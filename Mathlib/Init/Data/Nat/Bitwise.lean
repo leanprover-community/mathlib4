@@ -9,7 +9,6 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.PermuteGoals
 
 #align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
@@ -191,7 +190,7 @@ theorem shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | n + 1 => by
     have : 2 * (m * 2^n) = 2^(n+1)*m := by
       rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
-    simp [shiftLeft', bit_val, shiftLeft'_false, this]
+    simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
 /-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
 @[simp]
@@ -200,14 +199,6 @@ lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp]
 lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
-
-theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
-  simp only [shiftLeft_eq, Nat.pow_add, Nat.pow_one, ← Nat.mul_assoc, Nat.mul_comm]
-
-/-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
-def testBit (m n : ℕ) : Bool :=
-  bodd (m >>> n)
 #align nat.test_bit Nat.testBit
 
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
@@ -230,7 +221,7 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       let n' := div2 n
       have _x : bit (bodd n) n' = n := by
         apply bit_decomp n
-      rw [←_x]
+      rw [← _x]
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
 #align nat.binary_rec Nat.binaryRec
@@ -241,7 +232,8 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 #align nat.size Nat.size
 
-/-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
+/-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
+    the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
@@ -301,15 +293,28 @@ theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< 
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
 @[simp]
-theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
-  bodd_bit _ _
+theorem testBit_zero (b n) : testBit (bit b n) 0 = b := by
+  rw [testBit, bit]
+  cases b
+  · simp [bit0, ← Nat.mul_two]
+  · simp only [cond_true, bit1, bit0, shiftRight_zero, and_one_is_mod, bne_iff_ne]
+    simp only [← Nat.mul_two]
+    rw [Nat.add_mod]
+    simp
+
 #align nat.test_bit_zero Nat.testBit_zero
+
+theorem bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
+  | 0 => rfl
+  | 1 => rfl
+  | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
 
 theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
-    dsimp [shiftRight]
+    simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
+  simp only [bodd_eq_and_one_ne_zero] at this
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 

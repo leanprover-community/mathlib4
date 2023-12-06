@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.RowCol
 
 #align_import linear_algebra.matrix.trace from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
@@ -120,6 +121,15 @@ theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matr
     f (trace A)  = trace (f.mapMatrix A) :=
   map_sum f (fun i => diag A i) Finset.univ
 
+lemma trace_blockDiagonal [DecidableEq p] (M : p → Matrix n n R) :
+    trace (blockDiagonal M) = ∑ i, trace (M i) := by
+  simp [blockDiagonal, trace, Finset.sum_comm (γ := n)]
+
+lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m i)]
+    (M : ∀ i, Matrix (m i) (m i) R) :
+    trace (blockDiagonal' M) = ∑ i, trace (M i) := by
+  simp [blockDiagonal', trace, Finset.sum_sigma']
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -179,6 +189,13 @@ theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row
 
 end Mul
+
+lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
+    (M : Matrix (Fin n.succ) (Fin n.succ) R) :
+    M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
+  delta trace
+  rw [← (finSuccEquiv n).symm.sum_comp]
+  simp
 
 section Fin
 

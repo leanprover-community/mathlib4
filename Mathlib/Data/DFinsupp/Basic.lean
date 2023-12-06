@@ -295,14 +295,14 @@ instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, �
 
 @[simp]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
-    ⇑(∑ a in s, g a) = ∑ a in s, ⇑g a :=
-  (coeFnAddMonoidHom : _ →+ ∀ i, β i).map_sum g s
+    ⇑(∑ a in s, g a) = ∑ a in s, ⇑(g a) :=
+  map_sum coeFnAddMonoidHom g s
 #align dfinsupp.coe_finset_sum DFinsupp.coe_finset_sum
 
 @[simp]
 theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
     (∑ a in s, g a) i = ∑ a in s, g a i :=
-  (evalAddMonoidHom i : _ →+ β i).map_sum g s
+  map_sum (evalAddMonoidHom i) g s
 #align dfinsupp.finset_sum_apply DFinsupp.finset_sum_apply
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
@@ -746,6 +746,21 @@ theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 #align dfinsupp.equiv_fun_on_fintype_symm_single DFinsupp.equivFunOnFintype_symm_single
 
+section SingleAndZipWith
+
+variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
+@[simp]
+theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
+    {i} (b₁ : β₁ i) (b₂ : β₂ i) :
+    zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
+  ext j
+  rw [zipWith_apply]
+  obtain rfl | hij := Decidable.eq_or_ne i j
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne hij, single_eq_of_ne hij, single_eq_of_ne hij, hf]
+
+end SingleAndZipWith
+
 /-- Redefine `f i` to be `0`. -/
 def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
   ⟨fun j ↦ if j = i then 0 else x.1 j,
@@ -885,11 +900,7 @@ variable [∀ i, AddZeroClass (β i)]
 
 @[simp]
 theorem single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single i b₁ + single i b₂ :=
-  ext fun i' => by
-    by_cases h : i = i'
-    · subst h
-      simp only [add_apply, single_eq_same]
-    · simp only [add_apply, single_eq_of_ne h, zero_add]
+  (zipWith_single_single (fun _ => (· + ·)) _ b₁ b₂).symm
 #align dfinsupp.single_add DFinsupp.single_add
 
 @[simp]
@@ -1789,7 +1800,7 @@ theorem prod_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ : ι�
 theorem sum_apply {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
     [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)] {f : Π₀ i₁, β₁ i₁}
     {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {i₂ : ι} : (f.sum g) i₂ = f.sum fun i₁ b => g i₁ b i₂ :=
-  (evalAddMonoidHom i₂ : (Π₀ i, β i) →+ β i₂).map_sum _ f.support
+  map_sum (evalAddMonoidHom i₂) _ f.support
 #align dfinsupp.sum_apply DFinsupp.sum_apply
 
 theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
@@ -1823,7 +1834,7 @@ theorem prod_mul [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x
 @[to_additive (attr := simp)]
 theorem prod_inv [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommGroup γ]
     {f : Π₀ i, β i} {h : ∀ i, β i → γ} : (f.prod fun i b => (h i b)⁻¹) = (f.prod h)⁻¹ :=
-  ((invMonoidHom : γ →* γ).map_prod _ f.support).symm
+  (map_prod (invMonoidHom : γ →* γ) _ f.support).symm
 #align dfinsupp.prod_inv DFinsupp.prod_inv
 #align dfinsupp.sum_neg DFinsupp.sum_neg
 
@@ -2148,7 +2159,7 @@ theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decid
 theorem subtypeDomain_sum [∀ i, AddCommMonoid (β i)] {s : Finset γ} {h : γ → Π₀ i, β i}
     {p : ι → Prop} [DecidablePred p] :
     (∑ c in s, h c).subtypeDomain p = ∑ c in s, (h c).subtypeDomain p :=
-  (subtypeDomainAddMonoidHom β p).map_sum _ s
+  map_sum (subtypeDomainAddMonoidHom β p) _ s
 #align dfinsupp.subtype_domain_sum DFinsupp.subtypeDomain_sum
 
 theorem subtypeDomain_finsupp_sum {δ : γ → Type x} [DecidableEq γ] [∀ c, Zero (δ c)]
@@ -2272,7 +2283,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 @[to_additive]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
-    ⇑(f.prod g) = f.prod fun a b => ⇑g a b :=
+    ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 #align monoid_hom.coe_dfinsupp_prod MonoidHom.coe_dfinsupp_prod
 #align add_monoid_hom.coe_dfinsupp_sum AddMonoidHom.coe_dfinsupp_sum

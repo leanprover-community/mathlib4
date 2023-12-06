@@ -117,7 +117,7 @@ end
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
 -- needed for `aesop_cat`
-attribute [simp] FullSubcategory.comp_def FullSubcategory.id_def in
+attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -228,8 +228,8 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle := by ext Y; simp
-          right_triangle := by ext Y; simp } } }
+          left_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def]
+          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

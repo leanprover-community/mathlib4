@@ -196,8 +196,8 @@ theorem isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
 
 @[to_additive]
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
-    (hf : Continuous f) : IsCompact (range f) := by
-  apply isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
+    (hf : Continuous f) : IsCompact (range f) :=
+  isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 

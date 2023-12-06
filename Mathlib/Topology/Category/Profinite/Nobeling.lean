@@ -16,7 +16,8 @@ This file proves Nöbeling's theorem.
 
 ## Main result
 
-- `Nobeling`: For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
+* `LocallyConstant.freeOfProfinite`: Nöbeling's theorem.
+  For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
 
 ## Proof idea
 
@@ -89,7 +90,7 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  dsimp [Proj]
+  dsimp (config := { unfoldPartialApp := true }) [Proj]
   apply continuous_pi
   intro i
   split
@@ -225,7 +226,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunct
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] [DecidableEq I] :
+def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
     (fun s ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
@@ -386,7 +387,7 @@ theorem eval_eq (l : Products I) (x : C) :
     push_neg at h
     convert h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
-    simp only [ite_eq_right_iff]
+    simp only [ite_eq_right_iff, one_ne_zero]
 
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
@@ -676,8 +677,8 @@ theorem fin_comap_jointlySurjective
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap (ProjRestrict C (· ∈ s)) := by
-  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
-    (spanCone hC.isCompact) _
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
+    (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
 
@@ -802,7 +803,7 @@ instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (Locally
   apply @zero_ne_one ℤ
   exact FunLike.congr_fun h default
 
-theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil:= by
+theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
   simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
     Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h
@@ -882,7 +883,7 @@ theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (π C (ord I ·
 
 theorem contained_proj (o : Ordinal) : contained (π C (ord I · < o)) o := by
   intro x ⟨_, ⟨_, h⟩⟩ j hj
-  dsimp [Proj] at h
+  dsimp (config := { unfoldPartialApp := true }) [Proj] at h
   simp only [← congr_fun h j, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
   exact hj.1
 
@@ -1023,7 +1024,7 @@ def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : 
 
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
-  dsimp [range_equiv_smaller_toFun]
+  dsimp (config := { unfoldPartialApp := true }) [range_equiv_smaller_toFun]
   refine ⟨fun a b hab ↦ ?_, fun ⟨a, b, hb⟩ ↦ ?_⟩
   · ext1
     simp only [Subtype.mk.injEq] at hab
@@ -1231,7 +1232,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
 
 theorem continuous_swapTrue  :
     Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
-  dsimp [SwapTrue]
+  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
   apply continuous_pi
   intro i
   apply Continuous.comp'
@@ -1244,7 +1245,7 @@ theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
   convert hg
-  dsimp [SwapTrue]
+  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
   ext i
   split_ifs with h
   · rw [ord_term ho] at h
@@ -1557,7 +1558,7 @@ theorem Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
     (∀ i, i ∈ l.Tail.val → (x.val i = true)) = (∀ i, i ∈ l.Tail.val → (SwapTrue o x.val i = true))
   · apply forall_congr; intro i; apply forall_congr; intro hi; rw [hi' i hi]
   simp only [H]
-  split_ifs with h₁ h₂ h₃ <;> dsimp [e]
+  split_ifs with h₁ h₂ h₃ <;> try (dsimp [e])
   · rw [if_pos (swapTrue_eq_true _ _), if_neg]
     · rfl
     · simp [mem_C'_eq_false C ho x x.prop, Bool.coe_false]
@@ -1796,7 +1797,7 @@ open Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
-  · dsimp [ι]
+  · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
     intro C
     rw [← IsLocallyConstant.iff_continuous]
@@ -1813,9 +1814,9 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
     by_contra hn
-    obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
+    obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
-    dsimp [ι] at h
+    dsimp (config := { unfoldPartialApp := true }) [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 

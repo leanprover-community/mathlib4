@@ -810,6 +810,37 @@ theorem set_integral_nonpos_le {s : Set α} (hs : MeasurableSet s) (hf : Strongl
       (hfi.indicator hs) (indicator_nonpos_le_indicator s f)
 #align measure_theory.set_integral_nonpos_le MeasureTheory.set_integral_nonpos_le
 
+lemma Integrable.measure_le_integral {f : α → ℝ} (f_int : Integrable f μ) (f_nonneg : 0 ≤ᵐ[μ] f)
+    {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) :
+    μ s ≤ ENNReal.ofReal (∫ x, f x ∂μ) := by
+  rw [ofReal_integral_eq_lintegral_ofReal f_int f_nonneg]
+  apply meas_le_lintegral₀
+  · exact ENNReal.continuous_ofReal.measurable.comp_aemeasurable f_int.1.aemeasurable
+  · intro x hx
+    simpa using ENNReal.ofReal_le_ofReal (hs x hx)
+
+lemma integral_le_measure {f : α → ℝ} {s : Set α}
+    (hs : ∀ x ∈ s, f x ≤ 1) (h's : ∀ x ∈ sᶜ, f x ≤ 0) :
+    ENNReal.ofReal (∫ x, f x ∂μ) ≤ μ s := by
+  by_cases H : Integrable f μ; swap
+  · simp [integral_undef H]
+  let g x := max (f x) 0
+  have g_int : Integrable g μ := H.pos_part
+  have : ENNReal.ofReal (∫ x, f x ∂μ) ≤ ENNReal.ofReal (∫ x, g x ∂μ) := by
+    apply ENNReal.ofReal_le_ofReal
+    exact integral_mono H g_int (fun x ↦ le_max_left _ _)
+  apply this.trans
+  rw [ofReal_integral_eq_lintegral_ofReal g_int (eventually_of_forall (fun x ↦ le_max_right _ _))]
+  apply lintegral_le_meas
+  · intro x
+    apply ENNReal.ofReal_le_of_le_toReal
+    by_cases H : x ∈ s
+    · simpa using hs x H
+    · apply le_trans _ zero_le_one
+      simpa using h's x H
+  · intro x hx
+    simpa using h's x hx
+
 end Nonneg
 
 section IntegrableUnion
@@ -842,7 +873,7 @@ theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(α, E)} {s : β →
   refine'
     integrableOn_iUnion_of_summable_integral_norm (fun i => (s i).isCompact.isClosed.measurableSet)
       (fun i => (map_continuous f).continuousOn.integrableOn_compact (s i).isCompact)
-      (summable_of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => _) hf)
+      (.of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => _) hf)
   rw [← (Real.norm_of_nonneg (integral_nonneg fun a => norm_nonneg _) : ‖_‖ = ∫ x in s i, ‖f x‖ ∂μ)]
   exact
     norm_set_integral_le_of_norm_le_const' (s i).isCompact.measure_lt_top
@@ -1148,8 +1179,8 @@ theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L
   by_cases h : Integrable φ μ
   · exact integral_comp_comm L h
   have : ¬Integrable (fun a => L (φ a)) μ := by
-    erw [LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
-    assumption
+    rwa [← Function.comp_def,
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
   simp [integral_undef, h, this]
 #align continuous_linear_map.integral_comp_comm' ContinuousLinearMap.integral_comp_comm'
 
@@ -1260,10 +1291,10 @@ theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [C
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf
   · by_cases hc : c = 0
-    · simp only [hc, integral_zero, smul_zero]
+    · simp [hc, integral_zero, smul_zero]
     rw [integral_undef hf, integral_undef, zero_smul]
     rw [integrable_smul_const hc]
-    simp_rw [hf]
+    simp_rw [hf, not_false_eq_true]
 #align integral_smul_const integral_smul_const
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :
@@ -1400,3 +1431,92 @@ theorem Integrable.simpleFunc_mul' (hm : m ≤ m0) (g : @SimpleFunc β m ℝ) (h
 end MeasureTheory
 
 end BilinearMap
+
+section ParametricIntegral
+
+variable {α β F G 𝕜 : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
+  [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+open Metric Function ContinuousLinearMap
+
+/-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
+`g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
+integral depends continuously on `a`. -/
+lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
+    [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
+    {f : α → β → G} {s : Set α} {k : Set β} {g : β → F}
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
+    ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
+  have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
+    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+  intro q hq
+  apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
+  obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by
+    simpa [integral_mul_right] using exists_pos_mul_lt εpos _
+  obtain ⟨v, v_mem, hv⟩ : ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, dist (f p x) (f q x) < δ :=
+    hk.mem_uniformity_of_prod
+      (hf.mono (Set.prod_mono_right (subset_univ k))) hq (dist_mem_uniformity δpos)
+  simp_rw [dist_eq_norm] at hv ⊢
+  have I : ∀ p ∈ s, IntegrableOn (fun x ↦ L (g x) (f p x)) k μ := by
+    intro p hp
+    obtain ⟨C, hC⟩ : ∃ C, ∀ x, ‖f p x‖ ≤ C := by
+      have : ContinuousOn (f p) k := by
+        have : ContinuousOn (fun x ↦ (p, x)) k := (Continuous.Prod.mk p).continuousOn
+        exact hf.comp this (by simp [MapsTo, hp])
+      rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
+      refine ⟨max C 0, fun x ↦ ?_⟩
+      by_cases hx : x ∈ k
+      · exact (hC x hx).trans (le_max_left _ _)
+      · simp [hfs p x hp hx]
+    have : IntegrableOn (fun x ↦ ‖L‖ * ‖g x‖ * C) k μ :=
+      (hg.norm.const_mul _).mul_const _
+    apply Integrable.mono' this ?_ ?_
+    · borelize G
+      apply L.aestronglyMeasurable_comp₂ hg.aestronglyMeasurable
+      apply StronglyMeasurable.aestronglyMeasurable
+      apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
+      apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
+    · apply eventually_of_forall (fun x ↦ (le_op_norm₂ L (g x) (f p x)).trans ?_)
+      gcongr
+      apply hC
+  filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
+  calc
+  ‖∫ x, L (g x) (f p x) ∂μ - ∫ x, L (g x) (f q x) ∂μ‖
+    = ‖∫ x in k, L (g x) (f p x) ∂μ - ∫ x in k, L (g x) (f q x) ∂μ‖ := by
+      congr 2
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+        simp [hfs p x h'p hx]
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+        simp [hfs q x hq hx]
+  _ = ‖∫ x in k, L (g x) (f p x) - L (g x) (f q x) ∂μ‖ := by rw [integral_sub (I p h'p) (I q hq)]
+  _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _
+  _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
+      apply integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity))
+      · exact (hg.norm.const_mul _).mul_const _
+      · apply eventually_of_forall (fun x ↦ ?_)
+        by_cases hx : x ∈ k
+        · dsimp only
+          specialize hv p hp x hx
+          calc
+          ‖L (g x) (f p x) - L (g x) (f q x)‖
+            = ‖L (g x) (f p x - f q x)‖ := by simp only [map_sub]
+          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_op_norm₂ _ _ _
+          _ ≤ ‖L‖ * ‖g x‖ * δ := by gcongr
+        · simp only [hfs p x h'p hx, hfs q x hq hx, sub_self, norm_zero, mul_zero]
+          positivity
+  _ < ε := hδ
+
+/-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
+compactly supported. Then the integral depends continuously on `a`. -/
+lemma continuousOn_integral_of_compact_support
+    {f : α → β → E} {s : Set α} {k : Set β} [IsFiniteMeasureOnCompacts μ]
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
+    ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
+  simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
+    hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
+
+end ParametricIntegral

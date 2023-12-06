@@ -29,7 +29,7 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-set_option autoImplicit true
+variable {M G : Type*}
 
 namespace SemiconjBy
 
@@ -123,7 +123,7 @@ end Group
 end SemiconjBy
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
-@[to_additive AddUnits.mk_addSemiconjBy "`a` semiconjugates `x` to `a + x + -a`."]
+@[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
 theorem Units.mk_semiconjBy [Monoid M] (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
   unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
 #align units.mk_semiconj_by Units.mk_semiconjBy

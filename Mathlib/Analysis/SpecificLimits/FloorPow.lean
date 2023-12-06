@@ -19,8 +19,6 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
   to `1/j^2`, up to a multiplicative constant.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Filter Finset
 
 open Topology BigOperators
@@ -72,7 +70,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
-      by_contra' h
+      by_contra! h
       have cNM : c N ≤ M := by
         apply le_max'
         apply mem_image_of_mem
@@ -135,7 +133,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
-      by_contra' h
+      by_contra! h
       have cNM : c N ≤ M := by
         apply le_max'
         apply mem_image_of_mem
