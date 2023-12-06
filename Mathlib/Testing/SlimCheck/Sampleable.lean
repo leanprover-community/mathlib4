@@ -254,6 +254,11 @@ instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
   sample := Gen.listOf sample
   interp := List.map interp
 
+instance ULift.sampleableExt [SampleableExt α] : SampleableExt (ULift α) where
+  proxy := proxy α
+  sample := sample
+  interp a := ⟨interp a⟩
+
 end Samplers
 
 /-- An annotation for values that should never get shrinked. -/
@@ -281,9 +286,12 @@ Print (at most) 10 samples of a given type to stdout for debugging.
 -/
 -- Porting note: if `Control.ULiftable` is ported, make use of that here, as in mathlib3,
 -- to enable sampling from higher types.
-def printSamples {t : Type} [Repr t] (g : Gen t) : IO PUnit := do
-  for i in List.range 10 do
-    IO.println s!"{repr (← g.run i)}"
+def printSamples {t : Type u} [Repr t] (g : Gen t) : IO PUnit := do
+  let xs : List Std.Format ← IO.runRand $ ULiftable.down <| (show Rand (ULift.{u} _) from do
+    let xs : List t ← (List.range 10).mapM (ReaderT.run g ∘ ULift.up)
+    pure ⟨xs.map repr⟩)
+  for x in xs do
+    IO.println s!"{x}"
 
 open Lean Meta Qq
 
@@ -341,9 +349,7 @@ values of type `type` using an increasing size parameter.
 elab "#sample " e:term : command =>
   Command.runTermElabM fun _ => do
     let e ← Elab.Term.elabTermAndSynthesize e none
-    let g ← mkGenerator e
-    -- `printSamples` only works in `Type 0` (see the porting note)
-    let ⟨0, α, _, gen⟩ := g | throwError "Cannot sample from {g.1} due to its universe"
+    let ⟨u, α, _, gen⟩ ← mkGenerator e
     let printSamples := q(printSamples (t := $α) $gen)
     let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
     _ ← code

@@ -393,3 +393,16 @@ issue: true ≠ true does not hold
 --     slim_check (config := { randomSeed := some 257 })
 --   admit
 --   trivial
+
+example (f : ULift.{1} ℕ) : true := by
+  have : f = ⟨0⟩
+  success_if_fail_with_msg "
+===================
+Found problems!
+f := 1
+issue: ULift.up 1 = ULift.up 0 does not hold
+(0 shrinks)
+-------------------"
+    slim_check (config := { randomSeed := some 257 })
+  admit
+  trivial
