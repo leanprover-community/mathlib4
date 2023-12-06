@@ -9,6 +9,7 @@ import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.MetricSpace.Equicontinuity
+import Mathlib.Algebra.Module.MinimalAxioms
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
