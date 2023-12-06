@@ -657,6 +657,10 @@ set_option linter.uppercaseLean3 false in
 instance hasSheafifyOfPlusPlus : HasSheafify J D where
   isRightAdjoint := ⟨inferInstance⟩
 
+/--
+The functor `plusPlusSheaf`, doing the plus construction twice, is isomorphic to any choice of
+sheafification functor (by uniqueness of left adjoints).
+-/
 noncomputable
 def presheafToSheafIsoPlusPlus : plusPlusSheaf J D ≅ presheafToSheaf J D :=
   Adjunction.leftAdjointUniq (plusPlusAdjunction J D) (sheafificationAdjunction J D)
@@ -672,6 +676,10 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added to ease the port of CategoryTheory.Sites.LeftExact
 -- in mathlib, this was `by refl`, but here it would timeout
+/--
+"Sheafification" as an endofunctor of the presheaf category is isomorphic to sheafification
+followed by inclusion.
+-/
 @[simps! hom_app inv_app]
 noncomputable
 def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
@@ -704,3 +712,4 @@ instance sheafification_reflective : IsIso (plusPlusAdjunction J D).counit :=
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 end CategoryTheory
+#lint

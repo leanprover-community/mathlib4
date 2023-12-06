@@ -32,7 +32,7 @@ essentially small sites.
   taking a sheaf to its underlying presheaf. 
 -/
 
-universe v u v' u' w
+universe u
 
 namespace CategoryTheory
 
@@ -40,9 +40,9 @@ open Functor Limits GrothendieckTopology
 
 namespace Equivalence
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type u'} [Category.{v'} D] (e : C ≌ D)
-variable {A : Type w} [Category.{max u' v'} A]
+variable {C : Type*} [Category C] (J : GrothendieckTopology C)
+variable {D : Type*} [Category D] (e : C ≌ D)
+variable {A : Type*} [Category A]
 
 theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
   intro X T
@@ -169,6 +169,9 @@ def transportSheafificationAdjunction : transportAndSheafify J e ⊣ sheafToPres
   ((e.op.congrLeft.toAdjunction.comp (sheafificationAdjunction _ _)).comp
     (e.sheafCongr (A := A) J).symm.toAdjunction).ofNatIsoRight (transportIsoSheafToPresheaf _ _)
 
+theorem hasSheafify : HasSheafify J A where
+  isRightAdjoint := ⟨⟨transportAndSheafify J e, transportSheafificationAdjunction J e⟩⟩
+
 end Equivalence
 
 variable {C : Type (u+1)} [LargeCategory C] [EssentiallySmall C] (J : GrothendieckTopology C)
@@ -186,5 +189,7 @@ functor
 noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J
+
+instance : HasSheafify J A := (equivSmallModel C).hasSheafify J
 
 end CategoryTheory

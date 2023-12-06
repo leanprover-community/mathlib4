@@ -53,10 +53,9 @@ variable {J : GrothendieckTopology C}
 -- instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
 --   out j := { has_limit := fun F => by infer_instance }
 
--- sheafification assumptions
 variable [HasSheafify J D] [PreservesFiniteLimits (presheafToSheaf J D)]
 
-instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
+instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 set_option linter.uppercaseLean3 false in
