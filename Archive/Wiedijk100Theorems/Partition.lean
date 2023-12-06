@@ -10,7 +10,9 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Finset.Antidiagonal
+--import Mathlib.Data.Finset.Antidiagonal
+
+import Mathlib.Data.Finset.PiAntidiagonal
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -201,10 +203,28 @@ theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s)
 * move this to the file on PowerSeries
 * make it work for MvPowerSeries
 -/
+
+open Finset HasPiAntidiagonal
+
+universe u
+variable {ι : Type u}
+
+#check Finset.HasPiAntidiagonal ι ℕ
+
+instance : Finset.HasPiAntidiagonal ι ℕ :=
+Finset.HasAntidiagonal.HasPiAntidiagonal
+
+instance : HasPiAntidiagonal ι (Unit →₀ ℕ) :=
+Finset.HasAntidiagonal.HasPiAntidiagonal
+
 theorem coeff_prod_range [CommSemiring α] {ι : Type*} -- [DecidableEq ι] -- [DecidableEq (ι → ℕ)]
     (s : Finset ι) (f : ι → PowerSeries α) (n : ℕ) :
     coeff α n (∏ j in s, f j) = ∑ l in piAntidiagonal s n, ∏ i in s, coeff α (l i) (f i) := by
-  revert n
+  simp only [coeff]
+  have := coeff_prod f (fun₀ | () => n) s
+  convert this
+  sorry
+  /-revert n
   induction s using Finset.induction_on with
   | empty =>
     intro n
@@ -237,7 +257,7 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type*} -- [DecidableEq ι] -- [
       have := sum_congr (Eq.refl s) fun x _ => Function.funext_iff.1 z x
       obtain rfl : q₁ = q₂ := by simpa [sum_add_distrib, hp, hq, if_neg hi] using this
       obtain rfl : p₂ = p₁ := by simpa using h
-      exact (t rfl).elim
+      exact (t rfl).elim-/
 #align theorems_100.coeff_prod_range Theorems100.coeff_prod_range
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
@@ -330,7 +350,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
             (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) :
         α) =
       (coeff α n) (∏ i : ℕ in s, indicatorSeries α ((· * i) '' c i)) := by
-  simp_rw [coeff_prod_range, coeff_indicator, prod_boole, sum_boole]
+  rw [coeff_prod]
+  simp_rw [/- coeff_prod_range, -/coeff_prod, coeff_indicator, prod_boole, sum_boole]
   congr 1
   refine' Finset.card_congr (fun p _ i => Multiset.count i p.parts • i) _ _ _
   · simp only [mem_filter, mem_univ, true_and_iff, exists_prop, and_assoc, and_imp,
