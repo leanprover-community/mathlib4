@@ -323,7 +323,7 @@ class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
   /-- Any set of a discrete measurable space is measurable. -/
   measurableSet : ∀ (s : Set α), MeasurableSet s
 
-attribute [simp, measurability] DiscreteMeasurableSpace.measurableSet
+attribute [measurability] DiscreteMeasurableSpace.measurableSet
 
 section DiscreteMeasurableSpace
 
