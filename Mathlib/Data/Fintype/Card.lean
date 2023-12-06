@@ -222,7 +222,12 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_ofSubsingleton _
 #align fintype.card_unique Fintype.card_unique
 
-#noalign fintype.card_of_is_empty
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
+arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
+@[simp]
+theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
+  rfl
+#align fintype.card_of_is_empty Fintype.card_of_isEmpty
 
 end Fintype
 
