@@ -77,6 +77,9 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 #align basis.parallelepiped_basis_fun Basis.parallelepiped_basisFun
 
+-- HACK for a `simp` that barely times out
+attribute [-instance] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass StarAlgHomClass.toAlgHomClass
+
 /-- A parallelepiped can be expressed on the standard basis. -/
 theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :

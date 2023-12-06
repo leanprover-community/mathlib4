@@ -49,6 +49,9 @@ open NumberField Units BigOperators
 
 section Rat
 
+-- HACK for coercion failing due to timeout
+attribute [-instance] StarAlgHomClass.toAlgHomClass NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
+
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←

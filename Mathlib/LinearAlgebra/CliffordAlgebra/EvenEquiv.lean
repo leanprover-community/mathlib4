@@ -270,7 +270,9 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
+        -- HACK: not sure what causes the timeout with unqualified `map_neg`,
+        -- the synthInstance trace looks okay.
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, RingHom.map_neg,
           neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,

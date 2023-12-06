@@ -189,11 +189,15 @@ theorem contractRight_algebraMap (r : R) : algebraMap R (CliffordAlgebra Q) r⌊
   rw [contractRight_eq, reverse.commutes, contractLeft_algebraMap, map_zero]
 #align clifford_algebra.contract_right_algebra_map CliffordAlgebra.contractRight_algebraMap
 
+-- HACK: This search is just slightly over the heartbeat bound
+set_option synthInstance.maxHeartbeats 30000 in
 @[simp]
 theorem contractLeft_one : d⌋(1 : CliffordAlgebra Q) = 0 := by
   simpa only [map_one] using contractLeft_algebraMap Q d 1
 #align clifford_algebra.contract_left_one CliffordAlgebra.contractLeft_one
 
+-- HACK: This search is just slightly over the heartbeat bound
+set_option synthInstance.maxHeartbeats 30000 in
 @[simp]
 theorem contractRight_one : (1 : CliffordAlgebra Q)⌊d = 0 := by
   simpa only [map_one] using contractRight_algebraMap Q d 1
@@ -298,6 +302,8 @@ theorem changeForm_algebraMap (r : R) : changeForm h (algebraMap R _ r) = algebr
   (foldr_algebraMap _ _ _ _ _).trans <| Eq.symm <| Algebra.algebraMap_eq_smul_one r
 #align clifford_algebra.change_form_algebra_map CliffordAlgebra.changeForm_algebraMap
 
+-- HACK: This search goes over the heartbeat bound
+set_option synthInstance.maxHeartbeats 40000 in
 @[simp]
 theorem changeForm_one : changeForm h (1 : CliffordAlgebra Q) = 1 := by
   simpa using changeForm_algebraMap h (1 : R)
@@ -322,6 +328,8 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
   rw [changeForm_ι_mul, changeForm_ι, contractLeft_ι, BilinForm.toLin_apply]
 #align clifford_algebra.change_form_ι_mul_ι CliffordAlgebra.changeForm_ι_mul_ι
 
+-- HACK: This search is just slightly over the heartbeat bound
+set_option synthInstance.maxHeartbeats 30000 in
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
     -- Porting note: original statement

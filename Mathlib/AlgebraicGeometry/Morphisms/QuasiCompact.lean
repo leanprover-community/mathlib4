@@ -320,10 +320,12 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   swap
   · delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at H ⊢
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
-    · simp only [← comp_apply, ← Functor.map_comp]
+    -- Note: the below was `simp only [← comp_apply]`
+    · rw [← comp_apply, ← comp_apply]
+      simp only [← Functor.map_comp]
       rfl
+      · simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
     · rw [map_zero]
-      simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype
   cases nonempty_fintype s

@@ -79,6 +79,11 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
     Quotient.mkₐ ℂ I
 #align ideal.to_character_space Ideal.toCharacterSpace
 
+section
+
+-- HACK because these instances cause a slow search
+attribute [-instance] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass StarAlgHomClass.toAlgHomClass
+
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
@@ -87,6 +92,8 @@ theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
   simp_rw [Quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq]
   exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
 #align ideal.to_character_space_apply_eq_zero_of_mem Ideal.toCharacterSpace_apply_eq_zero_of_mem
+
+end
 
 /-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivalent
 to `gelfandTransform ℂ A a` takes the value zero at some character. -/

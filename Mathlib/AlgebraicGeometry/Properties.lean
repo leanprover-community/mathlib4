@@ -64,6 +64,9 @@ theorem isReducedOfStalkIsReduced [∀ x : X.carrier, _root_.IsReduced (X.preshe
   exact (hs.map _).eq_zero
 #align algebraic_geometry.is_reduced_of_stalk_is_reduced AlgebraicGeometry.isReducedOfStalkIsReduced
 
+-- HACK to avoid slow instances
+attribute [-instance] StarAlgHomClass.toAlgHomClass NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
+
 instance stalk_isReduced_of_reduced [IsReduced X] (x : X.carrier) :
     _root_.IsReduced (X.presheaf.stalk x) := by
   constructor
@@ -89,6 +92,7 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
+set_option maxHeartbeats 400000 in -- HACK: seems to be a heavy defeq introduced somewhere
 instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp

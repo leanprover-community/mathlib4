@@ -83,6 +83,9 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   refine' h_conv hw (h_symm _ hv) _ _ _ <;> norm_num
 #align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
 
+-- HACK because these instances cause a slow search
+attribute [-instance] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass StarAlgHomClass.toAlgHomClass
+
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
 domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
 contains a non-zero lattice point of `L`. Compared to
