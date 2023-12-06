@@ -67,7 +67,7 @@ variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [Ordere
   {s : Set M} {a b : M} {c : R}
 
 instance : PosSMulStrictMono R M where
-  elim a _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb a.2
+  elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
 instance : PosSMulReflectLT R M :=
   posSMulReflectLT_iff_contravariant_pos.2 $
