@@ -58,12 +58,14 @@ variable {α : Type*}
 section General
 variable [Group α] [DecidableEq α] {x y : Finset α × Finset α} {s t : Finset α}
 
-/-- The relation we induct along in the proof of Cauchy-Davenport theorem. `(s₁, t₁) < (s₂, t₂)` iff
+/-- The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
+`(s₁, t₁) < (s₂, t₂)` iff
 * `|s₁ * t₁| < |s₂ * t₂|`
 * or `|s₁ * t₁| = |s₂ * t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
 * or `|s₁ * t₁| = |s₂ * t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`. -/
 @[to_additive
-"The relation we induct along in the proof of Cauchy-Davenport theorem. `(s₁, t₁) < (s₂, t₂)` iff
+"The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
+`(s₁, t₁) < (s₂, t₂)` iff
 * `|s₁ + t₁| < |s₂ + t₂|`
 * or `|s₁ + t₁| = |s₂ + t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
 * or `|s₁ + t₁| = |s₂ + t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`."]
@@ -72,7 +74,7 @@ private def DevosMulRel : Finset α × Finset α → Finset α × Finset α → 
     ((x.1 * x.2).card, x.1.card + x.2.card, x.1.card)
 
 @[to_additive]
-lemma devosMulRel_iff :
+private lemma devosMulRel_iff :
     DevosMulRel x y ↔
       (x.1 * x.2).card < (y.1 * y.2).card ∨
         (x.1 * x.2).card = (y.1 * y.2).card ∧ y.1.card + y.2.card < x.1.card + x.2.card ∨
@@ -81,19 +83,19 @@ lemma devosMulRel_iff :
   simp [DevosMulRel, Prod.lex_iff, and_or_left]
 
 @[to_additive]
-lemma devosMulRel_of_le (mul : (x.1 * x.2).card ≤ (y.1 * y.2).card)
+private lemma devosMulRel_of_le (mul : (x.1 * x.2).card ≤ (y.1 * y.2).card)
     (hadd : y.1.card + y.2.card < x.1.card + x.2.card) : DevosMulRel x y :=
   devosMulRel_iff.2 <| mul.lt_or_eq.imp_right fun h ↦ Or.inl ⟨h, hadd⟩
 
 @[to_additive]
-lemma devosMulRel_of_le_of_le (mul : (x.1 * x.2).card ≤ (y.1 * y.2).card)
+private lemma devosMulRel_of_le_of_le (mul : (x.1 * x.2).card ≤ (y.1 * y.2).card)
     (hadd : y.1.card + y.2.card ≤ x.1.card + x.2.card) (hone : x.1.card < y.1.card) :
     DevosMulRel x y :=
   devosMulRel_iff.2 <|
     mul.lt_or_eq.imp_right fun h ↦ hadd.gt_or_eq.imp (And.intro h) fun h' ↦ ⟨h, h', hone⟩
 
 @[to_additive]
-lemma wellFoundedOn_devosMulRel :
+private lemma wellFoundedOn_devosMulRel :
     {x : Finset α × Finset α | x.1.Nonempty ∧ x.2.Nonempty}.WellFoundedOn
       (DevosMulRel : Finset α × Finset α → Finset α × Finset α → Prop) := by
   refine wellFounded_lt.onFun.wellFoundedOn.prod_lex_of_wellFoundedOn_fiber fun n ↦
@@ -124,10 +126,10 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     Nat.cast_le] at *
   -- If `t.card < s.card`, we're done by the induction hypothesis on `(t⁻¹, s⁻¹)`.
   obtain hts | hst := lt_or_le t.card s.card
-  · simpa only [←mul_inv_rev, add_comm, card_inv] using
+  · simpa only [← mul_inv_rev, add_comm, card_inv] using
       ih _ _ ht.inv hs.inv
         (devosMulRel_iff.2 <| Or.inr <| Or.inr <| by
-          simpa only [←mul_inv_rev, add_comm, card_inv, true_and])
+          simpa only [← mul_inv_rev, add_comm, card_inv, true_and])
   -- If `s` is a singleton, then the result is trivial.
   obtain ⟨a, rfl⟩ | ⟨a, ha, b, hb, hab⟩ := hs.exists_eq_singleton_or_nontrivial
   · simp [add_comm]
@@ -143,16 +145,16 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   · have hS : (zpowers g : Set α) ⊆ a⁻¹ • (s : Set α) := by
       refine forall_mem_zpowers.2 $ @zpow_induction_right _ _ _ (· ∈ a⁻¹ • (s : Set α))
         ⟨_, ha, inv_mul_self _⟩ (fun c hc ↦ ?_) fun c hc ↦ ?_
-      · rw [←hsg, coe_smul_finset, smul_comm]
+      · rw [← hsg, coe_smul_finset, smul_comm]
         exact Set.smul_mem_smul_set hc
       · simp only
-        rwa [←op_smul_eq_mul, op_inv, ←Set.mem_smul_set_iff_inv_smul_mem, smul_comm,
-          ←coe_smul_finset, hsg]
+        rwa [← op_smul_eq_mul, op_inv, ← Set.mem_smul_set_iff_inv_smul_mem, smul_comm,
+          ← coe_smul_finset, hsg]
     refine Or.inl ((minOrder_le_natCard (zpowers_ne_bot.2 hg) <|
       s.finite_toSet.smul_set.subset hS).trans <| WithTop.coe_le_coe.2 <|
         ((Nat.card_mono s.finite_toSet.smul_set hS).trans_eq <| ?_).trans <|
           card_le_card_mul_right _ ht)
-    rw [←coe_smul_finset]
+    rw [← coe_smul_finset]
     simp [-coe_smul_finset]
   -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that `(s', t')` and
   -- `(s'', t'')` are both strictly smaller than `(s, t)` according to `DevosMulRel`.
@@ -162,9 +164,9 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   replace aux2 := card_mono $ mulETransformRight.fst_mul_snd_subset g (s, t)
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
-  · rw [←card_smul_finset g⁻¹ t]
+  · rw [← card_smul_finset g⁻¹ t]
     refine' Or.inr ((add_le_add_right hst _).trans _)
-    rw [←card_union_eq hgt]
+    rw [← card_union_eq hgt]
     exact (card_le_card_mul_left _ hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must
@@ -205,8 +207,8 @@ lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
-    rw [←card_singleton_mul t (s.max' hs), ←card_mul_singleton s (t.min' ht),
-      ←card_union_add_card_inter, ←card_singleton _, ←this, Nat.add_sub_cancel]
+    rw [← card_singleton_mul t (s.max' hs), ← card_mul_singleton s (t.min' ht),
+      ← card_union_add_card_inter, ← card_singleton _, ← this, Nat.add_sub_cancel]
     exact card_mono (union_subset (mul_subset_mul_left <| singleton_subset_iff.2 <| min'_mem _ _) <|
       mul_subset_mul_right <| singleton_subset_iff.2 <| max'_mem _ _)
   refine' eq_singleton_iff_unique_mem.2 ⟨mem_inter.2 ⟨mul_mem_mul (max'_mem _ _) <|
