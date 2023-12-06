@@ -318,6 +318,23 @@ theorem Set.Countable.measurableSet {s : Set α} (hs : s.Countable) : Measurable
 
 end MeasurableSingletonClass
 
+/-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
+class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
+  /-- Any set of a discrete measurable space is measurable. -/
+  measurableSet : ∀ (s : Set α), MeasurableSet s
+
+attribute [simp, measurability] DiscreteMeasurableSpace.measurableSet
+
+section DiscreteMeasurableSpace
+
+instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] :
+    DiscreteMeasurableSpace α := ⟨fun _ ↦ Set.Countable.measurableSet (Set.to_countable _)⟩
+
+instance [MeasurableSpace α] [DiscreteMeasurableSpace α] :
+    MeasurableSingletonClass α := ⟨fun _ ↦ DiscreteMeasurableSpace.measurableSet _⟩
+
+end DiscreteMeasurableSpace
+
 namespace MeasurableSpace
 
 /-- Copy of a `MeasurableSpace` with a new `MeasurableSet` equal to the old one. Useful to fix
@@ -526,6 +543,10 @@ theorem generateFrom_iUnion_measurableSet (m : ι → MeasurableSpace α) :
   (@giGenerateFrom α).l_iSup_u m
 #align measurable_space.generate_from_Union_measurable_set MeasurableSpace.generateFrom_iUnion_measurableSet
 
+instance : @DiscreteMeasurableSpace α ⊤ := by
+  letI : MeasurableSpace α := ⊤
+  exact ⟨fun s ↦ measurableSet_top⟩
+
 end CompleteLattice
 
 end MeasurableSpace
@@ -575,8 +596,13 @@ theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} 
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 #align measurable.le Measurable.le
 
+@[measurability]
+theorem DiscreteMeasurableSpace.measurable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    [DiscreteMeasurableSpace α] (f : α → β) : Measurable f :=
+  fun _ _ => DiscreteMeasurableSpace.measurableSet _
+
 theorem MeasurableSpace.Top.measurable {α β : Type*} [MeasurableSpace β] (f : α → β) :
-    Measurable[⊤] f := fun _ _ => MeasurableSpace.measurableSet_top
+    Measurable[⊤] f := @DiscreteMeasurableSpace.measurable α β ⊤ _ _ f
 #align measurable_space.top.measurable MeasurableSpace.Top.measurable
 
 end MeasurableFunctions

@@ -956,3 +956,34 @@ theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable
 #align finset.ae_measurable_sum Finset.aemeasurable_sum
 
 end CommMonoid
+
+section DiscreteMeasurableSpace
+
+variable {α : Type*} [MeasurableSpace α] [DiscreteMeasurableSpace α]
+
+@[to_additive]
+instance [Mul α] : MeasurableMul α :=
+  ⟨fun _ ↦ DiscreteMeasurableSpace.measurable _, fun _ ↦ DiscreteMeasurableSpace.measurable _⟩
+
+@[to_additive]
+instance [Div α] : MeasurableDiv α :=
+  ⟨fun _ ↦ DiscreteMeasurableSpace.measurable _, fun _ ↦ DiscreteMeasurableSpace.measurable _⟩
+
+@[to_additive]
+instance [Inv α] : MeasurableInv α := ⟨DiscreteMeasurableSpace.measurable _⟩
+
+end DiscreteMeasurableSpace
+
+section Countable
+
+variable {α : Type*} [MeasurableSpace α] [Countable α] [MeasurableSingletonClass α]
+
+instance [Add α] : MeasurableAdd₂ α := ⟨DiscreteMeasurableSpace.measurable _⟩
+
+instance [Mul α] : MeasurableMul₂ α := ⟨DiscreteMeasurableSpace.measurable _⟩
+
+instance [Sub α] : MeasurableSub₂ α := ⟨DiscreteMeasurableSpace.measurable _⟩
+
+instance [Div α] : MeasurableDiv₂ α := ⟨DiscreteMeasurableSpace.measurable _⟩
+
+end Countable
