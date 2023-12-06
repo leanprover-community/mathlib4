@@ -419,7 +419,7 @@ def oneCoboundariesOfIsOneCoboundary (f : G → A) (hf : IsOneCoboundary f) :
 theorem isOneCoboundary_of_oneCoboundaries (f : oneCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsOneCoboundary (A := A) f.1.1 := by
   rcases mem_range_of_mem_oneCoboundaries f.1 f.2 with ⟨x, hx⟩
-  exact ⟨x, by rw [←hx]; intro g; rfl⟩
+  exact ⟨x, by rw [← hx]; intro g; rfl⟩
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
@@ -493,7 +493,7 @@ theorem isMulOneCoboundary_of_oneCoboundaries
     (f : oneCoboundaries (Rep.ofMulDistribMulAction G M)) :
     IsMulOneCoboundary (M := M) (Additive.ofMul ∘ f.1.1) := by
   rcases mem_range_of_mem_oneCoboundaries f.1 f.2 with ⟨x, hx⟩
-  exact ⟨x, by rw [←hx]; intro g; rfl⟩
+  exact ⟨x, by rw [← hx]; intro g; rfl⟩
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
