@@ -291,7 +291,7 @@ theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β)
 variable (α)
 
 /-- Constant as a continuous bounded function. -/
-@[simps! (config := { fullyApplied := false })] -- Porting note: Changed `simps` to `simps!`
+@[simps! (config := .asFn)] -- Porting note: Changed `simps` to `simps!`
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp [le_rfl]⟩
 #align bounded_continuous_function.const BoundedContinuousFunction.const
@@ -767,7 +767,7 @@ open BigOperators
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
-  (@coeFnAddHom α β _ _ _ _).map_sum f s
+  map_sum coeFnAddHom f s
 #align bounded_continuous_function.coe_sum BoundedContinuousFunction.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α) :

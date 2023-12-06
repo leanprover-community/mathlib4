@@ -478,6 +478,9 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 #align subgroup.to_submonoid_le Subgroup.toSubmonoid_le
 #align add_subgroup.to_add_submonoid_le AddSubgroup.toAddSubmonoid_le
 
+@[to_additive (attr := simp)]
+lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
+
 end Subgroup
 
 /-!
@@ -911,7 +914,7 @@ theorem eq_bot_of_subsingleton [Subsingleton H] : H = ⊥ := by
 #align subgroup.eq_bot_of_subsingleton Subgroup.eq_bot_of_subsingleton
 #align add_subgroup.eq_bot_of_subsingleton AddSubgroup.eq_bot_of_subsingleton
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_eq_univ {H : Subgroup G} : (H : Set G) = Set.univ ↔ H = ⊤ :=
   (SetLike.ext'_iff.trans (by rfl)).symm
 #align subgroup.coe_eq_univ Subgroup.coe_eq_univ
@@ -938,7 +941,7 @@ theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x �
 @[to_additive]
 theorem exists_ne_one_of_nontrivial (H : Subgroup G) [Nontrivial H] :
     ∃ x ∈ H, x ≠ 1 := by
-  rwa [←Subgroup.nontrivial_iff_exists_ne_one]
+  rwa [← Subgroup.nontrivial_iff_exists_ne_one]
 
 @[to_additive]
 theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := by
@@ -963,7 +966,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 
 @[to_additive]
 lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
-  rw [←nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
+  rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
   simp only [ne_eq, Subtype.exists, mk_eq_one_iff, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
@@ -1274,10 +1277,8 @@ theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, c
 #align subgroup.closure_Union Subgroup.closure_iUnion
 #align add_subgroup.closure_Union AddSubgroup.closure_iUnion
 
-@[to_additive]
-theorem closure_eq_bot_iff (G : Type*) [Group G] (S : Set G) : closure S = ⊥ ↔ S ⊆ {1} := by
-  rw [← le_bot_iff]
-  exact closure_le _
+@[to_additive (attr := simp)]
+theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans $ closure_le _
 #align subgroup.closure_eq_bot_iff Subgroup.closure_eq_bot_iff
 #align add_subgroup.closure_eq_bot_iff AddSubgroup.closure_eq_bot_iff
 
@@ -1329,23 +1330,23 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup K i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup K i hi⟩
   suffices x ∈ closure (⋃ i, (K i : Set G)) → ∃ i, x ∈ K i by
     simpa only [closure_iUnion, closure_eq (K _)] using this
-  refine' fun hx => closure_induction hx (fun _ => mem_iUnion.1) _ _ _
-  · exact hι.elim fun i => ⟨i, (K i).one_mem⟩
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_ ?_
+  · exact hι.elim fun i ↦ ⟨i, (K i).one_mem⟩
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hK i j with ⟨k, hki, hkj⟩
     exact ⟨k, mul_mem (hki hi) (hkj hj)⟩
-  rintro _ ⟨i, hi⟩
-  exact ⟨i, inv_mem hi⟩
+  · rintro _ ⟨i, hi⟩
+    exact ⟨i, inv_mem hi⟩
 #align subgroup.mem_supr_of_directed Subgroup.mem_iSup_of_directed
 #align add_subgroup.mem_supr_of_directed AddSubgroup.mem_iSup_of_directed
 
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align subgroup.coe_supr_of_directed Subgroup.coe_iSup_of_directed
 #align add_subgroup.coe_supr_of_directed AddSubgroup.coe_iSup_of_directed
 
@@ -2106,10 +2107,11 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
     Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
   toFun := MonoidHom.toHomUnits <|
-    { toFun := fun u ↦ ⟨(u : G₀ˣ), fun r ↦ by
-        rcases eq_or_ne r 0 with (rfl | hr)
-        · rw [mul_zero, zero_mul]
-        exact congrArg Units.val <| u.2 <| Units.mk0 r hr⟩
+    { toFun := fun u ↦ ⟨(u : G₀ˣ),
+      (Submonoid.mem_center_iff.mpr (fun r ↦ by
+          rcases eq_or_ne r 0 with (rfl | hr)
+          · rw [mul_zero, zero_mul]
+          exact congrArg Units.val <| (u.2.comm <| Units.mk0 r hr).symm))⟩
       map_one' := rfl
       map_mul' := fun _ _ ↦ rfl }
   invFun u := unitsCenterToCenterUnits G₀ u
@@ -2120,8 +2122,9 @@ def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
 variable {G}
 
 @[to_additive]
-theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
+  rw [← Semigroup.mem_center_iff]
+  exact Iff.rfl
 #align subgroup.mem_center_iff Subgroup.mem_center_iff
 #align add_subgroup.mem_center_iff AddSubgroup.mem_center_iff
 
@@ -2131,15 +2134,19 @@ instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidab
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
-  refine' characteristic_iff_comap_le.mpr fun ϕ g hg h => _
+  refine' characteristic_iff_comap_le.mpr fun ϕ g hg => _
+  rw [mem_center_iff]
+  intro h
   rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]
-  exact hg (ϕ h)
+  exact (hg.comm (ϕ h)).symm
 #align subgroup.center_characteristic Subgroup.centerCharacteristic
 #align add_subgroup.center_characteristic AddSubgroup.centerCharacteristic
 
 theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
   rw [eq_top_iff']
-  intro x y
+  intro x
+  rw [Subgroup.mem_center_iff]
+  intro y
   exact mul_comm y x
 #align comm_group.center_eq_top CommGroup.center_eq_top
 
@@ -2149,7 +2156,9 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
     mul_comm := by
       rw [eq_top_iff'] at h
       intro x y
-      exact h y x }
+      apply Subgroup.mem_center_iff.mp _ x
+      exact (h y)
+  }
 #align group.comm_group_of_center_eq_top Group.commGroupOfCenterEqTop
 
 variable (H)
@@ -2396,7 +2405,7 @@ instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
 #align add_subgroup.is_commutative.add_comm_group AddSubgroup.IsCommutative.addCommGroup
 
 instance center.isCommutative : (center G).IsCommutative :=
-  ⟨⟨fun a b => Subtype.ext (b.2 a)⟩⟩
+  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 #align subgroup.center.is_commutative Subgroup.center.isCommutative
 
 @[to_additive]
@@ -3708,7 +3717,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
 #align subgroup.commute_of_normal_of_disjoint Subgroup.commute_of_normal_of_disjoint
-#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.commute_of_normal_of_disjoint
+#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.addCommute_of_normal_of_disjoint
 
 end SubgroupNormal
 
@@ -3779,7 +3788,7 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
 variable {M : Type*} [Monoid M]
 
 theorem eq_of_left_mem_center {g h : M} (H : IsConj g h) (Hg : g ∈ Set.center M) : g = h := by
-  rcases H with ⟨u, hu⟩; rwa [← u.mul_left_inj, ← Hg u]
+  rcases H with ⟨u, hu⟩; rwa [← u.mul_left_inj, Hg.comm u]
 #align is_conj.eq_of_left_mem_center IsConj.eq_of_left_mem_center
 
 theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center M) : g = h :=
@@ -3809,6 +3818,7 @@ theorem mk_bijOn (G : Type*) [Group G] :
   · rintro ⟨g⟩ hg
     refine ⟨g, ?_, rfl⟩
     simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
+    rw [SetLike.mem_coe, Subgroup.mem_center_iff]
     intro h
     rw [← mul_inv_eq_iff_eq_mul]
     refine hg ?_ mem_carrier_mk

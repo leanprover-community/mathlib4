@@ -47,14 +47,7 @@ theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
   coe_decide p
 #align bool.of_to_bool_iff Bool.of_decide_iff
 
-@[simp]
-theorem true_eq_decide_iff {p : Prop} [Decidable p] : true = decide p ↔ p :=
-  eq_comm.trans of_decide_iff
 #align bool.tt_eq_to_bool_iff Bool.true_eq_decide_iff
-
-@[simp]
-theorem false_eq_decide_iff {p : Prop} [Decidable p] : false = decide p ↔ ¬p :=
-  eq_comm.trans (decide_false_iff _)
 #align bool.ff_eq_to_bool_iff Bool.false_eq_decide_iff
 
 theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
@@ -81,8 +74,14 @@ theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) 
   cases a <;> cases b <;> simp
 
 -- Porting note: new theorem
-theorem beq_eq_decide_eq {α} [DecidableEq α]
-    (a b : α) : (a == b) = decide (a = b) := rfl
+/- Even though `DecidableEq α` implies an instance of (`Lawful`)`BEq α`, we keep the seemingly
+redundant typeclass assumptions so that the theorem is also applicable for types that have
+overridden this default instance of `LawfulBEq α` -/
+theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
+    (a b : α) : (a == b) = decide (a = b) := by
+  cases h : a == b
+  · simp [ne_of_beq_false h]
+  · simp [eq_of_beq h]
 
 -- Porting note: new theorem
 theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
@@ -302,15 +301,17 @@ theorem right_le_or : ∀ x y : Bool, y ≤ (x || y) := by decide
 theorem or_le : ∀ {x y z}, x ≤ z → y ≤ z → (x || y) ≤ z := by decide
 #align bool.bor_le Bool.or_le
 
-/-- convert a `Bool` to a `ℕ`, `false -> 0`, `true -> 1` -/
-def toNat (b : Bool) : Nat :=
-  cond b 1 0
 #align bool.to_nat Bool.toNat
 
 /-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat
+
+@[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by cases b <;> rfl
+@[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) =  b := by simp [bne]
+@[simp] lemma toNat_beq_one  (b : Bool) : (b.toNat == 1) =  b := by cases b <;> rfl
+@[simp] lemma toNat_bne_one  (b : Bool) : (b.toNat != 1) = !b := by simp [bne]
 
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
@@ -323,7 +324,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
-  cases b₀ <;> cases b₁ <;> simp_all
+  cases b₀ <;> cases b₁ <;> simp_all (config := { decide := true })
 #align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by

@@ -733,6 +733,10 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
   SMulZeroClass.smul_zero _
 #align smul_zero smul_zero
 
+@[simp]
+lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
+    (a • if p then b else 0) = if p then a • b else 0 := by rw [smul_ite, smul_zero]
+
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/
 @[reducible]
@@ -1121,12 +1125,13 @@ variable {α}
 This is generalized to bundled endomorphisms by:
 * `Equiv.Perm.applyMulAction`
 * `AddMonoid.End.applyDistribMulAction`
+* `AddMonoid.End.applyModule`
 * `AddAut.applyDistribMulAction`
 * `MulAut.applyMulDistribMulAction`
-* `RingHom.applyDistribMulAction`
 * `LinearEquiv.applyDistribMulAction`
 * `LinearMap.applyModule`
 * `RingHom.applyMulSemiringAction`
+* `RingAut.applyMulSemiringAction`
 * `AlgEquiv.applyMulSemiringAction`
 -/
 instance Function.End.applyMulAction :

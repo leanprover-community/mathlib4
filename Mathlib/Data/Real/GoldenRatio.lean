@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu
 -/
 import Mathlib.Data.Real.Irrational
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.LinearRecurrence
