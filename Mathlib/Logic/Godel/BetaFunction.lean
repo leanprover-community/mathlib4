@@ -133,7 +133,7 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
   Nat.coprime_of_dvd (by
     intro p pp hn hm
     have : p ∣ (m - n) * a := by
-      simpa [Nat.succ_sub_succ, ←Nat.mul_sub_right_distrib] using
+      simpa [Nat.succ_sub_succ, ← Nat.mul_sub_right_distrib] using
         Nat.dvd_sub (Nat.succ_le_succ $ Nat.mul_le_mul_right a h) hm hn
     have : p ∣ a := by
       rcases (Nat.Prime.dvd_mul pp).mp this with (hp | hp)
