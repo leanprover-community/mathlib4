@@ -155,10 +155,6 @@ theorem comul_comp_snd :
 @[simp] theorem counit_comp_inl : counit ∘ₗ inl R A B = counit := by ext; simp
 
 instance instCoalgebra : Coalgebra R (A × B) where
-  comul := .coprod
-    (TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul)
-    (TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul)
-  counit := .coprod counit counit
   rTensor_counit_comp_comul := by
     ext : 1
     · rw [comp_assoc, comul_comp_inl, ← comp_assoc, rTensor_comp_map, counit_comp_inl,
@@ -172,6 +168,7 @@ instance instCoalgebra : Coalgebra R (A × B) where
     · rw [comp_assoc, comul_comp_inr, ← comp_assoc, lTensor_comp_map, counit_comp_inr,
         ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
   coassoc := by
+    dsimp only [instCoalgebraStruct]
     ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_coe, coe_inl, coe_inr, coprod_apply]
     · simp only [map_zero, add_zero]
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
