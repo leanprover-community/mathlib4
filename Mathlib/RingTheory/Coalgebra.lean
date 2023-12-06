@@ -29,7 +29,8 @@ open scoped TensorProduct
 /-- Data fields for `Coalgebra`, to allow API to be constructed before proving `Coalgebra.coassoc`.
 
 See `Coalgebra` for documentation. -/
-class CoalgebraStruct (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] where
+class CoalgebraStruct (R : Type u) (A : Type v)
+    [CommSemiring R] [AddCommMonoid A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
@@ -41,8 +42,8 @@ end Coalgebra
 
 /-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
-class Coalgebra (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] extends
-    CoalgebraStruct R A where
+class Coalgebra (R : Type u) (A : Type v)
+    [CommSemiring R] [AddCommMonoid A] [Module R A] extends CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
