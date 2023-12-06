@@ -81,37 +81,6 @@ def adjunctionToTypes {G : Type max v u ⥤ D} (adj : G ⊣ forget D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction_to_types CategoryTheory.Sheaf.adjunctionToTypes
 
--- @[simp]
--- theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
---     (Y : SheafOfTypes J) :
---     ((adjunctionToTypes J adj).unit.app Y).val =
---       (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
---         whiskerRight ((sheafificationAdjunction _ _).unit.app _) (forget D) := by
---   simp? [adjunctionToTypes, Adjunction.comp]
---   ext
---   simp? [adjunction, Adjunction.restrictFullyFaithful, equivOfFullyFaithful, Functor.preimage,
---     Full.preimage, Adjunction.comp]
--- set_option linter.uppercaseLean3 false in
--- #align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
-
--- @[simp]
--- theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
---     (X : Sheaf J D) :
---     ((adjunctionToTypes J adj).counit.app X).val =
---       J.sheafifyLift ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
---   apply J.sheafifyLift_unique
---   dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
---     instCategorySheaf_comp_val, instCategorySheaf_id_val]
---   rw [adjunction_aux_counit_app_val]
---   erw [Category.id_comp, J.sheafifyMap_sheafifyLift, J.toSheafify_sheafifyLift]
---   ext
---   dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
---     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
---   simp
-
--- set_option linter.uppercaseLean3 false in
--- #align category_theory.Sheaf.adjunction_to_types_counit_app_val CategoryTheory.Sheaf.adjunctionToTypes_counit_app_val
-
 instance [IsRightAdjoint (forget D)] : IsRightAdjoint (sheafForget J : Sheaf J D ⥤ _) :=
   ⟨_, adjunctionToTypes J (Adjunction.ofRightAdjoint (forget D))⟩
 
