@@ -701,6 +701,12 @@ lemma cyclesIsoSc'_inv_iCycles :
   erw [ShortComplex.cyclesMap_i]
   apply comp_id
 
+@[reassoc (attr := simp)]
+lemma toCycles_cyclesIsoSc'_hom :
+    K.toCycles i j ≫ (K.cyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).toCycles := by
+  simp only [← cancel_mono (K.sc' i j k).iCycles, assoc, cyclesIsoSc'_hom_iCycles,
+    toCycles_i, ShortComplex.toCycles_i, shortComplexFunctor'_obj_f]
+
 /-- The homology of a homological complex in degree `j` by specifying a choice of
 `c.prev j` and `c.next j`. -/
 noncomputable def opcyclesIsoSc' : K.opcycles j ≅ (K.sc' i j k).opcycles :=

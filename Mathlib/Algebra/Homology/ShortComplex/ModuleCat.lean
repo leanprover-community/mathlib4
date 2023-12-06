@@ -35,7 +35,7 @@ def moduleCatMk {X₁ X₂ X₃ : Type v} [AddCommGroup X₁] [AddCommGroup X₂
     (hfg : g.comp f = 0) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g) hfg
 
-variable (S : ShortComplex (ModuleCat.{v} R))
+variable (S S' : ShortComplex (ModuleCat.{v} R)) (φ : S ⟶ S')
 
 @[simp]
 lemma moduleCat_zero_apply (x : S.X₁) : S.g (S.f x) = 0 :=
@@ -157,6 +157,13 @@ lemma moduleCatCyclesIso_hom_subtype :
 lemma moduleCatCyclesIso_inv_iCycles :
     S.moduleCatCyclesIso.inv ≫ S.iCycles = (LinearMap.ker S.g).subtype :=
   S.moduleCatLeftHomologyData.cyclesIso_inv_comp_iCycles
+
+@[reassoc (attr := simp, elementwise)]
+lemma toCycles_moduleCatCyclesIso_hom :
+    S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatToCycles := by
+  rw [← cancel_mono S.moduleCatLeftHomologyData.i, moduleCatLeftHomologyData_i,
+    Category.assoc, S.moduleCatCyclesIso_hom_subtype, toCycles_i]
+  rfl
 
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit

@@ -467,46 +467,43 @@ def shortComplexH1 : ShortComplex (ModuleCat k) :=
 
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
-def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
-  (inhomogeneousCochains A).isoSc' 0 1 2 (CochainComplex.prev_nat_succ _) (CochainComplex.next _ _)
-    ≪≫ isoMk (zeroCochainsLequiv A).toModuleIso (oneCochainsLequiv A).toModuleIso
+@[simps!]
+def shortComplexH1Iso : (inhomogeneousCochains A).sc' 0 1 2 ≅ shortComplexH1 A :=
+    isoMk (zeroCochainsLequiv A).toModuleIso (oneCochainsLequiv A).toModuleIso
       (twoCochainsLequiv A).toModuleIso (dZero_comp_eq A) (dOne_comp_eq A)
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `oneCocycles A`, which is a simpler type. -/
 def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
-  cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+    cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
 lemma isoOneCocycles_hom_comp_subtype :
     (isoOneCocycles A).hom ≫ ModuleCat.ofHom (oneCocycles A).subtype =
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
-  show _ ≫ (moduleCatLeftHomologyData (shortComplexH1 A)).i = _
-  simp only [isoOneCocycles, cyclesMapIso_hom, Category.assoc, moduleCatCyclesIso,
-    Iso.trans_hom, LeftHomologyData.cyclesIso_hom_comp_i, cyclesMap_i]
+  dsimp [isoOneCocycles]
+  rw [Category.assoc, Category.assoc]
+  erw [(shortComplexH1 A).moduleCatCyclesIso_hom_subtype]
+  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
   rfl
 
 lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
-      (zeroCochainsLequiv A).toModuleIso.hom
-        ≫ ModuleCat.ofHom ((dZero A).codRestrict (oneCocycles A) fun c =>
-          LinearMap.ext_iff.1 (dOne_comp_dZero.{u} A) c) := by
-  rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 A)).i, Category.assoc]
-  show _ ≫ (_ ≫ ModuleCat.ofHom (oneCocycles A).subtype) = _
-  rw [isoOneCocycles_hom_comp_subtype, toCocycles, iCocycles, HomologicalComplex.toCycles_i_assoc]
-  apply (dZero_comp_eq A).symm
+      (zeroCochainsLequiv A).toModuleIso.hom ≫
+        ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
+  simp [isoOneCocycles]
+  rfl
 
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
 def isoH1 : groupCohomology A 1 ≅ ModuleCat.of k (H1 A) :=
-  homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
+  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+    homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
 lemma groupCohomologyπ_comp_isoH1_hom  :
     groupCohomologyπ A 1 ≫ (isoH1 A).hom =
-      (isoOneCocycles A).hom ≫ ModuleCat.ofHom ((oneCoboundaries A).mkQ) := by
-  simp only [groupCohomologyπ, isoH1, Iso.trans_hom, homologyMapIso_hom,
-    HomologicalComplex.homologyπ, homologyπ_naturality_assoc,
-    moduleCatHomologyIso, LeftHomologyData.homologyπ_comp_homologyIso_hom]
-  rfl
+      (isoOneCocycles A).hom ≫ (shortComplexH1 A).moduleCatHomologyπ := by
+  simp [groupCohomologyπ, isoH1, isoOneCocycles]
 
 end H1
 section H2
