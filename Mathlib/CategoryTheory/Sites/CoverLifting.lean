@@ -368,15 +368,7 @@ noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
     apply (Ran.adjunction A G.op).homEquiv_counit
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
 
-variable
-  [ConcreteCategory.{max v u} A]
-  [PreservesLimits (forget A)]
-  [ReflectsIsomorphisms (forget A)]
-  [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A]
-  [∀ (X : D), PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : D), HasColimitsOfShape (K.Cover X)ᵒᵖ A]
-  [G.IsCocontinuous J K] [G.IsContinuous J K]
+variable [HasSheafify J A] [HasSheafify K A] [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
 def Functor.pushforwardContinuousSheafificationCompatibility :
