@@ -42,6 +42,9 @@ integral curve, vector field, local existence
 -/
 
 open scoped Manifold
+scoped[Manifold] notation "𝓔(" I ", " x ")" => extChartAt I x
+scoped[Manifold] notation "𝓔⁻¹(" I ", " x ")" => LocalEquiv.symm (𝓔(I, x))
+
 open Set
 
 variable
@@ -223,6 +226,23 @@ lemma isIntegralCurve_const (h : v x₀ = 0) : IsIntegralCurve (fun _ => x₀) v
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
 
+lemma IsIntegralCurveOn.continuousAt {γ : ℝ → M} (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
+    ContinuousAt γ t₀ := (hγ t₀ ht).1
+
+lemma IsIntegralCurveOn.continuousOn {γ : ℝ → M} (hγ : IsIntegralCurveOn γ v s) :
+    ContinuousOn γ s := fun t ht => (hγ t ht).1.continuousWithinAt
+
+lemma IsIntegralCurveAt.continuousAt {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) :
+    ContinuousAt γ t₀ := by
+  obtain ⟨ε, hε, hγ⟩ := hγ
+  apply hγ.continuousAt
+  rw [← Real.ball_eq_Ioo]
+  exact Metric.mem_ball_self hε
+
+lemma IsIntegralCurve.continuous {γ : ℝ → M} (hγ : IsIntegralCurve γ v) :
+    Continuous γ := continuous_iff_continuousAt.mpr
+      fun _ => (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+
 variable (t₀)
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
@@ -293,22 +313,11 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
 
-example {γ γ' : ℝ → M}
+example {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
-    ∃ t₁ > t₀, ∀ t ∈ Icc t₀ t₁, γ t = γ' t := by
-  obtain ⟨ε, hε, hγ⟩ := hγ
-  obtain ⟨ε', hε', hγ'⟩ := hγ'
-  set t₁ := t₀ + (min ε ε') / 2 with ht₁
-  have hf : ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Icc t₀ t₁) := sorry
-  have hf' : ContinuousOn ((extChartAt I (γ' t₀)) ∘ γ) (Icc t₀ t₁) := sorry
-
-
-
-  -- need to shrink ε further to fit inside s
-
-
-
+    ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) := by
+  -- extract set `s` on which `v` is Lipschitz
   set v' : E → E := fun x =>
     tangentCoordChange I ((extChartAt I (γ t₀)).symm x) (γ t₀) ((extChartAt I (γ t₀)).symm x)
       (v ((extChartAt I (γ t₀)).symm x)) with hv'
@@ -317,6 +326,113 @@ example {γ γ' : ℝ → M}
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
     ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint ht)).snd
   have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun t => hlip
-
-
-  -- have := ODE_solution_unique_of_mem_set hlip
+  -- extract `εs` so that `(extChartAt I (γ t₀)) (γ t) ∈ s` for all `t ∈ Ioo (t₀ - εs) (t₀ + εs)`
+  have hcont : ContinuousAt ((extChartAt I (γ t₀)) ∘ γ) t₀ :=
+    ContinuousAt.comp (continuousAt_extChartAt ..) hγ.continuousAt
+  rw [continuousAt_def] at hcont
+  have hnhds := hcont _ hs
+  rw [Metric.mem_nhds_iff] at hnhds
+  obtain ⟨εs, hεs, hmem⟩ := hnhds
+  simp_rw [subset_def, mem_preimage] at hmem
+  -- `εs'` for `γ'`
+  have hcont' : ContinuousAt ((extChartAt I (γ' t₀)) ∘ γ') t₀ :=
+    ContinuousAt.comp (continuousAt_extChartAt ..) hγ'.continuousAt
+  rw [continuousAt_def] at hcont'
+  have hnhds' := hcont' _ (h ▸ hs)
+  rw [Metric.mem_nhds_iff] at hnhds'
+  obtain ⟨εs', hεs', hmem'⟩ := hnhds'
+  simp_rw [subset_def, mem_preimage] at hmem'
+  -- extract `εe` so `γ t` stays within the interior of the chart around `γ t₀`
+  have := continuousAt_def.mp hγ.continuousAt _ <| extChartAt_source_mem_nhds I (γ t₀)
+  rw [Metric.mem_nhds_iff] at this
+  obtain ⟨εe, hεe, hsrc⟩ := this
+  simp_rw [subset_def, mem_preimage] at hsrc
+  have := continuousAt_def.mp hγ'.continuousAt _ <| extChartAt_source_mem_nhds I (γ' t₀)
+  rw [Metric.mem_nhds_iff] at this
+  obtain ⟨εe', hεe', hsrc'⟩ := this
+  simp_rw [subset_def, mem_preimage] at hsrc'
+  -- extract `εγ` from local existence of integral curve
+  obtain ⟨εγ, hεγ, hγ⟩ := hγ
+  obtain ⟨εγ', hεγ', hγ'⟩ := hγ'
+  let ε := min (min εe εe') <| min (min εs εs') (min εγ εγ')
+  have hf : ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Ioo (t₀ - ε) (t₀ + ε)) := by
+    apply ContinuousOn.comp (continuousOn_extChartAt I (γ t₀))
+    · apply hγ.continuousOn.mono
+      rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
+      apply Metric.ball_subset_ball
+      simp
+    · apply MapsTo.mono_left hsrc
+      rw [← Real.ball_eq_Ioo]
+      apply Metric.ball_subset_ball
+      simp
+  have hf' : ContinuousOn ((extChartAt I (γ' t₀)) ∘ γ') (Ioo (t₀ - ε) (t₀ + ε)) := by
+    apply ContinuousOn.comp (continuousOn_extChartAt I (γ' t₀))
+    · apply hγ'.continuousOn.mono
+      rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
+      apply Metric.ball_subset_ball
+      simp
+    · apply MapsTo.mono_left hsrc'
+      rw [← Real.ball_eq_Ioo]
+      apply Metric.ball_subset_ball
+      simp
+  have hε : 0 < ε := lt_min (lt_min hεe hεe') (lt_min (lt_min hεs hεs') (lt_min hεγ hεγ'))
+  refine ⟨ε, hε, ?_⟩
+  have heqon : EqOn ((extChartAt I (γ t₀)) ∘ γ) ((extChartAt I (γ' t₀)) ∘ γ')
+    (Ioo (t₀ - ε) (t₀ + ε)) := by
+    apply ODE_solution_unique_of_mem_set_Ioo hlip (t₀ := t₀) _ hf _ _ hf'
+    · intros t ht
+      have ht' : t ∈ Ioo (t₀ - εγ') (t₀ + εγ') := by
+        apply mem_of_mem_of_subset ht
+        rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
+        apply Metric.ball_subset_ball
+        simp
+      have := (hγ' t ht').2
+      rw [writtenInExtChartAt, modelWithCornersSelf_coe, range_id, extChartAt_self_apply,
+        modelWithCornersSelf_coe, id.def, extChartAt_coe_symm, modelWithCornersSelf_coe_symm,
+        Function.comp.right_id, chartAt_self_eq, LocalHomeomorph.refl_symm,
+        LocalHomeomorph.refl_apply, Function.comp.right_id, hasFDerivWithinAt_univ,
+        ← hasDerivAt_iff_hasFDerivAt] at this
+      have hrw : HasDerivAt ((extChartAt I (γ' t₀)) ∘ γ')
+        (tangentCoordChange I (γ' t) (γ' t₀) (γ' t) (v (γ' t))) t := by
+        -- maybe have to use `HasFDerivAt.of_local_left_inverse` here?
+        sorry
+      have hsub : (fun x ↦ v') t ((↑(extChartAt I (γ' t₀)) ∘ γ') t) =
+        (tangentCoordChange I (γ' t) (γ' t₀) (γ' t)) (v (γ' t)) := by
+        dsimp only
+        rw [h, Function.comp_apply, LocalEquiv.left_inv]
+        apply hsrc'
+        apply mem_of_mem_of_subset ht
+        rw [← Real.ball_eq_Ioo]
+        apply Metric.ball_subset_ball
+        simp
+      rw [hsub]
+      exact hrw
+    · intros t ht
+      apply hmem'
+      apply mem_of_mem_of_subset ht
+      rw [← Real.ball_eq_Ioo]
+      apply Metric.ball_subset_ball
+      simp
+    · simp [h]
+    · rw [← Real.ball_eq_Ioo]
+      exact Metric.mem_ball_self hε
+    · sorry
+    · intros t ht
+      apply hmem
+      apply mem_of_mem_of_subset ht
+      rw [← Real.ball_eq_Ioo]
+      apply Metric.ball_subset_ball
+      simp
+  refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
+  · intros t ht
+    rw [Function.comp_apply, Function.comp_apply, LocalEquiv.left_inv]
+    apply hsrc
+    rw [← Real.ball_eq_Ioo] at ht
+    apply mem_of_mem_of_subset ht (Metric.ball_subset_ball _)
+    simp
+  · intros t ht
+    rw [Function.comp_apply, Function.comp_apply, h, LocalEquiv.left_inv]
+    apply hsrc'
+    rw [← Real.ball_eq_Ioo] at ht
+    apply mem_of_mem_of_subset ht (Metric.ball_subset_ball _)
+    simp

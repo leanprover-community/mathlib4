@@ -38,6 +38,10 @@ manifold, interior, boundary
 
 open Set
 
+open scoped Manifold
+scoped[Manifold] notation "𝓔(" I ", " x ")" => extChartAt I x
+scoped[Manifold] notation "𝓔⁻¹(" I ", " x ")" => LocalEquiv.symm (𝓔(I, x))
+
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

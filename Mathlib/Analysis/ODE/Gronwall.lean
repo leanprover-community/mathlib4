@@ -303,8 +303,6 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
         mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
       (fun _ ht' => hgs _ <| mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1)) ha
 
--- another Ioo version t₀ ∈ (a, b)
-
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that RHS is Lipschitz continuous in `x`. -/
 theorem ODE_solution_unique {v : ℝ → E → E} {K : ℝ≥0} (hv : ∀ t, LipschitzWith K (v t))
