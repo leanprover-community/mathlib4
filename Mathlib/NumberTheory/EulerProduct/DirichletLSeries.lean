@@ -49,7 +49,6 @@ def dirichletSummandHom {n : ℕ} (χ : DirichletCharacter ℂ n) (hs : s ≠ 0)
       mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _]
       using mul_mul_mul_comm ..
 
-example (n : ℕ) : (n : ℂ) = (n : ℝ) := by rw [ofReal_nat_cast]
 /-- When `s.re > 1`, the map `n ↦ n^(-s)` is norm-summable. -/
 lemma summable_riemannZetaSummand (hs : 1 < s.re) :
     Summable (fun n ↦ ‖riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n‖) := by
