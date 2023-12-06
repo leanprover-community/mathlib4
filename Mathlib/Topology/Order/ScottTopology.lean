@@ -15,6 +15,8 @@ This file introduces the Scott topology on a preorder.
 
 - `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
   bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
+- `DirSupClosed` - a set `s` is said to be closed under directed joins if, whenever a directed set
+  `d` has a least upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 - `Topology.scott` - the Scott topology is defined as the join of the topology of upper sets and the
   Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
@@ -131,17 +133,9 @@ lemma ScottHausdorff.isOpen_of_isLowerSet {s : Set α} (h : IsLowerSet s) :
 
 lemma ScottHausdorff.dirSupClosed_of_isOpen {s : Set α} (h : IsOpen[scottHausdorff] s) :
     DirSupInacc s := by
-  rw [DirSupInacc]
-  intros d hd₁ hd₂ a hda hd₃
-  have e1 : ∃ b ∈ d, Ici b ∩ d ⊆ s := by
-    apply h hd₁ hd₂ hda hd₃
-  cases' e1 with b hb
-  use b
-  constructor
-  · exact hb.1
-  · apply hb.2
-    simp only [mem_inter_iff, mem_Ici, le_refl, true_and]
-    exact hb.1
+  intros  _ d₁ d₂ _ d₃ ha
+  obtain ⟨b, hbd, hbdu⟩ := h d₁ d₂ d₃ ha
+  exact ⟨b, hbd, mem_of_subset_of_mem hbdu ⟨left_mem_Ici, hbd⟩⟩
 
 lemma ScottHausdorff.dirSupInacc_of_isClosed {s : Set α} (h : IsClosed[scottHausdorff] s) :
     DirSupClosed s := by
@@ -253,9 +247,7 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc {u : Set α} :
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open]
   constructor
   · refine' And.imp_right _
-    intros h _ d₁ d₂ _ d₃ ha
-    obtain ⟨b, hbd, hbdu⟩ := h d₁ d₂ d₃ ha
-    exact ⟨b, hbd, mem_of_subset_of_mem hbdu ⟨left_mem_Ici, hbd⟩⟩
+    apply ScottHausdorff.dirSupClosed_of_isOpen
   · intros h
     constructor
     · exact h.1
@@ -263,32 +255,18 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc {u : Set α} :
       obtain ⟨b, hbd, hbu⟩ := h.2 d₁ d₂ d₃ ha
       exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset hbu)⟩
 
-lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
-    ↔ (IsLowerSet s ∧
-    ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s ) := by
+lemma isClosed_iff_isLowerSet_and_dirSupClosed {s : Set α} : IsClosed s
+    ↔ (IsLowerSet s ∧ DirSupClosed s ) := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc,
     isLowerSet_compl.symm, compl_compl]
   apply and_congr_right'
-  constructor
-  · intros h d a d₁ d₂ d₃ d₄
-    by_contra h'
-    have c1: (d ∩ sᶜ).Nonempty := h d₁ d₂ d₃ h'
-    have c2: d ∩ sᶜ =  ∅ := by
-      rw [← subset_empty_iff, ← inter_compl_self s]
-      exact inter_subset_inter_left _ d₄
-    rw [c2] at c1
-    simp only [Set.not_nonempty_empty] at c1
-  · intros h d d₁ d₂ a d₃ d₄
-    rw [inter_compl_nonempty_iff]
-    by_contra h'
-    have c1: a ∈ s := h d₁ d₂ d₃ h'
-    contradiction
+  rw [dirSupInacc_iff_dDirSupClosed_compl]
 
 lemma isUpperSet_of_isOpen {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
   (isOpen_iff_isUpperSet_and_scottHausdorff_open.mp h).left
 
 lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
-  (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
+  (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).left
 
 lemma lowerClosure_subset_closure {s : Set α} : (lowerClosure s : Set α) ⊆ closure s  := by
   convert closure.mono (@upperSet_le_scott α _)
@@ -302,7 +280,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := le_antisymm
   (closure_minimal (by rw [singleton_subset_iff, mem_Iic])
-  (isClosed_iff_lower_and_subset_implies_LUB_mem.mpr
+  (isClosed_iff_isLowerSet_and_dirSupClosed.mpr
     ⟨isLowerSet_Iic a, fun _ _ _ _ d₃ d₄ => (isLUB_le_iff d₃).mpr d₄⟩))
   ( by
     rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
@@ -393,7 +371,7 @@ lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty
 lemma isClosed_iff_lower_and_closed_under_Directed_Sup {s : Set α} : IsClosed s
     ↔ IsLowerSet s ∧
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
-  rw [Topology.IsScott.isClosed_iff_lower_and_subset_implies_LUB_mem]
+  rw [Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
   apply and_congr_right'
   exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
     fun h d a h₁ h₂ h₃ ha => Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h h₁ h₂ ha)⟩
