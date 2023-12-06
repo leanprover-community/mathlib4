@@ -162,7 +162,7 @@ def Emb := E →ₐ[F] AlgebraicClosure E
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,
 as a natural number. It is defined to be zero if there are infinitely many of them.
 Note that if `E / F` is not algebraic, then this definition makes no mathematical sense. -/
-def finSepDegree : ℕ := Cardinal.toNat <| Cardinal.mk (Emb F E)
+def finSepDegree : ℕ := Nat.card (Emb F E)
 
 instance instNonemptyEmb : Nonempty (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
 
@@ -184,18 +184,14 @@ def embEquivOfEquiv (i : E ≃ₐ[F] K) :
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same `Field.finSepDegree`
 over `F`. -/
 theorem finSepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
-    finSepDegree F E = finSepDegree F K := by
-  have := congr_arg Cardinal.toNat <| (Equiv.ulift.{w} (α := Emb F E)).trans
-    (embEquivOfEquiv F E K i) |>.trans
-      (Equiv.ulift.{v} (α := Emb F K)).symm |>.cardinal_eq
-  simpa only [Cardinal.mk_uLift, Cardinal.toNat_lift] using this
+    finSepDegree F E = finSepDegree F K := Nat.card_congr (embEquivOfEquiv F E K i)
 
 @[simp]
 theorem finSepDegree_self : finSepDegree F F = 1 := by
   have : Cardinal.mk (Emb F F) = 1 := le_antisymm
     (Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
     (Cardinal.one_le_iff_ne_zero.2 <| Cardinal.mk_ne_zero _)
-  rw [finSepDegree, this, Cardinal.one_toNat]
+  rw [finSepDegree, Nat.card, this, Cardinal.one_toNat]
 
 @[simp]
 theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := by
@@ -237,10 +233,7 @@ if `E = F(S)` such that every element
 `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
 theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
-    finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
-  have := congr_arg Cardinal.toNat <| (Equiv.ulift.{w} (α := Emb F E)).trans
-    (embEquivOfAdjoinSplits F E K hS hK) |>.cardinal_eq
-  simpa only [Cardinal.mk_uLift, Cardinal.toNat_lift] using this
+    finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfAdjoinSplits F E K hS hK)
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
 and `K / F` is algebraically closed. -/
@@ -252,10 +245,7 @@ def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
 theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
-    finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
-  have := congr_arg Cardinal.toNat <| (Equiv.ulift.{w} (α := Emb F E)).trans
-    (embEquivOfIsAlgClosed F E K halg) |>.cardinal_eq
-  simpa only [Cardinal.mk_uLift, Cardinal.toNat_lift] using this
+    finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfIsAlgClosed F E K halg)
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic,
 then there is a non-canonical bijection
@@ -277,10 +267,7 @@ $[E:F]_s [K:E]_s = [K:F]_s$. See also `FiniteDimensional.finrank_mul_finrank'`. 
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
-  have := congr_arg Cardinal.toNat <| (embProdEmbOfIsAlgebraic F E K halg).trans
-    (Equiv.ulift.{v} (α := Emb F K)).symm |>.cardinal_eq
-  simpa only [Cardinal.mk_prod, Cardinal.toNat_mul, Cardinal.toNat_lift,
-    Cardinal.mk_uLift] using this
+  simpa only [Nat.card_prod] using Nat.card_congr (embProdEmbOfIsAlgebraic F E K halg)
 
 end Field
 
@@ -566,10 +553,9 @@ namespace Field
 minimal polynomial of `α` over `F`. -/
 theorem finSepDegree_adjoin_simple_eq_natSepDegree (α : E) (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = (minpoly F α).natSepDegree := by
-  have : finSepDegree F F⟮α⟯ = _ := congr_arg Cardinal.toNat <|
-    (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral).cardinal_eq
-  rw [this, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯),
-    Cardinal.mk_fintype, Cardinal.toNat_cast]
+  have : finSepDegree F F⟮α⟯ = _ := Nat.card_congr
+    (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral)
+  rw [this, Nat.card_eq_fintype_card, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯)]
   exact Eq.trans (by simp only [Multiset.mem_toFinset]) (Fintype.card_coe _)
 
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
@@ -1061,7 +1047,7 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F
 /-- A purely inseparable extension has (finite) separable degree one. -/
 theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
     finSepDegree F E = 1 := by
-  rw [finSepDegree, Cardinal.toNat_eq_iff Nat.one_ne_zero, Nat.cast_one]
+  rw [finSepDegree, Nat.card, Cardinal.toNat_eq_iff Nat.one_ne_zero, Nat.cast_one]
   by_contra h
   obtain ⟨i : E →ₐ[F] _, i' : E →ₐ[F] _, h⟩ := Cardinal.one_lt_iff_nontrivial.1 <|
     Cardinal.one_le_iff_ne_zero.2 (Cardinal.mk_ne_zero (Emb F E)) |>.lt_of_ne' h
