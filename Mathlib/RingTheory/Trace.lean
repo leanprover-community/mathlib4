@@ -118,8 +118,8 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
--- Porting note: was `simp [-coe_lmul_eq_mul]`.
-  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, Matrix.scalar_apply_eq]
+  -- Porting note: was `simp [-coe_lmul_eq_mul]`.
+  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, scalar_apply, diagonal_apply_eq]
 
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
@@ -292,7 +292,7 @@ theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
   conv =>
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [← @trace_trace _ _ K K⟮x⟯ _ _ _ _ _ _ _ _ _, trace_algebraMap, LinearMap.map_smul_of_tower]
+  rw [← trace_trace (L := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
 #align trace_eq_trace_adjoin trace_eq_trace_adjoin
 
 variable {K}
@@ -364,7 +364,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.toRingHom.toAlgebra) := ?_
+  letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
   rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
     Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   refine' Finset.sum_congr rfl fun σ _ => _
@@ -444,7 +444,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
     BilinForm.sum_left,
     Fintype.sum_congr _ _ fun i : κ =>
-      @BilinForm.sum_right _ _ _ _ _ _ _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
+      BilinForm.sum_right _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
         b y * P.map (algebraMap A B) y β,
     sum_comm]
   congr; ext x

@@ -105,6 +105,9 @@ theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem (IsOpen : Set α �
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
 
+lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem (IsClosed : Set α → Prop) :=
+  fun _s hs _t ht _ ↦ IsClosed.inter hs ht
+
 theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     borel α = .generateFrom { s | IsClosed s } :=
   le_antisymm
@@ -282,6 +285,12 @@ instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace 
     [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
   ⟨by borelize α; symm; apply borel_comap⟩
 #align subtype.borel_space Subtype.borelSpace
+
+instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
+  have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
+  have : ∀ s, @MeasurableSet α (borel α) s := fun s ↦ measurableSet_generateFrom (isOpen_discrete s)
+  exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=

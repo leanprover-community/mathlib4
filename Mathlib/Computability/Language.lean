@@ -294,7 +294,7 @@ instance : KleeneAlgebra (Language α) :=
       refine' iSup_le (fun n ↦ _)
       induction' n with n ih
       · simp
-      rw [pow_succ, ←mul_assoc m l (l^n)]
+      rw [pow_succ, ← mul_assoc m l (l^n)]
       exact le_trans (le_mul_congr h le_rfl) ih }
 
 end Language

@@ -96,7 +96,7 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs
-  rw [connectedComponent_eq_iInter_clopen, Set.mem_iInter] at hB
+  rw [connectedComponent_eq_iInter_isClopen, Set.mem_iInter] at hB
   let Z := { F : Ultrafilter α | s ∈ F }
   have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
   exact hB ⟨Z, hZ, hs⟩

@@ -902,6 +902,25 @@ theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
   simp [pi, or_imp, forall_and, setOf_and]
 #align set.union_pi Set.union_pi
 
+theorem union_pi_inter
+    (ht₁ : ∀ (i) (_ : i ∉ s₁), t₁ i = univ) (ht₂ : ∀ (i) (_ : i ∉ s₂), t₂ i = univ) :
+    (s₁ ∪ s₂).pi (fun i ↦ t₁ i ∩ t₂ i) = s₁.pi t₁ ∩ s₂.pi t₂ := by
+  ext x
+  simp only [mem_pi, mem_union, mem_inter_iff]
+  refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
+    fun h i hi ↦ ?_⟩
+  cases' hi with hi hi
+  · by_cases hi2 : i ∈ s₂
+    · exact ⟨h.1 i hi, h.2 i hi2⟩
+    · refine ⟨h.1 i hi, ?_⟩
+      rw [ht₂ i hi2]
+      exact mem_univ _
+  · by_cases hi1 : i ∈ s₁
+    · exact ⟨h.1 i hi1, h.2 i hi⟩
+    · refine ⟨?_, h.2 i hi⟩
+      rw [ht₁ i hi1]
+      exact mem_univ _
+
 @[simp]
 theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by
   rw [← union_pi, union_compl_self]

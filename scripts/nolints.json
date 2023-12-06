@@ -1903,7 +1903,7 @@
  ["docBlame", "ToAdditive.additiveTestUnsafe.visit"],
  ["docBlame", "TopCat.GlueData.f_open"],
  ["docBlame", "TopologicalSpace.Clopens.carrier"],
- ["docBlame", "TopologicalSpace.Clopens.clopen'"],
+ ["docBlame", "TopologicalSpace.Clopens.isClopen'"],
  ["docBlame", "TopologicalSpace.Closeds.carrier"],
  ["docBlame", "TopologicalSpace.Closeds.closed'"],
  ["docBlame", "TopologicalSpace.CompactOpens.isOpen'"],
