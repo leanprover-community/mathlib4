@@ -109,12 +109,13 @@ protected theorem StrictConvex.convex (hs : StrictConvex 𝕜 s) : Convex 𝕜 s
 #align strict_convex.convex StrictConvex.convex
 
 /-- An open convex set is strictly convex. -/
-protected theorem Convex.strictConvex_of_open (h : IsOpen s) (hs : Convex 𝕜 s) : StrictConvex 𝕜 s :=
+protected theorem Convex.strictConvex_of_isOpen (h : IsOpen s) (hs : Convex 𝕜 s) :
+    StrictConvex 𝕜 s :=
   fun _ hx _ hy _ _ _ ha hb hab => h.interior_eq.symm ▸ hs hx hy ha.le hb.le hab
-#align convex.strict_convex_of_open Convex.strictConvex_of_open
+#align convex.strict_convex_of_open Convex.strictConvex_of_isOpen
 
 theorem IsOpen.strictConvex_iff (h : IsOpen s) : StrictConvex 𝕜 s ↔ Convex 𝕜 s :=
-  ⟨StrictConvex.convex, Convex.strictConvex_of_open h⟩
+  ⟨StrictConvex.convex, Convex.strictConvex_of_isOpen h⟩
 #align is_open.strict_convex_iff IsOpen.strictConvex_iff
 
 theorem strictConvex_singleton (c : E) : StrictConvex 𝕜 ({c} : Set E) :=

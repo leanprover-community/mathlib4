@@ -371,7 +371,7 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
 
 @[simp] lemma append_cast_left {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (n' : ℕ)
     (h : n' = n) :
-    Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
+    Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw [h]) := by
   subst h
   funext i
   simp (config := {unfoldPartialApp := true}) only [Fin.append, Fin.addCases, comp_def, Fin.cast,
@@ -380,7 +380,7 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
 
 @[simp] lemma append_cast_right {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (m' : ℕ)
     (h : m' = m) :
-    Fin.append xs (ys ∘ Fin.cast h) = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
+    Fin.append xs (ys ∘ Fin.cast h) = Fin.append xs ys ∘ (Fin.cast <| by rw [h]) := by
   subst h
   funext i
   simp only [append, addCases, cast, subNat_mk, natAdd_mk, Fin.eta, ge_iff_le, comp_apply,
@@ -672,7 +672,7 @@ theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → 
 def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
     (h : ∀ xs x, P (Fin.snoc xs x))
     (x : ∀ i : Fin n.succ, α i) : P x :=
-  _root_.cast (by rw[Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
+  _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
     {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
