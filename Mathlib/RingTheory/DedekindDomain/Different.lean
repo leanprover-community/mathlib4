@@ -99,7 +99,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   rw [← b.equivFun.symm_apply_apply (_ * _), b.equivFun_symm_apply]
   apply IsIntegral.sum
   intro i _
-  rw [smul_mul_assoc, b.equivFun.map_smul, discr_def, mul_comm, ← H, smul_def]
+  rw [smul_mul_assoc, b.equivFun.map_smul, discr_def, mul_comm, ← H, Algebra.smul_def]
   refine RingHom.IsIntegralElem.mul _ ?_ (hb _)
   apply IsIntegral.algebraMap
   rw [cramer_apply]
@@ -111,7 +111,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
     rw [mem_traceDual_iff_isIntegral] at hx
     apply hx
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp (hb j)
-    rw [mul_comm, ← hy, ← smul_def]
+    rw [mul_comm, ← hy, ← Algebra.smul_def]
     exact I.smul_mem _ (ha)
   · exact isIntegral_trace (RingHom.IsIntegralElem.mul _ (hb j) (hb k))
 
