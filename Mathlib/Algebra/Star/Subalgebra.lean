@@ -772,8 +772,8 @@ theorem ext_adjoin {s : Set A} [NDFunLike F (adjoin R s) B]
   · simp only [map_star, hx]
 #align star_alg_hom.ext_adjoin StarAlgHom.ext_adjoin
 
-theorem ext_adjoin_singleton {a : A} [NDFunLike F (adjoin R ({a} : Set A)) B] [StarHomClass F _ B]
-    [RingHomClass F _ B] [StarAlgHomClass F R (adjoin R ({a} : Set A)) B] {f g : F}
+theorem ext_adjoin_singleton {a : A} [NDFunLike F (adjoin R ({a} : Set A)) B]
+    [StarAlgHomClass F R (adjoin R ({a} : Set A)) B] {f g : F}
     (h : f ⟨a, self_mem_adjoin_singleton R a⟩ = g ⟨a, self_mem_adjoin_singleton R a⟩) : f = g :=
   ext_adjoin fun x hx =>
     (show x = ⟨a, self_mem_adjoin_singleton R a⟩ from

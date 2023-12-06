@@ -183,7 +183,7 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-noncomputable def _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+noncomputable lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
   { WeakDual.Complex.instStarHomClass, hF with }
 #align alg_hom_class.star_alg_hom_class AlgHomClass.instStarAlgHomClass
 

@@ -223,7 +223,7 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 #align is_add_unit.map IsAddUnit.map
 
 @[to_additive]
-theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
+theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
