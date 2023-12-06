@@ -48,20 +48,13 @@ variable {J : GrothendieckTopology C}
 --instance : Abelian (Cᵒᵖ ⥤ D) :=
 --  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
 
+-- note: doesn't seem to be the case anymore
 -- This also needs to be specified manually, but I don't know why.
-instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
-  out j := { has_limit := fun F => by infer_instance }
+-- instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
+--   out j := { has_limit := fun F => by infer_instance }
 
 -- sheafification assumptions
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-
-variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
-variable [ReflectsIsomorphisms (forget D)]
+variable [HasSheafify J D] [PreservesFiniteLimits (presheafToSheaf J D)]
 
 instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
