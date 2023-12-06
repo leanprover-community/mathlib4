@@ -125,6 +125,7 @@ macro (name := macroPattSetBuilder) (priority := low-1)
 macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
+/-- Pretty printing for set-builder notation with pattern matching. -/
 @[app_unexpander setOf]
 def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
