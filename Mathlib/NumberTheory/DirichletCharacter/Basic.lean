@@ -224,6 +224,28 @@ lemma primitiveCharacter_one (hn : n ≠ 0) :
       (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
       conductor_one hn]
 
+/-- Dirichlet character associated to multiplication of Dirichlet characters,
+after changing both levels to the same -/
+noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
+    DirichletCharacter R
+      (Nat.lcm n m) :=
+  changeLevel (Nat.dvd_lcm_left n m) χ₁ * changeLevel (Nat.dvd_lcm_right n m) χ₂
+
+/-- Primitive character associated to multiplication of Dirichlet characters,
+after changing both levels to the same -/
+noncomputable def primitive_mul {m : ℕ} (χ₁ : DirichletCharacter R n)
+    (χ₂ : DirichletCharacter R m) : DirichletCharacter R (mul χ₁ χ₂).conductor :=
+  primitiveCharacter (mul χ₁ χ₂)
+
+lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter R m} :
+    χ.primitive_mul ψ = primitiveCharacter _ :=
+  rfl
+
+namespace isPrimitive
+lemma primitive_mul {m : ℕ} (ψ : DirichletCharacter R m) : (primitive_mul χ ψ).isPrimitive :=
+  primitiveCharacter_isPrimitive _
+end isPrimitive
+
 variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
 
 /-- A Dirichlet character is odd if its value at -1 is -1. -/
