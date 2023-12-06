@@ -44,11 +44,13 @@ section Set.InjOn
 
 variable {α β : Type*} {f : α → β}  {s : Finset α} (hs : Set.InjOn f s)
 
+/-- The embedding associated with an map which is injective on a subset -/
 def Set.InjOn.embedding : s ↪ β := { inj' := hs.injective }
 
 @[simp]
 lemma Set.InjOn.embedding_apply {a : s} : hs.embedding a = f a := rfl
 
+/-- The Finset image of a Finset on which a function is injective -/
 def Finset.map_of_injOn : Finset β  :=
   s.attach.map { inj' := hs.injective }
 
@@ -62,6 +64,7 @@ open Function
 
 section HasPiAntidiagonal
 
+/-- The HasPiAntidiagonal class -/
 class HasPiAntidiagonal (ι : Type*) (μ : Type*) [AddCommMonoid μ] where
   /-- The piAntidiagonal function -/
   piAntidiagonal : Finset ι → μ → Finset (ι →₀ μ)
@@ -123,7 +126,6 @@ lemma mem_finAntidiagonal' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
   rw [mem_finAntidiagonal, Finsupp.sum_of_support_subset f (subset_univ _) _ (fun _ _ => rfl)]
 
 end Fin
-
 
 section
 
@@ -202,8 +204,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
       rw [Finsupp.mem_support_iff]
       intro hx'
       apply hx
-      simp only [Finsupp.erase, Finsupp.coe_mk, ite_eq_left_iff]
-      exact fun _ => hx'
+      simp only [Finsupp.erase, Finsupp.coe_mk, hx', ite_self]
     · apply Finset.sum_congr rfl
       intro x hx
       simp only [Finsupp.erase, Finsupp.coe_mk, ite_eq_left_iff, if_neg (ne_of_mem_of_not_mem hx h)]
@@ -274,7 +275,46 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
       simp
     · exact hg
 
+lemma Finset.mapRange_piAntidiagonal_subset
+    {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
+    (e : μ ≃+ μ') (s : Finset ι) (n : μ):
+    Finset.map (Finsupp.mapRange.addEquiv e).toEmbedding  (piAntidiagonal s n) ⊆
+      piAntidiagonal s (e n) := by
+  intro f
+  simp only [mem_map]
+  simp only [mem_piAntidiagonal]
+  rintro ⟨g, ⟨hsupp, hsum⟩, rfl⟩
+  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding,
+    Finsupp.mapRange.equiv_apply, EquivLike.coe_coe, le_eq_subset]
+  constructor
+  · exact subset_trans (Finsupp.support_mapRange) hsupp
+  · rw [Finsupp.sum_mapRange_index (fun _ => rfl),
+      ← hsum, _root_.map_finsupp_sum]
+
+lemma Finset.mapRange_piAntidiagonal_eq
+    {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
+    (e : μ ≃+ μ') (s : Finset ι) (n : μ):
+    Finset.map (Finsupp.mapRange.addEquiv e).toEmbedding  (piAntidiagonal s n) =
+      piAntidiagonal s (e n) := by
+  ext f
+  constructor
+  · apply Finset.mapRange_piAntidiagonal_subset
+  · set h :=  (Finsupp.mapRange.addEquiv e).toEquiv with hh
+    intro hf
+    rw [Finset.mem_map_equiv]
+    have : n = e.symm (e n) := by
+      exact (AddEquiv.eq_symm_apply e).mpr rfl
+    rw [this]
+    apply Finset.mapRange_piAntidiagonal_subset
+    rw [← Finset.mem_map_equiv]
+    convert hf
+    rw [Finset.map_map, hh]
+    convert Finset.map_refl
+    apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
+
+
 end
+
 
 section CanonicallyOrderedAddCommMonoid
 
@@ -312,76 +352,6 @@ theorem piAntidiagonal_zero (s : Finset ι) :
     simp [hf] -/
 
 end CanonicallyOrderedAddCommMonoid
-
-section MvPowerSeries
-
-open MvPowerSeries
-namespace MvPowerSeries
-/- Here, we prove that HasPiAntidiagonal allows us to state and prove the
-  desired formula for the coefficients of products power series -/
-variable {α : Type*} [CommSemiring α]
-  {σ : Type*} [DecidableEq σ]
-  {ι : Type*} [DecidableEq ι]
-
-theorem coeff_prod [HasPiAntidiagonal ι (σ →₀ ℕ)]
-    (f : ι → MvPowerSeries σ α) (d : σ →₀ ℕ) (s : Finset ι) :
-    coeff α d (∏ j in s, f j) =
-      ∑ l in piAntidiagonal s d,
-        ∏ i in s, coeff α (l i) (f i) := by
-  revert d
-  induction s using Finset.induction_on with
-  | empty =>
-    intro d
-    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one]
-    classical
-    rw [coeff_one]
-    simp only [piAntidiagonal_empty]
-    split_ifs with hd
-    · simp only [card_singleton, Nat.cast_one]
-    · simp only [card_empty, Nat.cast_zero]
-  | @insert a s ha ih =>
-    intro d
-    rw [piAntidiagonal_insert ha]
-    rw [prod_insert ha, coeff_mul, sum_biUnion]
-    . apply Finset.sum_congr rfl
-      · rintro ⟨u, v⟩ huv
-        simp only [mem_antidiagonal] at huv
-        simp only [Set.InjOn.embedding, sum_map, Embedding.coeFn_mk, Set.restrict_apply,
-          Finsupp.coe_update, ne_eq, update_same]
-        rw [ih, mul_sum]
-        rw [← Finset.sum_attach]
-        apply Finset.sum_congr rfl
-        rintro ⟨x, hx⟩ _
-        rw [Finset.prod_insert ha]
-        apply congr_arg₂
-        · apply congr_arg
-          simp only [update_same]
-        · apply Finset.prod_congr rfl
-          intro i hi
-          rw [Function.update_noteq]
-          intro hi'; apply ha; simpa [hi'] using hi
-    · simp only [Set.PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, mem_antidiagonal]
-      rintro ⟨u, v⟩ huv ⟨u', v'⟩ huv' h
-      rw [onFun_apply, disjoint_left]
-      intro k hk hl
-      simp only [mem_map, mem_attach, true_and, Subtype.exists] at hk hl
-      obtain ⟨k, hk, rfl⟩ := hk
-      obtain ⟨l, hl, hkl⟩ := hl
-      simp only [mem_piAntidiagonal] at hk hl
-      apply h
-      simp only [Prod.mk.inj_iff]
-      suffices : u = u'
-      apply And.intro this
-      rw [this, ← huv'] at huv
-      simpa only [add_right_inj] using huv
-      apply symm
-      simp only [Set.InjOn.embedding, Embedding.coeFn_mk, Set.restrict_apply] at hkl
-      rw [FunLike.ext_iff] at hkl
-      simpa only [Finsupp.coe_update, update_same] using hkl a
-
-end MvPowerSeries
-end MvPowerSeries
-
 end HasPiAntidiagonal
 
 section Construction
@@ -396,6 +366,7 @@ variable {ι : Type*} [DecidableEq ι]
 variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ]
   [DecidableEq μ]
 
+/-- The Finset underlying `Finset.HasAntidiagonal.HasPiAntidiagonal` -/
 noncomputable def piAntidiagonal' (s : Finset ι) (n : μ) : Finset (ι →₀ μ) := by
   exact (finAntidiagonal s.card n).map {
     toFun := Finsupp.embDomain {
@@ -431,7 +402,6 @@ lemma mem_embDomain {α β M : Type*} [AddCommMonoid M] (f : α ↪ β) (g : β 
       · rw [hb', ← Finsupp.not_mem_support_iff, Finsupp.support_embDomain, mem_map]
         rintro ⟨a, _, rfl⟩
         apply hb
-        simp only [Embedding.coeFn_mk, comp_apply, coe_mem]
         exact Set.mem_range_self a
       rw [← Finsupp.not_mem_support_iff]
       intro hb'
@@ -477,18 +447,12 @@ end HasPiAntidiagonal
 
 open Finset.HasAntidiagonal.HasPiAntidiagonal
 
+/-- Given `HasAntidiagonal μ`, a definition of `HasPiAntidiagonal` -/
 noncomputable def HasPiAntidiagonal {ι μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ]
   [DecidableEq μ]:
   HasPiAntidiagonal ι μ :=
 { piAntidiagonal     := piAntidiagonal'
   mem_piAntidiagonal := mem_piAntidiagonal' }
-
-/- noncomputable instance foo {ι } : Finset.HasPiAntidiagonal ι ℕ :=
-HasPiAntidiagonal -/
-
-#check Finset.HasAntidiagonal.HasPiAntidiagonal
-
-
 
 end HasAntidiagonal
 
@@ -497,3 +461,125 @@ end Construction
 end HasPiAntidiagonal
 
 end Finset
+
+section MvPowerSeries
+
+open MvPowerSeries BigOperators Finset.HasPiAntidiagonal Finset
+namespace MvPowerSeries
+
+variable {α : Type*} [CommSemiring α]
+  {σ : Type*} [DecidableEq σ]
+  {ι : Type*} [DecidableEq ι]
+
+/-- Coefficients of a product of power series -/
+theorem coeff_prod [HasPiAntidiagonal ι (σ →₀ ℕ)]
+    (f : ι → MvPowerSeries σ α) (d : σ →₀ ℕ) (s : Finset ι) :
+    coeff α d (∏ j in s, f j) =
+      ∑ l in piAntidiagonal s d,
+        ∏ i in s, coeff α (l i) (f i) := by
+  revert d
+  induction s using Finset.induction_on with
+  | empty =>
+    intro d
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one]
+    classical
+    rw [coeff_one]
+    simp only [piAntidiagonal_empty]
+    split_ifs with hd
+    · simp only [card_singleton, Nat.cast_one]
+    · simp only [card_empty, Nat.cast_zero]
+  | @insert a s ha ih =>
+    intro d
+    rw [piAntidiagonal_insert ha]
+    rw [prod_insert ha, coeff_mul, sum_biUnion]
+    . apply Finset.sum_congr rfl
+      · rintro ⟨u, v⟩ huv
+        simp only [mem_antidiagonal] at huv
+        simp only [sum_map, Set.InjOn.embedding_apply, Finsupp.coe_update, ne_eq,
+          Function.update_same]
+        rw [ih, mul_sum]
+        rw [← Finset.sum_attach]
+        apply Finset.sum_congr rfl
+        rintro ⟨x, hx⟩ _
+        rw [Finset.prod_insert ha]
+        apply congr_arg₂
+        · apply congr_arg
+          simp only [Function.update_same]
+        · apply Finset.prod_congr rfl
+          intro i hi
+          rw [Function.update_noteq]
+          intro hi'; apply ha; simpa [hi'] using hi
+    · simp only [Set.PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, mem_antidiagonal]
+      rintro ⟨u, v⟩ huv ⟨u', v'⟩ huv' h
+      rw [Function.onFun_apply, disjoint_left]
+      intro k hk hl
+      simp only [mem_map, mem_attach, true_and, Subtype.exists] at hk hl
+      obtain ⟨k, hk, rfl⟩ := hk
+      obtain ⟨l, hl, hkl⟩ := hl
+      simp only [mem_piAntidiagonal] at hk hl
+      apply h
+      simp only [Prod.mk.inj_iff]
+      suffices : u = u'
+      apply And.intro this
+      rw [this, ← huv'] at huv
+      simpa only [add_right_inj] using huv
+      apply symm
+      simp only [Set.InjOn.embedding, Function.Embedding.coeFn_mk, Set.restrict_apply] at hkl
+      rw [FunLike.ext_iff] at hkl
+      simpa only [Finsupp.coe_update, Function.update_same] using hkl a
+
+end MvPowerSeries
+end MvPowerSeries
+
+section PowerSeries
+
+open PowerSeries
+namespace PowerSeries
+
+open BigOperators Finset.HasPiAntidiagonal Finset
+
+variable {α : Type*} [CommSemiring α]
+  {ι : Type*} [DecidableEq ι]
+
+-- Ugly proof, by rewriting as much as possible to use the case of
+-- multivariable power series
+
+/-- Coefficients of a product of power series -/
+theorem coeff_prod [HasPiAntidiagonal ι ℕ]
+    (f : ι → PowerSeries α) (d : ℕ) (s : Finset ι) :
+    coeff α d (∏ j in s, f j) =
+      ∑ l in piAntidiagonal s d,
+        ∏ i in s, coeff α (l i) (f i) := by
+  simp only [PowerSeries.coeff]
+  haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
+  convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
+  set e : (Unit →₀ ℕ) ≃+ ℕ := {
+      Equiv.finsuppUnique with
+      map_add' := fun m n => by simp }
+  have := Finset.mapRange_piAntidiagonal_eq (ι := ι) e s (e.symm d)
+  have hd : e (e.symm d) = d := by
+    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, AddEquiv.symm_mk, AddEquiv.coe_mk,
+      Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, Equiv.apply_symm_apply]
+  rw [hd] at this
+  rw [← this, Finset.sum_map]
+  apply Finset.sum_congr
+  · apply congr_arg₂ _ rfl
+    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, AddEquiv.symm_mk, AddEquiv.coe_mk,
+      Equiv.coe_fn_symm_mk]
+    ext
+    simp only [PUnit.default_eq_unit, Equiv.finsuppUnique_symm_apply_toFun, Finsupp.single_eq_same]
+    rfl
+  · intro d _
+    apply Finset.prod_congr rfl
+    intro i _
+    congr
+    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, AddEquiv.toEquiv_eq_coe,
+      Finsupp.mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply,
+      EquivLike.coe_coe, AddEquiv.coe_mk, Equiv.coe_fn_mk, Finsupp.mapRange_apply,
+      Equiv.finsuppUnique_apply, PUnit.default_eq_unit]
+    ext
+    simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
+
+end PowerSeries
+
+end PowerSeries
