@@ -3709,5 +3709,5 @@ import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta
 import Mathlib.Util.Time
-import Mathlib.Util.WWhatsNew
+import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
