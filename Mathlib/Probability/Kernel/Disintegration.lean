@@ -20,8 +20,7 @@ Then there exists a kernel `ρ.condKernel : kernel α Ω` such that for any meas
 In terms of kernels, `ρ.condKernel` is such that for any measurable space `γ`, we
 have a disintegration of the constant kernel from `γ` with value `ρ`:
 `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ (condKernel ρ))`,
-where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular,
-`ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit (condKernel ρ))) ()`.
+where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular, `ρ = ρ.fst ⊗ₘ ρ.condKernel`.
 
 In order to obtain a disintegration for any standard Borel space, we use that these spaces embed
 measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`. In the real case,
@@ -40,8 +39,7 @@ function `condCdf ρ a` (the conditional cumulative distribution function).
   `∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst = ρ s`
 * `ProbabilityTheory.kernel.const_eq_compProd`:
   `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ ρ.condKernel)`
-* `ProbabilityTheory.measure_eq_compProd`:
-  `ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit ρ.condKernel)) ()`
+* `ProbabilityTheory.measure_eq_compProd`: `ρ = ρ.fst ⊗ₘ ρ.condKernel`
 * `ProbabilityTheory.eq_condKernel_of_measure_eq_compProd`: a.e. uniqueness of `condKernel`
 
 -/
