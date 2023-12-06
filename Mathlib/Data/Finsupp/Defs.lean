@@ -157,7 +157,7 @@ theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
   FunLike.congr_fun h _
 #align finsupp.congr_fun Finsupp.congr_fun
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0) : ⇑(⟨s, f, h⟩ : α →₀ M) = f :=
   rfl
 #align finsupp.coe_mk Finsupp.coe_mk
@@ -166,9 +166,7 @@ instance zero : Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 #align finsupp.has_zero Finsupp.zero
 
-@[simp]
-theorem coe_zero : ⇑(0 : α →₀ M) = 0 :=
-  rfl
+@[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
 #align finsupp.coe_zero Finsupp.coe_zero
 
 theorem zero_apply {a : α} : (0 : α →₀ M) a = 0 :=
@@ -556,7 +554,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
       simp [ha]
 #align finsupp.update Finsupp.update
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.update f a b := by
   delta update Function.update
   ext
@@ -977,9 +975,7 @@ instance add : Add (α →₀ M) :=
   ⟨zipWith (· + ·) (add_zero 0)⟩
 #align finsupp.has_add Finsupp.add
 
-@[simp]
-theorem coe_add (f g : α →₀ M) : ⇑(f + g) = f + g :=
-  rfl
+@[simp, norm_cast] lemma coe_add (f g : α →₀ M) : ⇑(f + g) = f + g := rfl
 #align finsupp.coe_add Finsupp.coe_add
 
 theorem add_apply (g₁ g₂ : α →₀ M) (a : α) : (g₁ + g₂) a = g₁ a + g₂ a :=
@@ -1237,9 +1233,7 @@ instance neg [NegZeroClass G] : Neg (α →₀ G) :=
   ⟨mapRange Neg.neg neg_zero⟩
 #align finsupp.has_neg Finsupp.neg
 
-@[simp]
-theorem coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g :=
-  rfl
+@[simp, norm_cast] lemma coe_neg [NegZeroClass G] (g : α →₀ G) : ⇑(-g) = -g := rfl
 #align finsupp.coe_neg Finsupp.coe_neg
 
 theorem neg_apply [NegZeroClass G] (g : α →₀ G) (a : α) : (-g) a = -g a :=
@@ -1260,9 +1254,7 @@ instance sub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 #align finsupp.has_sub Finsupp.sub
 
-@[simp]
-theorem coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ :=
-  rfl
+@[simp, norm_cast] lemma coe_sub [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) : ⇑(g₁ - g₂) = g₁ - g₂ := rfl
 #align finsupp.coe_sub Finsupp.coe_sub
 
 theorem sub_apply [SubNegZeroMonoid G] (g₁ g₂ : α →₀ G) (a : α) : (g₁ - g₂) a = g₁ a - g₂ a :=
