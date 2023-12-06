@@ -183,18 +183,23 @@ example {s s' t : Set α} (h : s' ⊆ s) : (s' ∩ t).Nonempty := by
     exact test_sorry
   · exact test_sorry -- unprovable
 
+example {s s' : Set α} (h : s' ⊆ s) : s'.Nonempty := by
+  fail_if_success grw [h]
+  -- `grw` fails because neither `gcongr` nor `rfl` make progress on the generated goal `s ⊆ s'`
+  exact test_sorry
+
 example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
-  -- this should fail because "rewriting `h : x < y` at `h`" requires the unprovable side condition
-  -- that `y ≤ x`.
-  -- it's weird behaviour that the wildcard in `grw [h] at *` includes `h` itself, but this is
-  -- consistent with `rw`, so should probably not be special-cased.
+  -- note: here the attempted rewriting of `h` at itself (included in the wildcard `*`) will fail,
+  -- we expect rewriting `h` at itself to succeed more or less when generalized-rewriting with an
+  -- equivalence relation (which is consistent with the behaviour of `rw` on the equivalence
+  -- relation `=`)
   grw [h] at *
-  next =>
-    guard_hyp h :ₛ y < y
-    guard_hyp h1 :ₛ a ≤ 3 * y
-    guard_target =ₛ 2 * y ≤ b
-    exact test_sorry
-  case ha => exact test_sorry -- unprovable
+  guard_hyp h :ₛ x < y
+  -- `grw` fails at `h` because neither `gcongr` nor `rfl` make progress on the generated goal
+  -- `y < y`
+  guard_hyp h1 :ₛ a ≤ 3 * y
+  guard_target =ₛ 2 * y ≤ b
+  exact test_sorry
 
 end
 

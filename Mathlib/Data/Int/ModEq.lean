@@ -67,8 +67,8 @@ protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMO
 instance : IsTrans ℤ (ModEq n) where
   trans := @Int.ModEq.trans n
 
-@[grw] lemma rewrite_modeq {a b a' b' : ℤ} (H : a ≡ b [ZMOD n]) (ha : a ≡ a' [ZMOD n])
-    (hb' : b ≡ b' [ZMOD n]) : a' ≡ b' [ZMOD n] := (ha.symm.trans H).trans hb'
+@[grw] lemma rewrite_modeq {a b a' b' : ℤ} (ha : a ≡ a' [ZMOD n]) (hb' : b ≡ b' [ZMOD n])
+    (H : a ≡ b [ZMOD n]) : a' ≡ b' [ZMOD n] := (ha.symm.trans H).trans hb'
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 #align int.modeq.eq Int.ModEq.eq
