@@ -598,9 +598,9 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
   revert b
   rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (add_isNormal _)]
   refine' ⟨_, fun a h => _⟩
-  · dsimp; rw [deriv_zero, add_zero]
+  · rw [deriv_zero, add_zero]
     exact nfp_add_zero a
-  · dsimp; rw [deriv_succ, h, add_succ]
+  · rw [deriv_succ, h, add_succ]
     exact nfp_eq_self (add_eq_right_iff_mul_omega_le.2 ((le_add_right _ _).trans (le_succ _)))
 #align ordinal.deriv_add_eq_mul_omega_add Ordinal.deriv_add_eq_mul_omega_add
 
