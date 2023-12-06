@@ -13,6 +13,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 In this file we define `Coalgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toCoalgebra`
+* Binary products: `Prod.instCoalgebra`
 * Finitely supported functions: `Finsupp.instCoalgebra`
 
 ## References
