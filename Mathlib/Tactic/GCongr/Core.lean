@@ -528,8 +528,7 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (failIfMainsUnsolved := false)
-      (mainGoalDischarger := assum)
+    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (mainGoalDischarger := assum)
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
