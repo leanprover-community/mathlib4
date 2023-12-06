@@ -79,7 +79,7 @@ lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
 @[simp]
 lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
-  ⟨fun h => of_pow x n h, fun h => pow_of_pos h hn⟩
+ ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
 
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
