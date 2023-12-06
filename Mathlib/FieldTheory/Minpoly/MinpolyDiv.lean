@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.IsAlgClosed.Basic
@@ -12,7 +17,6 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 - `traceForm_dualBasis_powerBasis_eq`: The dual basis of a powerbasis under the trace form.
-
 -/
 
 open Polynomial BigOperators FiniteDimensional
@@ -20,6 +24,7 @@ open Polynomial BigOperators FiniteDimensional
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)
 
+/-- `minpolyDiv R x : S[X]` for `x : S` is the polynomial `minpoly R x / (X - C x)`. -/
 noncomputable def minpolyDiv : S[X] := (minpoly R x).map (algebraMap R S) /ₘ (X - C x)
 
 lemma minpolyDiv_spec :
@@ -94,7 +99,6 @@ lemma natDegree_minpolyDiv_succ [Nontrivial S] :
 lemma natDegree_minpolyDiv :
     natDegree (minpolyDiv R x) = natDegree (minpoly R x) - 1 := by
   nontriviality S
-  have := (algebraMap R S).domain_nontrivial
   by_cases hx : IsIntegral R x
   · rw [← natDegree_minpolyDiv_succ hx]; rfl
   · rw [minpolyDiv_eq_zero hx, minpoly.eq_zero hx]; rfl
