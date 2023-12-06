@@ -74,6 +74,31 @@ set `d` lies in `u` then `d` has non-empty intersection with `u`.
 def DirSupInacc (u : Set α) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a → a ∈ u → (d ∩ u).Nonempty
 
+/--
+A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
+upper bound `a` and is a subset of `s` then `a` also lies in `s`.
+-/
+def DirSupClosed (s : Set α) : Prop :=
+  ∀ ⦃d : Set α⦄ ⦃a : α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a → d ⊆ s → a ∈ s
+
+lemma dirSupInacc_iff_dDirSupClosed_compl (s : Set α) : DirSupClosed s ↔ DirSupInacc sᶜ:= by
+  constructor
+  · intro h
+    intros d hd₁ hd₂ a hda ha
+    rw [inter_compl_nonempty_iff]
+    by_contra h₁
+    have c1 : a ∈ s := by
+      apply (h hd₁ hd₂ hda h₁)
+    contradiction
+  · intro h
+    intros d a hd₁ hd₂ hda hd₃
+    rw [← not_mem_compl_iff]
+    by_contra h₁
+    have c1 : Set.Nonempty (d ∩ sᶜ) := by
+      apply h hd₁ hd₂ hda h₁
+    rw [inter_compl_nonempty_iff] at c1
+    contradiction
+
 namespace Topology
 /--
 The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
@@ -103,6 +128,21 @@ lemma ScottHausdorff.isOpen_of_isLowerSet {s : Set α} (h : IsLowerSet s) :
     scottHausdorff.IsOpen s := fun d ⟨b, hb⟩ _ _ hda ha =>
       ⟨b, hb,Subset.trans (inter_subset_right (Ici b) d)
       (fun _ hc => h (mem_upperBounds.mp hda.1 _ hc) ha)⟩
+
+lemma ScottHausdorff.dirSupInacc_of_isClosed {s : Set α} (h : IsClosed[scottHausdorff] s) :
+    DirSupClosed s := by
+  rw [dirSupInacc_iff_dDirSupClosed_compl]
+  rw [← @isOpen_compl_iff _ scottHausdorff] at h
+  intros d hd₁ hd₂ a hda hd₃
+  have e1 : ∃ b ∈ d, Ici b ∩ d ⊆ sᶜ := by
+    apply h hd₁ hd₂ hda hd₃
+  cases' e1 with b hb
+  use b
+  constructor
+  · exact hb.1
+  · apply hb.2
+    simp only [mem_inter_iff, mem_Ici, le_refl, true_and]
+    exact hb.1
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
