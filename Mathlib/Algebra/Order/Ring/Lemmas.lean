@@ -30,16 +30,16 @@ In all that follows, `α` is an orders which has a `0` and a multiplication. Not
 mostly arbitrary function `α → α → α`.
 
 We use the following four typeclasses to reason about left multiplication (`b ↦ a * b`):
-* `PosMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂` implies `a * b₁ ≤ a * b₂`.
-* `PosMulStrictMono`: If `a > 0`, then `b₁ < b₂` implies `a * b₁ < a * b₂`.
-* `PosMulReflectLT`: If `a ≥ 0`, then `a * b₁ < a * b₂` implies `b₁ < b₂`.
-* `PosMulMonoRev`: If `a > 0`, then `a * b₁ ≤ a * b₂` implies `b₁ ≤ b₂`.
+* `PosMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
+* `PosMulStrictMono`: If `a > 0`, then `b₁ < b₂ → a * b₁ < a * b₂`.
+* `PosMulReflectLT`: If `a ≥ 0`, then `a * b₁ < a * b₂ → b₁ < b₂`.
+* `PosMulMonoRev`: If `a > 0`, then `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
 
 We use the following four typeclasses to reason about right multiplication (`a ↦ a * b`):
-* `MulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂` implies `a₁ * b ≤ a₂ * b`.
-* `MulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ * b < a₂ * b`.
-* `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b` implies `a₁ < a₂`.
-* `MulPosMonoRev`: If `b > 0`, then `a₁ * b ≤ a₂ * b` implies `a₁ ≤ a₂`.
+* `MulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
+* `MulPosStrictMono`: If `b > 0`, then `a₁ < a₂ → a₁ * b < a₂ * b`.
+* `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b → a₁ < a₂`.
+* `MulPosMonoRev`: If `b > 0`, then `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
 As `α` gets more and more structure, those typeclasses end up being equivalent. The commonly used
 implications are:
