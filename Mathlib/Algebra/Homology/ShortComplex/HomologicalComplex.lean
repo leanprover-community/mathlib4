@@ -768,4 +768,16 @@ lemma π_homologyIsoSc'_inv :
       (K.cyclesIsoSc' i j k hi hk).inv ≫ K.homologyπ j := by
   apply ShortComplex.homologyπ_naturality
 
+@[reassoc (attr := simp)]
+lemma homologyIsoSc'_hom_ι :
+    (K.homologyIsoSc' i j k hi hk).hom ≫ (K.sc' i j k).homologyι =
+      K.homologyι j ≫ (K.opcyclesIsoSc' i j k hi hk).hom := by
+  apply ShortComplex.homologyι_naturality
+
+@[reassoc (attr := simp)]
+lemma ι_homologyIsoSc'_inv :
+    (K.homologyIsoSc' i j k hi hk).inv ≫ K.homologyι j =
+      (K.sc' i j k).homologyι ≫ (K.opcyclesIsoSc' i j k hi hk).inv := by
+  apply ShortComplex.homologyι_naturality
+
 end HomologicalComplex
