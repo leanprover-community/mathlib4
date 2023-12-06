@@ -386,16 +386,43 @@ example {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
         rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
         apply Metric.ball_subset_ball
         simp
-      have := (hγ' t ht').2
-      rw [writtenInExtChartAt, modelWithCornersSelf_coe, range_id, extChartAt_self_apply,
-        modelWithCornersSelf_coe, id.def, extChartAt_coe_symm, modelWithCornersSelf_coe_symm,
-        Function.comp.right_id, chartAt_self_eq, LocalHomeomorph.refl_symm,
-        LocalHomeomorph.refl_apply, Function.comp.right_id, hasFDerivWithinAt_univ,
-        ← hasDerivAt_iff_hasFDerivAt] at this
       have hrw : HasDerivAt ((extChartAt I (γ' t₀)) ∘ γ')
         (tangentCoordChange I (γ' t) (γ' t₀) (γ' t) (v (γ' t))) t := by
-        -- maybe have to use `HasFDerivAt.of_local_left_inverse` here?
-        sorry
+        -- turn `HasDerivAt` into comp of `HasMFDerivAt`
+        rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
+        -- finagle to use `HasMFDerivAt.comp` on `hasMFDerivAt_extChartAt` and `this`
+        have := (hasMFDerivAt_extChartAt I (x := γ' t₀) (y := γ' t) (by
+          rw [← extChartAt_source I]
+          apply hsrc'
+          apply mem_of_mem_of_subset ht
+          rw [← Real.ball_eq_Ioo]
+          apply Metric.ball_subset_ball
+          simp
+        )).comp t (hγ' t ht')
+        have h2 : ContinuousLinearMap.comp
+          (mfderiv I I (↑(chartAt H (γ' t₀))) (γ' t))
+          (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (v (γ' t))) =
+          ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ)
+          ((tangentCoordChange I (γ' t) (γ' t₀) (γ' t)) (v (γ' t))) := by
+          rw [ContinuousLinearMap.ext_iff]
+          intro a
+          rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply,
+            ContinuousLinearMap.one_apply, ContinuousLinearMap.map_smul_of_tower,
+            ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply]
+          congr
+          rw [tangentCoordChange_def, mfderiv]
+          have hdiff : MDifferentiableAt I I (↑(chartAt H (γ' t₀))) (γ' t) := by
+            apply mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _)
+            rw [← extChartAt_source I]
+            apply hsrc'
+            apply mem_of_mem_of_subset ht
+            rw [← Real.ball_eq_Ioo]
+            apply Metric.ball_subset_ball
+            simp
+          simp only [hdiff, if_true]
+          rfl
+        rw [← h2]
+        exact this
       have hsub : (fun x ↦ v') t ((↑(extChartAt I (γ' t₀)) ∘ γ') t) =
         (tangentCoordChange I (γ' t) (γ' t₀) (γ' t)) (v (γ' t)) := by
         dsimp only
@@ -416,7 +443,60 @@ example {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
     · simp [h]
     · rw [← Real.ball_eq_Ioo]
       exact Metric.mem_ball_self hε
-    · sorry
+    · intros t ht
+      have ht' : t ∈ Ioo (t₀ - εγ) (t₀ + εγ) := by
+        apply mem_of_mem_of_subset ht
+        rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
+        apply Metric.ball_subset_ball
+        simp
+      have hrw : HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
+        (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
+        -- turn `HasDerivAt` into comp of `HasMFDerivAt`
+        rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
+        -- finagle to use `HasMFDerivAt.comp` on `hasMFDerivAt_extChartAt` and `this`
+        have := (hasMFDerivAt_extChartAt I (x := γ t₀) (y := γ t) (by
+          rw [← extChartAt_source I]
+          apply hsrc
+          apply mem_of_mem_of_subset ht
+          rw [← Real.ball_eq_Ioo]
+          apply Metric.ball_subset_ball
+          simp
+        )).comp t (hγ t ht')
+        have h2 : ContinuousLinearMap.comp
+          (mfderiv I I (↑(chartAt H (γ t₀))) (γ t))
+          (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (v (γ t))) =
+          ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ)
+          ((tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t))) := by
+          rw [ContinuousLinearMap.ext_iff]
+          intro a
+          rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply,
+            ContinuousLinearMap.one_apply, ContinuousLinearMap.map_smul_of_tower,
+            ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply]
+          congr
+          rw [tangentCoordChange_def, mfderiv]
+          have hdiff : MDifferentiableAt I I (↑(chartAt H (γ t₀))) (γ t) := by
+            apply mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _)
+            rw [← extChartAt_source I]
+            apply hsrc
+            apply mem_of_mem_of_subset ht
+            rw [← Real.ball_eq_Ioo]
+            apply Metric.ball_subset_ball
+            simp
+          simp only [hdiff, if_true]
+          rfl
+        rw [← h2]
+        exact this
+      have hsub : (fun x ↦ v') t ((↑(extChartAt I (γ t₀)) ∘ γ) t) =
+        (tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t)) := by
+        dsimp only
+        rw [Function.comp_apply, LocalEquiv.left_inv]
+        apply hsrc
+        apply mem_of_mem_of_subset ht
+        rw [← Real.ball_eq_Ioo]
+        apply Metric.ball_subset_ball
+        simp
+      rw [hsub]
+      exact hrw
     · intros t ht
       apply hmem
       apply mem_of_mem_of_subset ht
