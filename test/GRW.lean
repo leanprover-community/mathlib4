@@ -207,3 +207,7 @@ example {x y a b : ℤ} (h1 : |x| ≤ a) (h2 : |y| ≤ b) :
 example {a b : ℚ} {P : Prop} (hP : P) (h : P → a < b) : False := by
   have : 2 * a ≤ 2 * b := by grw [h]; exact hP
   exact test_sorry
+
+example {a b : ℚ} {P Q : Prop} (hP : P) (hQ : Q) (h : P → Q → a < b) : False := by
+  have : 2 * a ≤ 2 * b := by grw [h ?_ hQ]; exact hP
+  exact test_sorry
