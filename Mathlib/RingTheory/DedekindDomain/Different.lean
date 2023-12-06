@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Discriminant
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.NumberTheory.KummerDedekind
 
 /-!
 # The different ideal
@@ -162,7 +160,7 @@ def FractionalIdeal.dual (I : FractionalIdeal B⁰ L) :
 
 variable {A K}
 
-lemma FractionalIdeal.coe_dual (I : FractionalIdeal B⁰ L) (hI : I ≠ 0) :
+lemma FractionalIdeal.coe_dual {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
     (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI]; rfl
 
 @[simp]
@@ -204,7 +202,7 @@ lemma FractionalIdeal.dual_eq_zero_iff {I : FractionalIdeal B⁰ L} :
 lemma FractionalIdeal.dual_ne_zero_iff {I : FractionalIdeal B⁰ L} :
   dual A K I ≠ 0 ↔ I ≠ 0 := dual_eq_zero_iff.not
 
-lemma FractionalIdeal.le_dual_inv_aux (I J : FractionalIdeal B⁰ L) (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
+lemma FractionalIdeal.le_dual_inv_aux {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
   rw [dual, dif_neg hI]
   intro x hx y hy
@@ -217,7 +215,7 @@ lemma FractionalIdeal.le_dual_inv_aux (I J : FractionalIdeal B⁰ L) (hI : I ≠
 
 lemma FractionalIdeal.one_le_dual_one :
     1 ≤ dual A K (1 : FractionalIdeal B⁰ L) :=
-  FractionalIdeal.le_dual_inv_aux _ _ one_ne_zero (by rw [one_mul])
+  FractionalIdeal.le_dual_inv_aux one_ne_zero (by rw [one_mul])
 
 lemma one_le_traceFormDualSubmodule_one :
     (1 : Submodule B L) ≤ 1ᵛ := by
@@ -225,17 +223,17 @@ lemma one_le_traceFormDualSubmodule_one :
   exact FractionalIdeal.one_le_dual_one
   exact one_ne_zero
 
-lemma FractionalIdeal.le_dual_iff (I J : FractionalIdeal B⁰ L) (hJ : J ≠ 0) :
+lemma FractionalIdeal.le_dual_iff {I J : FractionalIdeal B⁰ L} (hJ : J ≠ 0) :
     I ≤ dual A K J ↔ I * J ≤ dual A K 1 := by
   by_cases hI : I = 0
   · simp [hI, zero_le]
-  rw [← coe_le_coe, ← coe_le_coe, coe_mul, coe_dual J hJ, coe_dual_one, le_traceFormDualSubmodule]
+  rw [← coe_le_coe, ← coe_le_coe, coe_mul, coe_dual hJ, coe_dual_one, le_traceFormDualSubmodule]
 
 variable [IsDedekindDomain B] [IsFractionRing B L]
 
 lemma FractionalIdeal.inv_le_dual (I : FractionalIdeal B⁰ L) :
     I⁻¹ ≤ dual A K I :=
-  if hI : I = 0 then by simp [hI] else le_dual_inv_aux _ _ hI (le_of_eq (mul_inv_cancel hI))
+  if hI : I = 0 then by simp [hI] else le_dual_inv_aux hI (le_of_eq (mul_inv_cancel hI))
 
 lemma FractionalIdeal.dual_inv_le (I : FractionalIdeal B⁰ L) :
     (dual A K I)⁻¹ ≤ I := by
@@ -251,16 +249,16 @@ lemma FractionalIdeal.dual_eq_mul_inv (I : FractionalIdeal B⁰ L) :
   apply le_antisymm
   · suffices : dual A K I * I ≤ dual A K 1
     · convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel hI, mul_one, mul_assoc]
-    rw [← le_dual_iff _ _ hI]
-  rw [le_dual_iff _ _ hI, mul_assoc, inv_mul_cancel hI, mul_one]
+    rw [← le_dual_iff hI]
+  rw [le_dual_iff hI, mul_assoc, inv_mul_cancel hI, mul_one]
 
-lemma FractionalIdeal.dual_mul_self (I : FractionalIdeal B⁰ L) (hI : I ≠ 0) :
+lemma FractionalIdeal.dual_mul_self {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
     dual A K I * I = dual A K 1 := by
   rw [dual_eq_mul_inv, mul_assoc, inv_mul_cancel hI, mul_one]
 
 lemma FractionalIdeal.self_mul_dual (I : FractionalIdeal B⁰ L) (hI : I ≠ 0) :
     I * dual A K I = dual A K 1 := by
-  rw [mul_comm, dual_mul_self I hI]
+  rw [mul_comm, dual_mul_self hI]
 
 lemma FractionalIdeal.dual_inv (I : FractionalIdeal B⁰ L) :
     dual A K I⁻¹ = dual A K 1 * I := by rw [dual_eq_mul_inv, inv_inv]
@@ -283,5 +281,5 @@ lemma FractionalIdeal.dual_injective :
 lemma FractionalIdeal.dual_le_dual {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0) :
     dual A K I ≤ dual A K J ↔ J ≤ I := by
   nth_rewrite 2 [← dual_dual (A := A) (K := K) I]
-  rw [le_dual_iff _ _ hJ, le_dual_iff J, mul_comm]
+  rw [le_dual_iff hJ, le_dual_iff (I := J), mul_comm]
   rwa [dual_ne_zero_iff]
