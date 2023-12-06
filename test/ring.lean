@@ -158,3 +158,9 @@ example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring_nf
 example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
   ring_nf
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20returns.20ugly.20literals/near/400988184
+example {n : ℝ} :
+    (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) = 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 := by
+  -- `conv_lhs` prevents `ring_nf` picking a bad normalization for both sides.
+  conv_lhs => ring_nf
