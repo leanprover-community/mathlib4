@@ -102,6 +102,34 @@ for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
   `({x | ∃ᵉ $bs:extBinders, $t = x})
 
+/-- Pattern matching in set-builder notation
+If `pat` is a pattern that is matched by all objects of type `X`, then `{ pat : X | p }` is
+notation for the set of all objects of type `X` which, when matched with the pattern `pat`,
+make `p` come out true.  If `X` can be inferred, then `{ pat | p }` can be used.
+
+For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all ordered pairs of
+natural numbers whose product is 12.
+-/
+macro (priority := low-1) "{" pat:term " : " t:term " | " p:term "}" : term =>
+  `({ x : $t | match x with | $pat => $p })
+
+macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
+  `({ x | match x with | $pat => $p })
+
+@[app_unexpander setOf]
+def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term | $p:term })
+      else
+        throw ()
+  | `($_ fun ($x:ident : $ty:term) ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term : $ty:term | $p:term })
+      else
+        throw ()
+  | _ => throw ()
+
 def univ : Set α := {_a | True}
 #align set.univ Set.univ
 
