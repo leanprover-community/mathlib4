@@ -10,13 +10,13 @@ import Mathlib.Algebra.Ring.OrderSynonym
 /-!
 # Action instances for `OrderDual`
 
-This file provides instances of algebraic actions for `OrderDual`. Note that the `SMul` instance is
-already defined in `Algebra.Group.OrderSynonym`.
+This file provides instances of algebraic actions for `OrderDual`. Note that the `SMul` instances
+are already defined in `Mathlib.Algebra.Group.OrderSynonym`.
 
 ## See also
 
-* `Algebra.Group.OrderSynonym`
-* `Algebra.Ring.OrderSynonym`
+* `Mathlib.Algebra.Group.OrderSynonym`
+* `Mathlib.Algebra.Ring.OrderSynonym`
 -/
 
 namespace OrderDual
