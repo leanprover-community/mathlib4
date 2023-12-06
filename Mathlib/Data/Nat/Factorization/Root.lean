@@ -14,9 +14,9 @@ root of `a` is the natural number whose `p`-adic valuation is the floor/ceil of 
 valuation of `a`.
 
 For example the `2`-nd flooring and ceiling roots of `2^3 * 3^2 * 5` are `2 * 3` and `2^2 * 3 * 5`
-respectively.
+respectively. Note this is **not** the `n`-th root of `a` as a real number, rounded up or down.
 
-Note this is **not** the `n`-th root of `a` as a real number, rounded up or down.
+Those operations are respectively the right and left adjoints to the map `a ↦ a ^ n`.
 
 ## TODO
 

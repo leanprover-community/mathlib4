@@ -3,34 +3,57 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Ring.Lemmas
-import Mathlib.Algebra.SMulWithZero
-import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
-# Scalar multiplication by ·positive· elements is monotone
+# Monotonicity of scalar multiplication by positive elements
 
-Let `α` be a type with `<` and `0`.  We use the type `{x : α // 0 < x}` of positive elements of `α`
-to prove results about monotonicity of scalar multiplication.  We also introduce the local notation `α>0`
-for the subtype `{x : α // 0 < x}`:
+This file defines typeclasses to reason about monotonicity of the operations
+* `b ↦ a • b`, "left scalar multiplication"
+* `a ↦ a • b`, "right scalar multiplication"
 
-If the type `α` also has a scalar multiplication, then we combine this with (`Contravariant`)
-`CovariantClass`es to assume that scalar multiplication by positive elements is (strictly) monotone on a
-`SMulZeroClass`, `MonoidWithZero`,...
-More specifically, we use extensively the following typeclasses:
+We use eight typeclasses to encode the various properties we care about for those two operations.
+These typeclasses are meant to be mostly internal to this file, to set up each lemma in the
+appropriate generality.
 
-• monotone left
-• • `CovariantClass α>0 β (fun a b ↦ (a : α) • b) (≤)`, abbreviated `PosSMulMono α`,
-    expressing that scalar multiplication by positive elements on the left is monotone;
-• • `CovariantClass α>0 β (fun a b ↦ (a : α) • b) (<)`, abbreviated `PosSMulStrictMono α`,
-    expressing that scalar multiplication by positive elements on the left is strictly monotone;
-• reverse monotone left
-• • `ContravariantClass α>0 β (fun a b ↦ (a : α) • b) (≤)`, abbreviated `PosSMulMonoRev α`,
-    expressing that scalar multiplication by positive elements on the left is reverse monotone;
-• • `ContravariantClass α>0 β (fun a b ↦ (a : α) • b) (<)`, abbreviated `PosSMulReflectLT α`,
-    expressing that scalar multiplication by positive elements on the left is strictly reverse monotone;
+Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField`, `OrderedSMul` should be
+enough for most purposes, and the system is set up so that they imply the correct granular
+typeclasses here. If those are enough for you, you may stop reading here! Else, beware that what
+follows is a bit technical.
+
+## Definitions
+
+In all that follows, `α` and `β` are orders which have a `0` and such that `α` acts on `β` by scalar
+multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence
+`•` should be considered here as a mostly arbitrary function `α → β → β`.
+
+We use the following four typeclasses to reason about left scalar multiplication (`b ↦ a • b`):
+* `PosSMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂` implies `a • b₁ ≤ a • b₂`.
+* `PosSMulStrictMono`: If `a > 0`, then `b₁ < b₂` implies `a • b₁ < a • b₂`.
+* `PosSMulReflectLT`: If `a ≥ 0`, then `a • b₁ < a • b₂` implies `b₁ < b₂`.
+* `PosSMulMonoRev`: If `a > 0`, then `a • b₁ ≤ a • b₂` implies `b₁ ≤ b₂`.
+
+We use the following four typeclasses to reason about right scalar multiplication (`a ↦ a • b`):
+* `SMulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂` implies `a₁ • b ≤ a₂ • b`.
+* `SMulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ • b < a₂ • b`.
+* `SMulPosReflectLT`: If `b ≥ 0`, then `a₁ • b < a₂ • b` implies `a₁ < a₂`.
+* `SMulPosMonoRev`: If `b > 0`, then `a₁ • b ≤ a₂ • b` implies `a₁ ≤ a₂`.
+
+As `α` and `β` get more and more structure, those typeclasses end up being equivalent. The commonly
+used implications are:
+* `PosSMulStrictMono → PosSMulMono`, `SMulPosStrictMono → SMulPosMono`,
+  `PosSMulMonoRev → PosSMulReflectLT`, `SMulPosMonoRev → SMulPosReflectLT` when `α`, `β` are partial
+  orders.
+* `PosSMulStrictMono → PosSMulMonoRev` when `β` is a linear order.
+* `SMulPosStrictMono → SMulPosMonoRev` when `α` is a linear order.
+* `PosSMulMono → SMulPosMono`, `PosSMulStrictMono → SMulPosStrictMono` when `α` is an ordered ring,
+  `β` an ordered group and also an `α`-module.
+* `PosSMulStrictMono → PosSMulReflectLT`, `PosSMulMono → PosSMulMonoRev` if `α` is an ordered
+  semifield, `β` is an `α`-module.
+
+All these are registered as instances, which means that in practice you should not worry about these
+implications. However, if you encounter a case where you think a statement is true but not covered
+by the current implications, please bring it up on Zulip!
 
 ## Notation
 
@@ -38,14 +61,6 @@ The following is local notation in this file:
 • `α≥0`: `{x : α // 0 ≤ x}`
 • `α>0`: `{x : α // 0 < x}`
 -/
-
-class CovariantClass' (α β γ : Type*) (μ : α → β → γ) (r : α → α → Prop) (s : γ → γ → Prop) : Prop
-    where
-  elim : ∀ b ⦃a₁ a₂⦄, r a₁ a₂ → s (μ a₁ b) (μ a₂ b)
-
-class ContravariantClass' (α β γ : Type*) (μ : α → β → γ) (r : α → α → Prop) (s : γ → γ → Prop) : Prop
-    where
-  elim : ∀ b ⦃a₁ a₂⦄, s (μ a₁ b) (μ a₂ b) → r a₁ a₂
 
 variable (α β : Type*)
 
@@ -74,20 +89,29 @@ variable [Zero α]
 /-- Typeclass for monotonicity of scalar multiplication by nonnegative elements on the left,
 namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` if `0 ≤ a`.
 
-This is an abbreviation for `CovariantClass α≥0 β (fun a b ↦ (a : α) • b) (≤)`,
-expressing that scalar multiplication by nonnegative elements on the left is monotone. -/
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev PosSMulMono : Prop := CovariantClass α≥0 β (fun a b ↦ (a : α) • b) (· ≤ ·)
 
-/-- `PosSMulStrictMono α` is an abbreviation for `CovariantClass α>0 β (fun a b ↦ (a : α) • b) (<)`,
-expressing that scalar multiplication by positive elements on the left is strictly monotone. -/
+/-- Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
+namely `b₁ < b₂ → a • b₁ < a • b₂` if `0 < a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev PosSMulStrictMono : Prop := CovariantClass α>0 β (fun a b ↦ (a : α) • b) (· < ·)
 
-/-- `PosSMulReflectLT α` is an abbreviation for `ContravariantClass α≥0 β (fun a b ↦ (a : α) • b) (<)`,
-expressing that scalar multiplication by nonnegative elements on the left is strictly reverse monotone. -/
+/-- Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
+the left, namely `a • b₁ < a • b₂ → b₁ < b₂` if `0 ≤ a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev PosSMulReflectLT : Prop := ContravariantClass α≥0 β (fun a b ↦ (a : α) • b) (· < ·)
 
-/-- `PosSMulMonoRev α` is an abbreviation for `ContravariantClass α>0 β (fun a b ↦ (a : α) • b) (≤)`,
-expressing that scalar multiplication by positive elements on the left is reverse monotone. -/
+/-- Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
+namely `a • b₁ ≤ a • b₂ → b₁ ≤ b₂` if `0 < a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev PosSMulMonoRev : Prop := ContravariantClass α>0 β (fun a b ↦ (a : α) • b) (· ≤ ·)
 
 end Left
@@ -95,20 +119,32 @@ end Left
 section Right
 variable [Zero β]
 
-/-- `SMulPosMono α` is an abbreviation for `CovariantClass' α β≥0 (fun a b ↦ (a : α) • b) (≤) (≤)`,
-expressing that multiplication by nonnegative elements on the right is monotone. -/
+/-- Typeclass for monotonicity of scalar multiplication by nonnegative elements on the left,
+namely `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` if `0 ≤ b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev SMulPosMono : Prop := CovariantClass' α β≥0 β (fun a b ↦ a • b) (· ≤ ·) (· ≤ ·)
 
-/-- `SMulPosStrictMono α` is an abbreviation for `CovariantClass α β>0 (fun a b ↦ a • b) (<) (<)`,
-expressing that scalar multiplication by positive elements on the right is strictly monotone. -/
+/-- Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
+namely `a₁ < a₂ → a₁ • b < a₂ • b` if `0 < b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev SMulPosStrictMono : Prop := CovariantClass' α β>0 β (fun a b ↦ (a : α) • b) (· < ·) (· < ·)
 
-/-- `SMulPosReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun a b ↦ a • b) (<)`,
-expressing that scalar multiplication by nonnegative elements on the right is strictly reverse monotone. -/
+/-- Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
+the left, namely `a₁ • b < a₂ • b → a₁ < a₂` if `0 ≤ b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev SMulPosReflectLT : Prop := ContravariantClass' α β≥0 β (fun a b ↦ a • b) (· < ·) (· < ·)
 
-/-- `SMulPosMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun a b ↦ (a : α) • b) (≤)`,
-expressing that smultiplication by positive elements on the right is reverse monotone. -/
+/-- Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
+namely `a₁ • b ≤ a₂ • b → a₁ ≤ a₂` if `0 < b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSMul`. -/
 abbrev SMulPosMonoRev : Prop := ContravariantClass' α β>0 β (fun a b ↦ a • b) (· ≤ ·) (· ≤ ·)
 
 end Right
@@ -278,12 +314,10 @@ lemma posSMulMono_iff_posSMulReflectLT : PosSMulMono α β ↔ PosSMulReflectLT 
   ⟨fun _ ↦ PosSMulMono.toPosSMulReflectLT, fun _ ↦ PosSMulReflectLT.toPosSMulMono⟩
 
 lemma smul_max_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (b₁ b₂ : β) :
-    a • max b₁ b₂ = max (a • b₁) (a • b₂) :=
-  (monotone_smul_left_of_nonneg ha).map_max
+    a • max b₁ b₂ = max (a • b₁) (a • b₂) := (monotone_smul_left_of_nonneg ha).map_max
 
 lemma smul_min_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (b₁ b₂ : β) :
-    a • min b₁ b₂ = min (a • b₁) (a • b₂) :=
-  (monotone_smul_left_of_nonneg ha).map_min
+    a • min b₁ b₂ = min (a • b₁) (a • b₂) := (monotone_smul_left_of_nonneg ha).map_min
 
 end Left
 
@@ -494,13 +528,14 @@ lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α
   · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
-lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) : b < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.1.not_le ha).2
+lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
+    b < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.1.not_le ha).2
 
-lemma neg_of_smul_pos_left [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : b ≤ 0) : a < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.2.not_le ha).1
+lemma neg_of_smul_pos_left [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : b ≤ 0) :
+    a < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.2.not_le ha).1
 
-lemma neg_iff_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) : a < 0 ↔ b < 0 :=
+lemma neg_iff_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
+    a < 0 ↔ b < 0 :=
   ⟨neg_of_smul_pos_right hab ∘ le_of_lt, neg_of_smul_pos_left hab ∘ le_of_lt⟩
 
 lemma neg_of_smul_neg_left [PosSMulMono α β] (h : a • b < 0) (ha : 0 ≤ a) : b < 0 :=

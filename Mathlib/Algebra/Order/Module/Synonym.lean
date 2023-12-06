@@ -3,11 +3,20 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Order.Monoid.Prod
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Ring.OrderSynonym
+
+/-!
+# Action instances for `OrderDual`
+
+This file provides instances of algebraic actions for `OrderDual`.
+
+## See also
+
+* `Algebra.Group.OrderSynonym`
+* `Algebra.Ring.OrderSynonym`
+-/
 
 namespace OrderDual
 variable {α β γ : Type*}
@@ -81,4 +90,3 @@ instance instModule' [Semiring α] [AddCommMonoid β] [Module α β] : Module α
   zero_smul := zero_smul _
 
 end OrderDual
-#lint

@@ -4,14 +4,47 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.GaloisConnection
 
 /-!
-# Flooring division
+# Flooring, ceiling division
 
+This file defines division rounded up and down.
+
+The setup is an ordered monoid `α` acting on an ordered monoid `β`. If `a : α`, `b : β`, we would
+like to be able to "divide" `b` by `a`, namely find `c : β` such that `a • c = b`.
+This is of course not always possible, but in some cases at least there is a least `c` such that
+`b ≤ a • c` and a greatest `c` such that `a • c ≤ b`. We call the first one the "ceiling division
+of `b` by `a`" and the second one the "flooring division of `b` by `a`"
+
+If `α` and `β` are both `ℕ`, then one can check that our flooring and ceiling divisions really are
+the floor and ceil of the exact division.
+If `α` is `ℕ` and `β` is the functions `ι → ℕ`, then the flooring and ceiling divisions are taken
+pointwise.
+
+In order theory terms, those operations are respectively the right and left adjoints to the map
+`b ↦ a • b`.
+
+## Main declarations
+
+* `FloorDiv`: Typeclass for the existence of a flooring division, denoted `b ⌊/⌋ a`.
+* `CeilDiv`: Typeclass for the existence of a ceiling division, denoted `b ⌈/⌉ a`.
+
+Note in both cases we only allow dividing by positive inputs. We enforce the following junk values:
+* `b ⌊/⌋ a = b ⌈/⌉ a = 0` if `a ≤ 0`
+* `0 ⌊/⌋ a = 0 ⌈/⌉ a = 0`
+
+## Notation
+
+* `b ⌊/⌋ a` for the flooring division of `b` by `a`
+* `b ⌈/⌉ a` for the ceiling division of `b` by `a`
+
+## TODO
+
+* `norm_num` extension
+* Prove `⌈a / b⌉ = a ⌈/⌉ b` when `a, b : ℕ`
 -/
 
 variable {ι α β : Type*}
@@ -19,6 +52,7 @@ variable {ι α β : Type*}
 section OrderedAddCommMonoid
 variable (α β) [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
 
+/-- Typeclass for division rounded down. For each This asserts the existence of ``-/
 class FloorDiv where
   /-- Flooring division. If `a > 0`, then `b ⌊/⌋ a` is the greatest `c` such that `a • c ≤ b`. -/
   floorDiv : β → α → β
