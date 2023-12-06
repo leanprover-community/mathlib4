@@ -50,56 +50,49 @@ noncomputable def levyProkhorovEDist (μ ν : Measure Ω) : ℝ≥0∞ :=
             μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε}
 
 lemma measure_apply_le_of_le_of_forall_le_measure_thickening_add {ε₁ ε₂ : ℝ≥0∞} (μ ν : Measure Ω)
-    (h_le : ε₁ ≤ ε₂) (hε₁ : ∀ B, MeasurableSet B → μ B ≤ ν (thickening ε₁.toReal B) + ε₁)
-    {B : Set Ω} (B_mble : MeasurableSet B) :
+    (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁):
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
-  specialize hε₁ B B_mble
   by_cases ε_top : ε₂ = ∞
   · simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ε_top, top_toReal,
                 add_top, le_top]
   apply hε₁.trans (add_le_add ?_ h_le)
-  simp only [FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at *
   exact measure_mono (μ := ν) (thickening_mono (toReal_mono ε_top h_le) B)
 
 lemma left_measure_le_of_levyProkhorovEDist_lt {μ ν : Measure Ω} {c : ℝ≥0∞}
     (h : levyProkhorovEDist μ ν < c) {B : Set Ω} (B_mble : MeasurableSet B) :
     μ B ≤ ν (thickening c.toReal B) + c := by
   obtain ⟨c', ⟨hc', lt_c⟩⟩ := sInf_lt_iff.mp h
-  apply measure_apply_le_of_le_of_forall_le_measure_thickening_add μ ν lt_c.le _ B_mble
-  exact fun s s_mble ↦ (hc' s s_mble).1
+  exact measure_apply_le_of_le_of_forall_le_measure_thickening_add μ ν lt_c.le (hc' B B_mble).1
 
 lemma right_measure_le_of_levyProkhorovEDist_lt {μ ν : Measure Ω} {c : ℝ≥0∞}
     (h : levyProkhorovEDist μ ν < c) {B : Set Ω} (B_mble : MeasurableSet B) :
     ν B ≤ μ (thickening c.toReal B) + c := by
   obtain ⟨c', ⟨hc', lt_c⟩⟩ := sInf_lt_iff.mp h
-  apply measure_apply_le_of_le_of_forall_le_measure_thickening_add ν μ lt_c.le _ B_mble
-  exact fun s s_mble ↦ (hc' s s_mble).2
-
-lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
-    (h : ∀ ε B, δ < ε → ε < ∞ → MeasurableSet B →
-      μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε) :
-    levyProkhorovEDist μ ν ≤ δ := by
-  apply ENNReal.le_of_forall_pos_le_add
-  intro ε hε δ_lt_top
-  by_cases ε_top : ε = ∞
-  · simp only [ε_top, add_top, le_top]
-  apply sInf_le
-  simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, mem_setOf_eq]
-  intro B B_mble
-  convert h (δ + ε) B ?_ ?_ B_mble
-  · simpa only [add_zero] using ENNReal.add_lt_add_left (a := δ) δ_lt_top.ne (coe_pos.mpr hε)
-  · simp only [add_lt_top, δ_lt_top, coe_lt_top, and_self]
+  exact measure_apply_le_of_le_of_forall_le_measure_thickening_add ν μ lt_c.le (hc' B B_mble).2
 
 lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ≥0∞)
     (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B →
       μ B ≤ ν (thickening (δ + ε).toReal B) + δ + ε ∧
       ν B ≤ μ (thickening (δ + ε).toReal B) + δ + ε) :
     levyProkhorovEDist μ ν ≤ δ := by
-  apply levyProkhorovEDist_le_of_forall μ ν δ
-  intro x B δ_lt_x x_lt_top B_mble
-  have pos : 0 < x - δ := by exact tsub_pos_of_lt δ_lt_x
-  simpa [add_assoc, add_tsub_cancel_of_le δ_lt_x.le]
-    using h (x - δ) B pos (tsub_lt_of_lt x_lt_top) B_mble
+  apply ENNReal.le_of_forall_pos_le_add
+  intro ε hε _
+  by_cases ε_top : ε = ∞
+  · simp only [ε_top, add_top, le_top]
+  apply sInf_le
+  intro B B_mble
+  simpa only [add_assoc] using h ε B (coe_pos.mpr hε) coe_lt_top B_mble
+
+lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
+    (h : ∀ ε B, δ < ε → ε < ∞ → MeasurableSet B →
+        μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε) :
+    levyProkhorovEDist μ ν ≤ δ := by
+  by_cases δ_top : δ = ∞
+  · simp only [δ_top, add_top, le_top]
+  apply levyProkhorovEDist_le_of_forall_add_pos_le
+  intro x B x_pos x_lt_top B_mble
+  simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
+    (by simp only [add_lt_top, Ne.lt_top δ_top, x_lt_top, and_self]) B_mble
 
 lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν ≤ max (μ univ) (ν univ) := by
@@ -109,9 +102,9 @@ lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
   intro B _
   refine ⟨(measure_mono (subset_univ B)).trans ?_, (measure_mono (subset_univ B)).trans ?_⟩
   · apply le_add_left
-    apply le_max_left
+    exact le_max_left ..
   · apply le_add_left
-    apply le_max_right
+    exact le_max_right ..
 
 lemma levyProkhorovEDist_lt_top (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     levyProkhorovEDist μ ν < ∞ := by
@@ -174,7 +167,7 @@ lemma levyProkhorovEDist_triangle (μ ν κ : Measure Ω) :
       isOpen_thickening.measurableSet
     have obs₂ := left_measure_le_of_levyProkhorovEDist_lt lt_s mble_B₁
     simp only [ENNReal.div_pos_iff, ne_eq, and_true, gt_iff_lt,
-      FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ge_iff_le] at *
+               FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ge_iff_le] at *
     apply obs₁.trans
     apply (add_le_add_right obs₂ _).trans
     simp_rw [add_assoc, add_comm (ε / 2), add_assoc, ENNReal.add_halves]
