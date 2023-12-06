@@ -74,8 +74,7 @@ The following is local notation in this file:
 * `α≥0`: `{x : α // 0 ≤ x}`
 * `α>0`: `{x : α // 0 < x}`
 
-See https://
-leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notation.20for.20positive.20elements
+See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notation.20for.20positive.20elements
 for a discussion about this notation, and whether to enable it globally (note that the notation is
 currently global but broken, hence actually only works locally).
 -/
