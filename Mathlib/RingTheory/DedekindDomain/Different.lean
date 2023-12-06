@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Discriminant
 # The different ideal
 
 ## Main definition
-- `traceFormDualSubmodule`: The dual `L`-sub `B`-module under the trace form.
+- `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
 
 ## TODO
@@ -31,9 +31,9 @@ variable [FiniteDimensional K L] [IsSeparable K L]
 
 open nonZeroDivisors IsLocalization Matrix Algebra
 
-/-- Under the AKLB setting, `Iᵛ := traceFormDualSubmodule A K (I : Submodule B L)` is the
+/-- Under the AKLB setting, `Iᵛ := traceDual A K (I : Submodule B L)` is the
 `Submodule B L` such that `x ∈ Iᵛ ↔ ∀ y ∈ I, Tr(x, y) ∈ A` -/
-def traceFormDualSubmodule (I : Submodule B L) : Submodule B L where
+def Submodule.traceDual (I : Submodule B L) : Submodule B L where
   carrier := { s | ∀ a ∈ I, traceForm K L s a ∈ (algebraMap A K).range }
   add_mem' hx hy a ha :=
     BilinForm.add_left (B := traceForm K L) _ _ _ ▸ add_mem (hx a ha) (hy a ha)
@@ -44,41 +44,47 @@ def traceFormDualSubmodule (I : Submodule B L) : Submodule B L where
 
 variable {A K}
 
-local notation:max I:max "ᵛ" => traceFormDualSubmodule A K I
+local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 
-lemma mem_traceFormDualSubmodule {I : Submodule B L} {x} :
+namespace Submodule
+
+lemma mem_traceDual {I : Submodule B L} {x} :
     x ∈ Iᵛ ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range :=
   Iff.rfl
 
-lemma le_traceFormDualSubmodule_iff_map_le_one {I J : Submodule B L} :
+lemma le_traceDual_iff_map_le_one {I J : Submodule B L} :
     I ≤ Jᵛ ↔ ((I * J : Submodule B L).restrictScalars A).map
       ((trace K L).restrictScalars A) ≤ 1 := by
   rw [Submodule.map_le_iff_le_comap, Submodule.restrictScalars_mul, Submodule.mul_le]
-  simp [SetLike.le_def, traceFormDualSubmodule]
+  simp [SetLike.le_def, traceDual]
 
-lemma le_traceFormDualSubmodule_mul_iff {I J J' : Submodule B L} :
+lemma le_traceDual_mul_iff {I J J' : Submodule B L} :
     I ≤ (J * J')ᵛ ↔ I * J ≤ J'ᵛ := by
-  simp_rw [le_traceFormDualSubmodule_iff_map_le_one, mul_assoc]
+  simp_rw [le_traceDual_iff_map_le_one, mul_assoc]
 
-lemma le_traceFormDualSubmodule {I J : Submodule B L} :
+lemma le_traceDual {I J : Submodule B L} :
     I ≤ Jᵛ ↔ I * J ≤ 1ᵛ := by
-  rw [← le_traceFormDualSubmodule_mul_iff, mul_one]
+  rw [← le_traceDual_mul_iff, mul_one]
 
-lemma le_traceFormDualSubmodule_comm {I J : Submodule B L} :
-    I ≤ Jᵛ ↔ J ≤ Iᵛ := by rw [le_traceFormDualSubmodule, mul_comm, ← le_traceFormDualSubmodule]
+lemma le_traceDual_comm {I J : Submodule B L} :
+    I ≤ Jᵛ ↔ J ≤ Iᵛ := by rw [le_traceDual, mul_comm, ← le_traceDual]
 
-lemma le_traceFormDualSubmodule_traceFormDualSubmodule {I : Submodule B L} :
-    I ≤ Iᵛᵛ := le_traceFormDualSubmodule_comm.mpr le_rfl
+lemma le_traceDual_traceDual {I : Submodule B L} :
+    I ≤ Iᵛᵛ := le_traceDual_comm.mpr le_rfl
+
+end Submodule
+
+open Submodule
 
 variable [IsIntegrallyClosed A]
 
-lemma mem_traceFormDualSubmodule_iff_isIntegral {I : Submodule B L} {x} :
+lemma Submodule.mem_traceDual_iff_isIntegral {I : Submodule B L} {x} :
     x ∈ Iᵛ ↔ ∀ a ∈ I, IsIntegral A (traceForm K L x a) :=
   forall₂_congr (fun _ _ ↦ IsIntegrallyClosed.isIntegral_iff.symm)
 
 /-- If `b` is an `A`-integral basis of `L` with discriminant `b`, then `d • a * x` is integral over
   `A` for all `a ∈ I` and `x ∈ Iᵛ`. -/
-lemma isIntegral_discr_mul_of_mem_traceFormDualSubmodule
+lemma isIntegral_discr_mul_of_mem_traceDual
     (I : Submodule B L) {ι} [DecidableEq ι] [Fintype ι]
     (b : Basis ι K L) (hb : ∀ i, IsIntegral A (b i))
     (a x : L) (ha : a ∈ I) (hx : x ∈ Iᵛ) :
@@ -102,16 +108,16 @@ lemma isIntegral_discr_mul_of_mem_traceFormDualSubmodule
   rw [updateColumn_apply]
   split
   · rw [mul_assoc]
-    rw [mem_traceFormDualSubmodule_iff_isIntegral] at hx
+    rw [mem_traceDual_iff_isIntegral] at hx
     apply hx
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp (hb j)
     rw [mul_comm, ← hy, ← smul_def]
     exact I.smul_mem _ (ha)
   · exact isIntegral_trace (RingHom.IsIntegralElem.mul _ (hb j) (hb k))
 
-lemma traceFormDualSubmodule_eq_span_dualBasis {ι} [Fintype ι] [DecidableEq ι]
+lemma Submodule.traceDual_eq_span_dualBasis {ι} [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) :
-    traceFormDualSubmodule A K (Submodule.span A (Set.range b)) =
+    (Submodule.span A (Set.range b))ᵛ =
       Submodule.span A (Set.range ((Algebra.traceForm K L).dualBasis
         (traceForm_nondegenerate K L) b)) := by
   apply le_antisymm
@@ -154,9 +160,9 @@ def FractionalIdeal.dual (I : FractionalIdeal B⁰ L) :
     · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, RingHom.map_zero,
         ← (algebraMap K L).map_zero, (algebraMap K L).injective.ne_iff]
       exact discr_not_zero_of_basis K b
-    · convert isIntegral_discr_mul_of_mem_traceFormDualSubmodule I b hb _ z hx' hz using 1
+    · convert isIntegral_discr_mul_of_mem_traceDual I b hb _ z hx' hz using 1
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
-      · rw [smul_def, RingHom.map_mul, hy, ← smul_def]⟩
+      · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
 
 variable {A K}
 
@@ -193,7 +199,7 @@ lemma FractionalIdeal.dual_ne_zero {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
   convert hb' a ha using 1
   · ext w
     exact IsIntegralClosure.isIntegral_iff (A := B)
-  · exact (smul_def _ _).symm
+  · exact (Algebra.smul_def _ _).symm
 
 @[simp]
 lemma FractionalIdeal.dual_eq_zero_iff {I : FractionalIdeal B⁰ L} :
@@ -217,7 +223,7 @@ lemma FractionalIdeal.one_le_dual_one :
     1 ≤ dual A K (1 : FractionalIdeal B⁰ L) :=
   FractionalIdeal.le_dual_inv_aux one_ne_zero (by rw [one_mul])
 
-lemma one_le_traceFormDualSubmodule_one :
+lemma one_le_traceDual_one :
     (1 : Submodule B L) ≤ 1ᵛ := by
   rw [← FractionalIdeal.coe_one, ← FractionalIdeal.coe_dual, FractionalIdeal.coe_le_coe]
   exact FractionalIdeal.one_le_dual_one
@@ -227,7 +233,7 @@ lemma FractionalIdeal.le_dual_iff {I J : FractionalIdeal B⁰ L} (hJ : J ≠ 0) 
     I ≤ dual A K J ↔ I * J ≤ dual A K 1 := by
   by_cases hI : I = 0
   · simp [hI, zero_le]
-  rw [← coe_le_coe, ← coe_le_coe, coe_mul, coe_dual hJ, coe_dual_one, le_traceFormDualSubmodule]
+  rw [← coe_le_coe, ← coe_le_coe, coe_mul, coe_dual hJ, coe_dual_one, le_traceDual]
 
 variable [IsDedekindDomain B] [IsFractionRing B L]
 
