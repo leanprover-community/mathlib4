@@ -39,20 +39,3 @@ def List.waitAll (tasks : List (Task α)) : Task (List α) :=
   | [] => .pure []
   | task::tasks => task.bind (prio := .max) fun a =>
       tasks.waitAll.map (prio := .max) fun as => a::as
-
-/-! ### Lawfulness of `IO`
-
-At some point core intends to make `IO` opaque, which would break these proofs
-As discussed in https://github.com/leanprover/std4/pull/416,
-it should be possible for core to expose the lawfulness of `IO` as part of the opaque interface,
-which would remove the need for these proofs anyway.
-
-These are not in Std because Std does not want to deal with the churn from such a core refactor.
--/
-
-instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
-instance : LawfulMonad IO := inferInstance
-
-instance : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad (ST ε) := inferInstance
