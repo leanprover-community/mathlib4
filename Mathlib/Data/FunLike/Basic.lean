@@ -209,6 +209,10 @@ section NonDependent
 
 variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
+/-- `NDFunLike` is the Non-Dependent version of `FunLike`.
+
+TODO: switch around the names: `FunLike` → `DFunLike` and `NDFunLike` → `Funlike`.
+-/
 abbrev NDFunLike F α β := FunLike F α fun _ => β
 
 namespace FunLike
