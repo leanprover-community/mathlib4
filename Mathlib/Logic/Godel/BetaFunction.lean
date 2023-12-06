@@ -88,7 +88,7 @@ lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : Coprimes l) :
   · rcases co with (_ | ⟨hm, hl⟩)
     have : a ≡ b [MOD m] ∧ a ≡ b [MOD l.prod] ↔ a ≡ b [MOD m * l.prod] :=
       Nat.modEq_and_modEq_iff_modEq_mul (coprime_list_prod_iff_right.mpr hm)
-    simp[←this, ←ih hl]
+    simp[← this, ← ih hl]
     constructor
     · intro h; exact ⟨by simpa using h ⟨0, by simp⟩, fun i => by simpa using h i.succ⟩
     · intro h i
