@@ -203,7 +203,7 @@ instance [CommRing R] [AddCommMonoid V] [Module R V] : SMul R (VertexOperator R 
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R V) :=
   {
-    smul := VertexAlg.instSMulVertexOperatorToSemiring.smul
+    smul := VertexAlg.instSMulVertexOperator.smul
     one_smul := by
       intros
       ext x n
@@ -309,13 +309,13 @@ noncomputable def Borcherds_sum_1 (R : Type v) [CommRing R] [AddCommGroup V]
 noncomputable def Borcherds_sum_2 (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-s - order R b c)))
-    (fun i ↦ (-1)^i • (Ring.choose r i) • index (Y R a) (r+t-i) (index (Y R b) (s+i) c))
+    (fun i ↦ (-1)^i • (Ring.choose t i) • index (Y R a) (r+t-i) (index (Y R b) (s+i) c))
 
 /-- The third sum in the Borcherds identity, giving coefficients of `b(z)a(y)c` near `-x = z-y`. -/
 noncomputable def Borcherds_sum_3 (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-r - order R a c)))
-    (fun i ↦ (-1: ℤˣ)^(t+i) • (Ring.choose t i) • index (Y R b) (s+t-i) (index (Y R a) (r+i) c))
+    (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • index (Y R b) (s+t-i) (index (Y R a) (r+i) c))
 
 /-- The Borcherds identity, also called the Jacobi identity or Cauchy-Jacobi identity when put in
 power-series form.  It is a formal distribution analogue of the combination of commutativity and

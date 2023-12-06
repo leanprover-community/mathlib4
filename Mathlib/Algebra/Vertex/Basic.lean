@@ -68,8 +68,8 @@ theorem associativity_left [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVerte
 theorem associativity_right [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
     (a b c : V) (s t : ℤ) : Borcherds_sum_2 R a b c 0 s t + Borcherds_sum_3 R a b c 0 s t =
     Finset.sum (Finset.range (Int.toNat (-s - order R b c))) (fun i ↦ (-1)^i •
-    (Ring.choose (0 : ℤ) i) • index (Y R a) (t-i) (index (Y R b) (s+i) c)) +
-    Finset.sum (Finset.range (Int.toNat (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i) •
+    (Ring.choose (t : ℤ) i) • index (Y R a) (t-i) (index (Y R b) (s+i) c)) +
+    Finset.sum (Finset.range (Int.toNat (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) •
     (Ring.choose t i) • index (Y R b) (s+t-i) (index (Y R a) i c)) := by
   unfold Borcherds_sum_2 Borcherds_sum_3
   simp only [Nat.odd_iff_not_even, neg_zero, zero_sub, zero_add]
@@ -77,9 +77,9 @@ theorem associativity_right [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
 /-- The associativity property of vertex algebras - maybe put this in defs? -/
 def associativity (R : Type v) [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
     (a b c : V) (s t : ℤ) : Prop := ((Y R) (((Y R) a⁅t⁆) b)⁅s⁆) c = Finset.sum (Finset.range
-    (Int.toNat (-s - order R b c))) (fun i ↦ (-1)^i • (Ring.choose (0 : ℤ)  i) •
+    (Int.toNat (-s - order R b c))) (fun i ↦ (-1)^i • (Ring.choose (t : ℤ)  i) •
     index (Y R a) (t-i) (index (Y R b) (s+i) c)) + Finset.sum (Finset.range (Int.toNat
-    (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i) • (Ring.choose t i) • index (Y R b) (s+t-i)
+    (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • index (Y R b) (s+t-i)
     (index (Y R a) i c))
 
 theorem Borcherds_id_implies_associativity [CommRing R] [AddCommGroup V]
