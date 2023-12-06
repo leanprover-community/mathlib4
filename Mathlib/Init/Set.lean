@@ -102,10 +102,13 @@ for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
   `({x | ∃ᵉ $bs:extBinders, $t = x})
 
-/-- Pattern matching in set-builder notation
-If `pat` is a pattern that is matched by all objects of type `X`, then `{ pat : X | p }` is
-notation for the set of all objects of type `X` which, when matched with the pattern `pat`,
-make `p` come out true.  If `X` can be inferred, then `{ pat | p }` can be used.
+/--
+* `{ pat : X | p }` is notation for pattern matching in set-builder notation,
+  where `pat` is a pattern that is matched by all objects of type `X`
+  and `p` is a proposition that can refer to variables in the pattern.
+  It is the set of all objects of type `X` which, when matched with the pattern `pat`,
+  make `p` come out true.
+* `{ pat | p }` is the same, but in the case when the type `X` can be inferred.
 
 For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all ordered pairs of
 natural numbers whose product is 12.
