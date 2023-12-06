@@ -50,11 +50,10 @@ def rnDerivGeOneSet (μ ν : Measure α) : Set α := {x | 1 ≤ μ.rnDeriv ν x}
 lemma measurableSet_rnDerivGeOneSet (μ ν : Measure α) : MeasurableSet (rnDerivGeOneSet μ ν) :=
   Measure.measurable_rnDeriv _ _ measurableSet_Ici
 
-lemma todo' [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν)
-    {s : Set α} (hs : MeasurableSet s) :
+lemma todo' [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν) (s : Set α) :
     μ s - ν s = ENNReal.ofReal (∫ x in s, (μ.rnDeriv ν x).toReal - 1 ∂ν) := by
   rw [integral_sub Measure.integrable_toReal_rnDeriv.integrableOn (integrable_const _),
-    set_integral_const, smul_eq_mul, mul_one, Measure.set_integral_toReal_rnDeriv hμν hs,
+    set_integral_const, smul_eq_mul, mul_one, Measure.set_integral_toReal_rnDeriv hμν s,
     ENNReal.ofReal_sub, ENNReal.ofReal_toReal (measure_ne_top _ _),
     ENNReal.ofReal_toReal (measure_ne_top _ _)]
   simp
@@ -62,7 +61,7 @@ lemma todo' [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν)
 lemma todo [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμν : μ ≪ ν)
     {s : Set α} (hs : MeasurableSet s) :
     μ s - ν s ≤ μ (rnDerivGeOneSet μ ν) - ν (rnDerivGeOneSet μ ν) := by
-  rw [todo' hμν hs]
+  rw [todo' hμν s]
   have : ∫ x in s, ENNReal.toReal (Measure.rnDeriv μ ν x) - 1 ∂ν
       ≤ ∫ x in s ∩ rnDerivGeOneSet μ ν, ENNReal.toReal (Measure.rnDeriv μ ν x) - 1 ∂ν := by
     sorry
@@ -104,8 +103,8 @@ lemma tv_eq_integral [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (hμν 
   rotate_left
   · exact Measure.integrable_toReal_rnDeriv.integrableOn
   · exact Measure.integrable_toReal_rnDeriv.integrableOn
-  rw [Measure.set_integral_toReal_rnDeriv hμν hs, set_integral_const, set_integral_const,
-    Measure.set_integral_toReal_rnDeriv hμν hs.compl, smul_eq_mul, smul_eq_mul, mul_one, mul_one]
+  rw [Measure.set_integral_toReal_rnDeriv hμν s, set_integral_const, set_integral_const,
+    Measure.set_integral_toReal_rnDeriv hμν sᶜ, smul_eq_mul, smul_eq_mul, mul_one, mul_one]
   have : (μ s).toReal - (ν s).toReal + ((ν sᶜ).toReal - (μ sᶜ).toReal)
       = 2 * ((μ s).toReal - (ν s).toReal) := by
     rw [prob_compl_eq_one_sub hs, prob_compl_eq_one_sub hs, ENNReal.toReal_sub_of_le,

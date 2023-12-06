@@ -55,7 +55,8 @@ lemma IsEValue.mono (hXY : X ≤ Y) (hST : S ⊆ T) (h : IsEValue Y T)
     (h.integral_le_one μ (hST hμS))
 
 lemma isEValue_exp (h_ne_zero : ∀ μ ∈ S, NeZero μ)
-    (h_int : ∀ μ ∈ S, Integrable (fun ω ↦ exp (X ω)) μ) (h_log : ∀ μ ∈ S, logIntegralExp μ X ≤ 0) :
+    (h_int : ∀ μ ∈ S, Integrable (fun ω ↦ exp (X ω)) μ)
+    (h_log : ∀ μ ∈ S, log (∫ ω, exp (X ω) ∂μ) ≤ 0) :
     IsEValue (fun ω ↦ exp (X ω)) S where
   integrable := h_int
   nonneg := fun x ↦ (exp_pos _).le
@@ -68,8 +69,8 @@ lemma isEValue_exp (h_ne_zero : ∀ μ ∈ S, NeZero μ)
 
 lemma isEValue_exp_sub_logIntegralExp (h_ne_zero : ∀ μ ∈ S, NeZero μ)
     (h_int : ∀ μ ∈ S, Integrable (fun ω ↦ exp (X ω)) μ)
-    (h_bdd : BddAbove (Set.range fun μ ↦ ⨆ (_ : μ ∈ S), logIntegralExp μ X)) :
-   IsEValue (fun ω ↦ exp (X ω - ⨆ μ ∈ S, logIntegralExp μ X)) S where
+    (h_bdd : BddAbove (Set.range fun μ ↦ ⨆ (_ : μ ∈ S), log (∫ ω, exp (X ω) ∂μ))) :
+   IsEValue (fun ω ↦ exp (X ω - ⨆ μ ∈ S, log (∫ ω, exp (X ω) ∂μ))) S where
   integrable := fun μ hμS ↦ by
     simp_rw [exp_sub]
     exact Integrable.div_const (h_int μ hμS) _
@@ -79,7 +80,7 @@ lemma isEValue_exp_sub_logIntegralExp (h_ne_zero : ∀ μ ∈ S, NeZero μ)
     · simp only [log_one, exp_sub]
       rw [integral_div, log_div]
       · simp only [log_exp, tsub_le_iff_right, zero_add]
-        change logIntegralExp μ X ≤ ⨆ μ ∈ S, logIntegralExp μ X
+        change log (∫ ω, exp (X ω) ∂μ) ≤ ⨆ μ ∈ S, log (∫ ω, exp (X ω) ∂μ)
         refine le_ciSup_of_le h_bdd μ ?_
         simp [hμS]
       · have := h_ne_zero μ hμS
@@ -98,7 +99,7 @@ theorem DonskerVaradhan_eValue {μ ν : Measure Ω} [IsProbabilityMeasure μ] [I
   rw [DonskerVaradhan hμν h_int]
   apply le_antisymm
   · refine ciSup_le (fun f ↦ ?_)
-    refine le_ciSup_of_le ?_ (fun x ↦ exp (f x - logIntegralExp μ X)) ?_
+    refine le_ciSup_of_le ?_ (fun x ↦ exp (f x - log (∫ ω, exp (X ω) ∂μ))) ?_
     · sorry
     · simp only [log_exp]
       by_cases hfμ : Integrable f μ
@@ -109,13 +110,15 @@ theorem DonskerVaradhan_eValue {μ ν : Measure Ω} [IsProbabilityMeasure μ] [I
           · sorry
           · simp only [Set.mem_singleton_iff, forall_eq]; infer_instance
           · simpa using hf
-          · simp only [Set.mem_singleton_iff, forall_eq]
-          exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
+          sorry
+          --· simp only [Set.mem_singleton_iff, forall_eq]
+          --exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
         · simp only [hf, ciSup_empty]
-          exact integral_llr_nonneg hμν h_int
+          sorry
+          --exact integral_llr_nonneg hμν h_int
       · simp only [hfμ, ciSup_empty]
-        exact integral_llr_nonneg hμν h_int
-      sorry
+        sorry
+        --exact integral_llr_nonneg hμν h_int
   · sorry
 
 end MeasureTheory
