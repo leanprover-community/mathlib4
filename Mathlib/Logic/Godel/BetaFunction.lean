@@ -151,7 +151,7 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
   rw[this]
   exact coprimes_of_nodup
     (List.nodup_ofFn_ofInjective $ by
-       intro i j; simp[listSup, ←Fin.ext_iff, Nat.factorial_ne_zero])
+       intro i j; simp[listSup, ← Fin.ext_iff, Nat.factorial_ne_zero])
     (by
       simp[← Fin.ext_iff, not_or]
       suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) *
