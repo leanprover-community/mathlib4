@@ -197,10 +197,10 @@ lemma FractionalIdeal.dual_ne_zero {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
 
 @[simp]
 lemma FractionalIdeal.dual_eq_zero_iff {I : FractionalIdeal B⁰ L} :
-  dual A K I = 0 ↔ I = 0 := ⟨not_imp_not.mp dual_ne_zero, fun e ↦ e.symm ▸ dual_zero⟩
+    dual A K I = 0 ↔ I = 0 := ⟨not_imp_not.mp dual_ne_zero, fun e ↦ e.symm ▸ dual_zero⟩
 
 lemma FractionalIdeal.dual_ne_zero_iff {I : FractionalIdeal B⁰ L} :
-  dual A K I ≠ 0 ↔ I ≠ 0 := dual_eq_zero_iff.not
+    dual A K I ≠ 0 ↔ I ≠ 0 := dual_eq_zero_iff.not
 
 lemma FractionalIdeal.le_dual_inv_aux {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
