@@ -89,11 +89,14 @@ def useRule (template rule : Expr) (goal : MVarId) : MetaM (Array MVarId) := do
     trace[GRW] "used reflexivity"
     return #[]
   catch _ => pure ()
-  let (_, _, subgoals) ← goal.gcongr template []
-    (mainGoalDischarger := fun g => g.gcongrForward #[rule])
+  try
+    let (_, _, subgoals) ← goal.gcongr template [] (failIfMainsUnsolved := true)
+      (mainGoalDischarger := fun g => g.gcongrForward #[rule])
 
-  trace[GRW] "Got proof {← instantiateMVars (.mvar goal)}"
-  return subgoals
+    trace[GRW] "Got proof {← instantiateMVars (.mvar goal)}"
+    return subgoals
+  catch e =>
+    throwError "failed to prove {← goal.getType} with gcongr, error was: {e.toMessageData}"
 
 /--
 Use the relation `rule : x ~ y` to rewrite the type of an mvar. Assigns the mvar and returns a new
