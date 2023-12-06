@@ -965,6 +965,14 @@ theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
   rfl
 #align tensor_product.hom_tensor_hom_map_apply TensorProduct.homTensorHomMap_apply
 
+@[simp]
+theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
+  (mapBilinear R M N P Q).map_zero₂ _
+
+@[simp]
+theorem map_zero_right (f : M →ₗ[R] P) : map f (0 : N →ₗ[R] Q) = 0 :=
+  (mapBilinear R M N P Q _).map_zero
+
 end
 
 /-- If `M` and `P` are linearly equivalent and `N` and `Q` are linearly equivalent
@@ -1101,6 +1109,16 @@ theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :
 theorem rTensor_tmul (m : M) (n : N) : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m :=
   rfl
 #align linear_map.rtensor_tmul LinearMap.rTensor_tmul
+
+@[simp]
+theorem lTensor_comp_mk (m : M) :
+    f.lTensor M ∘ₗ TensorProduct.mk R M N m = TensorProduct.mk R M P m ∘ₗ f :=
+  rfl
+
+@[simp]
+theorem rTensor_comp_flip_mk (m : M) :
+    f.rTensor M ∘ₗ (TensorProduct.mk R N M).flip m = (TensorProduct.mk R P M).flip m ∘ₗ f :=
+  rfl
 
 lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R P Q ∘ₗ rTensor Q g ∘ₗ TensorProduct.comm R Q N =

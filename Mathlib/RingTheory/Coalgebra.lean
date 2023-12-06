@@ -26,13 +26,23 @@ universe u v w
 
 open scoped TensorProduct
 
-/-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
-comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
-class Coalgebra (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] where
+/-- Data fields for `Coalgebra`, to allow API to be constructed before proving `Coalgebra.coassoc`.
+
+See `Coalgebra` for documentation. -/
+class CoalgebraStruct (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
+
+namespace Coalgebra
+export CoalgebraStruct (comul counit)
+end Coalgebra
+
+/-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
+comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
+class Coalgebra (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] extends
+    CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
@@ -97,36 +107,68 @@ variable (R : Type u) (A : Type v) (B : Type w)
 variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
 
-open LinearMap in
+open LinearMap
+
+instance instCoalgebraStruct : CoalgebraStruct R (A × B) where
+  comul := .coprod
+    (TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul)
+    (TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul)
+  counit := .coprod counit counit
+
+@[simp]
+theorem comul_apply (r : A × B) :
+    comul r =
+      TensorProduct.map (.inl R A B) (.inl R A B) (comul r.1) +
+      TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
+
+@[simp]
+theorem counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl
+
+theorem comul_comp_inl :
+    comul ∘ₗ inl R A B = TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul := by
+  ext; simp
+
+theorem comul_comp_inr :
+    comul ∘ₗ inr R A B = TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul := by
+  ext; simp
+
+theorem map_fst_fst_comp_comul :
+    TensorProduct.map (.fst R A B) (.fst R A B) ∘ₗ comul = comul ∘ₗ .fst R A B := by
+  ext : 1
+  · rw [comp_assoc, comul_comp_inl, ← comp_assoc, ← TensorProduct.map_comp, fst_comp_inl,
+      TensorProduct.map_id, id_comp, comp_assoc, fst_comp_inl, comp_id]
+  · rw [comp_assoc, comul_comp_inr, ← comp_assoc, ← TensorProduct.map_comp, fst_comp_inr,
+      TensorProduct.map_zero_left, zero_comp, comp_assoc, fst_comp_inr, comp_zero]
+
+theorem map_snd_snd_comp_comul :
+    TensorProduct.map (.snd R A B) (.snd R A B) ∘ₗ comul = comul ∘ₗ .snd R A B := by
+  ext : 1
+  · rw [comp_assoc, comul_comp_inl, ← comp_assoc, ← TensorProduct.map_comp, snd_comp_inl,
+      TensorProduct.map_zero_left, zero_comp, comp_assoc, snd_comp_inl, comp_zero]
+  · rw [comp_assoc, comul_comp_inr, ← comp_assoc, ← TensorProduct.map_comp, snd_comp_inr,
+      TensorProduct.map_id, id_comp, comp_assoc, snd_comp_inr, comp_id]
+
+@[simp] theorem counit_comp_inr : counit ∘ₗ inr R A B = counit := by ext; simp
+
+@[simp] theorem counit_comp_inl : counit ∘ₗ inl R A B = counit := by ext; simp
+
 instance instCoalgebra : Coalgebra R (A × B) where
   comul := .coprod
     (TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul)
     (TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul)
   counit := .coprod counit counit
   rTensor_counit_comp_comul := by
-    ext x : 2 <;> dsimp only [comp_apply, coe_inl, coe_inr, coprod_apply, TensorProduct.mk_apply]
-    · simp only [map_zero, add_zero]
-      simp_rw [← comp_apply, ← comp_assoc, ← lTensor_comp_rTensor, ← comp_assoc, rTensor_comp_lTensor,
-        ← lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ← rTensor_comp, coprod_inl, comp_assoc,
-        rTensor_counit_comp_comul]
-      rfl
-    · simp only [map_zero, zero_add]
-      simp_rw [← comp_apply, ← comp_assoc, ← lTensor_comp_rTensor, ← comp_assoc, rTensor_comp_lTensor,
-        ← lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ← rTensor_comp, coprod_inr, comp_assoc,
-        rTensor_counit_comp_comul]
-      rfl
+    ext : 1
+    · rw [comp_assoc, comul_comp_inl, ← comp_assoc, rTensor_comp_map, counit_comp_inl,
+        ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, lTensor_comp_mk]
+    · rw [comp_assoc, comul_comp_inr, ← comp_assoc, rTensor_comp_map, counit_comp_inr,
+        ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, lTensor_comp_mk]
   lTensor_counit_comp_comul := by
-    ext x : 2 <;> dsimp only [comp_apply, coe_inl, coe_inr, coprod_apply, TensorProduct.mk_apply]
-    · simp only [map_zero, add_zero]
-      simp_rw [← comp_apply, ← comp_assoc, ← rTensor_comp_lTensor, ← comp_assoc, lTensor_comp_rTensor,
-        ← rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ← lTensor_comp, coprod_inl, comp_assoc,
-        lTensor_counit_comp_comul]
-      rfl
-    · simp only [map_zero, zero_add]
-      simp_rw [← comp_apply, ← comp_assoc, ← rTensor_comp_lTensor, ← comp_assoc, lTensor_comp_rTensor,
-        ← rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ← lTensor_comp, coprod_inr, comp_assoc,
-        lTensor_counit_comp_comul]
-      rfl
+    ext : 1
+    · rw [comp_assoc, comul_comp_inl, ← comp_assoc, lTensor_comp_map, counit_comp_inl,
+        ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
+    · rw [comp_assoc, comul_comp_inr, ← comp_assoc, lTensor_comp_map, counit_comp_inr,
+        ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
   coassoc := by
     ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_coe, coe_inl, coe_inr, coprod_apply]
     · simp only [map_zero, add_zero]
@@ -137,15 +179,6 @@ instance instCoalgebra : Coalgebra R (A × B) where
       simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
-
-@[simp]
-theorem comul_apply (r : A × B) :
-    comul r =
-      TensorProduct.map (.inl R A B) (.inl R A B) (comul r.1) +
-      TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
-
-@[simp]
-theorem counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl
 
 end Prod
 
@@ -167,7 +200,7 @@ instance instCoalgebra : Coalgebra R (ι →₀ R) where
 @[simp]
 theorem comul_single (i : ι) (r : R) :
     comul (Finsupp.single i r) = (Finsupp.single i r) ⊗ₜ[R] (Finsupp.single i 1) := by
-  unfold comul instCoalgebra
+  unfold comul instCoalgebra toCoalgebraStruct
   rw [total_single, TensorProduct.smul_tmul', smul_single_one i r]
 
 @[simp]
