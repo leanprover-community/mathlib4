@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 
 The exponential tilting of a measure `μ` on `α` by a function `f : α → ℝ` is the measure with
 density `x ↦ exp (f x) / ∫ y, exp (f y) ∂μ` with respect to `μ`. This is sometimes also called
-the Esscher transform [esscher1932probability].
+the Esscher transform.
 
 The definition is mostly used for `f` linear, in which case the exponentially tilted measure belongs
 to the natural exponential family of the base measure. Exponentially tilted measures for general `f`
