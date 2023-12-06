@@ -104,38 +104,38 @@ instance instCoalgebra : Coalgebra R (A × B) where
     (TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul)
   counit := .coprod counit counit
   rTensor_counit_comp_comul := by
-    ext x : 2 <;> dsimp
+    ext x : 2 <;> dsimp only [comp_apply, coe_inl, coe_inr, coprod_apply, TensorProduct.mk_apply]
     · simp only [map_zero, add_zero]
-      simp_rw [←comp_apply, ←comp_assoc, ←lTensor_comp_rTensor, ←comp_assoc, rTensor_comp_lTensor,
-        ←lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ←rTensor_comp, coprod_inl, comp_assoc,
+      simp_rw [← comp_apply, ← comp_assoc, ← lTensor_comp_rTensor, ← comp_assoc, rTensor_comp_lTensor,
+        ← lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ← rTensor_comp, coprod_inl, comp_assoc,
         rTensor_counit_comp_comul]
       rfl
     · simp only [map_zero, zero_add]
-      simp_rw [←comp_apply, ←comp_assoc, ←lTensor_comp_rTensor, ←comp_assoc, rTensor_comp_lTensor,
-        ←lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ←rTensor_comp, coprod_inr, comp_assoc,
+      simp_rw [← comp_apply, ← comp_assoc, ← lTensor_comp_rTensor, ← comp_assoc, rTensor_comp_lTensor,
+        ← lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ← rTensor_comp, coprod_inr, comp_assoc,
         rTensor_counit_comp_comul]
       rfl
   lTensor_counit_comp_comul := by
-    ext x : 2 <;> dsimp
+    ext x : 2 <;> dsimp only [comp_apply, coe_inl, coe_inr, coprod_apply, TensorProduct.mk_apply]
     · simp only [map_zero, add_zero]
-      simp_rw [←comp_apply, ←comp_assoc, ←rTensor_comp_lTensor, ←comp_assoc, lTensor_comp_rTensor,
-        ←rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ←lTensor_comp, coprod_inl, comp_assoc,
+      simp_rw [← comp_apply, ← comp_assoc, ← rTensor_comp_lTensor, ← comp_assoc, lTensor_comp_rTensor,
+        ← rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ← lTensor_comp, coprod_inl, comp_assoc,
         lTensor_counit_comp_comul]
       rfl
     · simp only [map_zero, zero_add]
-      simp_rw [←comp_apply, ←comp_assoc, ←rTensor_comp_lTensor, ←comp_assoc, lTensor_comp_rTensor,
-        ←rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ←lTensor_comp, coprod_inr, comp_assoc,
+      simp_rw [← comp_apply, ← comp_assoc, ← rTensor_comp_lTensor, ← comp_assoc, lTensor_comp_rTensor,
+        ← rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ← lTensor_comp, coprod_inr, comp_assoc,
         lTensor_counit_comp_comul]
       rfl
   coassoc := by
-    ext x : 2 <;> dsimp
+    ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_coe, coe_inl, coe_inr, coprod_apply]
     · simp only [map_zero, add_zero]
-      simp_rw [←comp_apply, ←comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
-        ←map_comp_rTensor, ←map_comp_lTensor, comp_assoc, ←coassoc, ←comp_assoc,
+      simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
+        ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
     · simp only [map_zero, zero_add]
-      simp_rw [←comp_apply, ←comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
-        ←map_comp_rTensor, ←map_comp_lTensor, comp_assoc, ←coassoc, ←comp_assoc,
+      simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
+        ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
 
 @[simp]
