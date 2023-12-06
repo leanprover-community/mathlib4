@@ -129,12 +129,11 @@ lemma ScottHausdorff.isOpen_of_isLowerSet {s : Set α} (h : IsLowerSet s) :
       ⟨b, hb,Subset.trans (inter_subset_right (Ici b) d)
       (fun _ hc => h (mem_upperBounds.mp hda.1 _ hc) ha)⟩
 
-lemma ScottHausdorff.dirSupInacc_of_isClosed {s : Set α} (h : IsClosed[scottHausdorff] s) :
-    DirSupClosed s := by
-  rw [dirSupInacc_iff_dDirSupClosed_compl]
-  rw [← @isOpen_compl_iff _ scottHausdorff] at h
+lemma ScottHausdorff.dirSupClosed_of_isOpen {s : Set α} (h : IsOpen[scottHausdorff] s) :
+    DirSupInacc s := by
+  rw [DirSupInacc]
   intros d hd₁ hd₂ a hda hd₃
-  have e1 : ∃ b ∈ d, Ici b ∩ d ⊆ sᶜ := by
+  have e1 : ∃ b ∈ d, Ici b ∩ d ⊆ s := by
     apply h hd₁ hd₂ hda hd₃
   cases' e1 with b hb
   use b
@@ -143,6 +142,13 @@ lemma ScottHausdorff.dirSupInacc_of_isClosed {s : Set α} (h : IsClosed[scottHau
   · apply hb.2
     simp only [mem_inter_iff, mem_Ici, le_refl, true_and]
     exact hb.1
+
+lemma ScottHausdorff.dirSupInacc_of_isClosed {s : Set α} (h : IsClosed[scottHausdorff] s) :
+    DirSupClosed s := by
+  rw [dirSupInacc_iff_dDirSupClosed_compl]
+  apply dirSupClosed_of_isOpen
+  rw [@isOpen_compl_iff _ scottHausdorff]
+  exact h
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
