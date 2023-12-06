@@ -48,8 +48,9 @@ The converse is true in some special cases, but not in general
 
 ## References
 
-* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
+* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
+* [Karner, *Continuous monoids and semirings*][Karner2004]
 
 ## Tags
 
