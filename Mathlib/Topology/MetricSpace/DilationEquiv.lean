@@ -182,7 +182,8 @@ end PseudoEMetricSpace
 
 section PseudoMetricSpace
 
-variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] [DilationEquivClass F X Y]
+variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y]
+variable [EquivLike F X Y] [DilationEquivClass F X Y]
 
 @[simp]
 lemma map_cobounded (e : F) : map e (cobounded X) = cobounded Y := by
