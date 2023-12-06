@@ -110,6 +110,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     simpa [g_supp] using vK n
   simpa [this] using L
 
+
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported
   in an open set `U`, then `f` vanishes almost everywhere in `U`. -/
@@ -119,37 +120,22 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
       Smooth I 𝓘(ℝ) g → HasCompactSupport g → tsupport g ⊆ U → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
   have meas_U := hU.measurableSet
-  rw [← ae_restrict_iff'₀ meas_U.nullMeasurableSet, ae_restrict_iff_subtype meas_U]
-  let U : TopologicalSpace.Opens M := ⟨U, hU⟩
+  rw [← ae_restrict_iff' meas_U, ae_restrict_iff_subtype meas_U]
+  let U : Opens M := ⟨U, hU⟩
   change ∀ᵐ (x : U) ∂_, _
   haveI : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
-  apply ae_eq_zero_of_integral_smooth_smul_eq_zero I
+  refine ae_eq_zero_of_integral_smooth_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
   · exact (locallyIntegrable_comap meas_U).mpr hf
-  intro g g_smth g_supp
-  classical
-  have cpt := g_supp.image continuous_induced_dom
-  let g' x := if hx : x ∈ U then g ⟨x, hx⟩ else 0
-  have : ∀ x ∈ (Subtype.val '' tsupport g)ᶜ, g' x = 0 := fun x hx ↦ by
-    by_cases hxU : x ∈ U
-    · simp_rw [dif_pos hxU]; by_contra h
-      have : ⟨x, hxU⟩ ∈ tsupport g := by exact subset_closure h
-      exact hx (mem_image_of_mem _ this)
-    · simp_rw [dif_neg hxU]
-  have g'g : ∀ x : (U : Set M), g' x = g x := fun x ↦ dif_pos x.2
-  specialize h g' (fun x ↦ _) _ _
-  · by_cases hxU : x ∈ U
-    · rw [show x = (⟨x, hxU⟩ : U) from rfl, ← contMdiffAt_subtype_iff]
-      exact (g_smth _).congr_of_eventuallyEq (eventually_of_forall g'g)
-    · exact contMDiffAt_const.congr_of_eventuallyEq (EqOn.eventuallyEq_of_mem this <|
-        cpt.isClosed.isOpen_compl.mem_nhds <| mt (by apply Subtype.coe_image_subset) hxU)
-  · exact HasCompactSupport.of_support_subset_isCompact cpt fun x ↦ Not.imp_symm (this x)
-  · exact (cpt.isClosed.closure_subset_iff.mpr fun x ↦ Not.imp_symm (this x)).trans
-      (Subtype.coe_image_subset _ _)
+  specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)
+    (g_supp.extend_zero continuous_subtype_val) ((g_supp.tsupport_extend_zero_subset
+      continuous_subtype_val).trans <| Subtype.coe_image_subset _ _)
   rw [← set_integral_eq_integral_of_forall_compl_eq_zero (s := U) fun x hx ↦ ?_] at h
   · rw [← integral_subtype_comap] at h
-    · simp_rw [g'g] at h; exact h
+    · simp_rw [Subtype.val_injective.extend_apply] at h; exact h
     · exact meas_U
-  rw [show g' x = 0 from dif_neg hx, zero_smul]
+  rw [Function.extend_apply' _ _ _ (mt _ hx)]
+  · apply zero_smul
+  · rintro ⟨x, rfl⟩; exact x.2
 
 theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)

@@ -1339,11 +1339,6 @@ noncomputable def toLocalHomeomorph [Nonempty α] : LocalHomeomorph α β :=
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toLocalHomeomorph
 
-theorem continuousAt_iff {f : α → β} {g : β → γ} (hf : OpenEmbedding f) {x : α} :
-    ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
-  hf.tendsto_nhds_iff'
-#align open_embedding.continuous_at_iff OpenEmbedding.continuousAt_iff
-
 end OpenEmbedding
 
 namespace TopologicalSpace.Opens
