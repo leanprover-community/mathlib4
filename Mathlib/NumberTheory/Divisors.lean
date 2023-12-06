@@ -208,6 +208,32 @@ lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
   · apply zero_le
   · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
 
+lemma one_lt_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) : 1 < n :=
+  match n with
+  | 0 => by simp at h
+  | 1 => by simp at h
+  | n + 2 => n.one_lt_succ_succ
+
+lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) :
+    1 < n / m := by
+  have hm := pos_of_mem_properDivisors h
+  apply lt_of_mul_lt_mul_right ?_ hm.le
+  obtain ⟨h_dvd, h_lt⟩ := mem_properDivisors.mp h
+  simpa [Nat.div_mul_cancel h_dvd] using h_lt
+
+lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
+    m ∈ n.properDivisors ↔ ∃ k > 1, n = m * k := by
+  refine ⟨fun h ↦ ⟨n / m, one_lt_div_of_mem_properDivisors h, ?_⟩, ?_⟩
+  · rw [mul_comm]
+    exact (Nat.div_mul_cancel (mem_properDivisors.mp h).1).symm
+  · rintro ⟨k, hk, h⟩
+    refine mem_properDivisors.mpr ⟨⟨k, h⟩, ?_⟩
+    calc
+      m = m * 1 := (mul_one m).symm
+      _ < m * k := mul_lt_mul_of_pos_left hk <|
+        Nat.pos_of_ne_zero fun hm ↦ hn <| by simpa [hm] using h
+      _ = n     := h.symm
+
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
   ext
