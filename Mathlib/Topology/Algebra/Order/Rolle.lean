@@ -25,6 +25,8 @@ to prove several versions of Rolle's Theorem from calculus.
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
 
+set_option autoImplicit true
+
 open Filter Set Topology
 
 variable

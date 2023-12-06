@@ -80,7 +80,7 @@ variable [IsFiltered J]
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
 noncomputable instance colimitOne :
-  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.Nonempty.some,1⟩
+  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
 #align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
 #align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
 
@@ -301,7 +301,7 @@ The only thing left to see is that it is a monoid homomorphism.
 def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
   toFun := (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
   map_one' := by
-    rw [colimit_one_eq F IsFiltered.Nonempty.some]
+    rw [colimit_one_eq F IsFiltered.nonempty.some]
     exact MonoidHom.map_one _
   map_mul' x y := by
     refine Quot.induction_on₂ x y ?_
@@ -312,7 +312,8 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
     dsimp [Types.colimitCoconeIsColimit]
-    rw [MonoidHom.map_mul]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidHom.map_mul]
     -- Porting note : `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
     congr 1 <;>
@@ -365,7 +366,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 #align AddCommMon.filtered_colimits.M AddCommMonCat.FilteredColimits.M
 
 @[to_additive]
-noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F):=
+noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_

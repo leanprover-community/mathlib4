@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
 
-#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -29,14 +29,14 @@ open Pointwise
 /-- Ad hoc class stating that the closure of an upper set is an upper set. This is used to state
 lemmas that do not mention algebraic operations for both the additive and multiplicative versions
 simultaneously. If you find a satisfying replacement for this typeclass, please remove it! -/
-class HasUpperLowerClosure (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+class HasUpperLowerClosure (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
   isUpperSet_closure : ∀ s : Set α, IsUpperSet s → IsUpperSet (closure s)
   isLowerSet_closure : ∀ s : Set α, IsLowerSet s → IsLowerSet (closure s)
   isOpen_upperClosure : ∀ s : Set α, IsOpen s → IsOpen (upperClosure s : Set α)
   isOpen_lowerClosure : ∀ s : Set α, IsOpen s → IsOpen (lowerClosure s : Set α)
 #align has_upper_lower_closure HasUpperLowerClosure
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -104,7 +104,7 @@ protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior 
 #align is_upper_set.interior IsUpperSet.interior
 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
-  h.ofDual.interior
+  h.toDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by

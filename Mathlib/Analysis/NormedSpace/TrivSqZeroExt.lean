@@ -34,9 +34,11 @@ For now, this file contains results about `exp` for this type.
 -/
 
 
-variable (𝕜 : Type _) {R M : Type _}
+variable (𝕜 : Type*) {R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
+
+open NormedSpace -- For `exp`.
 
 namespace TrivSqZeroExt
 

@@ -36,7 +36,7 @@ section Identities
  -/
 /-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring.
 -/
-def powAddExpansion {R : Type _} [CommSemiring R] (x y : R) :
+def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
     ∀ n : ℕ, { k // (x + y) ^ n = x ^ n + n * x ^ (n - 1) * y + k * y ^ 2 }
   | 0 => ⟨0, by simp⟩
   | 1 => ⟨0, by simp⟩

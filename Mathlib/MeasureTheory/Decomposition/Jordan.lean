@@ -46,14 +46,14 @@ noncomputable section
 
 open scoped Classical MeasureTheory ENNReal NNReal
 
-variable {α β : Type _} [MeasurableSpace α]
+variable {α β : Type*} [MeasurableSpace α]
 
 namespace MeasureTheory
 
 /-- A Jordan decomposition of a measurable space is a pair of mutually singular,
 finite measures. -/
 @[ext]
-structure JordanDecomposition (α : Type _) [MeasurableSpace α] where
+structure JordanDecomposition (α : Type*) [MeasurableSpace α] where
   (posPart negPart : Measure α)
   [posPart_finite : IsFiniteMeasure posPart]
   [negPart_finite : IsFiniteMeasure negPart]
@@ -437,7 +437,7 @@ open JordanDecomposition
 /-- `MeasureTheory.SignedMeasure.toJordanDecomposition` and
 `MeasureTheory.JordanDecomposition.toSignedMeasure` form an `Equiv`. -/
 @[simps apply symm_apply]
-def toJordanDecompositionEquiv (α : Type _) [MeasurableSpace α] :
+def toJordanDecompositionEquiv (α : Type*) [MeasurableSpace α] :
     SignedMeasure α ≃ JordanDecomposition α where
   toFun := toJordanDecomposition
   invFun := toSignedMeasure

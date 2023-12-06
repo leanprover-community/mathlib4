@@ -20,9 +20,9 @@ subgroup, subgroups
 
 open BigOperators
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {A : Type _} [AddGroup A]
+variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -72,14 +72,14 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
     subgroup. -/
 @[to_additive "Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
  is in the `AddSubgroup`."]
-protected theorem prod_mem {G : Type _} [CommGroup G] (K : Subgroup G) {ι : Type _} {t : Finset ι}
+protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}
     {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c in t, f c) ∈ K :=
   prod_mem h
 #align subgroup.prod_mem Subgroup.prod_mem
 #align add_subgroup.sum_mem AddSubgroup.sum_mem
 
 @[to_additive]
-theorem noncommProd_mem (K : Subgroup G) {ι : Type _} {t : Finset ι} {f : ι → G} (comm) :
+theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι → G} (comm) :
     (∀ c ∈ t, f c ∈ K) → t.noncommProd f comm ∈ K :=
   K.toSubmonoid.noncommProd_mem t f comm
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
@@ -173,6 +173,9 @@ theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
 #align subgroup.card_le_one_iff_eq_bot Subgroup.card_le_one_iff_eq_bot
 #align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_le_one_iff_eq_bot
 
+@[to_additive] lemma eq_bot_iff_card [Fintype H] : H = ⊥ ↔ Fintype.card H = 1 :=
+  ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq _⟩
+
 @[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
@@ -191,7 +194,7 @@ section Pi
 
 open Set
 
-variable {η : Type _} {f : η → Type _} [∀ i, Group (f i)]
+variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 
 @[to_additive]
 theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
@@ -222,7 +225,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp [this]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp
@@ -278,7 +281,7 @@ end Subgroup
 
 namespace MonoidHom
 
-variable {N : Type _} [Group N]
+variable {N : Type*} [Group N]
 
 open Subgroup
 
@@ -298,7 +301,7 @@ presence of `Fintype N`. -/
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the presence
 of `Fintype N`."]
-instance fintypeMrange {M N : Type _} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
+instance fintypeMrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M] [DecidableEq N]
     (f : M →* N) : Fintype (mrange f) :=
   Set.fintypeRange f
 #align monoid_hom.fintype_mrange MonoidHom.fintypeMrange

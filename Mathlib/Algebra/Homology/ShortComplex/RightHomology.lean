@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
-/-! RightHomology of short complexes
+/-!
+# Right Homology of short complexes
 
 In this file, we define the dual notions to those defined in
 `Algebra.Homology.ShortComplex.LeftHomology`. In particular, if `S : ShortComplex C` is
@@ -17,14 +18,16 @@ that `f ≫ g = 0`, we define `h : S.RightHomologyData` to be the datum of morph
 to the kernel of the induced map `g' : Q ⟶ X₃`.
 
 When such a `S.RightHomologyData` exists, we shall say that `[S.HasRightHomology]`
-and (TODO) we define `S.rightHomology` to be the `H` field of a chosen right homology data.
+and we define `S.rightHomology` to be the `H` field of a chosen right homology data.
 Similarly, we define `S.opcycles` to be the `Q` field.
 
 In `Homology.lean`, when `S` has two compatible left and right homology data
 (i.e. they give the same `H` up to a canonical isomorphism), we shall define
-`[S.HasHomology]` and `S.homology` (TODO).
+`[S.HasHomology]` and `S.homology`.
 
 -/
+
+set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -32,12 +35,12 @@ open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
   (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
-and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` --/
+and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` -/
 structure RightHomologyData where
   /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂`-/
   Q : C
@@ -89,8 +92,7 @@ def descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.Q ⟶ A :=
   h.hp.desc (CokernelCofork.ofπ k hk)
 
 @[reassoc (attr := simp)]
-lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) :
-  h.p ≫ h.descQ k hk = k :=
+lemma p_descQ (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) : h.p ≫ h.descQ k hk = k :=
   h.hp.fac _ WalkingParallelPair.one
 
 /-- The morphism from the (right) homology attached to a morphism
@@ -114,7 +116,7 @@ lemma ι_descQ_eq_zero_of_boundary (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k
   congr 1
   simp only [← cancel_epi h.p, hx, p_descQ, p_g'_assoc]
 
-/-- For `h : S.RightHomologyData`, this is a restatement of `h.hι `, saying that
+/-- For `h : S.RightHomologyData`, this is a restatement of `h.hι`, saying that
 `ι : h.H ⟶ h.Q` is a kernel of `h.g' : h.Q ⟶ S.X₃`. -/
 def hι' : IsLimit (KernelFork.ofι h.ι h.ι_g') := h.hι
 
@@ -142,7 +144,7 @@ variable (S)
 by any limit kernel fork of `S.g` -/
 @[simps]
 def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
-  S.RightHomologyData where
+    S.RightHomologyData where
   Q := S.X₂
   H := c.pt
   p := 𝟙 _
@@ -167,7 +169,7 @@ ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 by any colimit cokernel cofork of `S.g` -/
 @[simps]
 def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c) :
-  S.RightHomologyData where
+    S.RightHomologyData where
   Q := c.pt
   H := c.pt
   p := c.π
@@ -361,7 +363,7 @@ attribute [nolint simpNF] mk.injEq
 /-- The right homology map data associated to the zero morphism between two short complexes. -/
 @[simps]
 def zero (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
-  RightHomologyMapData 0 h₁ h₂ where
+    RightHomologyMapData 0 h₁ h₂ where
   φQ := 0
   φH := 0
 
@@ -408,7 +410,7 @@ lemma congr_φQ {γ₁ γ₂ : RightHomologyMapData φ h₁ h₂} (eq : γ₁ = 
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
 def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
-  RightHomologyMapData φ (RightHomologyData.ofZeros S₁ hf₁ hg₁)
+    RightHomologyMapData φ (RightHomologyData.ofZeros S₁ hf₁ hg₁)
     (RightHomologyData.ofZeros S₂ hf₂ hg₂) where
   φQ := φ.τ₂
   φH := φ.τ₂
@@ -446,7 +448,7 @@ def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data
 `RightHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
@@ -458,7 +460,7 @@ def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
   φQ := 𝟙 _
   φH := c.ι
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
 @[simps]
@@ -683,8 +685,8 @@ lemma rightHomologyMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
 
 @[simp]
 lemma opcyclesMap_zero [HasRightHomology S₁] [HasRightHomology S₂] :
-  opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
-opcyclesMap'_zero _ _
+    opcyclesMap (0 : S₁ ⟶ S₂) = 0 :=
+  opcyclesMap'_zero _ _
 
 variable {S₁ S₂}
 
@@ -890,6 +892,374 @@ noncomputable def fromOpcyclesNatTrans :
   naturality := fun _ _  φ => fromOpcycles_naturality φ
 
 end
+
+/-- A left homology map data for a morphism of short complexes induces
+a right homology map data in the opposite category. -/
+@[simps]
+def LeftHomologyMapData.op {S₁ S₂ : ShortComplex C} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+    (ψ : LeftHomologyMapData φ h₁ h₂) : RightHomologyMapData (opMap φ) h₂.op h₁.op where
+  φQ := ψ.φK.op
+  φH := ψ.φH.op
+  commp := Quiver.Hom.unop_inj (by simp)
+  commg' := Quiver.Hom.unop_inj (by simp)
+  commι := Quiver.Hom.unop_inj (by simp)
+
+/-- A left homology map data for a morphism of short complexes in the opposite category
+induces a right homology map data in the original category. -/
+@[simps]
+def LeftHomologyMapData.unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+    (ψ : LeftHomologyMapData φ h₁ h₂) : RightHomologyMapData (unopMap φ) h₂.unop h₁.unop where
+  φQ := ψ.φK.unop
+  φH := ψ.φH.unop
+  commp := Quiver.Hom.op_inj (by simp)
+  commg' := Quiver.Hom.op_inj (by simp)
+  commι := Quiver.Hom.op_inj (by simp)
+
+/-- A right homology map data for a morphism of short complexes induces
+a left homology map data in the opposite category. -/
+@[simps]
+def RightHomologyMapData.op {S₁ S₂ : ShortComplex C} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+    (ψ : RightHomologyMapData φ h₁ h₂) : LeftHomologyMapData (opMap φ) h₂.op h₁.op where
+  φK := ψ.φQ.op
+  φH := ψ.φH.op
+  commi := Quiver.Hom.unop_inj (by simp)
+  commf' := Quiver.Hom.unop_inj (by simp)
+  commπ := Quiver.Hom.unop_inj (by simp)
+
+/-- A right homology map data for a morphism of short complexes in the opposite category
+induces a left homology map data in the original category. -/
+@[simps]
+def RightHomologyMapData.unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
+    {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+    (ψ : RightHomologyMapData φ h₁ h₂) : LeftHomologyMapData (unopMap φ) h₂.unop h₁.unop where
+  φK := ψ.φQ.unop
+  φH := ψ.φH.unop
+  commi := Quiver.Hom.op_inj (by simp)
+  commf' := Quiver.Hom.op_inj (by simp)
+  commπ := Quiver.Hom.op_inj (by simp)
+
+variable (S)
+
+/-- The right homology in the opposite category of the opposite of a short complex identifies
+to the left homology of this short complex. -/
+noncomputable def rightHomologyOpIso [S.HasLeftHomology] :
+    S.op.rightHomology ≅ Opposite.op S.leftHomology :=
+  S.leftHomologyData.op.rightHomologyIso
+
+/-- The left homology in the opposite category of the opposite of a short complex identifies
+to the right homology of this short complex. -/
+noncomputable def leftHomologyOpIso [S.HasRightHomology] :
+    S.op.leftHomology ≅ Opposite.op S.rightHomology :=
+  S.rightHomologyData.op.leftHomologyIso
+
+/-- The opcycles in the opposite category of the opposite of a short complex identifies
+to the cycles of this short complex. -/
+noncomputable def opcyclesOpIso [S.HasLeftHomology] :
+    S.op.opcycles ≅ Opposite.op S.cycles :=
+  S.leftHomologyData.op.opcyclesIso
+
+/-- The cycles in the opposite category of the opposite of a short complex identifies
+to the opcycles of this short complex. -/
+noncomputable def cyclesOpIso [S.HasRightHomology] :
+    S.op.cycles ≅ Opposite.op S.opcycles :=
+  S.rightHomologyData.op.cyclesIso
+
+@[simp]
+lemma leftHomologyMap'_op
+    (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    (leftHomologyMap' φ h₁ h₂).op = rightHomologyMap' (opMap φ) h₂.op h₁.op := by
+  let γ : LeftHomologyMapData φ h₁ h₂ := leftHomologyMapData φ h₁ h₂
+  simp only [γ.leftHomologyMap'_eq, γ.op.rightHomologyMap'_eq,
+    LeftHomologyMapData.op_φH]
+
+lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    (leftHomologyMap φ).op = S₂.rightHomologyOpIso.inv ≫ rightHomologyMap (opMap φ) ≫
+      S₁.rightHomologyOpIso.hom := by
+  dsimp [rightHomologyOpIso, RightHomologyData.rightHomologyIso, rightHomologyMap,
+    leftHomologyMap]
+  simp only [← rightHomologyMap'_comp, comp_id, id_comp, leftHomologyMap'_op]
+
+@[simp]
+lemma rightHomologyMap'_op
+    (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    (rightHomologyMap' φ h₁ h₂).op = leftHomologyMap' (opMap φ) h₂.op h₁.op := by
+  let γ : RightHomologyMapData φ h₁ h₂ := rightHomologyMapData φ h₁ h₂
+  simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq,
+    RightHomologyMapData.op_φH]
+
+lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    (rightHomologyMap φ).op = S₂.leftHomologyOpIso.inv ≫ leftHomologyMap (opMap φ) ≫
+      S₁.leftHomologyOpIso.hom := by
+  dsimp [leftHomologyOpIso, LeftHomologyData.leftHomologyIso, leftHomologyMap,
+    rightHomologyMap]
+  simp only [← leftHomologyMap'_comp, comp_id, id_comp, rightHomologyMap'_op]
+
+namespace RightHomologyData
+
+section
+
+variable (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃]
+
+/-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
+and `φ.τ₃` is mono, then a right homology data for `S₁` induces a right homology data for `S₂` with
+the same `Q` and `H` fields. This is obtained by dualising `LeftHomologyData.ofEpiOfIsIsoOfMono'`.
+The inverse construction is `ofEpiOfIsIsoOfMono'`.  -/
+noncomputable def ofEpiOfIsIsoOfMono : RightHomologyData S₂ := by
+  haveI : Epi (opMap φ).τ₁ := by dsimp; infer_instance
+  haveI : IsIso (opMap φ).τ₂ := by dsimp; infer_instance
+  haveI : Mono (opMap φ).τ₃ := by dsimp; infer_instance
+  exact (LeftHomologyData.ofEpiOfIsIsoOfMono' (opMap φ) h.op).unop
+
+@[simp] lemma ofEpiOfIsIsoOfMono_Q : (ofEpiOfIsIsoOfMono φ h).Q = h.Q := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono_H : (ofEpiOfIsIsoOfMono φ h).H = h.H := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono_p : (ofEpiOfIsIsoOfMono φ h).p = inv φ.τ₂ ≫ h.p := by
+  simp [ofEpiOfIsIsoOfMono, opMap]
+
+@[simp] lemma ofEpiOfIsIsoOfMono_ι : (ofEpiOfIsIsoOfMono φ h).ι = h.ι := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono_g' : (ofEpiOfIsIsoOfMono φ h).g' = h.g' ≫ φ.τ₃ := by
+  simp [ofEpiOfIsIsoOfMono, opMap]
+
+end
+
+section
+
+variable (φ : S₁ ⟶ S₂) (h : RightHomologyData S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃]
+
+/-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
+and `φ.τ₃` is mono, then a right homology data for `S₂` induces a right homology data for `S₁` with
+the same `Q` and `H` fields. This is obtained by dualising `LeftHomologyData.ofEpiOfIsIsoOfMono`.
+The inverse construction is `ofEpiOfIsIsoOfMono`.  -/
+noncomputable def ofEpiOfIsIsoOfMono' : RightHomologyData S₁ := by
+  haveI : Epi (opMap φ).τ₁ := by dsimp; infer_instance
+  haveI : IsIso (opMap φ).τ₂ := by dsimp; infer_instance
+  haveI : Mono (opMap φ).τ₃ := by dsimp; infer_instance
+  exact (LeftHomologyData.ofEpiOfIsIsoOfMono (opMap φ) h.op).unop
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_Q : (ofEpiOfIsIsoOfMono' φ h).Q = h.Q := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_H : (ofEpiOfIsIsoOfMono' φ h).H = h.H := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_p : (ofEpiOfIsIsoOfMono' φ h).p = φ.τ₂ ≫ h.p := by
+  simp [ofEpiOfIsIsoOfMono', opMap]
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_ι : (ofEpiOfIsIsoOfMono' φ h).ι = h.ι := rfl
+
+@[simp] lemma ofEpiOfIsIsoOfMono'_g'_τ₃ : (ofEpiOfIsIsoOfMono' φ h).g' ≫ φ.τ₃ = h.g' := by
+  rw [← cancel_epi (ofEpiOfIsIsoOfMono' φ h).p, p_g'_assoc, ofEpiOfIsIsoOfMono'_p,
+    assoc, p_g', φ.comm₂₃]
+
+end
+
+/-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : RightomologyData S₁`,
+this is the right homology data for `S₂` deduced from the isomorphism. -/
+noncomputable def ofIso (e : S₁ ≅ S₂) (h₁ : RightHomologyData S₁) : RightHomologyData S₂ :=
+  h₁.ofEpiOfIsIsoOfMono e.hom
+
+end RightHomologyData
+
+lemma hasRightHomology_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [HasRightHomology S₁]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasRightHomology S₂ :=
+  HasRightHomology.mk' (RightHomologyData.ofEpiOfIsIsoOfMono φ S₁.rightHomologyData)
+
+lemma hasRightHomology_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [HasRightHomology S₂]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : HasRightHomology S₁ :=
+HasRightHomology.mk' (RightHomologyData.ofEpiOfIsIsoOfMono' φ S₂.rightHomologyData)
+
+lemma hasRightHomology_of_iso {S₁ S₂ : ShortComplex C}
+    (e : S₁ ≅ S₂) [HasRightHomology S₁] : HasRightHomology S₂ :=
+  hasRightHomology_of_epi_of_isIso_of_mono e.hom
+
+namespace RightHomologyMapData
+
+/-- This right homology map data expresses compatibilities of the right homology data
+constructed by `RightHomologyData.ofEpiOfIsIsoOfMono` -/
+@[simps]
+def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    RightHomologyMapData φ h (RightHomologyData.ofEpiOfIsIsoOfMono φ h) where
+  φQ := 𝟙 _
+  φH := 𝟙 _
+
+/-- This right homology map data expresses compatibilities of the right homology data
+constructed by `RightHomologyData.ofEpiOfIsIsoOfMono'` -/
+@[simps]
+noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : RightHomologyData S₂)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    RightHomologyMapData φ (RightHomologyData.ofEpiOfIsIsoOfMono' φ h) h where
+  φQ := 𝟙 _
+  φH := 𝟙 _
+
+end RightHomologyMapData
+
+instance (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (rightHomologyMap' φ h₁ h₂) := by
+  let h₂' := RightHomologyData.ofEpiOfIsIsoOfMono φ h₁
+  haveI : IsIso (rightHomologyMap' φ h₁ h₂') := by
+    rw [(RightHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).rightHomologyMap'_eq]
+    dsimp
+    infer_instance
+  have eq := rightHomologyMap'_comp φ (𝟙 S₂) h₁ h₂' h₂
+  rw [comp_id] at eq
+  rw [eq]
+  infer_instance
+
+/-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
+and `φ.τ₃` is mono, then the induced morphism on right homology is an isomorphism. -/
+instance (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
+    IsIso (rightHomologyMap φ) := by
+  dsimp only [rightHomologyMap]
+  infer_instance
+
+variable (C)
+
+section
+
+variable [HasKernels C] [HasCokernels C] [HasKernels Cᵒᵖ] [HasCokernels Cᵒᵖ]
+
+/-- The opposite of the right homology functor is the left homology functor. -/
+@[simps!]
+noncomputable def rightHomologyFunctorOpNatIso :
+    (rightHomologyFunctor C).op ≅ opFunctor C ⋙ leftHomologyFunctor Cᵒᵖ :=
+  NatIso.ofComponents (fun S => (leftHomologyOpIso S.unop).symm)
+    (by simp [rightHomologyMap_op])
+
+/-- The opposite of the left homology functor is the right homology functor. -/
+@[simps!]
+noncomputable def leftHomologyFunctorOpNatIso :
+    (leftHomologyFunctor C).op ≅ opFunctor C ⋙ rightHomologyFunctor Cᵒᵖ :=
+  NatIso.ofComponents (fun S => (rightHomologyOpIso S.unop).symm)
+    (by simp [leftHomologyMap_op])
+
+end
+
+section
+
+variable {C}
+variable (h : RightHomologyData S) {A : C}
+  (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [HasRightHomology S]
+
+/-- A morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends to a morphism `S.opcycles ⟶ A`. -/
+noncomputable def descOpcycles : S.opcycles ⟶ A :=
+  S.rightHomologyData.descQ k hk
+
+@[reassoc (attr := simp)]
+lemma p_descOpcycles : S.pOpcycles ≫ S.descOpcycles k hk = k :=
+  RightHomologyData.p_descQ _ k hk
+
+@[reassoc]
+lemma descOpcycles_comp {A' : C} (α : A ⟶ A') :
+    S.descOpcycles k hk ≫ α = S.descOpcycles (k ≫ α) (by rw [reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_epi S.pOpcycles, p_descOpcycles_assoc, p_descOpcycles]
+
+/-- Via `S.pOpcycles : S.X₂ ⟶ S.opcycles`, the object `S.opcycles` identifies to the
+cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
+noncomputable def opcyclesIsCokernel :
+    IsColimit (CokernelCofork.ofπ S.pOpcycles S.f_pOpcycles) :=
+  S.rightHomologyData.hp
+
+/-- The canonical isomorphism `S.opcycles ≅ cokernel S.f`. -/
+@[simps]
+noncomputable def opcyclesIsoCokernel [HasCokernel S.f] : S.opcycles ≅ cokernel S.f where
+  hom := S.descOpcycles (cokernel.π S.f) (by simp)
+  inv := cokernel.desc S.f S.pOpcycles (by simp)
+
+/-- The morphism `S.rightHomology ⟶ A` obtained from a morphism `k : S.X₂ ⟶ A`
+such that `S.f ≫ k = 0.` -/
+@[simp]
+noncomputable def descRightHomology : S.rightHomology ⟶ A :=
+  S.rightHomologyι ≫ S.descOpcycles k hk
+
+@[reassoc]
+lemma rightHomologyι_descOpcycles_π_eq_zero_of_boundary (x : S.X₃ ⟶ A) (hx : k = S.g ≫ x) :
+    S.rightHomologyι ≫ S.descOpcycles k (by rw [hx, S.zero_assoc, zero_comp]) = 0 :=
+  RightHomologyData.ι_descQ_eq_zero_of_boundary _ k x hx
+
+@[reassoc (attr := simp)]
+lemma rightHomologyι_comp_fromOpcycles :
+    S.rightHomologyι ≫ S.fromOpcycles = 0 :=
+  S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary S.g (𝟙 _) (by rw [comp_id])
+
+/-- Via `S.rightHomologyι : S.rightHomology ⟶ S.opcycles`, the object `S.rightHomology` identifies
+to the kernel of `S.fromOpcycles : S.opcycles ⟶ S.X₃`. -/
+noncomputable def rightHomologyIsKernel :
+    IsLimit (KernelFork.ofι S.rightHomologyι S.rightHomologyι_comp_fromOpcycles) :=
+  S.rightHomologyData.hι
+
+variable {S}
+
+@[reassoc (attr := simp)]
+lemma opcyclesMap_comp_descOpcycles (φ : S₁ ⟶ S) [S₁.HasRightHomology] :
+    opcyclesMap φ ≫ S.descOpcycles k hk =
+      S₁.descOpcycles (φ.τ₂ ≫ k) (by rw [← φ.comm₁₂_assoc, hk, comp_zero]) := by
+  simp only [← cancel_epi (S₁.pOpcycles), p_opcyclesMap_assoc, p_descOpcycles]
+
+@[reassoc (attr := simp)]
+lemma RightHomologyData.opcyclesIso_inv_comp_descOpcycles :
+    h.opcyclesIso.inv ≫ S.descOpcycles k hk = h.descQ k hk := by
+  simp only [← cancel_epi h.p, p_comp_opcyclesIso_inv_assoc, p_descOpcycles, p_descQ]
+
+@[simp]
+lemma RightHomologyData.opcyclesIso_hom_comp_descQ :
+    h.opcyclesIso.hom ≫ h.descQ k hk = S.descOpcycles k hk := by
+  rw [← h.opcyclesIso_inv_comp_descOpcycles, Iso.hom_inv_id_assoc]
+
+end
+
+variable {C}
+
+namespace HasRightHomology
+
+lemma hasCokernel [S.HasRightHomology] : HasCokernel S.f :=
+  ⟨⟨⟨_, S.rightHomologyData.hp⟩⟩⟩
+
+lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
+    HasKernel (cokernel.desc S.f S.g S.zero) := by
+  let h := S.rightHomologyData
+  haveI : HasLimit (parallelPair h.g' 0) := ⟨⟨⟨_, h.hι'⟩⟩⟩
+  let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
+    parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
+      (Iso.refl _) (coequalizer.hom_ext (by simp)) (by aesop_cat)
+  exact hasLimitOfIso e.symm
+
+end HasRightHomology
+
+/-- The right homology of a short complex `S` identifies to the kernel of the canonical
+morphism `cokernel S.f ⟶ S.X₃`. -/
+noncomputable def rightHomologyIsoKernelDesc [S.HasRightHomology] [HasCokernel S.f]
+    [HasKernel (cokernel.desc S.f S.g S.zero)] :
+    S.rightHomology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
+  (RightHomologyData.ofHasCokernelOfHasKernel S).rightHomologyIso
+
+/-! The following lemmas and instance gives a sufficient condition for a morphism
+of short complexes to induce an isomorphism on opcycles. -/
+
+lemma isIso_opcyclesMap'_of_isIso_of_epi (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
+    (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    IsIso (opcyclesMap' φ h₁ h₂) := by
+  refine' ⟨h₂.descQ (inv φ.τ₂ ≫ h₁.p) _, _, _⟩
+  · simp only [← cancel_epi φ.τ₁, comp_zero, φ.comm₁₂_assoc, IsIso.hom_inv_id_assoc, h₁.wp]
+  · simp only [← cancel_epi h₁.p, p_opcyclesMap'_assoc, h₂.p_descQ,
+      IsIso.hom_inv_id_assoc, comp_id]
+  · simp only [← cancel_epi h₂.p, h₂.p_descQ_assoc, assoc, p_opcyclesMap',
+      IsIso.inv_hom_id_assoc, comp_id]
+
+lemma isIso_opcyclesMap_of_isIso_of_epi' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    IsIso (opcyclesMap φ) :=
+  isIso_opcyclesMap'_of_isIso_of_epi φ h₂ h₁ _ _
+
+instance isIso_opcyclesMap_of_isIso_of_epi (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Epi φ.τ₁]
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    IsIso (opcyclesMap φ) :=
+  isIso_opcyclesMap_of_isIso_of_epi' φ inferInstance inferInstance
 
 end ShortComplex
 

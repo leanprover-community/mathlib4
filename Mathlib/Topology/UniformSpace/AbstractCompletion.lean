@@ -78,7 +78,7 @@ attribute [local instance]
 
 namespace AbstractCompletion
 
-variable {α : Type _} [UniformSpace α] (pkg : AbstractCompletion α)
+variable {α : Type*} [UniformSpace α] (pkg : AbstractCompletion α)
 
 local notation "hatα" => pkg.space
 
@@ -111,7 +111,7 @@ theorem induction_on {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }
   isClosed_property pkg.dense hp ih a
 #align abstract_completion.induction_on AbstractCompletion.induction_on
 
-variable {β : Type _}
+variable {β : Type*}
 
 protected theorem funext [TopologicalSpace β] [T2Space β] {f g : hatα → β} (hf : Continuous f)
     (hg : Continuous g) (h : ∀ a, f (ι a) = g (ι a)) : f = g :=
@@ -208,7 +208,7 @@ theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous
   pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
     change pkg.extend (ι' ∘ f) _ = _
-    simp only [(· ∘ ·), h, ←comp_apply (f := g)]
+    simp_rw [(· ∘ ·), h, ← comp_apply (f := g)]
     rw [pkg.extend_coe (hg.comp pkg.uniformContinuous_coe)]
 #align abstract_completion.map_unique AbstractCompletion.map_unique
 
@@ -217,7 +217,7 @@ theorem map_id : pkg.map pkg id = id :=
   pkg.map_unique pkg uniformContinuous_id fun _ => rfl
 #align abstract_completion.map_id AbstractCompletion.map_id
 
-variable {γ : Type _} [UniformSpace γ]
+variable {γ : Type*} [UniformSpace γ]
 
 theorem extend_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g : α → β}
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
@@ -315,7 +315,7 @@ local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
-variable {γ : Type _} [UniformSpace γ]
+variable {γ : Type*} [UniformSpace γ]
 
 open Function
 
@@ -355,7 +355,7 @@ local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
-variable {γ : Type _} [UniformSpace γ] (pkg'' : AbstractCompletion γ)
+variable {γ : Type*} [UniformSpace γ] (pkg'' : AbstractCompletion γ)
 
 local notation "hatγ" => pkg''.space
 

@@ -33,7 +33,7 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type _} (P : Type _)
+variable {V : Type*} (P : Type*)
 
 open FiniteDimensional
 
@@ -280,7 +280,7 @@ theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical
   refine' hs.affineIndependent _ _
   · simp [h₁, h₂, h₃, Set.insert_subset_iff]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
-    simp [h₁₂, h₁₃, h₂₃, Function.Injective]
+    simp [h₁₂, h₁₃, h₂₃, Function.Injective, eq_iff_true_of_subsingleton]
 #align euclidean_geometry.cospherical.affine_independent_of_mem_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_mem_of_ne
 
 /-- The three points of a cospherical set are affinely independent. -/

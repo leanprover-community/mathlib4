@@ -23,13 +23,15 @@ other files.
 
 namespace Submonoid
 
-section
+section MulOneClass
 
-variable (M : Type _) [Monoid M]
+variable (M : Type*) [MulOneClass M]
 
-/-- The center of a monoid `M` is the set of elements that commute with everything in `M` -/
+/-- The center of a multiplication with unit `M` is the set of elements that commute with everything
+in `M` -/
 @[to_additive
-      "The center of a monoid `M` is the set of elements that commute with everything in `M`"]
+      "The center of an addition with zero `M` is the set of elements that commute with everything
+      in `M`"]
 def center : Submonoid M where
   carrier := Set.center M
   one_mem' := Set.one_mem_center M
@@ -50,9 +52,34 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
 
 variable {M}
 
+/-- The center of a multiplication with unit is commutative and associative.
+
+This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
+field. -/
+@[to_additive "The center of an addition with zero is commutative and associative."]
+abbrev center.commMonoid' : CommMonoid (center M) :=
+  { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
+
+end MulOneClass
+
+section Monoid
+
+variable {M} [Monoid M]
+
+/-- The center of a monoid is commutative. -/
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+instance center.commMonoid : CommMonoid (center M) :=
+  { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
+
+-- no instance diamond, unlike the primed version
+example :
+    center.commMonoid.toMonoid = Submonoid.toMonoid (center M) :=
+  rfl
+
+@[to_additive]
+theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+  rw [← Semigroup.mem_center_iff]
+  exact Iff.rfl
 #align submonoid.mem_center_iff Submonoid.mem_center_iff
 #align add_submonoid.mem_center_iff AddSubmonoid.mem_center_iff
 
@@ -62,14 +89,11 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 #align submonoid.decidable_mem_center Submonoid.decidableMemCenter
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
-/-- The center of a monoid is commutative. -/
-instance center.commMonoid : CommMonoid (center M) :=
-  { (center M).toMonoid with
-    mul_comm := fun _ b => Subtype.ext <| b.prop _ }
+
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smulCommClass_left : SMulCommClass (center M) M M
-    where smul_comm m x y := (Commute.left_comm (m.prop x) y).symm
+instance center.smulCommClass_left : SMulCommClass (center M) M M where
+  smul_comm m x y := Commute.left_comm (m.prop.comm x) y
 #align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
@@ -82,11 +106,11 @@ instance center.smulCommClass_right : SMulCommClass M (center M) M :=
 
 example : SMulCommClass (center M) (center M) M := by infer_instance
 
-end
+end Monoid
 
 section
 
-variable (M : Type _) [CommMonoid M]
+variable (M : Type*) [CommMonoid M]
 
 @[simp]
 theorem center_eq_top : center M = ⊤ :=
@@ -96,6 +120,25 @@ theorem center_eq_top : center M = ⊤ :=
 end
 
 end Submonoid
+
+variable (M)
+
+/-- For a monoid, the units of the center inject into the center of the units. This is not an
+equivalence in general; one case when it is is for groups with zero, which is covered in
+`centerUnitsEquivUnitsCenter`. -/
+@[to_additive (attr := simps! apply_coe_val)
+  "For an additive monoid, the units of the center inject into the center of the units."]
+def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) :=
+  (Units.map (Submonoid.center M).subtype).codRestrict _ <|
+      fun u ↦ Submonoid.mem_center_iff.mpr <|
+        fun r ↦ Units.ext <| by
+        rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
+          Submonoid.coe_subtype, u.1.prop.comm r]
+
+@[to_additive]
+theorem unitsCenterToCenterUnits_injective [Monoid M] :
+    Function.Injective (unitsCenterToCenterUnits M) :=
+  fun _a _b h => Units.ext <| Subtype.ext <| congr_arg (Units.val ∘ Subtype.val) h
 
 -- Guard against import creep
 assert_not_exists Finset

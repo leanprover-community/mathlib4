@@ -16,7 +16,7 @@ import Std.Tactic.Lint
 The `elementwise` attribute generates lemmas for concrete categories from lemmas
 that equate morphisms in a category.
 
-A sort of inverse to this for the `Type _` category is the `@[higher_order]` attribute.
+A sort of inverse to this for the `Type*` category is the `@[higher_order]` attribute.
 
 For more details, see the documentation attached to the `syntax` declaration.
 
@@ -32,6 +32,8 @@ This closely follows the implementation of the `@[reassoc]` attribute, due to Si
 reimplemented by Scott Morrison in Lean 4.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -41,7 +43,7 @@ open CategoryTheory
 section theorems
 
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-  (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+    (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
 attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
@@ -154,14 +156,14 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type _} [Category C]
+lemma some_lemma {C : Type*} [Category C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type _} [Category C]
+lemma some_lemma_apply {C : Type*} [Category C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
     [ConcreteCategory C] (x : X) : g (f x) = h x := ...
 ```

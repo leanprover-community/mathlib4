@@ -14,7 +14,7 @@ import Mathlib.Data.Fintype.Units
 -/
 
 
-variable {α : Type _} [Monoid α]
+variable {α : Type*} [Monoid α]
 
 attribute [local instance] IsConj.setoid
 

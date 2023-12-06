@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -25,7 +26,7 @@ namespace Set
 section Enumerate
 
 /- porting note : The original used parameters -/
-variable {α : Type _} (sel : Set α → Option α)
+variable {α : Type*} (sel : Set α → Option α)
 
 /-- Given a choice function `sel`, enumerates the elements of a set in the order
 `a 0 = sel s`, `a 1 = sel (s \ {a 0})`, `a 2 = sel (s \ {a 0, a 1})`, ... and stops when
@@ -64,7 +65,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
     cases h : sel s
     case none => simp [enumerate_eq_none_of_sel, h]
     case some a' =>
-      simp [enumerate, h]
+      simp only [enumerate, h, Nat.add_eq, add_zero]
       exact fun h' : enumerate sel (s \ {a'}) n = some a ↦
         have : a ∈ s \ {a'} := enumerate_mem h_sel h'
         this.left

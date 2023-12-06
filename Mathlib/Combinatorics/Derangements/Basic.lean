@@ -19,7 +19,7 @@ We also define some equivalences involving various subtypes of `Perm α` and `de
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
   `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
-  sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α)` which is later
+  sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
 
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
@@ -30,11 +30,11 @@ on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 open Equiv Function
 
 /-- A permutation is a derangement if it has no fixed points. -/
-def derangements (α : Type _) : Set (Perm α) :=
+def derangements (α : Type*) : Set (Perm α) :=
   { f : Perm α | ∀ x : α, f x ≠ x }
 #align derangements derangements
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
     f ∈ derangements α ↔ fixedPoints f = ∅ :=

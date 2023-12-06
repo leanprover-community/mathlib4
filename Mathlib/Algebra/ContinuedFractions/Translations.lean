@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 
 #align_import algebra.continued_fractions.translations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -29,7 +30,7 @@ us to access the numerators and denominators of a continued fraction.
 -/
 
 
-variable {α : Type _} {g : GeneralizedContinuedFraction α} {n : ℕ}
+variable {α : Type*} {g : GeneralizedContinuedFraction α} {n : ℕ}
 
 theorem terminatedAt_iff_s_terminatedAt : g.TerminatedAt n ↔ g.s.TerminatedAt n := by rfl
 #align generalized_continued_fraction.terminated_at_iff_s_terminated_at GeneralizedContinuedFraction.terminatedAt_iff_s_terminatedAt
@@ -79,12 +80,12 @@ section WithDivisionRing
 /-!
 ### Translations Between Computational Functions
 
-Here we  give some basic translations that hold by definition for the computational methods of a
+Here we give some basic translations that hold by definition for the computational methods of a
 continued fraction.
 -/
 
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
 
 theorem nth_cont_eq_succ_nth_cont_aux : g.continuants n = g.continuantsAux (n + 1) :=
   rfl

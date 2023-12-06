@@ -72,6 +72,10 @@ instance : IsSuccArchimedean ℕ :=
 instance : IsPredArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
 
+lemma forall_ne_zero_iff (P : ℕ → Prop) :
+    (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
+  SuccOrder.forall_ne_bot_iff P
+
 /-! ### Covering relation -/
 
 
@@ -86,5 +90,5 @@ theorem Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b 
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 #align fin.coe_covby_iff Fin.coe_covby_iff
 
-alias Fin.coe_covby_iff ↔ _ Covby.coe_fin
+alias ⟨_, Covby.coe_fin⟩ := Fin.coe_covby_iff
 #align covby.coe_fin Covby.coe_fin

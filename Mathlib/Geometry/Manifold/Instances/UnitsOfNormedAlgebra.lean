@@ -52,7 +52,7 @@ open scoped Manifold
 
 namespace Units
 
-variable {R : Type _} [NormedRing R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [CompleteSpace R]
 
 instance : ChartedSpace R Rˣ :=
   openEmbedding_val.singletonChartedSpace
@@ -65,7 +65,7 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 #align units.chart_at_source Units.chartAt_source
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 
 instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
   openEmbedding_val.singleton_smoothManifoldWithCorners 𝓘(𝕜, R)

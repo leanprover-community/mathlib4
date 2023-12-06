@@ -53,7 +53,7 @@ open Set
 
 section
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 variable [AffineSpace V P]
 
@@ -152,7 +152,7 @@ end
 
 /-- An `AffineSubspace k P` is a subset of an `AffineSpace V P` that, if not empty, has an affine
 space structure induced by a corresponding subspace of the `Module k V`. -/
-structure AffineSubspace (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V]
+structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
   carrier : Set P
   smul_vsub_vadd_mem :
@@ -162,7 +162,7 @@ structure AffineSubspace (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCom
 
 namespace Submodule
 
-variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 /-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
 def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
@@ -174,7 +174,7 @@ end Submodule
 
 namespace AffineSubspace
 
-variable (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 instance : SetLike (AffineSubspace k P) P where
@@ -390,7 +390,6 @@ def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s 
     ext
     apply add_vadd
   vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.2 _).mpr b.2⟩
-  Nonempty := by infer_instance
   vsub_vadd' a b := by
     ext
     apply AddTorsor.vsub_vadd'
@@ -520,7 +519,7 @@ end AffineSubspace
 
 namespace Submodule
 
-variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 @[simp]
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
@@ -533,7 +532,7 @@ theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.dire
 
 end Submodule
 
-theorem AffineMap.lineMap_mem {k V P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
   rw [AffineMap.lineMap_apply]
@@ -542,7 +541,7 @@ theorem AffineMap.lineMap_mem {k V P : Type _} [Ring k] [AddCommGroup V] [Module
 
 section affineSpan
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The affine span of a set of points is the smallest affine subspace containing those points.
@@ -587,7 +586,7 @@ end affineSpan
 
 namespace AffineSubspace
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P]
 
 instance : CompleteLattice (AffineSubspace k P) :=
@@ -741,7 +740,7 @@ theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ a
 #align affine_subspace.span_union AffineSubspace.span_union
 
 /-- The span of a union of an indexed family of sets is the sup of their spans. -/
-theorem span_iUnion {ι : Type _} (s : ι → Set P) :
+theorem span_iUnion {ι : Type*} (s : ι → Set P) :
     affineSpan k (⋃ i, s i) = ⨆ i, affineSpan k (s i) :=
   (AffineSubspace.gi k V P).gc.l_iSup
 #align affine_subspace.span_Union AffineSubspace.span_iUnion
@@ -767,7 +766,7 @@ variable (P)
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
 theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
-  cases' S.Nonempty with p
+  cases' S.nonempty with p
   ext v
   refine' ⟨imp_intro Submodule.mem_top, fun _hv => _⟩
   have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
@@ -822,11 +821,22 @@ theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontr
   · rw [affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P hs]
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nontrivial AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial
 
-theorem card_pos_of_affineSpan_eq_top {ι : Type _} [Fintype ι] {p : ι → P}
+theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
     (h : affineSpan k (range p) = ⊤) : 0 < Fintype.card ι := by
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
 #align affine_subspace.card_pos_of_affine_span_eq_top AffineSubspace.card_pos_of_affineSpan_eq_top
+
+attribute [local instance] toAddTorsor
+
+/-- The top affine subspace is linearly equivalent to the affine space.
+
+This is the affine version of `Submodule.topEquiv`. -/
+@[simps! linear apply symm_apply_coe]
+def topEquiv : (⊤ : AffineSubspace k P) ≃ᵃ[k] P where
+  toEquiv := Equiv.Set.univ P
+  linear := .ofEq _ _ (direction_top _ _ _) ≪≫ₗ Submodule.topEquiv
+  map_vadd' _p _v := rfl
 
 variable {P}
 
@@ -1027,10 +1037,10 @@ end AffineSubspace
 
 section AffineSpace'
 
-variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 open AffineSubspace Set
 
@@ -1165,7 +1175,7 @@ theorem affineSpan_nonempty : (affineSpan k s : Set P).Nonempty ↔ s.Nonempty :
   spanPoints_nonempty k s
 #align affine_span_nonempty affineSpan_nonempty
 
-alias affineSpan_nonempty ↔ _ _root_.Set.Nonempty.affineSpan
+alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 #align set.nonempty.affine_span Set.Nonempty.affineSpan
 
 /-- The affine span of a nonempty set is nonempty. -/
@@ -1194,7 +1204,7 @@ preserved under certain affine combinations, then `p` holds for all elements of 
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (Hs : ∀ x : P, x ∈ s → p x)
     (Hc : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (@affineSpan_le _ _ _ _ _ _ _ _ ⟨p, Hc⟩).mpr Hs h
+  (affineSpan_le (Q := ⟨p, Hc⟩)).mpr Hs h
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
@@ -1207,7 +1217,7 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
   refine' Exists.elim _ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- porting note: Lean couldn't infer the motive
-  refine' @affineSpan_induction k V P _ _ _ _ _ _ (fun y => ∃ z, p y z) h _ _
+  refine' affineSpan_induction (p := fun y => ∃ z, p y z) h _ _
   · exact fun y hy => ⟨subset_affineSpan _ _ hy, Hs y hy⟩
   · exact fun c u v w hu hv hw =>
       Exists.elim hu fun hu' hu =>
@@ -1419,7 +1429,7 @@ end AffineSpace'
 
 namespace AffineSubspace
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
@@ -1491,7 +1501,7 @@ end AffineSubspace
 
 section MapComap
 
-variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type _} [Ring k]
+variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type*} [Ring k]
 
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
 
@@ -1539,6 +1549,10 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
   Set.mem_image_of_mem _ h
 #align affine_subspace.mem_map_of_mem AffineSubspace.mem_map_of_mem
 
+-- The simpNF linter says that the LHS can be simplified via `AffineSubspace.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image
@@ -1584,6 +1598,29 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
         subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 #align affine_subspace.map_span AffineSubspace.map_span
 
+section inclusion
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine map from a smaller to a larger subspace of the same space.
+
+This is the affine version of `Submodule.inclusion`. -/
+@[simps linear]
+def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
+  toFun := Set.inclusion h
+  linear := Submodule.inclusion <| AffineSubspace.direction_le h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
+
+end inclusion
+
 end AffineSubspace
 
 namespace AffineMap
@@ -1602,6 +1639,33 @@ theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
 end AffineMap
 
 namespace AffineEquiv
+
+section ofEq
+variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine equivalence between two equal affine subspace.
+
+This is the affine version of `LinearEquiv.ofEq`. -/
+@[simps linear]
+def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
+  toEquiv := Equiv.Set.ofEq <| congr_arg _ h
+  linear := .ofEq _ _ <| congr_arg _ h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm :=
+  rfl
+
+@[simp]
+theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
+
+end ofEq
 
 theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by
@@ -1681,7 +1745,7 @@ theorem map_sup (s t : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) : (s ⊔
   (gc_map_comap f).l_sup
 #align affine_subspace.map_sup AffineSubspace.map_sup
 
-theorem map_iSup {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
+theorem map_iSup {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₁) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align affine_subspace.map_supr AffineSubspace.map_iSup
@@ -1691,7 +1755,7 @@ theorem comap_inf (s t : AffineSubspace k P₂) (f : P₁ →ᵃ[k] P₂) :
   (gc_map_comap f).u_inf
 #align affine_subspace.comap_inf AffineSubspace.comap_inf
 
-theorem comap_supr {ι : Sort _} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
+theorem comap_supr {ι : Sort*} (f : P₁ →ᵃ[k] P₂) (s : ι → AffineSubspace k P₂) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align affine_subspace.comap_supr AffineSubspace.comap_supr
@@ -1721,7 +1785,7 @@ namespace AffineSubspace
 
 open AffineEquiv
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 variable [AffineSpace V P]
 
@@ -1789,8 +1853,8 @@ theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubsp
     · rw [hs₁, bot_parallel_iff_eq_bot]
       exact hb.1 hs₁
     · have hs₂ : s₂ ≠ ⊥ := hb.not.1 hs₁
-      rcases(nonempty_iff_ne_bot s₁).2 hs₁ with ⟨p₁, hp₁⟩
-      rcases(nonempty_iff_ne_bot s₂).2 hs₂ with ⟨p₂, hp₂⟩
+      rcases (nonempty_iff_ne_bot s₁).2 hs₁ with ⟨p₁, hp₁⟩
+      rcases (nonempty_iff_ne_bot s₂).2 hs₂ with ⟨p₂, hp₂⟩
       refine' ⟨p₂ -ᵥ p₁, (eq_iff_direction_eq_of_mem hp₂ _).2 _⟩
       · rw [mem_map]
         refine' ⟨p₁, hp₁, _⟩

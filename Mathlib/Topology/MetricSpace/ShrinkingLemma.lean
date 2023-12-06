@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 
 #align_import topology.metric_space.shrinking_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -31,11 +31,11 @@ variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι �
 
 variable {x : α} {r : ℝ} {s : Set α}
 
-/-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
-of a closed subset of a proper metric space by open balls can be shrunk to a new cover by open balls
-so that each of the new balls has strictly smaller radius than the old one. This version assumes
-that `fun x ↦ ball (c i) (r i)` is a locally finite covering and provides a covering indexed by the
-same type. -/
+/-- **Shrinking lemma** for coverings by open balls in a proper metric space. A point-finite open
+cover of a closed subset of a proper metric space by open balls can be shrunk to a new cover by
+open balls so that each of the new balls has strictly smaller radius than the old one. This version
+assumes that `fun x ↦ ball (c i) (r i)` is a locally finite covering and provides a covering
+indexed by the same type. -/
 theorem exists_subset_iUnion_ball_radius_lt {r : ι → ℝ} (hs : IsClosed s)
     (uf : ∀ x ∈ s, { i | x ∈ ball (c i) (r i) }.Finite) (us : s ⊆ ⋃ i, ball (c i) (r i)) :
     ∃ r' : ι → ℝ, (s ⊆ ⋃ i, ball (c i) (r' i)) ∧ ∀ i, r' i < r i := by

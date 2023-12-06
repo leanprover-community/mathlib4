@@ -16,14 +16,14 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 open MeasureTheory
 
-variable {α : Type _} [MeasurableSpace α]
+variable {α : Type*} [MeasurableSpace α]
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type _} [NormedField 𝕜]
+variable {𝕜 : Type*} [NormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
-  [OpensMeasurableSpace E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
+  [OpensMeasurableSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F]
   [BorelSpace F]
 
 @[measurability]
@@ -40,9 +40,9 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace 𝕜 F]
 
 instance instMeasurableSpace : MeasurableSpace (E →L[𝕜] F) :=
@@ -75,10 +75,10 @@ end ContinuousLinearMap
 
 section ContinuousLinearMapNontriviallyNormedField
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
-  {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[measurability]
 theorem Measurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : Measurable φ) (v : F) :
@@ -96,9 +96,9 @@ end ContinuousLinearMapNontriviallyNormedField
 
 section NormedSpace
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [MeasurableSpace 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [MeasurableSpace 𝕜]
 
-variable [BorelSpace 𝕜] {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
+variable [BorelSpace 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
   [BorelSpace E]
 
 theorem measurable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :

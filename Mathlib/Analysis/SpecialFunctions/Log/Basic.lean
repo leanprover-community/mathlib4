@@ -22,6 +22,8 @@ We prove some basic properties of this function and show that it is continuous.
 logarithm, continuity
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter Function
 
@@ -182,7 +184,7 @@ theorem log_pos (hx : 1 < x) : 0 < log x :=
 #align real.log_pos Real.log_pos
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have : 1 < -x := by linarith
   exact log_pos this
 
@@ -196,7 +198,7 @@ theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
 #align real.log_neg Real.log_neg
 
 theorem log_neg_of_lt_zero (h0 : x < 0) (h1 : -1 < x) : log x < 0 := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have h0' : 0 < -x := by linarith
   have h1' : -x < 1 := by linarith
   exact log_neg h0' h1'
@@ -225,24 +227,24 @@ theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
   by_cases hn : n = 0
   case pos => simp [hn]
   case neg =>
-    have : (1 : ℝ) ≤ n := by exact_mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
+    have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
 theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
-  rw [←log_neg_eq_log, neg_neg]
+  rw [← log_neg_eq_log, neg_neg]
   exact log_nat_cast_nonneg _
 
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
   | inl hn =>
-      have : (1 : ℝ) ≤ n := by exact_mod_cast hn
+      have : (1 : ℝ) ≤ n := mod_cast hn
       exact log_nonneg this
   | inr hn =>
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact_mod_cast hn
-          rw [←log_neg_eq_log]
+          have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
+          rw [← log_neg_eq_log]
           exact log_nonneg this
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
@@ -345,8 +347,12 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
+lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
+
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp only [continuousOn_iff_continuous_restrict, restrict]
+  simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
+    restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 #align real.continuous_on_log Real.continuousOn_log
@@ -375,7 +381,7 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
 
 open BigOperators
 
-theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
+theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i in s, f i) = ∑ i in s, log (f i) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp
@@ -384,7 +390,7 @@ theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ 
 #align real.log_prod Real.log_prod
 
 -- Porting note: new theorem
-protected theorem _root_.Finsupp.log_prod {α β : Type _} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
+protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
@@ -426,7 +432,7 @@ section Continuity
 
 open Real
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.log {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) (hx : x ≠ 0) :
     Tendsto (fun x => log (f x)) l (𝓝 (log x)) :=
@@ -505,29 +511,29 @@ lemma log_pos_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n =
 lemma log_pos_of_isRat :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
 lemma log_pos_of_isRat_neg :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
 lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : 0 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
-      → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
+    → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : -1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg_of_lt_zero h₁' h₂'
@@ -551,7 +557,7 @@ def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
 def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  match ←NormNum.derive a with
+  match ← NormNum.derive a with
   | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
     assumeInstancesCommute
     have p : Q(NormNum.IsNat $a $lit) := p

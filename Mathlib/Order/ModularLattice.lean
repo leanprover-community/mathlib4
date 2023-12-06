@@ -55,38 +55,38 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A weakly upper modular lattice is a lattice where `a ⊔ b` covers `a` and `b` if `a` and `b` both
 cover `a ⊓ b`. -/
-class IsWeakUpperModularLattice (α : Type _) [Lattice α] : Prop where
+class IsWeakUpperModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a ⊔ b` covers `a` and `b` if `a` and `b` both cover `a ⊓ b`. -/
   covby_sup_of_inf_covby_covby {a b : α} : a ⊓ b ⋖ a → a ⊓ b ⋖ b → a ⋖ a ⊔ b
 #align is_weak_upper_modular_lattice IsWeakUpperModularLattice
 
 /-- A weakly lower modular lattice is a lattice where `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers
 both `a` and `b`. -/
-class IsWeakLowerModularLattice (α : Type _) [Lattice α] : Prop where
+class IsWeakLowerModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers both `a` and `b` -/
   inf_covby_of_covby_covby_sup {a b : α} : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ a
 #align is_weak_lower_modular_lattice IsWeakLowerModularLattice
 
 /-- An upper modular lattice, aka semimodular lattice, is a lattice where `a ⊔ b` covers `a` and `b`
 if either `a` or `b` covers `a ⊓ b`. -/
-class IsUpperModularLattice (α : Type _) [Lattice α] : Prop where
+class IsUpperModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a ⊔ b` covers `a` and `b` if either `a` or `b` covers `a ⊓ b` -/
   covby_sup_of_inf_covby {a b : α} : a ⊓ b ⋖ a → b ⋖ a ⊔ b
 #align is_upper_modular_lattice IsUpperModularLattice
 
 /-- A lower modular lattice is a lattice where `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers
 either `a` or `b`. -/
-class IsLowerModularLattice (α : Type _) [Lattice α] : Prop where
+class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers either `a` or `b` -/
   inf_covby_of_covby_sup {a b : α} : a ⋖ a ⊔ b → a ⊓ b ⋖ b
 #align is_lower_modular_lattice IsLowerModularLattice
 
 /-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
-class IsModularLattice (α : Type _) [Lattice α] : Prop where
+class IsModularLattice (α : Type*) [Lattice α] : Prop where
 /-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`  -/
   sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
 #align is_modular_lattice IsModularLattice
@@ -104,10 +104,10 @@ theorem covby_sup_of_inf_covby_of_inf_covby_right : a ⊓ b ⋖ a → a ⊓ b �
   exact fun ha hb => covby_sup_of_inf_covby_of_inf_covby_left hb ha
 #align covby_sup_of_inf_covby_of_inf_covby_right covby_sup_of_inf_covby_of_inf_covby_right
 
-alias covby_sup_of_inf_covby_of_inf_covby_left ← Covby.sup_of_inf_of_inf_left
+alias Covby.sup_of_inf_of_inf_left := covby_sup_of_inf_covby_of_inf_covby_left
 #align covby.sup_of_inf_of_inf_left Covby.sup_of_inf_of_inf_left
 
-alias covby_sup_of_inf_covby_of_inf_covby_right ← Covby.sup_of_inf_of_inf_right
+alias Covby.sup_of_inf_of_inf_right := covby_sup_of_inf_covby_of_inf_covby_right
 #align covby.sup_of_inf_of_inf_right Covby.sup_of_inf_of_inf_right
 
 instance : IsWeakLowerModularLattice (OrderDual α) :=
@@ -128,10 +128,10 @@ theorem inf_covby_of_covby_sup_of_covby_sup_right : a ⋖ a ⊔ b → b ⋖ a �
   exact fun ha hb => inf_covby_of_covby_sup_of_covby_sup_left hb ha
 #align inf_covby_of_covby_sup_of_covby_sup_right inf_covby_of_covby_sup_of_covby_sup_right
 
-alias inf_covby_of_covby_sup_of_covby_sup_left ← Covby.inf_of_sup_of_sup_left
+alias Covby.inf_of_sup_of_sup_left := inf_covby_of_covby_sup_of_covby_sup_left
 #align covby.inf_of_sup_of_sup_left Covby.inf_of_sup_of_sup_left
 
-alias inf_covby_of_covby_sup_of_covby_sup_right ← Covby.inf_of_sup_of_sup_right
+alias Covby.inf_of_sup_of_sup_right := inf_covby_of_covby_sup_of_covby_sup_right
 #align covby.inf_of_sup_of_sup_right Covby.inf_of_sup_of_sup_right
 
 instance : IsWeakUpperModularLattice (OrderDual α) :=
@@ -152,10 +152,10 @@ theorem covby_sup_of_inf_covby_right : a ⊓ b ⋖ b → a ⋖ a ⊔ b := by
   exact covby_sup_of_inf_covby_left
 #align covby_sup_of_inf_covby_right covby_sup_of_inf_covby_right
 
-alias covby_sup_of_inf_covby_left ← Covby.sup_of_inf_left
+alias Covby.sup_of_inf_left := covby_sup_of_inf_covby_left
 #align covby.sup_of_inf_left Covby.sup_of_inf_left
 
-alias covby_sup_of_inf_covby_right ← Covby.sup_of_inf_right
+alias Covby.sup_of_inf_right := covby_sup_of_inf_covby_right
 #align covby.sup_of_inf_right Covby.sup_of_inf_right
 
 -- See note [lower instance priority]
@@ -182,10 +182,10 @@ theorem inf_covby_of_covby_sup_right : b ⋖ a ⊔ b → a ⊓ b ⋖ a := by
   exact inf_covby_of_covby_sup_left
 #align inf_covby_of_covby_sup_right inf_covby_of_covby_sup_right
 
-alias inf_covby_of_covby_sup_left ← Covby.inf_of_sup_left
+alias Covby.inf_of_sup_left := inf_covby_of_covby_sup_left
 #align covby.inf_of_sup_left Covby.inf_of_sup_left
 
-alias inf_covby_of_covby_sup_right ← Covby.inf_of_sup_right
+alias Covby.inf_of_sup_right := inf_covby_of_covby_sup_right
 #align covby.inf_of_sup_right Covby.inf_of_sup_right
 
 -- See note [lower instance priority]
@@ -254,7 +254,7 @@ theorem inf_lt_inf_of_lt_of_sup_le_sup (hxy : x < y) (hinf : y ⊔ z ≤ x ⊔ z
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Artinian, then `M` is Artinian. -/
-theorem wellFounded_lt_exact_sequence {β γ : Type _} [PartialOrder β] [Preorder γ]
+theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorder γ]
     (h₁ : WellFounded ((· < ·) : β → β → Prop)) (h₂ : WellFounded ((· < ·) : γ → γ → Prop)) (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
@@ -273,7 +273,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type _} [PartialOrder β] [Preord
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Noetherian, then `M` is Noetherian.  -/
-theorem wellFounded_gt_exact_sequence {β γ : Type _} [Preorder β] [PartialOrder γ]
+theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [PartialOrder γ]
     (h₁ : WellFounded ((· > ·) : β → β → Prop)) (h₂ : WellFounded ((· > ·) : γ → γ → Prop)) (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
@@ -388,8 +388,12 @@ instance (priority := 100) [DistribLattice α] : IsModularLattice α :=
 
 end DistribLattice
 
-theorem Disjoint.disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
-    [IsModularLattice α] {a b c : α} (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) :
+namespace Disjoint
+
+variable {a b c : α}
+
+theorem disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
+    [IsModularLattice α] (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) :
     Disjoint a (b ⊔ c) := by
   rw [disjoint_iff_inf_le, ← h.eq_bot, sup_comm]
   apply le_inf inf_le_left
@@ -397,13 +401,25 @@ theorem Disjoint.disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot 
   rw [sup_comm, IsModularLattice.sup_inf_sup_assoc, hsup.eq_bot, bot_sup_eq]
 #align disjoint.disjoint_sup_right_of_disjoint_sup_left Disjoint.disjoint_sup_right_of_disjoint_sup_left
 
-theorem Disjoint.disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
-    [IsModularLattice α] {a b c : α} (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
+theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
+    [IsModularLattice α] (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
     Disjoint (a ⊔ b) c := by
   rw [disjoint_comm, sup_comm]
   apply Disjoint.disjoint_sup_right_of_disjoint_sup_left h.symm
   rwa [sup_comm, disjoint_comm] at hsup
 #align disjoint.disjoint_sup_left_of_disjoint_sup_right Disjoint.disjoint_sup_left_of_disjoint_sup_right
+
+theorem isCompl_sup_right_of_isCompl_sup_left [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    (h : Disjoint a b) (hcomp : IsCompl (a ⊔ b) c) :
+    IsCompl a (b ⊔ c) :=
+  ⟨h.disjoint_sup_right_of_disjoint_sup_left hcomp.disjoint, codisjoint_assoc.mp hcomp.codisjoint⟩
+
+theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    (h : Disjoint b c) (hcomp : IsCompl a (b ⊔ c)) :
+    IsCompl (a ⊔ b) c :=
+  ⟨h.disjoint_sup_left_of_disjoint_sup_right hcomp.disjoint, codisjoint_assoc.mpr hcomp.codisjoint⟩
+
+end Disjoint
 
 namespace IsModularLattice
 

@@ -32,10 +32,10 @@ be satisfied by itself and all stricter types.
 
 open Function OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of `⊤`-preserving functions from `α` to `β`. -/
-structure TopHom (α β : Type _) [Top α] [Top β] where
+structure TopHom (α β : Type*) [Top α] [Top β] where
   /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
@@ -43,7 +43,7 @@ structure TopHom (α β : Type _) [Top α] [Top β] where
 #align top_hom TopHom
 
 /-- The type of `⊥`-preserving functions from `α` to `β`. -/
-structure BotHom (α β : Type _) [Bot α] [Bot β] where
+structure BotHom (α β : Type*) [Bot α] [Bot β] where
   /-- The underlying function. The preferred spelling is `FunLike.coe`. -/
   toFun : α → β
   /-- The function preserves the bottom element. The preferred spelling is `map_bot`. -/
@@ -51,7 +51,7 @@ structure BotHom (α β : Type _) [Bot α] [Bot β] where
 #align bot_hom BotHom
 
 /-- The type of bounded order homomorphisms from `α` to `β`. -/
-structure BoundedOrderHom (α β : Type _) [Preorder α] [Preorder β] [BoundedOrder α]
+structure BoundedOrderHom (α β : Type*) [Preorder α] [Preorder β] [BoundedOrder α]
   [BoundedOrder β] extends OrderHom α β where
   /-- The function preserves the top element. The preferred spelling is `map_top`. -/
   map_top' : toFun ⊤ = ⊤
@@ -64,7 +64,7 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] extends
+class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] extends
   FunLike F α fun _ => β where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -73,7 +73,7 @@ class TopHomClass (F : Type _) (α β : outParam <| Type _) [Top α] [Top β] ex
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] extends
+class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] extends
   FunLike F α fun _ => β where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
@@ -82,7 +82,7 @@ class BotHomClass (F : Type _) (α β : outParam <| Type _) [Bot α] [Bot β] ex
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
 You should extend this class when you extend `BoundedOrderHom`. -/
-class BoundedOrderHomClass (F : Type _) (α β : outParam <| Type _) [LE α] [LE β] [BoundedOrder α]
+class BoundedOrderHomClass (F : Type*) (α β : outParam <| Type*) [LE α] [LE β] [BoundedOrder α]
   [BoundedOrder β] extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -280,11 +280,13 @@ theorem id_comp (f : TopHom α β) : (TopHom.id β).comp f = f :=
   TopHom.ext fun _ => rfl
 #align top_hom.id_comp TopHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => TopHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
 #align top_hom.cancel_right TopHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => TopHom.ext fun a => hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
@@ -470,11 +472,13 @@ theorem id_comp (f : BotHom α β) : (BotHom.id β).comp f = f :=
   BotHom.ext fun _ => rfl
 #align bot_hom.id_comp BotHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => BotHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align bot_hom.cancel_right BotHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => BotHom.ext fun a => hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
@@ -684,12 +688,14 @@ theorem id_comp (f : BoundedOrderHom α β) : (BoundedOrderHom.id β).comp f = f
   BoundedOrderHom.ext fun _ => rfl
 #align bounded_order_hom.id_comp BoundedOrderHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BoundedOrderHom β γ} {f : BoundedOrderHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => BoundedOrderHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
    congr_arg (fun g => comp g f)⟩
 #align bounded_order_hom.cancel_right BoundedOrderHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BoundedOrderHom β γ} {f₁ f₂ : BoundedOrderHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h =>

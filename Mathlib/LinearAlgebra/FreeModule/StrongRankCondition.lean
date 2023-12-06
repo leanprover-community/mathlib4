@@ -33,12 +33,10 @@ vector `(0,...,0,1)` gives `a₀`, contradiction.
 -/
 
 
-variable (R : Type _) [CommRing R] [Nontrivial R]
+variable (R : Type*) [CommRing R] [Nontrivial R]
 
 open Polynomial Function Fin LinearMap
 
-set_option maxHeartbeats 250000 in
-set_option synthInstance.maxHeartbeats 25000 in
 /-- Any commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R := by
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬Injective f by

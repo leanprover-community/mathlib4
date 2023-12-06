@@ -13,7 +13,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 
 open Pointwise
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Set
 
@@ -153,10 +153,10 @@ theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
 #align set.infinite_smul_set Set.infinite_smul_set
 #align set.infinite_vadd_set Set.infinite_vadd_set
 
-alias finite_smul_set ↔ Finite.of_smul_set _
+alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
 #align set.finite.of_smul_set Set.Finite.of_smul_set
 
-alias infinite_smul_set ↔ _ Infinite.smul_set
+alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
 #align set.infinite.smul_set Set.Infinite.smul_set
 
 attribute [to_additive] Finite.of_smul_set Infinite.smul_set
@@ -169,7 +169,7 @@ open Set
 
 namespace Group
 
-variable {G : Type _} [Group G] [Fintype G] (S : Set G)
+variable {G : Type*} [Group G] [Fintype G] (S : Set G)
 
 @[to_additive]
 theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :

@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The type class assumptions here are the minimal ones required to ensure `CharZero R`. While
 all of these are implied by `[StrictOrderedSemiring R]`, this generalization isn't superfluous;
