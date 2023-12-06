@@ -110,9 +110,10 @@ make `p` come out true.  If `X` can be inferred, then `{ pat | p }` can be used.
 For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all ordered pairs of
 natural numbers whose product is 12.
 -/
-macro (priority := low-1) "{" pat:term " : " t:term " | " p:term "}" : term =>
+macro (name := macroPattSetBuilder) (priority := low-1) "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
 
+@[inherit_doc macroPattSetBuilder]
 macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
