@@ -35,7 +35,7 @@ def moduleCatMk {X₁ X₂ X₃ : Type v} [AddCommGroup X₁] [AddCommGroup X₂
     (hfg : g.comp f = 0) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g) hfg
 
-variable (S S' : ShortComplex (ModuleCat.{v} R)) (φ : S ⟶ S')
+variable (S : ShortComplex (ModuleCat.{v} R))
 
 @[simp]
 lemma moduleCat_zero_apply (x : S.X₁) : S.g (S.f x) = 0 :=
