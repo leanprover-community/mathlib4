@@ -9,13 +9,12 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 # Exponentially tilted measures
 
 The exponential tilting of a measure `μ` on `α` by a function `f : α → ℝ` is the measure with
-density `x ↦ exp (f x - log ∫ x, exp (f x) ∂μ)` with respect to `μ`. This is sometimes also called
-the Esscher transform, after F. Esscher who introduced it for `f` linear in
-[esscher1932probability].
+density `x ↦ exp (f x) / ∫ y, exp (f y) ∂μ` with respect to `μ`. This is sometimes also called
+the Esscher transform [esscher1932probability].
 
 The definition is mostly used for `f` linear, in which case the exponentially tilted measure belongs
 to the natural exponential family of the base measure. Exponentially tilted measures for general `f`
-are used for example to establish variational expressions for the Kullback-Leibler divergence.
+can be used for example to establish variational expressions for the Kullback-Leibler divergence.
 
 ## Main definitions
 
@@ -42,17 +41,18 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
     (hf : Integrable (fun x ↦ exp (f x)) μ) :
     0 < ∫ x, exp (f x) ∂μ := by
   rw [integral_pos_iff_support_of_nonneg (fun x ↦ (exp_pos _).le) hf]
-  suffices (Function.support fun x ↦ exp (f x)) = Set.univ by
-    simp only [this, Measure.measure_univ_pos, ne_eq, hμ.out, not_false_eq_true]
+  suffices (Function.support fun x ↦ exp (f x)) = Set.univ by simp [this, hμ.out]
   ext1 x
-  simp only [Function.mem_support, ne_eq, Set.mem_univ, iff_true]
-  exact (exp_pos _).ne'
+  simp only [Function.mem_support, ne_eq, (exp_pos _).ne', not_false_eq_true, Set.mem_univ]
 
-/-- Exponentially tilted measure. `μ.tilted f` is the probability measure with density with respect
-to `μ` proportional to `exp (f x)`. -/
+/-- Exponentially tilted measure. When `x ↦ exp (f x)` is integrable, `μ.tilted f` is the
+probability measure with density with respect to `μ` proportional to `exp (f x)`. Otherwise it is 0.
+-/
 noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) : Measure α :=
   μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))
+
+attribute [pp_dot] Measure.tilted
 
 @[simp]
 lemma tilted_of_not_integrable (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) : μ.tilted f = 0 := by
@@ -93,6 +93,16 @@ lemma tilted_zero' (μ : Measure α) : μ.tilted 0 = (μ Set.univ)⁻¹ • μ :
 
 lemma tilted_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ.tilted 0 = μ := by simp
 
+lemma tilted_congr {g : α → ℝ} (hfg : f =ᵐ[μ] g) :
+    μ.tilted f = μ.tilted g := by
+  have h_int_eq : ∫ x, exp (f x) ∂μ = ∫ x, exp (g x) ∂μ := by
+    refine integral_congr_ae ?_
+    filter_upwards [hfg] with x hx
+    rw [hx]
+  refine withDensity_congr_ae ?_
+  filter_upwards [hfg] with x hx
+  rw [h_int_eq, hx]
+
 lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
     μ.tilted f = μ.withDensity (fun x ↦ ((↑) : ℝ≥0 → ℝ≥0∞)
       (⟨exp (f x) / ∫ x, exp (f x) ∂μ,
@@ -102,7 +112,7 @@ lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
   rw [ENNReal.ofReal_eq_coe_nnreal]
 
 lemma tilted_apply (μ : Measure α) (f : α → ℝ) {s : Set α} (hs : MeasurableSet s) :
-    μ.tilted f s = ∫⁻ a in s, ENNReal.ofReal (exp (f a) /∫ x, exp (f x) ∂μ) ∂μ := by
+    μ.tilted f s = ∫⁻ a in s, ENNReal.ofReal (exp (f a) / ∫ x, exp (f x) ∂μ) ∂μ := by
   rw [Measure.tilted, withDensity_apply _ hs]
 
 lemma tilted_apply' (μ : Measure α) [SFinite μ] (f : α → ℝ) (s : Set α) :
@@ -239,9 +249,8 @@ lemma integral_tilted (f : α → ℝ) (g : α → E) :
 
 end integral
 
-lemma integral_exp_tilted (f : α → ℝ) (g : α → ℝ) :
-    ∫ x, exp (g x) ∂(μ.tilted f)
-      = (∫ x, exp ((f + g) x) ∂μ) / ∫ x, exp (f x) ∂μ := by
+lemma integral_exp_tilted (f g : α → ℝ) :
+    ∫ x, exp (g x) ∂(μ.tilted f) = (∫ x, exp ((f + g) x) ∂μ) / ∫ x, exp (f x) ∂μ := by
   cases eq_zero_or_neZero μ with
   | inl h => rw [h]; simp
   | inr h0 =>
@@ -272,6 +281,11 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
     congr 1
     rw [mul_assoc, mul_inv_cancel, mul_one]
     exact (integral_exp_pos hf).ne'
+
+lemma tilted_comm (hf : Integrable (fun x ↦ exp (f x)) μ) {g : α → ℝ}
+    (hg : Integrable (fun x ↦ exp (g x)) μ) :
+    (μ.tilted f).tilted g = (μ.tilted g).tilted f := by
+  rw [tilted_tilted hf, add_comm, tilted_tilted hg]
 
 @[simp]
 lemma tilted_neg_same' (hf : Integrable (fun x ↦ exp (f x)) μ) :
