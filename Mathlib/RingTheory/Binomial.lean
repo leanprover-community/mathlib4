@@ -73,7 +73,7 @@ theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (k : ℕ) :
   | succ n ih =>
     rw [ascPochhammer_succ_right, ascPochhammer_succ_right, Polynomial.smeval_mul r, ih,
       mul_add (ascPochhammer R n), Polynomial.smeval_add, Polynomial.smeval_X r, pow_one,
-      ←Polynomial.C_eq_nat_cast, Polynomial.smeval_C, pow_zero, nsmul_one, Nat.cast_id,
+      ← Polynomial.C_eq_nat_cast, Polynomial.smeval_C, pow_zero, nsmul_one, Nat.cast_id,
       Polynomial.eval_add, Polynomial.eval_mul_X, ← Nat.cast_comm, Polynomial.eval_nat_cast_mul,
       mul_add, Nat.cast_comm]
 
@@ -120,7 +120,7 @@ instance integers_binomial_ring : BinomialRing ℤ := by
   | negSucc n => {
     have h₂ : mcAux (Int.negSucc n) k = (-1)^k * Nat.choose n.succ k := rfl
     rw [h₂, nsmul_eq_mul, mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
-      ← Nat.descFactorial_eq_factorial_mul_choose, ←descPochhammer_int_eq_descFactorial,
+      ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_int_eq_descFactorial,
       Ring.ascPochhammer_smeval_eq_eval, ← Int.neg_ofNat_succ,
       ascPochhammer_eval_neg_eq_descPochhammer]
   }
@@ -153,7 +153,7 @@ theorem descPochhammer_eq_factorial_mul_choose (r : R) (n : ℕ) :
   rw [factorial_smul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
     Polynomial.smeval_comp r, add_comm_sub, Polynomial.smeval_add, Polynomial.smeval_X, pow_one]
   have h : Polynomial.smeval (1 - n : Polynomial ℤ) r = 1 - n := by
-    rw [← Polynomial.C_eq_nat_cast, ←Polynomial.C_1, ← Polynomial.C_sub, Polynomial.smeval_C]
+    rw [← Polynomial.C_eq_nat_cast, ← Polynomial.C_1, ← Polynomial.C_sub, Polynomial.smeval_C]
     simp only [pow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, mul_one]
   rw [h, ascPochhammer_smeval_nat_int, add_comm_sub]
 

@@ -43,13 +43,16 @@ variable {V : Type u} {R : Type v}
 
 section VertexOperator
 
+/-- A vertex operator over a semiring `R` is an `R`-linear map from an `R`-module `V` to Laurent
+series with coefficients in `V`-/
 @[ext]
-structure VertexOperator (R : Type v) (V : Type u) [Semiring R] [AddCommMonoid V] [Module R V] where
+structure VertexOperator (R : Type v) (V : Type u) [CommRing R] [AddCommMonoid V] [Module R V] where
+/-- The underlying structure map of a vertex operator. -/
   toMap : V →ₗ[R] HahnSeries ℤ V
 
 namespace VertexAlg
 
-instance LinearMapClass (R : Type v) (V : Type u) [Semiring R] [AddCommMonoid V] [Module R V] :
+instance LinearMapClass (R : Type v) (V : Type u) [CommRing R] [AddCommMonoid V] [Module R V] :
     LinearMapClass (VertexOperator R V) R V (HahnSeries ℤ V) where
   coe f := f.toMap
   coe_injective' f g h := by
@@ -77,7 +80,9 @@ LinearMap instances:
 
 -/
 
-def coeff [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+/-- The coefficient of a vertex operator, viewed as a formal power series with coefficients in
+linear endomorphisms. -/
+def coeff [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V :=
   {
     toFun := fun (x : V) => (A.toMap x).coeff n
@@ -85,15 +90,19 @@ def coeff [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (
     map_smul' := by simp only [map_smul, HahnSeries.smul_coeff, RingHom.id_apply, forall_const]
   }
 
-def index [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+/-- We write `index` instead of `coefficient of a vertex operator under normalized indexing`.
+Alternative suggestions welcome. -/
+def index [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := coeff A (-n-1)
 
-theorem index_eq_coeff_neg [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V)
+theorem index_eq_coeff_neg [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V)
     (n : ℤ) : index A n = coeff A (-n-1) := rfl
 
+/-- The normal convention for the normalized coefficient of a vertex operatoris either `Aₙ` or
+`A(n)`.  Either choice seems to break things. -/
 scoped[VertexAlg] notation A "⁅" n "⁆" => index A n
 
-instance [Semiring R] [AddCommMonoid V] [Module R V] : Zero (VertexOperator R V) :=
+instance [CommRing R] [AddCommMonoid V] [Module R V] : Zero (VertexOperator R V) :=
   {
   zero :=
     {
@@ -114,18 +123,18 @@ instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
       apply add_comm }
 -/
 
-@[simp] lemma zero_toFun [Semiring R] [AddCommMonoid V] [Module R V] (x : V) :
+@[simp] lemma zero_toFun [CommRing R] [AddCommMonoid V] [Module R V] (x : V) :
   (0 : VertexOperator R V).toMap x = 0 := rfl
 
-@[simp] lemma zero_coeff [Semiring R] [AddCommMonoid V] [Module R V] (n : ℤ) :
+@[simp] lemma zero_coeff [CommRing R] [AddCommMonoid V] [Module R V] (n : ℤ) :
     coeff (0 : VertexOperator R V) n = 0 := by
   exact rfl
 
-@[simp] lemma zero_index [Semiring R] [AddCommMonoid V] [Module R V] (n : ℤ) :
+@[simp] lemma zero_index [CommRing R] [AddCommMonoid V] [Module R V] (n : ℤ) :
     (0 : VertexOperator R V) ⁅n⁆ = 0 := by
   exact rfl
 
-instance [Semiring R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) :=--inferInstance?
+instance [CommRing R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) :=--inferInstance?
   {
     add := fun a b =>
       {
@@ -142,7 +151,7 @@ instance [Semiring R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) 
       }
   }
 
-@[simp] lemma add_toMap_eq [Semiring R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V)
+@[simp] lemma add_toMap_eq [CommRing R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V)
   (x : V): (a + b).toMap x = a.toMap x + b.toMap x := rfl
 
 /-!
@@ -151,7 +160,7 @@ instance [Semiring R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) 
 -/
 
 -- can I use LinearMap.addCommMonoid here?
-instance [Semiring R] [AddCommMonoid V] [Module R V] : AddCommMonoid (VertexOperator R V) :=
+instance [CommRing R] [AddCommMonoid V] [Module R V] : AddCommMonoid (VertexOperator R V) :=
   {
     add_assoc := by
       intros
@@ -171,7 +180,7 @@ instance [Semiring R] [AddCommMonoid V] [Module R V] : AddCommMonoid (VertexOper
       simp only [add_toMap_eq, HahnSeries.add_coeff, add_comm]
   }
 
-instance [CommSemiring R] [AddCommMonoid V] [Module R V] : SMul R (VertexOperator R V) :=
+instance [CommRing R] [AddCommMonoid V] [Module R V] : SMul R (VertexOperator R V) :=
   { smul := fun r a =>
     {toMap :=
       {
@@ -189,10 +198,10 @@ instance [CommSemiring R] [AddCommMonoid V] [Module R V] : SMul R (VertexOperato
     }
   }
 
-@[simp] lemma smul_toMap_eq [CommSemiring R] [AddCommMonoid V] [Module R V] (r : R)
+@[simp] lemma smul_toMap_eq [CommRing R] [AddCommMonoid V] [Module R V] (r : R)
     (a : VertexOperator R V) (x : V): (r • a).toMap x = r • a.toMap x := rfl
 
-instance [CommSemiring R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R V) :=
+instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R V) :=
   {
     smul := VertexAlg.instSMulVertexOperatorToSemiring.smul
     one_smul := by
@@ -240,10 +249,12 @@ end VertexAlg
 
 end VertexOperator
 
-/-- A non-associative non-unital vertex algebra is an `R`-module `V` with a multiplication that
-takes values in Laurent series with coefficients in `V`. -/
+/-- A non-associative non-unital vertex algebra over a commutative ring `R` is an `R`-module `V`
+with a multiplication that takes values in Laurent series with coefficients in `V`. -/
 class NonAssocNonUnitalVertexAlgebra (R : Type v) (V : Type u) [CommRing R] [AddCommGroup V] extends
-    Module R V where Y: V →ₗ[R] VertexOperator R V
+    Module R V where
+  /-- The multiplication operation in a vertex algebra. -/
+  Y: V →ₗ[R] VertexOperator R V
 
 section NonAssocNonUnitalVertexAlgebra
 
@@ -288,21 +299,27 @@ theorem index_nonzero_at_neg_order_minus_one [CommRing R] [AddCommGroup V]
 
 -- a (t + i) b = 0 for i ≥ -t - (order a b)
 
+/-- The first sum in the Borcherds identity, giving coefficients of `(a(x)b)(z)c` near `z=y-x`. -/
 noncomputable def Borcherds_sum_1 (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-t - order R a b)))
     (fun i ↦ (Ring.choose r i) • index (Y R (index (Y R a) (t+i) b)) (r+s-i) c)
 
+/-- The second sum in the Borcherds identity, giving coefficients of `a(y)b(z)c` near `x=y-z`. -/
 noncomputable def Borcherds_sum_2 (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-s - order R b c)))
     (fun i ↦ (-1)^i • (Ring.choose r i) • index (Y R a) (r+t-i) (index (Y R b) (s+i) c))
 
+/-- The third sum in the Borcherds identity, giving coefficients of `b(z)a(y)c` near `-x = z-y`. -/
 noncomputable def Borcherds_sum_3 (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : V :=
   Finset.sum (Finset.range (Int.toNat (-r - order R a c)))
     (fun i ↦ (-1: ℤˣ)^(t+i) • (Ring.choose t i) • index (Y R b) (s+t-i) (index (Y R a) (r+i) c))
 
+/-- The Borcherds identity, also called the Jacobi identity or Cauchy-Jacobi identity when put in
+power-series form.  It is a formal distribution analogue of the combination of commutativity and
+associativity. -/
 noncomputable def Borcherds_id (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : Prop :=
   Borcherds_sum_1 R a b c r s t = Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t
@@ -311,10 +328,16 @@ end VertexAlg
 
 end NonAssocNonUnitalVertexAlgebra
 
+/-- A vertex algebra over a commutative ring `R` is an `R`-module `V` with a distinguished unit
+element `1`, together with a multiplication operation that takes values in Laurent series with
+coefficients in `V`, such that `a(z) 1 ∈ a + zV[[z]]` for all `a ∈ V` -/
 class VertexAlgebra (R : Type v) (V : Type u) [CommRing R] [AddCommGroupWithOne V] extends
     NonAssocNonUnitalVertexAlgebra R V where
+  /-- The Borcherds identity holds. -/
   Borcherds_id : ∀ (a b c : V) (r s t : ℤ), VertexAlg.Borcherds_id R a b c r s t
+  /-- Right multiplication by the unit vector is nonsingular. -/
   unit_comm : ∀ (a : V), VertexAlg.order R a 1 = 0
+  /-- The constant coefficient of right multiplication by the unit vector is identity. -/
   unit_right : ∀ (a : V), VertexAlg.coeff (Y a) 0 1 = a
 
 section VertexAlgebra
