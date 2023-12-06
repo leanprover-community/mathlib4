@@ -9,110 +9,149 @@ import Mathlib.Algebra.GroupWithZero.Defs
 #align_import algebra.order.ring.lemmas from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
-# Multiplication by ·positive· elements is monotonic
+# Monotonicity of multiplication by positive elements
 
-Let `α` be a type with `<` and `0`.  We use the type `{x : α // 0 < x}` of positive elements of `α`
-to prove results about monotonicity of multiplication.  We also introduce the local notation `α>0`
-for the subtype `{x : α // 0 < x}`:
+This file defines typeclasses to reason about monotonicity of the operations
+* `b ↦ a * b`, "left multiplication"
+* `a ↦ a * b`, "right multiplication"
 
-If the type `α` also has a multiplication, then we combine this with (`Contravariant`)
-`CovariantClass`es to assume that multiplication by positive elements is (strictly) monotone on a
-`MulZeroClass`, `MonoidWithZero`,...
-More specifically, we use extensively the following typeclasses:
+We use eight typeclasses to encode the various properties we care about for those two operations.
+These typeclasses are meant to be mostly internal to this file, to set up each lemma in the
+appropriate generality.
 
-* monotone left
-* * `CovariantClass α>0 α (fun x y ↦ x * y) (≤)`, abbreviated `PosMulMono α`,
-    expressing that multiplication by positive elements on the left is monotone;
-* * `CovariantClass α>0 α (fun x y ↦ x * y) (<)`, abbreviated `PosMulStrictMono α`,
-    expressing that multiplication by positive elements on the left is strictly monotone;
-* monotone right
-* * `CovariantClass α>0 α (fun x y ↦ y * x) (≤)`, abbreviated `MulPosMono α`,
-    expressing that multiplication by positive elements on the right is monotone;
-* * `CovariantClass α>0 α (fun x y ↦ y * x) (<)`, abbreviated `MulPosStrictMono α`,
-    expressing that multiplication by positive elements on the right is strictly monotone.
-* reverse monotone left
-* * `ContravariantClass α>0 α (fun x y ↦ x * y) (≤)`, abbreviated `PosMulMonoRev α`,
-    expressing that multiplication by positive elements on the left is reverse monotone;
-* * `ContravariantClass α>0 α (fun x y ↦ x * y) (<)`, abbreviated `PosMulReflectLT α`,
-    expressing that multiplication by positive elements on the left is strictly reverse monotone;
-* reverse reverse monotone right
-* * `ContravariantClass α>0 α (fun x y ↦ y * x) (≤)`, abbreviated `MulPosMonoRev α`,
-    expressing that multiplication by positive elements on the right is reverse monotone;
-* * `ContravariantClass α>0 α (fun x y ↦ y * x) (<)`, abbreviated `MulPosReflectLT α`,
-    expressing that multiplication by positive elements on the right is strictly reverse monotone.
+Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField`` should be enough for
+most purposes, and the system is set up so that they imply the correct granular typeclasses here.
+If those are enough for you, you may stop reading here! Else, beware that what follows is a bit
+technical.
+
+## Definitions
+
+In all that follows, `α` is an orders which has a `0` and a multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence `*` should be considered here as a
+mostly arbitrary function `α → α → α`.
+
+We use the following four typeclasses to reason about left multiplication (`b ↦ a * b`):
+* `PosMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂` implies `a * b₁ ≤ a * b₂`.
+* `PosMulStrictMono`: If `a > 0`, then `b₁ < b₂` implies `a * b₁ < a * b₂`.
+* `PosMulReflectLT`: If `a ≥ 0`, then `a * b₁ < a * b₂` implies `b₁ < b₂`.
+* `PosMulMonoRev`: If `a > 0`, then `a * b₁ ≤ a * b₂` implies `b₁ ≤ b₂`.
+
+We use the following four typeclasses to reason about right multiplication (`a ↦ a * b`):
+* `MulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂` implies `a₁ * b ≤ a₂ * b`.
+* `MulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ * b < a₂ * b`.
+* `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b` implies `a₁ < a₂`.
+* `MulPosMonoRev`: If `b > 0`, then `a₁ * b ≤ a₂ * b` implies `a₁ ≤ a₂`.
+
+As `α` gets more and more structure, those typeclasses end up being equivalent. The commonly used
+implications are:
+* `PosMulStrictMono → PosMulMono`, `MulPosStrictMono → MulPosMono`,
+  `PosMulMonoRev → PosMulReflectLT`, `MulPosMonoRev → MulPosReflectLT` when `α` is a partial order.
+* `PosMulStrictMono → PosMulMonoRev`, `MulPosStrictMono → MulPosMonoRev` when `α` is a linear order.
+* `PosMulMono → MulPosMono`, `PosMulStrictMono → MulPosStrictMono`, `PosMulMonoRev → MulPosMonoRev`,
+  `PosMulReflectLT → MulPosReflectLT` when the multiplication of `α` is commutative.
+* `PosMulMono → MulPosMono`, `PosMulStrictMono → MulPosStrictMono` when `α` is an ordered ring.
+* `PosMulStrictMono → PosMulReflectLT`, `PosMulMono → PosMulMonoRev` when `α` is an ordered
+  semifield.
+
+All these are registered as instances, which means that in practice you should not worry about these
+implications. However, if you encounter a case where you think a statement is true but not covered
+by the current implications, please bring it up on Zulip!
 
 ## Notation
 
 The following is local notation in this file:
 * `α≥0`: `{x : α // 0 ≤ x}`
 * `α>0`: `{x : α // 0 < x}`
+
+See https://
+leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notation.20for.20positive.20elements
+for a discussion about this notation, and whether to enable it globally (note that the notation is
+currently global but broken, hence actually only works locally).
 -/
 
 
 variable (α : Type*)
 
--- mathport name: «exprα≥0»
-/- Notations for nonnegative and positive elements
-https://
-leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notation.20for.20positive.20elements
--/
-section Abbreviations
-
-variable [Mul α] [Zero α] [Preorder α]
-
 set_option quotPrecheck false in
 /-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
 notation "α≥0" => { x : α // 0 ≤ x }
 
--- mathport name: «exprα>0»
 set_option quotPrecheck false in
 /-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
 notation "α>0" => { x : α // 0 < x }
 
-/-- `PosMulMono α` is an abbreviation for `CovariantClass α≥0 α (fun x y ↦ x * y) (≤)`,
-expressing that multiplication by nonnegative elements on the left is monotone. -/
+section Abbreviations
+
+variable [Mul α] [Zero α] [Preorder α]
+
+/-- Typeclass for monotonicity of multiplication by nonnegative elements on the left,
+namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂` if `0 ≤ a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSemiring`. -/
 abbrev PosMulMono : Prop :=
   CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·)
 #align pos_mul_mono PosMulMono
 
-/-- `MulPosMono α` is an abbreviation for `CovariantClass α≥0 α (fun x y ↦ y * x) (≤)`,
-expressing that multiplication by nonnegative elements on the right is monotone. -/
+/-- Typeclass for monotonicity of multiplication by nonnegative elements on the left,
+namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedSemiring`. -/
 abbrev MulPosMono : Prop :=
   CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·)
 #align mul_pos_mono MulPosMono
 
-/-- `PosMulStrictMono α` is an abbreviation for `CovariantClass α>0 α (fun x y ↦ x * y) (<)`,
-expressing that multiplication by positive elements on the left is strictly monotone. -/
+
+/-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
+namely `b₁ < b₂ → a * b₁ < a * b₂` if `0 < a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`StrictOrderedSemiring`. -/
 abbrev PosMulStrictMono : Prop :=
   CovariantClass α>0 α (fun x y => x * y) (· < ·)
 #align pos_mul_strict_mono PosMulStrictMono
 
-/-- `MulPosStrictMono α` is an abbreviation for `CovariantClass α>0 α (fun x y ↦ y * x) (<)`,
-expressing that multiplication by positive elements on the right is strictly monotone. -/
+/-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
+namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`StrictOrderedSemiring`. -/
 abbrev MulPosStrictMono : Prop :=
   CovariantClass α>0 α (fun x y => y * x) (· < ·)
 #align mul_pos_strict_mono MulPosStrictMono
 
-/-- `PosMulReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun x y ↦ x * y) (<)`,
-expressing that multiplication by nonnegative elements on the left is strictly reverse monotone. -/
+/-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
+the left, namely `a * b₁ < a * b₂ → b₁ < b₂` if `0 ≤ a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`LinearOrderedSemiring`. -/
 abbrev PosMulReflectLT : Prop :=
   ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
 #align pos_mul_reflect_lt PosMulReflectLT
 
-/-- `MulPosReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun x y ↦ y * x) (<)`,
-expressing that multiplication by nonnegative elements on the right is strictly reverse monotone. -/
+/-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
+the left, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`LinearOrderedSemiring`. -/
 abbrev MulPosReflectLT : Prop :=
   ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
 #align mul_pos_reflect_lt MulPosReflectLT
 
-/-- `PosMulMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun x y ↦ x * y) (≤)`,
-expressing that multiplication by positive elements on the left is reverse monotone. -/
+/-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
+namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂` if `0 < a`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`LinearOrderedSemiring`. -/
 abbrev PosMulMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 #align pos_mul_mono_rev PosMulMonoRev
 
-/-- `MulPosMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun x y ↦ y * x) (≤)`,
-expressing that multiplication by positive elements on the right is reverse monotone. -/
+/-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
+namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂` if `0 < b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`LinearOrderedSemiring`. -/
 abbrev MulPosMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·)
 #align mul_pos_mono_rev MulPosMonoRev
