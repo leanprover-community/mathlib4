@@ -155,16 +155,17 @@ section
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
 
 instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) where
-  elim a _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) a.2
+  elim _a ha _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) ha
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) where
-  elim b _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha $ b.2 i
+  elim _b hb _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha (hb i)
 
 instance instPosSMulMonoRev [PosSMulMonoRev α β] : PosSMulMonoRev α (ι →₀ β) where
-  elim a _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) a.2
+  elim _a ha _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) ha
 
 instance instSMulPosMonoRev [SMulPosMonoRev α β] : SMulPosMonoRev α (ι →₀ β) where
-  elim b _a₁ _a₂ h := by obtain ⟨-, i, hi⟩ := lt_def.1 b.2; exact le_of_smul_le_smul_right (h _) hi
+  elim _b hb _a₁ _a₂ h := by
+    obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
 
 end
 
@@ -174,18 +175,18 @@ variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β] [SMulWithZero �
 instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) where
   elim := by
     simp_rw [lt_def]
-    rintro a _b₁ _b₂ ⟨hb, i, hi⟩
-    exact ⟨smul_le_smul_of_nonneg_left hb a.2.le, i, smul_lt_smul_of_pos_left hi a.2⟩
+    rintro _a ha _b₁ _b₂ ⟨hb, i, hi⟩
+    exact ⟨smul_le_smul_of_nonneg_left hb ha.le, i, smul_lt_smul_of_pos_left hi ha⟩
 
 instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) where
   elim := by
-    simp_rw [Subtype.forall, lt_def]
+    simp_rw [lt_def]
     rintro a ⟨ha, i, hi⟩ _b₁ _b₂ hb
     exact ⟨smul_le_smul_of_nonneg_right hb.le ha, i, smul_lt_smul_of_pos_right hb hi⟩
 
 instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) where
   elim := by
-    simp_rw [Subtype.forall, lt_def]
+    simp_rw [lt_def]
     rintro b hb _a₁ _a₂ ⟨-, i, hi⟩
     exact lt_of_smul_lt_smul_right hi $ hb _
 
