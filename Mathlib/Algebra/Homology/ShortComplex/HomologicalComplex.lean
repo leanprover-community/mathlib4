@@ -751,6 +751,13 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
   erw [ShortComplex.p_opcyclesMap]
   apply id_comp
 
+@[reassoc (attr := simp)]
+lemma opcyclesIsoSc'_inv_fromOpcycles :
+    (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =
+      (K.sc' i j k).fromOpcycles := by
+  simp only [← cancel_epi (K.sc' i j k).pOpcycles,  pOpcycles_opcyclesIsoSc'_inv_assoc,
+    p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
+
 /-- The opcycles of a homological complex in degree `j` by specifying a choice of
 `c.prev j` and `c.next j`. -/
 noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
