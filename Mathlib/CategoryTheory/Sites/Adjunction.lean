@@ -47,10 +47,11 @@ abbrev composeAndSheafify (G : E ⥤ D) : Sheaf J E ⥤ Sheaf J D :=
 /-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
 and `F` preserves the correct limits. -/
--- @[simps!?]
 def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
   Adjunction.restrictFullyFaithful (sheafToPresheaf _ _) (𝟭 _)
     ((adj.whiskerRight Cᵒᵖ).comp (sheafificationAdjunction J D)) (Iso.refl _) (Iso.refl _)
+set_option linter.uppercaseLean3 false in
+#align category_theory.Sheaf.adjunction CategoryTheory.Sheaf.adjunction
 
 instance [IsRightAdjoint F] : IsRightAdjoint (sheafCompose J F) :=
   ⟨_, adjunction J (Adjunction.ofRightAdjoint F)⟩
