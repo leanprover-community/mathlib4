@@ -660,7 +660,7 @@ then its norm is bounded by the bound or zero if bound is negative. -/
 theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkContinuous C h‖ ≤ max C 0 :=
   ContinuousLinearMap.op_norm_le_bound _ (le_max_right _ _) fun x => by
-    grw [← le_max_left]; apply h -- FIXME `grw [h]` fails from non-syntactic equality
+    grw [← le_max_left, ← h]; rfl
 #align linear_map.mk_continuous_norm_le' LinearMap.mkContinuous_norm_le'
 
 variable [RingHomIsometric σ₂₃]
@@ -1094,13 +1094,12 @@ theorem mulLeftRight_apply (x y z : 𝕜') : mulLeftRight 𝕜 𝕜' x y z = x *
   rfl
 #align continuous_linear_map.mul_left_right_apply ContinuousLinearMap.mulLeftRight_apply
 
-theorem op_norm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x y‖ ≤ ‖x‖ * ‖y‖ :=
-  (op_norm_comp_le _ _).trans <|
-    (mul_comm _ _).trans_le <|
-      -- grw [op_norm_mul_apply_le] -- FIXME not syntactically equal
-      mul_le_mul (op_norm_mul_apply_le _ _ _)
-        (op_norm_le_bound _ (norm_nonneg _) fun _ => (norm_mul_le _ _).trans_eq (mul_comm _ _))
-        (norm_nonneg _) (norm_nonneg _)
+theorem op_norm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x y‖ ≤ ‖x‖ * ‖y‖ := by
+    dsimp [mulLeftRight]
+    grw [op_norm_comp_le, mul_comm, op_norm_mul_apply_le 𝕜 𝕜' x, op_norm_le_bound _ (norm_nonneg y)]
+    intros
+    dsimp
+    grw [norm_mul_le, mul_comm]
 #align continuous_linear_map.op_norm_mul_left_right_apply_apply_le ContinuousLinearMap.op_norm_mulLeftRight_apply_apply_le
 
 theorem op_norm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x‖ ≤ ‖x‖ :=
@@ -1425,7 +1424,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]
-    _ ≤ ‖c ^ n‖⁻¹ * 1 := by grw [hε _ hlt] -- FIXME `grw [hε]` doesn't report side goals correctly
+    _ ≤ ‖c ^ n‖⁻¹ * 1 := by grw [hε _ hlt]
     _ ≤ ε⁻¹ * ‖c‖ * ‖f x‖ := by rwa [mul_one]
 #align linear_map.antilipschitz_of_comap_nhds_le LinearMap.antilipschitz_of_comap_nhds_le
 

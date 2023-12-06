@@ -144,9 +144,9 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
           _ ≤ ↑4 ^ P.parts.card * ε ^ 5 := hPε
           _ ≤ ↑4 ^ P.parts.card * ε ^ 4 := by
             grw [pow_le_pow_of_le_one ?_ hε₁]
-            norm_num
+            · norm_num
+            · sz_positivity
           _ = (↑2 ^ 2) ^ P.parts.card * ε ^ (2 * 2) := by norm_num
-        sz_positivity -- FIXME `grw` reports this goal in the wrong place
       _ = ↑2 ^ P.parts.card * (ε * (ε / 10)) := by rw [mul_div_assoc, sq, mul_div_assoc]
   calc
     (↑1 - ε / 10) * (G.nonuniformWitness ε U V).card ≤
