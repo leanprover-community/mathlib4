@@ -140,16 +140,36 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
   grw [h2]
   decide
 
+end modeq
+
+section wildcard
+
+/-! Rewriting at a wildcard `*`, i.e. `grw [h] at *`, will sometimes include a rewrite at `h` itself
+and sometimes not, according to whether the generalized rewrite is valid or not; this is the case
+approximately (not exactly) when the relation in the type of `h` is an equivalence relation.  See
+examples below of it occurring for `≡ [ZMOD 5]` and not occurring for `<`.
+
+Having `grw [h] at *` rewrite at `h` itself is a bit weird, but is consistent with the behaviour of
+`rw` (for the equivalence relation `=`).
+-/
+
 example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
     a ^ 2 + b ^ 2 ≡ 4 [ZMOD 5] := by
   grw [h1] at *
-  guard_hyp h1 :ₛ 3 ≡ 3 [ZMOD 5] -- note: this is weird behaviour but consistent with `rw`
+  guard_hyp h1 :ₛ 3 ≡ 3 [ZMOD 5] -- `grw [h1] at *` rewrites at `h1`
   guard_hyp h2 :ₛ b ≡ 3 ^ 2 + 1 [ZMOD 5]
   guard_target =ₛ 3 ^ 2 + b ^ 2 ≡ 4 [ZMOD 5]
   grw [h2]
   decide
 
-end modeq
+example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
+  grw [h] at *
+  guard_hyp h :ₛ x < y -- `grw [h] at *` does not rewrite at `h`
+  guard_hyp h1 :ₛ a ≤ 3 * y
+  guard_target =ₛ 2 * y ≤ b
+  exact test_sorry
+
+end wildcard
 
 section nontransitive_grw_lemmas
 
@@ -168,33 +188,18 @@ end nontransitive_grw_lemmas
 
 section
 
-/-! The examples in this section would ideally fail, rather than having `gcongr` "succeed" but pass
-on an unresolved (and unprovable) main goal. -/
+/-! In the examples in this section, the proposed rewrite is not valid because the constructed
+relation does not have its main goals proved by `gcongr` (in the two examples here this is because
+the inequality goes in the wrong direction). -/
 
+/-- error: failed to prove 2 * x ≤ 2 * y with gcongr, error was: could not resolve goal x ≤ y -/
+#guard_msgs in
 example {x y b : ℚ} (h : x ≥ y) : 2 * x ≤ b := by
-  grw [h] -- should fail
-  · guard_target =ₛ 2 * y ≤ b
-    exact test_sorry
-  · exact test_sorry -- unprovable
+  grw [h]
 
 example {s s' t : Set α} (h : s' ⊆ s) : (s' ∩ t).Nonempty := by
-  grw [h] -- should fail
-  · guard_target =ₛ Set.Nonempty (s ∩ t)
-    exact test_sorry
-  · exact test_sorry -- unprovable
-
-example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
-  -- this should fail because "rewriting `h : x < y` at `h`" requires the unprovable side condition
-  -- that `y ≤ x`.
-  -- it's weird behaviour that the wildcard in `grw [h] at *` includes `h` itself, but this is
-  -- consistent with `rw`, so should probably not be special-cased.
-  grw [h] at *
-  next =>
-    guard_hyp h :ₛ y < y
-    guard_hyp h1 :ₛ a ≤ 3 * y
-    guard_target =ₛ 2 * y ≤ b
-    exact test_sorry
-  case ha => exact test_sorry -- unprovable
+  fail_if_success grw [h]
+  exact test_sorry
 
 end
 
