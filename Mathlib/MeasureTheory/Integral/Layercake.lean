@@ -380,7 +380,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     ν f_nn f_mble g_intble g_mble g_nn
 
-/-- The layer cake formula / Cavalieri's principle / tail probability formula:
+/-- The layer cake formula / **Cavalieri's principle** / tail probability formula:
 
 Let `f` be a non-negative measurable function on a measure space. Let `G` be an
 increasing absolutely continuous function on the positive real line, vanishing at the origin,

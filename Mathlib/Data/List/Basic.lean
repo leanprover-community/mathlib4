@@ -4396,7 +4396,7 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases lt_or_le n (l ++l').length with
+  cases lt_or_le n (l ++ l').length with
   | inl h' =>
     rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
@@ -4474,7 +4474,7 @@ section Disjoint
 
 variable {α β : Type*}
 
-/-- The images of disjoint maps under a map are disjoint -/
+/-- The images of disjoint lists under an injective map are disjoint -/
 theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
     (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
   simp only [Disjoint]
