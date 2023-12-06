@@ -114,7 +114,7 @@ namespace Finsupp
 
 section Basic
 
-variable [Zero M] {f g : α →₀ M}
+variable [Zero M]
 
 instance funLike : FunLike (α →₀ M) α fun _ => M :=
   ⟨toFun, by
@@ -140,7 +140,7 @@ theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
   FunLike.ext_iff
 #align finsupp.ext_iff Finsupp.ext_iff
 
-lemma ne_iff : f ≠ g ↔ ∃ a, f a ≠ g a := FunLike.ne_iff
+lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := FunLike.ne_iff
 
 @[deprecated FunLike.coe_fn_eq]
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
