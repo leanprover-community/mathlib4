@@ -355,9 +355,8 @@ theorem natSepDegree_eq_zero (h : f.natDegree = 0) : f.natSepDegree = 0 := by
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
   rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
   use rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)
-  rw [Multiset.mem_toFinset, mem_roots', IsRoot.def, eval_map]
-  exact ⟨map_ne_zero (ne_of_apply_ne _ h),
-    map_rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)⟩
+  rw [Multiset.mem_toFinset, mem_aroots]
+  exact ⟨ne_of_apply_ne _ h, map_rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)⟩
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
