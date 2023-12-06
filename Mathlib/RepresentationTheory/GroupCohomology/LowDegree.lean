@@ -520,8 +520,8 @@ isomorphic to the 2nd short complex associated to the complex of inhomogeneous c
 @[simps! hom inv]
 def shortComplexH2Iso :
     (inhomogeneousCochains A).sc' 1 2 3 ≅ shortComplexH2 A :=
-    isoMk (oneCochainsLequiv A).toModuleIso (twoCochainsLequiv A).toModuleIso
-      (threeCochainsLequiv A).toModuleIso (dOne_comp_eq A) (dTwo_comp_eq A)
+  isoMk (oneCochainsLequiv A).toModuleIso (twoCochainsLequiv A).toModuleIso
+    (threeCochainsLequiv A).toModuleIso (dOne_comp_eq A) (dTwo_comp_eq A)
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
