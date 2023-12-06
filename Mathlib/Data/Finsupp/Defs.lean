@@ -114,7 +114,7 @@ namespace Finsupp
 
 section Basic
 
-variable [Zero M]
+variable [Zero M] {f g : α →₀ M}
 
 instance funLike : FunLike (α →₀ M) α fun _ => M :=
   ⟨toFun, by
@@ -139,6 +139,8 @@ theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
 theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
   FunLike.ext_iff
 #align finsupp.ext_iff Finsupp.ext_iff
+
+lemma ne_iff : f ≠ g ↔ ∃ a, f a ≠ g a := FunLike.ne_iff
 
 @[deprecated FunLike.coe_fn_eq]
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
@@ -219,9 +221,7 @@ theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne.def]
 #align finsupp.support_nonempty_iff Finsupp.support_nonempty_iff
 
-theorem nonzero_iff_exists {f : α →₀ M} : f ≠ 0 ↔ ∃ a : α, f a ≠ 0 := by
-  simp [← Finsupp.support_eq_empty, Finset.eq_empty_iff_forall_not_mem]
-#align finsupp.nonzero_iff_exists Finsupp.nonzero_iff_exists
+#align finsupp.nonzero_iff_exists Finsupp.ne_iff
 
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 #align finsupp.card_support_eq_zero Finsupp.card_support_eq_zero
