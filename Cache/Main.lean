@@ -59,7 +59,7 @@ def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
 
 def leanTarArgs : List String :=
-  ["get", "get!", "pack", "pack!", "unpack"]
+  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
@@ -102,4 +102,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
+  | "lookup" :: args => lookup hashMap (toPaths args)
   | _ => println help
