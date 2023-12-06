@@ -6,7 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Marti
 import Mathlib.Algebra.Module.Basic
 
 /-!
-# Minimal Axioms for a Module.
+# Minimal Axioms for a Module
 
 This file defines a constructor to define a `Module` structure on a Type with an
 AddCommGroup, while proving a minimum number of equalities.
