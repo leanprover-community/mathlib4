@@ -136,10 +136,6 @@ separable degree, degree, polynomial, separable closure
 
 - Prove that the degree of `separableClosure F E` over `F` is $[E:F]_s$ if `E / F` is finite.
 
-- Prove that `separableClosure F (AlgebraicClosure F)` is a separable closure of `F`.
-
-- Prove that `[E:F]_s = 1` if and only if `E / F` is purely inseparable.
-
 - ...
 
 -/
@@ -1019,7 +1015,7 @@ theorem isPurelyInseparable_iff_natSepDegree_eq_one :
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, the minimal polynomial of `x` over `F` is of form
 `X ^ (q ^ n) - y` for some natural number `n` and some element `y` of `F`. -/
-theorem isPurelyInseparable_iff_minpoly_eq (q : ℕ) [hF : ExpChar F q] :
+theorem isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C (q : ℕ) [hF : ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ (n : ℕ) (y : F), minpoly F x = X ^ (q ^ n) - C y := by
   refine ⟨fun h x ↦ ?_, fun h ↦ (isPurelyInseparable_iff_natSepDegree_eq_one F E).2 fun x ↦ ?_⟩
   · have halg := h.isIntegral' x
@@ -1030,6 +1026,29 @@ theorem isPurelyInseparable_iff_minpoly_eq (q : ℕ) [hF : ExpChar F q] :
   apply_fun natSepDegree at h
   rwa [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at h
 
+/-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
+if and only if for every element `x` of `E`, the minimal polynomial of `x` over `F` is of form
+`(X - x) ^ (q ^ n)` for some natural number `n`. -/
+theorem isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow (q : ℕ) [hF : ExpChar F q] :
+    IsPurelyInseparable F E ↔ ∀ x : E, ∃ (n : ℕ), (minpoly F x).map (algebraMap F E) =
+      (X - C x) ^ (q ^ n) := by
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
+  refine ⟨fun h x ↦ ?_, fun h ↦ (isPurelyInseparable_iff_mem_pow F E q).2 fun x ↦ ?_⟩
+  · obtain ⟨n, y, h⟩ := (isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C F E q).1 h x
+    have hx := congr_arg (aeval x) h.symm
+    rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero] at hx
+    apply_fun map (algebraMap F E) at h
+    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C,
+      ← hx, map_pow, ← sub_pow_expChar_pow] at h
+    exact ⟨n, h⟩
+  obtain ⟨n, h⟩ := h x
+  apply_fun constantCoeff at h
+  simp only [constantCoeff_apply, coeff_map, map_pow, map_sub, coeff_X_zero, coeff_C_zero] at h
+  rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
+  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
+
+/-- If an algebraic extension has (finite) separable degree one, then it is purely inseparable. -/
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
   rw [isPurelyInseparable_iff]
@@ -1039,6 +1058,84 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F
     IntermediateField.finrank_eq_one_iff] at this
   simpa only [this.1] using mem_adjoin_simple_self F x
 
+/-- A purely inseparable extension has (finite) separable degree one. -/
+theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
+    finSepDegree F E = 1 := by
+  rw [finSepDegree, Cardinal.toNat_eq_iff Nat.one_ne_zero, Nat.cast_one]
+  by_contra h
+  obtain ⟨i : E →ₐ[F] _, i' : E →ₐ[F] _, h⟩ := Cardinal.one_lt_iff_nontrivial.1 <|
+    Cardinal.one_le_iff_ne_zero.2 (Cardinal.mk_ne_zero (Emb F E)) |>.lt_of_ne' h
+  obtain ⟨x, h⟩ := show ∃ (x : E), i x ≠ i' x by
+    by_contra h'
+    simp only [ne_eq, not_exists, not_not] at h'
+    exact h (AlgHom.ext h')
+  have hr : ∀ i : E →ₐ[F] (AlgebraicClosure E),
+      i x ∈ ((minpoly F x).aroots (AlgebraicClosure E)).toFinset := fun i ↦ by
+    rw [Multiset.mem_toFinset, mem_aroots]
+    exact ⟨minpoly.ne_zero (isIntegral F x),
+      (minpoly.algHom_eq i i.injective x) ▸ minpoly.aeval F (i x)⟩
+  have := Finset.one_lt_card_iff.2 ⟨i x, i' x, hr i, hr i', h⟩
+  rw [← natSepDegree_eq_of_isAlgClosed] at this
+  linarith only [this, (isPurelyInseparable_iff_natSepDegree_eq_one F E).1 inferInstance x]
 
+/-- An algebraic extension is purely inseparable if and only if it has (finite) separable
+degree one. -/
+theorem isPurelyInseparable_iff_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E) :
+    IsPurelyInseparable F E ↔ finSepDegree F E = 1 :=
+  ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
+    fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one F E halg h⟩
+
+/-- A purely inseparable extension is normal. -/
+instance IsPurelyInseparable.normal [h : IsPurelyInseparable F E] : Normal F E := by
+  refine ⟨isAlgebraic F E, fun x ↦ ?_⟩
+  obtain ⟨q, _⟩ := ExpChar.exists F
+  obtain ⟨n, h⟩ := (isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow F E q).1 h x
+  rw [← splits_id_iff_splits, h]
+  exact splits_pow _ (splits_X_sub_C _) _
+
+/-- If `E / F` is algebraic, then `E` is purely inseparable over the (relative)
+separable closure of `E / F`. -/
+theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
+    IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
+  set L := separableClosure F E
+  replace halg := (halg.tower_top L x).isIntegral
+  refine ⟨halg, fun h ↦ ?_⟩
+  haveI := (isSeparable_adjoin_simple_iff_separable L E).2 ⟨halg, h⟩
+  letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
+  letI : Module L L⟮x⟯ := Algebra.toModule
+  letI : SMul L L⟮x⟯ := Algebra.toSMul
+  haveI : IsScalarTower F L L⟮x⟯ := IntermediateField.isScalarTower L⟮x⟯
+  haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
+  have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
+  exact ⟨⟨x, (mem_separableClosure_iff F E).2 <| separable_of_mem_isSeparable F E hx⟩, rfl⟩
+
+/-- An intermediate field of `E / F` contains the (relative) separable closure of `E / F`
+if `E` is purely inseparable over it. -/
+theorem separableClosure_le (L : IntermediateField F E)
+    [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
+  obtain ⟨y, rfl⟩ := h.inseparable' _ <| ((mem_separableClosure_iff F E).1 hx).2.map
+    (f := algebraMap F L) |>.of_dvd (minpoly.dvd_map_of_isScalarTower F L x)
+  exact y.2
+
+/-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the (relative)
+separable closure of `E / F` if and only if `E` is purely inseparable over it. -/
+theorem separableClosure_le_iff (halg : Algebra.IsAlgebraic F E) (L : IntermediateField F E) :
+    separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
+  haveI := separableClosure.isPurelyInseparable F E halg
+  letI : Algebra (separableClosure F E) L := (inclusion h).toAlgebra
+  letI : Module (separableClosure F E) L := Algebra.toModule
+  letI : SMul (separableClosure F E) L := Algebra.toSMul
+  haveI : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  exact IsPurelyInseparable.tower_top (separableClosure F E) L E
+
+/-- If `E / F` is algebraic, then an intermediate field of `E / F` is equal to the (relative)
+separable closure of `E / F` if and only if it is separable over `F`, and `E` is purely inseparable
+over it. -/
+theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : IntermediateField F E) :
+    L = separableClosure F E ↔ IsSeparable F L ∧ IsPurelyInseparable L E :=
+  ⟨by rintro rfl; exact ⟨separableClosure.isSeparable F E,
+    separableClosure.isPurelyInseparable F E halg⟩, fun ⟨_, _⟩ ↦ le_antisymm
+      (le_separableClosure F E L) (separableClosure_le F E L)⟩
 
 end IsPurelyInseparable
