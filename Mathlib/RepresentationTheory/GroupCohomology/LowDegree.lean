@@ -436,9 +436,9 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
 def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅
-  Arrow.mk (ModuleCat.ofHom (dZero A)) :=
-    Arrow.isoMk (zeroCochainsLequiv A).toModuleIso
-      (oneCochainsLequiv A).toModuleIso (dZero_comp_eq A)
+    Arrow.mk (ModuleCat.ofHom (dZero A)) :=
+  Arrow.isoMk (zeroCochainsLequiv A).toModuleIso
+    (oneCochainsLequiv A).toModuleIso (dZero_comp_eq A)
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
