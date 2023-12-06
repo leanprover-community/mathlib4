@@ -52,7 +52,8 @@ variable {ι α β : Type*}
 section OrderedAddCommMonoid
 variable (α β) [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
 
-/-- Typeclass for division rounded down. For each This asserts the existence of ``-/
+/-- Typeclass for division rounded down. For each `a > 0`, this asserts the existence of a right
+adjoint to the map `b ↦ a • b : β → β`. -/
 class FloorDiv where
   /-- Flooring division. If `a > 0`, then `b ⌊/⌋ a` is the greatest `c` such that `a • c ≤ b`. -/
   floorDiv : β → α → β
@@ -63,6 +64,8 @@ class FloorDiv where
   /-- Do not use this. Use `zero_floorDiv` instead. -/
   protected zero_floorDiv (a) : floorDiv 0 a = 0
 
+/-- Typeclass for division rounded up. For each `a > 0`, this asserts the existence of a left
+adjoint to the map `b ↦ a • b : β → β`. -/
 class CeilDiv where
   /-- Ceiling division. If `a > 0`, then `b ⌈/⌉ a` is the least `c` such that `b ≤ a • c`. -/
   ceilDiv : β → α → β
