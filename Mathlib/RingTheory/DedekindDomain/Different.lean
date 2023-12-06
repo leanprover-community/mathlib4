@@ -86,8 +86,8 @@ lemma Submodule.mem_traceDual_iff_isIntegral {I : Submodule B L} {x} :
   `A` for all `a ∈ I` and `x ∈ Iᵛ`. -/
 lemma isIntegral_discr_mul_of_mem_traceDual
     (I : Submodule B L) {ι} [DecidableEq ι] [Fintype ι]
-    (b : Basis ι K L) (hb : ∀ i, IsIntegral A (b i))
-    (a x : L) (ha : a ∈ I) (hx : x ∈ Iᵛ) :
+    {b : Basis ι K L} (hb : ∀ i, IsIntegral A (b i))
+    {a x : L} (ha : a ∈ I) (hx : x ∈ Iᵛ) :
     IsIntegral A ((discr K b) • a * x) := by
   have hinv : IsUnit (traceMatrix K b).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ b
@@ -160,7 +160,7 @@ def FractionalIdeal.dual (I : FractionalIdeal B⁰ L) :
     · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, RingHom.map_zero,
         ← (algebraMap K L).map_zero, (algebraMap K L).injective.ne_iff]
       exact discr_not_zero_of_basis K b
-    · convert isIntegral_discr_mul_of_mem_traceDual I b hb _ z hx' hz using 1
+    · convert isIntegral_discr_mul_of_mem_traceDual I hb hx' hz using 1
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
       · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
 
