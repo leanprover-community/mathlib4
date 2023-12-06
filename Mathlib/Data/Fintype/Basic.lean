@@ -752,9 +752,9 @@ theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
   simp
 #align set.to_finset_univ Set.toFinset_univ
 
-attribute [local instance] Fintype.ofIsEmpty in
 @[simp]
 theorem toFinset_eq_empty [Fintype s] : s.toFinset = ∅ ↔ s = ∅ := by
+  let A : Fintype (∅ : Set α) := Fintype.ofIsEmpty
   rw [← toFinset_empty, toFinset_inj]
 #align set.to_finset_eq_empty Set.toFinset_eq_empty
 
