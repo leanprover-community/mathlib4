@@ -43,7 +43,7 @@ section
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
 class ContinuousOpenMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β where
+  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass
 

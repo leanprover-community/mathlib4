@@ -84,7 +84,7 @@ section
 
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
 class OrderAddMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β]
-  [AddZeroClass α] [AddZeroClass β] [NDFunLike F α β] extends AddMonoidHomClass F α β where
+  [AddZeroClass α] [AddZeroClass β] [NDFunLike F α β] extends AddMonoidHomClass F α β : Prop where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
@@ -121,7 +121,7 @@ section
 You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
 class OrderMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β]
-  [NDFunLike F α β] extends MonoidHomClass F α β where
+  [NDFunLike F α β] extends MonoidHomClass F α β : Prop where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
@@ -185,7 +185,7 @@ ordered monoid with zero homomorphisms.
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
 class OrderMonoidWithZeroHomClass (F α β : Type*) [Preorder α] [Preorder β]
   [MulZeroOneClass α] [MulZeroOneClass β] [NDFunLike F α β]
-  extends MonoidWithZeroHomClass F α β where
+  extends MonoidWithZeroHomClass F α β : Prop where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass

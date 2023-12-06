@@ -60,7 +60,7 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 
 You should extend this class when you extend `CentroidHom`. -/
 class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [NDFunLike F α α] extends
-  AddMonoidHomClass F α α where
+  AddMonoidHomClass F α α : Prop where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphims with right multiplication. -/

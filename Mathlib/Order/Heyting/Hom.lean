@@ -68,7 +68,7 @@ structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra �
 
 You should extend this class when you extend `HeytingHom`. -/
 class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [NDFunLike F α β]
-  extends LatticeHomClass F α β where
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
   map_bot (f : F) : f ⊥ = ⊥
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
@@ -79,7 +79,7 @@ class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] 
 
 You should extend this class when you extend `CoheytingHom`. -/
 class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [NDFunLike F α β]
-  extends LatticeHomClass F α β where
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
   map_top (f : F) : f ⊤ = ⊤
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
@@ -90,7 +90,7 @@ class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebr
 
 You should extend this class when you extend `BiheytingHom`. -/
 class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [NDFunLike F α β]
-  extends LatticeHomClass F α β where
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/

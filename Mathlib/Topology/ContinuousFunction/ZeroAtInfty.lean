@@ -60,7 +60,7 @@ vanish at infinity.
 
 You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
 class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-    [Zero β] [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β where
+    [Zero β] [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- Each member of the class tends to zero along the `cocompact` filter. -/
   zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
 #align zero_at_infty_continuous_map_class ZeroAtInftyContinuousMapClass

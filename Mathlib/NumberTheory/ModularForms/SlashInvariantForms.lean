@@ -46,7 +46,7 @@ structure SlashInvariantForm where
 
 /-- `SlashInvariantFormClass F Γ k` asserts `F` is a type of bundled functions that are invariant
 under the `SlashAction`. -/
-class SlashInvariantFormClass [NDFunLike F ℍ ℂ] where
+class SlashInvariantFormClass [NDFunLike F ℍ ℂ] : Prop where
   slash_action_eq : ∀ (f : F) (γ : Γ), (f : ℍ → ℂ) ∣[k] γ = f
 #align slash_invariant_form_class SlashInvariantFormClass
 

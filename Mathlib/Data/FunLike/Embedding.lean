@@ -131,7 +131,7 @@ instead of linearly increasing the work per `MyEmbedding`-related declaration.
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an
 injective coercion to injective functions `α ↪ β`.
 -/
-class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) [NDFunLike F α β] where
+class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) [NDFunLike F α β] : Prop where
   /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, Function.Injective (FunLike.coe f)
 #align embedding_like EmbeddingLike

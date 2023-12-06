@@ -42,7 +42,7 @@ section
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
 class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β where
+  [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 #align cocompact_map_class CocompactMapClass

@@ -82,7 +82,7 @@ class BotHomClass (F α β : Type*) [Bot α] [Bot β] [NDFunLike F α β] : Prop
 You should extend this class when you extend `BoundedOrderHom`. -/
 class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β] [BoundedOrder α] [BoundedOrder β]
   [NDFunLike F α β]
-  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
