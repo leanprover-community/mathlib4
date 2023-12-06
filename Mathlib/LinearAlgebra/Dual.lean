@@ -574,7 +574,7 @@ theorem finite_dual_iff : Finite K (Dual K V) ↔ Finite K V := by
     nontriviality K
     obtain ⟨⟨s, span_s⟩⟩ := h
     classical
-    letI := linearIndependentFintypeOfLeSpanFintype _ (b.linearIndependent.map' _ b.toDual_ker) s ?_
+    haveI := (b.linearIndependent.map' _ b.toDual_ker).finite_of_le_span_finite _ s ?_
     · exact Finite.of_basis b
     · rw [span_s]; apply le_top
   · infer_instance
@@ -1146,7 +1146,7 @@ open FiniteDimensional
 
 variable {V₁ : Type*} [AddCommGroup V₁] [Module K V₁]
 
-instance instModuleDualFiniteDimensional [H : FiniteDimensional K V] :
+instance instModuleDualFiniteDimensional [FiniteDimensional K V] :
     FiniteDimensional K (Module.Dual K V) := by
   infer_instance
 #align subspace.module.dual.finite_dimensional Subspace.instModuleDualFiniteDimensional
@@ -1160,7 +1160,7 @@ theorem dual_finrank_eq : finrank K (Module.Dual K V) = finrank K V := by
   · exact fun _ b ↦ h ((Module.finite_dual_iff K).mp <| Module.Finite.of_basis b)
 #align subspace.dual_finrank_eq Subspace.dual_finrank_eq
 
-variable [FiniteDimensional K V] [FiniteDimensional K V₁]
+variable [FiniteDimensional K V]
 
 theorem dualAnnihilator_dualAnnihilator_eq (W : Subspace K V) :
     W.dualAnnihilator.dualAnnihilator = Module.mapEvalEquiv K V W := by
