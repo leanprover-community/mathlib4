@@ -349,4 +349,3 @@ elab "#sample " e:term : command =>
     _ ← code
 
 end SlimCheck
-#sample 1
