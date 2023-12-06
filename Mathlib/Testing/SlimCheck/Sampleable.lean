@@ -292,14 +292,14 @@ def mkGenerator (e : Expr) : MetaM (Σ (u : Level) (α : Q(Type $u)), Q(Repr $α
   match ← inferTypeQ e with
   | ⟨.succ u, ~q(Gen $α), gen⟩ =>
     let repr_inst ← synthInstanceQ (q(Repr $α) : Q(Type $u))
-    pure ⟨u, α, (repr_inst, gen)⟩
+    pure ⟨u, α, repr_inst, gen⟩
   | ⟨.succ u, ~q(Sort u), α⟩ => do
     let v ← mkFreshLevelMVar
     let _sampleableExt_inst ← synthInstanceQ (q(SampleableExt.{u,v} $α) : Q(Sort (max u (v + 2))))
     let v ← instantiateLevelMVars v
     let repr_inst := q(SampleableExt.proxyRepr (α := $α))
     let gen := q(SampleableExt.sample (α := $α))
-    pure ⟨v, q(SampleableExt.proxy $α), (repr_inst, gen)⟩
+    pure ⟨v, q(SampleableExt.proxy $α), repr_inst, gen⟩
   | ⟨_u, t, _e⟩ =>
     throwError "Must be a Sort u` or a `Gen α`, got value of type{indentExpr t}"
 open Elab
