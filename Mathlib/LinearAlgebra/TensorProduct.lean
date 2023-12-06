@@ -797,11 +797,19 @@ theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f
   rfl
 #align tensor_product.map_tmul TensorProduct.map_tmul
 
+/-- Given linear maps `f : M → P`, `g : N → Q`, if we identify `M ⊗ N` with `N ⊗ M` and `P ⊗ Q`
+with `Q ⊗ P`, then this lemma states that `f ⊗ g = g ⊗ f`. -/
 lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-    map f g ∘ₗ TensorProduct.comm R N M =
-      TensorProduct.comm R Q P ∘ₗ map g f :=
+    map f g ∘ₗ TensorProduct.comm R N M = TensorProduct.comm R Q P ∘ₗ map g f :=
   ext rfl
 
+lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M):
+    map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
+  FunLike.congr_fun (map_comp_comm_eq _ _) _
+
+/-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `(M ⊗ N) ⊗ P`
+with `M ⊗ (N ⊗ P)` and `(Q ⊗ S) ⊗ T` with `Q ⊗ (S ⊗ T)`, then this lemma states that
+`f ⊗ (g ⊗ h) = (f ⊗ g) ⊗ h`. -/
 lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map f (map g h) ∘ₗ TensorProduct.assoc R M N P =
       TensorProduct.assoc R Q S T ∘ₗ map (map f g) h :=
@@ -812,6 +820,9 @@ lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) 
       TensorProduct.assoc R Q S T (map (map f g) h x) :=
   FunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
 
+/-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `M ⊗ (N ⊗ P)`
+with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this lemma states that
+`(f ⊗ g) ⊗ h = f ⊗ (g ⊗ h)`. -/
 lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map (map f g) h ∘ₗ (TensorProduct.assoc R M N P).symm =
       (TensorProduct.assoc R Q S T).symm ∘ₗ map f (map g h) :=
