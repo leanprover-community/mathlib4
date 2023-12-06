@@ -19,7 +19,7 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
-universe w₀ w₁ w₂ v₁ v₂ u₁ u₂
+universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
@@ -198,7 +198,7 @@ namespace Functor
 
 variable {C}
 
-variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)] {A : Type u₁} [Category.{u₁} A]
+variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [Category.{v₃} A]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
@@ -273,5 +273,15 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
 #align category_theory.nat_trans.pi CategoryTheory.NatTrans.pi
 
 end NatTrans
+
+variable {C}
+
+lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
+    IsIso f ↔ ∀ i, IsIso (f i) := by
+  constructor
+  · intro _ i
+    exact IsIso.of_iso (Pi.isoApp (asIso f) i)
+  · intro
+    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
 
 end CategoryTheory
