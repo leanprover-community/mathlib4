@@ -1413,12 +1413,11 @@ instance hasSmul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) :=
 #align bounded_continuous_function.has_smul' BoundedContinuousFunction.hasSmul'
 
 instance module' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
-  Module.ofMinimalAxioms <|
-    { smul := (· • ·)
-      smul_add := fun _ _ _ => ext fun _ => smul_add _ _ _
-      add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
-      mul_smul := fun _ _ _ => ext fun _ => mul_smul _ _ _
-      one_smul := fun f => ext fun x => one_smul 𝕜 (f x) }
+  Module.ofMinimalAxioms
+      (fun _ _ _ => ext fun _ => smul_add _ _ _)
+      (fun _ _ _ => ext fun _ => add_smul _ _ _)
+      (fun _ _ _ => ext fun _ => mul_smul _ _ _)
+      (fun f => ext fun x => one_smul 𝕜 (f x))
 #align bounded_continuous_function.module' BoundedContinuousFunction.module'
 
 theorem norm_smul_le (f : α →ᵇ 𝕜) (g : α →ᵇ β) : ‖f • g‖ ≤ ‖f‖ * ‖g‖ :=
