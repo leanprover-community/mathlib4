@@ -171,7 +171,7 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
 #align is_integral_iff_is_integral_closure_finite isIntegral_iff_isIntegral_closure_finite
 
 theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
-    (x : A) (f : R[X]) (hf : f.Monic) (hfx : aeval x f = 0) :
+    {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
     span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
       Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
   nontriviality A
@@ -192,7 +192,7 @@ theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
     (Algebra.adjoin R {x}).toSubmodule.FG := by
   rcases hx with ⟨f, hfm, hfx⟩
   use (Finset.range <| f.natDegree).image (x ^ ·)
-  exact span_range_natDegree_eq_adjoin x f hfm (by rwa [aeval_def])
+  exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=

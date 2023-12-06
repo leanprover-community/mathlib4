@@ -159,7 +159,8 @@ lemma span_coeff_minpolyDiv :
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩
     apply coeff_minpolyDiv_mem_adjoin
-  · rw [← Submodule.span_range_natDegree_eq_adjoin _ hx, Submodule.span_le]
+  · rw [← Submodule.span_range_natDegree_eq_adjoin (minpoly.monic hx) (minpoly.aeval _ _),
+      Submodule.span_le]
     simp only [Finset.coe_image, Finset.coe_range, Set.image_subset_iff]
     intro i
     apply Nat.strongInductionOn i
