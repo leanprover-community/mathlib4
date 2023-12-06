@@ -342,7 +342,7 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
 
 
 theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
-    Measure.map ((· • ·) r) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
+    Measure.map (r • ·) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
@@ -356,7 +356,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
 theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
     μ ((· • ·) r ⁻¹' s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s :=
   calc
-    μ ((· • ·) r ⁻¹' s) = Measure.map ((· • ·) r) μ s :=
+    μ ((· • ·) r ⁻¹' s) = Measure.map (r • ·) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
       rw [map_addHaar_smul μ hr, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,

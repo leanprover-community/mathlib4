@@ -807,7 +807,7 @@ theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = 
 #align dfinsupp.filter_ne_eq_erase DFinsupp.filter_ne_eq_erase
 
 @[simp]
-theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter ((· ≠ ·) i) = f.erase i := by
+theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter (i ≠ ·) = f.erase i := by
   rw [← filter_ne_eq_erase f i]
   congr with j
   exact ne_comm

@@ -89,7 +89,7 @@ theorem ediam_smul [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
 
 @[to_additive]
 theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a : M) :
-    Isometry ((· * ·) a) :=
+    Isometry (a * ·) :=
   isometry_smul M a
 #align isometry_mul_left isometry_mul_left
 #align isometry_add_left isometry_add_left

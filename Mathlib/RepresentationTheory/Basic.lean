@@ -269,7 +269,7 @@ variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAct
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
-  toFun g := Finsupp.lmapDomain k k ((· • ·) g)
+  toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
     ext x y
     dsimp
@@ -281,7 +281,7 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 
 variable {k G H}
 
-theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k ((· • ·) g) :=
+theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 #align representation.of_mul_action_def Representation.ofMulAction_def
 

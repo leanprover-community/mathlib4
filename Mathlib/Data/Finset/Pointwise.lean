@@ -397,7 +397,7 @@ theorem mul_singleton (a : α) : s * {a} = s.image (· * a) :=
 #align finset.add_singleton Finset.add_singleton
 
 @[to_additive]
-theorem singleton_mul (a : α) : {a} * s = s.image ((· * ·) a) :=
+theorem singleton_mul (a : α) : {a} * s = s.image (a * ·) :=
   image₂_singleton_left
 #align finset.singleton_mul Finset.singleton_mul
 #align finset.singleton_add Finset.singleton_add
@@ -618,7 +618,7 @@ theorem div_singleton (a : α) : s / {a} = s.image (· / a) :=
 #align finset.sub_singleton Finset.sub_singleton
 
 @[to_additive (attr := simp)]
-theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
+theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
   image₂_singleton_left
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
@@ -1207,7 +1207,7 @@ variable [Group α] {s t : Finset α} {a b : α}
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_singleton :
-    preimage {b} ((· * ·) a) ((mul_right_injective _).injOn _) = {a⁻¹ * b} := by
+    preimage {b} (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹ * b} := by
   classical rw [← image_mul_left', image_singleton]
 #align finset.preimage_mul_left_singleton Finset.preimage_mul_left_singleton
 #align finset.preimage_add_left_singleton Finset.preimage_add_left_singleton
@@ -1220,7 +1220,7 @@ theorem preimage_mul_right_singleton :
 #align finset.preimage_add_right_singleton Finset.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : preimage 1 ((· * ·) a) ((mul_right_injective _).injOn _) = {a⁻¹} :=
+theorem preimage_mul_left_one : preimage 1 (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹} :=
   by classical rw [← image_mul_left', image_one, mul_one]
 #align finset.preimage_mul_left_one Finset.preimage_mul_left_one
 #align finset.preimage_add_left_zero Finset.preimage_add_left_zero
@@ -1578,7 +1578,7 @@ protected def smulFinset : SMul α (Finset β) :=
 scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
 
 @[to_additive]
-theorem smul_finset_def : a • s = s.image ((· • ·) a) :=
+theorem smul_finset_def : a • s = s.image (a • ·) :=
   rfl
 #align finset.smul_finset_def Finset.smul_finset_def
 #align finset.vadd_finset_def Finset.vadd_finset_def

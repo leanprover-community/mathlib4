@@ -250,7 +250,7 @@ def Module.ofCore (H : Module.Core R M) : Module R M :=
   { H with
     zero_smul := fun x =>
       (AddMonoidHom.mk' (fun r : R => r • x) fun r s => H.add_smul r s x).map_zero
-    smul_zero := fun r => (AddMonoidHom.mk' ((· • ·) r) (H.smul_add r)).map_zero }
+    smul_zero := fun r => (AddMonoidHom.mk' (r • ·) (H.smul_add r)).map_zero }
 #align module.of_core Module.ofCore
 
 theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :

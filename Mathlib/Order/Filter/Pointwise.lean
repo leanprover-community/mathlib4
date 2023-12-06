@@ -354,7 +354,7 @@ theorem NeBot.of_mul_right : (f * g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_add_right Filter.NeBot.of_add_right
 
 @[to_additive (attr := simp)]
-theorem pure_mul : pure a * g = g.map ((· * ·) a) :=
+theorem pure_mul : pure a * g = g.map (a * ·) :=
   map₂_pure_left
 #align filter.pure_mul Filter.pure_mul
 #align filter.pure_add Filter.pure_add
@@ -495,7 +495,7 @@ theorem NeBot.of_div_right : (f / g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_sub_right Filter.NeBot.of_sub_right
 
 @[to_additive (attr := simp)]
-theorem pure_div : pure a / g = g.map ((· / ·) a) :=
+theorem pure_div : pure a / g = g.map (a / ·) :=
   map₂_pure_left
 #align filter.pure_div Filter.pure_div
 #align filter.pure_sub Filter.pure_sub
@@ -1019,7 +1019,7 @@ theorem NeBot.of_smul_right : (f • g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_vadd_right Filter.NeBot.of_vadd_right
 
 @[to_additive (attr := simp)]
-theorem pure_smul : (pure a : Filter α) • g = g.map ((· • ·) a) :=
+theorem pure_smul : (pure a : Filter α) • g = g.map (a • ·) :=
   map₂_pure_left
 #align filter.pure_smul Filter.pure_smul
 #align filter.pure_vadd Filter.pure_vadd
@@ -1173,7 +1173,7 @@ variable [SMul α β] {f f₁ f₂ : Filter β} {s : Set β} {a : α}
 /-- `a • f` is the map of `f` under `a •` in locale `Pointwise`. -/
 @[to_additive "`a +ᵥ f` is the map of `f` under `a +ᵥ` in locale `Pointwise`."]
 protected def instSMulFilter : SMul α (Filter β) :=
-  ⟨fun a => map ((· • ·) a)⟩
+  ⟨fun a => map (a • ·)⟩
 #align filter.has_smul_filter Filter.instSMulFilter
 #align filter.has_vadd_filter Filter.instVAddFilter
 

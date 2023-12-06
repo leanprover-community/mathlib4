@@ -512,7 +512,7 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 #align ordinal.add_le_of_limit Ordinal.add_le_of_limit
 
-theorem add_isNormal (a : Ordinal) : IsNormal ((· + ·) a) :=
+theorem add_isNormal (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
 #align ordinal.add_is_normal Ordinal.add_isNormal
 
@@ -800,7 +800,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
           exact mul_le_of_limit_aux h H⟩
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
-theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal ((· * ·) a) :=
+theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
   -- Porting note: `dsimp only` is required for beta reduction.
   ⟨fun b => by
       dsimp only

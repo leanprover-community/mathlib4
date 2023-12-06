@@ -820,13 +820,13 @@ theorem nhds_translation_mul_inv (x : G) : comap (fun y : G => y * x⁻¹) (𝓝
 #align nhds_translation_add_neg nhds_translation_add_neg
 
 @[to_additive (attr := simp)]
-theorem map_mul_left_nhds (x y : G) : map ((· * ·) x) (𝓝 y) = 𝓝 (x * y) :=
+theorem map_mul_left_nhds (x y : G) : map (x * ·) (𝓝 y) = 𝓝 (x * y) :=
   (Homeomorph.mulLeft x).map_nhds_eq y
 #align map_mul_left_nhds map_mul_left_nhds
 #align map_add_left_nhds map_add_left_nhds
 
 @[to_additive]
-theorem map_mul_left_nhds_one (x : G) : map ((· * ·) x) (𝓝 1) = 𝓝 x := by simp
+theorem map_mul_left_nhds_one (x : G) : map (x * ·) (𝓝 1) = 𝓝 x := by simp
 #align map_mul_left_nhds_one map_mul_left_nhds_one
 #align map_add_left_nhds_zero map_add_left_nhds_zero
 
@@ -1162,13 +1162,13 @@ def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
 #align homeomorph.sub_left Homeomorph.subLeft
 
 @[to_additive]
-theorem isOpenMap_div_left (a : G) : IsOpenMap ((· / ·) a) :=
+theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
   (Homeomorph.divLeft _).isOpenMap
 #align is_open_map_div_left isOpenMap_div_left
 #align is_open_map_sub_left isOpenMap_sub_left
 
 @[to_additive]
-theorem isClosedMap_div_left (a : G) : IsClosedMap ((· / ·) a) :=
+theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   (Homeomorph.divLeft _).isClosedMap
 #align is_closed_map_div_left isClosedMap_div_left
 #align is_closed_map_sub_left isClosedMap_sub_left

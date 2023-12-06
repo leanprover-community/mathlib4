@@ -120,7 +120,7 @@ theorem toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
 #align measurable_equiv.to_equiv_add_left MeasurableEquiv.toEquiv_addLeft
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding ((· * ·) g) :=
+theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding (g * ·) :=
   (mulLeft g).measurableEmbedding
 #align measurable_embedding_mul_left measurableEmbedding_mulLeft
 #align measurable_embedding_add_left measurableEmbedding_addLeft
@@ -168,7 +168,7 @@ def mulLeft₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ :=
 #align measurable_equiv.mul_left₀ MeasurableEquiv.mulLeft₀
 
 theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
-    MeasurableEmbedding ((· * ·) g) :=
+    MeasurableEmbedding (g * ·) :=
   (mulLeft₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 

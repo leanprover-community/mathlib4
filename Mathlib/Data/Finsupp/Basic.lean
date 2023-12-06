@@ -1416,12 +1416,12 @@ variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 
 This is not an instance as it would conflict with the action on the range.
 See the `instance_diamonds` test for examples of such conflicts. -/
-def comapSMul : SMul G (α →₀ M) where smul g := mapDomain ((· • ·) g)
+def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 #align finsupp.comap_has_smul Finsupp.comapSMul
 
 attribute [local instance] comapSMul
 
-theorem comapSMul_def (g : G) (f : α →₀ M) : g • f = mapDomain ((· • ·) g) f :=
+theorem comapSMul_def (g : G) (f : α →₀ M) : g • f = mapDomain (g • ·) f :=
   rfl
 #align finsupp.comap_smul_def Finsupp.comapSMul_def
 
@@ -1474,7 +1474,7 @@ end
 section
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
-  smul a v := v.mapRange ((· • ·) a) (smul_zero _)
+  smul a v := v.mapRange (a • ·) (smul_zero _)
   smul_zero a := by
     ext
     apply smul_zero
