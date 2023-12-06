@@ -577,7 +577,7 @@ theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z}
 variable (e' : Trivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
 
 protected theorem continuousOn : ContinuousOn e' e'.source :=
-  e'.continuous_toFun
+  e'.continuousOn_toFun
 #align trivialization.continuous_on Trivialization.continuousOn
 
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
