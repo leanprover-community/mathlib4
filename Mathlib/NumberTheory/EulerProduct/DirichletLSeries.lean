@@ -81,5 +81,5 @@ theorem riemannZeta_eulerProduct (hs : 1 < s.re) :
 -- TODO: state in terms of `∏'` once this is in Mathlib
 theorem dirichletLSeries_eulerProduct {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
     Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - χ p * (p : ℂ) ^ (-s))⁻¹) atTop
-      (𝓝 (∑' n : ℕ, dirichletSummandHom χ (Complex.ne_zero_of_one_lt_re hs) n)) := by
+      (𝓝 (∑' n : ℕ, dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n)) := by
   convert eulerProduct_completely_multiplicative <| summable_dirichletSummand χ hs
