@@ -775,7 +775,7 @@ lemma homologyIsoSc'_hom_ι :
   apply ShortComplex.homologyι_naturality
 
 @[reassoc (attr := simp)]
-lemma ι_homologyIsoSc'_inv :
+lemma homologyIsoSc'_inv_ι :
     (K.homologyIsoSc' i j k hi hk).inv ≫ K.homologyι j =
       (K.sc' i j k).homologyι ≫ (K.opcyclesIsoSc' i j k hi hk).inv := by
   apply ShortComplex.homologyι_naturality
