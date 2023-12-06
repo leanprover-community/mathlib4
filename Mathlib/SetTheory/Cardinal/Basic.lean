@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PPWithUniv
@@ -1010,6 +1010,22 @@ protected theorem iSup_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : iSup f
   ciSup_of_empty f
 #align cardinal.supr_of_empty Cardinal.iSup_of_empty
 
+lemma exists_of_iSup_eq_of_not_isSuccLimit
+    {ι : Type u} (f : ι → Cardinal.{u}) (ω : Cardinal.{u})
+    (hω : ¬ Order.IsSuccLimit ω)
+    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω :=
+  exists_of_ciSup_eq_of_not_isSuccLimit' f (bddAbove_range.{u, u} f) _ hω h
+
+lemma exists_of_iSup_eq_of_not_isLimit
+    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{u}) (ω : Cardinal.{u})
+    (hω : ¬ ω.IsLimit)
+    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
+  refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
+    (Cardinal.exists_of_iSup_eq_of_not_isSuccLimit f ω ·  h)
+  cases not_not.mp e
+  rw [← le_zero_iff] at h ⊢
+  exact (le_ciSup (Cardinal.bddAbove_range.{u, u} f) _).trans h
+
 -- Portin note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
@@ -1448,13 +1464,18 @@ theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccLimit_aleph0⟩
 #align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
 
+lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
+  | 0, e => e.1 rfl
+  | Nat.succ n, e => Order.not_isSuccLimit_succ _ (nat_succ n ▸ e.2)
+
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
-  rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
-  · exact h.ne_zero.irrefl
-  · rw [nat_succ] at h
-    exact not_isSuccLimit_succ _ h.isSuccLimit
-#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
+  rcases lt_aleph0.1 h' with ⟨n, rfl⟩
+  exact not_isLimit_natCast n h
+
+lemma exists_of_iSup_eq_natCast {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{u})
+    (n : ℕ) (h : ⨆ i : ι, f i = n) : ∃ i, f i = n :=
+  exists_of_iSup_eq_of_not_isLimit f _ (not_isLimit_natCast n) h
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
