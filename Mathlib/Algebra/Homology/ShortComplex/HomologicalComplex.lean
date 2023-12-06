@@ -705,8 +705,8 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] {ι : Type*} {c : Complex
   (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   [K.HasHomology j] [(K.sc' i j k).HasHomology]
 
-/-- The cycles of a homological complex in degree `j` by specifying a choice of
-`c.prev j` and `c.next j`. -/
+/-- The cycles of a homological complex in degree `j` can be computed
+by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def cyclesIsoSc' : K.cycles j ≅ (K.sc' i j k).cycles :=
   ShortComplex.cyclesMapIso (K.isoSc' i j k hi hk)
 
@@ -731,8 +731,8 @@ lemma toCycles_cyclesIsoSc'_hom :
   simp only [← cancel_mono (K.sc' i j k).iCycles, assoc, cyclesIsoSc'_hom_iCycles,
     toCycles_i, ShortComplex.toCycles_i, shortComplexFunctor'_obj_f]
 
-/-- The homology of a homological complex in degree `j` by specifying a choice of
-`c.prev j` and `c.next j`. -/
+/-- The homology of a homological complex in degree `j` can be computed
+by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def opcyclesIsoSc' : K.opcycles j ≅ (K.sc' i j k).opcycles :=
   ShortComplex.opcyclesMapIso (K.isoSc' i j k hi hk)
 
@@ -758,8 +758,8 @@ lemma opcyclesIsoSc'_inv_fromOpcycles :
   simp only [← cancel_epi (K.sc' i j k).pOpcycles,  pOpcycles_opcyclesIsoSc'_inv_assoc,
     p_fromOpcycles, ShortComplex.p_fromOpcycles, shortComplexFunctor'_obj_g]
 
-/-- The opcycles of a homological complex in degree `j` by specifying a choice of
-`c.prev j` and `c.next j`. -/
+/-- The opcycles of a homological complex in degree `j` can be computed
+by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
   ShortComplex.homologyMapIso (K.isoSc' i j k hi hk)
 
