@@ -124,6 +124,9 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   | succ n => convert Fintype.card_fin (n + 1) using 2
 #align zmod.card ZMod.card
 
+def npowImpl (n : ℕ) : ℕ → ZMod (n + 1) → ZMod (n + 1) :=
+(inferInstanceAs (CommRing (Fin n.succ))).npow
+
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
@@ -180,14 +183,14 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
   -- porting note: all npow fields are new, but probably should be backported
   npow := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).npow fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow
+    (inferInstanceAs (CommRing ℤ)).npow
+    npowImpl
   npow_zero := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_zero
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_zero
   npow_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
-#align zmod.comm_ring ZMod.commRing
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
