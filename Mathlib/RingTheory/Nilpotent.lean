@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.GroupTheory.Submonoid.ZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.ToLin

@@ -190,6 +190,13 @@ theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
 
 end Mul
 
+lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
+    (M : Matrix (Fin n.succ) (Fin n.succ) R) :
+    M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
+  delta trace
+  rw [← (finSuccEquiv n).symm.sum_comp]
+  simp
+
 section Fin
 
 variable [AddCommMonoid R]

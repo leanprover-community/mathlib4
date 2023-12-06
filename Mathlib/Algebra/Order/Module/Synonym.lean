@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
@@ -10,12 +10,13 @@ import Mathlib.Algebra.Ring.OrderSynonym
 /-!
 # Action instances for `OrderDual`
 
-This file provides instances of algebraic actions for `OrderDual`.
+This file provides instances of algebraic actions for `OrderDual`. Note that the `SMul` instances
+are already defined in `Mathlib.Algebra.Group.OrderSynonym`.
 
 ## See also
 
-* `Algebra.Group.OrderSynonym`
-* `Algebra.Ring.OrderSynonym`
+* `Mathlib.Algebra.Group.OrderSynonym`
+* `Mathlib.Algebra.Ring.OrderSynonym`
 -/
 
 namespace OrderDual
