@@ -655,7 +655,7 @@ theorem nfp_mul_eq_opow_omega {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a^omega
     rfl
   apply le_antisymm
   · apply nfp_le_fp (mul_isNormal ha).monotone hba
-    dsimp only; rw [← opow_one_add, one_add_omega]
+    rw [← opow_one_add, one_add_omega]
   rw [← nfp_mul_one ha]
   exact nfp_monotone (mul_isNormal ha).monotone (one_le_iff_pos.2 hb)
 #align ordinal.nfp_mul_eq_opow_omega Ordinal.nfp_mul_eq_opow_omega
