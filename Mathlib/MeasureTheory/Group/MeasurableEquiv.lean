@@ -71,9 +71,7 @@ def smul₀ (c : G₀) (hc : c ≠ 0) : α ≃ᵐ α :=
   MeasurableEquiv.smul (Units.mk0 c hc)
 #align measurable_equiv.smul₀ MeasurableEquiv.smul₀
 
-@[simp]
-theorem coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (· • ·) c :=
-  rfl
+@[simp] lemma coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (c • ·) := rfl
 #align measurable_equiv.coe_smul₀ MeasurableEquiv.coe_smul₀
 
 @[simp]
@@ -102,7 +100,7 @@ def mulLeft (g : G) : G ≃ᵐ G :=
 #align measurable_equiv.add_left MeasurableEquiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (· * ·) g :=
+theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (g * ·) :=
   rfl
 #align measurable_equiv.coe_mul_left MeasurableEquiv.coe_mulLeft
 #align measurable_equiv.coe_add_left MeasurableEquiv.coe_addLeft
@@ -172,9 +170,7 @@ theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
   (mulLeft₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 
-@[simp]
-theorem coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (· * ·) g :=
-  rfl
+@[simp] lemma coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (g * ·) := rfl
 #align measurable_equiv.coe_mul_left₀ MeasurableEquiv.coe_mulLeft₀
 
 @[simp]

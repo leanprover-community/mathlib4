@@ -177,7 +177,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
 #align sum.traverse_eq_map_id Sum.traverse_eq_map_id
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : σ ⊕ α) :
-    (f <$> ·) <$> Sum.traverse g x = Sum.traverse ((f <$> ·) ∘ g) x := by
+    (f <$> ·) <$> Sum.traverse g x = Sum.traverse (f <$> g ·) x := by
   cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
 #align sum.map_traverse Sum.map_traverse
 

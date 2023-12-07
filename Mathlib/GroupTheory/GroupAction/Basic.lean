@@ -303,7 +303,7 @@ of the orbit of `U` under `G`. -/
       union of the orbit of `U` under `G`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (· • ·) g '' U := by
+    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a

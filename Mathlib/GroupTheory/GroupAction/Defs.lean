@@ -784,7 +784,7 @@ def SMulZeroClass.compFun (f : N → M) :
 @[simps]
 def SMulZeroClass.toZeroHom (x : M) :
     ZeroHom A A where
-  toFun := (· • ·) x
+  toFun := (x • ·)
   map_zero' := smul_zero x
 #align smul_zero_class.to_zero_hom SMulZeroClass.toZeroHom
 #align smul_zero_class.to_zero_hom_apply SMulZeroClass.toZeroHom_apply
@@ -1056,7 +1056,7 @@ def MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction 
 /-- Scalar multiplication by `r` as a `MonoidHom`. -/
 def MulDistribMulAction.toMonoidHom (r : M) :
     A →* A where
-  toFun := (· • ·) r
+  toFun := (r • ·)
   map_one' := smul_one r
   map_mul' := smul_mul' r
 #align mul_distrib_mul_action.to_monoid_hom MulDistribMulAction.toMonoidHom

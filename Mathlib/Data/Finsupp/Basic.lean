@@ -1591,7 +1591,7 @@ theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMo
     [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
     (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
   erw [← mapRange_comp]
-  have : f ∘ (· • ·) c = (· • ·) c ∘ f := funext hsmul
+  have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
   simp_rw [this]
   apply mapRange_comp
   simp only [Function.comp_apply, smul_zero, hf]

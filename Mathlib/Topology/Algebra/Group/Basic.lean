@@ -61,7 +61,7 @@ protected def Homeomorph.mulLeft (a : G) : G ≃ₜ G :=
 #align homeomorph.add_left Homeomorph.addLeft
 
 @[to_additive (attr := simp)]
-theorem Homeomorph.coe_mulLeft (a : G) : ⇑(Homeomorph.mulLeft a) = (· * ·) a :=
+theorem Homeomorph.coe_mulLeft (a : G) : ⇑(Homeomorph.mulLeft a) = (a * ·) :=
   rfl
 #align homeomorph.coe_mul_left Homeomorph.coe_mulLeft
 #align homeomorph.coe_add_left Homeomorph.coe_addLeft
