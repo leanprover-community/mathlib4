@@ -255,7 +255,7 @@ theorem MeasureTheory.LeftInvariantIsQuotientVolumeEqVolumePreimage [IsFiniteMea
   rw [fund_dom_s.covolume_eq_volume] at h
   by_cases meas_s_ne_zero : volume s = 0
   · convert fund_dom_s.QuotientVolumeEqVolumePreimage_of_volume_zero meas_s_ne_zero
-    rw [← @measure_univ_eq_zero, ←h, meas_s_ne_zero]
+    rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
   apply IsMulLeftInvariant.quotientVolumeEqVolumePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)
   · rw [← h]
