@@ -1431,11 +1431,13 @@ theorem vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSp
 lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
-  apply affineSpan_induction hx (p := fun y ↦ y ∈ Submodule.span k s)
-    (fun x hx ↦ Submodule.subset_span hx) (fun c u v w hu hv hw ↦ ?_)
-  simp only [vsub_eq_sub, vadd_eq_add]
-  apply Submodule.add_mem _ _ hw
-  exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
+  show x ∈ Submodule.span k s
+  induction hx using affineSpan_induction' with
+  | Hs x hx => exact Submodule.subset_span hx
+  | Hc c u _ v _ w _ hu hv hw =>
+    simp only [vsub_eq_sub, vadd_eq_add]
+    apply Submodule.add_mem _ _ hw
+    exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
 
 end AffineSpace'
 
