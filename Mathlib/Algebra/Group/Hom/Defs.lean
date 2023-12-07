@@ -1355,8 +1355,6 @@ theorem coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
 theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
 #align add_monoid.coe_mul AddMonoid.coe_mul
 
-lemma mul_apply (f g : AddMonoid.End A) (a : A) : (f * g) a = f (g a) := rfl
-
 end AddMonoid
 
 end End
