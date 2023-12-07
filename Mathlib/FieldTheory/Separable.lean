@@ -501,7 +501,7 @@ class IsSeparable : Prop where
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
-variable (F : Type*) {K : Type*} [CommRing F] [Ring K] [Algebra F K]
+variable {K}
 
 theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
   IsSeparable.isIntegral'
@@ -511,12 +511,27 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-variable {F K : Type*} [CommRing F] [Ring K] [Algebra F K]
+variable {F}
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
   ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
     ⟨fun x => (h x).1, fun x => (h x).2⟩⟩
 #align is_separable_iff isSeparable_iff
+
+variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+
+/-- Transfer `IsSeparable` across an `AlgEquiv`. -/
+theorem AlgEquiv.isSeparable [IsSeparable F K] : IsSeparable F E :=
+  ⟨fun _ ↦ by rw [← isIntegral_algEquiv e.symm]; exact IsSeparable.isIntegral F _,
+    fun _ ↦ by rw [← minpoly.algEquiv_eq e.symm]; exact IsSeparable.separable F _⟩
+
+theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
+  ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
+
+variable (F K)
+
+theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
+  fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic
 
 end CommRing
 
