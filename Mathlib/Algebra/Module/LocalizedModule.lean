@@ -154,8 +154,8 @@ instance : Add (LocalizedModule S M) where
           mk_eq.mpr
             ⟨u1 * u2, by
               -- Put everything in the same shape, sorting the terms using `simp`
-              have hu1' := congr_arg ((u2 * s2 * s2' • ·) hu1
-              have hu2' := congr_arg ((u1 * s1 * s1' • ·) hu2
+              have hu1' := congr_arg ((u2 * s2 * s2') • ·) hu1
+              have hu2' := congr_arg ((u1 * s1 * s1') • ·) hu2
               simp only [smul_add, ← mul_smul, smul_assoc, mul_assoc, mul_comm,
                 mul_left_comm] at hu1' hu2' ⊢
               rw [hu1', hu2']⟩
