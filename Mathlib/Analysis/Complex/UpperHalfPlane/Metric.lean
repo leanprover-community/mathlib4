@@ -385,11 +385,9 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
           mul_div (2 : ℝ), div_div_div_comm, div_self h₂, Complex.norm_eq_abs]
     by_cases hc : g 1 0 = 0
     · obtain ⟨u, v, h⟩ := exists_SL2_smul_eq_of_apply_zero_one_eq_zero g hc
-      dsimp only at h
       rw [h]
       exact (isometry_real_vadd v).comp (isometry_pos_mul u)
     · obtain ⟨u, v, w, h⟩ := exists_SL2_smul_eq_of_apply_zero_one_ne_zero g hc
-      dsimp only at h
       rw [h]
       exact
         (isometry_real_vadd w).comp (h₀.comp <| (isometry_real_vadd v).comp <| isometry_pos_mul u)⟩
