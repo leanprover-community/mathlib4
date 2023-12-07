@@ -143,14 +143,12 @@ theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
   rw [dist_eq_norm_vsub V₂, dist_eq_norm_vsub V, ← map_vsub, f.linearIsometry.norm_map]
 #align affine_isometry.dist_map AffineIsometry.dist_map
 
--- Porting note: added `(dist_map)` to simp
 @[simp]
-theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist, (dist_map)]
+theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist]
 #align affine_isometry.nndist_map AffineIsometry.nndist_map
 
--- Porting note: added `(dist_map)` to simp
 @[simp]
-theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist, (dist_map)]
+theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
 #align affine_isometry.edist_map AffineIsometry.edist_map
 
 protected theorem isometry : Isometry f :=

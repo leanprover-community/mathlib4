@@ -259,9 +259,6 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
--- Porting note: This proof is _really_ slow, maybe it should be broken into several lemmas
--- See https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 500000 in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
@@ -299,9 +296,13 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
-    · rw [← pow_mul, ← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← pow_mul, ← map_nsmul_pow ψ₈char]
+      -- doesn't match syntactically for `rw`
+      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 ?_
       decide
-    · rw [← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← map_nsmul_pow ψ₈char]
+      -- doesn't match syntactically for `rw`
+      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 ?_
       decide
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`

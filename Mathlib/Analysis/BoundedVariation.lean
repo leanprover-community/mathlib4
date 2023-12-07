@@ -530,7 +530,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
   refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
-    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left n xy),
+    ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
   dsimp only [Subtype.coe_mk]
@@ -861,9 +861,8 @@ namespace LocallyBoundedVariationOn
 `ae_differentiableWithinAt_of_mem`. -/
 theorem ae_differentiableWithinAt_of_mem_real {f : ℝ → ℝ} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
-  obtain ⟨p, q, hp, hq, fpq⟩ : ∃ p q, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q :=
+  obtain ⟨p, q, hp, hq, rfl⟩ : ∃ p q, MonotoneOn p s ∧ MonotoneOn q s ∧ f = p - q :=
     h.exists_monotoneOn_sub_monotoneOn
-  subst f -- porting note: TODO: `rfl` instead of `fpq` doesn't work
   filter_upwards [hp.ae_differentiableWithinAt_of_mem, hq.ae_differentiableWithinAt_of_mem] with
     x hxp hxq xs
   exact (hxp xs).sub (hxq xs)

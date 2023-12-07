@@ -191,10 +191,10 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 #align quotient_group.coe_zpow QuotientGroup.mk_zpow
 #align quotient_add_group.coe_zsmul QuotientAddGroup.mk_zsmul
 
- @[to_additive (attr := simp)]
- theorem mk_prod {G ι : Type _} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
-     ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
-   map_prod (QuotientGroup.mk' N) _ _
+@[to_additive (attr := simp)]
+theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
+    ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
+  map_prod (QuotientGroup.mk' N) _ _
 
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
@@ -594,7 +594,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
   have φ_surjective : Surjective φ := fun x =>
     x.inductionOn' <| by
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩;
-      rw [←SetLike.mem_coe] at hy
+      rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
       rcases hy with ⟨h, n, hh, hn, rfl⟩
       use ⟨h, hh⟩

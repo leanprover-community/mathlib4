@@ -121,8 +121,9 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [SMulHomClass.map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • f (v a)) =
-      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
-    by congr; ext a b; change b • (f ∘ v) a = _; rw [← huv]; rfl
+      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) := by
+    congr with a b
+    rw [← Function.comp_apply (f := f) (g := v), ← huv, Function.comp_apply]
   rw [hn']
   apply add_mem
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
@@ -176,7 +177,7 @@ theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
     [Module.Free R P] [Module.Finite R P]
     (hN : FiniteDimensional.finrank R N = n)
     (hP : FiniteDimensional.finrank R P = p)
-    [StrongRankCondition R]:
+    [StrongRankCondition R] :
     FiniteDimensional.finrank R M = n + p := by
   apply FiniteDimensional.finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add h, ← hN, ← hP]

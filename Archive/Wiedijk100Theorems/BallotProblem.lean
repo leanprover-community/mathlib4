@@ -221,7 +221,9 @@ theorem first_vote_pos :
     simp [ENNReal.div_self _ _]
   | 0, q + 1, _ => by
     rw [counted_left_zero, condCount_singleton]
-    simp
+    simp only [List.replicate, Nat.add_eq, add_zero, mem_setOf_eq, List.headI_cons, Nat.cast_zero,
+      ENNReal.zero_div, ite_eq_right_iff]
+    decide
   | p + 1, q + 1, _ => by
     simp_rw [counted_succ_succ]
     rw [← condCount_disjoint_union ((countedSequence_finite _ _).image _)
@@ -252,7 +254,7 @@ theorem first_vote_pos :
     · simp
 #align ballot.first_vote_pos Ballot.first_vote_pos
 
-theorem headI_mem_of_nonempty {α : Type _} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
+theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
   | x::l, _ => List.mem_cons_self x l
 #align ballot.head_mem_of_nonempty Ballot.headI_mem_of_nonempty

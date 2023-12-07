@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Std.Data.MLList.Basic
 import Mathlib.Control.Basic
+import Mathlib.Tactic.RunCmd
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=
@@ -18,7 +19,7 @@ def F : Nat → S Nat
 
 open Lean
 
-#eval show MetaM Unit from do
+run_cmd Lean.Elab.Command.liftTermElabM do
   -- Note that `fix` fails if any invocation of `F` fails.
   -- This is different from previous behaviour, where it just terminated the lazy list.
   -- Hence we must use `.takeAsList 11` here rather than `.force`.
@@ -36,7 +37,7 @@ def l1 : MLList S Nat := MLList.ofList [0,1,2]
 def l2 : MLList S Nat := MLList.ofList [3,4,5]
 def ll : MLList S Nat := (MLList.ofList [l1, l2]).join
 
-#eval show MetaM Unit from do
+run_cmd Lean.Elab.Command.liftTermElabM do
   let x := ll.force.run []
   guard $ x = some ([0, 1, 2, 3, 4, 5], [])
 
@@ -44,13 +45,13 @@ def half_or_fail (n : Nat) : MetaM Nat :=
 do guard (n % 2 = 0)
    pure (n / 2)
 
-#eval do
+run_cmd Lean.Elab.Command.liftTermElabM do
   let x : MLList MetaM Nat := MLList.range
   let y := x.filterMapM fun n => try? <| half_or_fail n
   let z ← y.takeAsList 10
   guard $ z.length = 10
 
-#eval do
+run_cmd Lean.Elab.Command.liftTermElabM do
   let R : MLList MetaM Nat := MLList.range
   let S : MLList MetaM Nat := R.filterMapM fun n => try? do
     guard (n % 5 = 0)
@@ -60,7 +61,7 @@ do guard (n % 2 = 0)
   guard $ n = [0,1,2,3,4]
   guard $ m = 0
 
-#eval do
+run_cmd Lean.Elab.Command.liftTermElabM do
   let R : MLList MetaM Nat := MLList.range
   let n ← R.firstM fun n => try? do
     guard (n = 5)

@@ -92,7 +92,7 @@ attribute [local instance] ConcreteCategory.funLike
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
     [BundledHom hom_d] (obj : ∀ ⦃α⦄, c α → d α)
     (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → (Bundled.map @obj X ⟶ (Bundled.map @obj Y)))
-    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑map f = ⇑f) :
+    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑(map f) = ⇑f) :
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f

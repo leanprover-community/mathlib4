@@ -82,13 +82,14 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
             "variable '{mkFVar v}' is generalized automatically")
         s := s.insert v
       let (fvarIds, g) ← g.revert (← sortFVarIds s.toArray)
-      let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← g.getTag)
-      let elimArgs := result.elimApp.getAppArgs
-      ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! targetFVarIds
-      g.assign result.elimApp
-      let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
-        (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
-      setGoals <| (subgoals ++ result.others).toList ++ gs
+      g.withContext do
+        let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← g.getTag)
+        let elimArgs := result.elimApp.getAppArgs
+        ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! targetFVarIds
+        g.assign result.elimApp
+        let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
+          (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
+        setGoals <| (subgoals ++ result.others).toList ++ gs
 
 elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do

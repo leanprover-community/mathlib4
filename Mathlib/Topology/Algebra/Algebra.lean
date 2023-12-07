@@ -171,6 +171,7 @@ def Algebra.elementalAlgebra (x : A) : Subalgebra R A :=
   (Algebra.adjoin R ({x} : Set A)).topologicalClosure
 #align algebra.elemental_algebra Algebra.elementalAlgebra
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgebra R x :=
   SetLike.le_def.mp (Subalgebra.le_topologicalClosure (Algebra.adjoin R ({x} : Set A))) <|
     Algebra.self_mem_adjoin_singleton R x

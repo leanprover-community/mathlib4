@@ -324,10 +324,8 @@ theorem finrank_pos_iff_exists_ne_zero [FiniteDimensional K V] : 0 < finrank K V
 /-- A finite dimensional space has positive `finrank` iff it is nontrivial. -/
 theorem finrank_pos_iff [FiniteDimensional K V] : 0 < finrank K V ↔ Nontrivial V :=
   Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_pos_iff_nontrivial K V _ _ _ _ _)
+    (by rw [← finrank_eq_rank]; norm_cast)
+    (rank_pos_iff_nontrivial (R := K))
 #align finite_dimensional.finrank_pos_iff FiniteDimensional.finrank_pos_iff
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
@@ -339,10 +337,8 @@ theorem finrank_pos [FiniteDimensional K V] [h : Nontrivial V] : 0 < finrank K V
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem finrank_zero_iff [FiniteDimensional K V] : finrank K V = 0 ↔ Subsingleton V :=
   Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_zero_iff K V _ _ _ _ _)
+    (by rw [← finrank_eq_rank]; norm_cast)
+    (rank_zero_iff (R := K))
 #align finite_dimensional.finrank_zero_iff FiniteDimensional.finrank_zero_iff
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
@@ -352,7 +348,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
-    @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
+    LinearIndependent.image_subtype (f := Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
   -- porting note: `letI` now uses `this` so we need to give different names
@@ -762,7 +758,7 @@ theorem finrank_quotient_add_finrank [FiniteDimensional K V] (s : Submodule K V)
     finrank K (V ⧸ s) + finrank K s = finrank K V := by
   have := rank_quotient_add_rank s
   rw [← finrank_eq_rank, ← finrank_eq_rank, ← finrank_eq_rank] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align submodule.finrank_quotient_add_finrank Submodule.finrank_quotient_add_finrank
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
@@ -922,6 +918,13 @@ theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
         this).injective⟩
 #align linear_map.injective_iff_surjective LinearMap.injective_iff_surjective
 
+lemma injOn_iff_surjOn {p : Submodule K V} [FiniteDimensional K p]
+    {f : V →ₗ[K] V} (h : ∀ x ∈ p, f x ∈ p) :
+    Set.InjOn f p ↔ Set.SurjOn f p p := by
+  rw [Set.injOn_iff_injective, ← Set.MapsTo.restrict_surjective_iff h]
+  change Injective (f.domRestrict p) ↔ Surjective (f.restrict h)
+  simp [disjoint_iff, ← injective_iff_surjective]
+
 theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
@@ -958,6 +961,37 @@ theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V
   rw [← f.quotKerEquivRange.finrank_eq]
   exact Submodule.finrank_quotient_add_finrank _
 #align linear_map.finrank_range_add_finrank_ker LinearMap.finrank_range_add_finrank_ker
+
+theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
+    (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
+    p.comap f = p ⊔ ker f := by
+  refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
+  obtain ⟨⟨y, hy⟩, hxy⟩ :=
+    surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
+  replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
+  exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel'_right y x⟩
+
+theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V →ₗ[K] V}
+    (h : Commute f g) (h' : Disjoint (ker f) (ker g)) :
+    ker (f ∘ₗ g) = ker f ⊔ ker g := by
+  suffices ∀ x, f x = 0 → f (g x) = 0 by rw [ker_comp, comap_eq_sup_ker_of_disjoint _ h']; simpa
+  intro x hx
+  rw [← comp_apply, ← mul_eq_comp, h.eq, mul_apply, hx, _root_.map_zero]
+
+theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
+    (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
+    ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
+  classical
+  induction' s using Finset.induction_on with i s hi ih; simpa using LinearMap.ker_id
+  replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
+      ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
+  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+    ker_comp_eq_of_commute_of_disjoint_ker]
+  · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
+  · exact s.noncommProd_commute _ _ _ fun j hj ↦
+      comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+  · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
+    simpa [ih, hi, Finset.sup_eq_iSup] using h
 
 end DivisionRing
 

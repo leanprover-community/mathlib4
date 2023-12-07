@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Order.Cover
 
 #align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
@@ -90,6 +91,22 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
 #align function.support_eq_iff Function.support_eq_iff
 
 @[to_additive]
+theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
+    mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
+  mulSupport_subset_iff'.mpr fun x hfg ↦ by
+    by_cases hf : ∃ a, f a = x
+    · rw [extend, dif_pos hf, ← nmem_mulSupport]
+      rw [← Classical.choose_spec hf] at hfg
+      exact fun hg ↦ hfg ⟨_, hg, rfl⟩
+    · rw [extend_apply' _ _ _ hf]; rfl
+
+@[to_additive]
+theorem mulSupport_extend_one {f : α → M} {g : α → N} (hf : f.Injective) :
+    mulSupport (f.extend g 1) = f '' mulSupport g :=
+  mulSupport_extend_one_subset.antisymm <| by
+    rintro _ ⟨x, hx, rfl⟩; rwa [mem_mulSupport, hf.extend_apply]
+
+@[to_additive]
 theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
     Disjoint (mulSupport f) s ↔ EqOn f 1 s := by
   simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', not_mem_compl_iff, EqOn,
@@ -98,8 +115,9 @@ theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
 #align function.support_disjoint_iff Function.support_disjoint_iff
 
 @[to_additive]
-theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} : Disjoint s (mulSupport f) ↔ EqOn f 1 s :=
-  by rw [disjoint_comm, mulSupport_disjoint_iff]
+theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
+    Disjoint s (mulSupport f) ↔ EqOn f 1 s := by
+  rw [disjoint_comm, mulSupport_disjoint_iff]
 #align function.disjoint_mul_support_iff Function.disjoint_mulSupport_iff
 #align function.disjoint_support_iff Function.disjoint_support_iff
 
@@ -123,6 +141,12 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
     fun x (hx : x ∈ mulSupport f) => mem_image_of_mem f hx
 #align function.range_subset_insert_image_mul_support Function.range_subset_insert_image_mulSupport
 #align function.range_subset_insert_image_support Function.range_subset_insert_image_support
+
+@[to_additive]
+lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
+    range f = f '' k ∨ range f = insert 1 (f '' k) := by
+  apply (wcovby_insert _ _).eq_or_eq (image_subset_range _ _)
+  exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
 
 @[to_additive (attr := simp)]
 theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=

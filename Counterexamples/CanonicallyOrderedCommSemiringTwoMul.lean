@@ -31,34 +31,6 @@ set_option linter.uppercaseLean3 false
 
 namespace Counterexample
 
-namespace FromBhavik
-
-/-- Bhavik Mehta's example.  There are only the initial definitions, but no proofs.  The Type
-`K` is a canonically ordered commutative semiring with the property that `2 * (1/2) ≤ 2 * 1`, even
-though it is not true that `1/2 ≤ 1`, since `1/2` and `1` are not comparable. -/
-def K : Type :=
-  Subsemiring.closure ({1.5} : Set ℚ)
-deriving CommSemiring
-#align counterexample.from_Bhavik.K Counterexample.FromBhavik.K
-
-instance : Coe K ℚ :=
-  ⟨fun x => x.1⟩
-
-instance inhabitedK : Inhabited K :=
-  ⟨0⟩
-#align counterexample.from_Bhavik.inhabited_K Counterexample.FromBhavik.inhabitedK
-
-instance : Preorder K where
-  le x y := x = y ∨ (x : ℚ) + 1 ≤ (y : ℚ)
-  le_refl x := Or.inl rfl
-  le_trans x y z xy yz := by
-    rcases xy with (rfl | xy); · apply yz
-    rcases yz with (rfl | yz); · right; apply xy
-    right
-    exact xy.trans (le_trans ((le_add_iff_nonneg_right _).mpr zero_le_one) yz)
-
-end FromBhavik
-
 theorem mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
   rcases a with ⟨_ | _, _ | _ | _ | _⟩
   · exact Or.inl rfl

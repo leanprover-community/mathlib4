@@ -47,22 +47,12 @@ namespace Bool
 theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 #align cond_a_a Bool.cond_self
 
-@[simp]
-theorem xor_self (b : Bool) : xor b b = false := by cases b <;> simp
+attribute [simp] xor_self
 #align bxor_self Bool.xor_self
 
-@[simp]
-theorem xor_true (b : Bool) : xor b true = not b := by cases b <;> simp
 #align bxor_tt Bool.xor_true
-
-theorem xor_false (b : Bool) : xor b false = b := by cases b <;> simp
 #align bxor_ff Bool.xor_false
-
-@[simp]
-theorem true_xor (b : Bool) : xor true b = not b := by cases b <;> simp
 #align tt_bxor Bool.true_xor
-
-theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
 #align ff_bxor Bool.false_xor
 
 theorem true_eq_false_eq_False : ¬true = false := by decide
@@ -142,7 +132,7 @@ theorem bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
 #align bool_eq_false Bool.bool_eq_false
 
-theorem decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
+theorem decide_false_iff (p : Prop) {_ : Decidable p} : decide p = false ↔ ¬p :=
   bool_iff_false.symm.trans (not_congr (decide_iff _))
 #align to_bool_ff_iff Bool.decide_false_iff
 
@@ -161,16 +151,15 @@ theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
   | true => exact decide_true (h.2 <| of_decide_true h')
 #align to_bool_congr Bool.decide_congr
 
-theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
-#align bor_coe_iff Bool.or_coe_iff
+theorem coe_or_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
+#align bor_coe_iff Bool.coe_or_iff
 
-theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
-#align band_coe_iff Bool.and_coe_iff
+theorem coe_and_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
+#align band_coe_iff Bool.coe_and_iff
 
-@[simp]
-theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
+theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> exact by decide
-#align bxor_coe_iff Bool.xor_coe_iff
+#align bxor_coe_iff Bool.coe_xor_iff
 
 @[simp]
 theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
