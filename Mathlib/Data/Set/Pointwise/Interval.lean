@@ -693,7 +693,7 @@ theorem preimage_mul_const_uIcc (ha : a ≠ 0) (b c : α) :
 
 @[simp]
 theorem preimage_const_mul_uIcc (ha : a ≠ 0) (b c : α) :
-    (· * a) ⁻¹' [[b, c]] = [[b / a, c / a]] := by
+    (a * ·) ⁻¹' [[b, c]] = [[b / a, c / a]] := by
   simp only [← preimage_mul_const_uIcc ha, mul_comm]
 #align set.preimage_const_mul_uIcc Set.preimage_const_mul_uIcc
 
@@ -704,17 +704,17 @@ theorem preimage_div_const_uIcc (ha : a ≠ 0) (b c : α) :
 #align set.preimage_div_const_uIcc Set.preimage_div_const_uIcc
 
 @[simp]
-theorem image_mul_const_uIcc (a b c : α) : (fun x => x * a) '' [[b, c]] = [[b * a, c * a]] :=
+theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * a]] :=
   if ha : a = 0 then by simp [ha]
   else calc
-    (fun x => x * a) '' [[b, c]] = (fun x => x * a⁻¹) ⁻¹' [[b, c]] :=
+    (fun x => x * a) '' [[b, c]] = (· * a⁻¹) ⁻¹' [[b, c]] :=
       (Units.mk0 a ha).mulRight.image_eq_preimage _
     _ = (fun x => x / a) ⁻¹' [[b, c]] := by simp only [div_eq_mul_inv]
     _ = [[b * a, c * a]] := preimage_div_const_uIcc ha _ _
 #align set.image_mul_const_uIcc Set.image_mul_const_uIcc
 
 @[simp]
-theorem image_const_mul_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[a * b, a * c]] := by
+theorem image_const_mul_uIcc (a b c : α) : (a * ·) '' [[b, c]] = [[a * b, a * c]] := by
   simpa only [mul_comm] using image_mul_const_uIcc a b c
 #align set.image_const_mul_uIcc Set.image_const_mul_uIcc
 
@@ -782,7 +782,7 @@ theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx 
 
 @[simp]
 theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
-    (fun x => a * x + b) '' Icc c d = Icc (a * c + b) (a * d + b) := by
+    (a * · + b) '' Icc c d = Icc (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((· * a) '' Icc c d) = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]

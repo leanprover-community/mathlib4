@@ -792,7 +792,7 @@ alias le_self_pow_two := le_self_sq
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
     Function.Injective ((x ^ ·) : ℕ → ℤ) := by
-  suffices Function.Injective (natAbs ∘ ((x ^ ·) : ℕ → ℤ)) by
+  suffices Function.Injective (natAbs ∘ (x ^ · : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
