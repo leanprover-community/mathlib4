@@ -77,10 +77,10 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   open_source :=
     (isOpen_lt continuous_const continuous_fst).union
       (isOpen_ne_fun continuous_snd continuous_const)
-  continuous_invFun :=
+  continuousOn_invFun :=
     ((continuous_fst.mul (continuous_cos.comp continuous_snd)).prod_mk
         (continuous_fst.mul (continuous_sin.comp continuous_snd))).continuousOn
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.continuousOn.prod
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         {z | 0 < z.re ∨ z.im ≠ 0} := by
