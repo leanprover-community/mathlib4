@@ -3,13 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-<<<<<<< HEAD
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Algebra.Star.Basic
-=======
->>>>>>> master
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Star.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 
