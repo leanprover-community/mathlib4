@@ -383,7 +383,7 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
-/-- Assemble an `I`-indexed family of equivalences of categories isomorphisms
+/-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]
 def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
