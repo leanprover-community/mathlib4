@@ -190,9 +190,8 @@ lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
 variable (α) [TopologicalSpace α]
 
 /--
-The Scott topology is defined as the join of the topology of upper sets and the topological space
-where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
-is a tail of `d` which is a subset of `u`.
+The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
+topology.
 -/
 class IsScott : Prop where
   topology_eq_scott : ‹TopologicalSpace α› = scott
