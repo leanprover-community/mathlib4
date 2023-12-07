@@ -117,13 +117,15 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
       · exact Nat.dvd_trans hp ha
       · exact hp
     have : p = 1 := by
-      simpa[Nat.add_sub_cancel_left] using Nat.dvd_sub (le_add_right _ _) hn (Dvd.dvd.mul_left this n)
+      simpa[Nat.add_sub_cancel_left] using Nat.dvd_sub (le_add_right _ _) hn
+        (Dvd.dvd.mul_left this n)
     simp[this] at pp
     apply not_prime_one at pp
     exact pp)
 
 lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.snd) := by
-  have : (coprimeList l).map Prod.snd = List.ofFn (fun i : Fin l.length => (i + 1) * (listSup l)! + 1) := by
+  have : (coprimeList l).map Prod.snd =
+      List.ofFn (fun i : Fin l.length => (i + 1) * (listSup l)! + 1) := by
     simp[coprimeList, Function.comp]
   rw[this]
   exact coprimes_of_nodup
@@ -131,13 +133,15 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
        intro i j; simp[listSup, ←Fin.ext_iff, Nat.factorial_ne_zero])
     (by
       simp[←Fin.ext_iff, not_or]
-      suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) * (listSup l)! + 1)
+      suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) *
+        (listSup l)! + 1)
       · intro i j hij _
         rcases Ne.lt_or_lt hij with (hij | hij)
         · exact this i j hij
         · exact coprime_comm.mp (this j i hij)
       intro i j hij
-      have hjl : j < listSup l := lt_of_lt_of_le j.prop (le_step (le_max_left l.length (List.foldr max 0 l)))
+      have hjl : j < listSup l := lt_of_lt_of_le j.prop (le_step (le_max_left l.length
+        (List.foldr max 0 l)))
       apply coprime_mul_succ
         (Nat.succ_le_succ $ le_of_lt hij)
         (Nat.dvd_factorial (by simp[Nat.succ_sub_succ, hij]) (by
@@ -145,7 +149,8 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
 
 def beta (n i : ℕ) := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
-def unbeta (l : List ℕ) := (chineseRemainderList (coprimeList l) (coprimes_coprimeList l) : ℕ).pair (listSup l)!
+def unbeta (l : List ℕ) :=
+  (chineseRemainderList (coprimeList l) (coprimes_coprimeList l) : ℕ).pair (listSup l)!
 
 /-- **Gödel's Beta Function Lemma** -/
 lemma beta_function_lemma (l : List ℕ) (i : Fin l.length) :
