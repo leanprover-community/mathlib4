@@ -32,18 +32,6 @@ open SetLike (coe_subset_coe)
 open Finset hiding not_subset
 open Set hiding mem_singleton mem_insert
 
-lemma Ideal.le_or_le_of_subset_union (J X Y : Ideal R) (H : (J : Set R) ⊆ X ∪ Y) :
-    J ≤ X ∨ J ≤ Y := by
-  by_contra rid
-  push_neg at rid
-  erw [not_subset_iff_exists_mem_not_mem, not_subset_iff_exists_mem_not_mem] at rid
-  rcases rid with ⟨⟨x, hx1, hx2⟩, ⟨y, hy1, hy2⟩⟩
-  rcases H (J.add_mem hx1 hy1) with h|h
-  · refine (H hy1).elim (fun h' => hx2 ?_) (fun h' => hy2 h')
-    convert X.sub_mem h h'; aesop
-  · refine (H hx1).elim (fun h' => hx2 h') (fun h' => hy2 ?_)
-    convert Y.sub_mem h h'; aesop
-
 /--
 Let `R` be a commutative ring, `J` an ideal of `R`, `ℐ` be a finite collection of ideals of `R`
 such that ideals in `ℐ` are prime ideals except for perhaps at most two.
