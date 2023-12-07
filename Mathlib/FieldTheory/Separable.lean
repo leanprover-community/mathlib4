@@ -491,7 +491,9 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- is separable and normal, so if the definition of separable changes here at some point
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
-the minimal polynomial of every `x : K` is separable.
+the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
+extension, because the minimal polynomial of a non-integral element is 0, which is not
+separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
 is needed for a proof.
