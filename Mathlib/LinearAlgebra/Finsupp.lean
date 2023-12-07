@@ -218,7 +218,7 @@ theorem lapply_comp_lsingle_same (a : α) : lapply a ∘ₗ lsingle a = (.id : M
 
 @[simp]
 theorem lapply_comp_lsingle_of_ne (a a' : α) (h : a ≠ a') :
-  lapply a ∘ₗ lsingle a' = (0 : M →ₗ[R] M) := by ext; simp [h.symm]
+    lapply a ∘ₗ lsingle a' = (0 : M →ₗ[R] M) := by ext; simp [h.symm]
 
 @[simp]
 theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=

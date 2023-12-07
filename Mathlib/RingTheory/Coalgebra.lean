@@ -208,7 +208,7 @@ theorem comul_comp_lsingle (i : ι) :
 theorem comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
   ext j : 1
-  conv_rhs => rw [comp_assoc, comul_comp_lsingle, ←comp_assoc, ← TensorProduct.map_comp]
+  conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j
   · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
   · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
@@ -232,9 +232,9 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
       ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
   coassoc := by
     ext i : 1
-    simp_rw [comp_assoc, comul_comp_lsingle, ←comp_assoc, lTensor_comp_map, comul_comp_lsingle,
-      comp_assoc, ←comp_assoc comul, rTensor_comp_map, comul_comp_lsingle, ←map_comp_rTensor,
-      ←map_comp_lTensor, comp_assoc, ←coassoc, ←comp_assoc comul, ←comp_assoc,
+    simp_rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, lTensor_comp_map, comul_comp_lsingle,
+      comp_assoc, ← comp_assoc comul, rTensor_comp_map, comul_comp_lsingle, ← map_comp_rTensor,
+      ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq]
 
 end Finsupp
