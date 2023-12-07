@@ -846,7 +846,7 @@ def update : Π₀ i, β i :=
 
 variable (j : ι)
 
-@[simp, norm_cast] lemma coe_update : (f.update i b : ∀ i : ι, β i) = .update f i b := rfl
+@[simp, norm_cast] lemma coe_update : (f.update i b : ∀ i : ι, β i) = Function.update f i b := rfl
 #align dfinsupp.coe_update DFinsupp.coe_update
 
 @[simp]
