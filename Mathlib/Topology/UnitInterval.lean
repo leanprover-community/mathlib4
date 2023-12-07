@@ -72,7 +72,7 @@ instance hasOne : One I :=
   ⟨⟨1, by constructor <;> norm_num⟩⟩
 #align unit_interval.has_one unitInterval.hasOne
 
-instance : ZeroLEOneClass I := ⟨@zero_le_one ℝ _ _ _ _⟩
+instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
 instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 

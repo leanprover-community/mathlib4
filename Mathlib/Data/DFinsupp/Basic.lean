@@ -752,7 +752,7 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 @[simp]
 theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
     {i} (b₁ : β₁ i) (b₂ : β₂ i) :
-      zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
+    zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
   ext j
   rw [zipWith_apply]
   obtain rfl | hij := Decidable.eq_or_ne i j
