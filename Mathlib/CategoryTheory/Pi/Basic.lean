@@ -365,7 +365,7 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (Functor.leftUnitor _).symm)
 
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
-@[simps!]
+@[simps]
 def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
     (∀ i, C' i) ≌ C' none × (∀ (j : J), C' (some j)) where
   functor := Functor.prod' (Pi.eval C' none)
