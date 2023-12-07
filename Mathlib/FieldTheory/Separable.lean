@@ -544,13 +544,11 @@ theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=
-  isSeparable_iff.2 fun x ↦ by
-    refine (isSeparable_iff.1 h (algebraMap K E x)).imp .tower_bot_of_field fun hs ↦ ?_
-    obtain ⟨q, hq⟩ :=
+  ⟨fun x ↦
+    have ⟨_q, hq⟩ :=
       minpoly.dvd F x
         ((aeval_algebraMap_eq_zero_iff _ _ _).mp (minpoly.aeval F ((algebraMap K E) x)))
-    rw [hq] at hs
-    exact hs.of_mul_left
+    (hq ▸ h.separable (algebraMap K E x)).of_mul_left⟩
 #align is_separable_tower_bot_of_is_separable isSeparable_tower_bot_of_isSeparable
 
 variable {E}
