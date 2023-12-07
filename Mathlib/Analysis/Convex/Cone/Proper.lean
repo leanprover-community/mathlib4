@@ -114,10 +114,6 @@ variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
-/-- The `ProperCone` constructed from a pointed `PointedCone`. -/
-theorem _root_.PointedCone.toProperCone (K : PointedCone 𝕜 E) (hK : IsClosed (K : Set E)) :
-  ProperCone 𝕜 E := ⟨K, hK⟩
-
 /-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
 define `toPointedCone` as an alias of `toSubmodule`. -/
 abbrev toPointedCone (C : ProperCone 𝕜 E) := C.toSubmodule
@@ -133,8 +129,7 @@ instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
 --   rfl
 #noalign proper_cone.to_convex_cone_eq_coe
 
-theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) := fun S T h => by
-  cases S; cases T; congr
+theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) := fun S T h => by cases S; cases T; congr
 #align proper_cone.ext' ProperCone.toPointedCone_injective
 
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
