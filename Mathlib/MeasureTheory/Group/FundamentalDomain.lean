@@ -1013,8 +1013,7 @@ is a finite measure. -/
 @[to_additive]
 theorem QuotientVolumeEqVolumePreimage.isFiniteMeasure_quotient
     (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ]
-    [hasFun : HasFundamentalDomain G α]
-    (h : covolume G α ≠ ⊤) :
+    [hasFun : HasFundamentalDomain G α] (h : covolume G α ≠ ⊤) :
     IsFiniteMeasure μ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
   rw [h𝓕.eq_quotientMeasure μ, h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
