@@ -1179,8 +1179,8 @@ theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L
   by_cases h : Integrable φ μ
   · exact integral_comp_comm L h
   have : ¬Integrable (fun a => L (φ a)) μ := by
-    erw [LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
-    assumption
+    rwa [← Function.comp_def,
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
   simp [integral_undef, h, this]
 #align continuous_linear_map.integral_comp_comm' ContinuousLinearMap.integral_comp_comm'
 
