@@ -3,7 +3,6 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -63,6 +62,8 @@ open Set
 
 variable {α β : Type*}
 
+/-! ### Prerequisite order properties -/
+
 section Preorder
 variable [Preorder α] {s t : Set α}
 
@@ -101,12 +102,20 @@ lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClo
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
 
+lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
+  fun _d ⟨_b, hb⟩ _ _a ha hds ↦ hs (ha.1 hb) $ hds hb
+
+lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s := hs.compl.dirSupClosed.of_compl
+
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (isLUB_le_iff ha).2
 
 end Preorder
-#exit
 
 namespace Topology
+
+/-! ### Scott-Hausdorff topology -/
+
+section ScottHausdorff
 variable [Preorder α] {s : Set α}
 
 /--
@@ -127,12 +136,16 @@ def scottHausdorff : TopologicalSpace α where
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
+variable (α) [TopologicalSpace α]
+
 /-- Predicate for an ordered topological space to be equipped with the Scott-Hausdorff topology. -/
-class IsScottHausdorff (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
+class IsScottHausdorff : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff
 
+instance : @IsScottHausdorff α _ scottHausdorff := @IsScottHausdorff.mk _ _ scottHausdorff rfl
+
 namespace IsScottHausdorff
-variable (α) [TopologicalSpace α] [Preorder α] [IsScottHausdorff α] {s : Set α}
+variable [IsScottHausdorff α] {s : Set α}
 
 lemma topology_eq : ‹_› = scottHausdorff := topology_eq_scottHausdorff
 
@@ -145,6 +158,9 @@ lemma isOpen_iff :
 lemma isOpen_of_isLowerSet (h : IsLowerSet s) : IsOpen s :=
   isOpen_iff.2 fun _d ⟨b, hb⟩ _ _ hda ha ↦ ⟨b, hb, fun _ hc ↦ h (mem_upperBounds.1 hda.1 _ hc.2) ha⟩
 
+lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
+  isOpen_compl_iff.1 $ isOpen_of_isLowerSet h.compl
+
 lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
   fun d hd₁ hd₂ a hda hd₃ ↦ by
     obtain ⟨b, hbd, hb⟩ := isOpen_iff.1 h hd₁ hd₂ hda hd₃; exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
@@ -153,6 +169,13 @@ lemma dirSupClosed_of_isClosed (h : IsClosed s) : DirSupClosed s :=
   (dirSupInacc_of_isOpen h.isOpen_compl).of_compl
 
 end IsScottHausdorff
+end ScottHausdorff
+
+/-! ### Scott topology -/
+
+section Scott
+section Preorder
+variable [Preorder α]
 
 /--
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
@@ -163,13 +186,18 @@ def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
 lemma upperSet_le_scott : upperSet α ≤ scott := le_sup_left
 
 lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
+
+variable (α) [TopologicalSpace α]
+
 /--
 The Scott topology is defined as the join of the topology of upper sets and the topological space
 where a set `u` is open if, when the least upper bound of a directed set `d` lies in `u` then there
 is a tail of `d` which is a subset of `u`.
 -/
-class IsScott (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
+class IsScott : Prop where
   topology_eq_scott : ‹TopologicalSpace α› = scott
+
+end Preorder
 
 namespace IsScott
 section Preorder
@@ -180,20 +208,14 @@ lemma topology_eq : ‹_› = scott := topology_eq_scott
 variable {α} {s : Set α} {a : α}
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open :
-    IsOpen s ↔ IsUpperSet s ∧ scottHausdorff.IsOpen s := by erw [topology_eq α]; rfl
+    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff] s := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirSupInacc s := by
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open]
-  constructor
-  · refine' And.imp_right _
-    convert @IsScottHausdorff.dirSupInacc_of_isOpen _ _
-    exact ⟨rfl⟩
-  · intros h
-    constructor
-    · exact h.1
-    · intros d d₁ d₂ _ d₃ ha
-      obtain ⟨b, hbd, hbu⟩ := h.2 d₁ d₂ d₃ ha
-      exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.1.Ici_subset hbu)⟩
+  refine and_congr_right fun h ↦
+    ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ scottHausdorff _ _, fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
+  obtain ⟨b, hbd, hbu⟩ := h' d₁ d₂ d₃ ha
+  exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.Ici_subset hbu)⟩
 
 lemma isClosed_iff_isLowerSet_and_dirSupClosed : IsClosed s ↔ IsLowerSet s ∧ DirSupClosed s := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc, isUpperSet_compl,
@@ -207,65 +229,44 @@ lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
-  rw [@Topology.IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
+  rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
   · exact instIsUpperSetUpperSet
   · exact topology_eq α
 
 lemma isClosed_Iic : IsClosed (Iic a) :=
-  isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic a, _⟩
+  isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
 -/
 @[simp] lemma closure_singleton : closure {a} = Iic a := le_antisymm
-  (closure_minimal (by rw [singleton_subset_iff, mem_Iic])
-    (isClosed_iff_isLowerSet_and_dirSupClosed.mpr
-      ⟨isLowerSet_Iic a, fun _ _ _ _ d₃ d₄ ↦ (isLUB_le_iff d₃).mpr d₄⟩)) $ by
+  (closure_minimal (by rw [singleton_subset_iff, mem_Iic]) isClosed_Iic) $ by
     rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
     apply lowerClosure_subset_closure
 
-variable [Preorder β] [TopologicalSpace β] [IsScott β]
+variable [Preorder β] [TopologicalSpace β] [IsScott β] {f : α → β}
 
-lemma monotone_of_continuous {f : α → β} (hf : Continuous f) : Monotone f := fun _ b hab ↦ by
-  let u := (Iic (f b))ᶜ
+lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦ by
   by_contra h
-  have s1 : IsOpen u
-  · rw [isOpen_compl_iff, ← closure_singleton]
-    exact isClosed_closure }
-  have u3 : b ∈ f⁻¹' u := isUpperSet_of_isOpen (IsOpen.preimage hf s1) hab h
-  have c1 : f b ∈ (Iic (f b))ᶜ := by
-    simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
-  simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
+  simpa only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true]
+    using isUpperSet_of_isOpen ((isOpen_compl_iff.2 isClosed_Iic).preimage hf) hab h
 
-@[simp] lemma scottContinuous_iff_continuous {f : α → β} : ScottContinuous f ↔ Continuous f := by
-  refine ⟨fun h \map ⟩
-  · intro h
-    rw [continuous_def]
-    intros u hu
-    rw [isOpen_iff_isUpperSet_and_dirSupInacc]
-    exact ⟨IsUpperSet.preimage (isUpperSet_of_isOpen hu) h.monotone,
-      fun _ hd₁ hd₂ _ hd₃ ha ↦ image_inter_nonempty_iff.mp
-        $ (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
-        (directedOn_image.mpr (hd₂.mono (by simp only [Order.Preimage]; apply h.monotone)))
-        (h hd₁ hd₂ hd₃) ha⟩
-  · exact fun hf _ d₁ d₂ _ d₃ ↦ ⟨
-      Monotone.mem_upperBounds_image (monotone_of_continuous hf) ((isLUB_le_iff d₃).mp le_rfl),
-      by
-        rw [lowerBounds, mem_setOf_eq]
-        intros b hb
-        let u := (Iic b)ᶜ
-        by_contra h
-        have s1 : IsOpen u := by
-          rw [isOpen_compl_iff, ← closure_singleton]
-          exact isClosed_closure
-        have s2 : IsOpen (f⁻¹' u) := IsOpen.preimage hf s1
-        rw [isOpen_iff_isUpperSet_and_dirSupInacc] at s2
-        obtain ⟨c, hcd, hfcb⟩ := s2.2 d₁ d₂ d₃ h
-        simp at hfcb
-        simp [upperBounds] at hb
-        have c1: f c ≤ b := hb _ hcd
-        contradiction⟩
+@[simp] lemma scottContinuous_iff_continuous : ScottContinuous f ↔ Continuous f := by
+  refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
+  · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
+    exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ hd₁ hd₂ _ hd₃ ha ↦
+      image_inter_nonempty_iff.mp $ (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
+        (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
+  · refine fun hf _ d₁ d₂ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
+      fun b hb ↦ ?_⟩
+    by_contra h
+    let u := (Iic b)ᶜ
+    have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 isClosed_Iic).preimage hf
+    rw [isOpen_iff_isUpperSet_and_dirSupInacc] at hu
+    obtain ⟨c, hcd, hfcb⟩ := hu.2 d₁ d₂ d₃ h
+    simp [upperBounds] at hb
+    exact hfcb $ hb _ hcd
 
 end Preorder
 
@@ -281,12 +282,32 @@ instance (priority := 90): T0Space α :=
   by simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end PartialOrder
+
+section CompleteLattice
+variable [CompleteLattice α] [TopologicalSpace α] [IsScott α] {s : Set α}
+
+lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset :
+    IsOpen s ↔ IsUpperSet s ∧ ∀ ⦃d⦄,
+      d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
+  simp [isOpen_iff_isUpperSet_and_scottHausdorff_open,
+    @IsScottHausdorff.isOpen_iff _ _ scottHausdorff, DirSupInacc, isLUB_iff_sSup_eq]
+
+lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty :
+    IsOpen s ↔ IsUpperSet s ∧ ∀ ⦃d⦄,
+      d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
+  simp [isOpen_iff_isUpperSet_and_dirSupInacc, DirSupInacc, isLUB_iff_sSup_eq]
+
+lemma isClosed_iff_lower_and_dirSupClosed :
+    IsClosed s ↔ IsLowerSet s ∧ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
+  simp [isClosed_iff_isLowerSet_and_dirSupClosed, DirSupClosed, isLUB_iff_sSup_eq]
+
+end CompleteLattice
 end IsScott
 
 /--
 Type synonym for a preorder equipped with the Scott topology
 -/
-def WithScott := α
+def WithScott (α : Type*) := α
 
 namespace WithScott
 
@@ -325,53 +346,19 @@ lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
 
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
-def withScottHomeomorph : WithScott α ≃ₜ α :=
-  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+def withScottHomeomorph [TopologicalSpace α] [IsScott α] : WithScott α ≃ₜ α :=
+  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
 
 end WithScott
-end Topology
+end Scott
 
-section complete_lattice
+variable [Preorder α] [TopologicalSpace α]
 
-variable [CompleteLattice α] [TopologicalSpace α] [Topology.IsScott α]
+lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff ≤ ‹TopologicalSpace α› := by
+  rw [IsScott.topology_eq α, scott]; exact le_sup_right
 
-lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
-    IsOpen u ↔ IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
-    d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u := by
-  rw [Topology.IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open]
-  apply and_congr_right'
-  exact ⟨fun h d hd₁ hd₂ hd₃ ↦ h hd₁ hd₂ (isLUB_sSup d) hd₃,
-    fun h d hd₁ hd₂ a hd₃ ha ↦ h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
-
-lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty :
-    IsOpen u ↔ IsUpperSet u ∧ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u →
-    (d ∩u).Nonempty := by
-  rw [Topology.IsScott.isOpen_iff_isUpperSet_and_dirSupInacc]
-  apply and_congr_right'
-  exact ⟨fun h d hd₁ hd₂ hd₃ ↦ h hd₁ hd₂ (isLUB_sSup d) hd₃,
-    fun h d hd₁ hd₂ a hd₃ ha ↦ h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
-
-lemma isClosed_iff_lower_and_closed_under_Directed_Sup : IsClosed s
-    ↔ IsLowerSet s ∧
-    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
-  rw [Topology.IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
-  apply and_congr_right'
-  exact ⟨fun h d hd₁ hd₂ hd₃ ↦ h hd₁ hd₂ (isLUB_sSup d) hd₃,
-    fun h d a h₁ h₂ h₃ ha ↦ Set.mem_of_eq_of_mem (IsLUB.sSup_eq h₃).symm (h h₁ h₂ ha)⟩
-
-end complete_lattice
-
-variable [Preorder α]
-
-namespace Topology
-
-lemma IsScott.scottHausdorff_le [TopologicalSpace α] [IsScott α] :
-    scottHausdorff ≤ ‹TopologicalSpace α› := by
-  rw [IsScott.topology_eq α, scott]
-  apply le_sup_right
-
-lemma IsLower.scottHausdorff_le [TopologicalSpace α] [IsLower α] :
-    scottHausdorff ≤ ‹TopologicalSpace α› :=
-  fun _ h ↦ ScottHausdorff.isOpen_of_isLowerSet (IsLower.isLowerSet_of_isOpen h)
+lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff ≤ ‹TopologicalSpace α› :=
+  fun _ h ↦
+    @IsScottHausdorff.isOpen_of_isLowerSet _ _ scottHausdorff _ _ $ IsLower.isLowerSet_of_isOpen h
 
 end Topology
