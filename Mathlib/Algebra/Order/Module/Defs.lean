@@ -65,30 +65,16 @@ All these are registered as instances, which means that in practice you should n
 implications. However, if you encounter a case where you think a statement is true but not covered
 by the current implications, please bring it up on Zulip!
 
-## Notation
+## TODO
 
-The following is local notation in this file:
-• `α≥0`: `{x : α // 0 ≤ x}`
-• `α>0`: `{x : α // 0 < x}`
+This file acts as a substitute for `Mathlib.Algebra.Order.SMul`. We now need to
+* finish the transition by deleting the duplicate lemmas
+* rearrange the non-duplicate lemmas into new files
+* generalise (most of) the lemmas from `Mathlib.Algebra.Order.Module` to here
+* rethink `OrderedSMul`
 -/
 
 variable (α β : Type*)
-
-set_option quotPrecheck false in
-/-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
-notation "α≥0" => {x : α // 0 ≤ x}
-
-set_option quotPrecheck false in
-/-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
-notation "α>0" => {x : α // 0 < x}
-
-set_option quotPrecheck false in
-/-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
-notation "β≥0" => {x : β // 0 ≤ x}
-
-set_option quotPrecheck false in
-/-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
-notation "β>0" => {x : β // 0 < x}
 
 section Abbreviations
 variable [SMul α β] [Preorder α] [Preorder β]
