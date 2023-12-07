@@ -95,7 +95,8 @@ def listSup (l : List ℕ) := max l.length (List.foldr max 0 l) + 1
 def coprimeList (l : List ℕ) : List (ℕ × ℕ) :=
   List.ofFn (fun i : Fin l.length => (l.get i, (i + 1) * (listSup l)! + 1))
 
-@[simp] lemma coprimeList_length (l : List ℕ) : (coprimeList l).length = l.length := by simp[coprimeList]
+@[simp] lemma coprimeList_length (l : List ℕ) : (coprimeList l).length = l.length :=
+  by simp[coprimeList]
 
 lemma coprimeList_lt (l : List ℕ) (i) : ((coprimeList l).get i).1 < ((coprimeList l).get i).2 := by
   have h₁ : l.get (i.cast $ by simp[coprimeList]) < listSup l :=
