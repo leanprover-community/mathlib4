@@ -41,6 +41,7 @@ lemma coprime_list_prod_iff_right {k} {l : List ℕ} :
     Coprime k l.prod ↔ ∀ n ∈ l, Coprime k n := by
   induction' l with m l ih <;> simp[Nat.coprime_mul_iff_right, *]
 
+/-- Define a list of coprimes -/
 inductive Coprimes : List ℕ → Prop
   | nil : Coprimes []
   | cons {n : ℕ} {l : List ℕ} : (∀ m ∈ l, Coprime n m) → Coprimes l → Coprimes (n :: l)
@@ -74,6 +75,7 @@ lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : Coprimes l) :
       · simpa using h.1
       · simpa using h.2 _
 
+/-- List of coprimes used to invert Gödel's Beta function, using the Chinese remainder theorem -/
 def chineseRemainderList : (l : List (ℕ × ℕ)) → (H : Coprimes (l.map Prod.snd)) →
     { k // ∀ i, k ≡ (l.get i).1 [MOD (l.get i).2] }
   | [],          _ => ⟨0, by simp⟩
@@ -90,8 +92,10 @@ def chineseRemainderList : (l : List (ℕ × ℕ)) → (H : Coprimes (l.map Prod
         have : z ≡ (l.get i).1 [MOD (l.get i).2] := Nat.ModEq.trans this (ih.prop i)
         exact this⟩
 
+/-- Maximum of a list's length and its largest element plus one -/
 def listSup (l : List ℕ) := max l.length (List.foldr max 0 l) + 1
 
+/-- A list of coprimes -/
 def coprimeList (l : List ℕ) : List (ℕ × ℕ) :=
   List.ofFn (fun i : Fin l.length => (l.get i, (i + 1) * (listSup l)! + 1))
 
@@ -147,8 +151,10 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
         (Nat.dvd_factorial (by simp[Nat.succ_sub_succ, hij]) (by
           simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hjl))))
 
+/-- Gödel's Beta Function -/
 def beta (n i : ℕ) := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
+/-- Inverse of Gödel's Beta Function -/
 def unbeta (l : List ℕ) :=
   (chineseRemainderList (coprimeList l) (coprimes_coprimeList l) : ℕ).pair (listSup l)!
 
