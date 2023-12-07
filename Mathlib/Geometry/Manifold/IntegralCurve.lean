@@ -517,11 +517,101 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt {γ γ' : ℝ → M} (ht : I.IsInt
     apply mem_of_mem_of_subset ht (Metric.ball_subset_ball _)
     simp
 
-example {γ γ' : ℝ → M} {a b : ℝ} (hip : ∀ t ∈ Ioo a b, I.IsInteriorPoint (γ t))
+theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x} {γ γ' : ℝ → M}
+    {a b : ℝ} (ht₀ : t₀ ∈ Ioo a b) (hip : ∀ t ∈ Ioo a b, I.IsInteriorPoint (γ t))
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
-    (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by sorry
+    (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
   /-
   strategy:
   * Lee P.213, just need to translate "S is closed in J" to type theory language
   -/
+  set s := {t | γ t = γ' t} ∩ Ioo a b with hs
+  have hsub : Ioo a b ⊆ s := by
+    apply isPreconnected_Ioo.subset_of_closure_inter_subset
+    · rw [isOpen_iff_mem_nhds]
+      intro t₁ ht₁
+      rw [mem_nhds_iff]
+      have : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) := by
+        apply isIntegralCurveAt_eqOn_of_contMDiffAt (I := I)
+        · apply hip
+          exact ht₁.2
+        · exact hv.contMDiffAt
+        · apply hγ.isIntegralCurveAt
+          exact Ioo_mem_nhds ht₁.2.1 ht₁.2.2
+        · apply hγ'.isIntegralCurveAt
+          exact Ioo_mem_nhds ht₁.2.1 ht₁.2.2
+        · exact ht₁.1
+      obtain ⟨ε, hε, heqon⟩ := this
+      use Ioo (max a (t₁ - ε)) (min b (t₁ + ε))
+      refine ⟨?_, isOpen_Ioo, ?_⟩
+      · apply subset_inter
+        · intros t ht
+          apply @heqon t
+          apply mem_of_mem_of_subset ht
+          apply Ioo_subset_Ioo (by simp) (by simp)
+        · apply Ioo_subset_Ioo (by simp) (by simp)
+      · rw [mem_Ioo]
+        constructor
+        · apply max_lt ht₁.2.1
+          simp [hε]
+        · apply lt_min ht₁.2.2
+          simp [hε]
+    · use t₀
+      rw [mem_inter_iff]
+      use ht₀
+      use h
+    · -- is this really the most convenient way to pass to subtype topology?
+      rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
+        image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
+      intros t ht
+      rw [mem_preimage, ← closure_subtype] at ht
+      revert ht t
+      apply IsClosed.closure_subset
+      apply isClosed_eq
+      · rw [continuous_iff_continuousAt]
+        rintro ⟨t, ht⟩
+        apply ContinuousAt.comp _ continuousAt_subtype_val
+        rw [Subtype.coe_mk]
+        exact hγ.continuousAt ht
+      · rw [continuous_iff_continuousAt]
+        rintro ⟨t, ht⟩
+        apply ContinuousAt.comp _ continuousAt_subtype_val
+        rw [Subtype.coe_mk]
+        exact hγ'.continuousAt ht
+  intros t ht
+  exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
+
+theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x} {γ γ' : ℝ → M}
+    (hip : ∀ t, I.IsInteriorPoint (γ t))
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
+  ext t
+  have : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
+    use 2 * |t - t₀| + 1
+    constructor
+    · apply add_pos_of_nonneg_of_pos _ zero_lt_one
+      simp
+    · rw [mem_Ioo]
+      by_cases ht : t - t₀ < 0
+      · rw [abs_of_neg ht]
+        constructor <;> linarith
+      · rw [not_lt] at ht
+        rw [abs_of_nonneg ht]
+        constructor <;> linarith
+  obtain ⟨T, hT, ht⟩ := this
+  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff
+    (I := I) (a := t₀ - T) (b := t₀ + T) (t₀ := t₀)
+  · rw [← Real.ball_eq_Ioo]
+    exact Metric.mem_ball_self hT
+  · intros t _
+    exact hip t
+  · exact hv
+  · rw [isIntegralCurve_iff_isIntegralCurveOn] at hγ
+    exact IsIntegralCurveOn.mono hγ (subset_univ _)
+  · rw [isIntegralCurve_iff_isIntegralCurveOn] at hγ'
+    exact IsIntegralCurveOn.mono hγ' (subset_univ _)
+  · exact h
+  · exact ht
