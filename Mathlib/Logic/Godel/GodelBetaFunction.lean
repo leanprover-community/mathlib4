@@ -66,7 +66,7 @@ lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : Coprimes l) :
   · rcases co with (_ | ⟨hm, hl⟩)
     have : a ≡ b [MOD m] ∧ a ≡ b [MOD l.prod] ↔ a ≡ b [MOD m * l.prod] :=
       Nat.modEq_and_modEq_iff_modEq_mul (coprime_list_prod_iff_right.mpr hm)
-    simp[←this, ←ih hl]
+    simp[← this, ← ih hl]
     constructor
     · intro h; exact ⟨by simpa using h ⟨0, by simp⟩, fun i => by simpa using h i.succ⟩
     · intro h i
@@ -110,7 +110,7 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
   Nat.coprime_of_dvd (by
     intro p pp hn hm
     have : p ∣ (m - n) * a := by
-      simpa [Nat.succ_sub_succ, ←Nat.mul_sub_right_distrib] using
+      simpa [Nat.succ_sub_succ, ← Nat.mul_sub_right_distrib] using
         Nat.dvd_sub (Nat.succ_le_succ $ Nat.mul_le_mul_right a h) hm hn
     have : p ∣ a := by
       rcases (Nat.Prime.dvd_mul pp).mp this with (hp | hp)
@@ -130,9 +130,9 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
   rw[this]
   exact coprimes_of_nodup
     (List.nodup_ofFn_ofInjective $ by
-       intro i j; simp[listSup, ←Fin.ext_iff, Nat.factorial_ne_zero])
+       intro i j; simp[listSup, ← Fin.ext_iff, Nat.factorial_ne_zero])
     (by
-      simp[←Fin.ext_iff, not_or]
+      simp[← Fin.ext_iff, not_or]
       suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) *
         (listSup l)! + 1)
       · intro i j hij _
