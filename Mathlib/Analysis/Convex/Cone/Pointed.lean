@@ -15,10 +15,6 @@ nonnegative. This is equivalent to saying that as a set a pointed cone is convex
 contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
 as it allows us to use the `Module` API to work with convex cones.
 
-## TODO
-
-- Rewrite proper cones using pointed cones.
-
 -/
 
 variable {𝕜 E F G : Type*}

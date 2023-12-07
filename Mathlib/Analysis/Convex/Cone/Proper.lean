@@ -114,6 +114,8 @@ variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
+/-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
+define `toPointedCone` as an alias of `toSubmodule`. -/
 abbrev toPointedCone (C : ProperCone 𝕜 E) := C.toSubmodule
 
 attribute [coe] toPointedCone
