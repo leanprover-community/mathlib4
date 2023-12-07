@@ -40,20 +40,6 @@ open SetLike (coe_subset_coe)
 open Finset hiding not_subset
 open Set hiding mem_singleton mem_insert
 
-lemma Finset.filter_card_le_iff {α : Type*} (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
-    (s.filter P).card ≤ n ↔ ∀ s' ≤ s, n < s'.card → ∃ a ∈ s', ¬ P a := by
-  fconstructor
-  · intro H s' hs' s'_card
-    by_contra! rid
-    have card1 := card_le_of_subset (monotone_filter_left P hs') |>.trans H
-    have card2 : (s'.filter P).card = s'.card
-    · rw [filter_true_of_mem rid]
-    exact lt_irrefl _ <| lt_of_lt_of_le (card2.symm ▸ s'_card) card1
-  · contrapose!
-    intro H
-    exact ⟨s.filter P, s.filter_subset P, H, fun a ha ↦ (mem_filter.mp ha).2⟩
-
-
 /--
 Let `R` be a commutative ring, `J` an ideal of `R`, `S` be a finite collection of ideals of `R`
 such that ideals in `S` are prime ideals except for perhaps at most two.
