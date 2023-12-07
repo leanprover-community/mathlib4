@@ -77,7 +77,7 @@ theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype �
 #align finset.preimage_compl Finset.preimage_compl
 
 @[simp]
-theorem preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f (f.injective.injOn _) = s :=
+lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f (f.injective.injOn _) = s :=
   coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
 #align finset.preimage_map Finset.preimage_map
 

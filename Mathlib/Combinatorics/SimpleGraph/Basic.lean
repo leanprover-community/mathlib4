@@ -1033,7 +1033,7 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
   Iff.rfl
 #align simple_graph.mem_neighbor_set SimpleGraph.mem_neighborSet
 
-theorem not_mem_neighborSet_self : a ∉ G.neighborSet a := by simp
+lemma not_mem_neighborSet_self : a ∉ G.neighborSet a := by simp
 #align simple_graph.not_mem_neighbor_set_self SimpleGraph.not_mem_neighborSet_self
 
 @[simp]
