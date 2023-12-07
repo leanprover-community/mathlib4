@@ -23,12 +23,13 @@ defining objects that can be created randomly.
 
 ## Main definitions
 
-* `Rand` and `RandG` monad for computations guided by randomness;
+* `RandT` and `RandGT` monad transformers for computations guided by randomness;
+* `Rand` and `RandG` monads as special cases of the above
 * `Random` class for objects that can be generated randomly;
   * `random` to generate one object;
 * `BoundedRandom` class for objects that can be generated randomly inside a range;
   * `randomR` to generate one object inside a range;
-* `IO.runRand` to run a randomized computation inside the `IO` monad;
+* `IO.runRand` to run a randomized computation inside any monad that has access to `stdGenRef`.
 
 ## References
 
@@ -53,11 +54,14 @@ abbrev Rand := RandG StdGen
 instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
   monadLift x := fun s => x s
 
-/-- `Random m α` gives us machinery to generate values of type `α` in the monad `m` -/
+/-- `Random m α` gives us machinery to generate values of type `α` in the monad `m`.
+
+Note that `m` is a parameter as some types may only be sampleable with access to a certain monad. -/
 class Random (m) (α : Type u) where
   random [RandomGen g] : RandGT g m α
 
-/-- `BoundedRandom α` gives us machinery to generate values of type `α` between certain bounds -/
+/-- `BoundedRandom m α` gives us machinery to generate values of type `α` between certain bounds in
+the monad `m`. -/
 class BoundedRandom (m) (α : Type u) [Preorder α] where
   randomR {g : Type} (lo hi : α) (h : lo ≤ hi) [RandomGen g] : RandGT g m {a // lo ≤ a ∧ a ≤ hi}
 
