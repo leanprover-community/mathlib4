@@ -29,9 +29,9 @@ def sectionsEquiv {J : Type u} [Category.{u, u} J] (K : J ⥤ Type u) :
     uliftFunctor.{v, u}.obj (Functor.sections K) ≃
       (Functor.sections (K ⋙ uliftFunctor.{v, u})) where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
-  invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
-  left_inv := by intro; apply ULift.ext; ext; rfl
-  right_inv := by intro; ext; rfl
+  invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, fun f => by simp [← hu f]⟩
+  left_inv _ := by apply ULift.ext; ext; rfl
+  right_inv _ := by ext; rfl
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.
@@ -54,8 +54,8 @@ def sectionsEquiv' {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
-  left_inv := by intro; ext; rfl
-  right_inv := by intro; ext; rfl
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits.

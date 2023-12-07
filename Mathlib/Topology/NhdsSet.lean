@@ -175,5 +175,5 @@ theorem Continuous.tendsto_nhdsSet {f : α → β} {t : Set β} (hf : Continuous
 lemma Continuous.tendsto_nhdsSet_nhds {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {s : Set X} {y : Y} {f : X → Y} (h : Continuous f) (h' : EqOn f (fun _ ↦ y) s) :
     Tendsto f (𝓝ˢ s) (𝓝 y) := by
-  rw [←nhdsSet_singleton]
+  rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'

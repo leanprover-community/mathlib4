@@ -1164,9 +1164,8 @@ theorem eventually_congr {f : Filter α} {p q : α → Prop} (h : ∀ᶠ x in f,
 #align filter.eventually_congr Filter.eventually_congr
 
 @[simp]
-theorem eventually_all {ι : Type*} [Finite ι] {l} {p : ι → α → Prop} :
+theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  cases nonempty_fintype ι
   simpa only [Filter.Eventually, setOf_forall] using iInter_mem
 #align filter.eventually_all Filter.eventually_all
 
@@ -1203,10 +1202,9 @@ theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop}
   simp only [@or_comm _ q, eventually_or_distrib_left]
 #align filter.eventually_or_distrib_right Filter.eventually_or_distrib_right
 
-@[simp]
 theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
-    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x := by
-  simp only [imp_iff_not_or, eventually_or_distrib_left]
+    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x :=
+  eventually_all
 #align filter.eventually_imp_distrib_left Filter.eventually_imp_distrib_left
 
 @[simp]
@@ -1366,21 +1364,19 @@ theorem frequently_or_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} 
     (∃ᶠ x in f, p x ∨ q) ↔ (∃ᶠ x in f, p x) ∨ q := by simp
 #align filter.frequently_or_distrib_right Filter.frequently_or_distrib_right
 
-@[simp]
 theorem frequently_imp_distrib {f : Filter α} {p q : α → Prop} :
     (∃ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) → ∃ᶠ x in f, q x := by
-  simp [imp_iff_not_or, not_eventually, frequently_or_distrib]
+  simp [imp_iff_not_or]
 #align filter.frequently_imp_distrib Filter.frequently_imp_distrib
 
 theorem frequently_imp_distrib_left {f : Filter α} [NeBot f] {p : Prop} {q : α → Prop} :
-    (∃ᶠ x in f, p → q x) ↔ p → ∃ᶠ x in f, q x := by simp
+    (∃ᶠ x in f, p → q x) ↔ p → ∃ᶠ x in f, q x := by simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_left Filter.frequently_imp_distrib_left
 
 theorem frequently_imp_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} {q : Prop} :
-    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp
+    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_right Filter.frequently_imp_distrib_right
 
-@[simp]
 theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∀ᶠ x in f, p x → q) ↔ (∃ᶠ x in f, p x) → q := by
   simp only [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
@@ -2608,7 +2604,7 @@ theorem map_inf' {f g : Filter α} {m : α → β} {t : Set α} (htf : t ∈ f) 
 
 lemma disjoint_of_map {α β : Type*} {F G : Filter α} {f : α → β}
     (h : Disjoint (map f F) (map f G)) : Disjoint F G :=
-    disjoint_iff.mpr <| map_eq_bot_iff.mp <| le_bot_iff.mp <| trans map_inf_le (disjoint_iff.mp h)
+  disjoint_iff.mpr <| map_eq_bot_iff.mp <| le_bot_iff.mp <| trans map_inf_le (disjoint_iff.mp h)
 
 theorem disjoint_map {m : α → β} (hm : Injective m) {f₁ f₂ : Filter α} :
     Disjoint (map m f₁) (map m f₂) ↔ Disjoint f₁ f₂ := by
@@ -2932,7 +2928,7 @@ gi_principal_ker.gc.u_iInf
 gi_principal_ker.gc.u_sInf
 @[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
 
-@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [←principal_singleton, ker_principal]
+@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [← principal_singleton, ker_principal]
 
 @[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
   ext a

@@ -124,7 +124,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 /-- If a family of open sets `s` is such that every open neighbourhood contains some
 member of `s`, then `s` is a topological basis. -/
-theorem isTopologicalBasis_of_open_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
+theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
     (h_nhds : ∀ (a : α) (u : Set α), a ∈ u → IsOpen u → ∃ v ∈ s, a ∈ v ∧ v ⊆ u) :
     IsTopologicalBasis s := by
   refine'
@@ -137,7 +137,7 @@ theorem isTopologicalBasis_of_open_of_nhds {s : Set (Set α)} (h_open : ∀ u �
     rcases h_nhds a u ha hu with ⟨v, hvs, hav, hvu⟩
     rw [nhds_generateFrom]
     exact iInf₂_le_of_le v ⟨hav, hvs⟩ (le_principal_iff.2 hvu)
-#align topological_space.is_topological_basis_of_open_of_nhds TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+#align topological_space.is_topological_basis_of_open_of_nhds TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
 contains `a` and is itself contained in `s`. -/
@@ -245,13 +245,13 @@ theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTop
 #align topological_space.is_topological_basis.exists_nonempty_subset TopologicalSpace.IsTopologicalBasis.exists_nonempty_subset
 
 theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } :=
-  isTopologicalBasis_of_open_of_nhds (by tauto) (by tauto)
+  isTopologicalBasis_of_isOpen_of_nhds (by tauto) (by tauto)
 #align topological_space.is_topological_basis_opens TopologicalSpace.isTopologicalBasis_opens
 
 protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
     IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
-  refine' isTopologicalBasis_of_open_of_nhds _ _
+  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨u₁, u₂, hu₁, hu₂, rfl⟩
     exact (h₁.isOpen hu₁).prod (h₂.isOpen hu₂)
   · rintro ⟨a, b⟩ u hu uo
@@ -262,7 +262,7 @@ protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set
 
 protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
     (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) := by
-  refine' isTopologicalBasis_of_open_of_nhds _ _
+  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨V, hV, rfl⟩
     rw [hf.isOpen_iff]
     refine' ⟨V, h.isOpen hV, rfl⟩
@@ -277,7 +277,7 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
     (Uc : ⋃ i, U i = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :
     IsTopologicalBasis (⋃ i : ι, image ((↑) : U i → α) '' b i) := by
-  refine' isTopologicalBasis_of_open_of_nhds (fun u hu => _) _
+  refine' isTopologicalBasis_of_isOpen_of_nhds (fun u hu => _) _
   · simp only [mem_iUnion, mem_image] at hu
     rcases hu with ⟨i, s, sb, rfl⟩
     exact (Uo i).isOpenMap_subtype_val _ ((hb i).isOpen sb)
@@ -528,7 +528,7 @@ theorem isTopologicalBasis_pi {ι : Type*} {X : ι → Type*} [∀ i, Topologica
     {T : ∀ i, Set (Set (X i))} (cond : ∀ i, IsTopologicalBasis (T i)) :
     IsTopologicalBasis { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
       (∀ i, i ∈ F → U i ∈ T i) ∧ S = (F : Set ι).pi U } := by
-  refine' isTopologicalBasis_of_open_of_nhds _ _
+  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨U, F, h1, rfl⟩
     apply isOpen_set_pi F.finite_toSet
     intro i hi
@@ -565,7 +565,7 @@ theorem isTopologicalBasis_iInf {β : Type*} {ι : Type*} {X : ι → Type*}
 
 theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
     IsTopologicalBasis { s | ∃ x : α, (s : Set α) = {x} } :=
-  isTopologicalBasis_of_open_of_nhds (fun _ _ => isOpen_discrete _) fun x _ hx _ =>
+  isTopologicalBasis_of_isOpen_of_nhds (fun _ _ => isOpen_discrete _) fun x _ hx _ =>
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
 #align is_topological_basis_singletons isTopologicalBasis_singletons
 
@@ -841,7 +841,7 @@ topological bases on each of the parts of the space. -/
 theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
     (hs : ∀ i, IsTopologicalBasis (s i)) :
     IsTopologicalBasis (⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' s i) := by
-  apply isTopologicalBasis_of_open_of_nhds
+  apply isTopologicalBasis_of_isOpen_of_nhds
   · intro u hu
     obtain ⟨i, t, ts, rfl⟩ : ∃ (i : ι) (t : Set (E i)), t ∈ s i ∧ Sigma.mk i '' t = u := by
       simpa only [mem_iUnion, mem_image] using hu
@@ -874,7 +874,7 @@ topological bases on each of the two components. -/
 theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t : Set (Set β)}
     (ht : IsTopologicalBasis t) :
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
-  apply isTopologicalBasis_of_open_of_nhds
+  apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
     · exact openEmbedding_inl.isOpenMap w (hs.isOpen hw)
     · exact openEmbedding_inr.isOpenMap w (ht.isOpen hw)
@@ -909,7 +909,7 @@ variable {X : Type*} [TopologicalSpace X] {Y : Type*} [TopologicalSpace Y] {π :
 /-- The image of a topological basis under an open quotient map is a topological basis. -/
 theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h' : QuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
-  apply isTopologicalBasis_of_open_of_nhds
+  apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro - ⟨U, U_in_V, rfl⟩
     apply h U (hV.isOpen U_in_V)
   · intro y U y_in_U U_open
