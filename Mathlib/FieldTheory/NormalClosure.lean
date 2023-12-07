@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.Normal
+import Mathlib.Order.Closure
 
 #align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 /-!
@@ -69,14 +70,6 @@ lemma normalClosure_le_iSup_adjoin :
     IntermediateField.subset_adjoin F _ <| by
       rw [mem_rootSet_of_ne (minpoly.ne_zero <| isAlgebraic_iff_isIntegral.mp <| alg x), ← hx,
         AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, aeval_algHom_apply, minpoly.aeval, map_zero]
-
-theorem isNormalClosure_range_eval_eq_rootSet_minpoly [h: IsNormalClosure F K L] (x : K) :
-    (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = Polynomial.rootSet (minpoly F x) L := by
-  ext a
-  rw [Polynomial.mem_rootSet_of_ne (minpoly.ne_zero (alg.isIntegral x))]
-  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun x ↦ ⟨alg.isIntegral x, h.splits x⟩) ha⟩
-  rw [← hψ, Polynomial.aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
 
 variable (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
 
@@ -177,16 +170,6 @@ instance is_finiteDimensional [FiniteDimensional F K] :
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
     f.toLinearMap.finiteDimensional_range
   apply IntermediateField.finiteDimensional_iSup_of_finite
-
-/-- All `F`-`AlgHom`s from `K` to an algebraic closed field `A` factor through
-a normal closure of `K/F`. -/
-noncomputable def _root_.IsNormalClosure.algHom_equiv_algHom_isAlgClosed (A : Type*) [Field A]
-    [Algebra F L] [Algebra F A] [IsNormalClosure F K L] [IsAlgClosed A] [FiniteDimensional F K] :
-    (K →ₐ[F] L) ≃ (K →ₐ[F] A) := by
-  refine Equiv.trans (AlgEquiv.arrowCongr AlgEquiv.refl ?_) (normalClosure.algHomEquiv F K A)
-  convert IsNormalClosure.equiv (F := F) (K := K) (L := L) (L' := (normalClosure F K A))
-  refine Algebra.IsAlgebraic.isNormalClosure_normalClosure (Algebra.IsAlgebraic.of_finite F K) ?_
-  exact fun x => IsAlgClosed.splits_codomain (minpoly F x)
 
 variable [Algebra K L] [IsScalarTower F K L]
 
