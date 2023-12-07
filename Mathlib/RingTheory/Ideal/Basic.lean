@@ -765,24 +765,24 @@ theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1
 
 open BigOperators
 
-theorem prod_mem_of_mem {ι R : Type*} [CommRing R] {t : Finset ι} {f : ι → R}
+theorem prod_mem_of_mem {ι R : Type*} [CommSemiring R] {t : Finset ι} {f : ι → R}
     (I : Ideal R) {c : ι} (hc : c ∈ t) (hfc : f c ∈ I) :
     ∏ i in t, f i ∈ I := by
   classical
-  induction' t using Finset.induction_on with j t hj ih
+  induction' t using Finset.induction_on with j t hj ih generalizing c
   · aesop
-  · simp_rw [Finset.mem_insert] at mem
+  · simp_rw [Finset.mem_insert] at hc
     rw [Finset.prod_insert hj]
-    obtain ⟨c, (rfl|hc1), hc2⟩ := mem
-    · exact I.mul_mem_right _ hc2
-    · exact I.mul_mem_left _ <| ih ⟨c, hc1, hc2⟩
+    obtain (rfl|hc) := hc
+    · exact I.mul_mem_right _ hfc
+    · exact I.mul_mem_left _ <| ih hc hfc
 
-theorem IsPrime.prod_mem_iff_exists_mem {ι R : Type*} [CommRing R] {t : Finset ι} {f : ι → R}
+theorem IsPrime.prod_mem_iff_exists_mem {ι R : Type*} [CommSemiring R] {t : Finset ι} {f : ι → R}
     (I : Ideal R) [isPrime : I.IsPrime] :
     (∏ i in t, f i) ∈ I ↔ ∃ c ∈ t, f c ∈ I := by
   classical
   refine ⟨t.induction_on (fun h ↦ (isPrime.1 <| (eq_top_iff_one _).mpr <| by aesop).elim)
-    fun j t hj ih h ↦ ?_, I.prod_mem_of_mem⟩
+    fun j t hj ih h ↦ ?_, fun ⟨c, hc, hfc⟩ ↦ I.prod_mem_of_mem hc hfc⟩
   rw [Finset.prod_insert hj] at h
   rcases isPrime.mem_or_mem h with rid|rid
   · exact ⟨j, Finset.mem_insert.mpr <| Or.intro_left _ rfl, rid⟩
