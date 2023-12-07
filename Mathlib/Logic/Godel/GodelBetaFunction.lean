@@ -49,7 +49,8 @@ lemma coprimes_of_nodup {l : List ℕ} (hl : l.Nodup) (H : ∀ n ∈ l, ∀ m �
     Coprimes l := by
   induction' l with n l ih
   · exact Coprimes.nil
-  · have : Coprimes l := ih (List.Nodup.of_cons hl) (fun m hm k hk => H m (by simp[hm]) k (by simp[hk]))
+  · have : Coprimes l := ih (List.Nodup.of_cons hl) (fun m hm k hk => H m (by simp[hm]) k
+    (by simp[hk]))
     exact Coprimes.cons (fun m hm => coprime_comm.mp
       (H m (by simp[hm]) n (by simp) (by rintro rfl; exact (List.nodup_cons.mp hl).1 hm))) this
 
