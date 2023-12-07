@@ -195,7 +195,7 @@ section integral
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-lemma set_integral_tilted (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
+lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
   · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
@@ -212,7 +212,7 @@ lemma set_integral_tilted (f : α → ℝ) (g : α → E) {s : Set α} (hs : Mea
     rw [integral_undef hf']
     simp
 
-lemma set_integral_tilted' [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
+lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
   · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀']
@@ -231,7 +231,7 @@ lemma set_integral_tilted' [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set
 
 lemma integral_tilted (f : α → ℝ) (g : α → E) :
     ∫ x, g x ∂(μ.tilted f) = ∫ x, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
-  rw [← integral_univ, set_integral_tilted f g MeasurableSet.univ, integral_univ]
+  rw [← integral_univ, set_integral_tilted' f g MeasurableSet.univ, integral_univ]
 
 end integral
 
