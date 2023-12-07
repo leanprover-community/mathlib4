@@ -396,7 +396,7 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
     Finset.coe_univ, ← injective_iff_injOn_univ]
 
-theorem primitive_element_iff_algHom_eq_of_eval (α : E) (hF : Algebra.IsAlgebraic F A)
+theorem primitive_element_iff_algHom_eq_of_eval (α : E) 
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval' F A hA]
   refine ⟨fun h _ eq => h eq, fun h φ₀ ψ₀ h' => ?_⟩
@@ -419,10 +419,9 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E) (hF : Algebra.IsAlgebra
     ext1 x
     exact (RingHom.injective σ.toRingHom) <| AlgHom.congr_fun (eq₁.symm.trans eq₂) x
   refine IntermediateField.exists_algHom_of_splits_of_aeval ?_ ?_
-  · refine fun x => ⟨IsAlgebraic.isIntegral ?_, ?_⟩
-    · exact (isAlgebraic_adjoin fun a _ => IsAlgebraic.isIntegral (hF a)) x
-    · refine Polynomial.splits_of_algHom ?_ K.toSubalgebra.val
-      exact Normal.splits (IsNormalClosure.normal (K := E)) x
+  · refine fun x => ⟨IsAlgebraic.isIntegral (IsAlgebraic.of_finite F x), ?_⟩
+    refine Polynomial.splits_of_algHom ?_ K.toSubalgebra.val
+    exact Normal.splits (IsNormalClosure.normal (K := E)) x
   · rw [aeval_algHom_apply, _root_.map_eq_zero]
     convert minpoly.aeval F α
     letI : Algebra E K := (res φ₀).toAlgebra
