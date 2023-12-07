@@ -51,8 +51,8 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun DFinsupp.orderEmbeddingToFun
 
-@[simp, norm_cast] lemma coe_orderEmbeddingToFun :
-    (orderEmbeddingToFun : (Π₀ i, α i) → ∀ i, α i) = FunLike.coe := rfl
+@[simp, norm_cast]
+lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = FunLike.coe := rfl
 
 -- Porting note: we added implicit arguments here in #3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
@@ -73,10 +73,10 @@ instance : Preorder (Π₀ i, α i) :=
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
 
-lemma coe_mono : Monotone ((⇑) : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_mono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 #align dfinsupp.coe_fn_mono DFinsupp.coe_mono
 
-lemma coe_strictMono : Monotone ((⇑) : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
 end Preorder
 
