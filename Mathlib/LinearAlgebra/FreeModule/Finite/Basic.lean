@@ -33,7 +33,7 @@ variable [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
 /-- If a free module is finite, then any arbitrary basis is finite. -/
 lemma finite_basis {R M} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-  [Module.Free R M] {ι} [Module.Finite R M] (b : Basis ι R M) :
+    [Module.Free R M] {ι} [Module.Finite R M] (b : Basis ι R M) :
     _root_.Finite ι := by
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   exact basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
