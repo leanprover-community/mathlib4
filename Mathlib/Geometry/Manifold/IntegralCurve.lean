@@ -313,7 +313,7 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
 
-example {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
+theorem isIntegralCurveAt_eqOn_of_contMDiffAt {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) := by
@@ -486,7 +486,7 @@ example {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
           rfl
         rw [← h2]
         exact this
-      have hsub : (fun x ↦ v') t ((↑(extChartAt I (γ t₀)) ∘ γ) t) =
+      have hsub : (fun _ ↦ v') t ((↑(extChartAt I (γ t₀)) ∘ γ) t) =
         (tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t)) := by
         dsimp only
         rw [Function.comp_apply, LocalEquiv.left_inv]
@@ -516,3 +516,12 @@ example {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
     rw [← Real.ball_eq_Ioo] at ht
     apply mem_of_mem_of_subset ht (Metric.ball_subset_ball _)
     simp
+
+example {γ γ' : ℝ → M} {a b : ℝ} (hip : ∀ t ∈ Ioo a b, I.IsInteriorPoint (γ t))
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
+    (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by sorry
+  /-
+  strategy:
+  * Lee P.213, just need to translate "S is closed in J" to type theory language
+  -/
