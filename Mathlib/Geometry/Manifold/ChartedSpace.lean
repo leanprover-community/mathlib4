@@ -361,9 +361,9 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
   trans' e e' he he' := by
     constructor
     · apply PG.comp he.1 he'.1 e.open_source e'.open_source
-      apply e.continuous_toFun.preimage_open_of_open e.open_source e'.open_source
+      apply e.continuousOn_toFun.isOpen_inter_preimage e.open_source e'.open_source
     · apply PG.comp he'.2 he.2 e'.open_target e.open_target
-      apply e'.continuous_invFun.preimage_open_of_open e'.open_target e.open_target
+      apply e'.continuousOn_invFun.isOpen_inter_preimage e'.open_target e.open_target
   symm' e he := ⟨he.2, he.1⟩
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
@@ -377,7 +377,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
     · refine' PG.locality e.open_target fun x xu ↦ _
       rcases he (e.symm x) (e.map_target xu) with ⟨s, s_open, xs, hs⟩
       refine' ⟨e.target ∩ e.symm ⁻¹' s, _, ⟨xu, xs⟩, _⟩
-      · exact ContinuousOn.preimage_open_of_open e.continuous_invFun e.open_target s_open
+      · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
         convert hs.2 using 1
         dsimp [LocalHomeomorph.restr]
@@ -849,7 +849,7 @@ structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   mem_chart_source : ∀ x, x ∈ (chartAt x).source
   chart_mem_atlas : ∀ x, chartAt x ∈ atlas
   open_source : ∀ e e' : LocalEquiv M H, e ∈ atlas → e' ∈ atlas → IsOpen (e.symm.trans e').source
-  continuous_toFun : ∀ e e' : LocalEquiv M H, e ∈ atlas → e' ∈ atlas →
+  continuousOn_toFun : ∀ e e' : LocalEquiv M H, e ∈ atlas → e' ∈ atlas →
     ContinuousOn (e.symm.trans e') (e.symm.trans e').source
 #align charted_space_core ChartedSpaceCore
 
@@ -886,7 +886,7 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
   { c.toTopologicalSpace, e with
     open_source := by convert c.open_source' he
     open_target := by convert c.open_target he
-    continuous_toFun := by
+    continuousOn_toFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]
       intro s s_open
@@ -894,9 +894,9 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       apply TopologicalSpace.GenerateOpen.basic
       simp only [exists_prop, mem_iUnion, mem_singleton_iff]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
-    continuous_invFun := by
+    continuousOn_invFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
-      apply continuousOn_open_of_generateFrom
+      apply continuousOn_isOpen_of_generateFrom
       intro t ht
       simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩
@@ -904,7 +904,7 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       let f := e.symm.trans e'
       have : IsOpen (f ⁻¹' s ∩ f.source) := by
         simpa [inter_comm] using (continuousOn_open_iff (c.open_source e e' he e'_atlas)).1
-          (c.continuous_toFun e e' he e'_atlas) s s_open
+          (c.continuousOn_toFun e e' he e'_atlas) s s_open
       have A : e' ∘ e.symm ⁻¹' s ∩ (e.target ∩ e.symm ⁻¹' e'.source) =
           e.target ∩ (e' ∘ e.symm ⁻¹' s ∩ e.symm ⁻¹' e'.source) := by
         rw [← inter_assoc, ← inter_assoc]
@@ -1019,7 +1019,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph
   set f := chartAt (H := H) (e.symm x)
   let s := e.target ∩ e.symm ⁻¹' f.source
   have hs : IsOpen s := by
-    apply e.symm.continuous_toFun.preimage_open_of_open <;> apply open_source
+    apply e.symm.continuousOn_toFun.isOpen_inter_preimage <;> apply open_source
   have xs : x ∈ s := by
     simp only [mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
@@ -1159,8 +1159,19 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
-    · exact preimage_open_of_open_symm (chartAt _ _) s.2
+    · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
 #align topological_space.opens.has_groupoid TopologicalSpace.Opens.instHasGroupoid
+
+theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
+    (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
+  set i : U → M := Subtype.val
+  set e := chartAt H x.val
+  haveI : Nonempty U := ⟨x⟩
+  haveI : Nonempty M := ⟨i x⟩
+  have heUx_nhds : (e.subtypeRestr U).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr U).open_target.mem_nhds
+    exact e.map_subtype_source (mem_chart_source _ _)
+  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn U)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
     (chartAt H (Set.inclusion hUV x)).symm
@@ -1236,7 +1247,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have hg₂ := mem_chart_source (H := H) y
       let s := (c.symm ≫ₕ f₁).source ∩ c.symm ≫ₕ f₁ ⁻¹' g.source
       have open_s : IsOpen s := by
-        apply (c.symm ≫ₕ f₁).continuous_toFun.preimage_open_of_open <;> apply open_source
+        apply (c.symm ≫ₕ f₁).continuousOn_toFun.isOpen_inter_preimage <;> apply open_source
       have : x ∈ s := by
         constructor
         · simp only [trans_source, preimage_univ, inter_univ, Homeomorph.toLocalHomeomorph_source]

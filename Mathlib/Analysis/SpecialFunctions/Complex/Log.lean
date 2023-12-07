@@ -19,9 +19,9 @@ noncomputable section
 
 namespace Complex
 
-open Set Filter
+open Set Filter Bornology
 
-open Real Topology ComplexConjugate
+open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
@@ -169,7 +169,7 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine' ⟨fun hs => _, fun hs => _⟩
   · refine' ((hs.image exp).insert 0).mono _
-    rw [Set.image_preimage_eq_inter_range, range_exp, ←Set.diff_eq, ←Set.union_singleton,
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
   · rw [← Set.biUnion_preimage_singleton]
@@ -221,9 +221,9 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
 @[simp]
-theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop := by
-  rw [← comap_exp_comap_abs_atTop, map_comap, range_exp, inf_eq_left, le_principal_iff]
-  exact eventually_ne_of_tendsto_norm_atTop tendsto_comap 0
+theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
+  rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
+  exact eventually_ne_cobounded _
 #align complex.map_exp_comap_re_at_top Complex.map_exp_comap_re_atTop
 
 end Complex

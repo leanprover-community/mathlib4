@@ -151,7 +151,7 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
           ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
   have key : p ^ (1 : Cardinal) ≤ ↑a := by
-    rw [←hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
+    rw [← hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
   rw [power_one] at key
   lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
   exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, mod_cast hpk⟩
