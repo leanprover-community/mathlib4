@@ -99,7 +99,7 @@ lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClo
     ht hd hd' ha $ hds.trans $ inter_subset_right _ _⟩
 
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
-  rw [←dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
+  rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
 
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (isLUB_le_iff ha).2
 
