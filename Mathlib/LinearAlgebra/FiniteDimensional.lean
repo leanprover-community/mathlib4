@@ -852,6 +852,20 @@ theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K 
   eq_of_le_of_finrank_le hle hd.ge
 #align finite_dimensional.eq_of_le_of_finrank_eq FiniteDimensional.eq_of_le_of_finrank_eq
 
+section Subalgebra
+
+variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
+  [hfin : FiniteDimensional K E] (h_le : F ≤ E)
+
+theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_finrank : finrank K E ≤ finrank K F) : F = E :=
+  haveI : Module.Finite K (Subalgebra.toSubmodule E) := hfin
+  Subalgebra.toSubmodule_injective <| FiniteDimensional.eq_of_le_of_finrank_le h_le h_finrank
+
+theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_finrank : finrank K F = finrank K E) : F = E :=
+  Subalgebra.eq_of_le_of_finrank_le h_le h_finrank.ge
+
+end Subalgebra
+
 variable [FiniteDimensional K V] [FiniteDimensional K V₂]
 
 /-- Given isomorphic subspaces `p q` of vector spaces `V` and `V₁` respectively,
