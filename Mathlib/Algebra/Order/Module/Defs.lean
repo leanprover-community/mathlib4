@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.Ring.Lemmas
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -73,6 +73,28 @@ All these are registered as instances, which means that in practice you should n
 implications. However, if you encounter a case where you think a statement is true but not covered
 by the current implications, please bring it up on Zulip!
 
+## Implementation notes
+
+This file uses custom typeclasses instead of abbreviations of `CovariantClass`/`ContravariantClass`
+because:
+* They get displayed as classes in the docs. In particular, one can see their list of instances,
+  instead of their instances being invariably dumped to the `CovariantClass`/`ContravariantClass`
+  list.
+* They don't pollute other typeclass searches. Having many abbreviations of the same typeclass for
+  different purposes always felt like a performance issue (more instances with the same key, for no
+  added benefit), and indeed making the classes here abbreviation previous creates timeouts due to
+  the higher number of `CovariantClass`/`ContravariantClass` instances.
+* `SMulPosReflectLT`/`SMulPosReflectLE` do not fit in the framework since they relate `≤` on two
+  different types. So we would have to generalise `CovariantClass`/`ContravariantClass` to three
+  types and two relations.
+* Very minor, but the constructors let you work with `a : α`, `h : 0 ≤ a` instead of
+  `a : {a : α // 0 ≤ a}`. This actually makes some instances surprisingly cleaner to prove.
+* The `CovariantClass`/`ContravariantClass` framework is only useful to automate very simple logic
+  anyway. It is easily copied over.
+
+In the future, it would be good to make the corresponding typeclasses in
+`Mathlib.Algebra.Order.Ring.Lemmas` custom typeclasses too.
+
 ## TODO
 
 This file acts as a substitute for `Mathlib.Algebra.Order.SMul`. We now need to
@@ -84,7 +106,7 @@ This file acts as a substitute for `Mathlib.Algebra.Order.SMul`. We now need to
 
 variable (α β : Type*)
 
-section Abbreviations
+section Defs
 variable [SMul α β] [Preorder α] [Preorder β]
 
 section Left
@@ -168,9 +190,52 @@ class SMulPosReflectLE : Prop where
   protected elim ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b ≤ a₂ • b) : a₁ ≤ a₂
 
 end Right
-end Abbreviations
+end Defs
 
 variable {α β} {a a₁ a₂ : α} {b b₁ b₂ : β}
+
+section Mul
+variable [Zero α] [Mul α] [Preorder α]
+
+-- See note [lower instance priority]
+instance (priority := 100) PosMulMono.toPosSMulMono [PosMulMono α] : PosSMulMono α α where
+  elim _a ha _b₁ _b₂ hb := mul_le_mul_of_nonneg_left hb ha
+
+-- See note [lower instance priority]
+instance (priority := 100) PosMulStrictMono.toPosSMulStrictMono [PosMulStrictMono α] :
+    PosSMulStrictMono α α where
+  elim _a ha _b₁ _b₂ hb := mul_lt_mul_of_pos_left hb ha
+
+-- See note [lower instance priority]
+instance (priority := 100) PosMulReflectLT.toPosSMulReflectLT [PosMulReflectLT α] :
+    PosSMulReflectLT α α where
+  elim _a ha _b₁ _b₂ h := lt_of_mul_lt_mul_left h ha
+
+-- See note [lower instance priority]
+instance (priority := 100) PosMulMonoRev.toPosSMulReflectLE [PosMulMonoRev α] :
+    PosSMulReflectLE α α where
+  elim _a ha _b₁ _b₂ h := le_of_mul_le_mul_left h ha
+
+-- See note [lower instance priority]
+instance (priority := 100) MulPosMono.toSMulPosMono [MulPosMono α] : SMulPosMono α α where
+  elim _b hb _a₁ _a₂ ha := mul_le_mul_of_nonneg_right ha hb
+
+-- See note [lower instance priority]
+instance (priority := 100) MulPosStrictMono.toSMulPosStrictMono [MulPosStrictMono α] :
+    SMulPosStrictMono α α where
+  elim _b hb _a₁ _a₂ ha := mul_lt_mul_of_pos_right ha hb
+
+-- See note [lower instance priority]
+instance (priority := 100) MulPosReflectLT.toSMulPosReflectLT [MulPosReflectLT α] :
+    SMulPosReflectLT α α where
+  elim _b hb _a₁ _a₂ h := lt_of_mul_lt_mul_right h hb
+
+-- See note [lower instance priority]
+instance (priority := 100) MulPosMonoRev.toSMulPosReflectLE [MulPosMonoRev α] :
+    SMulPosReflectLE α α where
+  elim _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
+
+end Mul
 
 section SMul
 variable [SMul α β]
