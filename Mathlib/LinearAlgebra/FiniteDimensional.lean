@@ -147,7 +147,7 @@ theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDi
 #align finite_dimensional.of_fintype_basis FiniteDimensional.of_fintype_basis
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
-noncomputable def fintypeBasisIndex {ι : Type*} [Module.Free R V] [Module.Finite R V]
+noncomputable def fintypeBasisIndex {ι : Type*} [Module.Finite R V]
     (b : Basis ι R V) : Fintype ι :=
   @Fintype.ofFinite _ (Module.Free.finite_basis b)
 #align finite_dimensional.fintype_basis_index FiniteDimensional.fintypeBasisIndex
