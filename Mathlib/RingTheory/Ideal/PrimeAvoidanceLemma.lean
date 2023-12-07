@@ -52,7 +52,7 @@ Then if `J` is a subset of the union of `ℐ`, `J` is already a subset of some i
 theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     (J : Ideal R)
     (ℐ : Finset (Ideal R))
-    (number_of_non_prime : (ℐ.filter fun I => ¬ I.IsPrime).card ≤ 2)
+    (number_of_non_prime : ∀ s ≤ ℐ, 2 < s.card → ∃ p ∈ s, p.IsPrime)
     (subset_union : (J : Set R) ⊆ ⋃ (I : ℐ), I) :
     ∃ I, I ∈ ℐ ∧ J ≤ I := by
   classical
@@ -61,7 +61,7 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
   -- at most two non-prime ideals, if `J` is a subset of the union of `𝒥`, then `I` is a subideal of
   -- some ideal in `𝒥` already.
 
-  -- We can assume without lose of generality that `ℐ` has more than 2 ideals, for `ℐ` with fewer
+  -- We can assume without loss of generality that `ℐ` has more than 2 ideals, for `ℐ` with fewer
   -- ideals are easy cases.
   by_cases card : ℐ.card ≤ 2
   · replace card : ℐ.card = 0 ∨ ℐ.card = 1 ∨ ℐ.card = 2
@@ -77,27 +77,25 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
 
   -- We further assume that `J` is not a subset of any proper subset of `ℐ`, for otherwise, our
   -- induction hypotheses implies the desired result already.
+  -- We will show that this assumption in fact leads to a contradiction,
+  -- since the goal is to produce an `I ≥ J`, such that `{I}` is a proper subset of `ℐ`.
   by_cases subset' : ∀ ℐ', ℐ' ⊂ ℐ → ¬ (J : Set R) ⊆ ⋃ (I : ℐ'), I
   pick_goal 2
   · push_neg at subset'
     obtain ⟨ℐ', lt, le⟩ := subset'
-    obtain ⟨I, hI1, hI2⟩ := ih _ lt ((card_le_of_subset <| filter_subset_filter _ lt.1).trans
-      number_of_non_prime) le
+    obtain ⟨I, hI1, hI2⟩ := ih _ lt (fun s hs => number_of_non_prime s (hs.trans lt.1)) le
     exact ⟨I, lt.1 hI1, hI2⟩
 
   -- Since `ℐ` contains more than 2 ideals, there must be a prime ideal which we call `𝓅`.
-  obtain ⟨𝓅, h𝓅⟩ : (ℐ.filter (fun I ↦ I.IsPrime)).Nonempty
-  · exact Finset.nonempty_iff_ne_empty.mpr fun h ↦ card <|
-      show ℐ.filter (¬ ·.IsPrime) = ℐ by rw [filter_not, h, sdiff_empty] ▸ number_of_non_prime
-  obtain ⟨h𝓅₁, h𝓅₂⟩ := mem_filter.mp h𝓅
+  obtain ⟨𝓅, h𝓅₁, h𝓅₂⟩ := number_of_non_prime ℐ le_rfl (lt_of_not_ge card)
 
   have subset_hat : ∀ I : ℐ, ¬ (J : Set R) ⊆ ⋃ (i : ℐ.erase I), i
   · rintro ⟨I, hI⟩ rid
     exact (subset' (ℐ.erase I) (Finset.erase_ssubset hI)) rid
   simp_rw [not_subset] at subset_hat
-  -- Since `J` is not a subset of union of `ℐ`, it is not a subset of union of `ℐ \ {I}` for all
-  -- ideal `I` in `ℐ`. Hence for each `i ∈ ℐ`, we can find an `xᵢ ∈ R` that is in `J` and `i` but
-  -- not in the union of `ℐ`.
+  -- Since `J` is not a subset of the union of `ℐ`, it is not a subset of the union of `ℐ \ {I}`
+  -- for each ideal `I` in `ℐ`. Hence for each `i ∈ ℐ`, we can find an `xᵢ ∈ R` that is in `J` and
+  -- `i` but not in the union of `ℐ`.
   choose x hx1 hx2 using subset_hat
   have hx3 : ∀ i, x i ∈ i.1
   · rintro i
@@ -118,12 +116,12 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     exact ⟨⟨c, hc⟩, mem_attach _ _, hx1 _⟩
   specialize subset_union hX1
   rw [mem_iUnion] at subset_union
-  -- So there is another `𝓆 ∈ ℐ` such that `X ∈ 𝓆`. We consider two cases `𝓅 = 𝓆` and `𝓅 ≠ 𝓆`.
+  -- So there is some `𝓆 ∈ ℐ` such that `X ∈ 𝓆`. We consider two cases `𝓅 = 𝓆` and `𝓅 ≠ 𝓆`.
   obtain ⟨⟨𝓆, h𝓆₁⟩, h𝓆₂⟩ := subset_union
   by_cases H : 𝓅 = 𝓆
   · subst H
     -- If `𝓅 = 𝓆`, then for some `i ≠ 𝓅`, `xᵢ ∈ 𝓅`, this is a contradiction because `xᵢ` is not in
-    -- the union of `ℐ`
+    -- the union of `ℐ \ {i}`.
     obtain ⟨⟨i, hi1⟩, hi2⟩ : ∃ i : ℐ.erase 𝓅, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓅
     · have := 𝓅.sub_mem h𝓆₂ (hx3 ⟨𝓅, h𝓅₁⟩)
       simp only [add_sub_cancel] at this
@@ -131,7 +129,7 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     rw [Finset.mem_erase] at hi1
     exact (hx2 ⟨i, hi1.2⟩ <| mem_iUnion.mpr ⟨⟨𝓅, mem_erase.mpr ⟨hi1.1.symm, h𝓆₁⟩⟩, hi2⟩).elim
   · -- If `𝓅 ≠ 𝓆`, then `∏_{i ≠ 𝓅} xᵢ ∈ 𝓆` and `x_𝓅 ∈ 𝓆` as well (since `X` ∈ `𝓆`).
-    -- This contradicts that `x_𝓅` is not in the union of `ℐ`
+    -- This contradicts that `x_𝓅` is not in the union of `ℐ \ {𝓆}`.
     have mem1 : ∏ i in (ℐ.erase 𝓅).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓆
     · exact 𝓆.prod_mem_of_mem ⟨⟨𝓆, mem_erase.mpr ⟨Ne.symm H, h𝓆₁⟩⟩, mem_attach _ _, hx3 _⟩
     have mem2 : x ⟨𝓅, h𝓅₁⟩ ∈ 𝓆 := by simpa only [add_sub_cancel'] using 𝓆.sub_mem h𝓆₂ mem1
@@ -146,7 +144,7 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
 Let `R` be a commutative ring, `J` an ideal of `R`, `ℐ` be a finite collection of ideals of `R`
 such that ideals in `ℐ` are prime ideals except for perhaps at most two.
 
-If `J` is a subset of any of ideal in `ℐ`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
+If `J` is not a subset of any of ideal in `ℐ`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
 not in any of the ideals in `ℐ`.
 -/
 lemma Ideal.exists_mem_and_forall_not_mem_of_not_subset_and_at_most_two_non_primes

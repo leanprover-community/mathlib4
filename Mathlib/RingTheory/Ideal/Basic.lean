@@ -764,8 +764,9 @@ theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1
 #align ideal.mul_sub_mul_mem Ideal.mul_sub_mul_mem
 
 open BigOperators
+
 theorem prod_mem_of_mem {ι R : Type*} [CommRing R] {t : Finset ι} {f : ι → R}
-    (I : Ideal R) (mem : ∃ c ∈ t, f c ∈ I) :
+    (I : Ideal R) {c : ι} (hc : c ∈ t) (hfc : f c ∈ I) :
     ∏ i in t, f i ∈ I := by
   classical
   induction' t using Finset.induction_on with j t hj ih
