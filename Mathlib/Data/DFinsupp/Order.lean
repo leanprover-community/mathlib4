@@ -161,11 +161,11 @@ instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ 
 instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (Π₀ i, β i) :=
   SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
 
-instance instPosSMulMonoRev [∀ i, PosSMulMonoRev α (β i)] : PosSMulMonoRev α (Π₀ i, β i) :=
-  PosSMulMonoRev.lift _ coe_le_coe coe_smul
+instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (Π₀ i, β i) :=
+  PosSMulReflectLE.lift _ coe_le_coe coe_smul
 
-instance instSMulPosMonoRev [∀ i, SMulPosMonoRev α (β i)] : SMulPosMonoRev α (Π₀ i, β i) :=
-  SMulPosMonoRev.lift _ coe_le_coe coe_smul coe_zero
+instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (Π₀ i, β i) :=
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
 
 end Module
 

@@ -159,11 +159,11 @@ instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) :=
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) :=
   SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
 
-instance instPosSMulMonoRev [PosSMulMonoRev α β] : PosSMulMonoRev α (ι →₀ β) :=
-  PosSMulMonoRev.lift _ coe_le_coe coe_smul
+instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α (ι →₀ β) :=
+  PosSMulReflectLE.lift _ coe_le_coe coe_smul
 
-instance instSMulPosMonoRev [SMulPosMonoRev α β] : SMulPosMonoRev α (ι →₀ β) :=
-  SMulPosMonoRev.lift _ coe_le_coe coe_smul coe_zero
+instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α (ι →₀ β) :=
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
 
 end SMulZeroClass
 
