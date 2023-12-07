@@ -388,7 +388,6 @@ variable [IsSeparable F E] (A : Type*) [Field A] [Algebra F A]
 
 theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     F⟮α⟯ = ⊤ ↔ Function.Injective fun φ : E →ₐ[F] A ↦ φ α := by
--- ∀ φ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   classical
   simp_rw [primitive_element_iff_minpoly_natDegree_eq, ← card_rootSet_eq_natDegree (K := A)
     (IsSeparable.separable F α) (hA _), ← toFinset_card,
@@ -425,8 +424,7 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
   · rw [aeval_algHom_apply, _root_.map_eq_zero]
     convert minpoly.aeval F α
     letI : Algebra E K := (res φ₀).toAlgebra
-    refine minpoly.algebraMap_eq ?_ α
-    exact NoZeroSMulDivisors.algebraMap_injective E K
+    exact minpoly.algebraMap_eq (algebraMap E K).injective α
 
 end Field
 

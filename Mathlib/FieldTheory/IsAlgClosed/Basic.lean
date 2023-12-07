@@ -412,6 +412,7 @@ theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly (x : K) :
 
 /-- All `F`-`AlgHom`s from `K` to an algebraic closed field `A` factor through any subextension of
 `A/F` in which the minimal polynomial of elements of `K` splits. -/
+@[simps]
 def IntermediateField.algHomEquivAlgHomOfIsAlgClosed (L : IntermediateField F A)
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
