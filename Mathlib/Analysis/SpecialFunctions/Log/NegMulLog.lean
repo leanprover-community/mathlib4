@@ -7,14 +7,14 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
-# The functions `x ↦ x * log x` and `x ↦ - x * log x`
+# The function `x ↦ - x * log x`
 
-The purpose of this file is to record basic analytic properties of the functions
-$$x \to \pm x * \log x$$, for use in the theory of Shannon entropy.
+The purpose of this file is to record basic analytic properties of the function `x ↦ - x * log x`,
+which is notably used in the theory of Shannon entropy.
 
-## TODO
+## Main definitions
 
-Define `NegMulLog := x ↦ - x * log x` and state its properties.
+* `negMulLog`: the function `x ↦ - x * log x` from `ℝ` to `ℝ`.
 
 -/
 
@@ -22,33 +22,12 @@ open scoped Topology
 
 namespace Real
 
-lemma tendsto_log_mul_nhds_zero_left :
-    Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
-  have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
-  simp only [rpow_one] at h
-  have h_eq : ∀ x ∈ Set.Iio 0, (- (fun x ↦ log x * x) ∘ (fun x ↦ |x|)) x = log x * x := by
-    intro x hx
-    simp only [Set.mem_Iio] at hx
-    simp only [Pi.neg_apply, Function.comp_apply, log_abs]
-    rw [abs_of_nonpos hx.le]
-    simp only [mul_neg, neg_neg]
-  refine tendsto_nhdsWithin_congr h_eq ?_
-  rw [← neg_zero]
-  refine Filter.Tendsto.neg ?_
-  simp only [neg_zero]
-  refine h.comp ?_
-  refine tendsto_abs_nhdsWithin_zero.mono_left ?_
-  refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
-  simp only [Set.mem_Iio] at hx
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]
-
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
   intro x
   by_cases hx : x = 0
   swap; · exact (continuous_id'.continuousAt).mul (continuousAt_log hx)
-  rw [hx]
-  rw [ContinuousAt, zero_mul]
+  rw [hx, ContinuousAt, zero_mul]
   suffices Filter.Tendsto (fun x ↦ log x * x) (𝓝 0) (𝓝 0) by
     exact this.congr (fun x ↦ by rw [mul_comm])
   nth_rewrite 1 [← nhdsWithin_univ]
@@ -95,5 +74,59 @@ lemma convexOn_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) 
 
 lemma mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
+
+section negMulLog
+
+/-- The function `x ↦ - x * log x` from `ℝ` to `ℝ`. -/
+noncomputable def negMulLog (x : ℝ) : ℝ := - x * log x
+
+lemma negMulLog_def : negMulLog = fun x ↦ - x * log x := rfl
+
+lemma negMulLog_eq_neg : negMulLog = fun x ↦ - (x * log x) := by simp [negMulLog_def]
+
+@[simp] lemma negMulLog_zero : negMulLog (0 : ℝ) = 0 := by simp [negMulLog]
+
+@[simp] lemma negMulLog_one : negMulLog (1 : ℝ) = 0 := by simp [negMulLog]
+
+lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog x := by
+  rw [negMulLog_eq_neg, neg_nonneg]
+  exact mul_nonpos_of_nonneg_of_nonpos h1 (log_nonpos h1 h2)
+
+lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negMulLog y := by
+  simp only [negMulLog, neg_mul, neg_add_rev]
+  by_cases hx : x = 0
+  · simp [hx]
+  by_cases hy : y = 0
+  · simp [hy]
+  rw [log_mul hx hy]
+  ring
+
+lemma continuous_negMulLog : Continuous negMulLog := by
+  rw [negMulLog_eq_neg]
+  exact continuous_mul_log.neg
+
+lemma differentiableOn_negMulLog : DifferentiableOn ℝ negMulLog {0}ᶜ := by
+  rw [negMulLog_eq_neg]
+  exact differentiableOn_mul_log.neg
+
+lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1 := by
+  rw [negMulLog_eq_neg, deriv.neg, deriv_mul_log hx]
+  ring
+
+lemma deriv2_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv^[2] negMulLog x = - x⁻¹ := by
+  rw [negMulLog_eq_neg]
+  have h := deriv2_mul_log hx
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
+    Function.comp_apply, deriv.neg', differentiableAt_id', differentiableAt_log_iff, ne_eq] at h ⊢
+  rw [h]
+
+lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog := by
+  rw [negMulLog_eq_neg]
+  exact strictConvexOn_mul_log.neg
+
+lemma concaveOn_negMulLog : ConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog :=
+  strictConcaveOn_negMulLog.concaveOn
+
+end negMulLog
 
 end Real
