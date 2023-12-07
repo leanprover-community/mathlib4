@@ -67,12 +67,6 @@ variable {α β : Type*}
 section Preorder
 variable [Preorder α] {s t : Set α}
 
-lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
-  fun ⟨_a, ha⟩ _b hb ↦ hs (hb ha) ha
-
-lemma IsLowerSet.lowerBounds_subset (hs : IsLowerSet s) : s.Nonempty → lowerBounds s ⊆ s :=
-  fun ⟨_a, ha⟩ _b hb ↦ hs (hb ha) ha
-
 /-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
 directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
 def DirSupInacc (s : Set α) : Prop :=
@@ -110,6 +104,19 @@ lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s := hs.compl.dir
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (isLUB_le_iff ha).2
 
 end Preorder
+
+section CompleteLattice
+variable [CompleteLattice α] {s t : Set α}
+
+lemma dirSupInacc_iff_forall_sSup :
+    DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
+  simp [DirSupInacc, isLUB_iff_sSup_eq]
+
+lemma dirSupClosed_iff_forall_sSup :
+    DirSupClosed s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
+  simp [DirSupClosed, isLUB_iff_sSup_eq]
+
+end CompleteLattice
 
 namespace Topology
 
@@ -277,31 +284,11 @@ variable [PartialOrder α] [TopologicalSpace α] [IsScott α]
 The Scott topology on a partial order is T₀.
 -/
 -- see Note [lower instance priority]
-instance (priority := 90): T0Space α :=
+instance (priority := 90) : T0Space α :=
     (t0Space_iff_inseparable α).2 $ fun x y h ↦ Iic_injective $
   by simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end PartialOrder
-
-section CompleteLattice
-variable [CompleteLattice α] [TopologicalSpace α] [IsScott α] {s : Set α}
-
-lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset :
-    IsOpen s ↔ IsUpperSet s ∧ ∀ ⦃d⦄,
-      d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
-  simp [isOpen_iff_isUpperSet_and_scottHausdorff_open,
-    @IsScottHausdorff.isOpen_iff _ _ scottHausdorff, DirSupInacc, isLUB_iff_sSup_eq]
-
-lemma isOpen_iff_upper_and_sup_mem_implies_inter_nonempty :
-    IsOpen s ↔ IsUpperSet s ∧ ∀ ⦃d⦄,
-      d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
-  simp [isOpen_iff_isUpperSet_and_dirSupInacc, DirSupInacc, isLUB_iff_sSup_eq]
-
-lemma isClosed_iff_lower_and_dirSupClosed :
-    IsClosed s ↔ IsLowerSet s ∧ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
-  simp [isClosed_iff_isLowerSet_and_dirSupClosed, DirSupClosed, isLUB_iff_sSup_eq]
-
-end CompleteLattice
 end IsScott
 
 /--
