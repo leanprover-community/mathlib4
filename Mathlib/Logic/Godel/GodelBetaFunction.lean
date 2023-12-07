@@ -57,7 +57,7 @@ lemma coprimes_of_nodup {l : List ℕ} (hl : l.Nodup) (H : ∀ n ∈ l, ∀ m �
 lemma coprimes_cons_iff_coprimes_coprime_prod {n} {l : List ℕ} :
     Coprimes (n :: l) ↔ Coprimes l ∧ Coprime n l.prod := by
   simp[coprime_list_prod_iff_right]; constructor
-  · rintro ⟨⟩ ; simpa[*]
+  · rintro ⟨⟩; simpa[*]
   · rintro ⟨hl, hn⟩; exact Coprimes.cons hn hl
 
 lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : Coprimes l) :
