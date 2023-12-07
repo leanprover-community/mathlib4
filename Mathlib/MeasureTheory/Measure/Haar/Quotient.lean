@@ -300,7 +300,7 @@ instance MeasureTheory.QuotientVolumeEqVolumePreimage.haarMeasure_quotient [Loca
     apply IsOpenPosMeasure.open_pos (interior K) (μ := volume) (self := i')
     · exact isOpen_interior
     · exact K.interior_nonempty
-    rw [← le_zero_iff, 
+    rw [← le_zero_iff,
       ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
     apply measure_mono
     refine interior_subset.trans ?_
