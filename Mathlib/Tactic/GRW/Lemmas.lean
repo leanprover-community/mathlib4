@@ -32,7 +32,7 @@ namespace Mathlib.Tactic.GRW
     X' ⊂ Y' := lt_of_le_of_lt hX (lt_of_lt_of_le H hY)
 
 @[grw] lemma rewrite_bddAbove {α : Type*} [Preorder α] {s s' : Set α}
-    (H : BddAbove s) (hs : s' ⊆ s) : BddAbove s' := H.imp fun _ hc _ hx => hc (hs hx)
+    (H : BddAbove s) (hs : s' ⊆ s) : BddAbove s' := H.mono hs
 
 @[grw] lemma rewrite_setNonempty {α : Type*} {s s' : Set α} (H : Set.Nonempty s) (hs : s ⊆ s') :
     Set.Nonempty s' := H.mono hs
