@@ -118,11 +118,10 @@ namespace Topology
 section ScottHausdorff
 variable [Preorder α] {s : Set α}
 
-/--
-The Scott-Hausdorff topology is defined as the topological space where a set `u` is open if, when
-the least upper bound of a directed set `d` lies in `u` then there is a tail of `d` which is a
-subset of `u`.
--/
+/-- The Scott-Hausdorff topology.
+
+A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
+`d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 def scottHausdorff : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -138,7 +137,10 @@ def scottHausdorff : TopologicalSpace α where
 
 variable (α) [TopologicalSpace α]
 
-/-- Predicate for an ordered topological space to be equipped with the Scott-Hausdorff topology. -/
+/-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
+
+A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
+`d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 class IsScottHausdorff : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff
 
@@ -177,10 +179,9 @@ section Scott
 section Preorder
 variable [Preorder α]
 
-/--
-The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
-topology.
--/
+/-- The Scott topology.
+
+It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
 def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
 
 lemma upperSet_le_scott : upperSet α ≤ scott := le_sup_left
@@ -189,10 +190,10 @@ lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
 
 variable (α) [TopologicalSpace α]
 
-/--
+/-- Predicate for an ordered topological space to be equipped with its Scott topology.
+
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
-topology.
--/
+topology. -/
 class IsScott : Prop where
   topology_eq_scott : ‹TopologicalSpace α› = scott
 
