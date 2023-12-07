@@ -435,7 +435,7 @@ instance : Module R (CentroidHom α) :=
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
 
-lemma centroid_eq_centralizer_mul_op :
+lemma centroid_eq_centralizer_mulLeftRight :
     RingHom.rangeS (toEndRingHom α) = Subsemiring.centralizer (Set.range L ∪ Set.range R) := by
   ext T
   refine ⟨?_, fun h ↦ ?_⟩
