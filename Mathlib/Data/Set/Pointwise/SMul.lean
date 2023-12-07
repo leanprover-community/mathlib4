@@ -549,11 +549,11 @@ scoped[Pointwise] attribute [instance] Set.smulZeroClassSet
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
-protected def distribMulSet [AddZeroClass β] [DistribSMul α β] :
+protected def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
     DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
 
-scoped[Pointwise] attribute [instance] Set.distribMulSet
+scoped[Pointwise] attribute [instance] Set.distribSMulSet
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
