@@ -224,7 +224,7 @@ theorem gcd_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).gcd = GCDMonoid
 end
 
 theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α))
-    (ht : s = t.map (s.gcd * ·) : t.gcd = 1 :=
+    (ht : s = t.map (s.gcd * ·)) : t.gcd = 1 :=
   ((@mul_right_eq_self₀ _ _ s.gcd _).1 <| by
         conv_lhs => rw [← normalize_gcd, ← gcd_map_mul, ← ht]).resolve_right <| by
     contrapose! hs
