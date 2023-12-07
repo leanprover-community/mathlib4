@@ -102,7 +102,8 @@ lemma coprimeList_lt (l : List ℕ) (i) : ((coprimeList l).get i).1 < ((coprimeL
   have h₁ : l.get (i.cast $ by simp[coprimeList]) < listSup l :=
     Nat.lt_add_one_iff.mpr (by simpa using Or.inr $ List.le_max_of_le (List.get_mem _ _ _) (by rfl))
   have h₂ : Nat.listSup l ≤ (i + 1) * (Nat.listSup l)! + 1 :=
-    le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (succ_pos _)) (le_add_right _ _))
+    le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (succ_pos _))
+      (le_add_right _ _))
   simpa only [coprimeList, List.get_ofFn] using lt_of_lt_of_le h₁ h₂
 
 lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a + 1) :=
