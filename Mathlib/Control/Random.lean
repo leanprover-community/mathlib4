@@ -40,16 +40,15 @@ set_option autoImplicit true
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
 abbrev RandGT (g : Type) := StateT (ULift g)
-
+/-- A monad to generate random objects using the generator type `g`.  -/
 abbrev RandG (g : Type) := RandGT g Id
 
-/-- A monad transformer to generate random objects using the generator type `Rng`.
+/-- A monad transformer to generate random objects using the generator type `StdGen`.
 `RandT m α` should be thought of a random value in `m α`. -/
 abbrev RandT := RandGT StdGen
 
-/-- A monad to generate random objects using the generator type `Rng`.  -/
+/-- A monad to generate random objects using the generator type `StdGen`.  -/
 abbrev Rand := RandG StdGen
-
 
 instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
   monadLift x := fun s => x s
@@ -107,7 +106,6 @@ instance {n : Nat} : Random m (Fin n.succ) where
 def randBool [RandomGen g] : RandGT g m Bool :=
   return (← rand (Fin 2)) == 1
 
-
 instance : Random m Bool where
   random := randBool
 
@@ -115,7 +113,7 @@ instance {α : Type u} [ULiftable m m'] [Random m α] : Random m' (ULift.{v} α)
   random := ULiftable.up random
 
 instance : BoundedRandom m Nat where
-  randomR := λ lo hi h _ => do
+  randomR lo hi h _ := do
     let z ← rand (Fin (hi - lo).succ)
     pure ⟨
       lo + z.val, Nat.le_add_right _ _,
@@ -123,7 +121,7 @@ instance : BoundedRandom m Nat where
     ⟩
 
 instance : BoundedRandom m Int where
-  randomR := λ lo hi h _ => do
+  randomR lo hi h _ := do
     let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs $ hi - lo) (Nat.zero_le _)
     pure ⟨
       z + lo,
@@ -133,7 +131,7 @@ instance : BoundedRandom m Int where
         (le_of_eq $ Int.ofNat_natAbs_eq_of_nonneg _ $ Int.sub_nonneg_of_le h)⟩
 
 instance {n : Nat} : BoundedRandom m (Fin n) where
-  randomR := λ lo hi h _ => do
+  randomR lo hi h _ := do
     let ⟨r, h1, h2⟩ ← randBound Nat lo.val hi.val h
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
 
