@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2023 Floris Van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris Van Doorn, Patrick Massot, Junyan Xu, Sébastien Gouëzel
+Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris Van Doorn,
+Junyan Xu
 -/
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.RingTheory.MvPolynomial.Basic
