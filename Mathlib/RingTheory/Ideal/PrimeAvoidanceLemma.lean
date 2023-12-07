@@ -25,12 +25,25 @@ not in any of the ideals in `ℐ`.
 -/
 
 variable {R : Type _} [CommRing R]
-variable [DecidablePred fun I : Ideal R => I.IsPrime]
 
 open BigOperators
 open SetLike (coe_subset_coe)
 open Finset hiding not_subset
 open Set hiding mem_singleton mem_insert
+
+lemma Finset.filter_card_le_iff {α : Type*} (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
+    (s.filter P).card ≤ n ↔ ∀ s' ≤ s, n < s'.card → ∃ a ∈ s', ¬ P a := by
+  fconstructor
+  · intro H s' hs' s'_card
+    by_contra! rid
+    have card1 := card_le_of_subset (monotone_filter_left P hs') |>.trans H
+    have card2 : (s'.filter P).card = s'.card
+    · rw [filter_true_of_mem rid]
+    exact lt_irrefl _ <| lt_of_lt_of_le (card2.symm ▸ s'_card) card1
+  · contrapose!
+    intro H
+    exact ⟨s.filter P, s.filter_subset P, H, fun a ha ↦ (mem_filter.mp ha).2⟩
+
 
 /--
 Let `R` be a commutative ring, `J` an ideal of `R`, `ℐ` be a finite collection of ideals of `R`
@@ -40,10 +53,11 @@ Then if `J` is a subset of the union of `ℐ`, `J` is already a subset of some i
 theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     (J : Ideal R)
     (ℐ : Finset (Ideal R))
-    (number_of_non_prime : ∀ s ≤ ℐ, 2 < s.card → ∃ p ∈ s, p.IsPrime)
+    (exists_prime : ∀ s ≤ ℐ, 2 < s.card → ∃ p ∈ s, p.IsPrime)
     (subset_union : (J : Set R) ⊆ ⋃ (I : ℐ), I) :
     ∃ I, I ∈ ℐ ∧ J ≤ I := by
   classical
+
   induction' ℐ using Finset.strongInductionOn with ℐ ih
   -- We perform a strong induction on `ℐ`, i.e. we assume that for any proper subset `𝒥` of `ℐ` with
   -- at most two non-prime ideals, if `J` is a subset of the union of `𝒥`, then `I` is a subideal of
@@ -71,11 +85,11 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
   pick_goal 2
   · push_neg at subset'
     obtain ⟨ℐ', lt, le⟩ := subset'
-    obtain ⟨I, hI1, hI2⟩ := ih _ lt (fun s hs => number_of_non_prime s (hs.trans lt.1)) le
+    obtain ⟨I, hI1, hI2⟩ := ih _ lt (fun s hs ↦ exists_prime s (hs.trans lt.1)) le
     exact ⟨I, lt.1 hI1, hI2⟩
 
   -- Since `ℐ` contains more than 2 ideals, there must be a prime ideal which we call `𝓅`.
-  obtain ⟨𝓅, h𝓅₁, h𝓅₂⟩ := number_of_non_prime ℐ le_rfl (lt_of_not_ge card)
+  obtain ⟨𝓅, h𝓅₁, h𝓅₂⟩ := exists_prime ℐ le_rfl (lt_of_not_ge card)
 
   have subset_hat : ∀ I : ℐ, ¬ (J : Set R) ⊆ ⋃ (i : ℐ.erase I), i
   · rintro ⟨I, hI⟩ rid
@@ -92,16 +106,16 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     specialize subset_union (hx1 i)
     rw [Set.mem_iUnion] at subset_union ⊢
     rcases subset_union with ⟨j, hj⟩
-    exact ⟨⟨j.1, Finset.mem_erase.mpr ⟨fun r => hx2 <| r ▸ hj, j.2⟩⟩, hj⟩
+    exact ⟨⟨j.1, Finset.mem_erase.mpr ⟨fun r ↦ hx2 <| r ▸ hj, j.2⟩⟩, hj⟩
 
   -- Let `X` be `(∏_{i ≠ 𝓅} xᵢ) + x_𝓅`, then `X` is in `J` hence in the union of `ℐ`
   let X := ∏ i in (ℐ.erase 𝓅).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ + x ⟨𝓅, h𝓅₁⟩
   have hX1 : X ∈ J
-  · refine J.add_mem (Ideal.prod_mem_of_mem _ ?_) (hx1 _)
-    obtain ⟨c, hc⟩ : (ℐ.erase 𝓅).Nonempty
+  · obtain ⟨c, hc⟩ : (ℐ.erase 𝓅).Nonempty
     · rw [← Finset.card_pos, Finset.card_erase_eq_ite, if_pos h𝓅₁]
       exact tsub_pos_iff_lt.mpr <| one_lt_two.trans <| not_le.mp card
-    exact ⟨⟨c, hc⟩, mem_attach _ _, hx1 _⟩
+    exact J.add_mem (Ideal.prod_mem_of_mem _ (mem_attach _ ⟨_, hc⟩) (hx1 _)) (hx1 _)
+
   specialize subset_union hX1
   rw [mem_iUnion] at subset_union
   -- So there is some `𝓆 ∈ ℐ` such that `X ∈ 𝓆`. We consider two cases `𝓅 = 𝓆` and `𝓅 ≠ 𝓆`.
@@ -119,7 +133,7 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
   · -- If `𝓅 ≠ 𝓆`, then `∏_{i ≠ 𝓅} xᵢ ∈ 𝓆` and `x_𝓅 ∈ 𝓆` as well (since `X` ∈ `𝓆`).
     -- This contradicts that `x_𝓅` is not in the union of `ℐ \ {𝓆}`.
     have mem1 : ∏ i in (ℐ.erase 𝓅).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓆
-    · exact 𝓆.prod_mem_of_mem ⟨⟨𝓆, mem_erase.mpr ⟨Ne.symm H, h𝓆₁⟩⟩, mem_attach _ _, hx3 _⟩
+    · exact 𝓆.prod_mem_of_mem (mem_attach _ ⟨𝓆, mem_erase.mpr ⟨Ne.symm H, h𝓆₁⟩⟩) (hx3 ⟨𝓆, h𝓆₁⟩)
     have mem2 : x ⟨𝓅, h𝓅₁⟩ ∈ 𝓆 := by simpa only [add_sub_cancel'] using 𝓆.sub_mem h𝓆₂ mem1
     specialize hx2 ⟨𝓅, h𝓅₁⟩
     rw [mem_iUnion] at hx2
@@ -138,9 +152,9 @@ not in any of the ideals in `ℐ`.
 lemma Ideal.exists_mem_and_forall_not_mem_of_not_subset_and_at_most_two_non_primes
     (J : Ideal R)
     (ℐ : Finset (Ideal R))
-    (number_of_non_prime : (ℐ.filter fun I => ¬ I.IsPrime).card ≤ 2)
+    (exists_prime : ∀ s ≤ ℐ, 2 < s.card → ∃ p ∈ s, p.IsPrime)
     (not_subset : ∀ I : Ideal R, I ∈ ℐ → ¬ J ≤ I) :
     ∃ x : R, x ∈ J ∧ (∀ I : Ideal R, I ∈ ℐ → x ∉ I) := by
   contrapose! not_subset
-  exact J.le_of_subset_union_with_at_most_two_non_primes ℐ number_of_non_prime
+  exact J.le_of_subset_union_with_at_most_two_non_primes ℐ exists_prime
     (fun x hx ↦ mem_iUnion.mpr <| let ⟨i, hi1, hi2⟩ := not_subset x hx; ⟨⟨i, hi1⟩, hi2⟩)
