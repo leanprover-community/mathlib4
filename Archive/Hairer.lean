@@ -1,6 +1,23 @@
-import Mathlib
+/-
+Copyright (c) 2023 Floris Van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris Van Doorn, Patrick Massot, Junyan Xu, Sébastien Gouëzel
+-/
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.FieldTheory.Finite.Polynomial
+import Mathlib.Data.MvPolynomial.Funext
 
-/-! Hairer's challenge given to Kevin. -/
+/-!
+# Smooth functions whose integral calculates the values of polynomials
+
+In any space `ℝᵈ` and given any `N`, we construct a smooth function supported in the unit ball
+whose integral against a multivariate polynomial `P` of total degree at most `N` is `P 0`.
+
+This is a test of the state of the library suggested by Martin Hairer.
+-/
 
 noncomputable section
 
