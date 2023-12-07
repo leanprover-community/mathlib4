@@ -317,7 +317,7 @@ instance : SMul (Localization S) (LocalizedModule S M) where
           (by
             rintro ⟨m1, t1⟩ ⟨m2, t2⟩ ⟨u, h⟩
             refine' mk_eq.mpr ⟨u, _⟩
-            have h' := congr_arg ((s • r • ·) h
+            have h' := congr_arg ((s • r) • ·) h
             simp only [← mul_smul, smul_eq_mul, mul_comm, mul_left_comm, Submonoid.smul_def,
               Submonoid.coe_mul] at h' ⊢
             rw [h'])))

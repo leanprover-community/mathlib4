@@ -105,10 +105,7 @@ is. -/
 continuous when its left action is."]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
-  ⟨MulOpposite.rec' fun c => by
-    dsimp only
-    simp_rw [op_smul_eq_smul]
-    exact uniformContinuous_const_smul c⟩
+  ⟨MulOpposite.rec' fun c ↦ by simpa only [op_smul_eq_smul] using uniformContinuous_const_smul c⟩
 #align has_uniform_continuous_const_smul.op UniformContinuousConstSMul.op
 #align has_uniform_continuous_const_vadd.op UniformContinuousConstVAdd.op
 
