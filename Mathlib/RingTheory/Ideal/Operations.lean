@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 

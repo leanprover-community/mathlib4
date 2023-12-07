@@ -300,6 +300,13 @@ theorem tsub_tsub_tsub_cancel_left (h : b ≤ a) : a - c - (a - b) = b - c :=
   Contravariant.AddLECancellable.tsub_tsub_tsub_cancel_left h
 #align tsub_tsub_tsub_cancel_left tsub_tsub_tsub_cancel_left
 
+-- note: not generalized to `AddLECancellable` because `add_tsub_add_eq_tsub_left` isn't
+/-- The `tsub` version of `sub_sub_eq_add_sub`. -/
+theorem tsub_tsub_eq_add_tsub_of_le [ContravariantClass α α HAdd.hAdd LE.le]
+    (h : c ≤ b) : a - (b - c) = a + c - b := by
+  obtain ⟨d, rfl⟩ := exists_add_of_le h
+  rw [add_tsub_cancel_left c, add_comm a c, add_tsub_add_eq_tsub_left]
+
 end Contra
 
 end ExistsAddOfLE

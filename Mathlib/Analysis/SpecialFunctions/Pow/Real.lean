@@ -506,7 +506,7 @@ theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x
 theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (hz : z < 0) :
     x ^ z < y ^ z := by
   have hx : 0 < x := hy.trans hxy
-  rw [←neg_neg z, Real.rpow_neg (le_of_lt hx) (-z), Real.rpow_neg (le_of_lt hy) (-z),
+  rw [← neg_neg z, Real.rpow_neg (le_of_lt hx) (-z), Real.rpow_neg (le_of_lt hy) (-z),
       inv_lt_inv (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
   exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 

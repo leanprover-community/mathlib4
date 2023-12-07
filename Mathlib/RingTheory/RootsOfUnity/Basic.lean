@@ -253,7 +253,7 @@ variable {k R}
 theorem map_rootsOfUnity_eq_pow_self [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
-  rw [← restrictRootsOfUnity_coe_apply, hm, ←zpow_mod_orderOf, ← Int.toNat_of_nonneg
+  rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
       (m.emod_nonneg (Int.coe_nat_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_ofNat, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
@@ -994,7 +994,8 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
   refine' (_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans this.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 2
-  rw [pow_eq_pow_iff_modEq, ZMod.val_nat_cast, hμ.eq_orderOf, ←Subgroup.orderOf_coe, ←orderOf_units]
+  rw [pow_eq_pow_iff_modEq, ZMod.val_nat_cast, hμ.eq_orderOf, ← Subgroup.orderOf_coe,
+    ← orderOf_units]
   exact Nat.mod_modEq _ _
 #align is_primitive_root.aut_to_pow_spec IsPrimitiveRoot.autToPow_spec
 

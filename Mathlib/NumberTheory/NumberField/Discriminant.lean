@@ -41,6 +41,22 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
+theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
+    discr K = discr L := by
+  let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (integralClosure_algEquiv_restrict (f.restrictScalars ℤ)).toLinearEquiv
+  let e : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] ℂ) := by
+    refine Fintype.equivOfCardEq ?_
+    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
+  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
+    ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
+  change _ = algebraMap ℤ ℚ _
+  rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
+  congr
+  ext
+  simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
+    Basis.map_apply]
+  rfl
+
 open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 

@@ -361,7 +361,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
     show asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
     simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
-    rw [←hx]
+    rw [← hx]
     rfl
 #align representation.of_mul_action_self_smul_eq_mul Representation.ofMulAction_self_smul_eq_mul
 

@@ -484,7 +484,7 @@ theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
           ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
       apply ContDiffOn.pow
       simp_rw [← Real.norm_eq_abs]
-      apply @ContDiffOn.norm ℝ
+      apply ContDiffOn.norm ℝ
       · exact contDiffOn_fst
       · intro x hx; exact ne_of_gt hx.1.1
     · apply (u_smooth E).comp_contDiffOn

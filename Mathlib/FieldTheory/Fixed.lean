@@ -288,7 +288,7 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
 #align fixed_points.normal FixedPoints.normal
 
 instance separable : IsSeparable (FixedPoints.subfield G F) F :=
-  ⟨isIntegral G F, fun x => by
+  ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
     erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
