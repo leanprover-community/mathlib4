@@ -154,6 +154,7 @@ end
 space structure induced by a corresponding subspace of the `Module k V`. -/
 structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
+  /-- The affine subspace seen as a subset. -/
   carrier : Set P
   smul_vsub_vadd_mem :
     ∀ (c : k) {p1 p2 p3 : P},
@@ -1314,6 +1315,7 @@ theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
 
 variable (k)
 
+/-- The line between two points, as an affine subspace. -/
 notation "line[" k ", " p₁ ", " p₂ "]" =>
   affineSpan k (insert p₁ (@singleton _ _ Set.instSingletonSet p₂))
 
@@ -1424,6 +1426,23 @@ theorem vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSp
     vectorSpan k (insert p ps) = vectorSpan k ps := by
   simp_rw [← direction_affineSpan, affineSpan_insert_eq_affineSpan _ h]
 #align vector_span_insert_eq_vector_span vectorSpan_insert_eq_vectorSpan
+
+/-- When the affine space is also a vector space, the affine span is contained within the linear
+span. -/
+lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
+    affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
+  intro x hx
+  show x ∈ Submodule.span k s
+  induction hx using affineSpan_induction' with
+  | Hs x hx => exact Submodule.subset_span hx
+  | Hc c u _ v _ w _ hu hv hw =>
+    simp only [vsub_eq_sub, vadd_eq_add]
+    apply Submodule.add_mem _ _ hw
+    exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
+
+lemma affineSpan_subset_span {s : Set V} :
+    (affineSpan k s : Set V) ⊆  Submodule.span k s :=
+  affineSpan_le_toAffineSubspace_span
 
 end AffineSpace'
 
@@ -1795,6 +1814,7 @@ def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
   ∃ v : V, s₂ = s₁.map (constVAdd k P v)
 #align affine_subspace.parallel AffineSubspace.Parallel
 
+@[inherit_doc]
 scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 
 @[symm]

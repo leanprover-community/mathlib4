@@ -452,8 +452,8 @@ def toLocalHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   open_source := hs
   open_target := hf.open_image f'.toNonlinearRightInverse hs <| by
     rwa [f'.toEquiv.subsingleton_congr] at hc
-  continuous_toFun := hf.continuousOn
-  continuous_invFun := hf.inverse_continuousOn hc
+  continuousOn_toFun := hf.continuousOn
+  continuousOn_invFun := hf.inverse_continuousOn hc
 #align approximates_linear_on.to_local_homeomorph ApproximatesLinearOn.toLocalHomeomorph
 
 @[simp]
