@@ -11,10 +11,10 @@ import Mathlib.Analysis.InnerProductSpace.Adjoint
 /-!
 # Proper cones
 
-We define a proper cone as a nonempty, closed, convex cone. Proper cones are used in defining conic
+We define a *proper cone* as a closed, pointed cone. Proper cones are used in defining conic
 programs which generalize linear programs. A linear program is a conic program for the positive
 cone. We then prove Farkas' lemma for conic programs following the proof in the reference below.
-Farkas' lemma is equivalent to strong duality. So, once have the definitions of conic programs and
+Farkas' lemma is equivalent to strong duality. So, once we have the definitions of conic and
 linear programs, the results from this file can be used to prove duality theorems.
 
 ## TODO
@@ -25,7 +25,6 @@ The next steps are:
 - Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
 - Define linear programs and prove LP duality as a special case of cone duality.
 - Find a better reference (textbook instead of lecture notes).
-- Show submodules are (proper) cones.
 
 ## References
 
@@ -79,7 +78,7 @@ variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [M
 lemma closure_aux (K : PointedCone 𝕜 E) : (K : ConvexCone 𝕜 E).closure.Pointed :=
   subset_closure $ PointedCone.toConvexCone_pointed _
 
-/-- The closure of a pointed cone inside a topological space as a convex cone. This
+/-- The closure of a pointed cone inside a topological space as a pointed cone. This
 construction is mainly used for defining maps between proper cones. -/
 protected def closure (K : PointedCone 𝕜 E) : PointedCone 𝕜 E :=
   ConvexCone.toPointedCone K.closure_aux
@@ -99,9 +98,9 @@ theorem closure_eq {K L : PointedCone 𝕜 E} : K.closure = L ↔ closure (K : S
 
 end PointedCone
 
-/-- A proper cone is a convex cone `K` that is nonempty and closed. Proper cones have the nice
-property that the dual of the dual of a proper cone is itself. This makes them useful for defining
-cone programs and proving duality theorems. -/
+/-- A proper cone is a pointed cone `K` that is closed. Proper cones have the nice property that
+the dual of the dual of a proper cone is itself. This makes them useful for defining cone programs
+and proving duality theorems. -/
 structure ProperCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [Module 𝕜 E] extends Submodule {c : 𝕜 // 0 ≤ c} E where
   isClosed' : IsClosed (carrier : Set E)
@@ -308,7 +307,7 @@ theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
 
 /-- This is a relative version of
 `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`, which we recover by setting
-`f` to be the identity map. This is a geometric interpretation of the Farkas' lemma
+`f` to be the identity map. This is also a geometric interpretation of the Farkas' lemma
 stated using proper cones. -/
 theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F} :
     b ∈ K.map f ↔ ∀ y : F, adjoint f y ∈ K.dual → 0 ≤ ⟪y, b⟫_ℝ :=
@@ -336,8 +335,6 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       contrapose! h
 
       -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
-      -- have := ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem _
-      --   ((K : ConvexCone ℝ E).map f).nonempty
       let C := @PointedCone.toConvexCone ℝ F _ _ _ (K.map f)
       obtain ⟨y, hxy, hyb⟩ :=
         @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
