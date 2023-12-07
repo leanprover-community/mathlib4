@@ -320,7 +320,8 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
   convert (Zspan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
-  exact (by infer_instance : Countable (span ℤ (Set.range b)))
+  simp only [mem_toAddSubgroup]
+  infer_instance
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :

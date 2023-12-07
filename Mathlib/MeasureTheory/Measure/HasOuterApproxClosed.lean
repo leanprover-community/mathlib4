@@ -197,7 +197,7 @@ noncomputable instance (X : Type*) [TopologicalSpace X]
                 (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_0_nat F
       rw [tendsto_pi_nhds] at *
       intro x
-      nth_rw 2 [←IsClosed.closure_eq hF]
+      nth_rw 2 [← IsClosed.closure_eq hF]
       exact key x
 
 namespace MeasureTheory
