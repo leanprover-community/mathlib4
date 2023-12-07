@@ -51,15 +51,23 @@ available: `PosSMulMono.of_pos`, `PosSMulReflectLT.of_pos`, `SMulPosMono.of_pos`
 
 As `α` and `β` get more and more structure, those typeclasses end up being equivalent. The commonly
 used implications are:
-* `PosSMulStrictMono → PosSMulMono`, `SMulPosStrictMono → SMulPosMono`,
-  `PosSMulReflectLE → PosSMulReflectLT`, `SMulPosReflectLE → SMulPosReflectLT` when `α`, `β` are partial
-  orders.
-* `PosSMulStrictMono → PosSMulReflectLE` when `β` is a linear order.
-* `SMulPosStrictMono → SMulPosReflectLE` when `α` is a linear order.
-* `PosSMulMono → SMulPosMono`, `PosSMulStrictMono → SMulPosStrictMono` when `α` is an ordered ring,
-  `β` an ordered group and also an `α`-module.
-* `PosSMulStrictMono → PosSMulReflectLT`, `PosSMulMono → PosSMulReflectLE` if `α` is an ordered
-  semifield, `β` is an `α`-module.
+* When `α`, `β` are partial orders:
+  * `PosSMulStrictMono → PosSMulMono`
+  * `SMulPosStrictMono → SMulPosMono`
+  * `PosSMulReflectLE → PosSMulReflectLT`
+  * `SMulPosReflectLE → SMulPosReflectLT`
+* When `β` is a linear order: `PosSMulStrictMono → PosSMulReflectLE`
+* When `α` is a linear order: `SMulPosStrictMono → SMulPosReflectLE`
+* When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
+  * `PosSMulMono → SMulPosMono`
+  * `PosSMulStrictMono → SMulPosStrictMono`
+* When `α` is an ordered semifield, `β` is an `α`-module:
+  * `PosSMulStrictMono → PosSMulReflectLT`
+  * `PosSMulMono → PosSMulReflectLE`
+
+Further, the bundled non-granular typeclasses imply the granular ones like so:
+* `OrderedSMul → PosSMulStrictMono`
+* `OrderedSMul → PosSMulReflectLT`
 
 All these are registered as instances, which means that in practice you should not worry about these
 implications. However, if you encounter a case where you think a statement is true but not covered
