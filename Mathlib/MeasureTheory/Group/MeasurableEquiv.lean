@@ -54,7 +54,7 @@ def smul (c : G) : α ≃ᵐ α where
 #align measurable_equiv.vadd MeasurableEquiv.vadd
 
 @[to_additive]
-theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding ((· • ·) c : α → α) :=
+theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding (c • · : α → α) :=
   (smul c).measurableEmbedding
 #align measurable_embedding_const_smul measurableEmbedding_const_smul
 #align measurable_embedding_const_vadd measurableEmbedding_const_vadd
@@ -83,7 +83,7 @@ theorem symm_smul₀ {c : G₀} (hc : c ≠ 0) :
 #align measurable_equiv.symm_smul₀ MeasurableEquiv.symm_smul₀
 
 theorem _root_.measurableEmbedding_const_smul₀ {c : G₀} (hc : c ≠ 0) :
-    MeasurableEmbedding ((· • ·) c : α → α) :=
+    MeasurableEmbedding (c • · : α → α) :=
   (smul₀ c hc).measurableEmbedding
 #align measurable_embedding_const_smul₀ measurableEmbedding_const_smul₀
 

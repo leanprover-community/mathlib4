@@ -912,7 +912,7 @@ theorem ContinuousInv.of_nhds_one {G : Type*} [Group G] [TopologicalSpace G]
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (fun x : G => x₀ * x) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (fun x : G => x₀ * x * x₀⁻¹) (𝓝 1) (𝓝 1)) : ContinuousInv G := by
   refine' ⟨continuous_iff_continuousAt.2 fun x₀ => _⟩
-  have : Tendsto (fun x => x₀⁻¹ * (x₀ * x⁻¹ * x₀⁻¹)) (𝓝 1) (map ((· * ·) x₀⁻¹) (𝓝 1)) :=
+  have : Tendsto (fun x => x₀⁻¹ * (x₀ * x⁻¹ * x₀⁻¹)) (𝓝 1) (map (x₀⁻¹ * ·) (𝓝 1)) :=
     (tendsto_map.comp <| hconj x₀).comp hinv
   simpa only [ContinuousAt, hleft x₀, hleft x₀⁻¹, tendsto_map'_iff, (· ∘ ·), mul_assoc, mul_inv_rev,
     inv_mul_cancel_left] using this
@@ -1723,9 +1723,9 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
     with non-empty interior."]
 theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
     (hV : (interior V).Nonempty) : ∃ t : Finset G, K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V := by
-  obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((· * ·) x ⁻¹' V) := by
+  obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior (x * · ⁻¹' V) := by
     refine'
-      hK.elim_finite_subcover (fun x => interior <| (· * ·) x ⁻¹' V) (fun x => isOpen_interior) _
+      hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) _
     cases' hV with g₀ hg₀
     refine' fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, _⟩
     refine' preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) _

@@ -1232,7 +1232,7 @@ theorem preimage_mul_right_one : preimage 1 (· * b) ((mul_left_injective _).inj
 #align finset.preimage_add_right_zero Finset.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : preimage 1 ((· * ·) a⁻¹) ((mul_right_injective _).injOn _) = {a} :=
+theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) ((mul_right_injective _).injOn _) = {a} :=
   by rw [preimage_mul_left_one, inv_inv]
 #align finset.preimage_mul_left_one' Finset.preimage_mul_left_one'
 #align finset.preimage_add_left_zero' Finset.preimage_add_left_zero'
@@ -1502,7 +1502,7 @@ theorem vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b)
   image₂_singleton_right
 #align finset.vsub_singleton Finset.vsub_singleton
 
-theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image ((· -ᵥ ·) a) :=
+theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·) :=
   image₂_singleton_left
 #align finset.singleton_vsub Finset.singleton_vsub
 

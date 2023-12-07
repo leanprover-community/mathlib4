@@ -354,9 +354,9 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
 
 @[simp]
 theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
-    μ ((· • ·) r ⁻¹' s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s :=
+    μ ((r • ·) ⁻¹' s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s :=
   calc
-    μ ((· • ·) r ⁻¹' s) = Measure.map (r • ·) μ s :=
+    μ ((r • ·) ⁻¹' s) = Measure.map (r • ·) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
       rw [map_addHaar_smul μ hr, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,

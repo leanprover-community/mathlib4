@@ -1130,7 +1130,7 @@ theorem NeBot.of_vsub_right : (f -ᵥ g : Filter α).NeBot → g.NeBot :=
 #align filter.ne_bot.of_vsub_right Filter.NeBot.of_vsub_right
 
 @[simp]
-theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map ((· -ᵥ ·) a) :=
+theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map (a -ᵥ ·) :=
   map₂_pure_left
 #align filter.pure_vsub Filter.pure_vsub
 

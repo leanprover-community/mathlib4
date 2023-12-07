@@ -35,7 +35,7 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
   simp [flip, functor_norm]
 #align applicative.map_seq_map Applicative.map_seq_map
 
-theorem Applicative.pure_seq_eq_map' (f : α → β) : (· <*> ·) (pure f : F (α → β)) = (· <$> ·) f :=
+theorem Applicative.pure_seq_eq_map' (f : α → β) : (· <*> ·) (pure f : F (α → β)) = (f <$> ·) :=
   by ext; simp [functor_norm]
 #align applicative.pure_seq_eq_map' Applicative.pure_seq_eq_map'
 
