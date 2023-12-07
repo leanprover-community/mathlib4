@@ -33,8 +33,8 @@ variable {E E' F  : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 -- move this
-theorem tsupport_add {X : Type*} [TopologicalSpace X] {α : Type*}
-  [AddMonoid α] {f g : X → α} : (tsupport fun x ↦ f x + g x) ⊆ tsupport f ∪ tsupport g :=
+theorem tsupport_add {X : Type*} [TopologicalSpace X] {α : Type*} [AddMonoid α] {f g : X → α} :
+    (tsupport fun x ↦ f x + g x) ⊆ tsupport f ∪ tsupport g :=
   closure_minimal
     ((support_add f g).trans (union_subset_union (subset_tsupport _) (subset_tsupport _)))
     (isClosed_closure.union isClosed_closure)
@@ -63,13 +63,17 @@ lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : SmoothSupportedOn 𝕜 E F n s) =
 lemma tsupport_subset (f : SmoothSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.2.1
 
 lemma support_subset (f : SmoothSupportedOn 𝕜 E F n s) :
-  support f ⊆ s := subset_tsupport _ |>.trans (tsupport_subset f)
+    support f ⊆ s := subset_tsupport _ |>.trans (tsupport_subset f)
 
 lemma contDiff (f : SmoothSupportedOn 𝕜 E F n s) :
     ContDiff 𝕜 n f := f.2.2
 
 theorem continuous (f : SmoothSupportedOn 𝕜 E F n s) : Continuous f :=
   ContDiff.continuous <| SmoothSupportedOn.contDiff _
+
+lemma hasCompactSupport [ProperSpace E] (f : SmoothSupportedOn 𝕜 E F n (closedBall 0 1)) :
+    HasCompactSupport f :=
+  HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
 
 end SmoothSupportedOn
 
@@ -170,16 +174,6 @@ lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
     Continuous fun x ↦ (eval x) p := by
   continuity
 
-lemma SmoothSupportedOn.hasCompactSupport
-    (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
-    HasCompactSupport f :=
-  HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
-
-theorem SmoothSupportedOn.integrable
-    (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
-    Integrable f :=
-  Continuous.integrable_of_hasCompactSupport (continuous _) (hasCompactSupport _)
-
 theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x := by
@@ -188,7 +182,7 @@ theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
   · apply Continuous.mul
     · apply p.continuous_eval
     · apply ContDiff.continuous <| SmoothSupportedOn.contDiff _
-  apply (hasCompactSupport _).mul_left
+  exact (hasCompactSupport f).mul_left
 
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
