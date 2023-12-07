@@ -356,7 +356,7 @@ theorem finrank_pos [Module.Finite R V] [NoZeroSMulDivisors R V] [h : Nontrivial
 #align finite_dimensional.finrank_pos FiniteDimensional.finrank_pos
 
 /-- See `finrank_zero_iff` for the stronger version with `NoZeroSMulDivisors R V`. -/
-theorem finrank_eq_zero_iff [Module.Finite R V] [NoZeroSMulDivisors R V] :
+theorem finrank_eq_zero_iff [Module.Finite R V] :
     finrank R V = 0 ↔ ∀ x : V, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
   Iff.trans
     (by rw [← finrank_eq_rank]; norm_cast)
