@@ -211,8 +211,8 @@ theorem _root_.Module.finite_of_finrank_pos [Module.Free R V] (h : 0 < finrank R
   simp [finrank_of_infinite_dimensional h]
 #align finite_dimensional.finite_dimensional_of_finrank Module.finite_of_finrank_pos
 
-theorem _root_.Module.finite_of_finrank_eq_succ [Module.Free R V] {n : ℕ} (hn : finrank R V = n.succ) :
-    Module.Finite R V :=
+theorem _root_.Module.finite_of_finrank_eq_succ [Module.Free R V] {n : ℕ}
+    (hn : finrank R V = n.succ) : Module.Finite R V :=
   Module.finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 #align finite_dimensional.finite_dimensional_of_finrank_eq_succ Module.finite_of_finrank_eq_succ
 
