@@ -466,7 +466,7 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
 lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
-lemma center_iff_op_centroid (a : α) :
+lemma mem_center_iff_mulRight_eq_mulLeft_and_mul_mem_centroid (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
   · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
@@ -487,21 +487,13 @@ section NonUnitalNonAssocCommSemiring
 
 variable [NonUnitalNonAssocCommSemiring α]
 
-local notation "L" => AddMonoid.End.mulLeft
-local notation "R" => AddMonoid.End.mulRight
+local notation "T" => AddMonoid.End.mulLeft
 
-lemma center_iff_op_mul_commute (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
-  rw [center_iff_op_centroid, centroid_eq_centralizer_mulLeftRight, Subsemiring.mem_centralizer_iff,
-    AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
-  simp_rw [true_and]
-  constructor
-  · intro h b
-    apply h (L b)
-    simp only [Set.mem_range, exists_apply_eq_apply]
-  · intro h _ ⟨b, hb⟩
-    rw [← hb]
-    exact h b
+lemma mem_center_iff_commute_mulLeft_mulLeft (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (T b) (T a) := by
+  rw [mem_center_iff_mulRight_eq_mulLeft_and_mul_mem_centroid, centroid_eq_centralizer_mulLeftRight,
+    Subsemiring.mem_centralizer_iff, AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
+  aesop
 
 end NonUnitalNonAssocCommSemiring
 
