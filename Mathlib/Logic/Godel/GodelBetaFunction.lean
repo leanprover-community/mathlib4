@@ -17,9 +17,14 @@ This file proves Gödel's Beta Function Lemma, used to prove the First Incomplet
  permits  quantification over finite sequences of natural numbers in formal theories of arithmetic.
  This Beta Function has no connection with the unrelated Beta Function defined in analysis.
 
-## Implementation notes
+## Main result
 
-xxx
+- `beta_function_lemma`: Gödel's Beta Function Lemma.
+
+## Implementation note
+
+This code is a step towards eventually including a proof of Gödel's First Incompleteness Theorem
+and other key results from the repository https://github.com/iehality/lean4-logic.
 
 ## References
 
