@@ -389,17 +389,14 @@ lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ 
 
 end integral
 
-lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite κ]
-    [μ.HaveLebesgueDecomposition κ] [ν.HaveLebesgueDecomposition κ] [μ.HaveLebesgueDecomposition ν]
-    (hμν : μ ≪ ν) (hνκ : ν ≪ κ) :
+lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
+    (hμν : μ ≪ ν) :
     μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
-  rw [← withDensity_eq_iff_of_sigmaFinite]
-  · rw [mul_comm,
-      withDensity_mul _ (Measure.measurable_rnDeriv _ _) (Measure.measurable_rnDeriv _ _),
-      Measure.withDensity_rnDeriv_eq _ _ (hμν.trans hνκ), Measure.withDensity_rnDeriv_eq _ _ hνκ,
-      Measure.withDensity_rnDeriv_eq _ _ hμν]
-  · exact ((Measure.measurable_rnDeriv _ _).mul (Measure.measurable_rnDeriv _ _)).aemeasurable
+  refine (rnDeriv_withDensity_left ?_ ?_ ?_).symm.trans ?_
   · exact (Measure.measurable_rnDeriv _ _).aemeasurable
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
+  · exact rnDeriv_ne_top _ _
+  · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
 
 end Measure
 

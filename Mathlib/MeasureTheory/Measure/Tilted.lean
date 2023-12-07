@@ -97,18 +97,18 @@ lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
   congr with x
   rw [ENNReal.ofReal_eq_coe_nnreal]
 
-lemma tilted_apply (μ : Measure α) (f : α → ℝ) {s : Set α} (hs : MeasurableSet s) :
+lemma tilted_apply' (μ : Measure α) (f : α → ℝ) {s : Set α} (hs : MeasurableSet s) :
     μ.tilted f s = ∫⁻ a in s, ENNReal.ofReal (exp (f a) / ∫ x, exp (f x) ∂μ) ∂μ := by
   rw [Measure.tilted, withDensity_apply _ hs]
 
-lemma tilted_apply' (μ : Measure α) [SFinite μ] (f : α → ℝ) (s : Set α) :
+lemma tilted_apply (μ : Measure α) [SFinite μ] (f : α → ℝ) (s : Set α) :
     μ.tilted f s = ∫⁻ a in s, ENNReal.ofReal (exp (f a) / ∫ x, exp (f x) ∂μ) ∂μ := by
   rw [Measure.tilted, withDensity_apply' _ s]
 
-lemma tilted_apply_eq_ofReal_integral {s : Set α} (f : α → ℝ) (hs : MeasurableSet s) :
+lemma tilted_apply_eq_ofReal_integral' {s : Set α} (f : α → ℝ) (hs : MeasurableSet s) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a) / ∫ x, exp (f x) ∂μ ∂μ) := by
   by_cases hf : Integrable (fun x ↦ exp (f x)) μ
-  · rw [tilted_apply _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
+  · rw [tilted_apply' _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _
         (fun _ ↦ div_nonneg (exp_pos _).le (integral_nonneg (fun _ ↦ (exp_pos _).le)))
@@ -116,10 +116,10 @@ lemma tilted_apply_eq_ofReal_integral {s : Set α} (f : α → ℝ) (hs : Measur
       OuterMeasure.coe_zero, Pi.zero_apply, integral_undef hf, div_zero, integral_zero,
       ENNReal.ofReal_zero]
 
-lemma tilted_apply_eq_ofReal_integral' [SFinite μ] (f : α → ℝ) (s : Set α) :
+lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a) / ∫ x, exp (f x) ∂μ ∂μ) := by
   by_cases hf : Integrable (fun x ↦ exp (f x)) μ
-  · rw [tilted_apply' _ _, ← ofReal_integral_eq_lintegral_ofReal]
+  · rw [tilted_apply _ _, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _
         (fun _ ↦ div_nonneg (exp_pos _).le (integral_nonneg (fun _ ↦ (exp_pos _).le)))
@@ -138,7 +138,7 @@ instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
 lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     IsProbabilityMeasure (μ.tilted f) := by
   constructor
-  simp_rw [tilted_apply _ _ MeasurableSet.univ, set_lintegral_univ,
+  simp_rw [tilted_apply' _ _ MeasurableSet.univ, set_lintegral_univ,
     ENNReal.ofReal_div_of_pos (integral_exp_pos hf), div_eq_mul_inv]
   rw [lintegral_mul_const'' _ hf.1.aemeasurable.ennreal_ofReal,
     ← ofReal_integral_eq_lintegral_ofReal hf (ae_of_all _ fun _ ↦ (exp_pos _).le),
@@ -149,7 +149,7 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
 
 section lintegral
 
-lemma set_lintegral_tilted (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+lemma set_lintegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, g x ∂(μ.tilted f)
       = ∫⁻ x in s, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * g x ∂μ := by
   by_cases hf : AEMeasurable f μ
@@ -167,7 +167,7 @@ lemma set_lintegral_tilted (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α}
     rw [integral_undef hf']
     simp
 
-lemma set_lintegral_tilted' [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞) (s : Set α) :
+lemma set_lintegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ x in s, g x ∂(μ.tilted f)
       = ∫⁻ x in s, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * g x ∂μ := by
   by_cases hf : AEMeasurable f μ
@@ -187,7 +187,7 @@ lemma set_lintegral_tilted' [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞
 lemma lintegral_tilted (f : α → ℝ) (g : α → ℝ≥0∞) :
     ∫⁻ x, g x ∂(μ.tilted f)
       = ∫⁻ x, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * (g x) ∂μ := by
-  rw [← set_lintegral_univ, set_lintegral_tilted f g MeasurableSet.univ, set_lintegral_univ]
+  rw [← set_lintegral_univ, set_lintegral_tilted' f g MeasurableSet.univ, set_lintegral_univ]
 
 end lintegral
 
@@ -256,7 +256,7 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
   | inl h => simp [h]
   | inr h0 =>
     ext1 s hs
-    rw [tilted_apply _ _ hs, tilted_apply _ _ hs, set_lintegral_tilted f _ hs]
+    rw [tilted_apply' _ _ hs, tilted_apply' _ _ hs, set_lintegral_tilted' f _ hs]
     congr with x
     rw [← ENNReal.ofReal_mul (div_nonneg (exp_pos _).le (integral_nonneg (fun _ ↦ (exp_pos _).le))),
       integral_exp_tilted f, Pi.add_apply, exp_add]
@@ -316,7 +316,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
       rw [ENNReal.ofReal_inv_of_pos, inv_div', ← exp_neg, div_eq_mul_inv, inv_inv]
       exact div_pos (exp_pos _) (integral_exp_pos hf)
 
-lemma ofReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
+lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
@@ -335,7 +335,7 @@ lemma rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
   · exact ((measurable_exp.comp_aemeasurable hfν).div_const _).ennreal_ofReal
   · exact ae_of_all _ (fun x ↦ by simp)
 
-lemma ofReal_rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
+lemma toReal_rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     (hfμ : AEMeasurable f μ) (hfν : AEMeasurable f ν) :
     (fun x ↦ ((μ.tilted f).rnDeriv ν x).toReal)
       =ᵐ[ν] fun x ↦ exp (f x) / (∫ x, exp (f x) ∂μ) * (μ.rnDeriv ν x).toReal := by
