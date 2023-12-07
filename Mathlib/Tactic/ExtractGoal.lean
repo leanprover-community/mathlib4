@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
 import Std.Lean.Meta.Inaccessible
-import Mathlib.Lean.Meta.Tactic.CleanupExcept
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example
@@ -141,8 +140,9 @@ elab_rules : tactic
             -- In a contradiction proof, it is not very helpful to clear all hypotheses!
             pure g
           else
-            g.cleanupExcept #[] (props := true)
-        | `(config| $fvars:ident*) => g.cleanupExcept (← getFVarIds fvars)
+            g.cleanup
+        | `(config| $fvars:ident*) =>
+          g.cleanup (toPreserve := (← getFVarIds fvars)) (indirectProps := false)
         | _ => throwUnsupportedSyntax
       let (g, _) ← g.renameInaccessibleFVars
       let (_, g) ← g.revert (clearAuxDeclsInsteadOfRevert := true) (← g.getDecl).lctx.getFVarIds
