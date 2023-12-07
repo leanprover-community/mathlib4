@@ -82,7 +82,6 @@ instance MeasureTheory.QuotientVolumeEqVolumePreimage.smulInvariantMeasure_quoti
     SMulInvariantMeasure G (G ⧸ Γ) μ where
   measure_preimage_smul g A hA := by
     have meas_π : Measurable π := continuous_quotient_mk'.measurable
-    have meas_πA : MeasurableSet (π ⁻¹' A) := measurableSet_preimage meas_π hA
     obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) volume :=
       h𝓕.smul_of_comm g
