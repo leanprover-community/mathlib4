@@ -57,12 +57,6 @@ implications are:
   * `PosMulStrictMono → MulPosStrictMono`
   * `PosMulMonoRev → MulPosMonoRev`
   * `PosMulReflectLT → MulPosReflectLT`
-* When `α` is an ordered ring:
-  * `PosMulMono → MulPosMono`
-  * `PosMulStrictMono → MulPosStrictMono`
-* When `α` is an ordered semifield:
-  * `PosMulStrictMono → PosMulReflectLT`
-  * `PosMulMono → PosMulMonoRev`
 
 All these are registered as instances, which means that in practice you should not worry about these
 implications. However, if you encounter a case where you think a statement is true but not covered
