@@ -223,8 +223,9 @@ theorem fact_finiteDimensional_of_finrank_eq_succ [Module.Free R V] (n : ℕ)
   finiteDimensional_of_finrank <| by convert Nat.succ_pos n; apply Fact.out
 #align finite_dimensional.fact_finite_dimensional_of_finrank_eq_succ FiniteDimensional.fact_finiteDimensional_of_finrank_eq_succ
 
-theorem _root_.Module.finite_iff_of_rank_eq_nsmul [Module.Free R V] {W} [AddCommGroup W] [Module R W]
-    [Module.Free R W] {n : ℕ} (hn : n ≠ 0) (hVW : Module.rank R V = n • Module.rank R W) :
+theorem _root_.Module.finite_iff_of_rank_eq_nsmul [Module.Free R V] {W} [AddCommGroup W]
+    [Module R W] [Module.Free R W] {n : ℕ} (hn : n ≠ 0)
+    (hVW : Module.rank R V = n • Module.rank R W) :
     Module.Finite R V ↔ Module.Finite R W := by
   simp only [← rank_lt_alpeh0_iff, hVW,
     Cardinal.nsmul_lt_aleph0_iff_of_ne_zero hn]
