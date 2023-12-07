@@ -39,7 +39,7 @@ variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 /-- The `vectorSpan` of a finite set is finite-dimensional. -/
 theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (vectorSpan k s) :=
-  span_of_finite k <| h.vsub h
+  Module.Finite.span_of_finite k <| h.vsub h
 #align finite_dimensional_vector_span_of_finite finiteDimensional_vectorSpan_of_finite
 
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
@@ -738,7 +738,7 @@ theorem Collinear.coplanar_insert {s : Set P} (h : Collinear k s) (p : P) :
 
 /-- A set of points in a two-dimensional space is coplanar. -/
 theorem coplanar_of_finrank_eq_two (s : Set P) (h : finrank k V = 2) : Coplanar k s := by
-  have : FiniteDimensional k V := finiteDimensional_of_finrank_eq_succ h
+  have : FiniteDimensional k V := Module.finite_of_finrank_eq_succ h
   rw [coplanar_iff_finrank_le_two, ← h]
   exact Submodule.finrank_le _
 #align coplanar_of_finrank_eq_two coplanar_of_finrank_eq_two

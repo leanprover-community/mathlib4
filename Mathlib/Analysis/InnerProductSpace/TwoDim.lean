@@ -76,7 +76,7 @@ open FiniteDimensional
 
 lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  fact_finiteDimensional_of_finrank_eq_succ 1
+  Module.finite_of_fact_finrank_eq_succ 1
 
 attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
 

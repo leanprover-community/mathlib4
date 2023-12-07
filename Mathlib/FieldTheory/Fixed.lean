@@ -333,7 +333,7 @@ noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Fie
 
 theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=
-  fintype_card_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V V
+  Module.Finite.fintype_card_le_finrank_of_linearIndependent <| linearIndependent_toLinearMap K V V
 #align finrank_alg_hom finrank_algHom
 
 namespace FixedPoints

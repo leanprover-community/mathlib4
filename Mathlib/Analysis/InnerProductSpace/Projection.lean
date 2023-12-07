@@ -1173,7 +1173,7 @@ theorem Submodule.finrank_add_finrank_orthogonal' [FiniteDimensional 𝕜 E] {K 
 span of a nonzero vector is one less than the dimension of the space. -/
 theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : finrank 𝕜 (𝕜 ∙ v)ᗮ = n := by
-  haveI : FiniteDimensional 𝕜 E := fact_finiteDimensional_of_finrank_eq_succ n
+  haveI : FiniteDimensional 𝕜 E := Module.finite_of_fact_finrank_eq_succ n
   exact Submodule.finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 #align finrank_orthogonal_span_singleton finrank_orthogonal_span_singleton
@@ -1190,7 +1190,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine' ⟨[], rfl.le, show φ = 1 from _⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
-      rwa [Nat.zero_eq, le_zero_iff, finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
+      rwa [Nat.zero_eq, le_zero_iff, Module.finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
