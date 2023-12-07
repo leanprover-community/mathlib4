@@ -233,7 +233,7 @@ lemma lt_of_smul_lt_smul_right [SMulPosReflectLT α β] (h : a₁ • b < a₂ �
     a₁ < a₂ := SMulPosReflectLT.elim hb h
 
 lemma le_of_smul_le_smul_right [SMulPosReflectLE α β] (h : a₁ • b ≤ a₂ • b) (hb : 0 < b) :
-   a₁ ≤ a₂ := SMulPosReflectLE.elim hb h
+    a₁ ≤ a₂ := SMulPosReflectLE.elim hb h
 
 alias lt_of_smul_lt_smul_of_nonneg_right := lt_of_smul_lt_smul_right
 alias le_of_smul_le_smul_of_pos_right := le_of_smul_le_smul_right
