@@ -20,18 +20,18 @@ two intervals.
 
 ## Main definitions
 
-* `MeasureTheory.SetSemiring C`: property of being a semi-ring of sets.
-* `MeasureTheory.SetSemiring.diffFinset hs ht`: for `s, t` in a semi-ring `C`
-  (with `hC : SetSemiring C`) with `hs : s ∈ C`, `ht : t ∈ C`, this is a `Finset` of
+* `MeasureTheory.IsSetSemiring C`: property of being a semi-ring of sets.
+* `MeasureTheory.IsSetSemiring.diffFinset hs ht`: for `s, t` in a semi-ring `C`
+  (with `hC : IsSetSemiring C`) with `hs : s ∈ C`, `ht : t ∈ C`, this is a `Finset` of
   pairwise disjoint sets such that `s \ t = ⋃₀ hC.diffFinset hs ht`.
-* `MeasureTheory.SetSemiring.diffFinset₀ hs hI`: for `hs : s ∈ C` and a finset `I` of sets in `C`
+* `MeasureTheory.IsSetSemiring.diffFinset₀ hs hI`: for `hs : s ∈ C` and a finset `I` of sets in `C`
   (with `hI : ↑I ⊆ C`), this is a `Finset` of pairwise disjoint sets such that
   `s \ ⋃₀ I = ⋃₀ hC.diffFinset₀ hs hI`.
 
 ## Main statements
 
-* `MeasureTheory.SetSemiring.exists_disjoint_finset_diff_eq`: the existence of the `Finset` given
-  by the definition `SetSemiring.diffFinset₀` (see above).
+* `MeasureTheory.IsSetSemiring.exists_disjoint_finset_diff_eq`: the existence of the `Finset` given
+  by the definition `IsSetSemiring.diffFinset₀` (see above).
 
 -/
 
@@ -45,16 +45,16 @@ variable {α : Type*} {C : Set (Set α)} {s t : Set α}
 
 /-- A semi-ring of sets `C` is a family of sets containing `∅`, stable by intersection and such that
 for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of finitely many sets in `C`. -/
-structure SetSemiring (C : Set (Set α)) : Prop where
+structure IsSetSemiring (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
   inter_mem : ∀ (s) (_ : s ∈ C) (t) (_ : t ∈ C), s ∩ t ∈ C
   diff_eq_Union' :
     ∀ (t) (_ : t ∈ C) (s) (_ : s ∈ C),
       ∃ (I : Finset (Set α)) (_ : ↑I ⊆ C) (_ : PairwiseDisjoint (I : Set (Set α)) id), t \ s = ⋃₀ I
 
-namespace SetSemiring
+namespace IsSetSemiring
 
-lemma isPiSystem (hC : SetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
+lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
 
 section diffFinset
 
@@ -62,35 +62,36 @@ section diffFinset
 many sets in `C`. This definitions gives a finset of sets that satisfies that equality.
 
 We remove the empty set to ensure that `t ∉ hC.diffFinset hs ht` even if `t = ∅`. -/
-noncomputable def diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
+noncomputable def diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
+    [DecidableEq (Set α)] :
     Finset (Set α) :=
   (hC.diff_eq_Union' s hs t ht).choose \ {∅}
 
-lemma empty_not_mem_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
+lemma empty_not_mem_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     [DecidableEq (Set α)] :
     ∅ ∉ hC.diffFinset hs ht := by
-  simp only [SetSemiring.diffFinset, mem_sdiff, Finset.mem_singleton, eq_self_iff_true, not_true,
+  simp only [diffFinset, mem_sdiff, Finset.mem_singleton, eq_self_iff_true, not_true,
     and_false_iff, not_false_iff]
 
-lemma diffFinset_subset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
+lemma diffFinset_subset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
     ↑(hC.diffFinset hs ht) ⊆ C := by
-  simp only [SetSemiring.diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   exact (hC.diff_eq_Union' s hs t ht).choose_spec.choose.trans (Set.subset_insert _ _)
 
-lemma pairwiseDisjoint_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
+lemma pairwiseDisjoint_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     [DecidableEq (Set α)] :
     PairwiseDisjoint (hC.diffFinset hs ht : Set (Set α)) id := by
-  simp only [SetSemiring.diffFinset, coe_sdiff, coe_singleton]
+  simp only [diffFinset, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset (hC.diff_eq_Union' s hs t ht).choose_spec.choose_spec.choose
       (Set.diff_subset _ _)
 
-lemma sUnion_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
+lemma sUnion_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
     ⋃₀ hC.diffFinset hs ht = s \ t := by
   rw [(hC.diff_eq_Union' s hs t ht).choose_spec.choose_spec.choose_spec]
-  simp only [SetSemiring.diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
-lemma not_mem_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
+lemma not_mem_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
     t ∉ hC.diffFinset hs ht := by
   intro hs_mem
   suffices t ⊆ s \ t by
@@ -102,19 +103,19 @@ lemma not_mem_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [Dec
   rw [← hC.sUnion_diffFinset hs ht]
   exact subset_sUnion_of_mem hs_mem
 
-lemma sUnion_insert_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C) (hst : t ⊆ s)
+lemma sUnion_insert_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) (hst : t ⊆ s)
     [DecidableEq (Set α)] :
     ⋃₀ insert t (hC.diffFinset hs ht) = s := by
   conv_rhs => rw [← union_diff_cancel hst, ← hC.sUnion_diffFinset hs ht]
   simp only [mem_coe, sUnion_insert]
 
-lemma disjoint_sUnion_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
+lemma disjoint_sUnion_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     [DecidableEq (Set α)] :
     Disjoint t (⋃₀ hC.diffFinset hs ht) := by
   rw [hC.sUnion_diffFinset]
   exact disjoint_sdiff_right
 
-lemma pairwiseDisjoint_insert_diffFinset (hC : SetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
+lemma pairwiseDisjoint_insert_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     [DecidableEq (Set α)] :
     PairwiseDisjoint (insert t (hC.diffFinset hs ht) : Set (Set α)) id := by
   have h := hC.pairwiseDisjoint_diffFinset hs ht
@@ -132,8 +133,8 @@ variable {I : Finset (Set α)}
 
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
 finite set of sets in `C` such that `s \ ⋃₀ I = ⋃₀ (hC.diffFinset₀ hs I hI)`.
-See `SetSemiring.diffFinset₀` for a definition that gives such a set. -/
-lemma exists_disjoint_finset_diff_eq (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
+See `IsSetSemiring.diffFinset₀` for a definition that gives such a set. -/
+lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ∃ (J : Finset (Set α)) (_h_ss : ↑J ⊆ C) (_h_dis : PairwiseDisjoint (J : Set (Set α)) id),
       s \ ⋃₀ I = ⋃₀ J := by
   classical
@@ -200,47 +201,47 @@ lemma exists_disjoint_finset_diff_eq (hC : SetSemiring C) (hs : s ∈ C) (hI : �
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`,
 `diffFinset₀` is a finite set of sets in `C` such that `s \ ⋃₀ I = ⋃₀ (hC.diffFinset₀ hs I hI)`.
 `diffFinset` is as a special case of `diffFinset₀` where `I` is a singleton. -/
-noncomputable def diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
+noncomputable def diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
     [DecidableEq (Set α)] : Finset (Set α) :=
   (hC.exists_disjoint_finset_diff_eq hs hI).choose \ {∅}
 
-lemma empty_not_mem_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
+lemma empty_not_mem_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
     [DecidableEq (Set α)] : ∅ ∉ hC.diffFinset₀ hs hI := by
-  simp only [SetSemiring.diffFinset₀, mem_sdiff, Finset.mem_singleton, eq_self_iff_true, not_true,
+  simp only [diffFinset₀, mem_sdiff, Finset.mem_singleton, eq_self_iff_true, not_true,
     and_false_iff, not_false_iff]
 
-lemma diffFinset₀_subset (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
+lemma diffFinset₀_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
     [DecidableEq (Set α)] :
     ↑(hC.diffFinset₀ hs hI) ⊆ C := by
-  simp only [SetSemiring.diffFinset₀, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [diffFinset₀, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   exact (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.choose.trans (Set.subset_insert _ _)
 
-lemma pairwiseDisjoint_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C)
+lemma pairwiseDisjoint_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) [DecidableEq (Set α)] :
     PairwiseDisjoint (hC.diffFinset₀ hs hI : Set (Set α)) id := by
-  simp only [SetSemiring.diffFinset₀, coe_sdiff, coe_singleton]
+  simp only [diffFinset₀, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset
     (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.choose_spec.choose (Set.diff_subset _ _)
 
-lemma diff_sUnion_eq_sUnion_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C)
+lemma diff_sUnion_eq_sUnion_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) [DecidableEq (Set α)] :
     s \ ⋃₀ I = ⋃₀ hC.diffFinset₀ hs hI := by
   rw [(hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.choose_spec.choose_spec]
-  simp only [SetSemiring.diffFinset₀, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
+  simp only [diffFinset₀, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
-lemma sUnion_diffFinset₀_subset (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
+lemma sUnion_diffFinset₀_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C)
     [DecidableEq (Set α)] :
     ⋃₀ (hC.diffFinset₀ hs hI : Set (Set α)) ⊆ s := by
   rw [← hC.diff_sUnion_eq_sUnion_diffFinset₀]
   exact diff_subset _ _
 
-lemma disjoint_sUnion_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C)
+lemma disjoint_sUnion_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) [DecidableEq (Set α)] :
     Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.diffFinset₀ hs hI) := by
   rw [← hC.diff_sUnion_eq_sUnion_diffFinset₀]; exact Set.disjoint_sdiff_right
 
-lemma disjoint_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) [DecidableEq (Set α)] :
+lemma disjoint_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) [DecidableEq (Set α)] :
     Disjoint I (hC.diffFinset₀ hs hI) := by
   by_contra h
   rw [Finset.not_disjoint_iff] at h
@@ -251,7 +252,7 @@ lemma disjoint_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ 
   refine hC.empty_not_mem_diffFinset₀ hs hI ?_
   rwa [h_disj] at hu_diffFinset₀
 
-lemma pairwiseDisjoint_union_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C)
+lemma pairwiseDisjoint_union_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id) [DecidableEq (Set α)] :
     PairwiseDisjoint (I ∪ hC.diffFinset₀ hs hI : Set (Set α)) id := by
   rw [pairwiseDisjoint_union]
@@ -260,12 +261,12 @@ lemma pairwiseDisjoint_union_diffFinset₀ (hC : SetSemiring C) (hs : s ∈ C)
   exact disjoint_of_subset (subset_sUnion_of_mem hu) (subset_sUnion_of_mem hv)
     (hC.disjoint_sUnion_diffFinset₀ hs hI)
 
-lemma sUnion_union_sUnion_diffFinset₀_of_subset (hC : SetSemiring C) (hs : s ∈ C)
+lemma sUnion_union_sUnion_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s) [DecidableEq (Set α)] :
     ⋃₀ I ∪ ⋃₀ hC.diffFinset₀ hs hI = s:= by
   conv_rhs => rw [← union_diff_cancel hI_ss, hC.diff_sUnion_eq_sUnion_diffFinset₀ hs hI]
 
-lemma sUnion_union_diffFinset₀_of_subset (hC : SetSemiring C) (hs : s ∈ C)
+lemma sUnion_union_diffFinset₀_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
     (hI : ↑I ⊆ C) (hI_ss : ⋃₀ ↑I ⊆ s) [DecidableEq (Set α)] :
     ⋃₀ ↑(I ∪ hC.diffFinset₀ hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_diffFinset₀_of_subset hC hs hI hI_ss]
@@ -274,6 +275,6 @@ lemma sUnion_union_diffFinset₀_of_subset (hC : SetSemiring C) (hs : s ∈ C)
 
 end diffFinset₀
 
-end SetSemiring
+end IsSetSemiring
 
 end MeasureTheory
