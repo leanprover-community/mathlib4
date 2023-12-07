@@ -1428,7 +1428,8 @@ theorem vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSp
 #align vector_span_insert_eq_vector_span vectorSpan_insert_eq_vectorSpan
 
 /-- When the affine space is also a vector space, the affine span is contained within the linear span -/
-lemma affineSpan_subset_span {s : Set V} : (affineSpan k s : Set V) ⊆ Submodule.span k s := by
+lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
+    affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
   apply affineSpan_induction hx (p := fun y ↦ y ∈ Submodule.span k s)
     (fun x hx ↦ Submodule.subset_span hx) (fun c u v w hu hv hw ↦ ?_)
