@@ -616,7 +616,7 @@ protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·
       ((fun s : Set α => (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
         GE.ge)
       𝔖 :=
-  h.mono fun hst =>
+  h.mono fun _ _ hst =>
     ((UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _).le_basis_iff
           (UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _)).mpr
       fun V hV => ⟨V, hV, UniformOnFun.gen_mono hst subset_rfl⟩
