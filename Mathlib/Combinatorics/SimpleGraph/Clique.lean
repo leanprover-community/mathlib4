@@ -376,8 +376,7 @@ theorem cliqueFreeOn_empty : G.CliqueFreeOn ∅ n ↔ n ≠ 0 := by
 @[simp]
 theorem cliqueFreeOn_singleton : G.CliqueFreeOn {a} n ↔ 1 < n := by
   obtain _ | _ | n := n <;>
-    simp [CliqueFreeOn, isNClique_iff, ←subset_singleton_iff', (Nat.succ_ne_zero _).symm]
-
+    simp [CliqueFreeOn, isNClique_iff, ← subset_singleton_iff', (Nat.succ_ne_zero _).symm]
 #align simple_graph.clique_free_on_singleton SimpleGraph.cliqueFreeOn_singleton
 
 @[simp]
