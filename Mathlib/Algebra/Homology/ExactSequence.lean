@@ -81,7 +81,7 @@ variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-@[simps!]
+@[reducible]
 def sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     ShortComplex C :=
@@ -91,7 +91,7 @@ def sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by linarith)
 when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
 abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
     ShortComplex C :=
-    S.sc' hS i (i + 1) (i + 2)
+  S.sc' hS i (i + 1) (i + 2)
 
 /-- `F : ComposableArrows C n` is exact if it is a complex and that all short
 complexes consisting of two consecutive arrows are exact. -/

@@ -5,8 +5,7 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.LinearAlgebra.AdicCompletion
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
@@ -78,7 +77,7 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing 
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
   intro a b hab
-  by_contra' h
+  by_contra! h
   obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
   rw [h, mem_span_singleton'] at ha hb
   rcases ha with ⟨a, rfl⟩

@@ -603,6 +603,11 @@ theorem OpenEmbedding.tendsto_nhds_iff' {f : α → β} (hf : OpenEmbedding f) {
     {l : Filter γ} {a : α} : Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
 
+theorem OpenEmbedding.continuousAt_iff {f : α → β} (hf : OpenEmbedding f) {g : β → γ} {x : α} :
+    ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
+  hf.tendsto_nhds_iff'
+#align open_embedding.continuous_at_iff OpenEmbedding.continuousAt_iff
+
 theorem OpenEmbedding.continuous {f : α → β} (hf : OpenEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous
 #align open_embedding.continuous OpenEmbedding.continuous

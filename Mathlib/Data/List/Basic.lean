@@ -2540,7 +2540,7 @@ variable {f : β → α → β} {b : β} {a : α} {l : List α}
 theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
   | a, [] => rfl
   | a, x :: l => by
-    rw [scanl, length_cons, length_cons, ←succ_eq_add_one, congr_arg succ]
+    rw [scanl, length_cons, length_cons, ← succ_eq_add_one, congr_arg succ]
     exact length_scanl _ _
 #align list.length_scanl List.length_scanl
 
@@ -2752,7 +2752,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
-  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
+  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 #align list.mfoldl_eq_foldl List.foldlM_eq_foldl
 
 -- Porting note: now in std
@@ -2811,8 +2811,8 @@ where
         | nil => contradiction
         | cons hd tl =>
           rw [length, succ_eq_add_one] at h
-          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ←Array.push_data,
-            ←Array.toList_eq]
+          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
+            ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>
@@ -2994,7 +2994,7 @@ theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []
     cases tl with
     | nil => exact modifyLast_append_one _ hd _
     | cons hd' tl' =>
-      rw [append_cons, ←nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
+      rw [append_cons, ← nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
         modifyLast_append _ (l₁ ++ [hd]) (hd' :: tl') _, modifyLast_append _ [hd] (hd' :: tl') _,
         append_assoc]
       all_goals { exact cons_ne_nil _ _ }
@@ -3519,8 +3519,8 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
-    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ←Function.comp_apply (g := Subtype.val),
-      ←map_filter, attach_map_val]
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ← Function.comp_apply (g := Subtype.val),
+      ← map_filter, attach_map_val]
 #align list.filter_attach List.filter_attach
 
 #align list.filter_filter List.filter_filter
@@ -4227,7 +4227,7 @@ theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (Forall.imp h)
+  | x :: l => by simp; rw [← and_imp]; exact And.imp (h x) (Forall.imp h)
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
@@ -4310,7 +4310,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
           cases n
           · simp
           · simp [drop]
-            rw [←Nat.zero_add (sizeOf (drop _ xs_tl))]
+            rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
         · simp
     · simp
@@ -4396,7 +4396,7 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases lt_or_le n (l ++l').length with
+  cases lt_or_le n (l ++ l').length with
   | inl h' =>
     rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
@@ -4474,7 +4474,7 @@ section Disjoint
 
 variable {α β : Type*}
 
-/-- The images of disjoint maps under a map are disjoint -/
+/-- The images of disjoint lists under an injective map are disjoint -/
 theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
     (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
   simp only [Disjoint]
