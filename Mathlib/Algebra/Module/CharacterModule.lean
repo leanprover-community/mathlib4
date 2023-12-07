@@ -36,6 +36,7 @@ open CategoryTheory
 universe u w w'
 variable (R : Type u) [CommRing R]
 variable (M : Type w) [AddCommGroup M] [Module R M]
+variable (D : Type w) [AddCommGroup D] [Module R D]
 variable (N : Type w') [AddCommGroup N] [Module R N]
 
 /--
@@ -130,7 +131,7 @@ namespace CharacterModuleFunctor
 lemma map_surjective_of_injective_unop {M N : (ModuleCat.{w, u} R)ᵒᵖ}
     (L : M ⟶ N) (hL : Function.Injective L.unop) :
     Function.Surjective <| (CharacterModuleFunctor R).map L :=
-  L.unop.charaterfy_surjective_of_injective hL
+  L.unop.characterify_surjective_of_injective hL
 
 end CharacterModuleFunctor
 

@@ -44,3 +44,11 @@ instance enoughInjectives : EnoughInjectives (AddCommGroupCat.{u}) where
             (Injective.factorThru f g).toIntLinearMap }
 
 end AddCommGroupCat
+
+
+namespace CommGroupCat
+
+instance enoughInjectives : EnoughInjectives CommGroupCat.{u} :=
+  EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
+
+end CommGroupCat
