@@ -41,7 +41,7 @@ open scoped ENNReal BigOperators
 
 namespace MeasureTheory
 
-variable {α : Type _} {C : Set (Set α)} {s t : Set α}
+variable {α : Type*} {C : Set (Set α)} {s t : Set α}
 
 /-- A semi-ring of sets `C` is a family of sets containing `∅`, stable by intersection and such that
 for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of finitely many sets in `C`. -/
