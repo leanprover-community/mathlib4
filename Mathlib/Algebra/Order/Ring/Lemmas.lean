@@ -42,6 +42,8 @@ We use the following four typeclasses to reason about right multiplication (`a �
 * `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b → a₁ < a₂`.
 * `MulPosMonoRev`: If `b > 0`, then `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
+## Implications
+
 As `α` gets more and more structure, those typeclasses end up being equivalent. The commonly used
 implications are:
 *  When `α` is a partial order:
@@ -57,6 +59,12 @@ implications are:
   * `PosMulStrictMono → MulPosStrictMono`
   * `PosMulMonoRev → MulPosMonoRev`
   * `PosMulReflectLT → MulPosReflectLT`
+
+Further, the bundled non-granular typeclasses imply the granular ones like so:
+* `OrderedSemiring → PosMulMono`
+* `OrderedSemiring → MulPosMono`
+* `StrictOrderedSemiring → PosMulStrictMono`
+* `StrictOrderedSemiring → MulPosStrictMono`
 
 All these are registered as instances, which means that in practice you should not worry about these
 implications. However, if you encounter a case where you think a statement is true but not covered
