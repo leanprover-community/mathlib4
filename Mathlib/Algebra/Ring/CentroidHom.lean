@@ -492,7 +492,7 @@ local notation "R" => AddMonoid.End.mulRight
 
 lemma center_iff_op_mul_commute (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
-  rw [center_iff_op_centroid, centroid_eq_centralizer_mul_op, Subsemiring.mem_centralizer_iff,
+  rw [center_iff_op_centroid, centroid_eq_centralizer_mulLeftRight, Subsemiring.mem_centralizer_iff,
     AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
   simp_rw [true_and]
   constructor
