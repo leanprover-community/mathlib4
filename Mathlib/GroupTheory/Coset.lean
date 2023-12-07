@@ -15,6 +15,10 @@ import Mathlib.GroupTheory.Subgroup.MulOpposite
 
 This file develops the basic theory of left and right cosets.
 
+When `G` is a group and `a : G`, `s : Set G`, the left coset of `s` by `a` is written `a • s` and
+the right coset is written `MulOpposite.op a • s` (can be shortened to `op a • s` using
+`open MulOpposite`). One needs to use `open scoped Pointwise` to access both notations.
+
 ## Main definitions
 
 * `QuotientGroup.quotient s`: the quotient type representing the left cosets with respect to a
@@ -30,7 +34,7 @@ This file develops the basic theory of left and right cosets.
 
 ## TODO
 
-Properly merge with pointwise actions on sets.
+Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
 
@@ -39,8 +43,8 @@ open scoped Pointwise
 
 variable {α : Type*}
 
-#noalign left_coset
-#noalign left_add_coset
+#align left_coset HSMul.hSMul
+#align left_add_coset HVAdd.hVAdd
 #noalign right_coset
 #noalign right_add_coset
 
