@@ -27,17 +27,31 @@ info: ULift.up 17
 
 end Rand
 
+-- using the monad transformer
 section RandT
 
--- using the monad transformer
 /--
 info: Got 15
 Got 29
 44
 -/
 #guard_msgs in
-#eval do
-  IO.runRandWith 257 (show RandT IO _ from do
+#eval show IO _ from do
+  IO.runRandWith 257 (do
+    let i ← randBound Int 3 30 (by norm_num)
+    IO.println s!"Got {i}"
+    let j ← randBound Int 4 40 (by norm_num)
+    IO.println s!"Got {j}"
+    return i.1 + j.1)
+
+/--
+info: Got 15
+Got 29
+44
+-/
+#guard_msgs in
+#eval show Lean.Meta.MetaM _ from do
+  IO.runRandWith 257 (do
     let i ← randBound Int 3 30 (by norm_num)
     IO.println s!"Got {i}"
     let j ← randBound Int 4 40 (by norm_num)
