@@ -95,17 +95,18 @@ theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
 
 section map_dvd
 
-variable {M N : Type*} [Monoid M] [Monoid N]
+variable {M N : Type*}
 
-theorem map_dvd {F : Type*} [MulHomClass F M N] (f : F) {a b} : a ∣ b → f a ∣ f b
+theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [MulHomClass F M N] (f : F) {a b} :
+    a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
-theorem MulHom.map_dvd (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MulHom.map_dvd [Semigroup M] [Semigroup N] (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align mul_hom.map_dvd MulHom.map_dvd
 
-theorem MonoidHom.map_dvd (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
+theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
   _root_.map_dvd f
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 

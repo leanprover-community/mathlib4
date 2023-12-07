@@ -396,23 +396,11 @@ theorem pow_rootMultiplicity_not_dvd {p : R[X]} (p0 : p ≠ 0) (a : R) :
 
 theorem X_sub_C_pow_dvd_iff {p : R[X]} {t : R} {n : ℕ} :
     (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
-  change (X - C t) ^ n ∣ p ↔ X ^ n ∣ aeval (X + C t) p
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · replace h := (aeval (X + C t)).map_dvd h
-    simpa only [AlgHom.toRingHom_eq_coe, map_pow, map_sub, RingHom.coe_coe, aeval_X, aeval_C,
-      ← C_eq_algebraMap, add_sub_cancel] using h
-  · replace h := (aeval (X - C t)).map_dvd h
-    simpa only [AlgHom.toRingHom_eq_coe, map_pow, RingHom.coe_coe, aeval_X, ← AlgHom.comp_apply,
-      ← aeval_algHom, map_add, aeval_C, ← C_eq_algebraMap, sub_add_cancel, aeval_X_left,
-      AlgHom.coe_id, id_eq] using h
+  convert (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
+  simp [C_eq_algebraMap]
 
 theorem comp_X_add_C_eq_zero_iff {p : R[X]} (t : R) :
-    p.comp (X + C t) = 0 ↔ p = 0 := by
-  change aeval (X + C t) p = 0 ↔ p = 0
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]; exact aeval_zero _⟩
-  apply_fun aeval (X - C t) at h
-  rwa [map_zero, ← AlgHom.comp_apply, ← aeval_algHom, map_add, aeval_X, aeval_C,
-    ← C_eq_algebraMap, sub_add_cancel, aeval_X_left, AlgHom.coe_id, id_eq] at h
+    p.comp (X + C t) = 0 ↔ p = 0 := AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
 
 theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
     p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := Iff.not <| comp_X_add_C_eq_zero_iff t
