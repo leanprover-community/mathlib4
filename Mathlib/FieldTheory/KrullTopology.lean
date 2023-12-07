@@ -54,8 +54,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
 
-
-open scoped Classical
+open scoped Classical Pointwise
 
 /-- Mapping intermediate fields along the identity does not change them -/
 theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
@@ -240,6 +239,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
         ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, _⟩⟩
       rw [Set.disjoint_left]
       rintro σ ⟨w1, hw1, h⟩ ⟨w2, hw2, rfl⟩
+      dsimp at h
       rw [eq_inv_mul_iff_mul_eq.symm, ← mul_assoc, mul_inv_eq_iff_eq_mul.symm] at h
       have h_in_H : w1 * w2⁻¹ ∈ H := H.mul_mem (hWH hw1) (H.inv_mem (hWH hw2))
       rw [h] at h_in_H

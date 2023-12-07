@@ -92,13 +92,13 @@ section CosetSemigroup
 
 variable [Semigroup α]
 
-@[to_additive (attr := simp) leftAddCoset_assoc]
+@[to_additive leftAddCoset_assoc]
 theorem leftCoset_assoc (s : Set α) (a b : α) : a • (b • s) = (a * b) • s := by
   simp [← image_smul, (image_comp _ _ _).symm, Function.comp, mul_assoc]
 #align left_coset_assoc leftCoset_assoc
 #align left_add_coset_assoc leftAddCoset_assoc
 
-@[to_additive (attr := simp) rightAddCoset_assoc]
+@[to_additive rightAddCoset_assoc]
 theorem rightCoset_assoc (s : Set α) (a b : α) : op b • op a • s = op (a * b) • s := by
   simp [← image_smul, (image_comp _ _ _).symm, Function.comp, mul_assoc]
 #align right_coset_assoc rightCoset_assoc
