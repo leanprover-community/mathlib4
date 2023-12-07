@@ -290,8 +290,9 @@ instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
   rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
-    rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan]
-    convert finiteDimensional_bot _ _ <;> simp
+    rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan,
+      show vectorSpan k (insert p ∅) = ⊥ by simp]
+    exact Module.finite_bot k _
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀]
     infer_instance
 #align finite_dimensional_vector_span_insert finiteDimensional_vectorSpan_insert
