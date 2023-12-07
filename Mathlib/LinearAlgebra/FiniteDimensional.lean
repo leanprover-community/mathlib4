@@ -667,8 +667,7 @@ end FiniteDimensional
 
 section ZeroRank
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable [Ring R] [StrongRankCondition R] [Module R V]
+variable [Ring R] [StrongRankCondition R] [AddCommGroup V] [Module R V]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
