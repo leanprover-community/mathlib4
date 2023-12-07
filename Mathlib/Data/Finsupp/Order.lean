@@ -71,7 +71,6 @@ theorem orderEmbeddingToFun_apply {f : ι →₀ α} {i : ι} : orderEmbeddingTo
 end LE
 
 section Preorder
-
 variable [Preorder α] {f g : ι →₀ α}
 
 instance preorder : Preorder (ι →₀ α) :=
@@ -82,10 +81,10 @@ instance preorder : Preorder (ι →₀ α) :=
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
 
-lemma monotone_coe : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
-#align finsupp.monotone_to_fun Finsupp.monotone_coe
+lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+#align finsupp.monotone_to_fun Finsupp.coe_mono
 
-lemma strictMono_coe : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
 end Preorder
 
@@ -245,9 +244,7 @@ instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
     exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
     le_self_add := fun _f _g _x => le_self_add }
 
-@[simp]
-theorem coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g :=
-  rfl
+@[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 #align finsupp.coe_tsub Finsupp.coe_tsub
 
 theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=

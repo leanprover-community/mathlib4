@@ -1817,7 +1817,7 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
   -- We prove this by induction on `n`
   induction' n using ENat.nat_induction with n IH Itop
   · rw [contDiffAt_zero]
-    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuous_invFun⟩
+    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
     apply contDiffAt_succ_iff_hasFDerivAt.mpr
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it
