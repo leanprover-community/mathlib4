@@ -117,6 +117,8 @@ abbrev toLin' : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
   toLinHom ℕ
 #align bilin_form.to_lin' BilinForm.toLin'
 
+variable (B)
+
 @[simp]
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
     B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
@@ -136,7 +138,7 @@ theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
   rw [map_sum, Finset.sum_apply, Finset.sum_apply]
   rfl
 
-variable (R₂)
+variable {B} (R₂)
 
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left.
