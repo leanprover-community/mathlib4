@@ -77,7 +77,7 @@ local notation "π" => @QuotientGroup.mk G _ Γ
   invariant measure on `G`, then it is a `G` invariant measure on `G ⧸ Γ`. -/
 @[to_additive]
 instance MeasureTheory.QuotientVolumeEqVolumePreimage.smulInvariantMeasure_quotient
-    [IsMulLeftInvariant (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)]
+    [IsMulLeftInvariant (volume : Measure G)]
     [hasFun : HasFundamentalDomain Γ.op G] :
     SMulInvariantMeasure G (G ⧸ Γ) μ where
   measure_preimage_smul g A hA := by
