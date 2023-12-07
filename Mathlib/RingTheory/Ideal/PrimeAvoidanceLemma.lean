@@ -10,11 +10,20 @@ import Mathlib.Tactic.IntervalCases
 /-!
 # Prime Avoidance Lemma
 
-Let `R` be a commutative ring, `J` an ideal of `R`, `ℐ` be a finite collection of ideals of `R`
-such that ideals in `ℐ` are prime ideals except for perhaps at most two.
+Let `R` be a commutative ring, `J` an ideal of `R`, `S` be a finite collection of ideals of `R`
+such that ideals in `S` are prime ideals except for perhaps at most two.
 
-If `J` is a subset of any of ideal in `ℐ`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
-not in any of the ideals in `ℐ`.
+If `J` is a subset of any of ideal in `S`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
+not in any of the ideals in `S`.
+
+## Implementation details
+
+- variable naming : `I, J, Q` are (not necessarily prime) ideals of `R`. When we need to use ideals
+as index then `i, j` are used. `𝔭` is a prime ideal of `R`. `S, S'` are finite sets of ideals.
+
+- We spell "`S` has at most 2 non-prime ideals" as `∀ S' ≤ S, 2 < S'.card → ∃ p ∈ S', p.IsPrime`.
+We choose not to use `(S.filter (¬ Ideal.IsPrime)).card ≤ 2` to avoid `DecidablePred Ideal.IsPrime`
+instance and it is slightly easier to use the previous version in the proof.
 
 ## TODO
 * graded version
@@ -46,28 +55,28 @@ lemma Finset.filter_card_le_iff {α : Type*} (s : Finset α) (P : α → Prop) [
 
 
 /--
-Let `R` be a commutative ring, `J` an ideal of `R`, `ℐ` be a finite collection of ideals of `R`
-such that ideals in `ℐ` are prime ideals except for perhaps at most two.
-Then if `J` is a subset of the union of `ℐ`, `J` is already a subset of some ideal `I` in `ℐ`.
+Let `R` be a commutative ring, `J` an ideal of `R`, `S` be a finite collection of ideals of `R`
+such that ideals in `S` are prime ideals except for perhaps at most two.
+Then if `J` is a subset of the union of `S`, `J` is already a subset of some ideal `I` in `S`.
 -/
 theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     (J : Ideal R)
-    (ℐ : Finset (Ideal R))
-    (exists_prime : ∀ s ≤ ℐ, 2 < s.card → ∃ p ∈ s, p.IsPrime)
-    (subset_union : (J : Set R) ⊆ ⋃ (I : ℐ), I) :
-    ∃ I, I ∈ ℐ ∧ J ≤ I := by
+    (S : Finset (Ideal R))
+    (exists_prime : ∀ S' ≤ S, 2 < S'.card → ∃ p ∈ S', p.IsPrime)
+    (subset_union : (J : Set R) ⊆ ⋃ (I : S), I) :
+    ∃ I, I ∈ S ∧ J ≤ I := by
   classical
 
-  induction' ℐ using Finset.strongInductionOn with ℐ ih
-  -- We perform a strong induction on `ℐ`, i.e. we assume that for any proper subset `𝒥` of `ℐ` with
-  -- at most two non-prime ideals, if `J` is a subset of the union of `𝒥`, then `I` is a subideal of
-  -- some ideal in `𝒥` already.
+  induction' S using Finset.strongInductionOn with S ih
+  -- We perform a strong induction on `S`, i.e. we assume that for any proper subset `S'` of `S`
+  -- with at most two non-prime ideals, if `J` is a subset of the union of `S'`, then `I` is a
+  -- subideal of some ideal in `S'` already.
 
-  -- We can assume without loss of generality that `ℐ` has more than 2 ideals, for `ℐ` with fewer
+  -- We can assume without loss of generality that `S` has more than 2 ideals, for `S` with fewer
   -- ideals are easy cases.
-  by_cases card : ℐ.card ≤ 2
-  · replace card : ℐ.card = 0 ∨ ℐ.card = 1 ∨ ℐ.card = 2
-    · interval_cases ℐ.card <;> tauto
+  by_cases card : S.card ≤ 2
+  · replace card : S.card = 0 ∨ S.card = 1 ∨ S.card = 2
+    · interval_cases S.card <;> tauto
     obtain card|card|card := card
     · aesop
     · obtain ⟨i, rfl⟩ := Finset.card_eq_one.mp card
@@ -77,84 +86,84 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
         iUnion_subtype, iUnion_iUnion_eq_or_left, iUnion_iUnion_eq_left] at subset_union ⊢
       exact J.le_or_le_of_subset_union _ _ subset_union
 
-  -- We further assume that `J` is not a subset of any proper subset of `ℐ`, for otherwise, our
+  -- We further assume that `J` is not a subset of any proper subset of `S`, for otherwise, our
   -- induction hypotheses implies the desired result already.
   -- We will show that this assumption in fact leads to a contradiction,
-  -- since the goal is to produce an `I ≥ J`, such that `{I}` is a proper subset of `ℐ`.
-  by_cases subset' : ∀ ℐ', ℐ' ⊂ ℐ → ¬ (J : Set R) ⊆ ⋃ (I : ℐ'), I
+  -- since the goal is to produce an `I ≥ J`, such that `{I}` is a proper subset of `S`.
+  by_cases subset' : ∀ S', S' ⊂ S → ¬ (J : Set R) ⊆ ⋃ (I : S'), I
   pick_goal 2
   · push_neg at subset'
-    obtain ⟨ℐ', lt, le⟩ := subset'
+    obtain ⟨S', lt, le⟩ := subset'
     obtain ⟨I, hI1, hI2⟩ := ih _ lt (fun s hs ↦ exists_prime s (hs.trans lt.1)) le
     exact ⟨I, lt.1 hI1, hI2⟩
 
-  -- Since `ℐ` contains more than 2 ideals, there must be a prime ideal which we call `𝓅`.
-  obtain ⟨𝓅, h𝓅₁, h𝓅₂⟩ := exists_prime ℐ le_rfl (lt_of_not_ge card)
+  -- Since `S` contains more than 2 ideals, there must be a prime ideal which we call `𝓅`.
+  obtain ⟨𝓅, h𝓅₁, h𝓅₂⟩ := exists_prime S le_rfl (lt_of_not_ge card)
 
-  have subset_hat : ∀ I : ℐ, ¬ (J : Set R) ⊆ ⋃ (i : ℐ.erase I), i
+  have subset_hat : ∀ I : S, ¬ (J : Set R) ⊆ ⋃ (i : S.erase I), i
   · rintro ⟨I, hI⟩ rid
-    exact (subset' (ℐ.erase I) (Finset.erase_ssubset hI)) rid
+    exact (subset' (S.erase I) (Finset.erase_ssubset hI)) rid
   simp_rw [not_subset] at subset_hat
-  -- Since `J` is not a subset of the union of `ℐ`, it is not a subset of the union of `ℐ \ {I}`
-  -- for each ideal `I` in `ℐ`. Hence for each `i ∈ ℐ`, we can find an `xᵢ ∈ R` that is in `J` and
-  -- `i` but not in the union of `ℐ`.
-  choose x hx1 hx2 using subset_hat
-  have hx3 : ∀ i, x i ∈ i.1
+  -- Since `J` is not a subset of the union of `S`, it is not a subset of the union of `S \ {I}`
+  -- for each ideal `I` in `S`. Hence for each `i ∈ S`, we can find an `rᵢ ∈ R` that is in `J` and
+  -- `i` but not in the union of `S`.
+  choose r hr1 hr2 using subset_hat
+  have hr3 : ∀ i, r i ∈ i.1
   · rintro i
-    specialize hx2 i
-    contrapose! hx2
-    specialize subset_union (hx1 i)
+    specialize hr2 i
+    contrapose! hr2
+    specialize subset_union (hr1 i)
     rw [Set.mem_iUnion] at subset_union ⊢
     rcases subset_union with ⟨j, hj⟩
-    exact ⟨⟨j.1, Finset.mem_erase.mpr ⟨fun r ↦ hx2 <| r ▸ hj, j.2⟩⟩, hj⟩
+    exact ⟨⟨j.1, Finset.mem_erase.mpr ⟨fun r ↦ hr2 <| r ▸ hj, j.2⟩⟩, hj⟩
 
-  -- Let `X` be `(∏_{i ≠ 𝓅} xᵢ) + x_𝓅`, then `X` is in `J` hence in the union of `ℐ`
-  let X := ∏ i in (ℐ.erase 𝓅).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ + x ⟨𝓅, h𝓅₁⟩
-  have hX1 : X ∈ J
-  · obtain ⟨c, hc⟩ : (ℐ.erase 𝓅).Nonempty
+  -- Let `a` be `(∏_{i ≠ 𝓅} rᵢ) + r_𝓅`, then `a` is in `J` hence in the union of `S`
+  let a := ∏ i in (S.erase 𝓅).attach, r ⟨i.1, erase_subset _ _ i.2⟩ + r ⟨𝓅, h𝓅₁⟩
+  have ha1 : a ∈ J
+  · obtain ⟨c, hc⟩ : (S.erase 𝓅).Nonempty
     · rw [← Finset.card_pos, Finset.card_erase_eq_ite, if_pos h𝓅₁]
       exact tsub_pos_iff_lt.mpr <| one_lt_two.trans <| not_le.mp card
-    exact J.add_mem (Ideal.prod_mem_of_mem _ (mem_attach _ ⟨_, hc⟩) (hx1 _)) (hx1 _)
+    exact J.add_mem (Ideal.prod_mem_of_mem _ (mem_attach _ ⟨_, hc⟩) (hr1 _)) (hr1 _)
 
-  specialize subset_union hX1
+  specialize subset_union ha1
   rw [mem_iUnion] at subset_union
-  -- So there is some `𝓆 ∈ ℐ` such that `X ∈ 𝓆`. We consider two cases `𝓅 = 𝓆` and `𝓅 ≠ 𝓆`.
-  obtain ⟨⟨𝓆, h𝓆₁⟩, h𝓆₂⟩ := subset_union
-  by_cases H : 𝓅 = 𝓆
+  -- So there is some `Q ∈ S` such that `a ∈ Q`. We consider two cases `𝓅 = Q` and `𝓅 ≠ Q`.
+  obtain ⟨⟨Q, hQ₁⟩, hQ₂⟩ := subset_union
+  by_cases H : 𝓅 = Q
   · subst H
-    -- If `𝓅 = 𝓆`, then for some `i ≠ 𝓅`, `xᵢ ∈ 𝓅`, this is a contradiction because `xᵢ` is not in
-    -- the union of `ℐ \ {i}`.
-    obtain ⟨⟨i, hi1⟩, hi2⟩ : ∃ i : ℐ.erase 𝓅, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓅
-    · have := 𝓅.sub_mem h𝓆₂ (hx3 ⟨𝓅, h𝓅₁⟩)
+    -- If `𝓅 = Q`, then for some `i ≠ 𝓅`, `rᵢ ∈ 𝓅`, this is a contradiction because `rᵢ` is not in
+    -- the union of `S \ {i}`.
+    obtain ⟨⟨i, hi1⟩, hi2⟩ : ∃ i : S.erase 𝓅, r ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓅
+    · have := 𝓅.sub_mem hQ₂ (hr3 ⟨𝓅, h𝓅₁⟩)
       simp only [add_sub_cancel] at this
       simpa only [Ideal.IsPrime.prod_mem_iff_exists_mem, mem_attach, true_and_iff] using this
     rw [Finset.mem_erase] at hi1
-    exact (hx2 ⟨i, hi1.2⟩ <| mem_iUnion.mpr ⟨⟨𝓅, mem_erase.mpr ⟨hi1.1.symm, h𝓆₁⟩⟩, hi2⟩).elim
-  · -- If `𝓅 ≠ 𝓆`, then `∏_{i ≠ 𝓅} xᵢ ∈ 𝓆` and `x_𝓅 ∈ 𝓆` as well (since `X` ∈ `𝓆`).
-    -- This contradicts that `x_𝓅` is not in the union of `ℐ \ {𝓆}`.
-    have mem1 : ∏ i in (ℐ.erase 𝓅).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓆
-    · exact 𝓆.prod_mem_of_mem (mem_attach _ ⟨𝓆, mem_erase.mpr ⟨Ne.symm H, h𝓆₁⟩⟩) (hx3 ⟨𝓆, h𝓆₁⟩)
-    have mem2 : x ⟨𝓅, h𝓅₁⟩ ∈ 𝓆 := by simpa only [add_sub_cancel'] using 𝓆.sub_mem h𝓆₂ mem1
-    specialize hx2 ⟨𝓅, h𝓅₁⟩
-    rw [mem_iUnion] at hx2
-    push_neg at hx2
-    exact (hx2 ⟨𝓆, Finset.mem_erase.mpr ⟨Ne.symm H, h𝓆₁⟩⟩ mem2).elim
+    exact (hr2 ⟨i, hi1.2⟩ <| mem_iUnion.mpr ⟨⟨𝓅, mem_erase.mpr ⟨hi1.1.symm, hQ₁⟩⟩, hi2⟩).elim
+  · -- If `𝓅 ≠ Q`, then `∏_{i ≠ 𝓅} xᵢ ∈ 𝓆` and `x_𝓅 ∈ Q` as well (since `a` ∈ `Q`).
+    -- This contradicts that `x_𝓅` is not in the union of `S \ {Q}`.
+    have mem1 : ∏ i in (S.erase 𝓅).attach, r ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ Q
+    · exact Q.prod_mem_of_mem (mem_attach _ ⟨Q, mem_erase.mpr ⟨Ne.symm H, hQ₁⟩⟩) (hr3 ⟨Q, hQ₁⟩)
+    have mem2 : r ⟨𝓅, h𝓅₁⟩ ∈ Q := by simpa only [add_sub_cancel'] using Q.sub_mem hQ₂ mem1
+    specialize hr2 ⟨𝓅, h𝓅₁⟩
+    rw [mem_iUnion] at hr2
+    push_neg at hr2
+    exact (hr2 ⟨Q, mem_erase.mpr ⟨Ne.symm H, hQ₁⟩⟩ mem2).elim
 
 /--
 **Prime Avoidance Lemma** [00DS](https://stacks.math.columbia.edu/tag/00DS)
 
-Let `R` be a commutative ring, `J` an ideal of `R`, `ℐ` be a finite collection of ideals of `R`
-such that ideals in `ℐ` are prime ideals except for perhaps at most two.
+Let `R` be a commutative ring, `J` an ideal of `R`, `S` be a finite collection of ideals of `R`
+such that ideals in `S` are prime ideals except for perhaps at most two.
 
-If `J` is not a subset of any of ideal in `ℐ`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
-not in any of the ideals in `ℐ`.
+If `J` is not a subset of any of ideal in `S`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
+not in any of the ideals in `S`.
 -/
 lemma Ideal.exists_mem_and_forall_not_mem_of_not_subset_and_at_most_two_non_primes
     (J : Ideal R)
-    (ℐ : Finset (Ideal R))
-    (exists_prime : ∀ s ≤ ℐ, 2 < s.card → ∃ p ∈ s, p.IsPrime)
-    (not_subset : ∀ I : Ideal R, I ∈ ℐ → ¬ J ≤ I) :
-    ∃ x : R, x ∈ J ∧ (∀ I : Ideal R, I ∈ ℐ → x ∉ I) := by
+    (S : Finset (Ideal R))
+    (exists_prime : ∀ s ≤ S, 2 < s.card → ∃ p ∈ s, p.IsPrime)
+    (not_subset : ∀ I : Ideal R, I ∈ S → ¬ J ≤ I) :
+    ∃ r : R, r ∈ J ∧ (∀ I : Ideal R, I ∈ S → r ∉ I) := by
   contrapose! not_subset
-  exact J.le_of_subset_union_with_at_most_two_non_primes ℐ exists_prime
+  exact J.le_of_subset_union_with_at_most_two_non_primes S exists_prime
     (fun x hx ↦ mem_iUnion.mpr <| let ⟨i, hi1, hi2⟩ := not_subset x hx; ⟨⟨i, hi1⟩, hi2⟩)
