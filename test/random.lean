@@ -58,4 +58,20 @@ Got 29
     IO.println s!"Got {j}"
     return i.1 + j.1)
 
+-- test that `MetaM` can access the global random number generator
+/--
+info: Got 4
+Got 4
+8
+-/
+#guard_msgs in
+#eval show Lean.Meta.MetaM _ from do
+  IO.runRand (do
+    -- since we don't know the seed, we use a trivial range here for determinism
+    let i ← randBound Int 4 4 (by norm_num)
+    IO.println s!"Got {i}"
+    let j ← randBound Int 4 4 (by norm_num)
+    IO.println s!"Got {i}"
+    return i.1 + j.1)
+
 end RandT
