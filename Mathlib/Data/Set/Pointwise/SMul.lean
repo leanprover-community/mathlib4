@@ -532,23 +532,35 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set 
 @[to_additive
       "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
-  mul_smul := by
-    intros
-    simp only [← image_smul, image_image, ← mul_smul]
-  one_smul := by
-    intros
-    simp only [← image_smul, one_smul, image_id']
+  mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
+  one_smul _ := by simp only [← image_smul, one_smul, image_id']
 #align set.mul_action_set Set.mulActionSet
 #align set.add_action_set Set.addActionSet
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
+/-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
+then the same is true for `(0 : Set β)`. -/
+protected def smulZeroClassSet [Zero β] [SMulZeroClass α β] :
+    SMulZeroClass α (Set β) where
+  smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+
+scoped[Pointwise] attribute [instance] Set.smulZeroClassSet
+
+/-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
+then so is `(· • ·) : α → Set β → Set β`. -/
+protected def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
+    DistribSMul α (Set β) where
+  smul_add _ _ _ := image_image2_distrib <| smul_add _
+
+scoped[Pointwise] attribute [instance] Set.distribSMulSet
+
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
 protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
-  smul_add _ _ _ := image_image2_distrib <| smul_add _
-  smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+  smul_add := smul_add
+  smul_zero := smul_zero
 #align set.distrib_mul_action_set Set.distribMulActionSet
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/

@@ -426,7 +426,7 @@ instance [Subsingleton V] : Unique (SimpleGraph V) where
   uniq G := by ext a b; have := Subsingleton.elim a b; simp [this]
 
 instance [Nontrivial V] : Nontrivial (SimpleGraph V) :=
-  ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [←adj_inj, Function.funext_iff, bot_adj,
+  ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, Function.funext_iff, bot_adj,
     top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
 
 section Decidable
@@ -577,10 +577,10 @@ theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := b
 variable {G G₁ G₂}
 
 @[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
-  rw [Set.disjoint_iff, disjoint_iff_inf_le, ←edgeSet_inf, ←edgeSet_bot, ←Set.le_iff_subset,
+  rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, ← Set.le_iff_subset,
   OrderEmbedding.le_iff_le]
 
-@[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [←edgeSet_bot, edgeSet_inj]
+@[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
   rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
@@ -726,8 +726,8 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
 #align simple_graph.from_edge_set_mono SimpleGraph.fromEdgeSet_mono
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
-  conv_rhs => rw [←Set.diff_union_inter s {e : Sym2 V | e.IsDiag}]
-  rw [←disjoint_edgeSet,  edgeSet_fromEdgeSet, Set.disjoint_union_right, and_iff_left]
+  conv_rhs => rw [← Set.diff_union_inter s {e : Sym2 V | e.IsDiag}]
+  rw [← disjoint_edgeSet,  edgeSet_fromEdgeSet, Set.disjoint_union_right, and_iff_left]
   exact Set.disjoint_left.2 fun e he he' ↦ not_isDiag_of_mem_edgeSet _ he he'.2
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
@@ -1403,7 +1403,7 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
-    G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [←comap_symm, e.symm_symm]
+    G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
 theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
   intro G G' h _ _ ha
