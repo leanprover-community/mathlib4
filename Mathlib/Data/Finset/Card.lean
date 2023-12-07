@@ -588,7 +588,7 @@ theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x 
 
 theorem exists_mem_ne (hs : 1 < s.card) (a : α) : ∃ b ∈ s, b ≠ a := by
   have : Nonempty α := ⟨a⟩
-  by_contra'
+  by_contra!
   exact hs.not_le (card_le_one_iff_subset_singleton.2 ⟨a, subset_singleton_iff'.2 this⟩)
 #align finset.exists_mem_ne Finset.exists_mem_ne
 
