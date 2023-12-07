@@ -103,7 +103,7 @@ abbrev PosMulMono : Prop :=
   CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·)
 #align pos_mul_mono PosMulMono
 
-/-- Typeclass for monotonicity of multiplication by nonnegative elements on the left,
+/-- Typeclass for monotonicity of multiplication by nonnegative elements on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
@@ -122,7 +122,7 @@ abbrev PosMulStrictMono : Prop :=
   CovariantClass α>0 α (fun x y => x * y) (· < ·)
 #align pos_mul_strict_mono PosMulStrictMono
 
-/-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
+/-- Typeclass for strict monotonicity of multiplication by positive elements on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
@@ -141,7 +141,7 @@ abbrev PosMulReflectLT : Prop :=
 #align pos_mul_reflect_lt PosMulReflectLT
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
-the left, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
+the right, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `LinearOrderedSemiring`. -/
@@ -158,7 +158,7 @@ abbrev PosMulMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 #align pos_mul_mono_rev PosMulMonoRev
 
-/-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
+/-- Typeclass for reverse monotonicity of multiplication by positive elements on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
