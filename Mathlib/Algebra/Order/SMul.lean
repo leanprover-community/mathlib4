@@ -70,8 +70,7 @@ instance : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
 instance : PosSMulReflectLT R M :=
-  posSMulReflectLT_iff_contravariant_pos.2 $
-    ⟨fun a _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h a.2⟩
+  PosSMulReflectLT.of_pos $ fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
 @[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b := smul_lt_smul_of_pos_left
 #align smul_lt_smul_of_pos smul_lt_smul_of_pos

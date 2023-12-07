@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Order.Module.Synonym
 
 /-!
@@ -610,7 +611,7 @@ lemma PosSMulMono.toPosSMulStrictMono [PosSMulMono α β] : PosSMulStrictMono α
   ⟨fun _a ha _b₁ _b₂ hb ↦ (smul_le_smul_of_nonneg_left hb.le ha.le).lt_of_ne $
     (smul_right_injective _ ha.ne').ne hb.ne⟩
 
-lemma PosSMulReflectLT.toPosSMulMonoRev [PosSMulReflectLT α β] : PosSMulMonoRev α β :=
+instance PosSMulReflectLT.toPosSMulMonoRev [PosSMulReflectLT α β] : PosSMulMonoRev α β :=
   ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
     (lt_of_smul_lt_smul_left h' ha.le).le⟩
 
@@ -736,3 +737,97 @@ instance instSMulPosMonoRev [SMulPosMonoRev α β] : SMulPosMonoRev α βᵒᵈ 
 
 end Right
 end OrderDual
+
+namespace Prod
+
+end Prod
+
+namespace Pi
+variable {ι : Type*} {β : ι → Type*} [Zero α] [∀ i, Zero (β i)]
+
+section SMulZeroClass
+variable [Preorder α] [∀ i, Preorder (β i)] [∀ i, SMulZeroClass α (β i)]
+
+instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (∀ i, β i) where
+  elim _a ha _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) ha
+
+instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (∀ i, β i) where
+  elim _b hb _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha (hb i)
+
+instance instPosSMulMonoRev [∀ i, PosSMulMonoRev α (β i)] : PosSMulMonoRev α (∀ i, β i) where
+  elim _a ha _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) ha
+
+instance instSMulPosMonoRev [∀ i, SMulPosMonoRev α (β i)] : SMulPosMonoRev α (∀ i, β i) where
+  elim _b hb _a₁ _a₂ h := by
+    obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
+
+end SMulZeroClass
+
+section SMulWithZero
+variable [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]
+
+instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] :
+    PosSMulStrictMono α (∀ i, β i) where
+  elim := by
+    simp_rw [lt_def]
+    rintro _a ha _b₁ _b₂ ⟨hb, i, hi⟩
+    exact ⟨smul_le_smul_of_nonneg_left hb ha.le, i, smul_lt_smul_of_pos_left hi ha⟩
+
+instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] :
+    SMulPosStrictMono α (∀ i, β i) where
+  elim := by
+    simp_rw [lt_def]
+    rintro a ⟨ha, i, hi⟩ _b₁ _b₂ hb
+    exact ⟨smul_le_smul_of_nonneg_right hb.le ha, i, smul_lt_smul_of_pos_right hb hi⟩
+
+-- Note: There is no interesting instance for `PosSMulReflectLT α (∀ i, β i)` that's not already
+-- implied by the other instances
+
+instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (∀ i, β i) where
+  elim := by
+    simp_rw [lt_def]
+    rintro b hb _a₁ _a₂ ⟨-, i, hi⟩
+    exact lt_of_smul_lt_smul_right hi $ hb _
+
+end SMulWithZero
+end Pi
+
+section Lift
+variable {γ : Type*} [Zero α] [Preorder α] [Zero β] [Preorder β] [Zero γ] [Preorder γ]
+  [SMul α β] [SMul α γ] (f : β → γ) (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+  (smul : ∀ (a : α) b, f (a • b) = a • f b) (zero : f 0 = 0)
+
+lemma PosSMulMono.lift [PosSMulMono α γ] : PosSMulMono α β where
+  elim a ha b₁ b₂ hb := by simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
+
+lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ] : PosSMulStrictMono α β where
+  elim a ha b₁ b₂ hb :=  by
+    simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact smul_lt_smul_of_pos_left hb ha
+
+lemma PosSMulMonoRev.lift [PosSMulMonoRev α γ] : PosSMulMonoRev α β where
+  elim a ha b₁ b₂ h := hf.1 $ le_of_smul_le_smul_left (by simpa only [smul] using hf.2 h) ha
+
+lemma PosSMulReflectLT.lift [PosSMulReflectLT α γ] : PosSMulReflectLT α β where
+  elim a ha b₁ b₂ h := by
+    simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact lt_of_smul_lt_smul_left h ha
+
+lemma SMulPosMono.lift [SMulPosMono α γ] : SMulPosMono α β where
+  elim b hb a₁ a₂ ha := by
+    simp only [← hf, zero, smul] at *; exact smul_le_smul_of_nonneg_right ha hb
+
+lemma SMulPosStrictMono.lift [SMulPosStrictMono α γ] : SMulPosStrictMono α β where
+  elim b hb a₁ a₂ ha := by
+    simp only [← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
+    exact smul_lt_smul_of_pos_right ha hb
+
+lemma SMulPosMonoRev.lift [SMulPosMonoRev α γ] : SMulPosMonoRev α β where
+  elim b hb a₁ a₂ h := by
+    simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
+    exact le_of_smul_le_smul_right h hb
+
+lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β where
+  elim b hb a₁ a₂ h := by
+    simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
+    exact lt_of_smul_lt_smul_right h hb
+
+end Lift

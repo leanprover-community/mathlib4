@@ -151,61 +151,38 @@ instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α 
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
-section
+section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
 
-instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) where
-  elim _a ha _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) ha
+instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) :=
+  PosSMulMono.lift _ coe_le_coe coe_smul
 
-instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) where
-  elim _b hb _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha (hb i)
+instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) :=
+  SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
 
-instance instPosSMulMonoRev [PosSMulMonoRev α β] : PosSMulMonoRev α (ι →₀ β) where
-  elim _a ha _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) ha
+instance instPosSMulMonoRev [PosSMulMonoRev α β] : PosSMulMonoRev α (ι →₀ β) :=
+  PosSMulMonoRev.lift _ coe_le_coe coe_smul
 
-instance instSMulPosMonoRev [SMulPosMonoRev α β] : SMulPosMonoRev α (ι →₀ β) where
-  elim _b hb _a₁ _a₂ h := by
-    obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
+instance instSMulPosMonoRev [SMulPosMonoRev α β] : SMulPosMonoRev α (ι →₀ β) :=
+  SMulPosMonoRev.lift _ coe_le_coe coe_smul coe_zero
 
-end
+end SMulZeroClass
 
-section
+section SMulWithZero
 variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β] [SMulWithZero α β]
 
-instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) where
-  elim := by
-    simp_rw [lt_def]
-    rintro _a ha _b₁ _b₂ ⟨hb, i, hi⟩
-    exact ⟨smul_le_smul_of_nonneg_left hb ha.le, i, smul_lt_smul_of_pos_left hi ha⟩
+instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) :=
+  PosSMulStrictMono.lift _ coe_le_coe coe_smul
 
-instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) where
-  elim := by
-    simp_rw [lt_def]
-    rintro a ⟨ha, i, hi⟩ _b₁ _b₂ hb
-    exact ⟨smul_le_smul_of_nonneg_right hb.le ha, i, smul_lt_smul_of_pos_right hb hi⟩
+instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) :=
+  SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
 
-instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) where
-  elim := by
-    simp_rw [lt_def]
-    rintro b hb _a₁ _a₂ ⟨-, i, hi⟩
-    exact lt_of_smul_lt_smul_right hi $ hb _
+-- `PosSMulReflectLT α (ι →₀ β)` already follows from the other instances
 
-end
+instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) :=
+  SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
 
-section
-variable [Semiring α] [PartialOrder α] [AddCommGroup β] [PartialOrder β] [Module α β]
-  [NoZeroSMulDivisors α β]
-
-instance instPosSMulReflectLT [PosSMulReflectLT α β] : PosSMulReflectLT α (ι →₀ β) :=
-  posSMulReflectLT_iff_contravariant_pos.2 $ by
-    constructor
-    simp_rw [Contravariant, Subtype.forall, lt_def]
-    rintro a ha _b₁ _b₂ ⟨hb, i, hi⟩
-    -- TODO: Why is the below instance not synthesized?
-    have : PosSMulMonoRev α β := PosSMulReflectLT.toPosSMulMonoRev
-    exact ⟨le_of_smul_le_smul_left hb ha, i, lt_of_smul_lt_smul_left hi ha.le⟩
-
-end
+end SMulWithZero
 
 section CanonicallyOrderedAddCommMonoid
 
