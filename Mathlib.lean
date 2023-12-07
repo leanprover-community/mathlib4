@@ -2644,6 +2644,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Restrict
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.MeasureTheory.Measure.Trim
 import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.VectorMeasure
