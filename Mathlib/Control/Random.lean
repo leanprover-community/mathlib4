@@ -148,12 +148,14 @@ namespace IO
 variable {m : Type* → Type*} {m₀ : Type → Type}
 variable [Monad m] [MonadLiftT (ST RealWorld) m₀] [ULiftable m₀ m]
 
-/-- Computes a `RandT α` using the global `stdGenRef` as RNG.
-    Note that:
-    - `stdGenRef` is not necessarily properly seeded on program startup
-      as of now and will therefore be deterministic.
-    - `stdGenRef` is not thread local, hence two threads accessing it
-      at the same time will get the exact same generator.
+/--
+Computes a `RandT m α` using the global `stdGenRef` as RNG.
+
+Note that:
+- `stdGenRef` is not necessarily properly seeded on program startup
+  as of now and will therefore be deterministic.
+- `stdGenRef` is not thread local, hence two threads accessing it
+  at the same time will get the exact same generator.
 -/
 def runRand (cmd : RandT m α) : m α := do
   let stdGen ← ULiftable.up (stdGenRef.get : m₀ _)
