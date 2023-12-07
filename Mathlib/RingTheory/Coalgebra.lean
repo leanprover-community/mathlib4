@@ -188,7 +188,8 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 open LinearMap
 
 instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
-  comul := Finsupp.lsum R fun i => TensorProduct.map (Finsupp.lsingle i) (Finsupp.lsingle i) ∘ₗ comul
+  comul := Finsupp.lsum R fun i =>
+    TensorProduct.map (Finsupp.lsingle i) (Finsupp.lsingle i) ∘ₗ comul
   counit := Finsupp.lsum R fun _ => counit
 
 @[simp]
