@@ -434,8 +434,8 @@ theorem IntermediateField.algHomEquivAlgHomOfIsAlgClosed_apply_apply (L : Interm
 /-- All `F`-`AlgHom`s from `K` to an algebraic closed field `A` factor through any subfield of `A`
 in which the minimal polynomial of elements of `K` splits. -/
 noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed (L : Type*) [Field L]
-  [Algebra F L] [Algebra L A] [IsScalarTower F L A]
-  (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) := by
   refine (AlgEquiv.refl.arrowCongr
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans ?_
@@ -444,8 +444,8 @@ noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed (L : Type*)
   exact fun x => splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
 
 theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed_apply_apply (L : Type*) [Field L]
-  [Algebra F L] [Algebra L A] [IsScalarTower F L A]
-  (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
     Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed A hK L hL f x =
     algebraMap L A (f x) := rfl
 

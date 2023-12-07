@@ -387,18 +387,19 @@ variable [IsSeparable F E] (A : Type*) [Field A] [Algebra F A]
   (hA : ∀ x : E, (minpoly F x).Splits (algebraMap F A))
 
 theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
-    F⟮α⟯ = ⊤ ↔ ∀ φ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
+    F⟮α⟯ = ⊤ ↔ Function.Injective fun φ : E →ₐ[F] A ↦ φ α := by
+-- ∀ φ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   classical
   simp_rw [primitive_element_iff_minpoly_natDegree_eq, ← card_rootSet_eq_natDegree (K := A)
     (IsSeparable.separable F α) (hA _), ← toFinset_card,
     ← (Algebra.IsAlgebraic.of_finite F E).range_eval_eq_rootSet_minpoly_of_splits _ hA α,
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
-    Finset.coe_univ, ← injective_iff_injOn_univ, Function.Injective]
+    Finset.coe_univ, ← injective_iff_injOn_univ]
 
 theorem primitive_element_iff_algHom_eq_of_eval (α : E) (hF : Algebra.IsAlgebraic F A)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval' F A hA]
-  refine ⟨fun h ψ =>  h φ ψ, fun h φ₀ ψ₀ h' => ?_⟩
+  refine ⟨fun h _ eq => h eq, fun h φ₀ ψ₀ h' => ?_⟩
   let K := normalClosure F E A
   have : IsNormalClosure F E K := by
     refine Algebra.IsAlgebraic.isNormalClosure_normalClosure ?_ hA
