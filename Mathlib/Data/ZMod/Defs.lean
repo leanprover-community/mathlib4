@@ -126,8 +126,70 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   | succ n => convert Fintype.card_fin (n + 1) using 2
 #align zmod.card ZMod.card
 
+
+
+instance addMonoidWithOne (n : ℕ) : AddMonoidWithOne (ZMod n) where
+  add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
+  add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
+  zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
+  zero_add := Nat.casesOn n (@zero_add Int _) fun n => @zero_add (Fin n.succ) _
+  add_zero := Nat.casesOn n (@add_zero Int _) fun n => @add_zero (Fin n.succ) _
+  nsmul := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).nsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul
+  nsmul_zero := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).nsmul_zero
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_zero
+  nsmul_succ := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).nsmul_succ
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
+  -- porting note: `match` didn't work here
+  one := Nat.casesOn n (1 : Int) fun n => (1 : Fin n.succ)
+  natCast := Nat.casesOn n ((↑) : ℕ → ℤ) fun n => ((↑) : ℕ → Fin n.succ)
+  natCast_zero := Nat.casesOn n (@Nat.cast_zero Int _) fun n => @Nat.cast_zero (Fin n.succ) _
+  natCast_succ := Nat.casesOn n (@Nat.cast_succ Int _) fun n => @Nat.cast_succ (Fin n.succ) _
+  -- porting note: new, see
+  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
+  -- porting note: all npow fields are new, but probably should be backported
+
+
+
+
+
 def npowImpl (n : ℕ) : ℕ → ZMod (n + 1) → ZMod (n + 1) :=
+dbg_trace "hi" ;
 (inferInstanceAs (CommRing (Fin n.succ))).npow
+
+
+def val : (p : ℕ) → ZMod p → ℕ
+| 0, _ => 0
+| _+1, ⟨v, _⟩ => v
+
+
+def _root_.repeatedSquare (p : ℕ) (a : ℕ) : ℕ → ℕ
+| 0 => 1
+| (k + 1) =>
+  if k % 2 = 0 then
+    have : k / 2 < k + 1 := calc
+      k / 2 ≤ (k + 1) / 2 := Nat.div_le_div_right (Nat.le_add_right k 1)
+      _ < k + 1 := Nat.div_lt_self' k 0
+    (a * (repeatedSquare p a (k/2))^2) % p
+    else
+    have : (k+1) / 2 < k + 1 := Nat.div_lt_self' k 0
+    ((repeatedSquare p a ((k+1)/2))^2) % p
+termination_by repeatedSquare p a k => k
+
+
+nonrec def repeatedSquare {p : ℕ} (a : ZMod p) (k : ℕ) : ZMod p :=
+  dbg_trace "ffff";
+  repeatedSquare p a.val k
+
+def ZMod.repeatedSquare' (n : ℕ) (k : ℕ) (a : ZMod (n + 1)) : ZMod (n + 1) :=
+  a.repeatedSquare k
+
+
+@[csimp]
+theorem square_equiv : ZMod.npowImpl = ZMod.repeatedSquare' :=
+  sorry
 
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
@@ -199,3 +261,76 @@ instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
 #align zmod.inhabited ZMod.inhabited
 
 end ZMod
+
+
+
+class ok (α : Type) where
+(foo : ℕ → α → α)
+
+notation3 "ff" => ok.foo
+
+class ok' (α) extends ok α
+
+instance : ok' Unit where
+  foo := default
+
+instance (n : ℕ) : ok' (ZMod (n + 1)) where
+  foo := (Nat.casesOn n (ZMod.npowImpl _) (fun _ => ZMod.npowImpl _))
+
+
+
+
+
+#eval repeatedSquare 107 2 106
+#eval 2^106 % 107
+
+
+#eval (2 : ZMod 107)^106
+
+#eval ZMod.npowImpl _ 106 (2 : ZMod 107)
+-- #eval ZMod.repeatedSquare' _ 106 (2 : ZMod 107)
+
+#eval repeatedSquare 49999 3 49998
+#eval 3^49998 % 49999
+#eval (3 : ZMod 49999)^49998
+
+#synth Pow (ZMod 10) ℕ
+
+def h := ZMod.npowImpl
+
+#eval ZMod.npowImpl _ 49998 (3 : ZMod 49999)
+-- #eval ZMod.repeatedSquare' _ 49998 (3 : ZMod 49999)
+
+#eval h _ 49998 (3 : ZMod 49999)
+
+
+
+/-
+def p := 104743
+#eval sagePrimeFactors (p-1)
+-- #eval [2].all fun q => (3 : ZMod p) ^ ((p - 1) / q) != 1
+-- #eval [2, 3, 11, 23].all fun q => (3 : ZMod p) ^ ((p - 1) / q) != 1
+#eval sageIsPrimitiveRoot 3 104743
+
+
+#eval sageIsPrimitiveRoot 3 11
+
+
+-/
+
+
+
+
+#eval ff 106 ()
+
+#eval ff 106 (2 : ZMod 107)
+
+set_option trace.compiler.ir true
+
+def p : Nat := 2
+def q : Nat := 1 + 1
+@[csimp] theorem pq : p = q := sorry
+
+def pp := p
+
+def f2 := (2 : ZMod 107)^106
