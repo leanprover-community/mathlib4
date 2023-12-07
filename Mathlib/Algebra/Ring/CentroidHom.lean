@@ -438,39 +438,14 @@ local notation "R" => AddMonoid.End.mulRight
 lemma centroid_eq_centralizer_mul_op :
     RingHom.rangeS (toEndRingHom α) = Subsemiring.centralizer (Set.range L ∪ Set.range R) := by
   ext T
-  constructor
-  · intro ⟨f,hf⟩ S hS
-    cases' hS with h₁ h₂
-    · cases' h₁ with a ha
-      rw [← ha, ← hf, toEndRingHom_apply]
-      apply AddMonoidHom.ext
-      intro b
-      rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
-        AddMonoid.End.mulLeft_apply_apply, toEnd, AddMonoidHom.coe_coe, map_mul_left]
-    · cases' h₂ with b hb
-      rw [← hb, ← hf, toEndRingHom_apply]
-      apply AddMonoidHom.ext
-      intro a
-      rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
-        AddMonoid.End.mulRight_apply_apply, toEnd, AddMonoidHom.coe_coe, map_mul_right]
-  · intro h
-    use ⟨T, fun a b => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-      rw [← AddMonoid.End.mulLeft_apply_apply, ← AddMonoid.End.mulLeft_apply_apply,
-        ← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
-      apply congrFun (congrArg FunLike.coe (id _)) b
-      rw [(Submonoid.mem_centralizer_iff.mp h)]
-      apply (Set.mem_union _ _ _).mpr
-      simp only [Set.mem_range, exists_apply_eq_apply, true_or]
-    , fun a b => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-      rw [← AddMonoid.End.mulRight_apply_apply, ← AddMonoid.End.mulRight_apply_apply,
-        ← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
-      apply congrFun (congrArg FunLike.coe (id _)) a
-      rw [(Submonoid.mem_centralizer_iff.mp h)]
-      apply (Set.mem_union _ _ _).mpr
-      simp only [Set.mem_range, exists_apply_eq_apply, or_true] ⟩
-    exact rfl
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨f, rfl⟩ S (⟨a, rfl⟩ | ⟨b, rfl⟩)
+    · exact AddMonoidHom.ext fun b ↦ (map_mul_left f a b).symm
+    · exact AddMonoidHom.ext fun a ↦ (map_mul_right f a b).symm
+  · rw [Subsemiring.mem_centralizer_iff] at h
+    refine ⟨⟨T, fun a b ↦ ?_, fun a b ↦ ?_⟩, rfl⟩
+    · exact congr($(h (L a) (.inl ⟨a, rfl⟩)) b).symm
+    · exact congr($(h (R b) (.inr ⟨b, rfl⟩)) a).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
