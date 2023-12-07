@@ -112,7 +112,6 @@ abbrev MulPosMono : Prop :=
   CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·)
 #align mul_pos_mono MulPosMono
 
-
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
 namely `b₁ < b₂ → a * b₁ < a * b₂` if `0 < a`.
 
