@@ -44,7 +44,7 @@ lemma measurable_of_measurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α
   exact measurable_log.comp hf
 
 lemma aemeasurable_of_aemeasurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
-    {μ: MeasureTheory.Measure α} (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
+    {μ : MeasureTheory.Measure α} (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
     AEMeasurable f μ := by
   have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
   rw [this]
