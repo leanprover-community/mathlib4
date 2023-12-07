@@ -223,6 +223,11 @@ noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
 /-- The canonical map `P ⟶ L₂.X₂`. -/
 noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst ≫ S.v₁₂.τ₂
 
+@[reassoc (attr := simp)]
+lemma lift_φ₂ {A : C} (a : A ⟶ S.L₁.X₂) (b : A ⟶ S.L₀.X₃) (h : a ≫ S.L₁.g = b ≫ S.v₀₁.τ₃) :
+    pullback.lift a b h ≫ S.φ₂ = a ≫ S.v₁₂.τ₂ := by
+  simp [φ₂]
+
 /-- The canonical map `P ⟶ L₂.X₁`. -/
 noncomputable def φ₁ : S.P ⟶ S.L₂.X₁ :=
   S.L₂_exact.lift S.φ₂
@@ -361,6 +366,15 @@ lemma snake_lemma : S.composableArrows.Exact :=
     (exact_of_δ₀ S.L₁'_exact.exact_toComposableArrows
     (exact_of_δ₀ S.L₂'_exact.exact_toComposableArrows
     S.L₃_exact.exact_toComposableArrows))
+
+lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ : A ⟶ S.L₂.X₁)
+    (h₂ : x₂ ≫ S.L₁.g = x₃ ≫ S.v₀₁.τ₃) (h₁ : x₁ ≫ S.L₂.f = x₂ ≫ S.v₁₂.τ₂) :
+    x₃ ≫ S.δ = x₁ ≫ S.v₂₃.τ₁ := by
+  have H := (pullback.lift x₂ x₃ h₂) ≫= S.snd_δ
+  rw [pullback.lift_snd_assoc] at H
+  rw [H, ← assoc]
+  congr 1
+  simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
 variable (S₁ S₂ S₃ : SnakeInput C)
 
@@ -501,6 +515,14 @@ noncomputable def functorL₂' : SnakeInput C ⥤ ShortComplex C where
       τ₃ := f.f₃.τ₂
       comm₁₂ := (naturality_δ f).symm
       comm₂₃ := f.f₃.comm₁₂ }
+
+/-- The functor which maps `S : SnakeInput C` to the diagram
+`S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃`. -/
+@[simps]
+noncomputable def composableArrowsFunctor : SnakeInput C ⥤ ComposableArrows C 5 where
+  obj S := S.composableArrows
+  map f := ComposableArrows.homMk₅ f.f₀.τ₁ f.f₀.τ₂ f.f₀.τ₃ f.f₃.τ₁ f.f₃.τ₂ f.f₃.τ₃
+    f.f₀.comm₁₂.symm f.f₀.comm₂₃.symm (naturality_δ f) f.f₃.comm₁₂.symm f.f₃.comm₂₃.symm
 
 end SnakeInput
 

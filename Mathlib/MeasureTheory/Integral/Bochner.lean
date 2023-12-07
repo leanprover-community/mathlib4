@@ -1015,7 +1015,7 @@ theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : 
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_integral_of_L1 MeasureTheory.tendsto_integral_of_L1
 
-/-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost
+/-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
   We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
   (i.e. not requiring that `bound` is measurable), but in all applications proving integrability
