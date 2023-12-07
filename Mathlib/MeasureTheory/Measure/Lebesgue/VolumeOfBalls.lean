@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.Pi
 /-!
 # Volume of balls
 
-Let `E` be a finite dimensional normed `ℝ`-vector space equipped with an Haar measure `μ`. We
+Let `E` be a finite dimensional normed `ℝ`-vector space equipped with a Haar measure `μ`. We
 prove that
 `μ (Metric.ball 0 1) = (∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)`
 for any real number `p` with `0 < p`, see `MeasureTheorymeasure_unitBall_eq_integral_div_gamma`. We
