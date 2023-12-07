@@ -220,7 +220,7 @@ def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
     {s : Finset α} : (∑ a in s, f a) m = ∑ a in s, f a m :=
-  (applyAddHom m).map_sum f s
+  map_sum (applyAddHom m) f s
 #align continuous_multilinear_map.sum_apply ContinuousMultilinearMap.sum_apply
 
 end ContinuousAdd
@@ -278,14 +278,20 @@ def codRestrict (f : ContinuousMultilinearMap R M₁ M₂) (p : Submodule R M₂
 
 section
 
-variable (R M₂)
+variable (R M₂ M₃)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
--/
-@[simps! toMultilinearMap apply]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : ContinuousMultilinearMap R (fun _ : ι => M₂) M₂ where
-  toMultilinearMap := MultilinearMap.ofSubsingleton R _ i'
-  cont := continuous_apply _
+/-- The natural equivalence between continuous linear maps from `M₂` to `M₃`
+and continuous 1-multilinear maps from `M₂` to `M₃`. -/
+@[simps! apply_toMultilinearMap apply_apply symm_apply_apply]
+def ofSubsingleton [Subsingleton ι] (i : ι) :
+    (M₂ →L[R] M₃) ≃ ContinuousMultilinearMap R (fun _ : ι => M₂) M₃ where
+  toFun f := ⟨MultilinearMap.ofSubsingleton R M₂ M₃ i f,
+    (map_continuous f).comp (continuous_apply i)⟩
+  invFun f := ⟨(MultilinearMap.ofSubsingleton R M₂ M₃ i).symm f.toMultilinearMap,
+    (map_continuous f).comp <| continuous_pi fun _ ↦ continuous_id⟩
+  left_inv _ := rfl
+  right_inv f := toMultilinearMap_injective <|
+    (MultilinearMap.ofSubsingleton R M₂ M₃ i).apply_symm_apply f.toMultilinearMap
 #align continuous_multilinear_map.of_subsingleton ContinuousMultilinearMap.ofSubsingleton
 
 variable (M₁) {M₂}
