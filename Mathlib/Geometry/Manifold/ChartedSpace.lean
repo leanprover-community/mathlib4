@@ -1162,6 +1162,17 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
 #align topological_space.opens.has_groupoid TopologicalSpace.Opens.instHasGroupoid
 
+theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
+    (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
+  set i : U → M := Subtype.val
+  set e := chartAt H x.val
+  haveI : Nonempty U := ⟨x⟩
+  haveI : Nonempty M := ⟨i x⟩
+  have heUx_nhds : (e.subtypeRestr U).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr U).open_target.mem_nhds
+    exact e.map_subtype_source (mem_chart_source _ _)
+  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn U)
+
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
     (chartAt H (Set.inclusion hUV x)).symm
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
