@@ -79,8 +79,8 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
-instance {ι : Type*} [IsEmpty ι] (p : ℝ≥0∞) (α : ι → Type*) : Subsingleton (PiLp p α) :=
-  inferInstanceAs (Subsingleton ((∀ i : ι, α i)))
+instance {ι : Type*} [IsEmpty ι] (p : ℝ≥0∞) (α : ι → Type*) : Unique (PiLp p α) :=
+  inferInstanceAs (Unique (∀ i : ι, α i))
 
 @[ext] -- porting note: new lemma
 protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
