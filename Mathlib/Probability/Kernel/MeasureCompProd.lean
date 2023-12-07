@@ -37,7 +37,7 @@ noncomputable
 def compProd (μ : Measure α) (κ : kernel α β) : Measure (α × β) :=
   (kernel.const Unit μ ⊗ₖ kernel.prodMkLeft Unit κ) ()
 
-/-- The composition-product of a measure and a kernel. -/
+@[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ⊗ₘ " => MeasureTheory.Measure.compProd
 
 @[simp] lemma compProd_zero_left (κ : kernel α β) : (0 : Measure α) ⊗ₘ κ = 0 := by simp [compProd]
