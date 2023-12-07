@@ -39,8 +39,8 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' _ h := sq_sqrt (le_of_lt h)
   open_source := isOpen_Ioi
   open_target := isOpen_Ioi
-  continuous_toFun := (continuous_pow 2).continuousOn
-  continuous_invFun := continuousOn_id.sqrt
+  continuousOn_toFun := (continuous_pow 2).continuousOn
+  continuousOn_invFun := continuousOn_id.sqrt
 #align real.sq_local_homeomorph Real.sqLocalHomeomorph
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
