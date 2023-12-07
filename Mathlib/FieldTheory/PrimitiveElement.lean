@@ -396,7 +396,7 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
     Finset.coe_univ, ← injective_iff_injOn_univ]
 
-theorem primitive_element_iff_algHom_eq_of_eval (α : E) 
+theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval' F A hA]
   refine ⟨fun h _ eq => h eq, fun h φ₀ ψ₀ h' => ?_⟩
