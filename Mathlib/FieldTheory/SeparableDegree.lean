@@ -607,9 +607,52 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
 theorem finSepDegree_le_finrank [FiniteDimensional F E] :
     finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
 
-/-- If `E / F` is a finite separable extension, then its separable degree is equal to its degree. -/
-theorem finSepDegree_eq_finrank_of_isSeparable [FiniteDimensional F E] [IsSeparable F E] :
+-- TODO: move to suitable file
+/-- If `E / F` is an infinite algebraic extension, then there exists intermediate field `L / F`
+with arbitrary large finite extension degree. -/
+lemma _root_.IntermediateField.exists_lt_finrank_of_not_finiteDimensional
+    (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
+    ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
+  induction' n with n ih
+  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, by
+      rw [IntermediateField.finrank_bot]; exact one_pos⟩
+  obtain ⟨L, _, hn⟩ := ih
+  by_cases h : n + 1 < finrank F L
+  · exact ⟨L, by assumption, h⟩
+  have hr := eq_of_ge_of_not_gt (by exact hn) h
+  obtain ⟨x, hx⟩ := show ∃ x : E, x ∉ L by
+    by_contra hx
+    simp only [not_exists, not_not] at hx
+    have : L = ⊤ := eq_top_iff.2 fun x _ ↦ hx x
+    erw [this, finrank_top F E, finrank_of_infinite_dimensional hnfd] at hr
+    linarith only [hr]
+  let L' := L ⊔ F⟮x⟯
+  haveI := adjoin.finiteDimensional (halg x).isIntegral
+  haveI := finiteDimensional_sup L F⟮x⟯
+  refine ⟨L', by assumption, ?_⟩
+  have : finrank F L < finrank F L' := by
+    by_contra h
+    have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left (not_lt.1 h)
+    have h2 : F⟮x⟯ ≤ L' := le_sup_right
+    exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
+  rwa [hr] at this
+
+/-- If `E / F` is a separable extension, then its separable degree is equal to its degree.
+When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elements.
+(But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
+theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     finSepDegree F E = finrank F E := by
+  clear! K
+  wlog hfd : FiniteDimensional F E with H
+  · rw [finrank_of_infinite_dimensional hfd]
+    have halg := IsSeparable.isAlgebraic F E
+    obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_not_finiteDimensional F E halg hfd (finSepDegree F E)
+    haveI : IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
+    have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E (halg.tower_top L)
+    rw [H F L h] at hd
+    by_cases hd' : finSepDegree L E = 0
+    · rw [← hd, hd', mul_zero]
+    linarith only [h', hd, Nat.le_mul_of_pos_right (m := finrank F L) (Nat.pos_of_ne_zero hd')]
   let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K = finrank F K
   rw [← finSepDegree_top, ← finrank_top F E]
   refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
@@ -1125,3 +1168,51 @@ theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : Intermedia
       (le_separableClosure F E L) (separableClosure_le F E L)⟩
 
 end IsPurelyInseparable
+
+namespace Field
+
+/-- The (infinite) separable degree for a general field extension `E / F` is defined
+to be the degree of `(separableClosure F E) / F`. -/
+def sepDegree := Module.rank F (separableClosure F E)
+
+/-- The (infinite) inseparable degree for a general field extension `E / F` is defined
+to be the degree of `E / (separableClosure F E)`. -/
+def insepDegree := Module.rank (separableClosure F E) E
+
+/-- The (finite) inseparable degree for a general field extension `E / F` is defined
+to be the degree of `E / (separableClosure F E)` as a natural number. It is defined to be zero
+if such field extension is infinite. -/
+def finInsepDegree : ℕ := Cardinal.toNat (insepDegree F E)
+
+/-- The (infinite) separable degree multiply by the (infinite) inseparable degree is equal
+to the (infinite) field extension degree. -/
+theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
+  rank_mul_rank F (separableClosure F E) E
+
+/-- If `E / F` is algebraic, then the `Field.finSepDegree F E` is equal to `Field.sepDegree F E`
+as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
+`(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
+coincide. -/
+theorem finSepDegree_eq (halg : Algebra.IsAlgebraic F E) :
+    finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
+  have h := finSepDegree_mul_finSepDegree_of_isAlgebraic F (separableClosure F E) E
+    (halg.tower_top _) |>.symm
+  haveI := separableClosure.isSeparable F E
+  haveI := separableClosure.isPurelyInseparable F E halg
+  rwa [finSepDegree_eq_finrank_of_isSeparable F (separableClosure F E),
+    IsPurelyInseparable.finSepDegree_eq_one (separableClosure F E) E, mul_one] at h
+
+/-- The (finite) separable degree multiply by the (finite) inseparable degree is equal
+to the (finite) field extension degree. -/
+theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E = finrank F E := by
+  by_cases halg : Algebra.IsAlgebraic F E
+  · have := congr_arg Cardinal.toNat (sepDegree_mul_insepDegree F E)
+    rwa [Cardinal.toNat_mul, ← finSepDegree_eq F E halg] at this
+  change _ * finrank (separableClosure F E) E = _
+  rw [finrank_of_infinite_dimensional (K := F) (V := E) fun _ ↦
+      halg (Algebra.IsAlgebraic.of_finite F E),
+    finrank_of_infinite_dimensional (K := separableClosure F E) (V := E) fun _ ↦
+      halg ((separableClosure.isAlgebraic F E).trans (Algebra.IsAlgebraic.of_finite _ E)),
+    mul_zero]
+
+end Field
