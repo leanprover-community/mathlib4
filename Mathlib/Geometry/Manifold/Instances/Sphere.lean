@@ -296,12 +296,12 @@ def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ �
   right_inv' w _ := stereo_right_inv hv w
   open_source := isOpen_compl_singleton
   open_target := isOpen_univ
-  continuous_toFun :=
+  continuousOn_toFun :=
     continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
       dsimp
       exact
         h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
-  continuous_invFun := (continuous_stereoInvFun hv).continuousOn
+  continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 #align stereographic stereographic
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
