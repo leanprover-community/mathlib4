@@ -42,8 +42,6 @@ nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite plac
 number field, infinite places
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
@@ -581,7 +579,7 @@ open scoped ENNReal NNReal
 
 variable [NumberField K]
 
-/-- The bound that appears in Minkowski Convex Body theorem, see
+/-- The bound that appears in **Minkowski Convex Body theorem**, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. See
 `NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis` for the computation of
 `volume (fundamentalDomain (latticeBasis K))`. -/

@@ -401,7 +401,13 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
   S.isScalarTower_mid
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
 
-/-- If `f : L →+* L'` fixes `K`, `S.map f` is the intermediate field between `L'` and `K`
+/-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
+  such that `f x ∈ S ↔ x ∈ S.comap f`. -/
+def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField K L where
+  __ := S.toSubalgebra.comap f
+  inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx
+
+/-- Given `f : L →ₐ[K] L'`, `S.map f` is the intermediate field between `K` and `L'`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
 def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' where
   __ := S.toSubalgebra.map f
@@ -432,6 +438,14 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
   SetLike.coe_mono (Set.image_subset f h)
+
+theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
+    {s : IntermediateField K L} {t : IntermediateField K L'} :
+    s.map f ≤ t ↔ s ≤ t.comap f :=
+  Set.image_subset_iff
+
+theorem gc_map_comap (f :L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
+  fun _ _ ↦ map_le_iff_le_comap
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediate_field_equiv_map e E` is the induced equivalence

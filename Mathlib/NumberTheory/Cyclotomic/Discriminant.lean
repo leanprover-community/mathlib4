@@ -70,7 +70,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   haveI se : IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _, ←
     hζ.minpoly_eq_cyclotomic_of_irreducible hirr, PNat.pow_coe,
-    totient_prime_pow hp.out (succ_pos k), succ_sub_one]
+    totient_prime_pow hp.out (succ_pos k), Nat.add_one_sub_one]
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := rfl
   have hp2 : p = 2 → k ≠ 0 := by
     rintro rfl rfl
@@ -104,8 +104,8 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := congr_arg (Algebra.norm K) H
     have hnorm : (norm K) (ζ ^ (p : ℕ) ^ k - 1) = (p : K) ^ (p : ℕ) ^ k := by
       by_cases hp : p = 2
-      · exact_mod_cast hζ.pow_sub_one_norm_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
-      · exact_mod_cast hζ.pow_sub_one_norm_prime_ne_two hirr le_rfl hp
+      · exact mod_cast hζ.pow_sub_one_norm_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
+      · exact mod_cast hζ.pow_sub_one_norm_prime_ne_two hirr le_rfl hp
     rw [MonoidHom.map_mul, hnorm, MonoidHom.map_mul, ← map_natCast (algebraMap K L),
       Algebra.norm_algebraMap, finrank L hirr] at H
     conv_rhs at H => -- Porting note: need to drill down to successfully rewrite the totient

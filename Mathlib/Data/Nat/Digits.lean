@@ -438,7 +438,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   rw [← ofDigits_digits_append_digits]
   refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
-  · by_cases digits b m = []
+  · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
     · exact (List.getLast_append' _ _ h) ▸
@@ -556,7 +556,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
         have w₂' := fun (h : tl ≠ []) ↦ (List.getLast_cons h) ▸ h_ne_zero
         have ih := ih (w₂' h') w₁'
         simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h tl w₁' w₂',
-          ←Nat.one_add] at ih
+          ← Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'

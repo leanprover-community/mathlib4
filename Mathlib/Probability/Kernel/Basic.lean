@@ -97,7 +97,7 @@ theorem zero_apply (a : α) : (0 : kernel α β) a = 0 :=
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i in I, κ i) = ∑ i in I, ⇑(κ i) :=
-  (coeAddHom α β).map_sum _ _
+  map_sum (coeAddHom α β) _ _
 #align probability_theory.kernel.coe_finset_sum ProbabilityTheory.kernel.coe_finset_sum
 
 theorem finset_sum_apply (I : Finset ι) (κ : ι → kernel α β) (a : α) :
@@ -445,9 +445,14 @@ def const (α : Type*) {β : Type*} [MeasurableSpace α] {_ : MeasurableSpace β
   property := measurable_const
 #align probability_theory.kernel.const ProbabilityTheory.kernel.const
 
+@[simp]
 theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
   rfl
 #align probability_theory.kernel.const_apply ProbabilityTheory.kernel.const_apply
+
+@[simp]
+lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
+  ext x s _; simp [kernel.const_apply]
 
 instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
