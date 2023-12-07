@@ -129,7 +129,8 @@ instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
 --   rfl
 #noalign proper_cone.to_convex_cone_eq_coe
 
-theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) := fun S T h => by cases S; cases T; congr
+theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
+  fun S T h => by cases S; cases T; congr
 #align proper_cone.ext' ProperCone.toPointedCone_injective
 
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
