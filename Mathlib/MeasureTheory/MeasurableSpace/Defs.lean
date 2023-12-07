@@ -592,7 +592,7 @@ instance MeasurableSingletonClass.toDiscreteMeasurableSpace [MeasurableSpace α]
 section DiscreteMeasurableSpace
 variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
 
-@[simp, measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
 @[measurability]
