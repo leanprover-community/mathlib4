@@ -164,3 +164,18 @@ example {n : ℝ} :
     (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) = 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 := by
   -- `conv_lhs` prevents `ring_nf` picking a bad normalization for both sides.
   conv_lhs => ring_nf
+
+-- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
+-- about differing instance paths.
+/--
+warning: declaration uses 'sorry'
+---
+info: n : ℝ
+hn : 0 ≤ n
+⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
+-/
+#guard_msgs in
+example {n : ℝ} (hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1 / 3) * (n + 1) ^ 2 := by
+  ring_nf
+  trace_state
+  sorry
