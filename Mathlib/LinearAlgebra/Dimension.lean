@@ -1261,7 +1261,7 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
 
-variable [AddCommGroup V'] [Module K V'] [Ring R] [Module R V]
+variable [AddCommGroup V'] [Module K V']
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
