@@ -145,7 +145,8 @@ theorem IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (rig
 #align is_closed.right_add_coset IsClosed.right_addCoset
 
 @[to_additive]
-theorem discreteTopology_of_open_singleton_one (h : IsOpen ({1} : Set G)) : DiscreteTopology G := by
+theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
+    DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   intro g
   suffices {g} = (fun x : G => g⁻¹ * x) ⁻¹' {1} by
@@ -153,14 +154,14 @@ theorem discreteTopology_of_open_singleton_one (h : IsOpen ({1} : Set G)) : Disc
     exact (continuous_mul_left g⁻¹).isOpen_preimage _ h
   simp only [mul_one, Set.preimage_mul_left_singleton, eq_self_iff_true, inv_inv,
     Set.singleton_eq_singleton_iff]
-#align discrete_topology_of_open_singleton_one discreteTopology_of_open_singleton_one
-#align discrete_topology_of_open_singleton_zero discreteTopology_of_open_singleton_zero
+#align discrete_topology_of_open_singleton_one discreteTopology_of_isOpen_singleton_one
+#align discrete_topology_of_open_singleton_zero discreteTopology_of_isOpen_singleton_zero
 
 @[to_additive]
-theorem discreteTopology_iff_open_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
-  ⟨fun h => forall_open_iff_discrete.mpr h {1}, discreteTopology_of_open_singleton_one⟩
-#align discrete_topology_iff_open_singleton_one discreteTopology_iff_open_singleton_one
-#align discrete_topology_iff_open_singleton_zero discreteTopology_iff_open_singleton_zero
+theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
+  ⟨fun h => forall_open_iff_discrete.mpr h {1}, discreteTopology_of_isOpen_singleton_one⟩
+#align discrete_topology_iff_open_singleton_one discreteTopology_iff_isOpen_singleton_one
+#align discrete_topology_iff_open_singleton_zero discreteTopology_iff_isOpen_singleton_zero
 
 end ContinuousMulGroup
 
@@ -1300,7 +1301,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
     IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
   intro t ht
   rw [← quotientMap_quotient_mk'.isClosed_preimage, MulAction.quotient_preimage_image_eq_union_mul]
-  convert ht.smul_left_of_isCompact (isCompact_univ (α := α))
+  convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   rfl
 
@@ -1883,8 +1884,8 @@ theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
     𝓝 (x * y) = map (x * ·) (map (· * y) (𝓝 1 * 𝓝 1)) := by simp
     _ = map₂ (fun a b => x * (a * b * y)) (𝓝 1) (𝓝 1) := by rw [← map₂_mul, map_map₂, map_map₂]
     _ = map₂ (fun a b => x * a * (b * y)) (𝓝 1) (𝓝 1) := by simp only [mul_assoc]
-    _ = 𝓝 x * 𝓝 y :=
-    by rw [← map_mul_left_nhds_one x, ← map_mul_right_nhds_one y, ← map₂_mul, map₂_map_left,
+    _ = 𝓝 x * 𝓝 y := by
+      rw [← map_mul_left_nhds_one x, ← map_mul_right_nhds_one y, ← map₂_mul, map₂_map_left,
         map₂_map_right]
 #align nhds_mul nhds_mul
 #align nhds_add nhds_add

@@ -77,9 +77,6 @@ section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
-/- Porting note: Could `@[simp, to_additive]` be automatically changed to
-`@[to_additive (attr := simp)]`?
--/
 @[to_additive (attr := simp)]
 theorem image2_smul : image2 SMul.smul s t = s • t :=
   rfl
@@ -535,23 +532,35 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set 
 @[to_additive
       "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
-  mul_smul := by
-    intros
-    simp only [← image_smul, image_image, ← mul_smul]
-  one_smul := by
-    intros
-    simp only [← image_smul, one_smul, image_id']
+  mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
+  one_smul _ := by simp only [← image_smul, one_smul, image_id']
 #align set.mul_action_set Set.mulActionSet
 #align set.add_action_set Set.addActionSet
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
+/-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
+then the same is true for `(0 : Set β)`. -/
+protected def smulZeroClassSet [Zero β] [SMulZeroClass α β] :
+    SMulZeroClass α (Set β) where
+  smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+
+scoped[Pointwise] attribute [instance] Set.smulZeroClassSet
+
+/-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
+then so is `(· • ·) : α → Set β → Set β`. -/
+protected def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
+    DistribSMul α (Set β) where
+  smul_add _ _ _ := image_image2_distrib <| smul_add _
+
+scoped[Pointwise] attribute [instance] Set.distribSMulSet
+
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
 protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
-  smul_add _ _ _ := image_image2_distrib <| smul_add _
-  smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+  smul_add := smul_add
+  smul_zero := smul_zero
 #align set.distrib_mul_action_set Set.distribMulActionSet
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -566,7 +575,7 @@ scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMul
 instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
   ⟨fun {s t} h ↦ by
-    by_contra' H
+    by_contra! H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
       ← hst.of_smul_right.subset_zero_iff] at H
@@ -577,7 +586,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
 instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
   ⟨fun {a s} h ↦ by
-    by_contra' H
+    by_contra! H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
@@ -860,9 +869,9 @@ theorem op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] {s t : Set α}
+variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
@@ -871,7 +880,7 @@ theorem pairwiseDisjoint_smul_iff :
 #align set.pairwise_disjoint_smul_iff Set.pairwiseDisjoint_smul_iff
 #align set.pairwise_disjoint_vadd_iff Set.pairwiseDisjoint_vadd_iff
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section Group
 

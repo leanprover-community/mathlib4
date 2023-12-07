@@ -1772,6 +1772,22 @@ scoped[Pointwise]
   attribute [instance]
     Finset.mulActionFinset Finset.addActionFinset Finset.mulAction Finset.addAction
 
+/-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
+then the same is true for `(0 : Finset β)`. -/
+protected def smulZeroClassFinset [Zero β] [SMulZeroClass α β] :
+    SMulZeroClass α (Finset β) :=
+  coe_injective.smulZeroClass ⟨(↑), coe_zero⟩ coe_smul_finset
+
+scoped[Pointwise] attribute [instance] Finset.smulZeroClassFinset
+
+/-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
+then so is `(· • ·) : α → Finset β → Finset β`. -/
+protected def distribSMulFinset [AddZeroClass β] [DistribSMul α β] :
+    DistribSMul α (Finset β) :=
+  coe_injective.distribSMul coeAddMonoidHom coe_smul_finset
+
+scoped[Pointwise] attribute [instance] Finset.distribSMulFinset
+
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Finset β`. -/
 protected def distribMulActionFinset [Monoid α] [AddMonoid β] [DistribMulAction α β] :
@@ -1792,17 +1808,9 @@ instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisor
   Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
 
 instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors (Finset α) (Finset β) :=
-  ⟨by
-    intro s t h
-    by_contra H
-    have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
-    rw [← hst.of_smul_left.subset_zero_iff, ← hst.of_smul_right.subset_zero_iff] at H
-    push_neg at H
-    simp_rw [not_subset, mem_zero] at H
-    obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
-    exact (eq_zero_or_eq_zero_of_smul_eq_zero <| mem_zero.1 <| subset_of_eq h
-      <| smul_mem_smul hs ht).elim ha hb⟩
+    NoZeroSMulDivisors (Finset α) (Finset β) where
+  eq_zero_or_eq_zero_of_smul_eq_zero {s t} := by
+    exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := s.toSet) (x := t.toSet)
 
 instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Finset β) :=
@@ -1869,9 +1877,9 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
@@ -1898,11 +1906,11 @@ theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s 
 #align finset.card_le_card_mul_left Finset.card_le_card_mul_left
 #align finset.card_le_card_add_left Finset.card_le_card_add_left
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section
 
-variable [RightCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsRightCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive (attr := simp)]
 theorem card_mul_singleton : (s * {a}).card = s.card :=
