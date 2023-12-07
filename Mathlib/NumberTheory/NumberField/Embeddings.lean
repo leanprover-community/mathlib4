@@ -125,7 +125,6 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
   · wlog hlt : b < a
     · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
     refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
-    dsimp at h -- Porting note: added dsimp
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
     refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
