@@ -43,32 +43,6 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
-section Right -- todo: move to that section of Algebra/Bounds.lean
-
-variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
-  [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
-
-@[to_additive]
-theorem ciInf_mul (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
-  (OrderIso.mulRight a).map_ciInf hf
-
-@[to_additive]
-theorem ciInf_div (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
-  simp only [div_eq_mul_inv, ciInf_mul hf]
-
-end Right
-
-section Left
-
-variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
-  [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
-
-@[to_additive]
-theorem mul_ciInf (hf : BddBelow (Set.range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
-  (OrderIso.mulLeft a).map_ciInf hf
-
-end Left
-
 section x_log_x
 
 namespace Real
