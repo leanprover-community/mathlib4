@@ -113,7 +113,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported
-  in an open set `U`, then `f` vanishes almost everywhere in `U`. -/
+  in `U`, then `f` vanishes almost everywhere in `U`. -/
 nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (hU : IsOpen U)
     (hSig : IsSigmaCompact U) (hf : LocallyIntegrableOn f U μ)
     (h : ∀ g : M → ℝ,
