@@ -43,7 +43,7 @@ def FarFromTriangleFree (G : SimpleGraph α) (ε : 𝕜) : Prop :=
 #align simple_graph.far_from_triangle_free SimpleGraph.FarFromTriangleFree
 
 theorem farFromTriangleFree_iff :
-    G.FarFromTriangleFree ε ↔ ∀ ⦃H : SimpleGraph _⦄ [DecidableRel H.Adj], H ≤ G → H.CliqueFree 3 →
+    G.FarFromTriangleFree ε ↔ ∀ ⦃H : SimpleGraph α⦄, [DecidableRel H.Adj] → H ≤ G → H.CliqueFree 3 →
       ε * (card α ^ 2 : ℕ) ≤ G.edgeFinset.card - H.edgeFinset.card := deleteFar_iff
 #align simple_graph.far_from_triangle_free_iff SimpleGraph.farFromTriangleFree_iff
 

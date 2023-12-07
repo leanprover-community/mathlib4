@@ -79,9 +79,7 @@ theorem ceil_cast (x : ℚ) : ⌈(x : α)⌉ = ⌈x⌉ := by
 
 @[simp, norm_cast]
 theorem round_cast (x : ℚ) : round (x : α) = round x := by
-  -- Porting note: `simp` worked rather than `simp [H]` in mathlib3
-  have H : ((2 : ℚ) : α) = (2 : α) := Rat.cast_coe_nat 2
-  have : ((x + 1 / 2 : ℚ) : α) = x + 1 / 2 := by simp [H]
+  have : ((x + 1 / 2 : ℚ) : α) = x + 1 / 2 := by simp
   rw [round_eq, round_eq, ← this, floor_cast]
 #align rat.round_cast Rat.round_cast
 
