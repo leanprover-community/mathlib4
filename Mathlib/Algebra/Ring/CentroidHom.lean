@@ -3,10 +3,6 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Algebra.Module.Hom
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
