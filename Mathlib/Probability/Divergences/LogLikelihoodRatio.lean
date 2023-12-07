@@ -88,7 +88,7 @@ lemma todo_div {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : �
   have hν_ac : ν ≪ μ + ν := by
     rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
   have h_pos := Measure.rnDeriv_pos hν_ac
-  have h := Measure.rnDeriv_mul_rnDeriv hμν hν_ac
+  have h := Measure.rnDeriv_mul_rnDeriv hμν (κ := μ + ν)
   filter_upwards [hν_ac.ae_le h, h_pos, hν_ac.ae_le (Measure.rnDeriv_ne_top ν (μ + ν))]
     with x hx hx_pos hx_ne_top
   rw [Pi.mul_apply] at hx
@@ -200,7 +200,7 @@ lemma llr_tilted_ae_eq [IsFiniteMeasure μ]
     have hμ : μ = 0 := by ext s _; exact hμν (by simp [h])
     simp only [hμ, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
   | inr h0 =>
-    filter_upwards [hμν.ae_le (ofReal_rnDeriv_tilted_right μ ν hf), Measure.rnDeriv_pos hμν,
+    filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_right μ ν hf), Measure.rnDeriv_pos hμν,
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
     rw [LLR, hx, log_mul, log_mul (exp_pos _).ne', log_exp, LLR]
     · exact (integral_exp_pos hf).ne'
