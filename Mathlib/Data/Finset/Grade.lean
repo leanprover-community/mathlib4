@@ -77,7 +77,7 @@ alias ⟨_, _root_.Covby.finset_val⟩ := val_covby_val
 alias ⟨_, _root_.wcovby.finset_coe⟩ := coe_wcovby_coe
 alias ⟨_, _root_.Covby.finset_coe⟩ := coe_covby_coe
 
-@[simp] lemma covby_cons (ha : a ∉ s) : s ⋖ s.cons a ha := by simp [←val_covby_val]
+@[simp] lemma covby_cons (ha : a ∉ s) : s ⋖ s.cons a ha := by simp [← val_covby_val]
 
 lemma _root_.Covby.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, t = s.cons a ha :=
   let ⟨a, ha, hst⟩ := ssubset_iff_exists_cons_subset.1 h.lt
@@ -91,8 +91,8 @@ lemma _root_.Covby.card_finset (h : s ⋖ t) : s.card ⋖ t.card := (val_covby_v
 section DecidableEq
 variable [DecidableEq α]
 
-@[simp] lemma wcovby_insert (s : Finset α) (a : α) : s ⩿ insert a s := by simp [←coe_wcovby_coe]
-@[simp] lemma erase_wcovby (s : Finset α) (a : α) : s.erase a ⩿ s := by simp [←coe_wcovby_coe]
+@[simp] lemma wcovby_insert (s : Finset α) (a : α) : s ⩿ insert a s := by simp [← coe_wcovby_coe]
+@[simp] lemma erase_wcovby (s : Finset α) (a : α) : s.erase a ⩿ s := by simp [← coe_wcovby_coe]
 
 lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovby_insert _ _).covby_of_lt $ ssubset_insert ha
@@ -103,10 +103,10 @@ lemma _root_.Covby.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, t = insert 
   simpa using h.exists_finset_cons
 
 lemma _root_.Covby.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, s = t.erase a := by
-  simpa only [←coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
+  simpa only [← coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
 
 lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, t = insert a s := by
-  simp only [←coe_covby_coe, Set.covby_iff_exists_insert, ←coe_inj, coe_insert, mem_coe]
+  simp only [← coe_covby_coe, Set.covby_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
 
 lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
   rw [covby_iff_exists_insert]
@@ -119,7 +119,7 @@ lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
     rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 lemma covby_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, s = t.erase a := by
-  simp only [←coe_covby_coe, Set.covby_iff_exists_sdiff_singleton, ←coe_inj, coe_erase, mem_coe]
+  simp only [← coe_covby_coe, Set.covby_iff_exists_sdiff_singleton, ← coe_inj, coe_erase, mem_coe]
 
 end DecidableEq
 
@@ -135,7 +135,7 @@ variable [Fintype α] [DecidableEq α]
 lemma isCoatom_compl_singleton (a : α) : IsCoatom ({a}ᶜ : Finset α) := (isAtom_singleton a).compl
 
 protected lemma isCoatom_iff : IsCoatom s ↔ ∃ a, s = {a}ᶜ := by
-  simp_rw [←isAtom_compl, Finset.isAtom_iff, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
+  simp_rw [← isAtom_compl, Finset.isAtom_iff, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 
 end Fintype
 
