@@ -115,23 +115,23 @@ theorem range_vecMulLinear (M : Matrix m n R) :
   letI := Classical.decEq m
   simp_rw [range_eq_map, ← iSup_range_stdBasis, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
-    Matrix.vecMulLinear_apply, iSup_span, range_eq_iUnion, vecMul, iUnion_singleton_eq_range,
-    dotProduct, stdBasis_apply', ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
-    Finset.mem_univ, ite_true]
+    Matrix.vecMulLinear_apply, iSup_span, range_eq_iUnion, iUnion_singleton_eq_range,
+    LinearMap.stdBasis, coe_single]
+  unfold vecMul
+  simp_rw [single_dotProduct, one_mul]
 
 theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
     Function.Injective M.vecMul ↔ LinearIndependent R (fun i ↦ M i) := by
-  rw [← coe_vecMulLinear ]
+  rw [← coe_vecMulLinear]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
-     LinearMap.mem_ker, vecMulLinear_apply, vecMul, dotProduct]
-  refine ⟨fun h c h0 i ↦ ?_, fun h c h0 ↦ funext fun i ↦ ?_⟩
-  · rw [h c, Pi.zero_apply]
-    rw [← h0]
-    ext; simp [mul_comm]
-  rw [h c, Pi.zero_apply]
-  rw [← h0]
-  ext j
-  simp [mul_comm]
+    LinearMap.mem_ker, vecMulLinear_apply]
+  refine ⟨fun h c h0 ↦ congr_fun <| h c ?_, fun h c h0 ↦ funext <| h c ?_⟩
+  · rw [← h0]
+    ext i
+    simp [vecMul, dotProduct]
+  · rw [← h0]
+    ext j
+    simp [vecMul, dotProduct]
 
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
