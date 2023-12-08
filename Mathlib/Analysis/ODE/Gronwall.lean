@@ -230,7 +230,9 @@ set_option linter.uppercaseLean3 false in
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
 a given initial value provided that RHS is Lipschitz continuous in `x` within `s`,
-and we consider only solutions included in `s`. -/
+and we consider only solutions included in `s`.
+
+This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
 theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
@@ -242,63 +244,69 @@ theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E}
 set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
 
--- Ico rather than Icc
+/-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
+a given initial value provided that RHS is Lipschitz continuous in `x` within `s`,
+and we consider only solutions included in `s`.
+
+This version shows uniqueness in a half-open interval `Ico a b`, where `a` is the initial time. -/
 theorem ODE_solution_unique_of_mem_set_Ico {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Ico a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
     (hg : ContinuousOn g (Ico a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
-    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Ico a b) := fun _ ht ↦
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Ico a b) := fun t ht ↦
+  have hss := Ico_subset_Ico_right (a := a) (le_of_lt ht.2)
   ODE_solution_unique_of_mem_set hv
-    (hf.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hf' _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
-    (fun _ ht' ↦ hfs _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
-    (hg.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hg' _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
-    (fun _ ht' ↦ hgs _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩) ha ⟨ht.1, le_refl _⟩
+    (hf.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hf' _ (hss ht'))
+    (fun _ ht' ↦ hfs _ (hss ht'))
+    (hg.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hg' _ (hss ht'))
+    (fun _ ht' ↦ hgs _ (hss ht')) ha ⟨ht.1, le_refl _⟩
 
--- starting point t₀ can be inside (a, b)
+/-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
+a given initial value provided that RHS is Lipschitz continuous in `x` within `s`,
+and we consider only solutions included in `s`.
+
+This version shows uniqueness in an open interval `Ioo a b` that contains the initial time `t₀`. -/
 theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b) (hf : ContinuousOn f (Ioo a b))
     (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t) (hfs : ∀ t ∈ Ioo a b, f t ∈ s t)
     (hg : ContinuousOn g (Ioo a b)) (hg' : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t)
     (hgs : ∀ t ∈ Ioo a b, g t ∈ s t) (ha : f t₀ = g t₀) : EqOn f g (Ioo a b) := by
+  -- split `Ioo a b = Ioc a t₀ ∪ Ico t₀ b` and treat the two cases separately
   apply EqOn.mono (Ioo_subset_Ioc_union_Ico (b := t₀))
   apply EqOn.union
-  · have hv' : ∀ t, LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := fun t ↦ by
+  · -- case `t ≤ t₀`: show `fun t ↦ f_or_g (-t)` solves `-v (-t)` within `s (-t)` by composition,
+    -- so we can use the `Ico` version of the uniqueness lemma backwards in time
+    have hv' : ∀ t, LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := fun t ↦ by
       rw [← one_mul K]
-      apply LipschitzWith.comp_lipschitzOnWith (LipschitzWith.neg LipschitzWith.id)
-      exact hv _
+      exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _)
     have : EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Ico (-t₀) (-a)) := by
+      have hmt : MapsTo Neg.neg (Ico (-t₀) (-a)) (Ioo a b) :=
+        fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
       apply ODE_solution_unique_of_mem_set_Ico hv'
-        (hf.comp continuousOn_neg
-          fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩) _
-        (fun _ ht' ↦ hfs _ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩)
-        (hg.comp continuousOn_neg
-          fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩) _
-        (fun _ ht' ↦ hgs _ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩)
-        (by simp [ha])
+        (hf.comp continuousOn_neg hmt) _ (fun _ ht' ↦ hfs _ (hmt ht'))
+        (hg.comp continuousOn_neg hmt) _ (fun _ ht' ↦ hgs _ (hmt ht')) (by simp [ha])
       · intros t' ht'
         apply HasDerivAt.hasDerivWithinAt
-        have := hf' (-t') ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
-        convert HasFDerivAt.comp_hasDerivAt t' this (hasDerivAt_neg t')
+        convert HasFDerivAt.comp_hasDerivAt t' (hf' (-t') (hmt ht')) (hasDerivAt_neg t')
         simp
       · intros t' ht'
         apply HasDerivAt.hasDerivWithinAt
-        have := hg' (-t') ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
-        convert HasFDerivAt.comp_hasDerivAt t' this (hasDerivAt_neg t')
+        convert HasFDerivAt.comp_hasDerivAt t' (hg' (-t') (hmt ht')) (hasDerivAt_neg t')
         simp
     rw [eqOn_comp_right_iff] at this
     convert this
     simp
-  · exact ODE_solution_unique_of_mem_set_Ico hv
+  · -- case `t ≥ t₀`: follows trivially from the `Ico` version of the uniqueness lemma
+    have hss : Ico t₀ b ⊆ Ioo a b := fun _ ht' ↦ mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1)
+    exact ODE_solution_unique_of_mem_set_Ico hv
       (hf.mono (Ico_subset_Ioo_left ht.1))
-      (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hf' _ <|
-        mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
-      (fun _ ht' => hfs _ <| mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
+      (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hf' _ (hss ht'))
+      (fun _ ht' => hfs _ <| (hss ht'))
       (hg.mono (Ico_subset_Ioo_left ht.1))
-      (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hg' _ <|
-        mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
-      (fun _ ht' => hgs _ <| mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1)) ha
+      (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hg' _ (hss ht'))
+      (fun _ ht' => hgs _ <| (hss ht')) ha
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that RHS is Lipschitz continuous in `x`. -/
