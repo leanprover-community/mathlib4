@@ -1155,10 +1155,9 @@ theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbed
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 
-theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} :
-    x ∉ closure s → ContinuousWithinAt f s x := by
-  intro hx
-  rw [mem_closure_iff_nhdsWithin_neBot, neBot_iff, not_not] at hx
+theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} (hx : x ∉ closure s) :
+    ContinuousWithinAt f s x := by
+  rw [not_mem_closure_iff_nhdsWithin_eq_bot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 #align continuous_within_at_of_not_mem_closure continuousWithinAt_of_not_mem_closure
