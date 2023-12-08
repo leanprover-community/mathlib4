@@ -101,25 +101,29 @@ instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
 #align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
+namespace RightActions
+
 /-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
 
 In lemma names this is still called `smul`. -/
-scoped[RightActions] notation3:74 r:75 " •> " m:74 => r • m
+scoped notation3:74 r:75 " •> " m:74 => r • m
 
 /-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
 
 In lemma names this is still called `op_smul`. -/
-scoped[RightActions] notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
+scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
 
 /-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
 
 In lemma names this is still called `vadd`. -/
-scoped[RightActions] notation3:74 r:75 " +ᵥ>  " m:74 => r +ᵥ m
+scoped notation3:74 r:75 " +ᵥ>  " m:74 => r +ᵥ m
 
 /-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
 
 In lemma names this is still called `op_vadd`. -/
-scoped[RightActions] notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
+scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
+
+end RightActions
 
 @[to_additive]
 theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=

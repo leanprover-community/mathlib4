@@ -5,13 +5,15 @@ open AddOpposite renaming op → aop
 
 variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
 
+section delaborators
+
 section without_scope
 
 /-- info: a • b : β -/
 #guard_msgs in
 #check a • b
 
-/-- info: mop a • b : β -/
+/-- info: MulOpposite.op a • b : β -/
 #guard_msgs in
 #check mop a • b
 
@@ -19,11 +21,34 @@ section without_scope
 #guard_msgs in
 #check a +ᵥ b
 
-/-- info: aop a +ᵥ b : β -/
+/-- info: AddOpposite.op a +ᵥ b : β -/
 #guard_msgs in
 #check aop a +ᵥ b
 
 end without_scope
+
+section with_scope
+open scoped RightActions
+
+/-- info: a •> b : β -/
+#guard_msgs in
+#check a • b
+
+/-- info: b <• a : β -/
+#guard_msgs in
+#check mop a • b
+
+/-- info: a +ᵥ> b : β -/
+#guard_msgs in
+#check a +ᵥ b
+
+/-- info: b <+ᵥ a : β -/
+#guard_msgs in
+#check aop a +ᵥ b
+
+end with_scope
+
+end delaborators
 
 open scoped RightActions
 
