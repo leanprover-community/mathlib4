@@ -43,9 +43,6 @@ lemma coprime_list_prod_iff_right {k} {l : List ℕ} :
     Coprime k l.prod ↔ ∀ n ∈ l, Coprime k n := by
   induction' l with m l ih <;> simp[Nat.coprime_mul_iff_right, *]
 
-lemma pairwise_coprime_of_nodup {l : List ℕ} (hl : l.Nodup) (H : ∀ n ∈ l, ∀ m ∈ l, n ≠ m →
-    Coprime n m) : l.Pairwise Coprime := List.Nodup.pairwise_of_forall_ne hl H
-
 lemma pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod {n} {l : List ℕ} :
     (n :: l).Pairwise Coprime ↔ l.Pairwise Coprime ∧ Coprime n l.prod :=
   ⟨by rintro (⟨⟩ | ⟨hn, hp⟩); exact ⟨hp, coprime_list_prod_iff_right.mpr hn⟩,
@@ -124,7 +121,7 @@ lemma pairwise_coprime_coprimeList (l : List ℕ) : ((coprimeList l).map Prod.sn
       (listSup l)! + 1) := by
     simp[coprimeList, Function.comp]
   rw[this]
-  exact pairwise_coprime_of_nodup
+  exact List.Nodup.pairwise_of_forall_ne
     (List.nodup_ofFn_ofInjective $ by
        intro i j; simp[listSup, ← Fin.ext_iff, Nat.factorial_ne_zero])
     (by
