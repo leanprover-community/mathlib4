@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant
