@@ -479,7 +479,7 @@ end Module.Baer
 section ULift
 
 lemma Module.ulift_injective_of_injective
-    (M : Type max u v) [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
+    {M : Type max u v} [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
     Module.Injective.{u, max v v'} R (ULift.{max v v' u} M) := by
   rw [← Module.Baer.iff_injective] at inj ⊢
   intro I g
@@ -487,7 +487,7 @@ lemma Module.ulift_injective_of_injective
   exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
-    (M : Type max u v) [AddCommGroup M] [Module R M]
+    {M : Type max u v} [AddCommGroup M] [Module R M]
     (inj : Module.Injective.{u, max v v'} R (ULift.{max v v' u} M)) :
     Module.Injective.{u, v} R M := by
   rw [← Module.Baer.iff_injective] at inj ⊢
