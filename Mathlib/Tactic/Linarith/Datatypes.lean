@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Util.SynthesizeUsing
+import Mathlib.Util.Superscript
 
 /-!
 # Datatypes for `linarith`
@@ -44,6 +45,11 @@ This is not enforced by the type but the operations here preserve it.
 @[reducible]
 def Linexp : Type := List (Nat × Int)
 
+def Linexp.toFormat (x : Linexp) : Format :=
+  Format.joinSep (x.map fun p => s!"{p.2}x{toSubscriptString p.1}") " + "
+where
+  toSubscriptString (n : ℕ) : String :=
+    (toString n).map (Mathlib.Tactic.Superscript.Mapping.subscript.toSpecial.find!)
 namespace Linexp
 /--
 Add two `Linexp`s together componentwise.
