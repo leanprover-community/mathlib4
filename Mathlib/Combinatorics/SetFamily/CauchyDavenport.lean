@@ -22,9 +22,10 @@ There are two kinds of proof of Cauchy-Davenport:
 * The first one works in linear orders by writing `a₁ < ... < aₖ` the elements of `s`,
   `b₁ < ... < bₗ` the elements of `t`, and arguing that `a₁ + b₁ < ... < aₖ + b₁ < ... < aₖ + bₗ`
   are distinct elements of `s + t`.
-* The second one works in groups by performing an "e-transform". Replace `s` and `t` by `s ∩ g • s`
-  and `t ∪ g⁻¹ • t`. For a suitably chosen `g`, this decreases `|s + t|` and keeps `|s| + |t|` the
-  same.
+* The second one works in groups by performing an "e-transform". In an abelian group, the
+  e-transform replaces `s` and `t` by `s ∩ g • s` and `t ∪ g⁻¹ • t`. For a suitably chosen `g`, this
+  decreases `|s + t|` and keeps `|s| + |t|` the same. In a general group, we use a trickier
+  e-transform (in fact, a pair of e-transforms), but the idea is the same.
 
 ## Main declarations
 
@@ -156,8 +157,8 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
           card_le_card_mul_right _ ht)
     rw [← coe_smul_finset]
     simp [-coe_smul_finset]
-  -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that `(s', t')` and
-  -- `(s'', t'')` are both strictly smaller than `(s, t)` according to `DevosMulRel`.
+  -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that one of `(s', t')` and
+  -- `(s'', t'')` is strictly smaller than `(s, t)` according to `DevosMulRel`.
   replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left _ _, fun h ↦
     hsg <| eq_of_superset_of_card_ge (h.trans <| inter_subset_right _ _) (card_smul_finset _ _).le⟩
   replace aux1 := card_mono $ mulETransformLeft.fst_mul_snd_subset g (s, t)
