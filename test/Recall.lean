@@ -17,8 +17,8 @@ section
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-recall HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) :=
-  (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
+recall HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
+  HasFDerivAtFilter f f' x (nhds x)
 end
 
 /--
