@@ -40,53 +40,52 @@ private lemma interedges_badVertices [DecidableEq α] :
   simp only [mem_biUnion, mem_image, exists_prop, mem_filter, Prod.mk.inj_iff,
     exists_eq_right_right, Rel.mem_interedges_iff]
 
-private lemma pairs_card_bad_le :
-    ((Rel.interedges G.Adj (badVertices G ε s t) t).card : ℝ) ≤
+private lemma card_interedges_badVertices_le :
+    (Rel.interedges G.Adj (badVertices G ε s t) t).card ≤
       (badVertices G ε s t).card * t.card * (G.edgeDensity s t - ε) := by
   classical
   refine (Nat.cast_le.2 $ (card_le_of_subset $ subset_of_eq G.interedges_badVertices).trans
     card_biUnion_le).trans ?_
-  simp_rw [Nat.cast_sum, card_image_of_injective _ (Prod.mk.inj_left _), ←nsmul_eq_mul,
+  simp_rw [Nat.cast_sum, card_image_of_injective _ (Prod.mk.inj_left _), ← nsmul_eq_mul,
     smul_mul_assoc, mul_comm (t.card : ℝ)]
   exact sum_le_card_nsmul _ _ _ fun x hx ↦ (mem_filter.1 hx).2.le
 
-private lemma edgeDensity_badVertices (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.edgeDensity s t) :
-    (G.edgeDensity (badVertices G ε s t) t : ℝ) ≤ G.edgeDensity s t - ε := by
+private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.edgeDensity s t) :
+    G.edgeDensity (badVertices G ε s t) t ≤ G.edgeDensity s t - ε := by
   rw [edgeDensity_def]
   push_cast
   refine div_le_of_nonneg_of_le_mul (by positivity) (sub_nonneg_of_le $ by linarith) ?_
   rw [mul_comm]
-  exact G.pairs_card_bad_le
+  exact G.card_interedges_badVertices_le
 
-private lemma few_badVertices (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
-  ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := by
+private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
+    ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := by
   have hε : ε ≤ 1 := (le_mul_of_one_le_of_le_of_nonneg (by norm_num) le_rfl hst.pos.le).trans
     (dst.trans $ by exact_mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
   have : |(G.edgeDensity (badVertices G ε s t) t : ℝ) - G.edgeDensity s t| < ε :=
     hst (filter_subset _ _) Subset.rfl h.le (mul_le_of_le_one_right (Nat.cast_nonneg _) hε)
   rw [abs_sub_lt_iff] at this
-  linarith [G.edgeDensity_badVertices hst.pos.le dst]
+  linarith [G.edgeDensity_badVertices_le hst.pos.le dst]
 
 /-- A subset of the triangles constructed in a weird way to make them easy to count. -/
 private lemma triangle_split_helper [DecidableEq α] :
-  (s \ (badVertices G ε s t ∪ badVertices G ε s u)).biUnion
-    (fun x ↦ ((t.filter (G.Adj x) ×ˢ u.filter (G.Adj x)).filter
-      (fun (y, z) ↦ G.Adj y z)).image (x, ·)) ⊆
-    (s ×ˢ t ×ˢ u).filter (fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z) := by
+    (s \ (badVertices G ε s t ∪ badVertices G ε s u)).biUnion
+      (fun x ↦ (G.interedges (t.filter $ G.Adj x) (u.filter $ G.Adj x)).image (x, ·)) ⊆
+      (s ×ˢ t ×ˢ u).filter (fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z) := by
   rintro ⟨x, y, z⟩
   simp only [mem_filter, mem_product, mem_biUnion, mem_sdiff, exists_prop, mem_union,
-    mem_image, Prod.exists, and_assoc, exists_imp, and_imp, Prod.mk.inj_iff]
+    mem_image, Prod.exists, and_assoc, exists_imp, and_imp, Prod.mk.inj_iff, mem_interedges_iff]
   rintro x hx - y z hy xy hz xz yz rfl rfl rfl
   exact ⟨hx, hy, hz, xy, xz, yz⟩
 
 private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.edgeDensity s t)
-  (dsu : 2 * ε ≤ G.edgeDensity s u) (dtu : 2 * ε ≤ G.edgeDensity t u) (utu : G.IsUniform ε t u)
-  (x : α) (hx : x ∈ s \ (badVertices G ε s t ∪ badVertices G ε s u)) :
-  ε^3 * t.card * u.card ≤ (((t.filter (G.Adj x) ×ˢ u.filter (G.Adj x)).filter
-      (fun (y, z) ↦ G.Adj y z)).image (x, ·)).card := by
+    (dsu : 2 * ε ≤ G.edgeDensity s u) (dtu : 2 * ε ≤ G.edgeDensity t u) (utu : G.IsUniform ε t u)
+    (x : α) (hx : x ∈ s \ (badVertices G ε s t ∪ badVertices G ε s u)) :
+    ε^3 * t.card * u.card ≤ (((t.filter (G.Adj x) ×ˢ u.filter (G.Adj x)).filter
+        (fun (y, z) ↦ G.Adj y z)).image (x, ·)).card := by
   simp only [mem_sdiff, badVertices, mem_union, not_or, mem_filter, not_and_or, not_lt] at hx
-  rw [←or_and_left, and_or_left] at hx
+  rw [← or_and_left, and_or_left] at hx
   simp only [false_or, and_not_self, mul_comm ((_ : ℝ) - _)] at hx
   obtain ⟨-, hxY, hsu⟩ := hx
   have hY : (t.card : ℝ) * ε ≤ (filter (G.Adj x) t).card
@@ -107,14 +106,14 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   ring
 
 lemma triangle_counting
-  (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t)
-  (dsu : 2 * ε ≤ G.edgeDensity s u) (uXZ : G.IsUniform ε s u)
-  (dtu : 2 * ε ≤ G.edgeDensity t u) (utu : G.IsUniform ε t u) :
-  (1 - 2 * ε) * ε^3 * s.card * t.card * u.card ≤
-    ((s ×ˢ t ×ˢ u).filter fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z).card := by
+    (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t)
+    (dsu : 2 * ε ≤ G.edgeDensity s u) (uXZ : G.IsUniform ε s u)
+    (dtu : 2 * ε ≤ G.edgeDensity t u) (utu : G.IsUniform ε t u) :
+    (1 - 2 * ε) * ε^3 * s.card * t.card * u.card ≤
+      ((s ×ˢ t ×ˢ u).filter fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z).card := by
   classical
-  have h₁ : ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := G.few_badVertices dst hst
-  have h₂ : ((badVertices G ε s u).card : ℝ) ≤ s.card * ε := G.few_badVertices dsu uXZ
+  have h₁ : ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := G.card_badVertices_le dst hst
+  have h₂ : ((badVertices G ε s u).card : ℝ) ≤ s.card * ε := G.card_badVertices_le dsu uXZ
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
   have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z
   · apply triangle_split_helper
@@ -141,9 +140,9 @@ lemma triangle_counting
 variable [DecidableEq α]
 
 private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) (htu : Disjoint t u)
-  {x₁ x₂ y₁ y₂ z₁ z₂ : α} (h : ({x₁, y₁, z₁} : Finset α) = {x₂, y₂, z₂})
-  (hx₁ : x₁ ∈ s) (hx₂ : x₂ ∈ s) (hy₁ : y₁ ∈ t) (hy₂ : y₂ ∈ t) (hz₁ : z₁ ∈ u) (hz₂ : z₂ ∈ u) :
-  (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
+    {x₁ x₂ y₁ y₂ z₁ z₂ : α} (h : ({x₁, y₁, z₁} : Finset α) = {x₂, y₂, z₂})
+    (hx₁ : x₁ ∈ s) (hx₂ : x₂ ∈ s) (hy₁ : y₁ ∈ t) (hy₂ : y₂ ∈ t) (hz₁ : z₁ ∈ u) (hz₂ : z₂ ∈ u) :
+    (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
   rw [disjoint_left] at hst hsu htu
@@ -175,25 +174,25 @@ lemma triangle_counting2
 variable {G G'}
 
 lemma reduced_double_edges :
-  univ.filter (fun (x, y) ↦ G.Adj x y) \
-    univ.filter (fun (x, y) ↦ (G.reduced P (ε/8) (ε/4)).Adj x y) ⊆
-      (P.nonUniforms G (ε/8)).biUnion (fun (U, V) ↦ (U ×ˢ V)) ∪
-        P.parts.biUnion offDiag ∪
-          (P.parts.offDiag.filter fun (U, V) ↦ G.edgeDensity U V < ε/4).biUnion
-            fun (U, V) ↦ (U ×ˢ V).filter fun (x, y) ↦ G.Adj x y := by
+    univ.filter (fun (x, y) ↦ G.Adj x y) \
+      univ.filter (fun (x, y) ↦ (G.reduced P (ε/8) (ε/4)).Adj x y) ⊆
+        (P.nonUniforms G (ε/8)).biUnion (fun (U, V) ↦ (U ×ˢ V)) ∪
+          P.parts.biUnion offDiag ∪
+            (P.parts.offDiag.filter fun (U, V) ↦ G.edgeDensity U V < ε/4).biUnion
+              fun (U, V) ↦ (U ×ˢ V).filter fun (x, y) ↦ G.Adj x y := by
   rintro ⟨x, y⟩
   simp only [mem_sdiff, mem_filter, mem_univ, true_and, reduced_adj, not_and, not_exists,
     not_le, mem_biUnion, mem_union, exists_prop, mem_product, Prod.exists, mem_offDiag, and_imp,
-    or_assoc, and_assoc, P.mk_mem_nonUniforms_iff]
-  rw [mem_filter] -- TODO: Why does simp not use `mem_filter`
+    or_assoc, and_assoc, P.mk_mem_nonUniforms]
+  rw [mem_filter] -- TODO: Why does simp not use `mem_filter`?
   simp only [mem_sdiff, mem_filter, mem_univ, true_and, reduced_adj, not_and, not_exists,
     not_le, mem_biUnion, mem_union, exists_prop, mem_product, Prod.exists, mem_offDiag, and_imp,
-    or_assoc, and_assoc, P.mk_mem_nonUniforms_iff]
+    or_assoc, and_assoc, P.mk_mem_nonUniforms]
   intros h h'
   replace h' := h' h
   obtain ⟨U, hU, hx⟩ := P.exists_mem (mem_univ x)
   obtain ⟨V, hV, hy⟩ := P.exists_mem (mem_univ y)
-  rcases eq_or_ne U V with rfl | hUV
+  obtain rfl | hUV := eq_or_ne U V
   { exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩) }
   by_cases h₂ : G.IsUniform (ε/8) U V
   · exact Or.inr $ Or.inr ⟨U, V, hU, hV, hUV, h' _ hU _ hV hx hy hUV h₂, hx, hy, h⟩
@@ -206,7 +205,7 @@ lemma internal_killed_card (hP : P.IsEquipartition) :
   · rw [mul_assoc]
     refine card_biUnion_le_card_mul _ _ _ fun U hU ↦ ?_
     suffices : (U.card - 1) * U.card ≤ card α / P.parts.card * (card α / P.parts.card + 1)
-    · rwa [Nat.mul_sub_right_distrib, one_mul, ←offDiag_card] at this
+    · rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiag_card] at this
     have := hP.card_part_le_average_add_one hU
     refine Nat.mul_le_mul ((Nat.sub_le_sub_right this 1).trans ?_) this
     simp only [Nat.add_succ_sub_one, add_zero, card_univ, le_rfl]
@@ -220,53 +219,24 @@ lemma internal_killed_card (hP : P.IsEquipartition) :
     exact Nat.div_mul_le_self _ _
   exact add_le_add_right Nat.cast_div_le _
 
-lemma sparse_card (hP : P.IsEquipartition) (hε : 0 ≤ ε) :
-  (((P.parts.offDiag.filter fun (U, V) ↦ G.edgeDensity U V < ε).biUnion $
-      fun (U, V) ↦ G.interedges U V).card : ℝ) ≤
-    ε * (card α + P.parts.card)^2 := by
-  refine (Nat.cast_le.2 card_biUnion_le).trans ?_
-  rw [Nat.cast_sum]
-  have : ∀ UV ∈ P.parts.offDiag.filter (fun (U, V) ↦ G.edgeDensity U V < ε),
-    (G.interedges UV.1 UV.2).card ≤ ε * (UV.1.card * UV.2.card)
-  · simp only [and_imp, mem_offDiag, mem_filter, Ne.def, SimpleGraph.edgeDensity_def]
-    push_cast
-    rintro ⟨U, V⟩ hU hV - e
-    apply le_of_lt
-    rwa [←div_lt_iff]
-    exact mul_pos (Nat.cast_pos.2 (P.nonempty_of_mem_parts hU).card_pos)
-      (Nat.cast_pos.2 (P.nonempty_of_mem_parts hV).card_pos)
-  apply (sum_le_sum this).trans
-  refine (sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun i _ _ ↦ ?_).trans ?_
-  · positivity
-  rw [←mul_sum]
-  refine mul_le_mul_of_nonneg_left ?_ hε
-  refine (sum_le_card_nsmul P.parts.offDiag (fun i ↦ (i.1.card * i.2.card : ℝ))
-    ((card α / P.parts.card + 1)^2 : ℕ) ?_).trans ?_
-  · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms_iff, and_imp, mem_offDiag, sq]
-    rintro U V hU hV -
-    exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
-      (hP.card_part_le_average_add_one hV)
-  rw [nsmul_eq_mul, ←Nat.cast_mul, ←Nat.cast_add, ←Nat.cast_pow, Nat.cast_le, offDiag_card,
-    Nat.mul_sub_right_distrib, ←sq, ←mul_pow, mul_add_one]
-  exact (Nat.sub_le _ _).trans
-    (Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le _ _) _) _)
+attribute [pp_dot] Finset.card
 
 private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i + j) ^ 2 := by
   have : j * (j - 1) < j^2
   · rw [sq]
     exact Nat.mul_lt_mul_of_pos_left (Nat.sub_lt hj zero_lt_one) hj
   apply (Nat.mul_lt_mul_of_pos_right this $ pow_pos Nat.succ_pos' _).trans_le
-  rw [←mul_pow]
+  rw [← mul_pow]
   exact Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le i j) _) _
 
 lemma sum_nonUniforms_lt_of_isUniform [Nonempty α] (hε : 0 < ε) (hP : P.IsEquipartition)
     (hG : P.IsUniform G ε) :
-    ((∑ i in P.nonUniforms G ε, i.1.card * i.2.card) : ℝ) < ε * (card α + P.parts.card)^2 := by
+    ∑ i in P.nonUniforms G ε, (i.1.card * i.2.card : ℝ) < ε * (card α + P.parts.card)^2 := by
   refine (sum_le_card_nsmul (P.nonUniforms G ε) (fun i ↦ (i.1.card * i.2.card : ℝ))
     ((card α / P.parts.card + 1)^2 : ℕ) ?_).trans_lt ?_
-  · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms_iff, and_imp]
+  · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms, and_imp]
     rintro U V hU hV - -
-    rw [sq, ←Nat.cast_mul, Nat.cast_le]
+    rw [sq, ← Nat.cast_mul, Nat.cast_le]
     exact Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
   rw [nsmul_eq_mul]
@@ -281,23 +251,13 @@ lemma sum_nonUniforms_lt_of_isUniform' [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
     (((P.nonUniforms G ε).biUnion fun (U, V) ↦ U ×ˢ V).card : ℝ) < 4 * ε * (card α) ^ 2 := by
   calc
     _ ≤ ∑ i in P.nonUniforms G ε, (i.1.card * i.2.card : ℝ) := by
-        norm_cast; simp_rw [←card_product]; exact card_biUnion_le
+        norm_cast; simp_rw [← card_product]; exact card_biUnion_le
     _ < _ := sum_nonUniforms_lt_of_isUniform hε hP hG
     _ ≤ ε * (card α + card α) ^ 2 := by gcongr; exact P.card_parts_le_card
     _ = _ := by ring
 
-lemma sum_sparse (hε : 0 ≤ ε) (hP : P.IsEquipartition) :
-    (((P.parts.offDiag.filter fun (U, V) ↦ G.edgeDensity U V < ε).biUnion $
-            fun (U, V) ↦ (U ×ˢ V).filter fun (x, y) ↦ G.Adj x y).card : ℝ) ≤
-              4 * ε * (card α)^2 := by
-  refine (sparse_card hP hε).trans ?_
-  suffices : ε * ((card α) + P.parts.card)^2 ≤ ε * (card α + card α)^2
-  { exact this.trans_eq (by ring) }
-  refine mul_le_mul_of_nonneg_left (pow_le_pow_of_le_left (by positivity) ?_ _) hε
-  exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
-
 lemma internal_killed_card' (hε : 0 < ε) (hP : P.IsEquipartition) (hP' : 4 / ε ≤ P.parts.card) :
-    ((P.parts.biUnion offDiag).card : ℝ) ≤ ε / 2 * (card α)^2 := by
+    ((P.parts.biUnion offDiag).card : ℝ) ≤ ε / 2 * card α ^ 2 := by
   cases isEmpty_or_nonempty α
   { rw [Subsingleton.elim (P.parts.biUnion offDiag) ∅, Finset.card_empty, Nat.cast_zero]
     positivity }
@@ -308,10 +268,10 @@ lemma internal_killed_card' (hε : 0 < ε) (hP : P.IsEquipartition) (hP' : 4 / �
     exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
   refine (mul_le_mul_of_nonneg_left this $ by positivity).trans ?_
   suffices : 1 ≤ ε/4 * P.parts.card
-  · rw [mul_left_comm, ←sq]
+  · rw [mul_left_comm, ← sq]
     convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two $ sq_nonneg (card α : ℝ))
       using 1 <;> ring
-  rwa [←div_le_iff', one_div_div]
+  rwa [← div_le_iff', one_div_div]
   positivity
 
 end SimpleGraph

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Data.Real.Basic
+import Mathlib.Order.Partition.Equipartition
 import Mathlib.SetTheory.Ordinal.Basic
 
 #align_import combinatorics.simple_graph.regularity.uniform from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
@@ -40,6 +42,7 @@ is less than `ε`.
 
 
 open Finset
+open scoped BigOperators
 
 variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
 
@@ -201,20 +204,35 @@ end SimpleGraph
 
 
 variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph α)
-  [DecidableRel G.Adj] {ε δ : 𝕜}
+  [DecidableRel G.Adj] {ε δ : 𝕜} {u v : Finset α}
 
 namespace Finpartition
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
+@[pp_dot]
+def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
+  P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
+
+@[simp]
+lemma mk_mem_sparsePairs (u v : Finset α) (ε : 𝕜) :
+    (u, v) ∈ P.sparsePairs G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ G.edgeDensity u v < ε := by
+  rw [sparsePairs, mem_filter, mem_offDiag, and_assoc, and_assoc]
+
+lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆ P.sparsePairs G ε' :=
+  monotone_filter_right _ fun _ ↦ h.trans_lt'
+
+/-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
+dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
+@[pp_dot]
 def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
-  P.parts.offDiag.filter fun uv => ¬G.IsUniform ε uv.1 uv.2
+  P.parts.offDiag.filter fun (u, v) ↦ ¬G.IsUniform ε u v
 #align finpartition.non_uniforms Finpartition.nonUniforms
 
-theorem mk_mem_nonUniforms_iff (u v : Finset α) (ε : 𝕜) :
+@[simp] lemma mk_mem_nonUniforms :
     (u, v) ∈ P.nonUniforms G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ ¬G.IsUniform ε u v := by
   rw [nonUniforms, mem_filter, mem_offDiag, and_assoc, and_assoc]
-#align finpartition.mk_mem_non_uniforms_iff Finpartition.mk_mem_nonUniforms_iff
+#align finpartition.mk_mem_non_uniforms_iff Finpartition.mk_mem_nonUniforms
 
 theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' ⊆ P.nonUniforms G ε :=
   monotone_filter_right _ fun _ => mt <| SimpleGraph.IsUniform.mono h
@@ -223,7 +241,7 @@ theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' 
 theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε = ∅ := by
   rw [eq_empty_iff_forall_not_mem]
   rintro ⟨u, v⟩
-  simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
+  simp only [mk_mem_nonUniforms, parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
   rintro x ⟨_, rfl⟩ y ⟨_,rfl⟩ _
   rwa [SimpleGraph.isUniform_singleton]
@@ -275,6 +293,47 @@ theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht
     (hst : s ≠ t) : G.nonuniformWitness ε s t ∈ P.nonuniformWitnesses G ε s :=
   mem_image_of_mem _ <| mem_filter.2 ⟨ht, hst, h⟩
 #align finpartition.nonuniform_witness_mem_nonuniform_witnesses Finpartition.nonuniformWitness_mem_nonuniformWitnesses
+
+/-! ### Equipartitions -/
+
+open Fintype
+
+lemma _root_.Finpartition.IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
+    (hε : 0 ≤ ε) :
+    ((P.sparsePairs G ε).biUnion fun (U, V) ↦ G.interedges U V).card ≤
+      ε * (card α + P.parts.card) ^ 2 := by
+  calc
+    _ ≤ ∑ UV in P.sparsePairs G ε, ((G.interedges UV.1 UV.2).card : ℝ) := mod_cast card_biUnion_le
+    _ ≤ ∑ UV in P.sparsePairs G ε, ε * (UV.1.card * UV.2.card) := ?_
+    _ ≤ _ := sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun i _ _ ↦ by positivity
+    _ = _ := mul_sum.symm
+    _ ≤ _ := mul_le_mul_of_nonneg_left ?_ hε
+  · gcongr with UV hUV
+    obtain ⟨U, V⟩ := UV
+    simp [Finpartition.mk_mem_sparsePairs, ← card_interedges_div_card] at hUV
+    refine ((div_lt_iff ?_).1 hUV.2.2.2).le
+    exact mul_pos (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.1).card_pos)
+      (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.2.1).card_pos)
+  norm_cast
+  calc
+    (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ i.1.card * i.2.card)
+            ((card α / P.parts.card + 1)^2 : ℕ) ?_
+    _ ≤ (P.parts.card * (card α / P.parts.card) + P.parts.card) ^ 2 := ?_
+    _ ≤ _ := Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le _ _) _) _
+  · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms, and_imp, mem_offDiag, sq]
+    rintro U V hU hV -
+    exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
+      (hP.card_part_le_average_add_one hV)
+  · rw [smul_eq_mul, offDiag_card, Nat.mul_sub_right_distrib, ← sq, ← mul_pow, mul_add_one]
+    exact Nat.sub_le _ _
+
+lemma IsEquipartition.card_interedges_sparsePairs_le (hP : P.IsEquipartition) (hε : 0 ≤ ε) :
+    ((P.sparsePairs G ε).biUnion fun (U, V) ↦ G.interedges U V).card ≤ 4 * ε * card α ^ 2 := by
+  refine (hP.card_interedges_sparsePairs_le' hε).trans ?_
+  suffices : ε * ((card α) + P.parts.card)^2 ≤ ε * (card α + card α)^2
+  { exact this.trans_eq (by ring) }
+  refine mul_le_mul_of_nonneg_left (pow_le_pow_of_le_left (by positivity) ?_ _) hε
+  exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
 
 end Finpartition
 
