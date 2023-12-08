@@ -101,7 +101,13 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
   apply lintegral_dirac'
   exact Subsingleton.measurable
 
-/-- The marginal distribution is independent of the variables in `s`. -/
+/-- The marginal distribution is independent of the variables in `s`.
+
+TODO: This fails with:
+
+elaboration function for 'Std.ExtendedBinder.«termSatisfies_binder_pred%__»' has not been implemented
+  satisfies_binder_pred% i ∉ s
+
 theorem lmarginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (h : ∀ i ∉ s, x i = y i) :
     (∫⋯∫⁻_s, f ∂μ) x = (∫⋯∫⁻_s, f ∂μ) y := by
@@ -114,6 +120,7 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
   intro j hj
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
+-/
 
 theorem lmarginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (hst : Disjoint s t) : ∫⋯∫⁻_s ∪ t, f ∂μ = ∫⋯∫⁻_s, ∫⋯∫⁻_t, f ∂μ ∂μ := by
