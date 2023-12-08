@@ -1366,7 +1366,7 @@ theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
 #align list.nth_le_permutations'_aux List.nthLe_permutations'Aux
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
-    count (x :: l) (permutations'Aux x l) = length (takeWhile ((· = ·) x) l) + 1 := by
+    count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
   · simp [takeWhile, count]
   · rw [permutations'Aux, DecEq_eq, count_cons_self]
