@@ -1193,7 +1193,7 @@ private def graph (m : β → ℕ) (l : β → List β) (g : β → List σ → 
 
 private theorem mapGraph_primrec : Primrec₂ (mapGraph : List (β × γ) → List β → List γ) :=
   to₂ <| list_bind snd
-      (option_toList.comp₂ $ list_lookup.comp₂ Primrec₂.right (fst.comp₂ Primrec₂.left))
+    (option_toList.comp₂ $ list_lookup.comp₂ Primrec₂.right (fst.comp₂ Primrec₂.left))
 
 private theorem bindItr_primrec {l : β → List β} (hl : Primrec l) : Primrec₂ (bindItr l) :=
   nat_rec' snd
@@ -1212,7 +1212,7 @@ private theorem graph_primrec {m : β → ℕ} {l : β → List β} {g : β → 
             (hg.comp snd (mapGraph_primrec.comp (snd.comp $ snd.comp fst) (hl.comp snd)))
             (Primrec₂.pair.comp₂ (snd.comp₂ Primrec₂.left) Primrec₂.right)
 
-variable (m : β → ℕ) (f : β → σ) (l : β → List β) (g : β → List σ → Option σ)
+variable (f : β → σ) (m : β → ℕ) (l : β → List β) (g : β → List σ → Option σ)
   (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b) (H : ∀ b, g b ((l b).map f) = some (f b))
 
 private theorem bindItr_m_lt (b : β) (k) :
@@ -1261,9 +1261,9 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
     option_map (list_get?.comp ((graph_primrec hm hl hg).comp Primrec.id (succ.comp hm)) (const 0))
       (snd.comp₂ Primrec₂.right)
   exact option_some_iff.mp <| this.of_eq <| fun b => by
-    simp [graph_eq_map_bindItr m f l g Ord H b (m b + 1) (Nat.le_refl _), bindItr]
+    simp [graph_eq_map_bindItr f m l g Ord H b (m b + 1) (Nat.le_refl _), bindItr]
 
-theorem nat_omega_rec {m : α → β → ℕ} (f : α → β → σ)
+theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
     {l : α → β → List β} {g : α → β × List σ → Option σ}
     (hm : Primrec₂ m) (hl : Primrec₂ l) (hg : Primrec₂ g)
     (Ord : ∀ a b, ∀ b' ∈ l a b, m a b' < m a b)
