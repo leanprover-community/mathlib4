@@ -65,11 +65,11 @@ lemma LinearEquiv.apply_toPreSymmetry {N : Type*} [AddCommGroup N] [Module R N] 
 
 lemma toPreSymmetry_toPreSymmetry (a b : M) (f g : Dual R M) (h : f a = 2) :
     toPreSymmetry (toPreSymmetry a f b) (toPreSymmetry f (Dual.eval R M a) g) =
-    (toPreSymmetry a f) * (toPreSymmetry b g) * (toPreSymmetry a f) := by
+    (toPreSymmetry a f) ∘ₗ (toPreSymmetry b g) ∘ₗ (toPreSymmetry a f) := by
   ext m
-  simp only [h, toPreSymmetry_apply, mul_comm (g a) (f m), mul_two, mul_assoc, LinearMap.sub_apply,
-    LinearMap.mul_apply, LinearMap.smul_apply, dualTensorHom_apply, smul_eq_mul,
-    smul_sub, sub_smul, smul_smul, sub_mul, map_sub, map_smul, add_smul, Dual.eval_apply]
+  simp only [h, toPreSymmetry_apply, mul_comm (g a) (f m), mul_two, mul_assoc, Dual.eval_apply,
+    LinearMap.sub_apply, LinearMap.coe_comp, LinearMap.smul_apply, smul_eq_mul, smul_sub, sub_smul,
+    smul_smul, sub_mul, comp_apply, map_sub, map_smul, add_smul]
   abel
 
 lemma eq_of_toPreSymmetry_image_eq [CharZero R] [NoZeroSMulDivisors R M]

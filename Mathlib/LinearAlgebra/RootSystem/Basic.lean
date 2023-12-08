@@ -275,15 +275,13 @@ lemma mk_aux [CharZero R] [NoZeroSMulDivisors R M]
   set si := toPreSymmetry (root i) (p (coroot i))
   set sj := toPreSymmetry (root j) (p (coroot j))
   have hij : toPreSymmetry (toPreSymmetry (root i) (p (coroot i)) (root j))
-        (p <| toPreSymmetry (coroot i) (p.flip (root i)) (coroot j)) = si * sj * si := by
+        (p <| toPreSymmetry (coroot i) (p.flip (root i)) (coroot j)) = si ∘ₗ sj ∘ₗ si := by
     ext
     simp [← toPreSymmetry_toPreSymmetry (root i) (root j) (p (coroot i)) (p (coroot j)) (hp i),
       toPreSymmetry_apply, p.map_sub]
   apply eq_of_toPreSymmetry_image_eq_fixed hk₀ (finite_range root) hsp (hp k) ((hs k).symm ▸ refl _)
   · simp [hk, toPreSymmetry_apply, hp i, hp j, mul_two, mul_comm (p (coroot i) (root j)), p.map_sub]
-  · rw [hk, hij]
-    change (si ∘ sj ∘ si) '' _ ⊆ _
-    rw [← comp.assoc, image_comp, hs i, image_comp, hs j, hs i]
+  · rw [hk, hij, LinearMap.coe_comp, LinearMap.coe_comp, image_comp, image_comp, hs i, hs j, hs i]
 
 /-- In characteristic zero if there is no torsion, to check that a collection of roots form a root
 system, we do not need to check that the coroots are stable under reflections since this follows
