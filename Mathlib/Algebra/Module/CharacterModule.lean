@@ -120,7 +120,7 @@ namespace CharacterModuleFunctor
 
 lemma map_surjective_of_injective_unop
     {M N : (ModuleCat.{max uM uR, uR} R)ᵒᵖ}
-    (L : M ⟶ N) (hL : Function.Injective L.unop) :
+    {L : M ⟶ N} (hL : Function.Injective L.unop) :
     Function.Surjective <| (CharacterModuleFunctor.{uR, uM, uD} R D).map L :=
   LinearMap.characterify_surjective_of_injective.{uR, uM, uM, uD} D hL
 
