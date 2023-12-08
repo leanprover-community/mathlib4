@@ -407,13 +407,12 @@ theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
 
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
-  by_cases h : p = 0
-  · simp only [h, zero_comp, rootMultiplicity_zero]
-  refine le_antisymm ?_ ?_
-  · have := pow_rootMultiplicity_not_dvd ((comp_X_add_C_ne_zero_iff t).2 h) 0
-    rwa [map_zero, sub_zero, ← X_sub_C_pow_dvd_iff, ← rootMultiplicity_le_iff h] at this
-  · have := pow_rootMultiplicity_dvd (p.comp (X + C t)) 0
-    rwa [map_zero, sub_zero, ← X_sub_C_pow_dvd_iff, ← le_rootMultiplicity_iff h] at this
+  classical
+  simp_rw [rootMultiplicity_eq_multiplicity, comp_X_add_C_eq_zero_iff]
+  congr; ext; congr 1
+  rw [C_0, sub_zero]
+  convert (multiplicity.multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
+  simp [C_eq_algebraMap]
 
 theorem rootMultiplicity_eq_natTrailingDegree' {p : R[X]} :
     p.rootMultiplicity 0 = p.natTrailingDegree := by
