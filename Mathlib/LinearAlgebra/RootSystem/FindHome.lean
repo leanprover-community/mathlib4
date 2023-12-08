@@ -144,3 +144,7 @@ lemma Set.Finite.equiv_image_eq_iff_subset {α : Type*} (e : α ≃ α) (s : Set
   have : Fintype (e '' s) := Fintype.ofFinite (e '' s)
   apply eq_of_subset_of_card_le h
   rw [Fintype.card_congr (e.image s).symm]
+
+lemma Set.image_mono {α β : Type*} {f : α → β} {s t : Set α} (h : s ⊆ t) :
+    f '' s ⊆ f '' t := by
+  rintro - ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
