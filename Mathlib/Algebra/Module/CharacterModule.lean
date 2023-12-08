@@ -46,21 +46,17 @@ If `M` is an `R`-module, its `D`-character module is defined to be the `Hom_R(M,
 -/
 def CharacterModule : Type (max uR uM uD) := M →ₗ[R] D
 
-instance : FunLike (CharacterModule.{uR, uM, uD} R M D) M (fun _ ↦ D) where
-  coe (f : M →ₗ[R] D) m := f m
-  coe_injective' _ _ h := LinearMap.ext fun _ ↦ congr_fun h _
-
-instance : AddMonoidHomClass (CharacterModule.{uR, uM, uD} R M D) M D where
-  coe f := f
-  coe_injective' _ _ h := FunLike.ext _ _ fun _ ↦ congr_fun h _
-  map_add f := f.map_add
-  map_zero f := f.map_zero
+instance : FunLike (CharacterModule.{uR, uM, uD} R M D) M (fun _ ↦ D) :=
+  inferInstanceAs <| FunLike (M →ₗ[R] D) M _
 
 instance : AddCommGroup (CharacterModule.{uR, uM, uD} R M D) :=
   inferInstanceAs <| AddCommGroup <| M →ₗ[R] D
 
 instance : Module R (CharacterModule.{uR, uM, uD} R M D) :=
   LinearMap.module
+
+instance : LinearMapClass (CharacterModule.{uR, uM, uD} R M D) R M D :=
+  inferInstanceAs <| LinearMapClass (M →ₗ[R] D) R M D
 
 @[simp] lemma CharacterModule.smul_apply (f : CharacterModule.{uR, uM, uD} R M D) (r : R) (m : M) :
     (r • f) m = f (r • m) := by
@@ -129,6 +125,8 @@ lemma map_surjective_of_injective_unop
 
 end CharacterModuleFunctor
 
+namespace CharacterModule
+
 open TensorProduct
 
 variable (M N)
@@ -138,7 +136,7 @@ for a linear map `f : N → CharacterModule M`, i.e. `f : N → M → D`, we can
 `(N ⊗ M) → D`, i.e. a character in `CharacterModule (N ⊗[R] M)`.
 -/
 @[simps!]
-noncomputable def CharacterModule.uncurry :
+noncomputable def uncurry :
     (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) →ₗ[R]
     CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D :=
   TensorProduct.uncurry _ _ _ _
@@ -149,7 +147,7 @@ for a character in `CharacterModule (N ⊗[R] M)` i.e. `N ⊗ M → ℚ/ℤ`, we
 `N → M → ℚ/ℤ`, i.e. a linear map `N → CharacterModule M`
 -/
 @[simps!]
-noncomputable def CharacterModule.curry :
+noncomputable def curry :
     CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D →ₗ[R]
     N →ₗ[R] CharacterModule.{uR, uM, uD} R M D :=
   { toFun := fun c ↦ TensorProduct.curry (R := R) (M := N) (N := M) (P := D) c,
@@ -162,7 +160,7 @@ noncomputable def CharacterModule.curry :
 `Hom(N, CharacterModule M)` and `CharacterModule(N ⊗ M)`
 -/
 @[simps!]
-noncomputable def CharacterModule.homEquiv :
+noncomputable def homEquiv :
     (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) ≃ₗ[R]
     CharacterModule.{uR, max uM uN, uD} R (N ⊗[R] M) D :=
 LinearEquiv.ofLinear
@@ -174,7 +172,7 @@ LinearEquiv.ofLinear
 Equivalent modules have equivalent character modules
 -/
 @[simps!]
-def CharacterModule.cong (e : M ≃ₗ[R] N) :
+def cong (e : M ≃ₗ[R] N) :
     CharacterModule.{uR, uM, uD} R M D ≃ₗ[R] CharacterModule.{uR, uN, uD} R N D := by
   refine LinearEquiv.ofLinear
     (e.symm.toLinearMap.characterify D) (e.toLinearMap.characterify D) ?_ ?_ <;>
@@ -184,7 +182,7 @@ def CharacterModule.cong (e : M ≃ₗ[R] N) :
     LinearEquiv.apply_symm_apply, LinearMap.id_coe, id_eq]
   aesop
 
-namespace CharacterModule
+section addCommGroup
 
 universe uA
 variable (A : Type uA) [AddCommGroup A]
@@ -276,5 +274,7 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
   exact ne_zero <| unitRationalCircle.eq_zero_of_ofSpanSingleton_apply_self a rid
 
 end unitRationalCircle
+
+end addCommGroup
 
 end CharacterModule
