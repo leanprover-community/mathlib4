@@ -1347,12 +1347,12 @@ theorem continuousAt_iff {f : α → β} {g : β → γ} (hf : OpenEmbedding f) 
 variable [Nonempty α]
 
 lemma toLocalHomeomorph_left_inv {x : α} : (h.toLocalHomeomorph f).symm (f x) = x := by
-  rw [←congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.left_inv]
+  rw [← congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.left_inv]
   exact Set.mem_univ _
 
 lemma toLocalHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
     f ((h.toLocalHomeomorph f).symm x) = x := by
-  rw [←congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.right_inv]
+  rw [← congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.right_inv]
   rwa [toLocalHomeomorph_target]
 
 end OpenEmbedding
