@@ -442,7 +442,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt {γ γ' : ℝ → M} (ht : I.IsInt
           rfl
         rw [← h2]
         exact this
-      have hsub : (fun x ↦ v') t ((↑(extChartAt I (γ' t₀)) ∘ γ') t) =
+      have hsub : (fun _ ↦ v') t ((↑(extChartAt I (γ' t₀)) ∘ γ') t) =
         (tangentCoordChange I (γ' t) (γ' t₀) (γ' t)) (v (γ' t)) := by
         dsimp only
         rw [h, Function.comp_apply, LocalEquiv.left_inv]

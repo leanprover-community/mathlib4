@@ -254,7 +254,7 @@ theorem ODE_solution_unique_of_mem_set_Ico {v : ℝ → E → E} {s : ℝ → Se
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Ico a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
     (hg : ContinuousOn g (Ico a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
-    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Ico a b) := fun t ht ↦
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Ico a b) := fun _ ht ↦
   have hss := Ico_subset_Ico_right (a := a) (le_of_lt ht.2)
   ODE_solution_unique_of_mem_set hv
     (hf.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hf' _ (hss ht'))
