@@ -92,7 +92,7 @@ example {α β : Type*} (a : α) (b : β) : α × β := by
   exact (a, b)
 
 -- testing field notation
-example (A B : Prop) (h : A ↔ B) : A → B := by
+example {A B : Prop} (h : A ↔ B) : A → B := by
   intro hA
   apply h.mp at hA
   assumption
