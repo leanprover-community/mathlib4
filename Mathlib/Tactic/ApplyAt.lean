@@ -38,5 +38,3 @@ elab "apply" t:term "at" i:ident : tactic => withMainContext do
     (← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map fun e => some e))
   let (_, mainGoal) ← mainGoal.intro1P
   replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map fun e => e.mvarId!
-
-#check elabTermForApply
