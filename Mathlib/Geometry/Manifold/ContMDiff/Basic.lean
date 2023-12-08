@@ -449,7 +449,7 @@ lemma contMDiffOn_openEmbedding_symm :
     -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
     intros z hz
-    -- factorise into the chart (=e) and the model (=id)
+    -- factorise into the chart `e` and the model `id`
     simp only [mfld_simps]
     have (y : H) : e ((h.toLocalHomeomorph e).symm y) = y := sorry -- extract as separate lemma!
     -- TODO: fix the proof; `this` doesn't apply any more as z and z† don't unify...
