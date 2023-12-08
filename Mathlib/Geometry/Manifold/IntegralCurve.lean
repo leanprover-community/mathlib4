@@ -326,6 +326,8 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
 
+variable (I)
+
 /-- Local integral curves are unique.
 
   If a continuously differentiable vector field `v` admits two local integral curves `γ γ' : ℝ → M`
@@ -342,7 +344,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt {γ γ' : ℝ → M} (ht : I.IsInt
   obtain ⟨_, hv⟩ := hv
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
     ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint ht)).snd
-  have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun t => hlip
+  have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun _ => hlip
   -- extract `εs` so that `(extChartAt I (γ t₀)) (γ t) ∈ s` for all `t ∈ Ioo (t₀ - εs) (t₀ + εs)`
   have hcont : ContinuousAt ((extChartAt I (γ t₀)) ∘ γ) t₀ :=
     ContinuousAt.comp (continuousAt_extChartAt ..) hγ.continuousAt
@@ -613,28 +615,15 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
   have : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
-    use 2 * |t - t₀| + 1
-    constructor
-    · apply add_pos_of_nonneg_of_pos _ zero_lt_one
-      simp
-    · rw [mem_Ioo]
-      by_cases ht : t - t₀ < 0
-      · rw [abs_of_neg ht]
-        constructor <;> linarith
-      · rw [not_lt] at ht
-        rw [abs_of_nonneg ht]
-        constructor <;> linarith
+    refine ⟨2 * |t - t₀| + 1, add_pos_of_nonneg_of_pos (by simp) zero_lt_one, ?_⟩
+    rw [mem_Ioo]
+    by_cases ht : t - t₀ < 0
+    · rw [abs_of_neg ht]
+      constructor <;> linarith
+    · rw [abs_of_nonneg (not_lt.mp ht)]
+      constructor <;> linarith
   obtain ⟨T, hT, ht⟩ := this
-  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff
-    (I := I) (a := t₀ - T) (b := t₀ + T) (t₀ := t₀)
-  · rw [← Real.ball_eq_Ioo]
-    exact Metric.mem_ball_self hT
-  · intros t _
-    exact hip t
-  · exact hv
-  · rw [isIntegralCurve_iff_isIntegralCurveOn] at hγ
-    exact IsIntegralCurveOn.mono hγ (subset_univ _)
-  · rw [isIntegralCurve_iff_isIntegralCurveOn] at hγ'
-    exact IsIntegralCurveOn.mono hγ' (subset_univ _)
-  · exact h
-  · exact ht
+  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff I t₀
+    (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ => hip t) hv
+    (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
+    (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
