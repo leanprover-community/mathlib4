@@ -448,11 +448,9 @@ theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
   have h2 := monic_X_sub_C a |>.pow n |>.mul_left_ne_zero h
   refine le_antisymm ?_ ?_
-  · rw [rootMultiplicity_le_iff h2]
-    intro ⟨q, h'⟩
-    rw [mul_comm p _, add_comm _ n, add_assoc, pow_add, mul_assoc,
-      mul_cancel_left_mem_nonZeroDivisors (monic_X_sub_C a |>.pow n |>.mem_nonZeroDivisors)] at h'
-    exact pow_rootMultiplicity_not_dvd h a ⟨q, h'⟩
+  · rw [rootMultiplicity_le_iff h2, add_assoc, add_comm n, ← add_assoc, pow_add,
+      dvd_cancel_right_mem_nonZeroDivisors (monic_X_sub_C a |>.pow n |>.mem_nonZeroDivisors)]
+    exact pow_rootMultiplicity_not_dvd h a
   · rw [le_rootMultiplicity_iff h2, pow_add]
     exact mul_dvd_mul_right (pow_rootMultiplicity_dvd p a) _
 
@@ -510,13 +508,11 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
     rw [eval_mul, eval_zero] at h'
     exact hpq h'
   refine le_antisymm ?_ ?_
-  · rw [rootMultiplicity_le_iff hpq']
+  · rw [rootMultiplicity_le_iff hpq', pow_succ', h, dvd_cancel_left_mem_nonZeroDivisors
+      (monic_X_sub_C x |>.pow _ |>.mem_nonZeroDivisors)]
     intro ⟨f, h'⟩
-    rw [h, pow_succ', mul_assoc, mul_cancel_left_mem_nonZeroDivisors
-      (monic_X_sub_C x |>.pow _ |>.mem_nonZeroDivisors)] at h'
     apply_fun eval x at h'
-    simp only [eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul] at h'
-    exact hpq h'
+    exact hpq (by simpa only [eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul] using h')
   · rw [le_rootMultiplicity_iff hpq', h]
     exact dvd_mul_right _ _
 
