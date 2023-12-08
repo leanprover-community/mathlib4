@@ -41,10 +41,12 @@ variable (N : Type (max uR uN)) [AddCommGroup N] [Module R N]
 variable (D : Type (max uR uD)) [AddCommGroup D] [Module R D]
 variable [injective_dual : Injective <| ModuleCat.of R D]
 
+-- we really want to consider only injective modules
 /--
 If `M` is an `R`-module, its `D`-character module is defined to be the `Hom_R(M, D)`
 -/
-def CharacterModule : Type (max uR uM uD) := M →ₗ[R] D
+@[nolint unusedArguments]
+def CharacterModule [Injective <| ModuleCat.of R D] : Type (max uR uM uD) := M →ₗ[R] D
 
 instance : FunLike (CharacterModule.{uR, uM, uD} R M D) M (fun _ ↦ D) :=
   inferInstanceAs <| FunLike (M →ₗ[R] D) M _
