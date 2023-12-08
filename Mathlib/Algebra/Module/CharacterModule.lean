@@ -136,10 +136,6 @@ def cong (e : M ≃ₗ[R] N) :
     CharacterModule.{uR, uM, uD} R M D ≃ₗ[R] CharacterModule.{uR, uN, uD} R N D := by
   refine LinearEquiv.ofLinear
     (e.symm.toLinearMap.characterify D) (e.toLinearMap.characterify D) ?_ ?_ <;>
-  refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;>
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.characterify_apply,
-    AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe,
-    LinearEquiv.apply_symm_apply, LinearMap.id_coe, id_eq]
-  aesop
+  refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;> aesop
 
 end CharacterModule
