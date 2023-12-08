@@ -115,6 +115,10 @@ lemma image_iterate {α : Type*} {f : α → α} {n : ℕ} :
   induction' n with n ih; simp
   simpa only [iterate_succ', comp_apply, ← ih] using image_comp f (f^[n]) s
 
+lemma iterate_image_eq_of_image_eq {α : Type*} {f : α → α} {s : Set α} (h : f '' s = s) (n : ℕ) :
+    f^[n] '' s = s :=
+  image_iterate ▸ IsFixedPt.iterate h n
+
 variable (R M) in
 /-- TODO weaken typeclass etc. Can this really be missing!? -/
 lemma NoZeroSMulDivisors.IntOfCharZero [CharZero R] [NoZeroSMulDivisors R M] :

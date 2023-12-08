@@ -56,6 +56,7 @@ lemma reflection_apply {x : M} (y : M) {f : Dual R M} (h : f x = 2) :
     reflection h y = y - (f y) • x :=
   preReflection_apply x y f
 
+@[simp]
 lemma reflection_apply_self {x : M} {f : Dual R M} (h : f x = 2) :
     reflection h x = - x :=
   preReflection_apply_self h

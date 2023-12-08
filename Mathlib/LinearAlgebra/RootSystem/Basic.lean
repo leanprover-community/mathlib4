@@ -119,6 +119,11 @@ lemma reflection_apply (x : M) :
     P.reflection i x = x - (e (P.coroot i) x) • P.root i :=
   rfl
 
+@[simp]
+lemma reflection_apply_self :
+    P.reflection i (P.root i) = - P.root i :=
+  Module.reflection_apply_self (P.coroot_root_two i)
+
 /-- The reflection associated to a coroot. -/
 def coreflection : N ≃ₗ[R] N :=
   Module.reflection (P.root_coroot_two i)
@@ -144,9 +149,6 @@ lemma reflection_dualMap_eq_coreflection :
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (e n (P.root i)), e.map_sub]
 
--- This proof is horrendous (partly as a result of surviving several refactors of the base
--- definitions). Once I fix it I am confident I can drop the `maxHeartbeats` bump. TODO do this!
-set_option maxHeartbeats 800000 in
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
 
@@ -155,45 +157,32 @@ See also `RootPairing.injOn_dualMap_subtype_span_roots_coroots` for a more usefu
 lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
     (h : ∀ k, e (P.coroot i) (P.root k) = e (P.coroot j) (P.root k)) :
     i = j := by
-  let α := P.root i
-  let β := P.root j
-  let sα : M ≃ₗ[R] M := P.reflection i
-  let sβ : M ≃ₗ[R] M := P.reflection j
+  set α := P.root i
+  set β := P.root j
+  set sα : M ≃ₗ[R] M := P.reflection i
+  set sβ : M ≃ₗ[R] M := P.reflection j
+  set sαβ : M ≃ₗ[R] M := sβ.trans sα
   have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply, h j, P.coroot_root_two j]
   have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply, ← h i, P.coroot_root_two i]
-  let sαβ : M ≃ₗ[R] M := sα * sβ
-  have key : ∀ n : ℕ, (sαβ^[n]) β = β + (2 * n : ℤ) • (α - β) := by
+  have hsαβ : (sαβ : M → M) '' (range P.root) = range P.root := by
+    change (sα : M → M) ∘ (sβ : M → M) '' (range P.root) = range P.root
+    rw [image_comp, P.reflection_image_eq, P.reflection_image_eq]
+  set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
+  have hf : ∀ n : ℕ, (sαβ^[n]) β = f n := by
     intro n
     induction' n with n ih; simp
-    simp only [iterate_succ', ih, comp_apply, Nat.cast_succ, zsmul_sub, zsmul_sub, map_add, map_sub,
-      map_zsmul]
-    change sα (sβ β) + (_ • sα (sβ _) - _ • sα (sβ _)) = _
-    erw [reflection_apply_self]
-    rw [hβ, map_sub, map_smul, map_neg, hα]
-    erw [reflection_apply_self]
-    simp only [two_smul, neg_sub, zsmul_sub, smul_neg, smul_add, mul_add, mul_one, add_smul]
+    simp only [iterate_succ', ih, hα, hβ, two_smul, smul_add, mul_add, add_smul, comp_apply,
+      map_zsmul, zsmul_sub, map_add, neg_sub, map_neg, smul_neg, map_sub, Nat.cast_succ, mul_one,
+      LinearEquiv.trans_apply, reflection_apply_self]
     abel
-  replace key : ∀ n : ℕ, (β : M) + (2 * n : ℤ) • (α - β) ∈ range P.root := by
-    intros n
-    have hsαβ : (sαβ : M → M) '' (range P.root) = (range P.root) := by
-      change (sα : M → M) ∘ (sβ : M → M) '' (range P.root) = (range P.root)
-      simp only [image_comp, P.reflection_image_eq]
-    replace hsαβ : (sαβ^[n]) '' (range P.root) = (range P.root) := by
-      rw [← IsFixedPt, image_iterate]
-      exact IsFixedPt.iterate hsαβ n
-    conv_rhs => rw [← hsαβ]
-    rw [← key]
-    exact mem_image_of_mem _ (mem_range_self j)
-  let f : ℕ → range P.root := fun n ↦ ⟨β + (2 * n : ℤ) • (α - β), key n⟩
-  have : ¬ Injective f := by
-    have : Finite (range P.root) := Finite.Set.finite_range P.root
-    exact not_injective_infinite_finite f
+  set f' : ℕ → range P.root := fun n ↦ ⟨f n, by
+    rw [← iterate_image_eq_of_image_eq hsαβ n, ← hf]; exact mem_image_of_mem _ (mem_range_self j)⟩
+  have : ¬ Injective f' := not_injective_infinite_finite f'
   contrapose! this
-  replace this : α ≠ β := by contrapose! this; exact P.root.injective this
   intros n m hnm
   rw [Subtype.mk_eq_mk, add_right_inj, ← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero,
     sub_eq_zero] at hnm
-  linarith [hnm.resolve_right this]
+  linarith [hnm.resolve_right (P.root.injective.ne this)]
 
 lemma injOn_dualMap_subtype_span_roots_coroots [NoZeroSMulDivisors ℤ M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ e) (range P.coroot) := by
@@ -235,20 +224,20 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top' [CharZero R] [NoZeroSMul
     (hsp : span R (range root) = ⊤)
     {i j k : ι} (hk : root k = preReflection (root i) (e (coroot i)) (root j)) :
     coroot k = preReflection (coroot i) (e.flip (root i)) (coroot j) := by
-  set ri := root i
-  set rj := root j
-  set ci := coroot i
-  set cj := coroot j
-  set si := preReflection ri (e ci)
-  set sj := preReflection rj (e cj)
-  have hij : preReflection (preReflection ri (e ci) rj) (e (preReflection ci (e.flip ri) cj)) =
-      si ∘ₗ sj ∘ₗ si := by
+  set α := root i
+  set β := root j
+  set α' := coroot i
+  set β' := coroot j
+  set sα := preReflection α (e α')
+  set sβ := preReflection β (e β')
+  have hij : preReflection (preReflection α (e α') β) (e (preReflection α' (e.flip α) β')) =
+      sα ∘ₗ sβ ∘ₗ sα := by
     ext
-    simp [← preReflection_preReflection ri rj (e ci) (e cj) (hp i), preReflection_apply, e.map_sub]
+    simp [← preReflection_preReflection α β (e α') (e β') (hp i), preReflection_apply, e.map_sub]
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   apply e.injective
   apply eq_of_preReflection_image_eq_fixed hk₀ (finite_range root) hsp (hp k) (hs k)
-  · simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (e ci rj), e.map_sub]
+  · simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (e α' β), e.map_sub]
   · rw [hk, hij, LinearMap.coe_comp, LinearMap.coe_comp, image_comp, image_comp]
     exact subset_trans (image_mono (image_mono (hs i))) (subset_trans (image_mono (hs j)) (hs i))
 
