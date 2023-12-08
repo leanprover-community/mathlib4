@@ -81,7 +81,7 @@ def LinearMap.characterify
       L.map_smul, c.map_smul]
 
 lemma LinearMap.characterify_surjective_of_injective
-    (L : M →ₗ[R] N)
+    {L : M →ₗ[R] N}
     (inj : Function.Injective L) :
     Function.Surjective <| LinearMap.characterify.{uR, uM, uN, uD} D L := by
   rintro (g : _ →ₗ[_] _)
@@ -122,7 +122,7 @@ lemma map_surjective_of_injective_unop
     {M N : (ModuleCat.{max uM uR, uR} R)ᵒᵖ}
     (L : M ⟶ N) (hL : Function.Injective L.unop) :
     Function.Surjective <| (CharacterModuleFunctor.{uR, uM, uD} R D).map L :=
-  LinearMap.characterify_surjective_of_injective.{uR, uM, uM, uD} D L.unop hL
+  LinearMap.characterify_surjective_of_injective.{uR, uM, uM, uD} D hL
 
 end CharacterModuleFunctor
 
