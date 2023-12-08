@@ -506,7 +506,7 @@ instance ModuleCat.ulift_injective_of_injective
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
     CategoryTheory.Injective <| ModuleCat.of R (ULift.{max v v' u} M) :=
   @Module.injective_object_of_injective_module.{u, max v v'} R _ _ _ _ <|
-    Module.ulift_injective_of_injective.{u, v, v'} R M <|
+    Module.ulift_injective_of_injective.{u, v, v'} R <|
     @Module.injective_module_of_injective_object.{u, v} R _ M _ _ inj
 
 end ULift
