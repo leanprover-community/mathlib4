@@ -191,10 +191,10 @@ are equivalent to monomorphisms over the source of `f`.
 -/
 def slice {A : C} {f : Over A}
     (h₁ : ∀ (g : MonoOver f),
-    Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
+      Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
     (h₂ : ∀ (g : MonoOver f.left),
-    Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
-  MonoOver f ≌ MonoOver f.left where
+      Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
+    MonoOver f ≌ MonoOver f.left where
   functor := MonoOver.lift f.iteratedSliceEquiv.functor h₁
   inverse := MonoOver.lift f.iteratedSliceEquiv.inverse h₂
   unitIso :=
