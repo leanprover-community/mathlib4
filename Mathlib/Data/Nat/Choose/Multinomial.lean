@@ -128,7 +128,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
   simp only [binomial_eq_choose, Function.update_apply,
     h, Ne.def, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
-  rw [add_succ, choose_succ_succ, succ_add_eq_succ_add]
+  rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
 #align nat.binomial_succ_succ Nat.binomial_succ_succ
 
