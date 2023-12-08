@@ -246,7 +246,8 @@ The strategy is the following: assuming `epi f`
 
 
 theorem g_apply_fromCoset (x : B) (y : Set.range (· • (f.range : Set B) : B → Set B)) :
-    g x (fromCoset y) = fromCoset ⟨x • ↑y, by aesop_cat⟩ := rfl
+    g x (fromCoset y) = fromCoset ⟨x • ↑y,
+      by obtain ⟨z, hz⟩ := y.2; exact ⟨x * z, by simp [← hz, smul_smul]⟩⟩ := rfl
 #align Group.surjective_of_epi_auxs.g_apply_fromCoset GroupCat.SurjectiveOfEpiAuxs.g_apply_fromCoset
 
 theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
