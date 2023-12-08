@@ -139,14 +139,14 @@ lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
 lemma tangentCoordChange_self {x z : M} {v : E} (h : z ∈ (extChartAt I x).source) :
     tangentCoordChange I x x z v = v := by
   apply (tangentBundleCore I M).coordChange_self
-  rw [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
+  rw [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
   exact h
 
 lemma tangentCoordChange_comp {w x y z : M} {v : E}
     (h : z ∈ (extChartAt I w).source ∩ (extChartAt I x).source ∩ (extChartAt I y).source) :
     tangentCoordChange I x y z (tangentCoordChange I w x z v) = tangentCoordChange I w y z v := by
   apply (tangentBundleCore I M).coordChange_comp
-  simp only [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
+  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
   exact h
 
 lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
@@ -161,7 +161,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
   convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
-  simp only [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
+  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
 
 end tangentCoordChange
 
