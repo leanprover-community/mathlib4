@@ -39,7 +39,7 @@ import Mathlib.Algebra.Module.ULift
 
 noncomputable section
 
-universe u v
+universe u v v'
 
 variable (R : Type u) [Ring R] (Q : TypeMax.{v,u}) [AddCommGroup Q] [Module R Q]
 
@@ -475,3 +475,17 @@ protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer
+
+instance ModuleCat.injective_ulift (M : Type max v u) [AddCommGroup M] [Module R M]
+    [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
+    CategoryTheory.Injective <| ModuleCat.of R <| ULift.{max v v' u} M := by
+  have inj' := @Module.injective_module_of_injective_object.{u, v} R _ M _ _ inj
+  refine @Module.injective_object_of_injective_module.{u, max v v'} R _ _ _ _ ?_
+  rw [← Module.Baer.iff_injective] at inj' ⊢
+  intro I l
+  obtain ⟨g, hg⟩ := inj' I (ULift.moduleEquiv.toLinearMap ∘ₗ l)
+  refine ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g, fun r hr ↦ ?_⟩
+  specialize hg r hr
+  ext
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, hg,
+    ULift.moduleEquiv_apply, ULift.moduleEquiv_symm_apply]
