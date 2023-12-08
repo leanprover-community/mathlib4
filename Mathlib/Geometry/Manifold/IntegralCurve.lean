@@ -73,8 +73,8 @@ variable {γ : ℝ → M} {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀)
   {s : Set ℝ} {t₀ : ℝ}
 
-lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s) :
-  IsIntegralCurveOn γ v s := fun t _ => h t
+lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s) : IsIntegralCurveOn γ v s :=
+  fun t _ => h t
 
 lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
   ⟨fun h => h.isIntegralCurveOn _, fun h t => h t (mem_univ _)⟩
@@ -105,9 +105,9 @@ lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ
   obtain ⟨ε, hε, h⟩ := h t ht
   exact h t (Real.ball_eq_Ioo _ _ ▸ Metric.mem_ball_self hε)
 
+
 /-! ### Translation lemmas -/
 section Translation
-
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
