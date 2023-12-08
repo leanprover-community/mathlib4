@@ -24,8 +24,8 @@ provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 With `open scoped RightActions`, this provides:
 * `r •> m` as an alias for `r • m`
 * `m <• r` as an alias for `MulOpposite.op r • m`
-* `r +ᵥ> m` as an alias for `r +ᵥ m`
-* `m <+ᵥ r` as an alias for `AddOpposite.op r +ᵥ m`
+* `v +ᵥ> p` as an alias for `v +ᵥ p`
+* `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
 
