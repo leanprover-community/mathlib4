@@ -10,6 +10,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Std.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
@@ -245,6 +246,10 @@ instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt (α × β →
 end SampleableExt
 
 end TotalFunction
+
+-- We need List perm notation from `List` namespace but
+-- can't open `_root_.List` directly
+end SlimCheck open List namespace SlimCheck
 
 /-- Data structure specifying a total function using a list of pairs
 and a default value returned when the input is not in the domain of
