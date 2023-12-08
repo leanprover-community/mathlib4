@@ -588,7 +588,7 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
 
-instance quotient (R) {M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
+instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Finite R M]
     (N : Submodule A M) : Finite R (M ⧸ N) :=
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective

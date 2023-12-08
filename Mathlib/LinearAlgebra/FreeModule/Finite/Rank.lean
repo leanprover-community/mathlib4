@@ -293,58 +293,58 @@ noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique �
 variable (R V)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R V)`. -/
-noncomputable def Module.Finite.finBasis [Module.Free R V] [Module.Finite R V] :
+noncomputable def Module.Free.finBasis [Module.Free R V] [Module.Finite R V] :
     Basis (Fin (finrank R V)) R V :=
   (Free.chooseBasis R V).reindex (Fintype.equivFinOfCardEq
     (finrank_eq_card_chooseBasisIndex R V).symm)
-#align finite_dimensional.fin_basis Module.Finite.finBasis
+#align finite_dimensional.fin_basis Module.Free.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def Module.Finite.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V] {n : ℕ}
+noncomputable def Module.Free.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V] {n : ℕ}
     (hn : finrank R V = n) :
     Basis (Fin n) R V :=
   (finBasis R V).reindex (Fin.castIso hn).toEquiv
-#align finite_dimensional.fin_basis_of_finrank_eq Module.Finite.finBasisOfFinrankEq
+#align finite_dimensional.fin_basis_of_finrank_eq Module.Free.finBasisOfFinrankEq
 
 variable {R V}
 
 /-- A free module with rank 1 has a basis with one element. -/
-noncomputable def Module.Finite.basisUnique [Module.Free R V] (ι : Type*) [Unique ι]
+noncomputable def Module.Free.basisUnique [Module.Free R V] (ι : Type*) [Unique ι]
     (h : finrank R V = 1) :
     Basis ι R V :=
   haveI : Module.Finite R V :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
   (finBasisOfFinrankEq R V h).reindex (Equiv.equivOfUnique _ _)
-#align finite_dimensional.basis_unique Module.Finite.basisUnique
+#align finite_dimensional.basis_unique Module.Free.basisUnique
 
 @[simp]
-theorem Module.Finite.basisUnique_repr_eq_zero_iff [Module.Free R V] {ι : Type*} [Unique ι]
+theorem Module.Free.basisUnique_repr_eq_zero_iff [Module.Free R V] {ι : Type*} [Unique ι]
     {h : finrank R V = 1} {v : V} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
-#align finite_dimensional.basis_unique.repr_eq_zero_iff Module.Finite.basisUnique_repr_eq_zero_iff
+#align finite_dimensional.basis_unique.repr_eq_zero_iff Module.Free.basisUnique_repr_eq_zero_iff
 
-theorem Module.Finite.cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using
     cardinal_lift_le_rank_of_linearIndependent h
-#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent Module.Finite.cardinal_mk_le_finrank_of_linearIndependent
+#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
 
-theorem Module.Finite.fintype_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem FiniteDimensional.fintype_card_le_finrank_of_linearIndependent [Module.Finite R V]
     {ι : Type*} [Fintype ι] {b : ι → V} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R V := by
-  simpa using Module.Finite.cardinal_mk_le_finrank_of_linearIndependent h
-#align finite_dimensional.fintype_card_le_finrank_of_linear_independent Module.Finite.fintype_card_le_finrank_of_linearIndependent
+  simpa using FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent h
+#align finite_dimensional.fintype_card_le_finrank_of_linear_independent FiniteDimensional.fintype_card_le_finrank_of_linearIndependent
 
-theorem Module.Finite.finset_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem FiniteDimensional.finset_card_le_finrank_of_linearIndependent [Module.Finite R V]
     {b : Finset V} (h : LinearIndependent R (fun x => x : b → V)) :
     b.card ≤ finrank R V := by
   rw [← Fintype.card_coe]
-  exact Module.Finite.fintype_card_le_finrank_of_linearIndependent h
-#align finite_dimensional.finset_card_le_finrank_of_linear_independent Module.Finite.finset_card_le_finrank_of_linearIndependent
+  exact FiniteDimensional.fintype_card_le_finrank_of_linearIndependent h
+#align finite_dimensional.finset_card_le_finrank_of_linear_independent FiniteDimensional.finset_card_le_finrank_of_linearIndependent
 
 theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
     [Module.Finite R V] {v : ι → V} (h : LinearIndependent R v) : #ι < ℵ₀ := by
@@ -465,7 +465,7 @@ number of nontrivial subspaces in the family `p` is bounded above by the dimensi
 
 Note that the `Fintype` hypothesis required here can be provided by
 `CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional`. -/
-theorem _root_.CompleteLattice.Independent.subtype_ne_bot_le_finrank
+theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank
     [Module.Finite R V] [NoZeroSMulDivisors R V]
     {ι : Type w} {p : ι → Submodule R V} (hp : CompleteLattice.Independent p)
     [Fintype { i // p i ≠ ⊥ }] :
@@ -485,7 +485,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card
     [Module.Finite R V] {t : Finset V}
     (h : finrank R V < t.card) : ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   classical
-  have := mt Module.Finite.finset_card_le_finrank_of_linearIndependent (by simpa using h)
+  have := mt FiniteDimensional.finset_card_le_finrank_of_linearIndependent (by simpa using h)
   rw [_root_.not_linearIndependent_iff] at this
   obtain ⟨s, g, sum, z, zm, nonzero⟩ := this
   -- Now we have to extend `g` to all of `t`, then to all of `V`.
