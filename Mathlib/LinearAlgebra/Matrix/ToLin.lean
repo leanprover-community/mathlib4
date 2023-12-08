@@ -126,10 +126,10 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
      LinearMap.mem_ker, vecMulLinear_apply, vecMul, dotProduct]
   refine ⟨fun h c h0 i ↦ ?_, fun h c h0 ↦ funext fun i ↦ ?_⟩
   · rw [h c, Pi.zero_apply]
-    rw [←h0]
+    rw [← h0]
     ext; simp [mul_comm]
   rw [h c, Pi.zero_apply]
-  rw [←h0]
+  rw [← h0]
   ext j
   simp [mul_comm]
 

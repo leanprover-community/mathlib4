@@ -377,7 +377,7 @@ theorem vecMul_surjective_iff_exists_left_inverse [Semiring R] {A : Matrix m n R
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.vecMul y, by simp [hBA]⟩⟩
   choose rows hrows using (h <| Pi.single · 1)
   refine ⟨Matrix.of rows, Matrix.ext fun i j => ?_⟩
-  rw [mul_apply_eq_vecMul, one_eq_pi_single, ←hrows]
+  rw [mul_apply_eq_vecMul, one_eq_pi_single, ← hrows]
   rfl
 
 theorem mulVec_surjective_iff_exists_right_inverse [Semiring R] {A : Matrix m n R} :
@@ -415,7 +415,7 @@ theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
 theorem linearIndependent_rows_iff_isUnit {A : Matrix m m K} :
     LinearIndependent K (fun i ↦ A i) ↔ IsUnit A := by
   rw [← transpose_transpose A, ← mulVec_injective_iff, ← coe_mulVecLin, mulVecLin_transpose,
-    transpose_transpose, ←vecMul_injective_iff_isUnit, coe_vecMulLinear]
+    transpose_transpose, ← vecMul_injective_iff_isUnit, coe_vecMulLinear]
 
 theorem linearIndependent_cols_iff_isUnit {A : Matrix m m K} :
     LinearIndependent K (fun i ↦ Aᵀ i) ↔ IsUnit A := by
