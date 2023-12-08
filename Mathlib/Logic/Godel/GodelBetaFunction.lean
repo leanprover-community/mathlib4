@@ -45,8 +45,8 @@ namespace Nat
 
 open ZMod
 
-/-- Gödel's Beta Function. This is similar to `Encodable.decodeList`, but it is easier to prove that
-it is arithmetically definable. -/
+/-- Gödel's Beta Function. This is similar to `(Encodable.decodeList).get i`, but it is easier to
+prove that it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList` , but it is easier
