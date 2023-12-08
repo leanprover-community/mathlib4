@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
 import Mathlib.LinearAlgebra.PerfectPairing
-import Mathlib.LinearAlgebra.RootSystem.Symmetries
+import Mathlib.LinearAlgebra.RootSystem.Reflection
 
 /-!
 # Root data and root systems
