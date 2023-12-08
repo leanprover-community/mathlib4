@@ -304,8 +304,7 @@ theorem filter_card_eq {p : α → Prop} [DecidablePred p] (h : (s.filter p).car
   exact hx.2
 #align finset.filter_card_eq Finset.filter_card_eq
 
-theorem card_lt_card (h : s ⊂ t) : s.card < t.card :=
-  card_lt_card <| val_lt_iff.2 h
+nonrec lemma card_lt_card (h : s ⊂ t) : s.card < t.card := card_lt_card <| val_lt_iff.2 h
 #align finset.card_lt_card Finset.card_lt_card
 
 theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
