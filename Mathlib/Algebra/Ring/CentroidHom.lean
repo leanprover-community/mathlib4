@@ -80,11 +80,11 @@ instance [NonUnitalNonAssocSemiring α] [CentroidHomClass F α] : CoeTC F (Centr
 /-! ### Centroid homomorphisms -/
 
 
-namespace CentroidHom
-
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
+
+namespace CentroidHom
 
 instance : CentroidHomClass (CentroidHom α) α where
   coe f := f.toFun
@@ -463,10 +463,17 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     ext a
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
-lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
+lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
-lemma mem_center_iff_mulRight_eq_mulLeft_and_mul_mem_centroid (a : α) :
+end CentroidHom
+
+open CentroidHom
+
+local notation "L" => AddMonoid.End.mulLeft
+local notation "R" => AddMonoid.End.mulRight
+
+lemma NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
   · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
@@ -487,11 +494,14 @@ section NonUnitalNonAssocCommSemiring
 
 variable [NonUnitalNonAssocCommSemiring α]
 
-local notation "T" => AddMonoid.End.mulLeft
+/-
+Left and right multiplication coincide as α is commutative
+-/
+local notation "L" => AddMonoid.End.mulLeft
 
-lemma mem_center_iff_commute_mulLeft_mulLeft (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (T b) (T a) := by
-  rw [mem_center_iff_mulRight_eq_mulLeft_and_mul_mem_centroid, centroid_eq_centralizer_mulLeftRight,
+lemma NonUnitalNonAssocCommSemiring.mem_center_iff (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
+  rw [NonUnitalNonAssocSemiring.mem_center_iff, CentroidHom.centroid_eq_centralizer_mulLeftRight,
     Subsemiring.mem_centralizer_iff, AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
   aesop
 
@@ -501,17 +511,23 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
+namespace CentroidHom
+
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
-def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α :=
+def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
     left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
     right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
 
+end CentroidHom
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
+
+namespace CentroidHom
 
 variable [NonUnitalNonAssocRing α]
 
@@ -595,11 +611,15 @@ instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
     (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
 
+end CentroidHom
+
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
 
 variable [NonUnitalRing α]
+
+namespace CentroidHom
 
 -- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
@@ -614,6 +634,6 @@ def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0)
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing
 
-end NonUnitalRing
-
 end CentroidHom
+
+end NonUnitalRing
