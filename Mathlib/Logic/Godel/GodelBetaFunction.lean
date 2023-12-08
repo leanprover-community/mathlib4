@@ -16,7 +16,10 @@ import Mathlib.Data.ZMod.Coprime
 
 This file proves Gödel's Beta Function Lemma, used to prove the First Incompleteness Theorem. It
  permits  quantification over finite sequences of natural numbers in formal theories of arithmetic.
- This Beta Function has no connection with the unrelated Beta Function defined in analysis.
+ This Beta Function has no connection with the unrelated Beta Function defined in analysis. Note
+ that beta and unbeta provide similar functionality to List.encodeList and List.decodeList, but
+ except that beta and unbeta are arithmetically definable, which is needed for the proof of the
+ First Incompleteness Theorem.
 
 ## Main result
 
@@ -41,10 +44,11 @@ namespace Nat
 
 open ZMod
 
-/-- Gödel's Beta Function -/
+/-- Gödel's Beta Function. This is similar to List.encodeList, but is arithmetically definable. -/
 def beta (n i : ℕ) := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
-/-- Inverse of Gödel's Beta Function -/
+/-- Inverse of Gödel's Beta Function.  This is similar to List.decodeList, but is arithmetically
+definable. -/
 def unbeta (l : List ℕ) :=
   (chineseRemainderList (coprimeList l) (pairwise_coprime_coprimeList l) : ℕ).pair (listSup l)!
 
