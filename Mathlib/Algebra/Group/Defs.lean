@@ -660,12 +660,15 @@ where
   | (k + 1), y, x =>
     let k' := (k + 1) >>> 1
     if k &&& 1 = 1 then
-      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' y (x + x)
     else
-      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' (y + x) (x + x)
   termination_by go k _ _ => k
+  -- We use this `decreasing_by` block rather than inline `have` statements to avoid
+  -- https://github.com/leanprover/std4/issues/428
+  decreasing_by
+    simp_wf
+    exact Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
 
 /-- Exponentiation by repeated squaring. -/
 -- The unused arguments are essential so that it is possible to prove the `csimp` theorem
@@ -681,17 +684,19 @@ where
   | (k + 1), y, x =>
     let k' := (k + 1) >>> 1
     if k &&& 1 = 1 then
-      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' y (x * x)
     else
-      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' (y * x) (x * x)
   termination_by go k _ _ => k
+  -- We use this `decreasing_by` block rather than inline `have` statements to avoid
+  -- https://github.com/leanprover/std4/issues/428
+  decreasing_by
+    simp_wf
+    exact Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
 
 attribute [to_additive existing] npowBinRec.go
 
--- The unusedHavesSuffices linter is a false positive, see https://github.com/leanprover/std4/issues/428
-@[to_additive (attr := nolint unusedHavesSuffices)]
+@[to_additive]
 theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M]
     (mul_one : ∀ m : M, m * 1 = m) (one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (x y : M) :
     npowBinRec.go k y x = y * npowRec' mul_one one_mul k x := by
