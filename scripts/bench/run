@@ -6,4 +6,3 @@ lake exe cache get
 temci exec --config ./scripts/bench/temci-config.yml >2
 temci report --reporter codespeed2
   # move file metrics starting with "~" from "build" to toplevel and assign them the "instructions" metric
-false
