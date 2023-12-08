@@ -124,17 +124,13 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
-  have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
-  have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
-  refine' _root_.trans (mul_le_mul _ _ _ _)
-      (Bertrand.real_main_inequality (mod_cast n_large))
-  · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
-    refine' Real.rpow_le_rpow_of_exponent_le (mod_cast n2_pos) _
-    exact mod_cast Real.nat_sqrt_le_real_sqrt
-  · exact Real.rpow_le_rpow_of_exponent_le (by norm_num1) (cast_div_le.trans (by norm_cast))
-  · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
-  · refine' mul_nonneg (Nat.cast_nonneg _) _
-    exact Real.rpow_nonneg_of_nonneg (mul_nonneg zero_le_two (Nat.cast_nonneg _)) _
+  refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  gcongr
+  · have n2_pos : 0 < 2 * n := by positivity
+    exact mod_cast n2_pos
+  · exact_mod_cast Real.nat_sqrt_le_real_sqrt
+  · norm_num1
+  · exact cast_div_le.trans (by norm_cast)
 #align bertrand_main_inequality bertrand_main_inequality
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
@@ -196,7 +192,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
 
 namespace Nat
 
-/-- Proves that Bertrand's postulate holds for all sufficiently large `n`.
+/-- Proves that **Bertrand's postulate** holds for all sufficiently large `n`.
 -/
 theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
