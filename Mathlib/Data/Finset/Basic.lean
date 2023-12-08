@@ -546,7 +546,7 @@ theorem empty_val : (∅ : Finset α).1 = 0 :=
   rfl
 #align finset.empty_val Finset.empty_val
 
-@[simp]
+@[simp↓]
 theorem not_mem_empty (a : α) : a ∉ (∅ : Finset α) := by
   -- Porting note: was `id`. `a ∈ List.nil` is no longer definitionally equal to `False`
   simp only [mem_def, empty_val, not_mem_zero, not_false_iff]
@@ -569,7 +569,7 @@ theorem Nonempty.ne_empty {s : Finset α} (h : s.Nonempty) : s ≠ ∅ :=
   (Exists.elim h) fun _a => ne_empty_of_mem
 #align finset.nonempty.ne_empty Finset.Nonempty.ne_empty
 
-@[simp]
+@[simp↓]
 theorem empty_subset (s : Finset α) : ∅ ⊆ s :=
   zero_subset _
 #align finset.empty_subset Finset.empty_subset
@@ -592,7 +592,7 @@ theorem subset_empty {s : Finset α} : s ⊆ ∅ ↔ s = ∅ :=
   subset_zero.trans val_eq_zero
 #align finset.subset_empty Finset.subset_empty
 
-@[simp]
+@[simp↓]
 theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := fun h =>
   let ⟨_, he, _⟩ := exists_of_ssubset h
   -- Porting note: was `he`
@@ -714,7 +714,7 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
   ⟨a, mem_singleton_self a⟩
 #align finset.singleton_nonempty Finset.singleton_nonempty
 
-@[simp]
+@[simp↓]
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 #align finset.singleton_ne_empty Finset.singleton_ne_empty
@@ -798,7 +798,7 @@ theorem subset_singleton_iff' {s : Finset α} {a : α} : s ⊆ {a} ↔ ∀ b ∈
   forall₂_congr fun _ _ => mem_singleton
 #align finset.subset_singleton_iff' Finset.subset_singleton_iff'
 
-@[simp]
+@[simp↓]
 theorem ssubset_singleton_iff {s : Finset α} {a : α} : s ⊂ {a} ↔ s = ∅ := by
   rw [← coe_ssubset, coe_singleton, Set.ssubset_singleton_iff, coe_eq_empty]
 #align finset.ssubset_singleton_iff Finset.ssubset_singleton_iff
@@ -816,7 +816,7 @@ protected def Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
 theorem not_nontrivial_empty : ¬ (∅ : Finset α).Nontrivial := by simp [Finset.Nontrivial]
 #align finset.not_nontrivial_empty Finset.not_nontrivial_empty
 
-@[simp]
+@[simp↓]
 theorem not_nontrivial_singleton : ¬ ({a} : Finset α).Nontrivial := by simp [Finset.Nontrivial]
 #align finset.not_nontrivial_singleton Finset.not_nontrivial_singleton
 
@@ -1198,7 +1198,7 @@ theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
   ⟨a, mem_insert_self a s⟩
 #align finset.insert_nonempty Finset.insert_nonempty
 
-@[simp]
+@[simp↓]
 theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
   (insert_nonempty a s).ne_empty
 #align finset.insert_ne_empty Finset.insert_ne_empty
@@ -1666,12 +1666,12 @@ theorem inter_self (s : Finset α) : s ∩ s = s :=
   ext fun _ => mem_inter.trans <| and_self_iff
 #align finset.inter_self Finset.inter_self
 
-@[simp]
+@[simp↓]
 theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ :=
   ext fun _ => mem_inter.trans <| by simp
 #align finset.inter_empty Finset.inter_empty
 
-@[simp]
+@[simp↓]
 theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ :=
   ext fun _ => mem_inter.trans <| by simp
 #align finset.empty_inter Finset.empty_inter
@@ -2228,7 +2228,7 @@ theorem sdiff_nonempty : (s \ t).Nonempty ↔ ¬s ⊆ t :=
   nonempty_iff_ne_empty.trans sdiff_eq_empty_iff_subset.not
 #align finset.sdiff_nonempty Finset.sdiff_nonempty
 
-@[simp]
+@[simp↓]
 theorem empty_sdiff (s : Finset α) : ∅ \ s = ∅ :=
   bot_sdiff
 #align finset.empty_sdiff Finset.empty_sdiff
