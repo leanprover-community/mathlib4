@@ -155,11 +155,24 @@ example : 1 = 2 → False := by
 /--
 info: theorem extracted_1 (m : ℕ) : m < m + 1 := sorry
 ---
-error: unsolved goals
-m : ℕ
-⊢ m < m + 1
+warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example : ∀ n, n < n + 1 := by
   intro m
   extract_goal
+  sorry
+
+-- Throwing metavariables into the terms
+/--
+info: theorem extracted_1 (m : ℕ) (this : m < Nat.succ (Nat.succ m)) : m < m + 1 := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example : ∀ n, n < n + 1 := by
+  intro m
+  show _
+  have : m < _ := Nat.lt.step (Nat.lt.base m)
+  extract_goal
+  sorry
