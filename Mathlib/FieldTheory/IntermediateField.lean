@@ -698,6 +698,12 @@ theorem extendScalars_restrictScalars : (extendScalars h).restrictScalars K = E 
 
 theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := by rfl
 
+theorem extendScalars_le_iff (E' : IntermediateField F L) :
+    extendScalars h ≤ E' ↔ E ≤ E'.restrictScalars K := by rfl
+
+theorem le_extendScalars_iff (E' : IntermediateField F L) :
+    E' ≤ extendScalars h ↔ E'.restrictScalars K ≤ E := by rfl
+
 variable (F)
 
 theorem extendScalars_injective :
