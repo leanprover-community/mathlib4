@@ -286,7 +286,10 @@ where
               -- level names.
               return {res with paramNames := (← get).levelNames.toArray ++ res.paramNames}
         let ctx1 ← elabAndPackageBinders binders'
-        let ctx2 ← elabAndPackageBinders expectedBinders
+        -- For the expected binders, turn off the linter since it might, for example,
+        -- contain unused variables.
+        let ctx2 ← withOptions (fun opts => opts.set Linter.linter.all.name false) do
+          elabAndPackageBinders expectedBinders
         trace[«variable?»] "new context: paramNames = {ctx1.paramNames}, {
           ""}numMVars = {ctx1.numMVars}\n{indentD ctx1.expr}"
         trace[«variable?»] "expected context: paramNames = {ctx2.paramNames}, {
