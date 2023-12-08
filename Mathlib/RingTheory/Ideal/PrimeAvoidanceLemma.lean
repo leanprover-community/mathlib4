@@ -120,9 +120,8 @@ theorem Ideal.le_of_subset_union_with_at_most_two_non_primes
     -- If `𝓅 = Q`, then for some `i ≠ 𝓅`, `rᵢ ∈ 𝓅`, this is a contradiction because `rᵢ` is not in
     -- the union of `S \ {i}`.
     obtain ⟨⟨i, hi1⟩, hi2⟩ : ∃ i : S.erase 𝓅, r ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓅
-    · have := 𝓅.sub_mem hQ₂ (hr3 ⟨𝓅, h𝓅₁⟩)
-      simp only [add_sub_cancel] at this
-      simpa only [Ideal.IsPrime.prod_mem_iff_exists_mem, mem_attach, true_and_iff] using this
+    · simpa only [add_sub_cancel, Ideal.IsPrime.prod_mem_iff_exists_mem, mem_attach, true_and_iff]
+        using 𝓅.sub_mem hQ₂ (hr3 ⟨𝓅, h𝓅₁⟩)
     rw [Finset.mem_erase] at hi1
     exact (hr2 ⟨i, hi1.2⟩ <| mem_iUnion.mpr ⟨⟨𝓅, mem_erase.mpr ⟨hi1.1.symm, hQ₁⟩⟩, hi2⟩).elim
   · -- If `𝓅 ≠ Q`, then `∏_{i ≠ 𝓅} xᵢ ∈ 𝓆` and `x_𝓅 ∈ Q` as well (since `a` ∈ `Q`).
