@@ -45,7 +45,7 @@ instance instGradeMinOrder : GradeMinOrder ℕ (Multiset α) where
   covby_grade s t := Covby.card_multiset
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
-@[simp] protected lemma grade (m : Multiset α) : grade ℕ m = card m := rfl
+@[simp] lemma grade_eq (m : Multiset α) : grade ℕ m = card m := rfl
 
 end Multiset
 
@@ -79,11 +79,11 @@ alias ⟨_, _root_.Covby.finset_coe⟩ := coe_covby_coe
 
 @[simp] lemma covby_cons (ha : a ∉ s) : s ⋖ s.cons a ha := by simp [← val_covby_val]
 
-lemma _root_.Covby.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, t = s.cons a ha :=
+lemma _root_.Covby.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
   let ⟨a, ha, hst⟩ := ssubset_iff_exists_cons_subset.1 h.lt
-  ⟨a, ha, hst.eq_of_not_ssuperset $ h.2 $ ssubset_cons _⟩
+  ⟨a, ha, (hst.eq_of_not_ssuperset $ h.2 $ ssubset_cons _).symm⟩
 
-lemma covby_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, t = s.cons a ha :=
+lemma covby_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
   ⟨Covby.exists_finset_cons, by rintro ⟨a, ha, rfl⟩; exact covby_cons _⟩
 
 lemma _root_.Covby.card_finset (h : s ⋖ t) : s.card ⋖ t.card := (val_covby_val.2 h).card_multiset
@@ -99,13 +99,13 @@ lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s :=
 
 @[simp] lemma erase_covby (ha : a ∈ s) : s.erase a ⋖ s := ⟨erase_ssubset ha, (erase_wcovby _ _).2⟩
 
-lemma _root_.Covby.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, t = insert a s := by
+lemma _root_.Covby.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t := by
   simpa using h.exists_finset_cons
 
-lemma _root_.Covby.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, s = t.erase a := by
+lemma _root_.Covby.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, t.erase a = s := by
   simpa only [← coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
 
-lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, t = insert a s := by
+lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t := by
   simp only [← coe_covby_coe, Set.covby_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
 
 lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
@@ -118,7 +118,7 @@ lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
     refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
     rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
-lemma covby_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, s = t.erase a := by
+lemma covby_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, t.erase a = s := by
   simp only [← coe_covby_coe, Set.covby_iff_exists_sdiff_singleton, ← coe_inj, coe_erase, mem_coe]
 
 end DecidableEq
@@ -126,7 +126,7 @@ end DecidableEq
 @[simp] lemma isAtom_singleton (a : α) : IsAtom ({a} : Finset α) :=
   ⟨singleton_ne_empty a, fun _ ↦ eq_empty_of_ssubset_singleton⟩
 
-protected lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} :=
+protected lemma isAtom_iff : IsAtom s ↔ ∃ a, {a} = s :=
   bot_covby_iff.symm.trans $ covby_iff_exists_cons.trans $ by simp
 
 section Fintype
@@ -134,25 +134,27 @@ variable [Fintype α] [DecidableEq α]
 
 lemma isCoatom_compl_singleton (a : α) : IsCoatom ({a}ᶜ : Finset α) := (isAtom_singleton a).compl
 
-protected lemma isCoatom_iff : IsCoatom s ↔ ∃ a, s = {a}ᶜ := by
+protected lemma isCoatom_iff : IsCoatom s ↔ ∃ a, {a}ᶜ = s := by
   simp_rw [← isAtom_compl, Finset.isAtom_iff, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 
 end Fintype
 
+/-- Finsets are multiset-graded. This is not very meaningful mathematically but rather a handy way
+to record that the inclusion `Finset α ↪ Multiset α` preserves the covering relation. -/
 instance instGradeMinOrder_multiset : GradeMinOrder (Multiset α) (Finset α) where
   grade := val
   grade_strictMono := val_strictMono
   covby_grade _ _ := Covby.finset_val
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
-@[simp] lemma grade_multiset (s : Finset α) : grade (Multiset α) s = s.1 := rfl
+@[simp] lemma grade_multiset_eq (s : Finset α) : grade (Multiset α) s = s.1 := rfl
 
-instance GradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
+instance instGradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
   grade := card
   grade_strictMono := card_strictMono
   covby_grade _ _ := Covby.card_finset
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
-@[simp] protected lemma grade (s : Finset α) : grade ℕ s = s.card := rfl
+@[simp] lemma grade_eq (s : Finset α) : grade ℕ s = s.card := rfl
 
 end Finset

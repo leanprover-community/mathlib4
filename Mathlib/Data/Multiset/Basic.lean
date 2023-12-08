@@ -389,7 +389,7 @@ instance : HasSubset (Multiset α) :=
 instance : HasSSubset (Multiset α) :=
   ⟨fun s t => s ⊆ t ∧ ¬t ⊆ s⟩
 
-instance instIsNonStrictStrictOrder : IsNonstrictStrictOrder (Multiset α) (· ⊆ ·) (· ⊂ ·) where
+instance instIsNonstrictStrictOrder : IsNonstrictStrictOrder (Multiset α) (· ⊆ ·) (· ⊂ ·) where
   right_iff_left_not_left _ _ := Iff.rfl
 
 @[simp]

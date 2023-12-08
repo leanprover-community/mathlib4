@@ -246,9 +246,9 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 variable {α}
 
 @[simp, norm_cast] lemma Closeds.isAtom_coe [t1_space α] {s : Closeds α} :
-  IsAtom (s : set α) ↔ IsAtom s :=
+    IsAtom (s : set α) ↔ IsAtom s :=
   Closeds.gi.isAtom_iff' rfl
-    (λ t ht, by { obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht, exact closure_singleton }) s
+    (fun t ht ↦ by obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht; exact closure_singleton) s
 
 /-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the
 `TopologicalSpace.Closeds.singleton`s.
