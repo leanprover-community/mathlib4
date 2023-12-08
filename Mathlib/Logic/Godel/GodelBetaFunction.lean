@@ -19,7 +19,7 @@ This file proves Gödel's Beta Function Lemma, used to prove the First Incomplet
  This Beta Function has no connection with the unrelated Beta Function defined in analysis. Note
  that beta and unbeta provide similar functionality to List.encodeList and List.decodeList, ,
  except that we can prove that `Nat.beta` and `Nat.unbeta` are arithmetically definable, and it is
- hard to prove that for `List.encodeList` and `List.decodeList` directly. The arithmetic
+ hard to prove that for `Encodable.encodeList` and `Encodable.decodeList` directly. The arithmetic
  definability is needed for the proof of the  First Incompleteness Theorem.
 
 ## Main result
@@ -49,8 +49,8 @@ open ZMod
 it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
-/-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList` , but it is easier to
-prove that it is arithmetically definable. -/
+/-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList` , but it is easier
+to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=
   (chineseRemainderList (coprimeList l) (pairwise_coprime_coprimeList l) : ℕ).pair (listSup l)!
 
