@@ -254,6 +254,11 @@ theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
   ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
 #align polynomial.monic.is_unit_iff Polynomial.Monic.isUnit_iff
 
+theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
+  obtain ⟨u, rfl⟩ := hpq
+  rw [(hp.of_mul_monic_left hq).eq_one_of_isUnit u.isUnit, mul_one]
+#align polynomial.eq_of_monic_of_associated Polynomial.eq_of_monic_of_associated
+
 end Semiring
 
 section CommSemiring

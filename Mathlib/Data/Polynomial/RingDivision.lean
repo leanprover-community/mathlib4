@@ -557,14 +557,6 @@ theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) :
   (hm.prime_of_degree_eq_one hp1).irreducible
 #align polynomial.monic.irreducible_of_degree_eq_one Polynomial.Monic.irreducible_of_degree_eq_one
 
-theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
-  obtain ⟨u, hu⟩ := hpq
-  unfold Monic at hp hq
-  rw [eq_C_of_degree_le_zero (degree_coe_units _).le] at hu
-  rw [← hu, leadingCoeff_mul, hp, one_mul, leadingCoeff_C] at hq
-  rwa [hq, C_1, mul_one] at hu
-#align polynomial.eq_of_monic_of_associated Polynomial.eq_of_monic_of_associated
-
 theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
   classical
