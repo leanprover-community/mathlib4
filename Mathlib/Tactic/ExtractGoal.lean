@@ -142,6 +142,7 @@ elab_rules : tactic
           else
             g.cleanup
         | `(config| $fvars:ident*) =>
+          -- Note: `getFVarIds` does `withMainContext`
           g.cleanup (toPreserve := (← getFVarIds fvars)) (indirectProps := false)
         | _ => throwUnsupportedSyntax
       let (g, _) ← g.renameInaccessibleFVars

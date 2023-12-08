@@ -138,3 +138,28 @@ example : False := by
   have h : 1 = 2 := sorry
   extract_goal
   sorry
+
+-- Check that fvar elaboration is with respect to the main local context
+/--
+info: theorem extracted_1 (h : 1 = 2) : False := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example : 1 = 2 → False := by
+  intro h
+  extract_goal h
+  sorry
+
+-- Check that sets local context correctly
+/--
+info: theorem extracted_1 (m : ℕ) : m < m + 1 := sorry
+---
+error: unsolved goals
+m : ℕ
+⊢ m < m + 1
+-/
+#guard_msgs in
+example : ∀ n, n < n + 1 := by
+  intro m
+  extract_goal
