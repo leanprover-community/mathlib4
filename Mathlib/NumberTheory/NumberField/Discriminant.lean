@@ -191,7 +191,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
 theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   have h₁ : 1 ≤ 3 * π / 4 := by
-    rw [_root_.le_div_iff (by positivity),  ← _root_.div_le_iff' (by positivity), one_mul]
+    rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
   have h₂ : (9:ℝ) < π ^ 2 := by
     rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9:ℝ) = 3 from
