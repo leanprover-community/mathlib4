@@ -714,8 +714,8 @@ lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
 #align set.bij_on.perm_pow Set.BijOn.perm_pow
 
 lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s
-  | (Int.ofNat _) => hf.perm_pow _
-  | (Int.negSucc _) => (hf.perm_pow _).perm_inv
+  | (Int.ofNat n) => hf.perm_pow n
+  | (Int.negSucc n) => (hf.perm_pow (n + 1)).perm_inv
 #align set.bij_on.perm_zpow Set.BijOn.perm_zpow
 
 end Set
