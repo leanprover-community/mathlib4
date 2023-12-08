@@ -255,7 +255,7 @@ def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → �
 def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
-    himp := fun a => (· ⊔ ·) (compl a),
+    himp := (compl · ⊔ ·),
     compl,
     le_himp_iff,
     himp_bot := fun a => sup_bot_eq }

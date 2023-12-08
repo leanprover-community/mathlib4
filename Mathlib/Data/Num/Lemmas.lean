@@ -1428,19 +1428,22 @@ instance linearOrder : LinearOrder ZNum where
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
-instance addCommGroup : AddCommGroup ZNum where
+instance addMonoid : AddMonoid ZNum where
   add := (· + ·)
   add_assoc := by transfer
   zero := 0
   zero_add := zero_add
   add_zero := add_zero
-  add_comm := by transfer
-  neg := Neg.neg
-  add_left_neg := by transfer
+
+instance addCommGroup : AddCommGroup ZNum :=
+  { ZNum.addMonoid with
+    add_comm := by transfer
+    neg := Neg.neg
+    add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
-  { ZNum.addCommGroup with
+  { ZNum.addMonoid with
     one := 1
     natCast := fun n => ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
