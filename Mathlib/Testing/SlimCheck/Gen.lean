@@ -118,7 +118,7 @@ end Gen
 
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
 def Gen.run (x : Gen α) (size : Nat) : BaseIO α :=
-  IO.runRand (ReaderT.run x ⟨size⟩ :)
-
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
+  IO.runRand (ReaderT.run x ⟨size⟩:)
 
 end SlimCheck
