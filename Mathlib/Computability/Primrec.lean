@@ -1179,11 +1179,11 @@ section
 
 variable [DecidableEq β]
 
-private def mapGraph (M : List (β × γ)) (as : List β) : List γ :=
-  as.bind (Option.toList <| M.lookup ·)
+private def mapGraph (M : List (β × γ)) (bs : List β) : List γ :=
+  bs.bind (Option.toList <| M.lookup ·)
 
 private def bindItr (l : β → List β) (b : β) : ℕ → List β := fun n =>
-  n.rec [b] (fun _ as => as.bind l)
+  n.rec [b] (fun _ bs => bs.bind l)
 
 private def graph (m : β → ℕ) (l : β → List β) (g : β → List σ → Option σ) (b : β) :
     ℕ → List (β × σ) := fun i =>
@@ -1193,12 +1193,12 @@ private def graph (m : β → ℕ) (l : β → List β) (g : β → List σ → 
 
 private theorem mapGraph_primrec : Primrec₂ (mapGraph : List (β × γ) → List β → List γ) :=
   to₂ <| list_bind snd
-    (option_toList.comp₂ $ list_lookup.comp₂ Primrec₂.right (fst.comp₂ Primrec₂.left))
+    (option_toList.comp₂ $ list_lookup.comp₂ .right (fst.comp₂ .left))
 
 private theorem bindItr_primrec {l : β → List β} (hl : Primrec l) : Primrec₂ (bindItr l) :=
   nat_rec' snd
     (list_cons.comp fst (const []))
-    (to₂ $ list_bind (snd.comp snd) (hl.comp₂ Primrec₂.right))
+    (to₂ $ list_bind (snd.comp snd) (hl.comp₂ .right))
 
 private theorem graph_primrec {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g) : Primrec₂ (graph m l g) :=
@@ -1210,7 +1210,7 @@ private theorem graph_primrec {m : β → ℕ} {l : β → List β} {g : β → 
         option_toList.comp₂ <|
           to₂ <| option_map
             (hg.comp snd (mapGraph_primrec.comp (snd.comp $ snd.comp fst) (hl.comp snd)))
-            (Primrec₂.pair.comp₂ (snd.comp₂ Primrec₂.left) Primrec₂.right)
+            (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right)
 
 variable (f : β → σ) (m : β → ℕ) (l : β → List β) (g : β → List σ → Option σ)
   (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b) (H : ∀ b, g b ((l b).map f) = some (f b))
@@ -1229,10 +1229,10 @@ private theorem bindItr_eq_nil (b : β) :
   List.eq_nil_iff_forall_not_mem.mpr
     (by intro b' ha'; by_contra; simpa using bindItr_m_lt m l Ord b (m b + 1) b' ha')
 
-private theorem mapGraph_graph {as as' : List β} (has : as' ⊆ as) :
-    mapGraph (as.map $ fun x => (x, f x)) as' = as'.map f := by
-  induction' as' with b as' ih <;> simp [mapGraph]
-  · have : b ∈ as ∧ as' ⊆ as := by simpa using has
+private theorem mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
+    mapGraph (bs.map $ fun x => (x, f x)) bs' = bs'.map f := by
+  induction' bs' with b bs' ih <;> simp [mapGraph]
+  · have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
     rcases this with ⟨ha, has'⟩
     simpa [List.lookup_graph f ha] using ih has'
 
