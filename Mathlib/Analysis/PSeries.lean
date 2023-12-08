@@ -120,24 +120,6 @@ namespace ENNReal
 
 variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
 
-theorem strict_monotone_atTop_atTop (strict_mono : ∀ ⦃m n⦄, 0 ≤ m → m < n → u m < u n) :
-    Tendsto u atTop atTop := by
-  rw [Tendsto]
-  apply tendsto_atTop_atTop_of_monotone'
-  refine StrictMono.monotone ?h.hf
-  have : StrictMono u := fun m n hmn => strict_mono (zero_le m) hmn
-  · exact this
-  refine StrictMono.not_bddAbove_range ?H.hf
-  have : StrictMono u := fun m n hmn => strict_mono (zero_le m) hmn
-  exact this
-
-theorem strict_monotone_implies_monotone (strict_mono : ∀ ⦃m n⦄, 0 ≤ m → m < n → u m < u n) :
-    ∀ ⦃m n⦄, 0 ≤ m → m ≤ n → u m ≤ u n := by
-  intros m n h_m h_m_le_n
-  cases eq_or_lt_of_le h_m_le_n with
-    | inl h_eq => exact Nat.le_of_eq (congrArg u h_eq)
-    | inr h_lt => exact le_of_lt (strict_mono h_m h_lt)
-
 theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu_strict : StrictMono u) :
   ∑' k , f k ≤ ∑ k in range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
