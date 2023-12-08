@@ -67,7 +67,7 @@ protected theorem HasStrictFDerivAt.prod (hf₁ : HasStrictFDerivAt f₁ f₁' x
 theorem HasFDerivAtFilter.prod (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
-  ⟨hf₁.isLittleO.prod_left hf₂.isLittleO⟩
+  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 #align has_fderiv_at_filter.prod HasFDerivAtFilter.prod
 
 nonrec theorem HasFDerivWithinAt.prod (hf₁ : HasFDerivWithinAt f₁ f₁' s x)

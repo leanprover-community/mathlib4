@@ -143,7 +143,7 @@ of Fréchet derivative, and for `L = 𝓝[s] x` (in `HasFDerivWithinAt`), giving
 the notion of Fréchet derivative along the set `s`. -/
 @[mk_iff hasFDerivAtFilter_iff_isLittleO]
 structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
-  isLittleO : (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
+  of_isLittleO :: isLittleO : (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
 #align has_fderiv_at_filter HasFDerivAtFilter
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
@@ -369,7 +369,7 @@ theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : 
 
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
-  ⟨h.isLittleO.mono hst⟩
+  .of_isLittleO <| h.isLittleO.mono hst
 #align has_fderiv_at_filter.mono HasFDerivAtFilter.mono
 
 theorem HasFDerivWithinAt.mono_of_mem (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
@@ -514,7 +514,7 @@ theorem hasFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
 theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
     (ht : HasFDerivWithinAt f f' t x) : HasFDerivWithinAt f f' (s ∪ t) x := by
   simp only [HasFDerivWithinAt, nhdsWithin_union]
-  exact ⟨hs.isLittleO.sup ht.isLittleO⟩
+  exact .of_isLittleO <| hs.isLittleO.sup ht.isLittleO
 #align has_fderiv_within_at.union HasFDerivWithinAt.union
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
@@ -1074,7 +1074,7 @@ theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (id 𝕜 E) x :=
 #align has_strict_fderiv_at_id hasStrictFDerivAt_id
 
 theorem hasFDerivAtFilter_id (x : E) (L : Filter E) : HasFDerivAtFilter id (id 𝕜 E) x L :=
-  .mk <| (isLittleO_zero _ _).congr_left <| by simp
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left <| by simp
 #align has_fderiv_at_filter_id hasFDerivAtFilter_id
 
 theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (id 𝕜 E) s x :=
@@ -1144,7 +1144,7 @@ theorem hasStrictFDerivAt_const (c : F) (x : E) :
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .mk <| (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
 #align has_fderiv_at_filter_const hasFDerivAtFilter_const
 
 theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :

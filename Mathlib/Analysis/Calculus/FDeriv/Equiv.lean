@@ -391,7 +391,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
       fun x : F => f' (g x - g a) - (x - a) := by
     refine' ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => _) fun _ => rfl
     simp
-  refine ⟨this.trans_isLittleO ?_⟩
+  refine HasFDerivAtFilter.of_isLittleO <| this.trans_isLittleO ?_
   clear this
   refine ((hf.isLittleO.comp_tendsto hg).symm.congr' (hfg.mono ?_) .rfl).trans_isBigO ?_
   · intro p hp
