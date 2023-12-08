@@ -313,7 +313,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
   have : TopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
-  convert hp.hasBasis_zero_ball.map ((· + ·) x) using 1
+  convert hp.hasBasis_zero_ball.map (x + ·) using 1
   ext sr : 1
   -- Porting note: extra type ascriptions needed on `0`
   have : (sr.fst.sup p).ball (x +ᵥ (0 : E)) sr.snd = x +ᵥ (sr.fst.sup p).ball 0 sr.snd :=

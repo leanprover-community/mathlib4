@@ -403,7 +403,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
 #align ennreal.tendsto_finset_prod_of_ne_top ENNReal.tendsto_finset_prod_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ⊤ ∨ b ≠ 0) :
-    ContinuousAt ((· * ·) a) b :=
+    ContinuousAt (a * ·) b :=
   Tendsto.const_mul tendsto_id h.symm
 #align ennreal.continuous_at_const_mul ENNReal.continuousAt_const_mul
 
@@ -412,7 +412,7 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ⊤ ∨ b
   Tendsto.mul_const tendsto_id h.symm
 #align ennreal.continuous_at_mul_const ENNReal.continuousAt_mul_const
 
-protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continuous ((· * ·) a) :=
+protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ⊤) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 #align ennreal.continuous_const_mul ENNReal.continuous_const_mul
 
