@@ -245,6 +245,11 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
+@[simp, norm_cast] lemma Closeds.isAtom_coe [t1_space α] {s : Closeds α} :
+  IsAtom (s : set α) ↔ IsAtom s :=
+  Closeds.gi.isAtom_iff' rfl
+    (λ t ht, by { obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht, exact closure_singleton }) s
+
 /-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the
 `TopologicalSpace.Closeds.singleton`s.
 
@@ -252,11 +257,7 @@ TODO: use `minimal_nonempty_closed_eq_singleton` to show that an atom in `Topolo
 in a T₀ space is a singleton. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = Closeds.singleton x := by
-  have : IsAtom (s : Set α) ↔ IsAtom s := by
-    refine' Closeds.gi.isAtom_iff' rfl (fun t ht => _) s
-    obtain ⟨x, rfl⟩ := t.isAtom_iff.mp ht
-    exact closure_singleton
-  simp only [← this, (s : Set α).isAtom_iff, SetLike.ext'_iff, Closeds.singleton_coe]
+  simpa only [← Closeds.isAtom_coe, set.is_atom_iff, set_like.ext_iff, set.ext_iff]
 #align topological_space.closeds.is_atom_iff TopologicalSpace.Closeds.isAtom_iff
 
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
