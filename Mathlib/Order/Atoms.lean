@@ -169,7 +169,7 @@ theorem IsCoatom.of_isCoatom_coe_Ici {a : Set.Ici x} (ha : IsCoatom a) : IsCoato
 
 theorem isCoatom_iff_ge_of_le : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ b ≠ ⊤, a ≤ b → b ≤ a :=
   isAtom_iff_le_of_ge (α := αᵒᵈ)
-#align is_coatom_iff isCoatom_iff
+#align is_coatom_iff isCoatom_iff_ge_of_le
 
 end Preorder
 
