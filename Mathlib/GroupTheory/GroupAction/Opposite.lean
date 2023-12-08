@@ -22,8 +22,10 @@ provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 ## Notation
 
 With `open scoped RightActions`, this provides:
-* `r ⮊ m` as an alias for `r • m`
-* `m ⮈ r` as an alias for `MulOpposite.op r • m`
+* `r •> m` as an alias for `r • m`
+* `m <• r` as an alias for `MulOpposite.op r • m`
+* `r +ᵥ> m` as an alias for `r +ᵥ m`
+* `m <+ᵥ r` as an alias for `AddOpposite.op r +ᵥ m`
 -/
 
 
@@ -99,14 +101,50 @@ instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
 #align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
-/-- With `open scoped RightActions`, an alternative symbol for left actions.
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
 
 In lemma names this is still called `smul`. -/
-scoped[RightActions] notation3:73 r:73 " ⮊ " m:74 => r • m
+scoped[RightActions] notation3:74 r:75 " •> " m:74 => r • m
+
 /-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
 
 In lemma names this is still called `op_smul`. -/
-scoped[RightActions] notation3:73 m:74 " ⮈ " r:73 => MulOpposite.op r • m
+scoped[RightActions] notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
+
+/-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
+
+In lemma names this is still called `vadd`. -/
+scoped[RightActions] notation3:74 r:75 " +ᵥ>  " m:74 => r +ᵥ m
+
+/-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
+
+In lemma names this is still called `op_vadd`. -/
+scoped[RightActions] notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
+
+namespace RightActions
+variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
+
+example : a •> b = a • b := rfl
+example : b <• a = op a • b := rfl
+
+example : a +ᵥ> b = a +ᵥ b := rfl
+example : b <+ᵥ a = AddOpposite.op a +ᵥ b := rfl
+
+-- Left actions right-associate, right actions left-associate
+example : a₁ •> a₂ •> b = a₁ •> (a₂ •> b) := rfl
+example : b <• a₂ <• a₁ = (b <• a₂) <• a₁ := rfl
+
+example : a₁ +ᵥ> a₂ +ᵥ> b = a₁ +ᵥ> (a₂ +ᵥ> b) := rfl
+example : b <+ᵥ a₂ <+ᵥ a₁ = (b <+ᵥ a₂) <+ᵥ a₁ := rfl
+
+-- When left and right actions coexist, they associate to the left
+example : a₁ •> b <• a₂ = (a₁ •> b) <• a₂ := rfl
+example : a₁ •> a₂ •> b <• a₃ <• a₄ = ((a₁ •> (a₂ •> b)) <• a₃) <• a₄ := rfl
+
+example : a₁ +ᵥ> b <+ᵥ a₂ = (a₁ +ᵥ> b) <+ᵥ a₂ := rfl
+example : a₁ +ᵥ> a₂ +ᵥ> b <+ᵥ a₃ <+ᵥ a₄ = ((a₁ +ᵥ> (a₂ +ᵥ> b)) <+ᵥ a₃) <+ᵥ a₄ := rfl
+
+end RightActions
 
 @[to_additive]
 theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
