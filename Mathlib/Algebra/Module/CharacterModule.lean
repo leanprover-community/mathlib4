@@ -82,7 +82,6 @@ lemma LinearMap.characterify_surjective_of_injective
     (L : M →ₗ[R] N)
     (inj : Function.Injective L) :
     Function.Surjective <| LinearMap.characterify.{uR, uM, uN, uD} D L := by
-
   rintro (g : _ →ₗ[_] _)
   let g'' : (ULift.{max uM uN uD uR} M) →ₗ[R] (ULift.{max uM uN uD uR} D) :=
     ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap
