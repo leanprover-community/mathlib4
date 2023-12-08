@@ -33,7 +33,7 @@ In this file we define
 
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_module
+* https://en.wikipedia.org/wiki/Ordered_vector_space
 
 ## Tags
 
