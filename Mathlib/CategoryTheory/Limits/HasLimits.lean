@@ -573,33 +573,7 @@ def limYoneda :
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
 #align category_theory.limits.lim_yoneda CategoryTheory.Limits.limYoneda
 
-/-- The constant functor and limit functor are adjoint to each other-/
-def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
-  homEquiv c g :=
-    { toFun := fun f => limit.lift _ ⟨c, f⟩
-      invFun := fun f =>
-        { app := fun j => f ≫ limit.π _ _ }
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
-  unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
-  counit := { app := fun g => { app := limit.π _ } }
-  -- This used to be automatic before leanprover/lean4#2644
-  homEquiv_unit := by
-    -- Sad that aesop can no longer do this!
-    intros
-    dsimp
-    ext
-    simp
-#align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
-
-instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
-  ⟨_, constLimAdj⟩
-
 end LimFunctor
-
-instance limMap_mono' {F G : J ⥤ C} [HasLimitsOfShape J C] (α : F ⟶ G) [Mono α] : Mono (limMap α) :=
-  (lim : (J ⥤ C) ⥤ C).map_mono α
-#align category_theory.limits.lim_map_mono' CategoryTheory.Limits.limMap_mono'
 
 instance limMap_mono {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [∀ j, Mono (α.app j)] :
     Mono (limMap α) :=
@@ -1163,28 +1137,7 @@ def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftF
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => colimit.homIso (unop F) W
 #align category_theory.limits.colim_coyoneda CategoryTheory.Limits.colimCoyoneda
 
-/-- The colimit functor and constant functor are adjoint to each other
--/
-def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
-  homEquiv f c :=
-    { toFun := fun g =>
-        { app := fun _ => colimit.ι _ _ ≫ g }
-      invFun := fun g => colimit.desc _ ⟨_, g⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
-  unit := { app := fun g => { app := colimit.ι _ } }
-  counit := { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩ }
-#align category_theory.limits.colim_const_adj CategoryTheory.Limits.colimConstAdj
-
-instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
-  ⟨_, colimConstAdj⟩
-
 end ColimFunctor
-
-instance colimMap_epi' {F G : J ⥤ C} [HasColimitsOfShape J C] (α : F ⟶ G) [Epi α] :
-    Epi (colimMap α) :=
-  (colim : (J ⥤ C) ⥤ C).map_epi α
-#align category_theory.limits.colim_map_epi' CategoryTheory.Limits.colimMap_epi'
 
 instance colimMap_epi {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) [∀ j, Epi (α.app j)] :
     Epi (colimMap α) :=
