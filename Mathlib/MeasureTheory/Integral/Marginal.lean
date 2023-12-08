@@ -105,7 +105,8 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
 
 TODO: This fails with:
 
-elaboration function for 'Std.ExtendedBinder.«termSatisfies_binder_pred%__»' has not been implemented
+elaboration function for 'Std.ExtendedBinder.«termSatisfies_binder_pred%__»'
+  has not been implemented
   satisfies_binder_pred% i ∉ s
 
 theorem lmarginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
