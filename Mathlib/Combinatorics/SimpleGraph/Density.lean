@@ -319,7 +319,6 @@ theorem edgeDensity_def (s t : Finset α) :
   rfl
 #align simple_graph.edge_density_def SimpleGraph.edgeDensity_def
 
-@[simp]
 theorem card_interedges_div_card (s t : Finset α) :
     ((G.interedges s t).card : ℚ) / (s.card * t.card) = G.edgeDensity s t :=
   rfl
