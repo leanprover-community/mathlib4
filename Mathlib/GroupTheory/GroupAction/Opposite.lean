@@ -17,6 +17,13 @@ type, `SMul Rᵐᵒᵖ M`.
 
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
 provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
+
+
+## Notation
+
+With `open scoped RightActions`, this provides:
+* `r ⮊ m` as an alias for `r • m`
+* `m ⮈ r` as an alias for `MulOpposite.op r • m`
 -/
 
 
@@ -91,6 +98,15 @@ instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
   ⟨fun c x => x * c.unop⟩
 #align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
+
+/-- With `open scoped RightActions`, an alternative symbol for left actions.
+
+In lemma names this is still called `smul`. -/
+scoped[RightActions] notation3:73 r:73 " ⮊ " m:74 => r • m
+/-- With `open scoped RightActions`, a shorthand for right actions, `op r • m`.
+
+In lemma names this is still called `op_smul`. -/
+scoped[RightActions] notation3:73 m:74 " ⮈ " r:73 => MulOpposite.op r • m
 
 @[to_additive]
 theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
