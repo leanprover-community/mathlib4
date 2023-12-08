@@ -11,12 +11,14 @@ import Mathlib.Geometry.Manifold.MFDeriv
 /-!
 # Integral curves of vector fields on a manifold
 
-For any continuously differentiable vector field on a manifold `M` and any chosen interior point
-`x₀ : M`, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector of
-`γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around `t₀`.
+Let `M` be a manifold and `v : (x : M) → TangentSpace I x` be a vector field on `M`. An integral
+curve of `v` is a function `γ : ℝ → M` such that the derivative of `γ` at `t` equals `v (γ t)`. The
+integral curve may only be defined for all `t` within some subset of `ℝ`.
 
-As a corollary, such an integral curve exists for any starting point `x₀` if `M` is a manifold
-without boundary.
+Assume `v` is continuously differentiable. The existence theorem for solutions to ODEs implies that
+a unique local integral curve exists for any continuously differentiable vector field `v`. The
+uniqueness theorem for solutions to ODEs implies that integral curves of `v` are unique. These are
+the main results of this file.
 
 ## Main definition
 
@@ -31,14 +33,25 @@ For `IsIntegralCurveOn γ v s` and `IsIntegralCurveAt γ v t₀`, even though `�
 time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
 junk.
 
+## Implementation notes
+
+For the existence and uniqueness theorems, we assume that the image of the integral curve lies in
+the interior of the manifold. The case where the integral curve may lie on the boundary of the
+manifold requires special treatment, and we leave it as a to-do.
+
+The uniqueness theorem requires the manifold to be Hausdorff (T2), so that the set on which two
+continuous functions agree is closed.
+
+We state simpler versions of the theorem for manifolds without boundary as corollaries.
+
 ## To-do
 
-- Prove `comp_add`, `comp_smul` , etc. lemmas for `IsIntegralCurveOn`, and then derive versions for
-`IsIntegralCurveAt` and `IsIntegralCurve` as corollaries.
+- The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
+  J. M. Lee. May require submanifolds.
 
 ## Tags
 
-integral curve, vector field, local existence
+integral curve, vector field, local existence, uniqueness
 -/
 
 open scoped Manifold
@@ -313,6 +326,10 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
 
+/-- Local integral curves are unique.
+
+  If a continuously differentiable vector field `v` admits two local integral curves `γ γ' : ℝ → M`
+  at `t₀` with `γ t₀ = γ' t₀`, then `γ` and `γ'` agree on some open interval around `t₀` -/
 theorem isIntegralCurveAt_eqOn_of_contMDiffAt {γ γ' : ℝ → M} (ht : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
@@ -517,6 +534,11 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt {γ γ' : ℝ → M} (ht : I.IsInt
     apply mem_of_mem_of_subset ht (Metric.ball_subset_ball _)
     simp
 
+/-- Integral curves are unique on open intervals.
+
+  If a continuously differentiable vector field `v` admits two integral curves `γ γ' : ℝ → M`
+  on some open interval `Ioo a b`, and `γ t₀ = γ' t₀` for some `t ∈ Ioo a b`, then `γ` and `γ'`
+  agree on `Ioo a b`. -/
 theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
     [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x} {γ γ' : ℝ → M}
     {a b : ℝ} (ht₀ : t₀ ∈ Ioo a b) (hip : ∀ t ∈ Ioo a b, I.IsInteriorPoint (γ t))
@@ -583,6 +605,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
   intros t ht
   exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
 
+/-- Global integral curves are unique. -/
 theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
     [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x} {γ γ' : ℝ → M}
     (hip : ∀ t, I.IsInteriorPoint (γ t))
