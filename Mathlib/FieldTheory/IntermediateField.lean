@@ -675,6 +675,37 @@ end RestrictScalars
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
 example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E := by infer_instance
 
+section ExtendScalars
+
+variable {F E E' : IntermediateField K L} (h : F ≤ E) (h' : F ≤ E') {x : L}
+
+/-- If `F ≤ E` are two intermediate fields of `L / K`, then `E` is also an intermediate field of
+`L / F`. It can be viewed as an inverse to `IntermediateField.restrictScalars`. -/
+def extendScalars : IntermediateField F L := E.toSubfield.toIntermediateField fun ⟨_, hf⟩ ↦ h hf
+
+@[simp]
+theorem coe_extendScalars : (extendScalars h : Set L) = (E : Set L) := rfl
+
+@[simp]
+theorem extendScalars_toSubfield : (extendScalars h).toSubfield = E.toSubfield :=
+  SetLike.coe_injective rfl
+
+@[simp]
+theorem mem_extendScalars : x ∈ extendScalars h ↔ x ∈ E := Iff.rfl
+
+@[simp]
+theorem extendScalars_restrictScalars : (extendScalars h).restrictScalars K = E := rfl
+
+theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := by rfl
+
+variable (F)
+
+theorem extendScalars_injective :
+    Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.2 :=
+  fun E _ H ↦ by ext x; simp_rw [← mem_extendScalars (h := E.2), H, mem_extendScalars]
+
+end ExtendScalars
+
 end Tower
 
 section FiniteDimensional
@@ -725,12 +756,8 @@ theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
   suffices H {K L : Type _} [Field K] [Field L] [Algebra K L] {F E : IntermediateField K L}
       [FiniteDimensional K L] (h_le : F ≤ E) (h_finrank : finrank F L ≤ finrank E L) : F = E
   · refine le_antisymm h_le (fun l hl ↦ ?_)
-    let E₁ : IntermediateField F L := E.toSubfield.toIntermediateField fun ⟨f, hf⟩ ↦ h_le hf
-    let F₁ : IntermediateField F L := F.toSubfield.toIntermediateField fun ⟨_, hf⟩ ↦ hf
-    replace h_le : F₁ ≤ E₁ := fun f hf ↦ h_le hf
-    show l ∈ F₁
-    rw [H h_le h_finrank]
-    exact hl
+    rwa [← mem_extendScalars (le_refl F),
+      H ((extendScalars_le_extendScalars_iff (le_refl F) h_le).2 h_le) h_finrank, mem_extendScalars]
   apply eq_of_le_of_finrank_le h_le
   have h1 := finrank_mul_finrank K F L
   have h2 := finrank_mul_finrank K E L
