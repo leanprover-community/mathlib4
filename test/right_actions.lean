@@ -52,10 +52,6 @@ end delaborators
 
 open scoped RightActions
 
-/-- info: a •> b : β -/
-#guard_msgs in
-#check a • b
-
 example : a •> b = a • b := rfl
 example : b <• a = mop a • b := rfl
 
