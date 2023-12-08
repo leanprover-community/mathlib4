@@ -368,15 +368,7 @@ noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
     apply (Ran.adjunction A G.op).homEquiv_counit
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
 
-variable
-  [ConcreteCategory.{max v u} A]
-  [PreservesLimits (forget A)]
-  [ReflectsIsomorphisms (forget A)]
-  [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A]
-  [∀ (X : D), PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : D), HasColimitsOfShape (K.Cover X)ᵒᵖ A]
-  [G.IsCocontinuous J K] [G.IsContinuous J K]
+variable [HasSheafify J A] [HasSheafify K A] [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
 def Functor.pushforwardContinuousSheafificationCompatibility :
@@ -389,39 +381,5 @@ def Functor.pushforwardContinuousSheafificationCompatibility :
   letI A12 := A1.comp A2
   letI B12 := B1.comp B2
   A12.leftAdjointUniq B12
-
-/- Implementation: This is primarily used to prove the lemma
-`pullbackSheafificationCompatibility_hom_app_val`. -/
-lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
-    J.toSheafify (G.op ⋙ F) ≫
-    ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
-    whiskerLeft _ (K.toSheafify _) := by
-  dsimp [pushforwardContinuousSheafificationCompatibility, Adjunction.leftAdjointUniq]
-  apply Quiver.Hom.op_inj
-  apply coyoneda.map_injective
-  ext E : 2
-  dsimp [Functor.preimage, Full.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
-  erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
-  dsimp [Adjunction.comp]
-  simp only [sheafificationAdjunction_unit_app, Category.comp_id, Functor.map_id,
-    whiskerLeft_id', GrothendieckTopology.sheafifyMap_comp,
-    GrothendieckTopology.sheafifyMap_sheafifyLift, Category.id_comp,
-    Category.assoc, GrothendieckTopology.toSheafify_sheafifyLift]
-  ext t s : 3
-  dsimp [sheafPushforwardContinuous]
-  congr 1
-  simp only [← Category.assoc]
-  convert Category.id_comp (obj := A) _
-  have := (Ran.adjunction A G.op).left_triangle
-  apply_fun (fun e => (e.app (K.sheafify F)).app s) at this
-  exact this
-
-@[simp]
-lemma Functor.pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
-    ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
-    J.sheafifyLift (whiskerLeft G.op <| K.toSheafify F)
-      ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).cond := by
-  apply J.sheafifyLift_unique
-  apply toSheafify_pullbackSheafificationCompatibility
 
 end CategoryTheory
