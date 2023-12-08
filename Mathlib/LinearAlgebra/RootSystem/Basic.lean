@@ -145,12 +145,7 @@ lemma symmetry_image_eq' :
 lemma symmetryOfRoot_dualMap_eq_symmetryOfCoroot :
     p.trans (rp.symmetryOfRoot i).dualMap = (rp.symmetryOfCoroot i).trans p := by
   ext n m
-  -- TODO Sort out messy proof
-  simp only [LinearEquiv.trans_apply, LinearEquiv.dualMap_apply, symmetryOfRoot_apply, map_sub,
-    map_smulₛₗ, RingHom.id_apply, smul_eq_mul, symmetryOfCoroot_apply, LinearEquiv.flip_apply]
-  rw [LinearEquiv.map_sub]
-  simp only [map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-  rw [mul_comm]
+  simp [symmetryOfCoroot_apply, symmetryOfRoot_apply, mul_comm (p n (rp.root i)), p.map_sub]
 
 -- This proof is horrendous (partly as a result of surviving several refactors of the base
 -- definitions). Once I fix it I am confident I can drop the `maxHeartbeats` bump. TODO do this!
@@ -283,20 +278,12 @@ lemma mk_aux [CharZero R] [NoZeroSMulDivisors R M]
         (p <| toPreSymmetry (coroot i) (p.flip (root i)) (coroot j)) = si * sj * si := by
     ext
     simp [← toPreSymmetry_toPreSymmetry (root i) (root j) (p (coroot i)) (p (coroot j)) (hp i),
-      toPreSymmetry_apply, map_sub p]
+      toPreSymmetry_apply, p.map_sub]
   apply eq_of_toPreSymmetry_image_eq_fixed hk₀ (finite_range root) hsp (hp k) ((hs k).symm ▸ refl _)
-  · rw [hk]
-    simp only [toPreSymmetry_apply, LinearEquiv.flip_apply, map_sub, map_smulₛₗ, RingHom.id_apply,
-      smul_eq_mul]
-    erw [map_sub p] -- Why is `erw` necessary? TODO Fix this.
-    simp only [map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, hp i, hp j,
-      mul_two, sub_add_cancel'', mul_neg, sub_neg_eq_add]
-    rw [mul_comm, sub_add_cancel]
+  · simp [hk, toPreSymmetry_apply, hp i, hp j, mul_two, mul_comm (p (coroot i) (root j)), p.map_sub]
   · rw [hk, hij]
     change (si ∘ sj ∘ si) '' _ ⊆ _
-    rw [← comp.assoc]
-    simp only [image_comp, hs i, hs j]
-    rfl
+    rw [← comp.assoc, image_comp, hs i, image_comp, hs j, hs i]
 
 /-- In characteristic zero if there is no torsion, to check that a collection of roots form a root
 system, we do not need to check that the coroots are stable under reflections since this follows
