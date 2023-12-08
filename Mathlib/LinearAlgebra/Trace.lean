@@ -329,9 +329,9 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
 
 @[simp]
-lemma trace_extendScalars [Module.Free R M] [Module.Finite R M]
+lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
     (f : M →ₗ[R] M) (A : Type*) [CommRing A] [Algebra R A] :
-    trace A _ (f.extendScalars A) = algebraMap R A (trace R _ f) := by
+    trace A _ (f.baseChange A) = algebraMap R A (trace R _ f) := by
   let b := Module.Free.chooseBasis R M
   let b' := Algebra.TensorProduct.basis A b
   change _ = (algebraMap R A : R →+ A) _

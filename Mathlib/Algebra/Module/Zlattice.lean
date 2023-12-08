@@ -290,13 +290,11 @@ section Real
 
 theorem discreteTopology_pi_basisFun [Fintype ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
-  refine discreteTopology_iff_open_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
+  refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
   ext x
-  rw [Set.mem_preimage, mem_ball_zero_iff, Set.mem_singleton_iff, Pi.norm_def,
-    ← Real.lt_toNNReal_iff_coe_lt, Finset.sup_lt_iff (by simp), Real.toNNReal_one, ← coe_eq_zero]
-  simp_rw [Finset.mem_univ, forall_true_left, Function.funext_iff, Pi.zero_apply]
+  rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
+  simp_rw [← coe_eq_zero, Function.funext_iff, Pi.zero_apply, Real.norm_eq_abs]
   refine forall_congr' (fun i => ?_)
-  rw [← norm_toNNReal, Real.toNNReal_lt_one, Real.norm_eq_abs]
   rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one,  Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
   exact ((Pi.basisFun ℝ ι).mem_span_iff_repr_mem ℤ x).mp (SetLike.coe_mem x) i
@@ -306,8 +304,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
-    rw [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
-    exact fun i => hx i
+    rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
   convert DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
@@ -340,7 +337,8 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
   convert (Zspan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
-  exact (by infer_instance : Countable (span ℤ (Set.range b)))
+  simp only [mem_toAddSubgroup]
+  infer_instance
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :

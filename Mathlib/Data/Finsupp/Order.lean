@@ -42,15 +42,15 @@ section Zero
 variable [Zero α]
 
 section LE
-
-variable [LE α]
+variable [LE α] {f g : ι →₀ α}
 
 instance instLEFinsupp : LE (ι →₀ α) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
-theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
-  Iff.rfl
+lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align finsupp.le_def Finsupp.le_def
+
+@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
 /-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
@@ -59,7 +59,7 @@ def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
     Finsupp.ext fun i => by
       dsimp at h
       rw [h]
-  map_rel_iff' {a b} := (@le_def _ _ _ _ a b).symm
+  map_rel_iff' := coe_le_coe
 #align finsupp.order_embedding_to_fun Finsupp.orderEmbeddingToFun
 
 @[simp]
@@ -70,17 +70,20 @@ theorem orderEmbeddingToFun_apply {f : ι →₀ α} {i : ι} : orderEmbeddingTo
 end LE
 
 section Preorder
-
-variable [Preorder α]
+variable [Preorder α] {f g : ι →₀ α}
 
 instance preorder : Preorder (ι →₀ α) :=
   { Finsupp.instLEFinsupp with
     le_refl := fun f i => le_rfl
     le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
 
-theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) :=
-    fun _f _g h a => le_def.1 h a
-#align finsupp.monotone_to_fun Finsupp.monotone_toFun
+lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
+@[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
+
+lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+#align finsupp.monotone_to_fun Finsupp.coe_mono
+
+lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
 end Preorder
 
@@ -174,7 +177,7 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
 #align finsupp.le_iff Finsupp.le_iff
 
 lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
-  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+  fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
@@ -207,9 +210,7 @@ instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
     exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
     le_self_add := fun _f _g _x => le_self_add }
 
-@[simp]
-theorem coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g :=
-  rfl
+@[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 #align finsupp.coe_tsub Finsupp.coe_tsub
 
 theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
