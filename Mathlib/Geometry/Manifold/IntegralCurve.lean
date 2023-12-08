@@ -553,39 +553,8 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
   -/
   set s := {t | γ t = γ' t} ∩ Ioo a b with hs
   have hsub : Ioo a b ⊆ s := by
-    apply isPreconnected_Ioo.subset_of_closure_inter_subset
-    · rw [isOpen_iff_mem_nhds]
-      intro t₁ ht₁
-      rw [mem_nhds_iff]
-      have : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) := by
-        apply isIntegralCurveAt_eqOn_of_contMDiffAt (I := I)
-        · apply hip
-          exact ht₁.2
-        · exact hv.contMDiffAt
-        · apply hγ.isIntegralCurveAt
-          exact Ioo_mem_nhds ht₁.2.1 ht₁.2.2
-        · apply hγ'.isIntegralCurveAt
-          exact Ioo_mem_nhds ht₁.2.1 ht₁.2.2
-        · exact ht₁.1
-      obtain ⟨ε, hε, heqon⟩ := this
-      use Ioo (max a (t₁ - ε)) (min b (t₁ + ε))
-      refine ⟨?_, isOpen_Ioo, ?_⟩
-      · apply subset_inter
-        · intros t ht
-          apply @heqon t
-          apply mem_of_mem_of_subset ht
-          apply Ioo_subset_Ioo (by simp) (by simp)
-        · apply Ioo_subset_Ioo (by simp) (by simp)
-      · rw [mem_Ioo]
-        constructor
-        · apply max_lt ht₁.2.1
-          simp [hε]
-        · apply lt_min ht₁.2.2
-          simp [hε]
-    · use t₀
-      rw [mem_inter_iff]
-      use ht₀
-      use h
+    apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
+      ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
     · -- is this really the most convenient way to pass to subtype topology?
       rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
         image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
@@ -604,6 +573,25 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
         apply ContinuousAt.comp _ continuousAt_subtype_val
         rw [Subtype.coe_mk]
         exact hγ'.continuousAt ht
+    · rw [isOpen_iff_mem_nhds]
+      intro t₁ ht₁
+      rw [mem_nhds_iff]
+      obtain ⟨ε, hε, heqon⟩ : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) :=
+        isIntegralCurveAt_eqOn_of_contMDiffAt I _ (hip _ ht₁.2) hv.contMDiffAt
+          (hγ.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
+          (hγ'.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
+          ht₁.1
+      refine ⟨Ioo (max a (t₁ - ε)) (min b (t₁ + ε)),
+        subset_inter
+          (fun t ht => @heqon t <| mem_of_mem_of_subset ht <| Ioo_subset_Ioo (by simp) (by simp))
+          (Ioo_subset_Ioo (by simp) (by simp)),
+        isOpen_Ioo, ?_⟩
+      rw [mem_Ioo]
+      constructor
+      · apply max_lt ht₁.2.1
+        simp [hε]
+      · apply lt_min ht₁.2.2
+        simp [hε]
   intros t ht
   exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
 
@@ -614,7 +602,7 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
-  have : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
+  obtain ⟨T, hT, ht⟩ : ∃ T > 0, t ∈ Ioo (t₀ - T) (t₀ + T) := by
     refine ⟨2 * |t - t₀| + 1, add_pos_of_nonneg_of_pos (by simp) zero_lt_one, ?_⟩
     rw [mem_Ioo]
     by_cases ht : t - t₀ < 0
@@ -622,7 +610,6 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
       constructor <;> linarith
     · rw [abs_of_nonneg (not_lt.mp ht)]
       constructor <;> linarith
-  obtain ⟨T, hT, ht⟩ := this
   exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff I t₀
     (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ => hip t) hv
     (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
