@@ -783,7 +783,7 @@ theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx 
 @[simp]
 theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
     (a * · + b) '' Icc c d = Icc (a * c + b) (a * d + b) := by
-  suffices (· + b) '' ((· * a) '' Icc c d) = Icc (a * c + b) (a * d + b) by
+  suffices (· + b) '' ((a * ·) '' Icc c d) = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]
 #align set.image_affine_Icc' Set.image_affine_Icc'
