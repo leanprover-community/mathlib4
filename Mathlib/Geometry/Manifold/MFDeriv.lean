@@ -979,7 +979,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
   simp only [mfld_simps]
 #align has_mfderiv_within_at.comp HasMFDerivWithinAt.comp
 
-/-- The chain rule. -/
+/-- The **chain rule for manifolds**. -/
 theorem HasMFDerivAt.comp (hg : HasMFDerivAt I' I'' g (f x) g') (hf : HasMFDerivAt I I' f x f') :
     HasMFDerivAt I I'' (g ∘ f) x (g'.comp f') := by
   rw [← hasMFDerivWithinAt_univ] at *

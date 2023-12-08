@@ -635,7 +635,7 @@ theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) 
 theorem mono_fst_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono g] :
     Mono t.fst := by
   refine ⟨fun {W} h k i => IsLimit.hom_ext ht i ?_⟩
-  rw [← cancel_mono g, Category.assoc, Category.assoc, ←condition]
+  rw [← cancel_mono g, Category.assoc, Category.assoc, ← condition]
   have := congrArg (· ≫ f) i; dsimp at this
   rwa [Category.assoc, Category.assoc] at this
 #align category_theory.limits.pullback_cone.mono_fst_of_is_pullback_of_mono CategoryTheory.Limits.PullbackCone.mono_fst_of_is_pullback_of_mono

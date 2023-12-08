@@ -291,8 +291,8 @@ def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' _ hy := sin_arcsin hy.1.le hy.2.le
   open_source := isOpen_Ioo
   open_target := isOpen_Ioo
-  continuous_toFun := continuous_sin.continuousOn
-  continuous_invFun := continuous_arcsin.continuousOn
+  continuousOn_toFun := continuous_sin.continuousOn
+  continuousOn_invFun := continuous_arcsin.continuousOn
 #align real.sin_local_homeomorph Real.sinLocalHomeomorph
 
 theorem cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=

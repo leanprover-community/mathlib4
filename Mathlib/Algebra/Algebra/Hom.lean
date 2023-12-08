@@ -509,6 +509,10 @@ def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S
   { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
+lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+    Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
+  fun _ _ e ↦ FunLike.ext _ _ (fun x ↦ FunLike.congr_fun e x)
+
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
@@ -570,6 +574,16 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
+section MulDistribMulAction
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+end MulDistribMulAction
 end Algebra
 
 namespace MulSemiringAction
