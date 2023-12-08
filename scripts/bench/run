@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-lake exe cache get
+lake exe cache get >2
 temci exec --config ./scripts/bench/temci-config.yml >2
 temci report --reporter codespeed2
   # move file metrics starting with "~" from "build" to toplevel and assign them the "instructions" metric
