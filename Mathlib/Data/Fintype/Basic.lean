@@ -120,7 +120,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 #align finset.univ_unique Finset.univ_unique
 
-@[simp]
+@[simp↓]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 #align finset.subset_univ Finset.subset_univ
 
@@ -262,7 +262,7 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_image_of_mem _ <| mem_univ _
 #align finset.image_univ_of_surjective Finset.image_univ_of_surjective
 
-@[simp]
+@[simp↓]
 theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
   Finset.image_univ_of_surjective f.surjective
 
@@ -280,7 +280,7 @@ theorem map_univ_of_surjective [Fintype β] {f : β ↪ α} (hf : Surjective f) 
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_map_of_mem _ <| mem_univ _
 #align finset.map_univ_of_surjective Finset.map_univ_of_surjective
 
-@[simp]
+@[simp↓]
 theorem map_univ_equiv [Fintype β] (f : β ≃ α) : univ.map f.toEmbedding = univ :=
   map_univ_of_surjective f.surjective
 #align finset.map_univ_equiv Finset.map_univ_equiv
@@ -331,7 +331,7 @@ theorem coe_filter_univ (p : α → Prop) [DecidablePred p] : (univ.filter p : S
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
     s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [ext_iff]
 
-@[simp] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+@[simp↓] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.subtype p = univ := by simp
 
 end Finset
@@ -1219,12 +1219,12 @@ namespace Multiset
 
 variable [Fintype α] [Fintype β]
 
-@[simp]
+@[simp↓]
 theorem count_univ [DecidableEq α] (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
 
-@[simp]
+@[simp↓]
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
   rw [← congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]

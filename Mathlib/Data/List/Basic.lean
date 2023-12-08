@@ -55,7 +55,7 @@ instance : IsAssociative (List α) Append.append :=
 #align list.head_eq_of_cons_eq List.head_eq_of_cons_eqₓ -- implicits order
 #align list.tail_eq_of_cons_eq List.tail_eq_of_cons_eqₓ -- implicits order
 
-@[simp] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ => tail_eq_of_cons_eq
+@[simp↓] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ => tail_eq_of_cons_eq
 #align list.cons_injective List.cons_injective
 
 #align list.cons_inj List.cons_inj
@@ -415,7 +415,7 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
-@[simp] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
+@[simp↓] lemma replicate_zero (a : α) : replicate 0 a = [] := rfl
 #align list.replicate_zero List.replicate_zero
 
 attribute [simp] replicate_succ
@@ -462,7 +462,7 @@ theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = r
     tail (replicate n a) = replicate (n - 1) a := by cases n <;> rfl
 #align list.tail_replicate List.tail_replicate
 
-@[simp] theorem join_replicate_nil (n : ℕ) : join (replicate n []) = @nil α := by
+@[simp↓] theorem join_replicate_nil (n : ℕ) : join (replicate n []) = @nil α := by
   induction n <;> [rfl; simp only [*, replicate, join, append_nil]]
 #align list.join_replicate_nil List.join_replicate_nil
 
@@ -720,7 +720,7 @@ theorem getLast?_singleton (a : α) :
     getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
-@[simp]
+@[simp↓]
 theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
@@ -835,7 +835,7 @@ theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
   (eq_cons_of_mem_head? h).symm ▸ mem_cons_self _ _
 #align list.mem_of_mem_head' List.mem_of_mem_head?
 
-@[simp] theorem head!_cons [Inhabited α] (a : α) (l : List α) : head! (a :: l) = a := rfl
+@[simp↓] theorem head!_cons [Inhabited α] (a : α) (l : List α) : head! (a :: l) = a := rfl
 #align list.head_cons List.head!_cons
 
 #align list.tail_nil List.tail_nil
@@ -1531,7 +1531,7 @@ theorem insertNth_zero (s : List α) (x : α) : insertNth 0 x s = x :: s :=
   rfl
 #align list.insert_nth_zero List.insertNth_zero
 
-@[simp]
+@[simp↓]
 theorem insertNth_succ_nil (n : ℕ) (a : α) : insertNth (n + 1) a [] = [] :=
   rfl
 #align list.insert_nth_succ_nil List.insertNth_succ_nil
@@ -2286,7 +2286,7 @@ theorem reverse_take {α} {xs : List α} (n : ℕ) (h : n ≤ xs.length) :
     rfl
 #align list.reverse_take List.reverse_take
 
-@[simp]
+@[simp↓]
 theorem set_eq_nil (l : List α) (n : ℕ) (a : α) : l.set n a = [] ↔ l = [] := by
   cases l <;> cases n <;> simp only [set]
 #align list.update_nth_eq_nil List.set_eq_nil
@@ -2544,7 +2544,7 @@ theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
     exact length_scanl _ _
 #align list.length_scanl List.length_scanl
 
-@[simp]
+@[simp↓]
 theorem scanl_nil (b : β) : scanl f b nil = [b] :=
   rfl
 #align list.scanl_nil List.scanl_nil
@@ -2617,7 +2617,7 @@ attribute [deprecated get_succ_scanl] nthLe_succ_scanl
 end Scanl
 
 -- scanr
-@[simp]
+@[simp↓]
 theorem scanr_nil (f : α → β → β) (b : β) : scanr f b [] = [b] :=
   rfl
 #align list.scanr_nil List.scanr_nil

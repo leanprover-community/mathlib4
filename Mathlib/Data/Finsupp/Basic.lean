@@ -485,7 +485,7 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
   sum_single_index <| single_zero _
 #align finsupp.map_domain_single Finsupp.mapDomain_single
 
-@[simp]
+@[simp↓]
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 #align finsupp.map_domain_zero Finsupp.mapDomain_zero
@@ -818,7 +818,7 @@ theorem some_add [AddCommMonoid M] (f g : Option α →₀ M) : (f + g).some = f
   simp
 #align finsupp.some_add Finsupp.some_add
 
-@[simp]
+@[simp↓]
 theorem some_single_none [Zero M] (m : M) : (single none m : Option α →₀ M).some = 0 := by
   ext
   simp
@@ -1031,7 +1031,7 @@ theorem subtypeDomain_apply {a : Subtype p} {v : α →₀ M} : (subtypeDomain p
   rfl
 #align finsupp.subtype_domain_apply Finsupp.subtypeDomain_apply
 
-@[simp]
+@[simp↓]
 theorem subtypeDomain_zero : subtypeDomain p (0 : α →₀ M) = 0 :=
   rfl
 #align finsupp.subtype_domain_zero Finsupp.subtypeDomain_zero

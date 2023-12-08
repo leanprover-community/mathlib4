@@ -1245,7 +1245,7 @@ theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 instance uniqueFinOne : Unique (Fin 1) where
   uniq _ := Subsingleton.elim _ _
 
-@[simp]
+@[simp↓]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 #align fin.coe_fin_one Fin.coe_fin_one
 
