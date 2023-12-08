@@ -354,7 +354,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
     simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
       get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
-      tsub_zero, add_pos_iff, or_true, forall_true_left, and_congr_right_iff]
+      tsub_zero, add_pos_iff, zero_lt_one, or_true, forall_true_left, and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
@@ -457,7 +457,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       refine gt_of_gt_of_ge ha.1 ?_
       rw [le_iff_lt_or_eq] at hmas
       cases' hmas with hmas hmas
-      · by_contra' hh
+      · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt

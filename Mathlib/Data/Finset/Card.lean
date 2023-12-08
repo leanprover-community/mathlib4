@@ -6,7 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Mathlib.Init.CCLemmas
 import Mathlib.Data.Finset.Image
 
-#align_import data.finset.card from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import data.finset.card from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Cardinality of a finite set
@@ -47,6 +47,9 @@ def card (s : Finset α) : ℕ :=
 theorem card_def (s : Finset α) : s.card = Multiset.card s.1 :=
   rfl
 #align finset.card_def Finset.card_def
+
+@[simp] lemma card_val (s : Finset α) : Multiset.card s.1 = s.card := rfl
+#align finset.card_val Finset.card_val
 
 @[simp]
 theorem card_mk {m nodup} : (⟨m, nodup⟩ : Finset α).card = Multiset.card m :=
@@ -202,6 +205,13 @@ theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
   congr_arg card <| Multiset.dedup_eq_self.mpr h
 #align multiset.to_finset_card_of_nodup Multiset.toFinset_card_of_nodup
 
+theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
+    card m.dedup = card m ↔ m.Nodup :=
+  .trans ⟨fun h ↦ eq_of_le_of_card_le (dedup_le m) h.ge, congr_arg _⟩ dedup_eq_self
+
+theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
+    m.toFinset.card = card m ↔ m.Nodup := dedup_card_eq_card_iff_nodup
+
 theorem List.card_toFinset : l.toFinset.card = l.dedup.length :=
   rfl
 #align list.card_to_finset List.card_toFinset
@@ -348,7 +358,7 @@ theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s
 theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.card) {f : α → β}
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
-    by_contra' hz
+    by_contra! hz
     refine' hc.not_le (card_le_card_of_inj_on f hf _)
     intro x hx y hy
     contrapose
@@ -463,7 +473,17 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
 lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
-  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ←h, card_sdiff_add_card, union_comm]
+  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
+
+@[simp]
+lemma card_sdiff_add_card_inter (s t : Finset α) :
+    (s \ t).card + (s ∩ t).card = s.card := by
+  rw [← card_disjoint_union (disjoint_sdiff_inter _ _), sdiff_union_inter]
+
+@[simp]
+lemma card_inter_add_card_sdiff (s t : Finset α) :
+    (s ∩ t).card + (s \ t).card = s.card := by
+  rw [add_comm, card_sdiff_add_card_inter]
 
 end Lattice
 
@@ -487,7 +507,7 @@ theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + card B �
       apply Nat.succ_pos
     have z : i + card B + k = card (erase A a) := by
       rw [card_erase_of_mem (mem_sdiff.1 ha).1, ← h,
-        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ←pred_eq_sub_one,
+        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ← pred_eq_sub_one,
         k.pred_succ]
     have : B ⊆ A.erase a := by
       rintro t th
@@ -665,7 +685,7 @@ lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
   · simp_rw [card_eq_one]
     rintro ⟨hts, a, ha⟩
     refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
-    rw [insert_eq, ←ha, sdiff_union_of_subset hts]
+    rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 end DecidableEq
 

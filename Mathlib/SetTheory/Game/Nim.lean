@@ -174,12 +174,14 @@ theorem default_nim_one_rightMoves_eq :
 
 @[simp]
 theorem toLeftMovesNim_one_symm (i) :
-    (@toLeftMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by simp
+    (@toLeftMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
+  simp [eq_iff_true_of_subsingleton]
 #align pgame.to_left_moves_nim_one_symm SetTheory.PGame.toLeftMovesNim_one_symm
 
 @[simp]
 theorem toRightMovesNim_one_symm (i) :
-    (@toRightMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by simp
+    (@toRightMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
+  simp [eq_iff_true_of_subsingleton]
 #align pgame.to_right_moves_nim_one_symm SetTheory.PGame.toRightMovesNim_one_symm
 
 theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp

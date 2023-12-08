@@ -274,7 +274,7 @@ theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
 #align tsub_add_eq_tsub_tsub_swap tsub_add_eq_tsub_tsub_swap
 
 theorem tsub_right_comm : a - b - c = a - c - b := by
-  rw [←tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
+  rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
 #align tsub_right_comm tsub_right_comm
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/
