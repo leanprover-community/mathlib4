@@ -564,12 +564,12 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
       apply IsClosed.closure_subset
       apply isClosed_eq
       · rw [continuous_iff_continuousAt]
-        rintro ⟨t, ht⟩
+        rintro ⟨_, ht⟩
         apply ContinuousAt.comp _ continuousAt_subtype_val
         rw [Subtype.coe_mk]
         exact hγ.continuousAt ht
       · rw [continuous_iff_continuousAt]
-        rintro ⟨t, ht⟩
+        rintro ⟨_, ht⟩
         apply ContinuousAt.comp _ continuousAt_subtype_val
         rw [Subtype.coe_mk]
         exact hγ'.continuousAt ht
