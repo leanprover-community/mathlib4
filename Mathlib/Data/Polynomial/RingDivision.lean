@@ -496,10 +496,11 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
     (hpq : (p /ₘ (X - C x) ^ (p.rootMultiplicity x)).eval x *
       (q /ₘ (X - C x) ^ (q.rootMultiplicity x)).eval x ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
-  have h : p * q = (p /ₘ (X - C x) ^ (p.rootMultiplicity x) * (X - C x) ^ (p.rootMultiplicity x)) *
-      (q /ₘ (X - C x) ^ (q.rootMultiplicity x) * (X - C x) ^ (q.rootMultiplicity x)) := by
-    simp only [divByMonic_mul_pow_rootMultiplicity_eq]
-  rw [mul_comm _ <| (X - C x) ^ (q.rootMultiplicity x), ← mul_assoc,
+  have h : p * q =
+      ((X - C x) ^ (p.rootMultiplicity x) * (p /ₘ (X - C x) ^ (p.rootMultiplicity x))) *
+      ((X - C x) ^ (q.rootMultiplicity x) * (q /ₘ (X - C x) ^ (q.rootMultiplicity x))) := by
+    simp only [pow_mul_divByMonic_rootMultiplicity_eq]
+  rw [mul_comm <| (X - C x) ^ (p.rootMultiplicity x), ← mul_assoc,
     mul_assoc _ _ <| (X - C x) ^ (q.rootMultiplicity x), ← pow_add,
     mul_comm _ <| (X - C x) ^ (p.rootMultiplicity x + q.rootMultiplicity x), mul_assoc] at h
   have hpq' : p * q ≠ 0 := fun h' ↦ by
