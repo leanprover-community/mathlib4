@@ -612,13 +612,3 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
     (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ => hip t) hv
     (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
     (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
-
-example (s t : Set ℝ) : closure (s ∩ t) ∩ t ⊆ s ∩ t := by
-  rw [← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
-    image_subset_image_iff Subtype.val_injective]
-  intros t ht
-  rw [mem_preimage, ← closure_subtype] at ht
-  revert ht t
-  apply IsClosed.closure_subset
-  -- goal state: `IsClosed (Subtype.val ⁻¹' s)`
-  sorry
