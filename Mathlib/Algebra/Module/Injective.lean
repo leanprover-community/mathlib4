@@ -498,8 +498,8 @@ lemma Module.injective_of_ulift_injective
 lemma Module.injective_iff_ulift_injective
     (M : Type max u v) [AddCommGroup M] [Module R M] :
     Module.Injective.{u, v} R M ↔ Module.Injective.{u, max v v'} R (ULift.{max v v' u} M) :=
-  ⟨Module.ulift_injective_of_injective.{u, v, v'} R M,
-   Module.injective_of_ulift_injective.{u, v, v'} R M⟩
+  ⟨Module.ulift_injective_of_injective.{u, v, v'} R,
+   Module.injective_of_ulift_injective.{u, v, v'} R⟩
 
 instance ModuleCat.ulift_injective_of_injective
     (M : Type max u v) [AddCommGroup M] [Module R M]
