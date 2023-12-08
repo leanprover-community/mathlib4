@@ -298,6 +298,29 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
    use instead `α.prod β` or `NatTrans.prod α β`. -/
 end NatTrans
 
+namespace NatIso
+
+/-- The cartesian product of two natural isomorphisms. -/
+@[simps]
+def prod {F F' : A ⥤ B} {G G' : C ⥤ D} (e₁ : F ≅ F') (e₂ : G ≅ G') :
+    F.prod G ≅ F'.prod G' where
+  hom := NatTrans.prod e₁.hom e₂.hom
+  inv := NatTrans.prod e₁.inv e₂.inv
+
+end NatIso
+
+namespace Equivalence
+
+/-- The cartesian product of two equivalences of categories. -/
+@[simps]
+def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where
+  functor := E₁.functor.prod E₂.functor
+  inverse := E₁.inverse.prod E₂.inverse
+  unitIso := NatIso.prod E₁.unitIso E₂.unitIso
+  counitIso := NatIso.prod E₁.counitIso E₂.counitIso
+
+end Equivalence
+
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
 @[simps!]
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=

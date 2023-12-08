@@ -90,7 +90,7 @@ We use FTC-1 to prove several versions of FTC-2 for the Lebesgue measure, using 
 scheme as for the versions of FTC-1. They include:
 * `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` - most general version, for functions
   with a right derivative
-* `intervalIntegral.integral_eq_sub_of_hasDerivAt'` - version for functions with a derivative on
+* `intervalIntegral.integral_eq_sub_of_hasDerivAt` - version for functions with a derivative on
   an open set
 * `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
@@ -1031,7 +1031,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       rw [← uIcc_of_le hab] at G'int hcont ⊢
       exact (hcont.sub continuousOn_const).prod (continuousOn_primitive_interval G'int)
     simp only [inter_comm]
-    exact this.preimage_closed_of_closed isClosed_Icc OrderClosedTopology.isClosed_le'
+    exact this.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   have main : Icc a b ⊆ {t | g t - g a ≤ ∫ u in a..t, (G' u).toReal} := by
     -- to show that the set `s` is all `[a, b]`, it suffices to show that any point `t` in `s`
     -- with `t < b` admits another point in `s` slightly to its right
@@ -1129,7 +1129,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
       rw [← uIcc_of_le hab] at hcont φint ⊢
       exact (continuousOn_const.sub hcont).prod (continuousOn_primitive_interval_left φint)
     simp only [inter_comm]
-    exact this.preimage_closed_of_closed isClosed_Icc isClosed_le_prod
+    exact this.preimage_isClosed_of_isClosed isClosed_Icc isClosed_le_prod
   have A : closure (Ioc a b) ⊆ s := by
     apply s_closed.closure_subset_iff.2
     intro t ht
@@ -1243,6 +1243,27 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
   exact hcont.intervalIntegrable
 #align interval_integral.integral_deriv_eq_sub' intervalIntegral.integral_deriv_eq_sub'
 
+/-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
+of calculus, involving integrating over the unit interval. -/
+lemma integral_unitInterval_deriv_eq_sub [IsROrC 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+    {f f' : 𝕜 → E} {z₀ z₁ : 𝕜}
+    (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
+    (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
+    z₁ • ∫ t in (0 : ℝ)..1, f' (z₀ + t • z₁) = f (z₀ + z₁) - f z₀ := by
+  let γ (t : ℝ) : 𝕜 := z₀ + t • z₁
+  have hint : IntervalIntegrable (z₁ • (f' ∘ γ)) MeasureTheory.volume 0 1 :=
+    (ContinuousOn.const_smul hcont z₁).intervalIntegrable_of_Icc zero_le_one
+  have hderiv' : ∀ t ∈ Set.uIcc (0 : ℝ) 1, HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t
+  · intro t ht
+    refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t ?_
+    have : HasDerivAt (fun t : ℝ ↦ t • z₁) z₁ t
+    · convert (hasDerivAt_id t).smul_const (F := 𝕜) _ using 1
+      simp only [one_smul]
+    exact this.const_add z₀
+  convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
+  · simp_rw [← integral_smul, Function.comp_apply]
+  · simp only [Function.comp_apply, one_smul, zero_smul, add_zero]
+
 /-!
 ### Automatic integrability for nonnegative derivatives
 -/
@@ -1261,7 +1282,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     exact (hderiv x hx).derivWithin (uniqueDiffWithinAt_Ioi _)
   suffices H : (∫⁻ x in Ioo a b, ‖g' x‖₊) ≤ ENNReal.ofReal (g b - g a) from
     ⟨meas_g'.aestronglyMeasurable, H.trans_lt ENNReal.ofReal_lt_top⟩
-  by_contra' H
+  by_contra! H
   obtain ⟨f, fle, fint, hf⟩ :
     ∃ f : SimpleFunc ℝ ℝ≥0,
       (∀ x, f x ≤ ‖g' x‖₊) ∧

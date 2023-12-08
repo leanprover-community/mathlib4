@@ -768,7 +768,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   iterate 4 rw [hf.multiplicative_factorization f (by assumption),
     Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
       (s := (x.primeFactors ⊔ y.primeFactors))]
-  · rw [←Finset.prod_mul_distrib, ←Finset.prod_mul_distrib]
+  · rw [← Finset.prod_mul_distrib, ← Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
     intro p _
     rcases Nat.le_or_le (x.factorization p) (y.factorization p) with h | h <;>
@@ -1042,15 +1042,9 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
-  -- porting note: the rest of this proof was a single `simp only` with all the lemmas thrown in
-  -- followed by the last `rw`.
-  simp only [moebius, ZeroHom.coe_mk]
-  dsimp only [coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
-  simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
-    zero_mul, mul_zero]
-  rw [cardFactors_mul hn hm, pow_add, ite_mul_zero_left, ite_mul_zero_right]
-  split_ifs <;>  -- porting note: added
-  simp           -- porting note: added
+  simp only [moebius, ZeroHom.coe_mk, coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk,
+    IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_zero_mul_ite_zero,
+    cardFactors_mul hn hm, pow_add]
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
 open UniqueFactorizationMonoid
@@ -1207,19 +1201,19 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     let G := fun (n:ℕ) => (∑ i in n.divisors, f i)
     intro n hn hnP
     suffices ∑ d in n.divisors, μ (n/d) • G d = f n from by
-      rw [Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • g y), ←this, sum_congr rfl]
+      rw [Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • g y), ← this, sum_congr rfl]
       intro d hd
-      rw [←h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
-    rw [←Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • G y)]
+      rw [← h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
+    rw [← Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • G y)]
     apply sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
     intro _ _; rfl
   · intro h
     let F := fun (n:ℕ) => ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd
     intro n hn hnP
     suffices ∑ d in n.divisors, F d = g n from by
-      rw [←this, sum_congr rfl]
+      rw [← this, sum_congr rfl]
       intro d hd
-      rw [←h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
+      rw [← h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
     apply sum_eq_iff_sum_smul_moebius_eq.mpr _ n hn
     intro _ _; rfl
 

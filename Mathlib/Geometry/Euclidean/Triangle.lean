@@ -60,7 +60,7 @@ deduce corresponding results for Euclidean affine spaces.
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
-/-- Law of cosines (cosine rule), vector angle form. -/
+/-- **Law of cosines** (cosine rule), vector angle form. -/
 theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle (x y : V) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ - 2 * ‖x‖ * ‖y‖ * Real.cos (angle x y) := by
   rw [show 2 * ‖x‖ * ‖y‖ * Real.cos (angle x y) = 2 * (Real.cos (angle x y) * (‖x‖ * ‖y‖)) by ring,
@@ -69,7 +69,7 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
     sub_add_eq_add_sub]
 #align inner_product_geometry.norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle InnerProductGeometry.norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle
 
-/-- Pons asinorum, vector angle form. -/
+/-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
     angle x (x - y) = angle y (y - x) := by
   refine' Real.injOn_cos ⟨angle_nonneg _ _, angle_le_pi _ _⟩ ⟨angle_nonneg _ _, angle_le_pi _ _⟩ _
@@ -77,7 +77,7 @@ theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) 
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm, h, real_inner_comm x y]
 #align inner_product_geometry.angle_sub_eq_angle_sub_rev_of_norm_eq InnerProductGeometry.angle_sub_eq_angle_sub_rev_of_norm_eq
 
-/-- Converse of pons asinorum, vector angle form. -/
+/-- **Converse of pons asinorum**, vector angle form. -/
 theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
     (h : angle x (x - y) = angle y (y - x)) (hpi : angle x y ≠ π) : ‖x‖ = ‖y‖ := by
   replace h := Real.arccos_injOn (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x (x - y)))
@@ -238,14 +238,9 @@ theorem angle_add_angle_sub_add_angle_sub_eq_pi {x y : V} (hx : x ≠ 0) (hy : y
     replace h3lt := lt_of_mul_lt_mul_right h3lt (le_of_lt Real.pi_pos)
     norm_cast at h3lt
   interval_cases n
-  · rw [hn] at hcos
-    simp at hcos
-    norm_num at hcos
-  · rw [hn]
-    norm_num
-  · rw [hn] at hcos
-    simp at hcos
-    norm_num at hcos
+  · simp [hn] at hcos
+  · norm_num [hn]
+  · simp [hn] at hcos
 #align inner_product_geometry.angle_add_angle_sub_add_angle_sub_eq_pi InnerProductGeometry.angle_add_angle_sub_add_angle_sub_eq_pi
 
 end InnerProductGeometry

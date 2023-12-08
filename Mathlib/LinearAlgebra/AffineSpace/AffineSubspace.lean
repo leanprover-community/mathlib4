@@ -154,6 +154,7 @@ end
 space structure induced by a corresponding subspace of the `Module k V`. -/
 structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
+  /-- The affine subspace seen as a subset. -/
   carrier : Set P
   smul_vsub_vadd_mem :
     ∀ (c : k) {p1 p2 p3 : P},
@@ -302,7 +303,7 @@ theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p
 /-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
 vectors subtracting that point on the left. -/
 theorem coe_direction_eq_vsub_set_left {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
-    (s.direction : Set V) = (· -ᵥ ·) p '' s := by
+    (s.direction : Set V) = (p -ᵥ ·) '' s := by
   ext v
   rw [SetLike.mem_coe, ← Submodule.neg_mem_iff, ← SetLike.mem_coe,
     coe_direction_eq_vsub_set_right hp, Set.mem_image_iff_bex, Set.mem_image_iff_bex]
@@ -390,7 +391,6 @@ def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s 
     ext
     apply add_vadd
   vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.2 _).mpr b.2⟩
-  Nonempty := by infer_instance
   vsub_vadd' a b := by
     ext
     apply AddTorsor.vsub_vadd'
@@ -767,7 +767,7 @@ variable (P)
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
 theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
-  cases' S.Nonempty with p
+  cases' S.nonempty with p
   ext v
   refine' ⟨imp_intro Submodule.mem_top, fun _hv => _⟩
   have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
@@ -1047,7 +1047,7 @@ open AffineSubspace Set
 
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the left. -/
 theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
-    vectorSpan k s = Submodule.span k ((· -ᵥ ·) p '' s) := by
+    vectorSpan k s = Submodule.span k ((p -ᵥ ·) '' s) := by
   rw [vectorSpan_def]
   refine' le_antisymm _ (Submodule.span_mono _)
   · rw [Submodule.span_le]
@@ -1076,7 +1076,7 @@ theorem vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
 /-- The `vectorSpan` is the span of the pairwise subtractions with a given point on the left,
 excluding the subtraction of that point from itself. -/
 theorem vectorSpan_eq_span_vsub_set_left_ne {s : Set P} {p : P} (hp : p ∈ s) :
-    vectorSpan k s = Submodule.span k ((· -ᵥ ·) p '' (s \ {p})) := by
+    vectorSpan k s = Submodule.span k ((p -ᵥ ·) '' (s \ {p})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k hp, ← Set.insert_eq_of_mem hp, ←
       Set.insert_diff_singleton, Set.image_insert_eq]
@@ -1104,7 +1104,7 @@ theorem vectorSpan_eq_span_vsub_finset_right_ne [DecidableEq P] [DecidableEq V] 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
 given point on the left, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
-    vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ ·) (p i) '' (p '' (s \ {i}))) := by
+    vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' (p '' (s \ {i}))) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
       Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
@@ -1205,7 +1205,7 @@ preserved under certain affine combinations, then `p` holds for all elements of 
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (Hs : ∀ x : P, x ∈ s → p x)
     (Hc : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (@affineSpan_le _ _ _ _ _ _ _ _ ⟨p, Hc⟩).mpr Hs h
+  (affineSpan_le (Q := ⟨p, Hc⟩)).mpr Hs h
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
@@ -1218,7 +1218,7 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
   refine' Exists.elim _ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- porting note: Lean couldn't infer the motive
-  refine' @affineSpan_induction k V P _ _ _ _ _ _ (fun y => ∃ z, p y z) h _ _
+  refine' affineSpan_induction (p := fun y => ∃ z, p y z) h _ _
   · exact fun y hy => ⟨subset_affineSpan _ _ hy, Hs y hy⟩
   · exact fun c u v w hu hv hw =>
       Exists.elim hu fun hu' hu =>
@@ -1315,6 +1315,7 @@ theorem mem_vectorSpan_pair_rev {p₁ p₂ : P} {v : V} :
 
 variable (k)
 
+/-- The line between two points, as an affine subspace. -/
 notation "line[" k ", " p₁ ", " p₂ "]" =>
   affineSpan k (insert p₁ (@singleton _ _ Set.instSingletonSet p₂))
 
@@ -1425,6 +1426,23 @@ theorem vectorSpan_insert_eq_vectorSpan {p : P} {ps : Set P} (h : p ∈ affineSp
     vectorSpan k (insert p ps) = vectorSpan k ps := by
   simp_rw [← direction_affineSpan, affineSpan_insert_eq_affineSpan _ h]
 #align vector_span_insert_eq_vector_span vectorSpan_insert_eq_vectorSpan
+
+/-- When the affine space is also a vector space, the affine span is contained within the linear
+span. -/
+lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
+    affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
+  intro x hx
+  show x ∈ Submodule.span k s
+  induction hx using affineSpan_induction' with
+  | Hs x hx => exact Submodule.subset_span hx
+  | Hc c u _ v _ w _ hu hv hw =>
+    simp only [vsub_eq_sub, vadd_eq_add]
+    apply Submodule.add_mem _ _ hw
+    exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
+
+lemma affineSpan_subset_span {s : Set V} :
+    (affineSpan k s : Set V) ⊆  Submodule.span k s :=
+  affineSpan_le_toAffineSubspace_span
 
 end AffineSpace'
 
@@ -1796,6 +1814,7 @@ def Parallel (s₁ s₂ : AffineSubspace k P) : Prop :=
   ∃ v : V, s₂ = s₁.map (constVAdd k P v)
 #align affine_subspace.parallel AffineSubspace.Parallel
 
+@[inherit_doc]
 scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 
 @[symm]

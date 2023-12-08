@@ -75,7 +75,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     _ = (m + 1) * (n + 1) := by rw [sum_const, card_fin, Nat.nsmul_eq_mul]
   -- It remains to prove the key inequality, by contradiction
   rintro k -
-  by_contra' h : a k + a (rev k) < n + 1
+  by_contra! h : a k + a (rev k) < n + 1
   -- We exhibit `k+1` elements of `A` greater than `a (rev k)`
   set f : Fin (m + 1) ↪ ℕ :=
     ⟨fun i => a i + a (rev k), by
