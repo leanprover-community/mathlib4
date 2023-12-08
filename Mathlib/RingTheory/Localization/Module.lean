@@ -76,7 +76,7 @@ theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 := by
-    apply_fun (· • ·) (a : R) at hg
+    apply_fun ((a : R) • ·) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
     refine' Finset.sum_congr rfl fun i hi => _
