@@ -43,6 +43,12 @@ lemma coprime_list_prod_iff_right {k} {l : List ℕ} :
     Coprime k l.prod ↔ ∀ n ∈ l, Coprime k n := by
   induction' l with m l ih <;> simp[Nat.coprime_mul_iff_right, *]
 
+lemma coprime_list_prod_iff_left {k} {l : List ℕ} :
+    Coprime l.prod k ↔ ∀ n ∈ l, Coprime k n := by
+  induction' l with m l ih <;> simp[Nat.coprime_mul_iff_left, *]
+  intro
+  exact coprime_comm
+
 lemma pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod {n} {l : List ℕ} :
     (n :: l).Pairwise Coprime ↔ l.Pairwise Coprime ∧ Coprime n l.prod :=
   ⟨by rintro (⟨⟩ | ⟨hn, hp⟩); exact ⟨hp, coprime_list_prod_iff_right.mpr hn⟩,
