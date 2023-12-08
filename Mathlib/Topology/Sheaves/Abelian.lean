@@ -53,7 +53,7 @@ variable {J : GrothendieckTopology C}
 -- instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
 --   out j := { has_limit := fun F => by infer_instance }
 
-variable [HasSheafify J D] [PreservesFiniteLimits (presheafToSheaf J D)]
+variable [HasSheafify J D]
 
 instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D

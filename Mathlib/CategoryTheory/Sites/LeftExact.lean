@@ -271,6 +271,9 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
   intros
   infer_instance
 
+instance [HasFiniteLimits D] : HasSheafify J D :=
+  HasSheafify.mk' J D (sheafificationAdjunction J D)
+
 instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
     FinitaryExtensive (Sheaf J D) :=
   finitaryExtensive_of_reflective (sheafificationAdjunction _ _)

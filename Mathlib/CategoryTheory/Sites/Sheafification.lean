@@ -654,7 +654,7 @@ noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPr
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
 
-instance hasSheafifyOfPlusPlus : HasSheafify J D where
+instance hasSheafifyOfPlusPlus : HasWeakSheafify J D where
   isRightAdjoint := ⟨inferInstance⟩
 
 /--
@@ -712,4 +712,3 @@ instance sheafification_reflective : IsIso (plusPlusAdjunction J D).counit :=
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 end CategoryTheory
-#lint
