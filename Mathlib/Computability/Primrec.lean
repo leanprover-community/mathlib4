@@ -1248,7 +1248,7 @@ private theorem graph_eq_map_bindItr (a : α) (i : ℕ) (hi : i ≤ m a + 1) :
     rw [List.bind_option_toList_of_eq_some]
     intro a' ha'; simp; rw[mapGraph_graph]
     · exact H a'
-    · exact List.subset_bind_of_mem ha' l
+    · exact (List.infix_bind_of_mem ha' l).subset
 
 end
 

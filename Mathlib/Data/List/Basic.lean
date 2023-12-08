@@ -1762,9 +1762,9 @@ theorem bind_option_toList_of_eq_some {f : β → Option α} {g : β → α} {bs
     List.bind_congr (by simp; intro m hm; simp[h _ hm]; rfl)
   rw [this, List.bind_ret_eq_map]
 
-theorem subset_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
-    f a ⊆ as.bind f := by
-  intro _ ha; simpa using ⟨a, h, ha⟩
+theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
+    f a <:+: as.bind f :=
+  List.infix_of_mem_join (List.mem_map_of_mem f h)
 
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
