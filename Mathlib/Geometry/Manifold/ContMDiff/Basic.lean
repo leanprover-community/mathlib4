@@ -413,8 +413,7 @@ variable (I)
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is smooth. -/
-lemma contMDiff_openEmbedding :
-    ContMDiff (CS := h.singletonChartedSpace) I I n e := by
+lemma contMDiff_openEmbedding : ContMDiff (CS := h.singletonChartedSpace) I I n e := by
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [contMDiff_iff (CS := h.singletonChartedSpace)]
   use h.continuous
@@ -422,8 +421,7 @@ lemma contMDiff_openEmbedding :
   -- show the function is actually the identity on the range of I ∘ e
   apply contDiffOn_id.congr
   intros z hz
-  -- factorise into the chart (=e) and the model (=id)
-  rw [extChartAt_coe_symm (CS := h.singletonChartedSpace)]
+  -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
   rw [h.toLocalHomeomorph_right_inv]
   · rw [I.right_inv]
@@ -452,18 +450,11 @@ lemma contMDiffOn_openEmbedding_symm :
     apply contDiffOn_id.congr
     intros z hz
     -- factorise into the chart (=e) and the model (=id)
-    rw [extChartAt_coe (CS := h.singletonChartedSpace),
-      extChartAt_coe_symm, chartAt_self_eq]
-    simp_rw [Function.comp_apply]
-    rw [LocalHomeomorph.refl_symm, LocalHomeomorph.refl_apply, id.def,
-      LocalHomeomorph.singletonChartedSpace_chartAt_eq, LocalHomeomorph.right_inv]
-    · rw [I.right_inv]
-      · rfl
-      · apply mem_of_subset_of_mem _ hz.1
-        exact extChartAt_target_subset_range _ _
-    · -- `hz` implies that `z ∈ range (I ∘ e)`
-      rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ← mem_preimage]
-      exact hz.2.1
+    simp only [mfld_simps]
+    have (y : H) : e ((h.toLocalHomeomorph e).symm y) = y := sorry -- extract as separate lemma!
+    rw [this]
+    apply I.right_inv
+    exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
