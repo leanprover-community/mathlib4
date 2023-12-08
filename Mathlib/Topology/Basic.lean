@@ -1415,6 +1415,12 @@ theorem isClosed_iff_nhds {s : Set α} :
   simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
 #align is_closed_iff_nhds isClosed_iff_nhds
 
+lemma isClosed_iff_forall_filter {s : Set α} :
+    IsClosed s ↔ ∀ x, ∀ F : Filter α, F.NeBot → F ≤ 𝓟 s → F ≤ 𝓝 x → x ∈ s := by
+  simp_rw [isClosed_iff_clusterPt]
+  exact ⟨fun hs x F F_ne FS Fx ↦ hs _ <| NeBot.mono F_ne (le_inf Fx FS),
+         fun hs x hx ↦ hs x (𝓝 x ⊓ 𝓟 s) hx inf_le_right inf_le_left⟩
+
 theorem IsClosed.interior_union_left {s t : Set α} (_ : IsClosed s) :
     interior (s ∪ t) ⊆ s ∪ interior t := fun a ⟨u, ⟨⟨hu₁, hu₂⟩, ha⟩⟩ =>
   (Classical.em (a ∈ s)).imp_right fun h =>
