@@ -61,18 +61,6 @@ instance : AddCommGroup (CharacterModule.{uR, uM, uD} R M D) :=
 
 instance : Module R (CharacterModule.{uR, uM, uD} R M D) :=
   LinearMap.module
-  -- smul r l :=
-  -- { toFun := fun x ↦ l (r • x)
-  --   map_add' := fun x y ↦ by dsimp; rw [smul_add, map_add]
-  --   map_smul' := fun s x ↦ by dsimp; rw [← smul_comm, l.map_smul] }
-  -- one_smul l := LinearMap.ext fun x ↦ show l _ = _ by rw [one_smul]
-  -- mul_smul r₁ r₂ l := LinearMap.ext fun x ↦ show l _ = l _ by rw [mul_smul, smul_comm]
-  -- smul_zero r := rfl
-  -- smul_add r l₁ l₂ := LinearMap.ext fun x ↦ show (l₁ + _) _ = _ by
-  --   rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
-  -- add_smul r₁ r₂ l := LinearMap.ext fun x ↦ show l _ = l _ + l _ by
-  --   rw [add_smul, map_add]
-  -- zero_smul l := LinearMap.ext fun _ ↦ show l _ = 0 by rw [zero_smul, map_zero]
 
 @[simp] lemma CharacterModule.smul_apply (f : CharacterModule.{uR, uM, uD} R M D) (r : R) (m : M) :
     (r • f) m = f (r • m) := by
@@ -173,14 +161,15 @@ noncomputable def CharacterModule.curry :
 `CharacterModule.uncurry` and `CharacterModule.curry` defines a bijection between linear map
 `Hom(N, CharacterModule M)` and `CharacterModule(N ⊗ M)`
 -/
-@[simps]
+@[simps!]
 noncomputable def CharacterModule.homEquiv :
-  (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) ≃ CharacterModule.{uR, max uM uN, uD} R (N ⊗[R] M) D :=
-{ toFun := CharacterModule.uncurry.{uR, uM, uN, uD} R M N D
-  invFun := CharacterModule.curry.{uR, uM, uN, uD} R M N D
-  left_inv := fun _ ↦ LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop
-  right_inv := fun _ ↦ LinearMap.ext fun z ↦ by refine z.induction_on ?_ ?_ ?_ <;> aesop }
-
+    (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) ≃ₗ[R]
+    CharacterModule.{uR, max uM uN, uD} R (N ⊗[R] M) D :=
+LinearEquiv.ofLinear
+  (uncurry.{uR, uM, uN, uD} R M N D)
+  (curry.{uR, uM, uN, uD} R M N D)
+  (LinearMap.ext fun _ ↦ TensorProduct.ext <| by aesop)
+  (LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop)
 /--
 Equivalent modules have equivalent character modules
 -/
@@ -259,7 +248,6 @@ noncomputable def ofSpanSingleton (a : A) : unitRationalCircle (ℤ ∙ a) :=
 
 lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
-  -- simp? [ofSpanSingleton] at h
   erw [ofSpanSingleton, LinearMap.comp_apply,
     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
     LinearMap.toAddMonoidHom_coe, int.divByNat, LinearMap.toSpanSingleton_one,
