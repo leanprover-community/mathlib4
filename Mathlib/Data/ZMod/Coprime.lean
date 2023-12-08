@@ -50,9 +50,8 @@ lemma coprime_list_prod_iff_left {k} {l : List ℕ} :
   exact coprime_comm
 
 lemma pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod {n} {l : List ℕ} :
-    (n :: l).Pairwise Coprime ↔ l.Pairwise Coprime ∧ Coprime n l.prod :=
-  ⟨by rintro (⟨⟩ | ⟨hn, hp⟩); exact ⟨hp, coprime_list_prod_iff_right.mpr hn⟩,
-   by rintro ⟨hn, hp⟩; exact List.Pairwise.cons (coprime_list_prod_iff_right.mp hp) hn⟩
+    (n :: l).Pairwise Coprime ↔ l.Pairwise Coprime ∧ Coprime n l.prod := by
+  rw[List.pairwise_cons, coprime_list_prod_iff_right, and_comm]
 
 lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
     (∀ i, a ≡ b [MOD l.get i]) ↔ a ≡ b [MOD l.prod] := by
