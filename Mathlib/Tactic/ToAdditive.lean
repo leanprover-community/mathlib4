@@ -713,6 +713,7 @@ def nameDict : String → List String
   | "smul"        => ["vadd"]
   | "inv"         => ["neg"]
   | "div"         => ["sub"]
+  | "sdiv"        => ["vsub"]
   | "prod"        => ["sum"]
   | "hmul"        => ["hadd"]
   | "hsmul"       => ["hvadd"]
