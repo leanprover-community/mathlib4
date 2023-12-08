@@ -35,7 +35,7 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp
-  nth_rw 1 [← p.divByMonic_mul_pow_rootMultiplicity_eq t]
+  nth_rw 1 [← p.pow_mul_divByMonic_rootMultiplicity_eq t, mul_comm]
   simp only [derivative_pow, derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero,
     mul_one]
   set n := p.rootMultiplicity t - 1
