@@ -648,7 +648,7 @@ the additive version of exponentation by repeated squaring.
 -- `nsmulRec_eq_nsmulBinRec`
 @[nolint unusedArguments]
 def nsmulBinRec {M : Type*} [AddSemigroup M] [Zero M]
-  (_add_zero : ∀ m : M, m + 0 = m) (_zero_add : ∀ m : M, 0 + m = m) (k : ℕ) (m : M) : M :=
+    (_add_zero : ∀ m : M, m + 0 = m) (_zero_add : ∀ m : M, 0 + m = m) (k : ℕ) (m : M) : M :=
   go k 0 m
 where
   go : ℕ → M → M → M
@@ -667,7 +667,7 @@ where
 -- `npowRec_eq_npowBinRec`
 @[nolint unusedArguments, to_additive existing]
 def npowBinRec {M : Type*} [Semigroup M] [One M]
-  (_mul_one : ∀ m : M, m * 1 = m) (_one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) : M :=
+    (_mul_one : ∀ m : M, m * 1 = m) (_one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) : M :=
   go k 1 m
 where
   go : ℕ → M → M → M
