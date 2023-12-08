@@ -43,7 +43,7 @@ open Finset
 
 variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
 
-/-! ###  Graph uniformity -/
+/-! ### Graph uniformity -/
 
 
 namespace SimpleGraph
@@ -59,6 +59,9 @@ def IsUniform (s t : Finset α) : Prop :=
 #align simple_graph.is_uniform SimpleGraph.IsUniform
 
 variable {G ε}
+
+instance IsUniform.instDecidableRel : DecidableRel (G.IsUniform ε) := by
+  unfold IsUniform; infer_instance
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
@@ -76,8 +79,23 @@ theorem isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
   ⟨fun h => h.symm, fun h => h.symm⟩
 #align simple_graph.is_uniform_comm SimpleGraph.isUniform_comm
 
-theorem isUniform_singleton (hε : 0 < ε) : G.IsUniform ε {a} {b} := by
+lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
   intro s' hs' t' ht' hs ht
+  rw [mul_one] at hs ht
+  rw [eq_of_subset_of_card_le hs' (Nat.cast_le.1 hs),
+    eq_of_subset_of_card_le ht' (Nat.cast_le.1 ht), sub_self, abs_zero]
+  exact zero_lt_one
+#align simple_graph.is_uniform_one SimpleGraph.isUniform_one
+
+variable {G}
+
+lemma IsUniform.pos (hG : G.IsUniform ε s t) : 0 < ε :=
+  not_le.1 fun hε ↦ (hε.trans $ abs_nonneg _).not_lt $ hG (empty_subset _) (empty_subset _)
+    (by simpa using mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg _) hε)
+    (by simpa using mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg _) hε)
+
+@[simp] lemma isUniform_singleton : G.IsUniform ε {a} {b} ↔ 0 < ε := by
+  refine ⟨IsUniform.pos, fun hε s' hs' t' ht' hs ht ↦ ?_⟩
   rw [card_singleton, Nat.cast_one, one_mul] at hs ht
   obtain rfl | rfl := Finset.subset_singleton_iff.1 hs'
   · replace hs : ε ≤ 0 := by simpa using hs
@@ -91,16 +109,6 @@ theorem isUniform_singleton (hε : 0 < ε) : G.IsUniform ε {a} {b} := by
 theorem not_isUniform_zero : ¬G.IsUniform (0 : 𝕜) s t := fun h =>
   (abs_nonneg _).not_lt <| h (empty_subset _) (empty_subset _) (by simp) (by simp)
 #align simple_graph.not_is_uniform_zero SimpleGraph.not_isUniform_zero
-
-theorem isUniform_one : G.IsUniform (1 : 𝕜) s t := by
-  intro s' hs' t' ht' hs ht
-  rw [mul_one] at hs ht
-  rw [eq_of_subset_of_card_le hs' (Nat.cast_le.1 hs),
-    eq_of_subset_of_card_le ht' (Nat.cast_le.1 ht), sub_self, abs_zero]
-  exact zero_lt_one
-#align simple_graph.is_uniform_one SimpleGraph.isUniform_one
-
-variable {G}
 
 theorem not_isUniform_iff :
     ¬G.IsUniform ε s t ↔ ∃ s', s' ⊆ s ∧ ∃ t', t' ⊆ t ∧ ↑s.card * ε ≤ s'.card ∧
@@ -193,15 +201,13 @@ end SimpleGraph
 
 
 variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph α)
-  [DecidableRel G.Adj] {ε : 𝕜}
+  [DecidableRel G.Adj] {ε δ : 𝕜}
 
 namespace Finpartition
 
-open Classical
-
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
-noncomputable def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
+def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun uv => ¬G.IsUniform ε uv.1 uv.2
 #align finpartition.non_uniforms Finpartition.nonUniforms
 
@@ -219,9 +225,8 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   rintro ⟨u, v⟩
   simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_,xu⟩ y ⟨_,yv⟩ _
-  rw [← xu, ← yv]
-  exact G.isUniform_singleton hε
+  rintro x ⟨_, rfl⟩ y ⟨_,rfl⟩ _
+  rwa [SimpleGraph.isUniform_singleton]
 #align finpartition.non_uniforms_bot Finpartition.nonUniforms_bot
 
 /-- A finpartition of a graph's vertex set is `ε`-uniform (aka `ε`-regular) iff the proportion of
@@ -230,18 +235,18 @@ def IsUniform (ε : 𝕜) : Prop :=
   ((P.nonUniforms G ε).card : 𝕜) ≤ (P.parts.card * (P.parts.card - 1) : ℕ) * ε
 #align finpartition.is_uniform Finpartition.IsUniform
 
-theorem botIsUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
+lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
   rw [Finpartition.IsUniform, Finpartition.card_bot, nonUniforms_bot _ hε, Finset.card_empty,
     Nat.cast_zero]
   exact mul_nonneg (Nat.cast_nonneg _) hε.le
-#align finpartition.bot_is_uniform Finpartition.botIsUniform
+#align finpartition.bot_is_uniform Finpartition.bot_isUniform
 
-theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
+lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
   refine' (card_filter_le _
     (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans _
   rw [offDiag_card, Nat.mul_sub_left_distrib, mul_one]
-#align finpartition.is_uniform_one Finpartition.isUniformOne
+#align finpartition.is_uniform_one Finpartition.isUniform_one
 
 variable {P G}
 
@@ -272,3 +277,34 @@ theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht
 #align finpartition.nonuniform_witness_mem_nonuniform_witnesses Finpartition.nonuniformWitness_mem_nonuniformWitnesses
 
 end Finpartition
+
+/-! ### Reduced graph -/
+
+namespace SimpleGraph
+
+/-- The reduction of the graph `G` along partition `P` has edges between `ε`-uniform pairs of parts
+that have edge density at least `δ`. -/
+@[simps] def reduced (ε δ : 𝕜) : SimpleGraph α where
+  Adj a b := G.Adj a b ∧
+    ∃ U ∈ P.parts, ∃ V ∈ P.parts, a ∈ U ∧ b ∈ V ∧ U ≠ V ∧ G.IsUniform ε U V ∧ δ ≤ G.edgeDensity U V
+  symm a b := by
+    rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
+    refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
+    rwa [edgeDensity_comm]
+  loopless a h := G.loopless a h.1
+
+instance : DecidableRel (G.reduced P ε δ).Adj := by unfold reduced; infer_instance
+
+variable {G P}
+
+lemma reduced_le : G.reduced P ε δ ≤ G := fun _ _ ↦ And.left
+
+lemma reduced_mono {ε₁ ε₂ : 𝕜} (hε : ε₁ ≤ ε₂) : G.reduced P ε₁ δ ≤ G.reduced P ε₂ δ :=
+  fun _a _b ⟨hab, U, hU, V, hV, ha, hb, hUV, hGε, hGδ⟩ ↦
+    ⟨hab, U, hU, V, hV, ha, hb, hUV, hGε.mono hε, hGδ⟩
+
+lemma reduced_anti {δ₁ δ₂ : 𝕜} (hδ : δ₁ ≤ δ₂) : G.reduced P ε δ₂ ≤ G.reduced P ε δ₁ :=
+  fun _a _b ⟨hab, U, hU, V, hV, ha, hb, hUV, hUVε, hUVδ⟩ ↦
+    ⟨hab, U, hU, V, hV, ha, hb, hUV, hUVε, hδ.trans hUVδ⟩
+
+end SimpleGraph
