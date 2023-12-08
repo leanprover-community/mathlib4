@@ -586,3 +586,13 @@ error: Argument passed to nlinarith has metavariables:
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
+
+-- From https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/linarith.20regression/near/406082084
+example (a b c d e : ℚ)
+    (ha : 2 * a + b + c + d + e = 4)
+    (hb : a + 2 * b + c + d + e = 5)
+    (hc : a + b + 2 * c + d + e = 6)
+    (hd : a + b + c + 2 * d + e = 7)
+    (he : a + b + c + d + 2 * e = 8) :
+    e = 3 := by
+  linarith

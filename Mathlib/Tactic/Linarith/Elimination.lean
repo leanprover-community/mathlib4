@@ -233,8 +233,12 @@ for every `p' ∈ comps`.
 -/
 def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
   comps.foldl (fun s pc =>
+  dbgTrace s!"Considering the pair:\n{(p, pc)}" fun _ =>
   match pelimVar p pc a with
-  | some pc => if pc.maybeMinimal a then s.insert pc else s
+  | some pc =>
+    dbgTrace s!"Obtained:\n{pc}" fun _ =>
+    dbgTrace s!"maybeMinimal says:\n{pc.maybeMinimal a}" fun _ =>
+    if pc.maybeMinimal a then s.insert pc else s
   | none => s) RBSet.empty
 
 /--
@@ -301,9 +305,13 @@ def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCo
 from the `linarith` state.
 -/
 def elimVarM (a : ℕ) : LinarithM Unit := do
+  dbgTrace s!"Eliminating {a}:\n{(← getPCompSet).toList}" fun _ => do
   let vs ← getMaxVar
   if (a ≤ vs) then (do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
+    dbgTrace s!"Positive set:\n{pos.toList}" fun _ => do
+    dbgTrace s!"Negative set:\n{neg.toList}" fun _ => do
+    dbgTrace s!"Irrelevant set:\n{notPresent.toList}" fun _ => do
     update (vs - 1) (pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent))
   else
     pure ()
