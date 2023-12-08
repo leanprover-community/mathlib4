@@ -165,13 +165,10 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem_set {v : ℝ → E → E} {s :
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
-  rw [dist_eq_norm] at this
-  have hv := hv t (x := f t) (hfs t ht) (y := g t) (hgs t ht)
-  rw [edist_dist, edist_dist, ← ENNReal.ofReal_coe_nnreal,
-    ← ENNReal.ofReal_mul (NNReal.coe_nonneg _),
-    ENNReal.ofReal_le_ofReal_iff (mul_nonneg (NNReal.coe_nonneg _) dist_nonneg)] at hv
+  have hv := (hv t).dist_le_mul _ (hfs t ht) _ (hgs t ht)
+  rw [← dist_eq_norm, ← dist_eq_norm]
   refine this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht)) hv).trans ?_)
-  rw [dist_eq_norm, add_comm]
+  rw [add_comm]
 set_option linter.uppercaseLean3 false in
 #align dist_le_of_approx_trajectories_ODE_of_mem_set dist_le_of_approx_trajectories_ODE_of_mem_set
 
