@@ -126,7 +126,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm :=
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
     {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
-  congr_arg ((· • ·) a) (hB x y)
+  congr_arg (a • ·) (hB x y)
 #align bilin_form.is_symm.smul BilinForm.IsSymm.smul
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
@@ -187,7 +187,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := f
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
     {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
-  (congr_arg ((· • ·) a) (hB x)).trans <| smul_zero _
+  (congr_arg (a • ·) (hB x)).trans <| smul_zero _
 #align bilin_form.is_alt.smul BilinForm.IsAlt.smul
 
 end IsAlt

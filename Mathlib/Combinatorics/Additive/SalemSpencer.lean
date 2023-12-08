@@ -174,7 +174,7 @@ theorem mulSalemSpencer_pair (a b : α) : MulSalemSpencer ({a, b} : Set α) := b
 #align add_salem_spencer_pair addSalemSpencer_pair
 
 @[to_additive]
-theorem MulSalemSpencer.mul_left (hs : MulSalemSpencer s) : MulSalemSpencer ((· * ·) a '' s) := by
+theorem MulSalemSpencer.mul_left (hs : MulSalemSpencer s) : MulSalemSpencer ((a * ·) '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
   rw [mul_mul_mul_comm, mul_mul_mul_comm a d] at h
   rw [hs hb hc hd (mul_left_cancel h)]
@@ -190,7 +190,7 @@ theorem MulSalemSpencer.mul_right (hs : MulSalemSpencer s) : MulSalemSpencer ((�
 #align add_salem_spencer.add_right AddSalemSpencer.add_right
 
 @[to_additive]
-theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((· * ·) a '' s) ↔ MulSalemSpencer s :=
+theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((a * ·) '' s) ↔ MulSalemSpencer s :=
   ⟨fun hs b c d hb hc hd h =>
     mul_left_cancel
       (hs (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) (mem_image_of_mem _ hd) <| by
@@ -232,7 +232,7 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
 theorem MulSalemSpencer.mul_left₀ (hs : MulSalemSpencer s) (ha : a ≠ 0) :
-    MulSalemSpencer ((· * ·) a '' s) := by
+    MulSalemSpencer ((a * ·) '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
   rw [mul_mul_mul_comm, mul_mul_mul_comm a d] at h
   rw [hs hb hc hd (mul_left_cancel₀ (mul_ne_zero ha ha) h)]
@@ -246,7 +246,7 @@ theorem MulSalemSpencer.mul_right₀ (hs : MulSalemSpencer s) (ha : a ≠ 0) :
 #align mul_salem_spencer.mul_right₀ MulSalemSpencer.mul_right₀
 
 theorem mulSalemSpencer_mul_left_iff₀ (ha : a ≠ 0) :
-    MulSalemSpencer ((· * ·) a '' s) ↔ MulSalemSpencer s :=
+    MulSalemSpencer ((a * ·) '' s) ↔ MulSalemSpencer s :=
   ⟨fun hs b c d hb hc hd h =>
     mul_left_cancel₀ ha
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
