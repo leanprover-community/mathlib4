@@ -49,7 +49,7 @@ open ZMod
 prove that it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
-/-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList` , but it is easier
+/-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=
   (chineseRemainderList (coprimeList l) (pairwise_coprime_coprimeList l) : ℕ).pair (listSup l)!
