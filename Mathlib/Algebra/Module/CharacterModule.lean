@@ -127,7 +127,7 @@ endofunctor on `R`-modules.
 def CharacterModuleFunctor :
     (ModuleCat.{max uM uR, uR} R)ᵒᵖ ⥤ ModuleCat.{max uM uD uR, uR} R where
   obj M := ModuleCat.of R <| CharacterModule.{uR, uM, uD} R M.unop D
-  map {M N} L := LinearMap.characterify.{uR, uM, uM, uD} D L.unop
+  map L := LinearMap.characterify.{uR, uM, uM, uD} D L.unop
   map_id {_} := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
   map_comp _ _ := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
 
@@ -192,7 +192,7 @@ def CharacterModule.cong (e : M ≃ₗ[R] N) :
   refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;>
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.characterify_apply,
     AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe,
-    LinearEquiv.apply_symm_apply, LinearMap.id_coe, id_eq] <;>
+    LinearEquiv.apply_symm_apply, LinearMap.id_coe, id_eq]
   aesop
 
 namespace CharacterModule
