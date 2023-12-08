@@ -332,25 +332,45 @@ length -/
 def isPolyBoundedFunction (f : BString → BString)  : Prop :=
     ∃ (p: Polynomial ℕ ), ∀ (a b : BString), p.eval (f b).length < a.length
 
-/-- The set of poly bounded functions -/
-def PBoundedFunctions : Set (BString → BString) := {f | isPolyBoundedFunction f}
+/-- Complexity class FP: the set of functions with poly bounded output length -/
+def PolyTimeFunctions : Set (BString → BString) := {f | isPolyTimeFunction f}
 
 open Set
 
-/-- The domain of a poly bounded function -/
-def PBoundedFunctionDomain (f : BString → BString) : Set BString  := preimage f {[true]}
-
-def PBoundedFunctionDomains : Set (Set BString) :=
-    {PBoundedFunctionDomain f | f : PBoundedFunctions}
-
+/-- The language of a function is the preimage of `true`. If f is computable by a TM, this is the
+language accepted by the TM. -/
 def L_f (f : BString → BString )  : Set BString := preimage f {[true]}
 
-/-- Relationship indicates that "x" has a certificate with encoded length polynomially bounded as
-a function of the encoded length of x. -/
-def verification {p: Polynomial ℕ} (certified : Rel BString BString) : Prop :=
-    ∀ (x : BString) (certificate : BString), certified x certificate →
+end
+
+/-- Language in complexity class P: accepted by polynomial time TM -/
+def PolyTimeLanguage (f : PolyTimeFunctions) : Set BString := L_f f
+
+/-- Complexity class P: languages accepted by polynomial time TMs -/
+def PolyTimeLanguages : Set (Set BString) := {L_f f | f : PolyTimeFunctions}
+
+/-- Encode a pair of binary strings as one binary string -/
+def Bpair (aString bString : BString) : BString :=
+  encodeNat (Nat.pair (decodeNat aString) (decodeNat bString))
+
+/-- Unpair a binary string into two binary strings -/
+def Bunpair (aString : BString) : BString × BString :=
+  (encodeNat (decodeNat aString).unpair.1, encodeNat (decodeNat aString).unpair.2)
+
+/-- A verifier for a nondeterministic polynomial time language -/
+def isVerifier (M : PolyTimeFunctions) : Prop :=
+  ∃ (p: Polynomial ℕ), ∀ (x certificate : BString), (Bpair x certificate) ∈ L_f M →
     certificate.length < p.eval x.length
 
-end
+def verifiers : Set PolyTimeFunctions:= { f | isVerifier f}
+
+/-- A nondeterministic polynomial time language -/
+def NPLanguage (f : verifiers) : Set BString :=
+  {x | ∃ (certificate : BString), Bpair x certificate ∈ L_f f}
+
+/-- Complexity class NP: languages accepted in nondeterministic polynomial time -/
+def NPLanguages : Set (Set BString) := {NPLanguage f| f: verifiers}
+
+
 
 end Turing

@@ -7,6 +7,7 @@ import Mathlib.Computability.Language
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.Nat.Pairing
 
 #align_import computability.encoding from "leanprover-community/mathlib"@"b6395b3a5acd655b16385fa0cdbf1961d6c34b3e"
 
@@ -242,10 +243,10 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
 
 def BString := List Bool
 
-/-- An encoding function of `List Bool` in `List Bool`. -/
+/-- An (identity) encoding function of `List Bool` in `List Bool`. -/
 def encodeBString : BString → BString := id
 
-/-- A decoding function from `List Bool` to `List Bool`. -/
+/-- An (identity) decoding function from `List Bool` to `List Bool`. -/
 def decodeBString : BString → BString := id
 
 theorem decode_encodeBString : ∀ b, id (encodeBString b) = b := fun b ↦ rfl
