@@ -333,7 +333,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
   exact Nat.lt_of_le_of_lt this (pow_gt_exponent _ b_ge_two)
 
-/-- For all positive bases, there exist Fermat infinite pseudoprimes to that base.
+/-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
 that `m ≤ n`. This form is similar to `Nat.exists_infinite_primes`.
 -/

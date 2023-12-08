@@ -1437,7 +1437,7 @@ theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 
 theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i in t, f i) s x :=
   Finset.prod_induction f (fun f => ContDiffWithinAt 𝕜 n f s x) (fun _ _ => ContDiffWithinAt.mul)
-    (@contDiffWithinAt_const _ _ _ _ _ _ _ _ _ _ _ 1) h
+    (contDiffWithinAt_const (c := 1)) h
 #align cont_diff_within_at_prod' contDiffWithinAt_prod'
 
 theorem contDiffWithinAt_prod {t : Finset ι} {f : ι → E → 𝔸'}
@@ -1817,7 +1817,7 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
   -- We prove this by induction on `n`
   induction' n using ENat.nat_induction with n IH Itop
   · rw [contDiffAt_zero]
-    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuous_invFun⟩
+    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
     apply contDiffAt_succ_iff_hasFDerivAt.mpr
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it
@@ -1894,6 +1894,33 @@ theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ �
   contDiff_iff_contDiffAt.2 fun x =>
     f.toLocalHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm_deriv Homeomorph.contDiff_symm_deriv
+
+namespace LocalHomeomorph
+
+variable (𝕜)
+
+/-- Restrict a local homeomorphism to the subsets of the source and target
+that consist of points `x ∈ f.source`, `y = f x ∈ f.target`
+such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
+
+Note that `n` is a natural number, not `∞`,
+because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
+@[simps! apply symm_apply source target]
+def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
+  haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
+      {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
+    simp [hx, and_comm]
+  H.restr <| isOpen_iff_mem_nhds.2 <| fun x ⟨hxs, hxf, hxf'⟩ ↦
+    inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
+    f.continuousAt hxs hxf'.eventually
+
+lemma contDiffOn_restrContDiff_source (f : LocalHomeomorph E F) (n : ℕ) :
+    ContDiffOn 𝕜 n f (f.restrContDiff 𝕜 n).source := fun _x hx ↦ hx.2.1.contDiffWithinAt
+
+lemma contDiffOn_restrContDiff_target (f : LocalHomeomorph E F) (n : ℕ) :
+    ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n).target := fun _x hx ↦ hx.2.1.contDiffWithinAt
+
+end LocalHomeomorph
 
 end FunctionInverse
 

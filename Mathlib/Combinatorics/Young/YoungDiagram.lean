@@ -325,7 +325,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
 
 @[mono]
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
-  by_contra' h_lt
+  by_contra! h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
   rw [← mem_iff_lt_rowLen] at h_lt ⊢
   exact μ.up_left_mem hi (by rfl) h_lt

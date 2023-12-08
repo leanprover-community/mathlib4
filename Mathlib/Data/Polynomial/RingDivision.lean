@@ -860,6 +860,29 @@ theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) {x : R} :
 theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRootsFinset_def]
 #align polynomial.nth_roots_finset_zero Polynomial.nthRootsFinset_zero
 
+theorem mul_mem_nthRootsFinset
+    {η₁ η₂ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) (hη₂ : η₂ ∈ nthRootsFinset n R) :
+    η₁ * η₂ ∈ nthRootsFinset n R := by
+  cases n with
+  | zero =>
+    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη₁
+  | succ n =>
+    rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
+    rw [mul_pow, hη₁, hη₂, one_mul]
+
+theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R) : η ≠ 0 := by
+  nontriviality R
+  rintro rfl
+  cases n with
+  | zero =>
+    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
+  | succ n =>
+    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
+    exact zero_ne_one hη
+
+theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
+  rw [mem_nthRootsFinset hn, one_pow]
+
 end NthRoots
 
 theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
@@ -1315,7 +1338,7 @@ theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p
 theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) : p.roots.map f ≤ (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero]; rfl
+  · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.map_roots_le_of_injective Polynomial.map_roots_le_of_injective
 
@@ -1328,7 +1351,7 @@ theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}
     (hf : Function.Injective f) : Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]; rfl
+  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero, le_rfl]
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 
