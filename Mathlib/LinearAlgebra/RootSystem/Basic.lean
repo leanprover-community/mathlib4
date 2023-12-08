@@ -12,6 +12,7 @@ import Mathlib.LinearAlgebra.RootSystem.Reflection
 This file contains basic definitions for root systems and root data.
 
 ## Main definitions / results:
+
  * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with finite
    indexing set `ι` is the data of an `ι`-indexed subset of `M` ("the roots") and an `ι`-indexed
    subset of `N` ("the coroots") satisfying the axioms familiar from the traditional theory of root
@@ -34,15 +35,24 @@ This file contains basic definitions for root systems and root data.
 
 ## Implementation details
 
-TODO write, as this was fairly tricky to get into good state, potential points to mention:
- * Concept of `RootPairing`
- * Reason for `ι`-indexing to solve DTT hell
- * Various extensionality issues
- * Data-bearing or `Prop`-valued
- * `⊆ roots` or `= roots`
- * Roots / coroots as subsets or injections
- * Junk-value pattern for bijection to avoid DTT hell
- * etc.
+A root datum is sometimes defined as collections of roots and coroots together with a bijection
+between them, subject to hypotheses. However the hypotheses ensure that the bijection is unique.
+For root systems, things are even more extreme: the coroots are uniquely determined by the roots.
+Furthermore a root system induces a canonical non-degenerate bilinear form on the ambient space and
+many informal accounts include this form as part of the data.
+
+We have opted for a design in which some of the uniquely-determined data is actually included (e.g.,
+the coroots are part of the data of a root system). Empirically this seems to be by far the most
+convenient design and by providing extensionality lemmas expressing the uniqueness we expect to get
+the best of both worlds.
+
+A final point is that we require roots and coroots to be injections from a base indexing type `ι`
+rather than subsets of their codomains. This design was chosen to avoid the bijection between roots
+and coroots being a dependently-typed object. A third option would be to have the roots and coroots
+be subsets but to avoid having a dependently-typed bijection by defining it globally with junk value
+(say `0`) outside of the roots and coroots. This would work but lacks the convenient symmetry that
+the chosen design enjoys: by introducing the indexing type `ι`, one does not have to pick a
+direction (`roots → coroots` or `coroots → roots`) for the forward direction of the bijection.
 
 -/
 
@@ -153,7 +163,7 @@ lemma reflection_dualMap_eq_coreflection :
 roots. The proof depends crucially on the fact that there are finitely-many roots.
 
 Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI.
-See also `RootPairing.injOn_dualMap_subtype_span_roots_coroots` for a more useful restatement. -/
+See also `RootPairing.injOn_dualMap_subtype_span_root_coroot` for a more useful restatement. -/
 lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
     (h : ∀ k, e (P.coroot i) (P.root k) = e (P.coroot j) (P.root k)) :
     i = j := by
@@ -184,7 +194,7 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
     sub_eq_zero] at hnm
   linarith [hnm.resolve_right (P.root.injective.ne this)]
 
-lemma injOn_dualMap_subtype_span_roots_coroots [NoZeroSMulDivisors ℤ M] :
+lemma injOn_dualMap_subtype_span_root_coroot [NoZeroSMulDivisors ℤ M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ e) (range P.coroot) := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
   congr
@@ -204,7 +214,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   suffices P₁.coroot = P₂.coroot by cases P₁; cases P₂; congr
   have := NoZeroSMulDivisors.IntOfCharZero R M
   ext i
-  apply P₁.injOn_dualMap_subtype_span_roots_coroots (mem_range_self i) (hc ▸ mem_range_self i)
+  apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply]
   apply eq_of_preReflection_image_eq' (P₁.ne_zero i) (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
@@ -230,10 +240,9 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top' [CharZero R] [NoZeroSMul
   set β' := coroot j
   set sα := preReflection α (e α')
   set sβ := preReflection β (e β')
-  have hij : preReflection (preReflection α (e α') β) (e (preReflection α' (e.flip α) β')) =
-      sα ∘ₗ sβ ∘ₗ sα := by
-    ext
-    simp [← preReflection_preReflection α β (e α') (e β') (hp i), preReflection_apply, e.map_sub]
+  let sα' := preReflection α' (e.flip α)
+  have hij : preReflection (sα β) (e (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
+    ext; simp [← preReflection_preReflection β (e β') (hp i), preReflection_apply, e.map_sub]
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   apply e.injective
   apply eq_of_preReflection_image_eq_fixed hk₀ (finite_range root) hsp (hp k) (hs k)
@@ -267,8 +276,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootSystem ι R M}
     (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
-  suffices ∀ (P₁ P₂ : RootSystem ι R M) (_hr : P₁.root = P₂.root),
-      range P₁.coroot ⊆ range P₂.coroot by
+  suffices ∀ P₁ P₂ : RootSystem ι R M, P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
     have h₁ := this P₁ P₂ hr
     have h₂ := this P₂ P₁ hr.symm
     cases' P₁ with P₁
@@ -280,10 +288,8 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   use i
   apply (LinearEquiv.refl R (Dual R M)).injective
   apply eq_of_preReflection_image_eq (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
-  · rw [hr]
-    exact P₂.coroot_root_two i
-  · rw [hr]
-    exact P₂.reflection_image_eq i
+  · exact hr ▸ P₂.coroot_root_two i
+  · exact hr ▸ P₂.reflection_image_eq i
   · exact P₁.coroot_root_two i
   · exact P₁.reflection_image_eq i
 

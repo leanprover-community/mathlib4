@@ -8,17 +8,34 @@ import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.RootSystem.FindHome
 
 /-!
-# Symmetries and reflections
+# Reflections in linear algebra
 
-Hmm, does this definitely belong in the `RootSystem` directory? Maybe could go one level up?
+Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
+map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
+ 1. the kernel of `f` is fixed,
+ 2. the point `x ↦ -x`.
 
-## Implementation details
+Such endomorphisms are often called reflections of the module `M`. When `M` carries a inner product
+for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
+is characterised by properties 1 and 2 above, and is a linear isometry.
 
-Explain point is that we don't assume existence of inner product
+## Main definitions / results:
+
+ * `Module.preReflection`: the definition of the map `y ↦ y - (f y) • x`. Its main utility lies in
+   the fact that it does not require the assumption `f x = 2`, giving the user freedom to defer
+   discharging this proof obligation.
+ * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
+   that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
+   linear map.
+ * `Module.eq_of_preReflection_image_eq`: a uniqueness result about reflections preserving finite
+   spanning sets that is useful in the theory of root data / systems.
 
 ## TODO
 
-Show symmetries arise from inner product spaces
+Related definitions of reflection exists elsewhere in the library. These more specialised
+definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
+`LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
+should connect (or unify) these definitions with `Module.reflecton` defined here.
 
 -/
 
@@ -28,27 +45,45 @@ open Submodule (span)
 
 noncomputable section
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (x y : M) (f : Dual R M)
 
 namespace Module
 
-/-- TODO -/
-def preReflection (x : M) (f : Dual R M) : End R M :=
+/-- Given an element `x` in a module `M` and a linear form `f` on `M`, we define the endomorphism
+of `M` for which `y ↦ y - (f y) • x`.
+
+One is typically interested in this endomorphism when `f x = 2`; this definition exists to allow the
+user defer discharging this proof obligation. See also `Module.reflection`. -/
+def preReflection : End R M :=
   LinearMap.id - dualTensorHom R M M (f ⊗ₜ x)
 
-lemma preReflection_apply (x y : M) (f : Dual R M) :
+lemma preReflection_apply :
     preReflection x f y = y - (f y) • x := by
   simp [preReflection]
 
-lemma preReflection_apply_self {x : M} {f : Dual R M} (h : f x = 2) :
+variable {x f}
+
+lemma preReflection_apply_self (h : f x = 2) :
     preReflection x f x = - x := by
   rw [preReflection_apply, h, two_smul]; abel
 
-lemma involutive_preReflection {x : M} {f : Dual R M} (h : f x = 2) :
+lemma involutive_preReflection (h : f x = 2) :
     Involutive (preReflection x f) :=
   fun y ↦ by simp [h, smul_sub, two_smul, preReflection_apply]
 
-/-- TODO -/
+lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
+    preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
+    (preReflection x f) ∘ₗ (preReflection y g) ∘ₗ (preReflection x f) := by
+  ext m
+  simp only [h, preReflection_apply, mul_comm (g x) (f m), mul_two, mul_assoc, Dual.eval_apply,
+    LinearMap.sub_apply, LinearMap.coe_comp, LinearMap.smul_apply, smul_eq_mul, smul_sub, sub_smul,
+    smul_smul, sub_mul, comp_apply, map_sub, map_smul, add_smul]
+  abel
+
+/-- Given an element `x` in a module `M` and a linear form `f` on `M` for which `f x = 2`, we define
+the endomorphism of `M` for which `y ↦ y - (f y) • x`.
+
+It is an involutive endomorphism of `M` fixing the kernel of `f` for which `x ↦ -x`. -/
 def reflection {x : M} {f : Dual R M} (h : f x = 2) : M ≃ₗ[R] M :=
   LinearEquiv.ofBijective (preReflection x f) (involutive_preReflection h).bijective
 
@@ -61,19 +96,11 @@ lemma reflection_apply_self {x : M} {f : Dual R M} (h : f x = 2) :
     reflection h x = - x :=
   preReflection_apply_self h
 
-lemma LinearEquiv.apply_preReflection {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N)
-    (x : M) (f : Dual R M) :
-    e ∘ₗ preReflection x f = preReflection (e x) (e.symm.dualMap f) ∘ₗ e := by
-  ext; simp [preReflection_apply]
+lemma involutive_reflection {x : M} {f : Dual R M} (h : f x = 2) :
+    Involutive (reflection h) :=
+  involutive_preReflection h
 
-lemma preReflection_preReflection (a b : M) (f g : Dual R M) (h : f a = 2) :
-    preReflection (preReflection a f b) (preReflection f (Dual.eval R M a) g) =
-    (preReflection a f) ∘ₗ (preReflection b g) ∘ₗ (preReflection a f) := by
-  ext m
-  simp only [h, preReflection_apply, mul_comm (g a) (f m), mul_two, mul_assoc, Dual.eval_apply,
-    LinearMap.sub_apply, LinearMap.coe_comp, LinearMap.smul_apply, smul_eq_mul, smul_sub, sub_smul,
-    smul_smul, sub_mul, comp_apply, map_sub, map_smul, add_smul]
-  abel
+-- TODO Tidy up everthing below: still a total mess.
 
 lemma eq_of_preReflection_image_eq [CharZero R] [NoZeroSMulDivisors R M]
     {x : M} (hx : x ≠ 0)
