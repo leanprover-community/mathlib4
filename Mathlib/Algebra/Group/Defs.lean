@@ -620,11 +620,128 @@ the file `Algebra.GroupPower.Basic`. For now, we only register the most basic pr
 need right away.
 -/
 
+/--
+An abbreviation for `npowRec` with the typeclass hypotheses matching `npowBinRec`,
+so that we can use `@[csimp]` to replace it with an implementation by repeated squaring in compiled
+code.
+-/
+@[to_additive]
+abbrev npowRec' {M : Type*} [Semigroup M] [One M] (_mul_one : ∀ m : M, m * 1 = m) (_one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) : M := npowRec k m
+
+@[to_additive]
+theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (mul_one : ∀ m : M, m * 1 = m) (one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) :
+    npowRec' mul_one one_mul (2 * k) m = npowRec' mul_one one_mul k (m * m) := by
+  dsimp [npowRec']
+  induction k with
+  | zero => rfl
+  | succ n ih => simp [npowRec, ih, mul_assoc]
+
+def nsmulBinRec {M : Type*} [AddSemigroup M] [Zero M] (_add_zero : ∀ m : M, m + 0 = m) (_zero_add : ∀ m : M, 0 + m = m) (k : ℕ) (m : M) : M :=
+  go k 0 m
+where
+  go : ℕ → M → M → M
+  | 0, y, _ => y
+  | (k + 1), y, x =>
+    let k' := (k + 1) >>> 1
+    have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
+    if k &&& 1 = 1 then
+      go k' y (x + x)
+    else
+      go k' (y + x) (x + x)
+  termination_by go k _ _ => k
+
+@[to_additive existing]
+def npowBinRec {M : Type*} [Semigroup M] [One M] (_mul_one : ∀ m : M, m * 1 = m) (_one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) : M :=
+  go k 1 m
+where
+  go : ℕ → M → M → M
+  | 0, y, _ => y
+  | (k + 1), y, x =>
+    let k' := (k + 1) >>> 1
+    have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
+    if k &&& 1 = 1 then
+      go k' y (x * x)
+    else
+      go k' (y * x) (x * x)
+  termination_by go k _ _ => k
+
+attribute [to_additive existing] npowBinRec.go
+
+
+example {k : Nat} (w : k &&& 1 = 1) : 2 ∣ k + 1 := by
+  simp only [Nat.and_one_is_mod] at w
+  rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, w]
+  decide
+example {k : Nat} (w : ¬ k &&& 1 = 1) : 2 * ((k + 1) / 2) = k := by
+  simp only [Nat.and_one_is_mod] at w
+  replace w : k % 2 = 0 := by
+    cases (Nat.mod_two_eq_zero_or_one k)
+    · assumption
+    · contradiction
+  conv =>
+    lhs
+    rw [← Nat.div_add_mod k 2]
+  rw [w, Nat.add_zero, Nat.mul_add_div (by decide), show 1 / 2 = 0 by decide, Nat.add_zero,
+    Nat.mul_div_cancel']
+  rwa [Nat.dvd_iff_mod_eq_zero]
+
+@[to_additive]
+theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (mul_one : ∀ m : M, m * 1 = m) (one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (x y : M) :
+    npowBinRec.go k y x = y * npowRec' mul_one one_mul k x := by
+  induction k using Nat.strongInductionOn generalizing x y with
+  | ind k' ih =>
+    cases k' with
+    | zero => rw [go, npowRec', npowRec, mul_one]
+    | succ k' =>
+      rw [go]
+      dsimp
+      split <;> rename_i w
+      · rw [ih]
+        · congr 1
+          rw [← npowRec'_two_mul]
+          congr 1
+          rw [Nat.shiftRight_eq_div_pow, Nat.pow_one, Nat.mul_div_cancel']
+          simp only [Nat.and_one_is_mod] at w
+          rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, w]
+          decide
+        · exact Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
+      · rw [ih]
+        · rw [mul_assoc y x]
+          rw [← npowRec'_two_mul]
+          congr 1
+          conv =>
+            rhs
+            rw [npowRec', npowRec]
+          congr 2
+          rw [Nat.shiftRight_eq_div_pow, Nat.pow_one]
+          simp only [Nat.and_one_is_mod] at w
+          replace w : k' % 2 = 0 := by
+            cases (Nat.mod_two_eq_zero_or_one k')
+            · assumption
+            · contradiction
+          conv =>
+            lhs
+            rw [← Nat.div_add_mod k' 2]
+          rw [w, Nat.add_zero, Nat.mul_add_div (by decide), show 1 / 2 = 0 by decide, Nat.add_zero,
+            Nat.mul_div_cancel']
+          rwa [Nat.dvd_iff_mod_eq_zero]
+
+        · exact Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
+
+@[csimp] theorem nsmulRec_eq_nsmulBinRec : @nsmulRec' = @nsmulBinRec := by
+  funext M _ _ add_zero zero_add k m
+  dsimp [nsmulBinRec]
+  rw [nsmulBinRec.go_spec add_zero, zero_add]
+
+@[csimp] theorem npowRec_eq_npowBinRec : @npowRec' = @npowBinRec := by
+  funext M _ _ mul_one one_mul k m
+  dsimp [npowBinRec]
+  rw [npowBinRec.go_spec mul_one, one_mul]
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number. -/
-  protected nsmul : ℕ → M → M := nsmulRec
+  protected nsmul : ℕ → M → M := @nsmulRec' M _ _ add_zero zero_add
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -641,7 +758,7 @@ attribute [instance 50] AddZeroClass.toAdd
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRec
+  protected npow : ℕ → M → M := @npowRec' M _ _ mul_one one_mul
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/

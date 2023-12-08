@@ -1428,6 +1428,7 @@ instance linearOrder : LinearOrder ZNum where
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
+set_option maxHeartbeats 400000 in
 instance addCommGroup : AddCommGroup ZNum where
   add := (· + ·)
   add_assoc := by transfer
