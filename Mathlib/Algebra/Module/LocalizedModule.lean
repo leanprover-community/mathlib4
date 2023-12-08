@@ -237,11 +237,9 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-
   rfl
 #align localized_module.mk_neg LocalizedModule.mk_neg
 
-set_option maxHeartbeats 500000 in
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
-    Semiring (LocalizedModule S A) :=
-  { show (AddCommMonoid (LocalizedModule S A)) by infer_instance with
-    mul := fun m₁ m₂ =>
+    Monoid (LocalizedModule S A) :=
+  { mul := fun m₁ m₂ =>
       liftOn₂ m₁ m₂ (fun x₁ x₂ => LocalizedModule.mk (x₁.1 * x₂.1) (x₁.2 * x₂.2))
         (by
           rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
@@ -254,6 +252,23 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           all_goals
             rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
               mul_smul, mul_smul])
+    one := mk 1 (1 : S)
+    one_mul := by
+      rintro ⟨a, s⟩
+      exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
+    mul_one := by
+      rintro ⟨a, s⟩
+      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩
+    mul_assoc := by
+      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+      apply mk_eq.mpr _
+      use 1
+      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
+
+instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+    Semiring (LocalizedModule S A) :=
+  { show (AddCommMonoid (LocalizedModule S A)) by infer_instance,
+    show (Monoid (LocalizedModule S A)) by infer_instance with
     left_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       apply mk_eq.mpr _
@@ -271,19 +286,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
       exact mk_eq.mpr ⟨1, by simp only [zero_mul, smul_zero]⟩
     mul_zero := by
       rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩
-    mul_assoc := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm]
-    one := mk 1 (1 : S)
-    one_mul := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
-    mul_one := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩ }
+      exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩ }
 
 instance {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
