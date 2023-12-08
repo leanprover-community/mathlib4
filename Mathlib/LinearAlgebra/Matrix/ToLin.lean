@@ -223,7 +223,6 @@ This should eventually be remedied.
 -/
 
 
-
 section mulVec
 
 variable {R : Type*} [CommSemiring R]
