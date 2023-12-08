@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.MinMax
-import Mathlib.Data.Zmod.Coprime
+import Mathlib.Data.ZMod.Coprime
 
 /-!
 # Gödel's Beta Function Lemma
