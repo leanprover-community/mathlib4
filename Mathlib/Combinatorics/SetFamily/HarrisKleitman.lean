@@ -70,8 +70,8 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
   refine'
     (add_le_add_right
           (mul_add_mul_le_mul_add_mul
-              (card_le_of_subset h𝒜.memberSubfamily_subset_nonMemberSubfamily) <|
-            card_le_of_subset hℬ.memberSubfamily_subset_nonMemberSubfamily)
+              (card_le_card h𝒜.memberSubfamily_subset_nonMemberSubfamily) <|
+            card_le_card hℬ.memberSubfamily_subset_nonMemberSubfamily)
           _).trans
       _
   rw [← two_mul, pow_succ, mul_assoc]
@@ -128,7 +128,7 @@ theorem IsUpperSet.le_card_inter_finset (h𝒜 : IsUpperSet (𝒜 : Set (Finset 
   rwa [card_compl, Fintype.card_finset, tsub_mul, le_tsub_iff_le_tsub, ← mul_tsub, ←
     card_sdiff (inter_subset_right _ _), sdiff_inter_self_right, sdiff_compl,
     _root_.inf_comm] at this
-  · exact mul_le_mul_left' (card_le_of_subset <| inter_subset_right _ _) _
+  · exact mul_le_mul_left' (card_le_card <| inter_subset_right _ _) _
   · rw [← Fintype.card_finset]
     exact mul_le_mul_right' (card_le_univ _) _
 #align is_upper_set.le_card_inter_finset IsUpperSet.le_card_inter_finset

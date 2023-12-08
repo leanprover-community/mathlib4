@@ -573,7 +573,7 @@ theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
 #align finpartition.atomise_empty Finpartition.atomise_empty
 
 theorem card_atomise_le : (atomise s F).parts.card ≤ 2 ^ F.card :=
-  (card_le_of_subset <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le
+  (card_le_card <| erase_subset _ _).trans <| Finset.card_image_le.trans (card_powerset _).le
 #align finpartition.card_atomise_le Finpartition.card_atomise_le
 
 theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
@@ -592,7 +592,7 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   suffices h :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty) ⊆
       (F.erase t).powerset.image fun P ↦ s.filter fun i ↦ ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x
-  · refine' (card_le_of_subset h).trans (card_image_le.trans _)
+  · refine' (card_le_card h).trans (card_image_le.trans _)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
   simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,

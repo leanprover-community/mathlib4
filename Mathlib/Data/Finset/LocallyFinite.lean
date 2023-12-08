@@ -1208,7 +1208,7 @@ lemma transGen_wcovby_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
     have z_card : (Icc x z).card <(Icc x y).card := calc
       (Icc x z).card ≤ (Ico x y).card :=
-        card_le_of_subset <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
+        card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
       _              < (Icc x y).card := this
     have h₁ := transGen_wcovby_of_le (mem_Ico.mp z_mem).1
     have h₂ : z ⩿ y := by

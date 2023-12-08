@@ -61,12 +61,12 @@ theorem card_empty : card (∅ : Finset α) = 0 :=
   rfl
 #align finset.card_empty Finset.card_empty
 
-theorem card_le_of_subset : s ⊆ t → s.card ≤ t.card :=
-  Multiset.card_le_of_le ∘ val_le_iff.mpr
-#align finset.card_le_of_subset Finset.card_le_of_subset
+theorem card_le_card : s ⊆ t → s.card ≤ t.card :=
+  Multiset.card_le_card ∘ val_le_iff.mpr
+#align finset.card_le_of_subset Finset.card_le_card
 
 @[mono]
-theorem card_mono : Monotone (@card α) := by apply card_le_of_subset
+theorem card_mono : Monotone (@card α) := by apply card_le_card
 #align finset.card_mono Finset.card_mono
 
 @[simp]
@@ -197,7 +197,7 @@ theorem Multiset.card_toFinset : m.toFinset.card = Multiset.card m.dedup :=
 #align multiset.card_to_finset Multiset.card_toFinset
 
 theorem Multiset.toFinset_card_le : m.toFinset.card ≤ Multiset.card m :=
-  card_le_of_le <| dedup_le _
+  card_le_card <| dedup_le _
 #align multiset.to_finset_card_le Multiset.toFinset_card_le
 
 theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
@@ -279,7 +279,7 @@ theorem card_subtype (p : α → Prop) [DecidablePred p] (s : Finset α) :
 
 theorem card_filter_le (s : Finset α) (p : α → Prop) [DecidablePred p] :
     (s.filter p).card ≤ s.card :=
-  card_le_of_subset <| filter_subset _ _
+  card_le_card <| filter_subset _ _
 #align finset.card_filter_le Finset.card_filter_le
 
 theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : t.card ≤ s.card) : s = t :=
@@ -305,7 +305,7 @@ theorem filter_card_eq {p : α → Prop} [DecidablePred p] (h : (s.filter p).car
 #align finset.filter_card_eq Finset.filter_card_eq
 
 theorem card_lt_card (h : s ⊂ t) : s.card < t.card :=
-  card_lt_of_lt <| val_lt_iff.2 h
+  card_lt_card <| val_lt_iff.2 h
 #align finset.card_lt_card Finset.card_lt_card
 
 theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
@@ -350,7 +350,7 @@ theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s
     (f_inj : ∀ a₁ ∈ s, ∀ a₂ ∈ s, f a₁ = f a₂ → a₁ = a₂) : s.card ≤ t.card := by
   classical calc
       s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
-      _ ≤ t.card := card_le_of_subset <| image_subset_iff.2 hf
+      _ ≤ t.card := card_le_card <| image_subset_iff.2 hf
 #align finset.card_le_card_of_inj_on Finset.card_le_card_of_inj_on
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
@@ -453,13 +453,13 @@ theorem card_sdiff (h : s ⊆ t) : card (t \ s) = t.card - s.card := by
 #align finset.card_sdiff Finset.card_sdiff
 
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ s) + card s = card t :=
-  ((Nat.sub_eq_iff_eq_add (card_le_of_subset h)).mp (card_sdiff h).symm).symm
+  ((Nat.sub_eq_iff_eq_add (card_le_card h)).mp (card_sdiff h).symm).symm
 #align finset.card_sdiff_add_card_eq_card Finset.card_sdiff_add_card_eq_card
 
 theorem le_card_sdiff (s t : Finset α) : t.card - s.card ≤ card (t \ s) :=
   calc
     card t - card s ≤ card t - card (s ∩ t) :=
-      tsub_le_tsub_left (card_le_of_subset (inter_subset_left s t)) _
+      tsub_le_tsub_left (card_le_card (inter_subset_left s t)) _
     _ = card (t \ (s ∩ t)) := (card_sdiff (inter_subset_right s t)).symm
     _ ≤ card (t \ s) := by rw [sdiff_inter_self_right t s]
 #align finset.le_card_sdiff Finset.le_card_sdiff
@@ -583,7 +583,7 @@ theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x 
     · exact ⟨x, fun y hy => by rw [card_le_one.1 H y hy x hx, mem_singleton]⟩
   · rintro ⟨x, hx⟩
     rw [← card_singleton x]
-    exact card_le_of_subset hx
+    exact card_le_card hx
 #align finset.card_le_one_iff_subset_singleton Finset.card_le_one_iff_subset_singleton
 
 /-- A `Finset` of a subsingleton type has cardinality at most one. -/

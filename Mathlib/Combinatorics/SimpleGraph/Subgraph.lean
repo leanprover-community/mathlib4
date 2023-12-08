@@ -802,12 +802,12 @@ theorem finset_card_neighborSet_eq_degree {G' : Subgraph G} {v : V} [Fintype (G'
 theorem degree_le (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
-  exact Set.card_le_of_subset (G'.neighborSet_subset v)
+  exact Set.card_le_card (G'.neighborSet_subset v)
 #align simple_graph.subgraph.degree_le SimpleGraph.Subgraph.degree_le
 
 theorem degree_le' (G' G'' : Subgraph G) (h : G' ≤ G'') (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G''.neighborSet v)] : G'.degree v ≤ G''.degree v :=
-  Set.card_le_of_subset (neighborSet_subset_of_subgraph h v)
+  Set.card_le_card (neighborSet_subset_of_subgraph h v)
 #align simple_graph.subgraph.degree_le' SimpleGraph.Subgraph.degree_le'
 
 @[simp]
