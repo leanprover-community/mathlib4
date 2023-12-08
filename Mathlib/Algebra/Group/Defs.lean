@@ -625,7 +625,10 @@ An abbreviation for `npowRec` with the typeclass hypotheses matching `npowBinRec
 so that we can use `@[csimp]` to replace it with an implementation by repeated squaring in compiled
 code.
 -/
-@[to_additive]
+@[to_additive (attr := nolint unusedArguments)
+"An abbreviation for `nsmulRec` with the typeclass hypotheses matching `nsmulBinRec`,
+so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
+code."]
 abbrev npowRec' {M : Type*} [Semigroup M] [One M]
     (_mul_one : ∀ m : M, m * 1 = m) (_one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) : M :=
   npowRec k m
@@ -651,14 +654,16 @@ def nsmulBinRec {M : Type*} [AddSemigroup M] [Zero M]
     (_add_zero : ∀ m : M, m + 0 = m) (_zero_add : ∀ m : M, 0 + m = m) (k : ℕ) (m : M) : M :=
   go k 0 m
 where
+  /-- Auxiliary tail-recursive implementation for `nsmulBinRec`-/
   go : ℕ → M → M → M
   | 0, y, _ => y
   | (k + 1), y, x =>
     let k' := (k + 1) >>> 1
-    have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
     if k &&& 1 = 1 then
+      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' y (x + x)
     else
+      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' (y + x) (x + x)
   termination_by go k _ _ => k
 
@@ -670,14 +675,16 @@ def npowBinRec {M : Type*} [Semigroup M] [One M]
     (_mul_one : ∀ m : M, m * 1 = m) (_one_mul : ∀ m : M, 1 * m = m) (k : ℕ) (m : M) : M :=
   go k 1 m
 where
+  /-- Auxiliary tail-recursive implementation for `npowBinRec`-/
   go : ℕ → M → M → M
   | 0, y, _ => y
   | (k + 1), y, x =>
     let k' := (k + 1) >>> 1
-    have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
     if k &&& 1 = 1 then
+      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' y (x * x)
     else
+      have : k' < k + 1 := Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
       go k' (y * x) (x * x)
   termination_by go k _ _ => k
 
@@ -724,7 +731,6 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M]
           rw [w, Nat.add_zero, Nat.mul_add_div (by decide), show 1 / 2 = 0 by decide, Nat.add_zero,
             Nat.mul_div_cancel']
           rwa [Nat.dvd_iff_mod_eq_zero]
-
         · exact Nat.div_lt_self (Nat.zero_lt_succ _) (Nat.lt_succ_self _)
 
 @[csimp] theorem nsmulRec_eq_nsmulBinRec : @nsmulRec' = @nsmulBinRec := by
