@@ -261,7 +261,7 @@ theorem image_subset_infs_left : b ∈ t → (fun a => a ⊓ b) '' s ⊆ s ⊼ t
   image_subset_image2_left
 #align set.image_subset_infs_left Set.image_subset_infs_left
 
-theorem image_subset_infs_right : a ∈ s → (· ⊓ ·) a '' t ⊆ s ⊼ t :=
+theorem image_subset_infs_right : a ∈ s → (a ⊓ ·) '' t ⊆ s ⊼ t :=
   image_subset_image2_right
 #align set.image_subset_infs_right Set.image_subset_infs_right
 
@@ -350,7 +350,7 @@ lemma sep_infs_le (s t : Set α) (a : α) :
 
 variable (s t u)
 
-theorem iUnion_image_inf_left : ⋃ a ∈ s, (· ⊓ ·) a '' t = s ⊼ t :=
+theorem iUnion_image_inf_left : ⋃ a ∈ s, (a ⊓ ·) '' t = s ⊼ t :=
   iUnion_image_left _
 #align set.Union_image_inf_left Set.iUnion_image_inf_left
 

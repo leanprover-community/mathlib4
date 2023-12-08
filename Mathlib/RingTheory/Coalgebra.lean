@@ -42,7 +42,7 @@ export CoalgebraStruct (comul counit)
 end Coalgebra
 
 /-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
-comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
+comultiplication `Δ` and a counit `ε` obeying the left and right counitality laws. -/
 class Coalgebra (R : Type u) (A : Type v)
     [CommSemiring R] [AddCommMonoid A] [Module R A] extends CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
