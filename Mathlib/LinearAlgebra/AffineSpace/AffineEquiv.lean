@@ -455,7 +455,7 @@ def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
 #align affine_equiv.const_vsub AffineEquiv.constVSub
 
 @[simp]
-theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (p -ᵥ ·) :=
   rfl
 #align affine_equiv.coe_const_vsub AffineEquiv.coe_constVSub
 

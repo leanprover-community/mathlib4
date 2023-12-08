@@ -368,7 +368,7 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
 #align fin_add_flip_apply_nat_add finAddFlip_apply_natAdd
 
 @[simp]
-theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right k m n h)
+theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right n h)
     (hnk : n + k < n + m := add_lt_add_left h n) :
     finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
   convert finAddFlip_apply_castAdd ⟨k, h⟩ n

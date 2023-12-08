@@ -651,7 +651,7 @@ namespace MeasureTheory
 
 variable {γ : Type*}
 
-/-- The Lusin-Souslin theorem: the range of a continuous injective function defined on a Polish
+/-- The **Lusin-Souslin theorem**: the range of a continuous injective function defined on a Polish
 space is Borel-measurable. -/
 theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpace γ]
     [PolishSpace γ] [TopologicalSpace β] [T2Space β] [MeasurableSpace β] [OpensMeasurableSpace β]

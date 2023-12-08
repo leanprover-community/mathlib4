@@ -140,7 +140,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   calc
     Group.rank H ≤ T.card := Group.rank_le H hT
     _ ≤ H.index * S.card := hT₀
-    _ = H.index * Group.rank G := congr_arg ((· * ·) H.index) hS₀
+    _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 #align subgroup.rank_le_index_mul_rank Subgroup.rank_le_index_mul_rank
 
 variable (G)

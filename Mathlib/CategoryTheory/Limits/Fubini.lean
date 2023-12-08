@@ -454,8 +454,8 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasLimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasLimitOfIso i
   trans limit (uncurry.obj ((@curry J _ K _ C _).obj G))
-  apply HasLimit.isoOfNatIso i
-  exact limitUncurryIsoLimitCompLim ((@curry J _ K _ C _).obj G)
+  · apply HasLimit.isoOfNatIso i
+  · exact limitUncurryIsoLimitCompLim ((@curry J _ K _ C _).obj G)
 #align category_theory.limits.limit_iso_limit_curry_comp_lim CategoryTheory.Limits.limitIsoLimitCurryCompLim
 
 @[simp, reassoc]
