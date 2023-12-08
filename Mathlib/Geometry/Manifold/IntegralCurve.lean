@@ -156,11 +156,11 @@ lemma isIntegralCurve_comp_add {dt : ℝ} :
   convert hγ.comp_add (-dt)
   ext
   simp only [Function.comp_apply, neg_add_cancel_right]
+
 end Translation
 
 /-! ### Scaling lemmas -/
 section Scaling
-
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
@@ -238,8 +238,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
-  obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
-    exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
+  obtain ⟨f, hf1, ε1, hε1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
       (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
   rw [← Real.ball_eq_Ioo] at hf2
   -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
@@ -247,7 +246,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
   have hcont := (hf2 t₀ (Metric.mem_ball_self hε1)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
-    hcont _ (isOpen_interior.mem_nhds (ModelWithCorners.isInteriorPoint_iff.mp hx))
+    hcont _ (isOpen_interior.mem_nhds ((I.isInteriorPoint_iff).mp hx))
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨ε2, hε2, hf3⟩ := hnhds
   simp_rw [subset_def, mem_preimage] at hf3
@@ -270,7 +269,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
   have hft2 := mem_extChartAt_source I ((extChartAt I x₀).symm (f t))
   -- express the derivative of the integral curve in the local chart
-  refine ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') (h.continuousAt),
+  refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
