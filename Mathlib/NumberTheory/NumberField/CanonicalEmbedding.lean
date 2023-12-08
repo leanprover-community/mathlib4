@@ -664,7 +664,7 @@ theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
   refine mul_ne_zero (mul_ne_zero (pow_ne_zero _ two_ne_zero) ?_) ?_
   · refine ENNReal.pow_ne_zero ?_ _
     exact ne_of_gt <| div_pos_iff.mpr ⟨coe_ne_zero.mpr NNReal.pi_ne_zero, two_ne_top⟩
-  . exact ENNReal.inv_ne_zero.mpr (nat_ne_top _)
+  · exact ENNReal.inv_ne_zero.mpr (nat_ne_top _)
 
 theorem convexBodySumFactor_ne_top : convexBodySumFactor K ≠ ⊤ := by
   refine mul_ne_top (mul_ne_top (pow_ne_top two_ne_top) ?_) ?_
