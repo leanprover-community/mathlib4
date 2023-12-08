@@ -439,9 +439,9 @@ variable {I}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
 lemma contMDiffOn_openEmbedding_symm :
-    ContMDiffOn (CS' := h.singletonChartedSpace) I I n (h.toLocalHomeomorph e).symm (range e) := by
+    ContMDiffOn I I n (h.toLocalHomeomorph e).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [contMDiffOn_iff (CS' := h.singletonChartedSpace)]
+  rw [contMDiffOn_iff]
   constructor
   · rw [← h.toLocalHomeomorph_target]
     exact (h.toLocalHomeomorph e).continuousOn_symm
@@ -452,23 +452,21 @@ lemma contMDiffOn_openEmbedding_symm :
     -- factorise into the chart (=e) and the model (=id)
     simp only [mfld_simps]
     have (y : H) : e ((h.toLocalHomeomorph e).symm y) = y := sorry -- extract as separate lemma!
-    rw [this]
-    apply I.right_inv
-    exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
+    -- TODO: fix the proof; `this` doesn't apply any more as z and z† don't unify...
+    sorry --rw [this]
+    --apply I.right_inv
+    --exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_openEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
-    ContMDiff (CS' := h'.singletonChartedSpace) I I' n f := by
+    ContMDiff I I' n f := by
   have : f = (h'.toLocalHomeomorph e').symm ∘ e' ∘ f := by
     ext
     rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toLocalHomeomorph_left_inv]
   rw [this]
-  apply ContMDiffOn.comp_contMDiff (CS'' := h'.singletonChartedSpace) (t := range e') _ hf
-  · intros
-    simp
-  · exact contMDiffOn_openEmbedding_symm h'
+  apply (contMDiffOn_openEmbedding_symm h').comp_contMDiff hf (by intros; simp)
 
 end
