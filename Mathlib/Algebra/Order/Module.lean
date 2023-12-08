@@ -18,7 +18,7 @@ Generalise lemmas to the framework from `Mathlib.Algebra.Order.Module.Defs`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_vector_space
+* https://en.wikipedia.org/wiki/Ordered_module
 
 ## Tags
 
@@ -29,6 +29,11 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 open Pointwise
 
 variable {ι k M N : Type*}
+
+instance instModuleOrderDual [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
+    where
+  add_smul _ _ x := OrderDual.rec (add_smul _ _) x
+  zero_smul m := OrderDual.rec (zero_smul _) m
 
 section Semiring
 

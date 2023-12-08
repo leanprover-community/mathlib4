@@ -37,7 +37,7 @@ Delete the lemmas that have been generalised by `PosSMulMono` and friends.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_vector_space
+* https://en.wikipedia.org/wiki/Ordered_module
 
 ## Tags
 

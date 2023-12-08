@@ -212,7 +212,7 @@ instance (priority := 100) PosMulReflectLT.toPosSMulReflectLT [PosMulReflectLT �
   elim _a ha _b₁ _b₂ h := lt_of_mul_lt_mul_left h ha
 
 -- See note [lower instance priority]
-instance (priority := 100) PosMulMonoRev.toPosSMulReflectLE [PosMulMonoRev α] :
+instance (priority := 100) PosMulReflectLE.toPosSMulReflectLE [PosMulReflectLE α] :
     PosSMulReflectLE α α where
   elim _a ha _b₁ _b₂ h := le_of_mul_le_mul_left h ha
 
@@ -231,7 +231,7 @@ instance (priority := 100) MulPosReflectLT.toSMulPosReflectLT [MulPosReflectLT �
   elim _b hb _a₁ _a₂ h := lt_of_mul_lt_mul_right h hb
 
 -- See note [lower instance priority]
-instance (priority := 100) MulPosMonoRev.toSMulPosReflectLE [MulPosMonoRev α] :
+instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE α] :
     SMulPosReflectLE α α where
   elim _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
 
