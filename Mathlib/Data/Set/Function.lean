@@ -191,6 +191,10 @@ theorem eqOn_singleton : Set.EqOn f₁ f₂ {a} ↔ f₁ a = f₂ a := by
 #align set.eq_on_singleton Set.eqOn_singleton
 
 @[simp]
+theorem eqOn_univ (f₁ f₂ : α → β) : EqOn f₁ f₂ univ ↔ f₁ = f₂ := by
+  simp [EqOn, funext_iff]
+
+@[simp]
 theorem restrict_eq_restrict_iff : restrict s f₁ = restrict s f₂ ↔ EqOn f₁ f₂ s :=
   restrict_eq_iff
 #align set.restrict_eq_restrict_iff Set.restrict_eq_restrict_iff

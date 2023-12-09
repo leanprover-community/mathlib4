@@ -985,8 +985,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
       (hu.subset (subset_union_right _ _))] at hst
   obtain ⟨r', hnr', hr'⟩ := Finset.exists_subset_or_subset_of_two_mul_lt_card hst
   exact ⟨r', by simpa, by simpa using hr'⟩
-#align set.exists_subset_or_subset_of_two_mul_lt_ncard
-  Set.exists_subset_or_subset_of_two_mul_lt_ncard
+#align set.exists_subset_or_subset_of_two_mul_lt_ncard Set.exists_subset_or_subset_of_two_mul_lt_ncard
 
 /-! ### Explicit description of a set from its cardinality -/
 

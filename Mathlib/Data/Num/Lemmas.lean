@@ -25,7 +25,7 @@ unnecessary.
 set_option linter.deprecated false
 
 -- Porting note: Required for the notation `-[n+1]`.
-open Int
+open Int Function
 
 attribute [local simp] add_assoc
 
@@ -363,9 +363,10 @@ theorem of_to_nat' : ∀ n : Num, Num.ofNat' (n : ℕ) = n
   | pos p => p.of_to_nat'
 #align num.of_to_nat' Num.of_to_nat'
 
+lemma toNat_injective : Injective (castNum : Num → ℕ) := LeftInverse.injective of_to_nat'
+
 @[norm_cast]
-theorem to_nat_inj {m n : Num} : (m : ℕ) = n ↔ m = n :=
-  ⟨fun h => Function.LeftInverse.injective of_to_nat' h, congr_arg _⟩
+theorem to_nat_inj {m n : Num} : (m : ℕ) = n ↔ m = n := toNat_injective.eq_iff
 #align num.to_nat_inj Num.to_nat_inj
 
 /-- This tactic tries to turn an (in)equality about `Num`s to one about `Nat`s by rewriting.
@@ -416,33 +417,15 @@ instance commSemiring : CommSemiring Num := by
     simp [add_comm, mul_add, add_mul, mul_assoc, mul_comm, mul_left_comm]
 #align num.comm_semiring Num.commSemiring
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num :=
-  { Num.commSemiring with
-    lt := (· < ·)
-    lt_iff_le_not_le := by
-      intro a b
-      transfer_rw
-      apply lt_iff_le_not_le
-    le := (· ≤ ·)
-    le_refl := by
-      transfer
-    le_trans := by
-      intro a b c
-      transfer_rw
-      apply le_trans
-    le_antisymm := by
-      intro a b
-      transfer_rw
-      apply le_antisymm
-    add_le_add_left := by
-      intro a b h c
-      revert h
-      transfer_rw
-      exact fun h => add_le_add_left h c
-    le_of_add_le_add_left := by
-      intro a b c
-      transfer_rw
-      apply le_of_add_le_add_left }
+instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
+  le := (· ≤ ·)
+  lt := (· < ·)
+  lt_iff_le_not_le a b := by simp only [←lt_to_nat, ←le_to_nat, lt_iff_le_not_le]
+  le_refl := by transfer
+  le_trans a b c := by transfer_rw; apply le_trans
+  le_antisymm a b := by transfer_rw; apply le_antisymm
+  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
+  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 #align num.ordered_cancel_add_comm_monoid Num.orderedCancelAddCommMonoid
 
 instance linearOrderedSemiring : LinearOrderedSemiring Num :=

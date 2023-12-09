@@ -256,9 +256,7 @@ theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
-@[simp] -- TODO: add RelEmbeddingClass
-theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
-  f.injective.eq_iff
+@[simp] theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b := f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
 
 theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=

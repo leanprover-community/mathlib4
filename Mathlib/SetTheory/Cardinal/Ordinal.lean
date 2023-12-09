@@ -899,7 +899,7 @@ theorem add_one_le_add_one_iff_of_lt_aleph_0 {α β : Cardinal} : α + 1 ≤ β 
 /-! ### Properties about power -/
 
 --Porting note: Annoying workaround because `c ^ n` when `n` is a `ℕ` coerces `c` for some reason.
-local infixr:0 "^'" => @HPow.hPow Cardinal Cardinal Cardinal.instPowCardinal
+local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
 -- -- mathport name: cardinal.pow.nat
 local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
 

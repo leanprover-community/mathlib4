@@ -129,8 +129,7 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : EDist (PiLp p β) where
   edist f g :=
-    -- Porting note: can we drop the `_hp` entirely?
-    if _hp : p = 0 then { i | f i ≠ g i }.toFinite.toFinset.card
+    if p = 0 then { i | f i ≠ g i }.toFinite.toFinset.card
     else
       if p = ∞ then ⨆ i, edist (f i) (g i) else (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal)
 

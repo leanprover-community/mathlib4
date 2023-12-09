@@ -131,6 +131,11 @@ instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : N
   ⟨Nat.cast_ne_zero.mpr out⟩
 #align ne_zero.char_zero NeZero.charZero
 
+instance charZero_one {M} [AddMonoidWithOne M] [CharZero M] : NeZero (1 : M) where
+  out := by
+    rw [←Nat.cast_one, Nat.cast_ne_zero]
+    trivial
+
 instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZero M] :
     NeZero (OfNat.ofNat n : M) :=
   ⟨OfNat.ofNat_ne_zero n⟩

@@ -561,6 +561,14 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 #align algebra.of_id_apply Algebra.ofId_apply
 
+/-- This is a special case of a more general instance that we define in a later file. -/
+instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+
+/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+@[ext high]
+theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
+
 end Algebra
 
 namespace MulSemiringAction

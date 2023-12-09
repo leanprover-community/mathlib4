@@ -8,7 +8,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
 
-#align_import data.finset.image from "leanprover-community/mathlib"@"b685f506164f8d17a6404048bc4d696739c5d976"
+#align_import data.finset.image from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-! # Image and map operations on finite sets
 
@@ -186,6 +186,25 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
     (s.map f).filter p = (s.filter (p ∘ f)).map f :=
   eq_of_veq (map_filter _ _ _)
 #align finset.filter_map Finset.filter_map
+
+lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
+    [DecidablePred (∃ a, p a ∧ f a = ·)] :
+    (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+  simp [(· ∘ ·), filter_map, f.injective.eq_iff]
+#align finset.map_filter' Finset.map_filter'
+
+lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
+    s.attach.filter p =
+      (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
+        ⟨Subtype.map id <| filter_subset _ _, Subtype.map_injective _ injective_id⟩ :=
+  eq_of_veq <| Multiset.filter_attach' _ _
+#align finset.filter_attach' Finset.filter_attach'
+
+lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
+    s.attach.filter (fun a : s ↦ p a) =
+      (s.filter p).attach.map ((Embedding.refl _).subtypeMap mem_of_mem_filter) :=
+  eq_of_veq <| Multiset.filter_attach _ _
+#align finset.filter_attach Finset.filter_attach
 
 theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
     (s.filter p).map f.toEmbedding = (s.map f.toEmbedding).filter (p ∘ f.symm) := by

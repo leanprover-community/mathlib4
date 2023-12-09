@@ -791,8 +791,7 @@ theorem bot_eq_top_of_finrank_adjoin_le_one [FiniteDimensional F E]
 theorem subsingleton_of_finrank_adjoin_le_one [FiniteDimensional F E]
     (h : ∀ x : E, finrank F F⟮x⟯ ≤ 1) : Subsingleton (IntermediateField F E) :=
   subsingleton_of_bot_eq_top (bot_eq_top_of_finrank_adjoin_le_one h)
-#align intermediate_field.subsingleton_of_finrank_adjoin_le_one
-  IntermediateField.subsingleton_of_finrank_adjoin_le_one
+#align intermediate_field.subsingleton_of_finrank_adjoin_le_one IntermediateField.subsingleton_of_finrank_adjoin_le_one
 
 end AdjoinRank
 
