@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Sites.Sheaf
 In this file, given a site `(C, J)`, we introduce the notion of a family
 of objects `Y : I → C` which "cover the final object": this means
 that for all `X : C`, the sieve `Sieve.ofObjects Y X` is covering for `J`.
-When there is a terminal object `X : C`, then `J.ObjectsCoverTop Y`
+When there is a terminal object `X : C`, then `J.CoversTop Y`
 holds iff `Sieve.ofObjects Y X` is covering for `J`.
 
 We introduce a notion of compatible family of elements on objects `Y`
@@ -33,13 +33,13 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 namespace GrothendieckTopology
 
 /-- A family of objects `Y : I → C` "covers the final object"
-  if for all `X : C`, the sieve `ofObjects Y X` is a covering sieve. -/
-def ObjectsCoverTop {I : Type*} (Y : I → C) : Prop :=
+if for all `X : C`, the sieve `ofObjects Y X` is a covering sieve. -/
+def CoversTop {I : Type*} (Y : I → C) : Prop :=
   ∀ (X : C), Sieve.ofObjects Y X ∈ J X
 
-lemma objectsCoverTop_iff_of_isTerminal (X : C) (hX : IsTerminal X)
+lemma coversTop_iff_of_isTerminal (X : C) (hX : IsTerminal X)
     {I : Type*} (Y : I → C) :
-    J.ObjectsCoverTop Y ↔ Sieve.ofObjects Y X ∈ J X := by
+    J.CoversTop Y ↔ Sieve.ofObjects Y X ∈ J X := by
   constructor
   · tauto
   · intro h W
@@ -47,13 +47,13 @@ lemma objectsCoverTop_iff_of_isTerminal (X : C) (hX : IsTerminal X)
     rintro T a ⟨i, ⟨b⟩⟩
     exact ⟨i, ⟨b⟩⟩
 
-namespace ObjectsCoverTop
+namespace CoversTop
 
 variable {J}
-variable {I : Type*} {Y : I → C} (hY : J.ObjectsCoverTop Y)
+variable {I : Type*} {Y : I → C} (hY : J.CoversTop Y)
 
 /-- The cover of any object `W : C` attached to a family of objects `Y` that satisfy
-`J.ObjectsCoverTop Y` -/
+`J.CoversTop Y` -/
 abbrev cover (W : C) : Cover J W := ⟨Sieve.ofObjects Y W, hY W⟩
 
 lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}
@@ -73,7 +73,7 @@ lemma sections_ext (F : Sheaf J (Type _)) {x y : F.1.sections}
   rintro T a ⟨i, ⟨b⟩⟩
   simpa using congr_arg (F.1.map b.op) (h i)
 
-end ObjectsCoverTop
+end CoversTop
 
 end GrothendieckTopology
 
@@ -118,7 +118,7 @@ lemma familyOfElements_isCompatible (X : C) :
     hx.familyOfElements_apply f₂ i₂ φ₂] using hx Z i₁ i₂ (g₁ ≫ φ₁) (g₂ ≫ φ₂)
 
 variable {J}
-variable (hY : J.ObjectsCoverTop Y) (hF : IsSheaf J F)
+variable (hY : J.CoversTop Y) (hF : IsSheaf J F)
 
 lemma exists_unique_section :
     ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
