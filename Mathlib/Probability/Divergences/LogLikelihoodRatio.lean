@@ -43,46 +43,6 @@ variable {α : Type*} {mα : MeasurableSpace α}
 
 section move_this
 
-lemma absolutelyContinuous_withDensity_rnDeriv {μ ν : Measure α} [SigmaFinite ν] [SigmaFinite μ]
-    (hμν : μ ≪ ν) :
-    μ ≪ μ.withDensity (ν.rnDeriv μ) := by
-  rw [Measure.haveLebesgueDecomposition_add ν μ] at hμν
-  refine Measure.AbsolutelyContinuous.mk (fun s _ hνs ↦ ?_)
-  have h_sing := Measure.mutuallySingular_singularPart ν μ
-  obtain ⟨t, _, ht1, ht2⟩ := h_sing -- todo: provide API
-  have hs_eq_union : s = s ∩ t ∪ s ∩ tᶜ := by ext x; simp
-  rw [hs_eq_union]
-  refine le_antisymm ((measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_) (zero_le _)
-  simp only [nonpos_iff_eq_zero, add_eq_zero]
-  constructor
-  · refine hμν ?_
-    simp only [Measure.add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero]
-    constructor
-    · exact measure_mono_null (Set.inter_subset_right _ _) ht1
-    · exact measure_mono_null (Set.inter_subset_left _ _) hνs
-  · exact measure_mono_null (Set.inter_subset_right _ _) ht2
-
-lemma rnDeriv_pos' {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
-  refine (absolutelyContinuous_withDensity_rnDeriv hμν).ae_le ?_
-  filter_upwards [Measure.rnDeriv_pos (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)),
-    (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)).ae_le
-    (Measure.rnDeriv_withDensity μ (Measure.measurable_rnDeriv ν μ))] with x hx hx2
-  rwa [← hx2]
-
-lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] fun _ ↦ 1 :=
-  (Measure.eq_rnDeriv (measurable_const) Measure.MutuallySingular.zero_left (by simp)).symm
-
-lemma rnDeriv_add_right_of_mutuallySingular {μ ν ν' : Measure α}
-    [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite ν']
-    (hνν' : ν ⟂ₘ ν') :
-    μ.rnDeriv (ν + ν') =ᵐ[ν] μ.rnDeriv ν := by
-  sorry -- proved in another branch
-
-lemma inv_rnDeriv' {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    (μ.rnDeriv ν)⁻¹ =ᵐ[μ] ν.rnDeriv μ := by
-  sorry -- proved in another branch
-
 lemma todo_div {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
   have hν_ac : ν ≪ μ + ν := by
@@ -233,13 +193,13 @@ end llr_tilted
 
 lemma neg_llr {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     - LLR μ ν =ᵐ[μ] LLR ν μ := by
-  filter_upwards [inv_rnDeriv' hμν] with x hx
+  filter_upwards [Measure.inv_rnDeriv hμν] with x hx
   rw [Pi.neg_apply, LLR, LLR, ← log_inv, ← ENNReal.toReal_inv]
   congr
 
 lemma exp_neg_llr {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (fun x ↦ exp (- LLR μ ν x)) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x).toReal := by
-  filter_upwards [neg_llr hμν, exp_llr ν μ, rnDeriv_pos' hμν] with x hx hx_exp_log hx_pos
+  filter_upwards [neg_llr hμν, exp_llr ν μ, Measure.rnDeriv_pos' hμν] with x hx hx_exp_log hx_pos
   rw [Pi.neg_apply] at hx
   rw [hx, hx_exp_log]
   simp [hx_pos.ne']
