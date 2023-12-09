@@ -1343,8 +1343,8 @@ theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
 #align free_group.to_word_inv FreeGroup.toWord_inv
 #align free_add_group.to_word_neg FreeAddGroup.toWord_neg
 
-/-- Constructive Church-Rosser theorem (compare `church_rosser`). -/
-@[to_additive "Constructive Church-Rosser theorem (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 #align free_group.reduce.church_rosser FreeGroup.reduce.churchRosser
