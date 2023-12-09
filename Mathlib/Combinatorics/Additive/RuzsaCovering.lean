@@ -70,7 +70,7 @@ lemma exists_subset_mul_div (hs : s.Finite) (ht' : t.Finite) (ht : t.Nonempty) :
   obtain ⟨u, hu, hsut⟩ := Finset.exists_subset_mul_div s ht
   refine ⟨u, ?_⟩
   -- `norm_cast` would find these automatically, but breaks `to_additive` when it does so
-  rw [←Finset.coe_mul, ←Finset.coe_mul, ←Finset.coe_div]
+  rw [← Finset.coe_mul, ← Finset.coe_mul, ← Finset.coe_div]
   norm_cast
   simp [*]
 
