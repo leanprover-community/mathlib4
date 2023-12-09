@@ -381,22 +381,16 @@ theorem tendsto_log_mul_rpow_nhds_zero {r : ℝ} (hr : 0 < r) :
     eventually_mem_nhdsWithin.mono fun x hx => by rw [rpow_neg hx.out.le, div_inv_eq_mul]
 #align tendsto_log_mul_rpow_nhds_zero tendsto_log_mul_rpow_nhds_zero
 
-lemma tendsto_log_mul_nhds_zero_left :
-    Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
+lemma tendsto_log_mul_nhds_zero_left : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
   have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
   simp only [Real.rpow_one] at h
   have h_eq : ∀ x ∈ Set.Iio 0, (- (fun x ↦ log x * x) ∘ (fun x ↦ |x|)) x = log x * x := by
+    simp only [Set.mem_Iio, Pi.neg_apply, Function.comp_apply, log_abs]
     intro x hx
-    simp only [Set.mem_Iio] at hx
-    simp only [Pi.neg_apply, Function.comp_apply, log_abs]
-    rw [abs_of_nonpos hx.le]
-    simp only [mul_neg, neg_neg]
+    simp only [abs_of_nonpos hx.le, mul_neg, neg_neg]
   refine tendsto_nhdsWithin_congr h_eq ?_
-  rw [← neg_zero]
-  refine Filter.Tendsto.neg ?_
-  simp only [neg_zero]
-  refine h.comp ?_
-  refine tendsto_abs_nhdsWithin_zero.mono_left ?_
+  nth_rewrite 3 [← neg_zero]
+  refine (h.comp (tendsto_abs_nhdsWithin_zero.mono_left ?_)).neg
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
   simp only [Set.mem_Iio] at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]
