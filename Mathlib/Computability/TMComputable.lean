@@ -319,8 +319,8 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
 
 /-- Defines polynomial time function of a type, assuming an acceptable coding the input type e.g.
 not unary -/
-def isPolyTimeFunctionByType {α β: Type} {ea : FinEncoding α} {eb : FinEncoding β} (f : α → β) :Prop :=
-    Nonempty (@TM2ComputableInPolyTime α β ea eb f)
+def isPolyTimeFunctionByType {α β: Type} {ea : FinEncoding α} {eb : FinEncoding β}
+    (f : α → β) : Prop := Nonempty (@TM2ComputableInPolyTime α β ea eb f)
 
 /-- Defines polynomial time functions on binary strings to binary strings -/
 def isPolyTimeTM (tm : BString → BString) : Prop :=
