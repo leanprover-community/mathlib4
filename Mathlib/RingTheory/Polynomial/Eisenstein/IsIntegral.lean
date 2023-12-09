@@ -50,7 +50,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
-  · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, LinearMap.map_sum]
+  · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
     conv =>
       congr
       congr

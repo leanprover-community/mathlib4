@@ -117,7 +117,7 @@ theorem ι_plusCompIso_hom (X) (W) :
     F.map (colimit.ι _ W) ≫ (J.plusCompIso F P).hom.app X =
       (J.diagramCompIso F P X.unop).hom.app W ≫ colimit.ι _ W := by
   delta diagramCompIso plusCompIso
-  simp only [IsColimit.descCoconeMorphism_Hom, IsColimit.uniqueUpToIso_hom,
+  simp only [IsColimit.descCoconeMorphism_hom, IsColimit.uniqueUpToIso_hom,
     Cocones.forget_map, Iso.trans_hom, NatIso.ofComponents_hom_app, Functor.mapIso_hom, ←
     Category.assoc]
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]

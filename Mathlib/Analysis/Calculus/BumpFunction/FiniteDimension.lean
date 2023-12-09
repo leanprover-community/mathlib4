@@ -27,7 +27,7 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 noncomputable section
 
 open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimensional
-  ContinuousLinearMap Filter MeasureTheory.Measure
+  ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
 open scoped Pointwise Topology NNReal BigOperators Convolution
 
@@ -59,10 +59,9 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
     rw [tsupport, ← Euclidean.closure_ball _ d_pos.ne']
     exact closure_mono f_supp
   refine' ⟨f, f_tsupp.trans hd, _, _, _, _⟩
-  · refine' isCompact_of_isClosed_bounded isClosed_closure _
-    have : Bounded (Euclidean.closedBall x d) := Euclidean.isCompact_closedBall.bounded
-    apply this.mono _
-    refine' (IsClosed.closure_subset_iff Euclidean.isClosed_closedBall).2 _
+  · refine' isCompact_of_isClosed_isBounded isClosed_closure _
+    have : IsBounded (Euclidean.closedBall x d) := Euclidean.isCompact_closedBall.isBounded
+    refine this.subset (Euclidean.isClosed_closedBall.closure_subset_iff.2 ?_)
     exact f_supp.trans Euclidean.ball_subset_closedBall
   · apply c.contDiff.comp
     exact ContinuousLinearEquiv.contDiff _

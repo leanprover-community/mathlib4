@@ -245,14 +245,14 @@ instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
 noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCancelCommMonoid (β i)] :
     LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
-  __ := (inferInstance : LinearOrder (Lex (∀ i, β i)))
-  __ := (inferInstance: OrderedCancelCommMonoid (Lex (∀ i, β i)))
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
+  __ : OrderedCancelCommMonoid (Lex (∀ i, β i)) := inferInstance
 
 @[to_additive]
 noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCommGroup (β i)] :
     LinearOrderedCommGroup (Lex (∀ i, β i)) where
-  __ := (inferInstance : LinearOrder (Lex (∀ i, β i)))
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
   mul_le_mul_left _ _ := mul_le_mul_left'
 
 end OrderedMonoid

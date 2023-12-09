@@ -381,7 +381,7 @@ theorem map_pi {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ 
   classical
     cases nonempty_fintype ι
     rw [pi_eq_sum_univ x]
-    simp only [Finset.sum_apply, smul_eq_mul, LinearMap.map_sum, Pi.smul_apply, LinearMap.map_smul]
+    simp only [Finset.sum_apply, smul_eq_mul, map_sum, Pi.smul_apply, map_smul]
     exact I.sum_mem fun j _ => I.mul_mem_right _ (hi j)
 #align ideal.map_pi Ideal.map_pi
 

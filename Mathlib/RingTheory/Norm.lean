@@ -233,13 +233,10 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx, aroots_def]
-  have hx' : IsIntegral K (AdjoinSimple.gen K x) := by
-    rwa [← isIntegral_algebraMap_iff injKxL, AdjoinSimple.algebraMap_gen]
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
-  rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
-  try simp only [AdjoinSimple.algebraMap_gen _ _]
-  try exact hf
-  rfl
+    rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
+    try simp only [AdjoinSimple.algebraMap_gen _ _]
+  exact hf
 #align intermediate_field.adjoin_simple.norm_gen_eq_prod_roots IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots
 
 end IntermediateField

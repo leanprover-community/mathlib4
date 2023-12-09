@@ -77,7 +77,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     rw [closure_ball c hr₀.ne']
     exact ((differentiableOn_dslope <| ball_mem_nhds _ hR₁).mpr hd).mono
       (closedBall_subset_ball hr.2)
-  refine' norm_le_of_forall_mem_frontier_norm_le bounded_ball hd _ _
+  refine' norm_le_of_forall_mem_frontier_norm_le isBounded_ball hd _ _
   · rw [frontier_ball c hr₀.ne']
     intro z hz
     have hz' : z ≠ c := ne_of_mem_sphere hz hr₀.ne'

@@ -237,6 +237,9 @@ namespace Equivalence
 
 variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
 
+theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
+  ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
+
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/
 def projectivePresentationOfMapProjectivePresentation (X : C)

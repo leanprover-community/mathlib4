@@ -349,6 +349,9 @@ namespace Equivalence
 
 variable {D : Type*} [Category D] (F : C ≌ D)
 
+theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
+  ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩
+
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/
 def injectivePresentationOfMapInjectivePresentation (X : C)

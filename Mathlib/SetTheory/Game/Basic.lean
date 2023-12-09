@@ -98,11 +98,11 @@ instance instPartialOrderGame : PartialOrder Game where
 /-- The less or fuzzy relation on games.
 
 If `0 ⧏ x` (less or fuzzy with), then Left can win `x` as the first player. -/
-def Lf : Game → Game → Prop :=
-  Quotient.lift₂ PGame.Lf fun _ _ _ _ hx hy => propext (lf_congr hx hy)
-#align game.lf SetTheory.Game.Lf
+def LF : Game → Game → Prop :=
+  Quotient.lift₂ PGame.LF fun _ _ _ _ hx hy => propext (lf_congr hx hy)
+#align game.lf SetTheory.Game.LF
 
-local infixl:50 " ⧏ " => Lf
+local infixl:50 " ⧏ " => LF
 
 /-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
@@ -118,8 +118,8 @@ theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
   exact PGame.not_lf
 #align game.not_lf SetTheory.Game.not_lf
 
--- porting note: had to replace ⧏ with Lf, otherwise cannot differentiate with the operator on PGame
-instance : IsTrichotomous Game Lf :=
+-- porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
+instance : IsTrichotomous Game LF :=
   ⟨by
     rintro ⟨x⟩ ⟨y⟩
     change _ ∨ ⟦x⟧ = ⟦y⟧ ∨ _
@@ -136,7 +136,7 @@ theorem PGame.le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ �
   Iff.rfl
 #align game.pgame.le_iff_game_le SetTheory.Game.PGame.le_iff_game_le
 
-theorem PGame.lf_iff_game_lf {x y : PGame} : PGame.Lf x y ↔ ⟦x⟧ ⧏ ⟦y⟧ :=
+theorem PGame.lf_iff_game_lf {x y : PGame} : PGame.LF x y ↔ ⟦x⟧ ⧏ ⟦y⟧ :=
   Iff.rfl
 #align game.pgame.lf_iff_game_lf SetTheory.Game.PGame.lf_iff_game_lf
 

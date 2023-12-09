@@ -241,6 +241,15 @@ open Elab in
 Find locations as high as possible in the import hierarchy
 where the named declaration could live.
 Using `#find_home!` will forcefully remove the current file.
+Note that this works best if used in a file with `import Mathlib`.
+
+The current file could still be the only suggestion, even using `#find_home! lemma`.
+The reason is that `#find_home!` scans the import graph below the current file,
+selects all the files containing declarations appearing in `lemma`, excluding
+the current file itself and looks for all least upper bounds of such files.
+
+For a simple example, if `lemma` is in a file importing only `A.lean` and `B.lean` and
+uses one lemma from each, then `#find_home! lemma` returns the current file.
 -/
 elab "#find_home" bang:"!"? n:ident : command => do
   let stx ← getRef
