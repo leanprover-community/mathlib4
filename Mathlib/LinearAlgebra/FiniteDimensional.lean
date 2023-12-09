@@ -1016,7 +1016,7 @@ theorem finrank_eq_one_iff (ι : Type*) [Unique ι] : finrank K V = 1 ↔ Nonemp
   constructor
   · intro h
     haveI := finiteDimensional_of_finrank (_root_.zero_lt_one.trans_le h.symm.le)
-    exact ⟨Module.Free.basisUnique ι h⟩
+    exact ⟨FiniteDimensional.basisUnique ι h⟩
   · rintro ⟨b⟩
     simpa using finrank_eq_card_basis b
 #align finrank_eq_one_iff finrank_eq_one_iff
