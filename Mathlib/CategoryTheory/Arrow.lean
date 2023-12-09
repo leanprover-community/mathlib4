@@ -41,8 +41,8 @@ def Arrow :=
 instance : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T)
-    where default := show Comma (𝟭 T) (𝟭 T) from default
+instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
+  default := show Comma (𝟭 T) (𝟭 T) from default
 #align category_theory.arrow.inhabited CategoryTheory.Arrow.inhabited
 
 end
@@ -67,12 +67,12 @@ theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
 -- porting note: added to ease automation
 @[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).left = f.left ≫ g.left := rfl
+    (f ≫ g).left = f.left ≫ g.left := rfl
 
 -- porting note: added to ease automation
 @[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).right = f.right ≫ g.right := rfl
+    (f ≫ g).right = f.right ≫ g.right := rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
 @[simps]

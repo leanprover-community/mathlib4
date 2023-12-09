@@ -184,7 +184,7 @@ readable, we introduce local notation `c = lineMap a b r`. Then we prove lemmas 
 
 ```
 lemma map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
-  f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b :=
+    f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b :=
 ```
 
 For each inequality between `f c` and `lineMap (f a) (f b) r` we provide 3 lemmas:

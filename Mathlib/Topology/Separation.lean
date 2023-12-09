@@ -410,6 +410,12 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space α] {x y : α} (h : x ≠ y) (s : 
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 #align ne.nhds_within_diff_singleton Ne.nhdsWithin_diff_singleton
 
+lemma nhdsWithin_compl_singleton_le [T1Space α] (x y : α) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
+  rcases eq_or_ne x y with rfl|hy
+  · exact Eq.le rfl
+  · rw [Ne.nhdsWithin_compl_singleton hy]
+    exact nhdsWithin_le_nhds
+
 theorem isOpen_setOf_eventually_nhdsWithin [T1Space α] {p : α → Prop} :
     IsOpen { x | ∀ᶠ y in 𝓝[≠] x, p y } := by
   refine' isOpen_iff_mem_nhds.mpr fun a ha => _
@@ -455,7 +461,7 @@ theorem Bornology.relativelyCompact.isBounded_iff [T1Space α] {s : Set α} :
   constructor
   · rintro ⟨t, ht₁, ht₂, hst⟩
     rw [compl_subset_compl] at hst
-    exact isCompact_of_isClosed_subset ht₂ isClosed_closure (closure_minimal hst ht₁)
+    exact ht₂.of_isClosed_subset isClosed_closure (closure_minimal hst ht₁)
   · intro h
     exact ⟨closure s, isClosed_closure, h, compl_subset_compl.mpr subset_closure⟩
 #align bornology.relatively_compact.is_bounded_iff Bornology.relativelyCompact.isBounded_iff
@@ -673,12 +679,12 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space α] {x y : α} {s t : Se
 #align insert_mem_nhds_within_of_subset_insert insert_mem_nhdsWithin_of_subset_insert
 
 @[simp]
-theorem sInter_sets_nhds [T1Space α] (x : α) : ⋂₀ (𝓝 x).sets = {x} := by
-  simp [sInter_nhds_sets_eq_specializes]
+theorem ker_nhds [T1Space α] (x : α) : (𝓝 x).ker = {x} := by
+  simp [ker_nhds_eq_specializes]
 
 theorem biInter_basis_nhds [T1Space α] {ι : Sort*} {p : ι → Prop} {s : ι → Set α} {x : α}
     (h : (𝓝 x).HasBasis p s) : ⋂ (i) (_ : p i), s i = {x} := by
-  rw [← h.sInter_sets, sInter_sets_nhds]
+  rw [← h.ker, ker_nhds]
 #align bInter_basis_nhds biInter_basis_nhds
 
 @[simp]
@@ -1337,7 +1343,7 @@ theorem IsCompact.inter [T2Space α] {s t : Set α} (hs : IsCompact s) (ht : IsC
 
 theorem isCompact_closure_of_subset_compact [T2Space α] {s t : Set α} (ht : IsCompact t)
     (h : s ⊆ t) : IsCompact (closure s) :=
-  isCompact_of_isClosed_subset ht isClosed_closure (closure_minimal h ht.isClosed)
+  ht.of_isClosed_subset isClosed_closure (closure_minimal h ht.isClosed)
 #align is_compact_closure_of_subset_compact isCompact_closure_of_subset_compact
 
 @[simp]

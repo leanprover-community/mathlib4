@@ -142,18 +142,18 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 #align submodule.quotient.mk_smul Submodule.Quotient.mk_smul
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
-    [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P)
-    where smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
+    [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
+  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
 #align submodule.quotient.smul_comm_class Submodule.Quotient.smulCommClass
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
-    [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P)
-    where smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
+    [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
+  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
 #align submodule.quotient.is_scalar_tower Submodule.Quotient.isScalarTower
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
-    [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P)
-    where op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+    [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
+  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
 #align submodule.quotient.is_central_scalar Submodule.Quotient.isCentralScalar
 
 end SMul

@@ -79,11 +79,11 @@ theorem mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β}
     have : (fun i ↦ f (arr.get i)) = g := by funext ⟨i, h⟩; apply H
     cases this; constructor
 
-theorem size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) :
-  n = arr.size := by cases H; rfl
+theorem size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) : n = arr.size := by
+  cases H; rfl
 
 theorem get_eq {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m) :
-  ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = m ⟨i, h₂⟩ := by
+    ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = m ⟨i, h₂⟩ := by
   cases H; exact fun i h _ ↦ rfl
 
 theorem get_eq' {arr : Array α} {m : Fin arr.size → β} (H : Agrees arr f m)
@@ -123,7 +123,7 @@ def UFModel.Models (arr : Array (UFNode α)) {n} (m : UFModel n) :=
 namespace UFModel.Models
 
 theorem size_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) :
-  n = arr.size := H.1.size_eq
+    n = arr.size := H.1.size_eq
 
 theorem parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
   (i : Nat) (h₁ : i < arr.size) (h₂) : arr[i].parent = m.parent ⟨i, h₂⟩ := H.1.get_eq ..
@@ -150,7 +150,7 @@ theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models a
   (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set
       (fun k (h : (k:ℕ) ≠ i) ↦ by simp [UFModel.setParent, h.symm])
-      (fun h ↦ by simp [UFModel.setParent, hp]),
+      (fun _ ↦ by simp [UFModel.setParent, hp]),
     hm.2.set (fun _ _ ↦ rfl) (fun _ ↦ hrk.trans $ hm.2.get_eq ..)⟩
 
 end UFModel.Models
@@ -190,7 +190,7 @@ def rankMaxAux (self : UnionFind α) : ∀ (i : Nat),
 def rankMax (self : UnionFind α) := (rankMaxAux self self.size).1 + 1
 
 theorem lt_rankMax' (self : UnionFind α) (i : Fin self.size) :
-  (self.arr.get i).rank < self.rankMax :=
+    (self.arr.get i).rank < self.rankMax :=
   Nat.lt_succ.2 $ (rankMaxAux self self.size).2 _ i.2 _
 
 theorem lt_rankMax (self : UnionFind α) (i : Nat) : self.rank i < self.rankMax := by
@@ -214,7 +214,7 @@ def push (self : UnionFind α) (x : α) : UnionFind α where
   model := let ⟨_, hm⟩ := self.model'; ⟨_, _, hm.push _ rfl _⟩
 
 def findAux (self : UnionFind α) (x : Fin self.size) :
-  (s : Array (UFNode α)) ×' (root : Fin s.size) ×'
+    (s : Array (UFNode α)) ×' (root : Fin s.size) ×'
     ∃ n, ∃ (m : UFModel n) (m' : UFModel n),
       m.Models self.arr ∧ m'.Models s ∧ m'.rank = m.rank ∧
       (∃ hr, (m'.parent ⟨root, hr⟩).1 = root) ∧
@@ -246,7 +246,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
 termination_by _ α self x => self.rankMax - self.rank x
 
 def find (self : UnionFind α) (x : Fin self.size) :
-  (s : UnionFind α) × (root : Fin s.size) ×'
+    (s : UnionFind α) × (root : Fin s.size) ×'
     s.size = self.size ∧ (s.arr.get root).parent = root :=
   let ⟨s, root, H⟩ := self.findAux x
   have : _ ∧ s.size = self.size ∧ s[root.1].parent = root :=
@@ -277,7 +277,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
       (by simpa [← hm.parent_eq'] using yroot), ?_⟩
     let parent (i : Fin n) := (if x.1 = i then y else m.parent i).1
     have : UFModel.Agrees arr₁ (·.parent) parent :=
-      hm.1.set (fun i h ↦ by simp; rw [if_neg h.symm]) (fun h ↦ by simp)
+      hm.1.set (fun i h ↦ by simp; rw [if_neg h.symm]) (fun _ ↦ by simp)
     have H1 : UFModel.Agrees arr₂ (·.parent) parent := by
       simp; split
       · exact this.set (fun i h ↦ by simp [h.symm]) (fun h ↦ by simp [ne, hm.parent_eq'])

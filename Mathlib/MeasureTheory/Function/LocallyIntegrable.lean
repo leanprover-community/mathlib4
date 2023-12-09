@@ -24,7 +24,7 @@ on compact sets.
   integrable on `s`.
 -/
 
-open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace
+open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
 open scoped Topology Interval ENNReal BigOperators
 
@@ -144,7 +144,7 @@ theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClos
       let ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
       ⟨_, inter_mem_nhdsWithin s h2K,
         hf _ (inter_subset_left _ _)
-          (isCompact_of_isClosed_subset hK (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
+          (hK.of_isClosed_subset (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
   | inr hs =>
     obtain ⟨K, hK, h2K, h3K⟩ := exists_compact_subset hs hx
     refine' ⟨K, _, hf K h3K hK⟩
@@ -452,8 +452,8 @@ theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b 
   · exact integrableOn_empty
   have hbelow : BddBelow (f '' s) := ⟨f a, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono ha.1 hy (ha.2 hy)⟩
   have habove : BddAbove (f '' s) := ⟨f b, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono hy hb.1 (hb.2 hy)⟩
-  have : Metric.Bounded (f '' s) := Metric.bounded_of_bddAbove_of_bddBelow habove hbelow
-  rcases bounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
+  have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
+  rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
   have A : IntegrableOn (fun _ => C) s μ := by
     simp only [hs.lt_top, integrableOn_const, or_true_iff]
   refine'

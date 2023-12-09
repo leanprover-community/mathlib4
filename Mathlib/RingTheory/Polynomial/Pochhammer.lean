@@ -16,13 +16,16 @@ import Mathlib.Data.Polynomial.RingDivision
 
 We define and prove some basic relations about
 `ascPochhammer S n : S[X] := X * (X + 1) * ... * (X + n - 1)`
-which is also known as the rising factorial. A version of this definition
-that is focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial`.
+which is also known as the rising factorial and about
+`descPochhammer R n : R[X] := X * (X - 1) * ... * (X - n + 1)`
+which is also known as the falling factorial. Versions of this definition
+that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactorial` and
+`Nat.descFactorial`.
 
 ## Implementation
 
-As with many other families of polynomials, even though the coefficients are always in `ℕ`,
-we define the polynomial with coefficients in any `[Semiring S]`.
+As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
+we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
 
 ## TODO
 
@@ -41,7 +44,7 @@ section Semiring
 
 variable (S : Type u) [Semiring S]
 
-/-- `ascPochhammer S n` is the polynomial `X * (X+1) * ... * (X + n - 1)`,
+/-- `ascPochhammer S n` is the polynomial `X * (X + 1) * ... * (X + n - 1)`,
 with coefficients in the semiring `S`.
 -/
 noncomputable def ascPochhammer : ℕ → S[X]
@@ -63,7 +66,7 @@ theorem ascPochhammer_succ_left (n : ℕ) :
   by rw [ascPochhammer]
 #align pochhammer_succ_left ascPochhammer_succ_left
 
-theorem monic_pochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
+theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
     Monic <| ascPochhammer S n := by
   induction' n with n hn
   · simp
@@ -139,12 +142,6 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align pochhammer_succ_comp_X_add_one ascPochhammer_succ_comp_X_add_one
 
-theorem Polynomial.mul_X_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
-    (p * (X + (n : S[X]))).comp q = p.comp q * (q + n) := by
-  rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
-set_option linter.uppercaseLean3 false in
-#align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_nat_cast_comp
-
 theorem ascPochhammer_mul (n m : ℕ) :
     ascPochhammer S n * (ascPochhammer S m).comp (X + (n : S[X])) = ascPochhammer S (n + m) := by
   induction' m with m ih
@@ -175,7 +172,7 @@ theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
 #align pochhammer_nat_eq_desc_factorial ascPochhammer_nat_eq_descFactorial
 
 @[simp]
-theorem pochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
+theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
     (ascPochhammer S n).natDegree = n := by
   induction' n with n hn
   · simp
@@ -236,3 +233,135 @@ theorem ascPochhammer_eval_succ (r n : ℕ) :
 #align pochhammer_eval_succ ascPochhammer_eval_succ
 
 end Factorial
+
+section Ring
+
+variable (R : Type u) [Ring R]
+
+/-- `descPochhammer R n` is the polynomial `X * (X - 1) * ... * (X - n + 1)`,
+with coefficients in the ring `R`.
+-/
+noncomputable def descPochhammer : ℕ → R[X]
+  | 0 => 1
+  | n + 1 => X * (descPochhammer n).comp (X - 1)
+
+@[simp]
+theorem descPochhammer_zero : descPochhammer R 0 = 1 :=
+  rfl
+
+@[simp]
+theorem descPochhammer_one : descPochhammer R 1 = X := by simp [descPochhammer]
+
+theorem descPochhammer_succ_left (n : ℕ) :
+    descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
+  by rw [descPochhammer]
+
+theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
+    Monic <| descPochhammer R n := by
+  induction' n with n hn
+  · simp
+  · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
+    have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
+    rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
+        one_mul, one_mul, h, one_pow]
+
+section
+
+variable {R} {T : Type v} [Ring T]
+
+@[simp]
+theorem descPochhammer_map (f : R →+* T) (n : ℕ) :
+    (descPochhammer R n).map f = descPochhammer T n := by
+  induction' n with n ih
+  · simp
+  · simp [ih, descPochhammer_succ_left, map_comp]
+end
+
+@[simp, norm_cast]
+theorem descPochhammer_eval_cast (n : ℕ) (k : ℤ) :
+    (((descPochhammer ℤ n).eval k : ℤ) : R) = ((descPochhammer R n).eval k : R) := by
+  rw [← descPochhammer_map (algebraMap ℤ R), eval_map, ← eq_intCast (algebraMap ℤ R)]
+  simp only [algebraMap_int_eq, eq_intCast, eval₂_at_int_cast, Nat.cast_id, eq_natCast, Int.cast_id]
+
+theorem descPochhammer_eval_zero {n : ℕ} :
+    (descPochhammer R n).eval 0 = if n = 0 then 1 else 0 := by
+  cases n
+  · simp
+  · simp [X_mul, Nat.succ_ne_zero, descPochhammer_succ_left]
+
+theorem descPochhammer_zero_eval_zero : (descPochhammer R 0).eval 0 = 1 := by simp
+
+@[simp]
+theorem descPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (descPochhammer R n).eval 0 = 0 := by
+  simp [descPochhammer_eval_zero, h]
+
+theorem descPochhammer_succ_right (n : ℕ) :
+    descPochhammer R (n + 1) = descPochhammer R n * (X - (n : R[X])) := by
+  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X]))
+  · apply_fun Polynomial.map (algebraMap ℤ R) at h
+    simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
+      Polynomial.map_int_cast] using h
+  induction' n with n ih
+  · simp [descPochhammer]
+  · conv_lhs =>
+      rw [descPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← descPochhammer_succ_left, sub_comp,
+          X_comp, nat_cast_comp]
+    nth_rw 1 [Nat.succ_eq_add_one]
+    rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
+
+@[simp]
+theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R]:
+    (descPochhammer R n).natDegree = n := by
+  induction' n with n hn
+  · simp
+  · have : natDegree (X - (n : R[X])) = 1 := natDegree_X_sub_C (n : R)
+    rw [descPochhammer_succ_right,
+        natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
+    cases n
+    · simp
+    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
+
+theorem descPochhammer_succ_eval {S : Type*} [Ring S] (n : ℕ) (k : S) :
+    (descPochhammer S (n + 1)).eval k = (descPochhammer S n).eval k * (k - n) := by
+  rw [descPochhammer_succ_right, mul_sub, eval_sub, eval_mul_X, ← Nat.cast_comm, ← C_eq_nat_cast,
+    eval_C_mul, Nat.cast_comm, ← mul_sub]
+
+theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
+    (descPochhammer R (n + 1)).comp (X - 1) =
+      descPochhammer R (n + 1) - (n + (1 : R[X])) • (descPochhammer R n).comp (X - 1) := by
+  suffices (descPochhammer ℤ (n + 1)).comp (X - 1) =
+      descPochhammer ℤ (n + 1) - (n + 1) * (descPochhammer ℤ n).comp (X - 1)
+    by simpa [map_comp] using congr_arg (Polynomial.map (Int.castRingHom R)) this
+  nth_rw 2 [descPochhammer_succ_left]
+  rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, nat_cast_comp]
+  ring
+
+theorem descPochhammer_mul (n m : ℕ) :
+    descPochhammer R n * (descPochhammer R m).comp (X - (n : R[X])) = descPochhammer R (n + m) := by
+  induction' m with m ih
+  · simp
+  · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_int_cast_comp, ← mul_assoc, ih,
+      Nat.succ_eq_add_one, ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
+
+theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
+    ∀ k, (descPochhammer ℤ k).eval (n : ℤ) = n.descFactorial k
+  | 0 => by
+    rw [descPochhammer_zero, eval_one, Nat.descFactorial_zero]
+    rfl
+  | t + 1 => by
+    rw [descPochhammer_succ_right, eval_mul, descPochhammer_int_eq_descFactorial n t]
+    simp only [eval_sub, eval_X, eval_nat_cast, Nat.descFactorial_succ, Nat.cast_mul,
+        Nat.descFactorial_eq_zero_iff_lt]
+    rw [mul_comm]
+    simp only [mul_eq_mul_right_iff, Nat.cast_eq_zero, Nat.descFactorial_eq_zero_iff_lt]
+    by_cases n < t
+    · tauto
+    · left
+      exact (Int.ofNat_sub <| not_lt.mp h).symm
+
+theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
+    (descPochhammer ℤ b).eval (a + b : ℤ) = a.ascFactorial b := by
+  rw [← Nat.cast_add, descPochhammer_int_eq_descFactorial (a + b) b,
+      Nat.add_descFactorial_eq_ascFactorial]
+
+end Ring

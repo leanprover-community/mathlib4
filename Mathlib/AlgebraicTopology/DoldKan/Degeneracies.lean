@@ -105,13 +105,13 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         have hi' : i = Fin.castSucc ⟨i, by linarith⟩ := by
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
-        have eq := hq j.revPerm.succ (by
-          simp only [← hk, Fin.revPerm_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
+        have eq := hq j.rev.succ (by
+          simp only [← hk, Fin.rev_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
           linarith)
         rw [HomologicalComplex.comp_f, assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
-        simp only [Fin.revPerm_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
+        simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
         linarith
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.σ_comp_P_eq_zero AlgebraicTopology.DoldKan.σ_comp_P_eq_zero

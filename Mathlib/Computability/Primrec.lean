@@ -768,7 +768,7 @@ protected theorem decode₂ : Primrec (decode₂ α) :=
 #align primrec.decode₂ Primrec.decode₂
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
-  ∀ l : List β, Primrec fun a => l.findIdx (p a)
+    ∀ l : List β, Primrec fun a => l.findIdx (p a)
 | [] => const 0
 | a :: l => (cond (hp.comp .id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
   by simp [List.findIdx_cons]

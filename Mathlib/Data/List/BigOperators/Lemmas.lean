@@ -11,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Set.Basic
@@ -85,7 +85,7 @@ theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod :
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
 
-theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
+theorem dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
   induction' l with x l ih
   · exact dvd_zero _
   · rw [List.sum_cons]

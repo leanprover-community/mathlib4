@@ -5,6 +5,7 @@ Authors: Eric Wieser, Utensil Song
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 #align_import linear_algebra.clifford_algebra.basic from "leanprover-community/mathlib"@"d46774d43797f5d1f507a63a6e904f7a533ae74a"
@@ -229,16 +230,36 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   exact Subtype.prop (lift Q of a)
 #align clifford_algebra.induction CliffordAlgebra.induction
 
+theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
+    (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
+    f a * f b + f b * f a = algebraMap R _ (QuadraticForm.polar Q a b) :=
+  calc
+    f a * f b + f b * f a = f (a + b) * f (a + b) - f a * f a - f b * f b := by
+      rw [f.map_add, mul_add, add_mul, add_mul]; abel
+    _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
+      rw [hf, hf, hf]
+    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
+    _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
+
+/-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
+
+To show a function squares to the quadratic form, it suffices to show that
+`f x * f y + f y * f x = algebraMap _ _ (polar Q x y)` -/
+theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (2 : A))
+    (f : M →ₗ[R] A) :
+    (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
+      (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
+        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
+  simp_rw [FunLike.ext_iff]
+  refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
+  change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
+  apply h2.mul_left_cancel
+  rw [two_mul, two_mul, h x x, QuadraticForm.polar_self, two_mul, map_add]
+
 /-- The symmetric product of vectors is a scalar -/
 theorem ι_mul_ι_add_swap (a b : M) :
     ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticForm.polar Q a b) :=
-  calc
-    ι Q a * ι Q b + ι Q b * ι Q a = ι Q (a + b) * ι Q (a + b) - ι Q a * ι Q a - ι Q b * ι Q b := by
-      rw [(ι Q).map_add, mul_add, add_mul, add_mul]; abel
-    _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
-      rw [ι_sq_scalar, ι_sq_scalar, ι_sq_scalar]
-    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
-    _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
+  mul_add_swap_eq_polar_of_forall_mul_self_eq _ (ι_sq_scalar _) _ _
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_comm (a b : M) :
@@ -267,61 +288,58 @@ variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
 
 variable [Module R M₁] [Module R M₂] [Module R M₃]
 
-variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
+variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
 /-- Any linear map that preserves the quadratic form lifts to an `AlgHom` between algebras.
 
-See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.Isometry`. -/
-def map (f : M₁ →ₗ[R] M₂) (hf : ∀ m, Q₂ (f m) = Q₁ m) :
+See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.IsometryEquiv`. -/
+def map (f : Q₁ →qᵢ Q₂) :
     CliffordAlgebra Q₁ →ₐ[R] CliffordAlgebra Q₂ :=
   CliffordAlgebra.lift Q₁
-    ⟨(CliffordAlgebra.ι Q₂).comp f, fun m => (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| hf m⟩
+    ⟨ι Q₂ ∘ₗ f.toLinearMap, fun m => (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
 #align clifford_algebra.map CliffordAlgebra.map
 
 @[simp]
-theorem map_comp_ι (f : M₁ →ₗ[R] M₂) (hf) :
-    (map Q₁ Q₂ f hf).toLinearMap.comp (ι Q₁) = (ι Q₂).comp f :=
+theorem map_comp_ι (f : Q₁ →qᵢ Q₂) :
+    (map f).toLinearMap ∘ₗ ι Q₁ = ι Q₂ ∘ₗ f.toLinearMap :=
   ι_comp_lift _ _
 #align clifford_algebra.map_comp_ι CliffordAlgebra.map_comp_ι
 
 @[simp]
-theorem map_apply_ι (f : M₁ →ₗ[R] M₂) (hf) (m : M₁) : map Q₁ Q₂ f hf (ι Q₁ m) = ι Q₂ (f m) :=
+theorem map_apply_ι (f : Q₁ →qᵢ Q₂) (m : M₁) : map f (ι Q₁ m) = ι Q₂ (f m) :=
   lift_ι_apply _ _ m
 #align clifford_algebra.map_apply_ι CliffordAlgebra.map_apply_ι
 
+variable (Q₁) in
 @[simp]
-theorem map_id :
-    (map Q₁ Q₁ (LinearMap.id : M₁ →ₗ[R] M₁) fun m => rfl) = AlgHom.id R (CliffordAlgebra Q₁) := by
-  ext m; exact map_apply_ι _ _ _ _ m
+theorem map_id : map (QuadraticForm.Isometry.id Q₁) = AlgHom.id R (CliffordAlgebra Q₁) := by
+  ext m; exact map_apply_ι _ m
 #align clifford_algebra.map_id CliffordAlgebra.map_id
 
 @[simp]
-theorem map_comp_map (f : M₂ →ₗ[R] M₃) (hf) (g : M₁ →ₗ[R] M₂) (hg) :
-    (map Q₂ Q₃ f hf).comp (map Q₁ Q₂ g hg)
-      = map Q₁ Q₃ (f.comp g) fun m => (hf _).trans <| hg m := by
+theorem map_comp_map (f : Q₂ →qᵢ Q₃) (g : Q₁ →qᵢ Q₂) :
+    (map f).comp (map g) = map (f.comp g) := by
   ext m
   dsimp only [LinearMap.comp_apply, AlgHom.comp_apply, AlgHom.toLinearMap_apply, AlgHom.id_apply]
-  rw [map_apply_ι, map_apply_ι, map_apply_ι, LinearMap.comp_apply]
+  rw [map_apply_ι, map_apply_ι, map_apply_ι, QuadraticForm.Isometry.comp_apply]
 #align clifford_algebra.map_comp_map CliffordAlgebra.map_comp_map
 
 @[simp]
-theorem ι_range_map_map (f : M₁ →ₗ[R] M₂) (hf : ∀ m, Q₂ (f m) = Q₁ m) :
-    (ι Q₁).range.map (map Q₁ Q₂ f hf).toLinearMap = f.range.map (ι Q₂) :=
+theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
+    (ι Q₁).range.map (map f).toLinearMap = f.range.map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 #align clifford_algebra.ι_range_map_map CliffordAlgebra.ι_range_map_map
-
-variable {Q₁ Q₂ Q₃}
 
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
 @[simps! apply]
 def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
-  AlgEquiv.ofAlgHom (map Q₁ Q₂ e e.map_app) (map Q₂ Q₁ e.symm e.symm.map_app)
-    ((map_comp_map _ _ _ _ _ _ _).trans <| by
+  AlgEquiv.ofAlgHom (map e.toIsometry) (map e.symm.toIsometry)
+    ((map_comp_map _ _).trans <| by
       convert map_id Q₂ using 2  -- porting note: replaced `_` with `Q₂`
       ext m
       exact e.toLinearEquiv.apply_symm_apply m)
-    ((map_comp_map _ _ _ _ _ _ _).trans <| by
+    ((map_comp_map _ _).trans <| by
       convert map_id Q₁ using 2  -- porting note: replaced `_` with `Q₁`
       ext m
       exact e.toLinearEquiv.symm_apply_apply m)
@@ -337,7 +355,7 @@ theorem equivOfIsometry_symm (e : Q₁.IsometryEquiv Q₂) :
 theorem equivOfIsometry_trans (e₁₂ : Q₁.IsometryEquiv Q₂) (e₂₃ : Q₂.IsometryEquiv Q₃) :
     (equivOfIsometry e₁₂).trans (equivOfIsometry e₂₃) = equivOfIsometry (e₁₂.trans e₂₃) := by
   ext x
-  exact AlgHom.congr_fun (map_comp_map Q₁ Q₂ Q₃ _ _ _ _) x
+  exact AlgHom.congr_fun (map_comp_map _ _) x
 #align clifford_algebra.equiv_of_isometry_trans CliffordAlgebra.equivOfIsometry_trans
 
 @[simp]

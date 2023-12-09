@@ -55,6 +55,18 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
 
+lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
+  obtain ⟨N,hN⟩ := hx
+  use N
+  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+
+lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
+  cases n with
+  | zero => contradiction
+  | succ => exact IsNilpotent.pow hx
+
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩

@@ -227,6 +227,9 @@ theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
 #align finset.compl_insert Finset.compl_insert
 
+theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
+  simp_rw [compl_insert, insert_erase (mem_compl.2 ha)]
+
 @[simp]
 theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
   rw [← compl_erase, erase_singleton, compl_empty]
@@ -255,6 +258,10 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
     univ.image f = univ :=
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_image_of_mem _ <| mem_univ _
 #align finset.image_univ_of_surjective Finset.image_univ_of_surjective
+
+@[simp]
+theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
+  Finset.image_univ_of_surjective f.surjective
 
 end BooleanAlgebra
 
@@ -808,6 +815,9 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
 #align fin.univ_def Fin.univ_def
+
+@[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
+  ext; simp
 
 @[simp]
 theorem Fin.image_succAbove_univ {n : ℕ} (i : Fin (n + 1)) : univ.image i.succAbove = {i}ᶜ := by

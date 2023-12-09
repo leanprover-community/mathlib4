@@ -19,7 +19,7 @@ Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n
 in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
 ```
 def matPolyEquiv :
-  Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
+    Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```

@@ -54,10 +54,10 @@ end
 
 export LocallyBoundedMapClass (comap_cobounded_le)
 
-theorem IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] {f : F}
+theorem Bornology.IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] (f : F)
     {s : Set α} (hs : IsBounded s) : IsBounded (f '' s) :=
   comap_cobounded_le_iff.1 (comap_cobounded_le f) hs
-#align is_bounded.image IsBounded.image
+#align is_bounded.image Bornology.IsBounded.image
 
 /-- Turn an element of a type `F` satisfying `LocallyBoundedMapClass F α β` into an actual
 `LocallyBoundedMap`. This is declared as the default coercion from `F` to

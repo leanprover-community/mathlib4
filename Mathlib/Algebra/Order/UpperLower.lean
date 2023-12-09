@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.UpperLower.Basic
 
-#align_import algebra.order.upper_lower from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
+#align_import algebra.order.upper_lower from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 /-!
 # Algebraic operations on upper/lower sets
 
@@ -42,15 +42,12 @@ section OrderedCommGroup
 variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
 
 @[to_additive]
-theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := by
-  rintro _ y hxy ⟨x, hx, rfl⟩
-  exact mem_smul_set_iff_inv_smul_mem.2 (hs (le_inv_mul_iff_mul_le.2 hxy) hx)
+theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _
 #align is_upper_set.smul IsUpperSet.smul
 #align is_upper_set.vadd IsUpperSet.vadd
 
 @[to_additive]
-theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
-  hs.ofDual.smul
+theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) := hs.image <| OrderIso.mulLeft _
 #align is_lower_set.smul IsLowerSet.smul
 #align is_lower_set.vadd IsLowerSet.vadd
 
@@ -76,14 +73,12 @@ theorem IsUpperSet.mul_right (hs : IsUpperSet s) : IsUpperSet (s * t) := by
 #align is_upper_set.add_right IsUpperSet.add_right
 
 @[to_additive]
-theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) :=
-  ht.ofDual.mul_left
+theorem IsLowerSet.mul_left (ht : IsLowerSet t) : IsLowerSet (s * t) := ht.toDual.mul_left
 #align is_lower_set.mul_left IsLowerSet.mul_left
 #align is_lower_set.add_left IsLowerSet.add_left
 
 @[to_additive]
-theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) :=
-  hs.ofDual.mul_right
+theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) := hs.toDual.mul_right
 #align is_lower_set.mul_right IsLowerSet.mul_right
 #align is_lower_set.add_right IsLowerSet.add_right
 
@@ -112,14 +107,12 @@ theorem IsUpperSet.div_right (hs : IsUpperSet s) : IsUpperSet (s / t) := by
 #align is_upper_set.sub_right IsUpperSet.sub_right
 
 @[to_additive]
-theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) :=
-  ht.ofDual.div_left
+theorem IsLowerSet.div_left (ht : IsLowerSet t) : IsUpperSet (s / t) := ht.toDual.div_left
 #align is_lower_set.div_left IsLowerSet.div_left
 #align is_lower_set.sub_left IsLowerSet.sub_left
 
 @[to_additive]
-theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) :=
-  hs.ofDual.div_right
+theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) := hs.toDual.div_right
 #align is_lower_set.div_right IsLowerSet.div_right
 #align is_lower_set.sub_right IsLowerSet.sub_right
 
@@ -171,8 +164,7 @@ instance : MulAction α (UpperSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (UpperSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with
-    mul := (· * ·) }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
@@ -234,8 +226,7 @@ instance : MulAction α (LowerSet α) :=
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (LowerSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with
-    mul := (· * ·) }
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
 
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=

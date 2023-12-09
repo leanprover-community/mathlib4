@@ -130,7 +130,7 @@ protected theorem is_basis [T : TopologicalSpace α] (F : Realizer α) :
 #align ctop.realizer.is_basis Ctop.Realizer.is_basis
 
 protected theorem mem_nhds [T : TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
-  s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
+    s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
   have := @mem_nhds_toTopsp _ _ F.F s a; rwa [F.eq] at this
 #align ctop.realizer.mem_nhds Ctop.Realizer.mem_nhds
 

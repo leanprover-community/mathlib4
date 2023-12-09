@@ -114,8 +114,7 @@ def contractRight : CliffordAlgebra Q →ₗ[R] Module.Dual R M →ₗ[R] Cliffo
 #align clifford_algebra.contract_right CliffordAlgebra.contractRight
 
 theorem contractRight_eq (x : CliffordAlgebra Q) :
-    contractRight (Q := Q) x d = reverse
-    (contractLeft (R := R) (M := M) d <| reverse x) :=
+    contractRight (Q := Q) x d = reverse (contractLeft (R := R) (M := M) d <| reverse x) :=
   rfl
 #align clifford_algebra.contract_right_eq CliffordAlgebra.contractRight_eq
 
@@ -232,7 +231,7 @@ theorem contractRight_comm (x : CliffordAlgebra Q) : x⌊d⌊d' = -(x⌊d'⌊d) 
 #align clifford_algebra.contract_right_comm CliffordAlgebra.contractRight_comm
 
 /- TODO:
-lemma contract_right_contract_left (x : clifford_algebra Q) : (d ⌋ x) ⌊ d' = d ⌋ (x ⌊ d') :=
+lemma contractRight_contractLeft (x : CliffordAlgebra Q) : (d ⌋ x) ⌊ d' = d ⌋ (x ⌊ d') :=
 -/
 end contractLeft
 
@@ -325,8 +324,8 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
--- Porting note: original statement
---    changeForm h (d⌋x) = d⌋changeForm h x := by
+    -- Porting note: original statement
+    --    changeForm h (d⌋x) = d⌋changeForm h x := by
     changeForm h (contractLeft (Q := Q) d x) = contractLeft (Q := Q') d (changeForm h x) := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]

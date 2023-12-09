@@ -917,23 +917,19 @@ theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
 #align measure_theory.uniform_integrable_iff MeasureTheory.uniformIntegrable_iff
 
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
-theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : UniformIntegrable f p μ) :
-    UniformIntegrable (fun n => (∑ i in Finset.range n, f i) / (n : α → ℝ)) p μ := by
+theorem uniformIntegrable_average
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (hp : 1 ≤ p) {f : ℕ → α → E} (hf : UniformIntegrable f p μ) :
+    UniformIntegrable (fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in Finset.range n, f i)) p μ := by
   obtain ⟨hf₁, hf₂, hf₃⟩ := hf
   refine' ⟨fun n => _, fun ε hε => _, _⟩
-  · simp_rw [div_eq_mul_inv]
-    exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).mul
-      (aestronglyMeasurable_const : AEStronglyMeasurable (fun _ => (↑n : ℝ)⁻¹) μ)
+  · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine' ⟨δ, hδ₁, fun n s hs hle => _⟩
-    simp_rw [div_eq_mul_inv, Finset.sum_mul, Set.indicator_finset_sum]
-    refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).mul_const (↑n)⁻¹).indicator hs) hp) _
-    have : ∀ i, s.indicator (f i * (n : α → ℝ)⁻¹) = (↑n : ℝ)⁻¹ • s.indicator (f i) := by
-      intro i
-      rw [mul_comm, (_ : (↑n)⁻¹ * f i = fun ω => (↑n : ℝ)⁻¹ • f i ω)]
-      · rw [Set.indicator_const_smul s (↑n : ℝ)⁻¹ (f i)]
-        rfl
-      · rfl
+    simp_rw [Finset.smul_sum, Set.indicator_finset_sum]
+    refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
+    have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
+      fun i ↦ indicator_const_smul _ _ _
     simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]
@@ -946,13 +942,9 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
       all_goals simpa only [Ne.def, Nat.cast_eq_zero]
   · obtain ⟨C, hC⟩ := hf₃
-    simp_rw [div_eq_mul_inv, Finset.sum_mul]
-    refine' ⟨C, fun n => (snorm_sum_le (fun i _ => (hf₁ i).mul_const (↑n)⁻¹) hp).trans _⟩
-    have : ∀ i, (fun ω => f i ω * (↑n)⁻¹) = (↑n : ℝ)⁻¹ • fun ω => f i ω := by
-      intro i
-      ext ω
-      simp only [mul_comm, Pi.smul_apply, Algebra.id.smul_eq_mul]
-    simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
+    simp_rw [Finset.smul_sum]
+    refine' ⟨C, fun n => (snorm_sum_le (fun i _ => (hf₁ i).const_smul _) hp).trans _⟩
+    simp_rw [snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
@@ -965,7 +957,14 @@ theorem uniformIntegrable_average (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : 
       rw [ENNReal.coe_smul, nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
       all_goals simpa only [Ne.def, Nat.cast_eq_zero]
-#align measure_theory.uniform_integrable_average MeasureTheory.uniformIntegrable_average
+
+/-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/
+theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : UniformIntegrable f p μ) :
+    UniformIntegrable (fun n => (∑ i in Finset.range n, f i) / (n : α → ℝ)) p μ := by
+  convert uniformIntegrable_average hp hf using 2 with n
+  ext x
+  simp [div_eq_inv_mul]
+#align measure_theory.uniform_integrable_average MeasureTheory.uniformIntegrable_average_real
 
 end UniformIntegrable
 

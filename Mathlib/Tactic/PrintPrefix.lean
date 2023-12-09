@@ -15,7 +15,7 @@ structure FindOptions where
   checkPrivate : Bool := false
 
 def findCore (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) :
-  MetaM (Array ConstantInfo) := do
+    MetaM (Array ConstantInfo) := do
   let matches_ ← if !opts.stage1 then pure #[] else
     (← getEnv).constants.map₁.foldM (init := #[]) check
   (← getEnv).constants.map₂.foldlM (init := matches_) check

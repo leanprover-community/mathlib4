@@ -85,8 +85,8 @@ section
 
 open GradedMonoid DirectSum Gmodule
 
-instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, M i)
-    where smul x y := smulAddMonoidHom A M x y
+instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, M i) where
+  smul x y := smulAddMonoidHom A M x y
 
 @[simp]
 theorem smul_def [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, A i) (y : ⨁ i, M i) :

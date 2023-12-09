@@ -60,11 +60,11 @@ variable {ι : Type*} {f : ι → α} {s : Set α} {t : Finset ι} {a : α}
 open Finset
 
 lemma SupClosed.finsetSup'_mem (hs : SupClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.sup' ht f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.sup' ht f ∈ s :=
   sup'_induction _ _ hs
 
 lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
   sup'_eq_sup ht f ▸ hs.finsetSup'_mem ht
 #align finset.sup_closed_of_sup_closed SupClosed.finsetSup_mem
 
@@ -104,11 +104,11 @@ variable {ι : Type*} {f : ι → α} {s : Set α} {t : Finset ι} {a : α}
 open Finset
 
 lemma InfClosed.finsetInf'_mem (hs : InfClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.inf' ht f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.inf' ht f ∈ s :=
   inf'_induction _ _ hs
 
 lemma InfClosed.finsetInf_mem [OrderTop α] (hs : InfClosed s) (ht : t.Nonempty) :
-  (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
+    (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
   inf'_eq_inf ht f ▸ hs.finsetInf'_mem ht
 #align finset.inf_closed_of_inf_closed InfClosed.finsetInf_mem
 

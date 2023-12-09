@@ -126,8 +126,9 @@ theorem leibniz : D (a * b) = a • D b + b • D a :=
   D.leibniz' _ _
 #align derivation.leibniz Derivation.leibniz
 
-theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) : D (∑ i in s, f i) = ∑ i in s, D (f i) :=
-  D.toLinearMap.map_sum
+nonrec theorem map_sum {ι : Type*} (s : Finset ι) (f : ι → A) :
+    D (∑ i in s, f i) = ∑ i in s, D (f i) :=
+  map_sum D _ _
 #align derivation.map_sum Derivation.map_sum
 
 @[simp]
@@ -260,8 +261,9 @@ def coeFnAddMonoidHom : Derivation R A M →+ A → M where
 instance : DistribMulAction S (Derivation R A M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] : IsCentralScalar S (Derivation R A M)
-    where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
+    IsCentralScalar S (Derivation R A M) where
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩

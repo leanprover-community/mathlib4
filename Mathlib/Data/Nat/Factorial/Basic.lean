@@ -27,7 +27,6 @@ This file defines the factorial, along with the ascending and descending variant
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
-@[simp]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n

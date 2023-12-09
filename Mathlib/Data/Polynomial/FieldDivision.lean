@@ -461,7 +461,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.dvd_C_mul Polynomial.dvd_C_mul
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-  (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 #align polynomial.coe_norm_unit_of_ne_zero Polynomial.coe_normUnit_of_ne_zero

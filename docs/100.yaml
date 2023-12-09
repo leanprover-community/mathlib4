@@ -340,6 +340,7 @@
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
   links :
     mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/CubingACube.lean
+  author : Floris van Doorn
 83:
   title  : The Friendship Theorem
   links  :

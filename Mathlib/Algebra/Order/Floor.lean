@@ -1720,61 +1720,61 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
   cases H₁; cases H₂; congr
 #align subsingleton_floor_ring subsingleton_floorRing
 
--- Porting note: the `positivity` extensions for `Int.floor`, `Int.ceil`, `ceil` are TODO for now
+namespace Mathlib.Meta.Positivity
+open Lean.Meta Qq
 
--- namespace Tactic
+private theorem int_floor_nonneg [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+    0 ≤ ⌊a⌋ :=
+  Int.floor_nonneg.2 ha
 
--- open Positivity
+private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α}
+    (ha : 0 < a) :
+    0 ≤ ⌊a⌋ :=
+  int_floor_nonneg ha.le
 
--- private theorem int_floor_nonneg [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
---     0 ≤ ⌊a⌋ :=
---   Int.floor_nonneg.2 ha
--- #align tactic.int_floor_nonneg tactic.int_floor_nonneg
+/-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
+@[positivity ⌊ _ ⌋]
+def evalIntFloor : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
+  let ~q(@Int.floor $α' $i $j $a) := e | throwError "failed to match on Int.floor application"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg_of_pos (α := $α') $pa)
+      pure (.nonnegative ret)
+  | .nonnegative pa =>
+      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg (α := $α') $pa)
+      pure (.nonnegative ret)
+  | _ => pure .none
 
--- private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α}
---     (ha : 0 < a) :
---     0 ≤ ⌊a⌋ :=
---   int_floor_nonneg ha.le
--- #align tactic.int_floor_nonneg_of_pos tactic.int_floor_nonneg_of_pos
+private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
+    0 < a → 0 < ⌈a⌉₊ :=
+  Nat.ceil_pos.2
 
--- /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
--- @[positivity]
--- unsafe def positivity_floor : expr → tactic strictness
---   | q(⌊$(a)⌋) => do
---     let strictness_a ← core a
---     match strictness_a with
---       | positive p => nonnegative <$> mk_app `` int_floor_nonneg_of_pos [p]
---       | nonnegative p => nonnegative <$> mk_app `` int_floor_nonneg [p]
---       | _ => failed
---   | e => pp e >>= fail ∘ format.bracket "The expression `" "` is not of the form `⌊a⌋`"
--- #align tactic.positivity_floor tactic.positivity_floor
+/-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
+@[positivity ⌈ _ ⌉₊]
+def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
+  let ~q(@Nat.ceil $α' $i $j $a) := e | throwError "failed to match on Nat.ceil application"
+  let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
+  assertInstancesCommute
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+    letI ret : Q(0 < $e) := q(nat_ceil_pos (α := $α') $pa)
+    pure (.positive ret)
+  | _ => pure .none
 
--- private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
---     0 < a → 0 < ⌈a⌉₊ :=
---   Nat.ceil_pos.2
--- #align tactic.nat_ceil_pos tactic.nat_ceil_pos
+private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+  Int.ceil_pos.2
 
--- private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
---   Int.ceil_pos.2
--- #align tactic.int_ceil_pos tactic.int_ceil_pos
+/-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
+@[positivity ⌈ _ ⌉]
+def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
+  let ~q(@Int.ceil $α' $i $j $a) := e | throwError "failed to match on Int.ceil application"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+      letI ret : Q(0 < $e) := q(int_ceil_pos (α := $α') $pa)
+      pure (.positive ret)
+  | .nonnegative pa =>
+      letI ret : Q(0 ≤ $e) := q(Int.ceil_nonneg (α := $α') $pa)
+      pure (.nonnegative ret)
+  | _ => pure .none
 
--- /-- Extension for the `positivity` tactic: `ceil` and `Int.ceil` are positive/nonnegative if
--- their input is. -/
--- @[positivity]
--- unsafe def positivity_ceil : expr → tactic strictness
---   | q(⌈$(a)⌉₊) => do
---     let positive p ← core a
---     -- We already know `0 ≤ n` for all `n : ℕ`
---         positive <$>
---         mk_app `` nat_ceil_pos [p]
---   | q(⌈$(a)⌉) => do
---     let strictness_a ← core a
---     match strictness_a with
---       | positive p => positive <$> mk_app `` int_ceil_pos [p]
---       | nonnegative p => nonnegative <$> mk_app `` Int.ceil_nonneg [p]
---       | _ => failed
---   | e => pp e >>=
---       fail ∘ format.bracket "The expression `" "` is not of the form `⌈a⌉₊` nor `⌈a⌉`"
--- #align tactic.positivity_ceil tactic.positivity_ceil
-
--- end Tactic
+end Mathlib.Meta.Positivity

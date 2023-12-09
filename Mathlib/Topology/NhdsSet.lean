@@ -29,7 +29,8 @@ Furthermore, we have the following results:
 
 open Set Filter Topology
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : Filter α}
+  {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set α) : Filter α :=
@@ -47,6 +48,8 @@ theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
 theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : α, x ∈ t → s ∈ 𝓝 x := by
   simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
+
+lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ a ∈ s, 𝓝 a ≤ f := by simp [nhdsSet]
 
 theorem bUnion_mem_nhdsSet {t : α → Set α} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|

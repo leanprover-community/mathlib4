@@ -518,14 +518,14 @@ theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : 
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
     (e : c ≅ c') : IsVanKampenColimit c' := by
   intro F' c'' α f h hα
-  have : c'.ι ≫ (Functor.const J).map e.inv.Hom = c.ι := by
+  have : c'.ι ≫ (Functor.const J).map e.inv.hom = c.ι := by
     ext j
     exact e.inv.2 j
   rw [H c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα]
   apply forall_congr'
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
-  haveI : IsIso e.inv.Hom := Functor.map_isIso (Cocones.forget _) e.inv
+  haveI : IsIso e.inv.hom := Functor.map_isIso (Cocones.forget _) e.inv
   exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
 #align category_theory.is_van_kampen_colimit.of_iso CategoryTheory.IsVanKampenColimit.of_iso
 

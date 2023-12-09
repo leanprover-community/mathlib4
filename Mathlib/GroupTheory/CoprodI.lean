@@ -5,7 +5,7 @@ Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.IsFreeGroup
+import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Data.Set.Pointwise.SMul
@@ -222,8 +222,8 @@ section Group
 
 variable (G : ι → Type*) [∀ i, Group (G i)]
 
-instance : Inv (CoprodI G)
-    where inv :=
+instance : Inv (CoprodI G) where
+  inv :=
     MulOpposite.unop ∘ lift fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
 
 theorem inv_def (x : CoprodI G) :

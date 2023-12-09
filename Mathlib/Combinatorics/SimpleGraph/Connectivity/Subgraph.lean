@@ -111,9 +111,8 @@ lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     p.toSubgraph.Connected := by
   induction p with
   | nil => apply singletonSubgraph_connected
-  | cons h p ih =>
+  | @cons _ w _ h p ih =>
     apply (subgraphOfAdj_connected h).sup ih
-    rename_i w _
     exists w
     simp
 
@@ -148,8 +147,9 @@ lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
       (p.toSubgraph_connected ⟨_, p.start_mem_verts_toSubgraph⟩ ⟨_, p.end_mem_verts_toSubgraph⟩)
 
 lemma connected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
-    H.Connected ↔ H.verts.Nonempty ∧ ∀ {u v}, u ∈ H.verts → v ∈ H.verts →
-                                        ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
+    H.Connected ↔
+      H.verts.Nonempty ∧
+        ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   rw [H.connected_iff, preconnected_iff_forall_exists_walk_subgraph, and_comm]
 
 end Subgraph

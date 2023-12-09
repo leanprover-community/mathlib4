@@ -13,6 +13,12 @@ import Mathlib.CategoryTheory.Skeletal
 # The monoid on the skeleton of a monoidal category
 
 The skeleton of a monoidal category is a monoid.
+
+## Main results
+
+* `Skeleton.instMonoid`, for monoidal categories.
+* `Skeleton.instCommMonoid`, for braided monoidal categories.
+
 -/
 
 
@@ -40,18 +46,34 @@ def commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMono
   { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y => hC ⟨β_ X Y⟩ }
 #align category_theory.comm_monoid_of_skeletal_braided CategoryTheory.commMonoidOfSkeletalBraided
 
+namespace Skeleton
+
 /-- The skeleton of a monoidal category has a monoidal structure itself, induced by the equivalence.
 -/
-noncomputable instance : MonoidalCategory (Skeleton C) :=
+noncomputable instance instMonoidalCategory : MonoidalCategory (Skeleton C) :=
   Monoidal.transport (skeletonEquivalence C).symm
 
 /--
 The skeleton of a monoidal category can be viewed as a monoid, where the multiplication is given by
 the tensor product, and satisfies the monoid axioms since it is a skeleton.
 -/
-noncomputable instance : Monoid (Skeleton C) :=
+noncomputable instance instMonoid : Monoid (Skeleton C) :=
   monoidOfSkeletalMonoidal (skeletonIsSkeleton _).skel
 
--- TODO: Transfer the braided structure to the skeleton of C along the equivalence, and show that
--- the skeleton is a commutative monoid.
+/-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
+the equivalence. -/
+noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
+  letI := Monoidal.instIsEquivalence_fromTransported (skeletonEquivalence C).symm
+  braidedCategoryOfFullyFaithful (Monoidal.fromTransported (skeletonEquivalence C).symm)
+
+/--
+The skeleton of a braided monoidal category can be viewed as a commutative  monoid, where the
+multiplication is given by the tensor product, and satisfies the monoid axioms since it is a
+skeleton.
+-/
+noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
+  commMonoidOfSkeletalBraided (skeletonIsSkeleton _).skel
+
+end Skeleton
+
 end CategoryTheory

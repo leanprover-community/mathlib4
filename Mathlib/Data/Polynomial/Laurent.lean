@@ -57,7 +57,7 @@ Lots is missing!
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
 --  begin
---    refine (_ : AddMonoidAlgebra R ℕ →[R] R[X]).comp _,
+--    refine (_ : R[ℕ] →[R] R[X]).comp _,
 --    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
 --    { refine ⟨λ r, comapDomain _ r (Set.injOn_of_injective (λ a b ab, Int.ofNat.inj ab) _), _⟩,
 --      exact λ r f, comapDomain_smul _ _ _ }
@@ -579,7 +579,7 @@ instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
 instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
-  smul_assoc x y z := by simp only [(· • ·), SMul.smul, SMul.comp.smul, map_mul, mul_assoc]
+  smul_assoc x y z := by dsimp; simp_rw [MulAction.mul_smul]
 
 end Semiring
 

@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.Attr.Core
 
 #align_import logic.equiv.local_equiv from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 

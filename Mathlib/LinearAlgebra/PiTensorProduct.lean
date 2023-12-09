@@ -275,7 +275,6 @@ end DistribMulAction
 -- to find.
 instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
   { PiTensorProduct.distribMulAction' with
-    smul := (· • ·)
     add_smul := fun r r' x ↦
       PiTensorProduct.induction_on' x
         (fun {r f} ↦ by simp_rw [smul_tprodCoeff', add_smul, add_tprodCoeff'])
@@ -315,7 +314,7 @@ notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => 
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
-  ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+    ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : ∀ i, s i) : tprodCoeff R z f = z • tprod R f := by
