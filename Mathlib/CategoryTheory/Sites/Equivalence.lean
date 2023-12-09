@@ -211,15 +211,19 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J A
 
-noncomputable instance : HasSheafify J A := (equivSmallModel C).hasSheafify J A
+noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+  (equivSmallModel C).hasSheafify J A
 
-instance : HasSheafCompose J F := (equivSmallModel C).hasSheafCompose J F
+instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
+  (equivSmallModel C).hasSheafCompose J F
 
-instance [HasLimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
+instance hasLimitsEssentiallySmallSite
+    [HasLimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
     HasLimitsOfSize <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J A).functor
 
-instance [HasColimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
+instance hasColimitsEssentiallySmallSite
+    [HasColimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
     HasColimitsOfSize <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J A).functor
 
