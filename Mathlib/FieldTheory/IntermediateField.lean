@@ -710,6 +710,19 @@ theorem extendScalars_injective :
     Function.Injective fun E : { E : IntermediateField K L // F ≤ E } ↦ extendScalars E.2 :=
   fun E _ H ↦ by ext x; simp_rw [← mem_extendScalars (h := E.2), H, mem_extendScalars]
 
+/-- `IntermediateField.extendScalars` is an order isomorphism from
+`{ E : IntermediateField K L // F ≤ E }` to `IntermediateField F L`. Its inverse is
+`IntermediateField.restrictScalars`. -/
+def extendScalars.orderIso :
+    { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
+  toFun E := extendScalars E.2
+  invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
+  left_inv E := rfl
+  right_inv E := rfl
+  map_rel_iff' {E E'} := by
+    simp only [Equiv.coe_fn_mk]
+    exact extendScalars_le_extendScalars_iff _ _
+
 end ExtendScalars
 
 end Tower
