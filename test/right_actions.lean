@@ -72,6 +72,6 @@ example : a₁ •> a₂ •> b <• a₃ <• a₄ = ((a₁ •> (a₂ •> b))
 example : a₁ +ᵥ> b <+ᵥ a₂ = (a₁ +ᵥ> b) <+ᵥ a₂ := rfl
 example : a₁ +ᵥ> a₂ +ᵥ> b <+ᵥ a₃ <+ᵥ a₄ = ((a₁ +ᵥ> (a₂ +ᵥ> b)) <+ᵥ a₃) <+ᵥ a₄ := rfl
 
--- association is choosen to match multiplication and addition
+-- association is chosen to match multiplication and addition
 example {M} [Mul M] {x y z : M} : x •> y <• z = x * y * z := rfl
 example {A} [Add A] {x y z : A} : x +ᵥ> y <+ᵥ z = x + y + z := rfl
