@@ -31,13 +31,13 @@ open CategoryTheory.Limits
 
 section Abelian
 
-universe w v u
+universe w' w v u
 
 -- porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
 --   solves some problems
 variable {C : Type u} [Category.{v} C]
 
-variable {D : Type w} [Category.{max v u} D] [Abelian D]
+variable {D : Type w} [Category.{w'} D] [Abelian D]
 
 variable {J : GrothendieckTopology C}
 
@@ -48,12 +48,7 @@ variable {J : GrothendieckTopology C}
 --instance : Abelian (Cᵒᵖ ⥤ D) :=
 --  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
 
--- note: doesn't seem to be the case anymore
--- This also needs to be specified manually, but I don't know why.
--- instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
---   out j := { has_limit := fun F => by infer_instance }
-
-variable [HasSheafify J D]
+variable [HasSheafify J D] [HasFiniteLimits (Sheaf J D)]
 
 instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
