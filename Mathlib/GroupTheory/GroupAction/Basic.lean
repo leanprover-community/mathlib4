@@ -499,8 +499,7 @@ end Stabilizer
 end MulAction
 
 namespace AddAction
-
-variable (G : Type u) [AddGroup G] (α : Type v) [AddAction G α]
+variable {G α : Type*} [AddGroup G] [AddAction G α]
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
