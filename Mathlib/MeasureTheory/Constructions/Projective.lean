@@ -56,8 +56,8 @@ def IsProjectiveMeasureFamily [∀ i, MeasurableSpace (α i)]
 --def IsProjective [Preorder ι] (P : ∀ j : ι, α j) (π : ∀ {i j : ι}, j ≤ i → α i → α j) : Prop :=
 --  ∀ (i j) (hji : j ≤ i), P j = π hji (P i)
 
-/-- A family of measures indexed by finite sets of `ι` is projective if, for finite sets `J ⊆ I`,
-the projection from `∀ i : I, α i` to `∀ i : J, α i` maps `P I` to `P J`. -/
+--/-- A family of measures indexed by finite sets of `ι` is projective if, for finite sets `J ⊆ I`,
+--the projection from `∀ i : I, α i` to `∀ i : J, α i` maps `P I` to `P J`. -/
 --def IsProjectiveMeasureFamily (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
 --  IsProjective P
 --    (fun I _ hJI μ ↦ μ.map fun x : ∀ i : I, α i ↦ fun j ↦ x ⟨j, hJI j.2⟩ :
@@ -108,8 +108,8 @@ theorem measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J �
 theorem measure_univ_eq (hP : IsProjectiveMeasureFamily P) (I J : Finset ι) :
     P I univ = P J univ := by
   classical
-  rw [← hP.measure_univ_eq_of_subset (I ∪ J) I (Finset.subset_union_left _ _),
-    ← hP.measure_univ_eq_of_subset (I ∪ J) J (Finset.subset_union_right _ _)]
+  rw [← hP.measure_univ_eq_of_subset (Finset.subset_union_left I J),
+    ← hP.measure_univ_eq_of_subset (Finset.subset_union_right I J)]
 
 end IsProjectiveMeasureFamily
 
