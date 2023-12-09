@@ -381,7 +381,7 @@ theorem tendsto_log_mul_rpow_nhds_zero {r : ℝ} (hr : 0 < r) :
     eventually_mem_nhdsWithin.mono fun x hx => by rw [rpow_neg hx.out.le, div_inv_eq_mul]
 #align tendsto_log_mul_rpow_nhds_zero tendsto_log_mul_rpow_nhds_zero
 
-lemma tendsto_log_mul_nhds_zero_left : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
+lemma tendsto_log_mul_self_nhds_zero_left : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
   have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
   simp only [Real.rpow_one] at h
   have h_eq : ∀ x ∈ Set.Iio 0, (- (fun x ↦ log x * x) ∘ (fun x ↦ |x|)) x = log x * x := by
