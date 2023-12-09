@@ -23,9 +23,16 @@ open scoped BigOperators FinsetFamily
 
 namespace Nat
 
-/-- A special case of Graham's conjecture. -/
-lemma marica_schoenheim {n : ℕ} (f : ℕ → ℕ) (hn : n ≠ 0) (hf : StrictMonoOn f (Set.Iio n))
-    (hf' : ∀ k < n, Squarefree (f k)) : ∃ i < n, ∃ j < n, (f i).gcd (f j) * n ≤ f i := by
+/-- Statement of Graham's conjecture (which is now a theorem in the literature).
+
+Graham's conjecture states that if $0 < a_1 < \dots a_n$ are integers, then
+$\max_{i, j} \frac{a_i}{\gcd(a_i, a_j)} \ge n$. -/
+def GrahamConjecture (n : ℕ) (f : ℕ → ℕ) : Prop :=
+  ∃ i < n, ∃ j < n, (f i).gcd (f j) * n ≤ f i
+
+/-- The special case of Graham's conjecture where all numbers are squarefree. -/
+lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hn : n ≠ 0)
+    (hf : StrictMonoOn f (Set.Iio n)) (hf' : ∀ k < n, Squarefree (f k)) : GrahamConjecture n f := by
   by_contra'
   set 𝒜 := (Iio n).image fun n ↦ primeFactors (f n)
   have hf'' : ∀ i < n, ∀ j, Squarefree (f i / (f i).gcd (f j)) :=
