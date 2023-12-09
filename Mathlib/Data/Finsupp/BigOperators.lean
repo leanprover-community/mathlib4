@@ -36,7 +36,7 @@ it is a member of the support of a member of the collection:
 variable {ι M : Type*} [DecidableEq ι]
 
 theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
-    l.sum.support ⊆ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by
+    l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
   · simp only [List.sum_cons, Finset.union_comm]
@@ -57,7 +57,7 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
-    x ∈ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
+    x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
   simp only [Finset.sup_eq_union, List.foldr_map, Finsupp.mem_support_iff, exists_prop]
   induction' l with hd tl IH
   · simp
@@ -79,7 +79,7 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
 
 theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
-    l.sum.support = l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by
+    l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
   · simp only [List.pairwise_cons] at hl
