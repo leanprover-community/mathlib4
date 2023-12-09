@@ -138,7 +138,9 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
-          lake exe cache get
+          # We've been seeing many failures at this step recently because of network errors.
+          # As a band-aid, we try twice.
+          lake exe cache get || lake exe cache get
 
       - name: build mathlib
         id: build

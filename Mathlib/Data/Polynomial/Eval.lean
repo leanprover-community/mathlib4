@@ -1289,6 +1289,12 @@ theorem sub_comp : (p - q).comp r = p.comp r - q.comp r :=
 theorem cast_int_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
 #align polynomial.cast_int_comp Polynomial.cast_int_comp
 
+@[simp]
+theorem eval₂_at_int_cast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
+    p.eval₂ f n = f (p.eval n) := by
+  convert eval₂_at_apply (p := p) f n
+  simp
+
 end Ring
 
 end Polynomial
