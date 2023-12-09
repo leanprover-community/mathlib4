@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
@@ -40,6 +41,8 @@ import Mathlib.Algebra.Module.ULift
 noncomputable section
 
 universe u v v'
+
+variable [UnivLE.{u, v}]
 
 variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
 
@@ -463,27 +466,45 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
-protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦ by
-  let ⟨g', hg'⟩ := inj.1 (ULift.{max u v} I) (ULift.{max u v} R)
-    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ I.subtype ∘ₗ ULift.moduleEquiv.toLinearMap)
-    (fun a b h ↦ by aesop) (g ∘ₗ ULift.moduleEquiv.toLinearMap)
-  ⟨g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap, by aesop⟩
+protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := by
+  intro I g
+  letI : AddCommGroup (Shrink.{v, u} I) := (equivShrink I).symm.addCommGroup
+  letI : Module R (Shrink.{v, u} I) := (equivShrink I).symm.module R
+  letI : AddCommGroup (Shrink.{v, u} R) := (equivShrink R).symm.addCommGroup
+  letI : Module R (Shrink.{v, u} R) := (equivShrink R).symm.module R
+  let eI := (equivShrink I).symm.linearEquiv R
+  let eR := (equivShrink R).symm.linearEquiv R
+
+  obtain ⟨g', hg'⟩ := @Module.Injective.out (self := inj) (Shrink I) (Shrink R)
+    _ _ _ _ (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
+    (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective)
+    (g ∘ₗ eI.toLinearMap)
+
+  refine ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ ?_⟩
+  specialize hg' (equivShrink I ⟨x, mx⟩)
+  simpa only [Equiv.linearEquiv, Equiv.addEquiv, Equiv.toFun_as_coe, Equiv.invFun_as_coe,
+    Equiv.symm_symm, AddEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AddEquiv.coe_mk, Equiv.coe_fn_mk,
+    AddEquiv.coe_toEquiv_symm, AddEquiv.symm_mk, Equiv.coe_fn_symm_mk, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, Submodule.coeSubtype, LinearMap.coe_mk,
+    AddHom.coe_mk, Function.comp_apply, Equiv.symm_apply_apply] using hg'
 
 protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
-  ⟨Module.Baer.injective, Module.Baer.of_injective⟩
+  ⟨Module.Baer.injective, Module.Baer.of_injective.{u, v}⟩
 
 end Module.Baer
+
+#exit
 
 section ULift
 
 lemma Module.ulift_injective_of_injective
     {M : Type v} [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
-    Module.Injective.{u, max v v'} R (ULift.{max v v'} M) where
+    Module.Injective.{u, v'} R (ULift.{v', v} M) where
   out X Y _ _ _ _ f hf g := by
-  rw [← Module.Baer.iff_injective] at inj ⊢
-  intro I g
-  obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
-  exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
+    rw [← Module.Baer.iff_injective] at inj ⊢
+    intro I g
+    obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
+    exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
     {M : Type max u v} [AddCommGroup M] [Module R M]
