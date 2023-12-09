@@ -42,6 +42,10 @@ def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 #align disjoint Disjoint
 
+@[simp]
+theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
+  fun x _ _ ↦ le_of_eq (Subsingleton.elim x ⊥)
+
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 #align disjoint.comm disjoint_comm

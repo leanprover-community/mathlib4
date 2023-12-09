@@ -22,9 +22,9 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 
 ## Notation
 
-`l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
-`l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
-`l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
+* `l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
+* `l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
+* `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
 open Nat

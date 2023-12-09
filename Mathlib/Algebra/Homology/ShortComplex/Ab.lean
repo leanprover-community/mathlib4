@@ -3,9 +3,8 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.GroupCat.Abelian
-import Mathlib.Algebra.Category.GroupCat.EpiMono
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -109,6 +108,14 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
     rfl
   · intro h
     rw [h]
+
+lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
+    Function.Injective S.f :=
+  (AddCommGroupCat.mono_iff_injective _).1 hS.mono_f
+
+lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
+    Function.Surjective S.g :=
+  (AddCommGroupCat.epi_iff_surjective _).1 hS.epi_g
 
 end ShortComplex
 

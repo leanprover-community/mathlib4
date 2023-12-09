@@ -977,7 +977,7 @@ lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → P
     P x y := by
   refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
   filter_upwards [h z] with a ha
-  refine ⟨ha, h'' ha⟩
+  exact ⟨ha, h'' ha⟩
 
 /-- In a preconnected set, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact

@@ -1270,12 +1270,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
     commutes' := fun r => by
       ext n
-      simp only [algebraMap_apply, PowerSeries.algebraMap_apply, C_apply,
-        coeff_toPowerSeries]
-      cases' n with n
-      · simp [PowerSeries.coeff_zero_eq_constantCoeff, single_coeff_same]
-      · simp [n.succ_ne_zero, Ne.def, not_false_iff, single_coeff_of_ne]
-        rw [PowerSeries.coeff_C, if_neg n.succ_ne_zero] }
+      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 #align hahn_series.to_power_series_alg HahnSeries.toPowerSeriesAlg
 
 variable (Γ) [StrictOrderedSemiring Γ]

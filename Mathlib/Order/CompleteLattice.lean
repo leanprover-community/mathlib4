@@ -693,6 +693,10 @@ theorem iSup_congr (h : ∀ i, f i = g i) : ⨆ i, f i = ⨆ i, g i :=
   congr_arg _ <| funext h
 #align supr_congr iSup_congr
 
+theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
+    ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
+  iSup_congr <| fun i ↦ iSup_congr (h i)
+
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
   simp only [iSup._eq_1]
@@ -757,6 +761,10 @@ theorem sInf_eq_iInf' (s : Set α) : sInf s = ⨅ a : s, (a : α) :=
 theorem iInf_congr (h : ∀ i, f i = g i) : ⨅ i, f i = ⨅ i, g i :=
   congr_arg _ <| funext h
 #align infi_congr iInf_congr
+
+theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
+    ⨅ (i) (_ : p i), f i = ⨅ (i) (_ : p i), g i :=
+  biSup_congr (α := αᵒᵈ) h
 
 theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨅ x, g (f x) = ⨅ y, g y :=

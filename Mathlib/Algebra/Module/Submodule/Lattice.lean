@@ -130,11 +130,17 @@ def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
   right_inv _ := rfl
 #align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
-theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
-  rw [eq_bot_iff]
-  intro v hv
-  exact congr_arg Subtype.val (Subsingleton.elim (⟨v, hv⟩ : p) 0)
+theorem subsingleton_iff_eq_bot : Subsingleton p ↔ p = ⊥ := by
+  rw [subsingleton_iff, Submodule.eq_bot_iff]
+  refine ⟨fun h x hx ↦ by simpa using h ⟨x, hx⟩ ⟨0, p.zero_mem⟩,
+    fun h ⟨x, hx⟩ ⟨y, hy⟩ ↦ by simp [h x hx, h y hy]⟩
+
+theorem eq_bot_of_subsingleton [Subsingleton p] : p = ⊥ :=
+  subsingleton_iff_eq_bot.mp inferInstance
 #align submodule.eq_bot_of_subsingleton Submodule.eq_bot_of_subsingleton
+
+theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
+  rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
 
 /-!
 ## Top element of a submodule

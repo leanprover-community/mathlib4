@@ -127,7 +127,7 @@ theorem Injective.of_comp {g : γ → α} (I : Injective (f ∘ g)) : Injective 
 #align function.injective.of_comp Function.Injective.of_comp
 
 @[simp]
-theorem Injective.of_comp_iff {f : α → β} (hf : Injective f) (g : γ → α) :
+theorem Injective.of_comp_iff (hf : Injective f) (g : γ → α) :
     Injective (f ∘ g) ↔ Injective g :=
   ⟨Injective.of_comp, hf.comp⟩
 #align function.injective.of_comp_iff Function.Injective.of_comp_iff
@@ -137,6 +137,10 @@ theorem Injective.of_comp_right {g : γ → α} (I : Injective (f ∘ g)) (hg : 
   obtain ⟨x, rfl⟩ := hg x
   obtain ⟨y, rfl⟩ := hg y
   exact congr_arg g (I h)
+
+theorem Surjective.bijective₂_of_injective {g : γ → α} (hf : Surjective f) (hg : Surjective g)
+    (I : Injective (f ∘ g)) : Bijective f ∧ Bijective g :=
+  ⟨⟨I.of_comp_right hg, hf⟩, I.of_comp, hg⟩
 
 @[simp]
 theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g) :
@@ -181,6 +185,10 @@ theorem Surjective.of_comp_iff (f : α → β) {g : γ → α} (hg : Surjective 
 
 theorem Surjective.of_comp_left {g : γ → α} (S : Surjective (f ∘ g)) (hf : Injective f) :
     Surjective g := fun a ↦ let ⟨c, hc⟩ := S (f a); ⟨c, hf hc⟩
+
+theorem Injective.bijective₂_of_surjective {g : γ → α} (hf : Injective f) (hg : Injective g)
+    (S : Surjective (f ∘ g)) : Bijective f ∧ Bijective g :=
+  ⟨⟨hf, S.of_comp⟩, hg, S.of_comp_left hf⟩
 
 @[simp]
 theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :

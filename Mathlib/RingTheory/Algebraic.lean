@@ -298,17 +298,20 @@ theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f :
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
 
+theorem Algebra.IsAlgebraic.algHom_bijective₂ [Field R] [Algebra K R]
+    (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
+    Function.Bijective f ∧ Function.Bijective g :=
+  (g.injective.bijective₂_of_surjective f.injective (ha.algHom_bijective <| g.comp f).2).symm
+
 theorem Algebra.IsAlgebraic.bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
     [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
-  ⟨f.injective, Function.Surjective.of_comp <|
-    (ha.algHom_bijective <| f.comp <| IsScalarTower.toAlgHom K L R).2⟩
+  (ha.algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
 theorem Algebra.IsAlgebraic.bijective_of_isScalarTower' [Field R] [Algebra K R]
     (ha : Algebra.IsAlgebraic K R) [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
-  ⟨f.injective, Function.Surjective.of_comp_left
-    (ha.algHom_bijective <| (IsScalarTower.toAlgHom K L R).comp f).2 (RingHom.injective _)⟩
+  (ha.algHom_bijective₂ f (IsScalarTower.toAlgHom K L R)).1
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
   (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ

@@ -110,24 +110,15 @@ theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function
 -- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
 variable {F E} {E' : Type*} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
 
-theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
-  normal_iff.2 fun x => by
-    cases' h.out (f.symm x) with hx hhx
-    have H := map_isIntegral f.toAlgHom hx
-    simp [AlgEquiv.toAlgHom_eq_coe] at H
-    use H
-    apply Polynomial.splits_of_splits_of_dvd (algebraMap F E') (minpoly.ne_zero hx)
-    · rw [← AlgHom.comp_algebraMap f.toAlgHom]
-      exact Polynomial.splits_comp_of_splits (algebraMap F E) f.toAlgHom.toRingHom hhx
-    · apply minpoly.dvd _ _
-      rw [← AddEquiv.map_eq_zero_iff f.symm.toAddEquiv]
-      exact
-        Eq.trans (Polynomial.aeval_algHom_apply f.symm.toAlgHom x (minpoly F (f.symm x))).symm
-          (minpoly.aeval _ _)
+theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' := by
+  rw [normal_iff] at h ⊢
+  intro x; specialize h (f.symm x)
+  rw [← f.apply_symm_apply x, minpoly.algEquiv_eq, ← f.toAlgHom.comp_algebraMap]
+  exact ⟨map_isIntegral f h.1, splits_comp_of_splits _ _ h.2⟩
 #align normal.of_alg_equiv Normal.of_algEquiv
 
 theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
-  ⟨fun _ => Normal.of_algEquiv f, fun _ => Normal.of_algEquiv f.symm⟩
+  ⟨fun _ ↦ Normal.of_algEquiv f, fun _ ↦ Normal.of_algEquiv f.symm⟩
 #align alg_equiv.transfer_normal AlgEquiv.transfer_normal
 
 open IntermediateField
