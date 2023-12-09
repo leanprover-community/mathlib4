@@ -22,7 +22,7 @@ instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
 
-* `Homeomorph.toLocalHomeomorph`: associating a local homeomorphism to a homeomorphism, with
+* `Homeomorph.toPartialHomeomorph`: associating a local homeomorphism to a homeomorphism, with
   `source = target = Set.univ`;
 * `LocalHomeomorph.symm`: the inverse of a local homeomorphism
 * `LocalHomeomorph.trans`: the composition of two local homeomorphisms
@@ -200,7 +200,7 @@ protected theorem surjOn : SurjOn e e.source e.target :=
 to an open set `s` in the domain and to `t` in the codomain. -/
 @[simps! (config := .asFn) apply symm_apply toLocalEquiv,
   simps! (config := .lemmasOnly) source target]
-def _root_.Homeomorph.toLocalHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α) (hs : IsOpen s)
+def _root_.Homeomorph.toPartialHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α) (hs : IsOpen s)
     (t : Set β) (h : e '' s = t) : LocalHomeomorph α β where
   toLocalEquiv := e.toLocalEquivOfImageEq s t h
   open_source := hs
@@ -211,7 +211,7 @@ def _root_.Homeomorph.toLocalHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α)
 /-- A homeomorphism induces a local homeomorphism on the whole space -/
 @[simps! (config := mfld_cfg)]
 def _root_.Homeomorph.toPartialHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β :=
-  e.toLocalHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
+  e.toPartialHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
 #align homeomorph.to_local_homeomorph Homeomorph.toPartialHomeomorph
 
 /-- Replace `toLocalEquiv` field to provide better definitional equalities. -/
@@ -1294,7 +1294,7 @@ theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
-converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
+converse is also true; see `OpenEmbedding.toPartialHomeomorph`. -/
 theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
   e.openEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ α).symm.openEmbedding
@@ -1310,20 +1310,20 @@ variable (e : α ≃ₜ β) (e' : β ≃ₜ γ)
 /- Register as simp lemmas that the fields of a local homeomorphism built from a homeomorphism
 correspond to the fields of the original homeomorphism. -/
 @[simp, mfld_simps]
-theorem refl_toLocalHomeomorph : (Homeomorph.refl α).toPartialHomeomorph = LocalHomeomorph.refl α :=
+theorem refl_toPartialHomeomorph : (Homeomorph.refl α).toPartialHomeomorph = LocalHomeomorph.refl α :=
   rfl
-#align homeomorph.refl_to_local_homeomorph Homeomorph.refl_toLocalHomeomorph
+#align homeomorph.refl_to_local_homeomorph Homeomorph.refl_toPartialHomeomorph
 
 @[simp, mfld_simps]
-theorem symm_toLocalHomeomorph : e.symm.toPartialHomeomorph = e.toPartialHomeomorph.symm :=
+theorem symm_toPartialHomeomorph : e.symm.toPartialHomeomorph = e.toPartialHomeomorph.symm :=
   rfl
-#align homeomorph.symm_to_local_homeomorph Homeomorph.symm_toLocalHomeomorph
+#align homeomorph.symm_to_local_homeomorph Homeomorph.symm_toPartialHomeomorph
 
 @[simp, mfld_simps]
-theorem trans_toLocalHomeomorph :
+theorem trans_toPartialHomeomorph :
     (e.trans e').toPartialHomeomorph = e.toPartialHomeomorph.trans e'.toPartialHomeomorph :=
   LocalHomeomorph.toLocalEquiv_injective <| Equiv.trans_toLocalEquiv _ _
-#align homeomorph.trans_to_local_homeomorph Homeomorph.trans_toLocalHomeomorph
+#align homeomorph.trans_to_local_homeomorph Homeomorph.trans_toPartialHomeomorph
 
 end Homeomorph
 
@@ -1334,10 +1334,10 @@ variable (f : α → β) (h : OpenEmbedding f)
 /-- An open embedding of `α` into `β`, with `α` nonempty, defines a local homeomorphism whose source
 is all of `α`.  The converse is also true; see `LocalHomeomorph.to_openEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
-noncomputable def toLocalHomeomorph [Nonempty α] : LocalHomeomorph α β :=
+noncomputable def toPartialHomeomorph [Nonempty α] : LocalHomeomorph α β :=
   LocalHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toLocalEquiv _ _)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
-#align open_embedding.to_local_homeomorph OpenEmbedding.toLocalHomeomorph
+#align open_embedding.to_local_homeomorph OpenEmbedding.toPartialHomeomorph
 
 end OpenEmbedding
 
@@ -1350,7 +1350,7 @@ variable (s : Opens α) [Nonempty s]
 /-- The inclusion of an open subset `s` of a space `α` into `α` is a local homeomorphism from the
 subtype `s` to `α`. -/
 noncomputable def localHomeomorphSubtypeCoe : LocalHomeomorph s α :=
-  OpenEmbedding.toLocalHomeomorph _ s.2.openEmbedding_subtype_val
+  OpenEmbedding.toPartialHomeomorph _ s.2.openEmbedding_subtype_val
 #align topological_space.opens.local_homeomorph_subtype_coe TopologicalSpace.Opens.localHomeomorphSubtypeCoe
 
 @[simp, mfld_simps]

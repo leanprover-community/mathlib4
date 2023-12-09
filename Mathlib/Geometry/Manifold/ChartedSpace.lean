@@ -1112,7 +1112,7 @@ variable [Nonempty α]
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `LocalHomeomorph.singletonChartedSpace`. -/
 def singletonChartedSpace {f : α → H} (h : OpenEmbedding f) : ChartedSpace H α :=
-  (h.toLocalHomeomorph f).singletonChartedSpace (toLocalHomeomorph_source _ _)
+  (h.toPartialHomeomorph f).singletonChartedSpace (toPartialHomeomorph_source _ _)
 #align open_embedding.singleton_charted_space OpenEmbedding.singletonChartedSpace
 
 theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : OpenEmbedding f) {x : α} :
@@ -1122,7 +1122,7 @@ theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : OpenEmbedding f) {x
 
 theorem singleton_hasGroupoid {f : α → H} (h : OpenEmbedding f) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
-  (h.toLocalHomeomorph f).singleton_hasGroupoid (toLocalHomeomorph_source _ _) G
+  (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
 #align open_embedding.singleton_has_groupoid OpenEmbedding.singleton_hasGroupoid
 
 end OpenEmbedding
@@ -1239,7 +1239,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       let f₁ := e.toHomeomorph.toPartialHomeomorph
       let f₂ := e'.toHomeomorph.toPartialHomeomorph
       let f := (e.toHomeomorph.trans e'.toHomeomorph).toPartialHomeomorph
-      have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toLocalHomeomorph _ _
+      have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toPartialHomeomorph _ _
       -- define the atlas g around y
       let y := (c.symm ≫ₕ f₁) x
       let g := chartAt (H := H) y
@@ -1250,7 +1250,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         apply (c.symm ≫ₕ f₁).continuousOn_toFun.isOpen_inter_preimage <;> apply open_source
       have : x ∈ s := by
         constructor
-        · simp only [trans_source, preimage_univ, inter_univ, Homeomorph.toLocalHomeomorph_source]
+        · simp only [trans_source, preimage_univ, inter_univ, Homeomorph.toPartialHomeomorph_source]
           rw [trans_source] at hx
           exact hx.1
         · exact hg₂

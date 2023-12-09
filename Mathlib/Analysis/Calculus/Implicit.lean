@@ -144,7 +144,7 @@ at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these de
 complementary subspaces of `E`, then `x ↦ (f x, g x)` defines a local homeomorphism between
 `E` and `F × G`. In particular, `{x | f x = f a}` is locally homeomorphic to `G`. -/
 def toPartialHomeomorph : LocalHomeomorph E (F × G) :=
-  φ.hasStrictFDerivAt.toLocalHomeomorph _
+  φ.hasStrictFDerivAt.toPartialHomeomorph _
 #align implicit_function_data.to_local_homeomorph ImplicitFunctionData.toPartialHomeomorph
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
@@ -165,7 +165,7 @@ theorem toPartialHomeomorph_apply (x : E) : φ.toPartialHomeomorph x = (φ.leftF
 #align implicit_function_data.to_local_homeomorph_apply ImplicitFunctionData.toPartialHomeomorph_apply
 
 theorem pt_mem_toPartialHomeomorph_source : φ.pt ∈ φ.toPartialHomeomorph.source :=
-  φ.hasStrictFDerivAt.mem_toLocalHomeomorph_source
+  φ.hasStrictFDerivAt.mem_toPartialHomeomorph_source
 #align implicit_function_data.pt_mem_to_local_homeomorph_source ImplicitFunctionData.pt_mem_toPartialHomeomorph_source
 
 theorem map_pt_mem_toPartialHomeomorph_target :

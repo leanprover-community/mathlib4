@@ -181,7 +181,7 @@ namespace TangentBundle
 
 protected theorem chartAt (p : TM) :
     chartAt (ModelProd H E) p =
-      ((tangentBundleCore I M).toFiberBundleCore.localTriv (achart H p.1)).toLocalHomeomorph ≫ₕ
+      ((tangentBundleCore I M).toFiberBundleCore.localTriv (achart H p.1)).toPartialHomeomorph ≫ₕ
         (chartAt H p.1).prod (LocalHomeomorph.refl E) :=
   rfl
 #align tangent_bundle.chart_at TangentBundle.chartAt

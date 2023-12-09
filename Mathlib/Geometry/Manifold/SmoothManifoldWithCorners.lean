@@ -911,7 +911,7 @@ theorem OpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [Nontri
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
     (h : OpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
-  (h.toLocalHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
+  (h.toPartialHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
 #align open_embedding.singleton_smooth_manifold_with_corners OpenEmbedding.singleton_smoothManifoldWithCorners
 
 namespace TopologicalSpace.Opens

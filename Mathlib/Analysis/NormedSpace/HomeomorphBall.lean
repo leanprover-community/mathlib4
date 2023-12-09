@@ -108,7 +108,7 @@ interpreted as a `LocalHomeomorph` between `Metric.ball 0 1` and `Metric.ball c 
 @[simps!]
 def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
   ((Homeomorph.smulOfNeZero r hr.ne').trans
-      (IsometryEquiv.vaddConst c).toHomeomorph).toLocalHomeomorphOfImageEq
+      (IsometryEquiv.vaddConst c).toHomeomorph).toPartialHomeomorphOfImageEq
       (ball 0 1) isOpen_ball (ball c r) <| by
     change (IsometryEquiv.vaddConst c) ∘ (r • ·) '' ball (0 : E) 1 = ball c r
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
