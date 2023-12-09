@@ -44,7 +44,7 @@ namespace MeasureTheory
 variable {α : Type*} {C : Set (Set α)} {s t : Set α}
 
 /-- A semi-ring of sets `C` is a family of sets containing `∅`, stable by intersection and such that
-for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of finitely many sets in `C`. -/
+for all `s, t ∈ C`, `s \ t` is equal to a disjoint union of finitely many sets in `C`. -/
 structure IsSetSemiring (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
   inter_mem : ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C
