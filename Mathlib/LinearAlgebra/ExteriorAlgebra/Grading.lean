@@ -89,7 +89,7 @@ instance gradedAlgebra :
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
-    -- the proof from here onward is identical to the `tensor_algebra` case
+    -- the proof from here onward is identical to the `TensorAlgebra` case
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,

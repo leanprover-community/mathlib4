@@ -425,7 +425,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_nonempty_interior [SeparableSpa
 set `c`. Beware that this definition does not require that `c` is contained in `s` (to express the
 latter, use `TopologicalSpace.SeparableSpace s` or
 `TopologicalSpace.IsSeparable (univ : Set s))`. In metric spaces, the two definitions are
-equivalent, see `TopologicalSpace.IsSeparable.SeparableSpace`. -/
+equivalent, see `TopologicalSpace.IsSeparable.separableSpace`. -/
 def IsSeparable (s : Set α) :=
   ∃ c : Set α, c.Countable ∧ s ⊆ closure c
 #align topological_space.is_separable TopologicalSpace.IsSeparable
@@ -456,6 +456,25 @@ theorem isSeparable_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
   refine' ⟨⋃ i, c i, countable_iUnion hc, iUnion_subset_iff.2 fun i => _⟩
   exact (h'c i).trans (closure_mono (subset_iUnion _ i))
 #align topological_space.is_separable_Union TopologicalSpace.isSeparable_iUnion
+
+lemma isSeparable_pi {ι : Type*} [Fintype ι] {α : ∀ (_ : ι), Type*} {s : ∀ i, Set (α i)}
+    [∀ i, TopologicalSpace (α i)] (h : ∀ i, IsSeparable (s i)) :
+    IsSeparable {f : ∀ i, α i | ∀ i, f i ∈ s i} := by
+  choose c c_count hc using h
+  refine ⟨{f | ∀ i, f i ∈ c i}, countable_pi c_count, ?_⟩
+  simp_rw [← mem_univ_pi]
+  dsimp
+  rw [closure_pi_set]
+  exact Set.pi_mono (fun i _ ↦ hc i)
+
+lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
+    {s : Set α} {t : Set β} (hs : IsSeparable s) (ht : IsSeparable t) :
+    IsSeparable (s ×ˢ t) := by
+  rcases hs with ⟨cs, cs_count, hcs⟩
+  rcases ht with ⟨ct, ct_count, hct⟩
+  refine ⟨cs ×ˢ ct, cs_count.prod ct_count, ?_⟩
+  rw [closure_prod_eq]
+  exact Set.prod_mono hcs hct
 
 theorem _root_.Set.Countable.isSeparable {s : Set α} (hs : s.Countable) : IsSeparable s :=
   ⟨s, hs, subset_closure⟩

@@ -1200,6 +1200,34 @@ theorem mem_span_set {m : M} {s : Set M} :
   exact Finsupp.mem_span_image_iff_total R (v := _root_.id (α := M))
 #align mem_span_set mem_span_set
 
+/-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
+`m` can be written as a finite `R`-linear combination of elements of `s`.
+The implementation uses a sum indexed by `Fin n` for some `n`. -/
+lemma mem_span_set' {m : M} {s : Set M} :
+    m ∈ Submodule.span R s ↔ ∃ (n : ℕ) (f : Fin n → R) (g : Fin n → s),
+      ∑ i, f i • (g i : M) = m := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases mem_span_set.1 h with ⟨c, cs, rfl⟩
+    have A : c.support ≃ Fin c.support.card := Finset.equivFin _
+    refine ⟨_, fun i ↦ c (A.symm i), fun i ↦ ⟨A.symm i, cs (A.symm i).2⟩, ?_⟩
+    rw [Finsupp.sum, ← Finset.sum_coe_sort c.support]
+    exact Fintype.sum_equiv A.symm _ (fun j ↦ c j • (j : M)) (fun i ↦ rfl)
+  · rintro ⟨n, f, g, rfl⟩
+    exact Submodule.sum_mem _ (fun i _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span (g i).2))
+
+/-- The span of a subset `s` is the union over all `n` of the set of linear combinations of at most
+`n` terms belonging to `s`. -/
+lemma span_eq_iUnion_nat (s : Set M) :
+    (Submodule.span R s : Set M) = ⋃ (n : ℕ),
+      (fun (f : Fin n → (R × M)) ↦ ∑ i, (f i).1 • (f i).2) '' ({f | ∀ i, (f i).2 ∈ s}) := by
+  ext m
+  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_setOf_eq, mem_span_set']
+  refine exists_congr (fun n ↦ ⟨?_, ?_⟩)
+  · rintro ⟨f, g, rfl⟩
+    exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩
+  · rintro ⟨f, hf, rfl⟩
+    exact ⟨fun i ↦ (f i).1, fun i ↦ ⟨(f i).2, (hf i)⟩, rfl⟩
+
 /-- If `Subsingleton R`, then `M ≃ₗ[R] ι →₀ R` for any type `ι`. -/
 @[simps]
 def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [AddCommMonoid M]

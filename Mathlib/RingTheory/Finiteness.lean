@@ -609,6 +609,8 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
 
+instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
+
 section Algebra
 
 theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A]

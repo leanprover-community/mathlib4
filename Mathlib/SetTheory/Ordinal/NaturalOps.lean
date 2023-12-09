@@ -50,7 +50,7 @@ open Function Order
 
 noncomputable section
 
-/-! ### Basic casts between `ordinal` and `nat_ordinal` -/
+/-! ### Basic casts between `Ordinal` and `NatOrdinal` -/
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=

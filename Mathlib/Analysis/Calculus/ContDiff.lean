@@ -2064,6 +2064,15 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
   (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith
 #align cont_diff_at.exists_lipschitz_on_with ContDiffAt.exists_lipschitzOnWith
 
+/-- A `C^1` function with compact support is Lipschitz. -/
+theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
+    (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
+    ∃ C, LipschitzWith C f := by
+  obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)
+  refine ⟨⟨max C 0, le_max_right _ _⟩, ?_⟩
+  apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
+  simp [← NNReal.coe_le_coe, hC x]
+
 end Real
 
 section deriv

@@ -123,7 +123,7 @@ lemma comp_app (f : P ⟶ Q) (g : Q ⟶ T) (X : Cᵒᵖ) :
 
 @[ext]
 theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
-  cases f; cases g;
+  cases f; cases g
   congr
   ext X x
   exact LinearMap.congr_fun (w X) x

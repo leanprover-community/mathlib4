@@ -77,9 +77,9 @@ def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
 
 /-- Adjunction between two 1-morphisms. -/
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
-  /-- The unit of an adjuntion. -/
+  /-- The unit of an adjunction. -/
   unit : 𝟙 a ⟶ f ≫ g
-  /-- The counit of an adjuntion. -/
+  /-- The counit of an adjunction. -/
   counit : g ≫ f ⟶ 𝟙 b
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
   left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by aesop_cat
