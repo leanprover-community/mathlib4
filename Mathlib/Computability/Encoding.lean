@@ -248,7 +248,9 @@ def encodeBString : BString → BString := id
 /-- An (identity) decoding function from `List Bool` to `List Bool`. -/
 def decodeBString : BString → BString := id
 
-theorem decode_encodeBString : ∀ b, id (encodeBString b) = b := fun b ↦ rfl
+theorem decode_encodeBString : ∀ b, id (encodeBString b) = b := by
+  intro
+  exact rfl
 
 /-- A fin_encoding of `List Bool` in `List Bool`. -/
 def finEncodingBString : FinEncoding (BString) where
