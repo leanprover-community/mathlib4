@@ -979,7 +979,7 @@ def mkAddMonoidHom (b : M) : R →+ Localization M where
 
 theorem mk_sum {ι : Type*} (f : ι → R) (s : Finset ι) (b : M) :
     mk (∑ i in s, f i) b = ∑ i in s, mk (f i) b :=
-  (mkAddMonoidHom b).map_sum f s
+  map_sum (mkAddMonoidHom b) f s
 #align localization.mk_sum Localization.mk_sum
 
 theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=

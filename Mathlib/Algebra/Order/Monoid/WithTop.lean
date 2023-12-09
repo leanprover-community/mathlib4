@@ -185,7 +185,7 @@ theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c 
   obtain rfl | hb := (eq_or_ne b ⊤)
   · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
   lift b to α using hb
-  simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
+  simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
     exists_eq_left, add_left_inj, exists_eq_right, eq_comm]
 
 theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (h : b + a = c + a) : b = c :=
@@ -196,7 +196,7 @@ theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + 
   obtain rfl | hb := (eq_or_ne b ⊤)
   · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
   lift b to α using hb
-  simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
+  simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
     exists_and_left, exists_eq_left', add_right_inj, exists_eq_right']
 
 theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊤) (h : a + b = a + c) : b = c :=

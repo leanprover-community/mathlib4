@@ -120,5 +120,5 @@ lemma surjOn_extremePoints_image (f : E →A[ℝ] F) (hs : IsCompact s) :
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
   have := by simpa using image_openSegment _ f.toAffineMap y z
   have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) $ by
-    rw [←this]; exact mem_image_of_mem _ hxyz
+    rw [← this]; exact mem_image_of_mem _ hxyz
   exact hyt ⟨hy, this.1⟩ ⟨hz, this.2⟩ hxyz

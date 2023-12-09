@@ -243,7 +243,7 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
-  | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ ih _
+  | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 #align measure_theory.measure.sigma_finite_tprod MeasureTheory.Measure.sigmaFinite_tprod
 
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
