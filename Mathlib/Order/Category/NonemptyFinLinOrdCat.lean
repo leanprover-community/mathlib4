@@ -96,8 +96,8 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrdCat LinOrdCat :=
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.has_forget_to_LinOrd NonemptyFinLinOrdCat.hasForgetToLinOrd
 
-instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrdCat FinPartOrd
-    where forget₂ :=
+instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrdCat FinPartOrd where
+  forget₂ :=
     { obj := fun X => FinPartOrd.of X
       map := @fun X Y => id }
 set_option linter.uppercaseLean3 false in

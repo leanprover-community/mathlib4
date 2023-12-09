@@ -93,6 +93,12 @@ def ofIsEmpty [IsEmpty α] : α →ₛ β where
   finite_range' := by simp [range_eq_empty]
 #align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
 
+/-- Simple function defined on a finite type. -/
+def ofFintype [Fintype α] [MeasurableSingletonClass α] (f : α → β) : α →ₛ β where
+  toFun := f
+  measurableSet_fiber' x := Finite.measurableSet (toFinite (f ⁻¹' {x}))
+  finite_range' := Set.finite_range f
+
 /-- Range of a simple function `α →ₛ β` as a `Finset β`. -/
 protected def range (f : α →ₛ β) : Finset β :=
   f.finite_range.toFinset

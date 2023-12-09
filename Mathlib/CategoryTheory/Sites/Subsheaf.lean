@@ -94,8 +94,8 @@ instance : Mono G.ι :=
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
-def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf
-    where app U x := ⟨x, h U x.prop⟩
+def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
+  app U x := ⟨x, h U x.prop⟩
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=

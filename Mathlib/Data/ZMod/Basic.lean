@@ -443,11 +443,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_castIso, Fin.coe_mul, Fin.coe_mul, Fin.coe_castIso, Fin.coe_castIso, ← h]
+          rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_castIso, Fin.val_add, Fin.val_add, Fin.coe_castIso, Fin.coe_castIso, ← h] }
+          rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
 end CharEq

@@ -258,8 +258,6 @@ lift it to the quotient by this ideal. -/
 def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_zero' := f.map_zero
-    map_add' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_add
     map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
 #align ideal.quotient.lift Ideal.Quotient.lift
 

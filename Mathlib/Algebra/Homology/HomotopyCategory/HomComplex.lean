@@ -5,30 +5,31 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Tactic.Linarith
 
 /-! The cochain complex of homomorphisms between cochain complexes
 
-If `K` and `L` are cochain complexes (indexed by `ℤ`) in a preadditive category,
+If `F` and `G` are cochain complexes (indexed by `ℤ`) in a preadditive category,
 there is a cochain complex of abelian groups whose `0`-cocycles identify to
-morphisms `K ⟶ L`. Informally, in degree `n`, this complex shall consist of
-cochains of degree `n` from `K` to `L`, i.e. arbitrary families for morphisms
-`K.X p ⟶ L.X (p + n)`.
+morphisms `F ⟶ G`. Informally, in degree `n`, this complex shall consist of
+cochains of degree `n` from `F` to `G`, i.e. arbitrary families for morphisms
+`F.X p ⟶ G.X (p + n)`. This complex shall be denoted `HomComplex F G`.
 
 In order to avoid type theoretic issues, a cochain of degree `n : ℤ`
-(i.e. a term of type of `Cochain K L n`) shall be defined here
+(i.e. a term of type of `Cochain F G n`) shall be defined here
 as the data of a morphism `F.X p ⟶ G.X q` for all triplets
 `⟨p, q, hpq⟩` where `p` and `q` are integers and `hpq : p + n = q`.
-If `α : Cochain K L n`, we shall define `α.v p q hpq : F.X p ⟶ G.X q`.
+If `α : Cochain F G n`, we shall define `α.v p q hpq : F.X p ⟶ G.X q`.
 
 We follow the signs conventions appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
 TODO:
-* Define the differential `Cochain K L n ⟶ Cochain K L m`, and develop the API.
+* Define the differential `Cochain F G n ⟶ Cochain F G m`, and develop the API.
 * Identify morphisms of complexes to `0`-cocycles.
 * Identify homotopies to `-1`-cochains satisfying certain relations.
-* Behaviour with respect to shifting the cochain complexes `K` and `L`.
+* Behaviour with respect to shifting the cochain complexes `F` and `G`.
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
@@ -415,8 +416,135 @@ lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
     simp only [ComplexShape.up_Rel]
     exact fun _ => hnm (by linarith)
 
+variable (F G)
+
+/-- The differential on the complex of morphisms between cochain complexes, as an
+additive homomorphism. -/
+@[simps!]
+def δ_hom : Cochain F G n →+ Cochain F G m :=
+  AddMonoidHom.mk' (δ n m) (fun α β => by
+    by_cases n + 1 = m
+    · ext p q hpq
+      dsimp
+      simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.add_v, add_comp, comp_add, zsmul_add]
+      abel
+    · simp only [δ_shape _ _ h, add_zero])
+
+variable {F G}
+
+@[simp] lemma δ_add (z₁ z₂ : Cochain F G n) : δ n m (z₁ + z₂) = δ n m z₁ + δ n m z₂ :=
+  (δ_hom F G n m).map_add z₁ z₂
+
+@[simp] lemma δ_sub (z₁ z₂ : Cochain F G n) : δ n m (z₁ - z₂) = δ n m z₁ - δ n m z₂ :=
+  (δ_hom F G n m).map_sub z₁ z₂
+
+@[simp] lemma δ_zero : δ n m (0 : Cochain F G n) = 0 := (δ_hom F G n m).map_zero
+
+@[simp] lemma δ_neg (z : Cochain F G n) : δ n m (-z) = - δ n m z :=
+  (δ_hom F G n m).map_neg z
+
+@[simp] lemma δ_zsmul (k : ℤ) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
+  (δ_hom F G n m).map_zsmul z k
+
+lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
+  by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]
+  by_cases h₀₁ : n₀ + 1 = n₁; swap; rw [δ_shape _ _ h₀₁, δ_zero]
+  ext p q hpq
+  dsimp
+  simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
+    δ_v n₀ n₁ h₀₁ z p (q-1) (by linarith) (q-2) _ (by linarith) rfl,
+    δ_v n₀ n₁ h₀₁ z (p+1) q (by linarith) _ (p+2) rfl (by linarith),
+    ← h₀₁, Int.negOnePow_succ, neg_smul, add_comp, assoc,
+    HomologicalComplex.d_comp_d, comp_zero, neg_comp, zero_add, neg_neg, comp_add,
+    comp_neg, comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp, zsmul_zero,
+    neg_zero, add_zero, zsmul_comp, add_left_neg]
+
+lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
+    (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂ + 1 = m₁₂) (h₁ : n₁ + 1 = m₁) (h₂ : n₂ + 1 = m₂) :
+    δ n₁₂ m₁₂ (z₁.comp z₂ h) = z₁.comp (δ n₂ m₂ z₂) (by rw [← h₁₂, ← h₂, ← h, add_assoc]) +
+      n₂.negOnePow • (δ n₁ m₁ z₁).comp z₂
+        (by rw [← h₁₂, ← h₁, ← h, add_assoc, add_comm 1, add_assoc]) := by
+  subst h₁₂ h₁ h₂ h
+  ext p q hpq
+  dsimp
+  rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by linarith),
+    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by linarith) p (p+n₁+1) q
+      (by linarith) (by linarith),
+    δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by linarith) rfl,
+    z₁.comp_v z₂ rfl p _ _ rfl rfl,
+    z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by linarith) (by linarith),
+    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by linarith) (p+n₁+n₂) _ (by linarith) rfl,
+    δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by linarith) (p+n₁) _ (by linarith) rfl]
+  simp only [assoc, comp_add, add_comp, Int.negOnePow_succ, Int.negOnePow_add n₁ n₂,
+    neg_smul, comp_neg, neg_comp, comp_zsmul, zsmul_comp, zsmul_add, smul_neg, smul_smul,
+    mul_comm n₁.negOnePow n₂.negOnePow]
+  abel
+
+lemma δ_zero_cochain_comp {n₂ : ℤ} (z₁ : Cochain F G 0) (z₂ : Cochain G K n₂)
+    (m₂ : ℤ) (h₂ : n₂ + 1 = m₂) :
+    δ n₂ m₂ (z₁.comp z₂ (zero_add n₂)) =
+      z₁.comp (δ n₂ m₂ z₂) (zero_add m₂) +
+      n₂.negOnePow • ((δ 0 1 z₁).comp z₂ (by rw [add_comm, h₂])):=
+  δ_comp z₁ z₂ (zero_add n₂) 1 m₂ m₂ h₂ (zero_add 1) h₂
+
+lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K 0)
+    (m₁ : ℤ) (h₁ : n₁ + 1 = m₁) :
+    δ n₁ m₁ (z₁.comp z₂ (add_zero n₁)) =
+      z₁.comp (δ 0 1 z₂) h₁ + (δ n₁ m₁ z₁).comp z₂ (add_zero m₁) := by
+  simp only [δ_comp z₁ z₂ (add_zero n₁) m₁ 1 m₁ h₁ h₁ (zero_add 1), one_zsmul,
+    Int.negOnePow_zero]
+
+@[simp]
+lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
+    (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q):= by
+  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by linarith) hpq, zero_add,
+    Int.negOnePow_one, neg_smul, one_smul, sub_eq_add_neg]
+
+@[simp]
+lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
+  by_cases p = 1
+  · subst h
+    ext
+    simp
+  · rw [δ_shape]
+    intro
+    exact h (by linarith)
+
+
+@[simp]
+lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    δ (-1) 0 (Cochain.ofHomotopy h) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by
+  ext p
+  have eq := h.comm p
+  rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p+1) by simp),
+    prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p-1) p by simp)] at eq
+  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_self 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  simp only [Cochain.mk_v, add_left_neg, one_zsmul, Int.negOnePow_zero,
+    Cochain.sub_v, Cochain.ofHom_v, eq]
+  abel
+
+lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
+    δ (-1) 0 z = Cochain.ofHom (Homotopy.nullHomotopicMap'
+      (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
+  ext p
+  rw [δ_v (-1) 0 (neg_add_self 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  simp only [neg_add_self, one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
+  rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p-1) p by simp)
+    (show (ComplexShape.up ℤ).Rel p (p+1) by simp)]
+  abel
 end HomComplex
 
-end
+variable (F G)
 
-end CochainComplex
+open HomComplex
+
+/-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
+In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
+@[simps! X d_apply]
+def HomComplex : CochainComplex AddCommGroupCat ℤ where
+  X i := AddCommGroupCat.of (Cochain F G i)
+  d i j := AddCommGroupCat.ofHom (δ_hom F G i j)
+  shape _ _ hij := by ext; apply δ_shape _ _ hij
+  d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
+
+namespace HomComplex

@@ -312,8 +312,8 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
   exact adjoin.algebraMap_mem F S f
 #align intermediate_field.adjoin.range_algebra_map_subset IntermediateField.adjoin.range_algebraMap_subset
 
-instance adjoin.fieldCoe : CoeTC F (adjoin F S)
-    where coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
+instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
+  coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 #align intermediate_field.adjoin.field_coe IntermediateField.adjoin.fieldCoe
 
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)

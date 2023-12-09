@@ -439,7 +439,6 @@ instance one [One α] : One (FreeAbelianGroup α) :=
 
 instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalNonAssocRing with
-    mul := (· * ·)
     mul_assoc := fun x y z ↦ by
       refine' FreeAbelianGroup.induction_on z (by simp only [mul_zero])
           (fun L3 ↦ _) (fun L3 ih ↦ _) fun z₁ z₂ ih₁ ih₂ ↦ _
@@ -462,7 +461,6 @@ variable {R : Type*} [Monoid α] [Ring R]
 instance ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
-    mul := (· * ·)
     mul_one := fun x ↦ by
       dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
       rw [lift.of]

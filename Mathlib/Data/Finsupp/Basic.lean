@@ -1870,8 +1870,8 @@ end Sigma
 /-- Stringify a `Finsupp` as a sequence of `Finsupp.single` terms.
 
 Note this is `meta` as it has to choose some order for the terms. -/
-unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α)
-    where repr f :=
+unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α) where
+  repr f :=
     if f.support.card = 0 then "0"
     else
       " + ".intercalate <|

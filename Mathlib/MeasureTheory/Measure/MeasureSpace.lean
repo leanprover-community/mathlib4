@@ -2902,8 +2902,8 @@ instance isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFinite
     exact ⟨measure_lt_top _ _, measure_lt_top _ _⟩
 #align measure_theory.is_finite_measure_add MeasureTheory.isFiniteMeasureAdd
 
-instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ)
-    where measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
+instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ) where
+  measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
 #align measure_theory.is_finite_measure_smul_nnreal MeasureTheory.isFiniteMeasureSMulNNReal
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
@@ -3776,8 +3776,7 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
   refine' ⟨o, o_open.mem_nhds xo, _⟩
   apply ENNReal.mul_lt_top _ μo.ne
-  simp only [RingHom.id_apply, RingHom.toMonoidHom_eq_coe, ENNReal.coe_ne_top,
-    ENNReal.coe_ofNNRealHom, Ne.def, not_false_iff]
+  simp
 #align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.isLocallyFiniteMeasureSMulNNReal
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]

@@ -276,8 +276,8 @@ instance isScalarTower : IsScalarTower S R p where
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
 instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
-    [IsScalarTower S' S M] : IsScalarTower S' S p
-    where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
+    [IsScalarTower S' S M] : IsScalarTower S' S p where
+  smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'
 
 @[simp, norm_cast]

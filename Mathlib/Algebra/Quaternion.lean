@@ -353,11 +353,11 @@ variable [SMul S R] [SMul T R] (s : S)
 -- porting note: Lean 4 auto drops the unused `[Ring R]` argument
 instance : SMul S ℍ[R,c₁,c₂] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
 
-instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂]
-    where smul_assoc s t x := by ext <;> exact smul_assoc _ _ _
+instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂] where
+  smul_assoc s t x := by ext <;> exact smul_assoc _ _ _
 
-instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂]
-    where smul_comm s t x := by ext <;> exact smul_comm _ _ _
+instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂] where
+  smul_comm s t x := by ext <;> exact smul_comm _ _ _
 
 @[simp] theorem smul_re : (s • a).re = s • a.re := rfl
 #align quaternion_algebra.smul_re QuaternionAlgebra.smul_re

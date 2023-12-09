@@ -253,8 +253,8 @@ theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
 #align category_theory.grothendieck_topology.trivial_covering CategoryTheory.GrothendieckTopology.trivial_covering
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance instLEGrothendieckTopology : LE (GrothendieckTopology C)
-    where le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
+instance instLEGrothendieckTopology : LE (GrothendieckTopology C) where
+  le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
   Iff.rfl
@@ -268,8 +268,8 @@ instance : PartialOrder (GrothendieckTopology C) :=
     le_antisymm := fun J₁ J₂ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
-instance : InfSet (GrothendieckTopology C)
-    where sInf T :=
+instance : InfSet (GrothendieckTopology C) where
+  sInf T :=
     { sieves := sInf (sieves '' T)
       top_mem' := by
         rintro X S ⟨⟨_, J, hJ, rfl⟩, rfl⟩

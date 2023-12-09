@@ -201,10 +201,7 @@ instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
 instance commRing : CommRing (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
-    add := (· + ·)
-    zero := (0 : ℤ√d)
     mul := (· * ·)
-    one := 1
     npow := @npowRec (ℤ√d) ⟨1⟩ ⟨(· * ·)⟩,
     add_comm := ?_
     left_distrib := ?_

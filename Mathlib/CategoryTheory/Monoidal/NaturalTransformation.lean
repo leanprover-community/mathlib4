@@ -126,8 +126,8 @@ attribute [local simp] NatTrans.naturality MonoidalNatTrans.unit MonoidalNatTran
 /-- The cartesian product of two monoidal natural transformations is monoidal. -/
 @[simps]
 def prod {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor C E} (α : MonoidalNatTrans F G)
-    (β : MonoidalNatTrans H K) : MonoidalNatTrans (F.prod' H) (G.prod' K)
-    where app X := (α.app X, β.app X)
+    (β : MonoidalNatTrans H K) : MonoidalNatTrans (F.prod' H) (G.prod' K) where
+  app X := (α.app X, β.app X)
 #align category_theory.monoidal_nat_trans.prod CategoryTheory.MonoidalNatTrans.prod
 
 end

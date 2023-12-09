@@ -789,7 +789,8 @@ theorem secondCountableTopology_of_countable_cover {ι} [Encodable ι] {U : ι �
 #align topological_space.second_countable_topology_of_countable_cover TopologicalSpace.secondCountableTopology_of_countable_cover
 
 /-- In a second-countable space, an open set, given as a union of open sets,
-is equal to the union of countably many of those sets. -/
+is equal to the union of countably many of those sets.
+In particular, any open covering of `α` has a countable subcover: α is a Lindelöf space. -/
 theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Set α)
     (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i, s i := by
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }

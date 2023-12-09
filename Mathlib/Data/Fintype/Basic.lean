@@ -809,6 +809,9 @@ theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, L
   rfl
 #align fin.univ_def Fin.univ_def
 
+@[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
+  ext; simp
+
 @[simp]
 theorem Fin.image_succAbove_univ {n : ℕ} (i : Fin (n + 1)) : univ.image i.succAbove = {i}ᶜ := by
   ext m

@@ -275,7 +275,6 @@ end DistribMulAction
 -- to find.
 instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
   { PiTensorProduct.distribMulAction' with
-    smul := (· • ·)
     add_smul := fun r r' x ↦
       PiTensorProduct.induction_on' x
         (fun {r f} ↦ by simp_rw [smul_tprodCoeff', add_smul, add_tprodCoeff'])

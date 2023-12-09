@@ -2337,8 +2337,8 @@ theorem map_comap_of_mem {f : Filter β} {m : α → β} (hf : range m ∈ f) : 
 #align filter.map_comap_of_mem Filter.map_comap_of_mem
 
 instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Filter α) (Filter β) (map c) fun f => ∀ᶠ x : α in f, p x
-    where prf f hf := ⟨comap c f, map_comap_of_mem <| hf.mono CanLift.prf⟩
+    CanLift (Filter α) (Filter β) (map c) fun f => ∀ᶠ x : α in f, p x where
+  prf f hf := ⟨comap c f, map_comap_of_mem <| hf.mono CanLift.prf⟩
 #align filter.can_lift Filter.canLift
 
 theorem comap_le_comap_iff {f g : Filter β} {m : α → β} (hf : range m ∈ f) :

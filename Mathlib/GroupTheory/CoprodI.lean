@@ -222,8 +222,8 @@ section Group
 
 variable (G : ι → Type*) [∀ i, Group (G i)]
 
-instance : Inv (CoprodI G)
-    where inv :=
+instance : Inv (CoprodI G) where
+  inv :=
     MulOpposite.unop ∘ lift fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
 
 theorem inv_def (x : CoprodI G) :

@@ -114,9 +114,9 @@ theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
 #align vector.tail_map Vector.tail_map
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.castIso v.toList_length.symm i) :=
+    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
-#align vector.nth_eq_nth_le Vector.get_eq_get
+#align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
@@ -300,7 +300,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
-  rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
+  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get?_eq_get, ← List.get?_eq_get,
+    List.get?_reverse]
   · congr
     simp
   · simp
@@ -621,8 +622,6 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
   cases v; cases i; simp [Vector.set, get_eq_get]
-  dsimp
-  exact List.get_set_eq _ _ _ _
 #align vector.nth_update_nth_same Vector.get_set_same
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
@@ -630,7 +629,6 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
   cases v; cases i; cases j
   simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
   rw [List.get_set_of_ne]
-  · rfl
   · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 

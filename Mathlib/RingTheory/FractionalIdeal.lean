@@ -191,9 +191,6 @@ theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
 
 /-! Transfer instances from `Submodule R P` to `FractionalIdeal S P`. -/
 
-instance (I : FractionalIdeal S P) : AddCommGroup I :=
-  Submodule.addCommGroup (I : Submodule R P)
-
 instance (I : FractionalIdeal S P) : Module R I :=
   Submodule.module (I : Submodule R P)
 

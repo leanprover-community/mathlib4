@@ -105,8 +105,8 @@ instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlgCat BoolAlgCat)
 #align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlgCat.forgetToBoolAlgFaithful
 
 @[simps]
-instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd
-    where forget₂ :=
+instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlgCat FinPartOrd where
+  forget₂ :=
     { obj := fun X => FinPartOrd.of X
       map := fun {X Y} f => show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f) }
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlgCat.hasForgetToFinPartOrd

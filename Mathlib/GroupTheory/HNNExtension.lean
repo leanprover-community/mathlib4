@@ -4,17 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.GroupTheory.Coprod
+import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.Complement
 
 /-!
 
 ## HNN Extensions of Groups
 
-This file defines the HNN extensions of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
+This file defines the HNN extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
 subgroups `A` and `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such
 that for any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canonical map
-from `G` into the `HNNExtension`.
+from `G` into the `HNNExtension`. This construction is named after Graham Higman, Bernhard Neumann
+and Hanna Neumann.
 
 ## Main definitions
 
@@ -106,7 +107,7 @@ theorem lift_of (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G
 theorem hom_ext {f g : HNNExtension G A B φ →* M}
     (hg : f.comp of = g.comp of) (ht : f t = g t) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
-    Coprod.ext_hom _ _ hg (MonoidHom.ext_mint ht)
+    Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
