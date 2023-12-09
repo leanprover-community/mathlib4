@@ -205,6 +205,48 @@ theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective)
     OpenEmbedding f :=
   openEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
 
+-- TODO: can I show this more elegantly? Is a surjective open embedding a homeomorphism?
+/-- A bijective local homeomorphism is a homeomorphism. -/
+noncomputable def toHomeomorphImage_of_injective (hf : IsLocalHomeomorph f) (hb : f.Bijective) : Homeomorph X Y := by
+  -- Choose a right inverse `g` of `f`.
+  choose g hgInverse using (Function.bijective_iff_has_inverse).mp hb
+   -- Choose homeomorphisms φ_x which coincide which `f` near `x`.
+  choose Φ hyp using (fun x ↦ hf x)
+  -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
+  -- they're both inverses to g. In fact, the latter suffices for our proof.
+  -- have : ∀ x y, EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
+  -- xxx: does this hold globally, in our setting?
+  have aux (x) : Set.EqOn g (Φ x).symm (Φ x).target := by
+    apply Set.eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
+      ((hyp x).2 ▸ (Φ x).rightInvOn) (fun _y hy ↦(Φ x).map_target hy)
+  exact {
+    toFun := f
+    invFun := g
+    left_inv := hgInverse.1
+    right_inv := hgInverse.2
+    continuous_toFun := hf.continuous
+    continuous_invFun := by
+      rw [continuous_iff_continuousAt]
+      intro y
+      let x := g y
+      -- this is the sorry we really want
+      have aux2 (x y) : (Φ x).symm =ᶠ[𝓝 y] g := by
+        let r := aux x
+        have : (Φ x).target ∈ 𝓝 y := by
+          obtain ⟨hx, hfx⟩ := hyp x
+          apply (Φ x).open_target.mem_nhds ?_
+          sorry --exact ((hyp x).2 ▸ (hgInverse.2 y).symm) ▸ (Φ x).map_source (hyp x).1
+        exact Filter.eventuallyEq_of_mem this (id (Set.EqOn.symm r))
+
+      have : ContinuousAt (Φ x).symm y := by
+        obtain ⟨hx, hfx⟩ := hyp x
+        apply (Φ x).continuousOn_symm.continuousAt ((Φ x).open_target.mem_nhds ?_)--(hy x y))
+        exact (hfx ▸ (hgInverse.2 y).symm) ▸ (Φ x).map_source hx
+      exact this.congr (aux2 x y)
+  }
+
+
+
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem openEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : OpenEmbedding (g ∘ f))
     (cont : Continuous f) : OpenEmbedding f :=
