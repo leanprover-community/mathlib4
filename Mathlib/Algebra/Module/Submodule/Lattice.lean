@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.PUnitInstances
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -130,11 +130,17 @@ def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
   right_inv _ := rfl
 #align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
-theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ := by
-  rw [eq_bot_iff]
-  intro v hv
-  exact congr_arg Subtype.val (Subsingleton.elim (⟨v, hv⟩ : p) 0)
+theorem subsingleton_iff_eq_bot : Subsingleton p ↔ p = ⊥ := by
+  rw [subsingleton_iff, Submodule.eq_bot_iff]
+  refine ⟨fun h x hx ↦ by simpa using h ⟨x, hx⟩ ⟨0, p.zero_mem⟩,
+    fun h ⟨x, hx⟩ ⟨y, hy⟩ ↦ by simp [h x hx, h y hy]⟩
+
+theorem eq_bot_of_subsingleton [Subsingleton p] : p = ⊥ :=
+  subsingleton_iff_eq_bot.mp inferInstance
 #align submodule.eq_bot_of_subsingleton Submodule.eq_bot_of_subsingleton
+
+theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
+  rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
 
 /-!
 ## Top element of a submodule
@@ -377,8 +383,8 @@ theorem disjoint_def' {p p' : Submodule R M} :
     ⟨fun h x hx _ hy hxy ↦ h x hx <| hxy.symm ▸ hy, fun h x hx hx' ↦ h _ hx x hx' rfl⟩
 #align submodule.disjoint_def' Submodule.disjoint_def'
 
-theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 := by
-  exact_mod_cast disjoint_def.mp hpq a (coe_mem a) ha
+theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 :=
+  mod_cast disjoint_def.mp hpq a (coe_mem a) ha
 #align submodule.eq_zero_of_coe_mem_of_disjoint Submodule.eq_zero_of_coe_mem_of_disjoint
 
 theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :

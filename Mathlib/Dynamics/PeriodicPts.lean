@@ -3,10 +3,10 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 
@@ -343,7 +343,7 @@ theorem minimalPeriod_apply (hx : x ∈ periodicPts f) : minimalPeriod f (f x) =
 
 theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
     (hmn : f^[m] x = f^[n] x) : m ≤ n := by
-  by_contra' hmn'
+  by_contra! hmn'
   rw [← Nat.add_sub_of_le hmn'.le, add_comm, iterate_add_apply] at hmn
   exact
     ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
@@ -353,18 +353,17 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
       hm
 #align function.le_of_lt_minimal_period_of_iterate_eq Function.le_of_lt_minimalPeriod_of_iterate_eq
 
-theorem eq_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
-    (hn : n < minimalPeriod f x) (hmn : f^[m] x = f^[n] x) : m = n :=
-  (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
+theorem iterate_injOn_Iio_minimalPeriod : (Iio $ minimalPeriod f x).InjOn (f^[·] x) :=
+  fun _m hm _n hn hmn ↦ (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
     (le_of_lt_minimalPeriod_of_iterate_eq hn hmn.symm)
-#align function.eq_of_lt_minimal_period_of_iterate_eq Function.eq_of_lt_minimalPeriod_of_iterate_eq
+#align function.eq_of_lt_minimal_period_of_iterate_eq Function.iterate_injOn_Iio_minimalPeriod
 
-theorem eq_iff_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
+theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimalPeriod f x)
     (hn : n < minimalPeriod f x) : f^[m] x = f^[n] x ↔ m = n :=
-  ⟨eq_of_lt_minimalPeriod_of_iterate_eq hm hn, congr_arg (Nat.iterate f · x)⟩
-#align function.eq_iff_lt_minimal_period_of_iterate_eq Function.eq_iff_lt_minimalPeriod_of_iterate_eq
+  iterate_injOn_Iio_minimalPeriod.eq_iff hm hn
+#align function.eq_iff_lt_minimal_period_of_iterate_eq Function.iterate_eq_iterate_iff_of_lt_minimalPeriod
 
-theorem minimalPeriod_id : minimalPeriod id x = 1 :=
+@[simp] theorem minimalPeriod_id : minimalPeriod id x = 1 :=
   ((is_periodic_id _ _).minimalPeriod_le Nat.one_pos).antisymm
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 #align function.minimal_period_id Function.minimalPeriod_id
@@ -504,7 +503,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp [periodicOrbit]
+  simp only [periodicOrbit._eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 
@@ -538,7 +537,7 @@ theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on (List.nodup_range _)]
   intro m hm n hn hmn
   rw [List.mem_range] at hm hn
-  rwa [eq_iff_lt_minimalPeriod_of_iterate_eq hm hn] at hmn
+  rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
 #align function.nodup_periodic_orbit Function.nodup_periodicOrbit
 
 set_option linter.deprecated false in

@@ -63,7 +63,7 @@ open Classical Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type _} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Well order on an arbitrary type -/
@@ -167,7 +167,8 @@ instance isWellOrder_out_lt (o : Ordinal) : IsWellOrder o.out.α (· < ·) :=
 
 namespace Ordinal
 
--- ### Basic properties of the order type
+/-! ### Basic properties of the order type -/
+
 /-- The order type of a well order is an ordinal. -/
 def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
@@ -301,10 +302,10 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp]
+@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
-    convert (RelIso.preimage f r).ordinal_type_eq
+  convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -583,7 +584,7 @@ instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
-`induction` tactic, as in `induction i using Ordinal.induction with i IH`. -/
+`induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
   lt_wf.induction i h
@@ -647,7 +648,7 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 -- @[simp] -- Porting note: Not in simpnf, added aux lemma below
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
     type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
-  simp
+  simp (config := { unfoldPartialApp := true })
   rfl
 #align ordinal.type_ulift Ordinal.type_uLift
 
@@ -920,7 +921,6 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
     refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
     refine inductionOn c (fun β s _ ↦ ?_)
-    have := (Embedding.refl β).sumMap f
     refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
     · intros a b
       match a, b with
@@ -1009,7 +1009,8 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align ordinal.Inf_empty Ordinal.sInf_empty
 
--- ### Successor order properties
+/-! ### Successor order properties -/
+
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
   ⟨lt_of_lt_of_le
       (inductionOn a fun α r _ =>
@@ -1223,7 +1224,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
   of `Ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
- @[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 #align ordinal.univ Ordinal.univ
@@ -1474,7 +1475,7 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
   equivalently the cardinal of `Ordinal.{u}`, or `Cardinal.{u}`,
   as an element of `Cardinal.{v}` (when `u < v`). -/
-@[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ :=
   lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ
@@ -1508,7 +1509,7 @@ theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
-  rw [←h', lift.principalSeg_coe, ← lift_card]
+  rw [← h', lift.principalSeg_coe, ← lift_card]
   apply lift_lt_univ'
 #align cardinal.ord_univ Cardinal.ord_univ
 
@@ -1584,3 +1585,22 @@ theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp
 #align ordinal.type_fin Ordinal.type_fin
 
 end Ordinal
+
+/-! ### Sorted lists -/
+
+theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [IsWellOrder α (· < ·)] {l m : List α}
+    {o : Ordinal} (hl : l.Sorted (· > ·)) (hm : m.Sorted (· > ·)) (hmltl : m < l)
+    (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) : ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
+  replace hmltl : List.Lex (· < ·) m l := hmltl
+  cases l with
+  | nil => simp at hmltl
+  | cons a as =>
+    cases m with
+    | nil => intro i hi; simp at hi
+    | cons b bs =>
+      intro i hi
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      cases hi with
+      | head as => exact List.head_le_of_lt hmltl
+      | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
+          (List.head_le_of_lt hmltl))

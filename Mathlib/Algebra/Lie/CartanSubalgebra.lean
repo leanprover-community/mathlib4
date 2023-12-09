@@ -44,7 +44,9 @@ def LieSubmodule.IsUcsLimit {M : Type*} [AddCommGroup M] [Module R M] [LieRingMo
 
 namespace LieSubalgebra
 
-/-- A Cartan subalgebra is a nilpotent, self-normalizing subalgebra. -/
+/-- A Cartan subalgebra is a nilpotent, self-normalizing subalgebra.
+
+A _splitting_ Cartan subalgebra can be defined by mixing in `LieModule.IsTriangularizable R H L`. -/
 class IsCartanSubalgebra : Prop where
   nilpotent : LieAlgebra.IsNilpotent R H
   self_normalizing : H.normalizer = H

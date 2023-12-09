@@ -191,22 +191,24 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr
     have := (𝖣.t_fac k i j).symm
-    rw [←IsIso.inv_comp_eq] at this
+    rw [← IsIso.inv_comp_eq] at this
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
     replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
-    rw [coe_comp, coe_comp] at this
-    rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [coe_comp, coe_comp] at this
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      rw [←comp_apply, ←comp_base, D.t_inv, id_base, id_apply]
+      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      rw [←comp_apply, ←comp_base, IsIso.inv_hom_id, id_base, id_apply]
+      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
     · intro x
-      rw [←comp_apply, ←comp_base, IsIso.hom_inv_id, id_base, id_apply]
+      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
@@ -265,7 +267,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · rw [←coe_comp, ← TopCat.mono_iff_injective]
+  · rw [← coe_comp, ← TopCat.mono_iff_injective]
     infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_image_preimage_eq AlgebraicGeometry.PresheafedSpace.GlueData.ι_image_preimage_eq
 
@@ -424,9 +426,9 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
-      rw [←this, coe_comp]
+      rw [← this, coe_comp]
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
-      rw [←TopCat.mono_iff_injective]
+      rw [← TopCat.mono_iff_injective]
       infer_instance
   delta ιInvApp
   rw [limit.lift_π]

@@ -21,7 +21,8 @@ isomorphism; that is, a commutative monoid `N` is the localization of `M` at `S`
 monoid homomorphism `f : M →* N` satisfying 3 properties:
 1. For all `y ∈ S`, `f y` is a unit;
 2. For all `z : N`, there exists `(x, y) : M × S` such that `z * f y = f x`;
-3. For all `x, y : M`, `f x = f y` iff there exists `c ∈ S` such that `x * c = y * c`.
+3. For all `x, y : M` such that `f x = f y`, there exists `c ∈ S` such that `x * c = y * c`.
+   (The converse is a consequence of 1.)
 
 Given such a localization map `f : M →* N`, we can define the surjection
 `Submonoid.LocalizationMap.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and
@@ -88,12 +89,12 @@ satisfies this predicate, then `N` is isomorphic to the localization of `M` at `
 structure LocalizationMap extends AddMonoidHom M N where
   map_add_units' : ∀ y : S, IsAddUnit (toFun y)
   surj' : ∀ z : N, ∃ x : M × S, z + toFun x.2 = toFun x.1
-  eq_iff_exists' : ∀ x y, toFun x = toFun y ↔ ∃ c : S, ↑c + x = ↑c + y
+  exists_of_eq : ∀ x y, toFun x = toFun y → ∃ c : S, ↑c + x = ↑c + y
 #align add_submonoid.localization_map AddSubmonoid.LocalizationMap
 
 -- Porting note: no docstrings for AddSubmonoid.LocalizationMap
 attribute [nolint docBlame] AddSubmonoid.LocalizationMap.map_add_units'
-  AddSubmonoid.LocalizationMap.surj' AddSubmonoid.LocalizationMap.eq_iff_exists'
+  AddSubmonoid.LocalizationMap.surj' AddSubmonoid.LocalizationMap.exists_of_eq
 
 /-- The AddMonoidHom underlying a `LocalizationMap` of `AddCommMonoid`s. -/
 add_decl_doc LocalizationMap.toAddMonoidHom
@@ -114,12 +115,12 @@ satisfies this predicate, then `N` is isomorphic to the localization of `M` at `
 structure LocalizationMap extends MonoidHom M N where
   map_units' : ∀ y : S, IsUnit (toFun y)
   surj' : ∀ z : N, ∃ x : M × S, z * toFun x.2 = toFun x.1
-  eq_iff_exists' : ∀ x y, toFun x = toFun y ↔ ∃ c : S, ↑c * x = c * y
+  exists_of_eq : ∀ x y, toFun x = toFun y → ∃ c : S, ↑c * x = c * y
 #align submonoid.localization_map Submonoid.LocalizationMap
 
 -- Porting note: no docstrings for Submonoid.LocalizationMap
 attribute [nolint docBlame] Submonoid.LocalizationMap.map_units' Submonoid.LocalizationMap.surj'
-  Submonoid.LocalizationMap.eq_iff_exists'
+  Submonoid.LocalizationMap.exists_of_eq
 
 attribute [to_additive] Submonoid.LocalizationMap
 
@@ -529,12 +530,12 @@ namespace MonoidHom
 @[to_additive
     "Makes a localization map from an `AddCommMonoid` hom satisfying the characteristic predicate."]
 def toLocalizationMap (f : M →* N) (H1 : ∀ y : S, IsUnit (f y))
-    (H2 : ∀ z, ∃ x : M × S, z * f x.2 = f x.1) (H3 : ∀ x y, f x = f y ↔ ∃ c : S, ↑c * x = ↑c * y) :
+    (H2 : ∀ z, ∃ x : M × S, z * f x.2 = f x.1) (H3 : ∀ x y, f x = f y → ∃ c : S, ↑c * x = ↑c * y) :
     Submonoid.LocalizationMap S N :=
   { f with
     map_units' := H1
     surj' := H2
-    eq_iff_exists' := H3 }
+    exists_of_eq := H3 }
 #align monoid_hom.to_localization_map MonoidHom.toLocalizationMap
 #align add_monoid_hom.to_localization_map AddMonoidHom.toLocalizationMap
 
@@ -585,7 +586,11 @@ theorem surj (f : LocalizationMap S N) (z : N) : ∃ x : M × S, z * f.toMap x.2
 
 @[to_additive]
 theorem eq_iff_exists (f : LocalizationMap S N) {x y} :
-    f.toMap x = f.toMap y ↔ ∃ c : S, ↑c * x = c * y := f.4 x y
+    f.toMap x = f.toMap y ↔ ∃ c : S, ↑c * x = c * y := Iff.intro (f.4 x y)
+  fun ⟨c, h⟩ ↦ by
+    replace h := congr_arg f.toMap h
+    rw [map_mul, map_mul] at h
+    exact (f.map_units c).mul_right_inj.mp h
 #align submonoid.localization_map.eq_iff_exists Submonoid.LocalizationMap.eq_iff_exists
 #align add_submonoid.localization_map.eq_iff_exists AddSubmonoid.LocalizationMap.eq_iff_exists
 
@@ -1398,7 +1403,7 @@ def ofMulEquivOfLocalizations (k : N ≃* P) : LocalizationMap S P :=
       let ⟨z, hz⟩ := k.toEquiv.surjective v
       let ⟨x, hx⟩ := f.surj z
       ⟨x, show v * k _ = k _ by rw [← hx, k.map_mul, ← hz]; rfl⟩)
-    fun x y ↦ k.apply_eq_iff_eq.trans f.eq_iff_exists
+    fun x y ↦ (k.apply_eq_iff_eq.trans f.eq_iff_exists).1
 #align submonoid.localization_map.of_mul_equiv_of_localizations Submonoid.LocalizationMap.ofMulEquivOfLocalizations
 #align add_submonoid.localization_map.of_add_equiv_of_localizations AddSubmonoid.LocalizationMap.ofAddEquivOfLocalizations
 
@@ -1496,16 +1501,13 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
       ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.2⟩),
         show z * f.toMap (k.toEquiv w) = f.toMap (k.toEquiv v) by erw [hv, hw, hx]⟩)
     fun x y ↦
-    show f.toMap _ = f.toMap _ ↔ _ by
+    show f.toMap _ = f.toMap _ → _ by
       erw [f.eq_iff_exists]
       exact
-        ⟨fun ⟨c, hc⟩ ↦
+        fun ⟨c, hc⟩ ↦
           let ⟨d, hd⟩ := k.toEquiv.surjective c
           ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, by
-            erw [← hd, ← k.map_mul, ← k.map_mul] at hc; exact k.toEquiv.injective hc⟩,
-          fun ⟨c, hc⟩ ↦
-          ⟨⟨k c, H ▸ Set.mem_image_of_mem k c.2⟩, by
-            erw [← k.map_mul]; rw [hc, k.map_mul]; rfl⟩⟩
+            erw [← hd, ← k.map_mul, ← k.map_mul] at hc; exact k.toEquiv.injective hc⟩
 #align submonoid.localization_map.of_mul_equiv_of_dom Submonoid.LocalizationMap.ofMulEquivOfDom
 #align add_submonoid.localization_map.of_add_equiv_of_dom AddSubmonoid.LocalizationMap.ofAddEquivOfDom
 
@@ -1625,7 +1627,7 @@ def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
       isUnit_iff_exists_inv.2 ⟨mk 1 y, by dsimp only; rw [mk_mul, mul_one, one_mul, mk_self]⟩
     surj' := fun z ↦ induction_on z fun x ↦
       ⟨x, by dsimp only; rw [mk_mul, mul_comm x.fst, ← mk_mul, mk_self, one_mul]⟩
-    eq_iff_exists' := fun x y ↦
+    exists_of_eq := fun x y ↦ Iff.mp <|
       mk_eq_mk_iff.trans <|
         r_iff_exists.trans <|
           show (∃ c : S, ↑c * (1 * x) = c * (1 * y)) ↔ _ by rw [one_mul, one_mul] }

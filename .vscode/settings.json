@@ -7,4 +7,8 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "master"
+  ],
+  "git.ignoreLimitWarning": true
 }

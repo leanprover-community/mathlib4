@@ -132,7 +132,7 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
       constructor
       intro u v sq
       have h₀ : u ≫ f ≫ g = z ≫ v ≫ g := by
-        rw [←Category.assoc, eq_whisker sq.w, Category.assoc]
+        rw [← Category.assoc, eq_whisker sq.w, Category.assoc]
       exact CommSq.HasLift.mk' ⟨(CommSq.mk h₀).lift, by simp, by simp [← cancel_epi z, sq.w]⟩ }
 #align category_theory.strong_mono_of_strong_mono CategoryTheory.strongMono_of_strongMono
 

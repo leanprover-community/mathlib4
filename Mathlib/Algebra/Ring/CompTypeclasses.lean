@@ -51,10 +51,10 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
 -- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
-class RingHomId {R : Type _} [Semiring R] (σ : R →+* R) : Prop where
+class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
-instance {R : Type _} [Semiring R] : RingHomId (RingHom.id R) where
+instance {R : Type*} [Semiring R] : RingHomId (RingHom.id R) where
   eq_id := rfl
 
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is

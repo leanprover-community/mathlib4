@@ -55,7 +55,7 @@ theorem closedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤
   { embedding_inclusion h with
     closed_range := isClosed_induced_iff.2
       ⟨S₁, hS₁, by
-          convert(Set.range_subtype_map id _).symm
+          convert (Set.range_subtype_map id _).symm
           · rw [Set.image_id]; rfl
           · intro _ h'
             apply h h' ⟩ }
@@ -205,6 +205,7 @@ def elementalStarAlgebra (x : A) : StarSubalgebra R A :=
 
 namespace elementalStarAlgebra
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem self_mem (x : A) : x ∈ elementalStarAlgebra R x :=
   SetLike.le_def.mp (le_topologicalClosure _) (self_mem_adjoin_singleton R x)
 #align elemental_star_algebra.self_mem elementalStarAlgebra.self_mem

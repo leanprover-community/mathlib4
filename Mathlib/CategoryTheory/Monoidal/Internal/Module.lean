@@ -18,6 +18,8 @@ is equivalent to the category of "native" bundled `R`-algebras.
 Moreover, this equivalence is compatible with the forgetful functors to `ModuleCat R`.
 -/
 
+suppress_compilation
+
 set_option linter.uppercaseLean3 false
 
 universe v u
@@ -113,7 +115,8 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   one_mul := by
     -- Porting note : `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
-    rw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
     -- Porting note : this `dsimp` does nothing
     -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --   LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
@@ -131,7 +134,8 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --   AlgebraCat.coe_comp]
     -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂_apply]
-    rw [CategoryTheory.comp_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     rw [id_apply]
@@ -144,7 +148,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --   Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
     --   MonoidalCategory.associator_hom_apply]
     -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    rw [compr₂_apply, compr₂_apply, compr₂_apply, compr₂_apply, CategoryTheory.comp_apply,
+    rw [compr₂_apply, compr₂_apply, compr₂_apply, compr₂_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
     rw [id_apply, TensorProduct.mk_apply]
@@ -222,6 +228,9 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
               commutes' := fun r => rfl } })
       (by intros; rfl)
 #align Module.Mon_Module_equivalence_Algebra ModuleCat.monModuleEquivalenceAlgebra
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_apply
 
 /-- The equivalence `Mon_ (ModuleCat R) ≌ AlgebraCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.
