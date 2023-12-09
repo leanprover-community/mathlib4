@@ -2441,9 +2441,12 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     apply hl _ (List.mem_cons_self _ _)
 #align list.injective_foldl_comp List.injective_foldl_comp
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
+/-- Induction principle for values produced by a `foldr`: if a property holds
+for the seed element `b : β` and for all incremental `op : α → β → β`
+performed on the elements `(a : α) ∈ l`. The principle is given for
+a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
+def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
+    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2451,46 +2454,17 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     refine' IH _
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
--/
-/-- Induction principle for values produced by a `foldr`: if a property holds
-for the seed element `b : β` and for all incremental `op : α → β → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
-  cases l with
-  | nil => exact hb
-  | cons hd tl =>
-    have IH : ((b : β) → C b → (a : α) → a ∈ tl → C (op a b)) → C (foldr op b tl) :=
-      foldrRecOn _ _ _ hb
-    refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
-    intro y hy x hx
-    exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
-  induction l generalizing b with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine' IH _ _ _
-    · exact hl b hb hd (mem_cons_self hd tl)
-    · intro y hy x hx
-      exact hl y hy x (mem_cons_of_mem hd hx)
--/
 /-- Induction principle for values produced by a `foldl`: if a property holds
 for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
-  cases l with
+  induction l generalizing b with
   | nil => exact hb
-  | cons hd tl =>
-    have IH : (b : β) → C b → ((b : β) → C b → (a : α) → a ∈ tl → C (op b a)) → C (foldl op b tl) :=
-      foldlRecOn _ _
+  | cons hd tl IH =>
     refine' IH _ _ _
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
