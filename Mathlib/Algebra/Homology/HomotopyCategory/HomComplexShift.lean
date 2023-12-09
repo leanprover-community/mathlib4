@@ -149,7 +149,7 @@ lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
 
 @[simp]
 lemma rightShift_units_smul (a n' : ℤ) (hn' : n' + a = n) (x : Rˣ) :
-  (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
+    (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
   apply rightShift_smul
 
 @[simp]
