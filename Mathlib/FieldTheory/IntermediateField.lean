@@ -755,20 +755,19 @@ theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
   eq_of_le_of_finrank_le h_le h_finrank.ge
 #align intermediate_field.eq_of_le_of_finrank_eq IntermediateField.eq_of_le_of_finrank_eq
 
-theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
+private theorem eq_of_le_of_finrank_le'' [FiniteDimensional K L] (h_le : F ≤ E)
     (h_finrank : finrank F L ≤ finrank E L) : F = E := by
-  -- can't use `wlog` because the universe level mismatch
-  -- and we have to use `Type _` because it complains about universe level mismatch for `Type*`
-  suffices H {K L : Type _} [Field K] [Field L] [Algebra K L] {F E : IntermediateField K L}
-      [FiniteDimensional K L] (h_le : F ≤ E) (h_finrank : finrank F L ≤ finrank E L) : F = E
-  · refine le_antisymm h_le (fun l hl ↦ ?_)
-    rwa [← mem_extendScalars (le_refl F),
-      H ((extendScalars_le_extendScalars_iff (le_refl F) h_le).2 h_le) h_finrank, mem_extendScalars]
   apply eq_of_le_of_finrank_le h_le
   have h1 := finrank_mul_finrank K F L
   have h2 := finrank_mul_finrank K E L
   have h3 : 0 < finrank E L := finrank_pos
   nlinarith
+
+theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
+    (h_finrank : finrank F L ≤ finrank E L) : F = E := by
+  refine le_antisymm h_le (fun l hl ↦ ?_)
+  rwa [← mem_extendScalars (le_refl F), eq_of_le_of_finrank_le''
+    ((extendScalars_le_extendScalars_iff (le_refl F) h_le).2 h_le) h_finrank, mem_extendScalars]
 #align intermediate_field.eq_of_le_of_finrank_le' IntermediateField.eq_of_le_of_finrank_le'
 
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
