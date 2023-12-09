@@ -23,16 +23,20 @@ variable {α β γ : Type*}
 
 open Finset Function
 
-instance {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] : Fintype (Sigma β) :=
+instance (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] : Fintype (Sigma β) :=
   ⟨univ.sigma fun _ => univ, fun ⟨a, b⟩ => by simp⟩
 
 @[simp]
-theorem Finset.univ_sigma_univ {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
+theorem Finset.univ_sigma_univ {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
     ((univ : Finset α).sigma fun a => (univ : Finset (β a))) = univ :=
   rfl
 #align finset.univ_sigma_univ Finset.univ_sigma_univ
 
-instance PSigma.fintype {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
+instance PSigma.fintype {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
   Fintype.ofEquiv _ (Equiv.psigmaEquivSigma _).symm
 #align psigma.fintype PSigma.fintype
+
+lemma Set.biInter_finsetSigma_univ {β : α → Type*} [∀ a, Fintype (β a)]
+    (s : Finset α) (u : ∀ i, β i → Set γ) :
+    ⋂ ij ∈ s.sigma (fun i ↦ Finset.univ), u ij.1 ij.2 = ⋂ i ∈ s, ⋂ j : β i, u i j := by aesop

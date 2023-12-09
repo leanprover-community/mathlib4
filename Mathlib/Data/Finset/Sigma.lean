@@ -109,6 +109,9 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
   @sup_sigma _ _ βᵒᵈ _ _ _ _ _
 #align finset.inf_sigma Finset.inf_sigma
 
+theorem _root_.Set.biInter_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (u : ∀ i, α i → Set β) : ⋂ ij ∈ s.sigma t, u ij.1 ij.2 = ⋂ i ∈ s, ⋂ j : t i, u i j := by aesop
+
 end Sigma
 
 section SigmaLift
