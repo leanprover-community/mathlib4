@@ -13,7 +13,7 @@ import Mathlib.Logic.Equiv.Defs
 
 ```
 def Functor.mapEquiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
-  α ≃ β → f α ≃ f β
+    α ≃ β → f α ≃ f β
 ```
 
 -/

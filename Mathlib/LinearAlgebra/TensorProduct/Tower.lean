@@ -45,6 +45,8 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
+suppress_compilation
+
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -303,6 +305,9 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (LinearMap.ext <| one_smul _)
     (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
+
 variable {R M}
 
 @[simp]
@@ -418,7 +423,7 @@ section tensorTensorTensorComm
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
 def tensorTensorTensorComm :
-  (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+    (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A A (M ⊗[R] N) P Q).symm
   ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
   ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q

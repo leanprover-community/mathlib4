@@ -6,7 +6,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Associated
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
@@ -159,6 +158,9 @@ theorem span_eq : span (I : Set α) = I :=
 theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
   (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
 #align ideal.span_singleton_one Ideal.span_singleton_one
+
+theorem isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
+  simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
 
 theorem mem_span_insert {s : Set α} {x y} :
     x ∈ span (insert y s) ↔ ∃ a, ∃ z ∈ span s, x = a * y + z :=

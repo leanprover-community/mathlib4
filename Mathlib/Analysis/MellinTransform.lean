@@ -29,7 +29,7 @@ open MeasureTheory Set Filter Asymptotics TopologicalSpace
 
 namespace Complex
 
--- Porting note: move this to `analysis.special_functions.pow.complex`
+-- Porting note: move this to `Mathlib.Analysis.SpecialFunctions.Pow.Complex`
 theorem cpow_mul_ofReal_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (z : ℂ) :
     (x : ℂ) ^ (↑y * z) = (↑(x ^ y) : ℂ) ^ z := by
   rw [cpow_mul, ofReal_cpow hx]

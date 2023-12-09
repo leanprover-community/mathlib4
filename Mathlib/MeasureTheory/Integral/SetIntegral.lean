@@ -45,7 +45,7 @@ We provide the following notations for expressing the integral of a function on 
 * `∫ a in s, f a ∂μ` is `MeasureTheory.integral (μ.restrict s) f`
 * `∫ a in s, f a` is `∫ a in s, f a ∂volume`
 
-Note that the set notations are defined in the file `MeasureTheory/Integral/Bochner`,
+Note that the set notations are defined in the file `MeasureTheory/Integral/Bochner.lean`,
 but we reference them here because all theorems about set integrals are in this file.
 
 -/
@@ -402,6 +402,36 @@ theorem set_integral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s →
     ∫ x in s, f x ∂μ = ∫ x, f x ∂μ :=
   set_integral_eq_integral_of_ae_compl_eq_zero (eventually_of_forall h)
 #align measure_theory.set_integral_eq_integral_of_forall_compl_eq_zero MeasureTheory.set_integral_eq_integral_of_forall_compl_eq_zero
+
+lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem {E : Type*} [MeasurableSpace E]
+    [MeasurableSingletonClass E] {f : α → E} (c : E) {s : Set α}
+    (f_mble : NullMeasurable f (μ.restrict s)) :
+    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
+  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
+             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
+  rw [Measure.restrict_apply₀]
+  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
+  · apply NullMeasurableSet.compl
+    convert f_mble (MeasurableSet.singleton c)
+
+lemma ae_restrict_eq_const_iff_ae_eq_const_of_mem' {E : Type*} (c : E) (f : α → E) {s : Set α}
+    (s_mble : MeasurableSet s) :
+    f =ᵐ[Measure.restrict μ s] (fun _ ↦ c) ↔ ∀ᵐ x ∂μ, x ∈ s → f x = c := by
+  simp only [Measure.ae, MeasurableSet.compl_iff, EventuallyEq, Filter.Eventually,
+             Pi.zero_apply, Filter.mem_mk, mem_setOf_eq]
+  rw [Measure.restrict_apply_eq_zero']
+  · constructor <;> intro h <;> rw [← h] <;> congr <;> ext x <;> aesop
+  · exact s_mble
+
+/-- If a function equals zero almost everywhere w.r.t. restriction of the measure to `sᶜ`, then its
+integral on `s` coincides with its integral on the whole space. -/
+lemma set_integral_eq_integral_of_ae_restrict_eq_zero (hs : f =ᵐ[μ.restrict sᶜ] 0) :
+    ∫ ω in s, f ω ∂μ = ∫ ω, f ω ∂μ := by
+  borelize E
+  refine set_integral_eq_integral_of_ae_compl_eq_zero ?_
+  have f_mble : NullMeasurable f (μ.restrict sᶜ) :=
+    NullMeasurable.congr measurable_const.nullMeasurable hs.symm
+  simpa only [mem_compl_iff] using (ae_restrict_eq_const_iff_ae_eq_const_of_mem 0 f_mble).mp hs
 
 theorem set_integral_neg_eq_set_integral_nonpos [LinearOrder E] {f : α → E}
     (hf : AEStronglyMeasurable f μ) :
@@ -955,10 +985,12 @@ open MeasureTheory Asymptotics Metric
 
 variable {ι : Type*} [NormedAddCommGroup E]
 
-/-- Fundamental theorem of calculus for set integrals: if `μ` is a measure that is finite at a
-filter `l` and `f` is a measurable function that has a finite limit `b` at `l ⊓ μ.ae`, then `∫ x in
-s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that `s i` tends to `l.small_sets`
-along `li`. Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
+/-- Fundamental theorem of calculus for set integrals:
+if `μ` is a measure that is finite at a filter `l` and
+`f` is a measurable function that has a finite limit `b` at `l ⊓ μ.ae`, then
+`∫ x in s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that
+`s i` tends to `l.smallSets` along `li`.
+Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
 
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
@@ -970,9 +1002,10 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae [NormedSpace ℝ E] [Com
     (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
     (fun i => (∫ x in s i, f x ∂μ) - m i • b) =o[li] m := by
-  suffices : (fun s => (∫ x in s, f x ∂μ) - (μ s).toReal • b) =o[l.smallSets] fun s => (μ s).toReal
-  exact (this.comp_tendsto hs).congr'
-    (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
+  suffices
+      (fun s => (∫ x in s, f x ∂μ) - (μ s).toReal • b) =o[l.smallSets] fun s => (μ s).toReal from
+    (this.comp_tendsto hs).congr'
+      (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
   refine' isLittleO_iff.2 fun ε ε₀ => _
   have : ∀ᶠ s in l.smallSets, ∀ᶠ x in μ.ae, x ∈ s → f x ∈ closedBall b ε :=
     eventually_smallSets_eventually.2 (h.eventually <| closedBall_mem_nhds _ ε₀)

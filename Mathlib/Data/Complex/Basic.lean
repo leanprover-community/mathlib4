@@ -1038,7 +1038,7 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 #align complex.abs_conj Complex.abs_conj
 
-@[simp]
+-- Porting note: @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _

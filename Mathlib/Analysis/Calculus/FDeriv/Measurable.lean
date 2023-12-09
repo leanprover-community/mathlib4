@@ -167,7 +167,7 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
     ∃ R > 0, ∀ r ∈ Ioo (0 : ℝ) R, x ∈ A f (fderiv 𝕜 f x) r ε := by
   have := hx.hasFDerivAt
   simp only [HasFDerivAt, HasFDerivAtFilter, isLittleO_iff] at this
-  let δ := (ε/2)/2
+  let δ := (ε / 2) / 2
   have hδ : 0 < δ := by positivity
   rcases eventually_nhds_iff_ball.1 (this hδ) with ⟨R, R_pos, hR⟩
   refine' ⟨R, R_pos, fun r hr => _⟩
@@ -182,15 +182,13 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
     _ ≤ δ * ‖z - x‖ + δ * ‖y - x‖ :=
       (add_le_add (hR _ (lt_trans (mem_ball.1 hz) hr.2)) (hR _ (lt_trans (mem_ball.1 hy) hr.2)))
     _ ≤ δ * r + δ * r := by rw [mem_ball_iff_norm] at hz hy; gcongr
-    _ = (ε /2) * r := by ring
+    _ = (ε / 2) * r := by ring
     _ < ε * r := by gcongr; exacts [hr.1, half_lt_self hε]
 #align fderiv_measurable_aux.mem_A_of_differentiable FDerivMeasurableAux.mem_A_of_differentiable
 
 theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0 < ε) (hr : 0 < r) {x : E}
     {L₁ L₂ : E →L[𝕜] F} (h₁ : x ∈ A f L₁ r ε) (h₂ : x ∈ A f L₂ r ε) : ‖L₁ - L₂‖ ≤ 4 * ‖c‖ * ε := by
-  have : 0 ≤ 4 * ‖c‖ * ε :=
-    mul_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 4) (norm_nonneg _)) hε.le
-  refine' op_norm_le_of_shell (half_pos hr) this hc _
+  refine' op_norm_le_of_shell (half_pos hr) (by positivity) hc _
   intro y ley ylt
   rw [div_div, div_le_iff' (mul_pos (by norm_num : (0 : ℝ) < 2) (zero_lt_one.trans hc))] at ley
   calc
@@ -883,7 +881,10 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,
       ‖f a z - f a y - (L z - L y)‖ ≤ b := by
     have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by
-      continuity
+      -- `continuity` took several seconds to solve this.
+      refine continuous_norm.comp' <| Continuous.sub ?_ ?_
+      · exact ha.comp' continuous_snd |>.sub <| ha.comp' continuous_fst
+      · exact L.continuous.comp' continuous_snd |>.sub <| L.continuous.comp' continuous_fst
     have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by simp; linarith
     rcases ((isCompact_closedBall x t).prod (isCompact_closedBall x t)).exists_isMaxOn
       C B.continuousOn with ⟨p, pt, hp⟩
@@ -892,13 +893,16 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
       hr p.1 (pt.1.trans_lt htr') p.2 (pt.2.trans_lt htr'), fun y hy z hz ↦ ?_⟩
     have D : (y, z) ∈ closedBall x t ×ˢ closedBall x t := mem_prod.2 ⟨hy, hz⟩
     exact hp D
-  obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ b + 2 * ε < s * r := ⟨(s * r - b)/3, by linarith, by linarith⟩
+  obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ b + 2 * ε < s * r :=
+    ⟨(s * r - b) / 3, by linarith, by linarith⟩
   obtain ⟨u, u_open, au, hu⟩ : ∃ u, IsOpen u ∧ a ∈ u ∧ ∀ (p : α × E),
       p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
-    have C : Continuous (fun (p : α × E) ↦ f a p.2) := by continuity
+    have C : Continuous (fun (p : α × E) ↦ f a p.2) :=
+      -- `continuity` took several seconds to solve this.
+      ha.comp' continuous_snd
     have D : ({a} ×ˢ closedBall x t).EqOn f.uncurry (fun p ↦ f a p.2) := by
       rintro ⟨b, y⟩ ⟨hb, -⟩
-      simp at hb
+      simp only [mem_singleton_iff] at hb
       simp [hb]
     obtain ⟨v, v_open, sub_v, hv⟩ : ∃ v, IsOpen v ∧ {a} ×ˢ closedBall x t ⊆ v ∧
         ∀ p ∈ v, dist (Function.uncurry f p) (f a p.2) < ε :=

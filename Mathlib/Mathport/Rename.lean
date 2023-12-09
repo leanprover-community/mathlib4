@@ -230,10 +230,10 @@ structure ImportState where
 
 /-- This extension stores the lookup data generated from `#align_import` commands. -/
 initialize renameImportExtension :
-    PersistentEnvExtension (Name × ImportEntry) ImportEntry ImportState ←
+    PersistentEnvExtension (Name × ImportEntry) (Name × ImportEntry) ImportState ←
   registerPersistentEnvExtension {
     mkInitial := pure {}
-    addEntryFn := fun s e => { s with entries := e :: s.entries }
+    addEntryFn := fun s (mod4, e) => { s with mod4, entries := e :: s.entries }
     addImportedFn := fun extern => return { mod4 := (← read).env.header.mainModule, extern }
     exportEntriesFn := fun s => s.entries.reverse.foldl (fun a b => a.push (s.mod4, b)) #[]
   }
@@ -253,5 +253,6 @@ syntax (name := alignImport) "#align_import " ident (" from " str "@" str)? : co
         throwErrorAt sha "must be a full sha"
       else
         pure (repo.getString, shaStr)
-    modifyEnv (renameImportExtension.addEntry · { mod3 := mod3.getId, origin })
+    modifyEnv fun env =>
+      renameImportExtension.addEntry env (env.header.mainModule, { mod3 := mod3.getId, origin })
   | _ => throwUnsupportedSyntax

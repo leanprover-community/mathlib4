@@ -150,7 +150,7 @@ section Group
 
 variable {G : Type*} [Group G] [MulAction G X]
 
-noncomputable instance : Groupoid (ActionCategory G X) :=
+instance : Groupoid (ActionCategory G X) :=
   CategoryTheory.groupoidOfElements _
 
 /-- Any subgroup of `G` is a vertex group in its action groupoid. -/

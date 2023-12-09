@@ -109,9 +109,9 @@ class IsFraisse : Prop where
   FG : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M
   is_equiv_invariant : ∀ M N : Bundled.{w} L.Structure, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K)
   is_essentially_countable : (Quotient.mk' '' K).Countable
-  Hereditary : Hereditary K
-  JointEmbedding : JointEmbedding K
-  Amalgamation : Amalgamation K
+  hereditary : Hereditary K
+  jointEmbedding : JointEmbedding K
+  amalgamation : Amalgamation K
 #align first_order.language.is_fraisse FirstOrder.Language.IsFraisse
 
 variable {K} (L) (M : Type w) [Structure L M]
@@ -139,12 +139,12 @@ theorem Structure.FG.mem_age_of_equiv {M N : Bundled L.Structure} (h : Structure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fg.mem_age_of_equiv FirstOrder.Language.Structure.FG.mem_age_of_equiv
 
-theorem Hereditary.is_equiv_invariant_of_fG (h : Hereditary K)
+theorem Hereditary.is_equiv_invariant_of_fg (h : Hereditary K)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (M N : Bundled.{w} L.Structure)
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
-  ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn), fun NK =>
-    h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
-#align first_order.language.hereditary.is_equiv_invariant_of_fg FirstOrder.Language.Hereditary.is_equiv_invariant_of_fG
+  ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn),
+   fun NK => h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
+#align first_order.language.hereditary.is_equiv_invariant_of_fg FirstOrder.Language.Hereditary.is_equiv_invariant_of_fg
 
 variable (M)
 

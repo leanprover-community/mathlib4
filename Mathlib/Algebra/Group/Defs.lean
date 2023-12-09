@@ -338,7 +338,7 @@ lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigro
 `AddCommSemigroup G` that satisfies `IsLeftCancelAdd G` also satisfies
 `IsCancelAdd G`."]
 lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
-  [IsLeftCancelMul G] : IsCancelMul G :=
+    [IsLeftCancelMul G] : IsCancelMul G :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul G with }
 #align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommSemigroup.IsLeftCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsCancelAdd

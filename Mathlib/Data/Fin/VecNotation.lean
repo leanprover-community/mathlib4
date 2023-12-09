@@ -61,7 +61,14 @@ def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
   Fin.cons h t
 #align matrix.vec_cons Matrix.vecCons
 
-/-- Construct a vector `Fin n → α` using `Matrix.vecEmpty` and `Matrix.vecCons`. -/
+/-- `![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and
+`Matrix.vecCons`.
+
+For instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.
+
+Note that this should not be used as syntax for `Matrix` as it generates a term with the wrong type.
+The `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used instead.
+-/
 syntax (name := vecNotation) "![" term,* "]" : term
 
 macro_rules

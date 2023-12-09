@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.LinearAlgebra.TensorProduct
@@ -17,7 +18,6 @@ We move a few basic statements about algebras out of `Algebra.Algebra.Basic`,
 in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
-
 
 open TensorProduct Module
 
@@ -36,7 +36,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 #align linear_map.mul LinearMap.mul
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
-def mul' : A ⊗[R] A →ₗ[R] A :=
+noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 #align linear_map.mul' LinearMap.mul'
 
@@ -153,7 +153,18 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+variable {R A B} in
+/-- A `LinearMap` preserves multiplication if pre- and post- composition with `LinearMap.mul` are
+equivalent. By converting the statement into an equality of `LinearMap`s, this lemma allows various
+specialized `ext` lemmas about `→ₗ[R]` to then be applied.
+
+This is the `LinearMap` version of `AddMonoidHom.map_mul_iff`. -/
+theorem map_mul_iff (f : A →ₗ[R] B) :
+    (∀ x y, f (x * y) = f x * f y) ↔
+      (LinearMap.mul R A).compr₂ f = (LinearMap.mul R B ∘ₗ f).compl₂ f :=
+  Iff.symm LinearMap.ext_iff₂
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.

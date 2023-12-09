@@ -26,8 +26,6 @@ open Polynomial
 open PowerBasis
 
 
--- Porting note:
-
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :

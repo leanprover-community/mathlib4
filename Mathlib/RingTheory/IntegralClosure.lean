@@ -848,7 +848,7 @@ namespace IsIntegralClosure
 
 -- Porting note: added to work around missing infer kind support
 theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
-  [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
+    [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
   algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]

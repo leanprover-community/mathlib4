@@ -5,7 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Clopen
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -232,7 +233,7 @@ lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
   rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
-  (_ : @AlexandrovDiscrete α t₂) :
+    (_ : @AlexandrovDiscrete α t₂) :
   @AlexandrovDiscrete α (t₁ ⊔ t₂) :=
 @AlexandrovDiscrete.mk α (t₁ ⊔ t₂) λ _S hS ↦
   ⟨@isOpen_sInter _ t₁ _ _ λ _s hs ↦ (hS _ hs).1, isOpen_sInter λ _s hs ↦ (hS _ hs).2⟩

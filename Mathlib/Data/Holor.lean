@@ -363,7 +363,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
-      intro x s(h_x_notin_s : x ∉ s)ih h_cprank
+      intro x s (h_x_notin_s : x ∉ s) ih h_cprank
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]

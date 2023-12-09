@@ -21,9 +21,21 @@ open List
 def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
   ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
 
+/-- Statement of Fermat's Last Theorem for a given exponent. -/
+def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
+
 /-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial integer solution
 when `n ≥ 3`. -/
-def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremWith ℕ n
+def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
+
+lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
+  fun _ _ _ _ _ _ ↦ by norm_num
+
+lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
+  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
+  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
 
@@ -33,6 +45,10 @@ lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α 
   obtain ⟨k, rfl⟩ := hmn
   simp_rw [pow_mul']
   refine hm _ _ _ ?_ ?_ ?_ <;> exact pow_ne_zero _ ‹_›
+
+lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
+    FermatLastTheoremFor n := by
+  exact FermatLastTheoremWith.mono hmn hm
 
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
@@ -94,3 +110,12 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
   · rintro h a b c
     exact_mod_cast h a b c
   tfae_finish
+
+lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℕ n :=
+  Iff.rfl
+
+lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+
+lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2

@@ -441,11 +441,11 @@ end WeightedHomogeneousComponent
 
 end AddCommMonoid
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [CanonicallyOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- If `M` is a `CanonicallyOrderedAddMonoid`, then the `weightedHomogeneousComponent`
+/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
 @[simp]
 theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
@@ -463,6 +463,6 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
     exact ⟨i, hi, hw i⟩
 #align mv_polynomial.weighted_homogeneous_component_zero MvPolynomial.weightedHomogeneousComponent_zero
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 end MvPolynomial

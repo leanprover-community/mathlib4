@@ -23,7 +23,7 @@ Main definitions:
 
 ## TODO
 
-- definition of conductor
+- properties of the conductor
 
 ## Tags
 
@@ -73,5 +73,45 @@ lemma changeLevel_self_toUnitHom : (changeLevel (dvd_refl n) χ).toUnitHom = χ.
 lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
     changeLevel (dvd_trans hm hd) χ = changeLevel hd (changeLevel hm χ) := by
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
+
+lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
+    (changeLevel hm χ) a = χ a := by
+  simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
+      toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
+
+/-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
+`χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
+def FactorsThrough (d : ℕ) : Prop :=
+  ∃ (h : d ∣ n) (χ₀ : DirichletCharacter R d), χ = changeLevel h χ₀
+
+namespace FactorsThrough
+
+/-- The fact that `d` divides `n` when `χ` factors through a Dirichlet character at level `d` -/
+lemma dvd {d : ℕ} (h : FactorsThrough χ d) : d ∣ n := h.1
+
+/-- The Dirichlet character at level `d` through which `χ` factors -/
+noncomputable
+def χ₀ {d : ℕ} (h : FactorsThrough χ d) : DirichletCharacter R d := Classical.choose h.2
+
+/-- The fact that `χ` factors through `χ₀` of level `d` -/
+lemma eq_changeLevel {d : ℕ} (h : FactorsThrough χ d) : χ = changeLevel h.dvd h.χ₀ :=
+  Classical.choose_spec h.2
+
+lemma same_level : FactorsThrough χ n := ⟨dvd_refl n, χ, (changeLevel_self χ).symm⟩
+
+end FactorsThrough
+
+/-- The set of natural numbers for which a Dirichlet character is periodic. -/
+def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
+
+lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ FactorsThrough χ x := Iff.refl _
+
+lemma level_mem_conductorSet : n ∈ conductorSet χ := FactorsThrough.same_level χ
+
+lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := hx.dvd
+
+/-- The minimum natural number `n` for which a Dirichlet character is periodic.
+The Dirichlet character `χ` can then alternatively be reformulated on `ℤ/nℤ`. -/
+noncomputable def conductor : ℕ := sInf (conductorSet χ)
 
 end DirichletCharacter

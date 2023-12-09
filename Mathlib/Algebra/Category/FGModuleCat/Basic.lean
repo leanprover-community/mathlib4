@@ -220,7 +220,8 @@ instance closedPredicateModuleFinite :
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
   -- Porting note: was `infer_instance`
-  exact MonoidalCategory.fullMonoidalClosedSubcategory _
+  exact MonoidalCategory.fullMonoidalClosedSubcategory
+    (fun V : ModuleCat.{u} K => Module.Finite K V)
 
 variable (V W : FGModuleCat K)
 

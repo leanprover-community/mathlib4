@@ -78,9 +78,12 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 #align real.is_topological_basis_Ioo_rat Real.isTopologicalBasis_Ioo_rat
 
 @[simp]
+theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
+  simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
+
+@[simp]
 theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
-  simp only [← comap_dist_right_atTop_eq_cocompact (0 : ℝ), Real.dist_eq, sub_zero,
-    comap_abs_atTop]
+  rw [← cobounded_eq_cocompact, cobounded_eq]
 #align real.cocompact_eq Real.cocompact_eq
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings

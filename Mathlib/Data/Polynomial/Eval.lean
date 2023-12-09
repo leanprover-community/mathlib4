@@ -698,6 +698,9 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     simp (config := { contextual := true })
 #align polynomial.coeff_comp_degree_mul_degree Polynomial.coeff_comp_degree_mul_degree
 
+@[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
+    (∑ i in s, p i).comp q = ∑ i in s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
+
 end Comp
 
 section Map

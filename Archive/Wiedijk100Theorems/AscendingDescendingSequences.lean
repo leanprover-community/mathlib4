@@ -24,7 +24,7 @@ sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Er
 -/
 
 
-variable {α : Type _} [LinearOrder α] {β : Type _}
+variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
 

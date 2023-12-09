@@ -92,7 +92,7 @@ theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
 #align nat.fib_add_two Nat.fib_add_two
 
 lemma fib_add_one : ∀ {n}, n ≠ 0 → fib (n + 1) = fib (n - 1) + fib n
-| _n + 1, _ => fib_add_two
+  | _n + 1, _ => fib_add_two
 
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
@@ -128,12 +128,12 @@ theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
 
 lemma fib_strictMonoOn : StrictMonoOn fib (Set.Ici 2)
-| _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono $ lt_of_add_lt_add_right hmn
+  | _m + 2, _, _n + 2, _, hmn => fib_add_two_strictMono $ lt_of_add_lt_add_right hmn
 
 lemma fib_lt_fib {m : ℕ} (hm : 2 ≤ m) : ∀ {n}, fib m < fib n ↔ m < n
-| 0 => by simp [hm]
-| 1 => by simp [hm]
-| n + 2 => fib_strictMonoOn.lt_iff_lt hm $ by simp
+  | 0 => by simp [hm]
+  | 1 => by simp [hm]
+  | n + 2 => fib_strictMonoOn.lt_iff_lt hm $ by simp
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction' five_le_n with n five_le_n IH
@@ -147,12 +147,12 @@ theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
 #align nat.le_fib_self Nat.le_fib_self
 
 lemma le_fib_add_one : ∀ n, n ≤ fib n + 1
-| 0 => zero_le_one
-| 1 => one_le_two
-| 2 => le_rfl
-| 3 => le_rfl
-| 4 => le_rfl
-| _n + 5 => (le_fib_self le_add_self).trans $ le_succ _
+  | 0 => zero_le_one
+  | 1 => one_le_two
+  | 2 => le_rfl
+  | 3 => le_rfl
+  | 4 => le_rfl
+  | _n + 5 => (le_fib_self le_add_self).trans $ le_succ _
 
 /-- Subsequent Fibonacci numbers are coprime,
   see https://proofwiki.org/wiki/Consecutive_Fibonacci_Numbers_are_Coprime -/

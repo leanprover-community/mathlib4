@@ -109,6 +109,67 @@ notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
 /-- Indexed infimum. -/
 notation3 "⨅ "(...)", "r:60:(scoped f => iInf f) => r
 
+section delaborators
+
+open Lean Lean.PrettyPrinter.Delaborator
+
+/-- Delaborator for indexed supremum. -/
+@[delab app.iSup]
+def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.isLambda do failure
+  let prop ← Meta.isProp ι
+  let dep := f.bindingBody!.hasLooseBVar 0
+  let ppTypes ← getPPOption getPPFunBinderTypes
+  let stx ← SubExpr.withAppArg do
+    let dom ← SubExpr.withBindingDomain delab
+    withBindingBodyUnusedName $ fun x => do
+      let x : TSyntax `ident := .mk x
+      let body ← delab
+      if prop && !dep then
+        `(⨆ (_ : $dom), $body)
+      else if prop || ppTypes then
+        `(⨆ ($x:ident : $dom), $body)
+      else
+        `(⨆ $x:ident, $body)
+  -- Cute binders
+  let stx : Term ←
+    match stx with
+    | `(⨆ $x:ident, ⨆ (_ : $y:ident ∈ $s), $body)
+    | `(⨆ ($x:ident : $_), ⨆ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⨆ $x:ident ∈ $s, $body) else pure stx
+    | _ => pure stx
+  return stx
+
+/-- Delaborator for indexed infimum. -/
+@[delab app.iInf]
+def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.isLambda do failure
+  let prop ← Meta.isProp ι
+  let dep := f.bindingBody!.hasLooseBVar 0
+  let ppTypes ← getPPOption getPPFunBinderTypes
+  let stx ← SubExpr.withAppArg do
+    let dom ← SubExpr.withBindingDomain delab
+    withBindingBodyUnusedName $ fun x => do
+      let x : TSyntax `ident := .mk x
+      let body ← delab
+      if prop && !dep then
+        `(⨅ (_ : $dom), $body)
+      else if prop || ppTypes then
+        `(⨅ ($x:ident : $dom), $body)
+      else
+        `(⨅ $x:ident, $body)
+  -- Cute binders
+  let stx : Term ←
+    match stx with
+    | `(⨅ $x:ident, ⨅ (_ : $y:ident ∈ $s), $body)
+    | `(⨅ ($x:ident : $_), ⨅ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⨅ $x:ident ∈ $s, $body) else pure stx
+    | _ => pure stx
+  return stx
+end delaborators
+
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 

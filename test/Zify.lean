@@ -45,3 +45,8 @@ example (a b c : ℕ) (h : a + b ≠ c) : True := by
   zify at h
   guard_hyp h : (a + b : ℤ) ≠ c
   trivial
+
+example (a b c : ℕ) (h : a - b ∣ c) (h2 : b ≤ a) : True := by
+  zify [h2] at h
+  guard_hyp h : (a : ℤ) - b ∣ c
+  trivial

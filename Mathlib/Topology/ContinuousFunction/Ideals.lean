@@ -293,7 +293,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   obtain ⟨g', hI', hgt'⟩ := this
   obtain ⟨c, hc, hgc'⟩ : ∃ (c : _) (_ : 0 < c), ∀ y : X, y ∈ t → c ≤ g' y :=
     t.eq_empty_or_nonempty.elim
-      (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy )⟩) fun ht' =>
+      (fun ht' => ⟨1, zero_lt_one, fun y hy => False.elim (by rwa [ht'] at hy)⟩) fun ht' =>
       let ⟨x, hx, hx'⟩ := ht.isCompact.exists_forall_le ht' (map_continuous g').continuousOn
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc

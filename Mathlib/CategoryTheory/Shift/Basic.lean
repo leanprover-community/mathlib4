@@ -170,7 +170,7 @@ def shiftFunctorAdd (i j : A) : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ 
 
 /-- When `k = i + j`, shifting by `k` is the same as shifting by `i` and then shifting by `j`. -/
 def shiftFunctorAdd' (i j k : A) (h : i + j = k) :
-  shiftFunctor C k ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
+    shiftFunctor C k ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
   eqToIso (by rw [h]) ≪≫ shiftFunctorAdd C i j
 #align category_theory.shift_functor_add' CategoryTheory.shiftFunctorAdd'
 
@@ -714,7 +714,7 @@ lemma map_hasShiftOfFullyFaithful_add_hom_app (a b : A) (X : C) :
 lemma map_hasShiftOfFullyFaithful_add_inv_app (a b : A) (X : C) :
     F.map ((hasShiftOfFullyFaithful_add F s i a b).inv.app X) =
       (i b).hom.app ((s a).obj X) ≫ ((i a).hom.app X)⟦b⟧' ≫
-        (shiftFunctorAdd D a b).inv.app (F.obj X) ≫ (i (a + b)).inv.app X  := by
+        (shiftFunctorAdd D a b).inv.app (F.obj X) ≫ (i (a + b)).inv.app X := by
   dsimp [hasShiftOfFullyFaithful_add]
   simp
 #align category_theory.map_has_shift_of_fully_faithful_add_inv_app CategoryTheory.map_hasShiftOfFullyFaithful_add_inv_app
@@ -749,7 +749,7 @@ def hasShiftOfFullyFaithful :
         congr 1
         erw [(i n).hom.naturality]
         dsimp
-        simp )
+        simp)
       add_zero_hom_app := fun n X => F.map_injective (by
         have := dcongr_arg (fun a => (i a).hom.app X) (add_zero n)
         simp [this, ← NatTrans.naturality_assoc, eqToHom_map,

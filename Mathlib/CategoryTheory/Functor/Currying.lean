@@ -88,7 +88,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
     (NatIso.ofComponents fun F =>
         NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _)
     (NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
-      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [←F.map_comp]; simp ))
+      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [←F.map_comp]; simp))
 #align category_theory.currying CategoryTheory.currying
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/

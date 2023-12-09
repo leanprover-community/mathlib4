@@ -581,28 +581,17 @@ theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
   prime_iff
 #align nat.irreducible_iff_prime Nat.irreducible_iff_prime
 
-theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p ∣ m := by
-  induction' n with n IH
-  · exact pp.not_dvd_one.elim h
-  · rw [pow_succ] at h
-    exact (pp.dvd_mul.1 h).elim IH id
+theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p ∣ m :=
+  pp.prime.dvd_of_dvd_pow h
 #align nat.prime.dvd_of_dvd_pow Nat.Prime.dvd_of_dvd_pow
 
-theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime := fun hp =>
-  (hp.eq_one_or_self_of_dvd x <| dvd_trans ⟨x, sq _⟩ (pow_dvd_pow _ hn)).elim
-    (fun hx1 => hp.ne_one <| hx1.symm ▸ one_pow _) fun hxn =>
-    lt_irrefl x <|
-      calc
-        x = x ^ 1 := (pow_one _).symm
-        _ < x ^ n := Nat.pow_right_strictMono (hxn.symm ▸ hp.two_le) hn
-        _ = x := hxn.symm
-#align nat.prime.pow_not_prime Nat.Prime.pow_not_prime
-
-theorem Prime.pow_not_prime' {x : ℕ} : ∀ {n : ℕ}, n ≠ 1 → ¬(x ^ n).Prime
-  | 0 => fun _ => not_prime_one
-  | 1 => fun h => (h rfl).elim
-  | _ + 2 => fun _ => Prime.pow_not_prime le_add_self
+theorem Prime.pow_not_prime' {x n : ℕ} (hn : n ≠ 1) : ¬(x ^ n).Prime :=
+  pow_not_prime hn ∘ Nat.Prime.prime
 #align nat.prime.pow_not_prime' Nat.Prime.pow_not_prime'
+
+theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime :=
+  pow_not_prime' ((two_le_iff _).mp hn).2
+#align nat.prime.pow_not_prime Nat.Prime.pow_not_prime
 
 theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
   not_imp_not.mp Prime.pow_not_prime' h
@@ -630,29 +619,29 @@ theorem Prime.pow_minFac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).min
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
     x * y = p ^ 2 ↔ x = p ∧ y = p := by
-    refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
-    have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
-    -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
-    suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
-      obtain hx | hy := hp.dvd_mul.1 pdvdxy <;>
-        [skip; rw [And.comm]] <;>
-        [skip; rw [mul_comm] at h pdvdxy] <;>
-        apply this <;>
-        assumption
-    rintro x y hx hy h ⟨a, ha⟩
-    have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
-    obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
-    · subst ha1
-      rw [mul_one] at ha
-      subst ha
-      simp only [sq, mul_right_inj' hp.ne_zero] at h
-      subst h
-      exact ⟨rfl, rfl⟩
-    · refine' (hy ?_).elim
-      subst hap
-      subst ha
-      rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
-      exact h
+  refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
+  have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
+  -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
+  suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
+    obtain hx | hy := hp.dvd_mul.1 pdvdxy <;>
+      [skip; rw [And.comm]] <;>
+      [skip; rw [mul_comm] at h pdvdxy] <;>
+      apply this <;>
+      assumption
+  rintro x y hx hy h ⟨a, ha⟩
+  have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
+  obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
+  · subst ha1
+    rw [mul_one] at ha
+    subst ha
+    simp only [sq, mul_right_inj' hp.ne_zero] at h
+    subst h
+    exact ⟨rfl, rfl⟩
+  · refine' (hy ?_).elim
+    subst hap
+    subst ha
+    rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
+    exact h
 #align nat.prime.mul_eq_prime_sq_iff Nat.Prime.mul_eq_prime_sq_iff
 
 theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤ n

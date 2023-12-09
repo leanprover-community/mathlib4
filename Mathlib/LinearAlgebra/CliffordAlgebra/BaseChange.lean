@@ -61,32 +61,19 @@ module. -/
 -- `noncomputable` is a performance workaround for mathlib4#7103
 noncomputable def ofBaseChange (Q : QuadraticForm R V) :
     A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
-  Algebra.TensorProduct.algHomOfLinearMapTensorProduct
-    (TensorProduct.AlgebraTensorModule.lift <|
-      let f : A →ₗ[A] _ := (Algebra.lsmul A A (CliffordAlgebra (Q.baseChange A))).toLinearMap
-      LinearMap.flip <| LinearMap.flip (({
-        toFun := fun f : CliffordAlgebra (Q.baseChange A) →ₗ[A] CliffordAlgebra (Q.baseChange A) =>
-          LinearMap.restrictScalars R f
-        map_add' := fun f g => LinearMap.ext fun x => rfl
-        map_smul' := fun (c : A) g => LinearMap.ext fun x => rfl
-      } : _ →ₗ[A] _) ∘ₗ f) ∘ₗ (ofBaseChangeAux A Q).toLinearMap)
-    (fun z₁ z₂ b₁ b₂ =>
-      show (z₁ * z₂) • ofBaseChangeAux A Q (b₁ * b₂)
-        = z₁ • ofBaseChangeAux A Q b₁ * z₂ • ofBaseChangeAux A Q b₂
-      by rw [map_mul, smul_mul_smul])
-    (fun r =>
-      show r • ofBaseChangeAux A Q 1 = algebraMap A (CliffordAlgebra (Q.baseChange A)) r
-      by rw [map_one, Algebra.algebraMap_eq_smul_one])
+  Algebra.TensorProduct.lift (Algebra.ofId _ _) (ofBaseChangeAux A Q)
+    fun _a _x => Algebra.commutes _ _
 
 @[simp] theorem ofBaseChange_tmul_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     ofBaseChange A Q (z ⊗ₜ ι Q v) = ι (Q.baseChange A) (z ⊗ₜ v) := by
-  show z • ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (z ⊗ₜ[R] v)
-  rw [ofBaseChangeAux_ι, ←map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  show algebraMap _ _ z * ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (z ⊗ₜ[R] v)
+  rw [ofBaseChangeAux_ι, ←Algebra.smul_def, ←map_smul, TensorProduct.smul_tmul', smul_eq_mul,
+    mul_one]
 
 @[simp] theorem ofBaseChange_tmul_one (Q : QuadraticForm R V) (z : A) :
     ofBaseChange A Q (z ⊗ₜ 1) = algebraMap _ _ z := by
-  show z • ofBaseChangeAux A Q 1 = _
-  rw [map_one, ←Algebra.algebraMap_eq_smul_one]
+  show algebraMap _ _ z * ofBaseChangeAux A Q 1 = _
+  rw [map_one, mul_one]
 
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
@@ -159,7 +146,9 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
   rw [reverse, ←AlgEquiv.toLinearMap, ←AlgEquiv.toLinearEquiv_toLinearMap,
     AlgEquiv.toLinearEquiv_toOpposite]
-  simp
+  dsimp
+  -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?
+  rw [LinearEquiv.self_trans_symm]
   rfl
 
 attribute [ext] TensorProduct.ext

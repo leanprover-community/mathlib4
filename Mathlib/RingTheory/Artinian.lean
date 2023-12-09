@@ -39,9 +39,7 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 -/
 
-open Set
-
-open BigOperators Pointwise
+open Set Filter BigOperators Pointwise
 
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/
@@ -207,41 +205,80 @@ theorem monotone_stabilizes (f : ℕ →o (Submodule R M)ᵒᵈ) : ∃ n, ∀ m,
   monotone_stabilizes_iff_artinian.mpr ‹_› f
 #align is_artinian.monotone_stabilizes IsArtinian.monotone_stabilizes
 
+theorem eventuallyConst_of_isArtinian (f : ℕ →o (Submodule R M)ᵒᵈ) :
+    atTop.EventuallyConst f := by
+  simp_rw [eventuallyConst_atTop, eq_comm]
+  exact monotone_stabilizes f
+
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
 theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) → P I) (I : Submodule R M) :
     P I :=
   (wellFounded_submodule_lt R M).recursion I hgt
 #align is_artinian.induction IsArtinian.induction
 
-/-- For any endomorphism of an Artinian module, there is some nontrivial iterate
-with disjoint kernel and range. -/
-theorem exists_endomorphism_iterate_ker_sup_range_eq_top (f : M →ₗ[R] M) :
-    ∃ n : ℕ, n ≠ 0 ∧ LinearMap.ker (f ^ n) ⊔ LinearMap.range (f ^ n) = ⊤ := by
-  obtain ⟨n, w⟩ :=
-    monotone_stabilizes (f.iterateRange.comp ⟨fun n => n + 1, fun n m w => by linarith⟩)
-  specialize w (n + 1 + n) (by linarith)
-  dsimp at w
-  refine' ⟨n + 1, Nat.succ_ne_zero _, _⟩
-  simp_rw [eq_top_iff', mem_sup]
+end IsArtinian
+
+namespace LinearMap
+
+variable [IsArtinian R M]
+
+/-- For any endomorphism of an Artinian module, any sufficiently high iterate has codisjoint kernel
+and range. -/
+theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, Codisjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
+    monotone_stabilizes f.iterateRange
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr ?_⟩
+  simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
   intro x
-  have : (f ^ (n + 1)) x ∈ LinearMap.range (f ^ (n + 1 + n + 1)) := by
-    rw [← w]
-    exact mem_range_self _
-  rcases this with ⟨y, hy⟩
-  use x - (f ^ (n + 1)) y
-  constructor
-  · rw [LinearMap.mem_ker, LinearMap.map_sub, ← hy, sub_eq_zero, pow_add]
-    simp [pow_add]
-  · use (f ^ (n + 1)) y
-    simp
-#align is_artinian.exists_endomorphism_iterate_ker_sup_range_eq_top IsArtinian.exists_endomorphism_iterate_ker_sup_range_eq_top
+  suffices : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
+  · obtain ⟨y, hy⟩ := this; exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
+  simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
+    ← f.pow_apply m, ← mem_range, ← hn _ (n.le_add_left m), hn _ hm]
+  exact LinearMap.mem_range_self (f ^ m) x
+#align is_artinian.exists_endomorphism_iterate_ker_sup_range_eq_top LinearMap.eventually_codisjoint_ker_pow_range_pow
+
+lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
+    ∀ᶠ n in atTop, ⨅ m, LinearMap.range (f ^ m) = LinearMap.range (f ^ n) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
+    monotone_stabilizes f.iterateRange
+  refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
+  cases' le_or_lt l m with h h
+  · rw [← hn _ (hl.trans h), hn _ hl]
+  · exact f.iterateRange.monotone h.le
+
+/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+
+See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
+theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+  filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
+    f.eventually_codisjoint_ker_pow_range_pow] with n hn
+  simpa only [isCompl_iff]
+
+/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+
+See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
+theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+    IsCompl (⨆ n,LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
+  obtain ⟨k, hk⟩ := eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
+    f.eventually_iInf_range_pow_eq.and f.eventually_iSup_ker_pow_eq
+  obtain ⟨h₁, h₂, h₃⟩ := hk k (le_refl k)
+  rwa [h₂, h₃]
+
+end LinearMap
+
+namespace IsArtinian
+
+variable [IsArtinian R M]
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  obtain ⟨n, ne, w⟩ := exists_endomorphism_iterate_ker_sup_range_eq_top f
-  rw [LinearMap.ker_eq_bot.mpr (LinearMap.iterate_injective s n), bot_sup_eq,
-    LinearMap.range_eq_top] at w
-  exact LinearMap.surjective_of_iterate_surjective ne w
+  obtain ⟨n, hn⟩ := eventually_atTop.mp f.eventually_codisjoint_ker_pow_range_pow
+  specialize hn (n + 1) (n.le_add_right 1)
+  rw [codisjoint_iff, LinearMap.ker_eq_bot.mpr (LinearMap.iterate_injective s _), bot_sup_eq,
+    LinearMap.range_eq_top] at hn
+  exact LinearMap.surjective_of_iterate_surjective n.succ_ne_zero hn
 #align is_artinian.surjective_of_injective_endomorphism IsArtinian.surjective_of_injective_endomorphism
 
 /-- Any injective endomorphism of an Artinian module is bijective. -/

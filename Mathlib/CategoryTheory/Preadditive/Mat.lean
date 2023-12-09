@@ -252,7 +252,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
                 simp
               · rw [dif_neg h, dif_neg (Ne.symm h)]
             · rw [dif_neg h, dif_neg]
-              tauto ) }
+              tauto) }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
 

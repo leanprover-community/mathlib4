@@ -217,7 +217,7 @@ def addInfo (x : String) (h : q → p) (r : TestResult p)
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
 def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q  :=
+    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
@@ -461,7 +461,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand (TestResult p)
+    TestResult p → Nat → Rand (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
