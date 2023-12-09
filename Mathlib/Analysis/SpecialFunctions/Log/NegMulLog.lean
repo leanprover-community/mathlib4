@@ -25,11 +25,10 @@ namespace Real
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
   intro x
-  by_cases hx : x = 0
-  swap; · exact (continuous_id'.continuousAt).mul (continuousAt_log hx)
-  rw [hx, ContinuousAt, zero_mul]
-  suffices Filter.Tendsto (fun x ↦ log x * x) (𝓝 0) (𝓝 0) by
-    exact this.congr (fun x ↦ by rw [mul_comm])
+  obtain hx | rfl := ne_or_eq x 0
+  · exact (continuous_id'.continuousAt).mul (continuousAt_log hx)
+  rw [ContinuousAt, zero_mul]
+  simp_rw [mul_comm _ (log _)]
   nth_rewrite 1 [← nhdsWithin_univ]
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
