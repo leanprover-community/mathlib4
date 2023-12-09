@@ -57,33 +57,10 @@ theorem exists_subset_mul_div (ht : t.Nonempty) :
 end Finset
 
 namespace Set
-variable {α : Type*} [AddCommGroup α] {s t : Set α}
-
-/-- **Ruzsa's covering lemma** for sets. See also `Finset.exists_subset_add_sub`. -/
-lemma exists_subset_add_sub (hs : s.Finite) (ht' : t.Finite) (ht : t.Nonempty) :
-    ∃ u : Set α, Nat.card u * Nat.card t ≤ Nat.card (s + t) ∧ s ⊆ u + t - t ∧ u.Finite := by
-  lift s to Finset α using hs
-  lift t to Finset α using ht'
-  classical
-  obtain ⟨u, hu, hsut⟩ := Finset.exists_subset_add_sub s ht
-  exact ⟨u, by norm_cast; simp [*]⟩
-
-end Set
-
-namespace Set
 variable {α : Type*} [CommGroup α] {s t : Set α}
 
--- TODO: Additivisation fails with error message
-/-
-application type mismatch
-  Mathlib.Data.Finset.Pointwise._auxLemma.9
-argument has type
-  Add α
-but function has type
-  ∀ [inst : Mul α] (s t : Finset α), ↑s * ↑t = ↑(s * t)
--/
 /-- **Ruzsa's covering lemma** for sets. See also `Finset.exists_subset_mul_div`. -/
-@[to_additive existing "**Ruzsa's covering lemma**. Version for sets. For finsets,
+@[to_additive "**Ruzsa's covering lemma**. Version for sets. For finsets,
 see `Finset.exists_subset_add_sub`."]
 lemma exists_subset_mul_div (hs : s.Finite) (ht' : t.Finite) (ht : t.Nonempty) :
     ∃ u : Set α, Nat.card u * Nat.card t ≤ Nat.card (s * t) ∧ s ⊆ u * t / t ∧ u.Finite := by
@@ -91,6 +68,10 @@ lemma exists_subset_mul_div (hs : s.Finite) (ht' : t.Finite) (ht : t.Nonempty) :
   lift t to Finset α using ht'
   classical
   obtain ⟨u, hu, hsut⟩ := Finset.exists_subset_mul_div s ht
-  exact ⟨u, by norm_cast; simp [*]⟩
+  refine ⟨u, ?_⟩
+  -- `norm_cast` would find these automatically, but breaks `to_additive` when it does so
+  rw [←Finset.coe_mul, ←Finset.coe_mul, ←Finset.coe_div]
+  norm_cast
+  simp [*]
 
 end Set
