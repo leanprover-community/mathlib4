@@ -528,7 +528,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 instance finiteDimensional_finsupp {ι : Type*} [Finite ι] [FiniteDimensional K V] :
     FiniteDimensional K (ι →₀ V) :=
-  (Finsupp.linearEquivFunOnFinite K V ι).symm.finiteDimensional
+  Module.Finite.finsupp
 #align finite_dimensional_finsupp finiteDimensional_finsupp
 
 end

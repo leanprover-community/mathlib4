@@ -714,6 +714,5 @@ variable [Ring R] [StrongRankCondition R] [AddCommGroup V] [Module R V]
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=
   Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
-#align finite_dimensional_finsupp Module.Finite.finsupp
 
 end
