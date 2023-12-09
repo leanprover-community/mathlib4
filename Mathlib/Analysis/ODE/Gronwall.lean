@@ -299,7 +299,7 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
     convert this
     simp
   · -- case `t ≥ t₀`: follows trivially from the `Ico` version of the uniqueness lemma
-    have hss : Ico t₀ b ⊆ Ioo a b := fun _ ht' ↦ mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1)
+    have hss := Ico_subset_Ioo_left (b := b) ht.1
     exact ODE_solution_unique_of_mem_set_Ico hv
       (hf.mono (Ico_subset_Ioo_left ht.1))
       (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hf' _ (hss ht'))
