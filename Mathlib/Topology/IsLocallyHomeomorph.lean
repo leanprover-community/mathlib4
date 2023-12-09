@@ -65,7 +65,7 @@ theorem mk (h : ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀
         map_source' := fun x hx => by rw [he x hx]; exact e.map_source' hx
         left_inv' := fun x hx => by rw [he x hx]; exact e.left_inv' hx
         right_inv' := fun y hy => by rw [he _ (e.map_target' hy)]; exact e.right_inv' hy
-        continuous_toFun := (continuousOn_congr he).mpr e.continuous_toFun },
+        continuousOn_toFun := (continuousOn_congr he).mpr e.continuousOn_toFun },
       hx, rfl⟩
 #align is_locally_homeomorph_on.mk IsLocallyHomeomorphOn.mk
 
@@ -203,13 +203,13 @@ open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism form a basis of the source space.-/
 theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
-  refine isTopologicalBasis_of_open_of_nhds ?_ fun x U hx hU ↦ ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
   · rintro _ ⟨U, hU, s, hs, rfl⟩
     refine (openEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, ?_⟩) s.continuous).open_range
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
-    refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.preimage_open_of_open hU,
-      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuous_invFun.mono fun _ h ↦ h.1)⟩,
+    refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
+      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
       ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
     · ext y; exact f.right_inv y.2.1
     · apply (f.symm_image_target_inter_eq _).trans

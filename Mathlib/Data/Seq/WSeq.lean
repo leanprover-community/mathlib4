@@ -721,7 +721,7 @@ theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   | zero => simp [drop]
   | succ n n_ih =>
     -- Porting note: Was `simp [*, drop]`.
-    simp [drop, ←n_ih]
+    simp [drop, ← n_ih]
 #align stream.wseq.dropn_cons Stream'.WSeq.dropn_cons
 
 @[simp]
@@ -1305,7 +1305,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
       match Seq.destruct s with
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
-      | some (some a, s') => Sum.inr (a::l, s')) (l, s) = (· ++ ·) l.reverse <$> toList s := by
+      | some (some a, s') => Sum.inr (a :: l, s')) (l, s) = (l.reverse ++ ·) <$> toList s := by
   refine'
     Computation.eq_of_bisim
       (fun c1 c2 =>
@@ -1315,7 +1315,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
             | none => Sum.inl l.reverse
             | some (none, s') => Sum.inr (l, s')
             | some (some a, s') => Sum.inr (a::l, s')) (l' ++ l, s) ∧
-            c2 = Computation.map ((· ++ ·) l.reverse) (Computation.corec (fun ⟨l, s⟩ =>
+            c2 = Computation.map (l.reverse ++ ·) (Computation.corec (fun ⟨l, s⟩ =>
               match Seq.destruct s with
               | none => Sum.inl l.reverse
               | some (none, s') => Sum.inr (l, s')

@@ -162,7 +162,7 @@ def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
         (inferInstance : SeminormedAddCommGroup Y)
       -- porting note: again simp doesn't seem to be firing in the below line
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [ ←NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
+      erw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
     -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
       convert exists_apply_eq_apply f a)
 set_option linter.uppercaseLean3 false in
