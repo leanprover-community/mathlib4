@@ -6,6 +6,8 @@ Authors: Leonardo de Moura
 import Lean.Parser.Term
 import Std.Classes.SetNotation
 import Mathlib.Mathport.Rename
+import Mathlib.Init.Order.Defs
+import Mathlib.Mathport.Notation
 
 /-!
 
@@ -73,8 +75,11 @@ instance : LE (Set α) :=
 instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
-instance : EmptyCollection (Set α) :=
+instance : Bot (Set α) :=
   ⟨λ _ => False⟩
+
+instance : Top (Set α) :=
+  ⟨λ _ => True⟩
 
 open Std.ExtendedBinder in
 syntax "{" extBinder " | " term "}" : term
@@ -153,11 +158,32 @@ instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
-instance : Union (Set α) := ⟨Set.union⟩
+instance : Sup (Set α) := ⟨Set.union⟩
 
 protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
-instance : Inter (Set α) := ⟨Set.inter⟩
+instance : Inf (Set α) := ⟨Set.inter⟩
+
+section delab
+open Lean PrettyPrinter.Delaborator
+
+@[delab app.Sup.sup]
+def delabSetSup : Delab := whenPPOption Lean.getPPNotation do
+  let #[α, _, _, _] := (← SubExpr.getExpr).getAppArgs | failure
+  guard <| α.isAppOf ``Set
+  let x ← SubExpr.withAppFn <| SubExpr.withAppArg delab
+  let y ← SubExpr.withAppFn <| SubExpr.withAppArg delab
+  `($x ∪ $y)
+
+@[delab app.Inf.inf]
+def delabSetInf : Delab := whenPPOption Lean.getPPNotation do
+  let #[α, _, _, _] := (← SubExpr.getExpr).getAppArgs | failure
+  guard <| α.isAppOf ``Set
+  let x ← SubExpr.withAppFn <| SubExpr.withAppArg delab
+  let y ← SubExpr.withAppFn <| SubExpr.withAppArg delab
+  `($x ∩ $y)
+
+end delab
 
 protected def compl (s : Set α) : Set α := {a | a ∉ s}
 

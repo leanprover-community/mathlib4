@@ -7,6 +7,8 @@ import Mathlib.Mathport.Rename
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Simps.NotationClass
+import Mathlib.Util.CompileInductive
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -26,6 +28,57 @@ set_option default_priority 100
 
 universe u
 variable {α : Type u}
+
+/-- Typeclass for the `⊔` (`\lub`) notation -/
+@[notation_class, ext]
+class Sup (α : Type u) where
+  /-- Least upper bound (`\lub` notation) -/
+  sup : α → α → α
+#align has_sup Sup
+
+/-- Typeclass for the `⊓` (`\glb`) notation -/
+@[notation_class, ext]
+class Inf (α : Type u) where
+  /-- Greatest lower bound (`\glb` notation) -/
+  inf : α → α → α
+#align has_inf Inf
+
+@[inherit_doc]
+infixl:68 " ⊔ " => Sup.sup
+
+@[inherit_doc]
+infixl:69 " ⊓ " => Inf.inf
+
+/-- Typeclass for the `⊤` (`\top`) notation -/
+@[notation_class, ext]
+class Top (α : Type u) where
+  /-- The top (`⊤`, `\top`) element -/
+  top : α
+#align has_top Top
+
+/-- Typeclass for the `⊥` (`\bot`) notation -/
+@[notation_class, ext]
+class Bot (α : Type u) where
+  /-- The bot (`⊥`, `\bot`) element -/
+  bot : α
+#align has_bot Bot
+
+attribute [match_pattern] Bot.bot Top.top
+
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% Top.top
+compile_def% Bot.bot
+
+/-- The top (`⊤`, `\top`) element -/
+notation "⊤" => Top.top
+
+/-- The bot (`⊥`, `\bot`) element -/
+notation "⊥" => Bot.bot
+
+-- Override std:
+macro_rules | `($x ∪ $y) => `($x ⊔ $y)
+macro_rules | `($x ∩ $y) => `($x ⊓ $y)
+macro_rules | `(∅) => `(⊥)
 
 section Preorder
 

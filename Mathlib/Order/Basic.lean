@@ -961,29 +961,6 @@ theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
 
 end MinMaxRec
 
-/-! ### `Sup` and `Inf` -/
-
-
-/-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class, ext]
-class Sup (α : Type u) where
-  /-- Least upper bound (`\lub` notation) -/
-  sup : α → α → α
-#align has_sup Sup
-
-/-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class, ext]
-class Inf (α : Type u) where
-  /-- Greatest lower bound (`\glb` notation) -/
-  inf : α → α → α
-#align has_inf Inf
-
-@[inherit_doc]
-infixl:68 " ⊔ " => Sup.sup
-
-@[inherit_doc]
-infixl:69 " ⊓ " => Inf.inf
-
 /-! ### Lifts of order instances -/
 
 
