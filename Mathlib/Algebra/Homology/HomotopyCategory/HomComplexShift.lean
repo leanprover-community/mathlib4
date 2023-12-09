@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
---import Mathlib.Tactic.Ring
 
 /-! Shifting cochains
 
@@ -18,7 +17,7 @@ and `L`.
 When `n`, `a`, `n'` are integers such that `h : n' + a = n`,
 we obtain `rightShiftAddEquiv K L n a n' h : Cochain K L n ≃+ Cochain K L⟦a⟧ n'`.
 This definition does not involve signs, but the analogous definition for
-the shift on the first variable `K` shall involve signs, as we follow the
+the shift on the first variable `K` shall involve signs (TODO), as we follow the
 conventions appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
@@ -32,17 +31,15 @@ open CategoryTheory Category Limits Preadditive
 universe v u
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] {R : Type*} [Ring R] [Linear R C]
+  {K L M : CochainComplex C ℤ} {n : ℤ}
 
-namespace CochainComplex
-
-variable {K L M : CochainComplex C ℤ} {n : ℤ}
-
-namespace HomComplex
+namespace CochainComplex.HomComplex
 
 namespace Cochain
 
 variable (γ γ₁ γ₂ : Cochain K L n)
 
+/-- The map `Cochain K L n → Cochain K (L⟦a⟧) n'` when `n' + a = n`. -/
 def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cochain K (L⟦a⟧) n' :=
   Cochain.mk (fun p q hpq => γ.v p (p + n) rfl ≫
     (L.shiftFunctorObjXIso a q (p + n) (by linarith)).inv)
@@ -55,6 +52,7 @@ lemma rightShift_v (a n' : ℤ) (hn' : n' + a = n) (p q : ℤ) (hpq : p + n' = q
   dsimp only [rightShift]
   simp only [mk_v]
 
+/-- The map `Cochain K (L⟦a⟧) n' → Cochain K L n` when `n' + a = n`. -/
 def rightUnshift {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     Cochain K L n :=
   Cochain.mk (fun p q hpq => γ.v p (p + n') rfl ≫
@@ -76,8 +74,6 @@ lemma rightUnshift_rightShift (a n' : ℤ) (hn' : n' + a = n) :
     γ.rightShift_v _ _ hn' p (p + n') rfl q hpq,
     shiftFunctorObjXIso, assoc, Iso.inv_hom_id, comp_id]
 
-variable {G}
-
 @[simp]
 lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn' : n' + a = n) :
     (γ.rightUnshift n hn').rightShift a n' hn' = γ := by
@@ -86,7 +82,7 @@ lemma rightShift_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
     γ.rightUnshift_v n hn' p (p + n) rfl q hpq,
     shiftFunctorObjXIso, assoc, Iso.hom_inv_id, comp_id]
 
-variable (K L)
+variable (K L n)
 
 @[simp]
 lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
@@ -94,8 +90,6 @@ lemma rightShift_zero (a n' : ℤ) (hn' : n' + a = n) :
   ext p q hpq
   dsimp
   rw [rightShift_v _ a n' hn' p q hpq _ rfl, zero_v, zero_comp]
-
-variable (n)
 
 @[simp]
 lemma rightUnshift_zero (a n' : ℤ) (hn' : n' + a = n) :
@@ -108,20 +102,21 @@ variable {K L n}
 
 @[simp]
 lemma rightShift_neg (a n' : ℤ) (hn' : n' + a = n) :
-  (-γ).rightShift a n' hn' = -γ.rightShift a n' hn' := by
+    (-γ).rightShift a n' hn' = -γ.rightShift a n' hn' := by
   ext p q hpq
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, neg_v, neg_comp]
 
 @[simp]
 lemma rightShift_add (a n' : ℤ) (hn' : n' + a = n) :
-  (γ₁ + γ₂).rightShift a n' hn' = γ₁.rightShift a n' hn' + γ₂.rightShift a n' hn' := by
+    (γ₁ + γ₂).rightShift a n' hn' = γ₁.rightShift a n' hn' + γ₂.rightShift a n' hn' := by
   ext p q hpq
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, add_v, add_comp]
 
 variable (K L)
 
+/-- The additive equivalence `Cochain K L n ≃+ Cochain K L⟦a⟧ n'` when `n' + a = n`. -/
 @[simps]
 def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃+ Cochain K (L⟦a⟧) n' where
@@ -134,8 +129,20 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
 variable {K L}
 
 @[simp]
+lemma rightUnshift_neg {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
+    (-γ).rightUnshift n hn = -γ.rightUnshift n hn := by
+  apply (rightShiftAddEquiv K L n a n' hn).injective
+  simp only [rightShiftAddEquiv_apply, rightShift_rightUnshift, rightShift_neg]
+
+@[simp]
+lemma rightUnshift_add {n' a : ℤ} (γ₁ γ₂ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
+    (γ₁ + γ₂).rightUnshift n hn = γ₁.rightUnshift n hn + γ₂.rightUnshift n hn := by
+  apply (rightShiftAddEquiv K L n a n' hn).injective
+  simp only [rightShiftAddEquiv_apply, rightShift_rightUnshift, rightShift_add]
+
+@[simp]
 lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
-  (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
+    (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
   ext p q hpq
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, smul_v, Linear.smul_comp]
@@ -145,16 +152,15 @@ lemma rightShift_units_smul (a n' : ℤ) (hn' : n' + a = n) (x : Rˣ) :
   (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by
   apply rightShift_smul
 
-
 @[simp]
-def rightUnshift_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (x : R) :
+lemma rightUnshift_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (x : R) :
     (x • γ).rightUnshift n hn = x • γ.rightUnshift n hn := by
   ext p q hpq
   dsimp
   simp only [rightUnshift_v _ n hn p q hpq _ rfl, smul_v, Linear.smul_comp]
 
 @[simp]
-def rightUnshift_units_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ)
+lemma rightUnshift_units_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ)
     (hn : n' + a = n) (x : Rˣ) :
     (x • γ).rightUnshift n hn = x • γ.rightUnshift n hn := by
   apply rightUnshift_smul
@@ -180,8 +186,8 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
       δ_v n' m' hnm' _ p q hpq (p+n') (p+1) (by linarith) rfl,
       γ.rightShift_v a n' hn' p (p+n') rfl (p+n) rfl,
       γ.rightShift_v a n' hn' (p+1) q _ (p+m) (by linarith)]
-    simp only [shiftFunctor_obj_X, shiftFunctorObjXIso, ComplexShape.up_Rel, shiftFunctor_obj_d',
-      Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d, not_true_eq_false,
+    simp only [shiftFunctorObjXIso, shiftFunctor_obj_d',
+      Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
       add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add,
       add_right_inj, smul_smul]
     congr 1
@@ -190,7 +196,8 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
-lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (m m' : ℤ) (hm' : m' + a = m) :
+lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n)
+    (m m' : ℤ) (hm' : m' + a = m) :
     δ n m (γ.rightUnshift n hn) = a.negOnePow • (δ n' m' γ).rightUnshift m hm' := by
   obtain ⟨γ', rfl⟩ := (rightShiftAddEquiv K L n a n' hn).surjective γ
   dsimp
@@ -201,14 +208,15 @@ end Cochain
 
 namespace Cocycle
 
-variable (γ : Cocycle K L n)
-
+/-- The map `Cocycle K L n → Cocycle K (L⟦a⟧) n'` when `n' + a = n`. -/
 @[simps!]
-def rightShift (a n' : ℤ) (hn' : n' + a = n) : Cocycle K (L⟦a⟧) n' :=
+def rightShift (γ : Cocycle K L n) (a n' : ℤ) (hn' : n' + a = n) :
+    Cocycle K (L⟦a⟧) n' :=
   Cocycle.mk (γ.1.rightShift a n' hn') _ rfl (by
-    simp only [Cochain.δ_rightShift _ a n' (n'+1) hn' (n+1) (by linarith),
+    simp only [Cochain.δ_rightShift _ a n' (n' + 1) hn' (n + 1) (by linarith),
       δ_eq_zero, Cochain.rightShift_zero, smul_zero])
 
+/-- The map `Cocycle K (L⟦a⟧) n' → Cocycle K L n` when `n' + a = n`. -/
 @[simps!]
 def rightUnshift {n' a : ℤ} (γ : Cocycle K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) :
     Cocycle K L n :=
@@ -218,6 +226,4 @@ def rightUnshift {n' a : ℤ} (γ : Cocycle K (L⟦a⟧) n') (n : ℤ) (hn : n' 
 
 end Cocycle
 
-end HomComplex
-
-end CochainComplex
+end CochainComplex.HomComplex
