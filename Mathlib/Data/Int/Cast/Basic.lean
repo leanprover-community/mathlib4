@@ -68,6 +68,7 @@ theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
 -- expected `n` to be implicit, and `HasLiftT`
 #align int.cast_of_nat Int.cast_ofNatₓ
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by

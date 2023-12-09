@@ -187,16 +187,14 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
   simp_rw [this]
-  apply Summable.mul_left
-  rw [← summable_norm_iff]
+  refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
     rw [norm_eq_abs, ← Complex.abs_ofReal]
     congr 1
     norm_cast
   simp_rw [this]
-  rw [summable_abs_iff]
-  exact Real.summable_one_div_int_pow.mpr (one_lt_two.trans_le hk)
+  rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 #align summable_bernoulli_fourier summable_bernoulli_fourier
 
 theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k) {x : ℝ}

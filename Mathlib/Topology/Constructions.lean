@@ -1676,14 +1676,12 @@ variable [TopologicalSpace α] {β : Set α} {γ : Set β}
 
 theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
   rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
-  convert IsOpen.inter hβ hδ
-  ext
-  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+  rw [Subtype.image_preimage_coe]
+  exact IsOpen.inter hδ hβ
 
 theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
   rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
-  convert IsClosed.inter hβ hδ
-  ext
-  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+  rw [Subtype.image_preimage_coe]
+  convert IsClosed.inter hδ hβ
 
 end Monad

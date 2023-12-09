@@ -155,7 +155,7 @@ theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (tors
       rw [torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
       exact ⟨k, k.prop, h⟩
     rw [orderOf_submonoid (⟨ζ, hζ⟩ : torsion K)]
-    exact orderOf_dvd_card_univ
+    exact orderOf_dvd_card
 
 /-- The group of roots of unity of order dividing `torsionOrder` is equal to the torsion
 group. -/
@@ -166,7 +166,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
+  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
 
 end torsion
 

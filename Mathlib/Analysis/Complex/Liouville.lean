@@ -132,4 +132,25 @@ theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
   (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 #align differentiable.exists_eq_const_of_bounded Differentiable.exists_eq_const_of_bounded
 
+/-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
+(i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
+theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (hb : Tendsto f (cocompact E) (𝓝 c)) : f = Function.const E c := by
+  have h_bdd : Bornology.IsBounded (Set.range f) := by
+    obtain ⟨s, hs, hs_bdd⟩ := Metric.exists_isBounded_image_of_tendsto hb
+    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+    apply ht.image hf.continuous |>.isBounded.union hs_bdd |>.subset
+    simpa [Set.image_union, Set.image_univ] using Set.image_subset _ <| calc
+      Set.univ = t ∪ tᶜ := t.union_compl_self.symm
+      _        ⊆ t ∪ s  := by gcongr
+  obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
+  convert hc'
+  exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
+
+/-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
+(i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
+theorem apply_eq_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) : f x = c :=
+  congr($(hf.eq_const_of_tendsto_cocompact hb) x)
+
 end Differentiable

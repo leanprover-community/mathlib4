@@ -1333,7 +1333,7 @@ theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn
   rwa [h.rightInvOn_invFunOn hy]
 #align set.surj_on.bij_on_subset Set.SurjOn.bijOn_subset
 
-theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ (s' : _) (_ : s' ⊆ s), BijOn f s' t := by
+theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ s' ⊆ s, BijOn f s' t := by
   constructor
   · rcases eq_empty_or_nonempty t with (rfl | ht)
     · exact fun _ => ⟨∅, empty_subset _, bijOn_empty f⟩
@@ -1343,6 +1343,23 @@ theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ (s' : _) (_ : s' �
   · rintro ⟨s', hs', hfs'⟩
     exact hfs'.surjOn.mono hs' (Subset.refl _)
 #align set.surj_on_iff_exists_bij_on_subset Set.surjOn_iff_exists_bijOn_subset
+
+alias ⟨SurjOn.exists_bijOn_subset, _⟩ := Set.surjOn_iff_exists_bijOn_subset
+
+variable (f s)
+
+lemma exists_subset_bijOn : ∃ s' ⊆ s, BijOn f s' (f '' s) :=
+  surjOn_iff_exists_bijOn_subset.mp (surjOn_image f s)
+
+lemma exists_image_eq_and_injOn : ∃ u, f '' u =  f '' s ∧ InjOn f u :=
+  let ⟨u, _, hfu⟩ := exists_subset_bijOn s f
+  ⟨u, hfu.image_eq, hfu.injOn⟩
+
+variable {f s}
+
+lemma exists_image_eq_injOn_of_subset_range (ht : t ⊆ range f) :
+    ∃ s, f '' s = t ∧ InjOn f s :=
+  image_preimage_eq_of_subset ht ▸ exists_image_eq_and_injOn _ _
 
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ (range f)ᶜ := by

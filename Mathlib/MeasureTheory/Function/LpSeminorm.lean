@@ -909,33 +909,19 @@ theorem meas_snormEssSup_lt {f : α → F} : μ { y | snormEssSup f μ < ‖f y�
   meas_essSup_lt
 #align measure_theory.meas_snorm_ess_sup_lt MeasureTheory.meas_snormEssSup_lt
 
-lemma snormEssSup_piecewise_le {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+lemma snormEssSup_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) :
     snormEssSup (Set.piecewise s f g) μ
-      ≤ max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ)) := by
-  refine essSup_le_of_ae_le (max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ))) ?_
-  have hf : ∀ᵐ y ∂(μ.restrict s), ↑‖f y‖₊ ≤ snormEssSup f (μ.restrict s) :=
-    ae_le_snormEssSup (μ := μ.restrict s) (f := f)
-  have hg : ∀ᵐ y ∂(μ.restrict sᶜ), ↑‖g y‖₊ ≤ snormEssSup g (μ.restrict sᶜ) :=
-    ae_le_snormEssSup (μ := μ.restrict sᶜ) (f := g)
-  refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
-  · rw [ae_restrict_iff' hs] at hf ⊢
-    filter_upwards [hf] with x hx
-    intro hx_mem
-    simp only [hx_mem, Set.piecewise_eq_of_mem]
-    exact (hx hx_mem).trans (le_max_left _ _)
-  · rw [ae_restrict_iff' hs.compl] at hg ⊢
-    filter_upwards [hg] with x hx
-    intro hx_mem
-    rw [Set.mem_compl_iff] at hx_mem
-    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_not_mem]
-    exact (hx hx_mem).trans (le_max_right _ _)
+      = max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ)) := by
+  simp only [snormEssSup, ← essSup_piecewise hs]
+  congr with x
+  by_cases hx : x ∈ s <;> simp [hx]
 
-lemma snorm_top_piecewise_le {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+lemma snorm_top_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) :
     snorm (Set.piecewise s f g) ∞ μ
-      ≤ max (snorm f ∞ (μ.restrict s)) (snorm g ∞ (μ.restrict sᶜ)) :=
-  snormEssSup_piecewise_le f g hs
+      = max (snorm f ∞ (μ.restrict s)) (snorm g ∞ (μ.restrict sᶜ)) :=
+  snormEssSup_piecewise f g hs
 
 section MapMeasure
 

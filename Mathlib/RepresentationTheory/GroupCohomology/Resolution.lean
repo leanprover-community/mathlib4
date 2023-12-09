@@ -642,7 +642,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     · ext x
       dsimp [HomotopyEquiv.ofIso, Finsupp.LinearEquiv.finsuppUnique]
       rw [Finsupp.total_single, one_smul, @Unique.eq_default _ Types.terminalIso.toEquiv.unique x,
-        Finsupp.single_eq_same]
+        ChainComplex.single₀_map_f_zero, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+        Finsupp.equivFunOnFinite_apply, Finsupp.single_eq_same]
     · exact @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.forget₂_to_Module_homotopy_equiv_f_0_eq groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv_f_0_eq
@@ -667,12 +668,12 @@ def εToSingle₀ :
 
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
-        (ChainComplex.single₀MapHomologicalComplex _).hom.app _ =
+        (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =
       (forget₂ToModuleCatHomotopyEquiv k G).hom := by
-  refine' ChainComplex.to_single₀_ext _ _ _
   dsimp
-  rw [Category.comp_id]
-  exact (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
+  ext1
+  dsimp
+  simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 #align group_cohomology.resolution.ε_to_single₀_comp_eq groupCohomology.resolution.εToSingle₀_comp_eq
 
 theorem quasiIso'OfForget₂εToSingle₀ :
@@ -680,7 +681,8 @@ theorem quasiIso'OfForget₂εToSingle₀ :
   have h : QuasiIso' (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso' _
   rw [← εToSingle₀_comp_eq k G] at h
   haveI := h
-  exact quasiIso'_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
+  exact quasiIso'_of_comp_right _
+    ((HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _)
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso'OfForget₂εToSingle₀
 
 instance : QuasiIso' (εToSingle₀ k G) :=

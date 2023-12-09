@@ -504,9 +504,9 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
     HasSum (fun i => fourierCoeff f i • fourier i) f := by
   have sum_L2 := hasSum_fourier_series_L2 (toLp (E := ℂ) 2 haarAddCircle ℂ f)
   simp_rw [fourierCoeff_toLp] at sum_L2
-  refine' ContinuousMap.hasSum_of_hasSum_Lp (summable_of_summable_norm _) sum_L2
-  simp_rw [norm_smul, fourier_norm, mul_one, summable_norm_iff]
-  exact h
+  refine ContinuousMap.hasSum_of_hasSum_Lp (.of_norm ?_) sum_L2
+  simp_rw [norm_smul, fourier_norm, mul_one]
+  exact h.norm
 #align has_sum_fourier_series_of_summable hasSum_fourier_series_of_summable
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series of `f`

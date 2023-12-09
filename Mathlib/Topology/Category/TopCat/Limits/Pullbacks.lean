@@ -181,24 +181,24 @@ def pullbackHomeoPreimage
     {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : Embedding g) :
     { p : X × Y // f p.1 = g p.2 } ≃ₜ f ⁻¹' Set.range g where
-    toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
-    invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
-    left_inv := by
-      intro x
-      ext <;> dsimp
-      apply hg.inj
-      convert x.prop
-      exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
-    right_inv := fun x ↦ rfl
-    continuous_toFun := by
-      apply Continuous.subtype_mk
-      exact continuous_fst.comp continuous_subtype_val
-    continuous_invFun := by
-      apply Continuous.subtype_mk
-      refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
-      convert hf.comp continuous_subtype_val
-      ext x
-      exact Exists.choose_spec x.2
+  toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
+  invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
+  left_inv := by
+    intro x
+    ext <;> dsimp
+    apply hg.inj
+    convert x.prop
+    exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
+  right_inv := fun x ↦ rfl
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    exact continuous_fst.comp continuous_subtype_val
+  continuous_invFun := by
+    apply Continuous.subtype_mk
+    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
+    convert hf.comp continuous_subtype_val
+    ext x
+    exact Exists.choose_spec x.2
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Inducing <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=
