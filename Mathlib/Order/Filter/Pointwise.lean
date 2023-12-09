@@ -354,7 +354,7 @@ theorem NeBot.of_mul_right : (f * g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_add_right Filter.NeBot.of_add_right
 
 @[to_additive (attr := simp)]
-theorem pure_mul : pure a * g = g.map ((· * ·) a) :=
+theorem pure_mul : pure a * g = g.map (a * ·) :=
   map₂_pure_left
 #align filter.pure_mul Filter.pure_mul
 #align filter.pure_add Filter.pure_add
@@ -495,7 +495,7 @@ theorem NeBot.of_div_right : (f / g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_sub_right Filter.NeBot.of_sub_right
 
 @[to_additive (attr := simp)]
-theorem pure_div : pure a / g = g.map ((· / ·) a) :=
+theorem pure_div : pure a / g = g.map (a / ·) :=
   map₂_pure_left
 #align filter.pure_div Filter.pure_div
 #align filter.pure_sub Filter.pure_sub
@@ -1019,7 +1019,7 @@ theorem NeBot.of_smul_right : (f • g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_vadd_right Filter.NeBot.of_vadd_right
 
 @[to_additive (attr := simp)]
-theorem pure_smul : (pure a : Filter α) • g = g.map ((· • ·) a) :=
+theorem pure_smul : (pure a : Filter α) • g = g.map (a • ·) :=
   map₂_pure_left
 #align filter.pure_smul Filter.pure_smul
 #align filter.pure_vadd Filter.pure_vadd
@@ -1130,7 +1130,7 @@ theorem NeBot.of_vsub_right : (f -ᵥ g : Filter α).NeBot → g.NeBot :=
 #align filter.ne_bot.of_vsub_right Filter.NeBot.of_vsub_right
 
 @[simp]
-theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map ((· -ᵥ ·) a) :=
+theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map (a -ᵥ ·) :=
   map₂_pure_left
 #align filter.pure_vsub Filter.pure_vsub
 
@@ -1173,7 +1173,7 @@ variable [SMul α β] {f f₁ f₂ : Filter β} {s : Set β} {a : α}
 /-- `a • f` is the map of `f` under `a •` in locale `Pointwise`. -/
 @[to_additive "`a +ᵥ f` is the map of `f` under `a +ᵥ` in locale `Pointwise`."]
 protected def instSMulFilter : SMul α (Filter β) :=
-  ⟨fun a => map ((· • ·) a)⟩
+  ⟨fun a => map (a • ·)⟩
 #align filter.has_smul_filter Filter.instSMulFilter
 #align filter.has_vadd_filter Filter.instVAddFilter
 
@@ -1186,7 +1186,7 @@ theorem map_smul : map (fun b => a • b) f = a • f :=
 #align filter.map_vadd Filter.map_vadd
 
 @[to_additive]
-theorem mem_smul_filter : s ∈ a • f ↔ (· • ·) a ⁻¹' s ∈ f :=
+theorem mem_smul_filter : s ∈ a • f ↔ (a • ·) ⁻¹' s ∈ f :=
   Iff.rfl
 #align filter.mem_smul_filter Filter.mem_smul_filter
 #align filter.mem_vadd_filter Filter.mem_vadd_filter
@@ -1329,7 +1329,7 @@ multiplicative action on `Filter β`. -/
 protected def distribMulActionFilter [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Filter β) where
   smul_add _ _ _ := map_map₂_distrib <| smul_add _
-  smul_zero _ := (map_pure _ _).trans <| by dsimp only; rw [smul_zero, pure_zero]
+  smul_zero _ := (map_pure _ _).trans <| by rw [smul_zero, pure_zero]
 #align filter.distrib_mul_action_filter Filter.distribMulActionFilter
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -1368,7 +1368,6 @@ theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
   refine' fun s hs => mem_smul_filter.2 _
   convert @univ_mem _ g
   refine' eq_univ_iff_forall.2 fun a => _
-  dsimp only
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 

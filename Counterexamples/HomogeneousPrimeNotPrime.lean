@@ -65,7 +65,7 @@ def submoduleZ : Submodule R (R × R) where
   carrier := {zz | zz.1 = zz.2}
   zero_mem' := rfl
   add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
-  smul_mem' a _ hb := congr_arg ((· * ·) a) hb
+  smul_mem' a _ hb := congr_arg (a * ·) hb
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.submodule_z Counterexample.CounterexampleNotPrimeButHomogeneousPrime.submoduleZ
 
 /-- The grade 1 part of `R²` is `{(0, b) | b ∈ R}`. -/
