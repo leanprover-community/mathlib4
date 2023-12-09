@@ -193,10 +193,10 @@ def PComp.assump (c : Comp) (n : ℕ) : PComp where
   vars := .ofList c.vars _
 
 instance : ToFormat PComp :=
-  ⟨fun p => format p.c.coeffs ++ toString p.c.str ++ "0"⟩
+  ⟨fun p => format p.c.coeffs.toFormat ++ toString p.c.str ++ "0"⟩
 
 instance : ToString PComp :=
-  ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0" ++ s!" history: {p.history.toList}"⟩
+  ⟨fun p => toString p.c.coeffs.toFormat ++ toString p.c.str ++ "0" ++ s!" history: {p.history.toList}"⟩
 
 /-- A collection of comparisons. -/
 abbrev PCompSet := RBSet PComp PComp.cmp
@@ -308,13 +308,13 @@ def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCo
 from the `linarith` state.
 -/
 def elimVarM (a : ℕ) : LinarithM Unit := do
-  dbgTrace s!"Eliminating {a}:\n{(← getPCompSet).toList}" fun _ => do
+  dbg_trace f!"Eliminating {a}:\n{(← getPCompSet).toList}"
   let vs ← getMaxVar
   if (a ≤ vs) then (do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
-    dbgTrace s!"Positive set:\n{pos.toList}" fun _ => do
-    dbgTrace s!"Negative set:\n{neg.toList}" fun _ => do
-    dbgTrace s!"Irrelevant set:\n{notPresent.toList}" fun _ => do
+    dbg_trace f!"Positive set:\n{pos.toList}"
+    dbg_trace f!"Negative set:\n{neg.toList}"
+    dbg_trace f!"Irrelevant set:\n{notPresent.toList}"
     update (vs - 1) (pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent))
   else
     pure ()
