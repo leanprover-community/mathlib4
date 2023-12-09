@@ -76,7 +76,7 @@ theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerM
 lemma Finset.centerMass_smul_left {c : R'} [Module R' R] [Module R' E] [SMulCommClass R' R R]
     [IsScalarTower R' R R] [SMulCommClass R R' E] [IsScalarTower R' R E] (hc : c ≠ 0) :
     t.centerMass (c • w) z = t.centerMass w z := by
-  simp [centerMass, -smul_assoc, smul_assoc c, ← smul_sum, smul_inv₀, smul_smul_smul_comm, hc]
+  simp [centerMass, -smul_assoc, smul_assoc c, ← smul_sum', smul_inv₀, smul_smul_smul_comm, hc]
 
 theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
     t.centerMass w z = ∑ i in t, w i • z i := by
@@ -84,7 +84,7 @@ theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i in t, w i = 1) :
 #align finset.center_mass_eq_of_sum_1 Finset.centerMass_eq_of_sum_1
 
 theorem Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.centerMass w z := by
-  simp only [Finset.centerMass, Finset.smul_sum, (mul_smul _ _ _).symm, mul_comm c, mul_assoc]
+  simp only [Finset.centerMass, Finset.smul_sum', (mul_smul _ _ _).symm, mul_comm c, mul_assoc]
 #align finset.center_mass_smul Finset.centerMass_smul
 
 /-- A convex combination of two centers of mass is a center of mass as well. This version
@@ -93,7 +93,7 @@ theorem Finset.centerMass_segment' (s : Finset ι) (t : Finset ι') (ws : ι →
     (wt : ι' → R) (zt : ι' → E) (hws : ∑ i in s, ws i = 1) (hwt : ∑ i in t, wt i = 1) (a b : R)
     (hab : a + b = 1) : a • s.centerMass ws zs + b • t.centerMass wt zt = (s.disjSum t).centerMass
     (Sum.elim (fun i => a * ws i) fun j => b * wt j) (Sum.elim zs zt) := by
-  rw [s.centerMass_eq_of_sum_1 _ hws, t.centerMass_eq_of_sum_1 _ hwt, smul_sum, smul_sum, ←
+  rw [s.centerMass_eq_of_sum_1 _ hws, t.centerMass_eq_of_sum_1 _ hwt, smul_sum', smul_sum', ←
     Finset.sum_sum_elim, Finset.centerMass_eq_of_sum_1]
   · congr with ⟨⟩ <;> simp only [Sum.elim_inl, Sum.elim_inr, mul_smul]
   · rw [sum_sum_elim, ← mul_sum, ← mul_sum, hws, hwt, mul_one, mul_one, hab]
@@ -108,7 +108,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
   have hw : (∑ i in s, (a * w₁ i + b * w₂ i)) = 1 := by
     simp only [mul_sum.symm, sum_add_distrib, mul_one, *]
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
-    smul_sum, sum_add_distrib, add_smul, mul_smul, *]
+    smul_sum', sum_add_distrib, add_smul, mul_smul, *]
 #align finset.center_mass_segment Finset.centerMass_segment
 
 theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
@@ -126,7 +126,7 @@ variable {t}
 
 theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈ t', i ∉ t → w i = 0) :
     t.centerMass w z = t'.centerMass w z := by
-  rw [centerMass, sum_subset ht h, smul_sum, centerMass, smul_sum]
+  rw [centerMass, sum_subset ht h, smul_sum', centerMass, smul_sum']
   apply sum_subset ht
   intro i hit' hit
   rw [h i hit' hit, zero_smul, smul_zero]
@@ -311,7 +311,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
         affineCombination_eq_linear_combination s v w hw₁,
         affineCombination_eq_linear_combination s' v w' hw₁', add_smul, sum_add_distrib]
       rw [← sum_subset (subset_union_left s s'), ← sum_subset (subset_union_right s s')]
-      · simp only [ite_smul, sum_ite_of_true _ _ fun _ hi => hi, mul_smul, ← smul_sum]
+      · simp only [ite_smul, sum_ite_of_true _ _ fun _ hi => hi, mul_smul, ← smul_sum']
       · intro i _ hi'
         simp [hi']
       · intro i _ hi'

@@ -192,7 +192,7 @@ def domCoprod' :
         fun c m n => _ <;>
     · ext
       simp only [domCoprod_apply, add_apply, smul_apply, ← Finset.sum_add_distrib,
-        Finset.smul_sum, MultilinearMap.sum_apply, domCoprod.summand]
+        Finset.smul_sum', MultilinearMap.sum_apply, domCoprod.summand]
       congr
       ext σ
       refine Quotient.inductionOn' σ fun σ => ?_
@@ -259,7 +259,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   -- now we're ready to clean up the RHS, pulling out the summation
   rw [domCoprod.summand_mk'', MultilinearMap.domCoprod_alternization_coe, ← Finset.sum_product',
     Finset.univ_product_univ, ← MultilinearMap.domDomCongrEquiv_apply, _root_.map_sum,
-    Finset.smul_sum]
+    Finset.smul_sum']
   congr 1
   ext1 ⟨al, ar⟩
   dsimp only

@@ -925,12 +925,12 @@ variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
 
 @[simp]
 theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) : x • v ⬝ᵥ w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
+  by simp [dotProduct, Finset.smul_sum', smul_mul_assoc]
 #align matrix.smul_dot_product Matrix.smul_dotProduct
 
 @[simp]
 theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) : v ⬝ᵥ x • w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
+  by simp [dotProduct, Finset.smul_sum', mul_smul_comm]
 #align matrix.dot_product_smul Matrix.dotProduct_smul
 
 end DistribMulAction
@@ -1783,14 +1783,14 @@ theorem vecMul_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
     [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
     M.vecMul (b • v) = b • M.vecMul v := by
   ext i
-  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
+  simp only [vecMul, dotProduct, Finset.smul_sum', Pi.smul_apply, smul_mul_assoc]
 #align matrix.vec_mul_smul Matrix.vecMul_smul
 
 theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [DistribMulAction R S]
     [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
     M.mulVec (b • v) = b • M.mulVec v := by
   ext i
-  simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, mul_smul_comm]
+  simp only [mulVec, dotProduct, Finset.smul_sum', Pi.smul_apply, mul_smul_comm]
 #align matrix.mul_vec_smul Matrix.mulVec_smul
 
 @[simp]

@@ -103,7 +103,7 @@ lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.con
 -/
 def sumOfConjugatesEquivariant : W →ₗ[MonoidAlgebra k G] V :=
   MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
-    simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
+    simp only [sumOfConjugates_apply, Finset.smul_sum', conjugate_apply]
     refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
     simp only [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]
 #align linear_map.sum_of_conjugates_equivariant LinearMap.sumOfConjugatesEquivariant

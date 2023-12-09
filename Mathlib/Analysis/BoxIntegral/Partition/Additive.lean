@@ -98,7 +98,7 @@ instance : Add (ι →ᵇᵃ[I₀] M) :=
 instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
   ⟨fun r f =>
     ⟨r • (f : Box ι → M), fun I hI π hπ => by
-      simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
+      simp only [Pi.smul_apply, ← smul_sum', sum_partition_boxes _ hI hπ]⟩⟩
 
 instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl

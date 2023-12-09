@@ -1424,7 +1424,7 @@ lemma Basis.mem_center_iff {A}
       rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
         Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
       simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
-        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
+        Finset.smul_sum', smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
         (@SMulCommClass.smul_comm R R A)]
       rw [Finset.sum_comm]
     case mid_assoc =>
@@ -1437,7 +1437,7 @@ lemma Basis.mem_center_iff {A}
       rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
         Finsupp.sum, Finset.sum_mul]
       simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
-        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
+        Finset.smul_sum', smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
         (h.2 _ _).2.2]
 
 section RestrictScalars

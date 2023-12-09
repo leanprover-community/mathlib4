@@ -114,7 +114,7 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
   map_smul' r f := by
     ext x
 /- Porting note: changed from `simp only` which needed extra heartbeats -/
-    simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
+    simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum', ← smul_assoc,
       smul_eq_mul, mul_comm r]
 #align inhomogeneous_cochains.d inhomogeneousCochains.d
 

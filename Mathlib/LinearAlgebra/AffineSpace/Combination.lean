@@ -240,7 +240,7 @@ theorem weightedVSubOfPoint_filter_of_ne (w : ι → k) (p : ι → P) (b : P) {
 sum. -/
 theorem weightedVSubOfPoint_const_smul (w : ι → k) (p : ι → P) (b : P) (c : k) :
     s.weightedVSubOfPoint p b (c • w) = c • s.weightedVSubOfPoint p b w := by
-  simp_rw [weightedVSubOfPoint_apply, smul_sum, Pi.smul_apply, smul_smul, smul_eq_mul]
+  simp_rw [weightedVSubOfPoint_apply, smul_sum', Pi.smul_apply, smul_smul, smul_eq_mul]
 #align finset.weighted_vsub_of_point_const_smul Finset.weightedVSubOfPoint_const_smul
 
 /-- A weighted sum of the results of subtracting a default base point

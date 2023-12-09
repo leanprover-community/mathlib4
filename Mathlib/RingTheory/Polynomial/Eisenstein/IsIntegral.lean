@@ -194,7 +194,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map, ← hn]
     ring
   swap
-  · simp_rw [← smul_sum, ← smul_sub, Algebra.smul_def p, algebraMap_apply R K L, _root_.map_mul,
+  · simp_rw [← smul_sum', ← smul_sub, Algebra.smul_def p, algebraMap_apply R K L, _root_.map_mul,
       Algebra.norm_algebraMap, finrank_K_L, hr, ← hn]
   calc
     _ = (Q.coeff 0 • ↑1 + ∑ x : ℕ in (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) *
@@ -225,7 +225,7 @@ theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Com
     next => skip
     ext i
     rw [hf i (mem_range.2 (Fin.is_lt i)), ← smul_smul]
-  rw [← smul_sum] at hz
+  rw [← smul_sum'] at hz
   rw [← smul_right_injective _ hp hz]
   exact
     Subalgebra.sum_mem _ fun _ _ =>

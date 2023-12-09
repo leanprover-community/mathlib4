@@ -926,7 +926,7 @@ theorem uniformIntegrable_average
   · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine' ⟨δ, hδ₁, fun n s hs hle => _⟩
-    simp_rw [Finset.smul_sum, Set.indicator_finset_sum]
+    simp_rw [Finset.smul_sum', Set.indicator_finset_sum]
     refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
     have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
       fun i ↦ indicator_const_smul _ _ _
@@ -942,7 +942,7 @@ theorem uniformIntegrable_average
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
       all_goals simpa only [Ne.def, Nat.cast_eq_zero]
   · obtain ⟨C, hC⟩ := hf₃
-    simp_rw [Finset.smul_sum]
+    simp_rw [Finset.smul_sum']
     refine' ⟨C, fun n => (snorm_sum_le (fun i _ => (hf₁ i).const_smul _) hp).trans _⟩
     simp_rw [snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0

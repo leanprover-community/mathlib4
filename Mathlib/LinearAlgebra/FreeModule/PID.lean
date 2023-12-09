@@ -214,7 +214,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
         rfl)
   have a_smul_y' : a • y' = y := by
     refine Subtype.mk_eq_mk.mp (show (a • ⟨y', y'M⟩ : M) = ⟨y, N_le_M yN⟩ from ?_)
-    rw [← b'M.sum_repr ⟨y, N_le_M yN⟩, mk_y', Finset.smul_sum]
+    rw [← b'M.sum_repr ⟨y, N_le_M yN⟩, mk_y', Finset.smul_sum']
     refine' Finset.sum_congr rfl fun i _ ↦ _
     rw [← mul_smul, ← hc]
     rfl

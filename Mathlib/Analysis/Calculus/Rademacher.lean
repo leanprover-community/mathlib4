@@ -205,7 +205,7 @@ theorem ae_lineDeriv_sum_eq
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
     (locallyIntegrable_finset_sum _ (fun i hi ↦ (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
     (fun g g_smooth g_comp ↦ ?_)
-  simp_rw [Finset.smul_sum]
+  simp_rw [Finset.smul_sum']
   have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
       ((hf.memℒp_lineDeriv (v i)).const_smul (a i))

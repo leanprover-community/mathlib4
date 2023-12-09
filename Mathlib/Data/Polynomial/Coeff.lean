@@ -77,7 +77,7 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
     -- Porting note: `dsimp only []` is required for beta reduction.
     dsimp only []
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
-    simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
+    simp only [sum_def, Finset.smul_sum', coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 #align polynomial.lsum Polynomial.lsum
 #align polynomial.lsum_apply Polynomial.lsum_apply
 

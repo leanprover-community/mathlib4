@@ -427,7 +427,7 @@ theorem setToSimpleFunc_add_left' (T T' T'' : Set α → E →L[ℝ] F)
 
 theorem setToSimpleFunc_smul_left {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (c : ℝ)
     (f : α →ₛ F) : setToSimpleFunc (fun s => c • T s) f = c • setToSimpleFunc T f := by
-  simp_rw [setToSimpleFunc, ContinuousLinearMap.smul_apply, smul_sum]
+  simp_rw [setToSimpleFunc, ContinuousLinearMap.smul_apply, smul_sum']
 #align measure_theory.simple_func.set_to_simple_func_smul_left MeasureTheory.SimpleFunc.setToSimpleFunc_smul_left
 
 theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
@@ -435,7 +435,7 @@ theorem setToSimpleFunc_smul_left' (T T' : Set α → E →L[ℝ] F') (c : ℝ)
     setToSimpleFunc T' f = c • setToSimpleFunc T f := by
   simp_rw [setToSimpleFunc_eq_sum_filter]
   suffices ∀ x ∈ filter (fun x : E => x ≠ 0) f.range, T' (f ⁻¹' {x}) = c • T (f ⁻¹' {x}) by
-    rw [smul_sum]
+    rw [smul_sum']
     refine' Finset.sum_congr rfl fun x hx => _
     rw [this x hx]
     rfl
@@ -493,7 +493,7 @@ theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMea
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; dsimp only; rw [smul_zero]
     _ = ∑ x in f.range, c • T (f ⁻¹' {x}) x :=
       (Finset.sum_congr rfl fun b _ => by rw [ContinuousLinearMap.map_smul (T (f ⁻¹' {b})) c b])
-    _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum, smul_smul, mul_comm]
+    _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum', smul_smul, mul_comm]
 #align measure_theory.simple_func.set_to_simple_func_smul_real MeasureTheory.SimpleFunc.setToSimpleFunc_smul_real
 
 theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [NormedField 𝕜] [NormedSpace 𝕜 E]
@@ -504,7 +504,7 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [NormedField 𝕜] [Norm
     setToSimpleFunc T (c • f) = ∑ x in f.range, T (f ⁻¹' {x}) (c • x) := by
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; dsimp only; rw [smul_zero]
     _ = ∑ x in f.range, c • T (f ⁻¹' {x}) x := (Finset.sum_congr rfl fun b _ => by rw [h_smul])
-    _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum, smul_smul, mul_comm]
+    _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum', smul_smul, mul_comm]
 #align measure_theory.simple_func.set_to_simple_func_smul MeasureTheory.SimpleFunc.setToSimpleFunc_smul
 
 section Order

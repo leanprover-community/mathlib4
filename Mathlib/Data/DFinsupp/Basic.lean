@@ -1842,7 +1842,7 @@ theorem prod_eq_one [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0
 theorem smul_sum {α : Type*} [Monoid α] [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] [DistribMulAction α γ] {f : Π₀ i, β i} {h : ∀ i, β i → γ} {c : α} :
     c • f.sum h = f.sum fun a b => c • h a b :=
-  Finset.smul_sum
+  Finset.smul_sum'
 #align dfinsupp.smul_sum DFinsupp.smul_sum
 
 @[to_additive]

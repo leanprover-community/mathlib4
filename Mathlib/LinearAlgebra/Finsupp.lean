@@ -56,7 +56,7 @@ variable {α : Type*} {β : Type*} {R : Type*} {M : Type*} {M₂ : Type*}
 
 theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
     c • v.sum h = v.sum fun a b => c • h a b :=
-  Finset.smul_sum
+  Finset.smul_sum'
 #align finsupp.smul_sum Finsupp.smul_sum
 
 @[simp]
@@ -1148,9 +1148,9 @@ protected def Fintype.total : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
   toFun v :=
     { toFun := fun f => ∑ i, f i • v i
       map_add' := fun f g => by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
-      map_smul' := fun r f => by simp_rw [Finset.smul_sum, smul_smul]; rfl }
+      map_smul' := fun r f => by simp_rw [Finset.smul_sum', smul_smul]; rfl }
   map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+  map_smul' r v := by ext; simp [Finset.smul_sum', smul_comm]
 #align fintype.total Fintype.total
 
 variable {S}

@@ -301,7 +301,7 @@ variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     (f * g) • h = f • g • h := by
   ext n
-  simp only [mul_apply, smul_apply, sum_smul, mul_smul, smul_sum, Finset.sum_sigma']
+  simp only [mul_apply, smul_apply, sum_smul, mul_smul, smul_sum', Finset.sum_sigma']
   apply Finset.sum_bij
   pick_goal 5
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ _H

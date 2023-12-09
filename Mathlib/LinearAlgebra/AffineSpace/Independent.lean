@@ -507,7 +507,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr
     have hw' : (∑ j in s, (r • (w₁ - w₂) - w) j) = 0 := by
       simp_rw [Pi.sub_apply, Pi.smul_apply, Pi.sub_apply, smul_sub, Finset.sum_sub_distrib, ←
-        Finset.smul_sum, hw, hw₁, hw₂, sub_self]
+        Finset.smul_sum', hw, hw₁, hw₂, sub_self]
     have hr' := h s _ hw' hr i hi
     rw [eq_comm, ← sub_eq_zero, ← smul_eq_mul]
     exact hr'

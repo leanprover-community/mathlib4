@@ -582,7 +582,7 @@ nonrec theorem integral_finset_sum {ι} {s : Finset ι} {f : ι → ℝ → E}
     (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     ∫ x in a..b, ∑ i in s, f i x ∂μ = ∑ i in s, ∫ x in a..b, f i x ∂μ := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_finset_sum s fun i hi => (h i hi).def,
-    Finset.smul_sum]
+    Finset.smul_sum']
 #align interval_integral.integral_finset_sum intervalIntegral.integral_finset_sum
 
 @[simp]

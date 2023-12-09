@@ -324,7 +324,7 @@ def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
       simp_rw [← add_mul, ← C_add, Pi.add_apply]
     rw [h]
   map_smul' c f := by
-    simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
+    simp_rw [Finset.smul_sum', C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
 
 -- Porting note: There was originally '@[simp]' on this line but it was removed because

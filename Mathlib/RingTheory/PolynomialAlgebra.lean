@@ -57,7 +57,7 @@ def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
 
 theorem toFunBilinear_apply_eq_sum (a : A) (p : R[X]) :
     toFunBilinear R A a p = p.sum fun n r => monomial n (a * algebraMap R A r) := by
-  simp only [toFunBilinear_apply_apply, aeval_def, eval₂_eq_sum, Polynomial.sum, Finset.smul_sum]
+  simp only [toFunBilinear_apply_apply, aeval_def, eval₂_eq_sum, Polynomial.sum, Finset.smul_sum']
   congr with i : 1
   rw [← Algebra.smul_def, ← C_mul', mul_smul_comm, C_mul_X_pow_eq_monomial, ← Algebra.commutes,
     ← Algebra.smul_def, smul_monomial]

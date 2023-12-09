@@ -275,7 +275,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDomain R] [IsDedek
     exact hgI _ (hg' j hjs)
   refine ⟨fun i => algebraMap R S (g' i), ?_, j, hjs, hgI⟩
   have eq : f (∑ i in s, g' i • b i) = 0 := by
-    rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
+    rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum']
     refine Finset.sum_congr rfl ?_
     intro i hi
     rw [LinearMap.map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
@@ -344,7 +344,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       _ = 0 := Finset.sum_eq_zero fun k _ => ?_
     · simp only [Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
         mul_ite, mul_one, mul_zero, ite_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ]
-    · simp only [Matrix.mul_apply, Finset.smul_sum, Finset.sum_smul, smul_smul]
+    · simp only [Matrix.mul_apply, Finset.smul_sum', Finset.sum_smul, smul_smul]
       rw [Finset.sum_comm]
     · rw [A_smul, smul_zero]
   -- In the rings of integers we have the desired inclusion.
@@ -355,7 +355,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [smul_eq_mul, mul_comm, ← Algebra.smul_def] at hx ⊢
     rw [← Submodule.Quotient.mk_eq_zero, Submodule.Quotient.mk_smul]
     obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
-    rw [← quot_x_eq, Finset.smul_sum]
+    rw [← quot_x_eq, Finset.smul_sum']
     conv =>
       lhs; congr; next => skip
       intro x; rw [smul_comm A.det, d_smul, smul_zero]

@@ -355,7 +355,7 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     by congr; exact traceMatrix_of_basis_mulVec _ _
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
-    rw [← B.basis.sum_repr z, Finset.smul_sum]
+    rw [← B.basis.sum_repr z, Finset.smul_sum']
     refine' Subalgebra.sum_mem _ fun i _ => _
     replace this := this i
     rw [← discr_def, Pi.smul_apply, mem_bot] at this

@@ -143,7 +143,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
   toFun f := ∑ i : ι, (f i).comp (proj i)
   invFun f i := f.comp (single i)
   map_add' f g := by simp only [Pi.add_apply, add_comp, Finset.sum_add_distrib]
-  map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
+  map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum', RingHom.id_apply]
   left_inv f := by
     ext i x
     simp [apply_single]

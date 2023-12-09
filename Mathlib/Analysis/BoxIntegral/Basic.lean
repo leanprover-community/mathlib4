@@ -147,7 +147,7 @@ theorem integralSum_neg (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (�
 @[simp]
 theorem integralSum_smul (c : ℝ) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I) :
     integralSum (c • f) vol π = c • integralSum f vol π := by
-  simp only [integralSum, Finset.smul_sum, Pi.smul_apply, ContinuousLinearMap.map_smul]
+  simp only [integralSum, Finset.smul_sum', Pi.smul_apply, ContinuousLinearMap.map_smul]
 #align box_integral.integral_sum_smul BoxIntegral.integralSum_smul
 
 variable [Fintype ι]

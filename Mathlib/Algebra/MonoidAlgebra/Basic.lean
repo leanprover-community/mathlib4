@@ -646,7 +646,7 @@ instance smulCommClass_self [SMulCommClass R k k] :
       rw [coe_smul]
       refine Eq.symm (Eq.trans (congr_arg (sum a)
         (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
-      simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
+      simp only [mul_apply, Finsupp.sum, Finset.smul_sum', smul_ite, mul_smul_comm,
         imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]⟩
 #align monoid_algebra.smul_comm_class_self MonoidAlgebra.smulCommClass_self
 

@@ -68,7 +68,7 @@ theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
 @[simp]
 theorem trace_smul [Monoid α] [DistribMulAction α R] (r : α) (A : Matrix n n R) :
     trace (r • A) = r • trace A :=
-  Finset.smul_sum.symm
+  Finset.smul_sum'.symm
 #align matrix.trace_smul Matrix.trace_smul
 
 @[simp]

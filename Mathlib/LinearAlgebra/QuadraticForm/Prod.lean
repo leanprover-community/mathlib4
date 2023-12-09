@@ -295,7 +295,7 @@ variable [Fintype ι]
 @[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     associated (pi Q) = ∑ i, (Q i).associated.comp (.proj i) (.proj i) := by
   dsimp [associated, associatedHom]
-  rw [polarBilin_pi, Finset.smul_sum]
+  rw [polarBilin_pi, Finset.smul_sum']
   rfl
 
 end Ring

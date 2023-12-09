@@ -580,7 +580,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
       apply Subtype.eq
       change (∑ i in s.attach, (c • f i) • _) = _
       simp only [smul_eq_mul, mul_smul]
-      exact Finset.smul_sum.symm
+      exact Finset.smul_sum'.symm
   · rw [LinearMap.range_eq_top]
     rintro ⟨n, hn⟩
     change n ∈ N at hn

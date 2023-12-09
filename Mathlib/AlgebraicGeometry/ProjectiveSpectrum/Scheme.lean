@@ -175,7 +175,7 @@ theorem MemCarrier.clear_denominator' [DecidableEq (Away f)] {z : Localization.A
     IsLocalization.exist_integer_multiples_of_finset (Submonoid.powers f) (c.support.image c)
   choose acd hacd using hN
   refine' ⟨c, N, acd, _⟩
-  rw [← eq1, smul_sum, map_sum, ← sum_attach]
+  rw [← eq1, smul_sum', map_sum, ← sum_attach]
   congr 1
   ext i
   rw [_root_.map_mul, hacd, (Classical.choose_spec i.1.2).2, smul_eq_mul, smul_mul_assoc]

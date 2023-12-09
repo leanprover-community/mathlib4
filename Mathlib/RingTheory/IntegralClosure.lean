@@ -605,7 +605,7 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
 theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
     p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
   ext
-  simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
+  simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum',
     Ne.def, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
   -- porting note: added the following `simp only`
   simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,

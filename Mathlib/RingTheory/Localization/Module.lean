@@ -47,7 +47,7 @@ theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : Linear
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   specialize hli s g' _ i hi
-  · rw [← @smul_zero _ M _ _ (a : R), ← hg, Finset.smul_sum]
+  · rw [← @smul_zero _ M _ _ (a : R), ← hg, Finset.smul_sum']
     refine' Finset.sum_congr rfl fun i hi => _
     rw [← IsScalarTower.algebraMap_smul Rₛ, hg' i hi, smul_assoc]
   refine' (IsLocalization.map_units Rₛ a).mul_right_eq_zero.mp _
@@ -77,7 +77,7 @@ theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 := by
     apply_fun ((a : R) • ·) at hg
-    rw [smul_zero, Finset.smul_sum] at hg
+    rw [smul_zero, Finset.smul_sum'] at hg
     rw [map_sum, ← hg]
     refine' Finset.sum_congr rfl fun i hi => _
     rw [← smul_assoc, ← hg' i hi, Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, ←
