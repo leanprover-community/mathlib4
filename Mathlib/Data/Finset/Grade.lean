@@ -13,6 +13,11 @@ import Mathlib.Order.Grade
 
 This file characterises atoms, coatoms and the covering relation in finsets and multisets. It also
 proves that they form a `ℕ`-graded order.
+
+## Main declarations
+
+* `Multiset.instGradeMinOrder_nat`: Multisets are `ℕ`-graded
+* `Finset.instGradeMinOrder_nat`: Finsets are `ℕ`-graded
 -/
 
 open Order
@@ -26,16 +31,16 @@ variable {s t : Multiset α} {a : α}
   ⟨lt_cons_self _ _, fun t hst hts ↦ (covby_succ _).2 (card_lt_of_lt hst) $ by
     simpa using card_lt_of_lt hts⟩
 
-lemma _root_.Covby.exists_multiset_cons (h : s ⋖ t) : ∃ a, t = a ::ₘ s :=
-  (lt_iff_cons_le.1 h.lt).imp fun _a ha ↦ ha.eq_of_not_gt $ h.2 $ lt_cons_self _ _
+lemma _root_.Covby.exists_multiset_cons (h : s ⋖ t) : ∃ a, a ::ₘ s = t :=
+  (lt_iff_cons_le.1 h.lt).imp fun _a ha ↦ ha.eq_of_not_lt $ h.2 $ lt_cons_self _ _
 
-lemma covby_iff : s ⋖ t ↔ ∃ a, t = a ::ₘ s :=
+lemma covby_iff : s ⋖ t ↔ ∃ a, a ::ₘ s = t :=
   ⟨Covby.exists_multiset_cons, by rintro ⟨a, rfl⟩; exact covby_cons _ _⟩
 
 lemma _root_.Covby.card_multiset (h : s ⋖ t) : card s ⋖ card t := by
   obtain ⟨a, rfl⟩ := h.exists_multiset_cons; rw [card_cons]; exact covby_succ _
 
-lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := bot_covby_iff.symm.trans covby_iff
+lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := by simp [← bot_covby_iff, covby_iff, eq_comm]
 
 @[simp] lemma isAtom_singleton (a : α) : IsAtom ({a} : Multiset α) := isAtom_iff.2 ⟨_, rfl⟩
 
@@ -126,15 +131,15 @@ end DecidableEq
 @[simp] lemma isAtom_singleton (a : α) : IsAtom ({a} : Finset α) :=
   ⟨singleton_ne_empty a, fun _ ↦ eq_empty_of_ssubset_singleton⟩
 
-protected lemma isAtom_iff : IsAtom s ↔ ∃ a, {a} = s :=
-  bot_covby_iff.symm.trans $ covby_iff_exists_cons.trans $ by simp
+protected lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := by
+  simp [← bot_covby_iff, covby_iff_exists_cons, eq_comm]
 
 section Fintype
 variable [Fintype α] [DecidableEq α]
 
 lemma isCoatom_compl_singleton (a : α) : IsCoatom ({a}ᶜ : Finset α) := (isAtom_singleton a).compl
 
-protected lemma isCoatom_iff : IsCoatom s ↔ ∃ a, {a}ᶜ = s := by
+protected lemma isCoatom_iff : IsCoatom s ↔ ∃ a, s = {a}ᶜ := by
   simp_rw [← isAtom_compl, Finset.isAtom_iff, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 
 end Fintype

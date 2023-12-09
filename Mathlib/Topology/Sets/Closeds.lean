@@ -189,6 +189,8 @@ def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
 #align topological_space.closeds.singleton TopologicalSpace.Closeds.singleton
 
+@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
 end Closeds
 
 /-- The complement of a closed set as an open set. -/
@@ -257,7 +259,7 @@ TODO: use `minimal_nonempty_closed_eq_singleton` to show that an atom in `Topolo
 in a T₀ space is a singleton. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = Closeds.singleton x := by
-  simpa only [← Closeds.isAtom_coe, set.is_atom_iff, set_like.ext_iff, set.ext_iff]
+  simp [← Closeds.isAtom_coe, Set.isAtom_iff, SetLike.ext_iff, Set.ext_iff]
 #align topological_space.closeds.is_atom_iff TopologicalSpace.Closeds.isAtom_iff
 
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
