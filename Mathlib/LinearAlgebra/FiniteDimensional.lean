@@ -838,6 +838,8 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
+/-- If a submodule is less than or equal to a finite-dimensional
+submodule with the same or smaller dimension, they are equal. -/
 theorem eq_of_le_of_finrank_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (hle : S₁ ≤ S₂)
     (hd : finrank K S₂ ≤ finrank K S₁) : S₁ = S₂ := by
   rw [← LinearEquiv.finrank_eq (Submodule.comapSubtypeEquivOfLe hle)] at hd
@@ -857,10 +859,14 @@ section Subalgebra
 variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
   [hfin : FiniteDimensional K E] (h_le : F ≤ E)
 
+/-- If a subalgebra is less than or equal to a finite-dimensional
+subalgebra with the same or smaller dimension, they are equal. -/
 theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_finrank : finrank K E ≤ finrank K F) : F = E :=
   haveI : Module.Finite K (Subalgebra.toSubmodule E) := hfin
   Subalgebra.toSubmodule_injective <| FiniteDimensional.eq_of_le_of_finrank_le h_le h_finrank
 
+/-- If a subalgebra is less than or equal to a finite-dimensional
+subalgebra with the same dimension, they are equal. -/
 theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_finrank : finrank K F = finrank K E) : F = E :=
   Subalgebra.eq_of_le_of_finrank_le h_le h_finrank.ge
 

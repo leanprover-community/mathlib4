@@ -757,17 +757,25 @@ theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
   rfl
 #align intermediate_field.to_subalgebra_eq_iff IntermediateField.toSubalgebra_eq_iff
 
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
+then `F = E`. -/
 theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K E ≤ finrank K F) : F = E :=
   haveI : Module.Finite K E.toSubalgebra := hfin
   toSubalgebra_injective <| Subalgebra.eq_of_le_of_finrank_le h_le h_finrank
 #align intermediate_field.eq_of_le_of_finrank_le IntermediateField.eq_of_le_of_finrank_le
 
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[F : K] = [E : K]` are finite,
+then `F = E`. -/
 theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K F = finrank K E) : F = E :=
   eq_of_le_of_finrank_le h_le h_finrank.ge
 #align intermediate_field.eq_of_le_of_finrank_eq IntermediateField.eq_of_le_of_finrank_eq
 
+-- If `F ≤ E` are two intermediate fields of a finite extension `L / K` such that
+-- `[L : F] ≤ [L : E]`, then `F = E`. Marked as private since it's a direct corollary of
+-- `eq_of_le_of_finrank_le'` (the `FiniteDimensional K L` implies `FiniteDimensional F L`
+-- automatically by typeclass resolution).
 private theorem eq_of_le_of_finrank_le'' [FiniteDimensional K L] (h_le : F ≤ E)
     (h_finrank : finrank F L ≤ finrank E L) : F = E := by
   apply eq_of_le_of_finrank_le h_le
@@ -776,6 +784,8 @@ private theorem eq_of_le_of_finrank_le'' [FiniteDimensional K L] (h_le : F ≤ E
   have h3 : 0 < finrank E L := finrank_pos
   nlinarith
 
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F] ≤ [L : E]` are finite,
+then `F = E`. -/
 theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L ≤ finrank E L) : F = E := by
   refine le_antisymm h_le (fun l hl ↦ ?_)
@@ -783,6 +793,8 @@ theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
     ((extendScalars_le_extendScalars_iff (le_refl F) h_le).2 h_le) h_finrank, mem_extendScalars]
 #align intermediate_field.eq_of_le_of_finrank_le' IntermediateField.eq_of_le_of_finrank_le'
 
+/-- If `F ≤ E` are two intermediate fields of `L / K` such that `[L : F] = [L : E]` are finite,
+then `F = E`. -/
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
