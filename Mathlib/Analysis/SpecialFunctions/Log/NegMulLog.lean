@@ -72,6 +72,9 @@ lemma convexOn_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) 
 lemma mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
 
+lemma mul_log_nonpos {x : ℝ} (hx₀ : 0 ≤ x) (hx₁ : x ≤ 1) : x * log x ≤ 0 :=
+  mul_nonpos_of_nonneg_of_nonpos hx₀ (log_nonpos hx₀ hx₁)
+
 section negMulLog
 
 /-- The function `x ↦ - x * log x` from `ℝ` to `ℝ`. -/
@@ -87,7 +90,7 @@ lemma negMulLog_eq_neg : negMulLog = fun x ↦ - (x * log x) := by simp [negMulL
 
 lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog x := by
   rw [negMulLog_eq_neg, neg_nonneg]
-  exact mul_nonpos_of_nonneg_of_nonpos h1 (log_nonpos h1 h2)
+  exact mul_log_nonpos h1 h2
 
 lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negMulLog y := by
   simp only [negMulLog, neg_mul, neg_add_rev]
