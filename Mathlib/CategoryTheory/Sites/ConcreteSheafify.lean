@@ -1,37 +1,35 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.HasSheafify
+/-!
+
+This file proves that a sufficiently nice concrete category `D`, one can sheafify with `D` valued
+presheaves.
+-/
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Opposite
+open Limits
 
 universe w v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
-variable (D : Type w) [Category.{max v u} D]
-
-variable [ConcreteCategory.{max v u} D]
-
-variable [PreservesLimits (forget D)]
-
-variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
-variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
-variable [ReflectsIsomorphisms (forget D)]
-
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+  (D : Type w) [Category.{max v u} D]
+  [ConcreteCategory.{max v u} D]
+  [PreservesLimits (forget D)]
+  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+  [ReflectsIsomorphisms (forget D)]
+  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 instance hasSheafifyOfPlusPlus : HasWeakSheafify J D where
   isRightAdjoint := ⟨inferInstance⟩
-
--- instance : HasWeakSheafify J TypeMax.{v, u} := inferInstance
-  -- @hasSheafifyOfPlusPlus C _ J TypeMax.{v, u} _ _ _ _ _
-  --   (fun _ ↦ (inferInstance : Limits.PreservesColimitsOfShape _ (𝟭 _))) _
 
 /--
 The functor `plusPlusSheaf`, doing the plus construction twice, is isomorphic to any choice of
