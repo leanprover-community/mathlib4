@@ -319,8 +319,8 @@ end
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
-  let b := Module.Free.basisUnique ι h
-  let h : b.repr v default ≠ 0 := mt Module.Free.basisUnique_repr_eq_zero_iff.mp hv
+  let b := FiniteDimensional.basisUnique ι h
+  let h : b.repr v default ≠ 0 := mt FiniteDimensional.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
     { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
       invFun := fun f => f default • v
