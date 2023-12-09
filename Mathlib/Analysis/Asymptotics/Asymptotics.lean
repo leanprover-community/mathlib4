@@ -1306,6 +1306,28 @@ theorem isBigO_pure {x} : f'' =O[pure x] g'' ↔ g'' x = 0 → f'' x = 0 :=
 end ZeroConst
 
 @[simp]
+theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ :=
+  by rw [IsBigOWith_def]; rfl
+#align asymptotics.is_O_with_principal Asymptotics.isBigOWith_principal
+
+theorem isBigO_principal {s : Set α} : f =O[𝓟 s] g ↔ ∃ c, ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
+  rw [isBigO_iff]; rfl
+#align asymptotics.is_O_principal Asymptotics.isBigO_principal
+
+@[simp]
+theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'' x = 0 := by
+  refine ⟨fun h x hx ↦ norm_le_zero_iff.1 ?_, fun h ↦ ?_⟩
+  · simp only [isLittleO_iff, isBigOWith_principal] at h
+    have : Tendsto (fun c : ℝ => c * ‖g' x‖) (𝓝[>] 0) (𝓝 0) :=
+    ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
+      inf_le_left
+    apply le_of_tendsto_of_tendsto tendsto_const_nhds this
+    apply eventually_nhdsWithin_iff.2 (eventually_of_forall (fun c hc ↦ ?_))
+    exact eventually_principal.1 (h hc) x hx
+  · apply (isLittleO_zero g' _).congr' ?_ EventuallyEq.rfl
+    exact fun x hx ↦ (h x hx).symm
+
+@[simp]
 theorem isBigOWith_top : IsBigOWith c ⊤ f g ↔ ∀ x, ‖f x‖ ≤ c * ‖g x‖ := by rw [IsBigOWith_def]; rfl
 #align asymptotics.is_O_with_top Asymptotics.isBigOWith_top
 
@@ -1314,26 +1336,9 @@ theorem isBigO_top : f =O[⊤] g ↔ ∃ C, ∀ x, ‖f x‖ ≤ C * ‖g x‖ :
 #align asymptotics.is_O_top Asymptotics.isBigO_top
 
 @[simp]
-theorem isLittleO_top : f'' =o[⊤] g'' ↔ ∀ x, f'' x = 0 := by
-  refine' ⟨_, fun h => (isLittleO_zero g'' ⊤).congr (fun x => (h x).symm) fun x => rfl⟩
-  simp only [isLittleO_iff, eventually_top]
-  refine' fun h x => norm_le_zero_iff.1 _
-  have : Tendsto (fun c : ℝ => c * ‖g'' x‖) (𝓝[>] 0) (𝓝 0) :=
-    ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
-      inf_le_left
-  exact
-    le_of_tendsto_of_tendsto tendsto_const_nhds this
-      (eventually_nhdsWithin_iff.2 <| eventually_of_forall fun c hc => h hc x)
+theorem isLittleO_top : f'' =o[⊤] g' ↔ ∀ x, f'' x = 0 := by
+  simp only [← principal_univ, isLittleO_principal, mem_univ, forall_true_left]
 #align asymptotics.is_o_top Asymptotics.isLittleO_top
-
-@[simp]
-theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ :=
-  by rw [IsBigOWith_def]; rfl
-#align asymptotics.is_O_with_principal Asymptotics.isBigOWith_principal
-
-theorem isBigO_principal {s : Set α} : f =O[𝓟 s] g ↔ ∃ c, ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
-  rw [isBigO_iff]; rfl
-#align asymptotics.is_O_principal Asymptotics.isBigO_principal
 
 section
 

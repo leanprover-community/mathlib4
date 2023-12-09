@@ -85,6 +85,22 @@ theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x)
   hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_at_iff_tendsto_slope hasDerivAt_iff_tendsto_slope
 
+theorem hasDerivAt_iff_tendsto_slope_zero :
+    HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
+  have : 𝓝[≠] x = Filter.map (fun t ↦ x + t) (𝓝[≠] 0) := by
+    simp [nhdsWithin, map_add_left_nhds_zero x, Filter.map_inf, add_right_injective x]
+  simp [hasDerivAt_iff_tendsto_slope, this, slope, Function.comp]
+
+alias ⟨HasDerivAt.tendsto_slope_zero, _⟩ := hasDerivAt_iff_tendsto_slope_zero
+
+theorem HasDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+    Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[>] 0) (𝓝 f') :=
+  h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
+
+theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+    Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
+  h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
+
 end NormedField
 
 /-! ### Upper estimates on liminf and limsup -/

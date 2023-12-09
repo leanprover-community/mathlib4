@@ -29,13 +29,6 @@ noncomputable section
 
 variable {J : Type v} [SmallCategory J]
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs)
-  "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
-abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
-
-
 namespace GroupCat
 
 @[to_additive]
@@ -217,12 +210,6 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_preserves_limits AddGroupCat.forgetPreservesLimits
 
 end GroupCat
-
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommGroupCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs)
-  "An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues."]
-abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 
 namespace CommGroupCat
 

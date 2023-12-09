@@ -442,7 +442,7 @@ theorem continuous_integral_integral :
     rw [← lintegral_prod_of_measurable _ (this _), ← L1.ofReal_norm_sub_eq_lintegral]
   rw [← ofReal_zero]
   refine' (continuous_ofReal.tendsto 0).comp _
-  rw [← tendsto_iff_norm_tendsto_zero]; exact tendsto_id
+  rw [← tendsto_iff_norm_sub_tendsto_zero]; exact tendsto_id
 #align measure_theory.continuous_integral_integral MeasureTheory.continuous_integral_integral
 
 /-- **Fubini's Theorem**: For integrable functions on `α × β`,

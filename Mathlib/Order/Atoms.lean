@@ -642,7 +642,7 @@ variable [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 def equivBool {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α] : α ≃ Bool
     where
   toFun x := x = ⊤
-  invFun x := cond x ⊤ ⊥
+  invFun x := x.casesOn ⊥ ⊤
   left_inv x := by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top]
   right_inv x := by cases x <;> simp [bot_ne_top]
 #align is_simple_order.equiv_bool IsSimpleOrder.equivBool

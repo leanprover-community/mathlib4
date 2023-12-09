@@ -155,8 +155,8 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp only [or_iff_not_imp_left] at h
       exists h
       by_cases h : xs_hd ∈ s
-      · have : {xs_hd} ⊆ s
-        simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
+      · have : {xs_hd} ⊆ s := by
+          simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
         simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,
           eq_self_iff_true]
       · left

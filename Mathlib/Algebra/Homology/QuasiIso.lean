@@ -36,31 +36,31 @@ variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
 /-- A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 -/
 class QuasiIso (f : C ⟶ D) : Prop where
-  IsIso : ∀ i, IsIso ((homologyFunctor V c i).map f)
+  isIso : ∀ i, IsIso ((homologyFunctor V c i).map f)
 #align quasi_iso QuasiIso
 
-attribute [instance] QuasiIso.IsIso
+attribute [instance] QuasiIso.isIso
 
 instance (priority := 100) quasiIso_of_iso (f : C ⟶ D) [IsIso f] : QuasiIso f where
-  IsIso i := by
+  isIso i := by
     change IsIso ((homologyFunctor V c i).mapIso (asIso f)).hom
     infer_instance
 #align quasi_iso_of_iso quasiIso_of_iso
 
 instance quasiIso_comp (f : C ⟶ D) [QuasiIso f] (g : D ⟶ E) [QuasiIso g] : QuasiIso (f ≫ g) where
-  IsIso i := by
+  isIso i := by
     rw [Functor.map_comp]
     infer_instance
 #align quasi_iso_comp quasiIso_comp
 
 theorem quasiIso_of_comp_left (f : C ⟶ D) [QuasiIso f] (g : D ⟶ E) [QuasiIso (f ≫ g)] :
     QuasiIso g :=
-  { IsIso := fun i => IsIso.of_isIso_fac_left ((homologyFunctor V c i).map_comp f g).symm }
+  { isIso := fun i => IsIso.of_isIso_fac_left ((homologyFunctor V c i).map_comp f g).symm }
 #align quasi_iso_of_comp_left quasiIso_of_comp_left
 
 theorem quasiIso_of_comp_right (f : C ⟶ D) (g : D ⟶ E) [QuasiIso g] [QuasiIso (f ≫ g)] :
     QuasiIso f :=
-  { IsIso := fun i => IsIso.of_isIso_fac_right ((homologyFunctor V c i).map_comp f g).symm }
+  { isIso := fun i => IsIso.of_isIso_fac_right ((homologyFunctor V c i).map_comp f g).symm }
 #align quasi_iso_of_comp_right quasiIso_of_comp_right
 
 namespace HomotopyEquiv

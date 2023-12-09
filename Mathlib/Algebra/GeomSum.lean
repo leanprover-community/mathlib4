@@ -189,9 +189,23 @@ theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
   (Commute.all x y).geom_sum₂_mul n
 #align geom_sum₂_mul geom_sum₂_mul
 
+theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
+    x - y ∣ x ^ n - y ^ n :=
+  Dvd.intro _ $ h.mul_geom_sum₂ _
+
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
-  Dvd.intro_left _ (geom_sum₂_mul x y n)
+  (Commute.all x y).sub_dvd_pow_sub_pow n
 #align sub_dvd_pow_sub_pow sub_dvd_pow_sub_pow
+
+theorem one_sub_dvd_one_sub_pow [Ring α] (x : α) (n : ℕ) :
+    1 - x ∣ 1 - x ^ n := by
+  conv_rhs => rw [← one_pow n]
+  exact (Commute.one_left x).sub_dvd_pow_sub_pow n
+
+theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
+    x - 1 ∣ x ^ n - 1 := by
+  conv_rhs => rw [← one_pow n]
+  exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   cases' le_or_lt y x with h h

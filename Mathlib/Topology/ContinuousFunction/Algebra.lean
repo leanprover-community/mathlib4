@@ -912,13 +912,13 @@ variable {β : Type*} [TopologicalSpace β]
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance covariant_class_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
+instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
   [CovariantClass β β (· * ·) (· ≤ ·)] :
   CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
-instance covariant_class_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
+instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
   [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
   CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
 ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
@@ -970,13 +970,13 @@ instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [Con
     StarAddMonoid C(α, β) where
   star_add _ _ := ext fun _ => star_add _ _
 
-instance starSemigroup [Semigroup β] [ContinuousMul β] [StarSemigroup β] [ContinuousStar β] :
-    StarSemigroup C(α, β) where
+instance starMul [Mul β] [ContinuousMul β] [StarMul β] [ContinuousStar β] :
+    StarMul C(α, β) where
   star_mul _ _ := ext fun _ => star_mul _ _
 
-instance [NonUnitalSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
+instance [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
-  { ContinuousMap.starAddMonoid, ContinuousMap.starSemigroup with }
+  { ContinuousMap.starAddMonoid, ContinuousMap.starMul with }
 
 instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
     [ContinuousConstSMul R β] : StarModule R C(α, β) where

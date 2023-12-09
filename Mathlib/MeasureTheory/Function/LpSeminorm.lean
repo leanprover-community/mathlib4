@@ -490,8 +490,8 @@ theorem snorm_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ,
 
 theorem snorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
     snorm (s.indicator f - t.indicator f) p μ = snorm ((s ∆ t).indicator f) p μ :=
-    snorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
-  simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
+  snorm_congr_norm_ae <| ae_of_all _ fun x ↦ by
+    simp only [Pi.sub_apply, Set.apply_indicator_symmDiff norm_neg]
 
 @[simp]
 theorem snorm'_norm {f : α → F} : snorm' (fun a => ‖f a‖) q μ = snorm' f q μ := by simp [snorm']

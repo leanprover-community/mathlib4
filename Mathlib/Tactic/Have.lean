@@ -6,48 +6,23 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 import Lean
 import Mathlib.Data.Array.Defs
 
+/-!
+# Extending `have`, `let` and `suffices`
+
+This file extends the `have`, `let` and `suffices` tactics to allow the addition of hypotheses to
+the context without requiring their proofs to be provided immediately.
+-/
+
 namespace Mathlib.Tactic
 open Lean Elab.Tactic Meta Parser Term Syntax.MonadTraverser
 
-section deleteme -- once lean4#2262 is merged
-
-def hygieneInfoFn : ParserFn := fun c s =>
-  let input := c.input
-  let finish pos str trailing s :=
-    let info  := SourceInfo.original str pos trailing pos
-    let ident := mkIdent info str .anonymous
-    let stx   := mkNode hygieneInfoKind #[ident]
-    s.pushSyntax stx
-  let els s :=
-    let str := mkEmptySubstringAt input s.pos
-    finish s.pos str str s
-  if s.stxStack.isEmpty then els s else
-    let prev := s.stxStack.back
-    if let .original leading pos trailing endPos := prev.getTailInfo then
-      let str := mkEmptySubstringAt input endPos
-      let s := s.popSyntax.pushSyntax <| prev.setTailInfo (.original leading pos str endPos)
-      finish endPos str trailing s
-    else els s
-
-def hygieneInfoNoAntiquot : Parser := {
-  fn   := hygieneInfoFn
-  info := nodeInfo hygieneInfoKind epsilonInfo
-}
-
-@[combinator_formatter hygieneInfoNoAntiquot]
-def hygieneInfoNoAntiquot.formatter : PrettyPrinter.Formatter := goLeft
-@[combinator_parenthesizer hygieneInfoNoAntiquot]
-def hygieneInfoNoAntiquot.parenthesizer : PrettyPrinter.Parenthesizer := goLeft
-@[run_parser_attribute_hooks] def hygieneInfo : Parser :=
-  withAntiquot (mkAntiquot "hygieneInfo" hygieneInfoKind (anonymous := false)) hygieneInfoNoAntiquot
-
-end deleteme
-
+/-- A parser for optional binder identifiers -/
 def optBinderIdent : Parser := leading_parser
   -- Note: the withResetCache is because leading_parser seems to add a cache boundary,
   -- which causes the `hygieneInfo` parser not to be able to undo the trailing whitespace
   (ppSpace >> Term.binderIdent) <|> withResetCache hygieneInfo
 
+/-- Retrieves the name of the optional identifier, if provided. Returns `this` otherwise -/
 def optBinderIdent.name (id : TSyntax ``optBinderIdent) : Name :=
   if id.raw[0].isIdent then id.raw[0].getId else HygieneInfo.mkIdent ⟨id.raw[0]⟩ `this |>.getId
 
@@ -74,6 +49,13 @@ syntax "let " haveIdLhs' : tactic
 syntax "suffices" haveIdLhs' : tactic
 
 open Elab Term in
+/--
+Adds hypotheses to the context, turning them into goals to be proved later if their proof terms
+aren't provided (`t: Option Term := none`).
+
+If the bound term is intended to be kept in the context, pass `keepTerm : Bool := true`. This is
+useful when extending the `let` tactic, which is expected to show the proof term in the infoview.
+-/
 def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
   (bis : Array (TSyntax ``letIdBinder))
   (t : Option Term) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
@@ -95,16 +77,21 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       Term.addTermInfo' (isBinder := true) name.raw[0] (mkFVar fvar)
     pure (goal1, goal2)
 
+/-- An extension of the `have` tactic that turns the hypothesis into a goal to be proved later -/
 elab_rules : tactic
 | `(tactic| have $n:optBinderIdent $bs* $[: $t:term]?) => do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
   replaceMainGoal [goal1, goal2]
 
+/--
+An extension of the `suffices` tactic that turns the hypothesis into a goal to be proved later
+-/
 elab_rules : tactic
 | `(tactic| suffices $n:optBinderIdent $bs* $[: $t:term]?) => do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
   replaceMainGoal [goal2, goal1]
 
+/-- An extension of the `let` tactic that turns the hypothesis into a goal to be proved later -/
 elab_rules : tactic
 | `(tactic| let $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t true

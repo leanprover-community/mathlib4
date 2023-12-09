@@ -90,6 +90,11 @@ theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n �
   | n + 2 => by simp
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
+theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1
+  | 0 => by decide
+  | 1 => by decide
+  | n + 2 => by simp
+
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std

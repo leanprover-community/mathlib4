@@ -225,11 +225,13 @@ theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
   rfl
 #align centroid_hom.id_comp CentroidHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h ↦ ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
 #align centroid_hom.cancel_right CentroidHom.cancel_right
 
+@[simp]
 theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

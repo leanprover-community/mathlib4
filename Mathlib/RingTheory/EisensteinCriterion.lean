@@ -52,10 +52,10 @@ set_option linter.uppercaseLean3 false in
 theorem le_natDegree_of_map_eq_mul_X_pow {n : ℕ} {P : Ideal R} (hP : P.IsPrime) {q : R[X]}
     {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hc0 : c.degree = 0) :
     n ≤ q.natDegree :=
-  WithBot.coe_le_coe.1
+  Nat.cast_le.1
     (calc
       ↑n = degree (q.map (mk P)) := by
-        rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one, Nat.cast_withBot]
+        rw [hq, degree_mul, hc0, zero_add, degree_pow, degree_X, nsmul_one]
       _ ≤ degree q := (degree_map_le _ _)
       _ ≤ natDegree q := degree_le_natDegree
       )

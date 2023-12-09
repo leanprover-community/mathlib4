@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Nonempty
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
 
 #align_import logic.function.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
@@ -293,7 +292,7 @@ theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
   intro hf
   let T : Type max u v := Sigma f
-  cases' hf (Set T) with U hU
+  cases hf (Set T) with | intro U hU =>
   let g : Set T → T := fun s ↦ ⟨U, cast hU.symm s⟩
   have hg : Injective g := by
     intro s t h
@@ -878,10 +877,6 @@ end Uncurry
 def Involutive {α} (f : α → α) : Prop :=
   ∀ x, f (f x) = x
 #align function.involutive Function.Involutive
-
-theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
-  funext_iff.symm
-#align function.involutive_iff_iter_2_eq_id Function.involutive_iff_iter_2_eq_id
 
 theorem _root_.Bool.involutive_not : Involutive not :=
   Bool.not_not

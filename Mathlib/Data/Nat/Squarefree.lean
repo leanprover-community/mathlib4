@@ -34,7 +34,7 @@ theorem squarefree_iff_nodup_factors {n : ℕ} (h0 : n ≠ 0) : Squarefree n ↔
 end Nat
 
 theorem Squarefree.nodup_factors {n : ℕ} (hn : Squarefree n) : n.factors.Nodup :=
-    (Nat.squarefree_iff_nodup_factors hn.ne_zero).mp hn
+  (Nat.squarefree_iff_nodup_factors hn.ne_zero).mp hn
 
 namespace Nat
 
@@ -388,7 +388,7 @@ theorem squarefree_mul_iff {m n : ℕ} :
 
 theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.factors.toFinset, p = n := by
-  erw [List.prod_toFinset _ hn.nodup_factors, List.map_id, Nat.prod_factors hn.ne_zero]
+  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id'', Nat.prod_factors hn.ne_zero]
 
 end Nat
 

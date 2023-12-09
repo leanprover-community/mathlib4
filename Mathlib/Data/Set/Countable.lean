@@ -288,6 +288,27 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
   exact (hs.prod ht).image _
 #align set.countable.image2 Set.Countable.image2
 
+/-- If a family of disjoint sets is included in a countable set, then only countably many of
+them are nonempty. -/
+theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
+    (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
+    Set.Countable {t | (f t).Nonempty} := by
+  rw [← Set.countable_coe_iff] at hs ⊢
+  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
+    rintro ⟨t, ⟨x, hx⟩⟩
+    exact ⟨⟨x, (h'f t hx)⟩, hx⟩
+  choose F hF using this
+  have A : Injective F := by
+    rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
+    have A : (f t ∩ f t').Nonempty := by
+      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
+      rw [htt']
+      exact hF _
+    simp only [Subtype.mk.injEq]
+    by_contra H
+    exact not_disjoint_iff_nonempty_inter.2 A (hf H)
+  exact Injective.countable A
+
 end Set
 
 theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=

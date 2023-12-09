@@ -88,8 +88,8 @@ theorem eq_of_testBit_eq {n m : ℕ} (h : ∀ i, testBit n i = testBit m i) : n 
   induction' m using Nat.binaryRec with b' m
   · simp only [zero_testBit] at h
     exact zero_of_testBit_eq_false h
-  suffices h' : n = m
-  · rw [h', show b = b' by simpa using h 0]
+  suffices h' : n = m by
+    rw [h', show b = b' by simpa using h 0]
   exact hn fun i => by convert h (i + 1) using 1 <;> rw [testBit_succ]
 #align nat.eq_of_test_bit_eq Nat.eq_of_testBit_eq
 

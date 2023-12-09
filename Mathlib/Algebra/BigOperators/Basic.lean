@@ -599,8 +599,8 @@ theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → 
   refine' Eq.trans _ (prod_sigma s t fun p => f (p.1, p.2))
   exact
     prod_bij' (fun p _hp => ⟨p.1, p.2⟩) (fun p => mem_sigma.mpr ∘ (h p).mp)
-      (fun p hp => congr_arg f Prod.mk.eta.symm) (fun p _hp => (p.1, p.2))
-      (fun p => (h (p.1, p.2)).mpr ∘ mem_sigma.mp) (fun p _hp => Prod.mk.eta) fun p _hp => p.eta
+      (fun p _ => rfl) (fun p _hp => (p.1, p.2))
+      (fun p => (h (p.1, p.2)).mpr ∘ mem_sigma.mp) (fun p _ => rfl) fun p _hp => p.eta
 #align finset.prod_finset_product Finset.prod_finset_product
 #align finset.sum_finset_product Finset.sum_finset_product
 
@@ -619,8 +619,8 @@ theorem prod_finset_product_right (r : Finset (α × γ)) (s : Finset γ) (t : �
   refine' Eq.trans _ (prod_sigma s t fun p => f (p.2, p.1))
   exact
     prod_bij' (fun p _hp => ⟨p.2, p.1⟩) (fun p => mem_sigma.mpr ∘ (h p).mp)
-      (fun p hp => congr_arg f Prod.mk.eta.symm) (fun p _hp => (p.2, p.1))
-      (fun p => (h (p.2, p.1)).mpr ∘ mem_sigma.mp) (fun p _hp => Prod.mk.eta) fun p _hp => p.eta
+      (fun p _c => rfl) (fun p _hp => (p.2, p.1))
+      (fun p => (h (p.2, p.1)).mpr ∘ mem_sigma.mp) (fun p _ => rfl) fun p _hp => p.eta
 #align finset.prod_finset_product_right Finset.prod_finset_product_right
 #align finset.sum_finset_product_right Finset.sum_finset_product_right
 

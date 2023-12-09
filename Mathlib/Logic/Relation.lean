@@ -6,7 +6,10 @@ Authors: Johannes Hölzl
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Use
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.SimpRw
 
 #align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 

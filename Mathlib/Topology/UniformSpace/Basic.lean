@@ -1968,6 +1968,31 @@ theorem continuous_iff'_left [TopologicalSpace β] {f : β → α} :
   continuous_iff_continuousAt.trans <| forall_congr' fun _ => tendsto_nhds_left
 #align uniform.continuous_iff'_left Uniform.continuous_iff'_left
 
+/-- Consider two functions `f` and `g` which coincide on a set `s` and are continuous there.
+Then there is an open neighborhood of `s` on which `f` and `g` are uniformly close. -/
+lemma exists_is_open_mem_uniformity_of_forall_mem_eq
+    [TopologicalSpace β] {r : Set (α × α)} {s : Set β}
+    {f g : β → α} (hf : ∀ x ∈ s, ContinuousAt f x) (hg : ∀ x ∈ s, ContinuousAt g x)
+    (hfg : s.EqOn f g) (hr : r ∈ 𝓤 α) :
+    ∃ t, IsOpen t ∧ s ⊆ t ∧ ∀ x ∈ t, (f x, g x) ∈ r := by
+  have A : ∀ x ∈ s, ∃ t, IsOpen t ∧ x ∈ t ∧ ∀ z ∈ t, (f z, g z) ∈ r := by
+    intro x hx
+    obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
+    have A : {z | (f x, f z) ∈ t} ∈ 𝓝 x := (hf x hx).preimage_mem_nhds (mem_nhds_left (f x) ht)
+    have B : {z | (g x, g z) ∈ t} ∈ 𝓝 x := (hg x hx).preimage_mem_nhds (mem_nhds_left (g x) ht)
+    rcases _root_.mem_nhds_iff.1 (inter_mem A B) with ⟨u, hu, u_open, xu⟩
+    refine ⟨u, u_open, xu, fun y hy ↦ ?_⟩
+    have I1 : (f y, f x) ∈ t :=  (htsymm.mk_mem_comm).2 (hu hy).1
+    have I2 : (g x, g y) ∈ t := (hu hy).2
+    rw [hfg hx] at I1
+    exact htr (prod_mk_mem_compRel I1 I2)
+  choose! t t_open xt ht using A
+  refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), ?_⟩
+  rintro x hx
+  simp only [mem_iUnion, exists_prop] at hx
+  rcases hx with ⟨y, ys, hy⟩
+  exact ht y ys x hy
+
 end Uniform
 
 theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}

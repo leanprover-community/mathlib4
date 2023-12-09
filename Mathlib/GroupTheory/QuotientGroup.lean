@@ -195,31 +195,31 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* M`."]
-def lift (φ : G →* M) (HN : ∀ x ∈ N, φ x = 1) : Q →* M :=
+def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
   (QuotientGroup.con N).lift φ fun x y h => by
     simp only [QuotientGroup.con, leftRel_apply, Con.rel_mk] at h
     rw [Con.ker_rel]
     calc
       φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
-      _ = φ y := by rw [φ.map_mul, HN _ (N.inv_mem h), mul_one]
+      _ = φ y := by rw [φ.map_mul, HN (N.inv_mem h), mul_one]
 #align quotient_group.lift QuotientGroup.lift
 #align quotient_add_group.lift QuotientAddGroup.lift
 
 @[to_additive (attr := simp)]
-theorem lift_mk {φ : G →* M} (HN : ∀ x ∈ N, φ x = 1) (g : G) : lift N φ HN (g : Q ) = φ g :=
+theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q ) = φ g :=
   rfl
 #align quotient_group.lift_mk QuotientGroup.lift_mk
 #align quotient_add_group.lift_mk QuotientAddGroup.lift_mk
 
 @[to_additive (attr := simp)]
-theorem lift_mk' {φ : G →* M} (HN : ∀ x ∈ N, φ x = 1) (g : G) : lift N φ HN (mk g : Q ) = φ g :=
+theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q ) = φ g :=
   rfl
 -- TODO: replace `mk` with `mk'`)
 #align quotient_group.lift_mk' QuotientGroup.lift_mk'
 #align quotient_add_group.lift_mk' QuotientAddGroup.lift_mk'
 
 @[to_additive (attr := simp)]
-theorem lift_quot_mk {φ : G →* M} (HN : ∀ x ∈ N, φ x = 1) (g : G) :
+theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
     lift N φ HN (Quot.mk _ g : Q ) = φ g :=
   rfl
 #align quotient_group.lift_quot_mk QuotientGroup.lift_quot_mk
@@ -626,7 +626,7 @@ def quotientQuotientEquivQuotientAux : (G ⧸ N) ⧸ M.map (mk' N) →* G ⧸ M 
   lift (M.map (mk' N)) (map N M (MonoidHom.id G) h)
     (by
       rintro _ ⟨x, hx, rfl⟩
-      rw [map_mk' N M _ _ x]
+      rw [mem_ker, map_mk' N M _ _ x]
       exact (QuotientGroup.eq_one_iff _).mpr hx)
 #align quotient_group.quotient_quotient_equiv_quotient_aux QuotientGroup.quotientQuotientEquivQuotientAux
 #align quotient_add_group.quotient_quotient_equiv_quotient_aux QuotientAddGroup.quotientQuotientEquivQuotientAux

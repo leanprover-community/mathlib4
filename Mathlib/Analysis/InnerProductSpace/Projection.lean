@@ -580,6 +580,17 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (orthogonalProjection K v : E
   · simp
 #align orthogonal_projection_eq_self_iff orthogonalProjection_eq_self_iff
 
+@[simp]
+theorem orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 ↔ v ∈ Kᗮ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
+    (zero_mem _) ?_⟩
+  · simpa [h] using sub_orthogonalProjection_mem_orthogonal (K := K) v
+  · simpa
+
+@[simp]
+theorem ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
+  ext; exact orthogonalProjection_eq_zero_iff
+
 theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]

@@ -259,11 +259,11 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   obtain ⟨q, hb, rfl⟩ := hb
   obtain ⟨q', hq', hqq', hqa⟩ := exists_rat_pow_btwn two_ne_zero hb (mul_self_pos.2 ha.ne')
   trans (q' : β) ^ 2
-  exact_mod_cast hqq'.le
-  rw [pow_two] at hqa ⊢
-  exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
-    (le_csSup (cutMap_bddAbove β a) <|
-      coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
+  · exact_mod_cast hqq'.le
+  · rw [pow_two] at hqa ⊢
+    exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
+      (le_csSup (cutMap_bddAbove β a) <|
+        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
 #align linear_ordered_field.le_induced_map_mul_self_of_mem_cut_map LinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
 
 /-- Preparatory lemma for `inducedOrderRingHom`. -/

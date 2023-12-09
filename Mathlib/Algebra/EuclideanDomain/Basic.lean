@@ -205,7 +205,7 @@ theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x
 #align euclidean_domain.xgcd_aux_fst EuclideanDomain.xgcdAux_fst
 
 theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
-  rw [xgcd, ← xgcdAux_fst x y 1 0 0 1, Prod.mk.eta]
+  rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
 #align euclidean_domain.xgcd_aux_val EuclideanDomain.xgcdAux_val
 
 private def P (a b : R) : R × R × R → Prop

@@ -79,14 +79,18 @@ protected lemma isNilpotent_iff :
   · cases' i with i; simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 
-@[simp] lemma isNilpotent_reverse_iff :
-    IsNilpotent P.reverse ↔ IsNilpotent P := by
+@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N):
+    IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine' ⟨fun h i ↦ _, fun h i ↦ _⟩ <;> cases' le_or_lt i P.natDegree with hi hi
-  · simpa [tsub_tsub_cancel_of_le hi] using h (P.natDegree - i)
-  · simp [coeff_eq_zero_of_natDegree_lt hi]
-  · simpa only [hi, revAt_le] using h (P.natDegree - i)
-  · simpa only [revAt_eq_self_of_lt hi] using h i
+  refine' ⟨fun h i ↦ _, fun h i ↦ _⟩ <;> cases' le_or_lt i N with hi hi
+  · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
+  · simp [coeff_eq_zero_of_natDegree_lt $ lt_of_le_of_lt hN hi]
+  · simpa [hi, revAt_le] using h (N - i)
+  · simpa [revAt_eq_self_of_lt hi] using h i
+
+@[simp] lemma isNilpotent_reverse_iff :
+    IsNilpotent P.reverse ↔ IsNilpotent P :=
+  isNilpotent_reflect_iff (le_refl _)
 
 /-- Let `P` be a polynomial over `R`. If its constant term is a unit and its other coefficients are
 nilpotent, then `P` is a unit.

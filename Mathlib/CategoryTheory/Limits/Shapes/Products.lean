@@ -38,7 +38,7 @@ set_option autoImplicit true
 
 noncomputable section
 
-universe w w₂ w₃ v v₂ u u₂
+universe w w' w₂ w₃ v v₂ u u₂
 
 open CategoryTheory
 
@@ -572,7 +572,7 @@ end Unique
 
 section Reindex
 
-variable {γ : Type v} (ε : β ≃ γ) (f : γ → C)
+variable {γ : Type w'} (ε : β ≃ γ) (f : γ → C)
 
 section
 

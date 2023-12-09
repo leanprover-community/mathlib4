@@ -251,7 +251,7 @@ theorem comp_assoc (f : A →*[n] β) (g : B →*[n] γ) (h : C →*[n] δ) {hf 
 #align freiman_hom.comp_assoc FreimanHom.comp_assoc
 #align add_freiman_hom.comp_assoc AddFreimanHom.comp_assoc
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : Function.Surjective f) {hg₁ hg₂} :
     g₁.comp f hg₁ = g₂.comp f hg₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => h ▸ rfl⟩

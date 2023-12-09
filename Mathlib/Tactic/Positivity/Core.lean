@@ -10,6 +10,7 @@ import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Int.Cast.Lemmas
 import Qq
 
 /-!

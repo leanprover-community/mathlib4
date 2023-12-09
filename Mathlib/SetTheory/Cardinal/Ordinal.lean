@@ -24,7 +24,9 @@ using ordinals.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on.
+  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
+  giving an enumeration of (infinite) initial ordinals.
+  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
@@ -1446,3 +1448,46 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 -- end Bit
 
 end Cardinal
+
+section Initial
+
+namespace Ordinal
+
+/--
+`ω_ o` is a notation for the *initial ordinal* of cardinality
+`aleph o`. Thus, for example `ω_ 0 = ω`.
+-/
+scoped notation "ω_" o => ord <| aleph o
+
+/--
+`ω₁` is the first uncountable ordinal.
+-/
+scoped notation "ω₁" => ord <| aleph 1
+
+lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+
+section OrdinalIndices
+/-!
+### Cardinal operations with ordinal indices
+
+Results on cardinality of ordinal-indexed families of sets.
+-/
+namespace Cardinal
+
+open scoped Cardinal
+
+/--
+Bounding the cardinal of an ordinal-indexed union of sets.
+-/
+lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {c : Cardinal}
+    (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ c) :
+    #(⋃ j < o, A j) ≤ c := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
+  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
+  rw [mk_ordinal_out]
+  exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+
+end Cardinal
+
+end OrdinalIndices

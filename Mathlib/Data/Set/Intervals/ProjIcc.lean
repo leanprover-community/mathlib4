@@ -211,9 +211,9 @@ theorem IicExtend_apply (f : Iic b → β) (x : α) : IicExtend f x = f ⟨min b
   rfl
 #align set.Iic_extend_apply Set.IicExtend_apply
 
-theorem iccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
+theorem IccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
     IccExtend h f x = f ⟨max a (min b x), le_max_left _ _, max_le h (min_le_left _ _)⟩ := rfl
-#align set.Icc_extend_apply Set.iccExtend_apply
+#align set.Icc_extend_apply Set.IccExtend_apply
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by

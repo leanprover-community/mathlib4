@@ -1255,7 +1255,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
       (s.mulSupport_of_fiberwise_prod_subset_image f Prod.fst),
     ← Finset.prod_fiberwise_of_maps_to (t := Finset.image Prod.fst s) _ f]
   -- `finish` could close the goal here
-  simp only [Finset.mem_image, Prod.mk.eta]
+  simp only [Finset.mem_image]
   exact fun x hx => ⟨x, hx, rfl⟩
 #align finprod_mem_finset_product' finprod_mem_finset_product'
 #align finsum_mem_finset_product' finsum_mem_finset_product'

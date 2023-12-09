@@ -718,14 +718,38 @@ end
 
 end Homeomorph
 
+namespace Equiv
+variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+
+/-- An equiv between topological spaces respecting openness is a homeomorphism. -/
+@[simps toEquiv]
+def toHomeomorph (e : α ≃ β) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : α ≃ₜ β where
+  toEquiv := e
+  continuous_toFun := continuous_def.2 λ s ↦ (he _).2
+  continuous_invFun := continuous_def.2 λ s ↦ by convert (he _).1; simp
+
+@[simp] lemma coe_toHomeomorph (e : α ≃ β) (he) : ⇑(e.toHomeomorph he) = e := rfl
+lemma toHomeomorph_apply (e : α ≃ β) (he) (a : α) : e.toHomeomorph he a = e a := rfl
+
+@[simp] lemma toHomeomorph_refl :
+  (Equiv.refl α).toHomeomorph (λ _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+
+@[simp] lemma toHomeomorph_symm (e : α ≃ β) (he) :
+  (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
+
+lemma toHomeomorph_trans (e : α ≃ β) (f : β ≃ γ) (he hf) :
+  (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
+    (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
+
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
 @[simps toEquiv] -- porting note: TODO: was `@[simps]`
-def Equiv.toHomeomorphOfInducing [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ β)
-    (hf : Inducing f) : α ≃ₜ β :=
+def toHomeomorphOfInducing (f : α ≃ β) (hf : Inducing f) : α ≃ₜ β :=
   { f with
     continuous_toFun := hf.continuous
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
 #align equiv.to_homeomorph_of_inducing Equiv.toHomeomorphOfInducing
+
+end Equiv
 
 namespace Continuous
 

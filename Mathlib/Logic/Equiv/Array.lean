@@ -78,9 +78,9 @@ instance for `array` was)
 /-- If `α` is encodable, then so is `Array α`. -/
 instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
   Encodable.ofEquiv _ (Equiv.arrayEquivList _)
-#align array.encodable Array.encodable
+#noalign array.encodable
 
 /-- If `α` is countable, then so is `Array α`. -/
 instance Array.countable {α} [Countable α] : Countable (Array α) :=
   Countable.of_equiv _ (Equiv.arrayEquivList α).symm
-#align array.countable Array.countable
+#noalign array.countable

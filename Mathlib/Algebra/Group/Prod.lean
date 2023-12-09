@@ -366,7 +366,7 @@ theorem snd_comp_prod (f : M →ₙ* N) (g : M →ₙ* P) : (snd N P).comp (f.pr
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align mul_hom.prod_unique MulHom.prod_unique
 #align add_hom.prod_unique AddHom.prod_unique
 
@@ -577,7 +577,7 @@ theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) 
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align monoid_hom.prod_unique MonoidHom.prod_unique
 #align add_monoid_hom.prod_unique AddMonoidHom.prod_unique
 

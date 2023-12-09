@@ -839,10 +839,10 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
 
 theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ destruct (tail s)) :
     ∃ a', some a' ∈ destruct s := by
-  unfold tail Functor.map at h; simp at h
+  unfold tail Functor.map at h; simp only [destruct_flatten] at h
   rcases exists_of_mem_bind h with ⟨t, tm, td⟩; clear h
   rcases Computation.exists_of_mem_map tm with ⟨t', ht', ht2⟩; clear tm
-  cases' t' with t' <;> rw [← ht2] at td <;> simp at td
+  cases' t' with t' <;> rw [← ht2] at td <;> simp only [destruct_nil] at td
   · have := mem_unique td (ret_mem _)
     contradiction
   · exact ⟨_, ht'⟩

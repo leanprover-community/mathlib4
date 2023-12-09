@@ -18,14 +18,12 @@ This module defines and proves properties about triangles in simple graphs.
 
 ## Main declarations
 
-* `SimpleGraph.farFromTriangleFree`: Predicate for a graph to have enough triangles that, to
-  remove all of them, one must one must remove a lot of edges. This is the crux of the Triangle
-  Removal lemma.
+* `SimpleGraph.FarFromTriangleFree`: Predicate for a graph such that one must remove a lot of edges
+  from it for it to become triangle-free. This is the crux of the Triangle Removal Lemma.
 
 ## TODO
 
 * Generalise `farFromTriangleFree` to other graphs, to state and prove the Graph Removal Lemma.
-* Find a better name for `farFromTriangleFree`. Added 4/26/2022. Remove this TODO if it gets old.
 -/
 
 
@@ -38,8 +36,8 @@ namespace SimpleGraph
 variable {α 𝕜 : Type*} [Fintype α] [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
   {s : Finset α}
 
-/-- A simple graph is *`ε`-triangle-free far* if one must remove at least `ε * (card α)^2` edges to
-make it triangle-free. -/
+/-- A simple graph is *`ε`-far from triangle-free* if one must remove at least
+`ε * (card α) ^ 2` edges to make it triangle-free. -/
 def FarFromTriangleFree (G : SimpleGraph α) (ε : 𝕜) : Prop :=
   (G.DeleteFar fun H => H.CliqueFree 3) <| ε * (card α ^ 2 : ℕ)
 #align simple_graph.far_from_triangle_free SimpleGraph.FarFromTriangleFree
@@ -51,9 +49,9 @@ theorem farFromTriangleFree_iff : G.FarFromTriangleFree ε ↔ ∀ ⦃H⦄, H �
 alias ⟨farFromTriangleFree.le_card_sub_card, _⟩ := farFromTriangleFree_iff
 #align simple_graph.far_from_triangle_free.le_card_sub_card SimpleGraph.farFromTriangleFree.le_card_sub_card
 
-theorem farFromTriangleFree.mono (hε : G.FarFromTriangleFree ε) (h : δ ≤ ε) :
+nonrec theorem FarFromTriangleFree.mono (hε : G.FarFromTriangleFree ε) (h : δ ≤ ε) :
     G.FarFromTriangleFree δ := hε.mono <| by gcongr
-#align simple_graph.far_from_triangle_free.mono SimpleGraph.farFromTriangleFree.mono
+#align simple_graph.far_from_triangle_free.mono SimpleGraph.FarFromTriangleFree.mono
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFromTriangleFree ε)
     (hcard : (G.edgeFinset.card - H.edgeFinset.card : 𝕜) < ε * (card α ^ 2 : ℕ)) :

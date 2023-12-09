@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Ordering.Basic
 
 #align_import init.algebra.classes from "leanprover-community/lean"@"31f3a46d7c18d6b2255a72df4f9d62644145d83b"
 
