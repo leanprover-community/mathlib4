@@ -789,19 +789,6 @@ theorem IsPrime.prod_mem_iff_exists_mem {ι R : Type*} [CommSemiring R] {t : Fin
   · obtain ⟨c, hc1, hc2⟩ := ih rid
     exact ⟨c, Finset.mem_insert.mpr <| Or.intro_right _ hc1, hc2⟩
 
-lemma le_or_le_of_subset_union {R : Type*} [CommRing R]
-    (J X Y : Ideal R) (H : (J : Set R) ⊆ X ∪ Y) :
-    J ≤ X ∨ J ≤ Y := by
-  by_contra rid
-  push_neg at rid
-  erw [not_subset_iff_exists_mem_not_mem, not_subset_iff_exists_mem_not_mem] at rid
-  rcases rid with ⟨⟨x, hx1, hx2⟩, ⟨y, hy1, hy2⟩⟩
-  rcases H (J.add_mem hx1 hy1) with h|h
-  · refine (H hy1).elim (fun h' => hx2 ?_) (fun h' => hy2 h')
-    convert X.sub_mem h h'; aesop
-  · refine (H hx1).elim (fun h' => hx2 h') (fun h' => hy2 ?_)
-    convert Y.sub_mem h h'; aesop
-
 end Ideal
 
 end CommRing

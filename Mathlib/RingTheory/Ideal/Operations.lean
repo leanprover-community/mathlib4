@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
+Authors: Kenny Lau, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Tactic.IntervalCases
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -1156,172 +1157,167 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
       Set.Subset.trans h <| Set.subset_union_right (J : Set R) K ⟩
 #align ideal.subset_union Ideal.subset_union
 
+open Finset in
+/--
+Let `R` be a commutative ring, `J` an ideal of `R`, `S` be a finite collection of ideals of `R`
+such that ideals in `S` are prime ideals except for perhaps at most two.
+Then if `J` is a subset of the union of `S`, `J` is already a subset of some ideal `I` in `S`.
+-/
+theorem le_of_subset_union_with_at_most_two_non_primes {R : Type u} [CommRing R]
+    (J : Ideal R)
+    (S : Finset (Ideal R))
+    (exists_prime : ∀ S' ≤ S, 2 < S'.card → ∃ p ∈ S', p.IsPrime) :
+    (J : Set R) ⊆ ⋃ (I : S), I ↔ ∃ I, I ∈ S ∧ J ≤ I := by
+  classical
+  refine ⟨fun subset_union ↦ ?_, fun ⟨I, hI, hJ⟩ ↦ subset_trans hJ fun _ h ↦
+    Set.mem_iUnion.mpr ⟨⟨_, hI⟩, h⟩⟩
+
+  induction' S using Finset.strongInductionOn with S ih
+  -- We perform a strong induction on `S`, i.e. we assume that for any proper subset `S'` of `S`
+  -- with at most two non-prime ideals, if `J` is a subset of the union of `S'`, then `I` is a
+  -- subideal of some ideal in `S'` already.
+
+  -- We can assume without loss of generality that `S` has more than 2 ideals, for `S` with fewer
+  -- ideals are easy cases.
+  by_cases card : S.card ≤ 2
+  · replace card : S.card = 0 ∨ S.card = 1 ∨ S.card = 2
+    · interval_cases S.card <;> tauto
+    obtain card|card|card := card
+    · aesop
+    · obtain ⟨i, rfl⟩ := Finset.card_eq_one.mp card
+      exact ⟨i, mem_singleton_self _, fun x hx ↦ by aesop⟩
+    · obtain ⟨a, b, -, rfl⟩ := Finset.card_eq_two.mp card
+      simp only [Set.iUnion_subtype, mem_singleton, mem_insert, Set.iUnion_iUnion_eq_or_left,
+        Set.iUnion_iUnion_eq_left, exists_eq_or_imp, exists_eq_left] at subset_union ⊢
+      exact Ideal.subset_union (R := R) |>.mp subset_union
+
+  -- We further assume that `J` is not a subset of any proper subset of `S`, for otherwise, our
+  -- induction hypotheses implies the desired result already.
+  -- We will show that this assumption in fact leads to a contradiction,
+  -- since the goal is to produce an `I ≥ J`, such that `{I}` is a proper subset of `S`.
+  by_cases subset' : ∀ S', S' ⊂ S → ¬ (J : Set R) ⊆ ⋃ (I : S'), I
+  pick_goal 2
+  · push_neg at subset'
+    obtain ⟨S', lt, le⟩ := subset'
+    obtain ⟨I, hI1, hI2⟩ := ih _ lt (fun s hs ↦ exists_prime s (hs.trans lt.1)) le
+    exact ⟨I, lt.1 hI1, hI2⟩
+
+  -- Since `S` contains more than 2 ideals, there must be a prime ideal which we call `𝓅`.
+  obtain ⟨𝓅, h𝓅₁, h𝓅₂⟩ := exists_prime S le_rfl (lt_of_not_ge card)
+
+  have subset_hat : ∀ I : S, ¬ (J : Set R) ⊆ ⋃ (i : S.erase I), i
+  · rintro ⟨I, hI⟩ rid
+    exact (subset' (S.erase I) (Finset.erase_ssubset hI)) rid
+  simp_rw [Set.not_subset] at subset_hat
+  -- Since `J` is not a subset of the union of `S`, it is not a subset of the union of `S \ {I}`
+  -- for each ideal `I` in `S`. Hence for each `i ∈ S`, we can find an `rᵢ ∈ R` that is in `J` and
+  -- `i` but not in the union of `S`.
+  choose r hr1 hr2 using subset_hat
+  have hr3 : ∀ i, r i ∈ i.1
+  · rintro i
+    specialize hr2 i
+    contrapose! hr2
+    specialize subset_union (hr1 i)
+    rw [Set.mem_iUnion] at subset_union ⊢
+    rcases subset_union with ⟨j, hj⟩
+    exact ⟨⟨j.1, Finset.mem_erase.mpr ⟨fun r ↦ hr2 <| r ▸ hj, j.2⟩⟩, hj⟩
+
+  -- Let `a` be `(∏_{i ≠ 𝓅} rᵢ) + r_𝓅`, then `a` is in `J` hence in the union of `S`
+  let a := ∏ i in (S.erase 𝓅).attach, r ⟨i.1, erase_subset _ _ i.2⟩ + r ⟨𝓅, h𝓅₁⟩
+  have ha1 : a ∈ J
+  · obtain ⟨c, hc⟩ : (S.erase 𝓅).Nonempty
+    · rw [← Finset.card_pos, Finset.card_erase_eq_ite, if_pos h𝓅₁]
+      exact tsub_pos_iff_lt.mpr <| one_lt_two.trans <| not_le.mp card
+    exact J.add_mem (Ideal.prod_mem_of_mem _ (mem_attach _ ⟨_, hc⟩) (hr1 _)) (hr1 _)
+
+  specialize subset_union ha1
+  rw [Set.mem_iUnion] at subset_union
+  -- So there is some `Q ∈ S` such that `a ∈ Q`. We consider two cases `𝓅 = Q` and `𝓅 ≠ Q`.
+  obtain ⟨⟨Q, hQ₁⟩, hQ₂⟩ := subset_union
+  by_cases H : 𝓅 = Q
+  · subst H
+    -- If `𝓅 = Q`, then for some `i ≠ 𝓅`, `rᵢ ∈ 𝓅`, this is a contradiction because `rᵢ` is not in
+    -- the union of `S \ {i}`.
+    obtain ⟨⟨i, hi1⟩, hi2⟩ : ∃ i : S.erase 𝓅, r ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ 𝓅
+    · simpa only [add_sub_cancel, Ideal.IsPrime.prod_mem_iff_exists_mem, mem_attach, true_and_iff]
+        using 𝓅.sub_mem hQ₂ (hr3 ⟨𝓅, h𝓅₁⟩)
+    rw [Finset.mem_erase] at hi1
+    exact (hr2 ⟨i, hi1.2⟩ <| Set.mem_iUnion.mpr ⟨⟨𝓅, mem_erase.mpr ⟨hi1.1.symm, hQ₁⟩⟩, hi2⟩).elim
+  · -- If `𝓅 ≠ Q`, then `∏_{i ≠ 𝓅} xᵢ ∈ 𝓆` and `x_𝓅 ∈ Q` as well (since `a` ∈ `Q`).
+    -- This contradicts that `x_𝓅` is not in the union of `S \ {Q}`.
+    have mem1 : ∏ i in (S.erase 𝓅).attach, r ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ Q
+    · exact Q.prod_mem_of_mem (mem_attach _ ⟨Q, mem_erase.mpr ⟨Ne.symm H, hQ₁⟩⟩) (hr3 ⟨Q, hQ₁⟩)
+    have mem2 : r ⟨𝓅, h𝓅₁⟩ ∈ Q := by simpa only [add_sub_cancel'] using Q.sub_mem hQ₂ mem1
+    specialize hr2 ⟨𝓅, h𝓅₁⟩
+    rw [Set.mem_iUnion] at hr2
+    push_neg at hr2
+    exact (hr2 ⟨Q, mem_erase.mpr ⟨Ne.symm H, hQ₁⟩⟩ mem2).elim
+
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
     (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
-    ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
-  suffices
-    ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) → I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i from
-    ⟨this, fun h =>
-      Or.casesOn h
-        (fun h =>
-          Set.Subset.trans h <|
-            Set.Subset.trans (Set.subset_union_left _ _) (Set.subset_union_left _ _))
-        fun h =>
-        Or.casesOn h
-          (fun h =>
-            Set.Subset.trans h <|
-              Set.Subset.trans (Set.subset_union_right _ _) (Set.subset_union_left _ _))
-          fun ⟨i, his, hi⟩ => by
-          refine' Set.Subset.trans hi <| Set.Subset.trans _ <| Set.subset_union_right _ _;
-            exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
-  generalize hn : s.card = n; intro h
-  induction' n with n ih generalizing a b s
-  · clear hp
-    rw [Finset.card_eq_zero] at hn
-    subst hn
-    rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
-    simpa only [exists_prop, Finset.not_mem_empty, false_and_iff, exists_false, or_false_iff]
+    ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔
+    I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
   classical
-    replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
-      Finset.card_eq_succ.1 hn
-    rcases hn with ⟨i, t, hit, rfl, hn⟩
-    replace hp : IsPrime (f i) ∧ ∀ x ∈ t, IsPrime (f x) := (t.forall_mem_insert _ _).1 hp
-    by_cases Ht : ∃ j ∈ t, f j ≤ f i
-    · obtain ⟨j, hjt, hfji⟩ : ∃ j ∈ t, f j ≤ f i := Ht
-      obtain ⟨u, hju, rfl⟩ : ∃ u, j ∉ u ∧ insert j u = t :=
-        ⟨t.erase j, t.not_mem_erase j, Finset.insert_erase hjt⟩
-      have hp' : ∀ k ∈ insert i u, IsPrime (f k) := by
-        rw [Finset.forall_mem_insert] at hp ⊢
-        exact ⟨hp.1, hp.2.2⟩
-      have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
-      have hn' : (insert i u).card = n := by
-        rwa [Finset.card_insert_of_not_mem] at hn ⊢
-        exacts [hiu, hju]
-      have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k := by
-        rw [Finset.coe_insert] at h ⊢
-        rw [Finset.coe_insert] at h
-        simp only [Set.biUnion_insert] at h ⊢
-        rw [← Set.union_assoc (f i : Set R)] at h
-        erw [Set.union_eq_self_of_subset_right hfji] at h
-        exact h
-      specialize ih hp' hn' h'
-      refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
-      exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
-    by_cases Ha : f a ≤ f i
-    · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
-          Set.union_right_comm (f a : Set R)] at h
-        erw [Set.union_eq_self_of_subset_left Ha] at h
-        exact h
-      specialize ih hp.2 hn h'
-      right
-      rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · exact Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩
-      · exact Or.inl ih
-      · exact Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
-    by_cases Hb : f b ≤ f i
-    · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j := by
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
-          Set.union_assoc (f a : Set R)] at h
-        erw [Set.union_eq_self_of_subset_left Hb] at h
-        exact h
-      specialize ih hp.2 hn h'
-      rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · exact Or.inl ih
-      · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩)
-      · exact Or.inr (Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩)
-    by_cases Hi : I ≤ f i
-    · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, Hi⟩)
-    have : ¬I ⊓ f a ⊓ f b ⊓ t.inf f ≤ f i := by
-      rcases t.eq_empty_or_nonempty with (rfl | hsne)
-      · rw [Finset.inf_empty, inf_top_eq, hp.1.inf_le, hp.1.inf_le, not_or, not_or]
-        exact ⟨⟨Hi, Ha⟩, Hb⟩
-      simp only [hp.1.inf_le, hp.1.inf_le' hsne, not_or]
-      exact ⟨⟨⟨Hi, Ha⟩, Hb⟩, Ht⟩
-    rcases Set.not_subset.1 this with ⟨r, ⟨⟨⟨hrI, hra⟩, hrb⟩, hr⟩, hri⟩
-    by_cases HI : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j
-    · specialize ih hp.2 hn HI
-      rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · left
-        exact ih
-      · right
-        left
-        exact ih
-      · right
-        right
-        exact ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
-    exfalso
-    rcases Set.not_subset.1 HI with ⟨s, hsI, hs⟩
-    rw [Finset.coe_insert, Set.biUnion_insert] at h
-    have hsi : s ∈ f i := ((h hsI).resolve_left (mt Or.inl hs)).resolve_right (mt Or.inr hs)
-    rcases h (I.add_mem hrI hsI) with (⟨ha | hb⟩ | hi | ht)
-    · exact hs (Or.inl <| Or.inl <| add_sub_cancel' r s ▸ (f a).sub_mem ha hra)
-    · exact hs (Or.inl <| Or.inr <| add_sub_cancel' r s ▸ (f b).sub_mem hb hrb)
-    · exact hri (add_sub_cancel r s ▸ (f i).sub_mem hi hsi)
-    · rw [Set.mem_iUnion₂] at ht
-      rcases ht with ⟨j, hjt, hj⟩
-      simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-      exact hs (Or.inr <| Set.mem_biUnion hjt <| add_sub_cancel' r s ▸ (f j).sub_mem hj <| hr j hjt)
+  exact Iff.trans (Iff.of_eq <| congr rfl <| by ext; simp [or_assoc] ) <|
+    (Ideal.le_of_subset_union_with_at_most_two_non_primes I
+      (insert (f a) <| insert (f b) <| Finset.image f s)
+      (fun s' hs' card_s' ↦ by
+        obtain ⟨_, ⟨hc, hc1⟩⟩|h := em (∃ x ∈ s.image f, x ∈ s')
+        · obtain ⟨c, hc0, rfl⟩ := Finset.mem_image |>.mp hc
+          exact ⟨f c, hc1, hp c hc0⟩
+        · push_neg at h
+          have h := Finset.card_mono (show s' ≤ {f a, f b} by
+              rintro x hx
+              specialize hs' hx
+              rw [Finset.mem_insert, Finset.mem_singleton]
+              rw [Finset.mem_insert, Finset.mem_insert, ← or_assoc] at hs'
+              exact hs'.resolve_right fun rid ↦ h _ rid hx) |>.trans
+            (Finset.card_insert_le _ _ ) |>.trans <| show Finset.card {f b} + 1 ≤ 2 by
+              rw [Finset.card_singleton]
+          exact (not_le_of_lt card_s' h).elim)).trans <| by simp
 #align ideal.subset_union_prime' Ideal.subset_union_prime'
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/
 theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
-    ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
-  suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i by
-    have aux := fun h => (bex_def.2 <| this h)
-    simp_rw [exists_prop] at aux
-    refine ⟨aux, fun ⟨i, his, hi⟩ ↦ Set.Subset.trans hi ?_⟩
-    apply Set.subset_biUnion_of_mem (show i ∈ (↑s : Set ι) from his)
-  fun h : (I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i => by
+    ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i := by
   classical
-    by_cases has : a ∈ s
-    · obtain ⟨t, hat, rfl⟩ : ∃ t, a ∉ t ∧ insert a t = s :=
-        ⟨s.erase a, Finset.not_mem_erase a s, Finset.insert_erase has⟩
-      by_cases hbt : b ∈ t
-      · obtain ⟨u, hbu, rfl⟩ : ∃ u, b ∉ u ∧ insert b u = t :=
-          ⟨t.erase b, Finset.not_mem_erase b t, Finset.insert_erase hbt⟩
-        have hp' : ∀ i ∈ u, IsPrime (f i) := by
-          intro i hiu
-          refine' hp i (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hiu)) _ _ <;>
-              rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Finset.coe_insert, Set.biUnion_insert, Set.biUnion_insert, ←
-          Set.union_assoc, subset_union_prime' hp'] at h
-        rwa [Finset.exists_mem_insert, Finset.exists_mem_insert]
-      · have hp' : ∀ j ∈ t, IsPrime (f j) := by
-          intro j hj
-          refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f a : Set R),
-          subset_union_prime' hp', ← or_assoc, or_self_iff] at h
-        rwa [Finset.exists_mem_insert]
-    · by_cases hbs : b ∈ s
-      · obtain ⟨t, hbt, rfl⟩ : ∃ t, b ∉ t ∧ insert b t = s :=
-          ⟨s.erase b, Finset.not_mem_erase b s, Finset.insert_erase hbs⟩
-        have hp' : ∀ j ∈ t, IsPrime (f j) := by
-          intro j hj
-          refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
-          subset_union_prime' hp', ← or_assoc, or_self_iff] at h
-        rwa [Finset.exists_mem_insert]
-      cases' s.eq_empty_or_nonempty with hse hsne
-      · subst hse
-        rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
-        have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
-        exact absurd h this
-      · cases' hsne.bex with i his
-        obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
-          ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
-        have hp' : ∀ j ∈ t, IsPrime (f j) := by
-          intro j hj
-          refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f i : Set R),
-          subset_union_prime' hp', ← or_assoc, or_self_iff] at h
-        rwa [Finset.exists_mem_insert]
+  exact Iff.trans (Iff.of_eq <| congr rfl <| by ext; simp) <|
+    Ideal.le_of_subset_union_with_at_most_two_non_primes I (s.image f)
+      -- (insert (f a) <| insert (f b) <| Finset.image f s)
+      (fun s' hs' card_s' ↦ by
+        by_cases H : (s' ≤ {f a, f b})
+        · have h := Finset.card_mono H |>.trans
+            (Finset.card_insert_le _ _ ) |>.trans <| show Finset.card {f b} + 1 ≤ 2 by
+              rw [Finset.card_singleton]
+          exact (not_le_of_lt card_s' h).elim
+        · simp only [Finset.mem_singleton, Finset.le_eq_subset, Finset.not_subset] at H
+          obtain ⟨c, hc1, hc2⟩ := H
+          specialize hs' hc1
+          simp only [Finset.mem_singleton, Finset.mem_insert, not_or] at hc2
+          obtain ⟨c, hc0, rfl⟩ := Finset.mem_image |>.mp hs'
+          exact ⟨f c, hc1, hp c hc0 (by tauto) (by tauto)⟩) |>.trans (by simp)
 #align ideal.subset_union_prime Ideal.subset_union_prime
+
+
+/--
+**Prime Avoidance Lemma** [00DS](https://stacks.math.columbia.edu/tag/00DS)
+
+Let `R` be a commutative ring, `J` an ideal of `R`, `S` be a finite collection of ideals of `R`
+such that ideals in `S` are prime ideals except for perhaps at most two.
+
+If `J` is not a subset of any of ideal in `S`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
+not in any of the ideals in `S`.
+-/
+lemma Ideal.exists_mem_and_forall_not_mem_of_not_subset_and_at_most_two_non_primes
+    {R : Type*} [CommRing R] (J : Ideal R)
+    (S : Finset (Ideal R))
+    (exists_prime : ∀ s ≤ S, 2 < s.card → ∃ p ∈ s, p.IsPrime)
+    (not_subset : ∀ I : Ideal R, I ∈ S → ¬ J ≤ I) :
+    ∃ r, r ∈ J ∧ ∀ I, I ∈ S → r ∉ I := by
+  contrapose! not_subset
+  exact Ideal.le_of_subset_union_with_at_most_two_non_primes J S exists_prime |>.mp
+    (fun x hx ↦ Set.mem_iUnion.mpr <| let ⟨i, hi1, hi2⟩ := not_subset x hx; ⟨⟨i, hi1⟩, hi2⟩)
 
 section Dvd
 
