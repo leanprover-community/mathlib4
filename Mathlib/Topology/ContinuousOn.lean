@@ -1278,7 +1278,7 @@ variable [One β] {f : α → β} {s : Set α}
 
 @[to_additive]
 lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : ContinuousOn f (closure s)) :
-     Continuous (mulIndicator s f) := by
+    Continuous (mulIndicator s f) := by
   classical exact continuous_piecewise hs hf continuousOn_const
 
 @[to_additive]
