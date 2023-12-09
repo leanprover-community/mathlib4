@@ -32,7 +32,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
   - `OrderedCommSemiring ℝ≥0`;
   - `CanonicallyOrderedCommSemiring ℝ≥0`;
   - `LinearOrderedCommGroupWithZero ℝ≥0`;
-  - `CanonicallyLinearOrderedAddMonoid ℝ≥0`;
+  - `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
   - `Archimedean ℝ≥0`;
   - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
@@ -420,7 +420,7 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-noncomputable example : CanonicallyLinearOrderedAddMonoid ℝ≥0 := by infer_instance
+noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 

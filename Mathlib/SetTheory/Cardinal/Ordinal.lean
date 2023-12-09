@@ -810,8 +810,11 @@ theorem add_nat_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : a + n = a :=
   add_eq_left ha ((nat_lt_aleph0 _).le.trans ha)
 #align cardinal.add_nat_eq Cardinal.add_nat_eq
 
+theorem nat_add_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : n + a = a := by
+  rw [add_comm, add_nat_eq n ha]
+
 theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
-  add_eq_left ha (one_le_aleph0.trans ha)
+  add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
 --Porting note: removed `simp`, `simp` can prove it

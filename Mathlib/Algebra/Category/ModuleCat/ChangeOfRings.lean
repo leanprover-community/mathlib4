@@ -40,6 +40,8 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
+suppress_compilation
+
 set_option linter.uppercaseLean3 false -- Porting note: Module
 
 open CategoryTheory

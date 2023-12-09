@@ -1040,7 +1040,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
     { toFun := fun a => a.1 + a.2 * (r : R)
       map_zero' := by simp
       map_add' := fun a b => by
-        simp
+        simp only [add_re, Int.cast_add, add_im]
         ring
       map_one' := by simp
       map_mul' := fun a b => by

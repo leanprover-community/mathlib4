@@ -1116,7 +1116,7 @@ theorem units_zpow_right {a : M} {u : Mˣ} (h : Commute a u)
 
 @[to_additive (attr := simp)]
 theorem units_zpow_left {u : Mˣ} {a : M} (h : Commute (↑u) a)
-  (m : ℤ) : Commute (↑(u ^ m)) a :=
+    (m : ℤ) : Commute (↑(u ^ m)) a :=
   (h.symm.units_zpow_right m).symm
 #align commute.units_zpow_left Commute.units_zpow_left
 #align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
@@ -1135,7 +1135,7 @@ theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
 theorem cast_int_mul_cast_int_mul (h : Commute a b)
-  (m n : ℤ) : Commute (m * a : R) (n * b : R) :=
+    (m n : ℤ) : Commute (m * a : R) (n * b : R) :=
   SemiconjBy.cast_int_mul_cast_int_mul h m n
 #align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
 

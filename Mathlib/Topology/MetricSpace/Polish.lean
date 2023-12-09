@@ -125,6 +125,13 @@ instance sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, Topologica
   inferInstance
 #align polish_space.sigma PolishSpace.sigma
 
+/-- The product of two Polish spaces is Polish. -/
+instance prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
+    PolishSpace (α × β) :=
+  letI := upgradePolishSpace α
+  letI := upgradePolishSpace β
+  inferInstance
+
 /-- The disjoint union of two Polish spaces is Polish. -/
 instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
     PolishSpace (α ⊕ β) :=

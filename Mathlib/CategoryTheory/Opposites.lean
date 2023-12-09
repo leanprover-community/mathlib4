@@ -154,13 +154,13 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
-  aesop_cat_nonterminal
+  apply IsIso.eq_inv_of_hom_inv_id
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
-  aesop_cat_nonterminal
+  apply IsIso.eq_inv_of_hom_inv_id
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
 

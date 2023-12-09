@@ -387,7 +387,7 @@ theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o 
 noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
   ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
-    Eq.trans (by dsimp; congr ) (to_ofOption o)⟩
+    Eq.trans (by dsimp; congr) (to_ofOption o)⟩
 #align part.equiv_option Part.equivOption
 
 /-- We give `Part α` the order where everything is greater than `none`. -/

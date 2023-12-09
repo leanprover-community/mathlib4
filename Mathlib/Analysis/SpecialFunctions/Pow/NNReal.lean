@@ -28,7 +28,7 @@ open Finset Set
 
 namespace NNReal
 
-/-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ ` as the
+/-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ` as the
 restriction of the real power function. For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`,
 one sets `0 ^ 0 = 1` and `0 ^ y = 0` for `y ≠ 0`. -/
 noncomputable def rpow (x : ℝ≥0) (y : ℝ) : ℝ≥0 :=

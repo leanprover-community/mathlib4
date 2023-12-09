@@ -305,6 +305,13 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
   rw [← Int.coe_nat_dvd, ← int_lt_one_iff, Int.cast_ofNat]
 #align padic_norm.nat_lt_one_iff padicNorm.nat_lt_one_iff
 
+/-- If a rational is not a p-adic integer, it is not an integer. -/
+theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
+    (H : 1 < padicNorm p a) : ¬ a.isInt := by
+  contrapose! H
+  rw [Rat.eq_num_of_isInt H]
+  apply padicNorm.of_int
+
 open BigOperators
 
 theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :

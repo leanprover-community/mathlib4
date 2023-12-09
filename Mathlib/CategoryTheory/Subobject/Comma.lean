@@ -17,7 +17,7 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
-* `StructuredArrow.subobjectEquiv `: the order-equivalence between `Subobject A` and a subtype of
+* `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes

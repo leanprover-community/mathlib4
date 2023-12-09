@@ -300,7 +300,7 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlg
   have hx := IsSeparable.isIntegral K x
   rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
-  · exact (prod_embeddings_eq_finrank_pow L (L:= K⟮x⟯) E (adjoin.powerBasis hx)).symm
+  · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact IsSeparable.separable K _
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings

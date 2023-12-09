@@ -527,6 +527,10 @@ theorem closure_union (s t : Set M) : closure (s ∪ t) = closure s ⊔ closure 
 #align add_submonoid.closure_union AddSubmonoid.closure_union
 
 @[to_additive]
+theorem sup_eq_closure (N N' : Submonoid M) : N ⊔ N' = closure ((N : Set M) ∪ (N' : Set M)) := by
+  simp_rw [closure_union, closure_eq]
+
+@[to_additive]
 theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Submonoid.gi M).gc.l_iSup
 #align submonoid.closure_Union Submonoid.closure_iUnion

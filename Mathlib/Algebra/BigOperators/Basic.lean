@@ -201,7 +201,7 @@ theorem sum_multiset_singleton (s : Finset α) : (s.sum fun x => {x}) = s.val :=
 
 end Finset
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [MonoidHomClass G β γ] (g : G)
     (f : α → β) (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
@@ -1425,7 +1425,7 @@ theorem eq_prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 reduces to the difference of the last and first terms
 when the function we are summing is monotone.
 -/
-theorem sum_range_tsub [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α]
+theorem sum_range_tsub [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
     ∑ i in range n, (f (i + 1) - f i) = f n - f 0 := by
   apply sum_range_induction

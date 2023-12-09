@@ -324,7 +324,7 @@ theorem isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSM
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
   exact IsScalarTower.of_algebraMap_eq fun x =>
-    (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K ) x).symm
+    (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K) x).symm
 
 /-- Given an integral domain `A` and a localization map to a field of fractions
 `f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient

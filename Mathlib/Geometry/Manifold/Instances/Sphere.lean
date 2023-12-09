@@ -541,7 +541,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
       (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
-  -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
+  -- we must show `Submodule.span ℝ {v} = Submodule.span ℝ {-v}`
   apply Submodule.span_eq_span
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [← Submodule.neg_mem_iff]

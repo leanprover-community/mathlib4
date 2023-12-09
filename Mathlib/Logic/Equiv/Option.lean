@@ -112,8 +112,7 @@ theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x)
 
       · rw [removeNone_aux_some _ ⟨_, h1⟩]
         rw [removeNone_aux_some _ ⟨_, h2⟩]
-        simp
-        )
+        simp)
 -- Porting note: private
 -- #align equiv.remove_none_aux_inv Equiv.removeNone_aux_inv
 

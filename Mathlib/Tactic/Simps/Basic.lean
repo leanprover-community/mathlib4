@@ -90,7 +90,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     getSimpTheorems
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
-    config      := cfg
+    config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then
@@ -590,7 +590,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
-  (rawUnivs : List Level) : CoreM ParsedProjectionData := do
+    (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
     getCompositeOfProjections str proj.strName.getString

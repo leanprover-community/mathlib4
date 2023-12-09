@@ -129,7 +129,7 @@ attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm
 theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
-    simp
+    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
     refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
     cases bodd n <;> simp [cond, not]
     · rw [Nat.add_comm, Nat.add_succ]
@@ -308,7 +308,8 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
-  simp
+  simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
+    Bool.not_true, Bool.and_false, Bool.xor_false_right]
   cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 
@@ -408,14 +409,6 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
   unfold bitwise'; rw [binaryRec_zero]
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
-@[simp]
-theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
-    bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero]
-  exact bitwise'_bit_aux h
-#align nat.bitwise_zero_right Nat.bitwise'_zero_right
-
-@[simp]
 theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
   rw [bitwise'_zero_left]
   cases f false true <;> rfl
@@ -440,31 +433,6 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
       · rw [← bitwise'_bit_aux h, ftf] }
   · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
-
-theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
-    bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
-  funext m n; revert n
-  dsimp [Function.swap]
-  apply binaryRec _ _ m <;> intro n
-  · rw [bitwise'_zero_left, bitwise'_zero_right]
-    exact h
-  · intros a ih m'
-    apply bitCasesOn m'; intro b n'
-    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
-#align nat.bitwise_swap Nat.bitwise'_swap
-
--- Porting note:
--- If someone wants to merge `bitwise` and `bitwise'`
--- (and similarly `lor` / `lor'` and `land` / `land'`)
--- they could start by proving the next theorem:
--- lemma bitwise_eq_bitwise' (f : Bool → Bool → Bool) :
---     bitwise f = bitwise' f := by
---   sorry
-
--- @[simp]
--- theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
---     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
---   simp only [bitwise_eq_bitwise', bitwise'_bit h]
 
 @[simp]
 theorem lor'_bit : ∀ a m b n, lor' (bit a m) (bit b n) = bit (a || b) (lor' m n) :=

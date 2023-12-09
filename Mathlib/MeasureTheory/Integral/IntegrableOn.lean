@@ -296,7 +296,7 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
     intro n
     rw [inter_comm, ← Measure.restrict_apply (measurableSet_toMeasurable _ _),
       measure_toMeasurable]
-    exact (hf.measure_ge_lt_top (u_pos n)).ne
+    exact (hf.measure_norm_ge_lt_top (u_pos n)).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
   have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]

@@ -654,7 +654,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
   rw [f.isLocalStructomorphWithinAt_iff hx]
   refine' imp_congr_right fun _ ↦ exists_congr fun e ↦ and_congr_right fun _ ↦ _
   refine' and_congr_right fun h2e ↦ _
-  rw [inter_eq_right_iff_subset.mpr (h2e.trans hs)]
+  rw [inter_eq_right.mpr (h2e.trans hs)]
 #align local_homeomorph.is_local_structomorph_within_at_iff' LocalHomeomorph.isLocalStructomorphWithinAt_iff'
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and

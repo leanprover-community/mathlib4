@@ -120,19 +120,19 @@ variable (P)
 /-- `Idx` identifies a location inside the application of a pfunctor.
 For `F : PFunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
-def IdxCat :=
+def Idx :=
   Σx : P.A, P.B x
-#align pfunctor.Idx PFunctor.IdxCat
+#align pfunctor.Idx PFunctor.Idx
 
-instance IdxCat.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.IdxCat :=
+instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
   ⟨⟨default, default⟩⟩
-#align pfunctor.Idx.inhabited PFunctor.IdxCat.inhabited
+#align pfunctor.Idx.inhabited PFunctor.Idx.inhabited
 
 variable {P}
 
 /-- `x.iget i` takes the component of `x` designated by `i` if any is or returns
 a default value -/
-def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.IdxCat) : α :=
+def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.Idx) : α :=
   if h : i.1 = x.1 then x.2 (cast (congr_arg _ h) i.2) else default
 #align pfunctor.obj.iget PFunctor.Obj.iget
 
@@ -142,7 +142,7 @@ theorem fst_map {α β : Type u} (x : P.Obj α) (f : α → β) : (f <$> x).1 = 
 
 @[simp]
 theorem iget_map [DecidableEq P.A] {α β : Type u} [Inhabited α] [Inhabited β] (x : P.Obj α)
-    (f : α → β) (i : P.IdxCat) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
+    (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
   simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
   cases x
   rfl

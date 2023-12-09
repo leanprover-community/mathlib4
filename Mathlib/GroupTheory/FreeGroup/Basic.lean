@@ -827,8 +827,8 @@ theorem map.of {x} : map f (of x) = of (f x) :=
 
 @[to_additive]
 theorem map.unique (g : FreeGroup α →* FreeGroup β)
-  (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
-  ∀ {x}, g x = map f x := by
+    (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
+    ∀ {x}, g x = map f x := by
   rintro ⟨L⟩
   exact List.recOn L g.map_one fun ⟨x, b⟩ t (ih : g (FreeGroup.mk t) = map f (FreeGroup.mk t)) =>
     Bool.recOn b
@@ -1087,7 +1087,7 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
       (fun x => by intros; iterate 2 rw [pure_bind])
       (fun x ih => by intros; (iterate 3 rw [inv_bind]); rw [ih])
       (fun x y ihx ihy => by intros; (iterate 3 rw [mul_bind]); rw [ihx, ihy]))
-  (bind_pure_comp  := fun f x =>
+  (bind_pure_comp := fun f x =>
     FreeGroup.induction_on x (by rw [one_bind, map_one]) (fun x => by rw [pure_bind, map_pure])
       (fun x ih => by rw [inv_bind, map_inv, ih]) fun x y ihx ihy => by
       rw [mul_bind, map_mul, ihx, ihy])
@@ -1149,7 +1149,7 @@ theorem reduce.red : Red L (reduce L) := by
 -- porting notes: deleted mathport junk and manually formatted below.
 @[to_additive]
 theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α} {b},
-  ((reduce L₁) = L₂ ++ ((x,b)::(x ,!b)::L₃)) → p
+    ((reduce L₁) = L₂ ++ ((x,b)::(x ,!b)::L₃)) → p
   | [], L2 ,L3, _, _ => fun h => by cases L2 <;> injections
   | (x, b)::L1, L2, L3, x', b' => by
       dsimp

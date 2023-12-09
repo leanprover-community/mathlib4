@@ -5,7 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Maps
 
 #align_import topology.compact_open from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"

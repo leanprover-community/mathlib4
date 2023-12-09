@@ -27,10 +27,8 @@ primitive and `foldMap_hom` as a defining property.
 ```
 def foldMap {α ω} [One ω] [Mul ω] (f : α → ω) : t α → ω := ...
 
-lemma foldMap_hom (α β)
-  [Monoid α] [Monoid β] (f : α →* β)
-  (g : γ → α) (x : t γ) :
-  f (foldMap g x) = foldMap (f ∘ g) x :=
+lemma foldMap_hom (α β) [Monoid α] [Monoid β] (f : α →* β) (g : γ → α) (x : t γ) :
+    f (foldMap g x) = foldMap (f ∘ g) x :=
 ...
 ```
 

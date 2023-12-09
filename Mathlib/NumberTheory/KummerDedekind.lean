@@ -144,7 +144,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
       obtain ⟨a, ha⟩ := (Set.mem_image _ _ _).mp (prod_mem_ideal_map_of_mem_conductor hp
-          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy ))
+          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
           simp only [ha.right, map_add, AlgHom.map_mul, add_right_inj]; rfl⟩

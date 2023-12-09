@@ -173,8 +173,8 @@ theorem toAddMonoidAlgebra_add [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (f 
 
 @[simp]
 theorem toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M]
-  [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
-      (f * g).toAddMonoidAlgebra = toAddMonoidAlgebra f * toAddMonoidAlgebra g := by
+    [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
+    (f * g).toAddMonoidAlgebra = toAddMonoidAlgebra f * toAddMonoidAlgebra g := by
   apply_fun AddMonoidAlgebra.toDirectSum
   · simp
   · apply Function.LeftInverse.injective

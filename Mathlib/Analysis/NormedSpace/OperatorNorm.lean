@@ -9,6 +9,7 @@ import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import analysis.normed_space.operator_norm from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
@@ -26,8 +27,7 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 -/
 
-
-noncomputable section
+suppress_compilation
 
 open Classical NNReal Topology Bornology
 
@@ -876,12 +876,11 @@ theorem coe_flipₗᵢ : ⇑(flipₗᵢ 𝕜 E Fₗ Gₗ) = flip :=
 
 variable (F σ₁₂) [RingHomIsometric σ₁₂]
 
--- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-noncomputable def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
+def apply' : E →SL[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F :=
   flip (id 𝕜₂ (E →SL[σ₁₂] F))
 #align continuous_linear_map.apply' ContinuousLinearMap.apply'
 
@@ -894,12 +893,11 @@ theorem apply_apply' (v : E) (f : E →SL[σ₁₂] F) : apply' F σ₁₂ v f =
 
 variable (𝕜 Fₗ)
 
--- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `LinearMap.applyₗ`. -/
-noncomputable def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
+def apply : E →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] Fₗ :=
   flip (id 𝕜 (E →L[𝕜] Fₗ))
 #align continuous_linear_map.apply ContinuousLinearMap.apply
 
@@ -914,9 +912,8 @@ variable (σ₁₂ σ₂₃ E F G)
 
 set_option linter.uppercaseLean3 false
 
--- `noncomputable` is a performance workaround for mathlib4#7103
 /-- Composition of continuous semilinear maps as a continuous semibilinear map. -/
-noncomputable def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
+def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
       ext

@@ -26,7 +26,7 @@ where
     else pure matches_
 
 def find (msg : String)
-  (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
+    (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
   let cinfos ← findCore ϕ opts
   let cinfos := cinfos.qsort fun p q ↦ p.name.lt q.name
   let mut msg := msg

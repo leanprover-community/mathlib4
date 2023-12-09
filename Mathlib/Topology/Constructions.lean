@@ -522,16 +522,7 @@ theorem nhdsWithin_prod_eq (a : α) (b : β) (s : Set α) (t : Set β) :
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
 
-/-- If a function `f x y` is such that `y ↦ f x y` is continuous for all `x`, and `x` lives in a
-discrete space, then `f` is continuous. -/
-theorem continuous_uncurry_of_discreteTopology [DiscreteTopology α] {f : α → β → γ}
-    (hf : ∀ a, Continuous (f a)) : Continuous (uncurry f) := by
-  apply continuous_iff_continuousAt.2
-  rintro ⟨a, x⟩
-  change map _ _ ≤ _
-  rw [nhds_prod_eq, nhds_discrete, Filter.map_pure_prod]
-  exact (hf a).continuousAt
-#align continuous_uncurry_of_discrete_topology continuous_uncurry_of_discreteTopology
+#noalign continuous_uncurry_of_discrete_topology
 
 theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
     s ∈ 𝓝 (a, b) ↔ ∃ u ∈ 𝓝 a, ∃ v ∈ 𝓝 b, u ×ˢ v ⊆ s := by rw [nhds_prod_eq, mem_prod_iff]
@@ -676,12 +667,7 @@ theorem prod_induced_induced (f : α → β) (g : γ → δ) :
   rfl
 #align prod_induced_induced prod_induced_induced
 
-theorem continuous_uncurry_of_discreteTopology_left [DiscreteTopology α] {f : α → β → γ}
-    (h : ∀ a, Continuous (f a)) : Continuous (uncurry f) :=
-  continuous_iff_continuousAt.2 fun ⟨a, b⟩ => by
-    simp only [ContinuousAt, nhds_prod_eq, nhds_discrete α, pure_prod, tendsto_map'_iff, (· ∘ ·),
-      uncurry, (h a).tendsto]
-#align continuous_uncurry_of_discrete_topology_left continuous_uncurry_of_discreteTopology_left
+#noalign continuous_uncurry_of_discrete_topology_left
 
 /-- Given a neighborhood `s` of `(x, x)`, then `(x, x)` has a square open neighborhood
   that is a subset of `s`. -/

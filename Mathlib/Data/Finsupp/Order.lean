@@ -146,9 +146,9 @@ instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α 
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α]
+variable [CanonicallyOrderedAddCommMonoid α]
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -193,7 +193,7 @@ instance tsub : Sub (ι →₀ α) :=
 instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddMonoid (ι →₀ α) :=
+instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderBot,
     Finsupp.orderedAddCommMonoid with
     exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
@@ -226,11 +226,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
   simp (config := { contextual := true }) [subset_iff]
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddMonoid α]
+variable [CanonicallyLinearOrderedAddCommMonoid α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
@@ -254,7 +254,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
     rfl
 #align finsupp.disjoint_iff Finsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 /-! ### Some lemmas about `ℕ` -/
 

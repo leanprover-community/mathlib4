@@ -916,7 +916,7 @@ this paragraph, we prove variations around this statement.
 
 
 /-- If `Fₙ` converges locally uniformly on a neighborhood of `x` within a set `s` to a function `f`
-which is continuous at `x` within `s `, and `gₙ` tends to `x` within `s`, then `Fₙ (gₙ)` tends
+which is continuous at `x` within `s`, and `gₙ` tends to `x` within `s`, then `Fₙ (gₙ)` tends
 to `f x`. -/
 theorem tendsto_comp_of_locally_uniform_limit_within (h : ContinuousWithinAt f s x)
     (hg : Tendsto g p (𝓝[s] x))

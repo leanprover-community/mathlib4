@@ -158,7 +158,9 @@ section One
 
 variable [Zero ι] [GradedMonoid.GOne A] [∀ i, AddCommMonoid (A i)]
 
-instance : One (⨁ i, A i) where one := DirectSum.of (fun i => A i) 0 GradedMonoid.GOne.one
+instance : One (⨁ i, A i) where one := DirectSum.of A 0 GradedMonoid.GOne.one
+
+theorem one_def : 1 = DirectSum.of A 0 GradedMonoid.GOne.one := rfl
 
 end One
 

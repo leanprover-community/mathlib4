@@ -500,9 +500,6 @@ theorem QuotientGroup.card_preimage_mk [Fintype G] (s : Subgroup G) (t : Set (G 
 #align quotient_group.card_preimage_mk QuotientGroup.card_preimage_mk
 
 namespace Sylow
-
-open Subgroup Submonoid MulAction
-
 theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite (H : Set G)]
     {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>

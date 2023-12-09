@@ -610,6 +610,11 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
 #align measurable.subtype_mk Measurable.subtype_mk
 
+@[measurability]
+protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
+    Measurable (rangeFactorization f) :=
+  hf.subtype_mk
+
 theorem Measurable.subtype_map {f : α → β} {p : α → Prop} {q : β → Prop} (hf : Measurable f)
     (hpq : ∀ x, p x → q (f x)) : Measurable (Subtype.map f hpq) :=
   (hf.comp measurable_subtype_coe).subtype_mk
@@ -630,13 +635,16 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
     MeasurableSet (inclusion h '' u) :=
   (measurable_subtype_coe hs).image_inclusion' h hu
 
+theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
+    (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
+  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
+  simp [image_preimage_eq_inter_range, ← inter_distrib_left, univ_subset_iff.1 h]
+
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
     (ht : MeasurableSet t) (h : univ ⊆ s ∪ t) (hc : Measurable fun a : s => f a)
-    (hd : Measurable fun a : t => f a) : Measurable f := fun u hu => by
-  convert (hs.subtype_image (hc hu)).union (ht.subtype_image (hd hu))
-  change f ⁻¹' u = (↑) '' ((↑) ⁻¹' (f ⁻¹' u) : Set s) ∪ (↑) '' ((↑) ⁻¹' (f ⁻¹' u) : Set t)
-  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, Subtype.range_coe,
-    Subtype.range_coe, ← inter_distrib_left, univ_subset_iff.1 h, inter_univ]
+    (hd : Measurable fun a : t => f a) : Measurable f := fun _u hu =>
+  .of_union_cover hs ht h (hc hu) (hd hu)
 #align measurable_of_measurable_union_cover measurable_of_measurable_union_cover
 
 theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (hs : MeasurableSet s)
@@ -1315,6 +1323,9 @@ theorem symm_mk (e : α ≃ β) (h1 : Measurable e) (h2 : Measurable e.symm) :
 attribute [simps! apply toEquiv] trans refl
 
 @[simp]
+theorem symm_symm (e : α ≃ᵐ β) : e.symm.symm = e := rfl
+
+@[simp]
 theorem symm_refl (α : Type*) [MeasurableSpace α] : (refl α).symm = refl α :=
   rfl
 #align measurable_equiv.symm_refl MeasurableEquiv.symm_refl
@@ -1369,6 +1380,23 @@ theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' (
 theorem image_eq_preimage (e : α ≃ᵐ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage s
 #align measurable_equiv.image_eq_preimage MeasurableEquiv.image_eq_preimage
+
+lemma preimage_symm (e : α ≃ᵐ β) (s : Set α) : e.symm ⁻¹' s = e '' s := (image_eq_preimage _ _).symm
+
+lemma image_symm (e : α ≃ᵐ β) (s : Set β) : e.symm '' s = e ⁻¹' s := by
+  rw [← symm_symm e, preimage_symm, symm_symm]
+
+lemma eq_image_iff_symm_image_eq (e : α ≃ᵐ β) (s : Set β) (t : Set α) :
+    s = e '' t ↔ e.symm '' s = t := by
+  rw [← coe_toEquiv, Equiv.eq_image_iff_symm_image_eq, coe_toEquiv_symm]
+
+@[simp]
+lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' (e ⁻¹' s) = s := by
+  rw [← coe_toEquiv, Equiv.image_preimage]
+
+@[simp]
+lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := by
+  rw [← coe_toEquiv, Equiv.preimage_image]
 
 @[simp]
 theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :
@@ -1778,6 +1806,10 @@ theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @Countab
   rcases h₁ with ⟨⟨b₁, hb₁c, rfl⟩⟩
   rcases h₂ with ⟨⟨b₂, hb₂c, rfl⟩⟩
   exact @mk _ (_ ⊔ _) ⟨_, hb₁c.union hb₂c, generateFrom_sup_generateFrom⟩
+
+instance (priority := 100) [MeasurableSpace α] [Finite α] : CountablyGenerated α where
+  isCountablyGenerated :=
+    ⟨{s | MeasurableSet s}, Set.to_countable _, generateFrom_measurableSet.symm⟩
 
 instance [MeasurableSpace α] [CountablyGenerated α] {p : α → Prop} :
     CountablyGenerated { x // p x } := .comap _

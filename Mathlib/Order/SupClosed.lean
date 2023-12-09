@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Closure
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Sets closed under join/meet
@@ -53,6 +54,8 @@ supClosed_sInter $ forall_range_iff.2 hf
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
+lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
+
 end Set
 
 section Finset
@@ -96,6 +99,8 @@ infClosed_sInter $ forall_range_iff.2 hf
 
 lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, inf_le_left, inf_le_right⟩
+
+lemma IsLowerSet.infClosed (hs : IsLowerSet s) :  InfClosed s := λ _a _ _b ↦ hs inf_le_right
 
 end Set
 

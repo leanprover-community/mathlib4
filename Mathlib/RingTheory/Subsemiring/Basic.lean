@@ -168,6 +168,9 @@ instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] [SetLike 
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subsemiring_class.to_linear_ordered_comm_semiring SubsemiringClass.toLinearOrderedCommSemiring
 
+instance instCharZero [CharZero R] : CharZero s :=
+  ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s)) Nat.cast_injective⟩
+
 end SubsemiringClass
 
 end SubsemiringClass

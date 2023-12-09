@@ -253,7 +253,7 @@ theorem sup_sdiff_mem_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha :
 /-- If `a` is in the family compression and can be compressed, then its compression is in the
 original family. -/
 theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s)
-  (hva : v ≤ a) (hua : Disjoint u a) :
+    (hva : v ≤ a) (hua : Disjoint u a) :
     (a ⊔ u) \ v ∈ s := by
   rw [mem_compression, compress_of_disjoint_of_le hua hva] at ha
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha

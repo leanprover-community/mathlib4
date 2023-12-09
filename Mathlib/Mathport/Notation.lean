@@ -336,7 +336,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
     matchFoldl lit x y smatcher sinit s
 
 /-- Create a `Term` that represents a matcher for `foldl` notation.
-Reminder: `( lit ","* => foldl (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldl (x y => scopedTerm) init)` -/
 partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -346,7 +346,7 @@ partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote x) $(quote y) $smatcher $sinit))
 
 /-- Create a `Term` that represents a matcher for `foldr` notation.
-Reminder: `( lit ","* => foldr (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldr (x y => scopedTerm) init)` -/
 partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -408,7 +408,7 @@ for the notation.
 This command can be used in mathlib4 but it has an uncertain future and was created primarily
 for backward compatibility.
 -/
-elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
+elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
     "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
     ppSpace items:(notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
@@ -553,3 +553,5 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       logWarning s!"Could not generate matchers for a delaborator, so notation will not be pretty{
         ""} printed. Consider either adjusting the expansions or use{
         ""} `notation3 (prettyPrint := false)`."
+
+initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»

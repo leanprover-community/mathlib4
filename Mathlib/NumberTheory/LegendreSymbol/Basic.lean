@@ -265,7 +265,7 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
 
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/
 theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legendreSym p a = -1) {x y : ℤ}
-    (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2 ) : ↑p ∣ x ∧ ↑p ∣ y := by
+    (hxy : (p : ℤ) ∣ x ^ 2 - a * y ^ 2) : ↑p ∣ x ∧ ↑p ∣ y := by
   simp_rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd] at hxy ⊢
   push_cast at hxy
   exact eq_zero_mod_of_eq_neg_one h hxy
@@ -311,7 +311,7 @@ theorem mod_four_ne_three_of_sq_eq_neg_sq' {x y : ZMod p} (hy : y ≠ 0) (hxy : 
   @mod_four_ne_three_of_sq_eq_neg_one p _ (x / y)
     (by
       apply_fun fun z => z / y ^ 2 at hxy
-      rwa [neg_div, ← div_pow, ← div_pow, div_self hy, one_pow] at hxy )
+      rwa [neg_div, ← div_pow, ← div_pow, div_self hy, one_pow] at hxy)
 #align zmod.mod_four_ne_three_of_sq_eq_neg_sq' ZMod.mod_four_ne_three_of_sq_eq_neg_sq'
 
 theorem mod_four_ne_three_of_sq_eq_neg_sq {x y : ZMod p} (hx : x ≠ 0) (hxy : x ^ 2 = -y ^ 2) :
