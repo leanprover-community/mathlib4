@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Hom.Group.Defs
-import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.NeZero
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 

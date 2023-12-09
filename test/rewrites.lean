@@ -109,6 +109,7 @@ axiom f_eq (n) : f n = z
 -- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
 #guard_msgs(drop info) in
 lemma test : f n = f m := by
+  fail_if_success rw? [-f_eq] -- Check that we can forbid lemmas.
   rw?
   rw [f_eq]
 

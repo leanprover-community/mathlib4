@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
-#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
+#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"8818fdefc78642a7e6afcd20be5c184f3c7d9699"
 
 /-!
 # Lemmas of Gauss and Eisenstein

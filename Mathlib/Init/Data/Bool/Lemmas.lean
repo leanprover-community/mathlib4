@@ -50,18 +50,9 @@ theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by c
 attribute [simp] xor_self
 #align bxor_self Bool.xor_self
 
--- TODO: undo the rename in leanprover/std4#183?
-alias xor_true := xor_true_right
 #align bxor_tt Bool.xor_true
-
-theorem xor_false (b : Bool) : xor b false = b := by cases b <;> simp
 #align bxor_ff Bool.xor_false
-
--- TODO: undo the rename in leanprover/std4#183?
-alias true_xor := xor_true_left
 #align tt_bxor Bool.true_xor
-
-theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
 #align ff_bxor Bool.false_xor
 
 theorem true_eq_false_eq_False : ¬true = false := by decide

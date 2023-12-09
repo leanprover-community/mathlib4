@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
+import Mathlib.Lean.Name
 
 /-!
 # Library search
@@ -77,7 +78,7 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
-  DiscrTreeCache.mk "apply?: init cache" processLemma (config := discrTreeConfig)
+  DiscrTreeCache.mk "apply?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -104,7 +105,6 @@ initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
     let (d, _r) ← unpickle (DiscrTree (Name × DeclMod)) path
     -- We can drop the `CompactedRegion` value; we do not plan to free it
     DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)
-      (config := discrTreeConfig)
   else
     buildDiscrTree
 
@@ -149,7 +149,7 @@ def librarySearchCore (goal : MVarId)
     (required : List Expr) (solveByElimDepth := 6) : Nondet MetaM (List MVarId) :=
   .squash fun _ => do
     let ty ← goal.getType
-    let lemmas := (← librarySearchLemmas.getMatch ty discrTreeConfig).toList
+    let lemmas := (← librarySearchLemmas.getMatch ty).toList
     trace[Tactic.librarySearch.lemmas] m!"Candidate library_search lemmas:\n{lemmas}"
     return (Nondet.ofList lemmas).filterMapM fun (lem, mod) =>
       observing? <| librarySearchLemma lem mod required solveByElimDepth goal

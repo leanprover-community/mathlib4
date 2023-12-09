@@ -83,6 +83,14 @@ theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ �
 #align measure_theory.measure.mutually_singular.mono MeasureTheory.Measure.MutuallySingular.mono
 
 @[simp]
+lemma self_iff (μ : Measure α) : μ ⟂ₘ μ ↔ μ = 0 := by
+  refine ⟨?_, fun h ↦ by (rw [h]; exact zero_left)⟩
+  rintro ⟨s, hs, hμs, hμs_compl⟩
+  suffices μ Set.univ = 0 by rwa [measure_univ_eq_zero] at this
+  rw [← Set.union_compl_self s, measure_union disjoint_compl_right hs.compl, hμs, hμs_compl,
+    add_zero]
+
+@[simp]
 theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ ⟂ₘ ν ↔ ∀ i, μ i ⟂ₘ ν := by
   refine' ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => _⟩
   choose s hsm hsμ hsν using H

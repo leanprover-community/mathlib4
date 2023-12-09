@@ -294,7 +294,7 @@ theorem prime_two_or_dvd_of_dvd_two_mul_pow_self_two {m : ℤ} {p : ℕ} (hp : N
     exact le_antisymm (Nat.le_of_dvd zero_lt_two hp2) (Nat.Prime.two_le hp)
   · apply Or.intro_right
     rw [sq, Int.natAbs_mul] at hpp
-    exact (or_self_iff _).mp ((Nat.Prime.dvd_mul hp).mp hpp)
+    exact or_self_iff.mp ((Nat.Prime.dvd_mul hp).mp hpp)
 #align prime_two_or_dvd_of_dvd_two_mul_pow_self_two prime_two_or_dvd_of_dvd_two_mul_pow_self_two
 
 theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime p ∧ p ∣ n := by

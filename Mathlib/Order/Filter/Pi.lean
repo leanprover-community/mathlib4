@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
 
-#align_import order.filter.pi from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
+#align_import order.filter.pi from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 
 /-!
 # (Co)product of a family of filters
@@ -29,6 +29,7 @@ open Classical Filter
 namespace Filter
 
 variable {ι : Type*} {α : ι → Type*} {f f₁ f₂ : (i : ι) → Filter (α i)} {s : (i : ι) → Set (α i)}
+  {p : ∀ i, α i → Prop}
 
 section Pi
 
@@ -102,6 +103,14 @@ theorem pi_mem_pi_iff [∀ i, NeBot (f i)] {I : Set ι} (hI : I.Finite) :
     I.pi s ∈ pi f ↔ ∀ i ∈ I, s i ∈ f i :=
   ⟨fun h _i hi => mem_of_pi_mem_pi h hi, pi_mem_pi hI⟩
 #align filter.pi_mem_pi_iff Filter.pi_mem_pi_iff
+
+theorem Eventually.eval_pi {i : ι} (hf : ∀ᶠ x : α i in f i, p i x) :
+    ∀ᶠ x : ∀ i : ι, α i in pi f, p i (x i) := (tendsto_eval_pi _ _).eventually hf
+#align filter.eventually.eval_pi Filter.Eventually.eval_pi
+
+theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
+    ∀ᶠ x : ∀ i, α i in pi f, ∀ i, p i (x i) := eventually_all.2 fun _i => (hf _).eval_pi
+#align filter.eventually_pi Filter.eventually_pi
 
 theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :

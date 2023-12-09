@@ -306,17 +306,6 @@ theorem maximalSubfieldWithHom_is_maximal :
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
--- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
-/-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
-a root of `x`'s minimal polynomial in `T`. -/
-noncomputable def _root_.Algebra.adjoin.liftSingleton (R : Type*) [Field R] {S T : Type*}
-  [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  (x : S) (y : T) (h : aeval y (minpoly R x) = 0) :
-  Algebra.adjoin R {x} →ₐ[R] T :=
-AlgHom.comp
-  (AdjoinRoot.liftHom _ y h)
-  (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
-
 -- porting note: this was much faster in lean 3
 set_option synthInstance.maxHeartbeats 200000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by

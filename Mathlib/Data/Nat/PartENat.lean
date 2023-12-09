@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Data.Part
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Part
 import Mathlib.Tactic.NormNum
 
 #align_import data.nat.part_enat from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"

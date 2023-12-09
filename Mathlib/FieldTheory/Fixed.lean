@@ -45,7 +45,7 @@ variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] 
 
 /-- The subfield of F fixed by the field endomorphism `m`. -/
 def FixedBy.subfield : Subfield F where
-  carrier := fixedBy M F m
+  carrier := fixedBy F m
   zero_mem' := smul_zero m
   add_mem' hx hy := (smul_add m _ _).trans <| congr_arg₂ _ hx hy
   neg_mem' hx := (smul_neg m _).trans <| congr_arg _ hx

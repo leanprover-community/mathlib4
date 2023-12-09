@@ -114,10 +114,9 @@ def PiTensorProduct : Type _ :=
 variable {R}
 
 unsuppress_compilation in
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
---scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
-/-- notation for tensor product over some indexed type -/
-notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
+/-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
+given an indexed family of types `s : ι → Type*`. -/
+scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
 

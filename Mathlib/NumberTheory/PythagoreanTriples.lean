@@ -374,13 +374,13 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       -- Porting note: norm_num is not enough to close this
       field_simp [sq, Int.sub_emod, Int.mul_emod, hm, hn]
     apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpm)) hnp
-    apply (or_self_iff _).mp
+    apply or_self_iff.mp
     apply Int.Prime.dvd_mul' hp
     rw [(by ring : n * n = -(m ^ 2 - n ^ 2) + m * m)]
     exact hp1.neg_right.add ((Int.coe_nat_dvd_left.2 hpm).mul_right _)
   rw [Int.gcd_comm] at hnp
   apply mt (Int.dvd_gcd (Int.coe_nat_dvd_left.mpr hpn)) hnp
-  apply (or_self_iff _).mp
+  apply or_self_iff.mp
   apply Int.Prime.dvd_mul' hp
   rw [(by ring : m * m = m ^ 2 - n ^ 2 + n * n)]
   apply dvd_add hp1

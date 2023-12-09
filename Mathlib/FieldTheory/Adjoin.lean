@@ -904,6 +904,12 @@ noncomputable def algHomAdjoinIntegralEquiv (h : IsIntegral F α) :
       rw [adjoin.powerBasis_gen, minpoly_gen, Equiv.refl_apply])
 #align intermediate_field.alg_hom_adjoin_integral_equiv IntermediateField.algHomAdjoinIntegralEquiv
 
+lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
+    (x : { x // x ∈ (minpoly F α).aroots K }) :
+    (algHomAdjoinIntegralEquiv F h).symm x (AdjoinSimple.gen F α) = x :=
+  (adjoin.powerBasis h).lift_gen x.val <| by
+    rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
+
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)

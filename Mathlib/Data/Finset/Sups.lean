@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Set.Sups
 
-#align_import data.finset.sups from "leanprover-community/mathlib"@"20715f4ac6819ef2453d9e5106ecd086a5dc2a5e"
+#align_import data.finset.sups from "leanprover-community/mathlib"@"8818fdefc78642a7e6afcd20be5c184f3c7d9699"
 
 /-!
 # Set family operations
@@ -36,6 +36,9 @@ We define the following notation in locale `FinsetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+#align finset.decidable_pred_mem_upper_closure instDecidablePredMemUpperClosure
+#align finset.decidable_pred_mem_lower_closure instDecidablePredMemLowerClosure
 
 open Function
 
@@ -223,6 +226,8 @@ theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
   image₂_image₂_image₂_comm sup_sup_sup_comm
 #align finset.sups_sups_sups_comm Finset.sups_sups_sups_comm
 
+#align finset.filter_sups_le Finset.filter_sups_le
+
 end Sups
 
 section Infs
@@ -402,6 +407,8 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 #align finset.infs_infs_infs_comm Finset.infs_infs_infs_comm
+
+#align finset.filter_infs_ge Finset.filter_infs_le
 
 end Infs
 

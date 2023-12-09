@@ -3,9 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Group.Commute.Hom
+import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.noncomm_prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
