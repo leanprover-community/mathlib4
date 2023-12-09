@@ -7,6 +7,8 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Functor
+import Mathlib.Init.Control.Lawful
 
 #align_import control.uliftable from "leanprover-community/mathlib"@"cc8c90d4ac61725a8f6c92691d8abcd2dec88115"
 
@@ -50,6 +52,11 @@ namespace ULiftable
 
 instance symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftable f g] : ULiftable g f where
   congr e := (ULiftable.congr e.symm).symm
+
+instance refl (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] : ULiftable f f where
+  congr e := Functor.mapEquiv _ e
+
+example : ULiftable IO IO := inferInstance
 
 /-- The most common practical use `ULiftable` (together with `down`), this function takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
