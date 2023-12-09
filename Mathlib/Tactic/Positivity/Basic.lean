@@ -30,27 +30,27 @@ open Lean Meta Qq Function
 section ite
 variable [Zero α] (p : Prop) [Decidable p] {a b : α}
 
-private lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b :=
-by by_cases p <;> simp [*]
+private lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b := by
+  by_cases p <;> simp [*]
 
-private lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
-by by_cases p <;> simp [*]
+private lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b := by
+  by_cases p <;> simp [*]
 
 private lemma ite_nonneg_of_pos_of_nonneg [Preorder α] (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
-ite_nonneg _ ha.le hb
+  ite_nonneg _ ha.le hb
 
 private lemma ite_nonneg_of_nonneg_of_pos [Preorder α] (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b :=
-ite_nonneg _ ha hb.le
+  ite_nonneg _ ha hb.le
 
 private lemma ite_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by by_cases p <;> simp [*]
 
 private lemma ite_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) :
-  ite p a b ≠ 0 :=
-ite_ne_zero _ ha.ne' hb
+    ite p a b ≠ 0 :=
+  ite_ne_zero _ ha.ne' hb
 
 private lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
-  ite p a b ≠ 0 :=
-ite_ne_zero _ ha hb.ne'
+    ite p a b ≠ 0 :=
+  ite_ne_zero _ ha hb.ne'
 
 end ite
 
@@ -92,14 +92,14 @@ variable [LinearOrder R] {a b c : R}
 
 private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
-private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c :=
-by rw [min_def]; split_ifs <;> assumption
+private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c := by
+  rw [min_def]; split_ifs <;> assumption
 
 private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
 private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
 
-private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c :=
-by rw [max_def]; split_ifs <;> assumption
+private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c := by
+  rw [max_def]; split_ifs <;> assumption
 
 end LinearOrder
 
@@ -219,17 +219,17 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | _, _ => pure .none
 
 
-private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a :=
-by { rw [Int.ediv_self ha.ne']; exact zero_lt_one }
+private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
+  rw [Int.ediv_self ha.ne']; exact zero_lt_one
 
 private lemma int_div_nonneg_of_pos_of_nonneg {a b : ℤ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
-Int.ediv_nonneg ha.le hb
+  Int.ediv_nonneg ha.le hb
 
 private lemma int_div_nonneg_of_nonneg_of_pos {a b : ℤ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
-Int.ediv_nonneg ha hb.le
+  Int.ediv_nonneg ha hb.le
 
 private lemma int_div_nonneg_of_pos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 ≤ a / b :=
-Int.ediv_nonneg ha.le hb.le
+  Int.ediv_nonneg ha.le hb.le
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 where `a` and `b` are integers. -/
@@ -263,16 +263,16 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield R] {a b : R}
 
 private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
-div_nonneg ha.le hb
+  div_nonneg ha.le hb
 
 private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
-div_nonneg ha hb.le
+  div_nonneg ha hb.le
 
 private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
-div_ne_zero ha.ne' hb
+  div_ne_zero ha.ne' hb
 
 private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
-div_ne_zero ha hb.ne'
+  div_ne_zero ha hb.ne'
 
 end LinearOrderedSemifield
 
@@ -316,7 +316,7 @@ private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 <
   zero_lt_one.trans_le (pow_zero a).ge
 
 private lemma zpow_zero_pos [LinearOrderedSemifield R] (a : R) : 0 < a ^ (0 : ℤ) :=
-zero_lt_one.trans_le (zpow_zero a).ge
+  zero_lt_one.trans_le (zpow_zero a).ge
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
@@ -377,7 +377,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .none => pure .none
 
 private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
- [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
+    [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |(_ : α)|]
@@ -397,7 +397,7 @@ def evalAbs : PositivityExt where eval {_ _α} zα pα e := do
     pure (.nonnegative pa')
 
 private theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
-Int.natAbs_pos.mpr hn.ne'
+  Int.natAbs_pos.mpr hn.ne'
 
 /-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.
 Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled by the default

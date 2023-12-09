@@ -304,10 +304,10 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
       have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
-        = toΓSpecFun Y (f.val.base x) := by erw [ContinuousMap.coe_mk]; rfl
+        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
       erw [this]
       have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
-        = toΓSpecFun X x := by erw [ContinuousMap.coe_mk]
+        = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
       erw [this]
       dsimp [toΓSpecFun]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644

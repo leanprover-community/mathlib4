@@ -18,8 +18,6 @@ used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, d
 of `MeasureTheory.measurePreserving`).
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open MeasureTheory
 
 noncomputable section
