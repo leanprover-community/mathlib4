@@ -16,8 +16,10 @@ see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 continuous linear equivalences.
--/
 
+We also prove the usual formula for the derivative of the inverse function, assuming it exists.
+The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`.
+-/
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
