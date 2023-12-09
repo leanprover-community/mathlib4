@@ -15,11 +15,11 @@ This file defines local homeomorphisms.
 
 ## Main definitions
 
-* `IsLocallyHomeomorph`: A function `f : X → Y` satisfies `IsLocallyHomeomorph` if for each
+* `IsLocalHomeomorph`: A function `f : X → Y` satisfies `IsLocalHomeomorph` if for each
   point `x : X`, the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
   between `U` and an open subset of `Y`.
 
-  Note that `IsLocallyHomeomorph` is a global condition. This is in contrast to
+  Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
   `LocalHomeomorph`, which is a homeomorphism between specific open subsets.
 -/
 
@@ -29,14 +29,14 @@ open Topology
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (g : Y → Z)
   (f : X → Y) (s : Set X) (t : Set Y)
 
-/-- A function `f : X → Y` satisfies `IsLocallyHomeomorphOn f s` if each `x ∈ s` is contained in
+/-- A function `f : X → Y` satisfies `IsLocalHomeomorphOn f s` if each `x ∈ s` is contained in
 the source of some `e : LocalHomeomorph X Y` with `f = e`. -/
-def IsLocallyHomeomorphOn :=
+def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ f = e
-#align is_locally_homeomorph_on IsLocallyHomeomorphOn
+#align is_locally_homeomorph_on IsLocalHomeomorphOn
 
-theorem isLocallyHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
-    IsLocallyHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
+theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
+    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨e, hxe, rfl⟩ := h x hx
     exact ⟨e.source, e.open_source.mem_nhds hxe, e.openEmbedding_restrict⟩
@@ -50,13 +50,13 @@ theorem isLocallyHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
       (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,
       mem_interior_iff_mem_nhds.mpr hU, rfl⟩
 
-namespace IsLocallyHomeomorphOn
+namespace IsLocalHomeomorphOn
 
-/-- Proves that `f` satisfies `IsLocallyHomeomorphOn f s`. The condition `h` is weaker than the
-definition of `IsLocallyHomeomorphOn f s`, since it only requires `e : LocalHomeomorph X Y` to
+/-- Proves that `f` satisfies `IsLocalHomeomorphOn f s`. The condition `h` is weaker than the
+definition of `IsLocalHomeomorphOn f s`, since it only requires `e : LocalHomeomorph X Y` to
 agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -/
 theorem mk (h : ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀ y ∈ e.source, f y = e y) :
-    IsLocallyHomeomorphOn f s := by
+    IsLocalHomeomorphOn f s := by
   intro x hx
   obtain ⟨e, hx, he⟩ := h x hx
   exact
@@ -67,15 +67,15 @@ theorem mk (h : ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀
         right_inv' := fun y hy => by rw [he _ (e.map_target' hy)]; exact e.right_inv' hy
         continuousOn_toFun := (continuousOn_congr he).mpr e.continuousOn_toFun },
       hx, rfl⟩
-#align is_locally_homeomorph_on.mk IsLocallyHomeomorphOn.mk
+#align is_locally_homeomorph_on.mk IsLocalHomeomorphOn.mk
 
 variable {g f s t}
 
-theorem mono {t : Set X} (hf : IsLocallyHomeomorphOn f t) (hst : s ⊆ t) :
-    IsLocallyHomeomorphOn f s := fun x hx ↦ hf x (hst hx)
+theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) :
+    IsLocalHomeomorphOn f s := fun x hx ↦ hf x (hst hx)
 
-theorem of_comp_left (hgf : IsLocallyHomeomorphOn (g ∘ f) s) (hg : IsLocallyHomeomorphOn g (f '' s))
-    (cont : ∀ x ∈ s, ContinuousAt f x) : IsLocallyHomeomorphOn f s := mk f s fun x hx ↦ by
+theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeomorphOn g (f '' s))
+    (cont : ∀ x ∈ s, ContinuousAt f x) : IsLocalHomeomorphOn f s := mk f s fun x hx ↦ by
   obtain ⟨g, hxg, rfl⟩ := hg (f x) ⟨x, hx, rfl⟩
   obtain ⟨gf, hgf, he⟩ := hgf x hx
   refine ⟨(gf.restr <| f ⁻¹' g.source).trans g.symm, ⟨⟨hgf, mem_interior_iff_mem_nhds.mpr
@@ -86,8 +86,8 @@ theorem of_comp_left (hgf : IsLocallyHomeomorphOn (g ∘ f) s) (hg : IsLocallyHo
   rw [← he, g.eq_symm_apply this (by apply g.map_source this)]
   rfl
 
-theorem of_comp_right (hgf : IsLocallyHomeomorphOn (g ∘ f) s) (hf : IsLocallyHomeomorphOn f s) :
-    IsLocallyHomeomorphOn g (f '' s) := mk g _ <| by
+theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeomorphOn f s) :
+    IsLocalHomeomorphOn g (f '' s) := mk g _ <| by
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨f, hxf, rfl⟩ := hf x hx
   obtain ⟨gf, hgf, he⟩ := hgf x hx
@@ -96,112 +96,112 @@ theorem of_comp_right (hgf : IsLocallyHomeomorphOn (g ∘ f) s) (hf : IsLocallyH
   · change g y = gf (f.symm y)
     rw [← he, Function.comp_apply, f.right_inv hy.1]
 
-theorem map_nhds_eq (hf : IsLocallyHomeomorphOn f s) {x : X} (hx : x ∈ s) : (𝓝 x).map f = 𝓝 (f x) :=
+theorem map_nhds_eq (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) : (𝓝 x).map f = 𝓝 (f x) :=
   let ⟨e, hx, he⟩ := hf x hx
   he.symm ▸ e.map_nhds_eq hx
-#align is_locally_homeomorph_on.map_nhds_eq IsLocallyHomeomorphOn.map_nhds_eq
+#align is_locally_homeomorph_on.map_nhds_eq IsLocalHomeomorphOn.map_nhds_eq
 
-protected theorem continuousAt (hf : IsLocallyHomeomorphOn f s) {x : X} (hx : x ∈ s) :
+protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) :
     ContinuousAt f x :=
   (hf.map_nhds_eq hx).le
-#align is_locally_homeomorph_on.continuous_at IsLocallyHomeomorphOn.continuousAt
+#align is_locally_homeomorph_on.continuous_at IsLocalHomeomorphOn.continuousAt
 
-protected theorem continuousOn (hf : IsLocallyHomeomorphOn f s) : ContinuousOn f s :=
+protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
   ContinuousAt.continuousOn fun _x => hf.continuousAt
-#align is_locally_homeomorph_on.continuous_on IsLocallyHomeomorphOn.continuousOn
+#align is_locally_homeomorph_on.continuous_on IsLocalHomeomorphOn.continuousOn
 
-protected theorem comp (hg : IsLocallyHomeomorphOn g t) (hf : IsLocallyHomeomorphOn f s)
-    (h : Set.MapsTo f s t) : IsLocallyHomeomorphOn (g ∘ f) s := by
+protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
+    (h : Set.MapsTo f s t) : IsLocalHomeomorphOn (g ∘ f) s := by
   intro x hx
   obtain ⟨eg, hxg, rfl⟩ := hg (f x) (h hx)
   obtain ⟨ef, hxf, rfl⟩ := hf x hx
   exact ⟨ef.trans eg, ⟨hxf, hxg⟩, rfl⟩
-#align is_locally_homeomorph_on.comp IsLocallyHomeomorphOn.comp
+#align is_locally_homeomorph_on.comp IsLocalHomeomorphOn.comp
 
-end IsLocallyHomeomorphOn
+end IsLocalHomeomorphOn
 
-/-- A function `f : X → Y` satisfies `IsLocallyHomeomorph f` if each `x : x` is contained in
+/-- A function `f : X → Y` satisfies `IsLocalHomeomorph f` if each `x : x` is contained in
   the source of some `e : LocalHomeomorph X Y` with `f = e`. -/
-def IsLocallyHomeomorph :=
+def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ f = e
-#align is_locally_homeomorph IsLocallyHomeomorph
+#align is_locally_homeomorph IsLocalHomeomorph
 
-theorem Homeomorph.isLocallyHomeomorph (f : X ≃ₜ Y) : IsLocallyHomeomorph f :=
+theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toLocalHomeomorph, trivial, rfl⟩
 
 variable {f s}
 
-theorem isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ :
-    IsLocallyHomeomorph f ↔ IsLocallyHomeomorphOn f Set.univ :=
+theorem isLocalHomeomorph_iff_isLocalHomeomorphOn_univ :
+    IsLocalHomeomorph f ↔ IsLocalHomeomorphOn f Set.univ :=
   ⟨fun h x _ ↦ h x, fun h x ↦ h x trivial⟩
-#align is_locally_homeomorph_iff_is_locally_homeomorph_on_univ isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ
+#align is_locally_homeomorph_iff_is_locally_homeomorph_on_univ isLocalHomeomorph_iff_isLocalHomeomorphOn_univ
 
-protected theorem IsLocallyHomeomorph.isLocallyHomeomorphOn (hf : IsLocallyHomeomorph f) :
-    IsLocallyHomeomorphOn f s := fun x _ ↦ hf x
-#align is_locally_homeomorph.is_locally_homeomorph_on IsLocallyHomeomorph.isLocallyHomeomorphOn
+protected theorem IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph f) :
+    IsLocalHomeomorphOn f s := fun x _ ↦ hf x
+#align is_locally_homeomorph.is_locally_homeomorph_on IsLocalHomeomorph.isLocalHomeomorphOn
 
-theorem isLocallyHomeomorph_iff_openEmbedding_restrict {f : X → Y} :
-    IsLocallyHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
-  simp_rw [isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ,
-    isLocallyHomeomorphOn_iff_openEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
+theorem isLocalHomeomorph_iff_openEmbedding_restrict {f : X → Y} :
+    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
+  simp_rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ,
+    isLocalHomeomorphOn_iff_openEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
 
-theorem OpenEmbedding.isLocallyHomeomorph (hf : OpenEmbedding f) : IsLocallyHomeomorph f :=
-  isLocallyHomeomorph_iff_openEmbedding_restrict.mpr fun _ ↦
+theorem OpenEmbedding.isLocalHomeomorph (hf : OpenEmbedding f) : IsLocalHomeomorph f :=
+  isLocalHomeomorph_iff_openEmbedding_restrict.mpr fun _ ↦
     ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).openEmbedding⟩
 
 variable (f)
 
-namespace IsLocallyHomeomorph
+namespace IsLocalHomeomorph
 
-/-- Proves that `f` satisfies `IsLocallyHomeomorph f`. The condition `h` is weaker than the
-definition of `IsLocallyHomeomorph f`, since it only requires `e : LocalHomeomorph X Y` to
+/-- Proves that `f` satisfies `IsLocalHomeomorph f`. The condition `h` is weaker than the
+definition of `IsLocalHomeomorph f`, since it only requires `e : LocalHomeomorph X Y` to
 agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -/
 theorem mk (h : ∀ x : X, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀ y ∈ e.source, f y = e y) :
-    IsLocallyHomeomorph f :=
-  isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ.mpr
-    (IsLocallyHomeomorphOn.mk f Set.univ fun x _hx => h x)
-#align is_locally_homeomorph.mk IsLocallyHomeomorph.mk
+    IsLocalHomeomorph f :=
+  isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
+    (IsLocalHomeomorphOn.mk f Set.univ fun x _hx => h x)
+#align is_locally_homeomorph.mk IsLocalHomeomorph.mk
 
 variable {g f}
 
-lemma isLocallyInjective (hf : IsLocallyHomeomorph f) : IsLocallyInjective f :=
+lemma isLocallyInjective (hf : IsLocalHomeomorph f) : IsLocallyInjective f :=
   fun x ↦ by obtain ⟨f, hx, rfl⟩ := hf x; exact ⟨f.source, f.open_source, hx, f.injOn⟩
 
-theorem of_comp (hgf : IsLocallyHomeomorph (g ∘ f)) (hg : IsLocallyHomeomorph g)
-    (cont : Continuous f) : IsLocallyHomeomorph f :=
-  isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ.mpr <|
-    hgf.isLocallyHomeomorphOn.of_comp_left hg.isLocallyHomeomorphOn fun _ _ ↦ cont.continuousAt
+theorem of_comp (hgf : IsLocalHomeomorph (g ∘ f)) (hg : IsLocalHomeomorph g)
+    (cont : Continuous f) : IsLocalHomeomorph f :=
+  isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr <|
+    hgf.isLocalHomeomorphOn.of_comp_left hg.isLocalHomeomorphOn fun _ _ ↦ cont.continuousAt
 
-theorem map_nhds_eq (hf : IsLocallyHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (f x) :=
-  hf.isLocallyHomeomorphOn.map_nhds_eq (Set.mem_univ x)
-#align is_locally_homeomorph.map_nhds_eq IsLocallyHomeomorph.map_nhds_eq
+theorem map_nhds_eq (hf : IsLocalHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (f x) :=
+  hf.isLocalHomeomorphOn.map_nhds_eq (Set.mem_univ x)
+#align is_locally_homeomorph.map_nhds_eq IsLocalHomeomorph.map_nhds_eq
 
-protected theorem continuous (hf : IsLocallyHomeomorph f) : Continuous f :=
-  continuous_iff_continuousOn_univ.mpr hf.isLocallyHomeomorphOn.continuousOn
-#align is_locally_homeomorph.continuous IsLocallyHomeomorph.continuous
+protected theorem continuous (hf : IsLocalHomeomorph f) : Continuous f :=
+  continuous_iff_continuousOn_univ.mpr hf.isLocalHomeomorphOn.continuousOn
+#align is_locally_homeomorph.continuous IsLocalHomeomorph.continuous
 
-protected theorem isOpenMap (hf : IsLocallyHomeomorph f) : IsOpenMap f :=
+protected theorem isOpenMap (hf : IsLocalHomeomorph f) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun x => ge_of_eq (hf.map_nhds_eq x)
-#align is_locally_homeomorph.is_open_map IsLocallyHomeomorph.isOpenMap
+#align is_locally_homeomorph.is_open_map IsLocalHomeomorph.isOpenMap
 
-protected theorem comp (hg : IsLocallyHomeomorph g) (hf : IsLocallyHomeomorph f) :
-    IsLocallyHomeomorph (g ∘ f) :=
-  isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ.mpr
-    (hg.isLocallyHomeomorphOn.comp hf.isLocallyHomeomorphOn (Set.univ.mapsTo_univ f))
-#align is_locally_homeomorph.comp IsLocallyHomeomorph.comp
+protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
+    IsLocalHomeomorph (g ∘ f) :=
+  isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
+    (hg.isLocalHomeomorphOn.comp hf.isLocalHomeomorphOn (Set.univ.mapsTo_univ f))
+#align is_locally_homeomorph.comp IsLocalHomeomorph.comp
 
-theorem openEmbedding_of_injective (hf : IsLocallyHomeomorph f) (hi : f.Injective) :
+theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     OpenEmbedding f :=
   openEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
-theorem openEmbedding_of_comp (hf : IsLocallyHomeomorph g) (hgf : OpenEmbedding (g ∘ f))
+theorem openEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : OpenEmbedding (g ∘ f))
     (cont : Continuous f) : OpenEmbedding f :=
-  (hgf.isLocallyHomeomorph.of_comp hf cont).openEmbedding_of_injective hgf.inj.of_comp
+  (hgf.isLocalHomeomorph.of_comp hf cont).openEmbedding_of_injective hgf.inj.of_comp
 
 open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism form a basis of the source space.-/
-theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
+theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
   · rintro _ ⟨U, hU, s, hs, rfl⟩
@@ -216,4 +216,4 @@ theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
         f.source_preimage_target, f.source_inter_preimage_inv_preimage]
 
-end IsLocallyHomeomorph
+end IsLocalHomeomorph
