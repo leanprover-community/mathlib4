@@ -1284,7 +1284,6 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
   classical
   exact Iff.trans (Iff.of_eq <| congr rfl <| by ext; simp) <|
     Ideal.le_of_subset_union_with_at_most_two_non_primes I (s.image f)
-      -- (insert (f a) <| insert (f b) <| Finset.image f s)
       (fun s' hs' card_s' ↦ by
         by_cases H : (s' ≤ {f a, f b})
         · have h := Finset.card_mono H |>.trans
