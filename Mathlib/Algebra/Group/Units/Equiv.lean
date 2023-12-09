@@ -120,7 +120,7 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.add_left Equiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
+theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
   rfl
 #align equiv.coe_mul_left Equiv.coe_mulLeft
 #align equiv.coe_add_left Equiv.coe_addLeft

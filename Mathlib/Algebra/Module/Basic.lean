@@ -225,33 +225,7 @@ theorem AddMonoid.End.int_cast_def (z : ℤ) :
   rfl
 #align add_monoid.End.int_cast_def AddMonoid.End.int_cast_def
 
-/-- A structure containing most informations as in a module, except the fields `zero_smul`
-and `smul_zero`. As these fields can be deduced from the other ones when `M` is an `AddCommGroup`,
-this provides a way to construct a module structure by checking less properties, in
-`Module.ofCore`. -/
--- Porting note: removed @[nolint has_nonempty_instance]
-structure Module.Core extends SMul R M where
-  /-- Scalar multiplication distributes over addition from the left. -/
-  smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y
-  /-- Scalar multiplication distributes over addition from the right. -/
-  add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
-  /-- Scalar multiplication distributes over multiplication from the right. -/
-  mul_smul : ∀ (r s : R) (x : M), (r * s) • x = r • s • x
-  /-- Scalar multiplication by one is the identity. -/
-  one_smul : ∀ x : M, (1 : R) • x = x
-#align module.core Module.Core
-
 variable {R M}
-
-/-- Define `Module` without proving `zero_smul` and `smul_zero` by using an auxiliary
-structure `Module.Core`, when the underlying space is an `AddCommGroup`. -/
-def Module.ofCore (H : Module.Core R M) : Module R M :=
-  letI := H.toSMul
-  { H with
-    zero_smul := fun x =>
-      (AddMonoidHom.mk' (fun r : R => r • x) fun r s => H.add_smul r s x).map_zero
-    smul_zero := fun r => (AddMonoidHom.mk' ((· • ·) r) (H.smul_add r)).map_zero }
-#align module.of_core Module.ofCore
 
 theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :
     a • x + b • y = b • (y - x) + x :=
@@ -319,7 +293,7 @@ def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] :
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+    zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
 #align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
 
 variable {R}
@@ -357,27 +331,6 @@ instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐ�
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 #align ring_hom.to_module RingHom.toModule
-
-/-- The tautological action by `R →+* R` on `R`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance RingHom.applyDistribMulAction [Semiring R] : DistribMulAction (R →+* R) R where
-  smul := (· <| ·)
-  smul_zero := RingHom.map_zero
-  smul_add := RingHom.map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-#align ring_hom.apply_distrib_mul_action RingHom.applyDistribMulAction
-
-@[simp]
-protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • a = f a :=
-  rfl
-#align ring_hom.smul_def RingHom.smul_def
-
-/-- `RingHom.applyDistribMulAction` is faithful. -/
-instance RingHom.applyFaithfulSMul [Semiring R] : FaithfulSMul (R →+* R) R :=
-  ⟨fun {_ _} h => RingHom.ext h⟩
-#align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 
 section AddCommMonoid
 
@@ -670,7 +623,7 @@ section SMulInjective
 variable (M)
 
 theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
-    Function.Injective ((· • ·) c : M → M) :=
+    Function.Injective (c • · : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
 #align smul_right_injective smul_right_injective
 
