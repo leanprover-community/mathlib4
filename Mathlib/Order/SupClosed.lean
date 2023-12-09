@@ -25,22 +25,6 @@ is automatically complete. All dually for `⊓`.
   greatest lower bound is automatically complete.
 -/
 
-namespace Finset
-variable {α β : Type*}
-
--- This will come from https://github.com/leanprover-community/mathlib/pull/18989
-lemma sup'_union [SemilatticeSup α] [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty)
-  (h₂ : s₂.Nonempty) (f : β → α) :
-  (s₁ ∪ s₂).sup' (h₁.mono $ subset_union_left _ _) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
-eq_of_forall_ge_iff $ λ a ↦ by simp [or_imp, forall_and]
-
-lemma inf'_union [SemilatticeInf α] [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty)
-  (h₂ : s₂.Nonempty) (f : β → α) :
-  (s₁ ∪ s₂).inf' (h₁.mono $ subset_union_left _ _) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
-eq_of_forall_le_iff $ λ a ↦ by simp [or_imp, forall_and]
-
-end Finset
-
 variable {α : Type*}
 
 section SemilatticeSup

@@ -7,7 +7,7 @@ import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Data.Prod.TProd
 import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.MeasureTheory.MeasurableSpaceDef
+import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.LiminfLimsup

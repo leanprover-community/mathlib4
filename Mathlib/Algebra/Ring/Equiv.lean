@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
 import Mathlib.Algebra.Hom.Equiv.Basic

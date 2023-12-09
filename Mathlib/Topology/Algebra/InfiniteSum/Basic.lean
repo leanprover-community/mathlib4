@@ -512,8 +512,8 @@ theorem sum_eq_tsum_indicator (f : β → α) (s : Finset β) :
     (tsum_eq_sum this).symm
 #align sum_eq_tsum_indicator sum_eq_tsum_indicator
 
-theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f False + f True := by
-  rw [tsum_fintype, Finset.sum_eq_add] <;> simp
+theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f false + f true := by
+  rw [tsum_fintype, Fintype.sum_bool, add_comm]
 #align tsum_bool tsum_bool
 
 theorem tsum_eq_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 0) :

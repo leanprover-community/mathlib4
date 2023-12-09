@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Rat.Defs
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.WLOG
 
 #align_import imo.imo1988_q6 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"

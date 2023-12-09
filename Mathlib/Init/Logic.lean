@@ -13,6 +13,7 @@ import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
+import Mathlib.Util.Imports
 
 set_option autoImplicit true
 

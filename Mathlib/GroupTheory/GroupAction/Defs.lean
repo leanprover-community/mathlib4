@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Group.Commute
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
 

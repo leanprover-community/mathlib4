@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Basis
 
 #align_import algebra.direct_sum.module from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 

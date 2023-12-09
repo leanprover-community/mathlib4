@@ -73,7 +73,7 @@ variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
   ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
     Subalgebra.restrictScalars_injective F <| by
-      rw [rootSet, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
+      rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 #align polynomial.is_splitting_field.map Polynomial.IsSplittingField.map
@@ -81,7 +81,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Polynomial.Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
   ⟨fun h => by -- Porting note: replaced term-mode proof
-    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, roots_map (algebraMap K L) h,
+    rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
@@ -99,10 +99,9 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
   ⟨(IsScalarTower.algebraMap_eq F K L).symm ▸
       splits_mul _ (splits_comp_of_splits _ _ (splits K f))
         ((splits_map_iff _ _).1 (splits L <| g.map <| algebraMap F K)), by
-    rw [rootSet, Polynomial.map_mul,
-      roots_mul (mul_ne_zero (map_ne_zero hf : f.map (algebraMap F L) ≠ 0) (map_ne_zero hg)),
+    rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
-      IsScalarTower.algebraMap_eq F K L, ← map_map,
+      aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map,
       roots_map (algebraMap K L) ((splits_id_iff_splits <| algebraMap F K).2 <| splits K f),
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,

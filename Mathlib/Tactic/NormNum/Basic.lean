@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
+
 /-!
 ## `norm_num` basic plugins
 
@@ -404,6 +405,10 @@ theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} �
     IsRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
 
+/-- Helper function to synthesize a typed `DivisionRing α` expression. -/
+def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
+  return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
+
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
@@ -415,24 +420,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨qa, na, da, pa⟩ ← rab.toRat' dα
   assumeInstancesCommute
   return .isRat' dα qa na da q(isRat_div $pa)
-
-/-! # Constructor-like operations -/
-
-theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
-    IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
-  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
-
-/-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
-such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
-@[norm_num mkRat _ _] def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e):= do
-  let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
-  haveI' : $e =Q mkRat $a $b := ⟨⟩
-  let ra ← derive a
-  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRingInt) : Q(Ring Int)) | failure
-  let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
-  let rab ← derive q($na / $nb : Rat)
-  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.divisionRing)
-  return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
 /-! # Logic -/
 
@@ -465,44 +452,11 @@ theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {c : ℕ} →
     IsNat a c → IsNat b c → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
 
-theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
-    IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
-
 theorem ble_eq_false {x y : ℕ} : x.ble y = false ↔ y < x := by
   rw [← Nat.not_le, ← Bool.not_eq_true, Nat.ble_eq]
 
-theorem isNat_eq_false [AddMonoidWithOne α] [CharZero α] : {a b : α} → {a' b' : ℕ} →
-    IsNat a a' → IsNat b b' → Nat.beq a' b' = false → ¬a = b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => by simp; exact Nat.ne_of_beq_eq_false h
-
-theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
-    (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
-  not_lt_of_le (isNat_le_true hb ha h)
-
 theorem isInt_eq_true [Ring α] : {a b : α} → {z : ℤ} → IsInt a z → IsInt b z → a = b
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => rfl
-
-theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
-
-theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → decide (a' < b') → a < b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
-
-theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
-    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
-  not_le_of_lt (isInt_lt_true hb ha h)
-
-theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
-    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
-  not_lt_of_le (isInt_le_true hb ha h)
-
-theorem Rat.invOf_denom_swap [Ring α] (n₁ n₂ : ℤ) (a₁ a₂ : α)
-    [Invertible a₁] [Invertible a₂] : n₁ * ⅟a₁ = n₂ * ⅟a₂ ↔ n₁ * a₂ = n₂ * a₁ := by
-  rw [mul_invOf_eq_iff_eq_mul_right, ← Int.commute_cast, mul_assoc,
-    ← mul_left_eq_iff_eq_invOf_mul, Int.commute_cast]
 
 theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
     IsRat a n d → IsRat b n d → a = b

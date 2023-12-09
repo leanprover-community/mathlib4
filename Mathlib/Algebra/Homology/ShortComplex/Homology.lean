@@ -6,7 +6,8 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
-/-! Homology of short complexes
+/-!
+# Homology of short complexes
 
 In this file, we shall define the homology of short complexes `S`, i.e. diagrams
 `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`. We shall say that

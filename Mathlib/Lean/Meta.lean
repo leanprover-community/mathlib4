@@ -123,6 +123,70 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
     let mvars ← Meta.getMVars (← g'.getType)
     pure <| !(mvars.contains g)
 
+/--
+Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
+If successful, returns the new goal, and otherwise returns the original `MVarId`.
+
+This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
+-/
+def iffOfEq (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to convert an `Eq` into an `Iff` by applying `propext`.
+If successful, then returns then new goal, otherwise returns the original `MVarId`.
+-/
+def propext (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
+    -- We don't want a unification specializing `Sort*` to `Prop`.
+    let tgt ← withReducible mvarId.getType'
+    let some (ty, _, _) := tgt.eq? | failure
+    guard ty.isProp
+    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+
+We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
+specialize `Sort _` to `Prop`.
+-/
+def proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `proofIrrelHeq
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, _, rhs) := tgt.heq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
+/--
+Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
+
+We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
+This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
+`Sort _` to `Prop`.
+-/
+def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `subsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
 end Lean.MVarId
 
 namespace Lean.Meta

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import imo.imo2019_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 

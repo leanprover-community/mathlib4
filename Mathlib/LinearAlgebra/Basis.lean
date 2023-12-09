@@ -356,6 +356,9 @@ theorem map_apply (i) : b.map f i = f (b i) :=
   rfl
 #align basis.map_apply Basis.map_apply
 
+theorem coe_map : (b.map f : ι → M') = f ∘ b :=
+  rfl
+
 end Map
 
 section MapCoeffs

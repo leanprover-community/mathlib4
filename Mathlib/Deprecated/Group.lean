@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Hom.Units
 
 #align_import deprecated.group from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"

@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Group.Opposite
 
 #align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 

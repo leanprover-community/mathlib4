@@ -419,8 +419,8 @@ instance monoid [Monoid M] : Monoid (Germ l M) :=
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
 @[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
-def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M :=
-  ⟨⟨ofFun, rfl⟩, fun _ _ => rfl⟩
+def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
+  toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 #align filter.germ.coe_mul_hom Filter.Germ.coeMulHom
 #align filter.germ.coe_add_hom Filter.Germ.coeAddHom
 

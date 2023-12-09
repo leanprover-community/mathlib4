@@ -328,7 +328,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! (config := { fullyApplied := false })]
 noncomputable def liftEquiv' (pb : PowerBasis A S) :
-    (S →ₐ[A] B) ≃ { y : B // y ∈ ((minpoly A pb.gen).map (algebraMap A B)).roots } :=
+    (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
     · simp

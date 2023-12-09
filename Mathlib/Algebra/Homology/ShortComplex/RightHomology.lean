@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
-/-! RightHomology of short complexes
+/-!
+# Right Homology of short complexes
 
 In this file, we define the dual notions to those defined in
 `Algebra.Homology.ShortComplex.LeftHomology`. In particular, if `S : ShortComplex C` is
@@ -39,7 +40,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
-and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` --/
+and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` -/
 structure RightHomologyData where
   /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂`-/
   Q : C

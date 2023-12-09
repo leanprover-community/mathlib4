@@ -398,11 +398,6 @@ variable [CommRing R] [Ring A]
 
 variable [Algebra R A] {s t : Set A}
 
-theorem adjoin_int (s : Set R) : adjoin ℤ s = subalgebraOfSubring (Subring.closure s) :=
-  le_antisymm (adjoin_le Subring.subset_closure)
-    (Subring.closure_le.2 subset_adjoin : Subring.closure s ≤ (adjoin ℤ s).toSubring)
-#align algebra.adjoin_int Algebra.adjoin_int
-
 theorem mem_adjoin_iff {s : Set A} {x : A} :
     x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) :=
   ⟨fun hx =>
@@ -454,3 +449,30 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
 #align alg_hom.ext_of_adjoin_eq_top AlgHom.ext_of_adjoin_eq_top
 
 end AlgHom
+
+section NatInt
+
+theorem Algebra.adjoin_nat {R : Type _} [Semiring R] (s : Set R) :
+    adjoin ℕ s = subalgebraOfSubsemiring (Subsemiring.closure s) :=
+  le_antisymm (adjoin_le Subsemiring.subset_closure)
+    (Subsemiring.closure_le.2 subset_adjoin : Subsemiring.closure s ≤ (adjoin ℕ s).toSubsemiring)
+
+theorem Algebra.adjoin_int {R : Type _} [Ring R] (s : Set R) :
+    adjoin ℤ s = subalgebraOfSubring (Subring.closure s) :=
+  le_antisymm (adjoin_le Subring.subset_closure)
+    (Subring.closure_le.2 subset_adjoin : Subring.closure s ≤ (adjoin ℤ s).toSubring)
+#align algebra.adjoin_int Algebra.adjoin_int
+
+/-- The `ℕ`-algebra equivalence between `Subsemiring.closure s` and `Algebra.adjoin ℕ s` given
+by the identity map. -/
+def Subsemiring.closureEquivAdjoinNat {R : Type*} [Semiring R] (s : Set R) :
+    Subsemiring.closure s ≃ₐ[ℕ] Algebra.adjoin ℕ s :=
+  Subalgebra.equivOfEq (subalgebraOfSubsemiring <| Subsemiring.closure s) _ (adjoin_nat s).symm
+
+/-- The `ℤ`-algebra equivalence between `Subring.closure s` and `Algebra.adjoin ℤ s` given by
+the identity map. -/
+def Subring.closureEquivAdjoinInt {R : Type*} [Ring R] (s : Set R) :
+    Subring.closure s ≃ₐ[ℤ] Algebra.adjoin ℤ s :=
+  Subalgebra.equivOfEq (subalgebraOfSubring <| Subring.closure s) _ (adjoin_int s).symm
+
+  end NatInt
