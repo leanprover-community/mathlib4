@@ -696,13 +696,13 @@ theorem mem_extendScalars : x ∈ extendScalars h ↔ x ∈ E := Iff.rfl
 @[simp]
 theorem extendScalars_restrictScalars : (extendScalars h).restrictScalars K = E := rfl
 
-theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := by rfl
+theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := Iff.rfl
 
 theorem extendScalars_le_iff (E' : IntermediateField F L) :
-    extendScalars h ≤ E' ↔ E ≤ E'.restrictScalars K := by rfl
+    extendScalars h ≤ E' ↔ E ≤ E'.restrictScalars K := Iff.rfl
 
 theorem le_extendScalars_iff (E' : IntermediateField F L) :
-    E' ≤ extendScalars h ↔ E'.restrictScalars K ≤ E := by rfl
+    E' ≤ extendScalars h ↔ E'.restrictScalars K ≤ E := Iff.rfl
 
 variable (F)
 
