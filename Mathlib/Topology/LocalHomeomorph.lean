@@ -47,8 +47,6 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-open TopologicalSpace (SecondCountableTopology)
-
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
@@ -144,6 +142,10 @@ theorem coe_coe_symm : (e.toLocalEquiv.symm : β → α) = e.symm :=
 theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 #align local_homeomorph.map_source LocalHomeomorph.map_source
+
+/-- Variant of `map_source`, stated for images of subsets of `source`. -/
+lemma map_source'' : e '' e.source ⊆ e.target :=
+  fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
 
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
@@ -442,6 +444,17 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : LocalHomeomorph �
 theorem preimage_open_of_open {s : Set β} (hs : IsOpen s) : IsOpen (e.source ∩ e ⁻¹' s) :=
   e.continuousOn.preimage_open_of_open e.open_source hs
 #align local_homeomorph.preimage_open_of_open LocalHomeomorph.preimage_open_of_open
+
+/-- A local homeomorphism is an open map on its source. -/
+lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) :
+    IsOpen (e '' s) := by
+  rw [(image_eq_target_inter_inv_preimage (e := e) hse)]
+  exact e.continuous_invFun.preimage_open_of_open e.open_target hs
+
+/-- The inverse of a local homeomorphism `e` is an open map on `e.target`. -/
+lemma isOpen_image_symm_of_subset_target {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
+    IsOpen (e.symm '' t) :=
+  isOpen_image_of_subset_source e.symm ht (e.symm_source ▸ hte)
 
 /-!
 ### `LocalHomeomorph.IsImage` relation

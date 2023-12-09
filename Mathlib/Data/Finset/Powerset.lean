@@ -312,7 +312,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     · intro x hx
       simp only [mem_biUnion, exists_prop, id.def]
       obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
-        (le_trans (Nat.le_pred_of_lt hn) pred_card_le_card_erase)
+        (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
       · refine' ⟨insert x t, _, mem_insert_self _ _⟩
         rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
         exact mem_union_right _ (mem_image_of_mem _ ht)

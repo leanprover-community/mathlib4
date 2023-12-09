@@ -728,7 +728,7 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
   · simp [h₁]
   · rw [h₂, leadingCoeff, ← pow_succ, tsub_add_cancel_of_le hp]
   · rw [mul_assoc, ← pow_add, tsub_add_cancel_of_le]
-    apply Nat.le_pred_of_lt
+    apply Nat.le_sub_one_of_lt
     rw [lt_iff_le_and_ne]
     exact ⟨le_natDegree_of_ne_zero h₁, h₂⟩
 #align normalize_scale_roots_coeff_mul_leading_coeff_pow normalizeScaleRoots_coeff_mul_leadingCoeff_pow

@@ -884,12 +884,10 @@ theorem map_neg_atTop : map (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).map_atTop
 #align filter.map_neg_at_top Filter.map_neg_atTop
 
-@[simp]
 theorem comap_neg_atBot : comap (Neg.neg : β → β) atBot = atTop :=
   (OrderIso.neg β).comap_atTop
 #align filter.comap_neg_at_bot Filter.comap_neg_atBot
 
-@[simp]
 theorem comap_neg_atTop : comap (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).comap_atBot
 #align filter.comap_neg_at_top Filter.comap_neg_atTop

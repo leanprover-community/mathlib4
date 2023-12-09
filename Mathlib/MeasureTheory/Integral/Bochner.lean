@@ -1584,6 +1584,11 @@ theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
   exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
 #align measure_theory.integral_smul_measure MeasureTheory.integral_smul_measure
 
+@[simp]
+theorem integral_smul_nnreal_measure (f : α → G) (c : ℝ≥0) :
+    ∫ x, f x ∂(c • μ) = c • ∫ x, f x ∂μ :=
+  integral_smul_measure f (c : ℝ≥0∞)
+
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
     {f : β → G} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
   by_cases hG : CompleteSpace G; swap

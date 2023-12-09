@@ -280,7 +280,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
     rw [mem_filter, mem_antidiagonal, mem_singleton]
     refine' ⟨_, fun ha ↦ by aesop⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
-    rw [← ha, Nat.eq_zero_of_nonpos a.fst ha0, zero_add, ← Nat.eq_zero_of_nonpos a.fst ha0]
+    rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides
   simp only [_root_.pow_zero, esymm_zero, mul_one, one_mul, filter_filter] at sub_both_sides
   exact sub_both_sides.symm

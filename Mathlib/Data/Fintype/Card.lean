@@ -290,12 +290,12 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
 #align finset.card_compl Finset.card_compl
 
 @[simp]
-theorem card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
     s.card + sᶜ.card = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
 @[simp]
-theorem card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
     sᶜ.card + s.card = Fintype.card α := by
   rw [add_comm, card_add_card_compl]
 

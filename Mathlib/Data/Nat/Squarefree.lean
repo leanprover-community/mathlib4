@@ -345,7 +345,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   rintro x ⟨y, hy⟩
   rw [Nat.isUnit_iff]
   by_contra hx
-  refine' lt_le_antisymm _ (Finset.le_max' S ((b * x) ^ 2) _)
+  refine' Nat.lt_le_asymm _ (Finset.le_max' S ((b * x) ^ 2) _)
   -- Porting note: these two goals were in the opposite order in Lean 3
   · convert lt_mul_of_one_lt_right hlts
       (one_lt_pow 2 x zero_lt_two (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
