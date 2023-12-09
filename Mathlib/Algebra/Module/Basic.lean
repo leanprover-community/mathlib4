@@ -3,12 +3,14 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.Support.Basic
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Tactic.Abel
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
@@ -40,8 +42,7 @@ to use a canonical `Module` typeclass throughout.
 semimodule, module, vector space
 -/
 
-
-open Function
+open Function Set
 
 universe u v
 
@@ -718,5 +719,28 @@ theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) =
 theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
+
+namespace Function
+
+lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
+    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg $ by rw [Pi.smul_apply', hf, zero_smul]
+#align function.support_smul_subset_left Function.support_smul_subset_left
+
+lemma support_const_smul_of_ne_zero [Semiring R] [AddCommMonoid M] [Module R M]
+    [NoZeroSMulDivisors R M] (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
+  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne.def, smul_eq_zero, false_or_iff]
+#align function.support_const_smul_of_ne_zero Function.support_const_smul_of_ne_zero
+
+lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
+    (g : α → M) : support (f • g) = support f ∩ support g :=
+  ext fun _ => smul_ne_zero_iff
+#align function.support_smul Function.support_smul
+
+lemma support_smul_subset_right [Monoid R] [AddMonoid M] [DistribMulAction R M] (a : R) (f : α → M) :
+    support (a • f) ⊆ support f := fun x hbf hf =>
+  hbf <| by rw [Pi.smul_apply, hf, smul_zero]
+#align function.support_smul_subset_right Function.support_smul_subset_right
+
+end Function
 
 assert_not_exists Multiset

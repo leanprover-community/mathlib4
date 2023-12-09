@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Support
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
@@ -49,7 +50,7 @@ universe u v w
 
 variable {ι : Type*} {β : Type u} {α : Type v} {γ : Type w}
 
-open Fin
+open Fin Function
 
 namespace Finset
 
@@ -1146,6 +1147,14 @@ theorem prod_pi_mulSingle {β : α → Type*} [DecidableEq α] [∀ a, CommMonoi
 #align finset.prod_pi_mul_single Finset.prod_pi_mulSingle
 
 @[to_additive]
+lemma mulSupport_prod (s : Finset ι) (f : ι → α → β) :
+    mulSupport (fun x ↦ ∏ i in s, f i x) ⊆ ⋃ i ∈ s, mulSupport (f i) := by
+  simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, nmem_mulSupport]
+  exact fun x ↦ prod_eq_one
+#align function.mul_support_prod Finset.mulSupport_prod
+#align function.support_sum Finset.support_sum
+
+@[to_additive]
 theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ → β}
     (i : ∀ a ∈ s, f a ≠ 1 → γ) (hi : ∀ a h₁ h₂, i a h₁ h₂ ∈ t)
     (i_inj : ∀ a₁ a₂ h₁₁ h₁₂ h₂₁ h₂₂, i a₁ h₁₁ h₁₂ = i a₂ h₂₁ h₂₂ → a₁ = a₂)
@@ -1951,6 +1960,11 @@ theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
     rw [if_neg hq]
 #align finset.prod_boole Finset.prod_boole
 
+lemma support_prod_subset (s : Finset ι) (f : ι → α → β) :
+    support (fun x ↦ ∏ i in s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
+  fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx $ prod_eq_zero hi H
+#align function.support_prod_subset Finset.support_prod_subset
+
 variable [Nontrivial β] [NoZeroDivisors β]
 
 theorem prod_eq_zero_iff : ∏ x in s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
@@ -1964,6 +1978,11 @@ theorem prod_ne_zero_iff : ∏ x in s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := b
   rw [Ne, prod_eq_zero_iff]
   push_neg; rfl
 #align finset.prod_ne_zero_iff Finset.prod_ne_zero_iff
+
+lemma support_prod (s : Finset ι) (f : ι → α → β) :
+    support (fun x ↦ ∏ i in s, f i x) = ⋂ i ∈ s, support (f i) :=
+  Set.ext fun x ↦ by simp [support, prod_eq_zero_iff]
+#align function.support_prod Finset.support_prod
 
 end ProdEqZero
 
