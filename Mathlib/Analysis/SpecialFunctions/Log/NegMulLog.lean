@@ -53,8 +53,7 @@ lemma deriv2_mul_log {x : ℝ} (hx : x ≠ 0) : deriv^[2] (fun x ↦ x * log x) 
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
     refine (Filter.EventuallyEq.deriv_eq this).trans ?_
     rw [deriv_add_const, deriv_log x]
-  suffices ∀ᶠ y in (𝓝 x), y ≠ 0 by filter_upwards [this] with y hy using deriv_mul_log hy
-  exact eventually_ne_nhds hx
+  filter_upwards [eventually_ne_nhds hx] with y hy using deriv_mul_log hy
 
 lemma strictConvexOn_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
   refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_mul_log.continuousOn) ?_
