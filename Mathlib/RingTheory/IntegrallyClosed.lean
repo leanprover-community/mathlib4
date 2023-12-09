@@ -11,8 +11,8 @@ import Mathlib.RingTheory.Localization.Integral
 /-!
 # Integrally closed rings
 
-An integrally closed domain `R` contains all the elements of `Frac(R)` that are
-integral over `R`. A special case of integrally closed domains are the Dedekind domains.
+An integrally closed ring `R` contains all the elements of `Frac(R)` that are
+integral over `R`. A special case of integrally closed rings are the Dedekind domains.
 
 ## Main definitions
 
@@ -34,7 +34,7 @@ open Polynomial
 This definition uses `FractionRing R` to denote `Frac(R)`. See `isIntegrallyClosed_iff`
 if you want to choose another field of fractions for `R`.
 -/
-class IsIntegrallyClosed (R : Type*) [CommRing R] [IsDomain R] : Prop where
+class IsIntegrallyClosed (R : Type*) [CommRing R] : Prop where
   /-- All integral elements of `Frac(R)` are also elements of `R`. -/
   algebraMap_eq_of_integral :
     ∀ {x : FractionRing R}, IsIntegral R x → ∃ y, algebraMap R (FractionRing R) y = x
@@ -42,7 +42,7 @@ class IsIntegrallyClosed (R : Type*) [CommRing R] [IsDomain R] : Prop where
 
 section Iff
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [CommRing R]
 
 variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
@@ -131,12 +131,12 @@ variable {R : Type*} [CommRing R]
 
 variable (K : Type*) [Field K] [Algebra R K]
 
-variable [IsDomain R] [IsFractionRing R K]
+variable [IsFractionRing R K]
 
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
 -- Can't be an instance because you need to supply `K`.
-theorem isIntegrallyClosedOfFiniteExtension [FiniteDimensional K L] :
+theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L
   (integralClosure_eq_bot_iff L).mp integralClosure_idem

@@ -77,16 +77,3 @@ def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
 #align order_embedding.add_right OrderEmbedding.addRight
 #align order_embedding.mul_right_apply OrderEmbedding.mulRight_apply
 #align order_embedding.add_right_apply OrderEmbedding.addRight_apply
-
-@[to_additive]
-theorem eq_and_eq_of_le_of_le_of_mul_le [Mul α] [LinearOrder α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· < ·)]
-    [ContravariantClass α α (· * ·) (· ≤ ·)] {a b a0 b0 : α} (ha : a0 ≤ a) (hb : b0 ≤ b)
-    (ab : a * b ≤ a0 * b0) : a = a0 ∧ b = b0 := by
-  haveI := Mul.to_covariantClass_right α
-  have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt (mul_lt_mul_of_lt_of_le · hb)
-  have hb' : ¬a0 * b0 < a * b → ¬b0 < b := mt (mul_lt_mul_of_le_of_lt ha ·)
-  push_neg at ha' hb'
-  exact ⟨ha.antisymm' (ha' ab), hb.antisymm' (hb' ab)⟩
-#align eq_and_eq_of_le_of_le_of_mul_le eq_and_eq_of_le_of_le_of_mul_le
-#align eq_and_eq_of_le_of_le_of_add_le eq_and_eq_of_le_of_le_of_add_le

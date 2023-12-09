@@ -108,7 +108,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
           · rw [support_mul_single _ _ (fun y => by rw [mul_one] : ∀ y : R, y * 1 = 0 ↔ _)]
             simpa only [Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
               exists_eq_right]
-        · haveI : CovariantClass A A (· + ·) (· ≤ ·) := Add.to_covariantClass_left A
+        · haveI : CovariantClass A A (· + ·) (· ≤ ·) := covariantClass_le_of_lt A A _
           exact add_le_add_left (Finset.min'_le _ _ cg) _
       · refine' lt_of_le_of_lt (_ : _ ≤ b + gmin) _
         · apply Finset.min'_le
@@ -155,7 +155,7 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
             simpa only [Finset.mem_map, addLeftEmbedding_apply, add_right_inj, exists_prop,
               exists_eq_right]
         · haveI : CovariantClass A A (Function.swap (· + ·)) (· ≤ ·) :=
-            Add.to_covariantClass_right A
+            covariantClass_le_of_lt A A _
           exact add_le_add_right (Finset.min'_le _ _ bf) _⟩
 #align add_monoid_algebra.no_zero_divisors.of_right_ordered AddMonoidAlgebra.NoZeroDivisors.of_right_ordered
 
