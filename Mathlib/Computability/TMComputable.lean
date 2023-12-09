@@ -323,31 +323,25 @@ def isPolyTimeFunctionByType {α β: Type} {ea : FinEncoding α} {eb : FinEncodi
     Nonempty (@TM2ComputableInPolyTime α β ea eb f)
 
 /-- Defines polynomial time functions on binary strings to binary strings -/
-def isPolyTimeFunction (f : BString → BString) : Prop :=
+def isPolyTimeTM (tm : BString → BString) : Prop :=
     Nonempty (@TM2ComputableInPolyTime BString BString finEncodingBString
-     finEncodingBString f)
+     finEncodingBString tm
 
-/-- Defines a function with output strings of length polynomially bounded as a function of input
-length -/
-def isPolyBoundedFunction (f : BString → BString)  : Prop :=
-    ∃ (p: Polynomial ℕ ), ∀ (a b : BString), p.eval (f b).length < a.length
-
-/-- Complexity class FP: the set of functions with poly bounded output length -/
-def PolyTimeFunctions : Set (BString → BString) := {f | isPolyTimeFunction f}
+/-- Complexity class FP: the set of functions computable in polynomial time -/
+def PolyTimeTMs : Set (BString → BString) := {tm | isPolyTimeTM tm}
 
 open Set
 
-/-- The language of a function is the preimage of `true`. If f is computable by a TM, this is the
-language accepted by the TM. -/
-def L_f (f : BString → BString )  : Set BString := preimage f {[true]}
+/-- The language accepted by a TM is the preimage of `true` -/
+def L_M (tm : BString → BString) : Set BString := preimage tm {[true]}
 
 end
 
 /-- Language in complexity class P: accepted by polynomial time TM -/
-def PolyTimeLanguage (f : PolyTimeFunctions) : Set BString := L_f f
+def PolyTimeLanguage (tm : PolyTimeTMs) : Set BString := L_M tm
 
 /-- Complexity class P: languages accepted by polynomial time TMs -/
-def PolyTimeLanguages : Set (Set BString) := {L_f f | f : PolyTimeFunctions}
+def PolyTimeLanguages : Set (Set BString) := {L_M tm | tm : PolyTimeTMs}
 
 /-- Encode a pair of binary strings as one binary string -/
 def Bpair (aString bString : BString) : BString :=
@@ -358,19 +352,17 @@ def Bunpair (aString : BString) : BString × BString :=
   (encodeNat (decodeNat aString).unpair.1, encodeNat (decodeNat aString).unpair.2)
 
 /-- A verifier for a nondeterministic polynomial time language -/
-def isVerifier (M : PolyTimeFunctions) : Prop :=
-  ∃ (p: Polynomial ℕ), ∀ (x certificate : BString), (Bpair x certificate) ∈ L_f M →
+def isVerifier (tm : PolyTimeTMs) : Prop :=
+  ∃ (p: Polynomial ℕ), ∀ (x certificate : BString), (Bpair x certificate) ∈ L_M tm →
     certificate.length < p.eval x.length
 
-def verifiers : Set PolyTimeFunctions:= { f | isVerifier f}
+def verifiers : Set PolyTimeTMs := { tm | isVerifier tm}
 
 /-- A nondeterministic polynomial time language -/
-def NPLanguage (f : verifiers) : Set BString :=
-  {x | ∃ (certificate : BString), Bpair x certificate ∈ L_f f}
+def NPLanguage (tm : verifiers) : Set BString :=
+  {x | ∃ (certificate : BString), Bpair x certificate ∈ L_M tm}
 
 /-- Complexity class NP: languages accepted in nondeterministic polynomial time -/
-def NPLanguages : Set (Set BString) := {NPLanguage f| f: verifiers}
-
-
+def NPLanguages : Set (Set BString) := {NPLanguage tm| tm : verifiers}
 
 end Turing
