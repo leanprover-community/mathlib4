@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelClasses
+import Mathlib.Data.List.Basic
 
 #align_import data.list.lex from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
@@ -210,5 +211,28 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @nil a as => apply lt.nil
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
+
+theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
+    a' ≤ a := by
+  by_contra hh
+  simp only [not_le] at hh
+  exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hh) h
+
+theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
+    l'.head! ≤ l.head! := by
+  replace h : List.Lex (· < ·) l' l := h
+  by_cases hl : l = []
+  · simp [hl] at h
+  · rw [← List.cons_head!_tail hl', ← List.cons_head!_tail hl] at h
+    exact head_le_of_lt h
+
+theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
+    a :: l' ≤ a :: l := by
+  rw [le_iff_lt_or_eq] at h ⊢
+  refine h.imp ?_ (congr_arg _)
+  intro h
+  have haa : ¬(a < a) := gt_irrefl a
+  exact (List.lt_iff_lex_lt _ _).mp
+    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr h))
 
 end List

@@ -216,7 +216,7 @@ theorem factors_sublist_right {n k : ℕ} (h : k ≠ 0) : n.factors <+ (n * k).f
   cases' n with hn
   · simp [zero_mul]
   apply sublist_of_subperm_of_sorted _ (factors_sorted _) (factors_sorted _)
-  simp [(perm_factors_mul (Nat.succ_ne_zero _) h).subperm_left]
+  simp only [(perm_factors_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 #align nat.factors_sublist_right Nat.factors_sublist_right
 
@@ -299,6 +299,14 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
         eq_prime_pow_of_unique_prime_dvd hn fun {_} hprime hdvd =>
           hprime.eq_two_or_odd'.resolve_right fun hodd => H ⟨_, hprime, hdvd, hodd⟩⟩
 #align nat.eq_two_pow_or_exists_odd_prime_and_dvd Nat.eq_two_pow_or_exists_odd_prime_and_dvd
+
+theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
+    4 ∣ n ∨ ∃ p, Prime p ∧ p ∣ n ∧ Odd p := by
+  obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
+  · contradiction
+  · contradiction
+  · simp [pow_succ, mul_assoc]
+  · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat
 

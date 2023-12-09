@@ -124,6 +124,12 @@ theorem exists_nat_ge [OrderedSemiring α] [Archimedean α] (x : α) : ∃ n : �
   exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 #align exists_nat_ge exists_nat_ge
 
+instance (priority := 100) [OrderedSemiring α] [Archimedean α] : IsDirected α (· ≤ ·) :=
+  ⟨fun x y ↦
+    let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
+    let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
+    ⟨k, hm.trans <| Nat.mono_cast hmk, hn.trans <| Nat.mono_cast hnk⟩⟩
+
 theorem add_one_pow_unbounded_of_pos [StrictOrderedSemiring α] [Archimedean α] (x : α) {y : α}
     (hy : 0 < y) : ∃ n : ℕ, x < (y + 1) ^ n :=
   have : 0 ≤ 1 + y := add_nonneg zero_le_one hy.le

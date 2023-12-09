@@ -18,7 +18,7 @@ theorem Nat.lt_add_of_zero_lt_left (a b : Nat) (h : 0 < b) : a < a + b :=
 
 theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
   suffices 0 < a + 1 by
-    simp [Nat.add_comm]
+    simp only [Nat.add_comm]
     assumption
   Nat.zero_lt_succ _
 #align nat.zero_lt_one_add Nat.zero_lt_one_add

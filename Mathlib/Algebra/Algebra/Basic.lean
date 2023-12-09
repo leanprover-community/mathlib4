@@ -244,10 +244,8 @@ section FieldDivisionRing
 
 variable (R A : Type*) [Field R] [DivisionRing A] [Algebra R A]
 
--- porting note: todo: drop implicit args
 @[norm_cast]
-theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) :=
-  @map_ratCast (R →+* A) R A _ _ _ (algebraMap R A) q
+theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) := map_ratCast (algebraMap R A) q
 #align algebra_map.coe_rat_cast algebraMap.coe_ratCast
 
 end FieldDivisionRing

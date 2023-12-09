@@ -6,6 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Tactic.Cases
 
 /-!
 Lemmas for `List` not (yet) in `Std`

@@ -21,11 +21,15 @@ def create_query(type: str, n_vars: int, eq_list, goal_type):
     for a description of this method. """
     var_list = ", ".join([f"var{i}" for i in range(n_vars)])
     query = f'''
-P = PolynomialRing({type_str(type)}, 'var', {n_vars!r})
-[{var_list}] = P.gens()
-gens = {eq_list}
+if {n_vars!r} != 0:
+    P = PolynomialRing({type_str(type)}, 'var', {n_vars!r})
+    [{var_list}] = P.gens()
+else:
+    # workaround for a Sage shortcoming with `n_vars = 0`,
+    # `TypeError: no conversion of this ring to a Singular ring defined`
+    P = PolynomialRing({type_str(type)}, 'var', 1)
 p = P({goal_type})
-I = ideal(gens)
+I = P.ideal({eq_list})
 coeffs = p.lift(I)
 print(serialize_polynomials(coeffs))
 '''

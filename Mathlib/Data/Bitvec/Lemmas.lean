@@ -57,7 +57,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
 --  unfold bits_to_nat add_lsb List.foldl cond
 --  simp [cond_to_bool_mod_two]
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ Vector.nil) = n % 2 := by
-  simp [bitsToNat_toList]
+  simp only [bitsToNat_toList, Vector.toList_singleton, Vector.head_cons]
   unfold bitsToNat addLsb List.foldl
   simp [Nat.cond_decide_mod_two, -Bool.cond_decide]
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide

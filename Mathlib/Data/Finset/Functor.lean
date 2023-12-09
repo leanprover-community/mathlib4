@@ -89,7 +89,7 @@ theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then 
 
 /-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
+theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by
   ext
   simp [mem_sup]

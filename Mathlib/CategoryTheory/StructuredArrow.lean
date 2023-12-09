@@ -96,6 +96,7 @@ theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
+@[simp]
 theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
@@ -427,6 +428,7 @@ theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
 
+@[simp]
 theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
   subst h

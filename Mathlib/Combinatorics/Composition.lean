@@ -964,7 +964,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     j ∈ c.boundaries ↔ ∃ i < c.boundaries.card, (c.blocks.take i).sum = j := by
   constructor
   · intro hj
-    rcases(c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
+    rcases (c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
     refine' ⟨i.1, i.2, _⟩
     dsimp at hi

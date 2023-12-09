@@ -582,6 +582,13 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
       right_inv := by aesop_cat }
   unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } }
+  -- This used to be automatic before leanprover/lean4#2644
+  homEquiv_unit := by
+    -- Sad that aesop can no longer do this!
+    intros
+    dsimp
+    ext
+    simp
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=

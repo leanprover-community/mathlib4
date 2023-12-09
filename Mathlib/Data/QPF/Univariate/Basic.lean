@@ -50,10 +50,10 @@ elements of `F α` are represented by pairs `⟨a, f⟩`, where `a` is the shape
 -/
 class QPF (F : Type u → Type u) [Functor F] where
   P : PFunctor.{u}
-  abs : ∀ {α}, P.Obj α → F α
-  repr : ∀ {α}, F α → P.Obj α
+  abs : ∀ {α}, P α → F α
+  repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
-  abs_map : ∀ {α β} (f : α → β) (p : P.Obj α), abs (f <$> p) = f <$> abs p
+  abs_map : ∀ {α β} (f : α → β) (p : P α), abs (f <$> p) = f <$> abs p
 #align qpf QPF
 
 namespace QPF
@@ -115,7 +115,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
 #align qpf.liftp_iff QPF.liftp_iff
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
-    Liftp p x ↔ ∃ u : q.P.Obj α, abs u = x ∧ ∀ i, p (u.snd i) := by
+    Liftp p x ↔ ∃ u : q.P α, abs u = x ∧ ∀ i, p (u.snd i) := by
   constructor
   · rintro ⟨y, hy⟩
     cases' h : repr y with a f
@@ -660,12 +660,12 @@ def IsUniform : Prop :=
 
 /-- does `abs` preserve `Liftp`? -/
 def LiftpPreservation : Prop :=
-  ∀ ⦃α⦄ (p : α → Prop) (x : q.P.Obj α), Liftp p (abs x) ↔ Liftp p x
+  ∀ ⦃α⦄ (p : α → Prop) (x : q.P α), Liftp p (abs x) ↔ Liftp p x
 #align qpf.liftp_preservation QPF.LiftpPreservation
 
 /-- does `abs` preserve `supp`? -/
 def SuppPreservation : Prop :=
-  ∀ ⦃α⦄ (x : q.P.Obj α), supp (abs x) = supp x
+  ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
 #align qpf.supp_preservation QPF.SuppPreservation
 
 theorem supp_eq_of_isUniform (h : q.IsUniform) {α : Type u} (a : q.P.A) (f : q.P.B a → α) :

@@ -101,7 +101,7 @@ noncomputable def primeSpectrumProd :
           · exact False.elim (hJ.ne_top h.right)
           · simp only [h]
         · rintro ⟨I, hI⟩
-          rcases(Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
+          rcases (Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
           · exact ⟨Sum.inl ⟨p, hp⟩, rfl⟩
           · exact ⟨Sum.inr ⟨p, hp⟩, rfl⟩)
 #align prime_spectrum.prime_spectrum_prod PrimeSpectrum.primeSpectrumProd

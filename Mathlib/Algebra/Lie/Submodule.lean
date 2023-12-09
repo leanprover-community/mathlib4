@@ -1442,7 +1442,8 @@ def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 #align lie_ideal.top_equiv LieIdeal.topEquiv
 
-@[simp]
+-- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 #align lie_ideal.top_equiv_apply LieIdeal.topEquiv_apply
@@ -1455,7 +1456,8 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
   { LinearEquiv.ofTop ⊤ rfl with
     map_lie' := rfl }
 
-@[simp] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+-- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
 

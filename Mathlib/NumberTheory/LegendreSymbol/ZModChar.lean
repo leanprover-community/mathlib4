@@ -128,7 +128,6 @@ theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
   rfl
 #align zmod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
 
-set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the first primitive quadratic character on `ZMod 8`, `χ₈`.
 It corresponds to the extension `ℚ(√2)/ℚ`. -/
 @[simps]
@@ -172,7 +171,6 @@ theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
   exact_mod_cast χ₈_int_eq_if_mod_eight n
 #align zmod.χ₈_nat_eq_if_mod_eight ZMod.χ₈_nat_eq_if_mod_eight
 
-set_option maxHeartbeats 250000 in -- Porting note: otherwise `map_nonunit'` times out
 /-- Define the second primitive quadratic character on `ZMod 8`, `χ₈'`.
 It corresponds to the extension `ℚ(√-2)/ℚ`. -/
 @[simps]

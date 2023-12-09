@@ -762,7 +762,7 @@ theorem trans_refl_restr (s : Set β) : e.trans ((LocalEquiv.refl β).restr s) =
 theorem trans_refl_restr' (s : Set β) :
     e.trans ((LocalEquiv.refl β).restr s) = e.restr (e.source ∩ e ⁻¹' s) :=
   LocalEquiv.ext (fun x => rfl) (fun x => rfl) <| by
-    simp [trans_source]
+    simp only [trans_source, restr_source, refl_source, univ_inter]
     rw [← inter_assoc, inter_self]
 #align local_equiv.trans_refl_restr' LocalEquiv.trans_refl_restr'
 

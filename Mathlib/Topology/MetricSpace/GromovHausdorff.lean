@@ -624,12 +624,12 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
     refine' hausdorffDist_le_of_mem_dist (by linarith) _ _
     · intro x' hx'
-      rcases(Set.mem_image _ _ _).1 hx' with ⟨x, ⟨x_in_s, xx'⟩⟩
+      rcases (Set.mem_image _ _ _).1 hx' with ⟨x, ⟨x_in_s, xx'⟩⟩
       rw [← xx']
       use Fr (Φ ⟨x, x_in_s⟩), mem_image_of_mem Fr (mem_range_self _)
       exact le_of_eq (glueDist_glued_points (fun x : s => (x : X)) Φ (ε₂ / 2 + δ) ⟨x, x_in_s⟩)
     · intro x' hx'
-      rcases(Set.mem_image _ _ _).1 hx' with ⟨y, ⟨y_in_s', yx'⟩⟩
+      rcases (Set.mem_image _ _ _).1 hx' with ⟨y, ⟨y_in_s', yx'⟩⟩
       rcases mem_range.1 y_in_s' with ⟨x, xy⟩
       use Fl x, mem_image_of_mem _ x.2
       rw [← yx', ← xy, dist_comm]
@@ -1081,7 +1081,7 @@ instance : CompleteSpace GHSpace := by
     rw [Function.comp_apply, NonemptyCompacts.toGHSpace, ← (u n).toGHSpace_rep,
       toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     constructor
-    convert(isom n).isometryEquivOnRange.symm
+    convert (isom n).isometryEquivOnRange.symm
   -- the images of `X3 n` in the Gromov-Hausdorff space converge to the image of `L`
   -- so the images of `u n` converge to the image of `L` as well
   use L.toGHSpace

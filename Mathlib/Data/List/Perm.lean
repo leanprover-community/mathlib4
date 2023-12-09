@@ -963,7 +963,7 @@ theorem perm_insert_swap (x y : α) (l : List α) :
     List.insert x (List.insert y l) ~ List.insert y (List.insert x l) := by
   by_cases xl : x ∈ l <;> by_cases yl : y ∈ l <;> simp [xl, yl]
   by_cases xy : x = y; · simp [xy]
-  simp [List.insert, xl, yl, xy, Ne.symm xy]
+  simp only [List.insert, Bool.not_eq_true, mem_cons, xy, xl, or_self, ite_false, Ne.symm xy, yl]
   constructor
 #align list.perm_insert_swap List.perm_insert_swap
 
@@ -1129,7 +1129,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h₁, h₂]
       apply swap
     · simp [lookmap_cons_some _ _ h₁, lookmap_cons_some _ _ h₂]
-      rcases(pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
+      rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
       exact Perm.refl _
   · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
     exact fun a b h c h₁ d h₂ => (h d h₂ c h₁).imp Eq.symm Eq.symm
@@ -1272,7 +1272,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (permutations'Aux b l).bind (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp [permutations'Aux]
+  simp only [permutations'Aux, cons_bind, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,
@@ -1423,7 +1423,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
   · rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
       hk']
-  · rcases(Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
+  · rcases (Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
     · rw [nthLe_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]
       convert hk' using 1
       exact nthLe_insertNth_add_succ _ _ _ 0 _

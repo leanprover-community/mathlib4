@@ -497,7 +497,7 @@ theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι �
 /-- A finset of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
 noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
-    (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis (s : Set V) K V :=
+    (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis {x // x ∈ s} K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)

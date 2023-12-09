@@ -215,11 +215,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
   have h₂ : (f ∘ ((↑) : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
       span 𝕜 (f ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]
-    convert h₁ using 3
-    ext i
-    apply Iff.intro <;> simp -- Porting note: was `simpa using @le_of_lt _ _ i n`
-    · intros; simp_all only
-    · intros q; use i; exact ⟨q, le_of_lt q, rfl⟩
+    simpa using h₁
   apply LinearIndependent.not_mem_span_image h₀ _ h₂
   simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
 #align gram_schmidt_ne_zero_coe gramSchmidt_ne_zero_coe

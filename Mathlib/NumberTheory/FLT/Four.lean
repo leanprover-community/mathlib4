@@ -311,3 +311,16 @@ theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by
   apply @not_fermat_42 _ _ (c ^ 2) ha hb
   rw [heq]; ring
 #align not_fermat_4 fermatLastTheoremFour
+
+/--
+To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents, and the case of
+exponent 4 proved above.
+-/
+theorem FermatLastTheorem.of_odd_primes
+    (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem := by
+  intro n h
+  rw [ge_iff_le, Nat.succ_le_iff] at h
+  obtain hdvd|⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
+    apply FermatLastTheoremWith.mono hdvd
+  · exact fermatLastTheoremFour
+  · exact hprimes p hpprime hpodd

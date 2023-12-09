@@ -86,6 +86,12 @@ def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
     (NatIso.ofComponents fun X => AddEquiv.toAddGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align Group_AddGroup_equivalence groupAddGroupEquivalence
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
+  groupAddGroupEquivalence_counitIso_inv_app_apply
+  groupAddGroupEquivalence_unitIso_inv_app_apply
+  groupAddGroupEquivalence_counitIso_hom_app_apply
+
 /-- The equivalence of categories between `CommGroup` and `AddCommGroup`.
 -/
 @[simps!]
@@ -94,3 +100,9 @@ def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
     (NatIso.ofComponents fun X => MulEquiv.toCommGroupCatIso (MulEquiv.multiplicativeAdditive X))
     (NatIso.ofComponents fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align CommGroup_AddCommGroup_equivalence commGroupAddCommGroupEquivalence
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] commGroupAddCommGroupEquivalence_counitIso_hom_app_apply
+  commGroupAddCommGroupEquivalence_unitIso_inv_app_apply
+  commGroupAddCommGroupEquivalence_unitIso_hom_app_apply
+  commGroupAddCommGroupEquivalence_counitIso_inv_app_apply

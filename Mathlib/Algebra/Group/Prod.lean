@@ -378,7 +378,7 @@ variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f 
   (g : N →ₙ* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddMonoidHom`"]
+@[to_additive prodMap "`Prod.map` as an `AddMonoidHom`"]
 def prodMap : M × N →ₙ* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align mul_hom.prod_map MulHom.prodMap

@@ -68,6 +68,14 @@ theorem abs_mul_cos_add_sin_mul_I (x : ℂ) : (abs x * (cos (arg x) + sin (arg x
 set_option linter.uppercaseLean3 false in
 #align complex.abs_mul_cos_add_sin_mul_I Complex.abs_mul_cos_add_sin_mul_I
 
+@[simp]
+lemma abs_mul_cos_arg (x : ℂ) : abs x * Real.cos (arg x) = x.re := by
+  simpa [-abs_mul_cos_add_sin_mul_I] using congr_arg re (abs_mul_cos_add_sin_mul_I x)
+
+@[simp]
+lemma abs_mul_sin_arg (x : ℂ) : abs x * Real.sin (arg x) = x.im := by
+  simpa [-abs_mul_cos_add_sin_mul_I] using congr_arg im (abs_mul_cos_add_sin_mul_I x)
+
 theorem abs_eq_one_iff (z : ℂ) : abs z = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
   refine' ⟨fun hz => ⟨arg z, _⟩, _⟩
   · calc

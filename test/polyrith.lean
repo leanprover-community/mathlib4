@@ -433,11 +433,27 @@ A full test suite is provided at the bottom of the file.
 --   "(1 - 2)"]
 --   "linear_combination h1 - h2"
 
+-- example {R} [CommRing R] (x : R) (h2 : (2 : R) = 0) : x + x = 0 :=
+-- by test_polyrith
+--   "{\"data\":[\"(poly.var 0)\"],\"success\":true}"
+--   ["ff",
+--   "R",
+--   "1",
+--   "[(2 - 0)]",
+--   "((var0 + var0) - 0)"]
+--   "linear_combination x * h2"
+
+-- example {R} [CommRing R] (_x : R) (h : (2 : R) = 4) : (0 : R) = 2 :=
+-- by test_polyrith
+--   "{\"data\":[\"(poly.const 1/1)\"],\"success\":true}"
+--   ["ff",
+--   "R",
+--   "0",
+--   "[(2 - 4)]",
+--   "(0 - 2)"]
+--   "linear_combination h"
 
 -- We comment the following tests so that we don't overwhelm the SageCell API.
-
-
-
 
 /-
 

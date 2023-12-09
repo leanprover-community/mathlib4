@@ -176,6 +176,24 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
 #align polynomial.coeff_mul_C Polynomial.coeff_mul_C
 
+@[simp] lemma coeff_mul_natCast {a k : ℕ} :
+  coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_natCast_mul {a k : ℕ} :
+  coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
+
+@[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
+  coeff (p * (no_index (OfNat.ofNat a) : R[X])) k = coeff p k * OfNat.ofNat a := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
+  coeff ((no_index (OfNat.ofNat a) : R[X]) * p) k = OfNat.ofNat a * coeff p k := coeff_C_mul _
+
+@[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
+  coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_intCast_mul [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
+  coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
+
 @[simp]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
   simp only [one_mul, RingHom.map_one, ← coeff_C_mul_X_pow]

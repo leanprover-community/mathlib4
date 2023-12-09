@@ -32,22 +32,22 @@ open Function Polynomial
 
 NB: This is not related to the concept with the same name introduced by Bass (related to projective
 covers of modules). -/
-class PerfectRing (R : Type _) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p] : Prop where
+class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p] : Prop where
   /-- A ring is perfect if the Frobenius map is bijective. -/
   bijective_frobenius : Bijective $ frobenius R p
 
 section PerfectRing
 
-variable (R : Type _) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p]
+variable (R : Type*) (p : ℕ) [CommSemiring R] [Fact p.Prime] [CharP R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
-lemma PerfectRing.ofSurjective (R : Type _) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p]
+lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [Fact p.Prime] [CharP R p]
     [IsReduced R] (h : Surjective $ frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
 #align perfect_ring.of_surjective PerfectRing.ofSurjective
 
-instance PerfectRing.ofFiniteOfIsReduced (R : Type _) [CommRing R] [CharP R p]
+instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [CharP R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
   ofSurjective _ _ $ Finite.surjective_of_injective (frobenius_inj R p)
 
@@ -110,7 +110,7 @@ theorem not_irreducible_expand (f : R[X]) : ¬ Irreducible (expand R p f) := by
   rw [polynomial_expand_eq]
   exact fun hf ↦ hf.not_unit $ (of_irreducible_pow hp.out.ne_one hf).pow p
 
-instance (S : Type _) [CommSemiring S] [CharP S p] [PerfectRing S p] :
+instance (S : Type*) [CommSemiring S] [CharP S p] [PerfectRing S p] :
     PerfectRing (R × S) p := by
   constructor
   have : frobenius (R × S) p = Prod.map (frobenius R p) (frobenius S p) := by
@@ -123,11 +123,11 @@ end PerfectRing
 /-- A perfect field.
 
 See also `PerfectRing` for a generalisation in positive characteristic. -/
-class PerfectField (K : Type _) [Field K] : Prop where
+class PerfectField (K : Type*) [Field K] : Prop where
   /-- A field is perfect if every irreducible polynomial is separable. -/
   separable_of_irreducible : ∀ {f : K[X]}, Irreducible f → f.Separable
 
-lemma PerfectRing.toPerfectField (K : Type _) (p : ℕ)
+lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
     [Field K] [hp : Fact p.Prime] [CharP K p] [PerfectRing K p] : PerfectField K := by
   refine' PerfectField.mk $ fun hf ↦ _
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
@@ -136,7 +136,7 @@ lemma PerfectRing.toPerfectField (K : Type _) (p : ℕ)
 
 namespace PerfectField
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 instance ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
 

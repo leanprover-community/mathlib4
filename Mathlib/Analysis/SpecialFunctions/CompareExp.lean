@@ -30,8 +30,9 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 
 
 open Asymptotics Filter Function
+open scoped Topology
 
-open Topology
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Complex
 
@@ -55,7 +56,6 @@ variable {l : Filter ℂ}
 ### Alternative constructors
 -/
 
-
 theorem of_isBigO_im_re_rpow (hre : Tendsto re l atTop) (r : ℝ) (hr : im =O[l] fun z => z.re ^ r) :
     IsExpCmpFilter l :=
   ⟨hre, fun n =>
@@ -71,15 +71,14 @@ set_option linter.uppercaseLean3 false in
 
 theorem of_isBigO_im_re_pow (hre : Tendsto re l atTop) (n : ℕ) (hr : im =O[l] fun z => z.re ^ n) :
     IsExpCmpFilter l :=
-  of_isBigO_im_re_rpow hre n <| by norm_cast at hr; simpa only [Real.rpow_nat_cast]
+  of_isBigO_im_re_rpow hre n <| by exact_mod_cast hr
 set_option linter.uppercaseLean3 false in
 #align complex.is_exp_cmp_filter.of_is_O_im_re_pow Complex.IsExpCmpFilter.of_isBigO_im_re_pow
 
 theorem of_boundedUnder_abs_im (hre : Tendsto re l atTop)
     (him : IsBoundedUnder (· ≤ ·) l fun z => |z.im|) : IsExpCmpFilter l :=
   of_isBigO_im_re_pow hre 0 <| by
-    norm_cast
-    simpa only [pow_zero] using @IsBoundedUnder.isBigO_const ℂ ℝ ℝ _ _ _ l him 1 one_ne_zero
+    simpa only [pow_zero] using him.isBigO_const (f := im) one_ne_zero
 #align complex.is_exp_cmp_filter.of_bounded_under_abs_im Complex.IsExpCmpFilter.of_boundedUnder_abs_im
 
 theorem of_boundedUnder_im (hre : Tendsto re l atTop) (him_le : IsBoundedUnder (· ≤ ·) l im)
@@ -90,7 +89,6 @@ theorem of_boundedUnder_im (hre : Tendsto re l atTop) (him_le : IsBoundedUnder (
 /-!
 ### Preliminary lemmas
 -/
-
 
 theorem eventually_ne (hl : IsExpCmpFilter l) : ∀ᶠ w : ℂ in l, w ≠ 0 :=
   hl.tendsto_re.eventually_ne_atTop' _
@@ -112,15 +110,12 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => z.im ^ n) =o[l] fun z => Real.exp z.re :=
   flip IsLittleO.of_pow two_ne_zero <|
     calc
-      ((fun z : ℂ => (z.im ^ n)) ^ 2) = (fun z : ℂ => (z.im ^ n) ^ 2) := funext <| by simp
-      _ = fun z => (Complex.im z) ^ (2 * n) := funext <| fun _ => by norm_cast; rw [pow_mul']
-      _ =O[l] fun z => Real.exp z.re := by have := hl.isBigO_im_pow_re (2 * n); norm_cast at *
-      _ = fun z => Real.exp z.re ^ 1 := funext <| fun _ => by norm_cast; rw [pow_one]
-      _ =o[l] fun z => Real.exp z.re ^ 2 := by
-        have := (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
+      (fun z : ℂ ↦ (z.im ^ n) ^ 2) = (fun z ↦ z.im ^ (2 * n)) := by simp only [pow_mul']
+      _ =O[l] fun z ↦ Real.exp z.re := hl.isBigO_im_pow_re _
+      _ =     fun z ↦ (Real.exp z.re) ^ 1 := by simp only [pow_one]
+      _ =o[l] fun z ↦ (Real.exp z.re) ^ 2 :=
+        (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
           Real.tendsto_exp_atTop.comp hl.tendsto_re
-        simpa only [pow_one, Real.rpow_one, Real.rpow_two]
-      _ = (fun z => Real.exp z.re) ^ 2 := funext <| by simp
 #align complex.is_exp_cmp_filter.is_o_im_pow_exp_re Complex.IsExpCmpFilter.isLittleO_im_pow_exp_re
 
 theorem abs_im_pow_eventuallyLE_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
@@ -164,22 +159,26 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
 ### Main results
 -/
 
+lemma isTheta_cpow_exp_re_mul_log (hl : IsExpCmpFilter l) (a : ℂ) :
+    (· ^ a) =Θ[l] fun z ↦ Real.exp (re a * Real.log (abs z)) :=
+  calc
+    (fun z => z ^ a) =Θ[l] (fun z : ℂ => (abs z ^ re a)) :=
+      isTheta_cpow_const_rpow fun _ _ => hl.eventually_ne
+    _ =ᶠ[l] fun z => Real.exp (re a * Real.log (abs z)) :=
+      (hl.eventually_ne.mono fun z hz => by simp only [Real.rpow_def_of_pos, abs.pos hz, mul_comm])
 
 /-- If `l : Filter ℂ` is an "exponential comparison filter", then for any complex `a` and any
 positive real `b`, we have `(fun z ↦ z ^ a) =o[l] (fun z ↦ exp (b * z))`. -/
 theorem isLittleO_cpow_exp (hl : IsExpCmpFilter l) (a : ℂ) {b : ℝ} (hb : 0 < b) :
     (fun z => z ^ a) =o[l] fun z => exp (b * z) :=
-  -- Porting note: Added `show ℂ → ℝ from`
   calc
-    (fun z => z ^ a) =Θ[l] (show ℂ → ℝ from fun z => (abs z ^ re a)) :=
-      isTheta_cpow_const_rpow fun _ _ => hl.eventually_ne
-    _ =ᶠ[l] fun z => Real.exp (re a * Real.log (abs z)) :=
-      (hl.eventually_ne.mono fun z hz => by simp only [Real.rpow_def_of_pos, abs.pos hz, mul_comm])
+    (fun z => z ^ a) =Θ[l] fun z => Real.exp (re a * Real.log (abs z)) :=
+      hl.isTheta_cpow_exp_re_mul_log a
     _ =o[l] fun z => exp (b * z) :=
       IsLittleO.of_norm_right <| by
         simp only [norm_eq_abs, abs_exp, ofReal_mul_re, Real.isLittleO_exp_comp_exp_comp]
-        refine'
-          (IsEquivalent.refl.sub_isLittleO _).symm.tendsto_atTop (hl.tendsto_re.const_mul_atTop hb)
+        refine (IsEquivalent.refl.sub_isLittleO ?_).symm.tendsto_atTop
+          (hl.tendsto_re.const_mul_atTop hb)
         exact (hl.isLittleO_log_abs_re.const_mul_left _).const_mul_right hb.ne'
 #align complex.is_exp_cmp_filter.is_o_cpow_exp Complex.IsExpCmpFilter.isLittleO_cpow_exp
 

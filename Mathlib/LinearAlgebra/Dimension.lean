@@ -725,7 +725,7 @@ theorem linearIndependent_le_span_finset {ι : Type*} (v : ι → M) (i : Linear
 /-- An auxiliary lemma for `linearIndependent_le_basis`:
 we handle the case where the basis `b` is infinite.
 -/
-theorem linearIndependent_le_infinite_basis {ι : Type*} (b : Basis ι R M) [Infinite ι] {κ : Type _}
+theorem linearIndependent_le_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι] {κ : Type w}
     (v : κ → M) (i : LinearIndependent R v) : #κ ≤ #ι := by
   classical
   by_contra h
@@ -747,7 +747,7 @@ if `b` is a basis for a module `M`,
 and `s` is a linearly independent set,
 then the cardinality of `s` is bounded by the cardinality of `b`.
 -/
-theorem linearIndependent_le_basis {ι : Type*} (b : Basis ι R M) {κ : Type _} (v : κ → M)
+theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w} (v : κ → M)
     (i : LinearIndependent R v) : #κ ≤ #ι := by
   classical
   -- We split into cases depending on whether `ι` is infinite.
@@ -775,8 +775,8 @@ then every maximal linearly independent set has the same cardinality as `b`.
 This proof (along with some of the lemmas above) comes from
 [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 -/
-theorem maximal_linearIndependent_eq_infinite_basis {ι : Type*} (b : Basis ι R M) [Infinite ι]
-    {κ : Type _} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
+theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι]
+    {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
   apply le_antisymm
   · exact linearIndependent_le_basis b v i
   · haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R

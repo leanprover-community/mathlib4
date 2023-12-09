@@ -28,7 +28,7 @@ namespace CategoryTheory
 @[to_additive (attr := simps tensorObj_as leftUnitor rightUnitor associator) Discrete.addMonoidal]
 instance Discrete.monoidal : MonoidalCategory (Discrete M)
     where
-  tensorUnit' := Discrete.mk 1
+  tensorUnit := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)
   whiskerLeft X _ _ f := eqToHom (by dsimp; rw [eq_of_hom f])
   whiskerRight f X := eqToHom (by dsimp; rw [eq_of_hom f])

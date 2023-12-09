@@ -45,7 +45,7 @@ namespace Ring
 
 /-- The bracket operation for rings is the ring commutator, which captures the extent to which a
 ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) : Bracket A A :=
+instance (priority := 100) instBracket : Bracket A A :=
   ⟨fun x y => x * y - y * x⟩
 
 theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=

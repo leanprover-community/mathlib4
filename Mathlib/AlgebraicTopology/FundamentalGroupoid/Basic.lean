@@ -324,8 +324,10 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
       map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
-        refine' Quotient.inductionOn₂ p q fun a b => _
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
+        refine Quotient.inductionOn₂ p q fun a b => ?_
+        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
+        -- This was not needed before leanprover/lean4#2644
+        erw [ ← Path.Homotopic.comp_lift]; rfl}
   map_id X := by
     simp only
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)

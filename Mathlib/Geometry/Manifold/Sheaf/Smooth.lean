@@ -127,12 +127,15 @@ lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eva
   intro n
   exact ⟨⊤, fun _ ↦ n, smooth_const, rfl⟩
 
+instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) :=
+  (smoothSheaf.eval_surjective IM I N x).nontrivial
+
 variable {IM I N}
 
-@[simp] lemma smoothSheaf.eval_germ (U : Opens (TopCat.of M)) (x : U)
+@[simp] lemma smoothSheaf.eval_germ (U : Opens M) (x : U)
     (f : (smoothSheaf IM I M N).presheaf.obj (op U)) :
-    smoothSheaf.eval IM I N (x : TopCat.of M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
-  TopCat.stalkToFiber_germ _ U x f
+    smoothSheaf.eval IM I N (x:M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
+  TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp IM I ⊤).localPredicate M N) _ _ _
 
 lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}
     (f : (smoothSheaf IM I M N).presheaf.obj U) :
@@ -298,10 +301,10 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
   ι_preservesColimitsIso_hom _ _ _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_inv (x : TopCat.of M) (U) :
-    colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).val) U ≫
+    colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheaf IM I M R).presheaf) U ≫
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
     (forget CommRingCat).map
-      (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).val) U) := by
+      (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U) := by
   rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom, CommRingCat.forget_map]
   simp_rw [Functor.comp_obj, Functor.op_obj]
 
@@ -330,6 +333,13 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
     smoothSheafCommRing.evalAt _ _ _ _ _ _ :=
   colimit.ι_desc _ _
 
+@[simp] lemma smoothSheafCommRing.evalHom_germ (U : Opens (TopCat.of M)) (x : U)
+    (f : (smoothSheafCommRing IM I M R).presheaf.obj (op U)) :
+    smoothSheafCommRing.evalHom IM I M R (x : TopCat.of M)
+      ((smoothSheafCommRing IM I M R).presheaf.germ x f)
+    = f x :=
+  congr_arg (fun a ↦ a f) <| smoothSheafCommRing.ι_evalHom IM I M R x ⟨U, x.2⟩
+
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_inv_comp_eval
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).inv ≫
@@ -356,5 +366,16 @@ lemma smoothSheafCommRing.eval_surjective (x) :
   obtain ⟨y, rfl⟩ := smoothSheaf.eval_surjective IM I R x r
   use (smoothSheafCommRing.forgetStalk IM I M R x).inv y
   apply smoothSheafCommRing.forgetStalk_inv_comp_eval_apply
+
+instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
+  (smoothSheafCommRing.eval_surjective IM I M R x).nontrivial
+
+variable {IM I M R}
+
+@[simp] lemma smoothSheafCommRing.eval_germ (U : Opens M) (x : U)
+    (f : (smoothSheafCommRing IM I M R).presheaf.obj (op U)) :
+    smoothSheafCommRing.eval IM I M R x ((smoothSheafCommRing IM I M R).presheaf.germ x f)
+    = f x :=
+  smoothSheafCommRing.evalHom_germ IM I M R U x f
 
 end SmoothCommRing
