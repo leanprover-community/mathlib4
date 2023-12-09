@@ -762,7 +762,7 @@ section
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_zero_iff_forall_zero [FiniteDimensional K V] : finrank K V = 0 ↔ ∀ x : V, x = 0 :=
-  finrank_zero_iff.trans (subsingleton_iff_forall_eq 0)
+  FiniteDimensional.finrank_zero_iff.trans (subsingleton_iff_forall_eq 0)
 #align finrank_zero_iff_forall_zero finrank_zero_iff_forall_zero
 
 /-- If `ι` is an empty type and `V` is zero-dimensional, there is a unique `ι`-indexed basis. -/
@@ -787,7 +787,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
   · rw [h, finrank_bot, add_zero, H] at this
     exact eq_top_of_finrank_eq this
   · rw [h, finrank_top, H] at this
-    exact finrank_eq_zero.1 (add_right_injective _ this)
+    exact Submodule.finrank_eq_zero.1 (add_right_injective _ this)
 #align linear_map.injective_iff_surjective_of_finrank_eq_finrank LinearMap.injective_iff_surjective_of_finrank_eq_finrank
 
 theorem ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank [FiniteDimensional K V]
