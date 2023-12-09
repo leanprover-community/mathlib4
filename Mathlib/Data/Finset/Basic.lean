@@ -194,6 +194,9 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
   Multiset.decidableMem _ _
 #align finset.decidable_mem Finset.decidableMem
 
+@[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by aesop
+@[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by aesop
+
 /-! ### set coercion -/
 
 --Porting note: new definition
@@ -417,6 +420,8 @@ theorem coe_ssubset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊂ s₂ ↔ s₁ 
 theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.1 < s₂.1 ↔ s₁ ⊂ s₂ :=
   and_congr val_le_iff <| not_congr val_le_iff
 #align finset.val_lt_iff Finset.val_lt_iff
+
+lemma val_strictMono : StrictMono (val : Finset α → Multiset α) := fun _ _ ↦ val_lt_iff.2
 
 theorem ssubset_iff_subset_ne {s t : Finset α} : s ⊂ t ↔ s ⊆ t ∧ s ≠ t :=
   @lt_iff_le_and_ne _ _ s t
@@ -935,17 +940,6 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
 #align finset.ssubset_iff_exists_cons_subset Finset.ssubset_iff_exists_cons_subset
 
-lemma covby_cons (ha : a ∉ s) : s ⋖ cons a s ha :=
-  Covby.of_image ⟨⟨_, coe_injective⟩, coe_subset⟩ <| by
-    simpa using Set.covby_insert (show a ∉ (s : Set α) from ha)
-
-lemma covby_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, cons a s ha = t := by
-  refine ⟨fun hst ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, hast⟩ := ssubset_iff_exists_cons_subset.1 hst.1
-    exact ⟨a, ha, eq_of_le_of_not_lt hast <| hst.2 <| ssubset_cons _⟩
-  · rintro ⟨a, ha, rfl⟩
-    exact covby_cons ha
-
 end Cons
 
 /-! ### disjoint -/
@@ -1128,6 +1122,9 @@ theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b =
   (mem_insert.1 ha).resolve_right hb
 #align finset.eq_of_not_mem_of_mem_insert Finset.eq_of_not_mem_of_mem_insert
 
+/-- A version of `IsLawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+@[simp, nolint simpNF] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
+
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
   ext fun a => by simp
@@ -1186,7 +1183,7 @@ theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
 
 -- Porting note: @[simp] can prove this
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s :=
-  ext fun x => by simp only [mem_insert, ←or_assoc, or_self_iff]
+  ext fun x => by simp only [mem_insert, ← or_assoc, or_self_iff]
 #align finset.insert_idem Finset.insert_idem
 
 @[simp]
@@ -1223,7 +1220,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
 #align finset.insert_subset_insert Finset.insert_subset_insert
 
 @[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
-  simp_rw [←coe_subset]; simp [-coe_subset, ha]
+  simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert_self _ _) ha, congr_arg (insert · s)⟩
@@ -1233,8 +1230,7 @@ theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := 
   (insert_inj h).1
 #align finset.insert_inj_on Finset.insert_inj_on
 
-theorem ssubset_iff : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t :=
-  mod_cast @Set.ssubset_iff_insert α s t
+theorem ssubset_iff : s ⊂ t ↔ ∃ a, a ∉ s ∧insert a s ⊆ t := mod_cast @Set.ssubset_iff_insert α s t
 #align finset.ssubset_iff Finset.ssubset_iff
 
 theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
@@ -1334,11 +1330,6 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
 #align finset.disjoint_insert_right Finset.disjoint_insert_right
-
-lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s := by simpa using covby_cons ha
-
-lemma covby_iff_exists_insert : t ⋖ s ↔ ∃ a, a ∉ t ∧ insert a t = s := by
-  simp [covby_iff_exists_cons]
 
 end Insert
 
@@ -2084,9 +2075,6 @@ theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => erase
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 #align finset.erase_inj_on' Finset.erase_injOn'
 
-lemma covby_iff_exists_erase : t ⋖ s ↔ ∃ a, a ∈ s ∧ t = s.erase a :=
-  covby_iff_exists_insert.trans $ exists_congr fun a ↦ by aesop
-
 end Erase
 
 /-! ### sdiff -/
@@ -2118,8 +2106,8 @@ theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ 
 
 instance : GeneralizedBooleanAlgebra (Finset α) :=
   { sup_inf_sdiff := fun x y => by
-      simp only [ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter, ←and_or_left,
-        em, and_true, implies_true]
+      simp only [ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
+        ← and_or_left, em, and_true, implies_true]
     inf_inf_sdiff := fun x y => by
       simp only [ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff_iff, inf_eq_inter,
         not_mem_empty, bot_eq_empty, not_false_iff, implies_true] }
@@ -2905,7 +2893,7 @@ theorem filter_union (s₁ s₂ : Finset α) : (s₁ ∪ s₂).filter p = s₁.f
 #align finset.filter_union Finset.filter_union
 
 theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x :=
-  ext fun x => by simp [mem_filter, mem_union, ←and_or_left]
+  ext fun x => by simp [mem_filter, mem_union, ← and_or_left]
 #align finset.filter_union_right Finset.filter_union_right
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :

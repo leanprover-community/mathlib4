@@ -292,7 +292,7 @@ variable {F F'}
 def Full.ofIso [Full F] (α : F ≅ F') :
     Full F' where
   preimage {X Y} f := F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv)
-  witness f := by simp [←NatIso.naturality_1 α]
+  witness f := by simp [← NatIso.naturality_1 α]
 #align category_theory.full.of_iso CategoryTheory.Full.ofIso
 
 theorem Faithful.of_iso [Faithful F] (α : F ≅ F') : Faithful F' :=

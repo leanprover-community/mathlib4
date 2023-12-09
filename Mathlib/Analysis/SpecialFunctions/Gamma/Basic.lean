@@ -322,7 +322,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
       refine' lt_add_of_lt_of_nonneg i0 _
       rw [← Nat.cast_zero, Nat.cast_le]; exact Nat.zero_le k
   convert (u <| n - ⌊1 - s.re⌋₊).symm; rw [Nat.add_sub_of_le]
-  by_cases 0 ≤ 1 - s.re
+  by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]; linarith; linarith
@@ -342,7 +342,7 @@ theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s 
 #align complex.Gamma_eq_integral Complex.Gamma_eq_integral
 
 @[simp]
-theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral]; simp; simp
+theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral] <;> simp
 #align complex.Gamma_one Complex.Gamma_one
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by

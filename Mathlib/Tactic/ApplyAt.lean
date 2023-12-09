@@ -24,7 +24,7 @@ then replace the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying th
 original `i`.
 -/
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
-  let f ← Term.elabTerm (← `(@$t)) none
+  let f ← elabTermForApply t
   let some ldecl := (← getLCtx).findFromUserName? i.getId
     | throwErrorAt i m!"Identifier {i} not found"
   let (mvs, bis, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type

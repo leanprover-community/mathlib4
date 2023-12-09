@@ -133,7 +133,7 @@ theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h :
 @[csimp]
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
-  by_cases (1 < p ∧ 0 < n)
+  by_cases h : 1 < p ∧ 0 < n
   · dsimp [padicValNat]
     rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
   · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
@@ -728,7 +728,7 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
   simp only [sub_one_mul_padicValNat_factorial]
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
-      digit_sum_le p n, Nat.sub_sub (k + n),  ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
+      digit_sum_le p n, Nat.sub_sub (k + n), ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
       (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), zero_add, add_comm]
 

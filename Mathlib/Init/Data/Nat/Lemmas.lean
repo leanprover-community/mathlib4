@@ -63,7 +63,7 @@ namespace Nat
 
 #align nat.one_mul Nat.one_mul
 
-#align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
+#align nat.succ_add_eq_succ_add Nat.succ_add_eq_add_succ
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl
@@ -416,7 +416,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_one Nat.sub_one
 
-#align nat.succ_sub_one Nat.succ_sub_one
+#align nat.succ_sub_one Nat.add_one_sub_one
 
 #align nat.succ_pred_eq_of_pos Nat.succ_pred_eq_of_pos
 

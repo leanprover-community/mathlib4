@@ -865,7 +865,7 @@ theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (aleph o
 #align cardinal.principal_add_aleph Cardinal.principal_add_aleph
 
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=
-  ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_fun (congr_arg (· + ·) h) γ⟩
+  ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_arg (· + γ) h⟩
 #align cardinal.add_right_inj_of_lt_aleph_0 Cardinal.add_right_inj_of_lt_aleph0
 
 @[simp]
@@ -1071,7 +1071,6 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 #align cardinal.mk_multiset_of_infinite Cardinal.mk_multiset_of_infinite
 
-@[simp]
 theorem mk_multiset_of_isEmpty (α : Type u) [IsEmpty α] : #(Multiset α) = 1 :=
   Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
 #align cardinal.mk_multiset_of_is_empty Cardinal.mk_multiset_of_isEmpty

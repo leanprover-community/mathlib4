@@ -129,10 +129,10 @@ jobs:
       - name: cleanup
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
-          # Delete all but the 10 most recent toolchains.
+          # Delete all but the 5 most recent toolchains.
           # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
           # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +11 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
@@ -264,7 +264,10 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.3.0-rc2
+          git checkout toolchain/v4.3.0
+          # Now that the git hash is embedded in each olean,
+          # we need to compile lean4checker on the same toolchain
+          cp ../lean-toolchain .
           lake build
           ./test.sh
           cd ..
