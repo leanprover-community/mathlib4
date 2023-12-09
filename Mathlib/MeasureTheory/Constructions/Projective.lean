@@ -24,16 +24,26 @@ namespace MeasureTheory
 
 variable {ι : Type _} {α : ι → Type _}
 
-def IsProjective [Preorder ι] (P : ∀ j : ι, α j) (π : ∀ {i j : ι}, j ≤ i → α i → α j) : Prop :=
-  ∀ (i j) (hji : j ≤ i), P j = π hji (P i)
+structure IsProjective [Preorder ι] (P : ∀ j : ι, α j) (π : ∀ {i j : ι}, j ≤ i → α i → α j) :
+    Prop :=
+  (id : ∀ n, π (le_rfl : n ≤ n) = id)
+  (comp : ∀ i j k (hij : i ≤ j) (hjk : j ≤ k), π hij ∘ π hjk = π (hij.trans hjk))
+  (map : ∀ i j (hji : j ≤ i), P j = π hji (P i))
 
 /-- A family of measures indexed by finite sets of `ι` is projective if, for finite sets `J ⊆ I`,
 the projection from `∀ i : I, α i` to `∀ i : J, α i` maps `P I` to `P J`. -/
 def IsProjectiveMeasureFamily [∀ i, MeasurableSpace (α i)]
     (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
-  IsProjective P
-    (fun I _ hJI μ => μ.map fun x : ∀ i : I, α i => fun j => x ⟨j, hJI j.2⟩ :
-      ∀ (I J : Finset ι) (_ : J ⊆ I), Measure (∀ i : I, α i) → Measure (∀ j : J, α j))
+  ∀ (I J : Finset ι) (hJI : J ⊆ I),
+    P J = (P I).map (fun (x : ∀ i : I, α i) (j : J) ↦ x ⟨j, hJI j.2⟩)
+--
+--  ∀ (I J : Finset ι) (hJI : J ⊆ I),
+--    P J = (fun (I' J' : Finset ι) (hJI' : J' ⊆ I') (μ : Measure (∀ i : I', α i))
+--            ↦ μ.map (fun (x : ∀ i : I', α i) (j : J') ↦ x ⟨j, hJI' j.2⟩)) I J hJI (P I)
+--
+--  IsProjective P
+--    (fun I J hJI μ => μ.map (fun (x : ∀ i : I, α i) (j : J) ↦ x ⟨j, hJI j.2⟩) :
+--      ∀ (I J : Finset ι) (_ : J ⊆ I), Measure (∀ i : I, α i) → Measure (∀ j : J, α j))
 
 /-- A measure `μ` is the projective limit of a family of measures indexed by finite sets of `ι` if
 for all `I : Finset ι`, the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`. -/
@@ -90,8 +100,9 @@ theorem measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P)
 
 theorem measure_univ_eq (hP : IsProjectiveMeasureFamily P) (I J : Finset ι) :
     P I univ = P J univ := by
-  classical rw [← hP.measure_univ_eq_of_subset (I ∪ J) I (Finset.subset_union_left _ _), ←
-    hP.measure_univ_eq_of_subset (I ∪ J) J (Finset.subset_union_right _ _)]
+  classical
+  rw [← hP.measure_univ_eq_of_subset (I ∪ J) I (Finset.subset_union_left _ _),
+    ← hP.measure_univ_eq_of_subset (I ∪ J) J (Finset.subset_union_right _ _)]
 
 end IsProjectiveMeasureFamily
 
@@ -100,18 +111,14 @@ namespace IsProjectiveLimit
 variable {μ ν : Measure (∀ i, α i)}
 
 theorem measure_cylinder (h : IsProjectiveLimit μ P)
-    (I : Finset ι) {s : Set (∀ i : I, α i)} (hs : MeasurableSet s) : μ (cylinder I s) = P I s := by
+    (I : Finset ι) {s : Set (∀ i : I, α i)} (hs : MeasurableSet s) :
+    μ (cylinder I s) = P I s := by
   rw [cylinder, ← Measure.map_apply _ hs, h I]
   exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
 
-theorem measure_univ_eq (hμ : IsProjectiveLimit μ P)
-    (I : Finset ι) : μ univ = P I univ := by
+theorem measure_univ_eq (hμ : IsProjectiveLimit μ P) (I : Finset ι) :
+    μ univ = P I univ := by
   rw [← cylinder_univ I, hμ.measure_cylinder _ MeasurableSet.univ]
-
-theorem measure_univ_unique [hι : Nonempty ι]
-    (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
-    μ univ = ν univ := by
-  rw [hμ.measure_univ_eq ({hι.some} : Finset ι), hν.measure_univ_eq ({hι.some} : Finset ι)]
 
 theorem isFiniteMeasure [hι : Nonempty ι] [∀ i, IsFiniteMeasure (P i)]
     (hμ : IsProjectiveLimit μ P) :
@@ -126,6 +133,11 @@ theorem isProbabilityMeasure [hι : Nonempty ι] [∀ i, IsProbabilityMeasure (P
   constructor
   rw [hμ.measure_univ_eq ({hι.some} : Finset ι)]
   exact measure_univ
+
+theorem measure_univ_unique [hι : Nonempty ι]
+    (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
+    μ univ = ν univ := by
+  rw [hμ.measure_univ_eq ({hι.some} : Finset ι), hν.measure_univ_eq ({hι.some} : Finset ι)]
 
 /-- The projective limit is unique. -/
 theorem unique [hι : Nonempty ι] [∀ i, IsFiniteMeasure (P i)]
