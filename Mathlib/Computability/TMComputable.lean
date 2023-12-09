@@ -355,6 +355,7 @@ def isVerifier (tm : PolyTimeTMs) : Prop :=
   ∃ (p: Polynomial ℕ), ∀ (x certificate : BString), (Bpair x certificate) ∈ L_M tm →
     certificate.length < p.eval x.length
 
+/-- The set of verifiers for nondeterministic polynomial time languages -/
 def verifiers : Set PolyTimeTMs := {tm | isVerifier tm}
 
 /-- A nondeterministic polynomial time language -/

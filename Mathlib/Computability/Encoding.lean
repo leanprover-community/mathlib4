@@ -240,6 +240,7 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
   ⟨finEncodingBoolBool.toEncoding⟩
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
+/-- Binary string as shorthand for List Bool -/
 def BString := List Bool
 
 /-- An (identity) encoding function of `List Bool` in `List Bool`. -/
