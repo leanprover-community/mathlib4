@@ -116,7 +116,7 @@ scoped notation3:73 m:73 " <• " r:74 => MulOpposite.op r • m
 /-- With `open scoped RightActions`, an alternative symbol for left actions, `r • m`.
 
 In lemma names this is still called `vadd`. -/
-scoped notation3:74 r:75 " +ᵥ>  " m:74 => r +ᵥ m
+scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
 
 /-- With `open scoped RightActions`, a shorthand for right actions, `op r +ᵥ m`.
 
