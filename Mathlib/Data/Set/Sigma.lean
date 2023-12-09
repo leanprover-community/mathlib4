@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
 
 #align_import data.set.sigma from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
@@ -142,6 +143,9 @@ theorem sigma_inter_sigma : s₁.Sigma t₁ ∩ s₂.Sigma t₂ = (s₁ ∩ s₂
   ext ⟨x, y⟩
   simp [and_assoc, and_left_comm]
 #align set.sigma_inter_sigma Set.sigma_inter_sigma
+
+theorem biInter_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
+  ⋂ ij ∈ s.Sigma t, u ij.1 ij.2 = ⋂ i ∈ s, ⋂ j : t i, u i j := by aesop
 
 theorem insert_sigma : (insert i s).Sigma t = Sigma.mk i '' t i ∪ s.Sigma t := by
   rw [insert_eq, union_sigma, singleton_sigma]
