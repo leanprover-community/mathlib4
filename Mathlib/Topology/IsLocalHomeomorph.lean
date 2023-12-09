@@ -177,20 +177,24 @@ theorem map_nhds_eq (hf : IsLocalHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (
   hf.isLocalHomeomorphOn.map_nhds_eq (Set.mem_univ x)
 #align is_locally_homeomorph.map_nhds_eq IsLocalHomeomorph.map_nhds_eq
 
+/-- A local homeomorphism is continuous. -/
 protected theorem continuous (hf : IsLocalHomeomorph f) : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isLocalHomeomorphOn.continuousOn
 #align is_locally_homeomorph.continuous IsLocalHomeomorph.continuous
 
+/-- A local homeomorphism is an open map. -/
 protected theorem isOpenMap (hf : IsLocalHomeomorph f) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun x => ge_of_eq (hf.map_nhds_eq x)
 #align is_locally_homeomorph.is_open_map IsLocalHomeomorph.isOpenMap
 
+/-- The composition of local homeomorphisms is a local homeomorphism. -/
 protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
     IsLocalHomeomorph (g ∘ f) :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (hg.isLocalHomeomorphOn.comp hf.isLocalHomeomorphOn (Set.univ.mapsTo_univ f))
 #align is_locally_homeomorph.comp IsLocalHomeomorph.comp
 
+/-- An injective local homeomorphism is an open embedding. -/
 theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
     OpenEmbedding f :=
   openEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
