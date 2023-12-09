@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 
 # Equivalences of sheaf categories
@@ -175,11 +176,28 @@ noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J e A whe
 theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J e A)
 
+variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
+  [(e.locallyCoverDense J).inducedTopology.HasSheafCompose F]
+
+theorem hasSheafCompose : J.HasSheafCompose F where
+  isSheaf P hP := by
+    let K := (e.locallyCoverDense J).inducedTopology
+    have hP' : Presheaf.IsSheaf K (e.inverse.op ⋙ P ⋙ F) := by
+      change Presheaf.IsSheaf K ((_ ⋙ _) ⋙ _)
+      apply HasSheafCompose.isSheaf
+      exact e.inverse.op_comp_isSheaf K J ⟨P, hP⟩
+    replace hP' : Presheaf.IsSheaf J (e.functor.op ⋙ e.inverse.op ⋙ P ⋙ F) :=
+      e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
+    exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
+
+
 end Equivalence
 
 variable {C : Type (u+1)} [LargeCategory C] [EssentiallySmall C] (J : GrothendieckTopology C)
-variable (A : Type (u+1)) [LargeCategory A]
+variable (A : Type*) [Category A] --[LargeCategory A]
+variable (B : Type*) [Category B] (F : A ⥤ B)
 variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
+variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
 
 /-- Transport to a small model and sheafify there. -/
 noncomputable
@@ -194,5 +212,7 @@ def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J A
 
 noncomputable instance : HasSheafify J A := (equivSmallModel C).hasSheafify J A
+
+instance : HasSheafCompose J F := (equivSmallModel C).hasSheafCompose J F
 
 end CategoryTheory

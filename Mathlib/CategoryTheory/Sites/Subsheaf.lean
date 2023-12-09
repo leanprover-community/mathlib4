@@ -454,13 +454,15 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
 
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
 noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ F') :
-    Limits.ImageFactorisation f where
+    Limits.ImageFactorisation (C := Sheaf J TypeMax.{v, u}) f where
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by
         -- port note: need to specify the target category (TypeMax.{v, u}) for this to work.
-        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J TypeMax.{v, u} _).mp I.m_mono
-        haveI := isIso_toImagePresheaf I.m.1
+        -- note: in #8727 I need to specify the instance of preserving colimits in this weird way
+        haveI M : Mono I.m.val :=
+          @presheaf_mono_of_mono C _ J TypeMax.{v, u} _ _ _ _ _
+            (fun _ ↦ (inferInstance : Limits.PreservesColimitsOfShape _ (𝟭 _))) _ _ _ _ I.m_mono
         refine' ⟨Subpresheaf.homOfLe _ ≫ inv (toImagePresheaf I.m.1)⟩
         apply Subpresheaf.sheafify_le
         · conv_lhs => rw [← I.fac]
@@ -470,6 +472,7 @@ noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ 
         · apply Presieve.isSheaf_iso J (asIso <| toImagePresheaf I.m.1)
           rw [← isSheaf_iff_isSheaf_of_type]
           exact I.I.2
+
       lift_fac := fun I => by
         ext1
         dsimp [imageMonoFactorization]
