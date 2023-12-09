@@ -196,7 +196,7 @@ instance : ToFormat PComp :=
   ⟨fun p => format p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 instance : ToString PComp :=
-  ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
+  ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0" ++ s!" history: {p.history.toList}"⟩
 
 /-- A collection of comparisons. -/
 abbrev PCompSet := RBSet PComp PComp.cmp
@@ -238,6 +238,9 @@ def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
   | some pc =>
     dbgTrace s!"Obtained:\n{pc}" fun _ =>
     dbgTrace s!"maybeMinimal says:\n{pc.maybeMinimal a}" fun _ =>
+    dbgTrace s!"history:\n{pc.history.toList}" fun _ =>
+    dbgTrace s!"implicit:\n{pc.implicit.toList}" fun _ =>
+    dbgTrace s!"effective:\n{pc.effective.toList}" fun _ =>
     if pc.maybeMinimal a then s.insert pc else s
   | none => s) RBSet.empty
 
