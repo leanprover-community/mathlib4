@@ -47,10 +47,9 @@ variable {α : Type*} {C : Set (Set α)} {s t : Set α}
 for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of finitely many sets in `C`. -/
 structure IsSetSemiring (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
-  inter_mem : ∀ (s) (_ : s ∈ C) (t) (_ : t ∈ C), s ∩ t ∈ C
-  diff_eq_Union' :
-    ∀ (t) (_ : t ∈ C) (s) (_ : s ∈ C),
-      ∃ (I : Finset (Set α)) (_ : ↑I ⊆ C) (_ : PairwiseDisjoint (I : Set (Set α)) id), t \ s = ⋃₀ I
+  inter_mem : ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C
+  diff_eq_Union' : ∀ s ∈ C, ∀ t ∈ C,
+    ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I
 
 namespace IsSetSemiring
 
@@ -76,18 +75,18 @@ lemma empty_not_mem_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈
 lemma diffFinset_subset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
     ↑(hC.diffFinset hs ht) ⊆ C := by
   simp only [diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
-  exact (hC.diff_eq_Union' s hs t ht).choose_spec.choose.trans (Set.subset_insert _ _)
+  exact (hC.diff_eq_Union' s hs t ht).choose_spec.1.trans (Set.subset_insert _ _)
 
 lemma pairwiseDisjoint_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     [DecidableEq (Set α)] :
     PairwiseDisjoint (hC.diffFinset hs ht : Set (Set α)) id := by
   simp only [diffFinset, coe_sdiff, coe_singleton]
-  exact Set.PairwiseDisjoint.subset (hC.diff_eq_Union' s hs t ht).choose_spec.choose_spec.choose
+  exact Set.PairwiseDisjoint.subset (hC.diff_eq_Union' s hs t ht).choose_spec.2.1
       (Set.diff_subset _ _)
 
 lemma sUnion_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) [DecidableEq (Set α)] :
     ⋃₀ hC.diffFinset hs ht = s \ t := by
-  rw [(hC.diff_eq_Union' s hs t ht).choose_spec.choose_spec.choose_spec]
+  rw [(hC.diff_eq_Union' s hs t ht).choose_spec.2.2]
   simp only [diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
