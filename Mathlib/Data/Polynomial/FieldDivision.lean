@@ -34,7 +34,7 @@ variable [CommRing R]
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
-  have hp := divByMonic_mul_pow_rootMultiplicity_eq p t
+  have hp := pow_mul_divByMonic_rootMultiplicity_eq p t; rw [mul_comm] at hp
   set m := p.rootMultiplicity t
   set g := p /ₘ (X - C t) ^ m
   have h : derivative p = derivative g * (X - C t) ^ m + g * (C (m : R)) * (X - C t) ^ (m - 1) := by
@@ -62,7 +62,7 @@ theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
     (derivative p).rootMultiplicity t = p.rootMultiplicity t - 1 := by
   by_cases h : p = 0
   · simp only [h, map_zero, rootMultiplicity_zero]
-  have hp := divByMonic_mul_pow_rootMultiplicity_eq p t
+  have hp := pow_mul_divByMonic_rootMultiplicity_eq p t; rw [mul_comm] at hp
   set m := p.rootMultiplicity t
   have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
   set g := p /ₘ (X - C t) ^ m
@@ -99,7 +99,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =
       (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ (p.rootMultiplicity t)).eval t := by
   have := congr_arg (fun f ↦ (derivative^[p.rootMultiplicity t] f).eval t) <|
-    divByMonic_mul_pow_rootMultiplicity_eq p t |>.symm
+    pow_mul_divByMonic_rootMultiplicity_eq p t |>.symm
   let m := rootMultiplicity t p
   let f := fun (x : ℕ) => m.choose x •
     (derivative^[m - x] (p /ₘ (X - C t) ^ m) * derivative^[x] ((X - C t) ^ m)) |>.eval t
@@ -108,7 +108,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     simp only [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_pow, eval_sub, eval_X,
       eval_C, sub_self, zero_pow hx, smul_zero, mul_zero]
   simp only at this
-  rw [this]
+  rw [this, mul_comm]
   simp only [iterate_derivative_mul, eval_finset_sum]
   simp only [Finset.sum_range_succ, Finset.sum_eq_zero hf]
   simp only [Nat.choose_self, Nat.sub_self, Function.iterate_zero, id_eq,
