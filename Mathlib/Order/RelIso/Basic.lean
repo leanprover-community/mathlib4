@@ -643,6 +643,19 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := FunLike.ext' hf
 
+--Porting note: helper instance
+-- see Note [function coercion]
+instance : CoeFun (r ≃r s) fun _ => α → β :=
+  ⟨FunLike.coe⟩
+
+@[simp]
+theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
+  rfl
+
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_iso.map_rel_iff RelIso.map_rel_iff

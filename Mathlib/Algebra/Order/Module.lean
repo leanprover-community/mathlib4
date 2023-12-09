@@ -14,7 +14,7 @@ In this file we provide lemmas about `OrderedSMul` that hold once a module struc
 
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_module
+* https://en.wikipedia.org/wiki/Ordered_vector_space
 
 ## Tags
 
@@ -25,11 +25,6 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 open Pointwise
 
 variable {ι k M N : Type*}
-
-instance instModuleOrderDual [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
-    where
-  add_smul _ _ x := OrderDual.rec (add_smul _ _) x
-  zero_smul m := OrderDual.rec (zero_smul _) m
 
 section Semiring
 
@@ -73,8 +68,8 @@ theorem lt_of_smul_lt_smul_of_nonpos (h : c • a < c • b) (hc : c ≤ 0) : b 
 lemma smul_le_smul_of_nonneg_right (h : c ≤ d) (hb : 0 ≤ b) : c • b ≤ d • b := by
   rw [← sub_nonneg, ← sub_smul]; exact smul_nonneg (sub_nonneg.2 h) hb
 
-lemma smul_le_smul (hcd : c ≤ d) (hab : a ≤ b) (ha : 0 ≤ a) (hd : 0 ≤ d) : c • a ≤ d • b :=
-  (smul_le_smul_of_nonneg_right hcd ha).trans $ smul_le_smul_of_nonneg_left hab hd
+lemma smul_le_smul (hcd : c ≤ d) (hab : a ≤ b) (hc : 0 ≤ c) (hb : 0 ≤ b) : c • a ≤ d • b :=
+  (smul_le_smul_of_nonneg_left hab hc).trans $ smul_le_smul_of_nonneg_right hcd hb
 
 theorem smul_lt_smul_iff_of_neg (hc : c < 0) : c • a < c • b ↔ b < a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_lt_neg_iff]
