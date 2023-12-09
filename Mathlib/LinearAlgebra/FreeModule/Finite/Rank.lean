@@ -293,38 +293,38 @@ noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique �
 variable (R V)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R V)`. -/
-noncomputable def Module.Free.finBasis [Module.Free R V] [Module.Finite R V] :
+noncomputable def FiniteDimensional.finBasis [Module.Free R V] [Module.Finite R V] :
     Basis (Fin (finrank R V)) R V :=
   (Free.chooseBasis R V).reindex (Fintype.equivFinOfCardEq
     (finrank_eq_card_chooseBasisIndex R V).symm)
-#align finite_dimensional.fin_basis Module.Free.finBasis
+#align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def Module.Free.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V] {n : ℕ}
+noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V] {n : ℕ}
     (hn : finrank R V = n) :
     Basis (Fin n) R V :=
   (finBasis R V).reindex (Fin.castIso hn).toEquiv
-#align finite_dimensional.fin_basis_of_finrank_eq Module.Free.finBasisOfFinrankEq
+#align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
 
 variable {R V}
 
 /-- A free module with rank 1 has a basis with one element. -/
-noncomputable def Module.Free.basisUnique [Module.Free R V] (ι : Type*) [Unique ι]
+noncomputable def FiniteDimensional.basisUnique [Module.Free R V] (ι : Type*) [Unique ι]
     (h : finrank R V = 1) :
     Basis ι R V :=
   haveI : Module.Finite R V :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
   (finBasisOfFinrankEq R V h).reindex (Equiv.equivOfUnique _ _)
-#align finite_dimensional.basis_unique Module.Free.basisUnique
+#align finite_dimensional.basis_unique FiniteDimensional.basisUnique
 
 @[simp]
-theorem Module.Free.basisUnique_repr_eq_zero_iff [Module.Free R V] {ι : Type*} [Unique ι]
+theorem FiniteDimensional.basisUnique_repr_eq_zero_iff [Module.Free R V] {ι : Type*} [Unique ι]
     {h : finrank R V = 1} {v : V} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
-#align finite_dimensional.basis_unique.repr_eq_zero_iff Module.Free.basisUnique_repr_eq_zero_iff
+#align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
 theorem FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
