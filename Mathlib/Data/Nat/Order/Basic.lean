@@ -112,8 +112,6 @@ theorem eq_zero_of_mul_le (hb : 2 ≤ n) (h : n * m ≤ m) : m = 0 :=
   eq_zero_of_double_le <| le_trans (Nat.mul_le_mul_right _ hb) h
 #align nat.eq_zero_of_mul_le Nat.eq_zero_of_mul_le
 
-theorem zero_max : max 0 n = n :=
-  max_eq_right (zero_le _)
 #align nat.zero_max Nat.zero_max
 
 @[simp]

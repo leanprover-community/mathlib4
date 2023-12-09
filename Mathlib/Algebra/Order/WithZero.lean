@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
@@ -214,10 +214,6 @@ theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a 
 
 theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
   show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (Function.swap (· * ·)) (· ≤ ·) :=
-      OrderedCommMonoid.to_covariantClass_right αˣ
-    have : CovariantClass αˣ αˣ (· * ·) (· ≤ ·) :=
-      OrderedCommGroup.to_covariantClass_left_le αˣ
     inv_le_inv_iff
 #align inv_le_inv₀ inv_le_inv₀
 

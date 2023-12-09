@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Algebra.Ring.CompTypeclasses
+import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
@@ -1092,6 +1092,11 @@ instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
 theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m :=
   rfl
 #align module.End.nat_cast_apply Module.End.natCast_apply
+
+@[simp]
+theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m :=
+  rfl
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with

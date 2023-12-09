@@ -328,7 +328,7 @@ theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExtension S A 
   refine' Set.Finite.induction_on (Set.Finite.intro h) (fun A B => _) @fun n S _ _ H A B => _
   · intro _ _ _ _ _
     refine' Module.finite_def.2 ⟨({1} : Finset B), _⟩
-    simp [← top_toSubmodule, ← empty, toSubmodule_bot]
+    simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
   · intro _ _ _ _ h
     haveI : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1}) :=
       union_left _ (insert n S) _ _ (subset_insert n S)
@@ -476,8 +476,7 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1
         and_iff_right_iff_imp, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one]
       exact fun _ => X_pow_sub_C_ne_zero n.pos (1 : L) }
 set_option linter.uppercaseLean3 false in
-#align is_cyclotomic_extension.splitting_field_X_pow_sub_one
-       IsCyclotomicExtension.isSplittingField_X_pow_sub_one
+#align is_cyclotomic_extension.splitting_field_X_pow_sub_one IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 /-- Any two `n`-th cyclotomic extensions are isomorphic. -/
 def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K L'] :

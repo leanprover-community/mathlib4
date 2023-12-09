@@ -399,4 +399,8 @@ def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlg
   changeFormEquiv changeForm.associated_neg_proof
 #align clifford_algebra.equiv_exterior CliffordAlgebra.equivExterior
 
+/-- A `CliffordAlgebra` over a nontrivial ring is nontrivial, in characteristic not two. -/
+instance [Nontrivial R] [Invertible (2 : R)] :
+    Nontrivial (CliffordAlgebra Q) := (equivExterior Q).symm.injective.nontrivial
+
 end CliffordAlgebra

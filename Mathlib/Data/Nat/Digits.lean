@@ -172,10 +172,10 @@ theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
 #align nat.of_digits_eq_foldr Nat.ofDigits_eq_foldr
 
 theorem ofDigits_eq_sum_map_with_index_aux (b : ℕ) (l : List ℕ) :
-    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ i) ∘ succ) l).sum =
+    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ (i + 1))) l).sum =
       b * ((List.range l.length).zipWith (fun i a => a * b ^ i) l).sum := by
   suffices
-    (List.range l.length).zipWith ((fun i a : ℕ => a * b ^ i) ∘ succ) l =
+    (List.range l.length).zipWith (fun i a : ℕ => a * b ^ (i + 1)) l =
       (List.range l.length).zipWith (fun i a => b * (a * b ^ i)) l
     by simp [this]
   congr; ext; simp [pow_succ]; ring
@@ -463,7 +463,7 @@ theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p 
   · simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
-theorem sum_le_ofDigits (L : List ℕ) (h: 1 ≤ p) : L.sum ≤ ofDigits p L :=
+theorem sum_le_ofDigits (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=
   (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
@@ -514,7 +514,7 @@ lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
   induction' digits with hd tl
   · simp [ofDigits]
   · refine' Eq.trans (add_mul_div_left hd _ hpos) _
-    rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
     rfl
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
@@ -555,7 +555,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
         have w₂' := fun (h : tl ≠ []) ↦ (List.getLast_cons h) ▸ h_ne_zero
         have ih := ih (w₂' h') w₁'
         simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h tl w₁' w₂',
-          succ_eq_one_add] at ih
+          ←Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'

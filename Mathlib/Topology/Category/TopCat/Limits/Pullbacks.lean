@@ -53,8 +53,11 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
-      rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]
-      exact h)
+      -- Next 2 lines were
+      -- `rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]`
+      -- `exact h` before leanprover/lean4#2644
+      rw [comp_apply, comp_apply]
+      congr!)
 #align Top.pullback_cone TopCat.pullbackCone
 
 /-- The constructed cone is a limit. -/
@@ -74,12 +77,12 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine' ⟨_, _, _⟩
       · delta pullbackCone
         ext a
-        rw [comp_apply, ContinuousMap.coe_mk]
-        rfl
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [comp_apply, ContinuousMap.coe_mk]
       · delta pullbackCone
         ext a
-        rw [comp_apply, ContinuousMap.coe_mk]
-        rfl
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [comp_apply, ContinuousMap.coe_mk]
       · intro m h₁ h₂
         -- Porting note: used to be ext x
         apply ContinuousMap.ext; intro x
@@ -168,8 +171,34 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
     rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π] <;>
-    simp
+    -- This used to be `simp` before leanprover/lean4#2644
+    aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
+
+/-- The pullback along an embedding is (isomorphic to) the preimage. -/
+noncomputable
+def pullbackHomeoPreimage
+    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : Embedding g) :
+    { p : X × Y // f p.1 = g p.2 } ≃ₜ f ⁻¹' Set.range g where
+    toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
+    invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
+    left_inv := by
+      intro x
+      ext <;> dsimp
+      apply hg.inj
+      convert x.prop
+      exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
+    right_inv := fun x ↦ rfl
+    continuous_toFun := by
+      apply Continuous.subtype_mk
+      exact continuous_fst.comp continuous_subtype_val
+    continuous_invFun := by
+      apply Continuous.subtype_mk
+      refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
+      convert hf.comp continuous_subtype_val
+      ext x
+      exact Exists.choose_spec x.2
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Inducing <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=

@@ -633,6 +633,7 @@ theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
     (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
   rfl
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
 
@@ -899,28 +900,12 @@ variable {ι : Type*}
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalStarSubalgebra R A :=
-    { carrier := ⋃ i, S i
-      zero_mem' :=
-        let i := @Nonempty.some ι inferInstance
-        Set.mem_iUnion.2 ⟨i, zero_mem (S i)⟩
-      mul_mem' := fun hx hy =>
+    { __ := NonUnitalSubalgebra.copy _ _ (NonUnitalSubalgebra.coe_iSup_of_directed dir).symm
+      star_mem' := fun hx ↦
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, mul_mem (s := S k) (hik hi) (hjk hj)⟩
-      add_mem' := fun hx hy =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, add_mem (s := S k) (hik hi) (hjk hj)⟩
-      smul_mem' := fun r _x hx =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        Set.mem_iUnion.2 ⟨i, SMulMemClass.smul_mem (s := (S i)) r hi⟩
-      star_mem' := fun hx =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        Set.mem_iUnion.2 ⟨i, star_mem (s := (S i)) hi⟩ }
-  have : iSup S = K := le_antisymm (iSup_le fun i => Set.subset_iUnion (fun i => (S i : Set A)) i)
-    (SetLike.coe_subset_coe.1 (Set.iUnion_subset fun _i => SetLike.coe_subset_coe.2 (le_iSup _ _)))
+        Set.mem_iUnion.2 ⟨i, star_mem (s := S i) hi⟩ }
+  have : iSup S = K := le_antisymm (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i)
+    (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star

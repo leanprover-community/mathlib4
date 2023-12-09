@@ -46,7 +46,7 @@ variable (α β)
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ β` are
 equivalent to `C(α, β)`.
 -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
   ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
     ext
@@ -76,7 +76,7 @@ theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedO
 additively equivalent to `C(α, 𝕜)`.
 -/
 -- porting note: the following `simps` received a "maximum recursion depth" error
--- @[simps! (config := { fullyApplied := false }) apply symm_apply]
+-- @[simps! (config := .asFn) apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 #align continuous_map.add_equiv_bounded_of_compact ContinuousMap.addEquivBoundedOfCompact
@@ -100,7 +100,7 @@ instance metricSpace : MetricSpace C(α, β) :=
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
 -/
-@[simps! (config := { fullyApplied := false }) toEquiv apply symm_apply]
+@[simps! (config := .asFn) toEquiv apply symm_apply]
 def isometryEquivBoundedOfCompact : C(α, β) ≃ᵢ (α →ᵇ β) where
   isometry_toFun _ _ := rfl
   toEquiv := equivBoundedOfCompact α β
@@ -496,6 +496,10 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     intro s
     ext1 x
     simp
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
+    simp
+    congr!
   simpa only [HasSum, A] using summable_of_summable_norm (hF K)
 #align continuous_map.summable_of_locally_summable_norm ContinuousMap.summable_of_locally_summable_norm
 

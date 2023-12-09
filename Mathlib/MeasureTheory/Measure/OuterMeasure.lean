@@ -56,9 +56,6 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-
-open TopologicalSpace (SecondCountableTopology)
-
 open Classical BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
@@ -129,7 +126,7 @@ generalising to `Sort`. -/
 theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
     m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
     ⟨ fun h i => mono_null m (subset_iUnion s i) h,
-      by by_cases i : ι <;> simp [i]; exact (fun h => h (Iff.mpr (Iff.of_eq (eq_true i)) trivial)) ⟩
+      by by_cases i : ι <;> simp [i]⟩
 #align measure_theory.outer_measure.Union_null_iff' MeasureTheory.OuterMeasure.iUnion_null_iff'
 
 theorem biUnion_null_iff (m : OuterMeasure α) {s : Set β} (hs : s.Countable) {t : β → Set α} :
@@ -1111,7 +1108,7 @@ theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
 
 theorem le_smul_caratheodory (a : ℝ≥0∞) (m : OuterMeasure α) :
     m.caratheodory ≤ (a • m).caratheodory := fun s h t => by
-      simp [smul_apply]
+      simp only [smul_apply, smul_eq_mul]
       rw [(isCaratheodory_iff m).mp h t]
       simp [mul_add]
 #align measure_theory.outer_measure.le_smul_caratheodory MeasureTheory.OuterMeasure.le_smul_caratheodory

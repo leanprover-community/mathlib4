@@ -480,7 +480,8 @@ theorem tsum_eq_sum {s : Finset β} (hf : ∀ (b) (_ : b ∉ s), f b = 0) :
     contrapose! hx
     rw [nmem_support]
     exact hf _ hx
-  simp [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I]
+  simp only [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I,
+     ite_true, dite_eq_ite]
   exact finsum_eq_sum_of_support_subset f I
 #align tsum_eq_sum tsum_eq_sum
 
@@ -1264,7 +1265,7 @@ theorem Summable.tendsto_atTop_zero {f : ℕ → G} (hf : Summable f) : Tendsto 
   exact hf.tendsto_cofinite_zero
 #align summable.tendsto_at_top_zero Summable.tendsto_atTop_zero
 
-theorem Summable.countable_support [TopologicalSpace.FirstCountableTopology G] [T1Space G]
+theorem Summable.countable_support [FirstCountableTopology G] [T1Space G]
     (hf : Summable f) : f.support.Countable := by
   simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
 

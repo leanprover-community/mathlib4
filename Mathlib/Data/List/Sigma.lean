@@ -641,7 +641,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
   induction' l with x xs l_ih
   · apply this
   · cases x
-    simp [dedupKeys]
+    simp only [foldr_cons, kinsert_def, nodupKeys_cons, ne_eq, not_true]
     constructor
     · simp [keys_kerase]
       apply l_ih.not_mem_erase

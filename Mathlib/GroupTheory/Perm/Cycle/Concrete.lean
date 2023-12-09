@@ -356,7 +356,8 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
     simp [Nat.succ_le_succ_iff] at hl
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
   · refine' ext_get (by simp) fun k hk hk' => _
-    simp [formPerm_pow_apply_nthLe _ hn, Nat.mod_eq_of_lt hk']
+    simp only [Nat.zero_eq, get_map, get_range, formPerm_pow_apply_nthLe _ hn, zero_add,
+      Nat.mod_eq_of_lt hk']
     rw [nthLe_eq]
   · simpa [hs] using get_mem _ _ _
 #align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial

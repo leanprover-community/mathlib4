@@ -194,11 +194,8 @@ theorem single_ne_zero (h : r ≠ 0) : single a r ≠ 0 := fun con =>
 #align hahn_series.single_ne_zero HahnSeries.single_ne_zero
 
 @[simp]
-theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 := by
-  constructor
-  · contrapose!
-    exact single_ne_zero
-  · simp (config := { contextual := true })
+theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
+  map_eq_zero_iff _ <| single_injective a
 #align hahn_series.single_eq_zero_iff HahnSeries.single_eq_zero_iff
 
 instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
@@ -388,7 +385,7 @@ theorem min_order_le_order_add {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x y :
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
   refine' le_of_eq_of_le _ (Set.IsWf.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
-  · exact (Set.IsWf.min_union _ _ _ _).symm
+  exact (Set.IsWf.min_union _ _ _ _).symm
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 /-- `single` as an additive monoid/group homomorphism -/
@@ -746,8 +743,8 @@ theorem mul_single_zero_coeff [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSer
 #align hahn_series.mul_single_zero_coeff HahnSeries.mul_single_zero_coeff
 
 theorem single_zero_mul_coeff [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
-    ((single 0 r : HahnSeries Γ R) * x).coeff a = r * x.coeff a :=
-  by rw [← add_zero a, single_mul_coeff_add, add_zero]
+    ((single 0 r : HahnSeries Γ R) * x).coeff a = r * x.coeff a := by
+  rw [← add_zero a, single_mul_coeff_add, add_zero]
 #align hahn_series.single_zero_mul_coeff HahnSeries.single_zero_mul_coeff
 
 @[simp]
@@ -873,16 +870,12 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
-    eq_zero_or_eq_zero_of_mul_eq_zero {x} {y} xy := by
-      by_cases hx : x = 0
-      · left
-        exact hx
-      right
+    eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
       contrapose! xy
       rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
       refine' ⟨x.order + y.order, _⟩
       rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
-      simp [coeff_order_ne_zero, hx, xy]
+      simp [coeff_order_ne_zero, xy]
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
@@ -1126,7 +1119,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     classical
       refine' sum_filter_ne_zero.symm.trans ((sum_congr _ fun _ _ => rfl).trans sum_filter_ne_zero)
       ext m
-      simp only [Nat.mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
+      simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
         mem_support]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
@@ -1241,7 +1234,7 @@ def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃
       refine' sum_filter_ne_zero.symm.trans ((sum_congr _ fun _ _ => rfl).trans sum_filter_ne_zero)
       ext m
       simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
-        Finsupp.mem_antidiagonal]
+        Finset.mem_antidiagonal]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 #align hahn_series.to_mv_power_series HahnSeries.toMvPowerSeries
@@ -1270,12 +1263,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
     commutes' := fun r => by
       ext n
-      simp only [algebraMap_apply, PowerSeries.algebraMap_apply, C_apply,
-        coeff_toPowerSeries]
-      cases' n with n
-      · simp [PowerSeries.coeff_zero_eq_constantCoeff, single_coeff_same]
-      · simp [n.succ_ne_zero, Ne.def, not_false_iff, single_coeff_of_ne]
-        rw [PowerSeries.coeff_C, if_neg n.succ_ne_zero] }
+      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 #align hahn_series.to_power_series_alg HahnSeries.toPowerSeriesAlg
 
 variable (Γ) [StrictOrderedSemiring Γ]

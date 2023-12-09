@@ -121,27 +121,32 @@ def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
 /-- An inductively defined relation on `Pre R X` used to force the initial algebra structure on
 the associated quotient.
 -/
-inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central semiring morphism
-
+inductive Rel : Pre R X → Pre R X → Prop
+  -- force `of_scalar` to be a central semiring morphism
   | add_scalar {r s : R} : Rel (↑(r + s)) (↑r + ↑s)
   | mul_scalar {r s : R} : Rel (↑(r * s)) (↑r * ↑s)
-  | central_scalar {r : R} {a : Pre R X} : Rel (r * a) (a * r)-- commutative additive semigroup
+  | central_scalar {r : R} {a : Pre R X} : Rel (r * a) (a * r)
 
+  -- commutative additive semigroup
   | add_assoc {a b c : Pre R X} : Rel (a + b + c) (a + (b + c))
   | add_comm {a b : Pre R X} : Rel (a + b) (b + a)
-  | zero_add {a : Pre R X} : Rel (0 + a) a-- multiplicative monoid
+  | zero_add {a : Pre R X} : Rel (0 + a) a
 
+  -- multiplicative monoid
   | mul_assoc {a b c : Pre R X} : Rel (a * b * c) (a * (b * c))
   | one_mul {a : Pre R X} : Rel (1 * a) a
-  | mul_one {a : Pre R X} : Rel (a * 1) a-- distributivity
+  | mul_one {a : Pre R X} : Rel (a * 1) a
 
+  -- distributivity
   | left_distrib {a b c : Pre R X} : Rel (a * (b + c)) (a * b + a * c)
   | right_distrib {a b c : Pre R X} :
-      Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
+      Rel ((a + b) * c) (a * c + b * c)
 
+  -- other relations needed for semiring
   | zero_mul {a : Pre R X} : Rel (0 * a) 0
-  | mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
+  | mul_zero {a : Pre R X} : Rel (a * 0) 0
 
+  -- compatibility
   | add_compat_left {a b c : Pre R X} : Rel a b → Rel (a + c) (b + c)
   | add_compat_right {a b c : Pre R X} : Rel a b → Rel (c + a) (c + b)
   | mul_compat_left {a b c : Pre R X} : Rel a b → Rel (a * c) (b * c)

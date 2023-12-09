@@ -87,7 +87,7 @@ General algebra:
     $K[X]$ is Euclidean: 'Polynomial.instEuclideanDomainPolynomialToSemiringToDivisionSemiringToSemifield'
     Hilbert basis theorem: 'Polynomial.isNoetherianRing'
     $A[X]$ has gcd and lcm if $A$ does: 'Polynomial.normalizedGcdMonoid'
-    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.instUniqueFactorizationMonoidMvPolynomialToCommSemiringToCancelCommMonoidWithZeroCommSemiringInstIsDomainMvPolynomialToCommSemiringToSemiringCommSemiring'
+    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.uniqueFactorizationMonoid'
     irreducible polynomial: 'Irreducible'
     Eisenstein's criterion: 'Polynomial.irreducible_of_eisenstein_criterion'
     polynomial in several indeterminates: 'MvPolynomial'

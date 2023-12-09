@@ -1393,6 +1393,19 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
 
 end Induction
 
+/-- An element of a non-unital-non-associative algebra is in the center exactly when it commutes
+with the basis elements. -/
+lemma Basis.mem_center_iff {A}
+    [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    (b : Basis ι R A) {x : A} :
+    x ∈ Set.center A ↔ ∀ i, Commute (b i) x := by
+  constructor
+  · intro h i; apply h
+  · intro h y
+    rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
+    simp_rw [mul_smul_comm, smul_mul_assoc, (h _).eq]
+
 section RestrictScalars
 
 variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]

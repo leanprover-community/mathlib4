@@ -315,7 +315,7 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
-  simp [minFac_eq]
+  simp only [minFac_eq, Nat.isUnit_iff]
   by_cases d2 : 2 ∣ n <;> simp [d2]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine'
@@ -671,7 +671,7 @@ theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p
 #align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : Coprime p n :=
-  (coprime_or_dvd_of_prime pp n).resolve_right fun h => lt_le_antisymm hlt (le_of_dvd n_pos h)
+  (coprime_or_dvd_of_prime pp n).resolve_right fun h => Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
 #align nat.coprime_of_lt_prime Nat.coprime_of_lt_prime
 
 theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Prime p) :

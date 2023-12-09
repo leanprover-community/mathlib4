@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
 import Lean
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 
 /-!
 # The `#find` command and tactic.

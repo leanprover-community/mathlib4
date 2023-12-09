@@ -155,3 +155,40 @@ end use_distrib
 example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
   push_neg at h
   exact h
+
+example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+namespace no_proj
+
+structure G (V : Type) where
+  Adj : V → V → Prop
+
+def g : G Nat where
+  Adj a b := (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a))
+
+example {p q : Nat} : ¬ g.Adj p q := by
+  rw [g]
+  guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
+  push_neg
+  guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
+  dsimp only
+  guard_target =ₛ ¬ ((p ≠ q) ∧ ((p ∣ q) ∨ (q ∣ p)))
+  push_neg
+  guard_target =ₛ p ≠ q → ¬p ∣ q ∧ ¬q ∣ p
+  exact test_sorry
+
+end no_proj

@@ -37,7 +37,9 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp [Valuation.ltAddSubgroup]
+      simp only [ltAddSubgroup, ge_iff_le, Units.min_val, Units.val_le_val, lt_min_iff,
+        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
+        forall_const, and_true]
       tauto
     mul := by
       rintro γ

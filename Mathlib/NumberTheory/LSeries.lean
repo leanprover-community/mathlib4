@@ -74,7 +74,7 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
     · simp [hm, Real.zero_rpow (_root_.ne_of_gt (lt_trans Real.zero_lt_one hz))]
     simp only [map_div₀, Complex.norm_eq_abs]
     apply div_le_div hm (h _) (Real.rpow_pos_of_pos (Nat.cast_pos.2 n.succ_pos) _) (le_of_eq _)
-    rw [Complex.abs_cpow_real, Complex.abs_cast_nat]
+    rw [Complex.abs_cpow_real, Complex.abs_natCast]
 #align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real Nat.ArithmeticFunction.LSeriesSummable_of_bounded_of_one_lt_real
 
 theorem LSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ} (h : w.re = z.re) :
@@ -117,7 +117,7 @@ theorem zeta_LSeriesSummable_iff_one_lt_re {z : ℂ} : LSeriesSummable ζ z ↔ 
     · simp [h0]
     simp only [cast_zero, natCoe_apply, zeta_apply, succ_ne_zero, if_false, cast_succ, one_div,
       Complex.norm_eq_abs, map_inv₀, Complex.abs_cpow_real, inv_inj, zero_add]
-    rw [← cast_one, ← cast_add, Complex.abs_of_nat, cast_add, cast_one]
+    rw [← cast_one, ← cast_add, Complex.abs_natCast, cast_add, cast_one]
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re Nat.ArithmeticFunction.zeta_LSeriesSummable_iff_one_lt_re
 
 @[simp]

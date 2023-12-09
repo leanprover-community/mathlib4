@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
@@ -15,7 +15,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
 
-#align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
+#align_import algebra.big_operators.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Big operators
@@ -187,6 +187,12 @@ theorem prod_eq_multiset_prod [CommMonoid β] (s : Finset α) (f : α → β) :
 #align finset.prod_eq_multiset_prod Finset.prod_eq_multiset_prod
 #align finset.sum_eq_multiset_sum Finset.sum_eq_multiset_sum
 
+@[to_additive (attr := simp)]
+lemma prod_map_val [CommMonoid β] (s : Finset α) (f : α → β) : (s.1.map f).prod = ∏ a in s, f a :=
+  rfl
+#align finset.prod_map_val Finset.prod_map_val
+#align finset.sum_map_val Finset.sum_map_val
+
 @[to_additive]
 theorem prod_eq_fold [CommMonoid β] (s : Finset α) (f : α → β) :
     ∏ x in s, f x = s.fold ((· * ·) : β → β → β) 1 f :=
@@ -273,14 +279,16 @@ end Deprecated
 
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :
-    ⇑(∏ x in s, f x) = ∏ x in s, ⇑f x :=
+    ⇑(∏ x in s, f x) = ∏ x in s, ⇑(f x) :=
   (MonoidHom.coeFn β γ).map_prod _ _
 #align monoid_hom.coe_finset_prod MonoidHom.coe_finset_prod
 #align add_monoid_hom.coe_finset_sum AddMonoidHom.coe_finset_sum
 
--- See also `Finset.prod_apply`, with the same conclusion
--- but with the weaker hypothesis `f : α → β → γ`.
-@[to_additive (attr := simp)]
+/-- See also `Finset.prod_apply`, with the same conclusion but with the weaker hypothesis
+`f : α → β → γ` -/
+@[to_additive (attr := simp)
+  "See also `Finset.sum_apply`, with the same conclusion but with the weaker hypothesis
+  `f : α → β → γ`"]
 theorem MonoidHom.finset_prod_apply [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α)
     (b : β) : (∏ x in s, f x) b = ∏ x in s, f x b :=
   (MonoidHom.eval b).map_prod _ _
@@ -339,6 +347,10 @@ theorem prod_insert_one [DecidableEq α] (h : f a = 1) : ∏ x in insert a s, f 
   prod_insert_of_eq_one_if_not_mem fun _ => h
 #align finset.prod_insert_one Finset.prod_insert_one
 #align finset.sum_insert_zero Finset.sum_insert_zero
+
+@[to_additive]
+theorem prod_insert_div {M : Type*} [CommGroup M] [DecidableEq α] (ha : a ∉ s) {f : α → M} :
+    (∏ x in insert a s, f x) / f a = ∏ x in s, f x := by simp [ha]
 
 @[to_additive (attr := simp)]
 theorem prod_singleton (f : α → β) (a : α) : ∏ x in singleton a, f x = f a :=
@@ -683,7 +695,7 @@ theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β}
 #align finset.sum_product_right Finset.sum_product_right
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
-@[to_additive "An uncurried version of `Finset.prod_product_right`"]
+@[to_additive "An uncurried version of `Finset.sum_product_right`"]
 theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
     ∏ x in s ×ˢ t, f x.1 x.2 = ∏ y in t, ∏ x in s, f x y :=
   prod_product_right
@@ -1460,12 +1472,12 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x in s, f x ^ n
 #align finset.prod_pow Finset.prod_pow
 #align finset.sum_nsmul Finset.sum_nsmul
 
-/-- A product over `Finset.powersetLen` which only depends on the size of the sets is constant. -/
+/-- A product over `Finset.powersetCard` which only depends on the size of the sets is constant. -/
 @[to_additive
-"A sum over `Finset.powersetLen` which only depends on the size of the sets is constant."]
-lemma prod_powersetLen (n : ℕ) (s : Finset α) (f : ℕ → β) :
-    ∏ t in powersetLen n s, f t.card = f n ^ s.card.choose n := by
-  rw [prod_eq_pow_card, card_powersetLen]; rintro a ha; rw [(mem_powersetLen.1 ha).2]
+"A sum over `Finset.powersetCard` which only depends on the size of the sets is constant."]
+lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
+    ∏ t in powersetCard n s, f t.card = f n ^ s.card.choose n := by
+  rw [prod_eq_pow_card, card_powersetCard]; rintro a ha; rw [(mem_powersetCard.1 ha).2]
 
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
@@ -1769,11 +1781,19 @@ theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
   apply sum_congr rfl h₁
 #align finset.sum_const_nat Finset.sum_const_nat
 
+lemma natCast_card_filter [AddCommMonoidWithOne β] (p) [DecidablePred p] (s : Finset α) :
+    ((filter p s).card : β) = ∑ a in s, if p a then (1 : β) else 0 := by
+  rw [sum_ite, sum_const_zero, add_zero, sum_const, nsmul_one]
+#align finset.nat_cast_card_filter Finset.natCast_card_filter
+
+lemma card_filter (p) [DecidablePred p] (s : Finset α) :
+    (filter p s).card = ∑ a in s, ite (p a) 1 0 := natCast_card_filter _ _
+#align finset.card_filter Finset.card_filter
+
 @[simp]
-theorem sum_boole {s : Finset α} {p : α → Prop} [NonAssocSemiring β] {hp : DecidablePred p} :
-    (∑ x in s, if p x then (1 : β) else (0 : β)) = (s.filter p).card := by
-  simp only [add_zero, mul_one, Finset.sum_const, nsmul_eq_mul, eq_self_iff_true,
-    Finset.sum_const_zero, Finset.sum_ite, mul_zero]
+lemma sum_boole {s : Finset α} {p : α → Prop} [AddCommMonoidWithOne β] [DecidablePred p] :
+    (∑ x in s, if p x then 1 else 0 : β) = (s.filter p).card :=
+  (natCast_card_filter _ _).symm
 #align finset.sum_boole Finset.sum_boole
 
 theorem _root_.Commute.sum_right [NonUnitalNonAssocSemiring β] (s : Finset α) (f : α → β) (b : β)
@@ -2133,11 +2153,11 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type*} {i : Finset β} {f : β → 
 #align multiset.finset_sum_eq_sup_iff_disjoint Multiset.finset_sum_eq_sup_iff_disjoint
 
 theorem sup_powerset_len {α : Type*} [DecidableEq α] (x : Multiset α) :
-    (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetLen k) = x.powerset := by
+    (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by
   convert bind_powerset_len x using 1
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
-    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetLen x h)
+    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
 #align multiset.sup_powerset_len Multiset.sup_powerset_len
 
 @[simp]

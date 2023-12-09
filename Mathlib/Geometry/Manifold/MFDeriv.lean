@@ -639,6 +639,18 @@ theorem mfderivWithin_inter (ht : t ∈ 𝓝 x) :
     fderivWithin_inter (extChartAt_preimage_mem_nhds I x ht)]
 #align mfderiv_within_inter mfderivWithin_inter
 
+theorem mfderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : mfderivWithin I I' f s x = mfderiv I I' f x := by
+  rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
+
+lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
+    mfderivWithin I I' f s x = mfderiv I I' f x :=
+  mfderivWithin_of_mem_nhds (hs.mem_nhds hx)
+
+theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
+    mfderivWithin I I' f s x = mfderiv I I' f x := by
+  rw [← mfderivWithin_univ]
+  exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
+
 theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
     (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x' ↔
@@ -901,7 +913,8 @@ theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundl
     (hs : UniqueMDiffWithinAt I s p.1) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
   refine TotalSpace.ext _ _ (h p.1 hp) ?_
-  simp only [tangentMapWithin, h p.1 hp, mfderivWithin_congr hs h (h _ hp), HEq.refl]
+  -- This used to be `simp only`, but we need `erw` after leanprover/lean4#2644
+  rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr hs h (h _ hp)]
 #align tangent_map_within_congr tangentMapWithin_congr
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :

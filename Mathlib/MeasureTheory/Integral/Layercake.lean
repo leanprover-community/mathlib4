@@ -79,7 +79,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
   intro t ht
   have : μ {a | t < g a} < μ {a | t ≤ g a} :=
     lt_of_le_of_ne (measure_mono (fun a ha ↦ le_of_lt ha)) (Ne.symm ht)
-  refine ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
+  exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
     (ν : Measure R) [NoAtoms ν] (g : α → R) :
@@ -178,7 +178,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
   rw [aux₂]
   have mble₀ : MeasurableSet {p : α × ℝ | p.snd ∈ Ioc 0 (f p.fst)} := by
     simpa only [mem_univ, Pi.zero_apply, gt_iff_lt, not_lt, ge_iff_le, true_and] using
-      measurableSet_region_between_oc measurable_zero f_mble  MeasurableSet.univ
+      measurableSet_region_between_oc measurable_zero f_mble MeasurableSet.univ
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀
     mble₀.nullMeasurableSet
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
@@ -237,7 +237,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
           apply set_lintegral_mono' measurableSet_Ioc (fun x hx ↦ ?_)
           rw [← h's]
           gcongr
-          exact measure_mono (fun a ha ↦ hx.2.trans (le_of_lt ha))
+          exact fun a ha ↦ hx.2.trans (le_of_lt ha)
       _ ≤ ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) :=
           lintegral_mono_set Ioc_subset_Ioi_self
     /- The second integral is infinite, as one integrates amont other things on those `ω` where

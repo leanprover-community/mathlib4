@@ -346,7 +346,7 @@ theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductS
 /-- `J` commutes with any positively-oriented isometric automorphism. -/
 theorem linearIsometryEquiv_comp_rightAngleRotation (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : E) : φ (J x) = J (φ x) := by
-  convert(o.rightAngleRotation_map φ (φ x)).symm
+  convert (o.rightAngleRotation_map φ (φ x)).symm
   · simp
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ

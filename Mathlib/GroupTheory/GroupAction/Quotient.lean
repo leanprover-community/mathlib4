@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -49,7 +49,7 @@ class QuotientAction : Prop where
 #align mul_action.quotient_action MulAction.QuotientAction
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
-class _root_.AddAction.QuotientAction {α : Type*} (β : Type _) [AddGroup α] [AddMonoid β]
+class _root_.AddAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
@@ -307,9 +307,9 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
       "**Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
       acting on `X` and `X/G`denotes the quotient of `X` by the relation `orbitRel G X`. "]
-noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy α β a) ≃ Ω × α :=
+noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy β a) ≃ Ω × α :=
   calc
-    (Σa : α, fixedBy α β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
+    (Σa : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
       (Equiv.subtypeProdEquivSigmaSubtype _).symm
     _ ≃ { ba : β × α // ba.2 • ba.1 = ba.1 } := (Equiv.prodComm α β).subtypeEquiv fun _ => Iff.rfl
     _ ≃ Σb : β, stabilizer α b :=
@@ -333,8 +333,8 @@ elements fixed by each `g ∈ G` is the number of orbits. -/
 @[to_additive
       "**Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. "]
-theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a, Fintype <| fixedBy α β a]
-    [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy α β a)) = Fintype.card Ω * Fintype.card α := by
+theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
+    [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy β a)) = Fintype.card Ω * Fintype.card α := by
   rw [← Fintype.card_prod, ← Fintype.card_sigma,
     Fintype.card_congr (sigmaFixedByEquivOrbitsProdGroup α β)]
 #align mul_action.sum_card_fixed_by_eq_card_orbits_mul_card_group MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group
@@ -426,7 +426,7 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
   -- Porting note: Changed `calc` proof into a `rw` proof.
   rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute), card_sigma,
     sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
-      (fun g ↦ card (MulAction.fixedBy (ConjAct G) G g))
+      (fun g ↦ card (MulAction.fixedBy G g))
       fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
     MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
   congr 1; apply card_congr'; congr; ext;

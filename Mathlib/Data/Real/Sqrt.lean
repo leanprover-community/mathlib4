@@ -380,7 +380,7 @@ def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
   let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
+  let ra ← catchNone <| core zα' pα' a
   assertInstancesCommute
   match ra with
   | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))

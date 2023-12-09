@@ -50,6 +50,14 @@ protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sort
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
   h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
+protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· > ·)) :
+    l.Sorted (· ≥ ·) :=
+  h.imp le_of_lt
+
+protected theorem Sorted.gt_of_ge [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≥ ·))
+    (h₂ : l.Nodup) : l.Sorted (· > ·) :=
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
+
 @[simp]
 theorem sorted_nil : Sorted r [] :=
   Pairwise.nil
@@ -66,6 +74,20 @@ theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : So
 theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
   rel_of_pairwise_cons
 #align list.rel_of_sorted_cons List.rel_of_sorted_cons
+
+theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
+    (ha : a ∈ l) : l.head! ≤ a := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
+
+theorem Sorted.le_head! [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· > ·) l)
+    (ha : a ∈ l) : a ≤ l.head! := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
 
 @[simp]
 theorem sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l, r a b) ∧ Sorted r l :=

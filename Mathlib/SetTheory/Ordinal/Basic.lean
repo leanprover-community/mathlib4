@@ -63,7 +63,7 @@ open Classical Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type _} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Well order on an arbitrary type -/
@@ -167,7 +167,8 @@ instance isWellOrder_out_lt (o : Ordinal) : IsWellOrder o.out.α (· < ·) :=
 
 namespace Ordinal
 
--- ### Basic properties of the order type
+/-! ### Basic properties of the order type -/
+
 /-- The order type of a well order is an ordinal. -/
 def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
@@ -1009,7 +1010,8 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align ordinal.Inf_empty Ordinal.sInf_empty
 
--- ### Successor order properties
+/-! ### Successor order properties -/
+
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
   ⟨lt_of_lt_of_le
       (inductionOn a fun α r _ =>
@@ -1584,3 +1586,22 @@ theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp
 #align ordinal.type_fin Ordinal.type_fin
 
 end Ordinal
+
+/-! ### Sorted lists -/
+
+theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [IsWellOrder α (· < ·)] {l m : List α}
+    {o : Ordinal} (hl : l.Sorted (· > ·)) (hm : m.Sorted (· > ·)) (hmltl : m < l)
+    (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) : ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
+  replace hmltl : List.Lex (· < ·) m l := hmltl
+  cases l with
+  | nil => simp at hmltl
+  | cons a as =>
+    cases m with
+    | nil => intro i hi; simp at hi
+    | cons b bs =>
+      intro i hi
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      cases hi with
+      | head as => exact List.head_le_of_lt hmltl
+      | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
+          (List.head_le_of_lt hmltl))

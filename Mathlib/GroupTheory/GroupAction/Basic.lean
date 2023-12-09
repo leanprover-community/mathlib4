@@ -37,7 +37,11 @@ open Function
 
 namespace MulAction
 
-variable (M : Type u) {α : Type v} [Monoid M] [MulAction M α]
+variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α]
+
+section Orbit
+
+variable {α}
 
 /-- The orbit of an element under an action. -/
 @[to_additive "The orbit of an element under an action."]
@@ -55,8 +59,8 @@ theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x 
 #align add_action.mem_orbit_iff AddAction.mem_orbit_iff
 
 @[to_additive (attr := simp)]
-theorem mem_orbit (a : α) (x : M) : x • a ∈ orbit M a :=
-  ⟨x, rfl⟩
+theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
+  ⟨m, rfl⟩
 #align mul_action.mem_orbit MulAction.mem_orbit
 #align add_action.mem_orbit AddAction.mem_orbit
 
@@ -102,7 +106,17 @@ theorem orbit.coe_smul {a : α} {m : M} {a' : orbit M a} : ↑(m • a') = m •
 #align mul_action.orbit.coe_smul MulAction.orbit.coe_smul
 #align add_action.orbit.coe_vadd AddAction.orbit.coe_vadd
 
-variable (M) (α)
+variable (M)
+
+@[to_additive]
+theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
+  (surjective_smul M a).range_eq
+#align mul_action.orbit_eq_univ MulAction.orbit_eq_univ
+#align add_action.orbit_eq_univ AddAction.orbit_eq_univ
+
+end Orbit
+
+section FixedPoints
 
 /-- The set of elements fixed under the whole action. -/
 @[to_additive "The set of elements fixed under the whole action."]
@@ -111,6 +125,8 @@ def fixedPoints : Set α :=
 #align mul_action.fixed_points MulAction.fixedPoints
 #align add_action.fixed_points AddAction.fixedPoints
 
+variable {M}
+
 /-- `fixedBy m` is the set of elements fixed by `m`. -/
 @[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
 def fixedBy (m : M) : Set α :=
@@ -118,14 +134,16 @@ def fixedBy (m : M) : Set α :=
 #align mul_action.fixed_by MulAction.fixedBy
 #align add_action.fixed_by AddAction.fixedBy
 
+variable (M)
+
 @[to_additive]
-theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy M α m :=
+theorem fixed_eq_iInter_fixedBy : fixedPoints M α = ⋂ m : M, fixedBy α m :=
   Set.ext fun _ =>
     ⟨fun hx => Set.mem_iInter.2 fun m => hx m, fun hx m => (Set.mem_iInter.1 hx m : _)⟩
 #align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_iInter_fixedBy
 #align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_iInter_fixedBy
 
-variable {M}
+variable {M α}
 
 @[to_additive (attr := simp)]
 theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
@@ -134,7 +152,7 @@ theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a
 #align add_action.mem_fixed_points AddAction.mem_fixedPoints
 
 @[to_additive (attr := simp)]
-theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy M α m ↔ m • a = a :=
+theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
   Iff.rfl
 #align mul_action.mem_fixed_by MulAction.mem_fixedBy
 #align add_action.mem_fixed_by AddAction.mem_fixedBy
@@ -147,32 +165,6 @@ theorem mem_fixedPoints' {a : α} : a ∈ fixedPoints M α ↔ ∀ a', a' ∈ or
     fun h _ => h _ (mem_orbit _ _)⟩
 #align mul_action.mem_fixed_points' MulAction.mem_fixedPoints'
 #align add_action.mem_fixed_points' AddAction.mem_fixedPoints'
-
-variable (M) {α}
-
-/-- The stabilizer of a point `a` as a submonoid of `M`. -/
-@[to_additive "The stabilizer of m point `a` as an additive submonoid of `M`."]
-def Stabilizer.submonoid (a : α) : Submonoid M where
-  carrier := { m | m • a = a }
-  one_mem' := one_smul _ a
-  mul_mem' {m m'} (ha : m • a = a) (hb : m' • a = a) :=
-    show (m * m') • a = a by rw [← smul_smul, hb, ha]
-#align mul_action.stabilizer.submonoid MulAction.Stabilizer.submonoid
-#align add_action.stabilizer.add_submonoid AddAction.Stabilizer.addSubmonoid
-
-@[to_additive (attr := simp)]
-theorem mem_stabilizer_submonoid_iff {a : α} {m : M} : m ∈ Stabilizer.submonoid M a ↔ m • a = a :=
-  Iff.rfl
-#align mul_action.mem_stabilizer_submonoid_iff MulAction.mem_stabilizer_submonoid_iff
-#align add_action.mem_stabilizer_add_submonoid_iff AddAction.mem_stabilizer_addSubmonoid_iff
-
-@[to_additive]
-theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
-  (surjective_smul M a).range_eq
-#align mul_action.orbit_eq_univ MulAction.orbit_eq_univ
-#align add_action.orbit_eq_univ AddAction.orbit_eq_univ
-
-variable {M}
 
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
@@ -188,30 +180,56 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
 #align mul_action.mem_fixed_points_iff_card_orbit_eq_one MulAction.mem_fixedPoints_iff_card_orbit_eq_one
 #align add_action.mem_fixed_points_iff_card_orbit_eq_zero AddAction.mem_fixedPoints_iff_card_orbit_eq_one
 
+end FixedPoints
+
+section Stabilizers
+
+variable {α}
+
+/-- The stabilizer of a point `a` as a submonoid of `M`. -/
+@[to_additive "The stabilizer of a point `a` as an additive submonoid of `M`."]
+def stabilizerSubmonoid (a : α) : Submonoid M where
+  carrier := { m | m • a = a }
+  one_mem' := one_smul _ a
+  mul_mem' {m m'} (ha : m • a = a) (hb : m' • a = a) :=
+    show (m * m') • a = a by rw [← smul_smul, hb, ha]
+#align mul_action.stabilizer.submonoid MulAction.stabilizerSubmonoid
+#align add_action.stabilizer.add_submonoid AddAction.stabilizerAddSubmonoid
+
+variable {M}
+
+@[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
+
+@[to_additive (attr := simp)]
+theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid M a ↔ m • a = a :=
+  Iff.rfl
+#align mul_action.mem_stabilizer_submonoid_iff MulAction.mem_stabilizerSubmonoid_iff
+#align add_action.mem_stabilizer_add_submonoid_iff AddAction.mem_stabilizerAddSubmonoid_iff
+
+end Stabilizers
+
 end MulAction
+
+/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
+The general theory of such `k` is elaborated by `IsSMulRegular`.
+The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
+theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
+    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
+    a = b := by
+  rw [← sub_eq_zero]
+  refine' h _ _
+  rw [smul_sub, h', sub_self]
+#align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
 
 namespace MulAction
 
-variable (G : Type u) {α : Type v} [Group G] [MulAction G α]
+variable (G : Type u) [Group G] (α : Type v) [MulAction G α]
 
-/-- The stabilizer of an element under an action, i.e. what sends the element to itself.
-A subgroup. -/
-@[to_additive
-      "The stabilizer of an element under an action, i.e. what sends the element to itself.
-      An additive subgroup."]
-def stabilizer (a : α) : Subgroup G :=
-  { Stabilizer.submonoid G a with
-    inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
-#align mul_action.stabilizer MulAction.stabilizer
-#align add_action.stabilizer AddAction.stabilizer
+section Orbit
 
-variable {G}
-
-@[to_additive (attr := simp)]
-theorem mem_stabilizer_iff {g : G} {a : α} : g ∈ stabilizer G a ↔ g • a = a :=
-  Iff.rfl
-#align mul_action.mem_stabilizer_iff MulAction.mem_stabilizer_iff
-#align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
+variable {G α}
 
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
@@ -246,8 +264,6 @@ theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
 #align mul_action.orbit_eq_iff MulAction.orbit_eq_iff
 #align add_action.orbit_eq_iff AddAction.orbit_eq_iff
 
-variable (G)
-
 @[to_additive]
 theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by
   simp only [orbit_smul, mem_orbit_self]
@@ -260,7 +276,7 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
 #align mul_action.smul_mem_orbit_smul MulAction.smul_mem_orbit_smul
 #align add_action.vadd_mem_orbit_vadd AddAction.vadd_mem_orbit_vadd
 
-variable (α)
+variable (G α)
 
 /-- The relation 'in the same orbit'. -/
 @[to_additive "The relation 'in the same orbit'."]
@@ -412,7 +428,34 @@ def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
 #align mul_action.self_equiv_sigma_orbits MulAction.selfEquivSigmaOrbits
 #align add_action.self_equiv_sigma_orbits AddAction.selfEquivSigmaOrbits
 
-variable {G α}
+end Orbit
+
+section Stabilizer
+
+variable {α}
+
+/-- The stabilizer of an element under an action, i.e. what sends the element to itself.
+A subgroup. -/
+@[to_additive
+      "The stabilizer of an element under an action, i.e. what sends the element to itself.
+      An additive subgroup."]
+def stabilizer (a : α) : Subgroup G :=
+  { stabilizerSubmonoid G a with
+    inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
+#align mul_action.stabilizer MulAction.stabilizer
+#align add_action.stabilizer AddAction.stabilizer
+
+variable {G}
+
+@[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
+
+@[to_additive (attr := simp)]
+theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a = a :=
+  Iff.rfl
+#align mul_action.mem_stabilizer_iff MulAction.mem_stabilizer_iff
+#align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -432,11 +475,13 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel 
   (MulEquiv.subgroupCongr this).trans ((MulAut.conj g).subgroupMap <| stabilizer G b).symm
 #align mul_action.stabilizer_equiv_stabilizer_of_orbit_rel MulAction.stabilizerEquivStabilizerOfOrbitRel
 
+end Stabilizer
+
 end MulAction
 
 namespace AddAction
 
-variable (G : Type u) (α : Type v) [AddGroup G] [AddAction G α]
+variable (G : Type u) [AddGroup G] (α : Type v) [AddAction G α]
 
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -458,14 +503,3 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel 
 #align add_action.stabilizer_equiv_stabilizer_of_orbit_rel AddAction.stabilizerEquivStabilizerOfOrbitRel
 
 end AddAction
-
-/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
-The general theory of such `k` is elaborated by `IsSMulRegular`.
-The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
-    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
-    a = b := by
-  rw [← sub_eq_zero]
-  refine' h _ _
-  rw [smul_sub, h', sub_self]
-#align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor

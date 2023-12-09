@@ -44,10 +44,10 @@ namespace Subsemigroup
 @[to_additive]
 theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
     (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine' fun hx => closure_induction hx (fun y hy => mem_iUnion.mp hy) _
+  refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) ?_
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
@@ -56,7 +56,7 @@ theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
 
 @[to_additive]
 theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, ↑(S i) :=
+    ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
 #align subsemigroup.coe_supr_of_directed Subsemigroup.coe_iSup_of_directed
 #align add_subsemigroup.coe_supr_of_directed AddSubsemigroup.coe_iSup_of_directed

@@ -393,7 +393,10 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     refine TensorProduct.induction_on x ?_ ?_ ?_
     · simp only [smul_zero, map_zero]
     · intro x y
-      simp [smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra, h.1.equiv_tmul]
+      simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
+        TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
+        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, _root_.map_mul,
+        IsScalarTower.coe_toAlgHom']
       ring
     · intro x y hx hy
       rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
@@ -430,7 +433,7 @@ instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [Com
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomoprhism `S' → A`.
 -/
---@[simps (config := { isSimp := false }) apply] --Porting note: removed and added by hand
+--@[simps (config := .lemmasOnly) apply] --Porting note: removed and added by hand
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A := by

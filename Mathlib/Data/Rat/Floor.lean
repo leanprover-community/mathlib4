@@ -39,7 +39,7 @@ protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
 
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
-    simp [Rat.floor_def']
+    simp only [Rat.floor_def']
     rw [num_den']
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>

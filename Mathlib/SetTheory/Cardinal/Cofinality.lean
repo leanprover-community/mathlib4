@@ -1026,7 +1026,7 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (w : #α < 
 /-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
 has an infinite fiber.
 -/
-theorem exists_infinite_fiber {β α : Type _} (f : β → α) (w : #α < #β) (w' : Infinite α) :
+theorem exists_infinite_fiber {β α : Type u} (f : β → α) (w : #α < #β) (w' : Infinite α) :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
   simp_rw [Cardinal.infinite_iff] at w' ⊢
   cases' infinite_pigeonhole_card_lt f w w' with a ha

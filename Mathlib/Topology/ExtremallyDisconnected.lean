@@ -62,7 +62,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
     refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
-    rw [Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
+    rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
 end TotallySeparated

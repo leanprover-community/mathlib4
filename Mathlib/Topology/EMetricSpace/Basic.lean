@@ -3,13 +3,12 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
-#align_import topology.metric_space.emetric_space from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
+#align_import topology.metric_space.emetric_space from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Extended metric spaces
@@ -30,7 +29,9 @@ to `EMetricSpace` at the end.
 -/
 
 
-open Set Filter Classical Uniformity Topology BigOperators NNReal ENNReal
+open Set Filter Classical
+
+open scoped Uniformity Topology BigOperators Filter NNReal ENNReal Pointwise
 
 universe u v w
 
@@ -851,9 +852,9 @@ open TopologicalSpace
 
 variable (α)
 
-/-- A sigma compact pseudo emetric space has second countable topology. This is not an instance
-to avoid a loop with `sigmaCompactSpace_of_locally_compact_second_countable`.  -/
-theorem secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountableTopology α := by
+/-- A sigma compact pseudo emetric space has second countable topology. -/
+instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
+    SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
@@ -925,6 +926,12 @@ theorem diam_empty : diam (∅ : Set α) = 0 :=
 theorem diam_singleton : diam ({x} : Set α) = 0 :=
   diam_subsingleton subsingleton_singleton
 #align emetric.diam_singleton EMetric.diam_singleton
+
+@[to_additive (attr := simp)]
+theorem diam_one [One α] : diam (1 : Set α) = 0 :=
+  diam_singleton
+#align emetric.diam_one EMetric.diam_one
+#align emetric.diam_zero EMetric.diam_zero
 
 theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) :
     diam (⋃ i ∈ o, s i) = ⨆ i ∈ o, diam (s i) := by cases o <;> simp

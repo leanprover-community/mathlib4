@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MutuallySingular
 /-!
 # Dirac measure
 
@@ -62,6 +62,16 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) :=
   ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
 #align measure_theory.measure.map_dirac MeasureTheory.Measure.map_dirac
+
+lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
+  ext s hs
+  simp only [aemeasurable_const, measurable_const, smul_toOuterMeasure, OuterMeasure.coe_smul,
+    Pi.smul_apply, dirac_apply' _ hs, smul_eq_mul]
+  classical
+  rw [Measure.map_apply measurable_const hs, Set.preimage_const]
+  by_cases hsc : c ∈ s
+  · rw [(Set.indicator_eq_one_iff_mem _).mpr hsc, mul_one, if_pos hsc]
+  · rw [if_neg hsc, (Set.indicator_eq_zero_iff_not_mem _).mpr hsc, measure_empty, mul_zero]
 
 @[simp]
 theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
@@ -148,3 +158,7 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     rwa [ae_dirac_eq]
   · rw [restrict_eq_zero, dirac_apply, indicator_of_not_mem has]
 #align measure_theory.restrict_dirac MeasureTheory.restrict_dirac
+
+lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
+    Measure.dirac x ⟂ₘ μ :=
+  ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩

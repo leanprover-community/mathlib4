@@ -216,6 +216,7 @@ theorem eval₂_list_prod_noncomm (ps : List R[X])
 #align polynomial.eval₂_list_prod_noncomm Polynomial.eval₂_list_prod_noncomm
 
 /-- `eval₂` as a `RingHom` for noncommutative rings -/
+@[simps]
 def eval₂RingHom' (f : R →+* S) (x : S) (hf : ∀ a, Commute (f a) x) : R[X] →+* S where
   toFun := eval₂ f x
   map_add' _ _ := eval₂_add _ _
@@ -1245,14 +1246,6 @@ end CommSemiring
 section Ring
 
 variable [Ring R] {p q r : R[X]}
-
-theorem C_neg : C (-a) = -C a :=
-  RingHom.map_neg C a
-#align polynomial.C_neg Polynomial.C_neg
-
-theorem C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub C a b
-#align polynomial.C_sub Polynomial.C_sub
 
 @[simp]
 protected theorem map_sub {S} [Ring S] (f : R →+* S) : (p - q).map f = p.map f - q.map f :=

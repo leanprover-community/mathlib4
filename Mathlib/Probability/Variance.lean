@@ -215,7 +215,8 @@ theorem variance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Me
   · apply hX.integrable_sq.add
     convert @integrable_const Ω ℝ (_) ℙ _ _ (𝔼[X] ^ 2)
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp [integral_mul_right, integral_mul_left]
+  simp only [Pi.pow_apply, integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul,
+    Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, integral_mul_right, integral_mul_left]
   ring
 #align probability_theory.variance_def' ProbabilityTheory.variance_def'
 
@@ -271,8 +272,8 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
     simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
       NNReal.coe_le_coe, ENNReal.ofReal_coe_nnreal]
   · rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
-    simp only [show ENNReal.some (c ^ 2) = (ENNReal.some c) ^ 2 by norm_cast, coe_two, one_div,
-      Pi.sub_apply]
+    simp only [show ENNReal.ofNNReal (c ^ 2) = (ENNReal.ofNNReal c) ^ 2 by norm_cast, coe_two,
+      one_div, Pi.sub_apply]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
     congr
     simp_rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
