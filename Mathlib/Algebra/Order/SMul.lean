@@ -53,7 +53,7 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
 #align ordered_smul OrderedSMul
 
-variable {ι 𝕜 R M N : Type*}
+variable {ι α β γ 𝕜 R M N : Type*}
 
 namespace OrderDual
 
@@ -63,10 +63,35 @@ instance OrderDual.instSMulWithZero [Zero R] [AddZeroClass M] [SMulWithZero R M]
     zero_smul := fun m => OrderDual.rec (zero_smul _) m
     smul_zero := fun r => OrderDual.rec (@smul_zero R M _ _) r }
 
+@[to_additive]
 instance OrderDual.instMulAction [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
   { OrderDual.instSMul with
     one_smul := fun m => OrderDual.rec (one_smul _) m
     mul_smul := fun r => OrderDual.rec (@mul_smul R M _ _) r }
+
+@[to_additive]
+instance OrderDual.instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
+    SMulCommClass αᵒᵈ β γ := ‹SMulCommClass α β γ›
+
+@[to_additive]
+instance OrderDual.instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
+    SMulCommClass α βᵒᵈ γ := ‹SMulCommClass α β γ›
+
+@[to_additive]
+instance OrderDual.instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
+    SMulCommClass α β γᵒᵈ := ‹SMulCommClass α β γ›
+
+@[to_additive OrderDual.instVAddAssocClass]
+instance OrderDual.instIsScalarTower [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+   IsScalarTower αᵒᵈ β γ := ‹IsScalarTower α β γ›
+
+@[to_additive OrderDual.instVAddAssocClass']
+instance OrderDual.instIsScalarTower' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+    IsScalarTower α βᵒᵈ γ := ‹IsScalarTower α β γ›
+
+@[to_additive OrderDual.instVAddAssocClass'']
+instance OrderDual.IsScalarTower'' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+    IsScalarTower α β γᵒᵈ := ‹IsScalarTower α β γ›
 
 instance [MonoidWithZero R] [AddMonoid M] [MulActionWithZero R M] : MulActionWithZero R Mᵒᵈ :=
   { OrderDual.instMulAction, OrderDual.instSMulWithZero with }
@@ -98,6 +123,9 @@ variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [Ordere
     · rw [zero_smul, zero_smul]
     · exact (smul_lt_smul_of_pos hab hc).le
 #align smul_le_smul_of_nonneg smul_le_smul_of_nonneg
+
+-- TODO: Remove `smul_le_smul_of_nonneg` completely
+alias smul_le_smul_of_nonneg_left := smul_le_smul_of_nonneg
 
 theorem smul_nonneg (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c • a :=
   calc

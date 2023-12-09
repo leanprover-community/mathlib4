@@ -178,7 +178,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
   rw [aux₂]
   have mble₀ : MeasurableSet {p : α × ℝ | p.snd ∈ Ioc 0 (f p.fst)} := by
     simpa only [mem_univ, Pi.zero_apply, gt_iff_lt, not_lt, ge_iff_le, true_and] using
-      measurableSet_region_between_oc measurable_zero f_mble  MeasurableSet.univ
+      measurableSet_region_between_oc measurable_zero f_mble MeasurableSet.univ
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀
     mble₀.nullMeasurableSet
 #align measure_theory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite

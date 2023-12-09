@@ -875,13 +875,8 @@ theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn 
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
-  · simp only [const, continuous_def, piecewise_preimage]
-    intro U hU
-    by_cases hy' : y ∈ U
-    · simp [hy', h.mem_open hU hy']
-    · by_cases hx' : x ∈ U
-      · simpa [hx', hy'] using isOpen_univ.sdiff isClosed_singleton
-      · simp [hx', hy']
+  · exact isClosed_singleton.continuous_piecewise_of_specializes continuous_const continuous_const
+      fun _ ↦ h
   · simp only [Path.coe_mk_mk, piecewise]
     split_ifs <;> assumption
 

@@ -87,7 +87,7 @@ theorem Set.Finite.isClopen_biUnion {s : Set Y} {f : Y → Set X} (hs : s.Finite
 
 theorem isClopen_biUnion_finset {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
- s.finite_toSet.isClopen_biUnion  h
+ s.finite_toSet.isClopen_biUnion h
 #align is_clopen_bUnion_finset isClopen_biUnion_finset
 
 theorem isClopen_iInter_of_finite [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :

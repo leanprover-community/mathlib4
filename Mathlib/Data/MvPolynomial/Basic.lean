@@ -707,8 +707,8 @@ theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a 
 #align mv_polynomial.coeff_C_mul MvPolynomial.coeff_C_mul
 
 theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
-    coeff n (p * q) = ∑ x in antidiagonal n, coeff x.1 p * coeff x.2 q :=
-  AddMonoidAlgebra.mul_apply_antidiagonal p q _ _ mem_antidiagonal
+    coeff n (p * q) = ∑ x in Finset.antidiagonal n, coeff x.1 p * coeff x.2 q :=
+  AddMonoidAlgebra.mul_apply_antidiagonal p q _ _ Finset.mem_antidiagonal
 #align mv_polynomial.coeff_mul MvPolynomial.coeff_mul
 
 @[simp]

@@ -53,14 +53,14 @@ open AlgebraicTopology.DoldKan
 `N' : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` and the inverse
 of the equivalence `ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`. -/
 @[simps!, nolint unusedArguments]
-def N  [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
+def N [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
   N₁ ⋙ (toKaroubiEquivalence _).inverse
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.dold_kan.N CategoryTheory.Idempotents.DoldKan.N
 
 /-- The functor `Γ` for the equivalence is `Γ'`. -/
 @[simps!, nolint unusedArguments]
-def Γ  [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤ SimplicialObject C :=
+def Γ [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤ SimplicialObject C :=
   Γ₀
 #align category_theory.idempotents.dold_kan.Γ CategoryTheory.Idempotents.DoldKan.Γ
 

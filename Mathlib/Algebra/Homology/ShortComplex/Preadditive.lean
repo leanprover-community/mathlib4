@@ -158,7 +158,7 @@ lemma cyclesMap_add : cyclesMap (φ + φ') = cyclesMap φ + cyclesMap φ' :=
 
 @[simp]
 lemma leftHomologyMap_sub : leftHomologyMap (φ - φ') = leftHomologyMap φ - leftHomologyMap φ' :=
-  leftHomologyMap'_sub  _ _
+  leftHomologyMap'_sub _ _
 
 @[simp]
 lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
@@ -269,7 +269,7 @@ lemma opcyclesMap_add : opcyclesMap (φ + φ') = opcyclesMap φ + opcyclesMap φ
 @[simp]
 lemma rightHomologyMap_sub :
     rightHomologyMap (φ - φ') = rightHomologyMap φ - rightHomologyMap φ' :=
-  rightHomologyMap'_sub  _ _
+  rightHomologyMap'_sub _ _
 
 @[simp]
 lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ' :=
@@ -342,7 +342,7 @@ lemma homologyMap_add : homologyMap (φ + φ')  = homologyMap φ + homologyMap �
 
 @[simp]
 lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ' :=
-  homologyMap'_sub  _ _
+  homologyMap'_sub _ _
 
 end
 

@@ -226,7 +226,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
 #align complex.of_real_add Complex.ofReal_add
 
 @[simp, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ)  :=
+theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ) :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.ofReal_bit0
 
@@ -1123,6 +1123,14 @@ theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
 theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by
   simpa using @abs_re_lt_abs (z * I)
 #align complex.abs_im_lt_abs Complex.abs_im_lt_abs
+
+@[simp]
+lemma abs_re_eq_abs {z : ℂ} : |z.re| = abs z ↔ z.im = 0 :=
+  not_iff_not.1 <| (abs_re_le_abs z).lt_iff_ne.symm.trans abs_re_lt_abs
+
+@[simp]
+lemma abs_im_eq_abs {z : ℂ} : |z.im| = abs z ↔ z.re = 0 :=
+  not_iff_not.1 <| (abs_im_le_abs z).lt_iff_ne.symm.trans abs_im_lt_abs
 
 @[simp]
 theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=

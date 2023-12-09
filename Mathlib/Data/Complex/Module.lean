@@ -479,7 +479,7 @@ lemma IsSelfAdjoint.coe_realPart {x : A} (hx : IsSelfAdjoint x) :
     (ℜ x : A) = x :=
   hx.coe_selfAdjointPart_apply ℝ
 
-lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
+nonrec lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
     ℑ x = 0 := by
   rw [imaginaryPart, LinearMap.comp_apply, hx.skewAdjointPart_apply _, map_zero]
 

@@ -199,7 +199,6 @@ theorem toΓSpecSheafedSpace_app_eq :
   dsimp at this
   rw [←this]
   dsimp
-  congr
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 

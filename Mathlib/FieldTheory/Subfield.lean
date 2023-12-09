@@ -418,7 +418,7 @@ instance toAlgebra : Algebra s K :=
 #align subfield.to_algebra Subfield.toAlgebra
 
 @[simp]
-theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K)  :=
+theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=
   rfl
 #align subfield.coe_subtype Subfield.coe_subtype
 

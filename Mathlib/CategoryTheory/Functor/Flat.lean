@@ -184,8 +184,6 @@ theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 #align category_theory.preserves_finite_limits_of_flat.fac CategoryTheory.PreservesFiniteLimitsOfFlat.fac
 
-attribute [local simp] eqToHom_map
-
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
@@ -208,7 +206,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    simpa (config := {zeta := false}) using e₁.symm.trans e₂
+    convert e₁.symm.trans e₂ <;> simp
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1

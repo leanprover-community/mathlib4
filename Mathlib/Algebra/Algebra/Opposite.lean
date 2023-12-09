@@ -153,7 +153,7 @@ theorem toRingEquiv_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toRingEquiv = RingEquiv.op f.toRingEquiv :=
   rfl
 
-/-- The 'unopposite' of an algebra iso  `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
+/-- The 'unopposite' of an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
 abbrev unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ A ≃ₐ[R] B := AlgEquiv.op.symm
 
 theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=

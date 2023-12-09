@@ -88,12 +88,11 @@ instance : CompleteLattice (IntermediateField F E) where
 instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
-theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) :=
-  Algebra.coe_bot
+theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
 #align intermediate_field.coe_bot IntermediateField.coe_bot
 
 theorem mem_bot {x : E} : x ∈ (⊥ : IntermediateField F E) ↔ x ∈ Set.range (algebraMap F E) :=
-  Algebra.mem_bot
+  Iff.rfl
 #align intermediate_field.mem_bot IntermediateField.mem_bot
 
 @[simp]
@@ -260,10 +259,8 @@ def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
 
 @[simp]
 theorem restrictScalars_bot_eq_self (K : IntermediateField F E) :
-    (⊥ : IntermediateField K E).restrictScalars _ = K := by
-  ext x
-  rw [mem_restrictScalars, mem_bot];
-  exact Set.ext_iff.mp Subtype.range_coe x
+    (⊥ : IntermediateField K E).restrictScalars _ = K :=
+  SetLike.coe_injective Subtype.range_coe
 #align intermediate_field.restrict_scalars_bot_eq_self IntermediateField.restrictScalars_bot_eq_self
 
 @[simp]

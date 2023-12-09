@@ -607,7 +607,7 @@ theorem le_op_norm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL
 
 -- porting note: new theorem
 theorem le_of_op_norm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
-    {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c)  :
+    {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c) :
     ‖f x y‖ ≤ a * b * c :=
   (f x).le_of_op_norm_le_of_le (f.le_of_op_norm_le_of_le hf hx) hy
 
@@ -1180,7 +1180,7 @@ class _root_.RegularNormedAlgebra : Prop :=
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
 instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜'  where
+    [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜' where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 𝕜') <|
     fun x => le_antisymm (op_norm_mul_apply_le _ _ _) <| by
       convert ratio_le_op_norm ((mul 𝕜 𝕜') x) (1 : 𝕜')

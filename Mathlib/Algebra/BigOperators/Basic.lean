@@ -278,9 +278,11 @@ theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → �
 #align monoid_hom.coe_finset_prod MonoidHom.coe_finset_prod
 #align add_monoid_hom.coe_finset_sum AddMonoidHom.coe_finset_sum
 
--- See also `Finset.prod_apply`, with the same conclusion
--- but with the weaker hypothesis `f : α → β → γ`.
-@[to_additive (attr := simp)]
+/-- See also `Finset.prod_apply`, with the same conclusion but with the weaker hypothesis
+`f : α → β → γ` -/
+@[to_additive (attr := simp)
+  "See also `Finset.sum_apply`, with the same conclusion but with the weaker hypothesis
+  `f : α → β → γ`"]
 theorem MonoidHom.finset_prod_apply [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α)
     (b : β) : (∏ x in s, f x) b = ∏ x in s, f x b :=
   (MonoidHom.eval b).map_prod _ _

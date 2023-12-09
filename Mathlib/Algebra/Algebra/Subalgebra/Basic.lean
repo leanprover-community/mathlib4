@@ -352,6 +352,9 @@ theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 theorem coe_toSubmodule (S : Subalgebra R A) : (toSubmodule S : Set A) = S := rfl
 #align subalgebra.coe_to_submodule Subalgebra.coe_toSubmodule
 
+theorem toSubmodule_injective : Function.Injective (toSubmodule : Subalgebra R A → Submodule R A) :=
+  fun _S₁ _S₂ h => SetLike.ext (SetLike.ext_iff.mp h :)
+
 section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
@@ -780,8 +783,10 @@ protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) w
   choice_eq _ _ := Subalgebra.copy_eq _ _ _
 #align algebra.gi Algebra.gi
 
-instance : CompleteLattice (Subalgebra R A) :=
-  GaloisInsertion.liftCompleteLattice Algebra.gi
+instance : CompleteLattice (Subalgebra R A) where
+  __ := GaloisInsertion.liftCompleteLattice Algebra.gi
+  bot := (Algebra.ofId R A).range
+  bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
 @[simp]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
@@ -895,21 +900,14 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
-theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) :=
-  suffices (ofId R A).range = (⊥ : Subalgebra R A) by
-    rw [← this, ← SetLike.mem_coe, AlgHom.coe_range]
-    rfl
-  le_bot_iff.mp fun x hx => Subalgebra.range_le _ ((ofId R A).coe_range ▸ hx)
+theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 #align algebra.mem_bot Algebra.mem_bot
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = R ∙ 1 := by
-  ext x
-  simp [mem_bot, Submodule.mem_span_singleton, Algebra.smul_def]
+theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 := rfl
 #align algebra.to_submodule_bot Algebra.toSubmodule_bot
 
 @[simp]
-theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := by
-  simp [Set.ext_iff, Algebra.mem_bot]
+theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 #align algebra.coe_bot Algebra.coe_bot
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
@@ -934,8 +932,7 @@ theorem map_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R A).map f = f.range :=
 
 @[simp]
 theorem map_bot (f : A →ₐ[R] B) : (⊥ : Subalgebra R A).map f = ⊥ :=
-  SetLike.coe_injective <| by
-    simp only [← Set.range_comp, (· ∘ ·), Algebra.coe_bot, Subalgebra.coe_map, f.commutes]
+  Subalgebra.toSubmodule_injective <| Submodule.map_one _
 #align algebra.map_bot Algebra.map_bot
 
 @[simp]
@@ -968,9 +965,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, hy⟩ =>
-        let ⟨x, hx⟩ := Algebra.mem_bot.1 hy
-        ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
 #align algebra.bot_equiv_of_injective Algebra.botEquivOfInjective
 
 /-- The bottom subalgebra is isomorphic to the field. -/

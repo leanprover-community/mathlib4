@@ -7,6 +7,9 @@ import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Order
@@ -459,6 +462,26 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
     pure (.nonzero q(Int.cast_ne_zero.mpr $pa))
   | .none =>
     pure .none
+
+/-- Extension for Rat.cast. -/
+@[positivity Rat.cast _]
+def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+  let _rα : Q(RatCast $α) ← synthInstanceQ (q(RatCast $α))
+  let ~q(Rat.cast ($a : ℚ)) := e | throwError "not Rat.cast"
+  let zα' : Q(Zero ℚ) := q(inferInstance)
+  let pα' : Q(PartialOrder ℚ) := q(inferInstance)
+  match ← core zα' pα' a with
+  | .positive pa =>
+    let _oα ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u))
+    pure (.positive (q((Rat.cast_pos (K := $α)).mpr $pa) : Expr))
+  | .nonnegative pa =>
+    let _oα ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u))
+    pure (.nonnegative (q((Rat.cast_nonneg (K := $α)).mpr $pa) : Expr))
+  | .nonzero pa =>
+    let _oα ← synthInstanceQ (q(DivisionRing $α) : Q(Type u))
+    let _cα ← synthInstanceQ (q(CharZero $α) : Q(Prop))
+    pure (.nonzero (q((Rat.cast_ne_zero (α := $α)).mpr $pa) : Expr))
+  | .none => pure .none
 
 /-- Extension for Nat.succ. -/
 @[positivity Nat.succ _]
