@@ -41,7 +41,7 @@ noncomputable section
 
 universe u v v'
 
-variable (R : Type u) [Ring R] (Q : TypeMax.{v,u}) [AddCommGroup Q] [Module R Q]
+variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
 
 /--
 An `R`-module `Q` is injective if and only if every injective `R`-linear map descends to a linear
@@ -56,35 +56,33 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   ```
 -/
 class Module.Injective : Prop where
-  out : ∀ (X Y : TypeMax.{v,u}) [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
+  out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
 #align module.injective Module.Injective
 
 -- Porting note: egregious max u v abuse
-theorem Module.injective_object_of_injective_module [Module.Injective.{u, v} R Q] :
-    CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R) :=
-  { factors := fun g f mn => by
-      rcases Module.Injective.out _ _ f ((ModuleCat.mono_iff_injective f).mp mn) g with ⟨h, eq1⟩
-      exact ⟨h, LinearMap.ext eq1⟩ }
+theorem Module.injective_object_of_injective_module [inj : Module.Injective R Q] :
+    CategoryTheory.Injective (ModuleCat.of R Q) where
+  factors g f m :=
+    have ⟨l, h⟩ := inj.out f ((ModuleCat.mono_iff_injective f).mp m) g
+    ⟨l, LinearMap.ext h⟩
 #align module.injective_object_of_injective_module Module.injective_object_of_injective_module
 
 theorem Module.injective_module_of_injective_object
-    [CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R)] :
-    Module.Injective.{u, v} R Q :=
-  { out := fun X Y ins1 ins2 ins3 ins4 f hf g => by
-      skip
-      rcases@CategoryTheory.Injective.factors (ModuleCat R) _ ⟨Q⟩ _ ⟨X⟩ ⟨Y⟩ g f
-          ((ModuleCat.mono_iff_injective _).mpr hf) with
-        ⟨h, rfl⟩
-      exact ⟨h, fun x => rfl⟩ }
+    [inj : CategoryTheory.Injective <| ModuleCat.of R Q] :
+    Module.Injective R Q where
+  out X Y _ _ _ _ f hf g := by
+    have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
+    obtain ⟨l, rfl⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
+    refine ⟨l, fun _ ↦ rfl⟩
 #align module.injective_module_of_injective_object Module.injective_module_of_injective_object
 
 theorem Module.injective_iff_injective_object :
-    Module.Injective.{u, v} R Q ↔
-      CategoryTheory.Injective.{max u v} (⟨Q⟩ : ModuleCat.{max u v} R) :=
-  ⟨fun h => @Module.injective_object_of_injective_module R _ Q _ _ h, fun h =>
-    @Module.injective_module_of_injective_object R _ Q _ _ h⟩
+    Module.Injective R Q ↔
+    CategoryTheory.Injective (ModuleCat.of R Q) :=
+  ⟨fun _ => injective_object_of_injective_module R Q,
+   fun _ => injective_module_of_injective_object R Q⟩
 #align module.injective_iff_injective_object Module.injective_iff_injective_object
 
 /-- An `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an `Ideal R` extends to
@@ -96,7 +94,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Module.Baer
 
-variable {R Q} {M N : Type max u v} [AddCommGroup M] [AddCommGroup N]
+variable {R Q} {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
@@ -465,7 +463,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
-protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦
+protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦ by
   let ⟨g', hg'⟩ := inj.1 (ULift.{max u v} I) (ULift.{max u v} R)
     (ULift.moduleEquiv.symm.toLinearMap ∘ₗ I.subtype ∘ₗ ULift.moduleEquiv.toLinearMap)
     (fun a b h ↦ by aesop) (g ∘ₗ ULift.moduleEquiv.toLinearMap)
@@ -479,8 +477,9 @@ end Module.Baer
 section ULift
 
 lemma Module.ulift_injective_of_injective
-    {M : Type max u v} [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
-    Module.Injective.{u, max v v'} R (ULift.{max v v' u} M) := by
+    {M : Type v} [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
+    Module.Injective.{u, max v v'} R (ULift.{max v v'} M) where
+  out X Y _ _ _ _ f hf g := by
   rw [← Module.Baer.iff_injective] at inj ⊢
   intro I g
   obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
