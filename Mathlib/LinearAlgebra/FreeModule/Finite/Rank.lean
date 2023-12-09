@@ -300,8 +300,8 @@ noncomputable def FiniteDimensional.finBasis [Module.Free R V] [Module.Finite R 
 #align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V] {n : ℕ}
-    (hn : finrank R V = n) :
+noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V]
+    {n : ℕ} (hn : finrank R V = n) :
     Basis (Fin n) R V :=
   (finBasis R V).reindex (Fin.castIso hn).toEquiv
 #align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
