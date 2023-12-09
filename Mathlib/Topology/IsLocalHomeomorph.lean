@@ -15,12 +15,19 @@ This file defines local homeomorphisms.
 
 ## Main definitions
 
-* `IsLocalHomeomorph`: A function `f : X → Y` satisfies `IsLocalHomeomorph` if for each
-  point `x : X`, the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
+For a function `f : X → Y ` between topological spaces, we say
+* `IsLocalHomeomorphOn f s` if `f` is a local homeomorphism on `s`: for each `x : X`,
+  the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
   between `U` and an open subset of `Y`.
+* `IsLocalHomeomorph f`: `f` is a local homeomorphism, i.e. it's a local homeomorphism on `univ`.
 
-  Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
-  `PartialHomeomorph`, which is a homeomorphism between specific open subsets.
+Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
+`PartialHomeomorph`, which is a homeomorphism between specific open subsets.
+
+## Main results
+* local homeomorphisms are locally injective open maps
+* more!
+
 -/
 
 
