@@ -34,14 +34,10 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
   simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
-  have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
-  simp only [rpow_one] at h
-  have h' : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := tendsto_log_mul_nhds_zero_left
-  refine ⟨⟨h', h⟩, ?_⟩ -- ⊢ Filter.Tendsto (fun x ↦ log x * x) (pure 0) (𝓝 0)
-  rw [Filter.tendsto_pure_left, mul_zero]
-  intro s hs
-  obtain ⟨t, hts, _, h_zero_mem⟩ := mem_nhds_iff.mp hs
-  exact hts h_zero_mem
+  refine ⟨⟨tendsto_log_mul_nhds_zero_left, ?_⟩, ?_⟩
+  · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
+  · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
+    simp
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
@@ -57,9 +53,7 @@ lemma deriv2_mul_log {x : ℝ} (hx : x ≠ 0) : deriv^[2] (fun x ↦ x * log x) 
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
     refine (Filter.EventuallyEq.deriv_eq this).trans ?_
     rw [deriv_add_const, deriv_log x]
-  suffices ∀ᶠ y in (𝓝 x), y ≠ 0 by
-    filter_upwards [this] with y hy
-    exact deriv_mul_log hy
+  suffices ∀ᶠ y in (𝓝 x), y ≠ 0 by filter_upwards [this] with y hy using deriv_mul_log hy
   exact eventually_ne_nhds hx
 
 lemma strictConvexOn_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
