@@ -125,7 +125,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def inclusion {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
   toFun := _
   continuous_toFun := continuous_subtype_val

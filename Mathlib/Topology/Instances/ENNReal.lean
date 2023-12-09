@@ -349,7 +349,7 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a �
     | top =>
       simp only [ne_eq, or_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]
-        using (ht a ha).comp (continuous_swap.tendsto (some a, ⊤))
+        using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ⊤))
     | coe b =>
       simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, (· ∘ ·), tendsto_mul]
 #align ennreal.tendsto_mul ENNReal.tendsto_mul

@@ -210,7 +210,7 @@ theorem get_one (h : (1 : PartENat).Dom) : (1 : PartENat).get h = 1 :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (no_index (OfNat.ofNat x: PartENat)).Dom) :
+theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (no_index (OfNat.ofNat x : PartENat)).Dom) :
     Part.get (no_index (OfNat.ofNat x : PartENat)) h = (no_index (OfNat.ofNat x)) :=
   get_natCast' x h
 

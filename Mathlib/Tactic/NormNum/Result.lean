@@ -443,4 +443,22 @@ def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
 def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) : Result q(Prop) :=
   Result'.isBool b prf
 
+/-- If `a = b` and we can evaluate `b`, then we can evaluate `a`. -/
+def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b → Result a
+  | .isBool true proof =>
+    have a : Q(Prop) := a
+    have b : Q(Prop) := b
+    have eq : Q($a = $b) := eq
+    have proof : Q($b) := proof
+    Result.isTrue (x := a) q($eq ▸ $proof)
+  | .isBool false proof =>
+    have a : Q(Prop) := a
+    have b : Q(Prop) := b
+    have eq : Q($a = $b) := eq
+    have proof : Q(¬ $b) := proof
+   Result.isFalse (x := a) q($eq ▸ $proof)
+  | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
+  | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
+  | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
+
 end Meta.NormNum

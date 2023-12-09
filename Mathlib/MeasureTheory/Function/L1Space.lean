@@ -266,7 +266,7 @@ theorem hasFiniteIntegral_norm_iff (f : α → β) :
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : (∫⁻ x, f x ∂μ) ≠ ∞) :
     HasFiniteIntegral (fun x => (f x).toReal) μ := by
   have :
-    ∀ x, (‖(f x).toReal‖₊ : ℝ≥0∞) = ENNReal.some ⟨(f x).toReal, ENNReal.toReal_nonneg⟩ := by
+      ∀ x, (‖(f x).toReal‖₊ : ℝ≥0∞) = ENNReal.ofNNReal ⟨(f x).toReal, ENNReal.toReal_nonneg⟩ := by
     intro x
     rw [Real.nnnorm_of_nonneg]
   simp_rw [HasFiniteIntegral, this]

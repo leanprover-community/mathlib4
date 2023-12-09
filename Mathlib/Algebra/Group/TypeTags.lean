@@ -128,9 +128,9 @@ instance [Finite α] : Finite (Additive α) :=
 instance [Finite α] : Finite (Multiplicative α) :=
   Finite.of_equiv α (by rfl)
 
-instance [h: Infinite α] : Infinite (Additive α) := h
+instance [h : Infinite α] : Infinite (Additive α) := h
 
-instance [h: Infinite α] : Infinite (Multiplicative α) := h
+instance [h : Infinite α] : Infinite (Multiplicative α) := h
 
 instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
 
