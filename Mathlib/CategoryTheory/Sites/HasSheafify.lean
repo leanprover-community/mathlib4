@@ -14,12 +14,16 @@ Given a site `(C, J)` we define a typeclass `HasSheaf J A` saying that the inc
 `A`-valued sheaves on `C` to presheaves admits a left adjoint (sheafification).
 -/
 
+universe v₁ v₂ u₁ u₂
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-variable (A : Type*) [Category A]
+variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
+variable (A : Type u₂) [Category.{v₂} A]
+
+#check Sheaf J A
 
 /--
 `HasWeakSheafify` means that the inclusion functor from sheaves to presheaves admits a
