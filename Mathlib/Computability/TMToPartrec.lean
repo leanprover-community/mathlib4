@@ -1536,7 +1536,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     simp only [Option.mem_def, TM2.stepAux, elim_main, decide_False, elim_update_main, ne_eq,
       Function.update_noteq, elim_rev, elim_update_rev, decide_True, Function.update_same,
       cond_true, cond_false]
-    convert unrev_ok using 2
+    convert unrev_ok using 1
     simp only [elim_update_rev, elim_rev, elim_main, List.reverseAux_nil, elim_update_main]
     rfl
   simp only [trNum, Num.succ, Num.succ']
@@ -1686,7 +1686,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       · simp
       rw [trList, List.headI, trNat, Nat.cast_succ, Num.add_one, Num.succ, List.tail]
       cases (n : Num).succ' <;> exact ⟨rfl, rfl⟩
-    by_cases v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
+    by_cases h : v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
     · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
       refine' ⟨c, h₁, TransGen.head rfl _⟩
       simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,
