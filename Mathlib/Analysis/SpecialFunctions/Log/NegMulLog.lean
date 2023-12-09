@@ -111,6 +111,11 @@ lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1
   rw [negMulLog_eq_neg, deriv.neg, deriv_mul_log hx]
   ring
 
+lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- log x - 1) x := by
+  rw [← deriv_negMulLog hx, hasDerivAt_deriv_iff]
+  refine DifferentiableOn.differentiableAt differentiableOn_negMulLog ?_
+  simp [hx]
+
 lemma deriv2_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log hx
