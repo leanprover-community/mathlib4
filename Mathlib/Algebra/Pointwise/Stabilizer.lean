@@ -63,7 +63,7 @@ variable [DecidableEq α]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_coe_finset (s : Finset α) : stabilizer G (s : Set α) = stabilizer G s := by
-  ext; simp [←Finset.coe_inj]
+  ext; simp [← Finset.coe_inj]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_finset_empty : stabilizer G (∅ : Finset α) = ⊤ :=
