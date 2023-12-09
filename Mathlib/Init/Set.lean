@@ -183,6 +183,12 @@ def delabSetInf : Delab := whenPPOption Lean.getPPNotation do
   let y ← SubExpr.withAppFn <| SubExpr.withAppArg delab
   `($x ∩ $y)
 
+@[delab app.Bot.bot]
+def delabSetBot : Delab := whenPPOption Lean.getPPNotation do
+  let #[α, _] := (← SubExpr.getExpr).getAppArgs | failure
+  guard <| α.isAppOf ``Set
+  `(∅)
+
 end delab
 
 protected def compl (s : Set α) : Set α := {a | a ∉ s}
