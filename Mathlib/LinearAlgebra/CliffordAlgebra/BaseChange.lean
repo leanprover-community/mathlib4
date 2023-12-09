@@ -43,7 +43,8 @@ namespace CliffordAlgebra
 variable (A)
 
 /-- Auxiliary construction: note this is really just a heterobasic `CliffordAlgebra.map`. -/
-def ofBaseChangeAux (Q : QuadraticForm R V) :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
   CliffordAlgebra.lift Q <| by
     refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => ?_⟩
@@ -57,7 +58,8 @@ def ofBaseChangeAux (Q : QuadraticForm R V) :
 
 /-- Convert from the base-changed clifford algebra to the clifford algebra over a base-changed
 module. -/
-def ofBaseChange (Q : QuadraticForm R V) :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def ofBaseChange (Q : QuadraticForm R V) :
     A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (TensorProduct.AlgebraTensorModule.lift <|
@@ -88,7 +90,8 @@ def ofBaseChange (Q : QuadraticForm R V) :
 
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
-def toBaseChange (Q : QuadraticForm R V) :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def toBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
     refine ⟨TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q), ?_⟩
@@ -192,7 +195,8 @@ base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R C�
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]
-def equivBaseChange (Q : QuadraticForm R V) :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def equivBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) ≃ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   AlgEquiv.ofAlgHom (toBaseChange A Q) (ofBaseChange A Q)
     (toBaseChange_comp_ofBaseChange A Q)

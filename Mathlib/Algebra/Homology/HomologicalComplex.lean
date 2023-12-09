@@ -98,7 +98,7 @@ def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
 
 @[simp]
 lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
-  K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
+    K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}

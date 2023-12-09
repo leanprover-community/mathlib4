@@ -939,7 +939,7 @@ def IsCaratheodory (s : Set α) : Prop :=
 #align measure_theory.outer_measure.is_caratheodory MeasureTheory.OuterMeasure.IsCaratheodory
 
 theorem isCaratheodory_iff_le' {s : Set α} :
-  IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
+    IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
     forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| le_inter_add_diff _
 #align measure_theory.outer_measure.is_caratheodory_iff_le' MeasureTheory.OuterMeasure.isCaratheodory_iff_le'
 
@@ -1623,7 +1623,7 @@ theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun
 #align measure_theory.outer_measure.trim_mono MeasureTheory.OuterMeasure.trim_mono
 
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
-  m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s := by
+    m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s := by
     let me := extend (fun s (_p : MeasurableSet s) => measureOf m₂ s)
     have me_empty : me ∅ = 0 := by apply extend_empty; simp; simp
     have : m₁ ≤ OuterMeasure.ofFunction me me_empty ↔
@@ -1758,7 +1758,7 @@ theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.tri
 /-- `trim` sends the supremum of a countable family of outer measures to the supremum
 of the trimmed measures. -/
 theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
-  trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
+    trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
     simp_rw [← @iSup_plift_down _ ι]
     ext1 s
     obtain ⟨t, _, _, hμt⟩ :=

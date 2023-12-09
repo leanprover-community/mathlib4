@@ -739,7 +739,7 @@ protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
 #align nat.find_min' Nat.find_min'
 
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
-  ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
   induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
   | zero => assumption

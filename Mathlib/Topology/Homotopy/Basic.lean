@@ -565,6 +565,10 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P
   ⟨h.some.symm⟩
 #align continuous_map.homotopic_with.symm ContinuousMap.HomotopicWith.symm
 
+-- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
+-- the `trans` tactic could not use it.
+-- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- It could be restored by changing the argument order to `HomotopicWith P f g`.
 @[trans]
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :
     HomotopicWith f h P :=

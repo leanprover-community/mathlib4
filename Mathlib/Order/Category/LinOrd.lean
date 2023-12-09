@@ -3,14 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Category.LatCat
+import Mathlib.Order.Category.Lat
 
 #align_import order.category.LinOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # Category of linear orders
 
-This defines `LinOrdCat`, the category of linear orders with monotone maps.
+This defines `LinOrd`, the category of linear orders with monotone maps.
 -/
 
 
@@ -19,53 +19,53 @@ open CategoryTheory
 universe u
 
 /-- The category of linear orders. -/
-def LinOrdCat :=
+def LinOrd :=
   Bundled LinearOrder
 set_option linter.uppercaseLean3 false in
-#align LinOrd LinOrdCat
+#align LinOrd LinOrd
 
-namespace LinOrdCat
+namespace LinOrd
 
 instance : BundledHom.ParentProjection @LinearOrder.toPartialOrder :=
   ⟨⟩
 
-deriving instance LargeCategory for LinOrdCat
+deriving instance LargeCategory for LinOrd
 
 -- Porting note: Probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory LinOrdCat :=
+instance : ConcreteCategory LinOrd :=
   BundledHom.concreteCategory _
 
-instance : CoeSort LinOrdCat (Type*) :=
+instance : CoeSort LinOrd Type* :=
   Bundled.coeSort
 
-/-- Construct a bundled `LinOrdCat` from the underlying type and typeclass. -/
-def of (α : Type*) [LinearOrder α] : LinOrdCat :=
+/-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+def of (α : Type*) [LinearOrder α] : LinOrd :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
-#align LinOrd.of LinOrdCat.of
+#align LinOrd.of LinOrd.of
 
 @[simp]
 theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align LinOrd.coe_of LinOrdCat.coe_of
+#align LinOrd.coe_of LinOrd.coe_of
 
-instance : Inhabited LinOrdCat :=
+instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
 
-instance (α : LinOrdCat) : LinearOrder α :=
+instance (α : LinOrd) : LinearOrder α :=
   α.str
 
-instance hasForgetToLatCat : HasForget₂ LinOrdCat LatCat where
+instance hasForgetToLat : HasForget₂ LinOrd Lat where
   forget₂ :=
-    { obj := fun X => LatCat.of X
+    { obj := fun X => Lat.of X
       map := fun {X Y} (f : OrderHom _ _) => OrderHomClass.toLatticeHom X Y f }
 set_option linter.uppercaseLean3 false in
-#align LinOrd.has_forget_to_Lat LinOrdCat.hasForgetToLatCat
+#align LinOrd.has_forget_to_Lat LinOrd.hasForgetToLat
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : LinOrdCat.{u}} (e : α ≃o β) : α ≅ β where
+def Iso.mk {α β : LinOrd.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : OrderHom _ _)
   inv := (e.symm : OrderHom _ _)
   hom_inv_id := by
@@ -75,30 +75,30 @@ def Iso.mk {α β : LinOrdCat.{u}} (e : α ≃o β) : α ≅ β where
     ext x
     exact e.apply_symm_apply x
 set_option linter.uppercaseLean3 false in
-#align LinOrd.iso.mk LinOrdCat.Iso.mk
+#align LinOrd.iso.mk LinOrd.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
-def dual : LinOrdCat ⥤ LinOrdCat where
+def dual : LinOrd ⥤ LinOrd where
   obj X := of Xᵒᵈ
   map := OrderHom.dual
 set_option linter.uppercaseLean3 false in
-#align LinOrd.dual LinOrdCat.dual
+#align LinOrd.dual LinOrd.dual
 
-/-- The equivalence between `LinOrdCat` and itself induced by `OrderDual` both ways. -/
+/-- The equivalence between `LinOrd` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
-def dualEquiv : LinOrdCat ≌ LinOrdCat where
+def dualEquiv : LinOrd ≌ LinOrd where
   functor := dual
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
-#align LinOrd.dual_equiv LinOrdCat.dualEquiv
+#align LinOrd.dual_equiv LinOrd.dualEquiv
 
-end LinOrdCat
+end LinOrd
 
-theorem linOrdCat_dual_comp_forget_to_latCat :
-    LinOrdCat.dual ⋙ forget₂ LinOrdCat LatCat = forget₂ LinOrdCat LatCat ⋙ LatCat.dual :=
+theorem linOrd_dual_comp_forget_to_Lat :
+    LinOrd.dual ⋙ forget₂ LinOrd Lat = forget₂ LinOrd Lat ⋙ Lat.dual :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align LinOrd_dual_comp_forget_to_Lat linOrdCat_dual_comp_forget_to_latCat
+#align LinOrd_dual_comp_forget_to_Lat linOrd_dual_comp_forget_to_Lat

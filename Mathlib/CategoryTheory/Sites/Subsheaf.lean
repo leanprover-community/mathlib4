@@ -143,7 +143,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
 
 @[reassoc (attr := simp)]
 theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
-  G.lift f hf ≫ G.ι = f := by
+    G.lift f hf ≫ G.ι = f := by
   ext
   rfl
 #align category_theory.grothendieck_topology.subpresheaf.lift_ι CategoryTheory.GrothendieckTopology.Subpresheaf.lift_ι

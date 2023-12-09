@@ -26,7 +26,7 @@ variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n
 index `k` such that `μ` lies in the closed ball of center the diagonal term `A k k` and of
 radius the sum of the norms `∑ j ≠ k, ‖A k j‖. -/
 theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
-      ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) := by
+    ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) := by
   cases isEmpty_or_nonempty n
   · exfalso
     exact hμ (Submodule.eq_bot_of_subsingleton _)

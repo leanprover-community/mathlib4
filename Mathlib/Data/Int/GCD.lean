@@ -499,6 +499,12 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
   exact coe_nat_dvd_left.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
 #align int.lcm_dvd Int.lcm_dvd
 
+theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]
+
+theorem lcm_mul_right {m n k : ℤ} : (m * n).lcm (k * n) = m.lcm k * natAbs n := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_right]
+
 end Int
 
 @[to_additive gcd_nsmul_eq_zero]

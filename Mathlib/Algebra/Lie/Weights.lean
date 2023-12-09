@@ -244,11 +244,10 @@ theorem isNilpotent_toEndomorphism_weightSpace_zero [LieAlgebra.IsNilpotent R L]
   exact hk hm
 #align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEndomorphism_weightSpace_zero
 
-/-- By Engel's theorem, when the Lie algebra is Noetherian, the zero weight space of a Noetherian
-Lie module is nilpotent. -/
-instance [LieAlgebra.IsNilpotent R L] [IsNoetherian R L] [IsNoetherian R M] :
+/-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
+instance [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
     IsNilpotent R L (weightSpace M (0 : L → R)) :=
-  isNilpotent_iff_forall.mpr <| isNilpotent_toEndomorphism_weightSpace_zero M
+  isNilpotent_iff_forall'.mpr <| isNilpotent_toEndomorphism_weightSpace_zero M
 
 end LieModule
 

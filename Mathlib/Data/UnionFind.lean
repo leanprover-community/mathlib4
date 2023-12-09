@@ -79,11 +79,11 @@ theorem mk' {arr : Array α} {f : α → β} {n} {g : Fin n → β}
     have : (fun i ↦ f (arr.get i)) = g := by funext ⟨i, h⟩; apply H
     cases this; constructor
 
-theorem size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) :
-  n = arr.size := by cases H; rfl
+theorem size_eq {arr : Array α} {m : Fin n → β} (H : Agrees arr f m) : n = arr.size := by
+  cases H; rfl
 
 theorem get_eq {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m) :
-  ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = m ⟨i, h₂⟩ := by
+    ∀ i h₁ h₂, f (arr.get ⟨i, h₁⟩) = m ⟨i, h₂⟩ := by
   cases H; exact fun i h _ ↦ rfl
 
 theorem get_eq' {arr : Array α} {m : Fin arr.size → β} (H : Agrees arr f m)
@@ -123,7 +123,7 @@ def UFModel.Models (arr : Array (UFNode α)) {n} (m : UFModel n) :=
 namespace UFModel.Models
 
 theorem size_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) :
-  n = arr.size := H.1.size_eq
+    n = arr.size := H.1.size_eq
 
 theorem parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
   (i : Nat) (h₁ : i < arr.size) (h₂) : arr[i].parent = m.parent ⟨i, h₂⟩ := H.1.get_eq ..
@@ -190,7 +190,7 @@ def rankMaxAux (self : UnionFind α) : ∀ (i : Nat),
 def rankMax (self : UnionFind α) := (rankMaxAux self self.size).1 + 1
 
 theorem lt_rankMax' (self : UnionFind α) (i : Fin self.size) :
-  (self.arr.get i).rank < self.rankMax :=
+    (self.arr.get i).rank < self.rankMax :=
   Nat.lt_succ.2 $ (rankMaxAux self self.size).2 _ i.2 _
 
 theorem lt_rankMax (self : UnionFind α) (i : Nat) : self.rank i < self.rankMax := by

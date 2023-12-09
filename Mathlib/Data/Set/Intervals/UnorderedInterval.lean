@@ -105,17 +105,17 @@ lemma mem_uIcc_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [[a, b]] := Icc_subse
 #align set.mem_uIcc_of_ge Set.mem_uIcc_of_ge
 
 lemma uIcc_subset_uIcc (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) :
-  [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
+    [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
   Icc_subset_Icc (le_inf h₁.1 h₂.1) (sup_le h₁.2 h₂.2)
 #align set.uIcc_subset_uIcc Set.uIcc_subset_uIcc
 
 lemma uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) :
-  [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
+    [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
   Icc_subset_Icc (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
 #align set.uIcc_subset_Icc Set.uIcc_subset_Icc
 
 lemma uIcc_subset_uIcc_iff_mem :
-  [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
+    [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
   Iff.intro (fun h => ⟨h left_mem_uIcc, h right_mem_uIcc⟩) fun h =>
     uIcc_subset_uIcc h.1 h.2
 #align set.uIcc_subset_uIcc_iff_mem Set.uIcc_subset_uIcc_iff_mem

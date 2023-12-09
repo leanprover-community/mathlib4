@@ -1614,7 +1614,7 @@ theorem castPred_mk' (n i : ℕ) (h₁ : i < n + 2) (h₂ : i < n + 1) : castPre
   castPred_mk _ _ _
 
 theorem coe_castPred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last _) :
-  (a.castPred : ℕ) = a := by
+    (a.castPred : ℕ) = a := by
   rcases a with ⟨a, ha⟩
   rw [castPred_mk]
   exact hx

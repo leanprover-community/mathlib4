@@ -810,13 +810,13 @@ protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
 #align tensor_product.map_pow TensorProduct.map_pow
 
 theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-  map (f₁ + f₂) g = map f₁ g + map f₂ g := by
+    map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
   simp only [add_tmul, compr₂_apply, mk_apply, map_tmul, add_apply]
 #align tensor_product.map_add_left TensorProduct.map_add_left
 
 theorem map_add_right (f : M →ₗ[R] P) (g₁ g₂ : N →ₗ[R] Q) :
-  map f (g₁ + g₂) = map f g₁ + map f g₂ := by
+    map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
   simp only [tmul_add, compr₂_apply, mk_apply, map_tmul, add_apply]
 #align tensor_product.map_add_right TensorProduct.map_add_right

@@ -872,7 +872,7 @@ class ContainsIdentities (W : MorphismProperty C) : Prop :=
   id_mem' : ∀ (X : C), W (𝟙 X)
 
 lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
-  W (𝟙 X) := ContainsIdentities.id_mem' X
+    W (𝟙 X) := ContainsIdentities.id_mem' X
 
 namespace ContainsIdentities
 

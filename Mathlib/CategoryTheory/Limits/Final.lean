@@ -860,7 +860,7 @@ This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which st
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
-  IsCofilteredOrEmpty D :=
+    IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 

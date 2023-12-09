@@ -1715,7 +1715,7 @@ theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
         mul_subset_mul_right <| singleton_subset_iff.2 hV₁
       _ = V * V := hVo.mul_closure _
       _ ⊆ L := hVL
-  exact ⟨closure V, isCompact_of_isClosed_subset Lcomp isClosed_closure hcVL, isClosed_closure,
+  exact ⟨closure V, Lcomp.of_isClosed_subset isClosed_closure hcVL, isClosed_closure,
     hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed

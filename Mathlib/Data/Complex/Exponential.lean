@@ -416,6 +416,9 @@ def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
 
+/-- scoped notation for the complex exponential function -/
+scoped notation "cexp" => Complex.exp
+
 end
 
 end Complex
@@ -468,6 +471,9 @@ the complex hyperbolic tangent -/
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
+
+/-- scoped notation for the real exponential function -/
+scoped notation "rexp" => Real.exp
 
 end
 
@@ -1460,15 +1466,16 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast
-      rw [← Nat.add_sub_of_le hj, Finset.sum_range_add]
-      refine' le_add_of_nonneg_right (sum_nonneg fun i _ => _)
+      refine sum_le_sum_of_subset_of_nonneg (range_mono hj) fun _ _ _ ↦ ?_
       positivity
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 #align real.sum_le_exp_of_nonneg Real.sum_le_exp_of_nonneg
 
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
-    1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by simp [Finset.sum_range_succ]; ring_nf
+    1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by
+        simp [factorial, Finset.sum_range_succ]
+        ring_nf
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 #align real.quadratic_le_exp_of_nonneg Real.quadratic_le_exp_of_nonneg
 
@@ -1682,16 +1689,16 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     abs (exp x - 1) = abs (exp x - ∑ m in range 1, x ^ m / m.factorial) := by simp [sum_range_succ]
     _ ≤ abs x ^ 1 * ((Nat.succ 1 : ℝ) * ((Nat.factorial 1) * (1 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
-    _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul]
+    _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m in range 2, x ^ m / m.factorial) := by
-      simp [sub_eq_add_neg, sum_range_succ_comm, add_assoc]
+      simp [sub_eq_add_neg, sum_range_succ_comm, add_assoc, Nat.factorial]
     _ ≤ abs x ^ 2 * ((Nat.succ 2 : ℝ) * (Nat.factorial 2 * (2 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
-    _ ≤ abs x ^ 2 * 1 := by gcongr; norm_num
+    _ ≤ abs x ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = abs x ^ 2 := by rw [mul_one]
 #align complex.abs_exp_sub_one_sub_id_le Complex.abs_exp_sub_one_sub_id_le
 
@@ -1756,7 +1763,7 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      mul_inv]
+      mul_inv, Nat.factorial]
   ac_rfl
 #align real.exp_near_succ Real.expNear_succ
 
@@ -1781,7 +1788,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert mul_le_mul_of_nonneg_left (a := abs' x ^ n / ↑(Nat.factorial n))
       (le_sub_iff_add_le'.1 e) ?_ using 1
-  · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv]
+  · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv, Nat.factorial]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]
 #align real.exp_approx_succ Real.exp_approx_succ
@@ -1818,7 +1825,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
-            simp [pow_succ]
+            simp [pow_succ, Nat.factorial]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
             )))
     _ ≤ abs ((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2) +
@@ -1832,7 +1839,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
       gcongr
       · exact Complex.exp_bound (by simpa) (by decide)
       · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
+    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
 #align real.cos_bound Real.cos_bound
 
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
@@ -1849,7 +1856,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
-            simp [pow_succ]
+            simp [pow_succ, Nat.factorial]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
     _ ≤ abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) * I) / 2) :=
@@ -1862,7 +1869,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       gcongr
       · exact Complex.exp_bound (by simpa) (by decide)
       · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
+    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
 #align real.sin_bound Real.sin_bound
 
 theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
@@ -1941,7 +1948,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
       repeat erw [Finset.sum_range_succ]
-      norm_num
+      norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'

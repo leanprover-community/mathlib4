@@ -13,7 +13,7 @@ import Mathlib.Order.Hom.Basic
 /-!
 # Category of preorders
 
-This defines `PreordCat`, the category of preorders with monotone maps.
+This defines `Preord`, the category of preorders with monotone maps.
 -/
 
 
@@ -22,12 +22,12 @@ universe u
 open CategoryTheory
 
 /-- The category of preorders. -/
-def PreordCat :=
+def Preord :=
   Bundled Preorder
 set_option linter.uppercaseLean3 false in
-#align Preord PreordCat
+#align Preord Preord
 
-namespace PreordCat
+namespace Preord
 
 instance : BundledHom @OrderHom where
   toFun := @OrderHom.toFun
@@ -35,36 +35,36 @@ instance : BundledHom @OrderHom where
   comp := @OrderHom.comp
   hom_ext := @OrderHom.ext
 
-deriving instance LargeCategory for PreordCat
+deriving instance LargeCategory for Preord
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory PreordCat :=
+instance : ConcreteCategory Preord :=
   BundledHom.concreteCategory _
 
-instance : CoeSort PreordCat (Type*) :=
+instance : CoeSort Preord Type* :=
   Bundled.coeSort
 
-/-- Construct a bundled PreordCat from the underlying type and typeclass. -/
-def of (α : Type*) [Preorder α] : PreordCat :=
+/-- Construct a bundled Preord from the underlying type and typeclass. -/
+def of (α : Type*) [Preorder α] : Preord :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
-#align Preord.of PreordCat.of
+#align Preord.of Preord.of
 
 @[simp]
 theorem coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Preord.coe_of PreordCat.coe_of
+#align Preord.coe_of Preord.coe_of
 
-instance : Inhabited PreordCat :=
+instance : Inhabited Preord :=
   ⟨of PUnit⟩
 
-instance (α : PreordCat) : Preorder α :=
+instance (α : Preord) : Preorder α :=
   α.str
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
-def Iso.mk {α β : PreordCat.{u}} (e : α ≃o β) : α ≅ β where
+def Iso.mk {α β : Preord.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : OrderHom α β)
   inv := (e.symm : OrderHom β α)
   hom_inv_id := by
@@ -74,39 +74,39 @@ def Iso.mk {α β : PreordCat.{u}} (e : α ≃o β) : α ≅ β where
     ext x
     exact e.apply_symm_apply x
 set_option linter.uppercaseLean3 false in
-#align Preord.iso.mk PreordCat.Iso.mk
+#align Preord.iso.mk Preord.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
-def dual : PreordCat ⥤ PreordCat where
+def dual : Preord ⥤ Preord where
   obj X := of Xᵒᵈ
   map := OrderHom.dual
 set_option linter.uppercaseLean3 false in
-#align Preord.dual PreordCat.dual
+#align Preord.dual Preord.dual
 
-/-- The equivalence between `PreordCat` and itself induced by `OrderDual` both ways. -/
+/-- The equivalence between `Preord` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
-def dualEquiv : PreordCat ≌ PreordCat where
+def dualEquiv : Preord ≌ Preord where
   functor := dual
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
-#align Preord.dual_equiv PreordCat.dualEquiv
+#align Preord.dual_equiv Preord.dualEquiv
 
-end PreordCat
+end Preord
 
-/-- The embedding of `PreordCat` into `Cat`.
+/-- The embedding of `Preord` into `Cat`.
 -/
 @[simps]
-def preordCatToCat : PreordCat.{u} ⥤ Cat where
+def preordToCat : Preord.{u} ⥤ Cat where
   obj X := Cat.of X.1
   map f := f.monotone.functor
 set_option linter.uppercaseLean3 false in
-#align Preord_to_Cat preordCatToCat
+#align Preord_to_Cat preordToCat
 
-instance : Faithful preordCatToCat.{u} where
+instance : Faithful preordToCat.{u} where
   map_injective h := by ext x; exact Functor.congr_obj h x
 
-instance : Full preordCatToCat.{u} where
+instance : Full preordToCat.{u} where
   preimage {X Y} f := ⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩

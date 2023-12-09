@@ -761,7 +761,7 @@ lemma toHomeomorph_apply (e : α ≃ β) (he) (a : α) : e.toHomeomorph he a = e
   (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : α ≃ β) (f : β ≃ γ) (he hf) :
-  (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
+    (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/

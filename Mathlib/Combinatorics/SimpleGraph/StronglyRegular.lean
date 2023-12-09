@@ -135,7 +135,7 @@ theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
 #align simple_graph.sdiff_compl_neighbor_finset_inter_eq SimpleGraph.sdiff_compl_neighborFinset_inter_eq
 
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
-  Gᶜ.IsRegularOfDegree (n - k - 1) := by
+    Gᶜ.IsRegularOfDegree (n - k - 1) := by
   rw [← h.card, Nat.sub_sub, add_comm, ← Nat.sub_sub]
   exact h.regular.compl
 set_option linter.uppercaseLean3 false in

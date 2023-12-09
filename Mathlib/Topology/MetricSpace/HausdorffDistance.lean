@@ -1299,7 +1299,7 @@ theorem _root_.IsCompact.exists_isCompact_cthickening [LocallyCompactSpace α] (
   rcases exists_compact_superset hs with ⟨K, K_compact, hK⟩
   rcases hs.exists_cthickening_subset_open isOpen_interior hK with ⟨δ, δpos, hδ⟩
   refine ⟨δ, δpos, ?_⟩
-  exact isCompact_of_isClosed_subset K_compact isClosed_cthickening (hδ.trans interior_subset)
+  exact K_compact.of_isClosed_subset isClosed_cthickening (hδ.trans interior_subset)
 
 theorem _root_.IsCompact.exists_thickening_subset_open (hs : IsCompact s) (ht : IsOpen t)
     (hst : s ⊆ t) : ∃ δ, 0 < δ ∧ thickening δ s ⊆ t :=

@@ -649,7 +649,7 @@ theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i => f (b 
   b.constr_eq S fun _ => rfl
 #align basis.constr_self Basis.constr_self
 
-theorem constr_range [Nonempty ι] {f : ι → M'} :
+theorem constr_range {f : ι → M'} :
     LinearMap.range (constr (M' := M') b S f) = span R (range f) := by
   rw [b.constr_def S f, LinearMap.range_comp, LinearMap.range_comp, LinearEquiv.range, ←
     Finsupp.supported_univ, Finsupp.lmapDomain_supported, ← Set.image_univ, ←

@@ -1007,7 +1007,7 @@ theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
 
 @[simp]
 theorem toEquiv_mk (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ h₂) :
-  toEquiv (mk f g h₁ h₂ : M ≃ₗ⁅R,L⁆ N) = Equiv.mk f g h₁ h₂ :=
+    toEquiv (mk f g h₁ h₂ : M ≃ₗ⁅R,L⁆ N) = Equiv.mk f g h₁ h₂ :=
   rfl
 
 @[simp]
