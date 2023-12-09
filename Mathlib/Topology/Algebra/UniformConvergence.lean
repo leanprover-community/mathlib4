@@ -93,8 +93,12 @@ instance [CommGroup β] : CommGroup (α →ᵤ β) :=
 instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
   Pi.commGroup
 
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
+
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
   Pi.module _ _ _
+
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
 
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   Pi.module _ _ _
