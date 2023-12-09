@@ -143,35 +143,35 @@ protected theorem hasStrictFDerivAt :
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `x ↦ (f x, g x)` defines a local homeomorphism between
 `E` and `F × G`. In particular, `{x | f x = f a}` is locally homeomorphic to `G`. -/
-def toLocalHomeomorph : LocalHomeomorph E (F × G) :=
+def toPartialHomeomorph : LocalHomeomorph E (F × G) :=
   φ.hasStrictFDerivAt.toLocalHomeomorph _
-#align implicit_function_data.to_local_homeomorph ImplicitFunctionData.toLocalHomeomorph
+#align implicit_function_data.to_local_homeomorph ImplicitFunctionData.toPartialHomeomorph
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
 `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 def implicitFunction : F → G → E :=
-  Function.curry <| φ.toLocalHomeomorph.symm
+  Function.curry <| φ.toPartialHomeomorph.symm
 #align implicit_function_data.implicit_function ImplicitFunctionData.implicitFunction
 
 @[simp]
-theorem toLocalHomeomorph_coe : ⇑φ.toLocalHomeomorph = φ.prodFun :=
+theorem toPartialHomeomorph_coe : ⇑φ.toPartialHomeomorph = φ.prodFun :=
   rfl
-#align implicit_function_data.to_local_homeomorph_coe ImplicitFunctionData.toLocalHomeomorph_coe
+#align implicit_function_data.to_local_homeomorph_coe ImplicitFunctionData.toPartialHomeomorph_coe
 
-theorem toLocalHomeomorph_apply (x : E) : φ.toLocalHomeomorph x = (φ.leftFun x, φ.rightFun x) :=
+theorem toPartialHomeomorph_apply (x : E) : φ.toPartialHomeomorph x = (φ.leftFun x, φ.rightFun x) :=
   rfl
-#align implicit_function_data.to_local_homeomorph_apply ImplicitFunctionData.toLocalHomeomorph_apply
+#align implicit_function_data.to_local_homeomorph_apply ImplicitFunctionData.toPartialHomeomorph_apply
 
-theorem pt_mem_toLocalHomeomorph_source : φ.pt ∈ φ.toLocalHomeomorph.source :=
+theorem pt_mem_toPartialHomeomorph_source : φ.pt ∈ φ.toPartialHomeomorph.source :=
   φ.hasStrictFDerivAt.mem_toLocalHomeomorph_source
-#align implicit_function_data.pt_mem_to_local_homeomorph_source ImplicitFunctionData.pt_mem_toLocalHomeomorph_source
+#align implicit_function_data.pt_mem_to_local_homeomorph_source ImplicitFunctionData.pt_mem_toPartialHomeomorph_source
 
-theorem map_pt_mem_toLocalHomeomorph_target :
-    (φ.leftFun φ.pt, φ.rightFun φ.pt) ∈ φ.toLocalHomeomorph.target :=
-  φ.toLocalHomeomorph.map_source <| φ.pt_mem_toLocalHomeomorph_source
-#align implicit_function_data.map_pt_mem_to_local_homeomorph_target ImplicitFunctionData.map_pt_mem_toLocalHomeomorph_target
+theorem map_pt_mem_toPartialHomeomorph_target :
+    (φ.leftFun φ.pt, φ.rightFun φ.pt) ∈ φ.toPartialHomeomorph.target :=
+  φ.toPartialHomeomorph.map_source <| φ.pt_mem_toPartialHomeomorph_source
+#align implicit_function_data.map_pt_mem_to_local_homeomorph_target ImplicitFunctionData.map_pt_mem_toPartialHomeomorph_target
 
 theorem prod_map_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
@@ -264,7 +264,7 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : ra
 to vertical subspaces. -/
 def implicitToPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) : LocalHomeomorph E (F × ker f') :=
-  (implicitFunctionDataOfComplemented f f' hf hf' hker).toLocalHomeomorph
+  (implicitFunctionDataOfComplemented f f' hf hf' hker).toPartialHomeomorph
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented HasStrictFDerivAt.implicitToPartialHomeomorphOfComplemented
 
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
@@ -307,7 +307,7 @@ theorem implicitToPartialHomeomorphOfComplemented_self (hf : HasStrictFDerivAt f
 theorem mem_implicitToPartialHomeomorphOfComplemented_source (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     a ∈ (hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker).source :=
-  ImplicitFunctionData.pt_mem_toLocalHomeomorph_source _
+  ImplicitFunctionData.pt_mem_toPartialHomeomorph_source _
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_of_complemented_source HasStrictFDerivAt.mem_implicitToPartialHomeomorphOfComplemented_source
 
 theorem mem_implicitToPartialHomeomorphOfComplemented_target (hf : HasStrictFDerivAt f f' a)
@@ -431,7 +431,7 @@ theorem implicitToPartialHomeomorph_self (hf : HasStrictFDerivAt f f' a) (hf' : 
 theorem mem_implicitToPartialHomeomorph_source (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     a ∈ (hf.implicitToPartialHomeomorph f f' hf').source :=
   haveI := FiniteDimensional.complete 𝕜 F
-  ImplicitFunctionData.pt_mem_toLocalHomeomorph_source _
+  ImplicitFunctionData.pt_mem_toPartialHomeomorph_source _
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_source HasStrictFDerivAt.mem_implicitToPartialHomeomorph_source
 
 theorem mem_implicitToPartialHomeomorph_target (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :

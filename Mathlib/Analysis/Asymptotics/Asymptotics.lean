@@ -2282,7 +2282,7 @@ open Asymptotics
 /-- Transfer `IsBigOWith` over a `Homeomorph`. -/
 theorem isBigOWith_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} {C : ℝ} :
     IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
-  e.toLocalHomeomorph.isBigOWith_congr trivial
+  e.toPartialHomeomorph.isBigOWith_congr trivial
 set_option linter.uppercaseLean3 false in
 #align homeomorph.is_O_with_congr Homeomorph.isBigOWith_congr
 

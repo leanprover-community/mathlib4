@@ -1198,7 +1198,7 @@ and use structomorph instead. -/
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : LocalHomeomorph M H, ∀ c' : LocalHomeomorph M' H, c ∈ atlas H M →
-    c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toLocalHomeomorph ≫ₕ c' ∈ G
+    c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toPartialHomeomorph ≫ₕ c' ∈ G
 #align structomorph Structomorph
 
 variable [TopologicalSpace M'] [TopologicalSpace M''] {G : StructureGroupoid H} [ChartedSpace H M']
@@ -1219,7 +1219,7 @@ def Structomorph.symm (e : Structomorph G M M') : Structomorph G M' M :=
   { e.toHomeomorph.symm with
     mem_groupoid := by
       intro c c' hc hc'
-      have : (c'.symm ≫ₕ e.toHomeomorph.toLocalHomeomorph ≫ₕ c).symm ∈ G :=
+      have : (c'.symm ≫ₕ e.toHomeomorph.toPartialHomeomorph ≫ₕ c).symm ∈ G :=
         G.symm (e.mem_groupoid c' c hc' hc)
       rwa [trans_symm_eq_symm_trans_symm, trans_symm_eq_symm_trans_symm, symm_symm, trans_assoc]
         at this }
@@ -1236,9 +1236,9 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       their composition is smooth, and it coincides with c' ∘ e' ∘ e ∘ c⁻¹ around x. -/
       intro c c' hc hc'
       refine' G.locality fun x hx ↦ _
-      let f₁ := e.toHomeomorph.toLocalHomeomorph
-      let f₂ := e'.toHomeomorph.toLocalHomeomorph
-      let f := (e.toHomeomorph.trans e'.toHomeomorph).toLocalHomeomorph
+      let f₁ := e.toHomeomorph.toPartialHomeomorph
+      let f₂ := e'.toHomeomorph.toPartialHomeomorph
+      let f := (e.toHomeomorph.trans e'.toHomeomorph).toPartialHomeomorph
       have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toLocalHomeomorph _ _
       -- define the atlas g around y
       let y := (c.symm ≫ₕ f₁) x

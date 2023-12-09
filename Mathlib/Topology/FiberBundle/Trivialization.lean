@@ -541,7 +541,7 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 /-- Composition of a `Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
-  toLocalHomeomorph := h.toLocalHomeomorph.trans e.toLocalHomeomorph
+  toLocalHomeomorph := h.toPartialHomeomorph.trans e.toLocalHomeomorph
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := by simp [source_eq, preimage_preimage, (· ∘ ·)]

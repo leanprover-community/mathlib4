@@ -1867,7 +1867,7 @@ theorem Homeomorph.contDiff_symm [CompleteSpace E] (f : E ≃ₜ F) {f₀' : E �
     (hf₀' : ∀ a, HasFDerivAt f (f₀' a : E →L[𝕜] F) a) (hf : ContDiff 𝕜 n (f : E → F)) :
     ContDiff 𝕜 n (f.symm : F → E) :=
   contDiff_iff_contDiffAt.2 fun x =>
-    f.toLocalHomeomorph.contDiffAt_symm (mem_univ x) (hf₀' _) hf.contDiffAt
+    f.toPartialHomeomorph.contDiffAt_symm (mem_univ x) (hf₀' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm Homeomorph.contDiff_symm
 
 /-- Let `f` be a local homeomorphism of a nontrivially normed field, let `a` be a point in its
@@ -1892,7 +1892,7 @@ theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ �
     (h₀ : ∀ x, f' x ≠ 0) (hf' : ∀ x, HasDerivAt f (f' x) x) (hf : ContDiff 𝕜 n (f : 𝕜 → 𝕜)) :
     ContDiff 𝕜 n (f.symm : 𝕜 → 𝕜) :=
   contDiff_iff_contDiffAt.2 fun x =>
-    f.toLocalHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
+    f.toPartialHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm_deriv Homeomorph.contDiff_symm_deriv
 
 namespace LocalHomeomorph

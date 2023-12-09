@@ -367,7 +367,7 @@ def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 
     LocalHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
-            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toLocalHomeomorph
+            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toPartialHomeomorph
 #align stereographic' stereographic'
 
 @[simp]

@@ -210,9 +210,9 @@ def _root_.Homeomorph.toLocalHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α)
 
 /-- A homeomorphism induces a local homeomorphism on the whole space -/
 @[simps! (config := mfld_cfg)]
-def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β :=
+def _root_.Homeomorph.toPartialHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β :=
   e.toLocalHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
-#align homeomorph.to_local_homeomorph Homeomorph.toLocalHomeomorph
+#align homeomorph.to_local_homeomorph Homeomorph.toPartialHomeomorph
 
 /-- Replace `toLocalEquiv` field to provide better definitional equalities. -/
 def replaceEquiv (e : LocalHomeomorph α β) (e' : LocalEquiv α β) (h : e.toLocalEquiv = e') :
@@ -755,7 +755,7 @@ theorem restr_source_inter (s : Set α) : e.restr (e.source ∩ s) = e.restr s :
 /-- The identity on the whole space as a local homeomorphism. -/
 @[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
 protected def refl (α : Type*) [TopologicalSpace α] : LocalHomeomorph α α :=
-  (Homeomorph.refl α).toLocalHomeomorph
+  (Homeomorph.refl α).toPartialHomeomorph
 #align local_homeomorph.refl LocalHomeomorph.refl
 
 @[simp, mfld_simps]
@@ -928,7 +928,7 @@ def transHomeomorph (e' : β ≃ₜ γ) : LocalHomeomorph α γ where
 #align local_homeomorph.trans_homeomorph LocalHomeomorph.transHomeomorph
 
 theorem transHomeomorph_eq_trans (e' : β ≃ₜ γ) :
-    e.transHomeomorph e' = e.trans e'.toLocalHomeomorph :=
+    e.transHomeomorph e' = e.trans e'.toPartialHomeomorph :=
   toLocalEquiv_injective <| LocalEquiv.transEquiv_eq_trans _ _
 #align local_homeomorph.trans_equiv_eq_trans LocalHomeomorph.transHomeomorph_eq_trans
 
@@ -944,7 +944,7 @@ def _root_.Homeomorph.transLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph 
 #align homeomorph.trans_local_homeomorph Homeomorph.transLocalHomeomorph
 
 theorem _root_.Homeomorph.transLocalHomeomorph_eq_trans (e : α ≃ₜ β) :
-    e.transLocalHomeomorph e' = e.toLocalHomeomorph.trans e' :=
+    e.transLocalHomeomorph e' = e.toPartialHomeomorph.trans e' :=
   toLocalEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transLocalHomeomorph_eq_trans
 
@@ -1310,18 +1310,18 @@ variable (e : α ≃ₜ β) (e' : β ≃ₜ γ)
 /- Register as simp lemmas that the fields of a local homeomorphism built from a homeomorphism
 correspond to the fields of the original homeomorphism. -/
 @[simp, mfld_simps]
-theorem refl_toLocalHomeomorph : (Homeomorph.refl α).toLocalHomeomorph = LocalHomeomorph.refl α :=
+theorem refl_toLocalHomeomorph : (Homeomorph.refl α).toPartialHomeomorph = LocalHomeomorph.refl α :=
   rfl
 #align homeomorph.refl_to_local_homeomorph Homeomorph.refl_toLocalHomeomorph
 
 @[simp, mfld_simps]
-theorem symm_toLocalHomeomorph : e.symm.toLocalHomeomorph = e.toLocalHomeomorph.symm :=
+theorem symm_toLocalHomeomorph : e.symm.toPartialHomeomorph = e.toPartialHomeomorph.symm :=
   rfl
 #align homeomorph.symm_to_local_homeomorph Homeomorph.symm_toLocalHomeomorph
 
 @[simp, mfld_simps]
 theorem trans_toLocalHomeomorph :
-    (e.trans e').toLocalHomeomorph = e.toLocalHomeomorph.trans e'.toLocalHomeomorph :=
+    (e.trans e').toPartialHomeomorph = e.toPartialHomeomorph.trans e'.toPartialHomeomorph :=
   LocalHomeomorph.toLocalEquiv_injective <| Equiv.trans_toLocalEquiv _ _
 #align homeomorph.trans_to_local_homeomorph Homeomorph.trans_toLocalHomeomorph
 

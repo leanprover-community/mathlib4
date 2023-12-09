@@ -161,7 +161,7 @@ open scoped Real
 /-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : LocalHomeomorph ℂ (ℝ × ℝ) :=
-  equivRealProdClm.toHomeomorph.toLocalHomeomorph.trans polarCoord
+  equivRealProdClm.toHomeomorph.toPartialHomeomorph.trans polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by

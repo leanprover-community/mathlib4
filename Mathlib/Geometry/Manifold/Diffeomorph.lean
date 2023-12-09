@@ -375,7 +375,7 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
 #align diffeomorph.cont_mdiff_diffeomorph_comp_iff Diffeomorph.contMDiff_diffeomorph_comp_iff
 
 theorem toLocalHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    h.toHomeomorph.toLocalHomeomorph.MDifferentiable I J :=
+    h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
 #align diffeomorph.to_local_homeomorph_mdifferentiable Diffeomorph.toLocalHomeomorph_mdifferentiable
 

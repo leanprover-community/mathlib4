@@ -120,7 +120,7 @@ Otherwise, it is the translation by `c`.
 Thus in all cases, it sends `0` to `c`, see `LocalHomeomorph.univBall_apply_zero`. -/
 def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
   if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
-  else (IsometryEquiv.vaddConst c).toHomeomorph.toLocalHomeomorph
+  else (IsometryEquiv.vaddConst c).toHomeomorph.toPartialHomeomorph
 
 @[simp]
 theorem univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by

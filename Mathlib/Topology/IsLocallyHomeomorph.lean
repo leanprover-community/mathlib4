@@ -127,7 +127,7 @@ def IsLocallyHomeomorph :=
 #align is_locally_homeomorph IsLocallyHomeomorph
 
 theorem Homeomorph.isLocallyHomeomorph (f : X ≃ₜ Y) : IsLocallyHomeomorph f :=
-  fun _ ↦ ⟨f.toLocalHomeomorph, trivial, rfl⟩
+  fun _ ↦ ⟨f.toPartialHomeomorph, trivial, rfl⟩
 
 variable {f s}
 
