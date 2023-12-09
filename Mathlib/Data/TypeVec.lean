@@ -248,8 +248,7 @@ theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type*} {ε : TypeVe
           (g₀ : last ε → β)
           (g₁ : β → δ) :
    appendFun f₁ g₁ ⊚ splitFun f₀ g₀
-      = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀)
-  :=
+      = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
   (splitFun_comp _ _ _ _).symm
 #align typevec.append_fun_comp_split_fun TypeVec.appendFun_comp_splitFun
 
@@ -306,8 +305,8 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
 
 /-- cases distinction for 0-length type vector -/
-protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v
-  := fun v => cast (by congr; funext i; cases i) f
+protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
+  fun v => cast (by congr; funext i; cases i) f
 #align typevec.cases_nil TypeVec.casesNil
 
 /-- cases distinction for (n+1)-length type vector -/

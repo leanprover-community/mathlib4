@@ -9,6 +9,8 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Logic.Basic
 import Qq
 
 /-!

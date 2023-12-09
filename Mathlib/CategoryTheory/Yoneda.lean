@@ -485,8 +485,8 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁)
-    := by
+    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op
+      ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁) := by
   refine eqToIso ?_ ≪≫ curry.mapIso (isoWhiskerLeft (Prod.swap _ _)
     (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial :_))
     ≪≫ eqToIso ?_

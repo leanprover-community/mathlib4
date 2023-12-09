@@ -1311,13 +1311,13 @@ theorem _root_.IsCompact.exists_thickening_subset_open (hs : IsCompact s) (ht : 
 
 theorem hasBasis_nhdsSet_thickening {K : Set α} (hK : IsCompact K) :
     (𝓝ˢ K).HasBasis (fun δ : ℝ => 0 < δ) fun δ => thickening δ K :=
-  (hasBasis_nhdsSet K).to_has_basis' (fun _U hU => hK.exists_thickening_subset_open hU.1 hU.2)
+  (hasBasis_nhdsSet K).to_hasBasis' (fun _U hU => hK.exists_thickening_subset_open hU.1 hU.2)
     fun _ => thickening_mem_nhdsSet K
 #align metric.has_basis_nhds_set_thickening Metric.hasBasis_nhdsSet_thickening
 
 theorem hasBasis_nhdsSet_cthickening {K : Set α} (hK : IsCompact K) :
     (𝓝ˢ K).HasBasis (fun δ : ℝ => 0 < δ) fun δ => cthickening δ K :=
-  (hasBasis_nhdsSet K).to_has_basis' (fun _U hU => hK.exists_cthickening_subset_open hU.1 hU.2)
+  (hasBasis_nhdsSet K).to_hasBasis' (fun _U hU => hK.exists_cthickening_subset_open hU.1 hU.2)
     fun _ => cthickening_mem_nhdsSet K
 #align metric.has_basis_nhds_set_cthickening Metric.hasBasis_nhdsSet_cthickening
 

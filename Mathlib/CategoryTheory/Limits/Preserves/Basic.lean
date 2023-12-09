@@ -134,8 +134,8 @@ def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [Preserv
   PreservesColimit.preserves t
 #align category_theory.limits.is_colimit_of_preserves CategoryTheory.Limits.isColimitOfPreserves
 
-instance preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (PreservesLimit K F)
-    := by
+instance preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
+    Subsingleton (PreservesLimit K F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.preserves_limit_subsingleton CategoryTheory.Limits.preservesLimit_subsingleton
 

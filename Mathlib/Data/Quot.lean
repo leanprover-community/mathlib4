@@ -342,11 +342,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
-/-- `Quotient.mk` is a surjective function. -/
-theorem surjective_quotient_mk (α : Sort*) [s : Setoid α] :
-    Function.Surjective (Quotient.mk _ : α → Quotient s) :=
+/-- `Quotient.mk'` is a surjective function. -/
+theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
+    Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
-#align surjective_quotient_mk surjective_quotient_mk
+#align surjective_quotient_mk surjective_quotient_mk'
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
