@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean

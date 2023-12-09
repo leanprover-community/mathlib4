@@ -5,7 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Support.Basic
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
@@ -742,5 +742,56 @@ lemma support_smul_subset_right [Monoid R] [AddMonoid M] [DistribMulAction R M] 
 #align function.support_smul_subset_right Function.support_smul_subset_right
 
 end Function
+
+namespace Set
+section SMulZeroClass
+variable [Zero R] [Zero M] [SMulZeroClass R M]
+
+lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
+    indicator s (fun a ↦ r a • f a) a = r a • indicator s f a := by
+  dsimp only [indicator]
+  split_ifs
+  exacts [rfl, (smul_zero (r a)).symm]
+#align set.indicator_smul_apply Set.indicator_smul_apply
+
+lemma indicator_smul (s : Set α) (r : α → R) (f : α → M) :
+    indicator s (fun a ↦ r a • f a) = fun a ↦ r a • indicator s f a :=
+  funext $ indicator_smul_apply s r f
+#align set.indicator_smul Set.indicator_smul
+
+lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
+    indicator s (r • f ·) a = r • indicator s f a :=
+  indicator_smul_apply s (fun _ ↦ r) f a
+#align set.indicator_const_smul_apply Set.indicator_const_smul_apply
+
+lemma indicator_const_smul (s : Set α) (r : R) (f : α → M) :
+    indicator s (r • f ·) = (r • indicator s f ·) :=
+  funext $ indicator_const_smul_apply s r f
+#align set.indicator_const_smul Set.indicator_const_smul
+
+end SMulZeroClass
+
+section SMulWithZero
+variable [Zero R] [Zero M] [SMulWithZero M M]
+
+lemma indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → M) (a : α) :
+    indicator s (fun a ↦ r a • f a) a = indicator s r a • f a := by
+  dsimp only [indicator]
+  split_ifs
+  exacts [rfl, (zero_smul _ (f a)).symm]
+
+lemma indicator_smul_left (s : Set α) (r : α → M) (f : α → M) :
+    indicator s (fun a ↦ r a • f a) = fun a ↦ indicator s r a • f a :=
+  funext $ indicator_smul_apply_left _ _ _
+
+lemma indicator_smul_const_apply (s : Set α) (r : α → M) (m : M) (a : α) :
+    indicator s (r · • m) a = indicator s r a • m := indicator_smul_apply_left _ _ _ _
+
+lemma indicator_smul_const (s : Set α) (r : α → M) (m : M) :
+    indicator s (r · • m) = (indicator s r · • m) :=
+  funext $ indicator_smul_const_apply _ _ _
+
+end SMulWithZero
+end Set
 
 assert_not_exists Multiset

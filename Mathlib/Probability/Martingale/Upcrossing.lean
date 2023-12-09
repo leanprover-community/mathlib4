@@ -375,7 +375,7 @@ theorem upcrossingStrat_nonneg : 0 ≤ upcrossingStrat a b f N n ω :=
 #align measure_theory.upcrossing_strat_nonneg MeasureTheory.upcrossingStrat_nonneg
 
 theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
-  rw [upcrossingStrat, ← Set.indicator_finset_biUnion_apply]
+  rw [upcrossingStrat, ← Set.Set.indicator_biUnion_apply]
   · exact Set.indicator_le_self' (fun _ _ => zero_le_one) _
   · intro i _ j _ hij
     rw [Set.Ico_disjoint_Ico]

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Support
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
@@ -1153,6 +1153,82 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → α → β) :
   exact fun x ↦ prod_eq_one
 #align function.mul_support_prod Finset.mulSupport_prod
 #align function.support_sum Finset.support_sum
+
+section indicator
+open Set
+variable {κ : Type*}
+
+/-- Consider a product of `g i (f i)` over a finset.  Suppose `g` is a function such as
+`n ↦ (· ^ n)`, which maps a second argument of `1` to `1`. Then if `f` is replaced by the
+corresponding multiplicative indicator function, the finset may be replaced by a possibly larger
+finset without changing the value of the product. -/
+@[to_additive "Consider a sum of `g i (f i)` over a finset.  Suppose `g` is a function such as
+`n ↦ (n • ·)`, which maps a second argument of `0` to `0` (or a weighted sum of `f i * h i` or
+`f i • h i`, where `f` gives the weights that are multiplied by some other function `h`). Then if
+`f` is replaced by the corresponding indicator function, the finset may be replaced by a possibly
+larger finset without changing the value of the sum."]
+lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α → β) {s t : Finset ι}
+    (h : s ⊆ t) (hg : ∀ a, g a 1 = 1) :
+    ∏ i in t, g i (mulIndicator ↑s f i) = ∏ i in s, g i (f i) := by
+  calc
+    _ = ∏ i in s, g i (mulIndicator ↑s f i) := by rw [prod_subset h fun i _ hn ↦ by simp [hn, hg]]
+    -- Porting note: This did not use to need the implicit argument
+    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ $ mulIndicator_of_mem (α := ι) hi f
+#align set.prod_mul_indicator_subset_of_eq_one Finset.prod_mulIndicator_subset_of_eq_one
+#align set.sum_indicator_subset_of_eq_zero Finset.sum_indicator_subset_of_eq_zero
+
+/-- Taking the product of an indicator function over a possibly larger finset is the same as
+taking the original function over the original finset. -/
+@[to_additive "Summing an indicator function over a possibly larger `Finset` is the same as summing
+  the original function over the original finset."]
+lemma prod_mulIndicator_subset (f : ι → β) {s t : Finset ι} (h : s ⊆ t) :
+    ∏ i in t, mulIndicator (↑s) f i = ∏ i in s, f i :=
+  prod_mulIndicator_subset_of_eq_one _ (fun _ ↦ id) h fun _ ↦ rfl
+#align set.prod_mul_indicator_subset Finset.prod_mulIndicator_subset
+#align set.sum_indicator_subset Finset.sum_indicator_subset
+
+@[to_additive]
+lemma prod_mulIndicator_eq_prod_filter (s : Finset ι) (f : ι → κ → β) (t : ι → Set κ) (g : ι → κ)
+    [DecidablePred fun i ↦ g i ∈ t i] :
+    ∏ i in s, mulIndicator (t i) (f i) (g i) = ∏ i in s.filter fun i ↦ g i ∈ t i, f i (g i) := by
+  refine (prod_filter_mul_prod_filter_not s (fun i ↦ g i ∈ t i) _).symm.trans $
+     Eq.trans (congr_arg₂ (· * ·) ?_ ?_) (mul_one _)
+  · exact prod_congr rfl fun x hx ↦ mulIndicator_of_mem (mem_filter.1 hx).2 _
+  · exact prod_eq_one fun x hx ↦ mulIndicator_of_not_mem (mem_filter.1 hx).2 _
+#align finset.prod_mul_indicator_eq_prod_filter Finset.prod_mulIndicator_eq_prod_filter
+#align finset.sum_indicator_eq_sum_filter Finset.sum_indicator_eq_sum_filter
+
+@[to_additive]
+lemma mulIndicator_prod (s : Finset ι) (t : Set κ) (f : ι → κ → β) :
+    mulIndicator t (∏ i in s, f i) = ∏ i in s, mulIndicator t (f i) :=
+  map_prod (mulIndicatorHom _ _) _ _
+#align set.mul_indicator_finset_prod Finset.mulIndicator_prod
+#align set.indicator_finset_sum Finset.indicator_sum
+
+variable {κ : Type*}
+@[to_additive]
+lemma mulIndicator_biUnion (s : Finset ι) (t : ι → Set κ) {f : κ → β} :
+    ((s : Set ι).PairwiseDisjoint t) →
+      mulIndicator (⋃ i ∈ s, t i) f = fun a ↦ ∏ i in s, mulIndicator (t i) f a := by
+  classical
+  refine Finset.induction_on s (by simp) fun i s hi ih hs ↦ funext fun j ↦ ?_
+  rw [prod_insert hi, set_biUnion_insert, mulIndicator_union_of_not_mem_inter,
+    ih (hs.subset $ subset_insert _ _)]
+  simp only [not_exists, exists_prop, mem_iUnion, mem_inter_iff, not_and]
+  exact fun hji i' hi' hji' ↦ (ne_of_mem_of_not_mem hi' hi).symm $
+    hs.elim_set (mem_insert_self _ _) (mem_insert_of_mem hi') _ hji hji'
+#align set.mul_indicator_finset_bUnion Finset.mulIndicator_biUnion
+#align set.indicator_finset_bUnion Finset.indicator_biUnion
+
+@[to_additive]
+lemma mulIndicator_biUnion_apply (s : Finset ι) (t : ι → Set κ) {f : κ → β}
+    (h : (s : Set ι).PairwiseDisjoint t) (x : κ) :
+    mulIndicator (⋃ i ∈ s, t i) f x = ∏ i in s, mulIndicator (t i) f x := by
+  rw [mulIndicator_biUnion s t h]
+#align set.mul_indicator_finset_bUnion_apply Finset.mulIndicator_biUnion_apply
+#align set.indicator_finset_bUnion_apply Finset.indicator_biUnion_apply
+
+end indicator
 
 @[to_additive]
 theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ → β}
