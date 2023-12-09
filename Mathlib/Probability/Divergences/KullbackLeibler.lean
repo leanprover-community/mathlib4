@@ -229,13 +229,13 @@ lemma integral_sub_logIntegralExp_le {μ ν : Measure α}
     ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν) ≤ ∫ x, LLR μ ν x ∂μ := by
   have : ∫ x, LLR μ ν x ∂μ - ∫ x, LLR μ (ν.tilted f) x ∂μ
       = ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν) := by
-    rw [integral_llr_tilted hμν hfμ hf h_int]
+    rw [integral_llr_tilted_right hμν hfμ hf h_int]
     abel
   rw [← this]
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
   refine integral_llr_nonneg (hμν.trans (absolutelyContinuous_tilted hf)) ?_
-  exact integrable_llr_tilted hμν hfμ hf h_int
+  exact integrable_llr_tilted_right hμν hfμ hf h_int
 
 lemma ciSup_le_integral_llr {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
@@ -268,9 +268,13 @@ lemma exp_llrAddConst {μ ν : Measure α} {u : ℝ} (hu : 0 < u) (x : α) :
   rw [LLRAddConst, exp_log]
   positivity
 
+lemma measurable_llrAddConst {μ ν : Measure α} {u : ℝ} :
+    Measurable (LLRAddConst μ ν u) :=
+  ((Measure.measurable_rnDeriv μ ν).ennreal_toReal.add measurable_const).log
+
 lemma stronglyMeasurable_llrAddConst {μ ν : Measure α} {u : ℝ} :
     StronglyMeasurable (LLRAddConst μ ν u) :=
-  ((measurable_toReal_rnDeriv _ _).add measurable_const).log.stronglyMeasurable
+  measurable_llrAddConst.stronglyMeasurable
 
 lemma log_le_llrAddConst {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u) :
     log u ≤ LLRAddConst μ ν u x := by
