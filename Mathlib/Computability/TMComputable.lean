@@ -324,8 +324,7 @@ def isPolyTimeFunctionByType {α β: Type} {ea : FinEncoding α} {eb : FinEncodi
 
 /-- Defines polynomial time functions on binary strings to binary strings -/
 def isPolyTimeTM (tm : BString → BString) : Prop :=
-    Nonempty (@TM2ComputableInPolyTime BString BString finEncodingBString
-     finEncodingBString tm
+    Nonempty (@TM2ComputableInPolyTime BString BString finEncodingBString finEncodingBString tm)
 
 /-- Complexity class FP: the set of functions computable in polynomial time -/
 def PolyTimeTMs : Set (BString → BString) := {tm | isPolyTimeTM tm}
