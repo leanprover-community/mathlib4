@@ -45,11 +45,11 @@ theorem MeasureTheory.integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E
   rw [← (volume_measurePreserving_piCongrLeft _ e).integral_comp']
   have h0 (x : (m : Fin n) → E (e m)) (m : Fin n) : MeasurableEquiv.piCongrLeft E e x (e m) = x m
   · rw [MeasurableEquiv.coe_piCongrLeft, Equiv.piCongrLeft_apply_apply]
-  have h1 : ∫ x, ∏ i, f i ((MeasurableEquiv.piCongrLeft E e) x i) =
+  have : ∫ x, ∏ i, f i ((MeasurableEquiv.piCongrLeft E e) x i) =
       ∫ x : (m : Fin n) → E (e m), ∏ m, f (e m) (x m)
   · congr 1 with v : 1
     exact (Fintype.prod_equiv e _ _ (fun m ↦ by rw [h0 v m])).symm
-  rw [h1, MeasureTheory.integral_fin_nat_prod_eq_prod]
+  rw [this, MeasureTheory.integral_fin_nat_prod_eq_prod]
   exact Fintype.prod_equiv e _ _ (fun i ↦ by rfl)
 
 theorem MeasureTheory.integral_fintype_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → 𝕜)
