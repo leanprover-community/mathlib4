@@ -2004,12 +2004,13 @@ theorem lift_symm_apply (F : k[G] →ₐ[k] A) (x : Multiplicative G) :
 
 @[simp]
 theorem lift_single (F : Multiplicative G →* A) (a b) :
-    lift k G A F (single a b) = b • F (Multiplicative.ofAdd a) := by
-  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
+    lift k G A F (single a b) = b • F (Multiplicative.ofAdd a) :=
+  MonoidAlgebra.lift_single F (.ofAdd a) b
 #align add_monoid_algebra.lift_single AddMonoidAlgebra.lift_single
 
 theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
-    lift k G A F (of k G x) = F x := by simp
+    lift k G A F (of k G x) = F x :=
+  MonoidAlgebra.lift_of F x
 #align add_monoid_algebra.lift_of AddMonoidAlgebra.lift_of
 
 lemma lift_of' (F : Multiplicative G →* A) (x : G) :
