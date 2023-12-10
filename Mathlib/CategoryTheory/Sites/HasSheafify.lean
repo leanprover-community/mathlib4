@@ -42,6 +42,8 @@ class HasSheafify extends HasWeakSheafify J A where
 
 attribute [instance] HasSheafify.isLeftExact
 
+/-- An instance `HasSheafify J A` given an adjunction `F ⊣ sheafToPresheaf J A` such that `F`
+preserves finite limits -/
 def HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
     [PreservesFiniteLimits F] : HasSheafify J A where
   isRightAdjoint := ⟨F, adj⟩

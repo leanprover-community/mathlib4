@@ -173,6 +173,7 @@ def transportSheafificationAdjunction : transportAndSheafify J e A ⊣ sheafToPr
 noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J e A where
   preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
 
+/-- Transport `HasSheafify` along an equivalence of sites. -/
 noncomputable def hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J e A)
 
