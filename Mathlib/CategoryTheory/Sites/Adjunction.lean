@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Sites.HasSheafify
 import Mathlib.CategoryTheory.Sites.Whiskering
 
 #align_import category_theory.sites.adjunction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -31,7 +32,7 @@ variable {E : Type w₂} [Category.{w₂'} E]
 
 variable {F : D ⥤ E} {G : E ⥤ D}
 
-variable [HasSheafify J D] [HasSheafCompose J F]
+variable [HasWeakSheafify J D] [HasSheafCompose J F]
 
 -- variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (S.index P).multicospan F]
 

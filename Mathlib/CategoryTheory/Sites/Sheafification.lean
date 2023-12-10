@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Sites.Plus
-import Mathlib.CategoryTheory.Sites.HasSheafify
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
@@ -21,6 +19,16 @@ We construct the sheafification of a presheaf over a site `C` with values in `D`
 and reflects isomorphisms.
 
 We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
+
+Note:
+* If you only need the abstract properties of sheafification, namely that it is a left exact
+left adjoint to the inclusion, import the file `Sites/HasSheafify` and use the assumption
+`[HasSheafify J D]` instead of the long list of assumptions on a concrete category `D` in this file.
+
+* The file `Sites/LeftExact` contains the proof that sufficiently nice concrete categories have
+  left exact sheafification (`HasSheafify`). If you only need the fact that sheafification is
+  a left adjoint, then `HasWeakSheafify` is enough. The file `Sites/ConcreteSheafify` contains
+  the proof that this is satisfied by sufficiently nice concrete categories.
 
 -/
 
@@ -654,17 +662,6 @@ noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPr
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
 
-instance hasSheafifyOfPlusPlus : HasSheafify J D where
-  isRightAdjoint := ⟨inferInstance⟩
-
-/--
-The functor `plusPlusSheaf`, doing the plus construction twice, is isomorphic to any choice of
-sheafification functor (by uniqueness of left adjoints).
--/
-noncomputable
-def presheafToSheafIsoPlusPlus : plusPlusSheaf J D ≅ presheafToSheaf J D :=
-  Adjunction.leftAdjointUniq (plusPlusAdjunction J D) (sheafificationAdjunction J D)
-
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
   (sheafToPresheaf J D).map_mono _
 #align category_theory.presheaf_mono_of_mono CategoryTheory.presheaf_mono_of_mono
@@ -673,21 +670,6 @@ theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono 
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
-
--- porting note: added to ease the port of CategoryTheory.Sites.LeftExact
--- in mathlib, this was `by refl`, but here it would timeout
-/--
-"Sheafification" as an endofunctor of the presheaf category is isomorphic to sheafification
-followed by inclusion.
--/
-@[simps! hom_app inv_app]
-noncomputable
-def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
-  (NatIso.ofComponents fun P => Iso.refl _) ≪≫
-    isoWhiskerRight (presheafToSheafIsoPlusPlus J D) (sheafToPresheaf J D)
-
-variable {J D}
 
 /-- A sheaf `P` is isomorphic to its own sheafification. -/
 @[simps]
@@ -712,4 +694,3 @@ instance sheafification_reflective : IsIso (plusPlusAdjunction J D).counit :=
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 end CategoryTheory
-#lint

@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.HasSheafify
 
 /-!
 
@@ -37,7 +37,7 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
           simp }
       naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ } }
 
-variable [HasSheafify J D]
+variable [HasWeakSheafify J D]
 
 /--
 The functor which maps an object of `D` to the constant sheaf at that object, i.e. the

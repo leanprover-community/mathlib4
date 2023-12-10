@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.HasSheafify
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 
@@ -368,7 +368,7 @@ noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
     apply (Ran.adjunction A G.op).homEquiv_counit
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
 
-variable [HasSheafify J A] [HasSheafify K A] [G.IsCocontinuous J K] [G.IsContinuous J K]
+variable [HasWeakSheafify J A] [HasWeakSheafify K A] [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
 def Functor.pushforwardContinuousSheafificationCompatibility :
