@@ -119,7 +119,7 @@ theorem Real.Continuous.inv [TopologicalSpace α] {f : α → ℝ} (h : ∀ a, f
   hf.inv₀ h
 #align real.continuous.inv Real.Continuous.inv
 
-theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous ((· * ·) x) :=
+theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
   uniformContinuous_const_smul x
 #align real.uniform_continuous_const_mul Real.uniformContinuous_const_mul
 

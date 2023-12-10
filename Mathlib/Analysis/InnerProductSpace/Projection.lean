@@ -1251,7 +1251,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     -- factorization into reflections for `φ`.
     refine' ⟨x::l, Nat.succ_le_succ hl, _⟩
     rw [List.map_cons, List.prod_cons]
-    have := congr_arg ((· * ·) ρ) hφl
+    have := congr_arg (ρ * ·) hφl
     dsimp only at this
     rwa [← mul_assoc, reflection_mul_reflection, one_mul] at this
 #align linear_isometry_equiv.reflections_generate_dim_aux LinearIsometryEquiv.reflections_generate_dim_aux

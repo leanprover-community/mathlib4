@@ -554,7 +554,7 @@ open Multiset
 Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
-    m.1.filter ((· ≠ ·) a),
+    m.1.filter (a ≠ ·),
     eq_tsub_of_add_eq <|
       Eq.trans
         (by

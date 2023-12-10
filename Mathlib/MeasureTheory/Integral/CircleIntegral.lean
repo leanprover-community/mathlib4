@@ -95,7 +95,7 @@ theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * �
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
     (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
   show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((· * ·) (R : ℂ) ⁻¹' ((· + ·) c ⁻¹' s))))).Countable from
+      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
     (((hs.preimage (add_right_injective _)).preimage <|
       mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
         mul_left_injective₀ I_ne_zero).preimage ofReal_injective

@@ -106,6 +106,10 @@ instance : EquivLike (α ≃ β) α β where
 instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
+@[simp, norm_cast]
+lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
+    ((e : α ≃ β) : α → β) = e := rfl
+
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk

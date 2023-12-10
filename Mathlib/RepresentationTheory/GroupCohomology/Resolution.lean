@@ -149,7 +149,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     erw [hn, Equiv.piFinSuccAboveEquiv_symm_apply]
     refine' Fin.cases _ (fun i => _) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
-    · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ←mul_assoc]
+    · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
       rfl
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_inv_apply groupCohomology.resolution.actionDiagonalSucc_inv_apply
@@ -290,7 +290,7 @@ def ofMulActionBasisAux :
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · rw [smul_zero, map_zero]
-      · rw [TensorProduct.smul_tmul', smul_eq_mul, ←ofMulAction_self_smul_eq_mul]
+      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
       · rw [smul_add, hz, hy, map_add] }
 #align group_cohomology.resolution.of_mul_action_basis_aux groupCohomology.resolution.ofMulActionBasisAux
@@ -655,7 +655,7 @@ theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
-      ←(forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
+      ← (forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
     exact comp_zero
   exact LinearMap.ext_iff.1 this _
 #align group_cohomology.resolution.d_comp_ε groupCohomology.resolution.d_comp_ε

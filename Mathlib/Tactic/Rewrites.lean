@@ -21,7 +21,7 @@ import Mathlib.Tactic.SolveByElim
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 -/
 
@@ -246,7 +246,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
     | .inr lem => try? <| mkConstWithFreshMVarLevels lem) | return none
-    trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
+    trace[Tactic.rewrites] m!"considering {if symm then "← " else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
     if result.mvarIds.isEmpty then
@@ -320,7 +320,7 @@ syntax forbidden := " [" (("-" ident),*,?) "]"
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 You can use `rw? [-my_lemma, -my_theorem]` to prevent `rw?` using the named lemmas.
 -/
