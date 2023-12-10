@@ -671,8 +671,7 @@ theorem convexBodySumFactor_ne_top : convexBodySumFactor K ≠ ⊤ := by
     exact pow_ne_top coe_ne_top
   · exact inv_ne_top.mpr <| Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
 
-open MeasureTheory MeasureTheory.Measure Real
-
+open MeasureTheory MeasureTheory.Measure Real in
 theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
   obtain hB | hB := le_or_lt B 0
