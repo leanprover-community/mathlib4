@@ -52,10 +52,10 @@ theorem IsClopen.inter (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ t) 
   ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 #align is_clopen.inter IsClopen.inter
 
-@[simp] theorem isClopen_empty : IsClopen (∅ : Set X) := ⟨isOpen_empty, isClosed_empty⟩
+theorem isClopen_empty : IsClopen (∅ : Set X) := ⟨isOpen_empty, isClosed_empty⟩
 #align is_clopen_empty isClopen_empty
 
-@[simp] theorem isClopen_univ : IsClopen (univ : Set X) := ⟨isOpen_univ, isClosed_univ⟩
+theorem isClopen_univ : IsClopen (univ : Set X) := ⟨isOpen_univ, isClosed_univ⟩
 #align is_clopen_univ isClopen_univ
 
 theorem IsClopen.compl (hs : IsClopen s) : IsClopen sᶜ :=
