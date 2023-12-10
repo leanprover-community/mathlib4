@@ -24,11 +24,8 @@ The notation `~` is used for permutation equivalence.
 
 open Nat
 
-universe uu vv
-
 namespace List
-
-variable {α : Type uu} {β : Type vv} {l₁ l₂ : List α}
+variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
 
 #align list.perm List.Perm
 
@@ -39,6 +36,8 @@ open Perm (swap)
 
 attribute [refl] Perm.refl
 #align list.perm.refl List.Perm.refl
+
+lemma perm_rfl : l ~ l := Perm.refl _
 
 -- Porting note: used rec_on in mathlib3; lean4 eqn compiler still doesn't like it
 attribute [symm] Perm.symm
@@ -224,6 +223,31 @@ end Subperm
 
 #align list.sublist.exists_perm_append List.Sublist.exists_perm_append
 
+lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
+  refine ⟨?_, fun ⟨l, h₁, h₂⟩ ↦ h₂.subperm.trans h₁.subperm⟩
+  rintro ⟨l, h₁, h₂⟩
+  obtain ⟨l', h₂⟩ := h₂.exists_perm_append
+  exact ⟨l₁ ++ l', (h₂.trans (h₁.append_right _)).symm, (prefix_append _ _).sublist⟩
+
+
+-- This is now in `Std`, but apparently misnamed as `List.subperm_singleton_iff`.
+@[simp] lemma singleton_subperm_iff : [a] <+~ l ↔ a ∈ l :=
+  ⟨fun ⟨s, hla, h⟩ ↦ by rwa [perm_singleton.1 hla, singleton_sublist] at h,
+    fun h ↦ ⟨[a], perm_rfl, singleton_sublist.2 h⟩⟩
+#align list.subperm_singleton_iff List.singleton_subperm_iff
+
+-- The prime could be removed if `List.subperm_singleton_iff` is renamed in Std.
+@[simp] lemma subperm_singleton_iff' : l <+~ [a] ↔ l = [] ∨ l = [a] := by
+  constructor
+  · rw [subperm_iff]
+    rintro ⟨s, hla, h⟩
+    rwa [perm_singleton.mp hla, sublist_singleton] at h
+  · rintro (rfl | rfl)
+    exacts [nil_subperm, Subperm.refl _]
+
+theorem Perm.countP_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
+    countP p l₁ = countP p l₂ := by
+  rw [countP_eq_length_filter, countP_eq_length_filter]; exact (s.filter _).length_eq
 #align list.perm.countp_eq List.Perm.countP_eq
 
 #align list.subperm.countp_le List.Subperm.countP_le
@@ -457,6 +481,16 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
 
 #align list.subperm_singleton_iff List.subperm_singleton_iff
 
+theorem Subperm.cons_left {l₁ l₂ : List α} (h : l₁ <+~ l₂) (x : α) (hx : count x l₁ < count x l₂) :
+    x :: l₁ <+~ l₂ := by
+  rw [subperm_ext_iff] at h ⊢
+  intro y hy
+  by_cases hy' : y = x
+  · subst x
+    simpa using Nat.succ_le_of_lt hx
+  · rw [count_cons_of_ne hy']
+    refine' h y _
+    simpa [hy'] using hy
 #align list.subperm.cons_left List.Subperm.cons_left
 
 #align list.decidable_perm List.decidablePerm

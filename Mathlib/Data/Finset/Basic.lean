@@ -421,6 +421,8 @@ theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.1 < s₂.1 ↔ s₁ ⊂ s₂ :
   and_congr val_le_iff <| not_congr val_le_iff
 #align finset.val_lt_iff Finset.val_lt_iff
 
+lemma val_strictMono : StrictMono (val : Finset α → Multiset α) := fun _ _ ↦ val_lt_iff.2
+
 theorem ssubset_iff_subset_ne {s t : Finset α} : s ⊂ t ↔ s ⊆ t ∧ s ≠ t :=
   @lt_iff_le_and_ne _ _ s t
 #align finset.ssubset_iff_subset_ne Finset.ssubset_iff_subset_ne
@@ -938,17 +940,6 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
 #align finset.ssubset_iff_exists_cons_subset Finset.ssubset_iff_exists_cons_subset
 
-lemma covby_cons (ha : a ∉ s) : s ⋖ cons a s ha :=
-  Covby.of_image ⟨⟨_, coe_injective⟩, coe_subset⟩ <| by
-    simpa using Set.covby_insert (show a ∉ (s : Set α) from ha)
-
-lemma covby_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, cons a s ha = t := by
-  refine ⟨fun hst ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, hast⟩ := ssubset_iff_exists_cons_subset.1 hst.1
-    exact ⟨a, ha, eq_of_le_of_not_lt hast <| hst.2 <| ssubset_cons _⟩
-  · rintro ⟨a, ha, rfl⟩
-    exact covby_cons ha
-
 end Cons
 
 /-! ### disjoint -/
@@ -1131,6 +1122,9 @@ theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b =
   (mem_insert.1 ha).resolve_right hb
 #align finset.eq_of_not_mem_of_mem_insert Finset.eq_of_not_mem_of_mem_insert
 
+/-- A version of `IsLawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+@[simp, nolint simpNF] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
+
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
   ext fun a => by simp
@@ -1236,8 +1230,7 @@ theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := 
   (insert_inj h).1
 #align finset.insert_inj_on Finset.insert_inj_on
 
-theorem ssubset_iff : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t :=
-  mod_cast @Set.ssubset_iff_insert α s t
+theorem ssubset_iff : s ⊂ t ↔ ∃ a, a ∉ s ∧insert a s ⊆ t := mod_cast @Set.ssubset_iff_insert α s t
 #align finset.ssubset_iff Finset.ssubset_iff
 
 theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
@@ -1337,11 +1330,6 @@ theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint 
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
 #align finset.disjoint_insert_right Finset.disjoint_insert_right
-
-lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s := by simpa using covby_cons ha
-
-lemma covby_iff_exists_insert : t ⋖ s ↔ ∃ a, a ∉ t ∧ insert a t = s := by
-  simp [covby_iff_exists_cons]
 
 end Insert
 
@@ -2086,9 +2074,6 @@ theorem erase_injOn (s : Finset α) : Set.InjOn s.erase s := fun _ _ _ _ => (era
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => erase s a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 #align finset.erase_inj_on' Finset.erase_injOn'
-
-lemma covby_iff_exists_erase : t ⋖ s ↔ ∃ a, a ∈ s ∧ t = s.erase a :=
-  covby_iff_exists_insert.trans $ exists_congr fun a ↦ by aesop
 
 end Erase
 
