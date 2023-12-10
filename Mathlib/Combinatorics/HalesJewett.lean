@@ -100,15 +100,15 @@ variable {l : Line α ι} {i : ι} {a x : α}
 instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
   ⟨fun l x i => (l.idxFun i).getD x⟩
 
-instance instFunLike [Nontrivial α] : FunLike (Line α ι) α fun _ => ι → α where
-  coe := (⇑)
-  coe_injective' l m hlm := by
-    ext i a
-    obtain ⟨b, hba⟩ := exists_ne a
-    simp only [Option.mem_def, funext_iff] at hlm ⊢
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · cases hi : idxFun m i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
-    · cases hi : idxFun l i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
+-- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
+lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → ι → α) := by
+  rintro l m hlm
+  ext i a
+  obtain ⟨b, hba⟩ := exists_ne a
+  simp only [Option.mem_def, funext_iff] at hlm ⊢
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · cases hi : idxFun m i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
+  · cases hi : idxFun l i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
 
 /-- A line is monochromatic if all its points are the same color. -/
 def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
@@ -393,25 +393,25 @@ instance : Inhabited (Subspace ι α ι) := ⟨⟨Sum.inr, fun i ↦ ⟨i, rfl�
 instance instCoeFun : CoeFun (Subspace η α ι) (fun _ ↦ (η → α) → ι → α) :=
   ⟨fun l x i ↦ (l.idxFun i).elim id x⟩
 
-instance instFunLike [Nontrivial α] : FunLike (Subspace η α ι) (η → α) (fun _ ↦ ι → α) where
-  coe := (⇑)
-  coe_injective' l m hlm := by
-    ext i
-    simp only [funext_iff] at hlm
-    cases hl : idxFun l i with
+-- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
+lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
+  rintro l m hlm
+  ext i
+  simp only [funext_iff] at hlm
+  cases hl : idxFun l i with
+  | inl a =>
+    obtain ⟨b, hba⟩ := exists_ne a
+    cases hm : idxFun m i <;> simpa [hl, hm, hba.symm] using hlm (const _ b) i
+  | inr e =>
+    cases hm : idxFun m i with
     | inl a =>
       obtain ⟨b, hba⟩ := exists_ne a
-      cases hm : idxFun m i <;> simpa [hl, hm, hba.symm] using hlm (const _ b) i
-    | inr e =>
-      cases hm : idxFun m i with
-      | inl a =>
-        obtain ⟨b, hba⟩ := exists_ne a
-        simpa [hl, hm, hba] using hlm (const _ b) i
-      | inr f =>
-        obtain ⟨a, b, hab⟩ := exists_pair_ne α
-        simp only [Sum.inr.injEq]
-        by_contra' hef
-        simpa [hl, hm, hef, hab] using hlm (Function.update (const _ a) f b) i
+      simpa [hl, hm, hba] using hlm (const _ b) i
+    | inr f =>
+      obtain ⟨a, b, hab⟩ := exists_pair_ne α
+      simp only [Sum.inr.injEq]
+      by_contra! hef
+      simpa [hl, hm, hef, hab] using hlm (Function.update (const _ a) f b) i
 
 lemma apply_def (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.idxFun i).elim id x := rfl
 lemma apply_inl (h : l.idxFun i = Sum.inl a) : l x i = a := by simp [apply_def, h]
