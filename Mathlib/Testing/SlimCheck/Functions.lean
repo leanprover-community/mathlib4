@@ -247,8 +247,8 @@ end SampleableExt
 
 end TotalFunction
 
--- We need List perm notation from `List` namespace but
--- can't open `_root_.List` directly
+-- We need List perm notation from `List` namespace but can't open `_root_.List` directly.
+-- Lean issue: https://github.com/leanprover/lean4/issues/3045
 end SlimCheck open List namespace SlimCheck
 
 /-- Data structure specifying a total function using a list of pairs
