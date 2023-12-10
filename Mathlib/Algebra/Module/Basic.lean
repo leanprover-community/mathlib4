@@ -736,7 +736,7 @@ lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
   ext fun _ => smul_ne_zero_iff
 #align function.support_smul Function.support_smul
 
-lemma support_smul_subset_right [Zero R] [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
+lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
     support (a • f) ⊆ support f := fun x hbf hf =>
   hbf <| by rw [Pi.smul_apply, hf, smul_zero]
 #align function.support_smul_subset_right Function.support_smul_subset_right
