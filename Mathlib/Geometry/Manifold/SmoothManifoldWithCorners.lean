@@ -946,14 +946,14 @@ as `LocalEquiv`.
 -/
 
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 /-- Given a chart `f` on a manifold with corners, `f.extend I` is the extended chart to the model
 vector space. -/
 @[simp, mfld_simps]
 def extend : LocalEquiv M E :=
   f.toLocalEquiv ≫ I.toLocalEquiv
-#align local_homeomorph.extend LocalHomeomorph.extend
+#align local_homeomorph.extend PartialHomeomorph.extend
 
 theorem extend_coe : ⇑(f.extend I) = I ∘ f :=
   rfl
@@ -981,7 +981,7 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
   exact image_subset _ (inter_subset_right _ _)
-#align local_homeomorph.maps_to_extend LocalHomeomorph.mapsTo_extend
+#align local_homeomorph.maps_to_extend PartialHomeomorph.mapsTo_extend
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
@@ -1003,11 +1003,11 @@ theorem continuousOn_extend : ContinuousOn (f.extend I) (f.extend I).source := b
   refine' I.continuous.comp_continuousOn _
   rw [extend_source]
   exact f.continuousOn
-#align local_homeomorph.continuous_on_extend LocalHomeomorph.continuousOn_extend
+#align local_homeomorph.continuous_on_extend PartialHomeomorph.continuousOn_extend
 
 theorem continuousAt_extend {x : M} (h : x ∈ f.source) : ContinuousAt (f.extend I) x :=
   (continuousOn_extend f I).continuousAt <| extend_source_mem_nhds f I h
-#align local_homeomorph.continuous_at_extend LocalHomeomorph.continuousAt_extend
+#align local_homeomorph.continuous_at_extend PartialHomeomorph.continuousAt_extend
 
 theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝[range I] f.extend I x := by
@@ -1234,7 +1234,7 @@ theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ max
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 #align local_homeomorph.cont_diff_within_at_extend_coord_change' LocalHomeomorph.contDiffWithinAt_extend_coord_change'
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 open LocalHomeomorph
 

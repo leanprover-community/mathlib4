@@ -1893,7 +1893,7 @@ end SpecificFunctions
 
 /-! ### Differentiable local homeomorphisms -/
 
-namespace LocalHomeomorph.MDifferentiable
+namespace PartialHomeomorph.MDifferentiable
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
@@ -1993,7 +1993,7 @@ theorem trans (he' : e'.MDifferentiable I' I'') : (e.trans e').MDifferentiable I
           (he'.symm.mdifferentiableAt hx.1)).mdifferentiableWithinAt
 #align local_homeomorph.mdifferentiable.trans LocalHomeomorph.MDifferentiable.trans
 
-end LocalHomeomorph.MDifferentiable
+end PartialHomeomorph.MDifferentiable
 
 /-! ### Differentiability of `extChartAt` -/
 

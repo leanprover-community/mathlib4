@@ -101,7 +101,7 @@ theorem Homeomorph.coe_unitBall_apply_zero :
 
 variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 /-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
 interpreted as a `LocalHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/

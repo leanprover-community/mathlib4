@@ -1057,7 +1057,7 @@ section Singleton
 
 variable {α : Type*} [TopologicalSpace α]
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable (e : PartialHomeomorph α H)
 
@@ -1103,7 +1103,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
 #align local_homeomorph.singleton_has_groupoid LocalHomeomorph.singleton_hasGroupoid
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 namespace OpenEmbedding
 

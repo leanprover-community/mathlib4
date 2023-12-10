@@ -404,7 +404,7 @@ theorem Homeomorph.contDiffOn_unitBall_symm {f : E → E}
   LocalHomeomorph.contDiffOn_univUnitBall_symm.congr h
 #align cont_diff_on_homeomorph_unit_ball_symm Homeomorph.contDiffOn_unitBall_symm
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable {c : E} {r : ℝ}
 
@@ -427,6 +427,6 @@ theorem contDiffOn_univBall_symm :
     apply LocalHomeomorph.symm_mapsTo
   · exact contDiffOn_id.sub contDiffOn_const
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 end DiffeomorphUnitBall

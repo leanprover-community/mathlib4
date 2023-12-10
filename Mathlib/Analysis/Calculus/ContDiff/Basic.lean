@@ -1895,7 +1895,7 @@ theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ �
     f.toPartialHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm_deriv Homeomorph.contDiff_symm_deriv
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable (𝕜)
 
@@ -1920,7 +1920,7 @@ lemma contDiffOn_restrContDiff_source (f : PartialHomeomorph E F) (n : ℕ) :
 lemma contDiffOn_restrContDiff_target (f : PartialHomeomorph E F) (n : ℕ) :
     ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n).target := fun _x hx ↦ hx.2.1.contDiffWithinAt
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 end FunctionInverse
 

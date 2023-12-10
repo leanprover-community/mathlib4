@@ -2233,7 +2233,7 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
@@ -2269,7 +2269,7 @@ theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.tar
 set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_o_congr LocalHomeomorph.isLittleO_congr
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 namespace Homeomorph
 

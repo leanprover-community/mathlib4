@@ -60,7 +60,7 @@ structure PartialHomeomorph (α : Type*) (β : Type*) [TopologicalSpace α]
   continuousOn_invFun : ContinuousOn invFun target
 #align local_homeomorph PartialHomeomorph
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable (e : PartialHomeomorph α β) (e' : PartialHomeomorph β γ)
 
@@ -1301,7 +1301,7 @@ theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
 
 #align local_homeomorph.to_open_embedding LocalHomeomorph.to_openEmbedding
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 namespace Homeomorph
 
@@ -1371,7 +1371,7 @@ theorem localHomeomorphSubtypeCoe_target : s.localHomeomorphSubtypeCoe.target = 
 
 end TopologicalSpace.Opens
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 open TopologicalSpace
 
@@ -1457,4 +1457,4 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} [Nonempty U] [Nonempty V] 
     rw [U.localHomeomorphSubtypeCoe.right_inv hy.2]
 #align local_homeomorph.subtype_restr_symm_eq_on_of_le LocalHomeomorph.subtypeRestr_symm_eqOn_of_le
 
-end LocalHomeomorph
+end PartialHomeomorph
