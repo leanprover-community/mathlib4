@@ -2251,7 +2251,7 @@ theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.ta
       ((e.eventually_right_inverse hb).mono fun x hx => congr_arg f hx)
       ((e.eventually_right_inverse hb).mono fun x hx => congr_arg g hx)⟩
 set_option linter.uppercaseLean3 false in
-#align local_homeomorph.is_O_with_congr LocalHomeomorph.isBigOWith_congr
+#align local_homeomorph.is_O_with_congr PartialHomeomorph.isBigOWith_congr
 
 /-- Transfer `IsBigO` over a `LocalHomeomorph`. -/
 theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
@@ -2259,7 +2259,7 @@ theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target
   simp only [IsBigO_def]
   exact exists_congr fun C => e.isBigOWith_congr hb
 set_option linter.uppercaseLean3 false in
-#align local_homeomorph.is_O_congr LocalHomeomorph.isBigO_congr
+#align local_homeomorph.is_O_congr PartialHomeomorph.isBigO_congr
 
 /-- Transfer `IsLittleO` over a `LocalHomeomorph`. -/
 theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
@@ -2267,7 +2267,7 @@ theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.tar
   simp only [IsLittleO_def]
   exact forall₂_congr fun c _hc => e.isBigOWith_congr hb
 set_option linter.uppercaseLean3 false in
-#align local_homeomorph.is_o_congr LocalHomeomorph.isLittleO_congr
+#align local_homeomorph.is_o_congr PartialHomeomorph.isLittleO_congr
 
 end PartialHomeomorph
 

@@ -267,7 +267,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   symm' := fun e ↦ by
     simp only [mem_iUnion]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
-    refine' ⟨fun b => (φ b).symm, U, hU, h2φ, _, LocalHomeomorph.EqOnSource.symm' heφ⟩
+    refine' ⟨fun b => (φ b).symm, U, hU, h2φ, _, PartialHomeomorph.EqOnSource.symm' heφ⟩
     simp_rw [ContinuousLinearEquiv.symm_symm]
     exact hφ
   id_mem' := by
@@ -277,7 +277,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     -/
     refine mem_iUnion.2 ⟨fun _ ↦ .refl 𝕜 F, mem_iUnion.2 ⟨univ, mem_iUnion.2 ⟨isOpen_univ, ?_⟩⟩⟩
     refine mem_iUnion.2 ⟨contMDiffOn_const, mem_iUnion.2 ⟨contMDiffOn_const, ?_, ?_⟩⟩
-    · simp only [FiberwiseLinear.localHomeomorph, LocalHomeomorph.refl_localEquiv,
+    · simp only [FiberwiseLinear.localHomeomorph, PartialHomeomorph.refl_localEquiv,
         LocalEquiv.refl_source, univ_prod_univ]
     · exact eqOn_refl id _
   locality' := by

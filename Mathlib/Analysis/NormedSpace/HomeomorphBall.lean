@@ -39,7 +39,7 @@ noncomputable section
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps (config := .lemmasOnly)]
-def LocalHomeomorph.univUnitBall : PartialHomeomorph E E where
+def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
   toFun x := (1 + ‖x‖ ^ 2).sqrt⁻¹ • x
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   source := univ
@@ -73,11 +73,11 @@ def LocalHomeomorph.univUnitBall : PartialHomeomorph E E where
       (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
 
 @[simp]
-theorem LocalHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
+theorem PartialHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_apply]
 
 @[simp]
-theorem LocalHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
+theorem PartialHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_symm_apply]
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
@@ -90,13 +90,13 @@ See also `Homeomorph.contDiff_unitBall` and `LocalHomeomorph.contDiffOn_unitBall
 for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! (config := .lemmasOnly)]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
-  (Homeomorph.Set.univ _).symm.trans LocalHomeomorph.univUnitBall.toHomeomorphSourceTarget
+  (Homeomorph.Set.univ _).symm.trans PartialHomeomorph.univUnitBall.toHomeomorphSourceTarget
 #align homeomorph_unit_ball Homeomorph.unitBall
 
 @[simp]
 theorem Homeomorph.coe_unitBall_apply_zero :
     (Homeomorph.unitBall (0 : E) : E) = 0 :=
-  LocalHomeomorph.univUnitBall_apply_zero
+  PartialHomeomorph.univUnitBall_apply_zero
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
 variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]

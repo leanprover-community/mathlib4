@@ -29,7 +29,7 @@ theorem isOpenMap_exp : IsOpenMap exp :=
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
 noncomputable def expLocalHomeomorph : PartialHomeomorph ℂ ℂ :=
-  LocalHomeomorph.ofContinuousOpen
+  PartialHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
       source := {z : ℂ | z.im ∈ Ioo (-π) π}

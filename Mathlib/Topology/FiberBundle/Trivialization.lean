@@ -560,7 +560,7 @@ theorem continuousAt_of_comp_right {X : Type*} [TopologicalSpace X] {f : Z → X
     rw [LocalEquiv.symm_target, e.mem_source]
     exact he
   rwa [e.toLocalHomeomorph.symm.continuousAt_iff_continuousAt_comp_right hez,
-    LocalHomeomorph.symm_symm]
+    PartialHomeomorph.symm_symm]
 #align trivialization.continuous_at_of_comp_right Trivialization.continuousAt_of_comp_right
 
 /-- Read off the continuity of a function `f : X → Z` at `x : X` by transferring via a
@@ -584,7 +584,7 @@ theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align trivialization.coe_mem_source Trivialization.coe_mem_source
 
-@[deprecated LocalHomeomorph.open_target]
+@[deprecated PartialHomeomorph.open_target]
 theorem open_target' : IsOpen e'.target := e'.open_target
 #align trivialization.open_target Trivialization.open_target'
 

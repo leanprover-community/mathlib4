@@ -193,7 +193,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, LocalHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -478,7 +478,7 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     rw [mem_smoothFiberwiseLinear_iff]
     refine' ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
       smoothOn_symm_coordChangeL IB e e', _⟩
-    refine LocalHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
+    refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
     · simp only [e.symm_trans_source_eq e', FiberwiseLinear.localHomeomorph, trans_toLocalEquiv,
         symm_toLocalEquiv]
     · rintro ⟨b, v⟩ hb
