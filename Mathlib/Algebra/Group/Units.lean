@@ -785,7 +785,7 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
 #align is_add_unit.add_right_cancel IsAddUnit.add_right_cancel
 
 @[to_additive]
-protected theorem mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) :=
+protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
   fun _ _ => h.mul_left_cancel
 #align is_unit.mul_right_injective IsUnit.mul_right_injective
 #align is_add_unit.add_right_injective IsAddUnit.add_right_injective

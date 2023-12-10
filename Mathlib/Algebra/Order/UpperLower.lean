@@ -132,7 +132,7 @@ instance : Div (UpperSet α) :=
 
 @[to_additive]
 instance : SMul α (UpperSet α) :=
-  ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
+  ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
@@ -200,7 +200,7 @@ instance : Div (LowerSet α) :=
 
 @[to_additive]
 instance : SMul α (LowerSet α) :=
-  ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
+  ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=

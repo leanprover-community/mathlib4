@@ -407,7 +407,7 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
         _ = Nat.descFactorial (m.succ + k) k.succ • p.coeff (m + k.succ) := by
           rw [← Nat.succ_add, Nat.descFactorial_succ, add_tsub_cancel_right]
         _ = Nat.descFactorial (m + k.succ) k.succ • p.coeff (m + k.succ) := by
-          rw [Nat.succ_add_eq_succ_add]
+          rw [Nat.succ_add_eq_add_succ]
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
