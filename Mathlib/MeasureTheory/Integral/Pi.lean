@@ -42,8 +42,7 @@ theorem MeasureTheory.integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E
     ∫ x : (i : ι) → E i, ∏ i, f i (x i) = ∏ i, ∫ x, f i x := by
   let n := Fintype.card ι
   let e : Fin n ≃ ι := (equivFin ι).symm
-  rw [← MeasurePreserving.integral_comp' (μ := volume) (ν := volume)
-    (measurePreserving_piCongrLeft (fun i => (volume : Measure (E i))) e)]
+  rw [← (volume_measurePreserving_piCongrLeft _ e).integral_comp']
   have h0 : ∀ (x : (m : Fin n) → E (e m)) (m : Fin n),
       (MeasurableEquiv.piCongrLeft E e) x (e m) = x m
   · intro x m
