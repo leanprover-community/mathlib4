@@ -29,13 +29,13 @@ This file contains basic definitions for root systems and root data.
    roots and coroots is unique.
  * `RootSystem.ext`: In characteristic zero if there is no torsion, a root system is determined
    entirely by its roots.
- * `RootSystem.mk'`: In characteristic zero if there is no torsion, to check that a collection of
+ * `RootSystem.mk'`: In characteristic zero if there is no torsion, to check that a family of
    roots form a root system, we do not need to check that the coroots are stable under reflections
    since this follows from the corresponding property for the roots.
 
 ## Implementation details
 
-A root datum is sometimes defined as collections of roots and coroots together with a bijection
+A root datum is sometimes defined as subsets of roots and coroots together with a bijection
 between them, subject to hypotheses. However the hypotheses ensure that the bijection is unique.
 For root systems, things are even more extreme: the coroots are uniquely determined by the roots.
 Furthermore a root system induces a canonical non-degenerate bilinear form on the ambient space and
@@ -216,12 +216,12 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply]
-  apply eq_of_preReflection_image_eq' (P₁.ne_zero i) (finite_range P₁.root)
+  apply Dual.eq_of_preReflection_image_subset' (P₁.ne_zero i) (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
-  · exact P₁.reflection_image_eq i
+  · exact P₁.image_root_subset i
   · exact hr ▸ P₂.coroot_root_two i
-  · exact hr ▸ P₂.reflection_image_eq i
+  · exact hr ▸ P₂.image_root_subset i
 
 /-- This lemma exists to support the definition `RootSystem.mk'` and usually should not be used
 directly. The lemma `RootPairing.coroot_eq_coreflection_of_root_eq_of_span_eq_top` or even
@@ -245,7 +245,7 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top' [CharZero R] [NoZeroSMul
     ext; simp [← preReflection_preReflection β (e β') (hp i), preReflection_apply, e.map_sub]
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   apply e.injective
-  apply eq_of_preReflection_image_eq_fixed hk₀ (finite_range root) hsp (hp k) (hs k)
+  apply Dual.eq_of_preReflection_image_subset hk₀ (finite_range root) hsp (hp k) (hs k)
   · simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (e α' β), e.map_sub]
   · rw [hk, hij, LinearMap.coe_comp, LinearMap.coe_comp, image_comp, image_comp]
     exact subset_trans (image_mono (image_mono (hs i))) (subset_trans (image_mono (hs j)) (hs i))
@@ -287,13 +287,13 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   rintro P₁ P₂ hr - ⟨i, rfl⟩
   use i
   apply (LinearEquiv.refl R (Dual R M)).injective
-  apply eq_of_preReflection_image_eq (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
+  apply Dual.eq_of_preReflection_image_subset (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
   · exact hr ▸ P₂.coroot_root_two i
-  · exact hr ▸ P₂.reflection_image_eq i
+  · exact hr ▸ P₂.image_root_subset i
   · exact P₁.coroot_root_two i
-  · exact P₁.reflection_image_eq i
+  · exact P₁.image_root_subset i
 
-/-- In characteristic zero if there is no torsion, to check that a collection of roots form a root
+/-- In characteristic zero if there is no torsion, to check that a family of roots form a root
 system, we do not need to check that the coroots are stable under reflections since this follows
 from the corresponding property for the roots. -/
 def mk' [CharZero R] [NoZeroSMulDivisors R M]

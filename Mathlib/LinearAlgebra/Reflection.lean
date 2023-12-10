@@ -27,8 +27,8 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
  * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
    that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
    linear map.
- * `Module.eq_of_preReflection_image_eq`: a uniqueness result about reflections preserving finite
-   spanning sets that is useful in the theory of root data / systems.
+ * `Module.Dual.eq_of_preReflection_image_subset`: a uniqueness result about reflections preserving
+   finite spanning sets that is useful in the theory of root data / systems.
 
 ## TODO
 
@@ -84,48 +84,52 @@ lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
 the endomorphism of `M` for which `y ↦ y - (f y) • x`.
 
 It is an involutive endomorphism of `M` fixing the kernel of `f` for which `x ↦ -x`. -/
-def reflection {x : M} {f : Dual R M} (h : f x = 2) : M ≃ₗ[R] M :=
+def reflection (h : f x = 2) : M ≃ₗ[R] M :=
   LinearEquiv.ofBijective (preReflection x f) (involutive_preReflection h).bijective
 
-lemma reflection_apply {x : M} (y : M) {f : Dual R M} (h : f x = 2) :
+lemma reflection_apply (h : f x = 2) :
     reflection h y = y - (f y) • x :=
   preReflection_apply x y f
 
 @[simp]
-lemma reflection_apply_self {x : M} {f : Dual R M} (h : f x = 2) :
+lemma reflection_apply_self (h : f x = 2) :
     reflection h x = - x :=
   preReflection_apply_self h
 
-lemma involutive_reflection {x : M} {f : Dual R M} (h : f x = 2) :
+lemma involutive_reflection (h : f x = 2) :
     Involutive (reflection h) :=
   involutive_preReflection h
 
--- TODO Tidy up everthing below: still a total mess.
+@[simp]
+lemma reflection_symm (h : f x = 2) :
+    (reflection h).symm = reflection h := by
+  ext m
+  rw [LinearEquiv.symm_apply_eq]
+  exact (involutive_reflection h m).symm
 
-lemma eq_of_preReflection_image_eq [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0)
-    {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤)
-    {f g : Dual R M} (hf₁ : f x = 2) (hf₂ : preReflection x f '' Φ = Φ)
-                     (hg₁ : g x = 2) (hg₂ : preReflection x g '' Φ = Φ) :
+/-- See also `Module.Dual.eq_of_preReflection_image_subset'` for a variant of this lemma which
+applies when `Φ` does not span. -/
+lemma Dual.eq_of_preReflection_image_subset [CharZero R] [NoZeroSMulDivisors R M]
+    {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
+    (hf₁ : f x = 2) (hf₂ : preReflection x f '' Φ ⊆ Φ)
+    (hg₁ : g x = 2) (hg₂ : preReflection x g '' Φ ⊆ Φ) :
     f = g := by
   let u := reflection hg₁ * reflection hf₁
+  have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
+    ext y
+    simp only [reflection_apply, hg₁, two_smul, LinearEquiv.coe_mul, LinearEquiv.coe_coe,
+      LinearMap.mul_apply, LinearMap.add_apply, LinearMap.id_coe, id_eq, LinearMap.coe_smulRight,
+      LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel', smul_neg, sub_neg_eq_add, sub_smul]
+    abel
+  replace hu : ∀ (n : ℕ),
+      ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
+    intros n
+    induction' n with n ih; simp
+    have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by ext; simp [hf₁, hg₁]
+    rw [pow_succ, LinearEquiv.coe_mul, ih, hu, add_mul, mul_add, mul_add]
+    simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero, add_assoc,
+      Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
-    have hu : u = LinearMap.id (R := R) (M := M) + dualTensorHom R M M ((f - g) ⊗ₜ x) := by
-      ext y
-      simp only [reflection, LinearEquiv.coe_mul, LinearMap.mul_apply, LinearEquiv.coe_coe,
-        LinearEquiv.ofBijective_apply, preReflection_apply, map_sub, map_smul, hg₁, two_smul,
-        sub_add_cancel', smul_neg, sub_neg_eq_add, LinearMap.add_apply, LinearMap.id_coe, id.def,
-        dualTensorHom_apply, LinearMap.sub_apply, sub_smul]
-      abel
-    replace hu : ∀ (n : ℕ), ↑(u^n) =
-        LinearMap.id (R := R) (M := M) + (n : R) • dualTensorHom R M M ((f - g) ⊗ₜ x) := by
-      intros n
-      induction' n with n ih; simp
-      have aux : (dualTensorHom R M M ((f - g) ⊗ₜ[R] x)).comp
-        ((n : R) • dualTensorHom R M M ((f - g) ⊗ₜ[R] x)) = 0 := by ext v; simp [hf₁, hg₁]
-      rw [pow_succ, LinearEquiv.coe_mul, ih, hu, add_mul, mul_add, mul_add]
-      simp only [LinearMap.mul_eq_comp, LinearMap.id_comp, LinearMap.comp_id, Nat.cast_succ,
-        aux, add_zero, add_smul, one_smul, add_assoc]
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this
     replace hn₁ : (↑(u ^ n) : M →ₗ[R] M) = LinearMap.id := LinearEquiv.toLinearMap_inj.mpr hn₁
     simpa [hn₁, hn₀.ne', hx, sub_eq_zero] using hu n
@@ -133,66 +137,30 @@ lemma eq_of_preReflection_image_eq [CharZero R] [NoZeroSMulDivisors R M]
     have hf : Injective (LinearEquiv.automorphismGroup.toLinearMapMonoidHom (R := R) (M := M)) :=
       LinearEquiv.toLinearMap_injective
     exact hf.isOfFinOrder_iff.mp this
-  refine isOfFinOrder_of_finite_of_span_eq_top_of_image_eq hΦ₁ hΦ₂ ?_
-  change (preReflection x g ∘ preReflection x f '' Φ) = Φ
-  rw [image_comp, hf₂, hg₂]
+  refine isOfFinOrder_of_finite_of_span_eq_top_of_image_eq hΦ₁ hΦ₂ <|
+    (hΦ₁.equiv_image_eq_iff_subset u.toEquiv).mpr ?_
+  simpa only [← image_comp] using (image_mono hf₂).trans hg₂
 
--- TODO Replace the lemma above with this (more generally use `⊆` instead of `=` in corresponding
--- hypotheses across all relevant lemmas)
-lemma eq_of_preReflection_image_eq_fixed [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0)
-    {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤)
-    {f g : Dual R M} (hf₁ : f x = 2) (hf₂ : preReflection x f '' Φ ⊆ Φ)
-                     (hg₁ : g x = 2) (hg₂ : preReflection x g '' Φ ⊆ Φ) :
-    f = g := by
-  change (reflection hf₁).toEquiv '' Φ ⊆ Φ at hf₂
-  rw [← hΦ₁.equiv_image_eq_iff_subset] at hf₂
-  change (reflection hg₁).toEquiv '' Φ ⊆ Φ at hg₂
-  rw [← hΦ₁.equiv_image_eq_iff_subset] at hg₂
-  exact eq_of_preReflection_image_eq hx hΦ₁ hΦ₂ hf₁ hf₂ hg₁ hg₂
-
-lemma eq_of_preReflection_image_eq' [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0)
-    {Φ : Set M} (hΦ₁ : Φ.Finite) (hx' : x ∈ span R Φ)
-    {f g : Dual R M} (hf₁ : f x = 2) (hf₂ : preReflection x f '' Φ = Φ)
-                     (hg₁ : g x = 2) (hg₂ : preReflection x g '' Φ = Φ) :
+lemma Dual.eq_of_preReflection_image_subset' [CharZero R] [NoZeroSMulDivisors R M]
+    {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hx' : x ∈ span R Φ) {f g : Dual R M}
+    (hf₁ : f x = 2) (hf₂ : preReflection x f '' Φ ⊆ Φ)
+    (hg₁ : g x = 2) (hg₂ : preReflection x g '' Φ ⊆ Φ) :
     (span R Φ).subtype.dualMap f = (span R Φ).subtype.dualMap g := by
-  let Φ' : Set (span R Φ) := range (inclusion <| Submodule.subset_span (R := R) (s := Φ))
-  have hΦ'₁ : Φ'.Finite := by
-    rw [← finite_coe_iff] at hΦ₁; exact finite_range (inclusion Submodule.subset_span)
+  set Φ' : Set (span R Φ) := range (inclusion <| Submodule.subset_span (R := R) (s := Φ))
+  rw [← finite_coe_iff] at hΦ₁
+  have hΦ'₁ : Φ'.Finite := finite_range (inclusion Submodule.subset_span)
   have hΦ'₂ : span R Φ' = ⊤ := by simp
   let x' : span R Φ := ⟨x, hx'⟩
   have hx' : x' ≠ 0 := Subtype.ne_of_val_ne hx
-  let f' := (span R Φ).subtype.dualMap f
-  let g' := (span R Φ).subtype.dualMap g
-  replace hf₂ : preReflection x' f' '' Φ' = Φ' := by
-    ext ⟨y, hy⟩
-    -- Fix (and abstract) this 🤢🤮 proof
-    simp only [preReflection_apply, LinearMap.dualMap_apply, Submodule.coeSubtype,
-      SetLike.mk_smul_mk, range_inclusion, SetLike.coe_sort_coe, mem_image, mem_setOf_eq,
-      Subtype.exists, exists_and_left]
-    simp_rw [Subtype.ext_iff]
-    simp only [AddSubgroupClass.coe_sub, exists_prop]
-    simp_rw [← preReflection_apply]
-    conv_rhs => rw [← hf₂]
-    simp only [mem_image]
-    refine exists_congr fun z ↦ ?_
-    simp only [and_congr_right_iff, and_iff_right_iff_imp]
-    exact fun hz _ ↦ Submodule.subset_span hz
-  replace hg₂ : preReflection x' g' '' Φ' = Φ' := by
-    ext ⟨y, hy⟩
-    -- Fix (and abstract) this 🤢🤮 proof
-    simp only [preReflection_apply, LinearMap.dualMap_apply, Submodule.coeSubtype,
-      SetLike.mk_smul_mk, range_inclusion, SetLike.coe_sort_coe, mem_image, mem_setOf_eq,
-      Subtype.exists, exists_and_left]
-    simp_rw [Subtype.ext_iff]
-    simp only [AddSubgroupClass.coe_sub, exists_prop]
-    simp_rw [← preReflection_apply]
-    conv_rhs => rw [← hg₂]
-    simp only [mem_image]
-    refine exists_congr fun z ↦ ?_
-    simp only [and_congr_right_iff, and_iff_right_iff_imp]
-    exact fun hz _ ↦ Submodule.subset_span hz
-  exact eq_of_preReflection_image_eq hx' hΦ'₁ hΦ'₂ (f := f') (g := g') hf₁ hf₂ hg₁ hg₂
+  have : ∀ (F : Dual R M) (y : span R Φ),
+      (preReflection x' ((span R Φ).subtype.dualMap F) y : M) = preReflection x F (y : M) :=
+    fun F y ↦ rfl
+  replace this : ∀ {F : Dual R M}, preReflection x F '' Φ ⊆ Φ →
+      preReflection x' ((span R Φ).subtype.dualMap F) '' Φ' ⊆ Φ' := by
+    intro F hF ⟨y, hy⟩ hy'
+    simp_rw [mem_image, Subtype.ext_iff, this, range_inclusion] at hy'
+    obtain ⟨z, hz, -, rfl⟩ := hy'
+    simpa using hF (mem_image_of_mem _ hz)
+  exact eq_of_preReflection_image_subset hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
 
 end Module

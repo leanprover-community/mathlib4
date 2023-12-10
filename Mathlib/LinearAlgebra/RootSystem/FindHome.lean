@@ -26,19 +26,19 @@ lemma LinearEquiv.coe_mul {e₁ e₂ : M ≃ₗ[R] M} :
   rfl
 
 @[simp]
-lemma eq_zero_or_zero_of_dualTensorHom_tmul_eq_zero
-    {f : Dual R M} {x : M} [NoZeroSMulDivisors R M] :
-    dualTensorHom R M M (f ⊗ₜ x) = 0 ↔ f = 0 ∨ x = 0 := by
+lemma LinearMap.smulRight_apply_eq_zero_iff {N : Type*} [AddCommGroup N] [Module R N]
+    {f : Dual R N} {x : M} [NoZeroSMulDivisors R M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases eq_or_ne x 0 with rfl | hx; simp
     left
     ext v
     simp only [LinearMap.zero_apply]
     replace h : f v • x = 0 :=
-      by simpa only [dualTensorHom_apply, LinearMap.zero_apply] using LinearMap.congr_fun h v
+      by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
     rw [smul_eq_zero] at h
     tauto
-  · rcases h with rfl | rfl <;> simp
+  · rcases h with rfl | rfl <;> ext <;> simp
 
 theorem Set.Finite.bijOn_of_mapsTo_of_surjOn {α : Type*} {s : Set α} {f : α → α}
     (hf : s.Finite) (hm : MapsTo f s s) (hi : SurjOn f s s) : BijOn f s s := by
