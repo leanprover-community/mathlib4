@@ -57,6 +57,10 @@ def lawson : TopologicalSpace α := lower α ⊓ scott
 
 variable (α) [TopologicalSpace α]
 
+/-- Predicate for an ordered topological space to be equipped with its Lawson topology.
+
+The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
+-/
 class IsLawson : Prop where
   topology_eq_lawson : ‹TopologicalSpace α› = lawson
 
