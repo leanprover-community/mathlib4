@@ -69,10 +69,10 @@ variable (G : StructureGroupoid H) (G' : StructureGroupoid H')
 to charted spaces admitting these groupoids will inherit the good behavior. -/
 structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop where
   is_local : ∀ {s x u} {f : H → H'}, IsOpen u → x ∈ u → (P f s x ↔ P f (s ∩ u) x)
-  right_invariance' : ∀ {s x f} {e : LocalHomeomorph H H},
+  right_invariance' : ∀ {s x f} {e : PartialHomeomorph H H},
     e ∈ G → x ∈ e.source → P f s x → P (f ∘ e.symm) (e.symm ⁻¹' s) (e x)
   congr_of_forall : ∀ {s x} {f g : H → H'}, (∀ y ∈ s, f y = g y) → f x = g x → P f s x → P g s x
-  left_invariance' : ∀ {s x f} {e' : LocalHomeomorph H' H'},
+  left_invariance' : ∀ {s x f} {e' : PartialHomeomorph H' H'},
     e' ∈ G' → s ⊆ f ⁻¹' e'.source → f x ∈ e'.source → P f s x → P (e' ∘ f) s x
 #align structure_groupoid.local_invariant_prop StructureGroupoid.LocalInvariantProp
 
@@ -121,7 +121,7 @@ theorem congr' {s : Set H} {x : H} {f g : H → H'} (h : f =ᶠ[𝓝 x] g) (hP :
   hG.congr h.symm hP
 #align structure_groupoid.local_invariant_prop.congr' StructureGroupoid.LocalInvariantProp.congr'
 
-theorem left_invariance {s : Set H} {x : H} {f : H → H'} {e' : LocalHomeomorph H' H'}
+theorem left_invariance {s : Set H} {x : H} {f : H → H'} {e' : PartialHomeomorph H' H'}
     (he' : e' ∈ G') (hfs : ContinuousWithinAt f s x) (hxe' : f x ∈ e'.source) :
     P (e' ∘ f) s x ↔ P f s x := by
   have h2f := hfs.preimage_mem_nhdsWithin (e'.open_source.mem_nhds hxe')
@@ -139,7 +139,7 @@ theorem left_invariance {s : Set H} {x : H} {f : H → H'} {e' : LocalHomeomorph
     exact hG.left_invariance' he' (inter_subset_right _ _) hxe'
 #align structure_groupoid.local_invariant_prop.left_invariance StructureGroupoid.LocalInvariantProp.left_invariance
 
-theorem right_invariance {s : Set H} {x : H} {f : H → H'} {e : LocalHomeomorph H H} (he : e ∈ G)
+theorem right_invariance {s : Set H} {x : H} {f : H → H'} {e : PartialHomeomorph H H} (he : e ∈ G)
     (hxe : x ∈ e.source) : P (f ∘ e.symm) (e.symm ⁻¹' s) (e x) ↔ P f s x := by
   refine' ⟨fun h ↦ _, hG.right_invariance' he hxe⟩
   have := hG.right_invariance' (G.symm he) (e.mapsTo hxe) h
@@ -208,8 +208,8 @@ open ChartedSpace
 
 namespace StructureGroupoid
 
-variable {G : StructureGroupoid H} {G' : StructureGroupoid H'} {e e' : LocalHomeomorph M H}
-  {f f' : LocalHomeomorph M' H'} {P : (H → H') → Set H → H → Prop} {g g' : M → M'} {s t : Set M}
+variable {G : StructureGroupoid H} {G' : StructureGroupoid H'} {e e' : PartialHomeomorph M H}
+  {f f' : PartialHomeomorph M' H'} {P : (H → H') → Set H → H → Prop} {g g' : M → M'} {s t : Set M}
   {x : M} {Q : (H → H) → Set H → H → Prop}
 
 theorem liftPropWithinAt_univ : LiftPropWithinAt P g univ x ↔ LiftPropAt P g x := Iff.rfl
@@ -278,7 +278,7 @@ theorem liftPropWithinAt_indep_chart_target_aux2 (g : H → M') {x : H} {s : Set
   exact (hgs.eventually <| f.eventually_left_inverse xf).mono fun y ↦ congr_arg f'
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_indep_chart_target_aux2 StructureGroupoid.LocalInvariantProp.liftPropWithinAt_indep_chart_target_aux2
 
-theorem liftPropWithinAt_indep_chart_target_aux {g : X → M'} {e : LocalHomeomorph X H} {x : X}
+theorem liftPropWithinAt_indep_chart_target_aux {g : X → M'} {e : PartialHomeomorph X H} {x : X}
     {s : Set X} (xe : x ∈ e.source) (hf : f ∈ G'.maximalAtlas M') (xf : g x ∈ f.source)
     (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source) (hgs : ContinuousWithinAt g s x) :
     P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) (e x) ↔ P (f' ∘ g ∘ e.symm) (e.symm ⁻¹' s) (e x) := by
@@ -527,12 +527,12 @@ theorem liftPropOn_chart_symm [HasGroupoid M G] (hG : G.LocalInvariantProp G Q)
 #align structure_groupoid.local_invariant_prop.lift_prop_on_chart_symm StructureGroupoid.LocalInvariantProp.liftPropOn_chart_symm
 
 theorem liftPropAt_of_mem_groupoid (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y)
-    {f : LocalHomeomorph H H} (hf : f ∈ G) {x : H} (hx : x ∈ f.source) : LiftPropAt Q f x :=
+    {f : PartialHomeomorph H H} (hf : f ∈ G) {x : H} (hx : x ∈ f.source) : LiftPropAt Q f x :=
   liftPropAt_of_mem_maximalAtlas hG hQ (G.mem_maximalAtlas_of_mem_groupoid hf) hx
 #align structure_groupoid.local_invariant_prop.lift_prop_at_of_mem_groupoid StructureGroupoid.LocalInvariantProp.liftPropAt_of_mem_groupoid
 
 theorem liftPropOn_of_mem_groupoid (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y)
-    {f : LocalHomeomorph H H} (hf : f ∈ G) : LiftPropOn Q f f.source :=
+    {f : PartialHomeomorph H H} (hf : f ∈ G) : LiftPropOn Q f f.source :=
   liftPropOn_of_mem_maximalAtlas hG hQ (G.mem_maximalAtlas_of_mem_groupoid hf)
 #align structure_groupoid.local_invariant_prop.lift_prop_on_of_mem_groupoid StructureGroupoid.LocalInvariantProp.liftPropOn_of_mem_groupoid
 
@@ -590,7 +590,7 @@ open LocalHomeomorph
 structure groupoid `G` for `H`, relative to a set `s` in `H`, if for all points `x` in the set, the
 function agrees with a `G`-structomorphism on `s` in a neighbourhood of `x`. -/
 def IsLocalStructomorphWithinAt (f : H → H) (s : Set H) (x : H) : Prop :=
-  x ∈ s → ∃ e : LocalHomeomorph H H, e ∈ G ∧ EqOn f e.toFun (s ∩ e.source) ∧ x ∈ e.source
+  x ∈ s → ∃ e : PartialHomeomorph H H, e ∈ G ∧ EqOn f e.toFun (s ∩ e.source) ∧ x ∈ e.source
 #align structure_groupoid.is_local_structomorph_within_at StructureGroupoid.IsLocalStructomorphWithinAt
 
 /-- For a groupoid `G` which is `ClosedUnderRestriction`, being a local structomorphism is a local
@@ -639,10 +639,10 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph.
   This gives us an `e` that is defined on a subset of `f.source`. -/
 theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGroupoid H}
-    [ClosedUnderRestriction G] (f : LocalHomeomorph H H) {s : Set H} {x : H}
+    [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {s : Set H} {x : H}
     (hx : x ∈ f.source ∪ sᶜ) :
     G.IsLocalStructomorphWithinAt (⇑f) s x ↔
-      x ∈ s → ∃ e : LocalHomeomorph H H,
+      x ∈ s → ∃ e : PartialHomeomorph H H,
       e ∈ G ∧ e.source ⊆ f.source ∧ EqOn f (⇑e) (s ∩ e.source) ∧ x ∈ e.source := by
   constructor
   · intro hf h2x
@@ -662,10 +662,10 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGro
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
   the set we're considering is a superset of `f.source`. -/
 theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGroupoid H}
-    [ClosedUnderRestriction G] (f : LocalHomeomorph H H) {s : Set H} {x : H} (hs : f.source ⊆ s)
+    [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {s : Set H} {x : H} (hs : f.source ⊆ s)
     (hx : x ∈ f.source ∪ sᶜ) :
     G.IsLocalStructomorphWithinAt (⇑f) s x ↔
-      x ∈ s → ∃ e : LocalHomeomorph H H,
+      x ∈ s → ∃ e : PartialHomeomorph H H,
       e ∈ G ∧ e.source ⊆ f.source ∧ EqOn f (⇑e) e.source ∧ x ∈ e.source := by
   rw [f.isLocalStructomorphWithinAt_iff hx]
   refine' imp_congr_right fun _ ↦ exists_congr fun e ↦ and_congr_right fun _ ↦ _
@@ -676,9 +676,9 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
   the set we're considering is `f.source`. -/
 theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_source_iff {G : StructureGroupoid H}
-    [ClosedUnderRestriction G] (f : LocalHomeomorph H H) {x : H} :
+    [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {x : H} :
     G.IsLocalStructomorphWithinAt (⇑f) f.source x ↔
-      x ∈ f.source → ∃ e : LocalHomeomorph H H,
+      x ∈ f.source → ∃ e : PartialHomeomorph H H,
       e ∈ G ∧ e.source ⊆ f.source ∧ EqOn f (⇑e) e.source ∧ x ∈ e.source :=
   haveI : x ∈ f.source ∪ f.sourceᶜ := by simp_rw [union_compl_self, mem_univ]
   f.isLocalStructomorphWithinAt_iff' Subset.rfl this

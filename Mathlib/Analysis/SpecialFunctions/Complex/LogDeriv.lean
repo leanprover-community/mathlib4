@@ -28,7 +28,7 @@ theorem isOpenMap_exp : IsOpenMap exp :=
 /-- `Complex.exp` as a `LocalHomeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
-noncomputable def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
+noncomputable def expLocalHomeomorph : PartialHomeomorph ℂ ℂ :=
   LocalHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
@@ -148,4 +148,3 @@ theorem Differentiable.clog {f : E → ℂ} (h₁ : Differentiable ℂ f)
 #align differentiable.clog Differentiable.clog
 
 end LogDeriv
-

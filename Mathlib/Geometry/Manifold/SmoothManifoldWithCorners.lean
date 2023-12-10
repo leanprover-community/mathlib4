@@ -330,7 +330,7 @@ theorem unique_diff_preimage {s : Set H} (hs : IsOpen s) :
   exact I.unique_diff.inter (hs.preimage I.continuous_invFun)
 #align model_with_corners.unique_diff_preimage ModelWithCorners.unique_diff_preimage
 
-theorem unique_diff_preimage_source {β : Type*} [TopologicalSpace β] {e : LocalHomeomorph H β} :
+theorem unique_diff_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' e.source ∩ range I) :=
   I.unique_diff_preimage e.open_source
 #align model_with_corners.unique_diff_preimage_source ModelWithCorners.unique_diff_preimage_source
@@ -613,7 +613,7 @@ theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
 
 /-- The composition of a local homeomorphism from `H` to `M` and its inverse belongs to
 the `C^n` groupoid. -/
-theorem symm_trans_mem_contDiffGroupoid (e : LocalHomeomorph M H) :
+theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
   haveI : e.symm.trans e ≈ LocalHomeomorph.ofSet e.target e.open_target :=
     LocalHomeomorph.trans_symm_self _
@@ -624,7 +624,7 @@ variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topologi
 
 /-- The product of two smooth local homeomorphisms is smooth. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-    {e : LocalHomeomorph H H} {e' : LocalHomeomorph H' H'} (he : e ∈ contDiffGroupoid ⊤ I)
+    {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid ⊤ I)
     (he' : e' ∈ contDiffGroupoid ⊤ I') : e.prod e' ∈ contDiffGroupoid ⊤ (I.prod I') := by
   cases' he with he he_symm
   cases' he' with he' he'_symm
@@ -772,7 +772,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
 
 /-- The composition of a local homeomorphism from `H` to `M` and its inverse belongs to
 the analytic groupoid. -/
-theorem symm_trans_mem_analyticGroupoid (e : LocalHomeomorph M H) :
+theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
     e.symm.trans e ∈ analyticGroupoid I :=
   haveI : e.symm.trans e ≈ LocalHomeomorph.ofSet e.target e.open_target :=
     LocalHomeomorph.trans_symm_self _
@@ -790,7 +790,7 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
 consists of the local homeomorphisms which are analytic and have analytic inverse. -/
 theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
-    (e : LocalHomeomorph H H) :
+    (e : PartialHomeomorph H H) :
     e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
     AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
   apply Iff.intro
@@ -830,7 +830,7 @@ theorem SmoothManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField �
 theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (h : ∀ e e' : LocalHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
+    (h : ∀ e e' : PartialHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
       ContDiffOn 𝕜 ⊤ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     SmoothManifoldWithCorners I M where
   compatible := by
@@ -875,7 +875,7 @@ theorem chart_mem_maximalAtlas [SmoothManifoldWithCorners I M] (x : M) :
 
 variable {I}
 
-theorem compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph M H} (he : e ∈ maximalAtlas I M)
+theorem compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H} (he : e ∈ maximalAtlas I M)
     (he' : e' ∈ maximalAtlas I M) : e.symm.trans e' ∈ contDiffGroupoid ∞ I :=
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
 #align smooth_manifold_with_corners.compatible_of_mem_maximal_atlas SmoothManifoldWithCorners.compatible_of_mem_maximalAtlas
@@ -899,7 +899,7 @@ end SmoothManifoldWithCorners
 
 theorem LocalHomeomorph.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] (e : LocalHomeomorph M H)
+    (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] (e : PartialHomeomorph M H)
     (h : e.source = Set.univ) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ (e.singletonChartedSpace h) :=
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
@@ -932,7 +932,7 @@ section ExtendedCharts
 open scoped Topology
 
 variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] (f f' : LocalHomeomorph M H)
+  [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] (f f' : PartialHomeomorph M H)
   (I : ModelWithCorners 𝕜 E H) [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   [TopologicalSpace M'] (I' : ModelWithCorners 𝕜 E' H') (x : M) {s t : Set M}
 
@@ -1105,7 +1105,7 @@ theorem tendsto_extend_comp_iff {l : Filter α} {g : α → M} (hg : ∀ᶠ z in
   simpa only [(· ∘ ·), extend_left_inv _ _ hz, mem_preimage] using hzu
 
 -- there is no definition `writtenInExtend` but we already use some made-up names in this file
-theorem continuousWithinAt_writtenInExtend_iff {f' : LocalHomeomorph M' H'} {g : M → M'}
+theorem continuousWithinAt_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'}
     (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
     ContinuousWithinAt (f'.extend I' ∘ g ∘ (f.extend I).symm)
       ((f.extend I).symm ⁻¹' s ∩ range I) (f.extend I y) ↔ ContinuousWithinAt g s y := by
@@ -1122,7 +1122,7 @@ theorem continuousWithinAt_writtenInExtend_iff {f' : LocalHomeomorph M' H'} {g :
 
 /-- If `s ⊆ f.source` and `g x ∈ f'.source` whenever `x ∈ s`, then `g` is continuous on `s` if and
 only if `g` written in charts `f.extend I` and `f'.extend I'` is continuous on `f.extend I '' s`. -/
-theorem continuousOn_writtenInExtend_iff {f' : LocalHomeomorph M' H'} {g : M → M'}
+theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'}
     (hs : s ⊆ f.source) (hmaps : MapsTo g s f'.source) :
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
   refine ball_image_iff.trans <| forall₂_congr fun x hx ↦ ?_

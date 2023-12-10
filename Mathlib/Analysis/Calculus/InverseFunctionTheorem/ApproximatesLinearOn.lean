@@ -401,7 +401,7 @@ variable (f s)
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
 returns a local homeomorph with `toFun = f` and `source = s`. -/
 def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : LocalHomeomorph E F where
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : PartialHomeomorph E F where
   toLocalEquiv := hf.toLocalEquiv hc
   open_source := hs
   open_target := hf.open_image f'.toNonlinearRightInverse hs <| by

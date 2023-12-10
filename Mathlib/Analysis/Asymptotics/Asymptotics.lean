@@ -2240,7 +2240,7 @@ variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 /-- Transfer `IsBigOWith` over a `LocalHomeomorph`. -/
-theorem isBigOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} {C : ℝ} : IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   ⟨fun h =>
     h.comp_tendsto <| by
@@ -2254,7 +2254,7 @@ set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_with_congr LocalHomeomorph.isBigOWith_congr
 
 /-- Transfer `IsBigO` over a `LocalHomeomorph`. -/
-theorem isBigO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
+theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
     f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
   exact exists_congr fun C => e.isBigOWith_congr hb
@@ -2262,7 +2262,7 @@ set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_congr LocalHomeomorph.isBigO_congr
 
 /-- Transfer `IsLittleO` over a `LocalHomeomorph`. -/
-theorem isLittleO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsLittleO_def]
   exact forall₂_congr fun c _hc => e.isBigOWith_congr hb

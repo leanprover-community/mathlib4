@@ -27,7 +27,7 @@ variable [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E}
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
 derivative at `a`, returns a `LocalHomeomorph` with `to_fun = f` and `a ∈ source`. -/
 def toPartialHomeomorph {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a)
-    (hn : 1 ≤ n) : LocalHomeomorph E F :=
+    (hn : 1 ≤ n) : PartialHomeomorph E F :=
   (hf.hasStrictFDerivAt' hf' hn).toPartialHomeomorph f
 #align cont_diff_at.to_local_homeomorph ContDiffAt.toPartialHomeomorph
 

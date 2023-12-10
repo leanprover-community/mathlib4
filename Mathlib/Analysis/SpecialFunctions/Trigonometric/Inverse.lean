@@ -280,7 +280,7 @@ theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := f
 
 /-- `Real.sin` as a `LocalHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+def sinLocalHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)

@@ -304,7 +304,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
 -- porting note: todo: was @[nolint has_nonempty_instance]
-structure Trivialization (proj : Z → B) extends LocalHomeomorph Z (B × F) where
+structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
@@ -380,7 +380,7 @@ theorem source_inter_preimage_target_inter (s : Set (B × F)) :
 #align trivialization.source_inter_preimage_target_inter Trivialization.source_inter_preimage_target_inter
 
 @[simp, mfld_simps]
-theorem coe_mk (e : LocalHomeomorph Z (B × F)) (i j k l m) (x : Z) :
+theorem coe_mk (e : PartialHomeomorph Z (B × F)) (i j k l m) (x : Z) :
     (Trivialization.mk e i j k l m : Trivialization F proj) x = e x :=
   rfl
 #align trivialization.coe_mk Trivialization.coe_mk

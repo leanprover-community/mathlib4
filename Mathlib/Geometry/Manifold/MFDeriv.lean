@@ -243,7 +243,7 @@ def MDifferentiable (f : M → M') :=
 #align mdifferentiable MDifferentiable
 
 /-- Prop registering if a local homeomorphism is a local diffeomorphism on its source -/
-def LocalHomeomorph.MDifferentiable (f : LocalHomeomorph M M') :=
+def LocalHomeomorph.MDifferentiable (f : PartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 #align local_homeomorph.mdifferentiable LocalHomeomorph.MDifferentiable
 
@@ -1804,7 +1804,7 @@ end ModelWithCorners
 
 section Charts
 
-variable {e : LocalHomeomorph M H}
+variable {e : PartialHomeomorph M H}
 
 theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
     MDifferentiableAt I I e x := by
@@ -1901,8 +1901,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
   [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
   [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : LocalHomeomorph M M'}
-  (he : e.MDifferentiable I I') {e' : LocalHomeomorph M' M''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : PartialHomeomorph M M'}
+  (he : e.MDifferentiable I I') {e' : PartialHomeomorph M' M''}
 
 nonrec theorem symm : e.symm.MDifferentiable I' I := he.symm
 #align local_homeomorph.mdifferentiable.symm LocalHomeomorph.MDifferentiable.symm
@@ -2067,7 +2067,7 @@ theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
   hs.image_denseRange' (fun x hx ↦ (hf x hx).hasMFDerivWithinAt) hd
 
 protected theorem UniqueMDiffWithinAt.preimage_localHomeomorph (hs : UniqueMDiffWithinAt I s x)
-    {e : LocalHomeomorph M M'} (he : e.MDifferentiable I I') (hx : x ∈ e.source) :
+    {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') (hx : x ∈ e.source) :
     UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
   rw [← e.image_source_inter_eq', inter_comm]
   exact (hs.inter (e.open_source.mem_nhds hx)).image_denseRange
@@ -2076,7 +2076,7 @@ protected theorem UniqueMDiffWithinAt.preimage_localHomeomorph (hs : UniqueMDiff
 
 /-- If a set has the unique differential property, then its image under a local
 diffeomorphism also has the unique differential property. -/
-theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : LocalHomeomorph M M'}
+theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : PartialHomeomorph M M'}
     (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
   e.right_inv hx.1 ▸ (hs _ hx.2).preimage_localHomeomorph he (e.map_target hx.1)
 #align unique_mdiff_on.unique_mdiff_on_preimage UniqueMDiffOn.uniqueMDiffOn_preimage

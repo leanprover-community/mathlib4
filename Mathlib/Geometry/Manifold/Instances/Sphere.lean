@@ -281,7 +281,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`; this
 is the version as a local homeomorphism. -/
-def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
+def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
@@ -364,7 +364,7 @@ space `E`.  This version has codomain the Euclidean space of dimension `n`, and 
 composing the original sterographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    LocalHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
+    PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
             (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toPartialHomeomorph

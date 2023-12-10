@@ -76,7 +76,7 @@ at `a` in the strict sense.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasStrictDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜}
+theorem LocalHomeomorph.hasStrictDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f' : 𝕜}
     (ha : a ∈ f.target) (hf' : f' ≠ 0) (htff' : HasStrictDerivAt f f' (f.symm a)) :
     HasStrictDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
@@ -98,7 +98,7 @@ nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.hasDerivAt_symm (f : LocalHomeomorph 𝕜 𝕜) {a f' : 𝕜} (ha : a ∈ f.target)
+theorem LocalHomeomorph.hasDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f' : 𝕜} (ha : a ∈ f.target)
     (hf' : f' ≠ 0) (htff' : HasDerivAt f f' (f.symm a)) : HasDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 #align local_homeomorph.has_deriv_at_symm LocalHomeomorph.hasDerivAt_symm

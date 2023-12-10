@@ -649,7 +649,7 @@ protected def TotalSpace :=
 #align vector_bundle_core.total_space VectorBundleCore.TotalSpace
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : LocalHomeomorph (B × F) (B × F) :=
+def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) :=
   Z.toFiberBundleCore.trivChange i j
 #align vector_bundle_core.triv_change VectorBundleCore.trivChange
 

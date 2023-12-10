@@ -164,21 +164,21 @@ We use primes in the structure names as we will reformulate them below (without 
 /-- A structure groupoid is a set of local homeomorphisms of a topological space stable under
 composition and inverse. They appear in the definition of the smoothness class of a manifold. -/
 structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
-  members : Set (LocalHomeomorph H H)
-  trans' : ∀ e e' : LocalHomeomorph H H, e ∈ members → e' ∈ members → e ≫ₕ e' ∈ members
-  symm' : ∀ e : LocalHomeomorph H H, e ∈ members → e.symm ∈ members
+  members : Set (PartialHomeomorph H H)
+  trans' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ∈ members → e ≫ₕ e' ∈ members
+  symm' : ∀ e : PartialHomeomorph H H, e ∈ members → e.symm ∈ members
   id_mem' : LocalHomeomorph.refl H ∈ members
-  locality' : ∀ e : LocalHomeomorph H H,
+  locality' : ∀ e : PartialHomeomorph H H,
     (∀ x ∈ e.source, ∃ s, IsOpen s ∧ x ∈ s ∧ e.restr s ∈ members) → e ∈ members
-  eq_on_source' : ∀ e e' : LocalHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
+  eq_on_source' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
 #align structure_groupoid StructureGroupoid
 
 variable [TopologicalSpace H]
 
-instance : Membership (LocalHomeomorph H H) (StructureGroupoid H) :=
-  ⟨fun (e : LocalHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
+instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
+  ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
-instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (LocalHomeomorph H H)
+instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
     where
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
@@ -231,12 +231,12 @@ instance : InfSet (StructureGroupoid H) :=
       intro e e' he he'e
       exact fun i hi => i.eq_on_source' e e' (he i hi) he'e)⟩
 
-theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : LocalHomeomorph H H} (he : e ∈ G)
+theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : PartialHomeomorph H H} (he : e ∈ G)
     (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
   G.trans' e e' he he'
 #align structure_groupoid.trans StructureGroupoid.trans
 
-theorem StructureGroupoid.symm (G : StructureGroupoid H) {e : LocalHomeomorph H H} (he : e ∈ G) :
+theorem StructureGroupoid.symm (G : StructureGroupoid H) {e : PartialHomeomorph H H} (he : e ∈ G) :
     e.symm ∈ G :=
   G.symm' e he
 #align structure_groupoid.symm StructureGroupoid.symm
@@ -245,12 +245,12 @@ theorem StructureGroupoid.id_mem (G : StructureGroupoid H) : LocalHomeomorph.ref
   G.id_mem'
 #align structure_groupoid.id_mem StructureGroupoid.id_mem
 
-theorem StructureGroupoid.locality (G : StructureGroupoid H) {e : LocalHomeomorph H H}
+theorem StructureGroupoid.locality (G : StructureGroupoid H) {e : PartialHomeomorph H H}
     (h : ∀ x ∈ e.source, ∃ s, IsOpen s ∧ x ∈ s ∧ e.restr s ∈ G) : e ∈ G :=
   G.locality' e h
 #align structure_groupoid.locality StructureGroupoid.locality
 
-theorem StructureGroupoid.eq_on_source (G : StructureGroupoid H) {e e' : LocalHomeomorph H H}
+theorem StructureGroupoid.eq_on_source (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
     (he : e ∈ G) (h : e' ≈ e) : e' ∈ G :=
   G.eq_on_source' e e' he h
 #align structure_groupoid.eq_on_source StructureGroupoid.eq_on_source
@@ -272,13 +272,13 @@ theorem StructureGroupoid.le_iff {G₁ G₂ : StructureGroupoid H} : G₁ ≤ G�
 /-- The trivial groupoid, containing only the identity (and maps with empty source, as this is
 necessary from the definition). -/
 def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
-  members := {LocalHomeomorph.refl H} ∪ { e : LocalHomeomorph H H | e.source = ∅ }
+  members := {LocalHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
     cases' he with he he
     · simpa only [mem_singleton_iff.1 he, refl_trans]
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
       rw [he] at this
-      have : e ≫ₕ e' ∈ { e : LocalHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
+      have : e ≫ₕ e' ∈ { e : PartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
       exact (mem_union _ _ _).2 (Or.inr this)
   symm' e he := by
     cases' (mem_union _ _ _).1 he with E E
@@ -328,7 +328,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
   bot := idGroupoid H
   bot_le := by
     intro u f hf
-    have hf : f ∈ {LocalHomeomorph.refl H} ∪ { e : LocalHomeomorph H H | e.source = ∅ } := hf
+    have hf : f ∈ {LocalHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
     cases' hf with hf hf
     · rw [hf]
@@ -357,7 +357,7 @@ structure Pregroupoid (H : Type*) [TopologicalSpace H] where
 /-- Construct a groupoid of local homeos for which the map and its inverse have some property,
 from a pregroupoid asserting that this property is stable under composition. -/
 def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
-  members := { e : LocalHomeomorph H H | PG.property e e.source ∧ PG.property e.symm e.target }
+  members := { e : PartialHomeomorph H H | PG.property e e.source ∧ PG.property e.symm e.target }
   trans' e e' he he' := by
     constructor
     · apply PG.comp he.1 he'.1 e.open_source e'.open_source
@@ -396,7 +396,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       exact he.2
 #align pregroupoid.groupoid Pregroupoid.groupoid
 
-theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : LocalHomeomorph H H} :
+theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : PartialHomeomorph H H} :
     e ∈ PG.groupoid ↔ PG.property e e.source ∧ PG.property e.symm e.target :=
   Iff.rfl
 #align mem_groupoid_of_pregroupoid mem_groupoid_of_pregroupoid
@@ -408,7 +408,7 @@ theorem groupoid_of_pregroupoid_le (PG₁ PG₂ : Pregroupoid H)
   exact ⟨h _ _ he.1, h _ _ he.2⟩
 #align groupoid_of_pregroupoid_le groupoid_of_pregroupoid_le
 
-theorem mem_pregroupoid_of_eq_on_source (PG : Pregroupoid H) {e e' : LocalHomeomorph H H}
+theorem mem_pregroupoid_of_eq_on_source (PG : Pregroupoid H) {e e' : PartialHomeomorph H H}
     (he' : e ≈ e') (he : PG.property e e.source) : PG.property e' e'.source := by
   rw [← he'.1]
   exact PG.congr e.open_source he'.eqOn.symm he
@@ -458,11 +458,11 @@ instance : CompleteLattice (StructureGroupoid H) :=
 homeomorphisms to open subsets of the source. -/
 class ClosedUnderRestriction (G : StructureGroupoid H) : Prop where
   closedUnderRestriction :
-    ∀ {e : LocalHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
+    ∀ {e : PartialHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
 #align closed_under_restriction ClosedUnderRestriction
 
 theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
-    {e : LocalHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
+    {e : PartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
 #align closed_under_restriction' closedUnderRestriction'
 
@@ -531,7 +531,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
   · intro h
     constructor
     intro e he s hs
-    rw [← ofSet_trans (e : LocalHomeomorph H H) hs]
+    rw [← ofSet_trans (e : PartialHomeomorph H H) hs]
     refine' G.trans _ he
     apply StructureGroupoid.le_iff.mp h
     exact idRestrGroupoid_mem hs
@@ -558,18 +558,18 @@ sometimes as a real manifold over `ℝ^(2n)`.
 -/
 @[ext]
 class ChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M] where
-  protected atlas : Set (LocalHomeomorph M H)
-  protected chartAt : M → LocalHomeomorph M H
+  protected atlas : Set (PartialHomeomorph M H)
+  protected chartAt : M → PartialHomeomorph M H
   protected mem_chart_source : ∀ x, x ∈ (chartAt x).source
   protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
 #align charted_space ChartedSpace
 
 abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
-    [ChartedSpace H M] : Set (LocalHomeomorph M H) :=
+    [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
   ChartedSpace.atlas
 
 abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] (x : M) : LocalHomeomorph M H :=
+    [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
   ChartedSpace.chartAt x
 
 @[simp, mfld_simps]
@@ -595,7 +595,7 @@ instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H wh
 /-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
 the atlas members are just the identity. -/
 @[simp, mfld_simps]
-theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : LocalHomeomorph H H} :
+theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : PartialHomeomorph H H} :
     e ∈ atlas H H ↔ e = LocalHomeomorph.refl H :=
   Iff.rfl
 #align charted_space_self_atlas chartedSpaceSelf_atlas
@@ -633,7 +633,7 @@ theorem achart_def (x : M) : achart H x = ⟨chartAt H x, chart_mem_atlas H x⟩
 #align achart_def achart_def
 
 @[simp, mfld_simps]
-theorem coe_achart (x : M) : (achart H x : LocalHomeomorph M H) = chartAt H x :=
+theorem coe_achart (x : M) : (achart H x : PartialHomeomorph M H) = chartAt H x :=
   rfl
 #align coe_achart coe_achart
 
@@ -684,7 +684,7 @@ theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompac
 /-- If a topological space admits an atlas with locally connected charts, then the space itself is
 locally connected. -/
 theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyConnectedSpace M := by
-  let e : M → LocalHomeomorph M H := chartAt H
+  let e : M → PartialHomeomorph M H := chartAt H
   refine' locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) _ _
   · intro x
@@ -882,7 +882,7 @@ theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
 for the topology constructed from this atlas. The `localHomeomorph` version is given in this
 definition. -/
 protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
-    @LocalHomeomorph M H c.toTopologicalSpace _ :=
+    @PartialHomeomorph M H c.toTopologicalSpace _ :=
   { c.toTopologicalSpace, e with
     open_source := by convert c.open_source' he
     open_target := by convert c.open_target he
@@ -938,7 +938,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 groupoid. -/
 class HasGroupoid {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] (G : StructureGroupoid H) : Prop where
-  compatible : ∀ {e e' : LocalHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
+  compatible : ∀ {e e' : PartialHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
 #align has_groupoid HasGroupoid
 
 /-- Reformulate in the `StructureGroupoid` namespace the compatibility condition of charts in a
@@ -946,7 +946,7 @@ charted space admitting a structure groupoid, to make it more easily accessible 
 notation. -/
 theorem StructureGroupoid.compatible {H : Type*} [TopologicalSpace H] (G : StructureGroupoid H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G]
-    {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
+    {e e' : PartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
   HasGroupoid.compatible he he'
 #align structure_groupoid.compatible StructureGroupoid.compatible
 
@@ -960,7 +960,7 @@ theorem hasGroupoid_inf_iff {G₁ G₂ : StructureGroupoid H} : HasGroupoid M (G
   ⟨(fun h ↦ ⟨hasGroupoid_of_le h inf_le_left, hasGroupoid_of_le h inf_le_right⟩),
   fun ⟨h1, h2⟩ ↦ { compatible := fun he he' ↦ ⟨h1.compatible he he', h2.compatible he he'⟩ }⟩
 
-theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : LocalHomeomorph M H},
+theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : PartialHomeomorph M H},
     e ∈ atlas H M → e' ∈ atlas H M → PG.property (e.symm ≫ₕ e') (e.symm ≫ₕ e').source) :
     HasGroupoid M PG.groupoid :=
   ⟨fun he he' ↦ mem_groupoid_of_pregroupoid.mpr ⟨h he he', h he' he⟩⟩
@@ -988,7 +988,7 @@ variable (M) (G : StructureGroupoid H)
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
 structure groupoid is the set of all local charts that are compatible with the atlas, i.e., such
 that changing coordinates with an atlas member gives an element of the groupoid. -/
-def StructureGroupoid.maximalAtlas : Set (LocalHomeomorph M H) :=
+def StructureGroupoid.maximalAtlas : Set (PartialHomeomorph M H) :=
   { e | ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G }
 #align structure_groupoid.maximal_atlas StructureGroupoid.maximalAtlas
 
@@ -1006,14 +1006,14 @@ theorem StructureGroupoid.chart_mem_maximalAtlas [HasGroupoid M G] (x : M) :
 
 variable {G}
 
-theorem mem_maximalAtlas_iff {e : LocalHomeomorph M H} :
+theorem mem_maximalAtlas_iff {e : PartialHomeomorph M H} :
     e ∈ G.maximalAtlas M ↔ ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G :=
   Iff.rfl
 #align mem_maximal_atlas_iff mem_maximalAtlas_iff
 
 /-- Changing coordinates between two elements of the maximal atlas gives rise to an element
 of the structure groupoid. -/
-theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph M H}
+theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
   refine' G.locality fun x hx ↦ _
   set f := chartAt (H := H) (e.symm x)
@@ -1045,7 +1045,7 @@ theorem StructureGroupoid.id_mem_maximalAtlas : LocalHomeomorph.refl H ∈ G.max
 #align structure_groupoid.id_mem_maximal_atlas StructureGroupoid.id_mem_maximalAtlas
 
 /-- In the model space, any element of the groupoid is in the maximal atlas. -/
-theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : LocalHomeomorph H H} (hf : f ∈ G) :
+theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorph H H} (hf : f ∈ G) :
     f ∈ G.maximalAtlas H := by
   rintro e (rfl : e = LocalHomeomorph.refl H)
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
@@ -1059,7 +1059,7 @@ variable {α : Type*} [TopologicalSpace α]
 
 namespace LocalHomeomorph
 
-variable (e : LocalHomeomorph α H)
+variable (e : PartialHomeomorph α H)
 
 /-- If a single local homeomorphism `e` from a space `α` into `H` has source covering the whole
 space `α`, then that local homeomorphism induces an `H`-charted space structure on `α`.
@@ -1083,7 +1083,7 @@ theorem singletonChartedSpace_chartAt_source (h : e.source = Set.univ) {x : α} 
   h
 #align local_homeomorph.singleton_charted_space_chart_at_source LocalHomeomorph.singletonChartedSpace_chartAt_source
 
-theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ) (e' : LocalHomeomorph α H)
+theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ) (e' : PartialHomeomorph α H)
     (h' : e' ∈ (e.singletonChartedSpace h).atlas) : e' = e :=
   h'
 #align local_homeomorph.singleton_charted_space_mem_atlas_eq LocalHomeomorph.singletonChartedSpace_mem_atlas_eq
@@ -1197,7 +1197,7 @@ and use structomorph instead. -/
 -- @[nolint has_nonempty_instance]  -- Porting note: commented out
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
-  mem_groupoid : ∀ c : LocalHomeomorph M H, ∀ c' : LocalHomeomorph M' H, c ∈ atlas H M →
+  mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →
     c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toPartialHomeomorph ≫ₕ c' ∈ G
 #align structomorph Structomorph
 

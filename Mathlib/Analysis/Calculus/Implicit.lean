@@ -143,7 +143,7 @@ protected theorem hasStrictFDerivAt :
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `x ↦ (f x, g x)` defines a local homeomorphism between
 `E` and `F × G`. In particular, `{x | f x = f a}` is locally homeomorphic to `G`. -/
-def toPartialHomeomorph : LocalHomeomorph E (F × G) :=
+def toPartialHomeomorph PartialHomeomorphph E (F × G) :=
   φ.hasStrictFDerivAt.toPartialHomeomorph _
 #align implicit_function_data.to_local_homeomorph ImplicitFunctionData.toPartialHomeomorph
 
@@ -263,7 +263,7 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : ra
 /-- A local homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
 to vertical subspaces. -/
 def implicitToPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
-    (hker : (ker f').ClosedComplemented) : LocalHomeomorph E (F × ker f') :=
+    (hker : (ker f').ClosedComplemented) : PartialHomeomorph E (F × ker f') :=
   (implicitFunctionDataOfComplemented f f' hf hf' hker).toPartialHomeomorph
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented HasStrictFDerivAt.implicitToPartialHomeomorphOfComplemented
 
@@ -394,7 +394,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] {E :
 /-- Given a map `f : E → F` to a finite dimensional space with a surjective derivative `f'`,
 returns a local homeomorphism between `E` and `F × ker f'`. -/
 def implicitToPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
-    LocalHomeomorph E (F × ker f') :=
+    PartialHomeomorph E (F × ker f') :=
   haveI := FiniteDimensional.complete 𝕜 F
   hf.implicitToPartialHomeomorphOfComplemented f f' hf'
     f'.ker_closedComplemented_of_finiteDimensional_range

@@ -210,7 +210,7 @@ theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
 /-- `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+def tanLocalHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)

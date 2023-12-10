@@ -444,7 +444,7 @@ def proj : Z.TotalSpace → B :=
 #align fiber_bundle_core.proj FiberBundleCore.proj
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : LocalHomeomorph (B × F) (B × F) where
+def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
   source := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   target := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   toFun p := ⟨p.1, Z.coordChange i j p.1 p.2⟩

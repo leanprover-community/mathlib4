@@ -1810,7 +1810,7 @@ then `f.symm` is `n` times continuously differentiable at the point `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E F)
+theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomorph E F)
     {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
     (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
     ContDiffAt 𝕜 n f.symm a := by
@@ -1876,7 +1876,7 @@ target. if `f` is `n` times continuously differentiable at `f.symm a`, and if th
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.contDiffAt_symm_deriv [CompleteSpace 𝕜] (f : LocalHomeomorph 𝕜 𝕜)
+theorem LocalHomeomorph.contDiffAt_symm_deriv [CompleteSpace 𝕜] (f : PartialHomeomorph 𝕜 𝕜)
     {f₀' a : 𝕜} (h₀ : f₀' ≠ 0) (ha : a ∈ f.target) (hf₀' : HasDerivAt f f₀' (f.symm a))
     (hf : ContDiffAt 𝕜 n f (f.symm a)) : ContDiffAt 𝕜 n f.symm a :=
   f.contDiffAt_symm ha (hf₀'.hasFDerivAt_equiv h₀) hf
@@ -1906,7 +1906,7 @@ such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
 Note that `n` is a natural number, not `∞`,
 because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
 @[simps! apply symm_apply source target]
-def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
+def restrContDiff (f : PartialHomeomorph E F) (n : ℕ) : PartialHomeomorph E F :=
   haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
       {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
     simp [hx, and_comm]
@@ -1914,10 +1914,10 @@ def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
     inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
     f.continuousAt hxs hxf'.eventually
 
-lemma contDiffOn_restrContDiff_source (f : LocalHomeomorph E F) (n : ℕ) :
+lemma contDiffOn_restrContDiff_source (f : PartialHomeomorph E F) (n : ℕ) :
     ContDiffOn 𝕜 n f (f.restrContDiff 𝕜 n).source := fun _x hx ↦ hx.2.1.contDiffWithinAt
 
-lemma contDiffOn_restrContDiff_target (f : LocalHomeomorph E F) (n : ℕ) :
+lemma contDiffOn_restrContDiff_target (f : PartialHomeomorph E F) (n : ℕ) :
     ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n).target := fun _x hx ↦ hx.2.1.contDiffWithinAt
 
 end LocalHomeomorph

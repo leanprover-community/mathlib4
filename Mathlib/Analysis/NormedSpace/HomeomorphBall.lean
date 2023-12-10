@@ -39,7 +39,7 @@ noncomputable section
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps (config := .lemmasOnly)]
-def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
+def LocalHomeomorph.univUnitBall : PartialHomeomorph E E where
   toFun x := (1 + ‖x‖ ^ 2).sqrt⁻¹ • x
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   source := univ
@@ -106,7 +106,7 @@ namespace LocalHomeomorph
 /-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
 interpreted as a `LocalHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
 @[simps!]
-def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
+def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : PartialHomeomorph E P :=
   ((Homeomorph.smulOfNeZero r hr.ne').trans
       (IsometryEquiv.vaddConst c).toHomeomorph).toPartialHomeomorphOfImageEq
       (ball 0 1) isOpen_ball (ball c r) <| by
@@ -118,7 +118,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
 Thus in all cases, it sends `0` to `c`, see `LocalHomeomorph.univBall_apply_zero`. -/
-def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
+def univBall (c : P) (r : ℝ) : PartialHomeomorph E P :=
   if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
   else (IsometryEquiv.vaddConst c).toHomeomorph.toPartialHomeomorph
 

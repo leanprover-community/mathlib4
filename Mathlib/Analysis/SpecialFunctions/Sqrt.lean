@@ -28,7 +28,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+noncomputable def sqLocalHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := sqrt
   source := Ioi 0
