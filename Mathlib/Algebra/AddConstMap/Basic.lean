@@ -19,7 +19,8 @@ for bundled maps satisfying `f (x + a) = f x + b`.
 We use parameters `a` and `b` instead of `1` to accomodate for two use cases:
 
 - maps between circles of different lengths;
-- self-maps \(f\colon S^1\to  S^1\) of degree other than one.
+- self-maps \(f\colon S^1\to  S^1\) of degree other than one,
+  including orientation-reversing maps.
 -/
 
 open Function Set
@@ -44,7 +45,7 @@ so one should not add instances like
 `[AddConstMapClass F G H a b] : AddConstMapClass F G H (-a) (-b)`. -/
 class AddConstMapClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
     (a : outParam G) (b : outParam H) extends FunLike F G fun _ ↦ H where
-  /-- A map of `AddConstMapClass` class semiconjugages shift by `a` to the shift by `b`:
+  /-- A map of `AddConstMapClass` class semiconjugates shift by `a` to the shift by `b`:
   `∀ x, f (x + a) = f x + b`. -/
   map_add_const (f : F) (x : G) : f (x + a) = f x + b
 

@@ -67,6 +67,10 @@ theorem inverses_right (h : Semiconj f ga gb) (ha : RightInverse ga' ga) (hb : L
   fun x ↦ by rw [← hb (f (ga' x)), ← h.eq, ha x]
 #align function.semiconj.inverses_right Function.Semiconj.inverses_right
 
+lemma inverse_left {f' : β → α} (h : Semiconj f ga gb)
+    (hf₁ : LeftInverse f' f) (hf₂ : RightInverse f' f) : Semiconj f' gb ga := fun x ↦ by
+  rw [← hf₁.injective.eq_iff, h, hf₂, hf₂]
+
 theorem option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) :
     Semiconj (Option.map f) (Option.map ga) (Option.map gb)
   | none => rfl

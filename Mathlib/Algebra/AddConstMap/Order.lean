@@ -7,6 +7,13 @@ import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.LatticeGroup
 
+/-!
+# Lattice structure on `AddConstMap`s
+
+In this file we define order and a `ConditionallyCompleteLattice` structure
+on the type of maps `G →+c[a, b] H` semiconjugating `(· + a)` to `(· + b)`.
+-/
+
 open Set AddConstMapClass
 namespace AddConstMap
 
