@@ -24,11 +24,8 @@ The notation `~` is used for permutation equivalence.
 
 open Nat
 
-universe uu vv
-
 namespace List
-
-variable {α : Type uu} {β : Type vv} {l₁ l₂ : List α}
+variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
 
 #align list.perm List.Perm
 
@@ -39,6 +36,8 @@ open Perm (swap)
 
 attribute [refl] Perm.refl
 #align list.perm.refl List.Perm.refl
+
+lemma perm_rfl : l ~ l := Perm.refl _
 
 -- Porting note: used rec_on in mathlib3; lean4 eqn compiler still doesn't like it
 attribute [symm] Perm.symm
@@ -223,6 +222,27 @@ attribute [trans] Subperm.trans
 end Subperm
 
 #align list.sublist.exists_perm_append List.Sublist.exists_perm_append
+
+lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
+  refine ⟨?_, fun ⟨l, h₁, h₂⟩ ↦ h₂.subperm.trans h₁.subperm⟩
+  rintro ⟨l, h₁, h₂⟩
+  obtain ⟨l', h₂⟩ := h₂.exists_perm_append
+  exact ⟨l₁ ++ l', (h₂.trans (h₁.append_right _)).symm, (prefix_append _ _).sublist⟩
+
+-- This is now in `Std`, but apparently misnamed as `List.subperm_singleton_iff`.
+@[simp] lemma singleton_subperm_iff : [a] <+~ l ↔ a ∈ l :=
+  ⟨fun ⟨s, hla, h⟩ ↦ by rwa [perm_singleton.1 hla, singleton_sublist] at h,
+    fun h ↦ ⟨[a], perm_rfl, singleton_sublist.2 h⟩⟩
+#align list.subperm_singleton_iff List.singleton_subperm_iff
+
+-- The prime could be removed if `List.subperm_singleton_iff` is renamed in Std.
+@[simp] lemma subperm_singleton_iff' : l <+~ [a] ↔ l = [] ∨ l = [a] := by
+  constructor
+  · rw [subperm_iff]
+    rintro ⟨s, hla, h⟩
+    rwa [perm_singleton.mp hla, sublist_singleton] at h
+  · rintro (rfl | rfl)
+    exacts [nil_subperm, Subperm.refl _]
 
 #align list.perm.countp_eq List.Perm.countP_eq
 
@@ -454,8 +474,6 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
 #align list.subperm_ext_iff List.subperm_ext_iff
 
 #align list.decidable_subperm List.decidableSubperm
-
-#align list.subperm_singleton_iff List.subperm_singleton_iff
 
 #align list.subperm.cons_left List.Subperm.cons_left
 
