@@ -1159,6 +1159,38 @@ alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 #align measurable_set.mem MeasurableSet.mem
 
 end prop
+
+section Set
+variable [MeasurableSpace β] {g : β → Set α}
+
+/-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
+random graphs. -/
+instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
+
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
+  unfold Set; infer_instance
+
+lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
+
+@[aesop safe 100 apply (rule_sets [Measurable])]
+lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
+
+@[aesop safe 100 apply (rule_sets [Measurable])]
+lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
+  (measurable_discrete Not).comp $ measurable_set_mem a
+
+@[aesop safe 100 apply (rule_sets [Measurable])]
+lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
+  measurableSet_setOf.2 $ measurable_set_mem _
+
+@[aesop safe 100 apply (rule_sets [Measurable])]
+lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
+  measurableSet_setOf.2 $ measurable_set_not_mem _
+
+lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
+  measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
+
+end Set
 end Constructions
 
 namespace MeasurableSpace
