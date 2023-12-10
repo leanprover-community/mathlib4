@@ -906,6 +906,7 @@ theorem lift_symm_apply (F : MonoidAlgebra k G →ₐ[k] A) (x : G) :
   rfl
 #align monoid_algebra.lift_symm_apply MonoidAlgebra.lift_symm_apply
 
+@[simp]
 theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
   rw [of_apply, ← lift_symm_apply, Equiv.symm_apply_apply]
 #align monoid_algebra.lift_of MonoidAlgebra.lift_of
@@ -2004,15 +2005,22 @@ theorem lift_symm_apply (F : k[G] →ₐ[k] A) (x : Multiplicative G) :
   rfl
 #align add_monoid_algebra.lift_symm_apply AddMonoidAlgebra.lift_symm_apply
 
-theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
-    lift k G A F (of k G x) = F x := by rw [of_apply, ← lift_symm_apply, Equiv.symm_apply_apply]
-#align add_monoid_algebra.lift_of AddMonoidAlgebra.lift_of
-
 @[simp]
 theorem lift_single (F : Multiplicative G →* A) (a b) :
     lift k G A F (single a b) = b • F (Multiplicative.ofAdd a) := by
   rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align add_monoid_algebra.lift_single AddMonoidAlgebra.lift_single
+
+@[simp]
+theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
+    lift k G A F (of k G x) = F x :=
+  (lift_single F _ 1).trans (one_smul _ _)
+#align add_monoid_algebra.lift_of AddMonoidAlgebra.lift_of
+
+@[simp]
+lemma lift_of' (F : Multiplicative G →* A) (x : G) :
+    lift k G A F (of' k G x) = F (Multiplicative.ofAdd x) :=
+  lift_of F x
 
 theorem lift_unique' (F : k[G] →ₐ[k] A) :
     F = lift k G A ((F : k[G] →* A).comp (of k G)) :=
