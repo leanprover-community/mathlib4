@@ -249,6 +249,16 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
           h.trans <| image₂_subset (subset_insert _ _) <| subset_insert _ _⟩⟩
 #align finset.subset_image₂ Finset.subset_image₂
 
+@[simp (default + 1)]
+lemma sup_image₂_le [SemilatticeSup δ] [OrderBot δ] {g : γ → δ} {a : δ} :
+    sup (image₂ f s t) g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
+  rw [Finset.sup_le_iff, forall_image₂_iff]
+
+@[simp (default + 1)]
+lemma le_inf_image₂ [SemilatticeInf δ] [OrderTop δ] {g : γ → δ} {a : δ} :
+    a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
+  sup_image₂_le (δ := δᵒᵈ)
+
 variable (s t)
 
 lemma sup_image₂_left [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :

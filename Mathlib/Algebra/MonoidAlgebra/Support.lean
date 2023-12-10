@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finset.NAry
+import Mathlib.Data.Finset.Pointwise
 
 #align_import algebra.monoid_algebra.support from "leanprover-community/mathlib"@"16749fc4661828cba18cd0f4e3c5eb66a8e80598"
 
@@ -12,6 +12,7 @@ import Mathlib.Data.Finset.NAry
 #  Lemmas about the support of a finitely supported function
 -/
 
+open scoped Pointwise
 
 universe u₁ u₂ u₃
 
@@ -22,7 +23,7 @@ open Finset Finsupp
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
 theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
-    (a * b).support ⊆ Finset.image₂ (· * ·) a.support b.support :=
+    (a * b).support ⊆ a.support * b.support :=
   support_sum.trans <| biUnion_subset.2 fun _x hx ↦
     support_sum.trans <| biUnion_subset.2 fun _y hy ↦
       support_single_subset.trans <| singleton_subset_iff.2 <| mem_image₂_of_mem hx hy
@@ -106,7 +107,7 @@ open Finset Finsupp MulOpposite
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
 theorem support_mul [DecidableEq G] [Add G] (a b : k[G]) :
-    (a * b).support ⊆ Finset.image₂ (· + ·) a.support b.support :=
+    (a * b).support ⊆ a.support + b.support :=
   @MonoidAlgebra.support_mul k (Multiplicative G) _ _ _ _ _
 #align add_monoid_algebra.support_mul AddMonoidAlgebra.support_mul
 
