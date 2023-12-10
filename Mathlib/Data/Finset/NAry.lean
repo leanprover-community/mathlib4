@@ -299,7 +299,6 @@ theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
   exact card_le_of_subset (image₂_subset_left <| singleton_subset_iff.2 hb)
 #align finset.card_le_card_image₂_right Finset.card_le_card_image₂_right
 
-
 variable {s t}
 
 theorem biUnion_image_left : (s.biUnion fun a => t.image <| f a) = image₂ f s t :=
