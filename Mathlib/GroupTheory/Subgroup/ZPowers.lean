@@ -171,6 +171,11 @@ theorem Int.mem_zmultiples_iff {a b : ℤ} : b ∈ AddSubgroup.zmultiples a ↔ 
   exists_congr fun k => by rw [mul_comm, eq_comm, ← smul_eq_mul]
 #align int.mem_zmultiples_iff Int.mem_zmultiples_iff
 
+@[simp]
+lemma Int.zmultiples_one : AddSubgroup.zmultiples (1 : ℤ) = ⊤ := by
+  ext z
+  simpa only [AddSubgroup.mem_top, iff_true] using ⟨z, zsmul_int_one z⟩
+
 theorem ofMul_image_zpowers_eq_zmultiples_ofMul {x : G} :
     Additive.ofMul '' (Subgroup.zpowers x : Set G) = AddSubgroup.zmultiples (Additive.ofMul x) := by
   ext y

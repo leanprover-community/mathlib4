@@ -372,6 +372,11 @@ theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t
   rfl
 #align set.maps_to.coe_restrict_apply Set.MapsTo.val_restrict_apply
 
+theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (k : ℕ) :
+    h.restrict^[k] x = f^[k] x := by
+  induction' k with k ih; · simp
+  simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
+
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
 theorem codRestrict_restrict (h : ∀ x : s, f x ∈ t) :
@@ -1003,6 +1008,10 @@ theorem EqOn.bijOn_iff (H : EqOn f₁ f₂ s) : BijOn f₁ s t ↔ BijOn f₂ s 
 theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
   h.surjOn.image_eq_of_mapsTo h.mapsTo
 #align set.bij_on.image_eq Set.BijOn.image_eq
+
+lemma _root_.Equiv.image_eq_iff_bijOn (e : α ≃ β) : e '' s = t ↔ BijOn e s t :=
+  ⟨fun h ↦ ⟨(mapsTo_image e s).mono_right h.subset, e.injective.injOn _, h ▸ surjOn_image e s⟩,
+  BijOn.image_eq⟩
 
 lemma bijOn_id (s : Set α) : BijOn id s s := ⟨s.mapsTo_id, s.injOn_id, s.surjOn_id⟩
 #align set.bij_on_id Set.bijOn_id

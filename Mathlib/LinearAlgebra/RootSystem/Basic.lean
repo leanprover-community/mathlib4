@@ -145,14 +145,12 @@ lemma coreflection_apply (f : N) :
 @[simp]
 lemma reflection_image_eq :
     P.reflection i '' (range P.root) = range P.root :=
-  ((finite_range P.root).equiv_image_eq_iff_subset (P.reflection i) _).mpr <|
-    P.image_root_subset i
+  ((finite_range P.root).equiv_image_eq_iff_subset (P.reflection i)).2 (P.image_root_subset i)
 
 @[simp]
 lemma coreflection_image_eq :
     P.coreflection i '' (range P.coroot) = range P.coroot :=
-  ((finite_range P.coroot).equiv_image_eq_iff_subset (P.coreflection i) _).mpr <|
-    P.image_coroot_subset i
+  ((finite_range P.coroot).equiv_image_eq_iff_subset (P.coreflection i)).2 (P.image_coroot_subset i)
 
 lemma reflection_dualMap_eq_coreflection :
     e.trans (P.reflection i).dualMap = (P.coreflection i).trans e := by
@@ -186,7 +184,7 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
       LinearEquiv.trans_apply, reflection_apply_self]
     abel
   set f' : ℕ → range P.root := fun n ↦ ⟨f n, by
-    rw [← iterate_image_eq_of_image_eq hsαβ n, ← hf]; exact mem_image_of_mem _ (mem_range_self j)⟩
+    rw [← IsFixedPt.image_iterate hsαβ n, ← hf]; exact mem_image_of_mem _ (mem_range_self j)⟩
   have : ¬ Injective f' := not_injective_infinite_finite f'
   contrapose! this
   intros n m hnm
@@ -212,7 +210,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
   suffices P₁.coroot = P₂.coroot by cases P₁; cases P₂; congr
-  have := NoZeroSMulDivisors.IntOfCharZero R M
+  have := NoZeroSMulDivisors.int_of_charZero R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply]

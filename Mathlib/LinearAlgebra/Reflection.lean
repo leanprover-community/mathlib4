@@ -5,7 +5,7 @@ Authors: Oliver Nash, Deepro Choudhury
 -/
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.RootSystem.FindHome
+import Mathlib.LinearAlgebra.FiniteSpan
 
 /-!
 # Reflections in linear algebra
@@ -117,8 +117,8 @@ lemma Dual.eq_of_preReflection_image_subset [CharZero R] [NoZeroSMulDivisors R M
   let u := reflection hg₁ * reflection hf₁
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
-    simp only [reflection_apply, hg₁, two_smul, LinearEquiv.coe_mul, LinearEquiv.coe_coe,
-      LinearMap.mul_apply, LinearMap.add_apply, LinearMap.id_coe, id_eq, LinearMap.coe_smulRight,
+    simp only [reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul, LinearMap.id_coe,
+      LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq, LinearMap.coe_smulRight,
       LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel', smul_neg, sub_neg_eq_add, sub_smul]
     abel
   replace hu : ∀ (n : ℕ),
@@ -126,19 +126,14 @@ lemma Dual.eq_of_preReflection_image_subset [CharZero R] [NoZeroSMulDivisors R M
     intros n
     induction' n with n ih; simp
     have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by ext; simp [hf₁, hg₁]
-    rw [pow_succ, LinearEquiv.coe_mul, ih, hu, add_mul, mul_add, mul_add]
+    rw [pow_succ, LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
     simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero, add_assoc,
       Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this
     replace hn₁ : (↑(u ^ n) : M →ₗ[R] M) = LinearMap.id := LinearEquiv.toLinearMap_inj.mpr hn₁
     simpa [hn₁, hn₀.ne', hx, sub_eq_zero] using hu n
-  suffices IsOfFinOrder u.toLinearMap by
-    have hf : Injective (LinearEquiv.automorphismGroup.toLinearMapMonoidHom (R := R) (M := M)) :=
-      LinearEquiv.toLinearMap_injective
-    exact hf.isOfFinOrder_iff.mp this
-  refine isOfFinOrder_of_finite_of_span_eq_top_of_image_eq hΦ₁ hΦ₂ <|
-    (hΦ₁.equiv_image_eq_iff_subset u.toEquiv).mpr ?_
+  apply u.isOfFinOrder_of_finite_of_span_eq_top_of_image_subset hΦ₁ hΦ₂
   simpa only [← image_comp] using (image_mono hf₂).trans hg₂
 
 lemma Dual.eq_of_preReflection_image_subset' [CharZero R] [NoZeroSMulDivisors R M]
