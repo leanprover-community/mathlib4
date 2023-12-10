@@ -363,7 +363,7 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M â†’* N) M N where
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply FunLike.coe_injective
     exact h
   map_mul := MonoidHom.map_mul'
   map_one f := f.toOneHom.map_one'
@@ -496,7 +496,7 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M â†
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply FunLike.coe_injective
     exact h
   map_mul := MonoidWithZeroHom.map_mul'
   map_one := MonoidWithZeroHom.map_one'

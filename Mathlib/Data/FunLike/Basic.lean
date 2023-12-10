@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Variable
 
 #align_import data.fun_like.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -126,15 +127,11 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 @[notation_class * toFun Simps.findCoercionArgs]
-class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
-  /-- The coercion from `F` to a function. -/
-  coe : F → ∀ a : α, β a
+class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*)
+  [CoeFun F (fun _ ↦ ∀ a : α, β a)] where
   /-- The coercion to functions must be injective. -/
-  coe_injective' : Function.Injective coe
+  coe_injective : Function.Injective (CoeFun.coe : F → ∀ a : α, β a)
 #align fun_like FunLike
-
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% FunLike.coe
 
 section Dependent
 
@@ -144,30 +141,18 @@ variable (F α : Sort*) (β : α → Sort*)
 
 namespace FunLike
 
-variable {F α β} [i : FunLike F α β]
+variable {F α β}
+variable? [i : FunLike F α β] => [CoeFun F fun x ↦ (a : α) → β a] [i : FunLike F α β]
 
-instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
-  coe := @FunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
-
-#eval Lean.Elab.Command.liftTermElabM do
-  Std.Tactic.Coe.registerCoercion ``FunLike.coe
-    (some { numArgs := 5, coercee := 4, type := .coeFun })
-
--- @[simp] -- porting note: this loops in lean 4
-theorem coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
-#align fun_like.coe_eq_coe_fn FunLike.coe_eq_coe_fn
-
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
-  FunLike.coe_injective'
 #align fun_like.coe_injective FunLike.coe_injective
 
 @[simp]
 theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
-  ⟨fun h ↦ FunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
+  ⟨fun h ↦ FunLike.coe_injective h, fun h ↦ by cases h; rfl⟩
 #align fun_like.coe_fn_eq FunLike.coe_fn_eq
 
 theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
-  FunLike.coe_injective' h
+  FunLike.coe_injective h
 #align fun_like.ext' FunLike.ext'
 
 theorem ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, β a) :=
@@ -175,7 +160,7 @@ theorem ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α,
 #align fun_like.ext'_iff FunLike.ext'_iff
 
 theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
-  FunLike.coe_injective' (funext h)
+  FunLike.coe_injective (funext h)
 #align fun_like.ext FunLike.ext
 
 theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
@@ -207,7 +192,8 @@ section NonDependent
 
 /-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
+variable? {F α β : Sort*} [i : FunLike F α fun _ ↦ β] => {F α β : Sort*}
+  [CoeFun F fun x ↦ (a : α) → (fun x ↦ β) a] [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 

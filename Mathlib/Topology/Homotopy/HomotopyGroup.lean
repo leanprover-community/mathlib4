@@ -119,7 +119,7 @@ instance funLike : FunLike (Ω^ N X x) (I^N) fun _ => X where
 
 @[ext]
 theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
-  FunLike.coe_injective' (funext H)
+  FunLike.coe_injective (funext H)
 #align gen_loop.ext GenLoop.ext
 
 @[simp]

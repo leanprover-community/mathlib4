@@ -150,7 +150,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
       (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget GroupCat)).fac
       ((forget GroupCat).mapCocone t) j
   uniq t _ h :=
-    FunLike.coe_injective' <|
+    FunLike.coe_injective <|
       (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget GroupCat)).uniq
       ((forget GroupCat).mapCocone t) _
         fun j => funext fun x => FunLike.congr_fun (h j) x

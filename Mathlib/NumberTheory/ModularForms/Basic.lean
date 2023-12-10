@@ -391,7 +391,7 @@ instance : Inhabited (CuspForm Γ k) :=
 
 instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   coe := FunLike.coe
-  coe_injective' := FunLike.coe_injective'
+  coe_injective' := FunLike.coe_injective
   slash_action_eq := SlashInvariantFormClass.slash_action_eq
   holo := CuspFormClass.holo
   bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).boundedAtFilter

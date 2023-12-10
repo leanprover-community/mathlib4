@@ -209,7 +209,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply FunLike.coe_injective
     exact h
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
