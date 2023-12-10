@@ -493,40 +493,42 @@ protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
 
 end Module.Baer
 
-#exit
 
 section ULift
 
 lemma Module.ulift_injective_of_injective
     {M : Type v} [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
-    Module.Injective.{u, v'} R (ULift.{v', v} M) where
-  out X Y _ _ _ _ f hf g := by
-    rw [← Module.Baer.iff_injective] at inj ⊢
+    Module.Injective R (ULift.{max v' v} M) := by
+    letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
+    rw [← Module.Baer.iff_injective.{u, v}] at inj
+    rw [← Module.Baer.iff_injective.{u, max v' v}]
     intro I g
     obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
     exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
-    {M : Type max u v} [AddCommGroup M] [Module R M]
-    (inj : Module.Injective.{u, max v v'} R (ULift.{max v v' u} M)) :
-    Module.Injective.{u, v} R M := by
-  rw [← Module.Baer.iff_injective] at inj ⊢
+    {M : Type v} [AddCommGroup M] [Module R M]
+    (inj : Module.Injective R (ULift.{max v v'} M)) :
+    Module.Injective R M := by
+  letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
+  rw [← Module.Baer.iff_injective.{u, max v v'}] at inj
+  rw [← Module.Baer.iff_injective.{u, v}]
   intro I g
   obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g)
   exact ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext_iff _ _ |>.mp <| hg' r hr⟩
 
 lemma Module.injective_iff_ulift_injective
-    (M : Type max u v) [AddCommGroup M] [Module R M] :
-    Module.Injective.{u, v} R M ↔ Module.Injective.{u, max v v'} R (ULift.{max v v' u} M) :=
+    (M : Type max v) [AddCommGroup M] [Module R M] :
+    Module.Injective R M ↔ Module.Injective R (ULift.{max v v'} M) :=
   ⟨Module.ulift_injective_of_injective.{u, v, v'} R,
    Module.injective_of_ulift_injective.{u, v, v'} R⟩
 
 instance ModuleCat.ulift_injective_of_injective
-    (M : Type max u v) [AddCommGroup M] [Module R M]
+    (M : Type v) [AddCommGroup M] [Module R M]
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
-    CategoryTheory.Injective <| ModuleCat.of R (ULift.{max v v' u} M) :=
-  @Module.injective_object_of_injective_module.{u, max v v'} R _ _ _ _ <|
-    Module.ulift_injective_of_injective.{u, v, v'} R <|
-    @Module.injective_module_of_injective_object.{u, v} R _ M _ _ inj
+    CategoryTheory.Injective <| ModuleCat.of R (ULift.{max v v'} M) :=
+  Module.injective_object_of_injective_module
+    (inj := Module.ulift_injective_of_injective.{u, v, v'}
+      (inj := Module.injective_module_of_injective_object (inj := inj)))
 
 end ULift
