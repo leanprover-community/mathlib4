@@ -64,7 +64,7 @@ set_option autoImplicit true
 
 assert_not_exists mfderiv
 
-open Bundle Set LocalHomeomorph
+open Bundle Set PartialHomeomorph
 
 open Function (id_def)
 

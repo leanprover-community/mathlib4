@@ -584,7 +584,7 @@ section LocalStructomorph
 
 variable (G)
 
-open LocalHomeomorph
+open PartialHomeomorph
 
 /-- A function from a model space `H` to itself is a local structomorphism, with respect to a
 structure groupoid `G` for `H`, relative to a set `s` in `H`, if for all points `x` in the set, the

@@ -20,7 +20,7 @@ To do it for semilinear maps, we would need to generalize `ContinuousLinearMap.c
 
 noncomputable section
 
-open Bundle Set LocalHomeomorph ContinuousLinearMap Pretrivialization
+open Bundle Set PartialHomeomorph ContinuousLinearMap Pretrivialization
 
 open scoped Manifold Bundle
 

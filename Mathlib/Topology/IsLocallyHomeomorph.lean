@@ -30,7 +30,7 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
   (f : X → Y) (s : Set X) (t : Set Y)
 
 /-- A function `f : X → Y` satisfies `IsLocallyHomeomorphOn f s` if each `x ∈ s` is contained in
-the source of some `e : LocalHomeomorph X Y` with `f = e`. -/
+the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocallyHomeomorphOn :=
   ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 #align is_locally_homeomorph_on IsLocallyHomeomorphOn
@@ -53,7 +53,7 @@ theorem isLocallyHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
 namespace IsLocallyHomeomorphOn
 
 /-- Proves that `f` satisfies `IsLocallyHomeomorphOn f s`. The condition `h` is weaker than the
-definition of `IsLocallyHomeomorphOn f s`, since it only requires `e : LocalHomeomorph X Y` to
+definition of `IsLocallyHomeomorphOn f s`, since it only requires `e : PartialHomeomorph X Y` to
 agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -/
 theorem mk (h : ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ ∀ y ∈ e.source, f y = e y) :
     IsLocallyHomeomorphOn f s := by
@@ -121,7 +121,7 @@ protected theorem comp (hg : IsLocallyHomeomorphOn g t) (hf : IsLocallyHomeomorp
 end IsLocallyHomeomorphOn
 
 /-- A function `f : X → Y` satisfies `IsLocallyHomeomorph f` if each `x : x` is contained in
-  the source of some `e : LocalHomeomorph X Y` with `f = e`. -/
+  the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocallyHomeomorph :=
   ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 #align is_locally_homeomorph IsLocallyHomeomorph
@@ -154,7 +154,7 @@ variable (f)
 namespace IsLocallyHomeomorph
 
 /-- Proves that `f` satisfies `IsLocallyHomeomorph f`. The condition `h` is weaker than the
-definition of `IsLocallyHomeomorph f`, since it only requires `e : LocalHomeomorph X Y` to
+definition of `IsLocallyHomeomorph f`, since it only requires `e : PartialHomeomorph X Y` to
 agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -/
 theorem mk (h : ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ ∀ y ∈ e.source, f y = e y) :
     IsLocallyHomeomorph f :=

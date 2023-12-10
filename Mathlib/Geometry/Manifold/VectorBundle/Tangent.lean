@@ -14,7 +14,7 @@ This file defines the tangent bundle as a smooth vector bundle.
 
 Let `M` be a smooth manifold with corners with model `I` on `(E, H)`. We define the tangent bundle
 of `M` using the `VectorBundleCore` construction indexed by the charts of `M` with fibers `E`.
-Given two charts `i, j : LocalHomeomorph M H`, the coordinate change between `i` and `j` at a point
+Given two charts `i, j : PartialHomeomorph M H`, the coordinate change between `i` and `j` at a point
 `x : M` is the derivative of the composite
 ```
   I.symm   i.symm    j     I
@@ -32,7 +32,7 @@ This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
 -/
 
 
-open Bundle Set SmoothManifoldWithCorners LocalHomeomorph ContinuousLinearMap
+open Bundle Set SmoothManifoldWithCorners PartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle
 

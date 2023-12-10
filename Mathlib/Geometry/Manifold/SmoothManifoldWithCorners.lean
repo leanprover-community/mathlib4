@@ -1236,7 +1236,7 @@ theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ max
 
 end PartialHomeomorph
 
-open LocalHomeomorph
+open PartialHomeomorph
 
 variable [ChartedSpace H M] [ChartedSpace H' M']
 

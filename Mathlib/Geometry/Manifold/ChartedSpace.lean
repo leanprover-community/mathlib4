@@ -129,7 +129,7 @@ scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
 
 scoped[Manifold] infixr:100 " ≫ " => LocalEquiv.trans
 
-open Set LocalHomeomorph Manifold  -- Porting note: Added `Manifold`
+open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
 /-! ### Structure groupoids -/
 
