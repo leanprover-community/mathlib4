@@ -51,8 +51,8 @@ def isPolyTimeFunctionByType {α β: Type} {ea : FinEncoding α} {eb : FinEncodi
 -- Acceptable coding. Time complexity of number functions throughout mathlib
 
 /-- Defines polynomial time functions on binary strings to binary strings -/
-def isPolyTimeTM (tm : BitString → BitString) : Prop :=
-    Nonempty (@TM2ComputableInPolyTime BitString BitString finEncodingBitString finEncodingBitString tm)
+def isPolyTimeTM (tm : BitString → BitString) : Prop := Nonempty (@TM2ComputableInPolyTime
+    BitString BitString finEncodingBitString finEncodingBitString tm)
 -- TODO: Time complexity measures for TM0 and TM1. Equivalence of TM1 and TM2 polynomial time
 -- TODO: Space complexity measures for TM0-2. Relation to time measures. PSPACE. NL=coNL
 
