@@ -1653,7 +1653,7 @@ section ULift
 theorem ULift.isOpen_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
     IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
   unfold ULift.topologicalSpace
-  erw [←Equiv.ulift.coinduced_symm]
+  erw [← Equiv.ulift.coinduced_symm]
   rfl
 
 theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
