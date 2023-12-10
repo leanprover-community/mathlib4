@@ -29,7 +29,7 @@ With `open scoped RightActions`, this provides:
 -/
 
 
-variable (α : Type*)
+variable (R α : Type*)
 
 /-! ### Actions _on_ the opposite type
 
@@ -80,26 +80,11 @@ theorem unop_smul_eq_unop_smul_unop {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α]
 
 end MulOpposite
 
-/-! ### Actions _by_ the opposite type (right actions)
+/-! ### Right actions
 
-In `Mul.toSMul` in another file, we define the left action `a₁ • a₂ = a₁ * a₂`. For the
-multiplicative opposite, we define `MulOpposite.op a₁ • a₂ = a₂ * a₁`, with the multiplication
-reversed.
+In this section we establish `SMul αᵐᵒᵖ β` as the canonical spelling of right scalar multiplication
+of `β` by `α`, and provide convienient notations.
 -/
-
-
-open MulOpposite
-
-/-- Like `Mul.toSMul`, but multiplies on the right.
-
-See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
-@[to_additive "Like `Add.toVAdd`, but adds on the right.
-
-  See also `AddMonoid.to_OppositeAddAction`."]
-instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
-  ⟨fun c x => x * c.unop⟩
-#align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
-#align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
 namespace RightActions
 
@@ -123,6 +108,7 @@ scoped notation3:74 r:75 " +ᵥ> " m:74 => r +ᵥ m
 In lemma names this is still called `op_vadd`. -/
 scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
 
+section examples
 variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
 
 -- Left and right actions are just notation around the general `•` and `+ᵥ` notations
@@ -146,7 +132,44 @@ example : a₁ •> a₂ •> b <• a₃ <• a₄ = ((a₁ •> (a₂ •> b))
 example : a₁ +ᵥ> b <+ᵥ a₂ = (a₁ +ᵥ> b) <+ᵥ a₂ := rfl
 example : a₁ +ᵥ> a₂ +ᵥ> b <+ᵥ a₃ <+ᵥ a₄ = ((a₁ +ᵥ> (a₂ +ᵥ> b)) <+ᵥ a₃) <+ᵥ a₄ := rfl
 
+end examples
+
 end RightActions
+
+section
+variable {α β : Type*}
+
+open scoped RightActions
+
+@[to_additive]
+theorem op_smul_op_smul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
+    b <• a₁ <• a₂ = b <• (a₁ * a₂) := smul_smul _ _ _
+
+@[to_additive]
+theorem op_smul_mul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
+    b <• (a₁ * a₂) = b <• a₁ <• a₂ := mul_smul _ _ _
+
+end section
+
+/-! ### Actions _by_ the opposite type (right actions)
+
+In `Mul.toSMul` in another file, we define the left action `a₁ • a₂ = a₁ * a₂`. For the
+multiplicative opposite, we define `MulOpposite.op a₁ • a₂ = a₂ * a₁`, with the multiplication
+reversed.
+-/
+
+open MulOpposite
+
+/-- Like `Mul.toSMul`, but multiplies on the right.
+
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+@[to_additive "Like `Add.toVAdd`, but adds on the right.
+
+  See also `AddMonoid.to_OppositeAddAction`."]
+instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
+  ⟨fun c x => x * c.unop⟩
+#align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
+#align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
 
 @[to_additive]
 theorem op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a :=
