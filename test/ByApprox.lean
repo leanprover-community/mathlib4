@@ -5,9 +5,6 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Complex.Exponential
 
-set_option trace.ByApprox true
--- set_option trace.profiler true
-
 open Real
 
 example : (3 : ℝ)/5 < 3/4 := by by_approx
@@ -38,16 +35,18 @@ example : sqrt 2 * sqrt 3 ≠ 100 := by by_approx
 
 example : 10 / sqrt 11 < sqrt 10 := by by_approx
 
-example : Real.exp 2 > 7 := by by_approx
+example : exp 1 > 2.7182818 := by by_approx
 
-open BigOperators Finset
+example : exp 1 < 2.7182819 := by by_approx
 
-set_option trace.Tactic.norm_num true
-example : (10).factorial > 5 := by
-  -- conv =>
-  --   lhs
-  --   whnf
-  norm_num
+example : exp (sqrt 10) < 23.6244 := by by_approx
 
+example : exp (sqrt 10) > 23.6243 := by by_approx
 
-  sorry
+example : exp (- sqrt 2) < 0.25 := by by_approx
+
+example : exp (- sqrt 2) > 0.24 := by by_approx
+
+example : |sqrt 2 - 1.414| < 0.001 := by by_approx
+
+example : |sqrt 10| > 3 := by by_approx

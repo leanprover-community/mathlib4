@@ -23,9 +23,9 @@ syntax (name := byApproxSyn) "by_approx " term,+ : attr
 
 structure Bounds where
   lb : ℚ
-  lb_prf : Option Expr -- : e ≥ ↑({lb.num} / {lb.den})
+  lb_prf : Option Expr -- : e ≥ ↑{mkRatExpr lb}
   ub : ℚ
-  ub_prf : Option Expr -- : e ≤ ↑ ({up.num} / {ub.den})
+  ub_prf : Option Expr -- : e ≤ ↑{mkRatExpr ub}
 
 
 structure ByApproxExt where

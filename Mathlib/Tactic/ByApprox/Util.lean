@@ -87,7 +87,7 @@ def mkAppNormNum (constName : Name) (xs : Array (Option Expr)) : MetaM Expr :=
     catch _ =>
     let results ← Meta.NormNum.normNumAt mvar (← mkSimpContext) #[]
     if results.isSome then
-      throwError "Got results back from normnum {← mvar.getType} {results.repr 0}"
+      throwError "norm_num failed to fill goal of type {← mvar.getType}, remains to prove {← results.get!.2.getType}"
   ) xs
 
 -- partial def decideRational (target : Q(Prop)) : MetaM Q($target) := do

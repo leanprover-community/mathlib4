@@ -1,6 +1,7 @@
 import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Rewrites
+import Mathlib.Tactic.GRW
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
@@ -269,3 +270,51 @@ end Mul
     | throwError "not div"
 
   approximate precision proofs q($a * ($b)⁻¹)
+
+section Abs
+
+private lemma abs_lower_bound_pos (a : ℝ) (a_l : ℚ) (a_lb : a ≥ a_l) :
+    |a| ≥ a_l := by grw [← le_abs_self, a_lb]
+
+private lemma abs_lower_bound_neg (a : ℝ) (a_u l : ℚ) (a_ub : a ≤ a_u)
+    (a_u_neg : a_u ≤ 0) (h : l = - a_u) : |a| ≥ l := by
+  grw [abs_of_nonpos, a_ub, h]
+  simp
+  grw [a_ub, Rat.cast_nonpos.mpr]
+  exact a_u_neg
+
+private lemma abs_lower_bound_zero (a : ℝ) (l : ℚ) (h : l = 0) : |a| ≥ l := by simp [h]
+
+private lemma abs_upper_bound (a : ℝ) (a_l a_u u : ℚ) (a_lb : a ≥ a_l) (a_ub : a ≤ a_u)
+    (hln : -a_l ≤ u) (hu : a_u ≤ u) : |a| ≤ u := by
+  by_cases a_sign : a ≥ 0
+  . grw [← Rat.cast_le.mpr hu, abs_of_nonneg a_sign, a_ub]
+  . have a_neg := not_le.mp a_sign
+    grw [← Rat.cast_le.mpr hln, abs_of_neg a_neg, a_lb]
+    simp
+
+
+@[by_approx abs _] def approxAbs : ByApproxExt where approximate precision proofs e := do
+  let .app (_ : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e)
+    | throwError "not abs"
+
+  let ⟨a_l, a_l_prf, a_u, a_u_prf⟩ ← approximate precision proofs a
+
+  let lb := if (a_l ≥ 0) ≠ (a_u ≥ 0) then 0 else min |a_l| |a_u|
+  let ub := max |a_l| |a_u|
+
+  if proofs then
+    let lb_prf ← if lb ≥ 0 then
+      mkAppNormNum ``abs_lower_bound_pos #[a, mkRatExpr a_l, a_l_prf]
+    else if ub ≤ 0 then
+      mkAppNormNum ``abs_lower_bound_neg #[a, mkRatExpr a_l, mkRatExpr lb, a_u_prf, none, none]
+    else
+      mkAppNormNum ``abs_lower_bound_zero #[a, mkRatExpr 0, none]
+
+    let ub_prf ← mkAppNormNum ``abs_upper_bound #[a, mkRatExpr a_l, mkRatExpr a_u, mkRatExpr ub,
+      a_l_prf, a_u_prf, none, none]
+    return ⟨lb, lb_prf, ub, ub_prf⟩
+  else
+    return ⟨lb, none, ub, none⟩
+
+end Abs
