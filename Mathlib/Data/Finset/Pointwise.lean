@@ -554,6 +554,16 @@ def imageMulHom : Finset α →ₙ* Finset β where
 #align finset.image_mul_hom Finset.imageMulHom
 #align finset.image_add_hom Finset.imageAddHom
 
+@[to_additive (attr := simp (default + 1))]
+lemma sup_mul_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
+    sup (s * t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x * y) ≤ a :=
+  sup_image₂_le
+
+@[to_additive (attr := simp (default + 1))]
+lemma le_inf_mul [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
+    a ≤ inf (s * t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x * y) :=
+  le_inf_image₂
+
 @[to_additive]
 lemma sup_mul_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
     sup (s * t) f = sup s fun x ↦ sup t (f <| x * ·) :=
@@ -577,7 +587,6 @@ lemma inf_mul_right [SemilatticeInf β] [OrderTop β] (s t : Finset α) (f : α 
 end Mul
 
 /-! ### Finset subtraction/division -/
-
 
 section Div
 
@@ -762,6 +771,16 @@ theorem subset_div {s t : Set α} :
   subset_image₂
 #align finset.subset_div Finset.subset_div
 #align finset.subset_sub Finset.subset_sub
+
+@[to_additive (attr := simp (default + 1))]
+lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+  sup_image₂_le
+
+@[to_additive (attr := simp (default + 1))]
+lemma le_inf_div [SemilatticeInf β] [OrderTop β] {s t : Finset α} {f : α → β} {a : β} :
+    a ≤ inf (s / t) f ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ f (x / y) :=
+  le_inf_image₂
 
 @[to_additive]
 lemma sup_div_left [SemilatticeSup β] [OrderBot β] (s t : Finset α) (f : α → β) :
