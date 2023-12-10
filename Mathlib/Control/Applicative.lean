@@ -5,8 +5,38 @@ Authors: Simon Hudon
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
+import Lean
 
 #align_import control.applicative from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
+
+section Delab
+open Lean PrettyPrinter.Delaborator SubExpr
+
+@[delab app.Seq.seq]
+def delabSeq : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, _, _, _, thunk] := (← getExpr).getAppArgs | failure
+  guard <| thunk.isLambda && !thunk.bindingBody!.hasLooseBVar 0
+  let a ← withAppFn <| withAppArg delab
+  let b ← withAppArg <| withBindingBody `_ delab
+  `($a <*> $b)
+
+@[delab app.SeqLeft.seqLeft]
+def delabSeqLeft : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, _, _, _, thunk] := (← getExpr).getAppArgs | failure
+  guard <| thunk.isLambda && !thunk.bindingBody!.hasLooseBVar 0
+  let a ← withAppFn <| withAppArg delab
+  let b ← withAppArg <| withBindingBody `_ delab
+  `($a <* $b)
+
+@[delab app.SeqRight.seqRight]
+def delabSeqRight : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, _, _, _, thunk] := (← getExpr).getAppArgs | failure
+  guard <| thunk.isLambda && !thunk.bindingBody!.hasLooseBVar 0
+  let a ← withAppFn <| withAppArg delab
+  let b ← withAppArg <| withBindingBody `_ delab
+  `($a *> $b)
+
+end Delab
 
 /-!
 # `applicative` instances
