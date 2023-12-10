@@ -17,7 +17,7 @@ In this file we show that a real (semi)normed vector space is homeomorphic to th
 We formalize it in two ways:
 
 - as a `Homeomorph`, see `Homeomorph.unitBall`;
-- as a `LocalHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
+- as a `PartialHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
 
 While the former approach is more natural, the latter approach provides us
 with a globally defined inverse function which makes it easier to say
@@ -104,7 +104,7 @@ variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 namespace PartialHomeomorph
 
 /-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
-interpreted as a `LocalHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
+interpreted as a `PartialHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
 @[simps!]
 def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : PartialHomeomorph E P :=
   ((Homeomorph.smulOfNeZero r hr.ne').trans

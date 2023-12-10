@@ -20,7 +20,7 @@ This file defines local homeomorphisms.
   between `U` and an open subset of `Y`.
 
   Note that `IsLocallyHomeomorph` is a global condition. This is in contrast to
-  `LocalHomeomorph`, which is a homeomorphism between specific open subsets.
+  `PartialHomeomorph`, which is a homeomorphism between specific open subsets.
 -/
 
 

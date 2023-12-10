@@ -11,7 +11,7 @@ private axiom test_sorry : ∀ {α}, α
 This is a test file for the tactic `mfld_set_tac`. Because this tactic applies a simp-set which
 mostly contains lemmas in advanced parts of mathlib, it is currently impossible to truly test it
 in realistic conditions. Instead, we create stub definitions and lemmas on objects such as
-`LocalHomeomorph`, label them with `mfld_simps` and run tests on those.
+`PartialHomeomorph`, label them with `mfld_simps` and run tests on those.
 -/
 
 open Lean Meta Elab Tactic
@@ -24,7 +24,7 @@ section stub_lemmas
 structure PartialHomeomorph (α : Type u) (β : Type u) extends LocalEquiv α β
 
 noncomputable
-instance PartialHomeomorph.has_coe_to_fun : CoeFun (LocalHomeomorph α β) (λ _ => α → β) := test_sorry
+instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (λ _ => α → β) := test_sorry
 
 noncomputable
 def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β α := test_sorry

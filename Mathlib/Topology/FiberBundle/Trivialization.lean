@@ -309,7 +309,7 @@ structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) w
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
   target_eq : target = baseSet ×ˢ univ
-  proj_toFun : ∀ p ∈ source, (toLocalHomeomorph p).1 = proj p
+  proj_toFun : ∀ p ∈ source, (toPartialHomeomorph p).1 = proj p
 #align trivialization Trivialization
 
 namespace Trivialization
@@ -318,7 +318,7 @@ variable {F}
 variable (e : Trivialization F proj) {x : Z}
 
 @[ext]
-lemma ext' (e e' : Trivialization F proj) (h₁ : e.toLocalHomeomorph = e'.toLocalHomeomorph)
+lemma ext' (e e' : Trivialization F proj) (h₁ : e.toPartialHomeomorph = e'.toPartialHomeomorph)
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 #align trivialization.ext Trivialization.ext'
@@ -347,7 +347,7 @@ theorem toPretrivialization_injective :
 #align trivialization.to_pretrivialization_injective Trivialization.toPretrivialization_injective
 
 @[simp, mfld_simps]
-theorem coe_coe : ⇑e.toLocalHomeomorph = e :=
+theorem coe_coe : ⇑e.toPartialHomeomorph = e :=
   rfl
 #align trivialization.coe_coe Trivialization.coe_coe
 
@@ -541,7 +541,7 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 /-- Composition of a `Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
-  toLocalHomeomorph := h.toPartialHomeomorph.trans e.toLocalHomeomorph
+  toPartialHomeomorph := h.toPartialHomeomorph.trans e.toPartialHomeomorph
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := by simp [source_eq, preimage_preimage, (· ∘ ·)]
@@ -666,7 +666,7 @@ end Zero
 that sends `p : Z` to `((e p).1, h (e p).2)`. -/
 def transFiberHomeomorph {F' : Type*} [TopologicalSpace F'] (e : Trivialization F proj)
     (h : F ≃ₜ F') : Trivialization F' proj where
-  toLocalHomeomorph := e.toPartialHomeomorph.transHomeomorph <| (Homeomorph.refl _).prodCongr h
+  toPartialHomeomorph := e.toPartialHomeomorph.transHomeomorph <| (Homeomorph.refl _).prodCongr h
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := e.source_eq
@@ -753,7 +753,7 @@ theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
 /-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
     Trivialization F proj where
-  toLocalHomeomorph :=
+  toPartialHomeomorph :=
     ((e.isImage_preimage_prod s).symm.restr (IsOpen.inter e.open_target (hs.prod isOpen_univ))).symm
   baseSet := e.baseSet ∩ s
   open_baseSet := IsOpen.inter e.open_baseSet hs
@@ -778,8 +778,8 @@ otherwise. -/
 noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
     (Hs : e.baseSet ∩ frontier s = e'.baseSet ∩ frontier s)
     (Heq : EqOn e e' <| proj ⁻¹' (e.baseSet ∩ frontier s)) : Trivialization F proj where
-  toLocalHomeomorph :=
-    e.toPartialHomeomorph.piecewise e'.toLocalHomeomorph (proj ⁻¹' s) (s ×ˢ univ)
+  toPartialHomeomorph :=
+    e.toPartialHomeomorph.piecewise e'.toPartialHomeomorph (proj ⁻¹' s) (s ×ˢ univ)
       (e.isImage_preimage_prod s) (e'.isImage_preimage_prod s)
       (by rw [e.frontier_preimage, e'.frontier_preimage, Hs]) (by rwa [e.frontier_preimage])
   baseSet := s.ite e.baseSet e'.baseSet
@@ -828,8 +828,8 @@ bundle trivialization over the union of the base sets that agrees with `e` and `
 base sets. -/
 noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.baseSet e'.baseSet) :
     Trivialization F proj where
-  toLocalHomeomorph :=
-    e.toPartialHomeomorph.disjointUnion e'.toLocalHomeomorph
+  toPartialHomeomorph :=
+    e.toPartialHomeomorph.disjointUnion e'.toPartialHomeomorph
       (by
         rw [e.source_eq, e'.source_eq]
         exact H.preimage _)

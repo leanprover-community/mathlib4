@@ -941,7 +941,7 @@ variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAdd
 
 In a smooth manifold with corners, the model space is the space `H`. However, we will also
 need to use extended charts taking values in the model vector space `E`. These extended charts are
-not `LocalHomeomorph` as the target is not open in `E` in general, but we can still register them
+not `PartialHomeomorph` as the target is not open in `E` in general, but we can still register them
 as `LocalEquiv`.
 -/
 

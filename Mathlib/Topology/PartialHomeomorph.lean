@@ -12,7 +12,7 @@ import Mathlib.Topology.Sets.Opens
 # Local homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
-`LocalHomeomorph α β` is an extension of `LocalEquiv α β`, i.e., it is a pair of functions
+`PartialHomeomorph α β` is an extension of `LocalEquiv α β`, i.e., it is a pair of functions
 `e.toFun` and `e.invFun`, inverse of each other on the sets `e.source` and `e.target`.
 Additionally, we require that these sets are open, and that the functions are continuous on them.
 Equivalently, they are homeomorphisms there.
@@ -69,7 +69,7 @@ variable (e : PartialHomeomorph α β) (e' : PartialHomeomorph β γ)
 switch to this behavior later, doing it mid-port will break a lot of proofs.  -/
 @[coe] def toFun' : α → β := e.toFun
 
-/-- Coercion of a `LocalHomeomorph` to function. Note that a `LocalHomeomorph` is not `FunLike`. -/
+/-- Coercion of a `PartialHomeomorph` to function. Note that a `PartialHomeomorph` is not `FunLike`. -/
 instance : CoeFun (PartialHomeomorph α β) fun _ => α → β :=
   ⟨fun e => e.toFun'⟩
 
@@ -196,7 +196,7 @@ protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
 #align local_homeomorph.surj_on PartialHomeomorph.surjOn
 
-/-- Interpret a `Homeomorph` as a `LocalHomeomorph` by restricting it
+/-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
 to an open set `s` in the domain and to `t` in the codomain. -/
 @[simps! (config := .asFn) apply symm_apply toLocalEquiv,
   simps! (config := .lemmasOnly) source target]
@@ -472,7 +472,7 @@ following equivalent conditions hold:
 
 This definition is a restatement of `LocalEquiv.IsImage` for partial homeomorphisms. In this section
 we transfer API about `LocalEquiv.IsImage` to partial homeomorphisms and add a few
-`LocalHomeomorph`-specific lemmas like `PartialHomeomorph.IsImage.closure`.
+`PartialHomeomorph`-specific lemmas like `PartialHomeomorph.IsImage.closure`.
 -/
 
 /-- We say that `t : Set β` is an image of `s : Set α` under a partial homeomorphism `e` if any of the
@@ -623,7 +623,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 #align local_homeomorph.is_image.is_open_iff PartialHomeomorph.IsImage.isOpen_iff
 
-/-- Restrict a `LocalHomeomorph` to a pair of corresponding open sets. -/
+/-- Restrict a `PartialHomeomorph` to a pair of corresponding open sets. -/
 @[simps toLocalEquiv]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : PartialHomeomorph α β where
   toLocalEquiv := h.toLocalEquiv.restr
@@ -678,7 +678,7 @@ theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.s
   image_isOpen_of_isOpen _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.image_isOpen_of_isOpen'
 
-/-- A `LocalEquiv` with continuous open forward map and an open source is a `LocalHomeomorph`. -/
+/-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : PartialHomeomorph α β where
   toLocalEquiv := e
@@ -688,7 +688,7 @@ def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.sourc
   continuousOn_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 #align local_homeomorph.of_continuous_open_restrict PartialHomeomorph.ofContinuousOpenRestrict
 
-/-- A `LocalEquiv` with continuous open forward map and an open source is a `LocalHomeomorph`. -/
+/-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
 def ofContinuousOpen (e : LocalEquiv α β) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : PartialHomeomorph α β :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
@@ -935,18 +935,18 @@ theorem transHomeomorph_eq_trans (e' : β ≃ₜ γ) :
 /-- Precompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := .asFn)]
-def _root_.Homeomorph.transLocalHomeomorph (e : α ≃ₜ β) : PartialHomeomorph α γ where
+def _root_.Homeomorph.transPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomorph α γ where
   toLocalEquiv := e.toEquiv.transLocalEquiv e'.toLocalEquiv
   open_source := e'.open_source.preimage e.continuous
   open_target := e'.open_target
   continuousOn_toFun := e'.continuousOn.comp e.continuous.continuousOn fun _ => id
   continuousOn_invFun := e.symm.continuous.comp_continuousOn e'.symm.continuousOn
-#align homeomorph.trans_local_homeomorph Homeomorph.transLocalHomeomorph
+#align homeomorph.trans_local_homeomorph Homeomorph.transPartialHomeomorph
 
-theorem _root_.Homeomorph.transLocalHomeomorph_eq_trans (e : α ≃ₜ β) :
-    e.transLocalHomeomorph e' = e.toPartialHomeomorph.trans e' :=
+theorem _root_.Homeomorph.transPartialHomeomorph_eq_trans (e : α ≃ₜ β) :
+    e.transPartialHomeomorph e' = e.toPartialHomeomorph.trans e' :=
   toLocalEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
-#align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transLocalHomeomorph_eq_trans
+#align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transPartialHomeomorph_eq_trans
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
 should really be considered the same local equiv. -/
@@ -1084,7 +1084,7 @@ end Prod
 
 section Piecewise
 
-/-- Combine two `LocalHomeomorph`s using `Set.piecewise`. The source of the new `LocalHomeomorph`
+/-- Combine two `PartialHomeomorph`s using `Set.piecewise`. The source of the new `PartialHomeomorph`
 is `s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target.  The
 function sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t`
 using `e'`, and similarly for the inverse function. To ensure that the maps `toFun` and `invFun`
@@ -1120,7 +1120,7 @@ theorem symm_piecewise (e e' : PartialHomeomorph α β) {s : Set α} {t : Set β
   rfl
 #align local_homeomorph.symm_piecewise PartialHomeomorph.symm_piecewise
 
-/-- Combine two `LocalHomeomorph`s with disjoint sources and disjoint targets. We reuse
+/-- Combine two `PartialHomeomorph`s with disjoint sources and disjoint targets. We reuse
 `PartialHomeomorph.piecewise` then override `toLocalEquiv` to `LocalEquiv.disjointUnion`.
 This way we have better definitional equalities for `source` and `target`. -/
 def disjointUnion (e e' : PartialHomeomorph α β) [∀ x, Decidable (x ∈ e.source)]
@@ -1143,7 +1143,7 @@ section Pi
 variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpace (Xi i)]
   [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, PartialHomeomorph (Xi i) (Yi i))
 
-/-- The product of a finite family of `LocalHomeomorph`s. -/
+/-- The product of a finite family of `PartialHomeomorph`s. -/
 @[simps toLocalEquiv]
 def pi : PartialHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
   toLocalEquiv := LocalEquiv.pi fun i => (ei i).toLocalEquiv
@@ -1231,7 +1231,7 @@ theorem continuous_iff_continuous_comp_left {f : γ → α} (h : f ⁻¹' e.sour
 
 end Continuity
 
-/-- The homeomorphism obtained by restricting a `LocalHomeomorph` to a subset of the source. -/
+/-- The homeomorphism obtained by restricting a `PartialHomeomorph` to a subset of the source. -/
 @[simps]
 def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source) (ht : e '' s = t) :
     s ≃ₜ t :=

@@ -28,7 +28,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqLocalHomeomorph : PartialHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := sqrt
   source := Ioi 0
@@ -41,7 +41,7 @@ noncomputable def sqLocalHomeomorph : PartialHomeomorph ℝ ℝ where
   open_target := isOpen_Ioi
   continuousOn_toFun := (continuous_pow 2).continuousOn
   continuousOn_invFun := continuousOn_id.sqrt
-#align real.sq_local_homeomorph Real.sqLocalHomeomorph
+#align real.sq_local_homeomorph Real.sqPartialHomeomorph
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by

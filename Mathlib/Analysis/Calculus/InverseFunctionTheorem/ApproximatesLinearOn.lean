@@ -17,7 +17,7 @@ When `f'` is onto, we show that `f` is locally onto.
 
 When `f'` is a continuous linear equiv, we show that `f` is a homeomorphism
 between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toPartialHomeomorph` to
-be a `LocalHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
+be a `PartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
 
 Maps of this type naturally appear in the proof of the inverse function theorem (see next section),
 and `ApproximatesLinearOn.toPartialHomeomorph` will imply that the locally inverse function
@@ -361,7 +361,7 @@ def toLocalEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   (hf.injOn hc).toLocalEquiv _ _
 #align approximates_linear_on.to_local_equiv ApproximatesLinearOn.toLocalEquiv
 
-/-- The inverse function is continuous on `f '' s`. Use properties of `LocalHomeomorph` instead. -/
+/-- The inverse function is continuous on `f '' s`. Use properties of `PartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toLocalEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2

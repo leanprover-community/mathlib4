@@ -16,11 +16,11 @@ has an invertible strict derivative `f'` at `a`, then it is locally invertible,
 and the inverse function has derivative `f' ⁻¹`.
 
 We define `HasStrictFDerivAt.toPartialHomeomorph` that repacks a function `f`
-with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into a `LocalHomeomorph`.
-The `toFun` of this `LocalHomeomorph` is defeq to `f`, so one can apply theorems
-about `LocalHomeomorph` to `hf.toPartialHomeomorph f`, and get statements about `f`.
+with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into a `PartialHomeomorph`.
+The `toFun` of this `PartialHomeomorph` is defeq to `f`, so one can apply theorems
+about `PartialHomeomorph` to `hf.toPartialHomeomorph f`, and get statements about `f`.
 
-Then we define `HasStrictFDerivAt.localInverse` to be the `invFun` of this `LocalHomeomorph`,
+Then we define `HasStrictFDerivAt.localInverse` to be the `invFun` of this `PartialHomeomorph`,
 and prove two versions of the inverse function theorem:
 
 * `HasStrictFDerivAt.to_localInverse`: if `f` has an invertible derivative `f'` at `a` in the
@@ -115,10 +115,10 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
 
 variable (f)
 
-/-- Given a function with an invertible strict derivative at `a`, returns a `LocalHomeomorph`
+/-- Given a function with an invertible strict derivative at `a`, returns a `PartialHomeomorph`
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
 The other part `HasStrictFDerivAt.to_localInverse` states that the inverse function
-of this `LocalHomeomorph` has derivative `f'.symm`. -/
+of this `PartialHomeomorph` has derivative `f'.symm`. -/
 def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) PartialHomeomorphph E F :=
   ApproximatesLinearOn.toPartialHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2

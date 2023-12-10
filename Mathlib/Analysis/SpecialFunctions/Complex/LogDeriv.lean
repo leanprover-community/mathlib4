@@ -25,10 +25,10 @@ theorem isOpenMap_exp : IsOpenMap exp :=
   open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
-/-- `Complex.exp` as a `LocalHomeomorph` with `source = {z | -π < im z < π}` and
+/-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
-noncomputable def expLocalHomeomorph : PartialHomeomorph ℂ ℂ :=
+noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
   PartialHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
@@ -48,7 +48,7 @@ noncomputable def expLocalHomeomorph : PartialHomeomorph ℂ ℂ :=
       left_inv' := fun x hx => log_exp hx.1 (le_of_lt hx.2)
       right_inv' := fun x hx => exp_log <| by rintro rfl; simp [lt_irrefl] at hx }
     continuous_exp.continuousOn isOpenMap_exp (isOpen_Ioo.preimage continuous_im)
-#align complex.exp_local_homeomorph Complex.expLocalHomeomorph
+#align complex.exp_local_homeomorph Complex.expPartialHomeomorph
 
 theorem hasStrictDerivAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : HasStrictDerivAt log x⁻¹ x :=
   have h0 : x ≠ 0 := by rintro rfl; simp [lt_irrefl] at h
