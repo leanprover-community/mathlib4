@@ -772,22 +772,22 @@ lemma indicator_const_smul (s : Set α) (r : R) (f : α → M) :
 end SMulZeroClass
 
 section SMulWithZero
-variable [Zero R] [Zero M] [SMulWithZero M M]
+variable [Zero R] [Zero M] [SMulWithZero R M]
 
-lemma indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → M) (a : α) :
+lemma indicator_smul_apply_left (s : Set α) (r : α → R) (f : α → M) (a : α) :
     indicator s (fun a ↦ r a • f a) a = indicator s r a • f a := by
   dsimp only [indicator]
   split_ifs
   exacts [rfl, (zero_smul _ (f a)).symm]
 
-lemma indicator_smul_left (s : Set α) (r : α → M) (f : α → M) :
+lemma indicator_smul_left (s : Set α) (r : α → R) (f : α → M) :
     indicator s (fun a ↦ r a • f a) = fun a ↦ indicator s r a • f a :=
   funext $ indicator_smul_apply_left _ _ _
 
-lemma indicator_smul_const_apply (s : Set α) (r : α → M) (m : M) (a : α) :
+lemma indicator_smul_const_apply (s : Set α) (r : α → R) (m : M) (a : α) :
     indicator s (r · • m) a = indicator s r a • m := indicator_smul_apply_left _ _ _ _
 
-lemma indicator_smul_const (s : Set α) (r : α → M) (m : M) :
+lemma indicator_smul_const (s : Set α) (r : α → R) (m : M) :
     indicator s (r · • m) = (indicator s r · • m) :=
   funext $ indicator_smul_const_apply _ _ _
 
