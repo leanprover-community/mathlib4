@@ -67,7 +67,8 @@ def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fi
 #align fin.cons Fin.cons
 
 @[simp]
-theorem tail_cons : tail (cons x p) = p := by simp [tail, cons]
+theorem tail_cons : tail (cons x p) = p := by
+  simp (config := { unfoldPartialApp := true }) [tail, cons]
 #align fin.tail_cons Fin.tail_cons
 
 @[simp]
@@ -242,7 +243,7 @@ theorem comp_cons {α : Type*} {β : Type*} (g : α → β) (y : α) (q : Fin n 
     rfl
   · let j' := pred j h
     have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ, comp, comp, cons_succ]
+    rw [← this, cons_succ, comp_apply, comp_apply, cons_succ]
 #align fin.comp_cons Fin.comp_cons
 
 theorem comp_tail {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
@@ -370,15 +371,16 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
 
 @[simp] lemma append_cast_left {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (n' : ℕ)
     (h : n' = n) :
-    Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
+    Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw [h]) := by
   subst h
   funext i
-  simp only [Fin.append, Fin.addCases, comp, Fin.cast, Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk,
-    ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq]
+  simp (config := {unfoldPartialApp := true}) only [Fin.append, Fin.addCases, comp_def, Fin.cast,
+    Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk, ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec,
+    id_eq, eq_mpr_eq_cast, cast_eq]
 
 @[simp] lemma append_cast_right {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (m' : ℕ)
     (h : m' = m) :
-    Fin.append xs (ys ∘ Fin.cast h) = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
+    Fin.append xs (ys ∘ Fin.cast h) = Fin.append xs ys ∘ (Fin.cast <| by rw [h]) := by
   subst h
   funext i
   simp only [append, addCases, cast, subNat_mk, natAdd_mk, Fin.eta, ge_iff_le, comp_apply,
@@ -651,12 +653,12 @@ theorem snoc_eq_append {α : Type*} (xs : Fin n → α) (x : α) :
 
 theorem append_left_snoc {n m} {α : Type*} (xs : Fin n → α) (x : α) (ys : Fin m → α) :
     Fin.append (Fin.snoc xs x) ys =
-      Fin.append xs (Fin.cons x ys) ∘ Fin.cast (Nat.succ_add_eq_succ_add ..) := by
+      Fin.append xs (Fin.cons x ys) ∘ Fin.cast (Nat.succ_add_eq_add_succ ..) := by
   rw [snoc_eq_append, append_assoc, append_left_eq_cons, append_cast_right]; rfl
 
 theorem append_right_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : Fin m → α) :
     Fin.append xs (Fin.cons y ys) =
-      Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_succ_add ..).symm := by
+      Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
@@ -670,7 +672,7 @@ theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → 
 def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
     (h : ∀ xs x, P (Fin.snoc xs x))
     (x : ∀ i : Fin n.succ, α i) : P x :=
-  _root_.cast (by rw[Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
+  _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
     {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))

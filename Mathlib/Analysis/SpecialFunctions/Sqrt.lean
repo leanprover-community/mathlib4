@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
 #align_import analysis.special_functions.sqrt from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -39,8 +39,8 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' _ h := sq_sqrt (le_of_lt h)
   open_source := isOpen_Ioi
   open_target := isOpen_Ioi
-  continuous_toFun := (continuous_pow 2).continuousOn
-  continuous_invFun := continuousOn_id.sqrt
+  continuousOn_toFun := (continuous_pow 2).continuousOn
+  continuousOn_invFun := continuousOn_id.sqrt
 #align real.sq_local_homeomorph Real.sqLocalHomeomorph
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
@@ -177,4 +177,3 @@ theorem ContDiff.sqrt (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) : ContDiff 
 #align cont_diff.sqrt ContDiff.sqrt
 
 end fderiv
-

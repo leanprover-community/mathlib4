@@ -216,13 +216,8 @@ theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [MonoidHomClass G �
 
 section Deprecated
 
-/-- Deprecated: use `_root_.map_prod` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `_root_.map_sum` instead."]
-protected theorem MonoidHom.map_prod [CommMonoid β] [CommMonoid γ] (g : β →* γ) (f : α → β)
-    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
-  map_prod g f s
-#align monoid_hom.map_prod MonoidHom.map_prod
-#align add_monoid_hom.map_sum AddMonoidHom.map_sum
+#align monoid_hom.map_prod map_prodₓ
+#align add_monoid_hom.map_sum map_sumₓ
 
 /-- Deprecated: use `_root_.map_prod` instead. -/
 @[to_additive (attr := deprecated) "Deprecated: use `_root_.map_sum` instead."]
@@ -279,8 +274,8 @@ end Deprecated
 
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :
-    ⇑(∏ x in s, f x) = ∏ x in s, ⇑f x :=
-  (MonoidHom.coeFn β γ).map_prod _ _
+    ⇑(∏ x in s, f x) = ∏ x in s, ⇑(f x) :=
+  map_prod (MonoidHom.coeFn β γ) _ _
 #align monoid_hom.coe_finset_prod MonoidHom.coe_finset_prod
 #align add_monoid_hom.coe_finset_sum AddMonoidHom.coe_finset_sum
 
@@ -291,7 +286,7 @@ theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → �
   `f : α → β → γ`"]
 theorem MonoidHom.finset_prod_apply [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α)
     (b : β) : (∏ x in s, f x) b = ∏ x in s, f x b :=
-  (MonoidHom.eval b).map_prod _ _
+  map_prod (MonoidHom.eval b) _ _
 #align monoid_hom.finset_prod_apply MonoidHom.finset_prod_apply
 #align add_monoid_hom.finset_sum_apply AddMonoidHom.finset_sum_apply
 
@@ -1461,6 +1456,14 @@ theorem prod_eq_pow_card {b : β} (hf : ∀ a ∈ s, f a = b) : ∏ a in s, f a 
 #align finset.prod_eq_pow_card Finset.prod_eq_pow_card
 #align finset.sum_eq_card_nsmul Finset.sum_eq_card_nsmul
 
+@[to_additive card_nsmul_add_sum]
+theorem pow_card_mul_prod {b : β} : b ^ s.card * ∏ a in s, f a = ∏ a in s, b * f a :=
+  (Finset.prod_const b).symm ▸ prod_mul_distrib.symm
+
+@[to_additive sum_add_card_nsmul]
+theorem prod_mul_pow_card {b : β} : (∏ a in s, f a) * b ^ s.card = ∏ a in s, f a * b :=
+  (Finset.prod_const b).symm ▸ prod_mul_distrib.symm
+
 @[to_additive]
 theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
 #align finset.pow_eq_prod_const Finset.pow_eq_prod_const
@@ -1564,7 +1567,7 @@ theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :
     (∏ x in s ∩ t, f x) * ∏ x in s \ t, f x = ∏ x in s, f x := by
   convert (s.prod_piecewise t f f).symm
-  simp [Finset.piecewise]
+  simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
 #align finset.prod_inter_mul_prod_diff Finset.prod_inter_mul_prod_diff
 #align finset.sum_inter_add_sum_diff Finset.sum_inter_add_sum_diff
 
@@ -1997,13 +2000,13 @@ namespace Fintype
 
 open Finset
 
-/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.bijective`.
+/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.Bijective`.
 
-See `Function.bijective.prod_comp` for a version without `h`. -/
-@[to_additive "`Fintype.sum_equiv` is a variant of `Finset.sum_bij` that accepts
-`Function.bijective`.
+See `Function.Bijective.prod_comp` for a version without `h`. -/
+@[to_additive "`Fintype.sum_bijective` is a variant of `Finset.sum_bij` that accepts
+`Function.Bijective`.
 
-See `Function.bijective.sum_comp` for a version without `h`. "]
+See `Function.Bijective.sum_comp` for a version without `h`. "]
 theorem prod_bijective {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M] (e : α → β)
     (he : Function.Bijective e) (f : α → M) (g : β → M) (h : ∀ x, f x = g (e x)) :
     ∏ x : α, f x = ∏ x : β, g x :=
@@ -2012,6 +2015,9 @@ theorem prod_bijective {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M
     (he.surjective y).imp fun _a h => ⟨mem_univ _, h.symm⟩
 #align fintype.prod_bijective Fintype.prod_bijective
 #align fintype.sum_bijective Fintype.sum_bijective
+
+alias _root_.Function.Bijective.finset_prod := prod_bijective
+attribute [to_additive] Function.Bijective.finset_prod
 
 /-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
@@ -2024,7 +2030,7 @@ automatically fills in most arguments.
 See `Equiv.sum_comp` for a version without `h`."]
 theorem prod_equiv {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M] (e : α ≃ β) (f : α → M)
     (g : β → M) (h : ∀ x, f x = g (e x)) : ∏ x : α, f x = ∏ x : β, g x :=
-  prod_bijective e e.bijective f g h
+  e.bijective.finset_prod _ f g h
 #align fintype.prod_equiv Fintype.prod_equiv
 #align fintype.sum_equiv Fintype.sum_equiv
 
@@ -2143,7 +2149,7 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type*} {i : Finset β} {f : β → 
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne.def, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne.def, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]
@@ -2289,7 +2295,7 @@ end Int
 @[simp, norm_cast]
 theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
     (↑(∏ i in s, f i) : M) = ∏ i in s, (f i : M) :=
-  (Units.coeHom M).map_prod _ _
+  map_prod (Units.coeHom M) _ _
 #align units.coe_prod Units.coe_prod
 
 theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h) :
@@ -2302,7 +2308,7 @@ theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i in s, f i).natAbs ≤ ∑ i in s, (f i).natAbs := by
   classical
     induction' s using Finset.induction_on with i s his IH
-    · simp only [Finset.sum_empty, Int.natAbs_zero]
+    · simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
     · simp only [his, Finset.sum_insert, not_false_iff]
       exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)
 #align nat_abs_sum_le nat_abs_sum_le

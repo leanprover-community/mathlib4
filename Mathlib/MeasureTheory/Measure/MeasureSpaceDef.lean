@@ -561,9 +561,9 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
-/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+/-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
-- `∅ : set α`
+- `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
@@ -615,8 +615,8 @@ theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
 
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
-(This property holds without the assumption `μ s ≠ ∞` when the space is sigma-finite,
-see `measure_toMeasurable_inter_of_sigmaFinite`).
+(This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
+σ-finite), see `measure_toMeasurable_inter_of_sFinite`).
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/

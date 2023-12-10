@@ -97,14 +97,14 @@ theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
 
 @[simp, norm_cast]
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
-  refine' ⟨_, fun ⟨h, ht⟩ => ⟨h, by exact_mod_cast ht⟩⟩
+  refine' ⟨_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
   rintro ⟨k, hk⟩
   have : ↑m < ℵ₀ := nat_lt_aleph0 m
   rw [hk, mul_lt_aleph0_iff] at this
   rcases this with (h | h | ⟨-, hk'⟩)
   iterate 2 simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
   lift k to ℕ using hk'
-  exact ⟨k, by exact_mod_cast hk⟩
+  exact ⟨k, mod_cast hk⟩
 #align cardinal.nat_coe_dvd_iff Cardinal.nat_coe_dvd_iff
 
 @[simp]
@@ -112,15 +112,15 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   simp only [Prime, Nat.prime_iff]
   refine' and_congr (by simp) (and_congr _ ⟨fun h b c hbc => _, fun h b c hbc => _⟩)
   · simp only [isUnit_iff, Nat.isUnit_iff]
-    exact_mod_cast Iff.rfl
-  · exact_mod_cast h b c (by exact_mod_cast hbc)
+    exact mod_cast Iff.rfl
+  · exact mod_cast h b c (mod_cast hbc)
   cases' lt_or_le (b * c) ℵ₀ with h' h'
   · rcases mul_lt_aleph0_iff.mp h' with (rfl | rfl | ⟨hb, hc⟩)
     · simp
     · simp
     lift b to ℕ using hb
     lift c to ℕ using hc
-    exact_mod_cast h b c (by exact_mod_cast hbc)
+    exact mod_cast h b c (mod_cast hbc)
   rcases aleph0_le_mul_iff.mp h' with ⟨hb, hc, hℵ₀⟩
   have hn : (n : Cardinal) ≠ 0 := by
     intro h
@@ -148,12 +148,13 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   rw [isPrimePow_def]
   refine'
     ⟨_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
-          ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact_mod_cast h⟩⟩
+          ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
-  have key : p ^ 1 ≤ ↑a := by rw [←hpk]; apply power_le_power_left hp.ne_zero; exact_mod_cast hk
+  have key : p ^ (1 : Cardinal) ≤ ↑a := by
+    rw [← hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
   rw [power_one] at key
   lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
-  exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, by exact_mod_cast hpk⟩
+  exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, mod_cast hpk⟩
 #align cardinal.is_prime_pow_iff Cardinal.isPrimePow_iff
 
 end Cardinal

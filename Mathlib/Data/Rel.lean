@@ -148,10 +148,12 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 #align rel.inv_comp Rel.inv_comp
 
 @[simp]
-theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by simp [Bot.bot, inv, flip]
+theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
+  simp [Bot.bot, inv, flip]
 
 @[simp]
-theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by simp [Top.top, inv, flip]
+theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
+  simp [Top.top, inv, flip]
 
 /-- Image of a set under a relation -/
 def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
@@ -289,7 +291,7 @@ theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := b
 
 @[simp]
 theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
-  rw[←dom_inv, preimage, preimage, image_inter_dom_eq]
+  rw [← dom_inv, preimage, preimage, image_inter_dom_eq]
 
 theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
   intro x hx
@@ -363,7 +365,7 @@ def graph (f : α → β) : Rel α β := fun x y => f x = y
 
 @[simp] lemma graph_def (f : α → β) (x y) : f.graph x y ↔ (f x = y) := Iff.rfl
 
-theorem graph_id : graph id = @Eq α := by simp [graph]
+theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y
@@ -382,7 +384,7 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
     use f x
     simp only [forall_eq', and_self]
   · intro h
-    rcases Classical.axiomOfChoice (λ x ↦ (h x).exists) with ⟨f,hf⟩
+    choose f hf using fun x ↦ (h x).exists
     use f
     constructor
     · ext x _

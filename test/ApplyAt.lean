@@ -90,3 +90,9 @@ example {α β : Type*} (a : α) (b : β) : α × β := by
 example {α β : Type*} (a : α) (b : β) : α × β := by
   fail_if_success apply a at b
   exact (a, b)
+
+-- testing field notation
+example {A B : Prop} (h : A ↔ B) : A → B := by
+  intro hA
+  apply h.mp at hA
+  assumption

@@ -99,6 +99,12 @@ theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDec
   exact Classical.choose_spec h.lebesgue_decomposition
 #align measure_theory.measure.have_lebesgue_decomposition_spec MeasureTheory.Measure.haveLebesgueDecomposition_spec
 
+instance instHaveLebesgueDecomposition_zero_left : HaveLebesgueDecomposition 0 ν where
+  lebesgue_decomposition := ⟨⟨0, 0⟩, measurable_zero, MutuallySingular.zero_left, by simp⟩
+
+instance instHaveLebesgueDecomposition_zero_right : HaveLebesgueDecomposition μ 0 where
+  lebesgue_decomposition := ⟨⟨μ, 0⟩, measurable_zero, MutuallySingular.zero_right, by simp⟩
+
 theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
   (haveLebesgueDecomposition_spec μ ν).2.2
@@ -135,6 +141,9 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
       · simp [hr]
       · exact ENNReal.coe_ne_top
 
+theorem haveLebesgueDecomposition_withDensity (μ : Measure α) {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).HaveLebesgueDecomposition μ := ⟨⟨⟨0, f⟩, hf, .zero_left, (zero_add _).symm⟩⟩
+
 @[measurability]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
@@ -149,6 +158,10 @@ theorem mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν 
   · rw [singularPart, dif_neg h]
     exact MutuallySingular.zero_left
 #align measure_theory.measure.mutually_singular_singular_part MeasureTheory.Measure.mutuallySingular_singularPart
+
+instance instHaveLebesgueDecomposition_singularPart :
+    HaveLebesgueDecomposition (μ.singularPart ν) ν :=
+  ⟨⟨μ.singularPart ν, 0⟩, measurable_zero, mutuallySingular_singularPart μ ν, by simp⟩
 
 theorem singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
@@ -167,6 +180,38 @@ theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv
   · rw [rnDeriv, dif_neg hl, withDensity_zero]
     exact Measure.zero_le μ
 #align measure_theory.measure.with_density_rn_deriv_le MeasureTheory.Measure.withDensity_rnDeriv_le
+
+lemma _root_.AEMeasurable.singularPart {β : Type*} {_ : MeasurableSpace β} {f : α → β}
+    (hf : AEMeasurable f μ) (ν : Measure α) :
+    AEMeasurable f (μ.singularPart ν) :=
+  AEMeasurable.mono_measure hf (Measure.singularPart_le _ _)
+
+lemma _root_.AEMeasurable.withDensity_rnDeriv {β : Type*} {_ : MeasurableSpace β} {f : α → β}
+    (hf : AEMeasurable f μ) (ν : Measure α) :
+    AEMeasurable f (ν.withDensity (μ.rnDeriv ν)) :=
+  AEMeasurable.mono_measure hf (Measure.withDensity_rnDeriv_le _ _)
+
+lemma MutuallySingular.singularPart (h : μ ⟂ₘ ν) (ν' : Measure α) :
+    μ.singularPart ν' ⟂ₘ ν :=
+  h.mono (singularPart_le μ ν') le_rfl
+
+lemma absolutelyContinuous_withDensity_rnDeriv {μ ν : Measure α} [HaveLebesgueDecomposition ν μ]
+    (hμν : μ ≪ ν) :
+    μ ≪ μ.withDensity (ν.rnDeriv μ) := by
+  rw [haveLebesgueDecomposition_add ν μ] at hμν
+  refine AbsolutelyContinuous.mk (fun s _ hνs ↦ ?_)
+  obtain ⟨t, _, ht1, ht2⟩ := mutuallySingular_singularPart ν μ
+  have hs_eq_union : s = s ∩ t ∪ s ∩ tᶜ := by ext x; simp
+  rw [hs_eq_union]
+  refine le_antisymm ((measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_) (zero_le _)
+  simp only [nonpos_iff_eq_zero, add_eq_zero]
+  constructor
+  · refine hμν ?_
+    simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero]
+    constructor
+    · exact measure_mono_null (Set.inter_subset_right _ _) ht1
+    · exact measure_mono_null (Set.inter_subset_left _ _) hνs
+  · exact measure_mono_null (Set.inter_subset_right _ _) ht2
 
 @[simp]
 lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
@@ -187,12 +232,21 @@ lemma rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
   rw [← withDensity_rnDeriv_eq_zero,
     withDensity_eq_zero_iff (measurable_rnDeriv _ _).aemeasurable]
 
+lemma rnDeriv_zero (ν : Measure α) : (0 : Measure α).rnDeriv ν =ᵐ[ν] 0 := by
+  rw [rnDeriv_eq_zero]
+  exact MutuallySingular.zero_left
+
 lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂ₘ ν) :
     μ.rnDeriv ν =ᵐ[ν] 0 := by
   by_cases h : μ.HaveLebesgueDecomposition ν
   · rw [rnDeriv_eq_zero]
     exact hμν
   · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
+
+lemma rnDeriv_singularPart (μ ν : Measure α) :
+    (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
+  rw [rnDeriv_eq_zero]
+  exact mutuallySingular_singularPart μ ν
 
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
@@ -421,13 +475,9 @@ theorem eq_withDensity_rnDeriv₀ {μ ν : Measure α} {s : Measure α} {f : α 
 
 theorem eq_rnDeriv₀ {μ ν : Measure α} [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν) (hadd : μ = s + ν.withDensity f) :
-    f =ᵐ[ν] μ.rnDeriv ν := by
-  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf
-    (measurable_rnDeriv μ ν).aemeasurable _
-  intro a ha _
-  calc ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
-    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv₀ hf hs hadd]
-    _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
+    f =ᵐ[ν] μ.rnDeriv ν :=
+  (withDensity_eq_iff_of_sigmaFinite hf (measurable_rnDeriv _ _).aemeasurable).mp
+    (eq_withDensity_rnDeriv₀ hf hs hadd)
 
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
@@ -441,20 +491,29 @@ theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf
   eq_rnDeriv₀ hf.aemeasurable hs hadd
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
 
+lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] fun _ ↦ 1 :=
+  (eq_rnDeriv (measurable_const) MutuallySingular.zero_left (by simp)).symm
+
+/-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
+theorem rnDeriv_withDensity₀ (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) :
+    (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
+  haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
+  (eq_rnDeriv₀ hf MutuallySingular.zero_left this).symm
+
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
 theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
-  haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
-  (eq_rnDeriv hf MutuallySingular.zero_left this).symm
+  rnDeriv_withDensity₀ ν hf.aemeasurable
 #align measure_theory.measure.rn_deriv_with_density MeasureTheory.Measure.rnDeriv_withDensity
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
 indicator function of this set. -/
-theorem rnDeriv_restrict (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : MeasurableSet s) :
+theorem rnDeriv_restrict_self (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : MeasurableSet s) :
     (ν.restrict s).rnDeriv ν =ᵐ[ν] s.indicator 1 := by
   rw [← withDensity_indicator_one hs]
   exact rnDeriv_withDensity _ (measurable_one.indicator hs)
-#align measure_theory.measure.rn_deriv_restrict MeasureTheory.Measure.rnDeriv_restrict
+#align measure_theory.measure.rn_deriv_restrict MeasureTheory.Measure.rnDeriv_restrict_self
 
 /-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left'`, which requires sigma-finite `ν` and `μ`. -/
@@ -1007,6 +1066,12 @@ lemma rnDeriv_add' (ν₁ ν₂ μ : Measure α) [SigmaFinite ν₁] [SigmaFinit
       ← ν₂.haveLebesgueDecomposition_add μ, ← add_assoc, ← ν₁.haveLebesgueDecomposition_add μ]
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
+
+lemma rnDeriv_add_of_mutuallySingular (ν₁ ν₂ μ : Measure α)
+    [SigmaFinite ν₁] [SigmaFinite ν₂] [SigmaFinite μ] (h : ν₂ ⟂ₘ μ) :
+    (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ := by
+  filter_upwards [rnDeriv_add' ν₁ ν₂ μ, (rnDeriv_eq_zero ν₂ μ).mpr h] with x hx_add hx_zero
+  simp [hx_add, hx_zero]
 
 end rnDeriv
 
