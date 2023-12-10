@@ -41,7 +41,7 @@ theorem isClopen_iff_frontier_eq_empty : IsClopen s ↔ frontier s = ∅ := by
     (h.trans interior_subset).antisymm subset_closure⟩
 #align is_clopen_iff_frontier_eq_empty isClopen_iff_frontier_eq_empty
 
-alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
+@[simp] alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
 #align is_clopen.frontier_eq IsClopen.frontier_eq
 
 theorem IsClopen.union (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∪ t) :=

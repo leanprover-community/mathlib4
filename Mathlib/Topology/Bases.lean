@@ -678,6 +678,10 @@ lemma SecondCountableTopology.mk' {b : Set (Set α)} (hc : b.Countable) :
     @SecondCountableTopology α (generateFrom b) :=
   @SecondCountableTopology.mk α (generateFrom b) ⟨b, hc, rfl⟩
 
+instance _root_.Finite.toSecondCountableTopology [Finite α] : SecondCountableTopology α where
+  is_open_generated_countable :=
+    ⟨_, {U | IsOpen U}.to_countable, TopologicalSpace.isTopologicalBasis_opens.eq_generateFrom⟩
+
 variable (α)
 
 theorem exists_countable_basis [SecondCountableTopology α] :
