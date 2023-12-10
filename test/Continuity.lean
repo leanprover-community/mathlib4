@@ -1,6 +1,7 @@
 import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
 
+set_option autoImplicit true
 section basic
 
 variable [TopologicalSpace W] [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -62,3 +63,11 @@ example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by con
   f.continuous.comp (continuous_const.prod_mk continuous_id)
 
 end basic
+
+/-! Some tests of the `comp_of_eq` lemmas -/
+
+example {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {x₀ : α} (f : α → α → β)
+  (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
+  ContinuousAt (λ x ↦ f x x) x₀ := by
+  fail_if_success { exact hf.comp (continuousAt_id.prod continuousAt_id) }
+  exact hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl

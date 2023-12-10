@@ -2,14 +2,11 @@
 Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
-
-! This file was ported from Lean 3 source module data.finsupp.pwo
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Order.WellFoundedSet
+
+#align_import data.finsupp.pwo from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Partial well ordering on finsupps
@@ -33,7 +30,7 @@ Dickson, order, partial well order
 ordered, when `σ` is `Finite` and `α` is a linear well order.
 This version uses finsupps on a finite type as it is intended for use with `MVPowerSeries`.
 -/
-theorem Finsupp.isPwo {α σ : Type _} [Zero α] [LinearOrder α] [IsWellOrder α (· < ·)] [Finite σ]
+theorem Finsupp.isPwo {α σ : Type*} [Zero α] [LinearOrder α] [IsWellOrder α (· < ·)] [Finite σ]
     (S : Set (σ →₀ α)) : S.IsPwo :=
   Finsupp.equivFunOnFinite.symm_image_image S ▸
     Set.PartiallyWellOrderedOn.image_of_monotone_on (Pi.isPwo _) fun _a _b _ha _hb => id

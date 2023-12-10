@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.filter
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Filter
+
+#align_import topology.algebra.order.filter from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Topology on filters of a space with order topology
@@ -23,7 +20,7 @@ open Topology
 
 namespace Filter
 
-variable {α X : Type _} [TopologicalSpace X] [PartialOrder X] [OrderTopology X]
+variable {α X : Type*} [TopologicalSpace X] [PartialOrder X] [OrderTopology X]
 
 protected theorem tendsto_nhds_atTop [NoMaxOrder X] : Tendsto 𝓝 (atTop : Filter X) (𝓝 atTop) :=
   Filter.tendsto_nhds_atTop_iff.2 fun x => (eventually_gt_atTop x).mono fun _ => le_mem_nhds

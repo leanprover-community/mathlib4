@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.reflexive
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+
+#align_import category_theory.limits.shapes.reflexive from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # Reflexive coequalizers
@@ -49,8 +46,8 @@ class IsReflexivePair (f g : A ⟶ B) : Prop where
 #align category_theory.is_reflexive_pair CategoryTheory.IsReflexivePair
 
 -- porting note: added theorem, because of unsupported infer kinds
-theorem IsReflexivePair.common_section (f g : A ⟶ B) [IsReflexivePair f g]:
-  ∃ s : B ⟶ A, s ≫ f = 𝟙 B ∧ s ≫ g = 𝟙 B := IsReflexivePair.common_section'
+theorem IsReflexivePair.common_section (f g : A ⟶ B) [IsReflexivePair f g] :
+    ∃ s : B ⟶ A, s ≫ f = 𝟙 B ∧ s ≫ g = 𝟙 B := IsReflexivePair.common_section'
 
 /--
 The pair `f g : A ⟶ B` is coreflexive if there is a morphism `B ⟶ A` which is a retraction for both.
@@ -60,8 +57,8 @@ class IsCoreflexivePair (f g : A ⟶ B) : Prop where
 #align category_theory.is_coreflexive_pair CategoryTheory.IsCoreflexivePair
 
 -- porting note: added theorem, because of unsupported infer kinds
-theorem IsCoreflexivePair.common_retraction (f g : A ⟶ B) [IsCoreflexivePair f g]:
-  ∃ s : B ⟶ A, f ≫ s = 𝟙 A ∧ g ≫ s = 𝟙 A := IsCoreflexivePair.common_retraction'
+theorem IsCoreflexivePair.common_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
+    ∃ s : B ⟶ A, f ≫ s = 𝟙 A ∧ g ≫ s = 𝟙 A := IsCoreflexivePair.common_retraction'
 
 theorem IsReflexivePair.mk' (s : B ⟶ A) (sf : s ≫ f = 𝟙 B) (sg : s ≫ g = 𝟙 B) :
     IsReflexivePair f g :=

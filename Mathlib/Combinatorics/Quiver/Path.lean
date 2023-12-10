@@ -2,15 +2,11 @@
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module combinatorics.quiver.path
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Logic.Lemmas
+
+#align_import combinatorics.quiver.path from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Paths in quivers
@@ -44,23 +40,23 @@ namespace Path
 variable {V : Type u} [Quiver V] {a b c d : V}
 
 lemma nil_ne_cons (p : Path a b) (e : b ⟶ a) : Path.nil ≠ p.cons e :=
-fun h => by injection h
+  fun h => by injection h
 #align quiver.path.nil_ne_cons Quiver.Path.nil_ne_cons
 
 lemma cons_ne_nil (p : Path a b) (e : b ⟶ a) : p.cons e ≠ Path.nil :=
-fun h => by injection h
+  fun h => by injection h
 #align quiver.path.cons_ne_nil Quiver.Path.cons_ne_nil
 
 lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
 #align quiver.path.obj_eq_of_cons_eq_cons Quiver.Path.obj_eq_of_cons_eq_cons
 
 lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
 #align quiver.path.heq_of_cons_eq_cons Quiver.Path.heq_of_cons_eq_cons
 
 lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
 #align quiver.path.hom_heq_of_cons_eq_cons Quiver.Path.hom_heq_of_cons_eq_cons
 
 /-- The length of a path is the number of arrows it uses. -/
@@ -192,7 +188,7 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
   | _, @cons _ _ _ c _ p f, @cons _ _ _ t _ C D, h => by
     simp only [toList, List.cons.injEq] at h
     obtain ⟨rfl, hAC⟩ := h
-    simp [toList_injective _ _ hAC]
+    simp [toList_injective _ _ hAC, eq_iff_true_of_subsingleton]
 #align quiver.path.to_list_injective Quiver.Path.toList_injective
 
 @[simp]

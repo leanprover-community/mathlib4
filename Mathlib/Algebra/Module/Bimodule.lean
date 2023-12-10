@@ -2,13 +2,10 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.module.bimodule
-! leanprover-community/mathlib commit 58cef51f7a819e7227224461e392dee423302f2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.TensorProduct
+
+#align_import algebra.module.bimodule from "leanprover-community/mathlib"@"58cef51f7a819e7227224461e392dee423302f2d"
 
 /-!
 # Bimodules
@@ -32,8 +29,8 @@ Note that the corresponding result holds for the canonically isomorphic ring `R 
 preferable to use the `R ⊗[ℕ] Sᵐᵒᵖ` instance since it works without additive inverses.
 
 Bimodules are thus just a special case of `Module`s and most of their properties follow from the
-theory of `Module`s`. In particular a two-sided Submodule of a bimodule is simply a term of type
-`submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
+theory of `Module`s. In particular a two-sided Submodule of a bimodule is simply a term of type
+`Submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
 
 This file is a place to collect results which are specific to bimodules.
 
@@ -67,7 +64,7 @@ namespace Subbimodule
 
 section Algebra
 
-variable {R A B M : Type _}
+variable {R A B M : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -108,7 +105,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
 @[simps!]
-def baseChange (S : Type _) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
+def baseChange (S : Type*) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
     [IsScalarTower S A M] [IsScalarTower S B M] (p : Submodule (A ⊗[R] B) M) :
     Submodule (A ⊗[S] B) M :=
   mk p.toAddSubmonoid (smul_mem p) (smul_mem' p)
@@ -134,7 +131,7 @@ end Algebra
 
 section Ring
 
-variable (R S M : Type _) [Ring R] [Ring S]
+variable (R S M : Type*) [Ring R] [Ring S]
 
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 

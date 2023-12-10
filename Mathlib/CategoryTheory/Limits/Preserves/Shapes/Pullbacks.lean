@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.pullbacks
-! leanprover-community/mathlib commit f11e306adb9f2a393539d2bb4293bf1b42caa7ac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.pullbacks from "leanprover-community/mathlib"@"f11e306adb9f2a393539d2bb4293bf1b42caa7ac"
 
 /-!
 # Preserving pullbacks
@@ -64,7 +61,7 @@ def isLimitMapConePullbackConeEquiv :
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
-    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [←G.map_comp,←G.map_comp,comm]
+    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp,comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   isLimitMapConePullbackConeEquiv G comm (PreservesLimit.preserves l)
 #align category_theory.limits.is_limit_pullback_cone_map_of_is_limit CategoryTheory.Limits.isLimitPullbackConeMapOfIsLimit
@@ -72,7 +69,7 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
-    from by simp only [←G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
+    from by simp only [← G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   ReflectsLimit.reflects ((isLimitMapConePullbackConeEquiv G comm).symm l)
 #align category_theory.limits.is_limit_of_is_limit_pullback_cone_map CategoryTheory.Limits.isLimitOfIsLimitPullbackConeMap
 
@@ -81,8 +78,8 @@ variable (f g) [PreservesLimit (cospan f g) G]
 /-- If `G` preserves pullbacks and `C` has them, then the pullback cone constructed of the mapped
 morphisms of the pullback cone is a limit. -/
 def isLimitOfHasPullbackOfPreservesLimit [i : HasPullback f g] :
-    have : G.map pullback.fst ≫ G.map f  = G.map pullback.snd ≫ G.map g := by
-      simp only [←G.map_comp, pullback.condition];
+    have : G.map pullback.fst ≫ G.map f = G.map pullback.snd ≫ G.map g := by
+      simp only [← G.map_comp, pullback.condition];
     IsLimit (PullbackCone.mk (G.map (@pullback.fst _ _ _ _ _ f g i)) (G.map pullback.snd) this) :=
   isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback f g)
 #align category_theory.limits.is_limit_of_has_pullback_of_preserves_limit CategoryTheory.Limits.isLimitOfHasPullbackOfPreservesLimit
@@ -171,14 +168,14 @@ def isColimitMapCoconePushoutCoconeEquiv :
 def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
     IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
-      from by simp only [←G.map_comp,comm] )) :=
+      from by simp only [← G.map_comp,comm] )) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (PreservesColimit.preserves l)
 #align category_theory.limits.is_colimit_pushout_cocone_map_of_is_colimit CategoryTheory.Limits.isColimitPushoutCoconeMapOfIsColimit
 
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
-      G.map g ≫ G.map k from by simp only [←G.map_comp,comm]))) :
+      G.map g ≫ G.map k from by simp only [← G.map_comp,comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   ReflectsColimit.reflects ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 #align category_theory.limits.is_colimit_of_is_colimit_pushout_cocone_map CategoryTheory.Limits.isColimitOfIsColimitPushoutCoconeMap

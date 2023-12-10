@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.functor
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
+
+#align_import category_theory.bicategory.functor from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Oplax functors and pseudofunctors
@@ -35,10 +32,10 @@ of the oplax functor associated with it is already done. For example, the compos
 pseudofunctors can be defined by using the composition of oplax functors as follows:
 ```lean
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-mkOfOplax ((F : OplaxFunctor B C).comp G)
-{ mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-  mapCompIso := λ f g =>
-    (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
+  mkOfOplax ((F : OplaxFunctor B C).comp G)
+  { mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+    mapCompIso := λ f g =>
+      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
 because `obviously` wasn't smart enough in mathlib3 and the porter of this file was too lazy

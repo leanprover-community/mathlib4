@@ -2,14 +2,11 @@
 Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
-
-! This file was ported from Lean 3 source module algebra.char_p.exp_char
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Nat.Prime
+
+#align_import algebra.char_p.exp_char from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Exponential characteristic
@@ -74,9 +71,9 @@ theorem char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 #align char_zero_of_exp_char_one char_zero_of_expChar_one
 
--- see Note [lower instance priority]
+-- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
 /-- The characteristic is zero if the exponential characteristic is one. -/
-instance (priority := 100) charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
+theorem charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
   cases hq
   · assumption
   · exact False.elim (CharP.char_ne_one R 1 rfl)

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.inverse
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Topology.Algebra.Order.ProjIcc
+
+#align_import analysis.special_functions.trigonometric.inverse from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Inverse trigonometric functions.
@@ -294,8 +291,8 @@ def sinLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' _ hy := sin_arcsin hy.1.le hy.2.le
   open_source := isOpen_Ioo
   open_target := isOpen_Ioo
-  continuous_toFun := continuous_sin.continuousOn
-  continuous_invFun := continuous_arcsin.continuousOn
+  continuousOn_toFun := continuous_sin.continuousOn
+  continuousOn_invFun := continuous_arcsin.continuousOn
 #align real.sin_local_homeomorph Real.sinLocalHomeomorph
 
 theorem cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=

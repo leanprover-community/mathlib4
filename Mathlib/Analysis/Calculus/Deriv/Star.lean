@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.star
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Star
+
+#align_import analysis.calculus.deriv.star from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Star operations on derivatives
@@ -18,6 +15,8 @@ This file contains the usual formulas (and existence assertions) for the derivat
 operation. Note that these only apply when the field that the derivative is respect to has a trivial
 star operation; which as should be expected rules out `𝕜 = ℂ`.
 -/
+
+set_option autoImplicit true
 
 
 universe u v w

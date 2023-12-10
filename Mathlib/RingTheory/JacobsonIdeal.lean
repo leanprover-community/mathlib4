@@ -2,14 +2,11 @@
 Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma
-
-! This file was ported from Lean 3 source module ring_theory.jacobson_ideal
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Polynomial.Quotient
+
+#align_import ring_theory.jacobson_ideal from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # Jacobson radical
@@ -169,7 +166,7 @@ theorem eq_jacobson_iff_not_mem :
   constructor
   · intro h x hx
     erw [← h, mem_sInf] at hx
-    push_neg  at hx
+    push_neg at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
@@ -233,7 +230,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 @[mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
-  erw [mem_sInf] at hx⊢
+  erw [mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 #align ideal.jacobson_mono Ideal.jacobson_mono
 

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module measure_theory.function.continuous_map_dense
-! leanprover-community/mathlib commit e0736bb5b48bdadbca19dbd857e12bee38ccfbb8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Integral.Bochner
+
+#align_import measure_theory.function.continuous_map_dense from "leanprover-community/mathlib"@"e0736bb5b48bdadbca19dbd857e12bee38ccfbb8"
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -25,13 +22,13 @@ The result is presented in several versions. First concrete versions giving an a
 up to `ε` in these various contexts, and then abstract versions stating that the topological
 closure of the relevant subgroups of `Lp` are the whole space.
 
-* `mem_ℒp.exists_has_compact_support_snorm_sub_le` states that, in a locally compact space,
-  an `ℒp` function can be approximated by continuous functions with compact support,
+* `MeasureTheory.Memℒp.exists_hasCompactSupport_snorm_sub_le` states that, in a locally compact
+  space, an `ℒp` function can be approximated by continuous functions with compact support,
   in the sense that `snorm (f - g) p μ` is small.
-* `mem_ℒp.exists_has_compact_support_integral_rpow_sub_le`: same result, but expressed in
+* `MeasureTheory.Memℒp.exists_hasCompactSupport_integral_rpow_sub_le`: same result, but expressed in
   terms of `∫ ‖f - g‖^p`.
 
-Versions with `integrable` instead of `mem_ℒp` are specialized to the case `p = 1`.
+Versions with `Integrable` instead of `Memℒp` are specialized to the case `p = 1`.
 Versions with `boundedContinuous` instead of `HasCompactSupport` drop the locally
 compact assumption and give only approximation by a bounded continuous function.
 
@@ -57,18 +54,18 @@ continuous function interpolating between these two sets.
 
 Are you looking for a result on "directional" approximation (above or below with respect to an
 order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?  See the
-Vitali-Carathéodory theorem, in the file `measure_theory.vitali_caratheodory`.
+Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/VitaliCaratheodory.lean`.
 
 -/
 
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
-open MeasureTheory TopologicalSpace ContinuousMap Set
+open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
-variable {α : Type _} [MeasurableSpace α] [TopologicalSpace α] [NormalSpace α] [BorelSpace α]
+variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [T4Space α] [BorelSpace α]
 
-variable {E : Type _} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
+variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
 
@@ -77,7 +74,7 @@ variable [NormedSpace ℝ E]
 /-- A variant of Urysohn's lemma, `ℒ^p` version, for an outer regular measure `μ`:
 consider two sets `s ⊆ u` which are respectively closed and open with `μ s < ∞`, and a vector `c`.
 Then one may find a continuous function `f` equal to `c` on `s` and to `0` outside of `u`,
-bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (λ y, c)` is
+bounded by `‖c‖` everywhere, and such that the `ℒ^p` norm of `f - s.indicator (fun y ↦ c)` is
 arbitrarily small. Additionally, this function `f` belongs to `ℒ^p`. -/
 theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ ∞) {s u : Set α}
     (s_closed : IsClosed s) (u_open : IsOpen u) (hsu : s ⊆ u) (hs : μ s ≠ ∞) (c : E) {ε : ℝ≥0∞}
@@ -96,7 +93,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
   have hsv : s ⊆ v := subset_inter hsu sV
   have hμv : μ v < ∞ := (measure_mono (inter_subset_right _ _)).trans_lt h'V
   obtain ⟨g, hgv, hgs, hg_range⟩ :=
-    exists_continuous_zero_one_of_closed (u_open.inter V_open).isClosed_compl s_closed
+    exists_continuous_zero_one_of_isClosed (u_open.inter V_open).isClosed_compl s_closed
       (disjoint_compl_left_iff.2 hsv)
   -- Multiply this by `c` to get a continuous approximation to the function `f`; the key point is
   -- that this is pointwise bounded by the indicator of the set `v \ s`, which has small measure.
@@ -112,8 +109,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
       cases' hv with hsv hs
-      ·
-        simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
+      · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
@@ -141,8 +137,8 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `snorm`. -/
-theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [μ.Regular] (hp : p ≠ ∞)
-    {f : α → E} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [WeaklyLocallyCompactSpace α] [μ.Regular]
+    (hp : p ≠ ∞) {f : α → E} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, HasCompactSupport g ∧ snorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ := by
   suffices H :
     ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ ∧ HasCompactSupport g
@@ -151,7 +147,7 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and consists of ae strongly measurable functions.
   -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ _ hε;
+  apply hf.induction_dense hp _ _ _ _ hε
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, hf⟩ ⟨g_cont, g_mem, hg⟩
@@ -173,8 +169,8 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [
   have I1 : snorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← snorm_neg, neg_sub, ← indicator_diff st]
     exact hη _ μs.le
-  obtain ⟨k, k_compact, sk, -⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k ∧ k ⊆ univ
-  exact exists_compact_between s_compact isOpen_univ (subset_univ _)
+  obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
+    exists_compact_superset s_compact
   rcases exists_continuous_snorm_sub_le_of_closed hp s_compact.isClosed isOpen_interior sk hsμ.ne c
       δpos.ne' with
     ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
@@ -195,7 +191,8 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [LocallyCompactSpace α] [
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
-theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le [LocallyCompactSpace α] [μ.Regular]
+theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
+    [WeaklyLocallyCompactSpace α] [μ.Regular]
     {p : ℝ} (hp : 0 < p) {f : α → E} (hf : Memℒp f (ENNReal.ofReal p) μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E,
       HasCompactSupport g ∧
@@ -216,7 +213,8 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le [LocallyCompactSpa
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫⁻`. -/
-theorem Integrable.exists_hasCompactSupport_lintegral_sub_le [LocallyCompactSpace α] [μ.Regular]
+theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
+    [WeaklyLocallyCompactSpace α] [μ.Regular]
     {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E,
       HasCompactSupport g ∧ (∫⁻ x, ‖f x - g x‖₊ ∂μ) ≤ ε ∧ Continuous g ∧ Integrable g μ := by
@@ -226,7 +224,8 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le [LocallyCompactSpac
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫`. -/
-theorem Integrable.exists_hasCompactSupport_integral_sub_le [LocallyCompactSpace α] [μ.Regular]
+theorem Integrable.exists_hasCompactSupport_integral_sub_le
+    [WeaklyLocallyCompactSpace α] [μ.Regular]
     {f : α → E} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E, HasCompactSupport g ∧ (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧
       Continuous g ∧ Integrable g μ := by
@@ -241,20 +240,20 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
     (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, snorm (f - (g : α → E)) p μ ≤ ε ∧ Memℒp g p μ := by
   suffices H :
-    ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ ∧ Metric.Bounded (range g)
+    ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ Continuous g ∧ Memℒp g p μ ∧ IsBounded (range g)
   · rcases H with ⟨g, hg, g_cont, g_mem, g_bd⟩
-    exact ⟨⟨⟨g, g_cont⟩, Metric.bounded_range_iff.1 g_bd⟩, hg, g_mem⟩
+    exact ⟨⟨⟨g, g_cont⟩, Metric.isBounded_range_iff.1 g_bd⟩, hg, g_mem⟩
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and made of ae strongly measurable functions.
   -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ _ hε;
+  apply hf.induction_dense hp _ _ _ _ hε
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, f_bd⟩ ⟨g_cont, g_mem, g_bd⟩
     refine' ⟨f_cont.add g_cont, f_mem.add g_mem, _⟩
-    let f' : α →ᵇ E := ⟨⟨f, f_cont⟩, Metric.bounded_range_iff.1 f_bd⟩
-    let g' : α →ᵇ E := ⟨⟨g, g_cont⟩, Metric.bounded_range_iff.1 g_bd⟩
-    exact (f' + g').bounded_range
+    let f' : α →ᵇ E := ⟨⟨f, f_cont⟩, Metric.isBounded_range_iff.1 f_bd⟩
+    let g' : α →ᵇ E := ⟨⟨g, g_cont⟩, Metric.isBounded_range_iff.1 g_bd⟩
+    exact (f' + g').isBounded_range
   -- ae strong measurability
   · exact fun f ⟨_, h, _⟩ => h.aestronglyMeasurable
   -- We are left with approximating characteristic functions.
@@ -284,7 +283,7 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine' ⟨f, I3, f_cont, f_mem, _⟩
-  exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).bounded_range
+  exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 #align measure_theory.mem_ℒp.exists_bounded_continuous_snorm_sub_le MeasureTheory.Memℒp.exists_boundedContinuous_snorm_sub_le
 
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,
@@ -360,7 +359,7 @@ end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)] (hp : p ≠ ∞)
 
-variable (𝕜 : Type _) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
 
 variable (E) (μ)
 
@@ -380,13 +379,14 @@ end BoundedContinuousFunction
 
 namespace ContinuousMap
 
+/-- Continuous functions are dense in `MeasureTheory.Lp`, `1 ≤ p < ∞`. This theorem assumes that
+the domain is a compact space because otherwise `ContinuousMap.toLp` is undefined. Use
+`BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space.  -/
 theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] :
     DenseRange (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ) := by
-  haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-  rw [denseRange_iff_closure_range]
-  suffices (LinearMap.range (toLp p μ 𝕜 : _ →L[𝕜] Lp E p μ)).toAddSubgroup.topologicalClosure = ⊤
-    by exact congr_arg ((↑) : AddSubgroup (Lp E p μ) → Set (Lp E p μ)) this
-  simpa [range_toLp p μ] using MeasureTheory.Lp.boundedContinuousFunction_dense E hp
+  refine (BoundedContinuousFunction.toLp_denseRange _ _ hp 𝕜).mono ?_
+  refine range_subset_iff.2 fun f ↦ ?_
+  exact ⟨f.toContinuousMap, rfl⟩
 set_option linter.uppercaseLean3 false in
 #align continuous_map.to_Lp_dense_range ContinuousMap.toLp_denseRange
 

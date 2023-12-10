@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
-
-! This file was ported from Lean 3 source module linear_algebra.bilinear_map
-! leanprover-community/mathlib commit 87c54600fe3cdc7d32ff5b50873ac724d86aef8d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basic
+
+#align_import linear_algebra.bilinear_map from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
 /-!
 # Basics on bilinear maps
@@ -33,23 +30,22 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
-
 namespace LinearMap
 
 section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {R : Type _} [Semiring R] {S : Type _} [Semiring S]
+variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
 
-variable {R₂ : Type _} [Semiring R₂] {S₂ : Type _} [Semiring S₂]
+variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
 
-variable {M : Type _} {N : Type _} {P : Type _}
+variable {M : Type*} {N : Type*} {P : Type*}
 
-variable {M₂ : Type _} {N₂ : Type _} {P₂ : Type _}
+variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
 
-variable {Nₗ : Type _} {Pₗ : Type _}
+variable {Nₗ : Type*} {Pₗ : Type*}
 
-variable {M' : Type _} {N' : Type _} {P' : Type _}
+variable {M' : Type*} {N' : Type*} {P' : Type*}
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 
@@ -123,6 +119,9 @@ theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : 
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
 #align linear_map.congr_fun₂ LinearMap.congr_fun₂
 
+theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
+  ⟨congr_fun₂, ext₂⟩
+
 section
 
 attribute [local instance] SMulCommClass.symm
@@ -179,9 +178,9 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
   (flip f y).map_smulₛₗ _ _
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
-theorem map_sum₂ {ι : Type _} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
+theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
     f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
-  (flip f y).map_sum
+  _root_.map_sum (flip f y) _ _
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 
 /-- Restricting a bilinear map in the second entry -/
@@ -211,13 +210,13 @@ end Semiring
 
 section CommSemiring
 
-variable {R : Type _} [CommSemiring R] {R₂ : Type _} [CommSemiring R₂]
+variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
 
-variable {R₃ : Type _} [CommSemiring R₃] {R₄ : Type _} [CommSemiring R₄]
+variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
 
-variable {M : Type _} {N : Type _} {P : Type _} {Q : Type _}
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
-variable {Mₗ : Type _} {Nₗ : Type _} {Pₗ : Type _} {Qₗ Qₗ' : Type _}
+variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 
@@ -363,7 +362,7 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
     f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
-    ext (x y)
+    ext x y
     cases' hₗ x with x' hx
     subst hx
     cases' hᵣ y with y' hy
@@ -398,13 +397,18 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
+/-- The restriction of a bilinear form to a submodule. -/
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
+    p →ₗ[R] p →ₗ[R] R :=
+  f.compl₁₂ p.subtype p.subtype
+
 end CommSemiring
 
 section CommRing
 
-variable {R R₂ S S₂ M N P : Type _}
+variable {R R₂ S S₂ M N P : Type*}
 
-variable {Mₗ Nₗ Pₗ : Type _}
+variable {Mₗ Nₗ Pₗ : Type*}
 
 variable [CommRing R] [CommRing S] [CommRing R₂] [CommRing S₂]
 
@@ -420,7 +424,7 @@ theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
 theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
-  LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
+    LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul
 

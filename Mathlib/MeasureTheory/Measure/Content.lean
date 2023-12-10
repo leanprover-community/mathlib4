@@ -2,15 +2,12 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.measure.content
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Sets.Compacts
+
+#align_import measure_theory.measure.content from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Contents
@@ -287,7 +284,7 @@ theorem outerMeasure_interior_compacts (K : Compacts G) : μ.outerMeasure (inter
 
 theorem outerMeasure_exists_compact {U : Opens G} (hU : μ.outerMeasure U ≠ ∞) {ε : ℝ≥0}
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.outerMeasure U ≤ μ.outerMeasure K + ε := by
-  rw [μ.outerMeasure_opens] at hU⊢
+  rw [μ.outerMeasure_opens] at hU ⊢
   rcases μ.innerContent_exists_compact hU hε with ⟨K, h1K, h2K⟩
   exact ⟨K, h1K, le_trans h2K <| add_le_add_right (μ.le_outerMeasure_compacts K) _⟩
 #align measure_theory.content.outer_measure_exists_compact MeasureTheory.Content.outerMeasure_exists_compact
@@ -308,7 +305,8 @@ theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ
   convert μ.innerContent_comap f h ⟨s, hs⟩
 #align measure_theory.content.outer_measure_preimage MeasureTheory.Content.outerMeasure_preimage
 
-theorem outerMeasure_lt_top_of_isCompact [LocallyCompactSpace G] {K : Set G} (hK : IsCompact K) :
+theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
+    {K : Set G} (hK : IsCompact K) :
     μ.outerMeasure K < ∞ := by
   rcases exists_compact_superset hK with ⟨F, h1F, h2F⟩
   calc
@@ -388,7 +386,7 @@ theorem measure_apply {s : Set G} (hs : MeasurableSet s) : μ.measure s = μ.out
 #align measure_theory.content.measure_apply MeasureTheory.Content.measure_apply
 
 /-- In a locally compact space, any measure constructed from a content is regular. -/
-instance regular [LocallyCompactSpace G] : μ.measure.Regular := by
+instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   have : μ.measure.OuterRegular := by
     refine' ⟨fun A hA r (hr : _ < _) => _⟩
     rw [μ.measure_apply hA, outerMeasure_eq_iInf] at hr

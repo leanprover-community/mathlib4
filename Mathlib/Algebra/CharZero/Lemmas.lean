@@ -2,14 +2,11 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.char_zero.lemmas
-! leanprover-community/mathlib commit acee671f47b8e7972a1eb6f4eed74b4b3abce829
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Algebra.GroupPower.Lemmas
+
+#align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
 /-!
 # Characteristic zero (additional theorems)
@@ -24,10 +21,9 @@ with `1`.
 * Characteristic zero implies that the additive monoid is infinite.
 -/
 
-
 namespace Nat
 
-variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
+variable {R : Type*} [AddMonoidWithOne R] [CharZero R]
 
 /-- `Nat.cast` as an embedding into monoids of characteristic `0`. -/
 @[simps]
@@ -37,14 +33,14 @@ def castEmbedding : ℕ ↪ R :=
 #align nat.cast_embedding_apply Nat.castEmbedding_apply
 
 @[simp]
-theorem cast_pow_eq_one {R : Type _} [Semiring R] [CharZero R] (q : ℕ) (n : ℕ) (hn : n ≠ 0) :
+theorem cast_pow_eq_one {R : Type*} [Semiring R] [CharZero R] (q : ℕ) (n : ℕ) (hn : n ≠ 0) :
     (q : R) ^ n = 1 ↔ q = 1 := by
   rw [← cast_pow, cast_eq_one]
   exact pow_eq_one_iff hn
 #align nat.cast_pow_eq_one Nat.cast_pow_eq_one
 
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type _} [DivisionSemiring k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type*} [DivisionSemiring k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
     ((m / n : ℕ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
@@ -55,7 +51,7 @@ end Nat
 
 section
 
-variable (M : Type _) [AddMonoidWithOne M] [CharZero M]
+variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
 
 instance CharZero.NeZero.two : NeZero (2 : M) :=
   ⟨by
@@ -67,7 +63,7 @@ end
 
 section
 
-variable {R : Type _} [NonAssocSemiring R] [NoZeroDivisors R] [CharZero R] {a : R}
+variable {R : Type*} [NonAssocSemiring R] [NoZeroDivisors R] [CharZero R] {a : R}
 
 @[simp]
 theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
@@ -99,19 +95,19 @@ end
 
 section
 
-variable {R : Type _} [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
+variable {R : Type*} [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
-theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
+@[simp] theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 #align neg_eq_self_iff neg_eq_self_iff
 
-theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
+@[simp] theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
   eq_neg_iff_add_eq_zero.trans add_self_eq_zero
 #align eq_neg_self_iff eq_neg_self_iff
 
 theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 ∨ a = b := by
   rw [← sub_eq_zero, ← mul_sub, mul_eq_zero, sub_eq_zero] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align nat_mul_inj nat_mul_inj
 
 theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n ≠ 0) : a = b := by
@@ -124,7 +120,7 @@ theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
   simp only [(two_mul a).symm, (two_mul b).symm] at h
   refine' nat_mul_inj' _ two_ne_zero
-  exact_mod_cast h
+  exact mod_cast h
 #align bit0_injective bit0_injective
 
 theorem bit1_injective : Function.Injective (bit1 : R → R) := fun a b h => by
@@ -157,7 +153,7 @@ end
 
 section
 
-variable {R : Type _} [DivisionRing R] [CharZero R]
+variable {R : Type*} [DivisionRing R] [CharZero R]
 
 @[simp]
 theorem half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_cancel a two_ne_zero]
@@ -177,16 +173,25 @@ end
 
 namespace WithTop
 
-instance {R : Type _} [AddMonoidWithOne R] [CharZero R] :
+instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithTop R) where
   cast_injective m n h := by
     rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
+namespace WithBot
+
+instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
+    CharZero (WithBot R) where
+  cast_injective m n h := by
+    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+
+end WithBot
+
 section RingHom
 
-variable {R S : Type _} [NonAssocSemiring R] [NonAssocSemiring S]
+variable {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 theorem RingHom.charZero (ϕ : R →+* S) [hS : CharZero S] : CharZero R :=
   ⟨fun a b h => CharZero.cast_injective (by rw [← map_natCast ϕ, ← map_natCast ϕ, h])⟩

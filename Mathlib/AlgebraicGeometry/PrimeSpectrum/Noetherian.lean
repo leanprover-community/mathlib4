@@ -2,14 +2,11 @@
 Copyright (c) 2020 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.prime_spectrum.noetherian
-! leanprover-community/mathlib commit 052f6013363326d50cb99c6939814a4b8eb7b301
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Topology.NoetherianSpace
+
+#align_import algebraic_geometry.prime_spectrum.noetherian from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Simon Hudon All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.constructions.prj
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Data.QPF.Multivariate.Basic
+
+#align_import data.qpf.multivariate.constructions.prj from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 Projection functors are QPFs. The `n`-ary projection functors on `i` is an `n`-ary
@@ -48,12 +45,12 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.prj.P MvQPF.Prj.P
 
 /-- Abstraction function of the `QPF` instance -/
-def Prj.abs ⦃α : TypeVec n⦄ : (Prj.P i).Obj α → Prj i α
+def Prj.abs ⦃α : TypeVec n⦄ : Prj.P i α → Prj i α
   | ⟨_x, f⟩ => f _ ⟨⟨rfl⟩⟩
 #align mvqpf.prj.abs MvQPF.Prj.abs
 
 /-- Representation function of the `QPF` instance -/
-def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → (Prj.P i).Obj α := fun x : α i =>
+def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → Prj.P i α := fun x : α i =>
   ⟨⟨⟩, fun j ⟨⟨h⟩⟩ => (h.rec x : α j)⟩
 #align mvqpf.prj.repr MvQPF.Prj.repr
 
@@ -62,7 +59,7 @@ instance Prj.mvqpf : MvQPF (Prj i) where
   abs := @Prj.abs _ i
   repr := @Prj.repr _ i
   abs_repr := by intros; rfl
-  abs_map := by intros α β f P ; cases P ; rfl
+  abs_map := by intros α β f P; cases P; rfl
 #align mvqpf.prj.mvqpf MvQPF.Prj.mvqpf
 
 end MvQPF

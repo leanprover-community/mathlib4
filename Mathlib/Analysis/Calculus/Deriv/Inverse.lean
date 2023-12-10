@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.inverse
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
+
+#align_import analysis.calculus.deriv.inverse from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Inverse function theorem - the easy half
@@ -96,7 +93,7 @@ theorem HasDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : 𝕜} (hg
   (hf.hasFDerivAt_equiv hf').of_local_left_inverse hg hfg
 #align has_deriv_at.of_local_left_inverse HasDerivAt.of_local_left_inverse
 
-/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
+/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
@@ -132,4 +129,3 @@ theorem not_differentiableAt_of_local_left_inverse_hasDerivAt_zero {f g : 𝕜 �
   have := (hf.comp a hg.hasDerivAt).congr_of_eventuallyEq hfg.symm
   simpa using this.unique (hasDerivAt_id a)
 #align not_differentiable_at_of_local_left_inverse_has_deriv_at_zero not_differentiableAt_of_local_left_inverse_hasDerivAt_zero
-

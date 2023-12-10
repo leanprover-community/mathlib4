@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.char_p.algebra
-! leanprover-community/mathlib commit 96782a2d6dcded92116d8ac9ae48efb41d46a27c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Algebra.FreeAlgebra
+
+#align_import algebra.char_p.algebra from "leanprover-community/mathlib"@"96782a2d6dcded92116d8ac9ae48efb41d46a27c"
 
 /-!
 # Characteristics of algebras
@@ -34,7 +31,7 @@ Instances constructed from this result:
 
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same characteristic as `R`. -/
-theorem charP_of_injective_algebraMap {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   { cast_eq_zero_iff' := fun x => by
       rw [← CharP.cast_eq_zero_iff R p x]
@@ -44,13 +41,13 @@ theorem charP_of_injective_algebraMap {R A : Type _} [CommSemiring R] [Semiring 
       rw [RingHom.map_zero] }
 #align char_p_of_injective_algebra_map charP_of_injective_algebraMap
 
-theorem charP_of_injective_algebraMap' (R A : Type _) [Field R] [Semiring A] [Algebra R A]
+theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
     [Nontrivial A] (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_algebraMap (algebraMap R A).injective p
 #align char_p_of_injective_algebra_map' charP_of_injective_algebraMap'
 
 /-- If the algebra map `R →+* A` is injective and `R` has characteristic zero then so does `A`. -/
-theorem charZero_of_injective_algebraMap {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+theorem charZero_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) [CharZero R] : CharZero A :=
   { cast_injective := fun x y hxy => by
       change algebraMap ℕ A x = algebraMap ℕ A y at hxy
@@ -68,7 +65,7 @@ As an application, a `ℚ`-algebra has characteristic zero.
 -- here as it would require `Ring A`.
 section QAlgebra
 
-variable (R : Type _) [Nontrivial R]
+variable (R : Type*) [Nontrivial R]
 
 /-- A nontrivial `ℚ`-algebra has `CharP` equal to zero.
 
@@ -99,7 +96,7 @@ An algebra over a field has the same characteristic as the field.
 
 section
 
-variable (K L : Type _) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
+variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
 
 theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
@@ -114,7 +111,7 @@ end
 
 namespace FreeAlgebra
 
-variable {R X : Type _} [CommSemiring R] (p : ℕ)
+variable {R X : Type*} [CommSemiring R] (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does `FreeAlgebra R X`. -/
 instance charP [CharP R p] : CharP (FreeAlgebra R X) p :=
@@ -130,7 +127,7 @@ end FreeAlgebra
 
 namespace IsFractionRing
 
-variable (R : Type _) {K : Type _} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) {K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 variable (p : ℕ)
 

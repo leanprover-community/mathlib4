@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.gram_schmidt_ortho
-! leanprover-community/mathlib commit 1a4df69ca1a9a0e5e26bfe12e2b92814216016d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.Block
+
+#align_import analysis.inner_product_space.gram_schmidt_ortho from "leanprover-community/mathlib"@"1a4df69ca1a9a0e5e26bfe12e2b92814216016d0"
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization
@@ -44,9 +41,9 @@ open scoped BigOperators
 
 open Finset Submodule FiniteDimensional
 
-variable (𝕜 : Type _) {E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-variable {ι : Type _} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -79,7 +76,7 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
 #align gram_schmidt_def'' gramSchmidt_def''
 
 @[simp]
-theorem gramSchmidt_zero {ι : Type _} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
     [IsWellOrder ι (· < ·)] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 #align gram_schmidt_zero gramSchmidt_zero
@@ -96,13 +93,13 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   clear h₀ a b
   intro a b h₀
   revert a
-  apply WellFounded.induction (@IsWellFounded.wf ι (· < ·) _) b
+  apply wellFounded_lt.induction b
   intro b ih a h₀
   simp only [gramSchmidt_def 𝕜 f b, inner_sub_right, inner_sum, orthogonalProjection_singleton,
     inner_smul_right]
   rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
   · by_cases h : gramSchmidt 𝕜 f a = 0
-    · simp only [h, inner_zero_left, zero_div, MulZeroClass.zero_mul, sub_zero]
+    · simp only [h, inner_zero_left, zero_div, zero_mul, sub_zero]
     · rw [IsROrC.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel, sub_self]
       rwa [inner_self_ne_zero]
   intro i hi hia
@@ -218,11 +215,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
   have h₂ : (f ∘ ((↑) : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
       span 𝕜 (f ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]
-    convert h₁ using 3
-    ext i
-    apply Iff.intro <;> simp -- Porting note: was `simpa using @le_of_lt _ _ i n`
-    · intros; simp_all only
-    · intros q; use i; exact ⟨q, le_of_lt q, rfl⟩
+    simpa using h₁
   apply LinearIndependent.not_mem_span_image h₀ _ h₂
   simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
 #align gram_schmidt_ne_zero_coe gramSchmidt_ne_zero_coe
@@ -326,7 +319,7 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
   by_cases h : gramSchmidt 𝕜 f i = 0
   · simp [h]
   · refine' mem_span_singleton.2 ⟨‖gramSchmidt 𝕜 f i‖, smul_inv_smul₀ _ _⟩
-    exact_mod_cast norm_ne_zero_iff.2 h
+    exact mod_cast norm_ne_zero_iff.2 h
 #align span_gram_schmidt_normed span_gramSchmidtNormed
 
 theorem span_gramSchmidtNormed_range (f : ι → E) :

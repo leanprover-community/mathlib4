@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.log.base
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Int.Log
+
+#align_import analysis.special_functions.log.base from "leanprover-community/mathlib"@"f23a09ce6d3f367220dc3cecad6b7eb69eb01690"
 
 /-!
 # Real logarithm base `b`
@@ -57,7 +54,14 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 #align real.logb_one Real.logb_one
 
 @[simp]
-theorem logb_abs (x : ℝ) : logb b (|x|) = logb b x := by rw [logb, logb, log_abs]
+lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
+  div_self (log_pos hb).ne'
+
+lemma logb_self_eq_one_iff : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :=
+  Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
+
+@[simp]
+theorem logb_abs (x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 #align real.logb_abs Real.logb_abs
 
 @[simp]
@@ -76,6 +80,38 @@ theorem logb_div (hx : x ≠ 0) (hy : y ≠ 0) : logb b (x / y) = logb b x - log
 @[simp]
 theorem logb_inv (x : ℝ) : logb b x⁻¹ = -logb b x := by simp [logb, neg_div]
 #align real.logb_inv Real.logb_inv
+
+theorem inv_logb (a b : ℝ) : (logb a b)⁻¹ = logb b a := by simp_rw [logb, inv_div]
+#align real.inv_logb Real.inv_logb
+
+theorem inv_logb_mul_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    (logb (a * b) c)⁻¹ = (logb a c)⁻¹ + (logb b c)⁻¹ := by
+  simp_rw [inv_logb]; exact logb_mul h₁ h₂
+#align real.inv_logb_mul_base Real.inv_logb_mul_base
+
+theorem inv_logb_div_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    (logb (a / b) c)⁻¹ = (logb a c)⁻¹ - (logb b c)⁻¹ := by
+  simp_rw [inv_logb]; exact logb_div h₁ h₂
+#align real.inv_logb_div_base Real.inv_logb_div_base
+
+theorem logb_mul_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    logb (a * b) c = ((logb a c)⁻¹ + (logb b c)⁻¹)⁻¹ := by rw [← inv_logb_mul_base h₁ h₂ c, inv_inv]
+#align real.logb_mul_base Real.logb_mul_base
+
+theorem logb_div_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    logb (a / b) c = ((logb a c)⁻¹ - (logb b c)⁻¹)⁻¹ := by rw [← inv_logb_div_base h₁ h₂ c, inv_inv]
+#align real.logb_div_base Real.logb_div_base
+
+theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -1) :
+    logb a b * logb b c = logb a c := by
+  unfold logb
+  rw [mul_comm, div_mul_div_cancel _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+#align real.mul_logb Real.mul_logb
+
+theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
+    logb a c / logb b c = logb a b :=
+  div_div_div_cancel_left' _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
+#align real.div_logb Real.div_logb
 
 section BPosAndNeOne
 
@@ -149,6 +185,11 @@ theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x �
   rw [logb, logb, div_le_div_right (log_pos hb), log_le_log h h₁]
 #align real.logb_le_logb Real.logb_le_logb
 
+@[gcongr]
+theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :=
+  (logb_le_logb hb h (by linarith)).mpr hxy
+
+@[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
   rw [logb, logb, div_lt_div_right (log_pos hb)]
   exact log_lt_log hx hxy
@@ -388,7 +429,7 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 -- TODO add other limits and continuous API lemmas analogous to those in Log.lean
 open BigOperators
 
-theorem logb_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
+theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i in s, f i) = ∑ i in s, logb b (f i) := by
   classical
     induction' s using Finset.induction_on with a s ha ih
@@ -398,3 +439,28 @@ theorem logb_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈
 #align real.logb_prod Real.logb_prod
 
 end Real
+
+section Induction
+
+/-- Induction principle for intervals of real numbers: if a proposition `P` is true
+on `[x₀, r * x₀)` and if `P` for `[x₀, r^n * x₀)` implies `P` for `[r^n * x₀, r^(n+1) * x₀)`,
+then `P` is true for all `x ≥ x₀`. -/
+lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
+    (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
+    (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
+      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
+    ∀ x ≥ x₀, P x := by
+  suffices ∀ n : ℕ, ∀ x ∈ Set.Ico x₀ (r ^ (n + 1) * x₀), P x by
+    intro x hx
+    have hx' : 0 < x / x₀ := div_pos (hx₀.trans_le hx) hx₀
+    refine this ⌊logb r (x / x₀)⌋₊ x ?_
+    rw [mem_Ico, ← div_lt_iff hx₀, ← rpow_nat_cast, ← logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
+      Nat.cast_one]
+    exact ⟨hx, Nat.lt_floor_add_one _⟩
+  intro n
+  induction n with
+  | zero => simpa using base
+  | succ n ih =>
+    exact fun x hx => (Ico_subset_Ico_union_Ico hx).elim (ih x) (step (n + 1) (by simp) ih _)
+
+end Induction

@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.module.star
-! leanprover-community/mathlib commit ad84a13c884fd19e286fb7abb36f4b9ba7e2f615
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Module
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Star
+
+#align_import topology.algebra.module.star from "leanprover-community/mathlib"@"ad84a13c884fd19e286fb7abb36f4b9ba7e2f615"
 
 /-!
 # The star operation, bundled as a continuous star-linear equiv
@@ -22,7 +19,7 @@ set_option linter.uppercaseLean3 false
 /-- If `A` is a topological module over a commutative `R` with compatible actions,
 then `star` is a continuous semilinear equivalence. -/
 @[simps!]
-def starL (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid A]
+def starL (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
     [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A] :
     A ≃L⋆[R] A where
   toLinearEquiv := starLinearEquiv R
@@ -36,7 +33,7 @@ def starL (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [AddCommMonoid
 /-- If `A` is a topological module over a commutative `R` with trivial star and compatible actions,
 then `star` is a continuous linear equivalence. -/
 @[simps!]
-def starL' (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TrivialStar R] [AddCommMonoid A]
+def starL' (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TrivialStar R] [AddCommMonoid A]
     [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A] :
     A ≃L[R] A :=
   (starL R : A ≃L⋆[R] A).trans
@@ -47,7 +44,7 @@ def starL' (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TrivialStar 
       A ≃L⋆[R] A)
 #align starL' starL'
 
-variable (R : Type _) (A : Type _) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A] [Invertible (2 : R)] [TopologicalSpace A]
 
 theorem continuous_selfAdjointPart [ContinuousAdd A] [ContinuousStar A] [ContinuousConstSMul R A] :
@@ -61,12 +58,12 @@ theorem continuous_skewAdjointPart [ContinuousSub A] [ContinuousStar A] [Continu
 #align continuous_skew_adjoint_part continuous_skewAdjointPart
 
 theorem continuous_decomposeProdAdjoint [TopologicalAddGroup A] [ContinuousStar A]
-    [ContinuousConstSMul R A] : Continuous (@StarModule.decomposeProdAdjoint R A _ _ _ _ _ _ _ _) :=
+    [ContinuousConstSMul R A] : Continuous (StarModule.decomposeProdAdjoint R A) :=
   (continuous_selfAdjointPart R A).prod_mk (continuous_skewAdjointPart R A)
 #align continuous_decompose_prod_adjoint continuous_decomposeProdAdjoint
 
 theorem continuous_decomposeProdAdjoint_symm [TopologicalAddGroup A] :
-    Continuous (@StarModule.decomposeProdAdjoint R A _ _ _ _ _ _ _ _).symm :=
+    Continuous (StarModule.decomposeProdAdjoint R A).symm :=
   (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
 #align continuous_decompose_prod_adjoint_symm continuous_decomposeProdAdjoint_symm
 

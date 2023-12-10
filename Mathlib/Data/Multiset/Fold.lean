@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.fold
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.List.MinMax
+
+#align_import data.multiset.fold from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # The fold operation for a commutative associative operation over a multiset.
@@ -18,7 +15,7 @@ import Mathlib.Data.List.MinMax
 
 namespace Multiset
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### fold -/
 
@@ -83,7 +80,7 @@ theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
       ha.assoc])
 #align multiset.fold_add Multiset.fold_add
 
-theorem fold_bind {ι : Type _} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
+theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
   induction' s using Multiset.induction_on with a ha ih
@@ -127,7 +124,7 @@ end Fold
 
 section Order
 
-theorem max_le_of_forall_le {α : Type _} [CanonicallyLinearOrderedAddMonoid α] (l : Multiset α)
+theorem max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddCommMonoid α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h

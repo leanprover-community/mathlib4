@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.uniform_space.matrix
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Data.Matrix.Basic
+
+#align_import topology.uniform_space.matrix from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Uniform space structure on matrices
@@ -18,7 +15,7 @@ import Mathlib.Data.Matrix.Basic
 
 open Uniformity Topology
 
-variable (m n 𝕜 : Type _) [UniformSpace 𝕜]
+variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 
 namespace Matrix
 
@@ -32,7 +29,7 @@ theorem uniformity :
   rfl
 #align matrix.uniformity Matrix.uniformity
 
-theorem uniformContinuous {β : Type _} [UniformSpace β] {f : β → Matrix m n 𝕜} :
+theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 𝕜} :
     UniformContinuous f ↔ ∀ i j, UniformContinuous fun x => f x i j := by
   simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_iInf, Filter.tendsto_comap_iff]
   apply Iff.intro <;> intro a <;> apply a

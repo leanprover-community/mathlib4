@@ -2,17 +2,14 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.add_torsor
-! leanprover-community/mathlib commit 837f72de63ad6cd96519cde5f1ffd5ed8d280ad0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Topology.Instances.RealVectorSpace
+
+#align_import analysis.normed_space.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
 /-!
 # Torsors of normed space actions.
@@ -27,12 +24,12 @@ open NNReal Topology
 
 open Filter
 
-variable {α V P W Q : Type _} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 section NormedSpace
 
-variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
 open AffineMap
 
@@ -227,6 +224,25 @@ theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
 
 end invertibleTwo
 
+@[simp] theorem dist_pointReflection_left (p q : P) :
+    dist (Equiv.pointReflection p q) p = dist p q := by
+  simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_left (G := V)]
+
+@[simp] theorem dist_left_pointReflection (p q : P) :
+    dist p (Equiv.pointReflection p q) = dist p q :=
+  (dist_comm _ _).trans (dist_pointReflection_left _ _)
+
+variable (𝕜) in
+theorem dist_pointReflection_right (p q : P) :
+    dist (Equiv.pointReflection p q) q = ‖(2 : 𝕜)‖ * dist p q := by
+  simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V),
+    nsmul_eq_smul_cast 𝕜, norm_smul]
+
+variable (𝕜) in
+theorem dist_right_pointReflection (p q : P) :
+    dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
+  (dist_comm _ _).trans (dist_pointReflection_right 𝕜 _ _)
+
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
@@ -284,7 +300,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by -- Porting note: was `by simp [h]`
-      simp
+      simp only [Function.comp_apply, AffineEquiv.vaddConst_apply, AffineEquiv.vaddConst_symm_apply]
       conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
           midpoint_vsub_midpoint]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))

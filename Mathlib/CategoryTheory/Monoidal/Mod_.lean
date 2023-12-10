@@ -2,13 +2,10 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.Mod_
-! leanprover-community/mathlib commit 33085c9739c41428651ac461a323fde9a2688d9b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
+
+#align_import category_theory.monoidal.Mod_ from "leanprover-community/mathlib"@"33085c9739c41428651ac461a323fde9a2688d9b"
 
 /-!
 # The category of module objects over a monoid object.
@@ -77,6 +74,7 @@ instance : Category (Mod_ A) where
   comp f g := comp f g
 
 -- porting note: added because `Hom.ext` is not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
   Hom.ext _ _ h

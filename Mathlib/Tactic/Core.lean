@@ -13,6 +13,8 @@ Generally useful tactics.
 
 -/
 
+set_option autoImplicit true
+
 open Lean.Elab.Tactic
 
 namespace Lean
@@ -24,7 +26,7 @@ Return the modifiers of declaration `nm` with (optional) docstring `newDoc`.
 Currently, recursive or partial definitions are not supported, and no attributes are provided.
 -/
 def toModifiers (nm : Name) (newDoc : Option String := none) :
-  CoreM Modifiers := do
+    CoreM Modifiers := do
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
@@ -49,7 +51,7 @@ from `nm`.
 Currently only implemented for definitions and theorems. Also see docstring of `toModifiers`
 -/
 def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option String := none) :
-  CoreM PreDefinition := do
+    CoreM PreDefinition := do
   let d ← getConstInfo nm
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
@@ -191,7 +193,7 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
 /-- Simulates the `<;>` tactic combinator. First runs `tac1` and then runs
     `tac2` on all newly-generated subgoals.
 -/
-def andThenOnSubgoals (tac1 : TacticM Unit)  (tac2 : TacticM Unit) : TacticM Unit :=
+def andThenOnSubgoals (tac1 : TacticM Unit) (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
 
 variable [Monad m] [MonadExcept Exception m]
@@ -199,23 +201,23 @@ variable [Monad m] [MonadExcept Exception m]
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
 def iterateAtMost : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
+  | 0, _ => pure ()
+  | n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
 
 /-- `iterateExactly' n t` executes `t` `n` times. If any iteration fails, the whole tactic fails.
 -/
 def iterateExactly' : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n+1, tac => tac *> iterateExactly' n tac
+  | 0, _ => pure ()
+  | n+1, tac => tac *> iterateExactly' n tac
 
 /--
 `iterateRange m n t`: Repeat the given tactic at least `m` times and
 at most `n` times or until `t` fails. Fails if `t` does not run at least `m` times.
 -/
 def iterateRange : Nat → Nat → m Unit → m Unit
-| 0, 0, _   => pure ()
-| 0, b, tac => iterateAtMost b tac
-| (a+1), n, tac => do tac; iterateRange a (n-1) tac
+  | 0, 0, _   => pure ()
+  | 0, b, tac => iterateAtMost b tac
+  | (a+1), n, tac => do tac; iterateRange a (n-1) tac
 
 /-- Repeats a tactic until it fails. Always succeeds. -/
 partial def iterateUntilFailure (tac : m Unit) : m Unit :=
@@ -245,7 +247,7 @@ open Lean
 
 /-- Returns the root directory which contains the package root file, e.g. `Mathlib.lean`. -/
 def getPackageDir (pkg : String) : IO System.FilePath := do
-  let sp ← initSrcSearchPath (← findSysroot)
+  let sp ← initSrcSearchPath
   let root? ← sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).withExtension "lean").pathExists
   if let some root := root? then return root

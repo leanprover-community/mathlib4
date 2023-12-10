@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.Top.open_nhds
-! leanprover-community/mathlib commit 1ec4876214bf9f1ddfbf97ae4b0d777ebd5d6938
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Opens
+
+#align_import topology.category.Top.open_nhds from "leanprover-community/mathlib"@"1ec4876214bf9f1ddfbf97ae4b0d777ebd5d6938"
 
 /-!
 # The category of open neighborhoods of a point

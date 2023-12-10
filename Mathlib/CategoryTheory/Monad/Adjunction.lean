@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.adjunction
-! leanprover-community/mathlib commit ea3009f6c1a37dc031f741382dbb3ed93c965620
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Algebra
+
+#align_import category_theory.monad.adjunction from "leanprover-community/mathlib"@"ea3009f6c1a37dc031f741382dbb3ed93c965620"
 
 /-!
 # Adjunctions and monads
@@ -94,7 +91,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 
 end Adjunction
 
-/-- Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
+/-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
 We later show that this is full when `R` is full, faithful when `R` is faithful,
@@ -142,7 +139,7 @@ instance (T : Monad C) : EssSurj (Monad.comparison T.adj) where
     ⟨Monad.Algebra.isoMk (Iso.refl _)⟩⟩
 
 /--
-Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
+Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
 `L.obj X`.
 -/

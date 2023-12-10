@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Kevin Lacker
-
-! This file was ported from Lean 3 source module algebra.group_power.identities
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
+
+#align_import algebra.group_power.identities from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Identities
@@ -17,7 +14,7 @@ This file contains some "named" commutative ring identities.
 -/
 
 
-variable {R : Type _} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y₁ y₂ y₃ y₄ y₅ y₆ y₇ y₈ n : R}
+variable {R : Type*} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y₁ y₂ y₃ y₄ y₅ y₆ y₇ y₈ n : R}
 
 /-- Brahmagupta-Fibonacci identity or Diophantus identity, see
 <https://en.wikipedia.org/wiki/Brahmagupta%E2%80%93Fibonacci_identity>.

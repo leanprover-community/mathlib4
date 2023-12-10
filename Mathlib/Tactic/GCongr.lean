@@ -12,33 +12,11 @@ import Mathlib.Tactic.GCongr.Core
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
 `Tactic.GCongr.Core`.  In this file we set it up for use across the library by tagging a minimal
 set of lemmas with the attribute `@[gcongr]` and by listing `positivity` as a first-pass
-discharger for side goals (`gcongr_discharger`) and four simple tactics as first-pass dischargers
-for main goals (`@[gcongr_forward]`). -/
+discharger for side goals (`gcongr_discharger`). -/
+
+set_option autoImplicit true
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
-
-namespace Mathlib.Tactic.GCongr
-open Lean Meta
-
-/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
-@[gcongr_forward] def exactRefl : ForwardExt where
-  eval h goal := do
-    let m ← mkFreshExprMVar none
-    goal.exact (← mkAppOptM ``Eq.subst #[h, m])
-    goal.rfl
-
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
-
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-@[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.symm).exact h
-
-@[gcongr_forward] def exact : ForwardExt where
-  eval := MVarId.exact
-
-end Mathlib.Tactic.GCongr
 
 /-! # ≤, - -/
 
@@ -98,6 +76,10 @@ protected theorem Nat.div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (
     a / c ≤ b / d :=
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
+
+/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
+@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefeq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
 
 attribute [gcongr]
   div_le_div'' div_le_div Nat.div_le_div -- tt / tt

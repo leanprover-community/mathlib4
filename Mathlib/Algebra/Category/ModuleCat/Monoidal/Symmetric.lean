@@ -2,19 +2,17 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module algebra.category.Module.monoidal.symmetric
-! leanprover-community/mathlib commit 74403a3b2551b0970855e14ef5e8fd0d6af1bfc2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+
+#align_import algebra.category.Module.monoidal.symmetric from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 
 /-!
 # The symmetric monoidal structure on `Module R`.
 -/
 
+suppress_compilation
 
 universe v w x u
 
@@ -40,6 +38,18 @@ theorem braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ �
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_category.braiding_naturality ModuleCat.MonoidalCategory.braiding_naturality
+
+@[simp]
+theorem braiding_naturality_left {X Y : ModuleCat R} (f : X ⟶ Y) (Z : ModuleCat R) :
+    f ▷ Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ Z ◁ f := by
+  simp_rw [← id_tensorHom]
+  apply braiding_naturality
+
+@[simp]
+theorem braiding_naturality_right (X : ModuleCat R) {Y Z : ModuleCat R} (f : Y ⟶ Z) :
+    X ◁ f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ f ▷ X := by
+  simp_rw [← id_tensorHom]
+  apply braiding_naturality
 
 @[simp]
 theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :

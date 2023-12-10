@@ -2,17 +2,14 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module category_theory.action
-! leanprover-community/mathlib commit aa812bd12a4dbbd2c129b38205f222df282df26d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.SemidirectProduct
+
+#align_import category_theory.action from "leanprover-community/mathlib"@"aa812bd12a4dbbd2c129b38205f222df282df26d"
 
 /-!
 # Actions as functors and as categories
@@ -22,7 +19,7 @@ types, mapping the single object of M to X and an element `m : M` to map `X → 
 multiplication by `m`.
   This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
-where M is a group, this category is a groupoid -- the `action groupoid'.
+where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
 
 
@@ -32,7 +29,7 @@ namespace CategoryTheory
 
 universe u
 
-variable (M : Type _) [Monoid M] (X : Type u) [MulAction M X]
+variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
@@ -89,7 +86,7 @@ theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
 #align category_theory.action_category.coe_back CategoryTheory.ActionCategory.coe_back
 
 @[simp]
-theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x ; rfl
+theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x; rfl
 #align category_theory.action_category.back_coe CategoryTheory.ActionCategory.back_coe
 
 variable (M X)
@@ -116,12 +113,12 @@ variable {X} (x : X)
 
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
-def stabilizerIsoEnd : Stabilizer.submonoid M x ≃* @End (ActionCategory M X) _ x :=
+def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x :=
   MulEquiv.refl _
 #align category_theory.action_category.stabilizer_iso_End CategoryTheory.ActionCategory.stabilizerIsoEnd
 
 @[simp]
-theorem stabilizerIsoEnd_apply (f : Stabilizer.submonoid M x) :
+theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
     (stabilizerIsoEnd M x) f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_apply
@@ -151,9 +148,9 @@ instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :
 
 section Group
 
-variable {G : Type _} [Group G] [MulAction G X]
+variable {G : Type*} [Group G] [MulAction G X]
 
-noncomputable instance : Groupoid (ActionCategory G X) :=
+instance : Groupoid (ActionCategory G X) :=
   CategoryTheory.groupoidOfElements _
 
 /-- Any subgroup of `G` is a vertex group in its action groupoid. -/
@@ -163,7 +160,7 @@ def endMulEquivSubgroup (H : Subgroup G) : End (objEquiv G (G ⧸ H) ↑(1 : G))
 #align category_theory.action_category.End_mul_equiv_subgroup CategoryTheory.ActionCategory.endMulEquivSubgroup
 
 /-- A target vertex `t` and a scalar `g` determine a morphism in the action groupoid. -/
-def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t) t :=
+def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t :) t :=
   Subtype.mk g (smul_inv_smul g t)
 #align category_theory.action_category.hom_of_pair CategoryTheory.ActionCategory.homOfPair
 
@@ -173,7 +170,7 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 #align category_theory.action_category.hom_of_pair.val CategoryTheory.ActionCategory.homOfPair.val
 
 /-- Any morphism in the action groupoid is given by some pair. -/
-protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort _}
+protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
   refine' cast _ (hyp b.back f.val)
   rcases a with ⟨⟨⟩, a : X⟩
@@ -185,12 +182,12 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort 
 
 -- porting note: added to ease the proof of `uncurry`
 lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
-    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b)  (hg : a = g⁻¹ • b),
+    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
   revert a' b' f
   exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
 
-variable {H : Type _} [Group H]
+variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
     can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/

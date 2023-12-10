@@ -2,14 +2,11 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.finiteness
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.Dimension
+
+#align_import field_theory.finiteness from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # A module over a division ring is noetherian if and only if it is finite.
@@ -55,7 +52,7 @@ theorem rank_lt_aleph0 : ∀ [IsNoetherian K V], Module.rank K V < ℵ₀ :=
 variable {K V}
 
 /-- In a noetherian module over a division ring, all bases are indexed by a finite type. -/
-noncomputable def fintypeBasisIndex {ι : Type _} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
+noncomputable def fintypeBasisIndex {ι : Type*} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=
   b.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K V)
 #align is_noetherian.fintype_basis_index IsNoetherian.fintypeBasisIndex
 
@@ -66,7 +63,7 @@ noncomputable instance [IsNoetherian K V] : Fintype (Basis.ofVectorSpaceIndex K 
 
 /-- In a noetherian module over a division ring,
 if a basis is indexed by a set, that set is finite. -/
-theorem finite_basis_index {ι : Type _} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
+theorem finite_basis_index {ι : Type*} {s : Set ι} [IsNoetherian K V] (b : Basis s K V) :
     s.Finite :=
   b.finite_index_of_rank_lt_aleph0 (rank_lt_aleph0 K V)
 #align is_noetherian.finite_basis_index IsNoetherian.finite_basis_index

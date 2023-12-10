@@ -2,15 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module data.int.dvd.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
+
+#align_import data.int.dvd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Basic lemmas about the divisibility relation in `ℤ`.
@@ -35,11 +31,11 @@ theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
 #align int.coe_nat_dvd Int.coe_nat_dvd
 
 theorem coe_nat_dvd_left {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd]
 #align int.coe_nat_dvd_left Int.coe_nat_dvd_left
 
 theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd]
 #align int.coe_nat_dvd_right Int.coe_nat_dvd_right
 
 #align int.le_of_dvd Int.le_of_dvd

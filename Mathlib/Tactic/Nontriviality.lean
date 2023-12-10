@@ -7,4 +7,3 @@ import Mathlib.Tactic.Nontriviality.Core
 
 /-! # The `nontriviality` tactic. -/
 
-attribute [nontriviality] eq_iff_true_of_subsingleton Subsingleton.le

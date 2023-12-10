@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.tensor_product
-! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Abelian
+
+#align_import algebra.lie.tensor_product from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
 /-!
 # Tensor products of Lie modules
@@ -20,6 +17,7 @@ Tensor products of Lie modules carry natural Lie module structures.
 lie module, tensor product, universal property
 -/
 
+suppress_compilation
 
 universe u v w w₁ w₂ w₃
 
@@ -66,7 +64,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     suffices (hasBracketAux x).comp (hasBracketAux y) =
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
       simp only [← LinearMap.add_apply]; rw [← LinearMap.comp_apply, this]; rfl
-    ext (m n)
+    ext m n
     simp only [hasBracketAux, LieRing.of_associative_ring_bracket, LinearMap.mul_apply, mk_apply,
       LinearMap.lTensor_sub, LinearMap.compr₂_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieHom.map_lie, toEndomorphism_apply_apply, LinearMap.add_apply,
@@ -97,7 +95,7 @@ tensor-hom adjunction is equivariant with respect to the `L` action. -/
 def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv R M N P with
     map_lie' := fun {x f} => by
-      ext (m n)
+      ext m n
       simp only [mk_apply, LinearMap.compr₂_apply, lie_tmul_right, LinearMap.sub_apply,
         lift.equiv_apply, LinearEquiv.toFun_eq_coe, LieHom.lie_apply, LinearMap.map_add]
       abel }
@@ -122,7 +120,7 @@ theorem coe_liftLie_eq_lift_coe (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) :
     ⇑(liftLie R L M N P f) = lift R L M N P f := by
   suffices (liftLie R L M N P f : M ⊗[R] N →ₗ[R] P) = lift R L M N P f by
     rw [← this, LieModuleHom.coe_toLinearMap]
-  ext (m n)
+  ext m n
   simp only [liftLie, LinearEquiv.trans_apply, LieModuleEquiv.coe_to_linearEquiv,
     coe_linearMap_maxTrivLinearMapEquivLieModuleHom, coe_maxTrivEquiv_apply,
     coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm]
@@ -210,11 +208,8 @@ open TensorProduct.LieModule
 open LieModule
 
 variable {L : Type v} {M : Type w}
-
 variable [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)
 
 /-- A useful alternative characterisation of Lie ideal operations on Lie submodules.
@@ -224,7 +219,7 @@ applying the action of `L` on `M`, we obtain morphism of Lie modules `f : I ⊗ 
 
 This lemma states that `⁅I, N⁆ = range f`. -/
 theorem lieIdeal_oper_eq_tensor_map_range :
-    ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : (↥I) ⊗ (↥N) →ₗ⁅R,L⁆ L ⊗ M)).range := by
+    ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : (↥I) ⊗[R] (↥N) →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← coe_toSubmodule_eq_iff, lieIdeal_oper_eq_linear_span, LieModuleHom.coeSubmodule_range,
     LieModuleHom.coe_linearMap_comp, LinearMap.range_comp, mapIncl_def, coe_linearMap_map,
     TensorProduct.map_range_eq_span_tmul, Submodule.map_span]

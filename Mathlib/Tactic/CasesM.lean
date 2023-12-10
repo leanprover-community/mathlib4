@@ -21,7 +21,7 @@ Core tactic for `casesm` and `cases_type`. Calls `cases` on all fvars in `g` for
 * `throwOnNoMatch`: if true, then throws an error if no match is found
 -/
 partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (allowSplit := true)
-    (throwOnNoMatch := !recursive) (g : MVarId) : MetaM (List MVarId) := do
+    (throwOnNoMatch := true) (g : MVarId) : MetaM (List MVarId) := do
   let result := (← go g).toList
   if throwOnNoMatch && result == [g] then
     throwError "no match"
@@ -54,7 +54,7 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
       return (acc.push g)
 
 def casesType (heads : Array Name) (recursive := false) (allowSplit := true) :
-     MVarId → MetaM (List MVarId) :=
+    MVarId → MetaM (List MVarId) :=
   let matcher ty := pure <|
     if let .const n .. := ty.headBeta.getAppFn then heads.contains n else false
   casesMatching matcher recursive allowSplit
@@ -125,7 +125,7 @@ Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
 * `throwOnNoMatch`: if true, throws an error if no match is found
 -/
 partial def constructorMatching (g : MVarId) (matcher : Expr → MetaM Bool)
-    (recursive := false) (throwOnNoMatch := !recursive): MetaM (List MVarId) := do
+    (recursive := false) (throwOnNoMatch := true) : MetaM (List MVarId) := do
   let result ←
     (if recursive then (do
       let result ← go g
