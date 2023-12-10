@@ -393,7 +393,8 @@ theorem map_target {x : B × F} (hx : x ∈ e.target) : e.toPartialHomeomorph.sy
   e.toPartialHomeomorph.map_target hx
 #align trivialization.map_target Trivialization.map_target
 
-theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toPartialHomeomorph.symm x) = x.1 :=
+theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) :
+    proj (e.toPartialHomeomorph.symm x) = x.1 :=
   e.toPretrivialization.proj_symm_apply hx
 #align trivialization.proj_symm_apply Trivialization.proj_symm_apply
 

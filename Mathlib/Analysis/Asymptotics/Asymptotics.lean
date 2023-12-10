@@ -2254,8 +2254,8 @@ set_option linter.uppercaseLean3 false in
 #align local_homeomorph.is_O_with_congr PartialHomeomorph.isBigOWith_congr
 
 /-- Transfer `IsBigO` over a `PartialHomeomorph`. -/
-theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
-    f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
+theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+    {g : β → F} : f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
   exact exists_congr fun C => e.isBigOWith_congr hb
 set_option linter.uppercaseLean3 false in

@@ -361,7 +361,8 @@ def toLocalEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   (hf.injOn hc).toLocalEquiv _ _
 #align approximates_linear_on.to_local_equiv ApproximatesLinearOn.toLocalEquiv
 
-/-- The inverse function is continuous on `f '' s`. Use properties of `PartialHomeomorph` instead. -/
+/-- The inverse function is continuous on `f '' s`.
+Use properties of `PartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toLocalEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
@@ -419,7 +420,8 @@ theorem toPartialHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] 
 
 @[simp]
 theorem toPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : (hf.toPartialHomeomorph f s hc hs).source = s :=
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
+    (hf.toPartialHomeomorph f s hc hs).source = s :=
   rfl
 #align approximates_linear_on.to_local_homeomorph_source ApproximatesLinearOn.toPartialHomeomorph_source
 

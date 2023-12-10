@@ -408,8 +408,8 @@ def implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) : F 
 variable {f f'}
 
 @[simp]
-theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) (x : E) :
-    (hf.implicitToPartialHomeomorph f f' hf' x).fst = f x :=
+theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
+    (x : E) : (hf.implicitToPartialHomeomorph f f' hf' x).fst = f x :=
   rfl
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_fst HasStrictFDerivAt.implicitToPartialHomeomorph_fst
 
@@ -428,14 +428,14 @@ theorem implicitToPartialHomeomorph_self (hf : HasStrictFDerivAt f f' a) (hf' : 
   implicitToPartialHomeomorphOfComplemented_self ..
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_self HasStrictFDerivAt.implicitToPartialHomeomorph_self
 
-theorem mem_implicitToPartialHomeomorph_source (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
-    a ∈ (hf.implicitToPartialHomeomorph f f' hf').source :=
+theorem mem_implicitToPartialHomeomorph_source (hf : HasStrictFDerivAt f f' a)
+    (hf' : range f' = ⊤) : a ∈ (hf.implicitToPartialHomeomorph f f' hf').source :=
   haveI := FiniteDimensional.complete 𝕜 F
   ImplicitFunctionData.pt_mem_toPartialHomeomorph_source _
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_source HasStrictFDerivAt.mem_implicitToPartialHomeomorph_source
 
-theorem mem_implicitToPartialHomeomorph_target (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
-    (f a, (0 : ker f')) ∈ (hf.implicitToPartialHomeomorph f f' hf').target :=
+theorem mem_implicitToPartialHomeomorph_target (hf : HasStrictFDerivAt f f' a)
+    (hf' : range f' = ⊤) : (f a, (0 : ker f')) ∈ (hf.implicitToPartialHomeomorph f f' hf').target :=
   haveI := FiniteDimensional.complete 𝕜 F
   mem_implicitToPartialHomeomorphOfComplemented_target ..
 #align has_strict_fderiv_at.mem_implicit_to_local_homeomorph_target HasStrictFDerivAt.mem_implicitToPartialHomeomorph_target

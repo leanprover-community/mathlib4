@@ -897,10 +897,10 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
 
 end SmoothManifoldWithCorners
 
-theorem PartialHomeomorph.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] (e : PartialHomeomorph M H)
-    (h : e.source = Set.univ) :
+theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] (e : PartialHomeomorph M H) (h : e.source = Set.univ) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ (e.singletonChartedSpace h) :=
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)

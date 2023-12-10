@@ -231,8 +231,8 @@ instance : InfSet (StructureGroupoid H) :=
       intro e e' he he'e
       exact fun i hi => i.eq_on_source' e e' (he i hi) he'e)⟩
 
-theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : PartialHomeomorph H H} (he : e ∈ G)
-    (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
+theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
+    (he : e ∈ G) (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
   G.trans' e e' he he'
 #align structure_groupoid.trans StructureGroupoid.trans
 
@@ -1045,8 +1045,8 @@ theorem StructureGroupoid.id_mem_maximalAtlas : PartialHomeomorph.refl H ∈ G.m
 #align structure_groupoid.id_mem_maximal_atlas StructureGroupoid.id_mem_maximalAtlas
 
 /-- In the model space, any element of the groupoid is in the maximal atlas. -/
-theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorph H H} (hf : f ∈ G) :
-    f ∈ G.maximalAtlas H := by
+theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorph H H}
+    (hf : f ∈ G) : f ∈ G.maximalAtlas H := by
   rintro e (rfl : e = PartialHomeomorph.refl H)
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
 #align structure_groupoid.mem_maximal_atlas_of_mem_groupoid StructureGroupoid.mem_maximalAtlas_of_mem_groupoid

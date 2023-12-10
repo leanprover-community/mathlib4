@@ -246,8 +246,8 @@ theorem liftPropWithinAt_iff {f : M → M'} :
           ((chartAt H x).target ∩ (chartAt H x).symm ⁻¹' (s ∩ f ⁻¹' (chartAt H' (f x)).source))
           (chartAt H x x) := by
   refine' and_congr_right fun hf ↦ hG.congr_set _
-  exact PartialHomeomorph.preimage_eventuallyEq_target_inter_preimage_inter hf (mem_chart_source H x)
-    (chart_source_mem_nhds H' (f x))
+  exact PartialHomeomorph.preimage_eventuallyEq_target_inter_preimage_inter hf
+    (mem_chart_source H x) (chart_source_mem_nhds H' (f x))
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_iff StructureGroupoid.LocalInvariantProp.liftPropWithinAt_iff
 
 theorem liftPropWithinAt_indep_chart_source_aux (g : M → H') (he : e ∈ G.maximalAtlas M)

@@ -410,8 +410,8 @@ the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.hasStrictFDerivAt_symm (f : PartialHomeomorph E F) {f' : E ≃L[𝕜] F} {a : F}
-    (ha : a ∈ f.target) (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
+theorem PartialHomeomorph.hasStrictFDerivAt_symm (f : PartialHomeomorph E F) {f' : E ≃L[𝕜] F}
+    {a : F} (ha : a ∈ f.target) (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
     HasStrictFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 #align local_homeomorph.has_strict_fderiv_at_symm PartialHomeomorph.hasStrictFDerivAt_symm
