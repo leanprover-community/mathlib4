@@ -231,7 +231,7 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
 
 
 -- This is now in `Std`, but apparently misnamed as `List.subperm_singleton_iff`.
-@[simp] lemma singleton_subperm_iff : [a] <+~ l ↔ a ∈ l :=
+lemma singleton_subperm_iff : [a] <+~ l ↔ a ∈ l :=
   ⟨fun ⟨s, hla, h⟩ ↦ by rwa [perm_singleton.1 hla, singleton_sublist] at h,
     fun h ↦ ⟨[a], perm_rfl, singleton_sublist.2 h⟩⟩
 #align list.subperm_singleton_iff List.singleton_subperm_iff
