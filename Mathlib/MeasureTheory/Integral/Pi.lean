@@ -41,25 +41,20 @@ theorem MeasureTheory.integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E
     ∫ x : (i : ι) → E i, ∏ i, f i (x i) = ∏ i, ∫ x, f i x := by
   let n := Fintype.card ι
   let e : Fin n ≃ ι := (equivFin ι).symm
-  let p := measurePreserving_piCongrLeft (fun i => (volume : Measure (E i))) e
-  have pp := @MeasurePreserving.integral_comp' ((m : Fin n) → E (e m))
-    L _ _ MeasurableSpace.pi volume ((i : ι) → E i) _ volume _ p
-    (fun v ↦  ∏ i, f i (v i))
-  rw [← pp]
+  rw [← MeasurePreserving.integral_comp' (μ := volume) (ν := volume)
+    (measurePreserving_piCongrLeft (fun i => (volume : Measure (E i))) e)]
   have h0 : ∀ (x : (m : Fin n) → E (e m)) (m : Fin n),
       (MeasurableEquiv.piCongrLeft (fun i ↦ E i) e) x (e m) = x m
   · intro x m
     rw [MeasurableEquiv.coe_piCongrLeft, Equiv.piCongrLeft_apply_apply]
-  suffices h1 : ∫ x, ∏ i, f i ((MeasurableEquiv.piCongrLeft (fun i ↦ E i) e) x i) =
+  have h1 : ∫ x, ∏ i, f i ((MeasurableEquiv.piCongrLeft (fun i ↦ E i) e) x i) =
       ∫ (x : (m : Fin n) → E (e m)), ∏ m, f (e m) (x m)
-  · rw [h1, MeasureTheory.integral_fin_nat_prod_eq_prod]
-    exact Fintype.prod_equiv e _ _ (fun i ↦ by rfl)
-  congr 1 with v : 1
-  refine (@Fintype.prod_equiv (Fin n) ι L _ _ _ e (fun m ↦ f (e m) (v m)) _ ?_).symm
-  intro m
-  rw [h0 v m]
+  · congr 1 with v : 1
+    exact (Fintype.prod_equiv e _ _ (fun m ↦ by rw [h0 v m])).symm
+  rw [h1, MeasureTheory.integral_fin_nat_prod_eq_prod]
+  exact Fintype.prod_equiv e _ _ (fun i ↦ by rfl)
 
-theorem MeasureTheory.integral_finset_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → L)
+theorem MeasureTheory.integral_fintype_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → L)
     [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := by
   rw [integral_fintype_prod_eq_prod, Finset.prod_const, Fintype.card]
