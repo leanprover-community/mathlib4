@@ -25,7 +25,7 @@ variable {α : Type u} (s : Set α)
 
 namespace DivisionRing
 
-abbrev Operands : Fin 6 ⊕ s → Type
+private abbrev Operands : Fin 6 ⊕ s → Type
   | .inl 0 => Bool -- add
   | .inl 1 => Bool -- mul
   | .inl 2 => Unit -- neg
@@ -36,7 +36,7 @@ abbrev Operands : Fin 6 ⊕ s → Type
 
 variable [DivisionRing α]
 
-def operate : (Σ n, Operands s n → Subfield.closure s) → Subfield.closure s
+private def operate : (Σ n, Operands s n → Subfield.closure s) → Subfield.closure s
   | ⟨.inl 0, f⟩ => f false + f true
   | ⟨.inl 1, f⟩ => f false * f true
   | ⟨.inl 2, f⟩ => - f ()
@@ -45,7 +45,7 @@ def operate : (Σ n, Operands s n → Subfield.closure s) → Subfield.closure s
   | ⟨.inl 5, _⟩ => 1
   | ⟨.inr a, _⟩ => ⟨a, Subfield.subset_closure a.prop⟩
 
-def rangeOfWType : Subfield (Subfield.closure s) where
+private def rangeOfWType : Subfield (Subfield.closure s) where
   carrier := Set.range (WType.elim _ <| operate s)
   add_mem' := by rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨WType.mk (.inl 0) (Bool.rec x y), by rfl⟩
   mul_mem' := by rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨WType.mk (.inl 1) (Bool.rec x y), by rfl⟩
