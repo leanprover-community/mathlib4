@@ -51,6 +51,10 @@ class ConnectedObject {C : Type u} [Category.{v, u} C] (X : C) : Prop where
   notInitial : IsInitial X → False
   noTrivialComponent (Y : C) (i : Y ⟶ X) [Mono i] : (IsInitial Y → False) → IsIso i
 
+class PreservesConnectedObjects {C : Type u} [Category.{v, u} C] {D : Type u₁}
+    [Category.{v₁, u₁} D] (F : C ⥤ D) : Prop where
+  preserves : ∀ {X : C} [ConnectedObject X], ConnectedObject (F.obj X)
+
 variable {C : Type u} [Category.{v, u} C] [PreGaloisCategory C]
 
 instance : HasTerminal C := PreGaloisCategory.hasTerminalObject
@@ -396,6 +400,25 @@ instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V := sorry
 
 lemma Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) :
     ConnectedObject X ↔ MulAction.IsPretransitive G X.V :=
+  sorry
+
+variable (G)
+
+def Action.ofMulAction (X : FintypeCat) [MulAction G X] : Action FintypeCat (MonCat.of G) where
+  V := X
+  ρ := MonCat.ofHom {
+    toFun := fun (g : G) (x : X) => g • x
+    map_one' := by simp only [one_smul, End.one_def]; rfl
+    map_mul' := by
+      intro σ τ 
+      apply FintypeCat.hom_ext
+      intro y
+      show (σ * τ) • y = σ • τ • y
+      rw [MulAction.mul_smul]
+  }
+
+lemma connected_of_transitive (X : FintypeCat) [MulAction G X]
+    [MulAction.IsPretransitive G X] : ConnectedObject (Action.ofMulAction G X) :=
   sorry
 
 end Examples

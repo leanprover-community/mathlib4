@@ -111,6 +111,17 @@ theorem hasDecompConnectedComponents (X : C) : ∃ (ι : Type) (f : ι → C)
   intro X
   exact hp (Nat.card (F.obj X)) X rfl
 
+lemma hasDecompConnectedComponents' (X : C) : ∃ (ι : Type) (_ : Finite ι) (f : ι → C)
+    (_ : ∐ f ≅ X), ∀ i, ConnectedObject (f i) := by
+  obtain ⟨ι, f, t, hc, hf, hx⟩ := hasDecompConnectedComponents F X
+  use ι
+  use hf
+  use f
+  let u : ∐ f ≅ X := by
+    rw [hx]
+    exact colimit.isoColimitCocone t
+  use u
+
 lemma mono_coprod_inclusion {ι : Type} [Fintype ι] {f : ι → C}
     (t : ColimitCocone (Discrete.functor f)) (i : ι) :
     Mono (Cofan.inj t.cocone i) := by
