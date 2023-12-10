@@ -597,8 +597,8 @@ theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ �
 #align mv_polynomial.sum_def MvPolynomial.sum_def
 
 theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
-    (p * q).support ⊆ p.support.biUnion fun a => q.support.biUnion fun b => {a + b} := by
-  convert AddMonoidAlgebra.support_mul p q
+    (p * q).support ⊆ Finset.image₂ (· + ·) p.support q.support :=
+  AddMonoidAlgebra.support_mul p q
 #align mv_polynomial.support_mul MvPolynomial.support_mul
 
 @[ext]
@@ -783,12 +783,8 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
     intro hm
     apply h
     have H := support_mul _ _ hm
-    simp only [Finset.mem_biUnion] at H
-    rcases H with ⟨j, _hj, i', hi', H⟩
-    rw [support_monomial, if_neg hr, Finset.mem_singleton] at hi'
-    subst i'
-    rw [Finset.mem_singleton] at H
-    subst m
+    rw [support_monomial, if_neg hr, Finset.image₂_singleton_right, Finset.mem_image] at H
+    rcases H with ⟨j, -, rfl⟩
     exact le_add_left le_rfl
 #align mv_polynomial.coeff_mul_monomial' MvPolynomial.coeff_mul_monomial'
 

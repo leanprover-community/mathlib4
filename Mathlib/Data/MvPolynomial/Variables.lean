@@ -161,8 +161,8 @@ theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + 
   classical
   refine' Finset.sup_le fun b hb => _
   have := support_mul p q hb
-  simp only [Finset.mem_biUnion, Finset.mem_singleton] at this
-  rcases this with ⟨a₁, h₁, a₂, h₂, rfl⟩
+  rw [Finset.mem_image₂] at this
+  rcases this with ⟨a₁, a₂, h₁, h₂, rfl⟩
   rw [Finsupp.toMultiset_add]
   exact add_le_add (Finset.le_sup h₁) (Finset.le_sup h₂)
 #align mv_polynomial.degrees_mul MvPolynomial.degrees_mul
