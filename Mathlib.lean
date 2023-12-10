@@ -3584,7 +3584,6 @@ import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.LocalExtr
-import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
@@ -3642,6 +3641,7 @@ import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Order.ScottTopology
 import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Partial
+import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.ProperMap
