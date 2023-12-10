@@ -74,6 +74,90 @@ variable {η α ι κ : Type*}
 
 namespace Combinatorics
 
+/-- The type of combinatorial subspaces. A subspace `l : Subspace η α ι` in the hypercube `ι → α`
+defines a function `(η → α) → ι → α` from `η → α` to the hypercube, such that for each coordinate
+`i : ι` and direction `e : η`, the function `fun x ↦ l x i` is either `fun x ↦ x e` for some
+direction `e : η` or constant. We require subspaces to be non-degenerate in the sense that, for
+every `e : η`, `fun x ↦ l x i` is `fun x ↦ x e` for at least one `i`.
+
+Formally, a subspace is represented by a word `l.idxFun : ι → α ⊕ η` which says whether
+`fun x ↦ l x i` is `fun x ↦ x e` (corresponding to `l.idxFun i = Sum.inr e`) or constantly `a`
+(corresponding to `l.idxFun i = Sum.inl a`).
+
+When `α` has size `1` there can be many elements of `Subspace η α ι` defining the same function. -/
+@[ext]
+structure Subspace (η α ι : Type*) where
+  /-- The word representing a combinatorial subspace. `l.idxfun i = Sum.inr e` means that
+  `l x i = x e` for all `x` and `l.idxfun i = some a` means that `l x i = a` for all `x`. -/
+  idxFun : ι → α ⊕ η
+  /-- We require combinatorial subspaces to be nontrivial in the sense that `fun x ↦ l x i` is
+  `fun x ↦ x e` for at least one coordinate `i`. -/
+  proper : ∀ e, ∃ i, idxFun i = Sum.inr e
+
+namespace Subspace
+variable {η α ι κ : Type*} {l : Subspace η α ι} {x : η → α} {i : ι} {a : α} {e : η}
+
+/-- The combinatorial subspace corresponding to the identity embedding `(ι → α) → (ι → α)`. -/
+instance : Inhabited (Subspace ι α ι) := ⟨⟨Sum.inr, fun i ↦ ⟨i, rfl⟩⟩⟩
+
+/-- Consider a subspace `l : Subspace η α ι` as a function `(η → α) → ι → α`. -/
+@[coe] def toFun (l : Subspace η α ι) (x : η → α) (i : ι) : α := (l.idxFun i).elim id x
+
+instance instCoeFun : CoeFun (Subspace η α ι) (fun _ ↦ (η → α) → ι → α) := ⟨toFun⟩
+
+lemma coe_apply (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.idxFun i).elim id x := rfl
+
+-- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
+lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
+  rintro l m hlm
+  ext i
+  simp only [funext_iff] at hlm
+  cases hl : idxFun l i with
+  | inl a =>
+    obtain ⟨b, hba⟩ := exists_ne a
+    cases hm : idxFun m i <;> simpa [hl, hm, hba.symm, coe_apply] using hlm (const _ b) i
+  | inr e =>
+    cases hm : idxFun m i with
+    | inl a =>
+      obtain ⟨b, hba⟩ := exists_ne a
+      simpa [hl, hm, hba, coe_apply] using hlm (const _ b) i
+    | inr f =>
+      obtain ⟨a, b, hab⟩ := exists_pair_ne α
+      simp only [Sum.inr.injEq]
+      by_contra! hef
+      simpa [hl, hm, hef, hab, coe_apply] using hlm (Function.update (const _ a) f b) i
+
+lemma apply_def (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.idxFun i).elim id x := rfl
+lemma apply_inl (h : l.idxFun i = Sum.inl a) : l x i = a := by simp [apply_def, h]
+lemma apply_inr (h : l.idxFun i = Sum.inr e) : l x i = x e := by simp [apply_def, h]
+
+/-- Given a coloring `C` of `ι → α` and a combinatorial subspace `l` of `ι → α`, `l.IsMono C`
+means that `l` is monochromatic with regard to `C`. -/
+def IsMono (C : (ι → α) → κ) (l : Subspace η α ι) : Prop := ∃ c, ∀ x, C (l x) = c
+
+variable {η' α' ι' : Type*}
+
+/-- Change the index types of a subspace. -/
+def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') : Subspace η' α' ι' where
+  idxFun i := (l.idxFun <| eι.symm i).map eα eη
+  proper e := (eι.exists_congr fun i ↦ by cases h : idxFun l i <;>
+    simp [*, Function.funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
+
+@[simp] lemma reindex_apply (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') (x i) :
+    l.reindex eη eα eι x i = eα (l (eα.symm ∘ x ∘ eη) <| eι.symm i) := by
+  cases h : l.idxFun (eι.symm i) <;> simp [h, reindex, coe_apply]
+
+@[simp] lemma reindex_isMono {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι ≃ ι'} {C : (ι' → α') → κ} :
+    (l.reindex eη eα eι).IsMono C ↔ l.IsMono fun x ↦ C <| eα ∘ x ∘ eι.symm := by
+  simp only [IsMono, funext (reindex_apply _ _ _ _ _), coe_apply]
+  exact exists_congr fun c ↦ (eη.arrowCongr eα).symm.forall_congr <| by aesop
+
+protected lemma IsMono.reindex {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι ≃ ι'} {C : (ι → α) → κ}
+    (hl : l.IsMono C) : (l.reindex eη eα eι).IsMono fun x ↦ C <| eα.symm ∘ x ∘ eι := by
+  simp [reindex_isMono, Function.comp.assoc]; simpa [← Function.comp.assoc]
+
+end Subspace
+
 /-- The type of combinatorial lines. A line `l : Line α ι` in the hypercube `ι → α` defines a
 function `α → ι → α` from `α` to the hypercube, such that for each coordinate `i : ι`, the function
 `fun x ↦ l x i` is either `id` or constant. We require lines to be nontrivial in the sense that
@@ -96,9 +180,14 @@ structure Line (α ι : Type*) where
 namespace Line
 variable {l : Line α ι} {i : ι} {a x : α}
 
+/-- Consider a line `l : Line α ι` as a function `α → ι → α`. -/
+@[coe] def toFun (l : Line α ι) (x : α) (i : ι) : α := (l.idxFun i).getD x
+
 -- This lets us treat a line `l : Line α ι` as a function `α → ι → α`.
-instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
+instance instCoeFun : CoeFun (Line α ι) fun _ => α → ι → α :=
   ⟨fun l x i => (l.idxFun i).getD x⟩
+
+lemma coe_apply (l : Line α ι) (x : α) (i : ι) : l x i = (l.idxFun i).getD x := rfl
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → ι → α) := by
@@ -113,6 +202,35 @@ lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → �
 /-- A line is monochromatic if all its points are the same color. -/
 def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
   ∃ c, ∀ x, C (l x) = c
+
+/-- Consider a line as a one-dimensional subspace. -/
+def toSubspaceUnit (l : Line α ι) : Subspace Unit α ι where
+  idxFun i := (l.idxFun i).elim (.inr ()) .inl
+  proper _ := l.proper.imp fun i hi ↦ by simp [hi]
+
+@[simp] lemma toSubspaceUnit_apply (l : Line α ι) (a) : ⇑l.toSubspaceUnit a = l (a ()) := by
+  ext i; cases h : l.idxFun i <;> simp [toSubspaceUnit, h, Subspace.coe_apply]
+
+@[simp] lemma toSubspaceUnit_isMono {C : (ι → α) → κ} : l.toSubspaceUnit.IsMono C ↔ l.IsMono C := by
+  simp only [Subspace.IsMono, toSubspaceUnit_apply, IsMono]
+  exact exists_congr fun c ↦ ⟨fun h a ↦ h fun _ ↦ a, fun h a ↦ h _⟩
+
+protected alias ⟨_, IsMono.toSubspaceUnit⟩ := toSubspaceUnit_isMono
+
+/-- Consider a line in `ι → η → α` as a `η`-dimensional subspace in `ι × η → α`. -/
+def toSubspace (l : Line (η → α) ι) : Subspace η α (ι × η) where
+  idxFun ie := (l.idxFun ie.1).elim (.inr ie.2) (fun f ↦ .inl <| f ie.2)
+  proper e := let ⟨i, hi⟩ := l.proper; ⟨(i, e), by simp [hi]⟩
+
+@[simp] lemma toSubspace_apply (l : Line (η → α) ι) (a ie) :
+    ⇑l.toSubspace a ie = l a ie.1 ie.2 := by
+  cases h : l.idxFun ie.1 <;> simp [toSubspace, h, coe_apply, Subspace.coe_apply]
+
+@[simp] lemma toSubspace_isMono {l : Line (η → α) ι} {C : (ι × η → α) → κ} :
+    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α  ↦ C fun (i, e) ↦ x i e := by
+  simp [Subspace.IsMono, IsMono, funext (toSubspace_apply _ _)]
+
+protected alias ⟨_, IsMono.toSubspace⟩ := toSubspace_isMono
 
 /-- The diagonal line. It is the identity at every coordinate. -/
 def diagonal (α ι) [Nonempty ι] : Line α ι where
@@ -364,78 +482,19 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
     simp_rw [← hy, Option.map_some', Option.getD]
 
-/-- The type of combinatorial subspaces. A subspace `l : Subspace η α ι` in the hypercube `ι → α`
-defines a function `(η → α) → ι → α` from `η → α` to the hypercube, such that for each coordinate
-`i : ι` and direction `e : η`, the function `fun x ↦ l x i` is either `fun x ↦ x e` for some
-direction `e : η` or constant. We require subspaces to be non-degenerate in the sense that, for
-every `e : η`, `fun x ↦ l x i` is `fun x ↦ x e` for at least one `i`.
-
-Formally, a subspace is represented by a word `l.idxFun : ι → α ⊕ η` which says whether
-`fun x ↦ l x i` is `fun x ↦ x e` (corresponding to `l.idxFun i = Sum.inr e`) or constantly `a`
-(corresponding to `l.idxFun i = Sum.inl a`).
-
-When `α` has size `1` there can be many elements of `Subspace η α ι` defining the same function. -/
-@[ext]
-structure Subspace (η α ι : Type*) where
-  /-- The word representing a combinatorial subspace. `l.idxfun i = Sum.inr e` means that
-  `l x i = x e` for all `x` and `l.idxfun i = some a` means that `l x i = a` for all `x`. -/
-  idxFun : ι → α ⊕ η
-  /-- We require combinatorial subspaces to be nontrivial in the sense that `fun x ↦ l x i` is
-  `fun x ↦ x e` for at least one coordinate `i`. -/
-  proper : ∀ e, ∃ i, idxFun i = Sum.inr e
-
 namespace Subspace
-variable {η α ι κ : Type*} {l : Subspace η α ι} {x : η → α} {i : ι} {a : α} {e : η}
-
-/-- The combinatorial subspace corresponding to the identity embedding `(ι → α) → (ι → α)`. -/
-instance : Inhabited (Subspace ι α ι) := ⟨⟨Sum.inr, fun i ↦ ⟨i, rfl⟩⟩⟩
-
-instance instCoeFun : CoeFun (Subspace η α ι) (fun _ ↦ (η → α) → ι → α) :=
-  ⟨fun l x i ↦ (l.idxFun i).elim id x⟩
-
--- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
-lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
-  rintro l m hlm
-  ext i
-  simp only [funext_iff] at hlm
-  cases hl : idxFun l i with
-  | inl a =>
-    obtain ⟨b, hba⟩ := exists_ne a
-    cases hm : idxFun m i <;> simpa [hl, hm, hba.symm] using hlm (const _ b) i
-  | inr e =>
-    cases hm : idxFun m i with
-    | inl a =>
-      obtain ⟨b, hba⟩ := exists_ne a
-      simpa [hl, hm, hba] using hlm (const _ b) i
-    | inr f =>
-      obtain ⟨a, b, hab⟩ := exists_pair_ne α
-      simp only [Sum.inr.injEq]
-      by_contra! hef
-      simpa [hl, hm, hef, hab] using hlm (Function.update (const _ a) f b) i
-
-lemma apply_def (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.idxFun i).elim id x := rfl
-lemma apply_inl (h : l.idxFun i = Sum.inl a) : l x i = a := by simp [apply_def, h]
-lemma apply_inr (h : l.idxFun i = Sum.inr e) : l x i = x e := by simp [apply_def, h]
-
-/-- Given a coloring `C` of `ι → α` and a combinatorial subspace `l` of `ι → α`, `l.IsMono C`
-means that `l` is monochromatic with regard to `C`. -/
-def IsMono (C : (ι → α) → κ) (l : Subspace η α ι) : Prop := ∃ c, ∀ x, C (l x) = c
 
 /-- The **extended Hales-Jewett theorem**: For any finite types `η`, `α` and `κ`, there exists a
 finite type `ι` such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic
 combinatorial subspace of dimension `η`. -/
 theorem exists_mono_in_high_dimension (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Subspace η α ι, l.IsMono C := by
-  obtain ⟨ι, _, hι⟩ := Line.exists_mono_in_high_dimension (η → α) κ
+  obtain ⟨ι, _, hι⟩ := Line.exists_mono_in_high_dimension (Shrink.{0} η → α) κ
   refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
-  obtain ⟨l, c, lC⟩ := hι fun x ↦ C <| fun (i, e) ↦ x i <| (equivShrink.{0} η).symm e
-  refine ⟨⟨fun p ↦ (l.idxFun p.fst).elim (Sum.inr <| (equivShrink.{0} η).symm p.snd)
-    fun x ↦ Sum.inl <| x <| (equivShrink.{0} η).symm p.snd, fun e ↦ ?_⟩, c, fun xs ↦ ?_⟩
-  · obtain ⟨i, hi⟩ := l.proper
-    use (i, equivShrink.{0} η e)
-    simp [hi]
-  convert lC xs with ⟨i, e⟩
-  cases hi : l.idxFun i <;> simp [hi]
+  obtain ⟨l, hl⟩ := hι fun x ↦ C fun (i, e) ↦ x i e
+  refine ⟨l.toSubspace.reindex (equivShrink.{0} η).symm (Equiv.refl _) (Equiv.refl _), ?_⟩
+  convert hl.toSubspace.reindex
+  simp
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the
 returned type is some `Fin n` instead of a general fintype. -/
