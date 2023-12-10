@@ -49,7 +49,7 @@ private lemma binomial_sum_eq (h : n < m) :
     ∑ i in range (n + 1), (n.choose i * (m - n) / ((m - i) * m.choose i) : ℚ) = 1 := by
   set f : ℕ → ℚ := fun i ↦ n.choose i * (m.choose i : ℚ)⁻¹ with hf
   suffices : ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i)
-  · rw [←sum_congr rfl this, sum_range_sub', hf]
+  · rw [← sum_congr rfl this, sum_range_sub', hf]
     simp [choose_self, choose_zero_right, choose_eq_zero_of_lt h]
   intro i h₁
   rw [mem_range] at h₁
@@ -75,7 +75,7 @@ private lemma binomial_sum_eq (h : n < m) :
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - s.card) * (card α).choose s.card) : ℚ) =
       card α * ∑ k in range (card α), (↑k)⁻¹ + 1 := by
-  rw [←powerset_univ, powerset_card_disjiUnion, sum_disjiUnion]
+  rw [← powerset_univ, powerset_card_disjiUnion, sum_disjiUnion]
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
     (card α / ((card α - Finset.card s) * (card α).choose (Finset.card s)) : ℚ) =
       card α / ((card α - x) * (card α).choose x)
@@ -83,10 +83,10 @@ private lemma Fintype.sum_div_mul_card_choose_card :
     rw [mem_powersetCard_univ.1 hs]
   simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ]
   simp
-  simp_rw [mul_div, mul_comm, ←mul_div]
-  rw [←mul_sum, ←mul_inv_cancel (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ←mul_add,
+  simp_rw [mul_div, mul_comm, ← mul_div]
+  rw [← mul_sum, ← mul_inv_cancel (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ← mul_add,
     add_comm _ ((card α)⁻¹ : ℚ), ←
-    @sum_insert _ _ _ _ (fun x : ℕ ↦ (x⁻¹ : ℚ)) _ _ not_mem_range_self, ←range_succ]
+    @sum_insert _ _ _ _ (fun x : ℕ ↦ (x⁻¹ : ℚ)) _ _ not_mem_range_self, ← range_succ]
   have : ∀ x ∈ range (card α + 1),
       ((card α).choose x / ((card α - x) * (card α).choose x) : ℚ) = (card α - x : ℚ)⁻¹
   · intros n hn
@@ -267,14 +267,14 @@ private lemma sups_aux : a ∈ upperClosure ↑(s ⊻ t) ↔ a ∈ upperClosure 
 lemma truncatedSup_infs (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t) :
     truncatedSup (s ⊼ t) a = truncatedSup s a ⊓ truncatedSup t a := by
   simp only [truncatedSup_of_mem, hs, ht, infs_aux.2 ⟨hs, ht⟩, sup'_inf_sup', filter_infs_le]
-  simp_rw [←image_inf_product]
+  simp_rw [← image_inf_product]
   rw [sup'_image]
   rfl
 
 lemma truncatedInf_sups (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t) :
     truncatedInf (s ⊻ t) a = truncatedInf s a ⊔ truncatedInf t a := by
   simp only [truncatedInf_of_mem, hs, ht, sups_aux.2 ⟨hs, ht⟩, inf'_sup_inf', filter_sups_le]
-  simp_rw [←image_sup_product]
+  simp_rw [← image_sup_product]
   rw [inf'_image]
   rfl
 
@@ -351,15 +351,15 @@ def supSum (𝒜 : Finset (Finset α)) : ℚ :=
 lemma supSum_union_add_supSum_infs (𝒜 ℬ : Finset (Finset α)) :
     supSum (𝒜 ∪ ℬ) + supSum (𝒜 ⊼ ℬ) = supSum 𝒜 + supSum ℬ := by
   unfold supSum
-  rw [←sum_add_distrib, ←sum_add_distrib, sum_congr rfl fun s _ ↦ _]
-  simp_rw [div_add_div_same, ←Nat.cast_add, card_truncatedSup_union_add_card_truncatedSup_infs]
+  rw [← sum_add_distrib, ← sum_add_distrib, sum_congr rfl fun s _ ↦ _]
+  simp_rw [div_add_div_same, ← Nat.cast_add, card_truncatedSup_union_add_card_truncatedSup_infs]
   simp
 
 lemma infSum_union_add_infSum_sups (𝒜 ℬ : Finset (Finset α)) :
     infSum (𝒜 ∪ ℬ) + infSum (𝒜 ⊻ ℬ) = infSum 𝒜 + infSum ℬ := by
   unfold infSum
-  rw [←sum_add_distrib, ←sum_add_distrib, sum_congr rfl fun s _ ↦ _]
-  simp_rw [div_add_div_same, ←Nat.cast_add, card_truncatedInf_union_add_card_truncatedInf_sups]
+  rw [← sum_add_distrib, ← sum_add_distrib, sum_congr rfl fun s _ ↦ _]
+  simp_rw [div_add_div_same, ← Nat.cast_add, card_truncatedInf_union_add_card_truncatedInf_sups]
   simp
 
 lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) (h𝒜₀ : ∅ ∉ 𝒜) :
@@ -382,20 +382,20 @@ variable [Nonempty α]
   · rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
     split_ifs <;> simp [card_univ]
-  simp_rw [←sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq, ←
-    eq_sub_iff_add_eq', supSum, ←sum_sub_distrib, ←sub_div]
+  simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq, ←
+    eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
   rw [sum_congr rfl fun t _ ↦ this t, sum_ite, sum_const_zero, add_zero, filter_subset_univ,
-    sum_powerset, ←binomial_sum_eq ((card_lt_iff_ne_univ _).2 hs), eq_comm]
+    sum_powerset, ← binomial_sum_eq ((card_lt_iff_ne_univ _).2 hs), eq_comm]
   refine' sum_congr rfl fun n _ ↦ _
-  rw [mul_div_assoc, ←nsmul_eq_mul]
+  rw [mul_div_assoc, ← nsmul_eq_mul]
   exact sum_powersetCard n s fun m ↦ (card α - s.card : ℚ) / ((card α - m) * (card α).choose m)
 
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
     infSum 𝒜ᶜˢ + supSum 𝒜 = card α * ∑ k in range (card α), (k : ℚ)⁻¹ + 1 := by
   unfold infSum supSum
-  rw [←@map_univ_of_surjective (Finset α) _ _ _ ⟨compl, compl_injective⟩ compl_surjective, sum_map]
-  simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ←compl_truncatedSup, ←
+  rw [← @map_univ_of_surjective (Finset α) _ _ _ ⟨compl, compl_injective⟩ compl_surjective, sum_map]
+  simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup, ←
     sum_add_distrib, card_compl, cast_sub (card_le_univ _), choose_symm (card_le_univ _),
     div_add_div_same, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
 
@@ -423,7 +423,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
 
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSum 𝒜 = 1 := by
-  rw [←compls_compls 𝒜, eq_sub_of_add_eq (infSum_compls_add_supSum _),
+  rw [← compls_compls 𝒜, eq_sub_of_add_eq (infSum_compls_add_supSum _),
     supSum_of_not_univ_mem h𝒜₁.compls, add_sub_cancel']
   simpa
 
