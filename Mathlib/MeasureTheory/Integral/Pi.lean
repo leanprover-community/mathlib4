@@ -45,10 +45,10 @@ theorem MeasureTheory.integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E
   rw [← MeasurePreserving.integral_comp' (μ := volume) (ν := volume)
     (measurePreserving_piCongrLeft (fun i => (volume : Measure (E i))) e)]
   have h0 : ∀ (x : (m : Fin n) → E (e m)) (m : Fin n),
-      (MeasurableEquiv.piCongrLeft (fun i ↦ E i) e) x (e m) = x m
+      (MeasurableEquiv.piCongrLeft E e) x (e m) = x m
   · intro x m
     rw [MeasurableEquiv.coe_piCongrLeft, Equiv.piCongrLeft_apply_apply]
-  have h1 : ∫ x, ∏ i, f i ((MeasurableEquiv.piCongrLeft (fun i ↦ E i) e) x i) =
+  have h1 : ∫ x, ∏ i, f i ((MeasurableEquiv.piCongrLeft E e) x i) =
       ∫ (x : (m : Fin n) → E (e m)), ∏ m, f (e m) (x m)
   · congr 1 with v : 1
     exact (Fintype.prod_equiv e _ _ (fun m ↦ by rw [h0 v m])).symm
