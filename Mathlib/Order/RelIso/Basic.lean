@@ -225,23 +225,24 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
+--Porting note: removed
+-- see Note [function coercion]
+-- instance : CoeFun (r ↪r s) fun _ => α → β :=
+--   ⟨fun o => o.toEmbedding⟩
+
+-- TODO: define and instantiate a `RelEmbeddingClass`
 instance : RelHomClass (r ↪r s) r s where
-  coe := fun o => o.toEmbedding
+  coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
-@[simp] lemma coe_toEmbedding (f : r ↪r s) : ⇑f.toEmbedding = f := rfl
-
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
-def Simps.apply (h : r ↪r s) : α → β :=
-  h
-
 initialize_simps_projections RelEmbedding (toFun → apply)
+
+instance : EmbeddingLike (r ↪r s) α β where
+  injective' f := f.inj'
 
 @[simp]
 theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
@@ -256,7 +257,7 @@ theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
-@[simp] theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b := f.injective.eq_iff
+theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b := f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
 
 theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
@@ -629,13 +630,13 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+-- TODO: define and instantiate a `RelIsoClass`
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+-- TODO: define and instantiate a `RelIsoClass`
 instance : EquivLike (r ≃r s) α β where
   coe f := f
   inv f := f.toEquiv.symm
@@ -670,8 +671,6 @@ theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
 theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 #align rel_iso.coe_fn_to_equiv RelIso.coe_fn_toEquiv
-
-@[simp] theorem coe_fn_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f := rfl
 
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
 `function.injective (λ e : r ≃r s, (e : α → β))`, so we use a trick to say the same. -/
