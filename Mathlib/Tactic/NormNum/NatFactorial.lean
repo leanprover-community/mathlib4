@@ -88,20 +88,20 @@ lemma isNat_descFactorial_zero {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h�
   simp [h₁.out, h₂.out, h₃]
 
 private partial def evalNatDescFactorialNotZero {x' y' : Q(ℕ)} (x y z : Q(ℕ)) (px : Q(IsNat $x' $x))
-    (py : Q(IsNat $y' $y)) : Expr × Expr :=
+    (py : Q(IsNat $y' $y)) : (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
   let eq_prf : Q($x = $z + $y) := (q(Eq.refl $x) : Expr)
   let ⟨val, ascPrf⟩ := proveAscFactorial (z.natLit!) (y.natLit!)
   let ascPrf : Q(ascFactorial $z $y = $val) := ascPrf
   let prf : Q(IsNat (descFactorial $x' $y') $val) :=
     q(isNat_descFactorial $z $px $py $eq_prf $val $ascPrf)
-  (val, prf)
+  ⟨val, prf⟩
 
 private partial def evalNatDescFactorialZero {x' y' : Q(ℕ)} (x y z : Q(ℕ)) (px : Q(IsNat $x' $x))
-    (py : Q(IsNat $y' $y)) : Expr × Expr :=
+    (py : Q(IsNat $y' $y)) : (n : Q(ℕ)) × Q(IsNat (descFactorial $x' $y') $n) :=
   let eq_prf : Q($y = $z + $x + 1) := (q(Eq.refl $y) : Expr)
   let prf : Q(IsNat (descFactorial $x' $y') 0) :=
     q(isNat_descFactorial_zero $z $px $py $eq_prf)
-  (mkRawNatLit 0, prf)
+  ⟨q(nat_lit 0), prf⟩
 
 /-- Evaluates the Nat.ascFactorial function. -/
 @[norm_num Nat.descFactorial _ _]
@@ -112,9 +112,9 @@ def evalNatDescFactorial : NormNumExt where eval {u α} e := do
   let ⟨y, p₂⟩ ← deriveNat y' sℕ
   if x.natLit! ≥ y.natLit! then
     let z : ℕ := x.natLit! - y.natLit!
-    let (val, prf) := evalNatDescFactorialNotZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
+    let ⟨val, prf⟩ := evalNatDescFactorialNotZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
     return .isNat sℕ val prf
   else
     let z : ℕ := y.natLit! - x.natLit! - 1
-    let (val, prf) := evalNatDescFactorialZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
+    let ⟨val, prf⟩ := evalNatDescFactorialZero (x' := x') (y' := y') x y (mkRawNatLit z) p₁ p₂
     return .isNat sℕ val prf
