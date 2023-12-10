@@ -245,9 +245,6 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
 
-theorem Perm.countP_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
-    countP p l₁ = countP p l₂ := by
-  rw [countP_eq_length_filter, countP_eq_length_filter]; exact (s.filter _).length_eq
 #align list.perm.countp_eq List.Perm.countP_eq
 
 #align list.subperm.countp_le List.Subperm.countP_le
@@ -479,18 +476,6 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
 
 #align list.decidable_subperm List.decidableSubperm
 
-#align list.subperm_singleton_iff List.subperm_singleton_iff
-
-theorem Subperm.cons_left {l₁ l₂ : List α} (h : l₁ <+~ l₂) (x : α) (hx : count x l₁ < count x l₂) :
-    x :: l₁ <+~ l₂ := by
-  rw [subperm_ext_iff] at h ⊢
-  intro y hy
-  by_cases hy' : y = x
-  · subst x
-    simpa using Nat.succ_le_of_lt hx
-  · rw [count_cons_of_ne hy']
-    refine' h y _
-    simpa [hy'] using hy
 #align list.subperm.cons_left List.Subperm.cons_left
 
 #align list.decidable_perm List.decidablePerm
