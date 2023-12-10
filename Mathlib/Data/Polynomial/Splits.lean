@@ -445,7 +445,7 @@ theorem splits_of_algHom {R L' : Type*} [CommRing R] [Field L'] [Algebra R L] [A
     splits_id_iff_splits]
   exact splits_of_splits_id e.toRingHom <| (splits_id_iff_splits _).mpr h
 
-theorem splits_of_algHom' {R : Type*} (L' : Type*) [CommRing R] [Field L'] [Algebra R L]
+theorem splits_of_isScalarTower {R : Type*} (L' : Type*) [CommRing R] [Field L'] [Algebra R L]
     [Algebra R L'] [Algebra L L'] [IsScalarTower R L L'] {f : R[X]}
     (h : Polynomial.Splits (algebraMap R L) f) :
     Polynomial.Splits (algebraMap R L') f :=
