@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Contraction
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.RootSystem.FindHome
 
 /-!
@@ -55,7 +55,7 @@ of `M` for which `y ↦ y - (f y) • x`.
 One is typically interested in this endomorphism when `f x = 2`; this definition exists to allow the
 user defer discharging this proof obligation. See also `Module.reflection`. -/
 def preReflection : End R M :=
-  LinearMap.id - dualTensorHom R M M (f ⊗ₜ x)
+  LinearMap.id - f.smulRight x
 
 lemma preReflection_apply :
     preReflection x f y = y - (f y) • x := by
