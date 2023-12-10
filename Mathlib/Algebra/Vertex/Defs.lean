@@ -310,10 +310,12 @@ theorem Y_add_left_eq (a b : V) : Y R (a + b) = (Y R a) + (Y R b) := by simp onl
 
 theorem Y_smul_left_eq (r : R) (a : V) : Y R (r • a) = r • Y R a := by simp only [map_smul]
 
-theorem coeff_add_left_eq (a b c : V) (n : ℤ) : coeff (Y R (a + b)) n c = coeff (Y R a) n c + coeff (Y R b) n c := by
+theorem coeff_add_left_eq (a b c : V) (n : ℤ) :
+    coeff (Y R (a + b)) n c = coeff (Y R a) n c + coeff (Y R b) n c := by
   simp only [map_add, add_coeff_eq, LinearMap.add_apply]
 
-theorem index_add_left_eq (a b c : V) (n : ℤ) : index (Y R (a + b)) n c = index (Y R a) n c + index (Y R b) n c := by
+theorem index_add_left_eq (a b c : V) (n : ℤ) :
+    index (Y R (a + b)) n c = index (Y R a) n c + index (Y R b) n c := by
   simp only [map_add, add_index_eq, LinearMap.add_apply]
 
 -- theorem coeff_smul_left_eq
@@ -394,12 +396,12 @@ def commutator_formula (R : Type v) [CommRing R] [AddCommGroup V]
 sufficiently large `N`.  That is, the vertex operators commute up to finite order poles on the
 diagonal. -/
 def locality (R : Type v) [CommRing R] [AddCommGroup V]
-    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) (_ : t ≥ - order R a b): Prop :=
+    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : Prop :=
   Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t = 0
 
 /-- The weak associativity property for vertex algebras. -/
 def weak_associativity (R : Type v) [CommRing R] [AddCommGroup V]
-    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t: ℤ) (_ : r ≥ - order R a c) : Prop :=
+    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t: ℤ) : Prop :=
   Borcherds_sum_1 R a b c r s t = Borcherds_sum_2 R a b c r s t
 
 end VertexAlg
@@ -416,16 +418,16 @@ def creative [CommRing R] [AddCommGroupWithOne V] [Module R V] (A : VertexOperat
   0 ≤ HahnSeries.order (A.toMap 1)
 
 /-- The state attached to a creative field is its `z^0`-coefficient at `1`. -/
-def state [CommRing R] [AddCommGroupWithOne V] [Module R V] (A : VertexOperator R V)
-    (_ : creative A) : V := coeff A 0 1
+def state [CommRing R] [AddCommGroupWithOne V] [Module R V] (A : VertexOperator R V) : V :=
+  coeff A 0 1
 
 /-- A divided-power system of translation operators.  `T 1` is often written `T`. -/
-def T (R: Type v) [CommRing R] [AddCommGroupWithOne V] [NonAssocNonUnitalVertexAlgebra R V] (n : ℕ) :
-    Module.End R V :=
+def T (R: Type v) [CommRing R] [AddCommGroupWithOne V] [NonAssocNonUnitalVertexAlgebra R V]
+    (n : ℕ) : Module.End R V :=
   {
     toFun := fun (x : V) => coeff (Y R x) n 1
-    map_add' := by intros ; funext; simp only [map_add, add_coeff_eq, LinearMap.add_apply]
-    map_smul' := by intros ; funext ; simp only [map_smul, smul_coeff_eq, LinearMap.smul_apply,
+    map_add' := by intros; funext; simp only [map_add, add_coeff_eq, LinearMap.add_apply]
+    map_smul' := by intros; funext; simp only [map_smul, smul_coeff_eq, LinearMap.smul_apply,
       RingHom.id_apply]
   }
 
@@ -438,9 +440,7 @@ def skew_symmetry (R : Type v) [CommRing R] [AddCommGroupWithOne V]
 /-- A field is translation covariant with respect to a divided-power system of endomorphisms that
 stabilizes identity if left translation satisfies the Leibniz rule. -/
 def translation_covariance (R : Type v) [CommRing R] [AddCommGroupWithOne V]
-    [NonAssocNonUnitalVertexAlgebra R V] (A : VertexOperator R V) (f : ℕ → Module.End R V)
-    (_ : f 0 = LinearMap.id) (_ : ∀ (i j : ℕ), f (i + j) = Nat.choose (i+j) i • f i * f j)
-    (_: ∀(i : ℕ), f i 1 = 0) : Prop :=
+    [NonAssocNonUnitalVertexAlgebra R V] (A : VertexOperator R V) (f : ℕ → Module.End R V) : Prop :=
   ∀(i : ℕ) (n : ℤ), f i * coeff A n = Finset.sum (Finset.antidiagonal i)
   fun m => (-1 : ℤˣ) ^ m.fst • Ring.choose n m.fst • (coeff A (n - m.fst) * T R m.snd)
 

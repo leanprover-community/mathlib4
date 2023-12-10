@@ -9,8 +9,6 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Basic
---import Mathlib.Util.AssertExists
---import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Basic
 

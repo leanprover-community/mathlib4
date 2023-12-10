@@ -105,8 +105,9 @@ theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s
     rw [Finset.range_zero, Finset.sum_empty]
     rw [index_zero_if_neg_order_leq a c r (toNat_sub_eq_zero_leq h), LinearMap.map_zero, neg_zero]
   | succ n =>
-    rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right, one_smul,
-        Nat.cast_zero, add_zero, sub_zero, zero_add, add_zero, zpow_one, Units.neg_smul, one_smul]
+    rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
+        Finset.sum_range_one, add_zero, Ring.choose_zero_right, one_smul, Nat.cast_zero, add_zero,
+        sub_zero, zero_add, add_zero, zpow_one, Units.neg_smul, one_smul]
     intro i hi
     rw [Ring.choose_zero_pos i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
         zero_smul, smul_zero]
@@ -127,7 +128,7 @@ theorem locality_left (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
   rw [hrange, Finset.range_zero, Finset.sum_empty]
 
 theorem Borcherds_id_at_large_t_iff_locality (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
-    Borcherds_id R a b c r s t ↔ locality R a b c r s t h := by
+    Borcherds_id R a b c r s t ↔ locality R a b c r s t := by
   unfold Borcherds_id locality
   rw [locality_left a b c r s t h]
   exact eq_comm
@@ -141,7 +142,7 @@ theorem weak_assoc_right (a b c : V) (r s t: ℤ) (h : r ≥ - order R a c) :
   rw [hrange, Finset.range_zero, Finset.sum_empty]
 
 theorem Borcherds_id_at_large_r_iff_weak_assoc (a b c : V) (r s t: ℤ) (h : r ≥ - order R a c) :
-    Borcherds_id R a b c r s t ↔ weak_associativity R a b c r s t h := by
+    Borcherds_id R a b c r s t ↔ weak_associativity R a b c r s t := by
   unfold Borcherds_id weak_associativity
   rw [weak_assoc_right a b c r s t h, add_zero]
 
@@ -219,10 +220,10 @@ theorem borcherds3Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
       simp_rw [Finset.sum_range_succ', Nat.add_one, Ring.choose_succ_succ, add_smul, smul_add]
       rw [Finset.sum_add_distrib, sub_eq_add_neg, neg_add, neg_add, add_assoc, add_assoc]
       refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-      rw [←neg_add, toNat_neg_succ_sub_eq_Nat _ _ _ h]
+      rw [← neg_add, toNat_neg_succ_sub_eq_Nat _ _ _ h]
       refine Finset.sum_congr rfl ?_
       intro i _
-      rw [←Nat.add_one, Nat.cast_add, Nat.cast_one, show (-1:ℤˣ)^(t + 1 + (i + 1) + 1) =
+      rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, show (-1:ℤˣ)^(t + 1 + (i + 1) + 1) =
         (-1)^(t + i + 1) by simp only [zpow_add, zpow_one, mul_neg, mul_one, zpow_coe_nat, neg_mul,
         neg_neg], show r + 1 + i =r + (i + 1) by linarith,
         show s + (t + 1) - (i + 1) = s + t - i by linarith] -- end first sum
@@ -230,7 +231,7 @@ theorem borcherds3Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
       rw [← Finset.sum_neg_distrib]
       refine Finset.sum_congr rfl ?_
       intro i _
-      rw [←Nat.add_one, Nat.cast_add, Nat.cast_one, ← Units.neg_smul, neg_eq_neg_one_mul,
+      rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, ← Units.neg_smul, neg_eq_neg_one_mul,
         mul_self_zpow, add_comm 1 t, add_right_comm t 1 _] -- end second sum
       rw [← Units.neg_smul, neg_eq_neg_one_mul, mul_self_zpow, add_comm 1 t]
       simp only [Ring.choose_zero_right, Nat.cast_zero, add_zero, zero_add] -- end third sum
@@ -253,16 +254,18 @@ section Unital
 
 /-!
 
-theorem vacuum_derivative_is_zero [AddCommGroup V] [UnboundedVertexMul V] [NonunitalVertexRing V]
-  : T 1 1 = 0 := by
+theorem vacuum_derivative_is_zero [AddCommGroup V] [UnboundedVertexMul V] [NonunitalVertexRing V] :
+    T 1 1 = 0 := by
 
 --  refine NonunitalVertexRing.borcherds_id vac vac vac -1 -1 -1
 -- set u=v=w = vac, r=s=t=-1 to get
   vac_{-2}vac = vac_{-2}(vac_{-1}vac) + vac_{-2}(vac_{-1}vac) = 2vac_{-2}vac
 
--- theorem vacuum_products_vanish : Y n vac vac = 0 when n ≠-1: for n ≥ 0, this is from van_vac.  For n < -1, we use induction: u=v=w=vac, r=s = -1, t=n.
+-- theorem vacuum_products_vanish : Y n vac vac = 0 when n ≠-1: for n ≥ 0, this is from van_vac.
+For n < -1, we use induction: u=v=w=vac, r=s = -1, t=n.
 
--- theorem left identity : Y n vac u = u if n = -1, and 0 if not := Borcherds with v = w = vac, r = -1, t = 0.
+-- theorem left identity : Y n vac u = u if n = -1, and 0 if not := Borcherds with v = w = vac,
+r = -1, t = 0.
 -- theorem unit_left (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgebra R V] (a : V) :
 
 theorem skew_symmetry_iff_Borcherds_at_zero
