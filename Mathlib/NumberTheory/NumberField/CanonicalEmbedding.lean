@@ -471,7 +471,7 @@ instance : NoAtoms (volume : Measure (E K)) := by
   · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
       (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
 
-/-- The fudge factor that appears in the formula for the volume of `convexBodyLt`. -/
+/-- The fudge factor that appears in the formula for the volume of `convexBodyLT`. -/
 noncomputable abbrev convexBodyLTFactor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ NrRealPlaces K * (NNReal.pi : ℝ≥0∞) ^ NrComplexPlaces K
 
