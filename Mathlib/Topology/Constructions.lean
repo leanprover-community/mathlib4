@@ -1669,7 +1669,7 @@ theorem continuous_uLift_up [TopologicalSpace α] : Continuous (ULift.up : α �
 #align continuous_ulift_up continuous_uLift_up
 
 theorem embedding_uLift_down [TopologicalSpace α] : Embedding (ULift.down : ULift.{v, u} α → α) :=
-  ⟨⟨congr_fun Equiv.ulift.coinduced_symm t⟩, ULift.down_injective⟩
+  ⟨⟨congr_fun Equiv.ulift.coinduced_symm _⟩, ULift.down_injective⟩
 #align embedding_ulift_down embedding_uLift_down
 
 theorem ULift.closedEmbedding_down [TopologicalSpace α] :
