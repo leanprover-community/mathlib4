@@ -153,7 +153,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
   have hf₁ : Continuous f₁ := (Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
-    e₁.toLocalHomeomorph.continuousOn.prod_map e₂.toLocalHomeomorph.continuousOn
+    e₁.toPartialHomeomorph.continuousOn.prod_map e₂.toPartialHomeomorph.continuousOn
   have hf₃ : Continuous f₃ :=
     (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
   refine' ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn _).congr _

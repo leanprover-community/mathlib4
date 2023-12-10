@@ -752,7 +752,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp only [LocalHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toLocalEquiv,
+  · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toLocalEquiv,
       LocalEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, LocalEquiv.ofSet_target, and_self]
     intro x hx
@@ -889,7 +889,7 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.prod I') (M × M') where
   compatible := by
     rintro f g ⟨f1, f2, hf1, hf2, rfl⟩ ⟨g1, g2, hg1, hg2, rfl⟩
-    rw [LocalHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
+    rw [PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
     have h1 := (contDiffGroupoid ⊤ I).compatible hf1 hg1
     have h2 := (contDiffGroupoid ⊤ I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
@@ -1195,7 +1195,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
   refine' I.image_mem_nhdsWithin _
-  refine' (LocalHomeomorph.open_source _).mem_nhds hx
+  refine' (PartialHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within PartialHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
 theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)
@@ -1223,7 +1223,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
   apply (contDiffOn_extend_coord_change I hf hf' x hx).mono_of_mem
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
-  exact I.image_mem_nhdsWithin ((LocalHomeomorph.open_source _).mem_nhds hz)
+  exact I.image_mem_nhdsWithin ((PartialHomeomorph.open_source _).mem_nhds hz)
 #align local_homeomorph.cont_diff_within_at_extend_coord_change PartialHomeomorph.contDiffWithinAt_extend_coord_change
 
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)

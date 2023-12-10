@@ -251,7 +251,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
     refine' ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', _, _,
-      Setoid.trans (LocalHomeomorph.EqOnSource.trans' heφ heφ') ⟨_, _⟩⟩
+      Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨_, _⟩⟩
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)
           (fun x : B => (φ' x).toContinuousLinearMap ∘L (φ x).toContinuousLinearMap) (U ∩ U')

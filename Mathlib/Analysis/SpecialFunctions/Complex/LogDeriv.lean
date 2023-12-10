@@ -52,7 +52,7 @@ noncomputable def expLocalHomeomorph : PartialHomeomorph ℂ ℂ :=
 
 theorem hasStrictDerivAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : HasStrictDerivAt log x⁻¹ x :=
   have h0 : x ≠ 0 := by rintro rfl; simp [lt_irrefl] at h
-  expLocalHomeomorph.hasStrictDerivAt_symm h h0 <| by
+  expPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
     simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 #align complex.has_strict_deriv_at_log Complex.hasStrictDerivAt_log
 
@@ -62,7 +62,7 @@ theorem hasStrictFDerivAt_log_real {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) :
 #align complex.has_strict_fderiv_at_log_real Complex.hasStrictFDerivAt_log_real
 
 theorem contDiffAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) {n : ℕ∞} : ContDiffAt ℂ n log x :=
-  expLocalHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
+  expPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
     contDiff_exp.contDiffAt
 #align complex.cont_diff_at_log Complex.contDiffAt_log
 

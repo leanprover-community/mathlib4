@@ -122,7 +122,7 @@ universe u
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
 /- Notational shortcut for the composition of local homeomorphisms and local equivs, i.e.,
-`LocalHomeomorph.trans` and `LocalEquiv.trans`.
+`PartialHomeomorph.trans` and `LocalEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
 scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
@@ -272,7 +272,7 @@ theorem StructureGroupoid.le_iff {G₁ G₂ : StructureGroupoid H} : G₁ ≤ G�
 /-- The trivial groupoid, containing only the identity (and maps with empty source, as this is
 necessary from the definition). -/
 def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
-  members := {LocalHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
+  members := {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
     cases' he with he he
     · simpa only [mem_singleton_iff.1 he, refl_trans]
@@ -328,7 +328,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
   bot := idGroupoid H
   bot_le := by
     intro u f hf
-    have hf : f ∈ {LocalHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
+    have hf : f ∈ {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
     cases' hf with hf hf
     · rw [hf]
@@ -372,7 +372,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       rcases he x xu with ⟨s, s_open, xs, hs⟩
       refine' ⟨s, s_open, xs, _⟩
       convert hs.1 using 1
-      dsimp [LocalHomeomorph.restr]
+      dsimp [PartialHomeomorph.restr]
       rw [s_open.interior_eq]
     · refine' PG.locality e.open_target fun x xu ↦ _
       rcases he (e.symm x) (e.map_target xu) with ⟨s, s_open, xs, hs⟩
@@ -380,7 +380,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
         convert hs.2 using 1
-        dsimp [LocalHomeomorph.restr]
+        dsimp [PartialHomeomorph.restr]
         rw [s_open.interior_eq]
   eq_on_source' e e' he ee' := by
     constructor
@@ -474,7 +474,7 @@ def idRestrGroupoid : StructureGroupoid H where
     rintro e e' ⟨s, hs, hse⟩ ⟨s', hs', hse'⟩
     refine' ⟨s ∩ s', IsOpen.inter hs hs', _⟩
     have := PartialHomeomorph.EqOnSource.trans' hse hse'
-    rwa [LocalHomeomorph.ofSet_trans_ofSet] at this
+    rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
     rintro e ⟨s, hs, hse⟩
     refine' ⟨s, hs, _⟩
@@ -506,7 +506,7 @@ instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRes
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, IsOpen.inter hs' hs
-    refine' Setoid.trans (LocalHomeomorph.EqOnSource.restr he s) _
+    refine' Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
 
@@ -525,7 +525,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     -- rw [hs.interior_eq]
     -- simp only [mfld_simps]
     ext
-    · rw [LocalHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
+    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
     · simp [hs]
     · simp [hs.interior_eq]
   · intro h
@@ -586,7 +586,7 @@ section ChartedSpace
 
 /-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
 instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
-  atlas := {LocalHomeomorph.refl H}
+  atlas := {PartialHomeomorph.refl H}
   chartAt _ := PartialHomeomorph.refl H
   mem_chart_source x := mem_univ x
   chart_mem_atlas _ := mem_singleton _
@@ -688,7 +688,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   refine' locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) _ _
   · intro x
-    simpa only [LocalHomeomorph.symm_map_nhds_eq, mem_chart_source] using
+    simpa only [PartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
@@ -1110,7 +1110,7 @@ namespace OpenEmbedding
 variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
-See `LocalHomeomorph.singletonChartedSpace`. -/
+See `PartialHomeomorph.singletonChartedSpace`. -/
 def singletonChartedSpace {f : α → H} (h : OpenEmbedding f) : ChartedSpace H α :=
   (h.toPartialHomeomorph f).singletonChartedSpace (toPartialHomeomorph_source _ _)
 #align open_embedding.singleton_charted_space OpenEmbedding.singletonChartedSpace
@@ -1139,8 +1139,8 @@ variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
 protected instance instChartedSpace : ChartedSpace H s where
-  atlas := ⋃ x : s, {@LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt H x.1) s ⟨x⟩}
-  chartAt x := @LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt H x.1) s ⟨x⟩
+  atlas := ⋃ x : s, {@PartialHomeomorph.subtypeRestr _ _ _ _ (chartAt H x.1) s ⟨x⟩}
+  chartAt x := @PartialHomeomorph.subtypeRestr _ _ _ _ (chartAt H x.1) s ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
@@ -1210,7 +1210,7 @@ def Structomorph.refl (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [HasGr
   { Homeomorph.refl M with
     mem_groupoid := fun c c' hc hc' ↦ by
       change PartialHomeomorph.symm c ≫ₕ PartialHomeomorph.refl M ≫ₕ c' ∈ G
-      rw [LocalHomeomorph.refl_trans]
+      rw [PartialHomeomorph.refl_trans]
       exact G.compatible hc hc' }
 #align structomorph.refl Structomorph.refl
 

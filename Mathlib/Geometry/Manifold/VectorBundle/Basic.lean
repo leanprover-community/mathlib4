@@ -111,7 +111,7 @@ instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F 
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (ModelProd HB F) x =
       (trivializationAt F E x.proj).toPartialHomeomorph ≫ₕ
-        (chartAt HB x.proj).prod (LocalHomeomorph.refl F) := by
+        (chartAt HB x.proj).prod (PartialHomeomorph.refl F) := by
   dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt,
     chartAt_self_eq]
   rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]

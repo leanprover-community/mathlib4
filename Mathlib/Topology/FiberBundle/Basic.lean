@@ -623,7 +623,7 @@ theorem continuous_const_section (v : F)
   refine continuous_iff_continuousAt.2 fun x => ?_
   have A : Z.baseSet (Z.indexAt x) ∈ 𝓝 x :=
     IsOpen.mem_nhds (Z.isOpen_baseSet (Z.indexAt x)) (Z.mem_baseSet_at x)
-  refine ((Z.localTrivAt x).toLocalHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
+  refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
   · apply continuousAt_id.prod
     simp only [(· ∘ ·), mfld_simps, localTrivAt_snd]
@@ -703,7 +703,7 @@ theorem mem_localTrivAt_target (p : B × F) (b : B) :
 
 @[simp, mfld_simps]
 theorem localTriv_symm_apply (p : B × F) :
-    (Z.localTriv i).toLocalHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
+    (Z.localTriv i).toPartialHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
   rfl
 #align fiber_bundle_core.local_triv_symm_apply FiberBundleCore.localTriv_symm_apply
 
@@ -848,7 +848,7 @@ theorem continuous_totalSpaceMk (b : B) :
     Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
   letI := a.totalSpaceTopology
   let e := a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)
-  rw [e.toLocalHomeomorph.continuous_iff_continuous_comp_left
+  rw [e.toPartialHomeomorph.continuous_iff_continuous_comp_left
       (a.totalSpaceMk_preimage_source b)]
   exact continuous_iff_le_induced.mpr (le_antisymm_iff.mp (a.totalSpaceMk_inducing b).induced).1
 #align fiber_prebundle.continuous_total_space_mk FiberPrebundle.continuous_totalSpaceMk

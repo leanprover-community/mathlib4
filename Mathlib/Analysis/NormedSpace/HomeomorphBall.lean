@@ -24,7 +24,7 @@ with a globally defined inverse function which makes it easier to say
 that this homeomorphism is in fact a diffeomorphism.
 
 We also show that the unit ball `Metric.ball (0 : E) 1` is homeomorphic
-to a ball of positive radius in an affine space over `E`, see `LocalHomeomorph.unitBallBall`.
+to a ball of positive radius in an affine space over `E`, see `PartialHomeomorph.unitBallBall`.
 
 ## Tags
 
@@ -74,11 +74,11 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
 
 @[simp]
 theorem PartialHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
-  simp [LocalHomeomorph.univUnitBall_apply]
+  simp [PartialHomeomorph.univUnitBall_apply]
 
 @[simp]
 theorem PartialHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
-  simp [LocalHomeomorph.univUnitBall_symm_apply]
+  simp [PartialHomeomorph.univUnitBall_symm_apply]
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -86,7 +86,7 @@ This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
 In many cases the actual implementation is not important, so we don't mark the projection lemmas
 `Homeomorph.unitBall_apply_coe` and `Homeomorph.unitBall_symm_apply` as `@[simp]`.
 
-See also `Homeomorph.contDiff_unitBall` and `LocalHomeomorph.contDiffOn_unitBall_symm`
+See also `Homeomorph.contDiff_unitBall` and `PartialHomeomorph.contDiffOn_unitBall_symm`
 for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! (config := .lemmasOnly)]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
@@ -114,10 +114,10 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : PartialHomeomorph E P :=
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
     simp [abs_of_pos hr]
 
-/-- If `r > 0`, then `LocalHomeomorph.univBall c r` is a smooth local homeomorphism
+/-- If `r > 0`, then `PartialHomeomorph.univBall c r` is a smooth local homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
-Thus in all cases, it sends `0` to `c`, see `LocalHomeomorph.univBall_apply_zero`. -/
+Thus in all cases, it sends `0` to `c`, see `PartialHomeomorph.univBall_apply_zero`. -/
 def univBall (c : P) (r : ℝ) : PartialHomeomorph E P :=
   if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
   else (IsometryEquiv.vaddConst c).toHomeomorph.toPartialHomeomorph

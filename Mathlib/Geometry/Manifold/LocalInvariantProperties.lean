@@ -255,7 +255,7 @@ theorem liftPropWithinAt_indep_chart_source_aux (g : M → H') (he : e ∈ G.max
     P (g ∘ e.symm) (e.symm ⁻¹' s) (e x) ↔ P (g ∘ e'.symm) (e'.symm ⁻¹' s) (e' x) := by
   rw [← hG.right_invariance (compatible_of_mem_maximalAtlas he he')]
   swap; · simp only [xe, xe', mfld_simps]
-  simp_rw [LocalHomeomorph.trans_apply, e.left_inv xe]
+  simp_rw [PartialHomeomorph.trans_apply, e.left_inv xe]
   rw [hG.congr_iff]
   · refine' hG.congr_set _
     refine' (eventually_of_mem _ fun y (hy : y ∈ e'.symm ⁻¹' e.source) ↦ _).set_eq
@@ -638,7 +638,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph.
   This gives us an `e` that is defined on a subset of `f.source`. -/
-theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGroupoid H}
+theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {s : Set H} {x : H}
     (hx : x ∈ f.source ∪ sᶜ) :
     G.IsLocalStructomorphWithinAt (⇑f) s x ↔
@@ -648,7 +648,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGro
   · intro hf h2x
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
     refine' ⟨e.restr f.source, closedUnderRestriction' he f.open_source, _, _, hxe, _⟩
-    · simp_rw [LocalHomeomorph.restr_source]
+    · simp_rw [PartialHomeomorph.restr_source]
       refine' (inter_subset_right _ _).trans interior_subset
     · intro x' hx'
       exact hfe ⟨hx'.1, hx'.2.1⟩
@@ -661,7 +661,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureGro
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
   the set we're considering is a superset of `f.source`. -/
-theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGroupoid H}
+theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {s : Set H} {x : H} (hs : f.source ⊆ s)
     (hx : x ∈ f.source ∪ sᶜ) :
     G.IsLocalStructomorphWithinAt (⇑f) s x ↔
@@ -675,7 +675,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
   the set we're considering is `f.source`. -/
-theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_source_iff {G : StructureGroupoid H}
+theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_source_iff {G : StructureGroupoid H}
     [ClosedUnderRestriction G] (f : PartialHomeomorph H H) {x : H} :
     G.IsLocalStructomorphWithinAt (⇑f) f.source x ↔
       x ∈ f.source → ∃ e : PartialHomeomorph H H,
@@ -704,13 +704,13 @@ theorem HasGroupoid.comp
         (isLocalStructomorphWithinAt_localInvariantProp G₁) (G₁.subset_maximalAtlas hf)
         (G₁.subset_maximalAtlas hf') (H _ (G₂.compatible he he')) hxs' hxs
       simp_rw [← PartialHomeomorph.coe_trans, PartialHomeomorph.trans_assoc] at hφ
-      simp_rw [LocalHomeomorph.trans_symm_eq_symm_trans_symm, PartialHomeomorph.trans_assoc]
+      simp_rw [PartialHomeomorph.trans_symm_eq_symm_trans_symm, PartialHomeomorph.trans_assoc]
       have hs : IsOpen (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').source :=
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
       refine' ⟨_, hs.inter φ.open_source, _, _⟩
       · simp only [hx, hφ_dom, mfld_simps]
       · refine' G₁.eq_on_source (closedUnderRestriction' hφG₁ hs) _
-        rw [LocalHomeomorph.restr_source_inter]
+        rw [PartialHomeomorph.restr_source_inter]
         refine' PartialHomeomorph.Set.EqOn.restr_eqOn_source (hφ.mono _)
         mfld_set_tac }
 #align structure_groupoid.has_groupoid.comp StructureGroupoid.HasGroupoid.comp

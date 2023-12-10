@@ -1822,7 +1822,7 @@ theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.sour
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
-  · apply IsOpen.mem_nhds ((LocalHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+  · apply IsOpen.mem_nhds ((PartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
 #align mdifferentiable_at_atlas mdifferentiableAt_atlas
 
 theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDifferentiableOn I I e e.source :=
@@ -1844,7 +1844,7 @@ theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
-  · apply IsOpen.mem_nhds ((LocalHomeomorph.open_source _).preimage I.continuous_symm) mem.1
+  · apply IsOpen.mem_nhds ((PartialHomeomorph.open_source _).preimage I.continuous_symm) mem.1
 #align mdifferentiable_at_atlas_symm mdifferentiableAt_atlas_symm
 
 theorem mdifferentiableOn_atlas_symm (h : e ∈ atlas H M) : MDifferentiableOn I I e.symm e.target :=
@@ -2130,7 +2130,7 @@ theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
   rw [← e.left_inv hp]
   refine (this.preimage_localHomeomorph e.mdifferentiable.symm (e.map_source hp)).mono ?_
   rintro y ⟨hy, hys, -⟩
-  rwa [LocalHomeomorph.symm_symm, e.coe_coe, e.coe_fst hy] at hys
+  rwa [PartialHomeomorph.symm_symm, e.coe_coe, e.coe_fst hy] at hys
 
 variable (Z)
 

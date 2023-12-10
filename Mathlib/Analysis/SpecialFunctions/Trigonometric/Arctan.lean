@@ -231,7 +231,7 @@ theorem coe_tanLocalHomeomorph : ⇑tanLocalHomeomorph = tan :=
 #align real.coe_tan_local_homeomorph Real.coe_tanLocalHomeomorph
 
 @[simp]
-theorem coe_tanLocalHomeomorph_symm : ⇑tanLocalHomeomorph.symm = arctan :=
+theorem coe_tanLocalHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
   rfl
 #align real.coe_tan_local_homeomorph_symm Real.coe_tanLocalHomeomorph_symm
 
