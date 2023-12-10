@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Function.Indicator
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
