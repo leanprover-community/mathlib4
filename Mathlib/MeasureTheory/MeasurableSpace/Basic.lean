@@ -1174,6 +1174,9 @@ alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 #align measurable_set.mem MeasurableSet.mem
 
+lemma Measurable.not (hp : Measurable p) : Measurable fun a ↦ ¬ p a :=
+  measurableSet_setOf.1 hp.setOf.compl
+
 lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∧ q a :=
   measurableSet_setOf.1 $ hp.setOf.inter hq.setOf
 
