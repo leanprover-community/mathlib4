@@ -251,6 +251,22 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
 
 variable (s t)
 
+lemma sup_image₂_left [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
+    sup (image₂ f s t) g = sup s fun x ↦ sup t (g ∘ f x) := by
+  simp only [image₂, sup_image, sup_product_left]; rfl
+
+lemma sup_image₂_right [SemilatticeSup δ] [OrderBot δ] (g : γ → δ) :
+    sup (image₂ f s t) g = sup t fun y ↦ sup s (g <| f · y) := by
+  simp only [image₂, sup_image, sup_product_right]; rfl
+
+lemma inf_image₂_left [SemilatticeInf δ] [OrderTop δ] (g : γ → δ) :
+    inf (image₂ f s t) g = inf s fun x ↦ inf t (g ∘ f x) :=
+  sup_image₂_left (δ := δᵒᵈ) ..
+
+lemma inf_image₂_right [SemilatticeInf δ] [OrderTop δ] (g : γ → δ) :
+    inf (image₂ f s t) g = inf t fun y ↦ inf s (g <| f · y) :=
+  sup_image₂_right (δ := δᵒᵈ) ..
+
 theorem card_image₂_singleton_left (hf : Injective (f a)) : (image₂ f {a} t).card = t.card := by
   rw [image₂_singleton_left, card_image_of_injective _ hf]
 #align finset.card_image₂_singleton_left Finset.card_image₂_singleton_left
@@ -282,6 +298,7 @@ theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
   rw [← card_image₂_singleton_right _ (hf b)]
   exact card_le_of_subset (image₂_subset_left <| singleton_subset_iff.2 hb)
 #align finset.card_le_card_image₂_right Finset.card_le_card_image₂_right
+
 
 variable {s t}
 
@@ -335,15 +352,12 @@ theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α)
 
 @[simp]
 theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
-    image₂ (curry f) s t = (s ×ˢ t).image f := by
-  classical
-  rw [← image₂_mk_eq_product, image_image₂]
-  dsimp (config := { unfoldPartialApp := true }) [curry]
+    image₂ (curry f) s t = (s ×ˢ t).image f := rfl
 #align finset.image₂_curry Finset.image₂_curry
 
 @[simp]
 theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    (s ×ˢ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
+    (s ×ˢ t).image (uncurry f) = image₂ f s t := rfl
 #align finset.image_uncurry_product Finset.image_uncurry_product
 
 theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
