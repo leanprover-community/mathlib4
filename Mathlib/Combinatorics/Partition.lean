@@ -94,7 +94,7 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n where
   parts_pos hi := (of_mem_filter hi).bot_lt
   parts_sum := by
     have lz : (l.filter (· = 0)).sum = 0 := by simp [sum_eq_zero_iff]
-    rwa [←filter_add_not (· = 0) l, sum_add, lz, zero_add] at hl
+    rwa [← filter_add_not (· = 0) l, sum_add, lz, zero_add] at hl
 #align nat.partition.of_sums Nat.Partition.ofSums
 
 /-- A `Multiset ℕ` induces a partition on its sum. -/
@@ -108,7 +108,7 @@ def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
 instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
-@[simp] lemma indiscretePartition_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
+@[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
 
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=

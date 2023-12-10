@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.ContMDiff
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 #align_import geometry.manifold.vector_bundle.fiberwise_linear from "leanprover-community/mathlib"@"be2c24f56783935652cefffb4bfca7e4b25d167e"
 
@@ -46,11 +46,11 @@ def localHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   right_inv' _ _ := Prod.ext rfl (ContinuousLinearEquiv.apply_symm_apply _ _)
   open_source := hU.prod isOpen_univ
   open_target := hU.prod isOpen_univ
-  continuous_toFun :=
+  continuousOn_toFun :=
     have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       hφ.prod_map continuousOn_id
     continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
-  continuous_invFun :=
+  continuousOn_invFun :=
     haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       h2φ.prod_map continuousOn_id
     continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)

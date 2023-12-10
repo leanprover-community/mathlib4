@@ -574,7 +574,7 @@ theorem snormEssSup_indicator_const_le (s : Set α) (c : G) :
 theorem snormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) :
     snormEssSup (s.indicator fun _ : α => c) μ = ‖c‖₊ := by
   refine' le_antisymm (snormEssSup_indicator_const_le s c) _
-  by_contra' h
+  by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
   push_neg at h'
   refine' hμs (measure_mono_null (fun x hx_mem => _) h')
@@ -1179,7 +1179,7 @@ def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul c (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha1, ha2, ha3, ha4, SMulHomClass.map_smul, Pi.smul_apply]
+    simp only [ha1, ha2, ha3, ha4, map_smul, Pi.smul_apply]
 #align continuous_linear_map.comp_Lpₗ ContinuousLinearMap.compLpₗ
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on

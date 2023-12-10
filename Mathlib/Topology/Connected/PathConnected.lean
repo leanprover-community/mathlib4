@@ -172,11 +172,14 @@ def symm (γ : Path x y) : Path y x where
 #align path.symm Path.symm
 
 @[simp]
-theorem symm_symm {γ : Path x y} : γ.symm.symm = γ := by
+theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
   show γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 #align path.symm_symm Path.symm_symm
+
+theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by

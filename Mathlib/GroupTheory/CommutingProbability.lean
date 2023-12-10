@@ -49,16 +49,16 @@ theorem commProb_def :
 #align comm_prob_def commProb_def
 
 theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
-  simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
-    ←Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
+  simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ← Nat.cast_mul,
+    ← Nat.card_prod, Commute, SemiconjBy, Prod.ext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
 theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
-  simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
-    ←Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
+  simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
+    ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩

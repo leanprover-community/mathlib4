@@ -283,9 +283,13 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 #align polynomial.separable_iff_derivative_ne_zero Polynomial.separable_iff_derivative_ne_zero
 
-theorem separable_map (f : F →+* K) {p : F[X]} :
+attribute [local instance] Ideal.Quotient.field in
+theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]} :
     (p.map f).Separable ↔ p.Separable := by
-  simp_rw [separable_def, derivative_map, isCoprime_map]
+  refine ⟨fun H ↦ ?_, fun H ↦ H.map⟩
+  obtain ⟨m, hm⟩ := Ideal.exists_maximal S
+  have := Separable.map H (f := Ideal.Quotient.mk m)
+  rwa [map_map, separable_def, derivative_map, isCoprime_map] at this
 #align polynomial.separable_map Polynomial.separable_map
 
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
@@ -487,38 +491,54 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- is separable and normal, so if the definition of separable changes here at some point
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
-the minimal polynomial of every `x : K` is separable.
+the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
+extension, because the minimal polynomial of a non-integral element is 0, which is not
+separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
 is needed for a proof.
 -/
-class IsSeparable : Prop where
-  isIntegral' (x : K) : IsIntegral F x
+@[mk_iff isSeparable_def] class IsSeparable : Prop where
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
-variable (F : Type*) {K : Type*} [CommRing F] [Ring K] [Algebra F K]
-
-theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
-  IsSeparable.isIntegral'
-#align is_separable.is_integral IsSeparable.isIntegral
+variable {K}
 
 theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separable :=
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-variable {F K : Type*} [CommRing F] [Ring K] [Algebra F K]
+theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x := fun x ↦ by
+  cases subsingleton_or_nontrivial F
+  · haveI := Module.subsingleton F K
+    exact ⟨1, monic_one, Subsingleton.elim _ _⟩
+  · exact of_not_not fun h ↦ not_separable_zero (minpoly.eq_zero h ▸ IsSeparable.separable F x)
+#align is_separable.is_integral IsSeparable.isIntegral
+
+variable {F}
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
-  ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
-    ⟨fun x => (h x).1, fun x => (h x).2⟩⟩
+  ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h => ⟨fun x => (h x).2⟩⟩
 #align is_separable_iff isSeparable_iff
+
+variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+
+/-- Transfer `IsSeparable` across an `AlgEquiv`. -/
+theorem AlgEquiv.isSeparable [IsSeparable F K] : IsSeparable F E :=
+  ⟨fun _ ↦ by rw [← minpoly.algEquiv_eq e.symm]; exact IsSeparable.separable F _⟩
+
+theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
+  ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
+
+variable (F K)
+
+theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
+  fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic
 
 end CommRing
 
 instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
-  ⟨fun x => isIntegral_algebraMap,
-   fun x => by
+  ⟨fun x => by
     rw [minpoly.eq_X_sub_C']
     exact separable_X_sub_C⟩
 #align is_separable_self isSeparable_self
@@ -527,8 +547,7 @@ instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
 /-- A finite field extension in characteristic 0 is separable. -/
 instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
-  have : ∀ x : K, IsIntegral F x := fun _x ↦ .of_finite F _
-  ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
+  ⟨fun x => (minpoly.irreducible <| .of_finite F x).separable⟩
 #align is_separable.of_finite IsSeparable.of_finite
 
 section IsSeparableTower
@@ -537,18 +556,15 @@ variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F 
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
-  ⟨fun x ↦ (IsSeparable.isIntegral F x).tower_top, fun x ↦
-    (IsSeparable.separable F x).map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)⟩
+  ⟨fun x ↦ (IsSeparable.separable F x).map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)⟩
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=
-  isSeparable_iff.2 fun x ↦ by
-    refine (isSeparable_iff.1 h (algebraMap K E x)).imp .tower_bot_of_field fun hs ↦ ?_
-    obtain ⟨q, hq⟩ :=
+  ⟨fun x ↦
+    have ⟨_q, hq⟩ :=
       minpoly.dvd F x
         ((aeval_algebraMap_eq_zero_iff _ _ _).mp (minpoly.aeval F ((algebraMap K E) x)))
-    rw [hq] at hs
-    exact hs.of_mul_left
+    (hq ▸ h.separable (algebraMap K E x)).of_mul_left⟩
 #align is_separable_tower_bot_of_is_separable isSeparable_tower_bot_of_isSeparable
 
 variable {E}

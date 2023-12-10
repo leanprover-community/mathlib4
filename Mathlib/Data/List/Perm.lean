@@ -24,11 +24,8 @@ The notation `~` is used for permutation equivalence.
 
 open Nat
 
-universe uu vv
-
 namespace List
-
-variable {α : Type uu} {β : Type vv} {l₁ l₂ : List α}
+variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
 
 /-- `Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are permutations
   of each other. This is defined by induction using pairwise swaps. -/
@@ -53,6 +50,8 @@ protected theorem Perm.refl : ∀ l : List α, l ~ l
   | [] => Perm.nil
   | x :: xs => (Perm.refl xs).cons x
 #align list.perm.refl List.Perm.refl
+
+lemma perm_rfl : l ~ l := Perm.refl _
 
 -- Porting note: used rec_on in mathlib3; lean4 eqn compiler still doesn't like it
 @[symm]
@@ -468,6 +467,25 @@ theorem Sublist.exists_perm_append : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ →
     let ⟨l, p⟩ := Sublist.exists_perm_append s
     ⟨l, p.cons a⟩
 #align list.sublist.exists_perm_append List.Sublist.exists_perm_append
+
+lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
+  refine ⟨?_, fun ⟨l, h₁, h₂⟩ ↦ h₂.subperm.trans h₁.subperm⟩
+  rintro ⟨l, h₁, h₂⟩
+  obtain ⟨l', h₂⟩ := h₂.exists_perm_append
+  exact ⟨l₁ ++ l', (h₂.trans (h₁.append_right _)).symm, (prefix_append _ _).sublist⟩
+
+@[simp] lemma singleton_subperm_iff : [a] <+~ l ↔ a ∈ l :=
+  ⟨fun ⟨s, hla, h⟩ ↦ by rwa [perm_singleton.1 hla, singleton_sublist] at h,
+    fun h ↦ ⟨[a], perm_rfl, singleton_sublist.2 h⟩⟩
+#align list.subperm_singleton_iff List.singleton_subperm_iff
+
+@[simp] lemma subperm_singleton_iff : l <+~ [a] ↔ l = [] ∨ l = [a] := by
+  constructor
+  · rw [subperm_iff]
+    rintro ⟨s, hla, h⟩
+    rwa [perm_singleton.mp hla, sublist_singleton] at h
+  · rintro (rfl | rfl)
+    exacts [nil_subperm, Subperm.refl _]
 
 theorem Perm.countP_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
     countP p l₁ = countP p l₂ := by
@@ -932,12 +950,6 @@ instance decidableSubperm : DecidableRel ((· <+~ ·) : List α → List α → 
   decidable_of_iff _ List.subperm_ext_iff.symm
 #align list.decidable_subperm List.decidableSubperm
 
-@[simp]
-theorem subperm_singleton_iff {α} {l : List α} {a : α} : [a] <+~ l ↔ a ∈ l :=
-  ⟨fun ⟨s, hla, h⟩ => by rwa [perm_singleton.mp hla, singleton_sublist] at h, fun h =>
-    ⟨[a], Perm.refl _, singleton_sublist.mpr h⟩⟩
-#align list.subperm_singleton_iff List.subperm_singleton_iff
-
 theorem Subperm.cons_left {l₁ l₂ : List α} (h : l₁ <+~ l₂) (x : α) (hx : count x l₁ < count x l₂) :
     x :: l₁ <+~ l₂ := by
   rw [subperm_ext_iff] at h ⊢
@@ -1366,7 +1378,7 @@ theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
 #align list.nth_le_permutations'_aux List.nthLe_permutations'Aux
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
-    count (x :: l) (permutations'Aux x l) = length (takeWhile ((· = ·) x) l) + 1 := by
+    count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
   · simp [takeWhile, count]
   · rw [permutations'Aux, DecEq_eq, count_cons_self]

@@ -1108,7 +1108,7 @@ theorem rank_quotient_add_rank (p : Submodule K V) :
     exact rank_prod'.symm.trans f.rank_eq
 #align rank_quotient_add_rank rank_quotient_add_rank
 
-/-- rank-nullity theorem -/
+/-- The **rank-nullity theorem** -/
 theorem rank_range_add_rank_ker (f : V →ₗ[K] V₁) :
     Module.rank K (LinearMap.range f) + Module.rank K (LinearMap.ker f) = Module.rank K V := by
   haveI := fun p : Submodule K V => Classical.decEq (V ⧸ p)

@@ -454,7 +454,7 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
   obtain ⟨t, k₁t, k₂t, ht⟩ := span f₁ g₁
   obtain ⟨s, ts, hs⟩ := IsFilteredOrEmpty.cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
   simp_rw [Category.assoc] at hs
-  exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [←Category.assoc, ht], hs⟩
+  exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [← Category.assoc, ht], hs⟩
 #align category_theory.is_filtered.bowtie CategoryTheory.IsFiltered.bowtie
 
 /-- Given a "tulip" of morphisms
@@ -480,7 +480,7 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
-  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [←Category.assoc, hl], _⟩ <;>
+  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [← Category.assoc, hl], _⟩ <;>
     simp only [hs₁, hs₂, Category.assoc]
 #align category_theory.is_filtered.tulip CategoryTheory.IsFiltered.tulip
 
