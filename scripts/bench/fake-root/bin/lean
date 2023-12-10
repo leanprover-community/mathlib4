@@ -11,4 +11,4 @@ for arg in "$@"; do
     fi
 done
 
-perf stat -e instructions -x ';' lean --profile -Dprofiler.threshold=10000 "$@" |& sed -E "s/([0-9]+);;instructions;.*/~$mod| \\1s/"
+perf stat -e instructions:u -x ';' lean --profile -Dprofiler.threshold=10000 "$@" |& sed -E "s/([0-9]+);;instructions:u;.*/~$mod| \\1s/"
