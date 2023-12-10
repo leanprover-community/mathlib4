@@ -18,10 +18,10 @@ type, `SMul Rᵐᵒᵖ M`.
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
 provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
 
-
 ## Notation
 
 With `open scoped RightActions`, this provides:
+
 * `r •> m` as an alias for `r • m`
 * `m <• r` as an alias for `MulOpposite.op r • m`
 * `v +ᵥ> p` as an alias for `v +ᵥ p`
@@ -29,7 +29,7 @@ With `open scoped RightActions`, this provides:
 -/
 
 
-variable (R α : Type*)
+variable (α : Type*)
 
 /-! ### Actions _on_ the opposite type
 
