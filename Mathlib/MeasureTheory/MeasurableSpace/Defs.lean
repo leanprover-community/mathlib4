@@ -601,7 +601,7 @@ instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [M
 section DiscreteMeasurableSpace
 variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
 
-@[simp, measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
 @[measurability]
