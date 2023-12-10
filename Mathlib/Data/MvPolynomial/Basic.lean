@@ -768,19 +768,15 @@ theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPo
 theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff m (p * monomial s r) = if s ≤ m then coeff (m - s) p * r else 0 := by
   classical
-  obtain rfl | hr := eq_or_ne r 0
-  · simp only [monomial_zero, coeff_zero, mul_zero, ite_self]
-  haveI : Nontrivial R := nontrivial_of_ne _ _ hr
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
     congr with t
     rw [tsub_add_cancel_of_le h]
-  · rw [← not_mem_support_iff]
-    intro hm
-    apply h
-    have H := support_mul _ _ hm
-    rw [support_monomial, if_neg hr, Finset.add_singleton, Finset.mem_image] at H
-    rcases H with ⟨j, -, rfl⟩
+  · contrapose! h
+    rw [← mem_support_iff] at h
+    obtain ⟨j, -, rfl⟩ : ∃ j ∈ support p, j + s = m := by
+      simpa [Finset.add_singleton]
+        using Finset.add_subset_add_left support_monomial_subset <| support_mul _ _ h
     exact le_add_left le_rfl
 #align mv_polynomial.coeff_mul_monomial' MvPolynomial.coeff_mul_monomial'
 
