@@ -11,27 +11,29 @@ import Mathlib.Algebra.Order.Field.InjSurj
 /-!
 # Subfields
 
-Let `K` be a field. This file defines the "bundled" subfield type `Subfield K`, a type
-whose terms correspond to subfields of `K`. This is the preferred way to talk
+Let `K` be a division ring, for example a field.
+This file defines the "bundled" subfield type `Subfield K`, a type
+whose terms correspond to subfields of `K`. Note we do not require the "subfields" to be
+commutative, so they are really sub-division rings / skew fields. This is the preferred way to talk
 about subfields in mathlib. Unbundled subfields (`s : Set K` and `IsSubfield s`)
 are not in this file, and they will ultimately be deprecated.
 
 We prove that subfields are a complete lattice, and that you can `map` (pushforward) and
 `comap` (pull back) them along ring homomorphisms.
 
-We define the `closure` construction from `Set R` to `Subfield R`, sending a subset of `R`
+We define the `closure` construction from `Set K` to `Subfield K`, sending a subset of `K`
 to the subfield it generates, and prove that it is a Galois insertion.
 
 ## Main definitions
 
 Notation used here:
 
-`(K : Type u) [Field K] (L : Type u) [Field L] (f g : K →+* L)`
+`(K : Type u) [DivisionRing K] (L : Type u) [DivisionRing L] (f g : K →+* L)`
 `(A : Subfield K) (B : Subfield L) (s : Set K)`
 
-* `Subfield R` : the type of subfields of a ring `R`.
+* `Subfield K` : the type of subfields of a division ring `K`.
 
-* `instance : CompleteLattice (Subfield R)` : the complete lattice structure on the subfields.
+* `instance : CompleteLattice (Subfield K)` : the complete lattice structure on the subfields.
 
 * `Subfield.closure` : subfield closure of a set, i.e., the smallest subfield that includes the set.
 
@@ -42,9 +44,7 @@ Notation used here:
 
 * `map f A : Subfield L` : the image of a subfield `A` along the ring homomorphism `f`.
 
-* `prod A B : Subfield (K × L)` : the product of subfields
-
-* `f.fieldRange : Subfield B` : the range of the ring homomorphism `f`.
+* `f.fieldRange : Subfield L` : the range of the ring homomorphism `f`.
 
 * `eqLocusField f g : Subfield K` : given ring homomorphisms `f g : K →+* R`,
      the subfield of `K` where `f x = g x`
@@ -417,7 +417,8 @@ theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=
   rfl
 #align subfield.coe_subtype Subfield.coe_subtype
 
-theorem toSubring_subtype_eq_subtype (F : Type*) [Field F] (S : Subfield F) :
+variable (K) in
+theorem toSubring_subtype_eq_subtype (S : Subfield K) :
     S.toSubring.subtype = S.subtype :=
   rfl
 #align subfield.to_subring.subtype_eq_subtype Subfield.toSubring_subtype_eq_subtype
@@ -826,12 +827,16 @@ theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x
   rfl
 #align ring_hom.coe_range_restrict_field RingHom.coe_rangeRestrictField
 
+section eqLocus
+
+variable {L : Type v} [Semiring L]
+
 /-- The subfield of elements `x : R` such that `f x = g x`, i.e.,
 the equalizer of f and g as a subfield of R -/
-def eqLocusField (f g : K →+* L) : Subfield K :=
-  { (f : K →+* L).eqLocus g with
-    inv_mem' := fun x (hx : f x = g x) => show f x⁻¹ = g x⁻¹ by rw [map_inv₀ f, map_inv₀ g, hx]
-    carrier := { x | f x = g x } }
+def eqLocusField (f g : K →+* L) : Subfield K where
+  __ := (f : K →+* L).eqLocus g
+  inv_mem' _ := eq_on_inv₀ f g
+  carrier := { x | f x = g x }
 #align ring_hom.eq_locus_field RingHom.eqLocusField
 
 /-- If two ring homomorphisms are equal on a set, then they are equal on its subfield closure. -/
@@ -848,6 +853,8 @@ theorem eq_of_eqOn_of_field_closure_eq_top {s : Set K} (hs : closure s = ⊤) {f
     (h : s.EqOn f g) : f = g :=
   eq_of_eqOn_subfield_top <| hs ▸ eqOn_field_closure h
 #align ring_hom.eq_of_eq_on_of_field_closure_eq_top RingHom.eq_of_eqOn_of_field_closure_eq_top
+
+end eqLocus
 
 theorem field_closure_preimage_le (f : K →+* L) (s : Set L) :
     closure (f ⁻¹' s) ≤ (closure s).comap f :=
