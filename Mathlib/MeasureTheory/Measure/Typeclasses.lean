@@ -292,7 +292,7 @@ lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈
     IsProbabilityMeasure (μ.comap f) where
   measure_univ := by
     rw [comap_apply _ hf hf'' _ MeasurableSet.univ,
-      ←mem_ae_iff_prob_eq_one (hf'' _ MeasurableSet.univ)]
+      ← mem_ae_iff_prob_eq_one (hf'' _ MeasurableSet.univ)]
     simpa
 
 protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
