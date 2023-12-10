@@ -9,9 +9,10 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Basic
-import Mathlib.Util.AssertExists
-import Mathlib.Data.Polynomial.Degree.Definitions
+--import Mathlib.Util.AssertExists
+--import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Induction
+import Mathlib.Data.Polynomial.Basic
 
 /-!
 # Scalar-multiple polynomial evaluation over commutative semirings
@@ -59,9 +60,9 @@ open BigOperators
 
 namespace Polynomial
 
-variable {R : Type u} [CommSemiring R] {p : R[X]} {S : Type v} {T : Type w} {a b : R}
-
 section NonUnital
+
+variable {R : Type u} [CommSemiring R] {p : R[X]} {S : Type v}
 
 variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ+] (p: ℕ+ →₀ R) (x : S)
 
@@ -92,6 +93,8 @@ theorem smnueval_X_pow {n : ℕ+} : smnueval (Finsupp.single n (1 : R)) x = x ^ 
 end NonUnital
 
 section Unital
+
+variable {R : Type u} [CommSemiring R] {p : R[X]} {S : Type v}
 
 variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ] (p q : R[X]) (r : R) (x : S)
 
@@ -131,6 +134,8 @@ end Unital
 
 section NonUnitalPowAssoc
 
+variable {R : Type u} [CommSemiring R] {p : R[X]} {S : Type v}
+
 variable [NonUnitalNonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 
 variable [Pow S ℕ+] [PNatPowAssoc S] (p: ℕ+ →₀ R) (x : S)
@@ -158,6 +163,8 @@ end NonUnitalPowAssoc
 
 section UnitalPowAssoc
 
+variable {R : Type u} [CommSemiring R] {p : R[X]} {S : Type v} (r : R)
+
 variable [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 
 variable [Pow S ℕ] [NatPowAssoc S]
@@ -169,6 +176,8 @@ theorem smeval_add: (p + q).smeval x = p.smeval x + q.smeval x := by
   refine sum_add_index p q (smul_pow x) ?_ ?_
   simp [smul_pow]
   simp [smul_pow, add_smul]
+
+--
 
 --theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
 --  simp only [smeval_eq_sum, smul_pow]
@@ -223,7 +232,7 @@ theorem smeval_X_pow_mul : ∀(n : ℕ), (X^n * p).smeval x = x^n * p.smeval x
     rw [add_comm, npow_add, mul_assoc, npow_one, smeval_X_mul, smeval_X_pow_mul n, npow_add,
       smeval_X_pow_assoc, npow_one]
 
-theorem smeval_C_mul : (C a * p).smeval x = a • p.smeval x := by
+theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [mul_add, smeval_add, ph, qh, smul_add]
@@ -260,3 +269,18 @@ theorem smeval_comp : (p.comp q).smeval x  = p.smeval (q.smeval x) := by
     simp [smeval_monomial, smeval_C_mul, smeval_pow]
 
 end UnitalPowAssoc
+
+section test
+
+variable {R : Type u} [CommRing R] {p q : R[X]} {S : Type v} [NonAssocRing S] [Module R S]
+variable [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ] [NatPowAssoc S]
+
+theorem smeval_neg (x : S) : (-p).smeval x = - p.smeval x := by
+  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
+  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
+  exact id h.symm
+
+theorem smeval_sub (x : S) : (p - q).smeval x = p.smeval x - q.smeval x := by
+  rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+end test

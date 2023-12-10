@@ -29,6 +29,12 @@ In this file we introduce vertex algebras using Hahn series.
 
 We postpone the proofs of equivalences of various identities to a different file.
 
+## To do:
+
+* locality of fields, order of locality
+
+* Translation-covariance
+
 ## References
 
 G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
@@ -46,13 +52,13 @@ section VertexOperator
 /-- A vertex operator over a semiring `R` is an `R`-linear map from an `R`-module `V` to Laurent
 series with coefficients in `V`-/
 @[ext]
-structure VertexOperator (R : Type v) (V : Type u) [CommRing R] [AddCommMonoid V] [Module R V] where
+structure VertexOperator (R : Type v) (V : Type u) [CommRing R] [AddCommGroup V] [Module R V] where
 /-- The underlying structure map of a vertex operator. -/
   toMap : V →ₗ[R] HahnSeries ℤ V
 
 namespace VertexAlg
 
-instance LinearMapClass (R : Type v) (V : Type u) [CommRing R] [AddCommMonoid V] [Module R V] :
+instance LinearMapClass (R : Type v) (V : Type u) [CommRing R] [AddCommGroup V] [Module R V] :
     LinearMapClass (VertexOperator R V) R V (HahnSeries ℤ V) where
   coe f := f.toMap
   coe_injective' f g h := by
@@ -73,7 +79,7 @@ example {R A : Type*} [CommSemiring R] [Semiring A]
 Algebra.ofModule smul_mul_assoc mul_smul_comm
 
 LinearMap instances:
-* `LinearMap.addCommMonoid` and `LinearMap.addCommGroup`: the elementwise addition structures
+* `LinearMap.AddCommGroup` and `LinearMap.addCommGroup`: the elementwise addition structures
   corresponding to addition in the codomain
 * `LinearMap.distribMulAction` and `LinearMap.module`: the elementwise scalar action structures
   corresponding to applying the action in the codomain.
@@ -82,7 +88,7 @@ LinearMap instances:
 
 /-- The coefficient of a vertex operator, viewed as a formal power series with coefficients in
 linear endomorphisms. -/
-def coeff [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+def coeff [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V :=
   {
     toFun := fun (x : V) => (A.toMap x).coeff n
@@ -92,17 +98,17 @@ def coeff [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (
 
 /-- We write `index` instead of `coefficient of a vertex operator under normalized indexing`.
 Alternative suggestions welcome. -/
-def index [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
+def index [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := coeff A (-n-1)
 
-theorem index_eq_coeff_neg [CommRing R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V)
+theorem index_eq_coeff_neg [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V)
     (n : ℤ) : index A n = coeff A (-n-1) := rfl
 
 /-- The normal convention for the normalized coefficient of a vertex operatoris either `Aₙ` or
 `A(n)`.  Either choice seems to break things. -/
 scoped[VertexAlg] notation A "⁅" n "⁆" => index A n
 
-instance [CommRing R] [AddCommMonoid V] [Module R V] : Zero (VertexOperator R V) :=
+instance [CommRing R] [AddCommGroup V] [Module R V] : Zero (VertexOperator R V) :=
   {
   zero :=
     {
@@ -116,25 +122,25 @@ instance [CommRing R] [AddCommMonoid V] [Module R V] : Zero (VertexOperator R V)
   }
 
 /-!
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
       apply add_comm }
 -/
 
-@[simp] lemma zero_toFun [CommRing R] [AddCommMonoid V] [Module R V] (x : V) :
+@[simp] lemma zero_toFun [CommRing R] [AddCommGroup V] [Module R V] (x : V) :
   (0 : VertexOperator R V).toMap x = 0 := rfl
 
-@[simp] lemma zero_coeff [CommRing R] [AddCommMonoid V] [Module R V] (n : ℤ) :
+@[simp] lemma zero_coeff [CommRing R] [AddCommGroup V] [Module R V] (n : ℤ) :
     coeff (0 : VertexOperator R V) n = 0 := by
   exact rfl
 
-@[simp] lemma zero_index [CommRing R] [AddCommMonoid V] [Module R V] (n : ℤ) :
+@[simp] lemma zero_index [CommRing R] [AddCommGroup V] [Module R V] (n : ℤ) :
     (0 : VertexOperator R V) ⁅n⁆ = 0 := by
   exact rfl
 
-instance [CommRing R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) :=--inferInstance?
+instance [CommRing R] [AddCommGroup V] [Module R V] : Add (VertexOperator R V) :=--inferInstance?
   {
     add := fun a b =>
       {
@@ -151,16 +157,38 @@ instance [CommRing R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) 
       }
   }
 
-@[simp] lemma add_toMap_eq [CommRing R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V)
+@[simp] lemma add_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (a b : VertexOperator R V)
   (x : V): (a + b).toMap x = a.toMap x + b.toMap x := rfl
 
-/-!
-@[simp] lemma add_coef_eq [Semiring R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V)
-  (n : ℤ) : (a + b) ⁅n⁆ = a ⁅n⁆ + b ⁅n⁆ := by exact rfl
--/
+@[simp] lemma add_coeff_eq [CommRing R] [AddCommGroup V] [Module R V] (a b : VertexOperator R V)
+  (n : ℤ) : coeff (a + b) n = coeff a n + coeff b n := by exact rfl
 
--- can I use LinearMap.addCommMonoid here?
-instance [CommRing R] [AddCommMonoid V] [Module R V] : AddCommMonoid (VertexOperator R V) :=
+@[simp] lemma add_index_eq [CommRing R] [AddCommGroup V] [Module R V] (a b : VertexOperator R V)
+  (n : ℤ) : (a + b) ⁅n⁆ = a ⁅n⁆ + b ⁅n⁆ := by exact rfl
+
+instance [CommRing R] [AddCommGroup V] [Module R V] : Neg (VertexOperator R V) :=
+  {
+    neg := fun a =>
+    {
+    toMap :=
+      {
+      toFun := fun x => - a.toMap x
+      map_add' := by
+        intros
+        simp only [map_add, neg_add_rev]
+        rw [add_comm]
+      map_smul' := by
+        intros
+        simp only [map_smul, RingHom.id_apply, smul_neg]
+      }
+    }
+  }
+
+@[simp] lemma neg_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (a : VertexOperator R V)
+    (x : V): (-a).toMap x = - a.toMap x := rfl
+
+-- can I use LinearMap.AddCommGroup here?
+instance [CommRing R] [AddCommGroup V] [Module R V] : AddCommGroup (VertexOperator R V) :=
   {
     add_assoc := by
       intros
@@ -178,9 +206,13 @@ instance [CommRing R] [AddCommMonoid V] [Module R V] : AddCommMonoid (VertexOper
       intros
       ext x n
       simp only [add_toMap_eq, HahnSeries.add_coeff, add_comm]
+    add_left_neg := by
+      intros
+      ext x n
+      simp only [add_toMap_eq, neg_toMap_eq, add_left_neg, HahnSeries.zero_coeff, zero_toFun]
   }
 
-instance [CommRing R] [AddCommMonoid V] [Module R V] : SMul R (VertexOperator R V) :=
+instance [CommRing R] [AddCommGroup V] [Module R V] : SMul R (VertexOperator R V) :=
   { smul := fun r a =>
     {toMap :=
       {
@@ -198,8 +230,14 @@ instance [CommRing R] [AddCommMonoid V] [Module R V] : SMul R (VertexOperator R 
     }
   }
 
-@[simp] lemma smul_toMap_eq [CommRing R] [AddCommMonoid V] [Module R V] (r : R)
+@[simp] lemma smul_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (r : R)
     (a : VertexOperator R V) (x : V): (r • a).toMap x = r • a.toMap x := rfl
+
+@[simp] lemma smul_coeff_eq [CommRing R] [AddCommGroup V] [Module R V] (r : R)
+  (a : VertexOperator R V) (n : ℤ) : coeff (r • a) n = r • coeff a n := by exact rfl
+
+@[simp] lemma smul_index_eq [CommRing R] [AddCommGroup V] [Module R V] (r : R)
+  (a : VertexOperator R V) (n : ℤ) : (r • a) ⁅n⁆ = r • (a ⁅n⁆) := by exact rfl
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R V) :=
   {
@@ -245,6 +283,8 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R
       simp only [zero_smul, zero_toFun, HahnSeries.zero_coeff]
   }
 
+-- locality of fields, order of locality
+
 end VertexAlg
 
 end VertexOperator
@@ -260,9 +300,24 @@ section NonAssocNonUnitalVertexAlgebra
 
 namespace VertexAlg
 
+variable [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
+
 /-- The multiplication in a vertex algebra. -/
 def Y (R : Type v) {V : Type u} [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V] :
     V →ₗ[R] VertexOperator R V := NonAssocNonUnitalVertexAlgebra.Y
+
+theorem Y_add_left_eq (a b : V) : Y R (a + b) = (Y R a) + (Y R b) := by simp only [map_add]
+
+theorem Y_smul_left_eq (r : R) (a : V) : Y R (r • a) = r • Y R a := by simp only [map_smul]
+
+theorem coeff_add_left_eq (a b c : V) (n : ℤ) : coeff (Y R (a + b)) n c = coeff (Y R a) n c + coeff (Y R b) n c := by
+  simp only [map_add, add_coeff_eq, LinearMap.add_apply]
+
+theorem index_add_left_eq (a b c : V) (n : ℤ) : index (Y R (a + b)) n c = index (Y R a) n c + index (Y R b) n c := by
+  simp only [map_add, add_index_eq, LinearMap.add_apply]
+
+-- theorem coeff_smul_left_eq
+-- theorem index_smul_left_eq
 
 --scoped[VertexAlg] notation a "(" n ")" => index (Y R a) n --seems to fail for any bracket choice.
 
@@ -271,33 +326,29 @@ otherwise.  In particular, `a ⁅n⁆ b = 0` for `n ≥ -order a b`. -/
 noncomputable def order (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b : V) : ℤ := HahnSeries.order (Y R a b)
 
-theorem coeff_zero_if_lt_order [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
-    (a b : V) (n : ℤ) (h: n < order R a b) : coeff (Y R a) n b = 0 := by
+theorem coeff_zero_if_lt_order (a b : V) (n : ℤ) (h: n < order R a b) : coeff (Y R a) n b = 0 := by
   rw [order] at h
   simp only [coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
-theorem coeff_nonzero_at_order [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
-    (a b : V) (h: Y R a b ≠ 0) : coeff (Y R a) (order R a b) b ≠ 0 := by
+theorem coeff_nonzero_at_order (a b : V) (h: Y R a b ≠ 0) : coeff (Y R a) (order R a b) b ≠ 0 := by
   rw [order, coeff]
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_order_ne_zero h
 
-theorem index_zero_if_neg_order_leq [CommRing R] [AddCommGroup V]
-    [NonAssocNonUnitalVertexAlgebra R V] (a b : V) (n : ℤ) (h: - order R a b ≤ n) :
+theorem index_zero_if_neg_order_leq (a b : V) (n : ℤ) (h: - order R a b ≤ n) :
     index (Y R a) n b = 0 := by
   rw [index_eq_coeff_neg]
   refine coeff_zero_if_lt_order a b (-n-1) ?_
   rw [Int.sub_one_lt_iff, neg_le]
   exact h
 
-theorem index_nonzero_at_neg_order_minus_one [CommRing R] [AddCommGroup V]
-    [NonAssocNonUnitalVertexAlgebra R V] (a b : V) (h: Y R a b ≠ 0) :
+theorem index_nonzero_at_neg_order_minus_one (a b : V) (h: Y R a b ≠ 0) :
     index (Y R a) (-order R a b - 1) b ≠ 0 := by
   rw [index_eq_coeff_neg, neg_sub, sub_neg_eq_add, add_sub_cancel']
   exact coeff_nonzero_at_order a b h
 
--- a (t + i) b = 0 for i ≥ -t - (order a b)
+-- Reminder: a (t + i) b = 0 for i ≥ -t - (order a b)
 
 /-- The first sum in the Borcherds identity, giving coefficients of `(a(x)b)(z)c` near `z=y-x`. -/
 noncomputable def Borcherds_sum_1 (R : Type v) [CommRing R] [AddCommGroup V]
@@ -324,9 +375,78 @@ noncomputable def Borcherds_id (R : Type v) [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) : Prop :=
   Borcherds_sum_1 R a b c r s t = Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t
 
+/-- The associativity property of vertex algebras. -/
+def associativity (R : Type v) [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
+    (a b c : V) (s t : ℤ) : Prop := ((Y R) (((Y R) a⁅t⁆) b)⁅s⁆) c = Finset.sum (Finset.range
+    (Int.toNat (-s - order R b c))) (fun i ↦ (-1)^i • (Ring.choose (t : ℤ)  i) •
+    index (Y R a) (t-i) (index (Y R b) (s+i) c)) + Finset.sum (Finset.range (Int.toNat
+    (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) • (Ring.choose t i) • index (Y R b) (s+t-i)
+    (index (Y R a) i c))
+
+/-- The commutator formula for vertex algebras. -/
+def commutator_formula (R : Type v) [CommRing R] [AddCommGroup V]
+    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s : ℤ) : Prop :=
+  index (Y R a) r (index (Y R b) s c) - index (Y R b) s (index (Y R a) r c) =
+  Finset.sum (Finset.range (Int.toNat (- order R a b))) (fun i ↦ (Ring.choose r i) •
+  index (Y R (index (Y R a) i b)) (r+s-i) c)
+
+/-- The locality property, asserting that `(x-y)^N Y(a,x)Y(b,y) = (x-y)^N Y(b,y)Y(a,x)` for
+sufficiently large `N`.  That is, the vertex operators commute up to finite order poles on the
+diagonal. -/
+def locality (R : Type v) [CommRing R] [AddCommGroup V]
+    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t : ℤ) (_ : t ≥ - order R a b): Prop :=
+  Borcherds_sum_2 R a b c r s t + Borcherds_sum_3 R a b c r s t = 0
+
+/-- The weak associativity property for vertex algebras. -/
+def weak_associativity (R : Type v) [CommRing R] [AddCommGroup V]
+    [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (r s t: ℤ) (_ : r ≥ - order R a c) : Prop :=
+  Borcherds_sum_1 R a b c r s t = Borcherds_sum_2 R a b c r s t
+
 end VertexAlg
 
 end NonAssocNonUnitalVertexAlgebra
+
+section Unital
+
+namespace VertexAlg
+
+/-- A field is creative with respect to the unit vector `1` if evaluating at `1` yields a regular
+series. -/
+def creative [CommRing R] [AddCommGroupWithOne V] [Module R V] (A : VertexOperator R V) : Prop :=
+  0 ≤ HahnSeries.order (A.toMap 1)
+
+/-- The state attached to a creative field is its `z^0`-coefficient at `1`. -/
+def state [CommRing R] [AddCommGroupWithOne V] [Module R V] (A : VertexOperator R V)
+    (_ : creative A) : V := coeff A 0 1
+
+/-- A divided-power system of translation operators.  `T 1` is often written `T`. -/
+def T (R: Type v) [CommRing R] [AddCommGroupWithOne V] [NonAssocNonUnitalVertexAlgebra R V] (n : ℕ) :
+    Module.End R V :=
+  {
+    toFun := fun (x : V) => coeff (Y R x) n 1
+    map_add' := by intros ; funext; simp only [map_add, add_coeff_eq, LinearMap.add_apply]
+    map_smul' := by intros ; funext ; simp only [map_smul, smul_coeff_eq, LinearMap.smul_apply,
+      RingHom.id_apply]
+  }
+
+/-- The skew-symmetry property for vertex algebras. -/
+def skew_symmetry (R : Type v) [CommRing R] [AddCommGroupWithOne V]
+    [NonAssocNonUnitalVertexAlgebra R V] (a b : V) (n : ℤ) : Prop :=
+  index (Y R b) n a = Finset.sum (Finset.range (Int.toNat (-n - order R a b)))
+    (fun i ↦ (-1:ℤˣ)^(n + i + 1) • T R i (index (Y R a) (n+i) b))
+
+/-- A field is translation covariant with respect to a divided-power system of endomorphisms that
+stabilizes identity if left translation satisfies the Leibniz rule. -/
+def translation_covariance (R : Type v) [CommRing R] [AddCommGroupWithOne V]
+    [NonAssocNonUnitalVertexAlgebra R V] (A : VertexOperator R V) (f : ℕ → Module.End R V)
+    (_ : f 0 = LinearMap.id) (_ : ∀ (i j : ℕ), f (i + j) = Nat.choose (i+j) i • f i * f j)
+    (_: ∀(i : ℕ), f i 1 = 0) : Prop :=
+  ∀(i : ℕ) (n : ℤ), f i * coeff A n = Finset.sum (Finset.antidiagonal i)
+  fun m => (-1 : ℤˣ) ^ m.fst • Ring.choose n m.fst • (coeff A (n - m.fst) * T R m.snd)
+
+end VertexAlg
+
+end Unital
 
 /-- A vertex algebra over a commutative ring `R` is an `R`-module `V` with a distinguished unit
 element `1`, together with a multiplication operation that takes values in Laurent series with
@@ -353,15 +473,6 @@ theorem unit_comm (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgeb
 theorem unit_right (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgebra R V] (a : V) :
     coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
 
-
-
---noncomputable def commutator formula
---noncomputable def locality
-
---noncomputable def associativity
---noncomputable def weak associativity
-
---noncomputable def skew-symmetry
 
 
 /-!

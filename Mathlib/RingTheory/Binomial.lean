@@ -129,17 +129,18 @@ section choose
 
 namespace Ring
 
+open Polynomial
+
 variable [BinomialRing R]
 
-theorem ascPochhammer_smeval_nat_int (r : R) :
-    ∀(n : ℕ), Polynomial.smeval (ascPochhammer ℤ n) r = Polynomial.smeval (ascPochhammer ℕ n) r
+theorem ascPochhammer_smeval_nat_int (r : R) : ∀(n : ℕ),
+    smeval (ascPochhammer ℤ n) r = smeval (ascPochhammer ℕ n) r
   | 0 => by
-    simp only [ascPochhammer_zero, Polynomial.smeval_one]
+    simp only [ascPochhammer_zero, smeval_one]
   | n + 1 => by
-    simp only [ascPochhammer_succ_right, Polynomial.smeval_mul]
+    simp only [ascPochhammer_succ_right, smeval_mul]
     rw [ascPochhammer_smeval_nat_int r n]
-    simp only [Polynomial.smeval_add, Polynomial.smeval_X, ← Polynomial.C_eq_nat_cast,
-      Polynomial.smeval_C]
+    simp only [smeval_add, smeval_X, ← C_eq_nat_cast, smeval_C]
     norm_cast
 
 /-- The binomial coefficient `choose r n` generalizes the natural number choose function,
@@ -148,24 +149,24 @@ def choose {R: Type _} [BinomialRing R] (r : R) (n : ℕ): R :=
   multichoose (r-n+1) n
 
 theorem descPochhammer_eq_factorial_mul_choose (r : R) (n : ℕ) :
-    Polynomial.smeval (descPochhammer ℤ n) r = n.factorial • choose r n := by
+    smeval (descPochhammer ℤ n) r = n.factorial • choose r n := by
   unfold choose
-  rw [factorial_smul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
-    Polynomial.smeval_comp r, add_comm_sub, Polynomial.smeval_add, Polynomial.smeval_X, pow_one]
-  have h : Polynomial.smeval (1 - n : Polynomial ℤ) r = 1 - n := by
-    rw [← Polynomial.C_eq_nat_cast, ← Polynomial.C_1, ← Polynomial.C_sub, Polynomial.smeval_C]
+  rw [factorial_smul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer, smeval_comp r,
+    add_comm_sub, smeval_add, smeval_X, pow_one]
+  have h : smeval (1 - n : Polynomial ℤ) r = 1 - n := by
+    rw [← C_eq_nat_cast, ← C_1, ← C_sub, smeval_C]
     simp only [pow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, mul_one]
   rw [h, ascPochhammer_smeval_nat_int, add_comm_sub]
 
 theorem choose_zero_right (r : R) : choose r 0 = 1 := by
   refine eq_of_smul_factorial_eq 0 ?_
-  rw [← descPochhammer_eq_factorial_mul_choose, Nat.factorial_zero,
-    descPochhammer_zero, Polynomial.smeval_one, pow_zero]
+  rw [← descPochhammer_eq_factorial_mul_choose, Nat.factorial_zero, descPochhammer_zero, smeval_one,
+    pow_zero]
 
 theorem choose_zero_succ (k : ℕ) : choose (0 : R) (Nat.succ k) = 0 := by
   refine eq_of_smul_factorial_eq (Nat.succ k) ?_
   rw [← descPochhammer_eq_factorial_mul_choose, smul_zero, descPochhammer_succ_left, mul_comm,
-    Polynomial.smeval_mul_X (0 : R), mul_zero]
+    smeval_mul_X (0 : R), mul_zero]
 
 theorem choose_zero_pos (k : ℕ) (h_pos: 0 < k) : choose (0 : R) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
@@ -180,6 +181,26 @@ theorem choose_zero_ite (k : ℕ) : choose (0 : R) k = if k = 0 then 1 else 0 :=
   exact hk
   rw [← @Nat.le_zero, Nat.not_le] at hk
   rw [choose_zero_pos k hk]
+
+theorem descPochhammer_succ_succ_smeval {S : Type u} [Ring S] (r : S) (k : ℕ) :
+    smeval (descPochhammer ℤ (Nat.succ k)) (r + 1) =
+    (k + 1) • smeval (descPochhammer ℤ k) r +
+    Polynomial.smeval (descPochhammer ℤ (Nat.succ k)) r := by
+  have h : descPochhammer ℤ (Nat.succ k) = (descPochhammer ℤ (Nat.succ k)).comp (X - 1) +
+      (k + 1) * (descPochhammer ℤ k).comp (X - 1) := by
+    rw [descPochhammer_succ_comp_X_sub_one, smul_eq_mul, sub_add_cancel]
+  nth_rewrite 1 [h]
+  simp only [smeval_comp (r + 1), smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one, pow_one,
+    pow_zero, one_smul, add_sub_cancel]
+  rw [← C_eq_nat_cast, smeval_C, pow_zero, add_mul, add_smul, add_comm]
+  simp only [zsmul_eq_mul, Int.cast_ofNat, mul_one, one_mul, nsmul_eq_mul, one_smul]
+
+theorem choose_succ_succ (r:R) (k : ℕ) :
+    choose (r+1) (Nat.succ k) = choose r k + choose r (Nat.succ k) := by
+  refine eq_of_smul_factorial_eq (Nat.succ k) ?_
+  simp only [smul_add, ← descPochhammer_eq_factorial_mul_choose]
+  rw [Nat.factorial_succ, nsmul_eq_mul, Nat.cast_mul, mul_assoc, ← nsmul_eq_mul, ← nsmul_eq_mul,
+    ← descPochhammer_eq_factorial_mul_choose, descPochhammer_succ_succ_smeval r k]
 
 end Ring
 
