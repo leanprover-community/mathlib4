@@ -644,7 +644,7 @@ theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n)
   rfl
 #align fin.of_nat_eq_coe Fin.ofNat''_eq_cast
 
-@[simp] lemma val_cast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
+@[simp] lemma val_nat_cast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
 -- porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
