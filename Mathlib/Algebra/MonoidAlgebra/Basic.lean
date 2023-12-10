@@ -907,14 +907,12 @@ theorem lift_symm_apply (F : MonoidAlgebra k G →ₐ[k] A) (x : G) :
 #align monoid_algebra.lift_symm_apply MonoidAlgebra.lift_symm_apply
 
 @[simp]
-theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
-  rw [of_apply, ← lift_symm_apply, Equiv.symm_apply_apply]
-#align monoid_algebra.lift_of MonoidAlgebra.lift_of
-
-@[simp]
 theorem lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
   rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align monoid_algebra.lift_single MonoidAlgebra.lift_single
+
+theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by simp
+#align monoid_algebra.lift_of MonoidAlgebra.lift_of
 
 theorem lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
     F = lift k G A ((F : MonoidAlgebra k G →* A).comp (of k G)) :=
@@ -1627,12 +1625,11 @@ theorem of'_apply (a : G) : of' k G a = single a 1 :=
   rfl
 #align add_monoid_algebra.of'_apply AddMonoidAlgebra.of'_apply
 
-theorem of'_eq_of [AddZeroClass G] (a : G) : of' k G a = of k G a :=
-  rfl
+theorem of'_eq_of [AddZeroClass G] (a : G) : of' k G a = of k G (.ofAdd a) := rfl
 #align add_monoid_algebra.of'_eq_of AddMonoidAlgebra.of'_eq_of
 
-theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) := fun a b h =>
-  by simpa using (single_eq_single_iff _ _ _ _).mp h
+theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) :=
+  MonoidAlgebra.of_injective
 #align add_monoid_algebra.of_injective AddMonoidAlgebra.of_injective
 
 /-- `Finsupp.single` as a `MonoidHom` from the product type into the additive monoid algebra.
@@ -2011,13 +2008,10 @@ theorem lift_single (F : Multiplicative G →* A) (a b) :
   rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align add_monoid_algebra.lift_single AddMonoidAlgebra.lift_single
 
-@[simp]
 theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
-    lift k G A F (of k G x) = F x :=
-  (lift_single F _ 1).trans (one_smul _ _)
+    lift k G A F (of k G x) = F x := by simp
 #align add_monoid_algebra.lift_of AddMonoidAlgebra.lift_of
 
-@[simp]
 lemma lift_of' (F : Multiplicative G →* A) (x : G) :
     lift k G A F (of' k G x) = F (Multiplicative.ofAdd x) :=
   lift_of F x
