@@ -41,7 +41,7 @@ end Pi
 @[to_additive (attr := simp)]
 theorem Finset.prod_apply {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (a : α)
     (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c in s, g c) a = ∏ c in s, g c a :=
-  (Pi.evalMonoidHom β a).map_prod _ _
+  map_prod (Pi.evalMonoidHom β a) _ _
 #align finset.prod_apply Finset.prod_apply
 #align finset.sum_apply Finset.sum_apply
 
@@ -68,6 +68,13 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
 #align prod_mk_prod prod_mk_prod
 #align prod_mk_sum prod_mk_sum
 
+/-- decomposing `x : ι → R` as a sum along the canonical basis -/
+theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
+    (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
+  ext
+  simp
+#align pi_eq_sum_univ pi_eq_sum_univ
+
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {Z : I → Type*}
@@ -87,7 +94,7 @@ theorem MonoidHom.functions_ext [Finite I] (G : Type*) [CommMonoid G] (g h : (�
     (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
   ext k
-  rw [← Finset.univ_prod_mulSingle k, g.map_prod, h.map_prod]
+  rw [← Finset.univ_prod_mulSingle k, map_prod, map_prod]
   simp only [H]
 #align monoid_hom.functions_ext MonoidHom.functions_ext
 #align add_monoid_hom.functions_ext AddMonoidHom.functions_ext
@@ -128,13 +135,13 @@ variable {α β γ : Type*} [CommMonoid α] [CommMonoid β] {s : Finset γ} {f :
 
 @[to_additive]
 theorem fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
-  (MonoidHom.fst α β).map_prod f s
+  map_prod (MonoidHom.fst α β) f s
 #align prod.fst_prod Prod.fst_prod
 #align prod.fst_sum Prod.fst_sum
 
 @[to_additive]
 theorem snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
-  (MonoidHom.snd α β).map_prod f s
+  map_prod (MonoidHom.snd α β) f s
 #align prod.snd_prod Prod.snd_prod
 #align prod.snd_sum Prod.snd_sum
 

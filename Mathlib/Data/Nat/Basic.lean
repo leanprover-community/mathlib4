@@ -165,7 +165,6 @@ theorem eq_of_le_of_lt_succ {n m : ℕ} (h₁ : n ≤ m) (h₂ : m < n + 1) : m 
 -- Moved to Std
 #align nat.one_add Nat.one_add
 
-@[simp]
 theorem succ_pos' {n : ℕ} : 0 < succ n :=
   succ_pos n
 #align nat.succ_pos' Nat.succ_pos'
@@ -289,11 +288,11 @@ theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
 /-! ### `pred` -/
 
 @[simp]
-theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
+theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, Nat.add_one_sub_one]
 #align nat.add_succ_sub_one Nat.add_succ_sub_one
 
 @[simp]
-theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, succ_sub_one]
+theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, Nat.add_one_sub_one]
 #align nat.succ_add_sub_one Nat.succ_add_sub_one
 
 theorem pred_eq_sub_one (n : ℕ) : pred n = n - 1 :=
@@ -708,6 +707,26 @@ protected theorem div_left_inj {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) : a
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 #align nat.div_left_inj Nat.div_left_inj
 
+theorem div_mul_div_comm {l : ℕ} (hmn : n ∣ m) (hkl : l ∣ k) :
+    (m / n) * (k / l) = (m * k) / (n * l) := by
+  obtain ⟨x, rfl⟩ := hmn
+  obtain ⟨y, rfl⟩ := hkl
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp
+  rcases l.eq_zero_or_pos with rfl | hl
+  · simp
+  rw [Nat.mul_div_cancel_left _ hn, Nat.mul_div_cancel_left _ hl, mul_assoc n, Nat.mul_left_comm x,
+    ← mul_assoc n, Nat.mul_div_cancel_left _ (Nat.mul_pos hn hl)]
+#align nat.div_mul_div_comm Nat.div_mul_div_comm
+
+protected theorem div_pow {a b c : ℕ} (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
+  rcases c.eq_zero_or_pos with rfl | hc
+  · simp
+  rcases a.eq_zero_or_pos with rfl | ha
+  · simp [Nat.zero_pow hc]
+  refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
+  rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
+
 /-! ### `mod`, `dvd` -/
 
 
@@ -792,7 +811,7 @@ theorem mul_dvd_of_dvd_div {a b c : ℕ} (hab : c ∣ b) (h : a ∣ b / c) : c *
   let ⟨d, hd⟩ := h1
   have h3 : b = a * d * c := Nat.eq_mul_of_div_eq_left hab hd
   -- Porting note: was `cc`
-  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ←mul_assoc] at h3⟩
+  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ← mul_assoc] at h3⟩
 #align nat.mul_dvd_of_dvd_div Nat.mul_dvd_of_dvd_div
 
 theorem eq_of_dvd_of_div_eq_one {a b : ℕ} (w : a ∣ b) (h : b / a = 1) : a = b := by
@@ -819,11 +838,12 @@ theorem lt_mul_div_succ (m : ℕ) {n : ℕ} (n0 : 0 < n) : m < n * (m / n + 1) :
   exact lt_succ_self _
 #align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
-theorem mul_add_mod (a b c : ℕ) : (a * b + c) % b = c % b := by simp [Nat.add_mod]
-#align nat.mul_add_mod Nat.mul_add_mod
+-- TODO: Std4 claimed this name but flipped the order of multiplication
+theorem mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [mul_comm, Nat.mul_add_mod]
+#align nat.mul_add_mod Nat.mul_add_mod'
 
 theorem mul_add_mod_of_lt {a b c : ℕ} (h : c < b) : (a * b + c) % b = c := by
-  rw [Nat.mul_add_mod, Nat.mod_eq_of_lt h]
+  rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 #align nat.mul_add_mod_of_lt Nat.mul_add_mod_of_lt
 
 theorem pred_eq_self_iff {n : ℕ} : n.pred = n ↔ n = 0 := by

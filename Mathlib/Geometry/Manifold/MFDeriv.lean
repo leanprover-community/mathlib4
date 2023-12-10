@@ -639,6 +639,18 @@ theorem mfderivWithin_inter (ht : t ∈ 𝓝 x) :
     fderivWithin_inter (extChartAt_preimage_mem_nhds I x ht)]
 #align mfderiv_within_inter mfderivWithin_inter
 
+theorem mfderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : mfderivWithin I I' f s x = mfderiv I I' f x := by
+  rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
+
+lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
+    mfderivWithin I I' f s x = mfderiv I I' f x :=
+  mfderivWithin_of_mem_nhds (hs.mem_nhds hx)
+
+theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I I' f x) :
+    mfderivWithin I I' f s x = mfderiv I I' f x := by
+  rw [← mfderivWithin_univ]
+  exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
+
 theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
     (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x' ↔
@@ -967,7 +979,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
   simp only [mfld_simps]
 #align has_mfderiv_within_at.comp HasMFDerivWithinAt.comp
 
-/-- The chain rule. -/
+/-- The **chain rule for manifolds**. -/
 theorem HasMFDerivAt.comp (hg : HasMFDerivAt I' I'' g (f x) g') (hf : HasMFDerivAt I I' f x f') :
     HasMFDerivAt I I'' (g ∘ f) x (g'.comp f') := by
   rw [← hasMFDerivWithinAt_univ] at *
@@ -1604,11 +1616,11 @@ theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
   (hf x).add (hg x)
 #align mdifferentiable.add MDifferentiable.add
 
--- porting note: forcing types using `@Add.add`
+-- porting note: forcing types using `by exact`
 theorem mfderiv_add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) :
-    (mfderiv I 𝓘(𝕜, E') (f + g) z : TangentSpace I z →L[𝕜] E') =
-      @Add.add (TangentSpace I z →L[𝕜] E') _ (mfderiv I 𝓘(𝕜, E') f z) (mfderiv I 𝓘(𝕜, E') g z) :=
+    (by exact mfderiv I 𝓘(𝕜, E') (f + g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv I 𝓘(𝕜, E') f z) + (by exact mfderiv I 𝓘(𝕜, E') g z) :=
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
 #align mfderiv_add mfderiv_add
 
@@ -1681,8 +1693,8 @@ theorem MDifferentiable.sub (hf : MDifferentiable I 𝓘(𝕜, E') f)
 
 theorem mfderiv_sub (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) :
-    (mfderiv I 𝓘(𝕜, E') (f - g) z : TangentSpace I z →L[𝕜] E') =
-      @Sub.sub (TangentSpace I z →L[𝕜] E') _ (mfderiv I 𝓘(𝕜, E') f z) (mfderiv I 𝓘(𝕜, E') g z) :=
+    (by exact mfderiv I 𝓘(𝕜, E') (f - g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv I 𝓘(𝕜, E') f z) - (by exact mfderiv I 𝓘(𝕜, E') g z) :=
   (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mfderiv
 #align mfderiv_sub mfderiv_sub
 

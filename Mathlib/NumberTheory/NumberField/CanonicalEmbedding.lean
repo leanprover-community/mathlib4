@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 import Mathlib.RingTheory.Discriminant
 import Mathlib.Algebra.Module.Zlattice
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
+import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.NumberTheory.NumberField.Embeddings
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
@@ -41,8 +42,6 @@ nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite plac
 
 number field, infinite places
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable (K : Type*) [Field K]
 
@@ -173,7 +172,7 @@ noncomputable def _root_.NumberField.mixedEmbedding : K →+* (E K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
     (Pi.ringHom fun w => w.val.embedding)
 
-instance [NumberField K] :  Nontrivial (E K) := by
+instance [NumberField K] : Nontrivial (E K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   obtain hw | hw := w.isReal_or_isComplex
   · have : Nonempty {w : InfinitePlace K // IsReal w} := ⟨⟨w, hw⟩⟩
@@ -184,9 +183,9 @@ instance [NumberField K] :  Nontrivial (E K) := by
 protected theorem finrank [NumberField K] : finrank ℝ (E K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const,
-    Finset.card_univ, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
-    ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
-    Nat.add_sub_of_le (Fintype.card_subtype_le _)]
+    Finset.card_univ, ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings,
+    Algebra.id.smul_eq_mul, mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
+    Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 theorem _root_.NumberField.mixedEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.mixedEmbedding K) := by
@@ -196,15 +195,15 @@ section commMap
 
 /-- The linear map that makes `canonicalEmbedding` and `mixedEmbedding` commute, see
 `commMap_canonical_eq_mixed`. -/
-noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) :=
-{ toFun := fun x => ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
+noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) where
+  toFun := fun x => ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
   map_add' := by
     simp only [Pi.add_apply, Complex.add_re, Prod.mk_add_mk, Prod.mk.injEq]
     exact fun _ _ => ⟨rfl, rfl⟩
   map_smul' := by
     simp only [Pi.smul_apply, Complex.real_smul, Complex.mul_re, Complex.ofReal_re,
       Complex.ofReal_im, zero_mul, sub_zero, RingHom.id_apply, Prod.smul_mk, Prod.mk.injEq]
-    exact fun _ _ => ⟨rfl, rfl⟩ }
+    exact fun _ _ => ⟨rfl, rfl⟩
 
 theorem commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
     (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
@@ -233,12 +232,11 @@ theorem disjoint_span_commMap_ker [NumberField K] :
   ext1 φ
   rw [Pi.zero_apply]
   by_cases hφ : ComplexEmbedding.IsReal φ
-  · rw [show x φ = (x φ).re by
-      rw [eq_comm, ← Complex.conj_eq_iff_re, canonicalEmbedding.conj_apply _ h_mem,
-        ComplexEmbedding.isReal_iff.mp hφ], ← Complex.ofReal_zero]
-    congr
-    rw [← embedding_mk_eq_of_isReal hφ, ← commMap_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
-    exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
+  · apply Complex.ext
+    · rw [← embedding_mk_eq_of_isReal hφ, ← commMap_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
+      exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
+    · rw [Complex.zero_im, ← Complex.conj_eq_iff_im, canonicalEmbedding.conj_apply _ h_mem,
+        ComplexEmbedding.isReal_iff.mp hφ]
   · have := congrFun (congrArg (fun x => x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
     cases embedding_mk_eq φ with
     | inl h => rwa [← h, ← commMap_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
@@ -249,6 +247,148 @@ theorem disjoint_span_commMap_ker [NumberField K] :
 
 end commMap
 
+noncomputable section stdBasis
+
+open Classical Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
+  ComplexConjugate
+
+variable [NumberField K]
+
+/-- The type indexing the basis `stdBasis`. -/
+abbrev index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // IsComplex w}) × (Fin 2)
+
+/-- The `ℝ`-basis of `({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)` formed by the vector
+equal to `1` at `w` and `0` elsewhere for `IsReal w` and by the couple of vectors equal to `1`
+(resp. `I`) at `w` and `0` elsewhere for `IsComplex w`. -/
+def stdBasis : Basis (index K) ℝ (E K) :=
+  Basis.prod (Pi.basisFun ℝ _)
+    (Basis.reindex (Pi.basis fun _ => basisOneI) (Equiv.sigmaEquivProd _ _))
+
+variable {K}
+
+@[simp]
+theorem stdBasis_apply_ofIsReal (x : E K) (w : {w : InfinitePlace K // IsReal w}) :
+    (stdBasis K).repr x (Sum.inl w) = x.1 w := rfl
+
+@[simp]
+theorem stdBasis_apply_ofIsComplex_fst (x : E K) (w : {w : InfinitePlace K // IsComplex w}) :
+    (stdBasis K).repr x (Sum.inr ⟨w, 0⟩) = (x.2 w).re := rfl
+
+@[simp]
+theorem stdBasis_apply_ofIsComplex_snd (x : E K) (w : {w : InfinitePlace K // IsComplex w}) :
+    (stdBasis K).repr x (Sum.inr ⟨w, 1⟩) = (x.2 w).im := rfl
+
+variable (K)
+
+theorem fundamentalDomain_stdBasis :
+    fundamentalDomain (stdBasis K) =
+        (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
+        (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
+  ext
+  simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
+
+theorem volume_fundamentalDomain_stdBasis :
+    volume (fundamentalDomain (stdBasis K)) = 1 := by
+  rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
+    Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
+    sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, Finset.prod_const_one,
+    Finset.prod_const_one, one_mul]
+  exact MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)
+
+/-- The `Equiv` between `index K` and `K →+* ℂ` defined by sending a real infinite place `w` to
+the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
+complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
+def indexEquiv : (index K) ≃ (K →+* ℂ) := by
+  refine Equiv.ofBijective (fun c => ?_)
+    ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
+  · cases c with
+    | inl w => exact w.val.embedding
+    | inr wj => rcases wj with ⟨w, j⟩
+                exact if j = 0 then w.val.embedding else ComplexEmbedding.conjugate w.val.embedding
+  · intro φ
+    by_cases hφ : ComplexEmbedding.IsReal φ
+    · exact ⟨Sum.inl (InfinitePlace.mkReal ⟨φ, hφ⟩), by simp [embedding_mk_eq_of_isReal hφ]⟩
+    · by_cases hw : (InfinitePlace.mk φ).embedding = φ
+      · exact ⟨Sum.inr ⟨InfinitePlace.mkComplex ⟨φ, hφ⟩, 0⟩, by simp [hw]⟩
+      · exact ⟨Sum.inr ⟨InfinitePlace.mkComplex ⟨φ, hφ⟩, 1⟩,
+          by simp [(embedding_mk_eq φ).resolve_left hw]⟩
+  · rw [Embeddings.card, ← mixedEmbedding.finrank K,
+      ← FiniteDimensional.finrank_eq_card_basis (stdBasis K)]
+
+variable {K}
+
+@[simp]
+theorem indexEquiv_apply_ofIsReal (w : {w : InfinitePlace K // IsReal w}) :
+    (indexEquiv K) (Sum.inl w) = w.val.embedding := rfl
+
+@[simp]
+theorem indexEquiv_apply_ofIsComplex_fst (w : {w : InfinitePlace K // IsComplex w}) :
+    (indexEquiv K) (Sum.inr ⟨w, 0⟩) = w.val.embedding := rfl
+
+@[simp]
+theorem indexEquiv_apply_ofIsComplex_snd (w : {w : InfinitePlace K // IsComplex w}) :
+    (indexEquiv K) (Sum.inr ⟨w, 1⟩) = ComplexEmbedding.conjugate w.val.embedding := rfl
+
+variable (K)
+
+/-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
+element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
+see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
+def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
+  fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
+    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
+
+theorem det_matrixToStdBasis :
+    (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
+  calc
+  _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
+      rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, Finset.prod_const_one, one_mul,
+          det_reindex_self, det_blockDiagonal]
+  _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
+      refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
+      field_simp; ring
+  _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
+      rw [Finset.prod_const, Fintype.card]
+
+/-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
+representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
+`matrixToStdBasis` by `x`. -/
+theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
+    (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :
+    ((stdBasis K).repr (commMap K x) c : ℂ) =
+      (mulVec (matrixToStdBasis K) (x ∘ (indexEquiv K))) c := by
+  simp_rw [commMap, matrixToStdBasis, LinearMap.coe_mk, AddHom.coe_mk,
+    mulVec, dotProduct, Function.comp_apply, index, Fintype.sum_sum_type,
+    diagonal_one, reindex_apply, ← Finset.univ_product_univ, Finset.sum_product,
+    indexEquiv_apply_ofIsReal, Fin.sum_univ_two, indexEquiv_apply_ofIsComplex_fst,
+    indexEquiv_apply_ofIsComplex_snd, smul_of, smul_cons, smul_eq_mul,
+    mul_one, smul_empty, Equiv.prodComm_symm, Equiv.coe_prodComm]
+  cases c with
+  | inl w =>
+      simp_rw [stdBasis_apply_ofIsReal, fromBlocks_apply₁₁, fromBlocks_apply₁₂,
+        one_apply, Matrix.zero_apply, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
+        Finset.mem_univ, ite_true, add_zero, Finset.sum_const_zero, add_zero,
+        ← conj_eq_iff_re, hx (embedding w.val), conjugate_embedding_eq_of_isReal w.prop]
+  | inr c =>
+    rcases c with ⟨w, j⟩
+    fin_cases j
+    · simp_rw [Fin.mk_zero, stdBasis_apply_ofIsComplex_fst, fromBlocks_apply₂₁,
+        fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply,
+        blockDiagonal_apply, Prod.swap_prod_mk, ite_mul, zero_mul, Finset.sum_const_zero,
+        zero_add, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true,
+        of_apply, cons_val', cons_val_zero, cons_val_one,
+        head_cons, ← hx (embedding w), re_eq_add_conj]
+      field_simp
+    · simp_rw [Fin.mk_one, stdBasis_apply_ofIsComplex_snd, fromBlocks_apply₂₁,
+        fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply,
+        blockDiagonal_apply, Prod.swap_prod_mk, ite_mul, zero_mul, Finset.sum_const_zero,
+        zero_add, Finset.sum_add_distrib, Finset.sum_ite_eq, Finset.mem_univ, ite_true,
+        of_apply, cons_val', cons_val_zero, cons_val_one,
+        head_cons, ← hx (embedding w), im_eq_sub_conj]
+      ring_nf; field_simp
+
+end stdBasis
+
 section integerLattice
 
 open Module FiniteDimensional
@@ -258,7 +398,7 @@ noncomputable def latticeBasis [NumberField K] :
     Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℝ (E K) := by
   classical
     -- We construct an `ℝ`-linear independent family from the image of
-    -- `canonicalEmbedding.lattice_basis` by `comm_map`
+    -- `canonicalEmbedding.lattice_basis` by `commMap`
     have := LinearIndependent.map (LinearIndependent.restrict_scalars
       (by { simpa only [Complex.real_smul, mul_one] using Complex.ofReal_injective })
       (canonicalEmbedding.latticeBasis K).linearIndependent)
@@ -267,8 +407,8 @@ noncomputable def latticeBasis [NumberField K] :
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
       finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, Finset.card_univ,
-      ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm, ← card_complex_embeddings,
-      ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
+      ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+      ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
 @[simp]
@@ -289,7 +429,7 @@ theorem mem_span_latticeBasis [NumberField K] (x : (E K)) :
 
 end integerLattice
 
-section convexBodyLt
+section convexBodyLT
 
 open Metric ENNReal NNReal
 
@@ -297,25 +437,25 @@ variable (f : InfinitePlace K → ℝ≥0)
 
 /-- The convex body defined by `f`: the set of points `x : E` such that `‖x w‖ < f w` for all
 infinite places `w`. -/
-abbrev convexBodyLt : Set (E K) :=
+abbrev convexBodyLT : Set (E K) :=
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
   (Set.univ.pi (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
 
-theorem convexBodyLt_mem {x : K} :
-    mixedEmbedding K x ∈ (convexBodyLt K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
+theorem convexBodyLT_mem {x : K} :
+    mixedEmbedding K x ∈ (convexBodyLT K f) ↔ ∀ w : InfinitePlace K, w x < f w := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
     forall_true_left, mem_ball_zero_iff, Pi.ringHom_apply, ← Complex.norm_real,
     embedding_of_isReal_apply, Subtype.forall, ← ball_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
-theorem convexBodyLt_symmetric (x : E K) (hx : x ∈ (convexBodyLt K f)) :
-    -x ∈ (convexBodyLt K f) := by
+theorem convexBodyLT_symmetric (x : E K) (hx : x ∈ (convexBodyLT K f)) :
+    -x ∈ (convexBodyLT K f) := by
   simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
     Prod.snd_neg, Complex.norm_eq_abs, hx] at hx ⊢
   exact hx
 
-theorem convexBodyLt_convex : Convex ℝ (convexBodyLt K f) :=
+theorem convexBodyLT_convex : Convex ℝ (convexBodyLT K f) :=
   Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => convex_ball _ _))
 
 open Classical Fintype MeasureTheory MeasureTheory.Measure BigOperators
@@ -324,43 +464,34 @@ variable [NumberField K]
 
 instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasure volume volume
 
-/-- The fudge factor that appears in the formula for the volume of `convexBodyLt`. -/
-noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
-  (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
-    volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
+/-- The fudge factor that appears in the formula for the volume of `convexBodyLT`. -/
+noncomputable abbrev convexBodyLTFactor : ℝ≥0∞ :=
+  (2 : ℝ≥0∞) ^ NrRealPlaces K * (NNReal.pi : ℝ≥0∞) ^ NrComplexPlaces K
 
-theorem convexBodyLtFactor_pos : 0 < (convexBodyLtFactor K) := by
-  refine mul_pos (NeZero.ne _) ?_
-  exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
+theorem convexBodyLTFactor_pos : 0 < (convexBodyLTFactor K) := by
+  refine mul_pos (NeZero.ne _) (ENNReal.pow_ne_zero ?_ _)
+  exact ne_of_gt (coe_pos.mpr Real.pi_pos)
 
-theorem convexBodyLtFactor_lt_top : (convexBodyLtFactor K) < ⊤ := by
+theorem convexBodyLTFactor_lt_top : (convexBodyLTFactor K) < ⊤ := by
   refine mul_lt_top ?_ ?_
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
-  · exact ne_of_lt (pow_lt_top measure_ball_lt_top _)
+  · exact ne_of_lt (pow_lt_top coe_lt_top _)
 
-/-- The volume of `(ConvexBodyLt K f)` where `convexBodyLt K f` is the set of points `x`
+/-- The volume of `(ConvexBodyLt K f)` where `convexBodyLT K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
-theorem convexBodyLt_volume :
-    volume (convexBodyLt K f) = (convexBodyLtFactor K) * ∏ w, (f w) ^ (mult w) := by
+theorem convexBodyLT_volume :
+    volume (convexBodyLT K f) = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
-          ∏ x : {w // InfinitePlace.IsComplex w}, volume (ball (0 : ℂ) 1) *
-            ENNReal.ofReal (f x.val) ^ 2 := by
-      simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball]
-      conv_lhs =>
-        congr; next => skip
-        congr; next => skip
-        ext i; rw [addHaar_ball _ _ (by exact (f i).prop), Complex.finrank_real_complex, mul_comm,
-          ENNReal.ofReal_pow (by exact (f i).prop)]
-    _ = (↑2 ^ card {w : InfinitePlace K // InfinitePlace.IsReal w} *
-          (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
-          (volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w} *
-          (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
+          ∏ x : {w // InfinitePlace.IsComplex w}, ENNReal.ofReal (f x.val) ^ 2 * pi := by
+      simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball, Complex.volume_ball]
+    _ = (↑2 ^ NrRealPlaces K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
+          ((∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) * ↑pi ^ NrComplexPlaces K) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_univ, ofReal_ofNat]
-    _ = (convexBodyLtFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
+    _ = (convexBodyLTFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
         (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by ring
-    _ = (convexBodyLtFactor K) * ∏ w, (f w) ^ (mult w) := by
+    _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow]
       congr 2
@@ -374,7 +505,7 @@ variable {f}
 /-- This is a technical result: quite often, we want to impose conditions at all infinite places
 but one and choose the value at the remaining place so that we can apply
 `exists_ne_zero_mem_ringOfIntegers_lt`. -/
-theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁→ f w ≠ 0) :
+theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ → f w ≠ 0) :
     ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult w = B := by
   let S := ∏ w in Finset.univ.erase w₁, (f w) ^ mult w
   refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult w₁ : ℝ)⁻¹), ?_, ?_⟩
@@ -387,7 +518,7 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁�
       exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
     · rw [mult]; split_ifs <;> norm_num
 
-end convexBodyLt
+end convexBodyLT
 
 section convexBodySum
 
@@ -448,10 +579,12 @@ open scoped ENNReal NNReal
 
 variable [NumberField K]
 
-/-- The bound that appears in Minkowski Convex Body theorem, see
-`MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. -/
+/-- The bound that appears in **Minkowski Convex Body theorem**, see
+`MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. See
+`NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis` for the computation of
+`volume (fundamentalDomain (latticeBasis K))`. -/
 noncomputable def minkowskiBound : ℝ≥0∞ :=
-  volume (fundamentalDomain (latticeBasis K)) * (2:ℝ≥0∞) ^ (finrank ℝ (E K))
+  volume (fundamentalDomain (latticeBasis K)) * (2 : ℝ≥0∞) ^ (finrank ℝ (E K))
 
 theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_
@@ -460,22 +593,24 @@ theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
 
 variable {f : InfinitePlace K → ℝ≥0}
 
+instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasure volume volume
+
 /-- Assume that `f : InfinitePlace K → ℝ≥0` is such that
-`minkowskiBound K < volume (convexBodyLt K f)` where `convexBodyLt K f` is the set of
-points `x` such that `‖x w‖ < f w` for all infinite places `w` (see `convexBodyLt_volume` for
+`minkowskiBound K < volume (convexBodyLT K f)` where `convexBodyLT K f` is the set of
+points `x` such that `‖x w‖ < f w` for all infinite places `w` (see `convexBodyLT_volume` for
 the computation of this volume), then there exists a nonzero algebraic integer `a` in `𝓞 K` such
 that `w a < f w` for all infinite places `w`. -/
-theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K < volume (convexBodyLt K f)) :
+theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K < volume (convexBodyLT K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume
   have : Countable (Submodule.span ℤ (Set.range (latticeBasis K))).toAddSubgroup := by
-    change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
+    change Countable (Submodule.span ℤ (Set.range (latticeBasis K)) : Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    h_fund h (convexBodyLt_symmetric K f) (convexBodyLt_convex K f)
+    h_fund (convexBodyLT_symmetric K f) (convexBodyLT_convex K f) h
   rw [Submodule.mem_toAddSubgroup, mem_span_latticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
-  refine ⟨⟨a, ha⟩, ?_, (convexBodyLt_mem K f).mp h_mem⟩
+  refine ⟨⟨a, ha⟩, ?_, (convexBodyLT_mem K f).mp h_mem⟩
   rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
   exact Subtype.ne_of_val_ne h_nzr
 
@@ -494,7 +629,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    h_fund h (convexBodySum_symmetric K B) (convexBodySum_convex K B)
+    h_fund (convexBodySum_symmetric K B) (convexBodySum_convex K B) h
   rw [Submodule.mem_toAddSubgroup, mem_span_latticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨⟨a, ha⟩, ?_, ?_⟩

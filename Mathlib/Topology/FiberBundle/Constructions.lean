@@ -222,8 +222,8 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
     ext x
     simp only [Trivialization.source_eq, mfld_simps]
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
-  continuous_toFun := Prod.continuous_to_fun
-  continuous_invFun := Prod.continuous_inv_fun
+  continuousOn_toFun := Prod.continuous_to_fun
+  continuousOn_invFun := Prod.continuous_inv_fun
   baseSet := e₁.baseSet ∩ e₂.baseSet
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
   source_eq := rfl
@@ -354,11 +354,11 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     exact e.open_baseSet.preimage ((map_continuous f).comp <| Pullback.continuous_proj F E f)
   open_target := ((map_continuous f).isOpen_preimage _ e.open_baseSet).prod isOpen_univ
   open_baseSet := (map_continuous f).isOpen_preimage _ e.open_baseSet
-  continuous_toFun :=
+  continuousOn_toFun :=
     (Pullback.continuous_proj F E f).continuousOn.prod
       (continuous_snd.comp_continuousOn <|
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
-  continuous_invFun := by
+  continuousOn_invFun := by
     dsimp only
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
       pullbackTotalSpaceEmbedding]

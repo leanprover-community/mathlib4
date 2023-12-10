@@ -100,7 +100,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
       (Eq.trans · hx.2)
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩
   set W := U ∩ {z | ‖f z‖ = ‖f c‖}ᶜ
-  have hWo : IsOpen W := hd.continuousOn.norm.preimage_open_of_open ho isOpen_ne
+  have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
   have hdVW : Disjoint V W := disjoint_compl_right.mono inf_le_right inf_le_right
   have hUVW : U ⊆ V ∪ W := fun x hx => (eq_or_ne ‖f x‖ ‖f c‖).imp (.intro hx) (.intro hx)
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne

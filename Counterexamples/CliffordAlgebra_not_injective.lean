@@ -56,6 +56,7 @@ theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
     Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
+  contradiction
 
 theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by
@@ -79,7 +80,7 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
   obtain ⟨i, _, hi⟩ := this m hm
-  simp_rw [←one_add_one_eq_two]
+  simp_rw [← one_add_one_eq_two]
   refine ⟨i, Nat.add_le_add ?_ ?_⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
@@ -129,9 +130,6 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 /-- Though `αβγ` is not itself zero-/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
   X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
-
--- A variant of lean4#2220
-local macro_rules | `($x • $y) => `(@HSMul.hSMul _ _ _ instHSMul $x $y)
 
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 
@@ -235,11 +233,11 @@ theorem gen_mul_gen (i) : gen i * gen i = 1 := by
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
-  simp_rw [← LinearMap.map_smul, ←LinearMap.map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
+  simp_rw [← LinearMap.map_smul, ← LinearMap.map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
-  norm_num [sub_zero, Ideal.span, Pi.single_apply]
+  simp (config := {decide := true}) [sub_zero, Ideal.span, Pi.single_apply]
 
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by

@@ -32,8 +32,6 @@ for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over th
 number field, embeddings, places, infinite places
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical
 
 namespace NumberField.Embeddings
@@ -122,12 +120,11 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
 theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
     ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
-    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ ((· ^ ·) x : ℕ → K) Set.infinite_univ
+    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
       (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   · wlog hlt : b < a
     · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
     refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
-    dsimp at h -- Porting note: added dsimp
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
     refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
@@ -353,6 +350,11 @@ theorem isComplex_iff {w : InfinitePlace K} :
 #align number_field.infinite_place.is_complex_iff NumberField.InfinitePlace.isComplex_iff
 
 @[simp]
+theorem conjugate_embedding_eq_of_isReal {w : InfinitePlace K} (h : IsReal w) :
+    ComplexEmbedding.conjugate (embedding w) = embedding w :=
+  ComplexEmbedding.isReal_iff.mpr (isReal_iff.mp h)
+
+@[simp]
 theorem not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex w := by
   rw [isComplex_iff, isReal_iff]
 #align number_field.infinite_place.not_is_real_iff_is_complex NumberField.InfinitePlace.not_isReal_iff_isComplex
@@ -464,14 +466,20 @@ theorem prod_eq_abs_norm (x : K) :
 
 open Fintype FiniteDimensional
 
+variable (K)
+
+/-- The number of infinite real places of the number field `K`. -/
+noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
+
+/-- The number of infinite complex places of the number field `K`. -/
+noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+
 theorem card_real_embeddings :
-    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }
-      = card { w : InfinitePlace K // IsReal w } := Fintype.card_congr mkReal
+    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = NrRealPlaces K := Fintype.card_congr mkReal
 #align number_field.infinite_place.card_real_embeddings NumberField.InfinitePlace.card_real_embeddings
 
 theorem card_complex_embeddings :
-    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } =
-      2 * card { w : InfinitePlace K // IsComplex w } := by
+    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * NrComplexPlaces K := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w }, (Finset.univ.filter
       fun φ : { φ // ¬ ComplexEmbedding.IsReal φ } => mkComplex φ = w).card = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
@@ -485,12 +493,11 @@ theorem card_complex_embeddings :
     · rwa [Subtype.mk_eq_mk, ← Subtype.ext_iff, ← Subtype.ext_iff] at h
     · refine ⟨⟨⟨φ, not_isReal_of_mk_isComplex (hφ.symm ▸ hw)⟩, ?_⟩, rfl⟩
       rwa [Subtype.ext_iff, mkComplex_coe]
-  · simp_rw [mult, not_isReal_iff_isComplex.mpr hw]
+  · simp_rw [mult, not_isReal_iff_isComplex.mpr hw, ite_false]
 #align number_field.infinite_place.card_complex_embeddings NumberField.InfinitePlace.card_complex_embeddings
 
 theorem card_add_two_mul_card_eq_rank :
-    card { w : InfinitePlace K // IsReal w } + 2 * card { w : InfinitePlace K // IsComplex w } =
-      finrank ℚ K := by
+    NrRealPlaces K + 2 * NrComplexPlaces K = finrank ℚ K := by
   rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _

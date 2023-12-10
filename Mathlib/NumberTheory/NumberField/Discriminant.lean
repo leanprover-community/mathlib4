@@ -3,7 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
@@ -22,7 +22,7 @@ number field, discriminant
 
 namespace NumberField
 
-open NumberField Matrix
+open Classical NumberField Matrix NumberField.InfinitePlace
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -40,6 +40,59 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
+
+theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
+    discr K = discr L := by
+  let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (integralClosure_algEquiv_restrict (f.restrictScalars ℤ)).toLinearEquiv
+  let e : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] ℂ) := by
+    refine Fintype.equivOfCardEq ?_
+    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
+  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
+    ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
+  change _ = algebraMap ℤ ℚ _
+  rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
+  congr
+  ext
+  simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
+    Basis.map_apply]
+  rfl
+
+open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
+  NumberField.InfinitePlace ENNReal NNReal Complex
+
+theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
+    volume (fundamentalDomain (latticeBasis K)) =
+      (2 : ℝ≥0∞)⁻¹ ^ (NrComplexPlaces K) * sqrt ‖discr K‖₊ := by
+  let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
+    (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
+  let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
+  let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
+  let N := Algebra.embeddingsMatrixReindex ℚ ℂ (integralBasis K ∘ f.symm)
+    RingHom.equivRatAlgHom
+  suffices M.map Complex.ofReal = (matrixToStdBasis K) *
+      (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
+    calc volume (fundamentalDomain (latticeBasis K))
+      _ = ‖((mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)).det‖₊ := by
+        rw [← fundamentalDomain_reindex _ e.symm, ← norm_toNNReal, measure_fundamentalDomain
+          ((latticeBasis K).reindex e.symm), volume_fundamentalDomain_stdBasis, mul_one]
+        rfl
+      _ = ‖(matrixToStdBasis K).det * N.det‖₊ := by
+        rw [← nnnorm_real, ← ofReal_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
+          det_mul, det_transpose, det_reindex_self]
+      _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} * sqrt ‖N.det ^ 2‖₊ := by
+        have : ‖Complex.I‖₊ = 1 := by rw [← norm_toNNReal, norm_eq_abs, abs_I, Real.toNNReal_one]
+        rw [det_matrixToStdBasis, nnnorm_mul, nnnorm_pow, nnnorm_mul, this, mul_one, nnnorm_inv,
+          coe_mul, ENNReal.coe_pow, ← norm_toNNReal, IsROrC.norm_two, Real.toNNReal_ofNat,
+          coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
+      _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
+        rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
+          ← coe_discr, map_intCast, ← Complex.nnnorm_int]
+  ext : 2
+  dsimp only
+  rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
+    Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
+    stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
+  rfl
 
 end NumberField
 

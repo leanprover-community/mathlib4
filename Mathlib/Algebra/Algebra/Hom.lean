@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Finsupp
 
 #align_import algebra.algebra.hom from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -508,6 +509,10 @@ def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S
   { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
+lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+    Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
+  fun _ _ e ↦ FunLike.ext _ _ (fun x ↦ FunLike.congr_fun e x)
+
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
@@ -561,6 +566,24 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 #align algebra.of_id_apply Algebra.ofId_apply
 
+/-- This is a special case of a more general instance that we define in a later file. -/
+instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+
+/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+@[ext high]
+theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
+
+section MulDistribMulAction
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+end MulDistribMulAction
 end Algebra
 
 namespace MulSemiringAction

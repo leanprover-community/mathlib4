@@ -81,7 +81,7 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
 
 instance : TotallyDisconnectedSpace ℚ := by
   refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
-  by_contra' H : x ≠ y
+  by_contra! H : x ≠ y
   wlog hlt : x < y
   · refine' this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
