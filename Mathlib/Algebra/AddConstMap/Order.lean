@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.LatticeGroup
