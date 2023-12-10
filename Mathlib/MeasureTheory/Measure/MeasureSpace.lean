@@ -294,15 +294,15 @@ theorem measure_compl (h₁ : MeasurableSet s) (h_fin : μ s ≠ ∞) : μ sᶜ 
 
 nonrec lemma NullMeasurableSet.measure_compl (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
     μ sᶜ = μ Set.univ - μ s := by
-  rw [←measure_congr h.toMeasurable_ae_eq, ←measure_compl (measurableSet_toMeasurable _ _)]
+  rw [← measure_congr h.toMeasurable_ae_eq, ← measure_compl (measurableSet_toMeasurable _ _)]
   · exact measure_congr h.toMeasurable_ae_eq.symm.compl
   · rwa [measure_congr h.toMeasurable_ae_eq]
 
 lemma measure_inter_conull' (ht : μ (s \ t) = 0) : μ (s ∩ t) = μ s := by
-  rw [←diff_compl, measure_diff_null']; rwa [←diff_eq]
+  rw [← diff_compl, measure_diff_null']; rwa [← diff_eq]
 
 lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
-  rw [←diff_compl, measure_diff_null ht]
+  rw [← diff_compl, measure_diff_null ht]
 
 @[simp]
 theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
@@ -1264,7 +1264,7 @@ lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
   `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
 theorem map_apply_of_aemeasurable (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
-     μ.map f s = μ (f ⁻¹' s) := map_apply₀ hf hs.nullMeasurableSet
+    μ.map f s = μ (f ⁻¹' s) := map_apply₀ hf hs.nullMeasurableSet
 #align measure_theory.measure.map_apply_of_ae_measurable MeasureTheory.Measure.map_apply_of_aemeasurable
 
 @[simp]
@@ -1290,7 +1290,7 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
 
 @[simp] lemma mapₗ_eq_zero_iff (hf : Measurable f) : Measure.mapₗ f μ = 0 ↔ μ = 0 := by
   classical
-  rw [←map_eq_zero_iff hf.aemeasurable, map, dif_pos hf.aemeasurable,
+  rw [← map_eq_zero_iff hf.aemeasurable, map, dif_pos hf.aemeasurable,
     mapₗ_congr hf hf.aemeasurable.measurable_mk]
   exact hf.aemeasurable.ae_eq_mk
 
