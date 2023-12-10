@@ -1296,6 +1296,25 @@ end AlgHomMkAdjoinSplits
 
 end IntermediateField
 
+section Algebra.IsAlgebraic
+
+/-- Let `K/F` be an algebraic extension of fields and `L` a field in which all the minimal
+polynomial over `F` of elements of `K` splits. Then, for `x ∈ K`, the images of `x` by the
+`F`-algebra morphisms from `K` to `L` are exactly the roots in `L` of the minimal polynomial
+of `x` over `F`. -/
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*} (L : Type*)
+    [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
+    (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
+    (hK : Algebra.IsAlgebraic F K) (x : K) :
+    (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
+  ext a
+  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
+  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
+    (fun x ↦ ⟨hK.isIntegral x, hA x⟩) ha⟩
+  rw [← hψ, Polynomial.aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
+
+end Algebra.IsAlgebraic
+
 section PowerBasis
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
