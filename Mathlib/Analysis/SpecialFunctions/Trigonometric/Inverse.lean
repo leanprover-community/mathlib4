@@ -278,7 +278,7 @@ theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := f
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 #align real.maps_to_sin_Ioo Real.mapsTo_sin_Ioo
 
-/-- `Real.sin` as a `PartialHomeomorphph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
 def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := sin

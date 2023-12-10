@@ -143,7 +143,7 @@ protected theorem hasStrictFDerivAt :
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
 complementary subspaces of `E`, then `x ↦ (f x, g x)` defines a local homeomorphism between
 `E` and `F × G`. In particular, `{x | f x = f a}` is locally homeomorphic to `G`. -/
-def toPartialHomeomorph PartialHomeomorphph E (F × G) :=
+def toPartialHomeomorph : PartialHomeomorph E (F × G) :=
   φ.hasStrictFDerivAt.toPartialHomeomorph _
 #align implicit_function_data.to_local_homeomorph ImplicitFunctionData.toPartialHomeomorph
 

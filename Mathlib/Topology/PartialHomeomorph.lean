@@ -9,7 +9,7 @@ import Mathlib.Topology.Sets.Opens
 #align_import topology.local_homeomorph from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-!
-# Local homeomorphisms
+# Partial homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
 `PartialHomeomorph α β` is an extension of `LocalEquiv α β`, i.e., it is a pair of functions
@@ -949,7 +949,7 @@ theorem _root_.Homeomorph.transPartialHomeomorph_eq_trans (e : α ≃ₜ β) :
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transPartialHomeomorph_eq_trans
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
-should really be considered the same local equiv. -/
+should really be considered the same local equivalence. -/
 def EqOnSource (e e' : PartialHomeomorph α β) : Prop :=
   e.source = e'.source ∧ EqOn e e' e.source
 #align local_homeomorph.eq_on_source PartialHomeomorph.EqOnSource

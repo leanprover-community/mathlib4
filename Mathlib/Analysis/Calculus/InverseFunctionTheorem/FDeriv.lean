@@ -119,7 +119,7 @@ variable (f)
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
 The other part `HasStrictFDerivAt.to_localInverse` states that the inverse function
 of this `PartialHomeomorph` has derivative `f'.symm`. -/
-def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) PartialHomeomorphph E F :=
+def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : PartialHomeomorph E F :=
   ApproximatesLinearOn.toPartialHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
     (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
