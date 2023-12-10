@@ -12,12 +12,13 @@ import Mathlib.MeasureTheory.Constructions.Prod.Integral
 
 open BigOperators Fintype MeasureTheory MeasureTheory.Measure
 
-variable {L : Type*} [IsROrC L]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 /-- A version of **Fubini's theorem** in `n` variables, for a natural number `n`. -/
 theorem MeasureTheory.integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
     [∀ i, MeasureSpace (E i)] [∀ i, SigmaFinite (volume : Measure (E i))]
-    (f : (i : Fin n) → E i → L) : ∫ x : (i : Fin n) → E i, ∏ i, f i (x i) = ∏ i, ∫ x, f i x := by
+    (f : (i : Fin n) → E i → 𝕜) :
+    ∫ x : (i : Fin n) → E i, ∏ i, f i (x i) = ∏ i, ∫ x, f i x := by
   induction n with
   | zero =>
       simp only [Nat.zero_eq, volume_pi, Finset.univ_eq_empty, Finset.prod_empty, integral_const,
@@ -37,7 +38,7 @@ theorem MeasureTheory.integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Typ
 
 /-- A version of **Fubini's theorem** with the variables indexed by a general finite type. -/
 theorem MeasureTheory.integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E : ι → Type*}
-    (f : (i : ι) → E i → L) [∀ i, MeasureSpace (E i)] [∀ i, SigmaFinite (volume : Measure (E i))] :
+    (f : (i : ι) → E i → 𝕜) [∀ i, MeasureSpace (E i)] [∀ i, SigmaFinite (volume : Measure (E i))] :
     ∫ x : (i : ι) → E i, ∏ i, f i (x i) = ∏ i, ∫ x, f i x := by
   let n := Fintype.card ι
   let e : Fin n ≃ ι := (equivFin ι).symm
@@ -54,7 +55,7 @@ theorem MeasureTheory.integral_fintype_prod_eq_prod (ι : Type*) [Fintype ι] {E
   rw [h1, MeasureTheory.integral_fin_nat_prod_eq_prod]
   exact Fintype.prod_equiv e _ _ (fun i ↦ by rfl)
 
-theorem MeasureTheory.integral_fintype_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → L)
+theorem MeasureTheory.integral_fintype_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → 𝕜)
     [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := by
   rw [integral_fintype_prod_eq_prod, Finset.prod_const, Fintype.card]
