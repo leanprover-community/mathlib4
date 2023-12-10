@@ -1163,6 +1163,8 @@ end prop
 section Set
 variable [MeasurableSpace β] {g : β → Set α}
 
+/-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
+random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
 
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
