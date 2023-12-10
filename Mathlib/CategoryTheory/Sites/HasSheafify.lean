@@ -23,49 +23,45 @@ open Limits
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
-#check Sheaf J A
-
 /--
 `HasWeakSheafify` means that the inclusion functor from sheaves to presheaves admits a
 left adjiont.
 -/
-class HasWeakSheafify : Prop where
+class HasWeakSheafify where
   /-- `sheafToPresheaf` is a right adjoint -/
-  isRightAdjoint : Nonempty <| IsRightAdjoint (sheafToPresheaf J A)
+  isRightAdjoint : IsRightAdjoint (sheafToPresheaf J A)
+
+attribute [instance] HasWeakSheafify.isRightAdjoint
 
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
 left adjiont (sheafification).
 -/
 class HasSheafify extends HasWeakSheafify J A where
-  isLeftExact : letI := isRightAdjoint.some
-    Nonempty <| PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A))
+  isLeftExact : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A))
 
-theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
+attribute [instance] HasSheafify.isLeftExact
+
+def HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
     [PreservesFiniteLimits F] : HasSheafify J A where
-  isRightAdjoint := ⟨⟨F, adj⟩⟩
+  isRightAdjoint := ⟨F, adj⟩
   isLeftExact :=
-    have h : Nonempty (IsRightAdjoint (sheafToPresheaf J A)) := ⟨⟨F, adj⟩⟩
-    letI := h.some
-    let i : F ≅ leftAdjoint (sheafToPresheaf J A) :=
+    let i : (h : IsRightAdjoint (sheafToPresheaf J A) := ⟨F, adj⟩) →
+      F ≅ leftAdjoint (sheafToPresheaf J A) := fun _ ↦
       adj.leftAdjointUniq (Adjunction.ofRightAdjoint (sheafToPresheaf J A))
-    ⟨⟨fun _ ↦ preservesLimitsOfShapeOfNatIso i⟩⟩
+    ⟨fun _ ↦ preservesLimitsOfShapeOfNatIso (i _)⟩
 
 noncomputable section
-
-instance [HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) :=
-  HasWeakSheafify.isRightAdjoint.some
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   leftAdjoint (sheafToPresheaf J A)
 
-instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
-  HasSheafify.isLeftExact.some
+instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) := HasSheafify.isLeftExact
 
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] : presheafToSheaf J A ⊣ sheafToPresheaf J A :=
-  HasWeakSheafify.isRightAdjoint.some.adj
+  HasWeakSheafify.isRightAdjoint.adj
 
 instance [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
   right := sheafToPresheaf J A

@@ -274,8 +274,6 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
 instance [HasFiniteLimits D] : HasSheafify J D :=
   HasSheafify.mk' J D (sheafificationAdjunction J D)
 
-instance : HasWeakSheafify J TypeMax.{v, u} := inferInstance
-
 instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
     FinitaryExtensive (Sheaf J D) :=
   finitaryExtensive_of_reflective (sheafificationAdjunction _ _)
