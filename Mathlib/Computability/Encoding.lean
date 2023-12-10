@@ -241,25 +241,33 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
 /-- Binary string as shorthand for List Bool -/
-def BString := List Bool
+def BitString := List Bool
 
 /-- An (identity) encoding function of `List Bool` in `List Bool`. -/
-def encodeBString : BString → BString := id
+def encodeBitString : BitString → BitString := id
 
 /-- An (identity) decoding function from `List Bool` to `List Bool`. -/
-def decodeBString : BString → BString := id
+def decodeBitString : BitString → BitString := id
 
-theorem decode_encodeBString : ∀ b, id (encodeBString b) = b := by
+theorem decode_encodeBitString : ∀ b, id (encodeBitString b) = b := by
   intro
   exact rfl
 
 /-- A fin_encoding of `List Bool` in `List Bool`. -/
-def finEncodingBString : FinEncoding (BString) where
+def finEncodingBitString : FinEncoding (BitString) where
   Γ := Bool
-  encode := encodeBString
-  decode x := some (decodeBString x)
-  decode_encode x := congr_arg _ (decode_encodeBString x)
+  encode := encodeBitString
+  decode x := some (decodeBitString x)
+  decode_encode x := congr_arg _ (decode_encodeBitString x)
   ΓFin := Bool.fintype
+
+/-- Encode a pair of binary strings as one binary string -/
+def Bpair (aString bString : BitString) : BitString :=
+  encodeNat (Nat.pair (decodeNat aString) (decodeNat bString))
+
+/-- Unpair a binary string into two binary strings -/
+def Bunpair (aString : BitString) : BitString × BitString :=
+  (encodeNat (decodeNat aString).unpair.1, encodeNat (decodeNat aString).unpair.2)
 
 theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
     Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
