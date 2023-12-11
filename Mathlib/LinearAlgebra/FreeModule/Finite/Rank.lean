@@ -276,7 +276,7 @@ theorem Module.finite_iff_of_rank_eq_nsmul [Module.Free R V] {W} [AddCommGroup W
 
 /-- If a free module is of finite rank, then the cardinality of any basis is equal to its
 `finrank`. -/
-theorem Module.mk_finrank_eq_card_basis [Module.Finite R V] [Module.Free R V]
+theorem Module.mk_finrank_eq_card_basis [Module.Finite R V]
     {ι : Type w} (h : Basis ι R V) : (finrank R V : Cardinal.{w}) = #ι := by
   cases @nonempty_fintype _ (Free.finite_basis h)
   rw [Cardinal.mk_fintype, finrank_eq_card_basis h]
