@@ -118,8 +118,8 @@ lemma inr_snd :
 it is often convenient to use an `ext` lemma, and use simp lemmas like `inl_v_f_fst_v`,
 but it is sometimes possible to get identities of cochains by using rewrites of
 identities of cochains like `inl_fst`. Then, similarly as in category theory,
-if we associate to right the composition as much as possible, it is also interesting
-to have `reassoc` variants of lemmas, like `inl_fst_assoc`. -/
+if we associate to right the compositions of cochains as much as possible,
+it is also interesting to have `reassoc` variants of lemmas, like `inl_fst_assoc`. -/
 
 @[simp]
 lemma inl_fst_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain F K d) (he : 1 + d = e) :
@@ -276,23 +276,83 @@ lemma δ_snd :
   ext p q hpq
   simp [d_snd_v φ p q hpq]
 
+section
+
+variable {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
+    (β : Cochain G K n) (h : m + 1 = n)
+
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def descCochain {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
-    (β : Cochain G K n) (h : m + 1 = n) : Cochain (mappingCone φ) K n :=
+noncomputable def descCochain : Cochain (mappingCone φ) K n :=
   (fst φ).1.comp α (by rw [← h, add_comm]) + (snd φ).comp β (zero_add n)
 
 @[simp]
-lemma inl_descCochain {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
-    (β : Cochain G K n) (h : m + 1 = n) :
+lemma inl_descCochain :
     (inl φ).comp (descCochain φ α β h) (by linarith) = α := by
   simp [descCochain]
 
 @[simp]
-lemma inr_descCochain {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
-    (β : Cochain G K n) (h : m + 1 = n) :
+lemma inr_descCochain :
     (Cochain.ofHom (inr φ)).comp (descCochain φ α β h) (zero_add n) = β := by
   simp [descCochain]
+
+@[reassoc (attr := simp)]
+lemma inl_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + (-1) = p₂) (h₂₃ : p₂ + n = p₃) :
+    (inl φ).v p₁ p₂ h₁₂ ≫ (descCochain φ α β h).v p₂ p₃ h₂₃ =
+        α.v p₁ p₃ (by rw [← h₂₃, ← h₁₂, ← h, add_comm m, add_assoc, neg_add_cancel_left]) := by
+  simpa only [Cochain.comp_v _ _ (show -1 + n = m by linarith) p₁ p₂ p₃
+    (by linarith) (by linarith)] using
+      Cochain.congr_v (inl_descCochain φ α β h) p₁ p₃ (by linarith)
+
+@[reassoc (attr := simp)]
+lemma inr_f_descCochain_v (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
+    (inr φ).f p₁ ≫ (descCochain φ α β h).v p₁ p₂ h₁₂ = β.v p₁ p₂ h₁₂ := by
+  simpa only [Cochain.comp_v _ _ (zero_add n) p₁ p₁ p₂ (add_zero p₁) h₁₂, Cochain.ofHom_v]
+    using Cochain.congr_v (inr_descCochain φ α β h) p₁ p₂ (by linarith)
+
+lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
+    δ n n' (descCochain φ α β h) =
+      (fst φ).1.comp (δ m n α +
+          n'.negOnePow • (Cochain.ofHom φ).comp β (zero_add n)) (by linarith) +
+      (snd φ).comp (δ n n' β) (zero_add n') := by
+  dsimp only [descCochain]
+  simp only [δ_add, Cochain.comp_add, δ_comp (fst φ).1 α _ 2 n n' hn' (by linarith) (by linarith),
+    Cocycle.δ_eq_zero, Cochain.zero_comp, smul_zero, add_zero,
+    δ_comp (snd φ) β (zero_add n) 1 n' n' hn' (zero_add 1) hn', δ_snd, Cochain.neg_comp,
+    smul_neg, Cochain.comp_assoc_of_second_is_zero_cochain, Cochain.comp_units_smul, ← hn',
+    Int.negOnePow_succ, Units.neg_smul, Cochain.comp_neg]
+  abel
+
+end
+
+/-- Given `φ : F ⟶ G`, this is the cocycle in `Cocycle (mappingCone φ) K n` that is
+constructed from `α : Cochain F K m` (with `m + 1 = n`) and `β : Cocycle F K n`,
+when a suitable cocycle relation is satisfied. -/
+@[simps!]
+noncomputable def descCocycle {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain F K m) (β : Cocycle G K n)
+    (h : m + 1 = n) (eq : δ m n α = n.negOnePow • (Cochain.ofHom φ).comp β.1 (zero_add n)) :
+    Cocycle (mappingCone φ) K n :=
+  Cocycle.mk (descCochain φ α β.1 h) (n + 1) rfl
+    (by simp [δ_descCochain _ _ _ _ _ rfl, eq, Int.negOnePow_succ])
+
+section
+
+variable {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
+  (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
+
+/-- Given `φ : F ⟶ G`, this is the morphism `mappingCone φ ⟶ K` that is constructed
+from a cochain `α : Cochain F K (-1)` and a morphism `β : G ⟶ K` such that
+`δ (-1) 0 α = Cochain.ofHom (φ ≫ β)`. -/
+noncomputable def desc : mappingCone φ ⟶ K :=
+  Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_self 1) (by simp [eq]))
+
+@[simp]
+lemma ofHom_desc :
+    Cochain.ofHom (desc φ α β eq) = descCochain φ α (Cochain.ofHom β) (neg_add_self 1) := by
+  simp [desc]
+
+end
 
 end mappingCone
 
