@@ -105,4 +105,46 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
   rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
+/-!
+## Recursion
+-/
+
+-- TODO: move to proper file
+theorem Bool.toNat_eq_bit (b : Bool) : b.toNat = Nat.bit b 0 := by
+  cases b <;> rfl
+
+theorem concat_eq_bit (xs : BitVec w) (x : Bool) :
+    concat xs x = ofFin ⟨Nat.bit x xs.toNat, Nat.bit_lt_two_pow_succ_iff.mpr <| toNat_lt xs⟩ := by
+  apply toNat_inj.mp
+  have mul_two_eq_bit : (xs.toNat * 2) = bit false xs.toNat := by
+    simp only [bit_val, Bool.cond_false, Nat.mul_comm]; rfl
+  simp only [concat, toNat_append, shiftLeft_eq_mul_pow, pow_one, toNat_ofBool, toNat_ofFin,
+    mul_two_eq_bit, Bool.toNat_eq_bit, lor_bit, Bool.false_or, zero_or]
+
+theorem induction {motive : ∀ {w}, BitVec w → Sort*}
+    (nil : motive .nil)
+    (concat : ∀ {w} (xs : BitVec w) (x : Bool), motive xs → motive (.concat xs x)) :
+    ∀ {w} (xs : BitVec w), motive xs := by
+  intro w ⟨⟨xs, h⟩⟩
+  induction' xs using Nat.binaryRec with x xs ih generalizing w
+  · induction' w with w ih
+    · exact nil
+    · exact concat _ false (ih <| two_pow_pos w)
+  · cases' w with w
+    · have : bit x xs = 0 := lt_one_iff.mp h
+      simpa only [this] using nil
+    · have h_prev : xs < 2 ^ w := bit_lt_two_pow_succ_iff.mp h
+      simpa only [concat_eq_bit] using concat ⟨⟨xs, h_prev⟩⟩ x (ih h_prev)
+
+-- @[simp]
+-- theorem cons_msb_truncate (x : BitVec (w+1)) : cons x.msb (x.truncate w) = x := by
+--   rcases x with ⟨⟨x, hx⟩⟩
+--   simp [
+--     cons, BitVec.msb, getMsb, truncate, zeroExtend, (· ++ ·), BitVec.append, cast,
+--     Fin.cast, BitVec.ofNat, Fin.ofNat', Nat.zero_lt_succ, Nat.succ_sub_one, shiftLeftZeroExtend
+--   ]
+--   rw [
+--     getLsb_eq_testBit, toNat_ofFin, ←and_two_pow, and_two_pow_or_and_two_pow_sub_one xs w,
+--     Nat.add_comm 1 w, land_land_self, ←Nat.mod_two_pow, Nat.mod_eq_of_lt h
+--   ]
 end Std.BitVec
