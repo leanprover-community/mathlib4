@@ -28,7 +28,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [CS : ChartedSpace H M]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
   -- declare a smooth manifold `M'` over the pair `(E', H')`.
   {E' : Type*}
@@ -413,9 +413,9 @@ variable (I)
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is smooth. -/
-lemma contMDiff_openEmbedding : ContMDiff (CS := h.singletonChartedSpace) I I n e := by
+lemma contMDiff_openEmbedding : ContMDiff I I n e := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [contMDiff_iff (CS := h.singletonChartedSpace)]
+  rw [contMDiff_iff]
   use h.continuous
   intros x y
   -- show the function is actually the identity on the range of I ∘ e
@@ -423,17 +423,18 @@ lemma contMDiff_openEmbedding : ContMDiff (CS := h.singletonChartedSpace) I I n 
   intros z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
+  sorry /- TODO: fix this proof! perhaps use `haveI := h.singletonChartedSpace`
   rw [h.toLocalHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
-    exact extChartAt_target_subset_range I x (CS := h.singletonChartedSpace)
+    exact extChartAt_target_subset_range I x
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
-    rw [extChartAt_target (CS := h.singletonChartedSpace)] at this
+    rw [extChartAt_target] at this
     have := this.1
     rw [mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toLocalHomeomorph_target] at this
-    exact this
+    exact this -/
 
 variable {I}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,

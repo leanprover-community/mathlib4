@@ -57,7 +57,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [CS : ChartedSpace H M]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
   -- declare a smooth manifold `M'` over the pair `(E', H')`.
   {E' : Type*}

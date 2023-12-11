@@ -1238,7 +1238,7 @@ end LocalHomeomorph
 
 open LocalHomeomorph
 
-variable [CS : ChartedSpace H M] [CS' : ChartedSpace H' M']
+variable [ChartedSpace H M] [ChartedSpace H' M']
 
 /-- The preferred extended chart on a manifold with corners around a point `x`, from a neighborhood
 of `x` to the model vector space. -/
