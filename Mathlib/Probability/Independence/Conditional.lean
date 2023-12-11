@@ -707,7 +707,7 @@ theorem iCondIndepFun.condIndepFun_prod {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iCondIndepFun m' hm' m f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
-  kernel.iIndepFun.indepFun_prod hf_Indep hf_meas i j k hik hjk
+  kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
 
 @[to_additive]
 theorem iCondIndepFun.mul {m : MeasurableSpace β}

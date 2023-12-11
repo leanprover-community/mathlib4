@@ -218,6 +218,9 @@ export MeasureTheory.IsProbabilityMeasure (measure_univ)
 
 attribute [simp] IsProbabilityMeasure.measure_univ
 
+lemma isProbabilityMeasure_iff : IsProbabilityMeasure μ ↔ μ univ = 1 :=
+  ⟨fun _ ↦ measure_univ, IsProbabilityMeasure.mk⟩
+
 instance (priority := 100) IsProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsProbabilityMeasure μ] : IsFiniteMeasure μ :=
   ⟨by simp only [measure_univ, ENNReal.one_lt_top]⟩
