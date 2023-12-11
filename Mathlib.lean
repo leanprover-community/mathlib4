@@ -2485,9 +2485,9 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
-import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic

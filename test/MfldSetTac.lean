@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Heather Macbeth, Frédéric Dupuis
 -/
 
-import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Logic.Equiv.PartialEquiv
 
 private axiom test_sorry : ∀ {α}, α
 /-!
