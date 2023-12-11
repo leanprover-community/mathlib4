@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.FinCases
@@ -249,7 +250,7 @@ theorem nat_cast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n →
 @[simp]
 theorem int_cast_comp_cast : ((↑) : ℤ → R) ∘ ((↑) : ZMod n → ℤ) = (↑) := by
   cases n
-  · exact congr_arg ((· ∘ ·) Int.cast) ZMod.cast_id'
+  · exact congr_arg (Int.cast ∘ ·) ZMod.cast_id'
   · ext
     simp [ZMod, ZMod.cast]
 #align zmod.int_cast_comp_cast ZMod.int_cast_comp_cast

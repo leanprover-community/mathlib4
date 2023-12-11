@@ -871,7 +871,7 @@ def coeAddHom {_ : MeasurableSpace α} : Measure α →+ Set α → ℝ≥0∞ w
 
 @[simp]
 theorem coe_finset_sum {_m : MeasurableSpace α} (I : Finset ι) (μ : ι → Measure α) :
-    ⇑(∑ i in I, μ i) = ∑ i in I, ⇑(μ i) := coeAddHom.map_sum μ I
+    ⇑(∑ i in I, μ i) = ∑ i in I, ⇑(μ i) := map_sum coeAddHom μ I
 #align measure_theory.measure.coe_finset_sum MeasureTheory.Measure.coe_finset_sum
 
 theorem finset_sum_apply {m : MeasurableSpace α} (I : Finset ι) (μ : ι → Measure α) (s : Set α) :
@@ -1806,7 +1806,7 @@ open Pointwise
 @[to_additive]
 theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {s t : Set α} {μ : Measure α} (g : G)
-    (h_qmp : QuasiMeasurePreserving ((· • ·) g⁻¹ : α → α) μ μ)
+    (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
     (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
   simpa only [← preimage_smul_inv] using h_qmp.ae_eq h_ae_eq
 #align measure_theory.measure.quasi_measure_preserving.smul_ae_eq_of_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.smul_ae_eq_of_ae_eq
@@ -1822,14 +1822,14 @@ open Pointwise
 theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G] [MulAction G α]
     [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (h_ae_disjoint : ∀ (g) (_ : g ≠ (1 : G)), AEDisjoint μ (g • s) s)
-    (h_qmp : ∀ g : G, QuasiMeasurePreserving ((· • ·) g : α → α) μ μ) :
+    (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • ·) μ μ) :
     Pairwise (AEDisjoint μ on fun g : G => g • s) := by
   intro g₁ g₂ hg
   let g := g₂⁻¹ * g₁
   replace hg : g ≠ 1
   · rw [Ne.def, inv_mul_eq_one]
     exact hg.symm
-  have : (· • ·) g₂⁻¹ ⁻¹' (g • s ∩ s) = g₁ • s ∩ g₂ • s := by
+  have : (g₂⁻¹ • ·) ⁻¹' (g • s ∩ s) = g₁ • s ∩ g₂ • s := by
     rw [preimage_eq_iff_eq_image (MulAction.bijective g₂⁻¹), image_smul, smul_set_inter, smul_smul,
       smul_smul, inv_mul_self, one_smul]
   change μ (g₁ • s ∩ g₂ • s) = 0

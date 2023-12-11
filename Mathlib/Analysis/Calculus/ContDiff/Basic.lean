@@ -1437,7 +1437,7 @@ theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 
 theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i in t, f i) s x :=
   Finset.prod_induction f (fun f => ContDiffWithinAt 𝕜 n f s x) (fun _ _ => ContDiffWithinAt.mul)
-    (@contDiffWithinAt_const _ _ _ _ _ _ _ _ _ _ _ 1) h
+    (contDiffWithinAt_const (c := 1)) h
 #align cont_diff_within_at_prod' contDiffWithinAt_prod'
 
 theorem contDiffWithinAt_prod {t : Finset ι} {f : ι → E → 𝔸'}
@@ -1817,7 +1817,7 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
   -- We prove this by induction on `n`
   induction' n using ENat.nat_induction with n IH Itop
   · rw [contDiffAt_zero]
-    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuous_invFun⟩
+    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
     apply contDiffAt_succ_iff_hasFDerivAt.mpr
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it

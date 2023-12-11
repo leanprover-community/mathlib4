@@ -204,8 +204,7 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
-  ⟨fun _ => (IsAlgClosure.algebraic _).isIntegral, fun _ =>
-    (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
+  ⟨fun _ => (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 
 namespace IsAlgClosed
@@ -410,8 +409,8 @@ theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly (x : K) :
   range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) hK x
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
 
-/-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension of
-`A/F` in which the minimal polynomial of elements of `K` splits. -/
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any intermediate
+field of `A/F` in which the minimal polynomial of elements of `K` splits. -/
 @[simps]
 def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
@@ -429,8 +428,8 @@ theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : Intermediat
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
     algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
 
-/-- All `F`-`AlgHom`s from `K` to an algebraic closed field `A` factor through any subfield of `A`
-in which the minimal polynomial of elements of `K` splits. -/
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension
+of `A/F` in which the minimal polynomial of elements of `K` splits. -/
 noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
