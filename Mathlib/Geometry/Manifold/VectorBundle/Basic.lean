@@ -141,11 +141,11 @@ variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
       (trivializationAt F E x.proj).toPartialEquiv ≫
-        (extChartAt IB x.proj).prod (LocalEquiv.refl F) := by
+        (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
-  simp only [LocalEquiv.trans_assoc, mfld_simps]
+  simp only [PartialEquiv.trans_assoc, mfld_simps]
   -- porting note: should not be needed
-  rw [LocalEquiv.prod_trans, PartialEquiv.refl_trans]
+  rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
 protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :

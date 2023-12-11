@@ -584,16 +584,16 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsLocalEquiv Z j).source ∩ localTrivAsLocalEquiv Z j ⁻¹' s := ht
     rw [ts]
-    simp only [LocalEquiv.right_inv, preimage_inter, PartialEquiv.left_inv]
+    simp only [PartialEquiv.right_inv, preimage_inter, PartialEquiv.left_inv]
     let e := Z.localTrivAsLocalEquiv i
     let e' := Z.localTrivAsLocalEquiv j
     let f := e.symm.trans e'
     have : IsOpen (f.source ∩ f ⁻¹' s) := by
-      rw [LocalEquiv.EqOnSource.source_inter_preimage_eq (Z.localTrivAsLocalEquiv_trans i j)]
+      rw [PartialEquiv.EqOnSource.source_inter_preimage_eq (Z.localTrivAsLocalEquiv_trans i j)]
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
     convert this using 1
-    dsimp [LocalEquiv.trans_source]
+    dsimp [PartialEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
   toPartialEquiv := Z.localTrivAsLocalEquiv i
 #align fiber_bundle_core.local_triv FiberBundleCore.localTriv

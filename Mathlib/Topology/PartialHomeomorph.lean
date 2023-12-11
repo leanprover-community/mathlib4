@@ -12,7 +12,7 @@ import Mathlib.Topology.Sets.Opens
 # Partial homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
-`PartialHomeomorph α β` is an extension of `LocalEquiv α β`, i.e., it is a pair of functions
+`PartialHomeomorph α β` is an extension of `PartialEquiv α β`, i.e., it is a pair of functions
 `e.toFun` and `e.invFun`, inverse of each other on the sets `e.source` and `e.target`.
 Additionally, we require that these sets are open, and that the functions are continuous on them.
 Equivalently, they are homeomorphisms there.
@@ -33,14 +33,14 @@ instead of `e.toFun x` and `e.invFun x`.
 
 ## Implementation notes
 
-Most statements are copied from their `LocalEquiv` versions, although some care is required
+Most statements are copied from their `PartialEquiv` versions, although some care is required
 especially when restricting to subsets, as these should be open subsets.
 
 For design notes, see `PartialEquiv.lean`.
 
 ### Local coding conventions
 
-If a lemma deals with the intersection of a set with either source or target of a `LocalEquiv`,
+If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
 
@@ -345,7 +345,7 @@ theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
   rfl
 #align local_homeomorph.symm_to_local_equiv PartialHomeomorph.symm_toPartialEquiv
 
--- The following lemmas are already simp via `LocalEquiv`
+-- The following lemmas are already simp via `PartialEquiv`
 theorem symm_source : e.symm.source = e.target :=
   rfl
 #align local_homeomorph.symm_source PartialHomeomorph.symm_source
@@ -679,7 +679,7 @@ theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.s
   image_isOpen_of_isOpen _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.image_isOpen_of_isOpen'
 
-/-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
+/-- A `PartialEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : PartialHomeomorph α β where
   toPartialEquiv := e
@@ -689,7 +689,7 @@ def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.sou
   continuousOn_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 #align local_homeomorph.of_continuous_open_restrict PartialHomeomorph.ofContinuousOpenRestrict
 
-/-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
+/-- A `PartialEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
 def ofContinuousOpen (e : PartialEquiv α β) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : PartialHomeomorph α β :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
@@ -697,7 +697,7 @@ def ofContinuousOpen (e : PartialEquiv α β) (hc : ContinuousOn e e.source) (ho
 
 /-- Restricting a partial homeomorphism `e` to `e.source ∩ s` when `s` is open.
 This is sometimes hard to use because of the openness assumption, but it has the advantage that
-when it can be used then its `LocalEquiv` is defeq to `PartialEquiv.restr`. -/
+when it can be used then its `PartialEquiv` is defeq to `PartialEquiv.restr`. -/
 protected def restrOpen (s : Set α) (hs : IsOpen s) : PartialHomeomorph α β :=
   (@IsImage.of_symm_preimage_eq α β _ _ e s (e.symm ⁻¹' s) rfl).restr
     (IsOpen.inter e.open_source hs)
@@ -709,7 +709,7 @@ theorem restrOpen_toPartialEquiv (s : Set α) (hs : IsOpen s) :
   rfl
 #align local_homeomorph.restr_open_to_local_equiv PartialHomeomorph.restrOpen_toPartialEquiv
 
--- Already simp via `LocalEquiv`
+-- Already simp via `PartialEquiv`
 theorem restrOpen_source (s : Set α) (hs : IsOpen s) : (e.restrOpen s hs).source = e.source ∩ s :=
   rfl
 #align local_homeomorph.restr_open_source PartialHomeomorph.restrOpen_source
@@ -937,7 +937,7 @@ theorem transHomeomorph_eq_trans (e' : β ≃ₜ γ) :
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := .asFn)]
 def _root_.Homeomorph.transPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomorph α γ where
-  toPartialEquiv := e.toEquiv.transLocalEquiv e'.toPartialEquiv
+  toPartialEquiv := e.toEquiv.transPartialEquiv e'.toPartialEquiv
   open_source := e'.open_source.preimage e.continuous
   open_target := e'.open_target
   continuousOn_toFun := e'.continuousOn.comp e.continuous.continuousOn fun _ => id
@@ -946,7 +946,7 @@ def _root_.Homeomorph.transPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomo
 
 theorem _root_.Homeomorph.transPartialHomeomorph_eq_trans (e : α ≃ₜ β) :
     e.transPartialHomeomorph e' = e.toPartialHomeomorph.trans e' :=
-  toPartialEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
+  toPartialEquiv_injective <| Equiv.transPartialEquiv_eq_trans _ _
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transPartialHomeomorph_eq_trans
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
@@ -1268,7 +1268,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
-@[simps (config := mfld_cfg) apply symm_apply] -- porting note: todo: add a `LocalEquiv` version
+@[simps (config := mfld_cfg) apply symm_apply] -- porting note: todo: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' : e.target = univ) :
     α ≃ₜ β where
   toFun := e

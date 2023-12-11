@@ -875,7 +875,7 @@ theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   have E : e.target ∩ e.symm ⁻¹' e.source = e.target :=
     Subset.antisymm (inter_subset_left _ _) fun x hx ↦
       ⟨hx, PartialEquiv.target_subset_preimage_source _ hx⟩
-  simpa [LocalEquiv.trans_source, E] using c.open_source e e he he
+  simpa [PartialEquiv.trans_source, E] using c.open_source e e he he
 #align charted_space_core.open_target ChartedSpaceCore.open_target
 
 /-- An element of the atlas in a charted space without topology becomes a local homeomorphism
@@ -910,7 +910,7 @@ protected def localHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
         rw [← inter_assoc, ← inter_assoc]
         congr 1
         exact inter_comm _ _
-      simpa [LocalEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
+      simpa [PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
 #align charted_space_core.local_homeomorph ChartedSpaceCore.localHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with

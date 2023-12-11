@@ -1882,7 +1882,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm _ (chart_mem_atlas _ _) h)]
   simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
     mfld_simps, (· ∘ ·)]
-  -- `simp` fails to apply `LocalEquiv.prod_symm` with `ModelProd`
+  -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
   congr
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 #align tangent_map_chart_symm tangentMap_chart_symm

@@ -189,7 +189,7 @@ protected theorem chartAt (p : TM) :
 theorem chartAt_toPartialEquiv (p : TM) :
     (chartAt (ModelProd H E) p).toPartialEquiv =
       (tangentBundleCore I M).toFiberBundleCore.localTrivAsLocalEquiv (achart H p.1) ≫
-        (chartAt H p.1).toPartialEquiv.prod (LocalEquiv.refl E) :=
+        (chartAt H p.1).toPartialEquiv.prod (PartialEquiv.refl E) :=
   rfl
 #align tangent_bundle.chart_at_to_local_equiv TangentBundle.chartAt_toPartialEquiv
 
@@ -244,7 +244,7 @@ theorem mem_chart_target_iff (p : H × E) (q : TM) :
     and_iff_left_iff_imp, mfld_simps]
   -/
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
-  rw [LocalEquiv.prod_symm]
+  rw [PartialEquiv.prod_symm]
   simp (config := { contextual := true }) only [and_iff_left_iff_imp, mfld_simps]
 #align tangent_bundle.mem_chart_target_iff TangentBundle.mem_chart_target_iff
 
@@ -308,7 +308,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
   refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
-  · rw [LocalEquiv.trans_source'] at hx
+  · rw [PartialEquiv.trans_source'] at hx
     simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
   · exact (i.1.extend_image_source_inter j.1 I).subset
   · apply inter_subset_left

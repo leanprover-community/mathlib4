@@ -21,7 +21,7 @@ open Lean Meta Elab Tactic
 set_option autoImplicit true
 section stub_lemmas
 
-structure PartialHomeomorph (α : Type u) (β : Type u) extends LocalEquiv α β
+structure PartialHomeomorph (α : Type u) (β : Type u) extends PartialEquiv α β
 
 noncomputable
 instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (λ _ => α → β) := test_sorry
@@ -34,7 +34,7 @@ def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β
   e.symm (e x) = x :=
 test_sorry
 
-@[mfld_simps] theorem PartialHomeomorph.symm_to_LocalEquiv (e : PartialHomeomorph α β) :
+@[mfld_simps] theorem PartialHomeomorph.symm_to_PartialEquiv (e : PartialHomeomorph α β) :
   e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 test_sorry
 
@@ -46,13 +46,13 @@ test_sorry
   (e.toPartialEquiv.symm : β → α) = (e.symm : β → α) :=
 test_sorry
 
-structure ModelWithCorners (𝕜 E H : Type u) extends LocalEquiv H E :=
+structure ModelWithCorners (𝕜 E H : Type u) extends PartialEquiv H E :=
   (source_eq : source = Set.univ)
 
 attribute [mfld_simps] ModelWithCorners.source_eq
 
 noncomputable
-def ModelWithCorners.symm (_I : ModelWithCorners 𝕜 E H) : LocalEquiv E H := test_sorry
+def ModelWithCorners.symm (_I : ModelWithCorners 𝕜 E H) : PartialEquiv E H := test_sorry
 
 noncomputable
 instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := test_sorry
@@ -75,11 +75,11 @@ end stub_lemmas
 /-! ## Tests for `MfldSetTac` -/
 section tests
 
-example (e : LocalEquiv α β) (e' : LocalEquiv β γ) :
+example (e : PartialEquiv α β) (e' : PartialEquiv β γ) :
   (e.trans e').source = e.source ∩ Set.preimage e (e.target ∩ e'.source) := by
   mfld_set_tac
 
-example (e : LocalEquiv α β) : (e.trans e.symm).source = e.source := by mfld_set_tac
+example (e : PartialEquiv α β) : (e.trans e.symm).source = e.source := by mfld_set_tac
 
 example (s : Set α) (f : PartialHomeomorph α β) :
   f.symm.toPartialEquiv.source ∩ (f.toPartialEquiv.target ∩ Set.preimage f.symm s)

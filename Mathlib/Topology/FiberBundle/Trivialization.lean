@@ -205,18 +205,18 @@ theorem target_inter_preimage_symm_source_eq (e f : Pretrivialization F proj) :
 
 theorem trans_source (e f : Pretrivialization F proj) :
     (f.toPartialEquiv.symm.trans e.toPartialEquiv).source = (e.baseSet ∩ f.baseSet) ×ˢ univ := by
-  rw [LocalEquiv.trans_source, PartialEquiv.symm_source, e.target_inter_preimage_symm_source_eq]
+  rw [PartialEquiv.trans_source, PartialEquiv.symm_source, e.target_inter_preimage_symm_source_eq]
 #align pretrivialization.trans_source Pretrivialization.trans_source
 
 theorem symm_trans_symm (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).symm
       = e'.toPartialEquiv.symm.trans e.toPartialEquiv := by
-  rw [LocalEquiv.trans_symm_eq_symm_trans_symm, PartialEquiv.symm_symm]
+  rw [PartialEquiv.trans_symm_eq_symm_trans_symm, PartialEquiv.symm_symm]
 #align pretrivialization.symm_trans_symm Pretrivialization.symm_trans_symm
 
 theorem symm_trans_source_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).source = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
-  rw [LocalEquiv.trans_source, e'.source_eq, PartialEquiv.symm_source, e.target_eq, inter_comm,
+  rw [PartialEquiv.trans_source, e'.source_eq, PartialEquiv.symm_source, e.target_eq, inter_comm,
     e.preimage_symm_proj_inter, inter_comm]
 #align pretrivialization.symm_trans_source_eq Pretrivialization.symm_trans_source_eq
 
@@ -558,7 +558,7 @@ theorem continuousAt_of_comp_right {X : Type*} [TopologicalSpace X] {f : Z → X
     (e : Trivialization F proj) (he : proj z ∈ e.baseSet)
     (hf : ContinuousAt (f ∘ e.toPartialEquiv.symm) (e z)) : ContinuousAt f z := by
   have hez : z ∈ e.toPartialEquiv.symm.target := by
-    rw [LocalEquiv.symm_target, e.mem_source]
+    rw [PartialEquiv.symm_target, e.mem_source]
     exact he
   rwa [e.toPartialHomeomorph.symm.continuousAt_iff_continuousAt_comp_right hez,
     PartialHomeomorph.symm_symm]

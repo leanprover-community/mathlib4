@@ -629,7 +629,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm
-  constructor <;> simp only [LocalEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv]
+  constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv]
   · have h3 := ContDiffOn.prod_map he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
@@ -942,7 +942,7 @@ variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAdd
 In a smooth manifold with corners, the model space is the space `H`. However, we will also
 need to use extended charts taking values in the model vector space `E`. These extended charts are
 not `PartialHomeomorph` as the target is not open in `E` in general, but we can still register them
-as `LocalEquiv`.
+as `PartialEquiv`.
 -/
 
 
@@ -1178,7 +1178,7 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
 
 theorem extend_coord_change_source :
     ((f.extend I).symm ≫ f'.extend I).source = I '' (f.symm ≫ₕ f').source := by
-  simp_rw [LocalEquiv.trans_source, I.image_eq, extend_source, PartialEquiv.symm_source,
+  simp_rw [PartialEquiv.trans_source, I.image_eq, extend_source, PartialEquiv.symm_source,
     extend_target, inter_right_comm _ (range I)]
   rfl
 #align local_homeomorph.extend_coord_change_source PartialHomeomorph.extend_coord_change_source
@@ -1543,9 +1543,9 @@ variable {𝕜}
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
-  -- Porting note: `simp` can't use `LocalEquiv.prod_trans` here because of a type
+  -- Porting note: `simp` can't use `PartialEquiv.prod_trans` here because of a type
   -- synonym
-  rw [LocalEquiv.prod_trans]
+  rw [PartialEquiv.prod_trans]
 #align ext_chart_at_prod extChartAt_prod
 
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
