@@ -516,7 +516,7 @@ lemma Module.injective_of_ulift_injective
   exact ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext_iff _ _ |>.mp <| hg' r hr⟩
 
 lemma Module.injective_iff_ulift_injective
-    (M : Type max v) [AddCommGroup M] [Module R M] :
+    (M : Type v) [AddCommGroup M] [Module R M] :
     Module.Injective R M ↔ Module.Injective R (ULift.{max v v'} M) :=
   ⟨Module.ulift_injective_of_injective.{u, v, v'} R,
    Module.injective_of_ulift_injective.{u, v, v'} R⟩
