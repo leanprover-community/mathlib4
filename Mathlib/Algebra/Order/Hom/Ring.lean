@@ -78,7 +78,7 @@ infixl:25 " ≃+*o " => OrderRingIso
 /-- `OrderRingHomClass F α β` states that `F` is a type of ordered semiring homomorphisms.
 You should extend this typeclass when you extend `OrderRingHom`. -/
 class OrderRingHomClass (F : Type*) (α β : outParam <| Type*) [NonAssocSemiring α] [Preorder α]
-  [NonAssocSemiring β] [Preorder β] extends RingHomClass F α β where
+  [NonAssocSemiring β] [Preorder β] extends flat RingHomClass F α β where
   /-- The proposition that the function preserves the order. -/
   monotone (f : F) : Monotone f
 #align order_ring_hom_class OrderRingHomClass

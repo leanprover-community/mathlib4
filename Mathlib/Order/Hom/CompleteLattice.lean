@@ -102,7 +102,7 @@ class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet �
 
 You should extend this class when you extend `FrameHom`. -/
 class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
-  [CompleteLattice β] extends InfTopHomClass F α β where
+  [CompleteLattice β] extends flat InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align frame_hom_class FrameHomClass
@@ -111,7 +111,7 @@ class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
 class CompleteLatticeHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
-  [CompleteLattice β] extends sInfHomClass F α β where
+  [CompleteLattice β] extends flat sInfHomClass F α β where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)

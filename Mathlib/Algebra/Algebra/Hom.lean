@@ -50,7 +50,7 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 from `A` to `B`.  -/
 class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B] extends RingHomClass F A B where
+  [Algebra R B] extends flat RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 

@@ -68,8 +68,8 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 from `A` to `B`.  -/
 class NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-  [DistribMulAction R A] [DistribMulAction R B] extends DistribMulActionHomClass F R A B,
-  MulHomClass F A B
+  [DistribMulAction R A] [DistribMulAction R B] extends flat DistribMulActionHomClass F R A B,
+  flat MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
 
 -- Porting note: commented out, not dangerous

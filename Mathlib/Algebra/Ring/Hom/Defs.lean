@@ -77,7 +77,7 @@ section NonUnitalRingHomClass
 /-- `NonUnitalRingHomClass F α β` states that `F` is a type of non-unital (semi)ring
 homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. -/
 class NonUnitalRingHomClass (F : Type*) (α β : outParam (Type*)) [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] extends MulHomClass F α β, AddMonoidHomClass F α β
+  [NonUnitalNonAssocSemiring β] extends flat MulHomClass F α β, flat AddMonoidHomClass F α β
 #align non_unital_ring_hom_class NonUnitalRingHomClass
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
@@ -373,7 +373,7 @@ This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
 class RingHomClass (F : Type*) (α β : outParam (Type*)) [NonAssocSemiring α]
-  [NonAssocSemiring β] extends MonoidHomClass F α β, AddMonoidHomClass F α β,
+  [NonAssocSemiring β] extends flat MonoidHomClass F α β, flat AddMonoidHomClass F α β,
   MonoidWithZeroHomClass F α β
 #align ring_hom_class RingHomClass
 

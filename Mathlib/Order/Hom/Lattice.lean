@@ -118,7 +118,7 @@ class InfHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] exte
 
 You should extend this class when you extend `SupBotHom`. -/
 class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [Bot α]
-  [Bot β] extends SupHomClass F α β where
+  [Bot β] extends flat SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align sup_bot_hom_class SupBotHomClass
@@ -127,7 +127,7 @@ class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [
 
 You should extend this class when you extend `SupBotHom`. -/
 class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [Top α]
-  [Top β] extends InfHomClass F α β where
+  [Top β] extends flat InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align inf_top_hom_class InfTopHomClass
@@ -136,7 +136,7 @@ class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [
 
 You should extend this class when you extend `LatticeHom`. -/
 class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β] extends
-  SupHomClass F α β where
+  flat SupHomClass F α β where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align lattice_hom_class LatticeHomClass
@@ -145,7 +145,7 @@ class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Latt
 
 You should extend this class when you extend `BoundedLatticeHom`. -/
 class BoundedLatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β]
-  [BoundedOrder α] [BoundedOrder β] extends LatticeHomClass F α β where
+  [BoundedOrder α] [BoundedOrder β] extends flat LatticeHomClass F α β where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- A `BoundedLatticeHomClass` morphism preserves the bottom element. -/

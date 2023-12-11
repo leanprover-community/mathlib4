@@ -155,7 +155,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam (Type*)) [AddZeroClass M] [AddZeroClass N]
-  extends AddHomClass F M N, ZeroHomClass F M N
+  extends flat AddHomClass F M N, flat ZeroHomClass F M N
 #align add_monoid_hom_class AddMonoidHomClass
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -353,7 +353,7 @@ infixr:25 " →* " => MonoidHom
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
 class MonoidHomClass (F : Type*) (M N : outParam (Type*)) [MulOneClass M] [MulOneClass N]
-  extends MulHomClass F M N, OneHomClass F M N
+  extends flat MulHomClass F M N, flat OneHomClass F M N
 #align monoid_hom_class MonoidHomClass
 
 @[to_additive]
@@ -487,7 +487,7 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
 class MonoidWithZeroHomClass (F : Type*) (M N : outParam (Type*)) [MulZeroOneClass M]
-  [MulZeroOneClass N] extends MonoidHomClass F M N, ZeroHomClass F M N
+  [MulZeroOneClass N] extends flat MonoidHomClass F M N, flat ZeroHomClass F M N
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
 
 instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
