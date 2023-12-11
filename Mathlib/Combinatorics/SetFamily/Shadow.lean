@@ -211,7 +211,7 @@ theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (
 
 /-- `t` is in the upper shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element
 to get `t`. -/
-lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a, a ∉ s ∧ insert a s = t := by
+lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∉ s, insert a s = t := by
   simp_rw [upShadow, mem_sup, mem_image, mem_compl]
 #align finset.mem_up_shadow_iff Finset.mem_upShadow_iff
 
