@@ -10,6 +10,7 @@ import Mathlib.Topology.Sets.Opens
 
 /-!
 # Partial homeomorphisms
+# Partial homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
 `PartialHomeomorph α β` is an extension of `PartialEquiv α β`, i.e., it is a pair of functions
@@ -50,6 +51,7 @@ open Function Set Filter Topology
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
+/-- partial homeomorphisms, defined on open subsets of the space -/
 /-- partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
 structure PartialHomeomorph (α : Type*) (β : Type*) [TopologicalSpace α]
