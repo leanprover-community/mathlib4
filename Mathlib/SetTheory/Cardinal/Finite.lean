@@ -121,12 +121,7 @@ lemma card_image_equiv (e : α ≃ β) : Nat.card (e '' s) = Nat.card s :=
 
 lemma card_preimage_of_injOn {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := by
-  obtain hs | hs := s.finite_or_infinite
-  · have : Fintype (f ⁻¹' s) := (hs.preimage hf).fintype
-    rw [← Nat.card_image_of_injOn hf, image_preimage_eq_iff.2 hsf]
-  · have := hs.to_subtype
-    have := (hs.preimage hsf).to_subtype
-    simp
+  rw [← Nat.card_image_of_injOn hf, image_preimage_eq_iff.2 hsf]
 
 lemma card_preimage_of_injective {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn (hf.injOn _) hsf
