@@ -221,8 +221,8 @@ def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' y _ := tan_arctan y
   open_source := isOpen_Ioo
   open_target := isOpen_univ
-  continuous_toFun := continuousOn_tan_Ioo
-  continuous_invFun := continuous_arctan.continuousOn
+  continuousOn_toFun := continuousOn_tan_Ioo
+  continuousOn_invFun := continuous_arctan.continuousOn
 #align real.tan_local_homeomorph Real.tanLocalHomeomorph
 
 @[simp]

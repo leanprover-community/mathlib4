@@ -203,7 +203,7 @@ protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
   Quot.induction_on s fun l₁ => by
     choose f hf using fun a => Quotient.exists_rep (t a)
-    simpa [←funext hf] using List.Nodup.sigma
+    simpa [← funext hf] using List.Nodup.sigma
 #align multiset.nodup.sigma Multiset.Nodup.sigma
 
 protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
@@ -242,7 +242,7 @@ theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
 #align multiset.nodup_bind Multiset.nodup_bind
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
-  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext d₁ d₂
+  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext_iff_of_nodup d₁ d₂
 #align multiset.nodup.ext Multiset.Nodup.ext
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=

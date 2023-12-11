@@ -279,6 +279,15 @@ theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
 theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 #align iff.not_right Iff.not_right
 
+protected lemma Iff.ne {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) :=
+  Iff.not
+
+lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) → (a ≠ b ↔ c = d) :=
+  Iff.not_left
+
+lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
+  Iff.not_right
+
 /-! ### Declarations about `Xor'` -/
 
 @[simp] theorem xor_true : Xor' True = Not := by
@@ -466,7 +475,7 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 #align decidable.not_and_distrib Decidable.not_and
 #align decidable.not_and_distrib' Decidable.not_and'
 
-/-- One of de Morgan's laws: the negation of a conjunction is logically equivalent to the
+/-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
 theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and
 #align not_and_distrib not_and_or

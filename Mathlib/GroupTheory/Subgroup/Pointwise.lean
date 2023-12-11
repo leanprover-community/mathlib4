@@ -39,6 +39,16 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
 #align inv_coe_set inv_coe_set
 #align neg_coe_set neg_coe_set
 
+@[to_additive (attr := simp)]
+lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
+
+@[to_additive (attr := simp)]
+lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    MulOpposite.op a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
+
 variable [Group G] [AddGroup A] {s : Set G}
 
 namespace Subgroup
