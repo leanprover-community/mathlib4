@@ -479,7 +479,7 @@ theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)
 
 /-- An `AlgEquiv` between two rings restrict to an `AlgEquiv` between the integral closures inside
 them. -/
-noncomputable def AlgEquiv.mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S) :
+def AlgEquiv.mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S) :
     integralClosure R A ≃ₐ[R] integralClosure R S :=
   AlgEquiv.ofAlgHom (f : A →ₐ[R] S).mapIntegralClosure (f.symm : S →ₐ[R] A).mapIntegralClosure
     (AlgHom.ext fun _ ↦ Subtype.ext (f.right_inv _))
