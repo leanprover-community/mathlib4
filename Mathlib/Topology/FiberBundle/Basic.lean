@@ -486,7 +486,7 @@ The local trivialization will ultimately be a local homeomorphism. For now, we o
 local equiv version, denoted with a prime. In further developments, avoid this auxiliary version,
 and use `Z.local_triv` instead.
 -/
-def localTrivAsLocalEquiv (i : ι) : LocalEquiv Z.TotalSpace (B × F) where
+def localTrivAsLocalEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   source := Z.proj ⁻¹' Z.baseSet i
   target := Z.baseSet i ×ˢ univ
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩

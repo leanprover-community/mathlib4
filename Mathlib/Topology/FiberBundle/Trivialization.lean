@@ -64,7 +64,7 @@ below as `Trivialization F proj`) if the total space has not been given a topolo
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
-structure Pretrivialization (proj : Z → B) extends LocalEquiv Z (B × F) where
+structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
   open_target : IsOpen target
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -103,7 +103,7 @@ lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
 
 /-- If the fiber is nonempty, then the projection to -/
 lemma toLocalEquiv_injective [Nonempty F] :
-    Injective (toLocalEquiv : Pretrivialization F proj → LocalEquiv Z (B × F)) := fun e e' h => by
+    Injective (toLocalEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := fun e e' h => by
   refine ext' _ _ h ?_
   simpa only [fst_image_prod, univ_nonempty, target_eq]
     using congr_arg (Prod.fst '' LocalEquiv.target ·) h

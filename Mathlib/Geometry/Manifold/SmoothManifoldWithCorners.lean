@@ -141,7 +141,7 @@ define a smooth manifold with model space `H`, and model vector space `E`.
 @[ext] -- porting note: was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
-    LocalEquiv H E where
+    PartialEquiv H E where
   source_eq : source = univ
   unique_diff' : UniqueDiffOn 𝕜 toLocalEquiv.target
   continuous_toFun : Continuous toFun := by continuity
@@ -178,7 +178,7 @@ switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
 
 /-- The inverse to a model with corners, only registered as a local equiv. -/
-protected def symm : LocalEquiv E H :=
+protected def symm : PartialEquiv E H :=
   I.toLocalEquiv.symm
 #align model_with_corners.symm ModelWithCorners.symm
 
@@ -204,7 +204,7 @@ theorem toLocalEquiv_coe : (I.toLocalEquiv : H → E) = I :=
 #align model_with_corners.to_local_equiv_coe ModelWithCorners.toLocalEquiv_coe
 
 @[simp, mfld_simps]
-theorem mk_coe (e : LocalEquiv H E) (a b c d) :
+theorem mk_coe (e : PartialEquiv H E) (a b c d) :
     ((ModelWithCorners.mk e a b c d : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
   rfl
 #align model_with_corners.mk_coe ModelWithCorners.mk_coe
@@ -215,7 +215,7 @@ theorem toLocalEquiv_coe_symm : (I.toLocalEquiv.symm : E → H) = I.symm :=
 #align model_with_corners.to_local_equiv_coe_symm ModelWithCorners.toLocalEquiv_coe_symm
 
 @[simp, mfld_simps]
-theorem mk_symm (e : LocalEquiv H E) (a b c d) :
+theorem mk_symm (e : PartialEquiv H E) (a b c d) :
     (ModelWithCorners.mk e a b c d : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 #align model_with_corners.mk_symm ModelWithCorners.mk_symm
@@ -951,7 +951,7 @@ namespace PartialHomeomorph
 /-- Given a chart `f` on a manifold with corners, `f.extend I` is the extended chart to the model
 vector space. -/
 @[simp, mfld_simps]
-def extend : LocalEquiv M E :=
+def extend : PartialEquiv M E :=
   f.toLocalEquiv ≫ I.toLocalEquiv
 #align local_homeomorph.extend PartialHomeomorph.extend
 
@@ -1243,7 +1243,7 @@ variable [ChartedSpace H M] [ChartedSpace H' M']
 /-- The preferred extended chart on a manifold with corners around a point `x`, from a neighborhood
 of `x` to the model vector space. -/
 @[simp, mfld_simps]
-def extChartAt (x : M) : LocalEquiv M E :=
+def extChartAt (x : M) : PartialEquiv M E :=
   (chartAt H x).extend I
 #align ext_chart_at extChartAt
 

@@ -357,7 +357,7 @@ Should not be used outside of this file, because it is superseded by `toPartialH
 
 This is a first step towards the inverse function. -/
 def toLocalEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : LocalEquiv E F :=
+    (hc : Subsingleton E ∨ c < N⁻¹) : PartialEquiv E F :=
   (hf.injOn hc).toLocalEquiv _ _
 #align approximates_linear_on.to_local_equiv ApproximatesLinearOn.toLocalEquiv
 

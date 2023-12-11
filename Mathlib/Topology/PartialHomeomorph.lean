@@ -53,7 +53,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace �
 /-- partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
 structure PartialHomeomorph (α : Type*) (β : Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends LocalEquiv α β where
+  [TopologicalSpace β] extends PartialEquiv α β where
   open_source : IsOpen source
   open_target : IsOpen target
   continuousOn_toFun : ContinuousOn toFun source
@@ -103,17 +103,17 @@ theorem continuousOn_symm : ContinuousOn e.symm e.target :=
 #align local_homeomorph.continuous_on_symm PartialHomeomorph.continuousOn_symm
 
 @[simp, mfld_simps]
-theorem mk_coe (e : LocalEquiv α β) (a b c d) : (PartialHomeomorph.mk e a b c d : α → β) = e :=
+theorem mk_coe (e : PartialEquiv α β) (a b c d) : (PartialHomeomorph.mk e a b c d : α → β) = e :=
   rfl
 #align local_homeomorph.mk_coe PartialHomeomorph.mk_coe
 
 @[simp, mfld_simps]
-theorem mk_coe_symm (e : LocalEquiv α β) (a b c d) :
+theorem mk_coe_symm (e : PartialEquiv α β) (a b c d) :
     ((PartialHomeomorph.mk e a b c d).symm : β → α) = e.symm :=
   rfl
 #align local_homeomorph.mk_coe_symm PartialHomeomorph.mk_coe_symm
 
-theorem toLocalEquiv_injective : Injective (toLocalEquiv : PartialHomeomorph α β → LocalEquiv α β)
+theorem toLocalEquiv_injective : Injective (toLocalEquiv : PartialHomeomorph α β → PartialEquiv α β)
   | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, rfl => rfl
 #align local_homeomorph.to_local_equiv_injective PartialHomeomorph.toLocalEquiv_injective
 
@@ -216,7 +216,7 @@ def _root_.Homeomorph.toPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomorph
 #align homeomorph.to_local_homeomorph Homeomorph.toPartialHomeomorph
 
 /-- Replace `toLocalEquiv` field to provide better definitional equalities. -/
-def replaceEquiv (e : PartialHomeomorph α β) (e' : LocalEquiv α β) (h : e.toLocalEquiv = e') :
+def replaceEquiv (e : PartialHomeomorph α β) (e' : PartialEquiv α β) (h : e.toLocalEquiv = e') :
     PartialHomeomorph α β where
   toLocalEquiv := e'
   open_source := h ▸ e.open_source
@@ -225,7 +225,7 @@ def replaceEquiv (e : PartialHomeomorph α β) (e' : LocalEquiv α β) (h : e.to
   continuousOn_invFun := h ▸ e.continuousOn_invFun
 #align local_homeomorph.replace_equiv PartialHomeomorph.replaceEquiv
 
-theorem replaceEquiv_eq_self (e : PartialHomeomorph α β) (e' : LocalEquiv α β)
+theorem replaceEquiv_eq_self (e : PartialHomeomorph α β) (e' : PartialEquiv α β)
     (h : e.toLocalEquiv = e') : e.replaceEquiv e' h = e := by
   cases e
   subst e'
@@ -680,7 +680,7 @@ theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.s
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.image_isOpen_of_isOpen'
 
 /-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
-def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.source)
+def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : PartialHomeomorph α β where
   toLocalEquiv := e
   open_source := hs
@@ -690,7 +690,7 @@ def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.sourc
 #align local_homeomorph.of_continuous_open_restrict PartialHomeomorph.ofContinuousOpenRestrict
 
 /-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
-def ofContinuousOpen (e : LocalEquiv α β) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
+def ofContinuousOpen (e : PartialEquiv α β) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : PartialHomeomorph α β :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
 #align local_homeomorph.of_continuous_open PartialHomeomorph.ofContinuousOpen
