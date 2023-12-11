@@ -11,16 +11,15 @@ import Mathlib.Data.Polynomial.Eval
 /-!
 # Complexity
 
-This file defines basic concepts in complexity theory of polynomial-time computability, polynomial
-reductions, nondeterministic polynomial time, and NP completeness and hardness.
+This file defines the concepts in complexity theory of polynomial-time computability,
+nondeterministic polynomial time (NP) computation (defined using efficiently verifiable
+certificates), polynomial time reductions, and NP completeness and hardness.
 
-This file is schematic as several key elements remain to be filled in: existence of a univeral TM;
-noncomputability of halting, and Rice's Theorem (see `Computability.Partrec`); Cook-Levin Theorem,
-especially NP Completeness of 3SAT; definition of space bounded computation; equivalence of
-polynomially-bounded computation as defined in the three models `TM0`, `TM1`, and `TM2` in
-`Computability.TuringMachine`, and complexity bounds for a multitude of computations throughout
-mathlib, given a selected model and an acceptable encoding. An extensive set of  TODO items are
-noted in the body below.
+Key results remain to be filled in: existence of a univeral Turing machine (TM); halting
+problem; and Rice's Theorem (`Computability.Partrec` provide ); Cook-Levin Theorem; definition
+of space bounded computation; equivalence of resource bounds across machine models
+(`TM0`, `TM1`, and `TM2` in `Computability.TuringMachine`); and complexity bounds for functions in
+mathlib with an acceptable encoding. An extensive set of TODO items are in comments below.
 
 ## Main Definitions
 
@@ -31,12 +30,13 @@ noted in the body below.
 
 ## Implementation notes
 
-This file draws on `Computability.TMComputable`, which defines polynomial-time computations by
-`FinTM2`.
+This file draws on `Computability.TMComputable`, which defines polynomial-time computations
+`TM2ComputableInPolyTime` by `FinTM2`. It focuses on computations on the type `BitString`
+(`List Bool`) to enforce an acceptable encoding (i.e. not unary) when defining resource bounds.
 
 ## References
 
-* [Arora and Barak, *Arora and Barak*][arorabarak2016]
+* [Arora and Barak, *Computational Complexity: A Modern Approach*][arorabarak2016]
 -/
 
 open Computability
@@ -99,8 +99,9 @@ def NPHard (L1 : Set BitString): Prop :=
 
 /-- A language is NP complete if it is NP hard and is an NP language -/
 def NPComplete (L1 : Set BitString) : Prop := NPHard L1 ∧ L1 ∈ NPLanguages
+
 -- TODO: An NP complete language is in P iff P=NP
--- TODO: Cook-Levin drawing on universal TM and bounded halting and THEOREMS as NP complete
+-- TODO: Cook-Levin thm drawing on universal TM and bounded halting and THEOREMS as NP complete
 -- TODO: NP completeness for other specific languages especially 3SAT
 -- TODO: Decision vs search
 -- TODO: Deterministic and nondeterministic time hierarchy, space hierarchy, nonuniform
@@ -113,7 +114,8 @@ def NPComplete (L1 : Set BitString) : Prop := NPHard L1 ∧ L1 ∈ NPLanguages
 -- TODO: Polynomial-time hierachy. Karp Lipton
 -- TODO: NA, AC
 -- TODO: BPP, RP, coRP, ZPP. BPP⊆P/poly. Randomized reductions
--- TODO: IP=PSPACE, NEXP=MIP, NEXP=PCP[poly,poly4]
--- TODO: One-way functions, PRGs, derandomization
+-- TODO: IP=PSPACE, NEXP=MIP
+-- TODO: One-way functions, PRGs (HILL), derandomization
+-- TODO: PCP theorem
 
 end Turing
