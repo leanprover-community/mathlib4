@@ -130,7 +130,7 @@ lemma neg_modMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R') :
     (-x) %ᵐᵒⁿᵒᵐⁱᵃˡ s = -(x %ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
   x.neg_modOf _
 
-lemma add_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R') :
+lemma add_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R) :
     (x + y) %ᵐᵒⁿᵒᵐⁱᵃˡ s = (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) + (y %ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
   x.add_modOf _ _
 
