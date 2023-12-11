@@ -68,7 +68,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 -- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
-/-- Notation for `MeasurableSet` with respect to a non-standanrd σ-algebra. -/
+/-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
 end MeasureTheory
@@ -575,8 +575,36 @@ theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} 
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 #align measurable.le Measurable.le
 
-theorem MeasurableSpace.Top.measurable {α β : Type*} [MeasurableSpace β] (f : α → β) :
-    Measurable[⊤] f := fun _ _ => MeasurableSpace.measurableSet_top
-#align measurable_space.top.measurable MeasurableSpace.Top.measurable
-
 end MeasurableFunctions
+
+/-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
+class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
+  /-- Do not use this. Use `measurableSet_discrete` instead. -/
+  forall_measurableSet : ∀ s : Set α, MeasurableSet s
+
+instance : @DiscreteMeasurableSpace α ⊤ :=
+  @DiscreteMeasurableSpace.mk _ (_) fun _ ↦ MeasurableSpace.measurableSet_top
+
+-- See note [lower instance priority]
+instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [MeasurableSpace α]
+    [MeasurableSingletonClass α] [Countable α] : DiscreteMeasurableSpace α where
+  forall_measurableSet _ := (Set.to_countable _).measurableSet
+
+section DiscreteMeasurableSpace
+variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
+
+@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+  DiscreteMeasurableSpace.forall_measurableSet _
+
+@[measurability]
+lemma measurable_discrete (f : α → β) : Measurable f := fun _ _ ↦ measurableSet_discrete _
+#align measurable_space.top.measurable measurable_discrete
+
+/-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
+To be monitored. -/
+-- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
+    MeasurableSingletonClass α where
+  measurableSet_singleton _ := measurableSet_discrete _
+
+end DiscreteMeasurableSpace

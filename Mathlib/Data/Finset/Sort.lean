@@ -74,6 +74,7 @@ theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 #align finset.sort_singleton Finset.sort_singleton
 
+open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
   simp only [coe_toList, sort_eq]

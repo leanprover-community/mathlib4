@@ -150,7 +150,7 @@ theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g
 
 /-- Composition by an injective function on the left is itself injective. -/
 theorem Injective.comp_left {g : β → γ} (hg : Function.Injective g) :
-    Function.Injective ((· ∘ ·) g : (α → β) → α → γ) :=
+    Function.Injective (g ∘ · : (α → β) → α → γ) :=
   fun _ _ hgf ↦ funext fun i ↦ hg <| (congr_fun hgf i : _)
 #align function.injective.comp_left Function.Injective.comp_left
 
@@ -539,13 +539,13 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
 
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
-    Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f ↦
+    Surjective (g ∘ · : (α → β) → α → γ) := fun f ↦
   ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
 #align function.surjective.comp_left Function.Surjective.comp_left
 
 /-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
-    Bijective ((· ∘ ·) g : (α → β) → α → γ) :=
+    Bijective (g ∘ · : (α → β) → α → γ) :=
   ⟨hg.injective.comp_left, hg.surjective.comp_left⟩
 #align function.bijective.comp_left Function.Bijective.comp_left
 
@@ -765,27 +765,11 @@ lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ 
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 #align function.factors_through_iff Function.factorsThrough_iff
 
-lemma FactorsThrough.apply_extend {δ} {g : α → γ} (hf : FactorsThrough g f)
-    (F : γ → δ) (e' : β → γ) (b : β) :
-    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
-  by_cases hb : ∃ a, f a = b
-  case pos =>
-    rcases hb with ⟨a, ha⟩
-    subst b
-    rw [hf.extend_apply, FactorsThrough.extend_apply, comp]
-    case intro.hf =>
-      intro a b h
-      simp only [comp_apply]
-      apply congr_arg
-      exact hf h
-  case neg =>
-    rw [extend_apply' _ _ _ hb, extend_apply' _ _ _ hb, comp]
-#align function.factors_through.apply_extend Function.FactorsThrough.apply_extend
-
-lemma Injective.apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α → γ) (e' : β → γ) (b : β) :
+lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β → γ) (b : β) :
     F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
-  (hf.factorsThrough g).apply_extend F e' b
-#align function.injective.apply_extend Function.Injective.apply_extend
+  apply_dite F _ _ _
+#align function.factors_through.apply_extend Function.apply_extend
+#align function.injective.apply_extend Function.apply_extend
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
