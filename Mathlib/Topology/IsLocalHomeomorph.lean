@@ -84,8 +84,7 @@ theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeom
     fun y hy ↦ ?_⟩
   change f y = g.symm (gf y)
   have : f y ∈ g.source := by apply interior_subset hy.1.2
-  rw [← he, g.eq_symm_apply this (by apply g.map_source this)]
-  rfl
+  rw [← he, g.eq_symm_apply this (by apply g.map_source this), Function.comp_apply]
 
 theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeomorphOn f s) :
     IsLocalHomeomorphOn g (f '' s) := mk g _ <| by
