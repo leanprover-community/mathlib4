@@ -135,12 +135,12 @@ theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
 
-@[simp]
+@[simp↓]
 theorem sign_coe_add_one (n : ℕ) : Int.sign (n + 1) = 1 :=
   rfl
 #align int.sign_coe_add_one Int.sign_coe_add_one
 
-@[simp]
+@[simp↓]
 theorem sign_negSucc (n : ℕ) : Int.sign -[n+1] = -1 :=
   rfl
 #align int.sign_neg_succ_of_nat Int.sign_negSucc

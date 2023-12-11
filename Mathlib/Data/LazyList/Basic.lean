@@ -224,7 +224,7 @@ instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, De
       exact decidable_of_decidable_of_iff this
 #align lazy_list.mem.decidable LazyList.Mem.decidable
 
-@[simp]
+@[simp↓]
 theorem mem_nil {α} (x : α) : x ∈ @LazyList.nil α ↔ False :=
   Iff.rfl
 #align lazy_list.mem_nil LazyList.mem_nil

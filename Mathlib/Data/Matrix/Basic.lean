@@ -273,7 +273,7 @@ instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix
 -- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
 
-@[simp]
+@[simp↓]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
@@ -321,7 +321,7 @@ theorem smul_of [SMul R α] (r : R) (f : m → n → α) : r • of f = of (r �
   rfl
 #align matrix.smul_of Matrix.smul_of
 
-@[simp]
+@[simp↓]
 protected theorem map_zero [Zero α] [Zero β] (f : α → β) (h : f 0 = 0) :
     (0 : Matrix m n α).map f = 0 := by
   ext
@@ -788,7 +788,7 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α] (u v w : m → α) (x y : n → α)
 
-@[simp]
+@[simp↓]
 theorem dotProduct_zero : v ⬝ᵥ 0 = 0 := by simp [dotProduct]
 #align matrix.dot_product_zero Matrix.dotProduct_zero
 
@@ -797,7 +797,7 @@ theorem dotProduct_zero' : (v ⬝ᵥ fun _ => 0) = 0 :=
   dotProduct_zero v
 #align matrix.dot_product_zero' Matrix.dotProduct_zero'
 
-@[simp]
+@[simp↓]
 theorem zero_dotProduct : 0 ⬝ᵥ v = 0 := by simp [dotProduct]
 #align matrix.zero_dot_product Matrix.zero_dotProduct
 
@@ -1018,13 +1018,13 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-@[simp]
+@[simp↓]
 protected theorem mul_zero [Fintype n] (M : Matrix m n α) : M * (0 : Matrix n o α) = 0 := by
   ext
   apply dotProduct_zero
 #align matrix.mul_zero Matrix.mul_zero
 
-@[simp]
+@[simp↓]
 protected theorem zero_mul [Fintype m] (M : Matrix m n α) : (0 : Matrix l m α) * M = 0 := by
   ext
   apply zero_dotProduct
@@ -1725,25 +1725,25 @@ theorem dotProduct_mulVec [Fintype n] [Fintype m] [NonUnitalSemiring R] (v : m �
   exact Finset.sum_comm
 #align matrix.dot_product_mul_vec Matrix.dotProduct_mulVec
 
-@[simp]
+@[simp↓]
 theorem mulVec_zero [Fintype n] (A : Matrix m n α) : mulVec A 0 = 0 := by
   ext
   simp [mulVec]
 #align matrix.mul_vec_zero Matrix.mulVec_zero
 
-@[simp]
+@[simp↓]
 theorem zero_vecMul [Fintype m] (A : Matrix m n α) : vecMul 0 A = 0 := by
   ext
   simp [vecMul]
 #align matrix.zero_vec_mul Matrix.zero_vecMul
 
-@[simp]
+@[simp↓]
 theorem zero_mulVec [Fintype n] (v : n → α) : mulVec (0 : Matrix m n α) v = 0 := by
   ext
   simp [mulVec]
 #align matrix.zero_mul_vec Matrix.zero_mulVec
 
-@[simp]
+@[simp↓]
 theorem vecMul_zero [Fintype m] (v : m → α) : vecMul v (0 : Matrix m n α) = 0 := by
   ext
   simp [vecMul]

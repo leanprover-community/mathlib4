@@ -260,7 +260,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 #align multiset.exists_cons_of_mem Multiset.exists_cons_of_mem
 
-@[simp]
+@[simp↓]
 theorem not_mem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil _
 #align multiset.not_mem_zero Multiset.not_mem_zero
@@ -290,7 +290,7 @@ theorem zero_ne_cons {a : α} {m : Multiset α} : 0 ≠ a ::ₘ m := fun h =>
   not_mem_zero _ this
 #align multiset.zero_ne_cons Multiset.zero_ne_cons
 
-@[simp]
+@[simp↓]
 theorem cons_ne_zero {a : α} {m : Multiset α} : a ::ₘ m ≠ 0 :=
   zero_ne_cons.symm
 #align multiset.cons_ne_zero Multiset.cons_ne_zero
@@ -412,7 +412,7 @@ theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a
   @h _
 #align multiset.mem_of_subset Multiset.mem_of_subset
 
-@[simp]
+@[simp↓]
 theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun a => (not_mem_nil a).elim
 #align multiset.zero_subset Multiset.zero_subset
 
@@ -607,7 +607,7 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 #align multiset.le_cons_of_not_mem Multiset.le_cons_of_not_mem
 
-@[simp]
+@[simp↓]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
   ne_of_gt (lt_cons_self _ _)
 #align multiset.singleton_ne_zero Multiset.singleton_ne_zero
@@ -773,12 +773,12 @@ theorem card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := 
   rw [card.map_nsmul s n, Nat.nsmul_eq_mul]
 #align multiset.card_nsmul Multiset.card_nsmul
 
-@[simp]
+@[simp↓]
 theorem card_cons (a : α) (s : Multiset α) : card (a ::ₘ s) = card s + 1 :=
   Quot.inductionOn s fun _l => rfl
 #align multiset.card_cons Multiset.card_cons
 
-@[simp]
+@[simp↓]
 theorem card_singleton (a : α) : card ({a} : Multiset α) = 1 := by
   simp only [← cons_zero, card_zero, eq_self_iff_true, zero_add, card_cons]
 #align multiset.card_singleton Multiset.card_singleton
@@ -922,7 +922,7 @@ def replicate (n : ℕ) (a : α) : Multiset α :=
 theorem coe_replicate (n : ℕ) (a : α) : (List.replicate n a : Multiset α) = replicate n a := rfl
 #align multiset.coe_replicate Multiset.coe_replicate
 
-@[simp] theorem replicate_zero (a : α) : replicate 0 a = 0 := rfl
+@[simp↓] theorem replicate_zero (a : α) : replicate 0 a = 0 := rfl
 #align multiset.replicate_zero Multiset.replicate_zero
 
 @[simp] theorem replicate_succ (a : α) (n) : replicate (n + 1) a = a ::ₘ replicate n a := rfl
@@ -944,7 +944,7 @@ def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
 #align multiset.replicate_one Multiset.replicate_one
 
-@[simp] theorem card_replicate (n) (a : α) : card (replicate n a) = n :=
+@[simp↓] theorem card_replicate (n) (a : α) : card (replicate n a) = n :=
   length_replicate n a
 #align multiset.card_replicate Multiset.card_replicate
 
@@ -1207,7 +1207,7 @@ theorem coe_map (f : α → β) (l : List α) : map f ↑l = l.map f :=
   rfl
 #align multiset.coe_map Multiset.coe_map
 
-@[simp]
+@[simp↓]
 theorem map_zero (f : α → β) : map f 0 = 0 :=
   rfl
 #align multiset.map_zero Multiset.map_zero
@@ -1269,12 +1269,12 @@ theorem mem_map {f : α → β} {b : β} {s : Multiset α} : b ∈ map f s ↔ �
   Quot.inductionOn s fun _l => List.mem_map
 #align multiset.mem_map Multiset.mem_map
 
-@[simp]
+@[simp↓]
 theorem card_map (f : α → β) (s) : card (map f s) = card s :=
   Quot.inductionOn s fun _l => length_map _ _
 #align multiset.card_map Multiset.card_map
 
-@[simp]
+@[simp↓]
 theorem map_eq_zero {s : Multiset α} {f : α → β} : s.map f = 0 ↔ s = 0 := by
   rw [← Multiset.card_eq_zero, Multiset.card_map, Multiset.card_eq_zero]
 #align multiset.map_eq_zero Multiset.map_eq_zero
@@ -1409,7 +1409,7 @@ def foldl (f : β → α → β) (H : RightCommutative f) (b : β) (s : Multiset
   Quot.liftOn s (fun l => List.foldl f b l) fun _l₁ _l₂ p => p.foldl_eq H b
 #align multiset.foldl Multiset.foldl
 
-@[simp]
+@[simp↓]
 theorem foldl_zero (f : β → α → β) (H b) : foldl f H b 0 = b :=
   rfl
 #align multiset.foldl_zero Multiset.foldl_zero
@@ -1431,7 +1431,7 @@ def foldr (f : α → β → β) (H : LeftCommutative f) (b : β) (s : Multiset 
   Quot.liftOn s (fun l => List.foldr f b l) fun _l₁ _l₂ p => p.foldr_eq H b
 #align multiset.foldr Multiset.foldr
 
-@[simp]
+@[simp↓]
 theorem foldr_zero (f : α → β → β) (H b) : foldr f H b 0 = b :=
   rfl
 #align multiset.foldr_zero Multiset.foldr_zero
@@ -1800,12 +1800,12 @@ def inter (s t : Multiset α) : Multiset α :=
 instance : Inter (Multiset α) :=
   ⟨inter⟩
 
-@[simp]
+@[simp↓]
 theorem inter_zero (s : Multiset α) : s ∩ 0 = 0 :=
   Quot.inductionOn s fun l => congr_arg ofList l.bagInter_nil
 #align multiset.inter_zero Multiset.inter_zero
 
-@[simp]
+@[simp↓]
 theorem zero_inter (s : Multiset α) : 0 ∩ s = 0 :=
   Quot.inductionOn s fun l => congr_arg ofList l.nil_bagInter
 #align multiset.zero_inter Multiset.zero_inter
@@ -1975,7 +1975,7 @@ theorem coe_filter (l : List α) : filter p ↑l = l.filter p :=
   rfl
 #align multiset.coe_filter Multiset.coe_filter
 
-@[simp]
+@[simp↓]
 theorem filter_zero : filter p 0 = 0 :=
   rfl
 #align multiset.filter_zero Multiset.filter_zero
@@ -2171,7 +2171,7 @@ theorem coe_filterMap (f : α → Option β) (l : List α) : filterMap f l = l.f
   rfl
 #align multiset.coe_filter_map Multiset.coe_filterMap
 
-@[simp]
+@[simp↓]
 theorem filterMap_zero (f : α → Option β) : filterMap f 0 = 0 :=
   rfl
 #align multiset.filter_map_zero Multiset.filterMap_zero
@@ -2260,7 +2260,7 @@ theorem coe_countP (l : List α) : countP p l = l.countP p :=
   rfl
 #align multiset.coe_countp Multiset.coe_countP
 
-@[simp]
+@[simp↓]
 theorem countP_zero : countP p 0 = 0 :=
   rfl
 #align multiset.countp_zero Multiset.countP_zero
@@ -2345,7 +2345,7 @@ theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
   Quot.inductionOn s fun _l => List.countP_true
 #align multiset.countp_true Multiset.countP_True
 
-@[simp]
+@[simp↓]
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
   Quot.inductionOn s fun _l => List.countP_false
 #align multiset.countp_false Multiset.countP_False
@@ -2786,11 +2786,11 @@ theorem rel_flip_eq {s t : Multiset α} : Rel (fun a b => b = a) s t ↔ s = t :
   show Rel (flip (· = ·)) s t ↔ s = t by rw [rel_flip, rel_eq, eq_comm]
 #align multiset.rel_flip_eq Multiset.rel_flip_eq
 
-@[simp]
+@[simp↓]
 theorem rel_zero_left {b : Multiset β} : Rel r 0 b ↔ b = 0 := by rw [Rel_iff]; simp
 #align multiset.rel_zero_left Multiset.rel_zero_left
 
-@[simp]
+@[simp↓]
 theorem rel_zero_right {a : Multiset α} : Rel r a 0 ↔ a = 0 := by rw [Rel_iff]; simp
 #align multiset.rel_zero_right Multiset.rel_zero_right
 
@@ -3018,7 +3018,7 @@ theorem disjoint_of_le_right {s t u : Multiset α} (h : t ≤ u) : Disjoint s u 
   disjoint_of_subset_right (subset_of_le h)
 #align multiset.disjoint_of_le_right Multiset.disjoint_of_le_right
 
-@[simp]
+@[simp↓]
 theorem zero_disjoint (l : Multiset α) : Disjoint 0 l
   | a => (not_mem_nil a).elim
 #align multiset.zero_disjoint Multiset.zero_disjoint
@@ -3087,7 +3087,7 @@ def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
   ∃ l : List α, m = l ∧ l.Pairwise r
 #align multiset.pairwise Multiset.Pairwise
 
-@[simp]
+@[simp↓]
 theorem pairwise_zero (r : α → α → Prop) : Multiset.Pairwise r 0 :=
   ⟨[], rfl, List.Pairwise.nil⟩
 #align multiset.pairwise_zero Multiset.pairwise_zero

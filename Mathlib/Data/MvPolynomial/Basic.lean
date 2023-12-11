@@ -354,7 +354,7 @@ theorem monomial_zero' : (monomial (0 : σ →₀ ℕ) : R → MvPolynomial σ R
   rfl
 #align mv_polynomial.monomial_zero' MvPolynomial.monomial_zero'
 
-@[simp]
+@[simp↓]
 theorem monomial_eq_zero {s : σ →₀ ℕ} {b : R} : monomial s b = 0 ↔ b = 0 :=
   Finsupp.single_eq_zero
 #align mv_polynomial.monomial_eq_zero MvPolynomial.monomial_eq_zero
@@ -621,7 +621,7 @@ theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C 
   smul_apply C p m
 #align mv_polynomial.coeff_smul MvPolynomial.coeff_smul
 
-@[simp]
+@[simp↓]
 theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
   rfl
 #align mv_polynomial.coeff_zero MvPolynomial.coeff_zero
@@ -897,7 +897,7 @@ variable {σ}
 
 variable (R)
 
-@[simp]
+@[simp↓]
 theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 := by
   simp [constantCoeff_eq]
 #align mv_polynomial.constant_coeff_X MvPolynomial.constantCoeff_X
