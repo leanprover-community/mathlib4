@@ -98,6 +98,7 @@ variable [CompleteLattice α] (f : α →o α)
 open Function fixedPoints Cardinal Order OrderHom
 
 /- Ordinal approximants of the least fixed points -/
+set_option linter.unusedVariables false in
 def lfp_approx (a : Ordinal.{u}) : α :=
   sSup { f (lfp_approx b) | (b : Ordinal) (h : b < a) }
 termination_by lfp_approx a => a
@@ -225,6 +226,7 @@ theorem lfp_is_lfp_approx : ∃ a : Ordinal, lfp_approx f a = OrderHom.lfp f := 
 
 
 /- Ordinal approximants of the least fixed points -/
+set_option linter.unusedVariables false in
 def gfp_approx (a : Ordinal.{u}) : α :=
   sInf { f (gfp_approx b) | (b : Ordinal) (h : b < a) }
 termination_by gfp_approx a => a
