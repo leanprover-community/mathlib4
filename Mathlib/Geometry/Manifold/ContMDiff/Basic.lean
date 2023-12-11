@@ -451,13 +451,11 @@ lemma contMDiffOn_openEmbedding_symm :
     intros z hz
     -- factorise into the chart `e` and the model `id`
     simp only [mfld_simps]
-    have : e ((h.toLocalHomeomorph e).symm (I.symm z)) = (I.symm z) := by
-      apply h.toLocalHomeomorph_right_inv e
-      -- I.symm z ∈ range e
+    have : I.symm z ∈ range e := by
       rw [ModelWithCorners.symm, ← mem_preimage]
       exact hz.2.1
     -- TODO: fix the proof; `this` doesn't apply any more as z and z† don't unify...
-    sorry --rw [this]
+    sorry --rw [h.toLocalHomeomorph_right_inv e this]
     --apply I.right_inv
     --exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
