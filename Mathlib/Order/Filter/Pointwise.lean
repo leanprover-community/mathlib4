@@ -1180,14 +1180,13 @@ protected def instSMulFilter : SMul α (Filter β) :=
 scoped[Pointwise] attribute [instance] Filter.instSMulFilter Filter.instVAddFilter
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (fun b => a • b) f = a • f :=
+protected theorem map_smul : map (fun b => a • b) f = a • f :=
   rfl
 #align filter.map_smul Filter.map_smul
 #align filter.map_vadd Filter.map_vadd
 
 @[to_additive]
-theorem mem_smul_filter : s ∈ a • f ↔ (a • ·) ⁻¹' s ∈ f :=
-  Iff.rfl
+theorem mem_smul_filter : s ∈ a • f ↔ (a • ·) ⁻¹' s ∈ f := Iff.rfl
 #align filter.mem_smul_filter Filter.mem_smul_filter
 #align filter.mem_vadd_filter Filter.mem_vadd_filter
 
@@ -1274,7 +1273,7 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Filter γ) :=
-  ⟨fun a b f => by simp only [← map_smul, map_map, smul_assoc]; rfl⟩
+  ⟨fun a b f => by simp only [← Filter.map_smul, map_map, smul_assoc]; rfl⟩
 #align filter.is_scalar_tower Filter.isScalarTower
 #align filter.vadd_assoc_class Filter.vaddAssocClass
 
@@ -1316,8 +1315,8 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive "An additive action of an additive monoid on a type `β` gives an additive action on
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← map_smul, map_map, Function.comp, ← mul_smul]
-  one_smul f := by simp only [← map_smul, one_smul, map_id']
+  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp, ← mul_smul]
+  one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 #align filter.mul_action_filter Filter.mulActionFilter
 #align filter.add_action_filter Filter.addActionFilter
 

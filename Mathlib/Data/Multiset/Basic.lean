@@ -621,7 +621,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
   Quot.induction_on s fun l ↦ by simp only [cons_zero, ← coe_singleton, quot_mk_to_coe'', coe_le,
-    coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
+    coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff']
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
   simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne.def, and_not_self, or_false,
@@ -3099,7 +3099,7 @@ theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
 
 theorem pairwise_coe_iff_pairwise {r : α → α → Prop} (hr : Symmetric r) {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r :=
-  Iff.intro (fun ⟨_l', Eq, h⟩ => ((Quotient.exact Eq).pairwise_iff hr).2 h) fun h => ⟨l, rfl, h⟩
+  Iff.intro (fun ⟨_l', Eq, h⟩ => ((Quotient.exact Eq).pairwise_iff @hr).2 h) fun h => ⟨l, rfl, h⟩
 #align multiset.pairwise_coe_iff_pairwise Multiset.pairwise_coe_iff_pairwise
 
 theorem map_set_pairwise {f : α → β} {r : β → β → Prop} {m : Multiset α}

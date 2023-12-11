@@ -104,13 +104,13 @@ lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s :=
 
 @[simp] lemma erase_covby (ha : a ∈ s) : s.erase a ⋖ s := ⟨erase_ssubset ha, (erase_wcovby _ _).2⟩
 
-lemma _root_.Covby.exists_finset_insert (h : s ⋖ t) : ∃ a, a ∉ s ∧ insert a s = t := by
+lemma _root_.Covby.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t := by
   simpa using h.exists_finset_cons
 
 lemma _root_.Covby.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, t.erase a = s := by
   simpa only [← coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
 
-lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a, a ∉ s ∧ insert a s = t := by
+lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t := by
   simp only [← coe_covby_coe, Set.covby_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
 
 lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by

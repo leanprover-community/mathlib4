@@ -1606,6 +1606,7 @@ import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
@@ -3580,7 +3581,7 @@ import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.Irreducible
-import Mathlib.Topology.IsLocallyHomeomorph
+import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.LocalExtr
