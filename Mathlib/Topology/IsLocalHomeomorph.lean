@@ -70,17 +70,17 @@ theorem mk (h : ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀
   exact
     ⟨{ e with
         toFun := f
-        map_source' := fun _x hx => by rw [he hx]; exact e.map_source' hx
-        left_inv' := fun _x hx => by rw [he hx]; exact e.left_inv' hx
-        right_inv' := fun _y hy => by rw [he (e.map_target' hy)]; exact e.right_inv' hy
+        map_source' := fun _x hx ↦ by rw [he hx]; exact e.map_source' hx
+        left_inv' := fun _x hx ↦ by rw [he hx]; exact e.left_inv' hx
+        right_inv' := fun _y hy ↦ by rw [he (e.map_target' hy)]; exact e.right_inv' hy
         continuousOn_toFun := (continuousOn_congr he).mpr e.continuousOn_toFun },
       hx, rfl⟩
 #align is_locally_homeomorph_on.mk IsLocalHomeomorphOn.mk
 
 variable {g f s t}
 
-theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) :
-    IsLocalHomeomorphOn f s := fun x hx ↦ hf x (hst hx)
+theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) : IsLocalHomeomorphOn f s :=
+  fun x hx ↦ hf x (hst hx)
 
 theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeomorphOn g (f '' s))
     (cont : ∀ x ∈ s, ContinuousAt f x) : IsLocalHomeomorphOn f s := mk f s fun x hx ↦ by
@@ -114,7 +114,7 @@ protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x �
 #align is_locally_homeomorph_on.continuous_at IsLocalHomeomorphOn.continuousAt
 
 protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
-  ContinuousAt.continuousOn fun _x => hf.continuousAt
+  ContinuousAt.continuousOn fun _x ↦ hf.continuousAt
 #align is_locally_homeomorph_on.continuous_on IsLocalHomeomorphOn.continuousOn
 
 protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
@@ -166,7 +166,7 @@ agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -
 theorem mk (h : ∀ x : X, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀ y ∈ e.source, f y = e y) :
     IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
-    (IsLocalHomeomorphOn.mk f Set.univ fun x _hx => h x)
+    (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
 #align is_locally_homeomorph.mk IsLocalHomeomorph.mk
 
 variable {g f}
@@ -190,7 +190,7 @@ protected theorem continuous (hf : IsLocalHomeomorph f) : Continuous f :=
 
 /-- A local homeomorphism is an open map. -/
 protected theorem isOpenMap (hf : IsLocalHomeomorph f) : IsOpenMap f :=
-  IsOpenMap.of_nhds_le fun x => ge_of_eq (hf.map_nhds_eq x)
+  IsOpenMap.of_nhds_le fun x ↦ ge_of_eq (hf.map_nhds_eq x)
 #align is_locally_homeomorph.is_open_map IsLocalHomeomorph.isOpenMap
 
 /-- The composition of local homeomorphisms is a local homeomorphism. -/
