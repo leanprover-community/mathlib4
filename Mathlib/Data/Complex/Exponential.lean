@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.Abs
+import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 
 #align_import data.complex.exponential from "leanprover-community/mathlib"@"a8b2226cfb0a79f5986492053fc49b1a0c6aeffb"
@@ -141,7 +142,7 @@ theorem isCauSeq_geo_series {β : Type*} [Ring β] [Nontrivial β] {abv : β →
         refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
         exact pow_le_one _ (by positivity) hx1.le
       · intro n _
-        rw [←one_mul (abv x ^ n), pow_succ]
+        rw [← one_mul (abv x ^ n), pow_succ]
         gcongr)
 #align is_cau_geo_series isCauSeq_geo_series
 
@@ -355,7 +356,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff hn0, one_mul]) fun m hm => by
       rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ, mul_comm m.succ, Nat.cast_mul, ← div_div,
-        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_cast_nat]
+        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
 #align complex.is_cau_abs_exp Complex.isCauSeq_abs_exp
@@ -568,7 +569,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp]
   rw [← lim_conj]
   refine' congr_arg CauSeq.lim (CauSeq.ext fun _ => _)
-  dsimp [exp', Function.comp, isCauSeq_conj, cauSeqConj]
+  dsimp [exp', Function.comp_def, isCauSeq_conj, cauSeqConj]
   rw [(starRingEnd _).map_sum]
   refine' sum_congr rfl fun n _ => _
   rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
@@ -1642,7 +1643,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
       (abv_sum_le_sum_abv (abv := Complex.abs) _ _)
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
-      simp_rw [map_mul, map_pow, map_div₀, abs_cast_nat]
+      simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
@@ -1669,12 +1670,12 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
         ∑ i : ℕ in range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
       abv_sum_le_sum_abv _ _
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / (n + i).factorial := by
-      simp [Complex.abs_cast_nat, map_div₀, abv_pow abs]
+      simp [Complex.abs_natCast, map_div₀, abv_pow abs]
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
     _ = ∑ i : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
   · gcongr
-    · exact_mod_cast Nat.factorial_mul_pow_le_factorial
+    · exact mod_cast Nat.factorial_mul_pow_le_factorial
   · refine' Finset.sum_congr rfl fun _ _ => _
     simp only [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
   · rw [← mul_sum]
@@ -1715,7 +1716,7 @@ open Complex Finset
 
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m in range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
-  have hxc : Complex.abs x ≤ 1 := by exact_mod_cast hx
+  have hxc : Complex.abs x ≤ 1 := mod_cast hx
   convert exp_bound hxc hn using 2 <;>
   --Porting note: was `norm_cast`
   simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
@@ -1735,7 +1736,7 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 #align real.exp_bound' Real.exp_bound'
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
-  have : abs' x ≤ 1 := by exact_mod_cast hx
+  have : abs' x ≤ 1 := mod_cast hx
   --Porting note: was
   --exact_mod_cast Complex.abs_exp_sub_one_le (x := x) this
   have := Complex.abs_exp_sub_one_le (x := x) (by simpa using this)
@@ -1746,8 +1747,8 @@ theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
   rw [← _root_.sq_abs]
   --Porting note: was
-  --exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
-  have : Complex.abs x ≤ 1 := by exact_mod_cast hx
+  -- exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
+  have : Complex.abs x ≤ 1 := mod_cast hx
   have := Complex.abs_exp_sub_one_sub_id_le this
   rw [← ofReal_one, ← ofReal_exp, ← ofReal_sub, ← ofReal_sub, abs_ofReal, abs_ofReal] at this
   exact this

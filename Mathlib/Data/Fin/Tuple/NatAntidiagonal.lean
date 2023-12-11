@@ -83,7 +83,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
-    · simp
+    · decide
     · simp [eq_comm]
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons]
@@ -91,7 +91,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
     simp_rw [List.mem_bind, List.mem_map,
       List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
       @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),
-      ←Prod.mk.inj_iff (a₁ := Prod.fst _), exists_eq_right]
+      ← Prod.mk.inj_iff (a₁ := Prod.fst _), exists_eq_right]
 #align list.nat.mem_antidiagonal_tuple List.Nat.mem_antidiagonalTuple
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/

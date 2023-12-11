@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
+import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
 
@@ -13,9 +14,8 @@ import Mathlib.Data.List.Forall2
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
-counterparts. These are defined in [`Data.List.Defs`](./Defs).
+counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
 -/
-
 
 variable {ι α M N P M₀ G R : Type*}
 
@@ -45,6 +45,15 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
     _ = _ := foldl_assoc
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
+
+@[to_additive]
+lemma prod_induction
+    (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
+    p l.prod := by
+  induction' l with a l ih; simpa
+  rw [List.prod_cons]
+  simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
+  exact hom _ _ (base.1) (ih base.2)
 
 @[to_additive (attr := simp)]
 theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
@@ -94,6 +103,13 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
   List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons, h₂ hl]
 #align list.prod_hom_rel List.prod_hom_rel
 #align list.sum_hom_rel List.sum_hom_rel
+
+@[to_additive]
+theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
+    (Forall₂ R ⇒ R) prod prod :=
+  rel_foldl hf h
+#align list.rel_prod List.rel_prod
+#align list.rel_sum List.rel_sum
 
 @[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [MonoidHomClass F M N] (f : F) :
@@ -542,13 +558,20 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 #align list.sum_le_foldr_max List.sum_le_foldr_max
 
+@[to_additive]
+theorem prod_erase_of_comm [DecidableEq M] [Monoid M] {a} {l : List M} (ha : a ∈ l)
+    (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
+    a * (l.erase a).prod = l.prod := by
+  induction' l with b l ih; simp at ha
+  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha; simp
+  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
+    comm a ha b (l.mem_cons_self b), mul_assoc,
+    ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
+
 @[to_additive (attr := simp)]
-theorem prod_erase [DecidableEq M] [CommMonoid M] {a} :
-    ∀ {l : List M}, a ∈ l → a * (l.erase a).prod = l.prod
-  | b :: l, h => by
-    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
-    · simp only [List.erase, if_pos, prod_cons, beq_self_eq_true]
-    · simp only [List.erase, beq_false_of_ne ne.symm, prod_cons, prod_erase h, mul_left_comm a b]
+theorem prod_erase [DecidableEq M] [CommMonoid M] {a} {l : List M} (ha : a ∈ l) :
+    a * (l.erase a).prod = l.prod :=
+  prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
 #align list.prod_erase List.prod_erase
 #align list.sum_erase List.sum_erase
 
@@ -594,7 +617,7 @@ If desired, we could add a class stating that `default = 0`.
 
 /-- This relies on `default ℕ = 0`. -/
 theorem headI_add_tail_sum (L : List ℕ) : L.headI + L.tail.sum = L.sum := by
-  cases L <;> simp
+  cases L <;> simp; rfl
 #align list.head_add_tail_sum List.headI_add_tail_sum
 
 /-- This relies on `default ℕ = 0`. -/

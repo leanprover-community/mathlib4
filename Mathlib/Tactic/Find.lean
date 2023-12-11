@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
 import Lean
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -25,6 +25,7 @@ open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab
+open Std.Tactic
 
 namespace Mathlib.Tactic.Find
 
@@ -49,7 +50,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isMatcher declName
 
 initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
-  DeclCache.mk "#find: init cache" {} fun _ c headMap ↦ do
+  DeclCache.mk "#find: init cache" failure {} fun _ c headMap ↦ do
     if (← isBlackListed c.name) then
       return headMap
     -- TODO: this should perhaps use `forallTelescopeReducing` instead,

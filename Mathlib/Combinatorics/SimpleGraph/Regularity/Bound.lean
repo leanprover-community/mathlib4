@@ -32,8 +32,6 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 open Finset Fintype Function Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open BigOperators
 
 namespace SzemerediRegularity
@@ -72,7 +70,7 @@ local notation3 "a" => (card α / P.parts.card - m * 4 ^ P.parts.card : ℕ)
 namespace SzemerediRegularity.Positivity
 
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
-  (Odd.pow_pos_iff (by norm_num)).mp
+  (Odd.pow_pos_iff (by decide)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m :=
@@ -124,7 +122,7 @@ theorem eps_pow_five_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : �
 #align szemeredi_regularity.eps_pow_five_pos SzemerediRegularity.eps_pow_five_pos
 
 theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) : 0 < ε :=
-  (Odd.pow_pos_iff (by norm_num)).mp (eps_pow_five_pos hPε)
+  (Odd.pow_pos_iff (by decide)).mp (eps_pow_five_pos hPε)
 #align szemeredi_regularity.eps_pos SzemerediRegularity.eps_pos
 
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
@@ -137,8 +135,8 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P
 #align szemeredi_regularity.hundred_div_ε_pow_five_le_m SzemerediRegularity.hundred_div_ε_pow_five_le_m
 
 theorem hundred_le_m [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
-    (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m := by
-  exact_mod_cast
+    (hPε : 100 ≤ (4 : ℝ) ^ P.parts.card * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m :=
+  mod_cast
     (hundred_div_ε_pow_five_le_m hPα hPε).trans'
       (le_div_self (by norm_num) (by sz_positivity) <| pow_le_one _ (by sz_positivity) hε)
 #align szemeredi_regularity.hundred_le_m SzemerediRegularity.hundred_le_m
@@ -148,7 +146,7 @@ theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   rw [stepBound, ← Nat.div_div_eq_div_mul]
   conv_rhs => rw [← Nat.sub_add_cancel h]
   rw [add_le_add_iff_right, tsub_le_iff_left, ← Nat.add_sub_assoc h]
-  exact Nat.le_pred_of_lt (Nat.lt_div_mul_add h)
+  exact Nat.le_sub_one_of_lt (Nat.lt_div_mul_add h)
 #align szemeredi_regularity.a_add_one_le_four_pow_parts_card SzemerediRegularity.a_add_one_le_four_pow_parts_card
 
 theorem card_aux₁ (hucard : u.card = m * 4 ^ P.parts.card + a) :
@@ -253,8 +251,8 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
   -- `simp [← mul_div_right_comm _ (t.card : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`
-  -- `  mul_pow, div_le_iff (sq_pos_of_ne_zero _ htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul, ←`
-  -- `  mul_sum]`
+  -- `  mul_pow, div_le_iff (sq_pos_of_ne_zero _ htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
+  -- `  ← mul_sum]`
   simp_rw [sub_div' _ _ _ htcard.ne']
   conv_lhs => enter [2, 2, x]; rw [div_pow]
   rw [div_pow, ← sum_div, ← mul_div_right_comm _ (t.card : 𝕜), ← add_div,

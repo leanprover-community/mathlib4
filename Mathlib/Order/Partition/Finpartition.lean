@@ -456,11 +456,14 @@ end Finpartition
 
 namespace Finpartition
 
-variable [DecidableEq α] {s t : Finset α} (P : Finpartition s)
+variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
   nonempty_iff_ne_empty.2 <| P.ne_bot ha
 #align finpartition.nonempty_of_mem_parts Finpartition.nonempty_of_mem_parts
+
+lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
+  P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
 theorem exists_mem {a : α} (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
   simp_rw [← P.supParts] at ha

@@ -8,7 +8,7 @@ import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
@@ -21,7 +21,7 @@ import Mathlib.Tactic.SolveByElim
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 -/
 
@@ -43,7 +43,7 @@ end Lean.Meta
 
 namespace Mathlib.Tactic.Rewrites
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.rewrites
 initialize registerTraceClass `Tactic.rewrites.lemmas
@@ -55,6 +55,8 @@ def backwardWeight := 1
 
 /-- Configuration for `DiscrTree`. -/
 def discrTreeConfig : WhnfCoreConfig := {}
+
+open Lean.Meta.DiscrTree (keysSpecific)
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -75,7 +77,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
       let lhsKey ← DiscrTree.mkPath lhs discrTreeConfig
       let rhsKey ← DiscrTree.mkPath rhs discrTreeConfig
       return #[(lhsKey, (name, false, forwardWeight * lhsKey.size)),
-        (rhsKey, (name, true, backwardWeight * rhsKey.size))]
+        (rhsKey, (name, true, backwardWeight * rhsKey.size))].filter fun t => keysSpecific t.1
     | _ => return #[]
 
 /-- Select `=` and `↔` local hypotheses. -/
@@ -85,6 +87,7 @@ def localHypotheses (except : List FVarId := []) : MetaM (Array (Expr × Bool ×
   for h in r do
     if except.contains h.fvarId! then continue
     let (_, _, type) ← forallMetaTelescopeReducing (← inferType h)
+    let type ← whnfR type
     match type.getAppFnArgs with
     | (``Eq, #[_, lhs, rhs])
     | (``Iff, #[lhs, rhs]) => do
@@ -95,21 +98,9 @@ def localHypotheses (except : List FVarId := []) : MetaM (Array (Expr × Bool ×
     | _ => pure ()
   return result
 
-/-- Insert a lemma into the discrimination tree. -/
--- Recall that `rw?` caches the discrimination tree on disk.
--- If you are modifying this file, you will probably want to delete
--- `build/lib/MathlibExtras/Rewrites.extra`
--- so that the cache is rebuilt.
-def addLemma (name : Name) (constInfo : ConstantInfo)
-    (lemmas : DiscrTree (Name × Bool × Nat)) : MetaM (DiscrTree (Name × Bool × Nat)) := do
-  let mut lemmas := lemmas
-  for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value discrTreeConfig
-  return lemmas
-
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × Bool × Nat)) :=
-  DiscrTreeCache.mk "rw?: init cache" processLemma (config := discrTreeConfig)
+  DiscrTreeCache.mk "rw?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -125,7 +116,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.Rewrites).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
 
 /--
 Retrieve the current cache of lemmas.
@@ -133,9 +124,9 @@ Retrieve the current cache of lemmas.
 initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat)) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d) (config := discrTreeConfig)
+    -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
+    let d := (·.1) <$> unpickle (DiscrTree (Name × Bool × Nat)) path
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 
@@ -255,7 +246,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
     | .inr lem => try? <| mkConstWithFreshMVarLevels lem) | return none
-    trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
+    trace[Tactic.rewrites] m!"considering {if symm then "← " else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
     if result.mvarIds.isEmpty then
@@ -329,7 +320,7 @@ syntax forbidden := " [" (("-" ident),*,?) "]"
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 You can use `rw? [-my_lemma, -my_theorem]` to prevent `rw?` using the named lemmas.
 -/

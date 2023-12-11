@@ -554,6 +554,89 @@ theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×�
 
 end Diagonal
 
+end Set
+
+section Pullback
+
+open Set
+
+variable {X Y Z}
+
+/-- The fiber product $X \times_Y Z$. -/
+abbrev Function.Pullback (f : X → Y) (g : Z → Y) := {p : X × Z // f p.1 = g p.2}
+
+/-- The fiber product $X \times_Y X$. -/
+abbrev Function.PullbackSelf (f : X → Y) := f.Pullback f
+
+/-- The projection from the fiber product to the first factor. -/
+def Function.Pullback.fst {f : X → Y} {g : Z → Y} (p : f.Pullback g) : X := p.val.1
+
+/-- The projection from the fiber product to the second factor. -/
+def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := p.val.2
+
+open Function.Pullback in
+lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
+
+/-- The diagonal map $\Delta: X \to X \times_Y X$. -/
+def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
+
+/-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
+def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
+
+/-- Three functions between the three pairs of spaces $X_i, Y_i, Z_i$ that are compatible
+  induce a function $X_1 \times_{Y_1} Z_1 \to X_2 \times_{Y_2} Z_2$. -/
+def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
+    {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}
+    (mapX : X₁ → X₂) (mapY : Y₁ → Y₂) (mapZ : Z₁ → Z₂)
+    (commX : f₂ ∘ mapX = mapY ∘ f₁) (commZ : g₂ ∘ mapZ = mapY ∘ g₁)
+    (p : f₁.Pullback g₁) : f₂.Pullback g₂ :=
+  ⟨(mapX p.fst, mapZ p.snd),
+    (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
+
+open Function.Pullback in
+/-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/
+def Function.PullbackSelf.map_fst {f : X → Y} {g : Z → Y} :
+    (@snd X Y Z f g).PullbackSelf → f.PullbackSelf :=
+  mapPullback fst g fst (pullback_comm_sq f g) (pullback_comm_sq f g)
+
+open Function.Pullback in
+/-- The projection $(X \times_Y Z) \times_X (X \times_Y Z) \to Z \times_Y Z$. -/
+def Function.PullbackSelf.map_snd {f : X → Y} {g : Z → Y} :
+    (@fst X Y Z f g).PullbackSelf → g.PullbackSelf :=
+  mapPullback snd f snd (pullback_comm_sq f g).symm (pullback_comm_sq f g).symm
+
+open Function.PullbackSelf Function.Pullback
+theorem preimage_map_fst_pullbackDiagonal {f : X → Y} {g : Z → Y} :
+    @map_fst X Y Z f g ⁻¹' pullbackDiagonal f = pullbackDiagonal (@snd X Y Z f g) := by
+  ext ⟨⟨p₁, p₂⟩, he⟩
+  simp_rw [pullbackDiagonal, mem_setOf, Subtype.ext_iff, Prod.ext_iff]
+  exact (and_iff_left he).symm
+
+theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X} (inj : g.Injective) :
+    mapPullback g id g (by rfl) (by rfl) ⁻¹' pullbackDiagonal f = pullbackDiagonal (f ∘ g) :=
+  ext fun _ ↦ inj.eq_iff
+
+theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
+    toPullbackDiag f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
+  ext x
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨rfl, hx, hx⟩
+  · obtain ⟨⟨x, y⟩, h⟩ := x
+    rintro ⟨rfl : x = y, h2x⟩
+    exact mem_image_of_mem _ h2x.1
+
+theorem range_toPullbackDiag (f : X → Y) : range (toPullbackDiag f) = pullbackDiagonal f := by
+  rw [← image_univ, image_toPullbackDiag, univ_prod_univ, preimage_univ, inter_univ]
+
+theorem injective_toPullbackDiag (f : X → Y) : (toPullbackDiag f).Injective :=
+  fun _ _ h ↦ congr_arg Prod.fst (congr_arg Subtype.val h)
+
+end Pullback
+
+namespace Set
+
 section OffDiag
 
 variable {α : Type*} {s t : Set α} {x : α × α} {a : α}
@@ -750,6 +833,9 @@ theorem Disjoint.set_pi (hi : i ∈ s) (ht : Disjoint (t₁ i) (t₂ i)) : Disjo
   disjoint_left.2 fun _ h₁ h₂ => disjoint_left.1 ht (h₁ _ hi) (h₂ _ hi)
 #align set.disjoint.set_pi Set.Disjoint.set_pi
 
+theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
+    uniqueElim ⁻¹' pi univ t = t (default : ι) := by ext; simp [Unique.forall_iff]
+
 section Nonempty
 
 variable [∀ i, Nonempty (α i)]
@@ -815,6 +901,25 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
 theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
   simp [pi, or_imp, forall_and, setOf_and]
 #align set.union_pi Set.union_pi
+
+theorem union_pi_inter
+    (ht₁ : ∀ (i) (_ : i ∉ s₁), t₁ i = univ) (ht₂ : ∀ (i) (_ : i ∉ s₂), t₂ i = univ) :
+    (s₁ ∪ s₂).pi (fun i ↦ t₁ i ∩ t₂ i) = s₁.pi t₁ ∩ s₂.pi t₂ := by
+  ext x
+  simp only [mem_pi, mem_union, mem_inter_iff]
+  refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
+    fun h i hi ↦ ?_⟩
+  cases' hi with hi hi
+  · by_cases hi2 : i ∈ s₂
+    · exact ⟨h.1 i hi, h.2 i hi2⟩
+    · refine ⟨h.1 i hi, ?_⟩
+      rw [ht₂ i hi2]
+      exact mem_univ _
+  · by_cases hi1 : i ∈ s₁
+    · exact ⟨h.1 i hi1, h.2 i hi⟩
+    · refine ⟨?_, h.2 i hi⟩
+      rw [ht₁ i hi1]
+      exact mem_univ _
 
 @[simp]
 theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by

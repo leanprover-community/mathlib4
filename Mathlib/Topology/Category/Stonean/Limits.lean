@@ -310,11 +310,11 @@ end Isos
 noncomputable
 def createsPullbacksOfOpenEmbedding :
     CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
-createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
-  refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
-    (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
-  refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
-  exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
+  createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
+    refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
+      (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
+    refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
+    exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
 
 instance : HasPullbacksOfInclusions Stonean where
   hasPullbackInl f := by
@@ -323,17 +323,15 @@ instance : HasPullbacksOfInclusions Stonean where
     apply Stonean.Sigma.openEmbedding_ι
 
 noncomputable
-instance : PreservesPullbacksOfInclusions Stonean.toCompHaus where
+instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
   preservesPullbackInl := by
     intros X Y Z f
     apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
     have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
     have := Stonean.createsPullbacksOfOpenEmbedding f this
-    apply preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
+    exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
-instance : FinitaryExtensive Stonean :=
-  have := fullyFaithfulReflectsLimits Stonean.toCompHaus
-  have := fullyFaithfulReflectsColimits Stonean.toCompHaus
+instance : FinitaryExtensive Stonean.{u} :=
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean

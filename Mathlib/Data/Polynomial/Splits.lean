@@ -438,6 +438,19 @@ theorem splits_id_of_splits {f : K[X]} (h : Splits i f)
     (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (RingHom.id K) f :=
   splits_of_comp (RingHom.id K) i h roots_mem_range
 
+theorem splits_of_algHom {R L' : Type*} [CommRing R] [Field L'] [Algebra R L] [Algebra R L']
+    {f : R[X]} (h : Polynomial.Splits (algebraMap R L) f) (e : L →ₐ[R] L') :
+    Polynomial.Splits (algebraMap R L') f := by
+  rw [← splits_id_iff_splits, ← AlgHom.comp_algebraMap_of_tower R e, ← map_map,
+    splits_id_iff_splits]
+  exact splits_of_splits_id e.toRingHom <| (splits_id_iff_splits _).mpr h
+
+theorem splits_of_isScalarTower {R : Type*} (L' : Type*) [CommRing R] [Field L'] [Algebra R L]
+    [Algebra R L'] [Algebra L L'] [IsScalarTower R L L'] {f : R[X]}
+    (h : Polynomial.Splits (algebraMap R L) f) :
+    Polynomial.Splits (algebraMap R L') f :=
+  splits_of_algHom h (IsScalarTower.toAlgHom R L L')
+
 theorem splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
   -- Porting note: was
   -- change i with (RingHom.id _).comp i at h

@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kyle Miller
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.Expr
 import Mathlib.Lean.PrettyPrinter.Delaborator
+import Mathlib.Tactic.ScopedNS
 import Mathlib.Util.Syntax
 import Std.Data.Option.Basic
 
@@ -586,7 +587,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let delabKeys := ms.foldr (·.1 ++ ·) []
       trace[notation3] "Adding `delab` attribute for keys {delabKeys}"
       for key in delabKeys do
-        elabCommand <| ← `(command| attribute [delab $(mkIdent key)] $(Lean.mkIdent delabName))
+        elabCommand <|
+          ← `(command| attribute [$attrKind delab $(mkIdent key)] $(Lean.mkIdent delabName))
     else
       logWarning s!"Was not able to generate a pretty printer for this notation.{
         ""} If you do not expect it to be pretty printable, then you can use{
@@ -597,3 +599,10 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         ""} (Use `set_option trace.notation3 true` to get some debug information.)"
 
 initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+
+/-! `scoped[ns]` support -/
+
+macro_rules
+  | `($[$doc]? $(attr)? scoped[$ns] notation3 $(prec)? $(n)? $(prio)? $(pp)? $items* => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      $[$doc]? $(attr)? scoped notation3 $(prec)? $(n)? $(prio)? $(pp)? $items* => $t)

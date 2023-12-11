@@ -292,7 +292,7 @@ to prevent `rw_search` from using the names theorems.
 syntax "rw_search" (forbidden)? : tactic
 
 elab_rules : tactic |
-    `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => do
+    `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => withMainContext do
   let forbidden : NameSet :=
     ((forbidden.getD #[]).map Syntax.getId).foldl (init := ∅) fun s n => s.insert n
   let .some init ← SearchNode.init (← getMainGoal) | throwError "Goal is not an equality."

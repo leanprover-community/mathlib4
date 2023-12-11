@@ -55,7 +55,7 @@ def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo �
 
 lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) :
     lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
-  And.intro (Nat.le_pred_of_lt (Nat.lt_of_succ_le h.left)) <|
+  And.intro (Nat.le_sub_one_of_lt (Nat.lt_of_succ_le h.left)) <|
     show a.pred.succ ≤ hi by
        rw [Nat.succ_pred_eq_of_pos]
        exact h.right
@@ -78,7 +78,7 @@ variable {α : Type u}
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
-  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (←getSize) (Nat.zero_le _) : Gen (ULift ℕ))
+  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (← getSize) (Nat.zero_le _) : Gen (ULift ℕ))
   let mut res := #[]
   for _ in [0:sz] do
     res := res.push (← x)

@@ -387,7 +387,7 @@ theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F']
 
 open Function
 
-theorem liftR_map_last [lawful: LawfulMvFunctor F]
+theorem liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
     LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
@@ -442,7 +442,7 @@ theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := b
     congr
     rfl
     rw [Cofix.dest]
-  rw [MvFunctor.map_map, MvFunctor.map_map, ←appendFun_comp_id, ←appendFun_comp_id]
+  rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros
   rfl
@@ -534,10 +534,10 @@ theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
   congr!; ext (i | i) <;> erw [corec_roll] <;> dsimp [Cofix.corec']
   · mv_bisim i with R a b x Ha Hb
     rw [Ha, Hb, Cofix.dest_corec]
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     repeat rw [MvFunctor.map_map, ← appendFun_comp_id]
     apply liftR_map_last'
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     intros
     exact ⟨_, rfl, rfl⟩
   · congr with y

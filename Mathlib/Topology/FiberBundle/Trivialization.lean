@@ -209,8 +209,9 @@ theorem trans_source (e f : Pretrivialization F proj) :
 #align pretrivialization.trans_source Pretrivialization.trans_source
 
 theorem symm_trans_symm (e e' : Pretrivialization F proj) :
-    (e.toLocalEquiv.symm.trans e'.toLocalEquiv).symm = e'.toLocalEquiv.symm.trans e.toLocalEquiv :=
-  by rw [LocalEquiv.trans_symm_eq_symm_trans_symm, LocalEquiv.symm_symm]
+    (e.toLocalEquiv.symm.trans e'.toLocalEquiv).symm
+      = e'.toLocalEquiv.symm.trans e.toLocalEquiv := by
+  rw [LocalEquiv.trans_symm_eq_symm_trans_symm, LocalEquiv.symm_symm]
 #align pretrivialization.symm_trans_symm Pretrivialization.symm_trans_symm
 
 theorem symm_trans_source_eq (e e' : Pretrivialization F proj) :
@@ -576,7 +577,7 @@ theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z}
 variable (e' : Trivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
 
 protected theorem continuousOn : ContinuousOn e' e'.source :=
-  e'.continuous_toFun
+  e'.continuousOn_toFun
 #align trivialization.continuous_on Trivialization.continuousOn
 
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
