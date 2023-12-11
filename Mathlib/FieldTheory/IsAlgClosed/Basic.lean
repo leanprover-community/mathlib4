@@ -416,11 +416,9 @@ def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
   toFun := L.val.comp
-  invFun f := f.codRestrict _ fun x ↦ by
-    rw [← range_val]
-    apply mem_range_of_minpoly_splits (R := F) ((hK x).isIntegral.map f)
-    rw [minpoly.algHom_eq f f.injective]
-    exact hL x
+  invFun f := f.codRestrict _ fun x ↦
+    ((hK x).isIntegral.map f).mem_intermediateField_of_minpoly_splits <| by
+      rw [minpoly.algHom_eq f f.injective]; exact hL x
   left_inv _ := rfl
   right_inv _ := by rfl
 
