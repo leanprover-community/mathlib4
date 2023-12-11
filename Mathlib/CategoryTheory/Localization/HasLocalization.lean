@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Localization.Predicate
 
 If `C : Type u` is a category (with `[Category.{v} C]`), and
 `W : MorphismProperty C`, then the constructed localized
-category `W.Localization` is `Type u` (the objects are
+category `W.Localization` is in `Type u` (the objects are
 essentially the same as that of `C`), but the morphisms
 are in `Type (max u v)`. In particular situations, it
 may happen that there is a localized category for `W`
