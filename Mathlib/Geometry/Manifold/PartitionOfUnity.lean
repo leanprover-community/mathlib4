@@ -642,7 +642,7 @@ theorem IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
       Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1 := by
     intro i
     apply IsOpen.exists_msmooth_support_eq_aux
-    exact LocalHomeomorph.isOpen_inter_preimage_symm _ hs
+    exact PartialHomeomorph.isOpen_inter_preimage_symm _ hs
   choose g g_supp g_diff hg using A
   have h'g : ∀ c x, 0 ≤ g c x := fun c x ↦ (hg c (mem_range_self (f := g c) x)).1
   have h''g : ∀ c x, 0 ≤ f c x * g c (chartAt H c x) :=

@@ -108,7 +108,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h
   refine'
-    ⟨e.toLocalHomeomorph.trans
+    ⟨e.toPartialHomeomorph.trans
         { toFun := fun p => p.1
           invFun := fun p => ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
@@ -122,7 +122,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
           right_inv' := fun p _ => rfl
           continuousOn_toFun := continuous_fst.continuousOn
           continuousOn_invFun := (continuous_id'.prod_mk continuous_const).continuousOn },
-      ⟨he, by rwa [e.toLocalHomeomorph.symm_symm, e.proj_toFun x he],
+      ⟨he, by rwa [e.toPartialHomeomorph.symm_symm, e.proj_toFun x he],
         (hf (f x) hx).toTrivialization_apply⟩,
       fun p h => (e.proj_toFun p h.1).symm⟩
 #align is_covering_map_on.is_locally_homeomorph_on IsCoveringMapOn.isLocalHomeomorphOn
