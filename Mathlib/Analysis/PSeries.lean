@@ -41,8 +41,8 @@ A sequence `u` has the property that its ratio of successive differences is boun
 when there is a positive real number `C` such that, for all n ∈ ℕ,
 (u (n + 2) - u (n + 1)) ≤ C * (u (n + 1) - u n)
 -/
-def SuccDiffBounded (u : ℕ → ℕ) : Prop :=
-  ∃ (C : ℝ≥0∞) (_ : C ≠ ∞) (_ : C > 0), ∀ (n : ℕ), (u (n + 2) - u (n + 1)) ≤ C * (u (n + 1) - u n)
+def SuccDiffBounded (C : ℕ) (u : ℕ → ℕ) : Prop :=
+  ∀ (n : ℕ), (u (n + 2) - u (n + 1)) ≤ C * (u (n + 1) - u n)
 
 namespace Finset
 
@@ -85,27 +85,21 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
   convert sum_le_sum this
   simp [pow_succ, two_mul]
 
-theorem sum_schlomilch_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
-    (hu : Monotone u) (h_succ_diff: SuccDiffBounded u) :
-    ∃ C > (0 : ℝ≥0), ∀ (n : ℕ), ∑ k in range (n + 1), (u (k + 1) - u k) * f (u k) ≤
+theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu : Monotone u) (h_succ_diff: SuccDiffBounded C u) :
+    ∀ (n : ℕ), ∑ k in range (n + 1), (u (k + 1) - u k) * f (u k) ≤
     (u 1 - u 0) * f (u 0) + C * ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   have h_nonneg : ∀ n, 0 ≤ f n := fun n => zero_le'
-  obtain ⟨C, h, hCpos, hC⟩ := h_succ_diff
-  lift C to ℝ≥0 using h
-  use C
-  constructor
-  · replace hCpos : C > 0 := ENNReal.coe_lt_coe.1 hCpos
-    apply hCpos
   intro n
   rw [sum_range_succ', add_comm]
   convert add_le_add_left _ ((u 1 - u 0) * f (u 0))
   have : ∀ k ∈ range n, (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤
     C * ((u (k + 1) - u k) * f (u (k + 1))) := by
-      intro k _
-      calc
-      (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤
-      C * (u (k + 1) - u k) * f (u (k + 1)) :=
-        mul_le_mul_of_nonneg_right (hC k) (h_nonneg (u (k + 1)))
+    intro k _
+    calc
+      (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤ C * (u (k + 1) - u k) * f (u (k + 1)) := by
+        sorry
+        -- mul_le_mul_of_nonneg_right (h_succ_diff k) (h_nonneg (u (k + 1)))
       _ = C * ((u (k + 1) - u k) * f (u (k + 1))) := by rw [mul_assoc]
   calc
     ∑ k in range n, (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤
@@ -113,7 +107,7 @@ theorem sum_schlomilch_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     _ = C * ∑ k in range n, (u (k + 1) - u k) * f (u (k + 1)) := mul_sum.symm
     _ = C * ∑ k in range n, (u (k + 1) - u k) * f (u (k + 1)) := by rw [mul_comm]
     _ ≤ C * ∑ k in Ico (u 0 + 1) (u n + 1), f k := mul_le_mul_of_nonneg_left
-      (sum_schlomilch_le' hf h_pos hu n) (le_of_lt hCpos)
+      (sum_schlomilch_le' hf h_pos hu n) (zero_le _)
 end Finset
 
 namespace ENNReal
@@ -129,38 +123,32 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   refine' iSup_le fun n => (Finset.le_sum_schlomilch hf h_pos hu n).trans (add_le_add_left _ _)
   apply ENNReal.sum_le_tsum
 
-theorem tsum_schlomilch_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
-    (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded u) :
-    ∃ C > (0 : ℝ≥0), ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) +
-      C * ∑' k, f k := by
+theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded C u) :
+    ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
   have hu : Monotone u := by
     apply StrictMono.monotone hu_strict
-  obtain ⟨C, hCpos, hC⟩ := Finset.sum_schlomilch_le hf h_pos hu h_succ_diff
-  use C
-  constructor
-  · apply hCpos
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id)]
   refine'
     iSup_le fun n =>
       le_trans _
         (add_le_add_left
           (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) _) _)
-  apply hC
-  replace hCpos : C > (0 : ℝ≥0∞) := ENNReal.coe_lt_coe.2 hCpos
-  apply le_of_lt hCpos
+  apply Finset.sum_schlomilch_le hf h_pos hu h_succ_diff
+  apply zero_le _
 end ENNReal
 
 namespace NNReal
 /-- for a series of `NNReal` version. -/
-theorem summable_schlomilch_iff {u : ℕ → ℕ} {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
-    (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u)
-    (h_succ_diff : SuccDiffBounded u) :
+theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
+    (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u) (hCpos : C > 0)
+    (h_succ_diff : SuccDiffBounded C u) :
     (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ≥0)) * f (u k)) ↔ Summable f := by
   simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Ne.def, not_iff_not, ENNReal.coe_mul]
   constructor <;> intro h
   · replace hf : ∀ m n, 1 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf (zero_lt_one.trans hm) hmn)
-    obtain ⟨C, hCpos, hC⟩ := ENNReal.tsum_schlomilch_le hf h_pos hu_strict h_succ_diff
+    obtain hC := ENNReal.tsum_schlomilch_le hf h_pos hu_strict h_succ_diff
     have C_nonzero : C ≠ 0 := ne_of_gt hCpos
     have : (↑(u 1) - ↑(u 0)) * ↑(f (u 0)) + ↑C * ∑' (k : ℕ), ↑(f k) = ∞ := by exact eq_top_mono hC h
     simpa [ENNReal.add_eq_top, ENNReal.mul_ne_top, ENNReal.mul_eq_top, C_nonzero]
@@ -172,9 +160,9 @@ theorem summable_schlomilch_iff {u : ℕ → ℕ} {f : ℕ → ℝ≥0} (hf : �
 end NNReal
 
 /-- for series of nonnegative real numbers. -/
-theorem summable_schlomilch_iff_of_nonneg {u : ℕ → ℕ} {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
+theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
-    (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded u) :
+    (hu_strict : StrictMono u) (hCpos : C > 0) (h_succ_diff : SuccDiffBounded C u) :
     (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ)) * f (u k)) ↔ Summable f := by
   lift f to ℕ → ℝ≥0 using h_nonneg
   simp only [NNReal.coe_le_coe] at *
@@ -182,7 +170,7 @@ theorem summable_schlomilch_iff_of_nonneg {u : ℕ → ℕ} {f : ℕ → ℝ} (h
     have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
     simp [NNReal.coe_sub this]
   simp_rw [this]
-  exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos hu_strict h_succ_diff
+  exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos hu_strict hCpos h_succ_diff
 
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
@@ -190,9 +178,11 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
   have h_pos : ∀ (n : ℕ), 0 < 2 ^ n := fun n => pow_pos zero_lt_two n
   have hu_strict : StrictMono (fun n => 2 ^ n) := fun m n hm =>
       pow_lt_pow (Nat.lt_succ_self 1) hm
-  have h_succ_diff : SuccDiffBounded (fun n => 2 ^ n) :=
-    ⟨2, by norm_num, by norm_num, by simp [pow_succ, two_mul]⟩
-  convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono h_pos hu_strict h_succ_diff
+  have h_succ_diff : SuccDiffBounded 2 (fun n => 2 ^ n) := by
+    intro n
+    simp [pow_succ, two_mul]
+  have hCpos : 2 > 0 := by norm_num
+  convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono h_pos hu_strict hCpos h_succ_diff
   simp only [Nat.cast_pow, Nat.cast_ofNat]
   simp [pow_succ, two_mul]
 
