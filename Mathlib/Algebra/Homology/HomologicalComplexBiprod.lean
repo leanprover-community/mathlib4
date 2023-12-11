@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 
+/-! Binary biproducts of homological complexes
+
+In this file, it is shown that if two homological complex `K` and `L` in
+a preadditive category are such that for all `i : ι`, the binary biproduct
+`K.X i ⊞ L.X i` exists, then `K ⊞ L` exists, and there is an isomorphism
+`biprodXIso K L i : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`.
+
+-/
 open CategoryTheory Limits
 
 namespace HomologicalComplex
@@ -13,12 +25,20 @@ instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L)
   dsimp [eval]
   infer_instance
 
-instance : HasBinaryBiproduct K L := by
-  sorry
+instance (i : ι) : HasLimit ((pair K L) ⋙ (eval C c i)) := by
+  have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair ((pair K L) ⋙ (eval C c i))
+  exact hasLimitOfIso e.symm
 
-instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) := by
-  sorry
+instance (i : ι) : HasColimit ((pair K L) ⋙ (eval C c i)) := by
+  have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair ((pair K L) ⋙ (eval C c i))
+  exact hasColimitOfIso e
 
+instance : HasBinaryBiproduct K L := HasBinaryBiproduct.of_hasBinaryProduct _ _
+
+instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) :=
+  preservesBinaryBiproductOfPreservesBinaryProduct _
+
+/-- The canonical isomorphism `(K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`. -/
 noncomputable def biprodXIso (i : ι) : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i) :=
   (eval C c i).mapBiprod K L
 
