@@ -1142,7 +1142,7 @@ instance Sigma.instMeasurableSpace {α} {β : α → Type*} [m : ∀ a, Measurab
 #align sigma.measurable_space Sigma.instMeasurableSpace
 
 section prop
-variable [MeasurableSpace α] {p : α → Prop}
+variable [MeasurableSpace α] {p q : α → Prop}
 
 @[simp] theorem measurableSet_setOf : MeasurableSet {a | p a} ↔ Measurable p :=
   ⟨fun h ↦ measurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
@@ -1157,6 +1157,29 @@ alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 #align measurable_set.mem MeasurableSet.mem
+
+lemma Measurable.not (hp : Measurable p) : Measurable (¬ p ·) :=
+  measurableSet_setOf.1 hp.setOf.compl
+
+lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∧ q a :=
+  measurableSet_setOf.1 <| hp.setOf.inter hq.setOf
+
+lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
+  measurableSet_setOf.1 <| hp.setOf.union hq.setOf
+
+lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
+  measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
+
+lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
+  measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
+
+lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
+    Measurable fun a ↦ ∀ i, p i a :=
+  measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
+
+lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
+    Measurable fun a ↦ ∃ i, p i a :=
+  measurableSet_setOf.1 <| by rw [setOf_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
 
 end prop
 
