@@ -39,7 +39,7 @@ likely to be very useful.
 -/
 
 
-variable {k k' k'' k''' G : Type*} [Semiring k] [Ring k'] [CommSemiring k''] [CommRing k''']
+variable {k k' k'' k''' G : Type*} [Semiring k] [Ring k']
 
 namespace AddMonoidAlgebra
 
@@ -203,11 +203,10 @@ lemma neg_modOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) %ᵒᶠ g = - (x %ᵒ
   simp only [neg_add_rev, neg_divOf, mul_neg, add_comm] at eq1
   rwa [add_left_inj, eq_comm] at eq1
 
-lemma add_modOf [IsCancelAdd k] (x y : AddMonoidAlgebra k G) (g : G) :
+lemma add_modOf (x y : AddMonoidAlgebra k G) (g : G) :
     (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
-  have eq1 : _ + _ = _ + _ := (congr_arg₂ (. + .) (modOf_add_divOf x g) (modOf_add_divOf y g)).trans
-    (modOf_add_divOf (x + y) g).symm
-  rwa [add_divOf, mul_add, add_add_add_comm, add_left_inj, eq_comm] at eq1
+  dsimp [modOf]
+  rw [Finsupp.filter_add]
 
 lemma sub_modOf (x y : k'[G]) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g := by
   rw [sub_eq_add_neg, add_modOf, neg_modOf, sub_eq_add_neg]
@@ -233,7 +232,7 @@ lemma mul_divOf (x y : k[G]) (g : G) :
     (x /ᵒᶠ g) * (y %ᵒᶠ g) +
     (x %ᵒᶠ g) * (y /ᵒᶠ g) +
     ((x %ᵒᶠ g) * (y %ᵒᶠ g)) /ᵒᶠ g := by
-  rw [← congr_arg₂ (. * .) (divOf_add_modOf x g) ( divOf_add_modOf y g), add_mul, mul_add, mul_add,
+  rw [← congr_arg₂ HMul.hMul (divOf_add_modOf x g) (divOf_add_modOf y g), add_mul, mul_add, mul_add,
     add_divOf, add_divOf, add_divOf, mul_assoc, of'_mul_divOf, ← mul_assoc,
     ← of'_commute (AddCommute.all _) _,
     add_assoc, add_assoc, add_assoc]
@@ -242,14 +241,12 @@ lemma mul_divOf (x y : k[G]) (g : G) :
   congr 1
   rw [(of'_commute (AddCommute.all _) _).symm.left_comm, of'_mul_divOf]
 
-lemma mul_modOf (x y : k'''[G]) (g : G) :
+lemma mul_modOf (x y : k[G]) (g : G) :
     (x * y) %ᵒᶠ g = ((x %ᵒᶠ g) * (y %ᵒᶠ g)) %ᵒᶠ g := by
-  rw [← sub_eq_iff_eq_add.mpr ((divOf_add_modOf (x * y) g).symm.trans (add_comm _ _)), mul_divOf,
-    ← congr_arg₂ (. * .) (divOf_add_modOf x g) ( divOf_add_modOf y g)]
-  ring_nf
-  rw [neg_add_eq_sub, sub_eq_iff_eq_add]
-  conv_lhs => rw [← divOf_add_modOf ((x %ᵒᶠ g) * (y %ᵒᶠ g)) g]
-  ring
+  have := congr_arg₂ HMul.hMul (divOf_add_modOf x g) (divOf_add_modOf y g)
+  simp only [mul_add, add_mul, (of'_commute (AddCommute.all g) _).symm.left_comm] at this
+  rw [←this]
+  simp_rw [add_modOf, mul_assoc, of'_mul_modOf, zero_add]
 
 end
 
