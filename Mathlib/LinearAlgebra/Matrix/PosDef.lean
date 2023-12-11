@@ -361,8 +361,6 @@ def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
   InnerProductSpace.ofCore _
 #align matrix.inner_product_space.of_matrix Matrix.InnerProductSpace.ofMatrix
 
-end Matrix
-
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
 @[delab app.Matrix.PosSemidef.sqrt]
@@ -375,3 +373,13 @@ def delabSqrt : Delab :=
     let optionsPerPos ← withNaryArg 6 do
       return (← read).optionsPerPos.setBool (← getPos) `pp.proofs.withType true
     withTheReader Context ({· with optionsPerPos}) delab
+
+-- test for custom elaborator
+variable [DecidableEq n] {A : Matrix n n 𝕜}  (hA : PosSemidef A)
+/--
+info: (_ : PosSemidef A).sqrt : Matrix n n 𝕜
+-/
+#guard_msgs in
+#check (id hA).sqrt -- (_ : PosSemidef A).sqrt : Matrix n n 𝕜
+
+end Matrix
