@@ -255,7 +255,7 @@ theorem cfc₁_map_X : cfc₁ R a (X.toContinuousMapOn <| spectrum R a) = a :=
 theorem cfc₁_map_id :
     cfc₁ R a ((ContinuousMap.id R).restrict <| spectrum R a) = a := by
   convert cfc₁_map_X R a
-  rw [←X_toContinuousMap R]
+  rw [← X_toContinuousMap R]
   rfl
 
 theorem cfc₂_map_X : cfc₂ R a (X : R[X]).toContinuousMap = a :=
@@ -496,7 +496,7 @@ lemma cfc₁_algebraMap_comm (f : C(F, F)) (x : F) :
     cfc₁ F a (f.comp (algebraMap F C(spectrum F a, F) x)) = algebraMap F A (f x) := by
   have key : (f.comp (x • ContinuousMap.id F)).comp (1 : C(spectrum F a, F)) =
       f.comp (x • (1 : C(spectrum F a, F))) := rfl
-  rw [Algebra.algebraMap_eq_smul_one, ←key, cfc₁_one_comm]
+  rw [Algebra.algebraMap_eq_smul_one, ← key, cfc₁_one_comm]
   simp
 
 lemma cfc₂_algebraMap_comm (f : C(F, F)) (x : F) :
@@ -509,7 +509,7 @@ lemma cfc₁_inv₀On (ha : IsUnit a) :
     cfc₁ F a (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha) = Ring.inverse a := by
   refine Eq.trans (Units.eq_inv_of_mul_eq_one_left ?_) <| (Ring.inverse_unit ha.unit).symm
   simp only [IsUnit.unit_spec]
-  nth_rewrite 1 [←cfc₁_map_id F a, ←map_mul]
+  nth_rewrite 1 [← cfc₁_map_id F a, ← map_mul]
   convert map_one (cfc₁ F a)
   ext x
   exact mul_inv_cancel fun hx => spectrum.zero_not_mem F ha (hx ▸ x.property)
@@ -629,7 +629,7 @@ theorem cfc₂_range : (cfc₂ 𝕜 a).range = elementalStarAlgebra 𝕜 a := by
         @IsROrC.I 𝕜 _ • (@IsROrC.ofRealClm 𝕜 _ : C(ℝ, 𝕜)).comp f_im',
       _⟩
   simp only [AlgHom.toRingHom_eq_coe, map_add, RingHom.coe_coe, StarAlgHom.coe_toAlgHom]
-  rw [cfc₂, StarAlgHom.coe_comp, Function.comp_apply, Function.comp_apply, ←map_add]
+  rw [cfc₂, StarAlgHom.coe_comp, Function.comp_apply, Function.comp_apply, ← map_add]
   congr!
   ext x
   apply IsROrC.ext <;>
