@@ -39,7 +39,7 @@ likely to be very useful.
 -/
 
 
-variable {k k' k'' k''' G : Type*} [Semiring k] [Ring k']
+variable {k k' G : Type*} [Semiring k] [Ring k']
 
 namespace AddMonoidAlgebra
 

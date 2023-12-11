@@ -138,7 +138,7 @@ lemma sub_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R') :
     (x - y) %ᵐᵒⁿᵒᵐⁱᵃˡ s = (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) - (y %ᵐᵒⁿᵒᵐⁱᵃˡ s) :=
   x.sub_modOf _ _
 
-lemma modMonomial_idem (s : σ →₀ ℕ) (x : MvPolynomial σ R') :
+lemma modMonomial_idem (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
     (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) %ᵐᵒⁿᵒᵐⁱᵃˡ s = x %ᵐᵒⁿᵒᵐⁱᵃˡ s :=
   x.modOf_idem _
 
@@ -150,11 +150,11 @@ lemma mul_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
     ((x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s)) /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
   x.mul_divOf y s
 
-lemma mul_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R') :
+lemma mul_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R) :
     (x * y) %ᵐᵒⁿᵒᵐⁱᵃˡ s = ((x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s)) %ᵐᵒⁿᵒᵐⁱᵃˡ s :=
   x.mul_modOf _ _
 
-lemma mul_modMonomial_finsupp_single (i : σ) (x y : MvPolynomial σ R') :
+lemma mul_modMonomial_finsupp_single (i : σ) (x y : MvPolynomial σ R) :
     (x * y) %ᵐᵒⁿᵒᵐⁱᵃˡ (Finsupp.single i 1) =
     (x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) := by
   classical
@@ -344,14 +344,18 @@ theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_monomial MvPolynomial.X_dvd_monomial
 
-lemma X_sub_C_ne_zero (i : σ) (c : R') [Nontrivial R'] : X i - C c ≠ 0 := by
+lemma X_add_C_ne_zero (i : σ) (c : R) [Nontrivial R] : X i + C c ≠ 0 := by
   classical
   intro r
   have := (ext_iff _ _).mp r (Finsupp.single i 1)
-  rw [coeff_sub, coeff_X, coeff_zero, coeff_C, if_neg, sub_zero] at this
-  · exact one_ne_zero' R' this
+  rw [coeff_add, coeff_X, coeff_zero, coeff_C, if_neg, add_zero] at this
+  · exact one_ne_zero' R  this
   · intro rid
     simpa using FunLike.ext_iff.mp rid i
+
+lemma X_sub_C_ne_zero (i : σ) (c : R') [Nontrivial R'] : X i - C c ≠ 0 := by
+  convert X_add_C_ne_zero i (- c) using 1
+  rw [C_neg, sub_eq_add_neg]
 
 lemma X_sub_C_not_isUnit (i : σ) (c : R') [Nontrivial R'] : ¬ IsUnit (X i - C c) := by
   classical
