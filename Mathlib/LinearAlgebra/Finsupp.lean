@@ -760,6 +760,18 @@ theorem mem_span_iff_total (s : Set M) (x : M) :
   (SetLike.ext_iff.1 <| span_eq_range_total _ _) x
 #align finsupp.mem_span_iff_total Finsupp.mem_span_iff_total
 
+@[simp]
+lemma span_setOf_mem_eq_top {s : Set M} :
+    span R {x : span R s | (x : M) ∈ s} = ⊤ := by
+  refine Submodule.eq_top_iff'.mpr fun ⟨z, hz⟩ ↦ ?_
+  rw [Finsupp.mem_span_iff_total] at hz ⊢
+  obtain ⟨l, rfl⟩ := hz
+  let f : s ↪ {x : span R s | (x : M) ∈ s} :=
+    ⟨fun x ↦ ⟨Set.inclusion (Submodule.subset_span) x, x.property⟩, fun x y ↦ by simp⟩
+  use l.embDomain f
+  rw [Finsupp.total_embDomain, Subtype.ext_iff, ← Submodule.coeSubtype, Finsupp.apply_total]
+  congr
+
 variable {R}
 
 theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :

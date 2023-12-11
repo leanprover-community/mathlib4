@@ -682,6 +682,22 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
 
 end SMulInjective
 
+instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
+  ⟨fun {c x} hcx ↦ by rwa [nsmul_eq_smul_cast ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
+
+variable (R M)
+
+theorem NoZeroSMulDivisors.int_of_charZero [CharZero R] : NoZeroSMulDivisors ℤ M :=
+  ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
+
+/-- Only a ring of characteristic zero can can have a non-trivial module without additive or
+scalar torsion. -/
+theorem CharZero.OfNoZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
+  refine ⟨fun {n m h} ↦ ?_⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [zsmul_eq_smul_cast R, h]
+  simpa using smul_left_injective ℤ hx h
+
 end Module
 
 section GroupWithZero
