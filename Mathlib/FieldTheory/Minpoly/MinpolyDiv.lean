@@ -16,8 +16,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 We used the contents of this file to describe the dual basis of a powerbasis under the trace form.
 See `traceForm_dualBasis_powerBasis_eq`.
 
-## Main result
-
+## Main results
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
@@ -83,7 +82,6 @@ lemma eval₂_minpolyDiv_self {T} [CommRing T] [Algebra R T] [IsDomain T] [Decid
   apply eval₂_minpolyDiv_of_eval₂_eq_zero
   rw [AlgHom.comp_algebraMap, ← σ₂.comp_algebraMap, ← eval₂_map, ← RingHom.coe_coe, eval₂_hom,
     eval_map, ← aeval_def, minpoly.aeval, map_zero]
-
 
 lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
     {y} (hy : aeval y (minpoly R x) = 0) :
@@ -180,16 +178,6 @@ lemma span_coeff_minpolyDiv :
       exact hi j hj (lt_trans hj hi')
     · rwa [← natDegree_minpolyDiv_succ hx, Set.mem_Iio, Nat.lt_succ_iff] at hi'
 
--- Dunno. Somewhere near Mathlib/FieldTheory/Minpoly/Basic.lean.
-lemma aeval_derivative_minpoly_ne_zero {K L} [CommRing K] [CommRing L] [Algebra K L] (x : L)
-    (hx : (minpoly K x).Separable) [Nontrivial L] :
-    Polynomial.aeval x (Polynomial.derivative (minpoly K x)) ≠ 0 := by
-  intro h
-  obtain ⟨a, b, e⟩ := hx
-  apply_fun (Polynomial.aeval x ·) at e
-  simp only [map_add, _root_.map_mul, minpoly.aeval, mul_zero, h, add_zero, _root_.map_one] at e
-  exact zero_ne_one e
-
 section PowerBasis
 
 variable {K}
@@ -210,7 +198,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
     rw [sub_eq_zero, div_mul_cancel]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
-    exact aeval_derivative_minpoly_ne_zero _ (IsSeparable.separable _ _)
+    exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
     · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,

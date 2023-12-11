@@ -130,6 +130,19 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
       Polynomial.map_one]⟩
 #align polynomial.separable.map Polynomial.Separable.map
 
+theorem Separable.eval₂_derivative_ne_zero [Nontrivial S] (f : R →+* S) {p : R[X]}
+    (h : p.Separable) {x : S} (hx : p.eval₂ f x = 0) :
+    (derivative p).eval₂ f x ≠ 0 := by
+  intro hx'
+  obtain ⟨a, b, e⟩ := h
+  apply_fun Polynomial.eval₂ f x at e
+  simp only [eval₂_add, eval₂_mul, hx, mul_zero, hx', add_zero, eval₂_one, zero_ne_one] at e
+
+theorem Separable.aeval_derivative_ne_zero [Nontrivial S] [Algebra R S] {p : R[X]}
+    (h : p.Separable) {x : S} (hx : aeval x p = 0) :
+    aeval x (derivative p) ≠ 0 :=
+  h.eval₂_derivative_ne_zero (algebraMap R S) hx
+
 variable (p q : ℕ)
 
 theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q * q ∣ p) :
