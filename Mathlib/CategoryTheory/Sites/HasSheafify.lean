@@ -23,6 +23,9 @@ open Limits
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
+/--
+A proposition saying that the inclusion functor from sheaves to presheaves admits a left adjoint.
+-/
 abbrev HasWeakSheafify := Nonempty (IsRightAdjoint (sheafToPresheaf J A))
 
 /--

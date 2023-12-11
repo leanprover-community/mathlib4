@@ -175,7 +175,7 @@ noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J e A whe
   preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
 
 /-- Transport `HasSheafify` along an equivalence of sites. -/
-noncomputable def hasSheafify : HasSheafify J A :=
+theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J e A)
 
 variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
