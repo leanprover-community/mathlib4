@@ -145,13 +145,18 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
     (f x ^ g x * log (f x)) • (1 : ℂ →L[ℂ] ℂ).smulRight g') 1 =
       g x * f x ^ (g x - 1) * f' + f x ^ g x * log (f x) * g' := by
   simp only [Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.one_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.add_apply, Pi.smul_apply,
+    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.add_apply,
     ContinuousLinearMap.coe_smul']
+  rw [Pi.smul_apply, Pi.smul_apply]
+  simp
 
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa using (hf.cpow hg h0).hasStrictDerivAt
+  have := (hf.cpow hg h0).hasStrictDerivAt
+  dsimp at this
+  rw [Pi.smul_apply, Pi.smul_apply] at this
+  simpa using this
 #align has_strict_deriv_at.cpow HasStrictDerivAt.cpow
 
 theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 ∨ f x ≠ 0) :
@@ -307,6 +312,8 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
     (hf.prod hg) using 1
+  dsimp
+  rw [Pi.smul_apply, Pi.smul_apply]
   simp [mul_assoc, mul_comm, mul_left_comm]
 #align has_strict_deriv_at.rpow HasStrictDerivAt.rpow
 
@@ -315,7 +322,10 @@ theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
   cases' hx.lt_or_lt with hx hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
       ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const _ _))
-    convert this using 1; simp
+    convert this using 1
+    dsimp
+    rw [Pi.smul_apply, Pi.smul_apply]
+    simp
   · simpa using (hasStrictDerivAt_id x).rpow (hasStrictDerivAt_const x p) hx
 #align real.has_strict_deriv_at_rpow_const_of_ne Real.hasStrictDerivAt_rpow_const_of_ne
 
@@ -337,8 +347,12 @@ values of `a` are outside of the "official" domain of `a ^ x`, and we may redefi
 for negative `a` if some other definition will be more convenient. -/
 theorem hasStrictDerivAt_const_rpow_of_neg {a x : ℝ} (ha : a < 0) :
     HasStrictDerivAt (fun x => a ^ x) (a ^ x * log a - exp (log a * x) * sin (x * π) * π) x := by
-  simpa using (hasStrictFDerivAt_rpow_of_neg (a, x) ha).comp_hasStrictDerivAt x
+  have := (hasStrictFDerivAt_rpow_of_neg (a, x) ha).comp_hasStrictDerivAt x
     ((hasStrictDerivAt_const _ _).prod (hasStrictDerivAt_id _))
+  dsimp at this
+  convert this using 1
+  rw [Pi.smul_apply, Pi.smul_apply]
+  simp
 #align real.has_strict_deriv_at_const_rpow_of_neg Real.hasStrictDerivAt_const_rpow_of_neg
 
 end Real
@@ -570,7 +584,7 @@ theorem HasDerivWithinAt.rpow (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWit
     (h : 0 < f x) : HasDerivWithinAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) s x := by
   convert (hf.hasFDerivWithinAt.rpow hg.hasFDerivWithinAt h).hasDerivWithinAt using 1
-  dsimp; ring
+  dsimp; rw [Pi.smul_apply, Pi.smul_apply]; dsimp; ring
 #align has_deriv_within_at.rpow HasDerivWithinAt.rpow
 
 theorem HasDerivAt.rpow (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) (h : 0 < f x) :
