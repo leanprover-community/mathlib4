@@ -1179,7 +1179,7 @@ theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆
   forall₂_congr <| fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
 #align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
-theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a, a ∉ s ∧ insert a s ⊆ t := by
+theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   aesop
 #align set.ssubset_iff_insert Set.ssubset_iff_insert
