@@ -1,10 +1,8 @@
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.TensorProduct.Finsupp
-
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.Algebra.DirectSum.Finsupp
-import Rotations.TensorProductFinsupp
 
 set_option autoImplicit false
 
