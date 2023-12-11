@@ -452,6 +452,19 @@ def of (R : Type u) [CommRing R] : CommRingCat :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.of CommRingCat.of
 
+instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
+    NDFunLike (CommRingCat.of X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
+
+instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] : NDFunLike (X ⟶ CommRingCat.of Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
+
+instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] : NDFunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
+
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
 def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   f
