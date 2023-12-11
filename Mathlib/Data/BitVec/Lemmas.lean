@@ -246,7 +246,7 @@ theorem Nat.sub_eq_xor_of (x y : ℕ) (h : ∀ i, (y.testBit i = true) → (x.te
       sub_succ_mod (two_pow_pos w),
       Nat.sub_sub,
       Nat.mod_eq_of_lt <| Nat.sub_lt (two_pow_pos w) (Fin.size_pos'),
-      ←Nat.sub_sub
+      ← Nat.sub_sub
     ]
     show _ = (_ - 1) ^^^ _
     apply Nat.sub_eq_xor_of
