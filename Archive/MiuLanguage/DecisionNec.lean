@@ -145,7 +145,7 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
   · cases' h₂ with mhead mtail
     contrapose! mtail
     rw [cons_append] at mtail
-    exact (or_self_iff _).mp (mem_append.mp mtail)
+    exact or_self_iff.mp (mem_append.mp mtail)
 #align miu.goodm_of_rule2 Miu.goodm_of_rule2
 
 theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++ bs))

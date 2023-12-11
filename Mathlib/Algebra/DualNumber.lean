@@ -39,20 +39,21 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 variable {R : Type*}
 
-/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
+/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
+`R[ε]` is notation for `DualNumber R`. -/
 abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 
-/-- The unit element $ε$ that squares to zero. -/
+/-- The unit element $ε$ that squares to zero, with notation `ε`. -/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
 #align dual_number.eps DualNumber.eps
 
--- mathport name: dual_number.eps
+@[inherit_doc]
 scoped[DualNumber] notation "ε" => DualNumber.eps
 
--- mathport name: dual_number
+@[inherit_doc]
 scoped[DualNumber] postfix:1024 "[ε]" => DualNumber
 
 open DualNumber
@@ -87,6 +88,13 @@ theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε])
   ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
+  ext <;> simp
+
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
+
 /-- For two algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext]
 theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A] ⦃f g : R[ε] →ₐ[R] A⦄
@@ -111,13 +119,13 @@ def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
 
--- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0.
+/-- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem lift_apply_eps (e : { e : A // e * e = 0 }) : @lift R _ _ _ _ e (ε : R[ε]) = e := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, one_smul, zero_add]
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
--- Lifting `DualNumber.eps` itself gives the identity.
+/-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_eps : lift ⟨ε, eps_mul_eps⟩ = AlgHom.id R R[ε] :=
   algHom_ext <| lift_apply_eps _

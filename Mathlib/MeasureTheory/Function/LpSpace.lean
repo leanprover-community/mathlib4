@@ -641,17 +641,8 @@ theorem Memℒp.indicator (hs : MeasurableSet s) (hf : Memℒp f p μ) : Memℒp
 
 theorem snormEssSup_indicator_eq_snormEssSup_restrict {f : α → F} (hs : MeasurableSet s) :
     snormEssSup (s.indicator f) μ = snormEssSup f (μ.restrict s) := by
-  simp_rw [snormEssSup, nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
-  by_cases hs_null : μ s = 0
-  · rw [Measure.restrict_zero_set hs_null]
-    simp only [essSup_measure_zero, ENNReal.essSup_eq_zero_iff, ENNReal.bot_eq_zero]
-    have hs_empty : s =ᵐ[μ] (∅ : Set α) := by rw [ae_eq_set]; simpa using hs_null
-    refine' (indicator_ae_eq_of_ae_eq_set hs_empty).trans _
-    rw [Set.indicator_empty]
-    rfl
-  rw [essSup_indicator_eq_essSup_restrict (eventually_of_forall fun x => ?_) hs hs_null]
-  rw [Pi.zero_apply]
-  exact zero_le _
+  simp_rw [snormEssSup, nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator,
+    ENNReal.essSup_indicator_eq_essSup_restrict hs]
 #align measure_theory.snorm_ess_sup_indicator_eq_snorm_ess_sup_restrict MeasureTheory.snormEssSup_indicator_eq_snormEssSup_restrict
 
 theorem snorm_indicator_eq_snorm_restrict {f : α → F} (hs : MeasurableSet s) :
@@ -731,6 +722,33 @@ theorem exists_snorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (h�
   refine' (snorm_indicator_const_le _ _).trans (le_trans _ hη_le)
   exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
 #align measure_theory.exists_snorm_indicator_le MeasureTheory.exists_snorm_indicator_le
+
+lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : Memℒp f p (μ.restrict s)) (hg : Memℒp g p (μ.restrict sᶜ)) :
+    Memℒp (s.piecewise f g) p μ := by
+  by_cases hp_zero : p = 0
+  · simp only [hp_zero, memℒp_zero_iff_aestronglyMeasurable]
+    exact AEStronglyMeasurable.piecewise hs hf.1 hg.1
+  refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
+  rcases eq_or_ne p ∞ with rfl | hp_top
+  · rw [snorm_top_piecewise f g hs]
+    exact max_lt hf.2 hg.2
+  rw [snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
+    ENNReal.add_lt_top]
+  constructor
+  · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
+        (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
+      refine ae_of_all _ (fun a ha ↦ ?_)
+      simp [ha]
+    rw [set_lintegral_congr_fun hs h]
+    exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
+  · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
+        (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
+      refine ae_of_all _ (fun a ha ↦ ?_)
+      have ha' : a ∉ s := ha
+      simp [ha']
+    rw [set_lintegral_congr_fun hs.compl h]
+    exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hg.2
 
 end Indicator
 
@@ -1561,10 +1579,7 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
       lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum hf hp1 h2
     have h4 : ∀ᵐ x ∂μ, (∑' i, ‖f (i + 1) x - f i x‖₊ : ℝ≥0∞) < ∞ :=
       tsum_nnnorm_sub_ae_lt_top hf hp1 hB h3
-    exact
-      h4.mono fun x hx =>
-        summable_of_summable_nnnorm
-          (ENNReal.tsum_coe_ne_top_iff_summable.mp (lt_top_iff_ne_top.mp hx))
+    exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
   have h :
     ∀ᵐ x ∂μ, ∃ l : E,
       atTop.Tendsto (fun n => ∑ i in Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by

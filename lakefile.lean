@@ -49,8 +49,8 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require Cli from git "https://github.com/leanprover/lean4-cli" @ "nightly"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.18"
+require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.22"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
@@ -60,6 +60,33 @@ lean_lib Cache where
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+
+/--
+When a package depending on Mathlib updates its dependencies,
+update its toolchain to match Mathlib's and fetch the new cache.
+-/
+post_update pkg do
+  let rootPkg ← getRootPackage
+  if rootPkg.name = pkg.name then
+    return -- do not run in Mathlib itself
+  /-
+  Once Lake updates the toolchains,
+  this toolchain copy will be unnecessary.
+  https://github.com/leanprover/lean4/issues/2752
+  -/
+  let wsToolchainFile := rootPkg.dir / "lean-toolchain"
+  let mathlibToolchain := ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
+  IO.FS.writeFile wsToolchainFile mathlibToolchain
+  /-
+  Instead of building and running cache via the Lake API,
+  spawn a new `lake` since the toolchain may have changed.
+  -/
+  let exitCode ← IO.Process.spawn {
+    cmd := "elan"
+    args := #["run", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
+  } >>= (·.wait)
+  if exitCode ≠ 0 then
+    logError s!"{pkg.name}: failed to fetch cache"
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]

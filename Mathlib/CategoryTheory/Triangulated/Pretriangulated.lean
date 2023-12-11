@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Luke Kershaw
+Authors: Luke Kershaw, Joël Riou
 -/
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -326,7 +327,7 @@ lemma isZero₂_iff : IsZero T.obj₂ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
 lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
   refine' (isZero₂_iff _ (inv_rot_of_distTriang _ hT)).trans _
   dsimp
-  simp [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
+  simp only [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
   tauto
 
 lemma isZero₃_iff : IsZero T.obj₃ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by
@@ -457,10 +458,162 @@ lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
   isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_distTriang _ hT)
     (inv_rot_of_distTriang _ hT') (by dsimp; infer_instance) (by dsimp; infer_instance)
 
-/-
-TODO: If `C` is pretriangulated with respect to a shift,
-then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.
--/
+/-- Given a distinguished triangle `T` such that `T.mor₃ = 0` and the datum of morphisms
+`inr : T.obj₃ ⟶ T.obj₂` and `fst : T.obj₂ ⟶ T.obj₁` satisfying suitable relations, this
+is the binary biproduct data expressing that `T.obj₂` identifies to the binary
+biproduct of `T.obj₁` and `T.obj₃`.
+See also `exists_iso_binaryBiproduct_of_distTriang`. -/
+@[simps]
+def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mor₃ = 0)
+    (inr : T.obj₃ ⟶ T.obj₂) (inr_snd : inr ≫ T.mor₂ = 𝟙 _) (fst : T.obj₂ ⟶ T.obj₁)
+    (total : fst ≫ T.mor₁ + T.mor₂ ≫ inr = 𝟙 T.obj₂) :
+    BinaryBiproductData T.obj₁ T.obj₃ := by
+  have : Mono T.mor₁ := T.mono₁ hT hT₀
+  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel]
+  exact
+    { bicone :=
+      { pt := T.obj₂
+        fst := fst
+        snd := T.mor₂
+        inl := T.mor₁
+        inr := inr
+        inl_fst := by
+          simp only [← cancel_mono T.mor₁, assoc, id_comp, eq, comp_sub, comp_id,
+            comp_distTriang_mor_zero₁₂_assoc _ hT, zero_comp, sub_zero]
+        inl_snd := comp_distTriang_mor_zero₁₂ _ hT
+        inr_fst := by
+          simp only [← cancel_mono T.mor₁, assoc, eq, comp_sub, reassoc_of% inr_snd,
+            comp_id, sub_self, zero_comp]
+        inr_snd := inr_snd }
+      isBilimit := isBinaryBilimitOfTotal _ total }
+
+instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
+  obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
+  obtain ⟨inr : X₃ ⟶ X₂, inr_snd : 𝟙 _ = inr ≫ snd⟩ :=
+    Triangle.coyoneda_exact₃ _ mem (𝟙 X₃) (by simp)
+  obtain ⟨fst : X₂ ⟶ X₁, hfst : 𝟙 X₂ - snd ≫ inr = fst ≫ inl⟩ :=
+    Triangle.coyoneda_exact₂ _ mem (𝟙 X₂ - snd ≫ inr) (by
+      dsimp
+      simp only [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
+  refine' ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst _⟩⟩
+  dsimp
+  simp only [← hfst, sub_add_cancel]⟩
+
+instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
+instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+
+lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
+    (zero : T.mor₃ = 0) :
+    ∃ (e : T.obj₂ ≅ T.obj₁ ⊞ T.obj₃), T.mor₁ ≫ e.hom = biprod.inl ∧
+      T.mor₂ = e.hom ≫ biprod.snd := by
+  have := T.epi₂ hT zero
+  have := isSplitEpi_of_epi T.mor₂
+  obtain ⟨fst, hfst⟩ := T.coyoneda_exact₂ hT (𝟙 T.obj₂ - T.mor₂ ≫ section_ T.mor₂) (by simp)
+  let d := binaryBiproductData _ hT zero (section_ T.mor₂) (by simp) fst
+    (by simp only [← hfst, sub_add_cancel])
+  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp⟩⟩
+  ext
+  · simpa using d.bicone.inl_fst
+  · simpa using d.bicone.inl_snd
+
+lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
+    binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
+  obtain ⟨Y, g, h, mem⟩ := distinguished_cocone_triangle₂ (0 : X₂ ⟶ X₁⟦(1 : ℤ)⟧)
+  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
+  dsimp at he₁ he₂
+  refine' isomorphic_distinguished _ mem _ (Iso.symm _)
+  refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
+lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
+    binaryProductTriangle X₁ X₂ ∈ distTriang C :=
+  isomorphic_distinguished _ (binaryBiproductTriangle_distinguished X₁ X₂) _
+    (binaryProductTriangleIsoBinaryBiproductTriangle X₁ X₂)
+
+/-- A chosen extension of a commutative square into a morphism of distinguished triangles. -/
+@[simps hom₁ hom₂]
+def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
+    (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    T₁ ⟶ T₂ :=
+    have h := complete_distinguished_triangle_morphism _ _ hT₁ hT₂ a b comm
+    { hom₁ := a
+      hom₂ := b
+      hom₃ := h.choose
+      comm₁ := comm
+      comm₂ := h.choose_spec.1
+      comm₃ := h.choose_spec.2 }
+
+/-- A product of distinguished triangles is distinguished -/
+lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
+    (hT : ∀ j, T j ∈ distTriang C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
+    productTriangle T ∈ distTriang C := by
+  /- The proof proceeds by constructing a morphism of triangles
+    `φ' : T' ⟶ productTriangle T` with `T'` distinguished, and such that
+    `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
+    `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
+    and diagram chases. -/
+  let f₁ := Pi.map (fun j => (T j).mor₁)
+  obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
+  let T' := Triangle.mk f₁ f₂ f₃
+  change T' ∈ distTriang C at hT'
+  let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
+    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp)
+  let φ' := productTriangle.lift _ φ
+  have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
+  have h₂ : φ'.hom₂ = 𝟙 _ := by aesop_cat
+  have : IsIso φ'.hom₁ := by rw [h₁]; infer_instance
+  have : IsIso φ'.hom₂ := by rw [h₂]; infer_instance
+  suffices IsIso φ'.hom₃ by
+    have : IsIso φ' := by
+      apply Triangle.isIso_of_isIsos
+      all_goals infer_instance
+    exact isomorphic_distinguished _ hT' _ (asIso φ').symm
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  /- the proofs by diagram chase start here -/
+  · suffices Mono φ'.hom₃ by
+      intro a₁ a₂ ha
+      simpa only [← cancel_mono φ'.hom₃] using ha
+    rw [mono_iff_cancel_zero]
+    intro A f hf
+    have hf' : f ≫ T'.mor₃ = 0 := by
+      rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
+    obtain ⟨g, hg⟩ := T'.coyoneda_exact₃ hT' f hf'
+    have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
+      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 :=
+        by rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
+      rw [φ'.comm₂_assoc, h₂, id_comp] at this
+      simpa using this
+    have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)
+    let α := fun j => (hg'' j).choose
+    have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
+    have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp; ext j; rw [hα]; simp
+    rw [hg, hg''', assoc, comp_distTriang_mor_zero₁₂ _ hT', comp_zero]
+  · intro a
+    obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
+      have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
+        rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
+          id_comp, productTriangle.zero₃₁]
+        intro j
+        exact comp_distTriang_mor_zero₃₁ _ (hT j)
+      have ⟨g, hg⟩ := T'.coyoneda_exact₁ hT' (a ≫ (productTriangle T).mor₃) (by
+        rw [assoc, zero, comp_zero])
+      exact ⟨g, hg.symm⟩
+    have ha'' := fun (j : J) => (T j).coyoneda_exact₃ (hT j) ((a - a' ≫ φ'.hom₃) ≫ Pi.π _ j) (by
+      simp only [sub_comp, assoc]
+      erw [← (productTriangle.π T j).comm₃]
+      rw [← φ'.comm₃_assoc]
+      rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
+    let b := fun j => (ha'' j).choose
+    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
+      Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
+    have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
+      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
+    exact ⟨_, this⟩
 
 end Pretriangulated
 

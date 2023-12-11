@@ -176,6 +176,7 @@ theorem snorm'_exponent_zero {f : α → F} : snorm' f 0 μ = 1 := by
 theorem snorm_exponent_zero {f : α → F} : snorm f 0 μ = 0 := by simp [snorm]
 #align measure_theory.snorm_exponent_zero MeasureTheory.snorm_exponent_zero
 
+@[simp]
 theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} : Memℒp f 0 μ ↔ AEStronglyMeasurable f μ :=
   by simp [Memℒp, snorm_exponent_zero]
 #align measure_theory.mem_ℒp_zero_iff_ae_strongly_measurable MeasureTheory.memℒp_zero_iff_aestronglyMeasurable
@@ -907,6 +908,20 @@ theorem ae_le_snormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖₊ ≤ snor
 theorem meas_snormEssSup_lt {f : α → F} : μ { y | snormEssSup f μ < ‖f y‖₊ } = 0 :=
   meas_essSup_lt
 #align measure_theory.meas_snorm_ess_sup_lt MeasureTheory.meas_snormEssSup_lt
+
+lemma snormEssSup_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snormEssSup (Set.piecewise s f g) μ
+      = max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ)) := by
+  simp only [snormEssSup, ← essSup_piecewise hs]
+  congr with x
+  by_cases hx : x ∈ s <;> simp [hx]
+
+lemma snorm_top_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snorm (Set.piecewise s f g) ∞ μ
+      = max (snorm f ∞ (μ.restrict s)) (snorm g ∞ (μ.restrict sᶜ)) :=
+  snormEssSup_piecewise f g hs
 
 section MapMeasure
 

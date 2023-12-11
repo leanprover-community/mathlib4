@@ -109,7 +109,7 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     have := @length_set m []
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
-    simp [set, length, @length_set m, Nat.max_succ_succ]
+    simp [set, length, @length_set m, Nat.succ_max_succ]
 #align list.func.length_set List.Func.length_set
 
 -- porting note : @[simp] has been removed since `#lint` says this is
@@ -306,7 +306,7 @@ theorem length_pointwise {f : α → β → γ} :
   | _ :: as, [] => by
     simp only [pointwise, length, length_map, max_eq_left (Nat.zero_le (length as + 1))]
   | _ :: as, _ :: bs => by
-    simp only [pointwise, length, Nat.max_succ_succ, @length_pointwise _ as bs]
+    simp only [pointwise, length, Nat.succ_max_succ, @length_pointwise _ as bs]
 #align list.func.length_pointwise List.Func.length_pointwise
 
 end Func

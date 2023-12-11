@@ -105,6 +105,12 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   map_smul' := smul_modByMonic
 #align polynomial.mod_by_monic_hom Polynomial.modByMonicHom
 
+theorem neg_modByMonic (p mod : R[X]) : (-p) %ₘ mod = - (p %ₘ mod) :=
+  (modByMonicHom mod).map_neg p
+
+theorem sub_modByMonic (a b mod : R[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod :=
+  (modByMonicHom mod).map_sub a b
+
 end
 
 section
@@ -1322,7 +1328,7 @@ theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}
     (hf : Function.Injective f) : Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]; rfl
+  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 

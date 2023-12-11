@@ -55,7 +55,7 @@ def degree (p : R[X]) : WithBot ℕ :=
 #align polynomial.degree Polynomial.degree
 
 theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
-  InvImage.wf degree (WithBot.wellFounded_lt Nat.lt_wfRel.wf)
+  InvImage.wf degree wellFounded_lt
 #align polynomial.degree_lt_wf Polynomial.degree_lt_wf
 
 instance : WellFoundedRelation R[X] :=
@@ -916,12 +916,12 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
     coeff (p * q) (natDegree p + natDegree q) = leadingCoeff p * leadingCoeff q :=
   calc
     coeff (p * q) (natDegree p + natDegree q) =
-        ∑ x in Nat.antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
+        ∑ x in antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
       coeff_mul _ _ _
     _ = coeff p (natDegree p) * coeff q (natDegree q) := by
       refine' Finset.sum_eq_single (natDegree p, natDegree q) _ _
       · rintro ⟨i, j⟩ h₁ h₂
-        rw [Nat.mem_antidiagonal] at h₁
+        rw [mem_antidiagonal] at h₁
         by_cases H : natDegree p < i
         · rw [coeff_eq_zero_of_degree_lt
               (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 H)),
@@ -944,7 +944,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
       · intro H
         exfalso
         apply H
-        rw [Nat.mem_antidiagonal]
+        rw [mem_antidiagonal]
 #align polynomial.coeff_mul_degree_add_degree Polynomial.coeff_mul_degree_add_degree
 
 theorem degree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
@@ -1098,14 +1098,14 @@ theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
     (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
-  · rw [Finset.Nat.mem_antidiagonal]
+  · rw [mem_antidiagonal]
   rintro ⟨df', dg'⟩ hmem hne
   obtain h | hdf' := lt_or_le df df'
   · rw [coeff_eq_zero_of_natDegree_lt (hdf.trans_lt h), zero_mul]
   obtain h | hdg' := lt_or_le dg dg'
   · rw [coeff_eq_zero_of_natDegree_lt (hdg.trans_lt h), mul_zero]
   obtain ⟨rfl, rfl⟩ :=
-    (add_eq_add_iff_eq_and_eq hdf' hdg').mp (Finset.Nat.mem_antidiagonal.1 hmem)
+    (add_eq_add_iff_eq_and_eq hdf' hdg').mp (mem_antidiagonal.1 hmem)
   exact (hne rfl).elim
 
 theorem zero_le_degree_iff : 0 ≤ degree p ↔ p ≠ 0 := by
@@ -1344,6 +1344,13 @@ section Ring
 
 variable [Ring R] {p q : R[X]}
 
+theorem degree_sub_C (hp : 0 < degree p) : degree (p - C a) = degree p := by
+  rw [sub_eq_add_neg, ← C_neg, degree_add_C hp]
+
+@[simp]
+theorem natDegree_sub_C {a : R} : natDegree (p - C a) = natDegree p := by
+  rw [sub_eq_add_neg, ← C_neg, natDegree_add_C]
+
 theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q) := by
   simpa only [degree_neg q] using degree_add_le p (-q)
 #align polynomial.degree_sub_le Polynomial.degree_sub_le
@@ -1546,9 +1553,8 @@ theorem degree_X_sub_C (a : R) : degree (X - C a) = 1 := by
   rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
 #align polynomial.degree_X_sub_C Polynomial.degree_X_sub_C
 
-@[simp]
-theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 :=
-  natDegree_eq_of_degree_eq_some <| degree_X_sub_C x
+theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 := by
+  rw [natDegree_sub_C, natDegree_X]
 #align polynomial.nat_degree_X_sub_C Polynomial.natDegree_X_sub_C
 
 @[simp]

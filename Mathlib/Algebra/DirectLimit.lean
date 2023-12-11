@@ -128,8 +128,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
           rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
-          -- porting note: was `rfl`
-          simp only [Submodule.Quotient.mk''_eq_mk, Quotient.mk_add]⟩
+          rfl ⟩
 #align module.direct_limit.exists_of Module.DirectLimit.exists_of
 
 @[elab_as_elim]
@@ -502,7 +501,6 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
     dsimp only
     -- porting note: Lean 3 could get away with far fewer hints for inputs in the line below
     have := DirectedSystem.map_map (fun i j h => f' i j h) (hj p hps) hjk
-    dsimp only at this
     rw [this]
   · rintro x y ihx ihy
     rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, (f' j k hjk).map_add, ihx, ihy,
@@ -530,7 +528,6 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           restriction_of, dif_pos, lift_of, lift_of]
         dsimp only
         have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
-        dsimp only at this
         rw [this]
         exact sub_self _
         exacts [Or.inr rfl, Or.inl rfl]
@@ -540,8 +537,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         -- porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
-        erw [lift_of, dif_pos rfl, RingHom.map_one, RingHom.map_one, lift_of,
-          RingHom.map_one, sub_self]
+        erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
     · refine'
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
@@ -732,17 +728,14 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
--- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 500000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
     Field (Ring.DirectLimit G fun i j h => f' i j h) :=
-  { Ring.DirectLimit.commRing G fun i j h => f' i j h,
-    DirectLimit.nontrivial G fun i j h =>
-      f' i j h with
-    inv := inv G fun i j h => f' i j h
+  -- This used to include the parent CommRing and Nontrivial instances,
+  -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
+  { inv := inv G fun i j h => f' i j h
     mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
     inv_zero := dif_pos rfl }
 #align field.direct_limit.field Field.DirectLimit.field

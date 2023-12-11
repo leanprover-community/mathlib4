@@ -595,7 +595,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
 theorem eq_snoc_eraseTop {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseTop s) s.top (isMaximal_eraseTop_top h) := by
   ext x
-  simp [mem_snoc, mem_eraseTop h]
+  simp only [mem_snoc, mem_eraseTop h, ne_eq]
   by_cases h : x = s.top <;> simp [*, s.top_mem]
 #align composition_series.eq_snoc_erase_top CompositionSeries.eq_snoc_eraseTop
 

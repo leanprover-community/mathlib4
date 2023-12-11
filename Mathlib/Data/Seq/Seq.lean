@@ -28,7 +28,7 @@ coinductive seq (α : Type u) : Type u
 | nil : seq α
 | cons : α → seq α → seq α
 -/
-/-- A stream `s : Option α` is a sequence if `s.nth n = none` implies `s.nth (n + 1) = none`.
+/-- A stream `s : Option α` is a sequence if `s.get n = none` implies `s.get (n + 1) = none`.
 -/
 def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
   ∀ {n : ℕ}, s n = none → s (n + 1) = none
@@ -289,7 +289,7 @@ def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (co
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  cases' M with k e; unfold Stream'.nth at e
+  cases' M with k e; unfold Stream'.get at e
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
@@ -341,7 +341,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
-  dsimp [corec, destruct, nth]
+  dsimp [corec, destruct, get]
   -- porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
@@ -447,9 +447,9 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
 #align stream.seq.of_list_nil Stream'.Seq.ofList_nil
 
 @[simp]
-theorem ofList_nth (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
+theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
   rfl
-#align stream.seq.of_list_nth Stream'.Seq.ofList_nth
+#align stream.seq.of_list_nth Stream'.Seq.ofList_get
 
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
@@ -520,7 +520,7 @@ def append (s₁ s₂ : Seq α) : Seq α :=
 def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
     ⟨s.map (Option.map f), fun {n} => by
-      dsimp [Stream'.map, Stream'.nth]
+      dsimp [Stream'.map, Stream'.get]
       induction' e : s n with e <;> intro
       · rw [al e]
         assumption
@@ -976,7 +976,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
-  simp [ret, bind, map]
+  simp only [bind, map, ret._eq_1, map_nil]
   cases' f a with a s
   apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind

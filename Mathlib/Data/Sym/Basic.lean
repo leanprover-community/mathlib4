@@ -53,7 +53,7 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α]: DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance [DecidableEq α] : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -315,7 +315,7 @@ theorem eq_replicate_of_subsingleton [Subsingleton α] (a : α) {n : ℕ} (s : S
 instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
   ⟨by
     cases n
-    · simp
+    · simp [eq_iff_true_of_subsingleton]
     · intro s s'
       obtain ⟨b, -⟩ := exists_mem s
       rw [eq_replicate_of_subsingleton b s', eq_replicate_of_subsingleton b s]⟩

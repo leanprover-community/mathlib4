@@ -138,7 +138,7 @@ instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applic
   intros
   simp! [map, Seq.seq, functor_norm]
   rw [commutative_map]
-  simp [Comp.mk, flip, (· ∘ ·), functor_norm]
+  simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
   congr
   funext x y
   rw [commutative_map]

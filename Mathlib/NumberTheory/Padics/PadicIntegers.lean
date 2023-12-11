@@ -684,11 +684,9 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
           ⟨(p ^ n : ℤ_[p]), mem_nonZeroDivisors_iff_ne_zero.mpr (NeZero.ne _)⟩)
       simp only [map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow, PadicInt.coe_nat_cast,
         Subtype.coe_mk, Nat.cast_pow]
-  eq_iff_exists' := by
+  exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
-    refine ⟨fun h => ⟨1, by rw [h]⟩, ?_⟩
-    rintro ⟨⟨c, hc⟩, h⟩
-    exact (mul_eq_mul_left_iff.mp h).resolve_right (mem_nonZeroDivisors_iff_ne_zero.mp hc)
+    exact fun h => ⟨1, by rw [h]⟩
 #align padic_int.is_fraction_ring PadicInt.isFractionRing
 
 end FractionRing

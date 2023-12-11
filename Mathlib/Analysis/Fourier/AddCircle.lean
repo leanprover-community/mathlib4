@@ -504,9 +504,9 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
     HasSum (fun i => fourierCoeff f i • fourier i) f := by
   have sum_L2 := hasSum_fourier_series_L2 (toLp (E := ℂ) 2 haarAddCircle ℂ f)
   simp_rw [fourierCoeff_toLp] at sum_L2
-  refine' ContinuousMap.hasSum_of_hasSum_Lp (summable_of_summable_norm _) sum_L2
-  simp_rw [norm_smul, fourier_norm, mul_one, summable_norm_iff]
-  exact h
+  refine ContinuousMap.hasSum_of_hasSum_Lp (.of_norm ?_) sum_L2
+  simp_rw [norm_smul, fourier_norm, mul_one]
+  exact h.norm
 #align has_sum_fourier_series_of_summable hasSum_fourier_series_of_summable
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series of `f`
@@ -570,7 +570,6 @@ theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → �
   conv => pattern (occs := 1 2 3) fourier _ _ * _ <;> (rw [mul_comm])
   rw [integral_mul_deriv_eq_deriv_mul hf (fun x _ => has_antideriv_at_fourier_neg hT hn x) hf'
     (((map_continuous (fourier (-n))).comp (AddCircle.continuous_mk' _)).intervalIntegrable _ _)]
-  dsimp only
   have : ∀ u v w : ℂ, u * ((b - a : ℝ) / v * w) = (b - a : ℝ) / v * (u * w) := by intros; ring
   conv in intervalIntegral _ _ _ _ => congr; ext; rw [this]
   rw [(by ring : ((b - a : ℝ) : ℂ) / (-2 * π * I * n) = ((b - a : ℝ) : ℂ) * (1 / (-2 * π * I * n)))]

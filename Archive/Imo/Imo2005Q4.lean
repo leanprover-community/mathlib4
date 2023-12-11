@@ -57,7 +57,7 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
     rintro rfl n -
     exact isCoprime_one_right
   intro h
-  -- Conversely, suppose `k` is a number with the property, and let `p` be `k.min_fac` (by
+  -- Conversely, suppose `k` is a number with the property, and let `p` be `k.minFac` (by
   -- definition this is the minimal prime factor of `k` if `k ≠ 1`, and otherwise `1`.
   let p := k.minFac
   -- Suppose for the sake of contradiction that `k ≠ 1`.  Then `p` is genuinely a prime factor of

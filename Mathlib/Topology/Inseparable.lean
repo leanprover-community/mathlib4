@@ -3,7 +3,6 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury G. Kudryashov
 -/
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
 
@@ -19,7 +18,7 @@ In this file we define
 * `Inseparable`: a relation saying that two points in a topological space have the same
   neighbourhoods; equivalently, they can't be separated by an open set;
 
-* `InseparableSetoid X`: same relation, as a `setoid`;
+* `InseparableSetoid X`: same relation, as a `Setoid`;
 
 * `SeparationQuotient X`: the quotient of `X` by its `InseparableSetoid`.
 
@@ -40,7 +39,7 @@ topological space, separation setoid
 open Set Filter Function Topology List
 
 variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f : X → Y}
+  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f g : X → Y}
 
 /-!
 ### `Specializes` relation
@@ -228,6 +227,20 @@ theorem not_specializes_iff_exists_closed : ¬x ⤳ y ↔ ∃ S : Set X, IsClose
   push_neg
   rfl
 #align not_specializes_iff_exists_closed not_specializes_iff_exists_closed
+
+theorem IsOpen.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsOpen s)
+    (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, f x ⤳ g x) :
+    Continuous (s.piecewise f g) := by
+  have : ∀ U, IsOpen U → g ⁻¹' U ⊆ f ⁻¹' U := fun U hU x hx ↦ (hspec x).mem_open hU hx
+  rw [continuous_def]
+  intro U hU
+  rw [piecewise_preimage, ite_eq_of_subset_right _ (this U hU)]
+  exact hU.preimage hf |>.inter hs |>.union (hU.preimage hg)
+
+theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsClosed s)
+    (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, g x ⤳ f x) :
+    Continuous (s.piecewise f g) := by
+  simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
 
 variable (X)
 
@@ -635,3 +648,8 @@ theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) →
 #align separation_quotient.continuous_lift₂ SeparationQuotient.continuous_lift₂
 
 end SeparationQuotient
+
+theorem continuous_congr_of_inseparable (h : ∀ x, f x ~ᵢ g x) :
+    Continuous f ↔ Continuous g := by
+  simp_rw [SeparationQuotient.inducing_mk.continuous_iff (β := Y)]
+  exact continuous_congr fun x ↦ SeparationQuotient.mk_eq_mk.mpr (h x)

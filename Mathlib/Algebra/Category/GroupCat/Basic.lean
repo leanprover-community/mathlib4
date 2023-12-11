@@ -145,7 +145,7 @@ set_option linter.uppercaseLean3 false in
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
@@ -153,9 +153,6 @@ set_option linter.uppercaseLean3 false in
 #align Group.of_hom_apply GroupCat.ofHom_apply
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply
 
 @[to_additive]
 instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i

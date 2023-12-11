@@ -131,64 +131,22 @@ variable (𝕜)
 lemma analyticAt_id (z : E) : AnalyticAt 𝕜 (id : E → E) z :=
   (ContinuousLinearMap.id 𝕜 E).analyticAt z
 
-/-- Scalar multiplication is analytic (jointly in both variables). The statement is a little
-pedantic to allow towers of field extensions.
+/-- `id` is entire -/
+theorem analyticOn_id {s : Set E} : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
+  fun _ _ ↦ analyticAt_id _ _
 
-TODO: can we replace `𝕜'` with a "normed module" in such a way that `analyticAt_mul` is a special
-case of this? -/
-lemma analyticAt_smul
-    {𝕝 : Type*} [NormedField 𝕝] [NormedAlgebra 𝕜 𝕝] [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
-    (z : 𝕝 × E) : AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
-  (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z
+/-- `fst` is analytic -/
+theorem analyticAt_fst {p : E × F} : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
+  (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
-/-- Multiplication in a normed algebra over `𝕜` is -/
-lemma analyticAt_mul {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] (z : A × A) :
-    AnalyticAt 𝕜 (fun x : A × A ↦ x.1 * x.2) z :=
-  (ContinuousLinearMap.mul 𝕜 A).analyticAt_bilinear z
+/-- `snd` is analytic -/
+theorem analyticAt_snd {p : E × F} : AnalyticAt 𝕜 (fun p : E × F ↦ p.snd) p :=
+  (ContinuousLinearMap.snd 𝕜 E F).analyticAt p
 
-namespace AnalyticAt
-variable {𝕜}
+/-- `fst` is entire -/
+theorem analyticOn_fst {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) s :=
+  fun _ _ ↦ analyticAt_fst _
 
-/-- Scalar multiplication of one analytic function by another. -/
-lemma smul {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedSpace 𝕝 F] [NormedAlgebra 𝕜 𝕝]
-    [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
-    (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (f • g) z :=
-  @AnalyticAt.comp 𝕜 E (𝕝 × F) F _ _ _ _ _ _ _
-    (fun x ↦ x.1 • x.2) (fun e ↦ (f e, g e)) z (analyticAt_smul _ _) (hf.prod hg)
-
-/-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
-lemma mul {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
-    {f g : E → A} {z : E}
-    (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) : AnalyticAt 𝕜 (f * g) z :=
-  @AnalyticAt.comp 𝕜 E (A × A) A _ _ _ _ _ _ _
-    (fun x ↦ x.1 * x.2) (fun e ↦ (f e, g e)) z (analyticAt_mul _ (f z, g z)) (hf.prod hg)
-
-/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma pow {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
-    {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
-    AnalyticAt 𝕜 (f ^ n) z := by
-  induction' n with m hm
-  · rw [pow_zero]
-    exact (analyticAt_const : AnalyticAt 𝕜 (fun _ ↦ (1 : A)) z)
-  · exact pow_succ f m ▸ hf.mul hm
-
-end AnalyticAt
-
-/-- If `𝕝` is a normed field extension of `𝕜`, then the inverse map `𝕝 → 𝕝` is `𝕜`-analytic
-away from 0. -/
-lemma analyticAt_inv {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-    {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
-  let f1 : 𝕝 → 𝕝 := fun a ↦ 1 / z * a
-  let f2 : 𝕝 → 𝕝 := fun b ↦ (1 - b)⁻¹
-  let f3 : 𝕝 → 𝕝 := fun c ↦ 1 - c / z
-  have feq : f1 ∘ f2 ∘ f3 = Inv.inv
-  · ext1 x
-    dsimp only [Function.comp_apply]
-    field_simp
-  have f3val : f3 z = 0 := by simp only [div_self hz, sub_self]
-  have f3an : AnalyticAt 𝕜 f3 z
-  · apply analyticAt_const.sub
-    simpa only [div_eq_inv_mul] using analyticAt_const.mul (analyticAt_id 𝕜 z)
-  exact feq ▸ (analyticAt_const.mul (analyticAt_id _ _)).comp
-    ((f3val.symm ▸ analyticAt_inv_one_sub 𝕝).comp f3an)
+/-- `snd` is entire -/
+theorem analyticOn_snd {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) s :=
+  fun _ _ ↦ analyticAt_snd _

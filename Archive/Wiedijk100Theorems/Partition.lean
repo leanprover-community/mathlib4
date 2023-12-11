@@ -123,7 +123,7 @@ theorem mem_cut {ι : Type*} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
 #align theorems_100.mem_cut Theorems100.mem_cut
 
 theorem cut_equiv_antidiag (n : ℕ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = Nat.antidiagonal n := by
+    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
     Equiv.eq_symm_apply]
@@ -157,14 +157,14 @@ theorem cut_empty_succ {ι : Type*} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = 
 
 theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     cut (insert a s) n =
-      (Nat.antidiagonal n).biUnion fun p : ℕ × ℕ =>
+      (antidiagonal n).biUnion fun p : ℕ × ℕ =>
         (cut s p.snd).map
           ⟨fun f => f + fun t => if t = a then p.fst else 0, add_left_injective _⟩ := by
   ext f
   rw [mem_cut, mem_biUnion, sum_insert h]
   constructor
   · rintro ⟨rfl, h₁⟩
-    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, Nat.mem_antidiagonal, Prod.exists]
+    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists]
     refine' ⟨f a, s.sum f, rfl, fun i => if i = a then 0 else f i, _, _⟩
     · rw [mem_cut]
       refine' ⟨_, _⟩
@@ -183,7 +183,7 @@ theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s)
       obtain rfl | h := eq_or_ne x a
       · simp
       · simp [if_neg h]
-  · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, Nat.mem_antidiagonal, Prod.exists,
+  · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists,
       exists_prop, mem_cut, not_or]
     rintro ⟨p, q, rfl, g, ⟨rfl, hg₂⟩, rfl⟩
     refine' ⟨_, _⟩
@@ -216,7 +216,7 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type*} (s : Finset ι) (f : ι 
       rw [if_neg, add_zero]
       exact ne_of_mem_of_not_mem hk hi
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, Prod.forall, not_and, Ne.def,
-        Nat.mem_antidiagonal, disjoint_left, mem_map, exists_prop, Function.Embedding.coeFn_mk,
+        mem_antidiagonal, disjoint_left, mem_map, exists_prop, Function.Embedding.coeFn_mk,
         exists_imp, not_exists, Finset.mem_coe, Function.onFun, mem_cut, and_imp]
       rintro p₁ q₁ rfl p₂ q₂ h t x p hp _ hp3 q hq _ hq3
       have z := hp3.trans hq3.symm
@@ -275,14 +275,14 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((Nat.antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
         cases' h with p hp
         refine' ⟨((i + 1) * (p - 1), i + 1), _⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, Nat.mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine' ⟨_, rfl⟩
@@ -292,12 +292,12 @@ theorem num_series' [Field α] (i : ℕ) :
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (Nat.antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
         apply eq_empty_of_forall_not_mem
-        simp only [Prod.forall, mem_filter, not_and, Nat.mem_antidiagonal]
+        simp only [Prod.forall, mem_filter, not_and, mem_antidiagonal]
         rintro _ h₁ h₂ ⟨a, rfl⟩ rfl
         apply h
         simp [← h₂]

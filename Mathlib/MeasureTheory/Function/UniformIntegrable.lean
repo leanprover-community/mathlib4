@@ -451,12 +451,12 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
     (hf : ∀ i, Memℒp (f i) p μ) : UnifIntegrable f p μ := by
   obtain ⟨n, hn⟩ := Finite.exists_equiv_fin ι
   intro ε hε
-  set g : Fin n → α → β := f ∘ hn.some.symm with hgeq
+  let g : Fin n → α → β := f ∘ hn.some.symm
   have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin μ hp_one hp_top hg hε
   refine' ⟨δ, hδpos, fun i s hs hμs => _⟩
   specialize hδ (hn.some i) s hs hμs
-  simp_rw [hgeq, Function.comp_apply, Equiv.symm_apply_apply] at hδ
+  simp_rw [Function.comp_apply, Equiv.symm_apply_apply] at hδ
   assumption
 #align measure_theory.unif_integrable_finite MeasureTheory.unifIntegrable_finite
 

@@ -189,6 +189,9 @@ theorem floor_mono : Monotone (floor : α → ℕ) := fun a b h => by
   · exact le_floor ((floor_le ha).trans h)
 #align nat.floor_mono Nat.floor_mono
 
+@[gcongr]
+theorem floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋₊ ≤ ⌊y⌋₊ := floor_mono
+
 theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a := by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha]
@@ -316,6 +319,9 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
 theorem ceil_mono : Monotone (ceil : α → ℕ) :=
   gc_ceil_coe.monotone_l
 #align nat.ceil_mono Nat.ceil_mono
+
+@[gcongr]
+theorem ceil_le_ceil : ∀ x y : α, x ≤ y → ⌈x⌉₊ ≤ ⌈y⌉₊ := ceil_mono
 
 @[simp]
 theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natCast]
@@ -652,6 +658,7 @@ notation "⌊" a "⌋" => Int.floor a
 notation "⌈" a "⌉" => Int.ceil a
 
 -- Mathematical notation for `fract a` is usually `{a}`. Let's not even go there.
+
 @[simp]
 theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
   rfl
@@ -737,6 +744,9 @@ theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 #align int.floor_mono Int.floor_mono
+
+@[gcongr]
+theorem floor_le_floor : ∀ x y : α, x ≤ y → ⌊x⌋ ≤ ⌊y⌋ := floor_mono
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   -- Porting note: broken `convert le_floor`
@@ -1022,7 +1032,7 @@ theorem fract_fract (a : α) : fract (fract a) = fract a :=
 theorem fract_add (a b : α) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
-    simp [sub_eq_add_neg]
+    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
     abel⟩
 #align int.fract_add Int.fract_add
 
@@ -1209,6 +1219,9 @@ theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(OfNat.ofNat n : α)⌉ = n := 
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
 #align int.ceil_mono Int.ceil_mono
+
+@[gcongr]
+theorem ceil_le_ceil : ∀ x y : α, x ≤ y → ⌈x⌉ ≤ ⌈y⌉ := ceil_mono
 
 @[simp]
 theorem ceil_add_int (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by

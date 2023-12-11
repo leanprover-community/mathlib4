@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
@@ -359,33 +359,12 @@ instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/
-def algEquiv (f : K[X]) [IsSplittingField K L f] : L ≃ₐ[K] SplittingField f := by
-  refine'
-    AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f)
-      ⟨RingHom.injective (lift L f <| splits (SplittingField f) f).toRingHom, _⟩
-  haveI := finiteDimensional (SplittingField f) f
-  haveI := finiteDimensional L f
-  have : FiniteDimensional.finrank K L = FiniteDimensional.finrank K (SplittingField f) :=
-    le_antisymm
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift L f <| splits (SplittingField f) f).toLinearMap from
-          RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)))
-      (LinearMap.finrank_le_finrank_of_injective
-        (show Function.Injective (lift (SplittingField f) f <| splits L f).toLinearMap from
-          RingHom.injective (lift (SplittingField f) f <| splits L f : f.SplittingField →+* L)))
-  change Function.Surjective (lift L f <| splits (SplittingField f) f).toLinearMap
-  refine' (LinearMap.injective_iff_surjective_of_finrank_eq_finrank this).1 _
-  exact RingHom.injective (lift L f <| splits (SplittingField f) f : L →+* f.SplittingField)
+def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
+  AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
+    have := finiteDimensional L f
+    ((Algebra.isAlgebraic_of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
 #align polynomial.is_splitting_field.alg_equiv Polynomial.IsSplittingField.algEquiv
 
 end IsSplittingField
 
 end Polynomial
-
-section Normal
-
-instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
-  Normal.of_isSplittingField p
-#align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
-
-end Normal

@@ -231,9 +231,18 @@ theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt
     HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
 
+theorem HasDerivAt.norm_sq {f : ℝ → F} {f' : F} {x : ℝ} (hf : HasDerivAt f f' x) :
+    HasDerivAt (‖f ·‖ ^ 2) (2 * Inner.inner (f x) f') x := by
+  simpa using hf.hasFDerivAt.norm_sq.hasDerivAt
+
 theorem HasFDerivWithinAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') s x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp_hasFDerivWithinAt x hf
+
+theorem HasDerivWithinAt.norm_sq {f : ℝ → F} {f' : F} {s : Set ℝ} {x : ℝ}
+    (hf : HasDerivWithinAt f f' s x) :
+    HasDerivWithinAt (‖f ·‖ ^ 2) (2 * Inner.inner (f x) f') s x := by
+  simpa using hf.hasFDerivWithinAt.norm_sq.hasDerivWithinAt
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
@@ -244,6 +253,28 @@ theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
     DifferentiableAt ℝ (fun y => ‖f y‖) x :=
   ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm DifferentiableAt.norm
+
+theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
+  rw [DifferentiableAt]
+  push_neg
+  intro f
+  simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
+    Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
+  use (1 / 2), by norm_num
+  rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
+  intro δ hδ
+  obtain ⟨x, hx⟩ : ∃ x ∈ Metric.ball 0 δ, x ≠ 0 ∧ f x ≤ 0 := by
+    by_cases f (δ / 2) ≤ 0
+    · use (δ / 2)
+      simp [h, abs_of_nonneg hδ.le, hδ, hδ.ne']
+    · use -(δ / 2)
+      push_neg at h
+      simp [h.le, abs_of_nonneg hδ.le, hδ, hδ.ne']
+  use x, hx.left
+  rw [lt_abs]
+  left
+  cancel_denoms
+  linarith [abs_pos.mpr hx.right.left]
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by

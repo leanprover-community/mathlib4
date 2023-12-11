@@ -441,6 +441,31 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain
 
+theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
+    (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
+    List.Chain' (· > ·) (a :: m) := by
+  cases m with
+  | nil => simp only [List.chain'_singleton]
+  | cons b bs =>
+    apply hm.cons
+    cases as with
+    | nil =>
+      simp only [le_iff_lt_or_eq, or_false] at hmas
+      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+    | cons a' as =>
+      rw [List.chain'_cons] at ha
+      refine gt_of_gt_of_ge ha.1 ?_
+      rw [le_iff_lt_or_eq] at hmas
+      cases' hmas with hmas hmas
+      · by_contra' hh
+        rw [← not_le] at hmas
+        apply hmas
+        apply le_of_lt
+        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+      · simp only [List.cons.injEq] at hmas
+        rw [ge_iff_le, le_iff_lt_or_eq]
+        exact Or.inr hmas.1
+
 end List
 
 

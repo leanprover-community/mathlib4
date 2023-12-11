@@ -312,7 +312,7 @@ def preservesColimitOfNatIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [Preser
 /-- Transfer preservation of colimits of shape along a natural isomorphism in the functor. -/
 def preservesColimitsOfShapeOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOfShape J F] :
     PreservesColimitsOfShape J G where
-  preservesColimit {K}  := preservesColimitOfNatIso K h
+  preservesColimit {K} := preservesColimitOfNatIso K h
 #align category_theory.limits.preserves_colimits_of_shape_of_nat_iso CategoryTheory.Limits.preservesColimitsOfShapeOfNatIso
 
 /-- Transfer preservation of colimits along a natural isomorphism in the functor. -/

@@ -5,8 +5,8 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Hom.Iterate
-import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Algebra.NonUnitalHom
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.LinearAlgebra.TensorProduct
 
 #align_import algebra.algebra.bilinear from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
