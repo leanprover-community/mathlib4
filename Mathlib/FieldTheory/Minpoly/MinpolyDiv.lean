@@ -13,10 +13,12 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 ## Main definition
 - `minpolyDiv`: The polynomial `minpoly R x / (X - C x)`.
 
+We used the contents of this file to describe the dual basis of a powerbasis under the trace form.
+See `traceForm_dualBasis_powerBasis_eq`.
+
 ## Main result
 
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
-- `traceForm_dualBasis_powerBasis_eq`: The dual basis of a powerbasis under the trace form.
 -/
 
 open Polynomial BigOperators FiniteDimensional
@@ -36,8 +38,7 @@ lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
     algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
   rw [← coeff_map, ← minpolyDiv_spec R x]; simp [mul_sub]
 
-variable (hx : IsIntegral R x)
-variable {R x}
+variable (hx : IsIntegral R x) {R x}
 
 lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
   intro e
@@ -66,7 +67,7 @@ lemma minpolyDiv_eval_eq_zero_of_ne_of_aeval_eq_zero [IsDomain S]
   exact hy.resolve_right (by rwa [sub_eq_zero])
 
 lemma eval₂_minpolyDiv_of_eval₂_eq_zero {T} [CommRing T]
-    [IsDomain T] [DecidableEq T] (x : S) (y : T)
+    [IsDomain T] [DecidableEq T] {x y}
     (σ : S →+* T) (hy : eval₂ (σ.comp (algebraMap R S)) y (minpoly R x) = 0) :
     eval₂ σ y (minpolyDiv R x) =
       if σ x = y then σ (aeval x (derivative <| minpoly R x)) else 0 := by
@@ -108,7 +109,8 @@ lemma natDegree_minpolyDiv_lt [Nontrivial S] :
   rw [← natDegree_minpolyDiv_succ hx]
   exact Nat.lt.base _
 
-lemma coeff_minpolyDiv_mem_adjoin {i} : coeff (minpolyDiv R x) i ∈ Algebra.adjoin R {x} := by
+lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
+    coeff (minpolyDiv R x) i ∈ Algebra.adjoin R {x} := by
   by_contra H
   have : ∀ j, coeff (minpolyDiv R x) (i + j) ∉ Algebra.adjoin R {x}
   · intro j; induction j with
@@ -132,7 +134,7 @@ lemma minpolyDiv_eq_of_isIntegrallyClosed [IsDomain R] [IsIntegrallyClosed R] [I
   rw [IsScalarTower.algebraMap_eq R K S, ← map_map,
     ← minpoly.isIntegrallyClosed_eq_field_fractions' _ hx]
 
-lemma coeff_minpolyDiv_sub_pow_mem_span (i) (hi : i ≤ natDegree (minpolyDiv R x)) :
+lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R x)) :
     coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) - x ^ i ∈
       Submodule.span R ((x ^ ·) '' Set.Iio i) := by
   induction i with
@@ -153,7 +155,6 @@ lemma coeff_minpolyDiv_sub_pow_mem_span (i) (hi : i ≤ natDegree (minpolyDiv R 
       rintro _ ⟨j, hj : j < i, rfl⟩
       exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ' x j⟩
 
-open Polynomial in
 lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
       Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
@@ -173,7 +174,7 @@ lemma span_coeff_minpolyDiv :
         Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
       Submodule.subset_span (Set.mem_range_self _)
     rw [Set.mem_preimage, SetLike.mem_coe, ← Submodule.sub_mem_iff_right _ this]
-    refine SetLike.le_def.mp ?_ (coeff_minpolyDiv_sub_pow_mem_span hx i ?_)
+    refine SetLike.le_def.mp ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)
     · rw [Submodule.span_le, Set.image_subset_iff]
       intro j (hj : j < i)
       exact hi j hj (lt_trans hj hi')
@@ -195,7 +196,7 @@ variable {K}
 
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     [FiniteDimensional K L] [IsSeparable K L]
-    (x : L) (hxL : Algebra.adjoin K {x} = ⊤) (r : ℕ) (hr : r < finrank K L) :
+    (x : L) (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
     ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
   classical
