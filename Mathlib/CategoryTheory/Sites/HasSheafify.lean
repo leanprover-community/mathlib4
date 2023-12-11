@@ -106,7 +106,7 @@ instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
 
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [IsRightAdjoint <| sheafToPresheaf J A] :
-  presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
+    presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
 
 instance [IsRightAdjoint <| sheafToPresheaf J A] : IsLeftAdjoint <| presheafToSheaf J A where
   adj := sheafificationAdjunction J A
