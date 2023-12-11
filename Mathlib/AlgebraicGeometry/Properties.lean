@@ -64,9 +64,6 @@ theorem isReducedOfStalkIsReduced [∀ x : X.carrier, _root_.IsReduced (X.preshe
   exact (hs.map _).eq_zero
 #align algebraic_geometry.is_reduced_of_stalk_is_reduced AlgebraicGeometry.isReducedOfStalkIsReduced
 
--- HACK to avoid slow instances
-attribute [-instance] StarAlgHomClass.toAlgHomClass NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
-
 instance stalk_isReduced_of_reduced [IsReduced X] (x : X.carrier) :
     _root_.IsReduced (X.presheaf.stalk x) := by
   constructor

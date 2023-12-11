@@ -671,10 +671,6 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     · exact Subalgebra.mul_mem _ hy hz
 #align cyclotomic_ring.is_cyclotomic_extension CyclotomicRing.isCyclotomicExtension
 
--- FIXME: should probably be an unbundling of the `StarHomClass` from `StarAlgHomClass`?
-attribute [-instance] StarAlgHomClass.toAlgHomClass NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
-  in
-
 instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units' := fun ⟨x, hx⟩ => by

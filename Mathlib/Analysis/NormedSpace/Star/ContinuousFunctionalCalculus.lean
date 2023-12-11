@@ -100,7 +100,6 @@ theorem spectrum_star_mul_self_of_isStarNormal :
 variable {a}
 
 -- HACK for a `simp` that barely times out
-attribute [-instance] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass StarAlgHomClass.toAlgHomClass
 attribute [-instance] ContinuousSemilinearMapClass.toSemilinearMapClass
 
 /-- This is the key lemma on the way to establishing spectral permanence for C⋆-algebras, which is
@@ -198,10 +197,6 @@ theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClo
   exact (congr_arg ((↑) : _ → A) hx'.unit.mul_inv)
 #align star_subalgebra.is_unit_coe_inv_mem StarSubalgebra.isUnit_coe_inv_mem
 
-section
--- HACK: this instance really doesn't want to be found!
-attribute [instance] StarAlgHomClass.toAlgHomClass
-set_option synthInstance.maxHeartbeats 40000 in
 /-- For a unital C⋆-subalgebra `S` of `A` and `x : S`, if `↑x : A` is invertible in `A`, then
 `x` is invertible in `S`. -/
 theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S} :
@@ -211,7 +206,6 @@ theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S :
       fun hx => hx.map S.subtype⟩
   exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
 #align star_subalgebra.coe_is_unit StarSubalgebra.coe_isUnit
-end
 
 theorem StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S}
     {z : ℂ} : z ∈ spectrum ℂ x ↔ z ∈ spectrum ℂ (x : A) :=

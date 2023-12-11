@@ -81,9 +81,6 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
 
 section
 
--- HACK because these instances cause a slow search
-attribute [-instance] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass StarAlgHomClass.toAlgHomClass
-
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
@@ -164,6 +161,8 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 #align gelfand_transform_isometry gelfandTransform_isometry
 
+-- HACK: a failing search for a `Star` instance is very expensive apparently!
+set_option synthInstance.maxHeartbeats 400000 in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩

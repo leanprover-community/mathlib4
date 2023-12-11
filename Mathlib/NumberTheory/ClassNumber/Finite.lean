@@ -83,9 +83,6 @@ theorem normBound_pos : 0 < normBound abv bS := by
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 #align class_group.norm_bound_pos ClassGroup.normBound_pos
 
--- FIXME: unbundle these instances?
-attribute [-instance] StarAlgHomClass.toAlgHomClass NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
-
 /-- If the `R`-integral element `a : S` has coordinates `≤ y` with respect to some basis `b`,
 its norm is less than `normBound abv b * y ^ dim S`. -/
 theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
