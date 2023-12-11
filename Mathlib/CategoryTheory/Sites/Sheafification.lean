@@ -27,8 +27,9 @@ left adjoint to the inclusion, import the file `Sites/HasSheafify` and use the a
 
 * The file `Sites/LeftExact` contains the proof that sufficiently nice concrete categories have
   left exact sheafification (`HasSheafify`). If you only need the fact that sheafification is
-  a left adjoint, then `HasWeakSheafify` is enough. The file `Sites/ConcreteSheafify` contains
-  the proof that this is satisfied by sufficiently nice concrete categories.
+  a left adjoint, then `[IsRightAdjoint <| sheafToPresheaf J D]` is enough. The file
+  `Sites/ConcreteSheafify` contains the proof that this is satisfied by sufficiently nice concrete
+  categories.
 
 -/
 
