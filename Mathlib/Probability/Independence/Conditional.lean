@@ -698,8 +698,8 @@ section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
 @[nontriviality]
-lemma iCondIndepFun.of_subsingleton [IsProbabilityMeasure μ] [Subsingleton ι] :
-    iCondIndepFun m' hm' m f μ := kernel.iIndepFun.of_subsingleton
+lemma iCondIndepFun.of_subsingleton [Subsingleton ι] : iCondIndepFun m' hm' m f μ :=
+  kernel.iIndepFun.of_subsingleton
 
 /-- If `f` is a family of mutually conditionally independent random variables
 (`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint finite index sets, then the tuple formed
