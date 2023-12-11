@@ -103,7 +103,7 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
-/- Import of widgets disabled temporarily, as they break cache on windows. TODO: fix properly. -/
+-- Import of widgets disabled temporarily, as they break cache on windows. TODO: fix properly.
 -- import Mathlib.Tactic.Widget.Calc
 -- import Mathlib.Tactic.Widget.Congrm
 -- import Mathlib.Tactic.Widget.Conv
