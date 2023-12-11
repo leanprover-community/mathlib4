@@ -28,8 +28,7 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
--- noncomputable instance hasSheafifyOfPlusPlus : HasWeakSheafify J D where
---   isRightAdjoint := inferInstance
+noncomputable instance hasSheafifyOfPlusPlus : HasWeakSheafify J D := ⟨inferInstance⟩
 
 /--
 The functor `plusPlusSheaf`, doing the plus construction twice, is isomorphic to any choice of

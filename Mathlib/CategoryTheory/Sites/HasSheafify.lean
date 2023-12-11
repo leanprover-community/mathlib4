@@ -23,19 +23,24 @@ open Limits
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
+abbrev HasWeakSheafify := Nonempty (IsRightAdjoint (sheafToPresheaf J A))
+
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
 left adjiont (sheafification).
 -/
 class HasSheafify : Prop where
-  isRightAdjoint : Nonempty (IsRightAdjoint (sheafToPresheaf J A))
+  isRightAdjoint : HasWeakSheafify J A
   isLeftExact : letI := isRightAdjoint.some
     Nonempty (PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)))
 
+instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
+
+instance [IsRightAdjoint <| sheafToPresheaf J A] : HasWeakSheafify J A := ⟨inferInstance⟩
+
 noncomputable section
 
-instance [HasSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) :=
-  HasSheafify.isRightAdjoint.some
+instance [h : HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) := h.some
 
 instance [HasSheafify J A] : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)) :=
   HasSheafify.isLeftExact.some
@@ -50,17 +55,17 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
     ⟨⟨fun _ ↦ preservesLimitsOfShapeOfNatIso (i _)⟩⟩
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
-def presheafToSheaf [IsRightAdjoint <| sheafToPresheaf J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
+def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   leftAdjoint (sheafToPresheaf J A)
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
   HasSheafify.isLeftExact.some
 
 /-- The sheafification-inclusion adjunction. -/
-def sheafificationAdjunction [IsRightAdjoint <| sheafToPresheaf J A] :
+def sheafificationAdjunction [HasWeakSheafify J A] :
     presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
 
-instance [IsRightAdjoint <| sheafToPresheaf J A] : IsLeftAdjoint <| presheafToSheaf J A where
+instance [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
   adj := sheafificationAdjunction J A
 
 end
