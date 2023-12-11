@@ -258,7 +258,6 @@ theorem cfc₁_map_id :
   rw [←X_toContinuousMap R]
   rfl
 
-@[simp]
 theorem cfc₂_map_X : cfc₂ R a (X : R[X]).toContinuousMap = a :=
   cfc₁_map_X R a
 
@@ -273,7 +272,6 @@ theorem cfc₁_map_C (r : R) :
     cfc₁ R a ((C r).toContinuousMapOn <| spectrum R a) = algebraMap R A r :=
   ((cfc₁ R a).toAlgHom.comp (toContinuousMapOnAlgHom <| spectrum R a)).commutes' r
 
-@[simp]
 theorem cfc₂_map_C (r : R) : cfc₂ R a (C r).toContinuousMap = algebraMap R A r :=
   cfc₁_map_C a r
 
@@ -905,14 +903,14 @@ noncomputable instance Cfc.complexToReal {A : Type*} [Ring A] [StarRing A] [Metr
   h.cfc _ (algebraMap_isometry ℝ ℂ)
 
 instance CfcSpectrumRestricts.complexToReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
-    [Algebra ℂ A] {a : A} [CFCClass ℂ a] [CompactSpace (spectrum ℂ a)]
+    [Algebra ℂ A] {a : A} [CFCClass ℂ a]
     [h : SpectrumRestricts a ContinuousMap.complexRe] (g : C(spectrum ℝ a, ℝ)) :
     SpectrumRestricts (@cfc₁ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.complexRe) g)
       ContinuousMap.complexRe :=
   h.cfc_spectrumRestricts _ g
 
 instance CfcSpectrumRestricts.complexToReal' {A : Type*} [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra ℂ A] {a : A} [CFCClass ℂ a] [CompactSpace (spectrum ℂ a)]
+    [TopologicalSpace A] [Algebra ℂ A] {a : A} [CFCClass ℂ a]
     [h : SpectrumRestricts a ContinuousMap.complexRe] (g : C(ℝ, ℝ)) :
     SpectrumRestricts (@cfc₂ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.complexRe) g)
       ContinuousMap.complexRe := by
@@ -942,14 +940,14 @@ noncomputable instance Cfc.realToNNReal {A : Type*} [Ring A] [StarRing A] [Topol
   h.cfc _ isometry_subtype_coe
 
 instance CfcSpectrumRestricts.realToNNReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
-    [Algebra ℝ A] {a : A} [CFCClass ℝ a] [CompactSpace (spectrum ℝ a)]
-    [h : SpectrumRestricts a ContinuousMap.toNNReal] (g : C(spectrum ℝ≥0 a, ℝ≥0)) :
+    [Algebra ℝ A] {a : A} [CFCClass ℝ a] [h : SpectrumRestricts a ContinuousMap.toNNReal]
+    (g : C(spectrum ℝ≥0 a, ℝ≥0)) :
     SpectrumRestricts (@cfc₁ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.toNNReal) g)
       ContinuousMap.toNNReal :=
   h.cfc_spectrumRestricts _ g
 
 instance CfcSpectrumRestricts.realToNNReal' {A : Type*} [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra ℝ A] {a : A} [CFCClass ℝ a] [CompactSpace (spectrum ℝ a)]
+    [TopologicalSpace A] [Algebra ℝ A] {a : A} [CFCClass ℝ a]
     [h : SpectrumRestricts a ContinuousMap.toNNReal] (g : C(ℝ≥0, ℝ≥0)) :
     SpectrumRestricts (@cfc₂ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.toNNReal) g)
       ContinuousMap.toNNReal := by
