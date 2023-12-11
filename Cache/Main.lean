@@ -20,6 +20,7 @@ Commands:
   unpack!      Decompress linked already downloaded files (no skipping)
   clean        Delete non-linked files
   clean!       Delete everything on the local cache
+  lookup       Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server

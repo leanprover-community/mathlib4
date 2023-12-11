@@ -366,13 +366,11 @@ file) regarding the files with specified paths. -/
 def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
   let mut err := false
   for path in paths do
-    match hashMap.find? path with
-    | none => err := true
-    | some hash =>
-      let ltar := CACHEDIR / hash.asLTar
-      IO.println s!"{path}: {ltar}"
-      for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do
-        println! "  commment: {line}"
+    let some hash := hashMap.find? path | err := true
+    let ltar := CACHEDIR / hash.asLTar
+    IO.println s!"{path}: {ltar}"
+    for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do
+      println! "  comment: {line}"
   if err then IO.Process.exit 1
 
 end Cache.IO
