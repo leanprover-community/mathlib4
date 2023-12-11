@@ -11,7 +11,7 @@ import Mathlib.Tactic.Attr.Core
 #align_import logic.equiv.local_equiv from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
-# Local equivalences
+# Partial equivalences
 
 This files defines equivalences between subsets of given types.
 An element `e` of `PartialEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
@@ -20,7 +20,7 @@ from α to β and from β to α (just like equivs), which are inverse to each ot
 
 They are designed in particular to define charts on manifolds.
 
-The main functionality is `e.trans f`, which composes the two local equivalences by restricting
+The main functionality is `e.trans f`, which composes the two partial equivalences by restricting
 the source and target to the maximal set where the composition makes sense.
 
 As for equivs, we register a coercion to functions and use it in our simp normal form: we write
@@ -28,17 +28,17 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 
 ## Main definitions
 
-* `Equiv.toPartialEquiv`: associating a local equiv to an equiv, with source = target = univ
-* `PartialEquiv.symm`: the inverse of a local equiv
-* `PartialEquiv.trans`: the composition of two local equivs
-* `PartialEquiv.refl`: the identity local equiv
+* `Equiv.toPartialEquiv`: associating a partial equiv to an equiv, with source = target = univ
+* `PartialEquiv.symm`: the inverse of a partial equivalence
+* `PartialEquiv.trans`: the composition of two partial equivalences
+* `PartialEquiv.refl`: the identity partial equivalence
 * `PartialEquiv.ofSet`: the identity on a set `s`
 * `EqOnSource`: equivalence relation describing the "right" notion of equality for local
   equivs (see below in implementation notes)
 
 ## Implementation notes
 
-There are at least three possible implementations of local equivalences:
+There are at least three possible implementations of partial equivalences:
 * equivs on subtypes
 * pairs of functions taking values in `Option α` and `Option β`, equal to none where the local
 equivalence is not defined
@@ -55,10 +55,10 @@ where one wants to discuss thoroughly the smoothness of the maps, this creates h
 overhead as one would need to extend all classes of smoothness to option-valued maps.
 * The `PartialEquiv` version as explained above is easier to use for manifolds. The drawback is that
 there is extra useless data (the values of `toFun` and `invFun` outside of `source` and `target`).
-In particular, the equality notion between local equivs is not "the right one", i.e., coinciding
-source and target and equality there. Moreover, there are no local equivs in this sense between
+In particular, the equality notion between partial equivs is not "the right one", i.e., coinciding
+source and target and equality there. Moreover, there are no partial equivs in this sense between
 an empty type and a nonempty type. Since empty types are not that useful, and since one almost never
-needs to talk about equal local equivs, this is not an issue in practice.
+needs to talk about equal partial equivs, this is not an issue in practice.
 Still, we introduce an equivalence relation `EqOnSource` that captures this right notion of
 equality, and show that many properties are invariant under this equivalence relation.
 
@@ -118,22 +118,22 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 inverse to each other there. The values of `toFun` outside of `source` and of `invFun` outside of
 `target` are irrelevant. -/
 structure PartialEquiv (α : Type*) (β : Type*) where
-  /-- The global function which has a local inverse. Its value outside of the `source` subset is
+  /-- The global function which has a partial inverse. Its value outside of the `source` subset is
   irrelevant. -/
   toFun : α → β
-  /-- The local inverse to `toFun`. Its value outside of the `target` subset is irrelevant. -/
+  /-- The partial inverse to `toFun`. Its value outside of the `target` subset is irrelevant. -/
   invFun : β → α
-  /-- The domain of the local equivalence. -/
+  /-- The domain of the partial equivalence. -/
   source : Set α
-  /-- The codomain of the local equivalence. -/
+  /-- The codomain of the partial equivalence. -/
   target : Set β
   /-- The proposition that elements of `source` are mapped to elements of `target`. -/
   map_source' : ∀ ⦃x⦄, x ∈ source → toFun x ∈ target
   /-- The proposition that elements of `target` are mapped to elements of `source`. -/
   map_target' : ∀ ⦃x⦄, x ∈ target → invFun x ∈ source
-  /-- The proposition that `invFun` is a local left-inverse of `toFun` on `source`. -/
+  /-- The proposition that `invFun` is a left-inverse of `toFun` on `source`. -/
   left_inv' : ∀ ⦃x⦄, x ∈ source → invFun (toFun x) = x
-  /-- The proposition that `invFun` is a local right-inverse of `toFun` on `target`. -/
+  /-- The proposition that `invFun` is a right-inverse of `toFun` on `target`. -/
   right_inv' : ∀ ⦃x⦄, x ∈ target → toFun (invFun x) = x
 #align local_equiv PartialEquiv
 
@@ -147,7 +147,7 @@ instance [Inhabited α] [Inhabited β] : Inhabited (PartialEquiv α β) :=
   ⟨⟨const α default, const β default, ∅, ∅, mapsTo_empty _ _, mapsTo_empty _ _, eqOn_empty _ _,
       eqOn_empty _ _⟩⟩
 
-/-- The inverse of a local equiv -/
+/-- The inverse of a partial equivalence -/
 protected def symm : PartialEquiv β α where
   toFun := e.invFun
   invFun := e.toFun
@@ -348,7 +348,7 @@ theorem exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ 
   rw [← image_source_eq_target, bex_image_iff]
 #align local_equiv.exists_mem_target PartialEquiv.exists_mem_target
 
-/-- We say that `t : Set β` is an image of `s : Set α` under a local equivalence if
+/-- We say that `t : Set β` is an image of `s : Set α` under a partial equivalence if
 any of the following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;
@@ -550,7 +550,7 @@ theorem target_subset_preimage_source : e.target ⊆ e.symm ⁻¹' e.source :=
   e.symm_mapsTo
 #align local_equiv.target_subset_preimage_source PartialEquiv.target_subset_preimage_source
 
-/-- Two local equivs that have the same `source`, same `toFun` and same `invFun`, coincide. -/
+/-- Two partial equivs that have the same `source`, same `toFun` and same `invFun`, coincide. -/
 @[ext]
 protected theorem ext {e e' : PartialEquiv α β} (h : ∀ x, e x = e' x)
     (hsymm : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' := by
@@ -568,7 +568,7 @@ protected theorem ext {e e' : PartialEquiv α β} (h : ∀ x, e x = e' x)
   simp [*]
 #align local_equiv.ext PartialEquiv.ext
 
-/-- Restricting a local equivalence to e.source ∩ s -/
+/-- Restricting a partial equivalence to `e.source ∩ s` -/
 protected def restr (s : Set α) : PartialEquiv α β :=
   (@IsImage.of_symm_preimage_eq α β e s (e.symm ⁻¹' s) rfl).restr
 #align local_equiv.restr PartialEquiv.restr
@@ -603,7 +603,7 @@ theorem restr_univ {e : PartialEquiv α β} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 #align local_equiv.restr_univ PartialEquiv.restr_univ
 
-/-- The identity local equiv -/
+/-- The identity partial equiv -/
 protected def refl (α : Type*) : PartialEquiv α α :=
   (Equiv.refl α).toPartialEquiv
 #align local_equiv.refl PartialEquiv.refl
@@ -640,7 +640,7 @@ theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target
   simp
 #align local_equiv.refl_restr_target PartialEquiv.refl_restr_target
 
-/-- The identity local equiv on a set `s` -/
+/-- The identity partial equivalence on a set `s` -/
 def ofSet (s : Set α) : PartialEquiv α α where
   toFun := id
   invFun := id
@@ -672,7 +672,7 @@ theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofS
   rfl
 #align local_equiv.of_set_symm PartialEquiv.ofSet_symm
 
-/-- Composing two local equivs if the target of the first coincides with the source of the
+/-- Composing two partial equivs if the target of the first coincides with the source of the
 second. -/
 @[simps]
 protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : PartialEquiv α γ where
@@ -686,7 +686,7 @@ protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : Part
   right_inv' y hy := by simp [hy, h]
 #align local_equiv.trans' PartialEquiv.trans'
 
-/-- Composing two local equivs, by restricting to the maximal domain where their composition
+/-- Composing two partial equivs, by restricting to the maximal domain where their composition
 is well defined. -/
 protected def trans : PartialEquiv α γ :=
   PartialEquiv.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (inter_comm _ _)
@@ -784,7 +784,7 @@ theorem mem_symm_trans_source {e' : PartialEquiv α γ} {x : α} (he : x ∈ e.s
   ⟨e.mapsTo he, by rwa [mem_preimage, PartialEquiv.symm_symm, e.left_inv he]⟩
 #align local_equiv.mem_symm_trans_source PartialEquiv.mem_symm_trans_source
 
-/-- Postcompose a local equivalence with an equivalence.
+/-- Postcompose a partial equivalence with an equivalence.
 We modify the source and target to have better definitional behavior. -/
 @[simps!]
 def transEquiv (e' : β ≃ γ) : PartialEquiv α γ :=
@@ -800,7 +800,7 @@ theorem transEquiv_eq_trans (e' : β ≃ γ) : e.transEquiv e' = e.trans e'.toPa
   copy_eq ..
 #align local_equiv.trans_equiv_eq_trans PartialEquiv.transEquiv_eq_trans
 
-/-- Precompose a local equivalence with an equivalence.
+/-- Precompose a partial equivalence with an equivalence.
 We modify the source and target to have better definitional behavior. -/
 @[simps!]
 def _root_.Equiv.transPartialEquiv (e : α ≃ β) : PartialEquiv α γ :=
@@ -818,7 +818,7 @@ theorem _root_.Equiv.transPartialEquiv_eq_trans (e : α ≃ β) :
 #align equiv.trans_local_equiv_eq_trans Equiv.transPartialEquiv_eq_trans
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. Then `e`
-and `e'` should really be considered the same local equiv. -/
+and `e'` should really be considered the same partial equiv. -/
 def EqOnSource (e e' : PartialEquiv α β) : Prop :=
   e.source = e'.source ∧ e.source.EqOn e e'
 #align local_equiv.eq_on_source PartialEquiv.EqOnSource
@@ -834,38 +834,38 @@ theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
 #align local_equiv.eq_on_source_refl PartialEquiv.eqOnSource_refl
 
-/-- Two equivalent local equivs have the same source. -/
+/-- Two equivalent partial equivs have the same source. -/
 theorem EqOnSource.source_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.source = e'.source :=
   h.1
 #align local_equiv.eq_on_source.source_eq PartialEquiv.EqOnSource.source_eq
 
-/-- Two equivalent local equivs coincide on the source. -/
+/-- Two equivalent partial equivs coincide on the source. -/
 theorem EqOnSource.eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : e.source.EqOn e e' :=
   h.2
 #align local_equiv.eq_on_source.eq_on PartialEquiv.EqOnSource.eqOn
 
 --Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
 
-/-- Two equivalent local equivs have the same target. -/
+/-- Two equivalent partial equivs have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.target = e'.target := by
   simp only [← image_source_eq_target, ← source_eq h, h.2.image_eq]
 #align local_equiv.eq_on_source.target_eq PartialEquiv.EqOnSource.target_eq
 
-/-- If two local equivs are equivalent, so are their inverses. -/
+/-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
   refine' ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn _ _⟩ <;>
     simp only [symm_source, target_eq h, source_eq h, e'.symm_mapsTo]
   exact e'.rightInvOn.congr_right e'.symm_mapsTo (source_eq h ▸ h.eqOn.symm)
 #align local_equiv.eq_on_source.symm' PartialEquiv.EqOnSource.symm'
 
-/-- Two equivalent local equivs have coinciding inverses on the target. -/
+/-- Two equivalent partial equivs have coinciding inverses on the target. -/
 theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : EqOn e.symm e'.symm e.target :=
   -- Porting note: `h.symm'` dot notation doesn't work anymore because `h` is not recognised as
   -- `PartialEquiv.EqOnSource` for some reason.
   eqOn (symm' h)
 #align local_equiv.eq_on_source.symm_eq_on PartialEquiv.EqOnSource.symm_eqOn
 
-/-- Composition of local equivs respects equivalence. -/
+/-- Composition of partial equivs respects equivalence. -/
 theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ} (he : e ≈ e')
     (hf : f ≈ f') : e.trans f ≈ e'.trans f' := by
   constructor
@@ -876,7 +876,7 @@ theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ
     simp [Function.comp_apply, PartialEquiv.coe_trans, (he.2 hx.1).symm, hf.2 hx.2]
 #align local_equiv.eq_on_source.trans' PartialEquiv.EqOnSource.trans'
 
-/-- Restriction of local equivs respects equivalence. -/
+/-- Restriction of partial equivs respects equivalence. -/
 theorem EqOnSource.restr {e e' : PartialEquiv α β} (he : e ≈ e') (s : Set α) :
     e.restr s ≈ e'.restr s := by
   constructor
@@ -891,8 +891,8 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
     e.source ∩ e ⁻¹' s = e'.source ∩ e' ⁻¹' s := by rw [he.eqOn.inter_preimage_eq, source_eq he]
 #align local_equiv.eq_on_source.source_inter_preimage_eq PartialEquiv.EqOnSource.source_inter_preimage_eq
 
-/-- Composition of a local equiv and its inverse is equivalent to the restriction of the identity
-to the source. -/
+/-- Composition of a partial equivlance and its inverse is equivalent to
+the restriction of the identity to the source. -/
 theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
   refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
@@ -900,13 +900,13 @@ theorem trans_self_symm : e.trans e.symm ≈ ofSet e.source := by
   simp only [hx, mfld_simps]
 #align local_equiv.trans_self_symm PartialEquiv.trans_self_symm
 
-/-- Composition of the inverse of a local equiv and this local equiv is equivalent to the
-restriction of the identity to the target. -/
+/-- Composition of the inverse of a partial equivalence and this partial equivalence is equivalent
+to the restriction of the identity to the target. -/
 theorem trans_symm_self : e.symm.trans e ≈ PartialEquiv.ofSet e.target :=
   trans_self_symm e.symm
 #align local_equiv.trans_symm_self PartialEquiv.trans_symm_self
 
-/-- Two equivalent local equivs are equal when the source and target are `univ`. -/
+/-- Two equivalent partial equivs are equal when the source and target are `univ`. -/
 theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' := by
   refine PartialEquiv.ext (fun x => ?_) (fun x => ?_) h.1
@@ -920,7 +920,7 @@ theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.
 
 section Prod
 
-/-- The product of two local equivs, as a local equiv on the product. -/
+/-- The product of two partial equivalences, as a partial equivalence on the product. -/
 def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α × γ) (β × δ) where
   source := e.source ×ˢ e'.source
   target := e.target ×ˢ e'.target
@@ -1043,7 +1043,7 @@ section Pi
 
 variable {ι : Type*} {αi βi γi : ι → Type*}
 
-/-- The product of a family of local equivs, as a local equiv on the pi type. -/
+/-- The product of a family of partial equivalences, as a partial equivalence on the pi type. -/
 @[simps (config := mfld_cfg) apply source target]
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun f i := ei i (f i)
@@ -1085,7 +1085,7 @@ end PartialEquiv
 namespace Set
 
 -- All arguments are explicit to avoid missing information in the pretty printer output
-/-- A bijection between two sets `s : Set α` and `t : Set β` provides a local equivalence
+/-- A bijection between two sets `s : Set α` and `t : Set β` provides a partial equivalence
 between `α` and `β`. -/
 @[simps (config := .asFn)]
 noncomputable def BijOn.toPartialEquiv [Nonempty α] (f : α → β) (s : Set α) (t : Set β)
@@ -1104,7 +1104,7 @@ noncomputable def BijOn.toPartialEquiv [Nonempty α] (f : α → β) (s : Set α
 #align set.bij_on.to_local_equiv_apply Set.BijOn.toPartialEquiv_apply
 #align set.bij_on.to_local_equiv_source Set.BijOn.toPartialEquiv_source
 
-/-- A map injective on a subset of its domain provides a local equivalence. -/
+/-- A map injective on a subset of its domain provides a partial equivalence. -/
 @[simp, mfld_simps]
 noncomputable def InjOn.toPartialEquiv [Nonempty α] (f : α → β) (s : Set α) (hf : InjOn f s) :
     PartialEquiv α β :=
