@@ -94,126 +94,13 @@ def partialDistinctGF (m : ℕ) [CommSemiring α] :=
   ∏ i in range m, (1 + (X : PowerSeries α) ^ (i + 1))
 #align theorems_100.partial_distinct_gf Theorems100.partialDistinctGF
 
-/-
-/--
-Functions defined only on `s`, which sum to `n`. In other words, a partition of `n` indexed by `s`.
-Every function in here is finitely supported, and the support is a subset of `s`.
-This should be thought of as a generalisation of `Finset.Nat.antidiagonalTuple` where
-`antidiagonalTuple k n` is the same thing as `cut (s : Finset.univ (Fin k)) n`.
--/
-def cut {ι : Type*} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
-  Finset.filter (fun f => s.sum f = n)
-    ((s.pi fun _ => range (n + 1)).map
-      ⟨fun f i => if h : i ∈ s then f i h else 0, fun f g h => by
-        ext i hi; simpa [dif_pos hi] using congr_fun h i⟩)
-#align theorems_100.cut Theorems100.cut
-
-theorem mem_cut {ι : Type*} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
-    f ∈ cut s n ↔ s.sum f = n ∧ ∀ i, i ∉ s → f i = 0 := by
-  rw [cut, mem_filter, and_comm, and_congr_right]
-  intro h
-  simp only [mem_map, exists_prop, Function.Embedding.coeFn_mk, mem_pi]
-  constructor
-  · rintro ⟨_, _, rfl⟩ _ H
-    simp [dif_neg H]
-  · intro hf
-    refine' ⟨fun i _ => f i, fun i hi => _, _⟩
-    · rw [mem_range, Nat.lt_succ_iff, ← h]
-      apply single_le_sum _ hi
-      simp
-    · ext x
-      rw [dite_eq_ite, ite_eq_left_iff, eq_comm]
-      exact hf x
-#align theorems_100.mem_cut Theorems100.mem_cut
-
-theorem cut_equiv_antidiag (n : ℕ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = antidiagonal n := by
-  ext ⟨x₁, x₂⟩
-  simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
-    Equiv.eq_symm_apply]
-  simp [mem_cut, add_comm]
-#align theorems_100.cut_equiv_antidiag Theorems100.cut_equiv_antidiag
-
-theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
-    cut univ n = Nat.antidiagonalTuple k n := by ext; simp [Nat.mem_antidiagonalTuple, mem_cut]
-#align theorems_100.cut_univ_fin_eq_antidiagonal_tuple Theorems100.cut_univ_fin_eq_antidiagonalTuple
-
-/-- There is only one `cut` of 0. -/
-@[simp]
-theorem cut_zero {ι : Type*} (s : Finset ι) : cut s 0 = {0} := by
-  -- In general it's nice to prove things using `mem_cut` but in this case it's easier to just
-  -- use the definition.
-  rw [cut, range_one, pi_const_singleton, map_singleton, Function.Embedding.coeFn_mk,
-    filter_singleton, if_pos, singleton_inj]
-  · ext; split_ifs <;> rfl
-  rw [sum_eq_zero_iff]
-  intro x hx
-  apply dif_pos hx
-#align theorems_100.cut_zero Theorems100.cut_zero
-
-@[simp]
-theorem cut_empty_succ {ι : Type*} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
-  apply eq_empty_of_forall_not_mem
-  intro x hx
-  rw [mem_cut, sum_empty] at hx
-  cases hx.1
-#align theorems_100.cut_empty_succ Theorems100.cut_empty_succ
-
-theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
-    cut (insert a s) n =
-      (antidiagonal n).biUnion fun p : ℕ × ℕ =>
-        (cut s p.snd).map
-          ⟨fun f => f + fun t => if t = a then p.fst else 0, add_left_injective _⟩ := by
-  ext f
-  rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
-  constructor
-  · rintro ⟨rfl, h₁⟩
-    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists]
-    refine' ⟨f a, s.sum f, rfl, fun i => if i = a then 0 else f i, _, _⟩
-    · rw [mem_piAntidiagonal]
-      refine' ⟨_, _⟩
-      · rw [sum_ite]
-        have : filter (fun x => x ≠ a) s = s := by
-          apply filter_true_of_mem
-          rintro i hi rfl
-          apply h hi
-        simp [this]
-      · intro i hi
-        rw [ite_eq_left_iff]
-        intro hne
-        apply h₁
-        simp [not_or, hne, hi]
-    · ext x
-      obtain rfl | h := eq_or_ne x a
-      · simp
-      · simp [if_neg h]
-  · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists,
-      exists_prop, mem_cut, not_or]
-    rintro ⟨p, q, rfl, g, ⟨rfl, hg₂⟩, rfl⟩
-    refine' ⟨_, _⟩
-    · simp [sum_add_distrib, if_neg h, hg₂ _ h, add_comm]
-    · rintro i ⟨h₁, h₂⟩
-      simp [if_neg h₁, hg₂ _ h₂]
-#align theorems_100.cut_insert Theorems100.piAntidiagonal_insert
--/
-
-/- TODO :
-* tell Lean what piAntidiagonal is (it was `cut` above)
-* check that piAntidiagonal on a Fintype is enough
-* move this to the file on PowerSeries
-* make it work for MvPowerSeries
--/
-
 open Finset HasPiAntidiagonal
 
 universe u
 variable {ι : Type u}
 
-instance : Finset.HasPiAntidiagonal ι ℕ :=
-Finset.HasAntidiagonal.HasPiAntidiagonal
-
-instance : HasPiAntidiagonal ι (Unit →₀ ℕ) :=
-Finset.HasAntidiagonal.HasPiAntidiagonal
+local instance : Finset.HasPiAntidiagonal ι ℕ :=
+  Finset.HasAntidiagonal.HasPiAntidiagonal
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
