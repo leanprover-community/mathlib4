@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Hunter Monroe (and others to be added)
+Authors: Hunter Monroe
 -/
 import Mathlib.Computability.TMComputable
 
@@ -9,8 +9,8 @@ import Mathlib.Computability.TMComputable
 # Complexity
 
 This file defines concepts from complexity theory related to polynomial-time computability on
-Turing machines (TMs), nondeterministic polynomial time (NP) computation (defined using efficiently
-verifiable certificates), polynomial time reductions, and NP completeness and hardness.
+Turing machines (TMs), nondeterministic polynomial-time (NP) computation (defined using efficiently
+verifiable certificates), polynomial-time reductions, and NP completeness and hardness.
 
 The file focuses on definitions. Key results remain to be filled in: computability including
 existence of a univeral TM, halting problem, and Rice's Theorem (`Computability.Partrec` provide );
