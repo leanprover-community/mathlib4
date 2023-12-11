@@ -50,8 +50,6 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
-set_option autoImplicit true
-
 
 noncomputable section
 
@@ -118,7 +116,8 @@ theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b
   Finsupp.single_add a b₁ b₂
 
 @[simp]
-theorem sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_zero : h a 0 = 0) :
+theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
+    (h_zero : h a 0 = 0) :
     (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
 
 @[simp]
@@ -1235,7 +1234,8 @@ theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b
   Finsupp.single_add a b₁ b₂
 
 @[simp]
-theorem sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_zero : h a 0 = 0) :
+theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
+    (h_zero : h a 0 = 0) :
     (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
 
 @[simp]
