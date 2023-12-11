@@ -16,8 +16,6 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set Function
 
 /-! ### Definition and basic arithmetic -/
@@ -907,14 +905,14 @@ theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
 lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
   simp_rw [div_eq_inv_mul, ← ofReal_inv, ofReal_mul']
 
-lemma div_nat_cast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ := by
-  exact_mod_cast div_ofReal z n
+lemma div_nat_cast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
+  mod_cast div_ofReal z n
 
-lemma div_int_cast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ := by
-  exact_mod_cast div_ofReal z n
+lemma div_int_cast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
+  mod_cast div_ofReal z n
 
-lemma div_rat_cast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ := by
-  exact_mod_cast div_ofReal z x
+lemma div_rat_cast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
+  mod_cast div_ofReal z x
 
 lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     z / OfNat.ofNat n = ⟨z.re / OfNat.ofNat n, z.im / OfNat.ofNat n⟩ :=

@@ -131,7 +131,7 @@ def compAEval : Derivation R R[X] <| AEval R M a where
 -/
 theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
     d.compAEval a f = derivative f • (AEval.of R M a (d a)) := by
-  rw [←mkDerivation_apply]
+  rw [← mkDerivation_apply]
   congr
   apply derivation_ext
   simp

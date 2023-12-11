@@ -484,15 +484,6 @@ private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
--- Porting note: This "workaround" does not work and break everything.
--- I changed it now from `^` to `^'` to prevent a clash
--- with `HPow`, but somebody should figure out
--- if this is still relevant in Lean4.
--- mathport name: cardinal.pow
-local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
--- -- mathport name: cardinal.pow.nat
-local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
-
 theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
   rfl
 #align cardinal.power_def Cardinal.power_def
@@ -602,7 +593,7 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 #align cardinal.power_mul Cardinal.power_mul
 
 @[simp]
-theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ℕ n :=
+theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 #align cardinal.pow_cast_right Cardinal.pow_cast_right
 
@@ -638,11 +629,11 @@ theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by s
 end deprecated
 
 -- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
-theorem lift_two : lift.{u, v} 2 = 2 := by simp [←one_add_one_eq_two]
+theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [←one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
@@ -652,7 +643,7 @@ theorem mk_powerset {α : Type u} (s : Set α) : #(↥(𝒫 s)) = 2 ^ #(↥s) :=
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
 theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
-  simp [←one_add_one_eq_two]
+  simp [← one_add_one_eq_two]
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
@@ -1112,7 +1103,7 @@ theorem lift_sInf (s : Set Cardinal) : lift.{u,v} (sInf s) = sInf (lift.{u,v} ''
 theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift.{u,v} (f i) := by
   unfold iInf
   convert lift_sInf (range f)
-  simp_rw [←comp_apply (f := lift), range_comp]
+  simp_rw [← comp_apply (f := lift), range_comp]
 #align cardinal.lift_infi Cardinal.lift_iInf
 
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
@@ -1326,18 +1317,18 @@ theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) := by simp
 #align cardinal.mk_coe_finset Cardinal.mk_coe_finset
 
-theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ℕ Fintype.card α := by
+theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
 #align cardinal.mk_finset_of_fintype Cardinal.mk_finset_of_fintype
 
 @[simp]
 theorem mk_finsupp_lift_of_fintype (α : Type u) (β : Type v) [Fintype α] [Zero β] :
-    #(α →₀ β) = lift.{u} #β ^ℕ Fintype.card α := by
+    #(α →₀ β) = lift.{u} #β ^ Fintype.card α := by
   simpa using (@Finsupp.equivFunOnFinite α β _ _).cardinal_eq
 #align cardinal.mk_finsupp_lift_of_fintype Cardinal.mk_finsupp_lift_of_fintype
 
 theorem mk_finsupp_of_fintype (α β : Type u) [Fintype α] [Zero β] :
-    #(α →₀ β) = #β ^ℕ Fintype.card α := by simp
+    #(α →₀ β) = #β ^ Fintype.card α := by simp
 #align cardinal.mk_finsupp_of_fintype Cardinal.mk_finsupp_of_fintype
 
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
@@ -1458,7 +1449,7 @@ theorem isLimit_aleph0 : IsLimit ℵ₀ :=
 #align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
 
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra' h'
+  by_contra! h'
   rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
   · exact h.ne_zero.irrefl
   · rw [nat_succ] at h
@@ -1712,7 +1703,7 @@ def toNat : ZeroHom Cardinal ℕ where
 lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
   simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
   refine' forall_congr' fun h => _
-  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+  rw [← @Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
 
 lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
 @[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
@@ -1766,8 +1757,10 @@ theorem toNat_cast (n : ℕ) : Cardinal.toNat n = n := by
   exact (Classical.choose_spec (lt_aleph0.1 (nat_lt_aleph0 n))).symm
 #align cardinal.to_nat_cast Cardinal.toNat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : Cardinal.toNat (OfNat.ofNat n) = OfNat.ofNat n :=
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toNat_cast n
 
 /-- `toNat` has a right-inverse: coercion. -/
@@ -2086,14 +2079,14 @@ theorem mk_plift_false : #(PLift False) = 0 :=
 #align cardinal.mk_plift_false Cardinal.mk_plift_false
 
 @[simp]
-theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ℕ n :=
+theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 #align cardinal.mk_vector Cardinal.mk_vector
 
-theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ℕ n :=
+theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
     #(List α) = #(Σn, Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
-    _ = sum fun n : ℕ => #α ^ℕ n := by simp
+    _ = sum fun n : ℕ => #α ^ n := by simp
 #align cardinal.mk_list_eq_sum_pow Cardinal.mk_list_eq_sum_pow
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=

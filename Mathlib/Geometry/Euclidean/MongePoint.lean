@@ -111,8 +111,8 @@ theorem mongePoint_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
 /-- The weights for the Monge point of an (n+2)-simplex, in terms of
 `pointsWithCircumcenter`. -/
 def mongePointWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index _ => ((n + 1 : ℕ) : ℝ)⁻¹
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex _ => ((n + 1 : ℕ) : ℝ)⁻¹
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_weights_with_circumcenter Affine.Simplex.mongePointWeightsWithCircumcenter
 
 /-- `mongePointWeightsWithCircumcenter` sums to 1. -/
@@ -122,7 +122,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
   -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero _
+  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
   field_simp [n.cast_add_one_ne_zero]
   ring
 #align affine.simplex.sum_monge_point_weights_with_circumcenter Affine.Simplex.sum_mongePointWeightsWithCircumcenter
@@ -141,7 +141,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
   congr with i
   rw [Pi.add_apply, Pi.smul_apply, smul_eq_mul, Pi.sub_apply]
   -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero _
+  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
   have hn1 : (n + 1 : ℝ) ≠ 0 := n.cast_add_one_ne_zero
   cases i <;>
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
@@ -149,7 +149,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
   · rw [if_pos (mem_univ _), sub_zero, add_zero, card_fin]
     -- Porting note: replaced
-    -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by exact_mod_cast Nat.succ_ne_zero _
+    -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by exact_mod_cast (n + 2).cast_add_one_ne_zero
     field_simp [hn1, hn3, mul_comm]
   · field_simp [hn1]
@@ -161,8 +161,8 @@ centroid of an n-dimensional face, in terms of
 `pointsWithCircumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
 def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
     PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_vsub_face_centroid_weights_with_circumcenter Affine.Simplex.mongePointVSubFaceCentroidWeightsWithCircumcenter
 
 /-- `mongePointVSubFaceCentroidWeightsWithCircumcenter` is the
@@ -310,7 +310,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
   rw [Submodule.iInf_orthogonal, ← Submodule.span_iUnion] at hi
   have hu :
     ⋃ i : { i // i₁ ≠ i }, ({s.points i₁ -ᵥ s.points i} : Set V) =
-      (· -ᵥ ·) (s.points i₁) '' (s.points '' (Set.univ \ {i₁})) := by
+      (s.points i₁ -ᵥ ·) '' (s.points '' (Set.univ \ {i₁})) := by
     rw [Set.image_image]
     ext x
     simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_diff_singleton]
@@ -385,8 +385,8 @@ theorem finrank_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fi
     (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
   have hc : card (univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
   refine' add_left_cancel (_root_.trans h _)
-  rw [s.Independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
-    s.Independent.finrank_vectorSpan_image_finset hc]
+  rw [s.independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
+    s.independent.finrank_vectorSpan_image_finset hc]
 #align affine.simplex.finrank_direction_altitude Affine.Simplex.finrank_direction_altitude
 
 /-- A line through a vertex is the altitude through that vertex if and
@@ -583,7 +583,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   symm
   rw [← h₂, t₂.affineSpan_pair_eq_altitude_iff]
   rw [h₂]
-  use t₁.Independent.injective.ne hi₁₂
+  use t₁.independent.injective.ne hi₁₂
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine' ext_of_direction_eq _
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
@@ -600,8 +600,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
         ⟨t₁.orthocenter_mem_affineSpan, mem_affineSpan ℝ (Set.mem_range_self _),
           mem_affineSpan ℝ (Set.mem_range_self _)⟩
     · rw [direction_affineSpan, direction_affineSpan,
-        t₁.Independent.finrank_vectorSpan (Fintype.card_fin _),
-        t₂.Independent.finrank_vectorSpan (Fintype.card_fin _)]
+        t₁.independent.finrank_vectorSpan (Fintype.card_fin _),
+        t₂.independent.finrank_vectorSpan (Fintype.card_fin _)]
   rw [he]
   use mem_affineSpan ℝ (Set.mem_range_self _)
   have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
@@ -693,7 +693,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
     have hs := Set.subset_diff_singleton hps h
     rw [Set.insert_diff_self_of_not_mem ho] at hs
     refine' Set.eq_of_subset_of_card_le hs _
-    rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.Independent.injective]
+    rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]
 #align euclidean_geometry.exists_of_range_subset_orthocentric_system EuclideanGeometry.exists_of_range_subset_orthocentricSystem
 
 /-- For any three points in an orthocentric system generated by
@@ -713,7 +713,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     have h₁₂₃ := h₁₂₃ i
     repeat' cases' h₁₂₃ with h₁₂₃ h₁₂₃
     · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
-    · rw [←h₂, dist_reflection_eq_of_mem _
+    · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
       exact t.dist_circumcenter_eq_circumradius _
     · rw [← h₃,
@@ -752,7 +752,7 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
   haveI := hfd
   refine' eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) _
   rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
-    t.Independent.finrank_vectorSpan (Fintype.card_fin _)]
+    t.independent.finrank_vectorSpan (Fintype.card_fin _)]
 #align euclidean_geometry.affine_span_of_orthocentric_system EuclideanGeometry.affineSpan_of_orthocentricSystem
 
 /-- All triangles in an orthocentric system have the same circumradius. -/
@@ -764,14 +764,14 @@ theorem OrthocentricSystem.exists_circumradius_eq {s : Set P} (ho : Orthocentric
   have ht₂s := ht₂
   rw [hts] at ht₂
   rcases exists_dist_eq_circumradius_of_subset_insert_orthocenter hto ht₂
-      t₂.Independent.injective with
+      t₂.independent.injective with
     ⟨c, hc, h⟩
   rw [Set.forall_range_iff] at h
   have hs : Set.range t.points ⊆ s := by
     rw [hts]
     exact Set.subset_insert _ _
-  rw [affineSpan_of_orthocentricSystem ⟨t, hto, hts⟩ hs t.Independent.injective,
-    ← affineSpan_of_orthocentricSystem ⟨t, hto, hts⟩ ht₂s t₂.Independent.injective] at hc
+  rw [affineSpan_of_orthocentricSystem ⟨t, hto, hts⟩ hs t.independent.injective,
+    ← affineSpan_of_orthocentricSystem ⟨t, hto, hts⟩ ht₂s t₂.independent.injective] at hc
   exact (t₂.eq_circumradius_of_dist_eq hc h).symm
 #align euclidean_geometry.orthocentric_system.exists_circumradius_eq EuclideanGeometry.OrthocentricSystem.exists_circumradius_eq
 
@@ -782,7 +782,7 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
     s = insert t.orthocenter (Set.range t.points) := by
   rcases ho with ⟨t₀, ht₀o, ht₀s⟩
   rw [ht₀s] at ht
-  rcases exists_of_range_subset_orthocentricSystem ht₀o ht t.Independent.injective with
+  rcases exists_of_range_subset_orthocentricSystem ht₀o ht t.independent.injective with
     (⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩ | hs)
   · obtain ⟨j₁, hj₁₂, hj₁₃, hj₁₂₃⟩ :
         ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by

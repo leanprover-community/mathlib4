@@ -13,7 +13,7 @@ set_option autoImplicit true
 -- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying the way that `rewrites` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/Rewrites.extra`
+-- `.lake/build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 
 set_option autoImplicit true

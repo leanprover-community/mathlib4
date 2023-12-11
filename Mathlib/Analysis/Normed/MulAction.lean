@@ -43,7 +43,7 @@ theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s
   dist_smul_le s x y
 #align nndist_smul_le nndist_smul_le
 
-theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : β → β) :=
+theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ (s • · : β → β) :=
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 #align lipschitz_with_smul lipschitzWith_smul
 
