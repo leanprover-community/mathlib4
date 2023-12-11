@@ -397,9 +397,8 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
 
 theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
-  constructor <;> intro h
-  · exact fun ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ
-  apply eq_of_le_of_finrank_eq' le_top
+  refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
+    fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
   letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
   haveI := isSeparable_tower_top_of_isSeparable F F⟮α⟯ E
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]

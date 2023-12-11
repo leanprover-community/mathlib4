@@ -419,10 +419,8 @@ section
 variable {R : Type*} [CommRing R] {f : R[X]}
 
 theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) (h : Splits i f) :
-    Splits (j.comp i) f := by
-  rw [← splits_map_iff]
-  rw [← i.id_comp, ← splits_map_iff i] at h
-  exact splits_of_splits_id _ h
+    Splits (j.comp i) f :=
+  (splits_map_iff i j).mp (splits_of_splits_id _ <| (splits_map_iff i <| .id K).mpr h)
 #align polynomial.splits_comp_of_splits Polynomial.splits_comp_of_splits
 
 variable [Algebra R K] [Algebra R L]
