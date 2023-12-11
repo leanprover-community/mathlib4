@@ -18,6 +18,8 @@ open scoped Pointwise
 namespace MulAction
 variable {G H α : Type*} [Group G] [Group H] [MulAction G α] {a : G}
 
+/-! ### Stabilizer of a set -/
+
 section Set
 
 @[to_additive (attr := simp)]
@@ -33,6 +35,28 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
   · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
   simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
   exact ((MulAction.toPerm a).forall_congr' $ by simp [Iff.comm]).1 h
+
+@[to_additive]
+lemma map_stabilizer_le (f : G →* H) (s : Set G) :
+    (stabilizer G s).map f ≤ stabilizer H (f '' s) := by
+  rintro a
+  simp only [Subgroup.mem_map, mem_stabilizer_iff, exists_prop, forall_exists_index, and_imp]
+  rintro a ha rfl
+  rw [← image_smul_distrib, ha]
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
+  ext
+  refine ⟨?_, fun h ↦ ⟨_, _, (stabilizer G s).one_mem, h, one_mul _⟩⟩
+  rintro ⟨a, b, ha, hb, rfl⟩
+  rw [← mem_stabilizer_iff.1 ha]
+  exact smul_mem_smul_set hb
+
+end Set
+
+/-! ### Stabilizer of a subgroup -/
+
+section Subgroup
 
 -- TODO: Is there a lemma that could unify the following three very similar lemmas?
 
@@ -56,25 +80,11 @@ lemma stabilizer_subgroup_op (s : Subgroup Gᵐᵒᵖ) : stabilizer G (s : Set G
   have : 1 * MulOpposite.op a ∈ s := (h 1).2 s.one_mem
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using this
 
-@[to_additive]
-lemma map_stabilizer_le (f : G →* H) (s : Set G) :
-    (stabilizer G s).map f ≤ stabilizer H (f '' s) := by
-  rintro a
-  simp only [Subgroup.mem_map, mem_stabilizer_iff, exists_prop, forall_exists_index, and_imp]
-  rintro a ha rfl
-  rw [← image_smul_distrib, ha]
+end Subgroup
 
-@[to_additive (attr := simp)]
-lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
-  ext
-  refine ⟨?_, fun h ↦ ⟨_, _, (stabilizer G s).one_mem, h, one_mul _⟩⟩
-  rintro ⟨a, b, ha, hb, rfl⟩
-  rw [← mem_stabilizer_iff.1 ha]
-  exact smul_mem_smul_set hb
+/-! ### Stabilizer of a finset -/
 
-end Set
-
-section DecidableEq
+section Finset
 variable [DecidableEq α]
 
 @[to_additive (attr := simp)]
@@ -108,7 +118,9 @@ lemma mem_stabilizer_finset' {s : Finset α} : a ∈ stabilizer G s ↔ ∀ ⦃b
   rw [← Subgroup.inv_mem_iff, mem_stabilizer_finset_iff_subset_smul_finset]
   simp_rw [← Finset.mem_inv_smul_finset_iff, Finset.subset_iff]
 
-end DecidableEq
+end Finset
+
+/-! ### Stabilizer of a finite set -/
 
 @[to_additive]
 lemma mem_stabilizer_set_iff_subset_smul_set {s : Set α} (hs : s.Finite) :
@@ -133,6 +145,8 @@ lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
   classical simp [-mem_stabilizer_iff, mem_stabilizer_finset']
 
 end MulAction
+
+/-! ### Stabilizer in a commutative group -/
 
 namespace MulAction
 variable {G : Type*} [CommGroup G] (s : Set G)
