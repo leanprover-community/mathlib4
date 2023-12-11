@@ -284,7 +284,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
     cases' (mem_union _ _ _).1 he with E E
     · simp [mem_singleton_iff.mp E]
     · right
-      simpa only [e.toLocalEquiv.image_source_eq_target.symm, mfld_simps] using E
+      simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
   id_mem' := mem_union_left _ rfl
   locality' e he := by
     cases' e.source.eq_empty_or_nonempty with h h
@@ -302,7 +302,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         have : (e.restr s).source = univ := by
           rw [hs]
           simp
-        have : e.toLocalEquiv.source ∩ interior s = univ := this
+        have : e.toPartialEquiv.source ∩ interior s = univ := this
         have : univ ⊆ interior s := by
           rw [← this]
           exact inter_subset_right _ _
@@ -319,7 +319,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
           rw [Set.mem_singleton_iff.1 he] <;> rfl
       rwa [← this]
     · right
-      have he : e.toLocalEquiv.source = ∅ := he
+      have he : e.toPartialEquiv.source = ∅ := he
       rwa [Set.mem_setOf_eq, EqOnSource.source_eq he'e]
 #align id_groupoid idGroupoid
 
@@ -392,7 +392,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       -- convert he.2
       -- rw [A.1]
       -- rfl
-      rw [A.1, symm_toLocalEquiv, LocalEquiv.symm_source]
+      rw [A.1, symm_toPartialEquiv, LocalEquiv.symm_source]
       exact he.2
 #align pregroupoid.groupoid Pregroupoid.groupoid
 

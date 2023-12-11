@@ -65,7 +65,7 @@ namespace PartialHomeomorph
 variable (e : PartialHomeomorph α β) (e' : PartialHomeomorph β γ)
 
 /-- Coercion of a partial homeomorphisms to a function. We don't use `e.toFun` because it is
-actually `e.toLocalEquiv.toFun`, so `simp` will apply lemmas about `toLocalEquiv`.
+actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`.
 While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' : α → β := e.toFun
 
@@ -76,7 +76,7 @@ instance : CoeFun (PartialHomeomorph α β) fun _ => α → β :=
 
 /-- The inverse of a partial homeomorphism -/
 protected def symm : PartialHomeomorph β α where
-  toLocalEquiv := e.toLocalEquiv.symm
+  toPartialEquiv := e.toPartialEquiv.symm
   open_source := e.open_target
   open_target := e.open_source
   continuousOn_toFun := e.continuousOn_invFun
@@ -113,9 +113,9 @@ theorem mk_coe_symm (e : PartialEquiv α β) (a b c d) :
   rfl
 #align local_homeomorph.mk_coe_symm PartialHomeomorph.mk_coe_symm
 
-theorem toLocalEquiv_injective : Injective (toLocalEquiv : PartialHomeomorph α β → PartialEquiv α β)
+theorem toPartialEquiv_injective : Injective (toPartialEquiv : PartialHomeomorph α β → PartialEquiv α β)
   | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, rfl => rfl
-#align local_homeomorph.to_local_equiv_injective PartialHomeomorph.toLocalEquiv_injective
+#align local_homeomorph.to_local_equiv_injective PartialHomeomorph.toPartialEquiv_injective
 
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
 homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
@@ -130,12 +130,12 @@ theorem invFun_eq_coe (e : PartialHomeomorph α β) : e.invFun = e.symm :=
 #align local_homeomorph.inv_fun_eq_coe PartialHomeomorph.invFun_eq_coe
 
 @[simp, mfld_simps]
-theorem coe_coe : (e.toLocalEquiv : α → β) = e :=
+theorem coe_coe : (e.toPartialEquiv : α → β) = e :=
   rfl
 #align local_homeomorph.coe_coe PartialHomeomorph.coe_coe
 
 @[simp, mfld_simps]
-theorem coe_coe_symm : (e.toLocalEquiv.symm : β → α) = e.symm :=
+theorem coe_coe_symm : (e.toPartialEquiv.symm : β → α) = e.symm :=
   rfl
 #align local_homeomorph.coe_coe_symm PartialHomeomorph.coe_coe_symm
 
@@ -165,7 +165,7 @@ theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
-  e.toLocalEquiv.eq_symm_apply hx hy
+  e.toPartialEquiv.eq_symm_apply hx hy
 #align local_homeomorph.eq_symm_apply PartialHomeomorph.eq_symm_apply
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
@@ -199,11 +199,11 @@ protected theorem surjOn : SurjOn e e.source e.target :=
 
 /-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
 to an open set `s` in the domain and to `t` in the codomain. -/
-@[simps! (config := .asFn) apply symm_apply toLocalEquiv,
+@[simps! (config := .asFn) apply symm_apply toPartialEquiv,
   simps! (config := .lemmasOnly) source target]
 def _root_.Homeomorph.toPartialHomeomorphOfImageEq (e : α ≃ₜ β) (s : Set α) (hs : IsOpen s)
     (t : Set β) (h : e '' s = t) : PartialHomeomorph α β where
-  toLocalEquiv := e.toLocalEquivOfImageEq s t h
+  toPartialEquiv := e.toPartialEquivOfImageEq s t h
   open_source := hs
   open_target := by simpa [← h]
   continuousOn_toFun := e.continuous.continuousOn
@@ -215,10 +215,10 @@ def _root_.Homeomorph.toPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomorph
   e.toPartialHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
 #align homeomorph.to_local_homeomorph Homeomorph.toPartialHomeomorph
 
-/-- Replace `toLocalEquiv` field to provide better definitional equalities. -/
-def replaceEquiv (e : PartialHomeomorph α β) (e' : PartialEquiv α β) (h : e.toLocalEquiv = e') :
+/-- Replace `toPartialEquiv` field to provide better definitional equalities. -/
+def replaceEquiv (e : PartialHomeomorph α β) (e' : PartialEquiv α β) (h : e.toPartialEquiv = e') :
     PartialHomeomorph α β where
-  toLocalEquiv := e'
+  toPartialEquiv := e'
   open_source := h ▸ e.open_source
   open_target := h ▸ e.open_target
   continuousOn_toFun := h ▸ e.continuousOn_toFun
@@ -226,7 +226,7 @@ def replaceEquiv (e : PartialHomeomorph α β) (e' : PartialEquiv α β) (h : e.
 #align local_homeomorph.replace_equiv PartialHomeomorph.replaceEquiv
 
 theorem replaceEquiv_eq_self (e : PartialHomeomorph α β) (e' : PartialEquiv α β)
-    (h : e.toLocalEquiv = e') : e.replaceEquiv e' h = e := by
+    (h : e.toPartialEquiv = e') : e.replaceEquiv e' h = e := by
   cases e
   subst e'
   rfl
@@ -236,9 +236,9 @@ theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 #align local_homeomorph.source_preimage_target PartialHomeomorph.source_preimage_target
 
-@[deprecated toLocalEquiv_injective]
-theorem eq_of_localEquiv_eq {e e' : PartialHomeomorph α β} (h : e.toLocalEquiv = e'.toLocalEquiv) :
-    e = e' := toLocalEquiv_injective h
+@[deprecated toPartialEquiv_injective]
+theorem eq_of_localEquiv_eq {e e' : PartialHomeomorph α β} (h : e.toPartialEquiv = e'.toPartialEquiv) :
+    e = e' := toPartialEquiv_injective h
 #align local_homeomorph.eq_of_local_equiv_eq PartialHomeomorph.eq_of_localEquiv_eq
 
 theorem eventually_left_inverse (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) :
@@ -278,16 +278,16 @@ theorem nhdsWithin_target_inter {x} (hx : x ∈ e.target) (s : Set β) : 𝓝[e.
 
 theorem image_eq_target_inter_inv_preimage {s : Set α} (h : s ⊆ e.source) :
     e '' s = e.target ∩ e.symm ⁻¹' s :=
-  e.toLocalEquiv.image_eq_target_inter_inv_preimage h
+  e.toPartialEquiv.image_eq_target_inter_inv_preimage h
 #align local_homeomorph.image_eq_target_inter_inv_preimage PartialHomeomorph.image_eq_target_inter_inv_preimage
 
 theorem image_source_inter_eq' (s : Set α) : e '' (e.source ∩ s) = e.target ∩ e.symm ⁻¹' s :=
-  e.toLocalEquiv.image_source_inter_eq' s
+  e.toPartialEquiv.image_source_inter_eq' s
 #align local_homeomorph.image_source_inter_eq' PartialHomeomorph.image_source_inter_eq'
 
 theorem image_source_inter_eq (s : Set α) :
     e '' (e.source ∩ s) = e.target ∩ e.symm ⁻¹' (e.source ∩ s) :=
-  e.toLocalEquiv.image_source_inter_eq s
+  e.toPartialEquiv.image_source_inter_eq s
 #align local_homeomorph.image_source_inter_eq PartialHomeomorph.image_source_inter_eq
 
 theorem symm_image_eq_source_inter_preimage {s : Set β} (h : s ⊆ e.target) :
@@ -302,7 +302,7 @@ theorem symm_image_target_inter_eq (s : Set β) :
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
     e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
-  e.toLocalEquiv.source_inter_preimage_inv_preimage s
+  e.toPartialEquiv.source_inter_preimage_inv_preimage s
 #align local_homeomorph.source_inter_preimage_inv_preimage PartialHomeomorph.source_inter_preimage_inv_preimage
 
 theorem target_inter_inv_preimage_preimage (s : Set β) :
@@ -312,11 +312,11 @@ theorem target_inter_inv_preimage_preimage (s : Set β) :
 
 theorem source_inter_preimage_target_inter (s : Set β) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
-  e.toLocalEquiv.source_inter_preimage_target_inter s
+  e.toPartialEquiv.source_inter_preimage_target_inter s
 #align local_homeomorph.source_inter_preimage_target_inter PartialHomeomorph.source_inter_preimage_target_inter
 
 theorem image_source_eq_target (e : PartialHomeomorph α β) : e '' e.source = e.target :=
-  e.toLocalEquiv.image_source_eq_target
+  e.toPartialEquiv.image_source_eq_target
 #align local_homeomorph.image_source_eq_target PartialHomeomorph.image_source_eq_target
 
 theorem symm_image_target_eq_source (e : PartialHomeomorph α β) : e.symm '' e.target = e.source :=
@@ -330,7 +330,7 @@ called `EqOnSource`. -/
 @[ext]
 protected theorem ext (e' : PartialHomeomorph α β) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
-  toLocalEquiv_injective (LocalEquiv.ext h hinv hs)
+  toPartialEquiv_injective (LocalEquiv.ext h hinv hs)
 #align local_homeomorph.ext PartialHomeomorph.ext
 
 protected theorem ext_iff {e e' : PartialHomeomorph α β} :
@@ -341,9 +341,9 @@ protected theorem ext_iff {e e' : PartialHomeomorph α β} :
 #align local_homeomorph.ext_iff PartialHomeomorph.ext_iff
 
 @[simp, mfld_simps]
-theorem symm_toLocalEquiv : e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
+theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
   rfl
-#align local_homeomorph.symm_to_local_equiv PartialHomeomorph.symm_toLocalEquiv
+#align local_homeomorph.symm_to_local_equiv PartialHomeomorph.symm_toPartialEquiv
 
 -- The following lemmas are already simp via `LocalEquiv`
 theorem symm_source : e.symm.source = e.target :=
@@ -491,16 +491,16 @@ namespace IsImage
 
 variable {e} {s : Set α} {t : Set β} {x : α} {y : β}
 
-theorem toLocalEquiv (h : e.IsImage s t) : e.toLocalEquiv.IsImage s t :=
+theorem toPartialEquiv (h : e.IsImage s t) : e.toPartialEquiv.IsImage s t :=
   h
-#align local_homeomorph.is_image.to_local_equiv PartialHomeomorph.IsImage.toLocalEquiv
+#align local_homeomorph.is_image.to_local_equiv PartialHomeomorph.IsImage.toPartialEquiv
 
 theorem apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ x ∈ s :=
   h hx
 #align local_homeomorph.is_image.apply_mem_iff PartialHomeomorph.IsImage.apply_mem_iff
 
 protected theorem symm (h : e.IsImage s t) : e.symm.IsImage t s :=
-  h.toLocalEquiv.symm
+  h.toPartialEquiv.symm
 #align local_homeomorph.is_image.symm PartialHomeomorph.IsImage.symm
 
 theorem symm_apply_mem_iff (h : e.IsImage s t) (hy : y ∈ e.target) : e.symm y ∈ s ↔ y ∈ t :=
@@ -513,7 +513,7 @@ theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
 #align local_homeomorph.is_image.symm_iff PartialHomeomorph.IsImage.symm_iff
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
-  h.toLocalEquiv.mapsTo
+  h.toPartialEquiv.mapsTo
 #align local_homeomorph.is_image.maps_to PartialHomeomorph.IsImage.mapsTo
 
 theorem symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.source ∩ s) :=
@@ -521,7 +521,7 @@ theorem symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.sour
 #align local_homeomorph.is_image.symm_maps_to PartialHomeomorph.IsImage.symm_mapsTo
 
 theorem image_eq (h : e.IsImage s t) : e '' (e.source ∩ s) = e.target ∩ t :=
-  h.toLocalEquiv.image_eq
+  h.toPartialEquiv.image_eq
 #align local_homeomorph.is_image.image_eq PartialHomeomorph.IsImage.image_eq
 
 theorem symm_image_eq (h : e.IsImage s t) : e.symm '' (e.target ∩ t) = e.source ∩ s :=
@@ -588,19 +588,19 @@ protected theorem diff {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :
 theorem leftInvOn_piecewise {e' : PartialHomeomorph α β} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : e.IsImage s t) (h' : e'.IsImage s t) :
     LeftInvOn (t.piecewise e.symm e'.symm) (s.piecewise e e') (s.ite e.source e'.source) :=
-  h.toLocalEquiv.leftInvOn_piecewise h'
+  h.toPartialEquiv.leftInvOn_piecewise h'
 #align local_homeomorph.is_image.left_inv_on_piecewise PartialHomeomorph.IsImage.leftInvOn_piecewise
 
 theorem inter_eq_of_inter_eq_of_eqOn {e' : PartialHomeomorph α β} (h : e.IsImage s t)
     (h' : e'.IsImage s t) (hs : e.source ∩ s = e'.source ∩ s) (Heq : EqOn e e' (e.source ∩ s)) :
     e.target ∩ t = e'.target ∩ t :=
-  h.toLocalEquiv.inter_eq_of_inter_eq_of_eqOn h' hs Heq
+  h.toPartialEquiv.inter_eq_of_inter_eq_of_eqOn h' hs Heq
 #align local_homeomorph.is_image.inter_eq_of_inter_eq_of_eq_on PartialHomeomorph.IsImage.inter_eq_of_inter_eq_of_eqOn
 
 theorem symm_eqOn_of_inter_eq_of_eqOn {e' : PartialHomeomorph α β} (h : e.IsImage s t)
     (hs : e.source ∩ s = e'.source ∩ s) (Heq : EqOn e e' (e.source ∩ s)) :
     EqOn e.symm e'.symm (e.target ∩ t) :=
-  h.toLocalEquiv.symm_eq_on_of_inter_eq_of_eqOn hs Heq
+  h.toPartialEquiv.symm_eq_on_of_inter_eq_of_eqOn hs Heq
 #align local_homeomorph.is_image.symm_eq_on_of_inter_eq_of_eq_on PartialHomeomorph.IsImage.symm_eqOn_of_inter_eq_of_eqOn
 
 theorem map_nhdsWithin_eq (h : e.IsImage s t) (hx : x ∈ e.source) : map e (𝓝[s] x) = 𝓝[t] e x := by
@@ -625,9 +625,9 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
 #align local_homeomorph.is_image.is_open_iff PartialHomeomorph.IsImage.isOpen_iff
 
 /-- Restrict a `PartialHomeomorph` to a pair of corresponding open sets. -/
-@[simps toLocalEquiv]
+@[simps toPartialEquiv]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : PartialHomeomorph α β where
-  toLocalEquiv := h.toLocalEquiv.restr
+  toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
   open_target := h.isOpen_iff.1 hs
   continuousOn_toFun := e.continuousOn.mono (inter_subset_left _ _)
@@ -637,13 +637,13 @@ def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : PartialHomeomorph
 end IsImage
 
 theorem isImage_source_target : e.IsImage e.source e.target :=
-  e.toLocalEquiv.isImage_source_target
+  e.toPartialEquiv.isImage_source_target
 #align local_homeomorph.is_image_source_target PartialHomeomorph.isImage_source_target
 
 theorem isImage_source_target_of_disjoint (e' : PartialHomeomorph α β)
     (hs : Disjoint e.source e'.source) (ht : Disjoint e.target e'.target) :
     e.IsImage e'.source e'.target :=
-  e.toLocalEquiv.isImage_source_target_of_disjoint e'.toLocalEquiv hs ht
+  e.toPartialEquiv.isImage_source_target_of_disjoint e'.toPartialEquiv hs ht
 #align local_homeomorph.is_image_source_target_of_disjoint PartialHomeomorph.isImage_source_target_of_disjoint
 
 /-- Preimage of interior or interior of preimage coincide for partial homeomorphisms,
@@ -669,7 +669,7 @@ theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.targ
 /-- The image of an open set in the source is open. -/
 theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) :
     IsOpen (e '' s) := by
-  have : e '' s = e.target ∩ e.symm ⁻¹' s := e.toLocalEquiv.image_eq_target_inter_inv_preimage h
+  have : e '' s = e.target ∩ e.symm ⁻¹' s := e.toPartialEquiv.image_eq_target_inter_inv_preimage h
   rw [this]
   exact e.continuousOn_symm.isOpen_inter_preimage e.open_target hs
 #align local_homeomorph.image_open_of_open PartialHomeomorph.image_isOpen_of_isOpen
@@ -682,7 +682,7 @@ theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.s
 /-- A `LocalEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : PartialHomeomorph α β where
-  toLocalEquiv := e
+  toPartialEquiv := e
   open_source := hs
   open_target := by simpa only [range_restrict, e.image_source_eq_target] using ho.isOpen_range
   continuousOn_toFun := hc
@@ -704,10 +704,10 @@ protected def restrOpen (s : Set α) (hs : IsOpen s) : PartialHomeomorph α β :
 #align local_homeomorph.restr_open PartialHomeomorph.restrOpen
 
 @[simp, mfld_simps]
-theorem restrOpen_toLocalEquiv (s : Set α) (hs : IsOpen s) :
-    (e.restrOpen s hs).toLocalEquiv = e.toLocalEquiv.restr s :=
+theorem restrOpen_toPartialEquiv (s : Set α) (hs : IsOpen s) :
+    (e.restrOpen s hs).toPartialEquiv = e.toPartialEquiv.restr s :=
   rfl
-#align local_homeomorph.restr_open_to_local_equiv PartialHomeomorph.restrOpen_toLocalEquiv
+#align local_homeomorph.restr_open_to_local_equiv PartialHomeomorph.restrOpen_toPartialEquiv
 
 -- Already simp via `LocalEquiv`
 theorem restrOpen_source (s : Set α) (hs : IsOpen s) : (e.restrOpen s hs).source = e.source ∩ s :=
@@ -724,23 +724,23 @@ protected def restr (s : Set α) : PartialHomeomorph α β :=
 #align local_homeomorph.restr PartialHomeomorph.restr
 
 @[simp, mfld_simps]
-theorem restr_toLocalEquiv (s : Set α) :
-    (e.restr s).toLocalEquiv = e.toLocalEquiv.restr (interior s) :=
+theorem restr_toPartialEquiv (s : Set α) :
+    (e.restr s).toPartialEquiv = e.toPartialEquiv.restr (interior s) :=
   rfl
-#align local_homeomorph.restr_to_local_equiv PartialHomeomorph.restr_toLocalEquiv
+#align local_homeomorph.restr_to_local_equiv PartialHomeomorph.restr_toPartialEquiv
 
 theorem restr_source' (s : Set α) (hs : IsOpen s) : (e.restr s).source = e.source ∩ s := by
   rw [e.restr_source, hs.interior_eq]
 #align local_homeomorph.restr_source' PartialHomeomorph.restr_source'
 
-theorem restr_toLocalEquiv' (s : Set α) (hs : IsOpen s) :
-    (e.restr s).toLocalEquiv = e.toLocalEquiv.restr s := by
-  rw [e.restr_toLocalEquiv, hs.interior_eq]
-#align local_homeomorph.restr_to_local_equiv' PartialHomeomorph.restr_toLocalEquiv'
+theorem restr_toPartialEquiv' (s : Set α) (hs : IsOpen s) :
+    (e.restr s).toPartialEquiv = e.toPartialEquiv.restr s := by
+  rw [e.restr_toPartialEquiv, hs.interior_eq]
+#align local_homeomorph.restr_to_local_equiv' PartialHomeomorph.restr_toPartialEquiv'
 
 theorem restr_eq_of_source_subset {e : PartialHomeomorph α β} {s : Set α} (h : e.source ⊆ s) :
     e.restr s = e :=
-  toLocalEquiv_injective <| LocalEquiv.restr_eq_of_source_subset <| interior_maximal h e.open_source
+  toPartialEquiv_injective <| LocalEquiv.restr_eq_of_source_subset <| interior_maximal h e.open_source
 #align local_homeomorph.restr_eq_of_source_subset PartialHomeomorph.restr_eq_of_source_subset
 
 @[simp, mfld_simps]
@@ -760,7 +760,7 @@ protected def refl (α : Type*) [TopologicalSpace α] : PartialHomeomorph α α 
 #align local_homeomorph.refl PartialHomeomorph.refl
 
 @[simp, mfld_simps]
-theorem refl_localEquiv : (PartialHomeomorph.refl α).toLocalEquiv = LocalEquiv.refl α :=
+theorem refl_localEquiv : (PartialHomeomorph.refl α).toPartialEquiv = LocalEquiv.refl α :=
   rfl
 #align local_homeomorph.refl_local_equiv PartialHomeomorph.refl_localEquiv
 
@@ -776,7 +776,7 @@ variable {s : Set α} (hs : IsOpen s)
 /-- The identity local equiv on a set `s` -/
 @[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
 def ofSet (s : Set α) (hs : IsOpen s) : PartialHomeomorph α α where
-  toLocalEquiv := LocalEquiv.ofSet s
+  toPartialEquiv := LocalEquiv.ofSet s
   open_source := hs
   open_target := hs
   continuousOn_toFun := continuous_id.continuousOn
@@ -784,9 +784,9 @@ def ofSet (s : Set α) (hs : IsOpen s) : PartialHomeomorph α α where
 #align local_homeomorph.of_set PartialHomeomorph.ofSet
 
 @[simp, mfld_simps]
-theorem ofSet_toLocalEquiv : (ofSet s hs).toLocalEquiv = LocalEquiv.ofSet s :=
+theorem ofSet_toPartialEquiv : (ofSet s hs).toPartialEquiv = LocalEquiv.ofSet s :=
   rfl
-#align local_homeomorph.of_set_to_local_equiv PartialHomeomorph.ofSet_toLocalEquiv
+#align local_homeomorph.of_set_to_local_equiv PartialHomeomorph.ofSet_toPartialEquiv
 
 @[simp, mfld_simps]
 theorem ofSet_symm : (ofSet s hs).symm = ofSet s hs :=
@@ -801,9 +801,9 @@ end
 
 /-- Composition of two partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
-@[simps! apply symm_apply toLocalEquiv, simps! (config := .lemmasOnly) source target]
+@[simps! apply symm_apply toPartialEquiv, simps! (config := .lemmasOnly) source target]
 protected def trans' (h : e.target = e'.source) : PartialHomeomorph α γ where
-  toLocalEquiv := LocalEquiv.trans' e.toLocalEquiv e'.toLocalEquiv h
+  toPartialEquiv := LocalEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
   open_source := e.open_source
   open_target := e'.open_target
   continuousOn_toFun :=  e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
@@ -818,9 +818,9 @@ protected def trans : PartialHomeomorph α γ :=
 #align local_homeomorph.trans PartialHomeomorph.trans
 
 @[simp, mfld_simps]
-theorem trans_toLocalEquiv : (e.trans e').toLocalEquiv = e.toLocalEquiv.trans e'.toLocalEquiv :=
+theorem trans_toPartialEquiv : (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
   rfl
-#align local_homeomorph.trans_to_local_equiv PartialHomeomorph.trans_toLocalEquiv
+#align local_homeomorph.trans_to_local_equiv PartialHomeomorph.trans_toPartialEquiv
 
 @[simp, mfld_simps]
 theorem coe_trans : (e.trans e' : α → γ) = e' ∘ e :=
@@ -842,19 +842,19 @@ theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm
 /- This could be considered as a simp lemma, but there are many situations where it makes something
 simple into something more complicated. -/
 theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
-  LocalEquiv.trans_source e.toLocalEquiv e'.toLocalEquiv
+  LocalEquiv.trans_source e.toPartialEquiv e'.toPartialEquiv
 #align local_homeomorph.trans_source PartialHomeomorph.trans_source
 
 theorem trans_source' : (e.trans e').source = e.source ∩ e ⁻¹' (e.target ∩ e'.source) :=
-  LocalEquiv.trans_source' e.toLocalEquiv e'.toLocalEquiv
+  LocalEquiv.trans_source' e.toPartialEquiv e'.toPartialEquiv
 #align local_homeomorph.trans_source' PartialHomeomorph.trans_source'
 
 theorem trans_source'' : (e.trans e').source = e.symm '' (e.target ∩ e'.source) :=
-  LocalEquiv.trans_source'' e.toLocalEquiv e'.toLocalEquiv
+  LocalEquiv.trans_source'' e.toPartialEquiv e'.toPartialEquiv
 #align local_homeomorph.trans_source'' PartialHomeomorph.trans_source''
 
 theorem image_trans_source : e '' (e.trans e').source = e.target ∩ e'.source :=
-  LocalEquiv.image_trans_source e.toLocalEquiv e'.toLocalEquiv
+  LocalEquiv.image_trans_source e.toPartialEquiv e'.toPartialEquiv
 #align local_homeomorph.image_trans_source PartialHomeomorph.image_trans_source
 
 theorem trans_target : (e.trans e').target = e'.target ∩ e'.symm ⁻¹' e.target :=
@@ -875,17 +875,17 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
 
 theorem trans_assoc (e'' : PartialHomeomorph γ δ) :
     (e.trans e').trans e'' = e.trans (e'.trans e'') :=
-  toLocalEquiv_injective <| e.1.trans_assoc _ _
+  toPartialEquiv_injective <| e.1.trans_assoc _ _
 #align local_homeomorph.trans_assoc PartialHomeomorph.trans_assoc
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (PartialHomeomorph.refl β) = e :=
-  toLocalEquiv_injective e.1.trans_refl
+  toPartialEquiv_injective e.1.trans_refl
 #align local_homeomorph.trans_refl PartialHomeomorph.trans_refl
 
 @[simp, mfld_simps]
 theorem refl_trans : (PartialHomeomorph.refl α).trans e = e :=
-  toLocalEquiv_injective e.1.refl_trans
+  toPartialEquiv_injective e.1.refl_trans
 #align local_homeomorph.refl_trans PartialHomeomorph.refl_trans
 
 theorem trans_ofSet {s : Set β} (hs : IsOpen s) : e.trans (ofSet s hs) = e.restr (e ⁻¹' s) :=
@@ -914,14 +914,14 @@ theorem ofSet_trans_ofSet {s : Set α} (hs : IsOpen s) {s' : Set α} (hs' : IsOp
 #align local_homeomorph.of_set_trans_of_set PartialHomeomorph.ofSet_trans_ofSet
 
 theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :=
-  toLocalEquiv_injective <| LocalEquiv.restr_trans e.toLocalEquiv e'.toLocalEquiv (interior s)
+  toPartialEquiv_injective <| LocalEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
 #align local_homeomorph.restr_trans PartialHomeomorph.restr_trans
 
 /-- Postcompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := .asFn)]
 def transHomeomorph (e' : β ≃ₜ γ) : PartialHomeomorph α γ where
-  toLocalEquiv := e.toLocalEquiv.transEquiv e'.toEquiv
+  toPartialEquiv := e.toPartialEquiv.transEquiv e'.toEquiv
   open_source := e.open_source
   open_target := e.open_target.preimage e'.symm.continuous
   continuousOn_toFun := e'.continuous.comp_continuousOn e.continuousOn
@@ -930,14 +930,14 @@ def transHomeomorph (e' : β ≃ₜ γ) : PartialHomeomorph α γ where
 
 theorem transHomeomorph_eq_trans (e' : β ≃ₜ γ) :
     e.transHomeomorph e' = e.trans e'.toPartialHomeomorph :=
-  toLocalEquiv_injective <| LocalEquiv.transEquiv_eq_trans _ _
+  toPartialEquiv_injective <| LocalEquiv.transEquiv_eq_trans _ _
 #align local_homeomorph.trans_equiv_eq_trans PartialHomeomorph.transHomeomorph_eq_trans
 
 /-- Precompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! (config := .asFn)]
 def _root_.Homeomorph.transPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomorph α γ where
-  toLocalEquiv := e.toEquiv.transLocalEquiv e'.toLocalEquiv
+  toPartialEquiv := e.toEquiv.transLocalEquiv e'.toPartialEquiv
   open_source := e'.open_source.preimage e.continuous
   open_target := e'.open_target
   continuousOn_toFun := e'.continuousOn.comp e.continuous.continuousOn fun _ => id
@@ -946,7 +946,7 @@ def _root_.Homeomorph.transPartialHomeomorph (e : α ≃ₜ β) : PartialHomeomo
 
 theorem _root_.Homeomorph.transPartialHomeomorph_eq_trans (e : α ≃ₜ β) :
     e.transPartialHomeomorph e' = e.toPartialHomeomorph.trans e' :=
-  toLocalEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
+  toPartialEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transPartialHomeomorph_eq_trans
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
@@ -956,13 +956,13 @@ def EqOnSource (e e' : PartialHomeomorph α β) : Prop :=
 #align local_homeomorph.eq_on_source PartialHomeomorph.EqOnSource
 
 theorem eqOnSource_iff (e e' : PartialHomeomorph α β) :
-    EqOnSource e e' ↔ LocalEquiv.EqOnSource e.toLocalEquiv e'.toLocalEquiv :=
+    EqOnSource e e' ↔ LocalEquiv.EqOnSource e.toPartialEquiv e'.toPartialEquiv :=
   Iff.rfl
 #align local_homeomorph.eq_on_source_iff PartialHomeomorph.eqOnSource_iff
 
 /-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (PartialHomeomorph α β) :=
-  { LocalEquiv.eqOnSourceSetoid.comap toLocalEquiv with r := EqOnSource }
+  { LocalEquiv.eqOnSourceSetoid.comap toPartialEquiv with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 #align local_homeomorph.eq_on_source_refl PartialHomeomorph.eqOnSource_refl
@@ -1028,13 +1028,13 @@ theorem trans_symm_self : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.
 
 theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph α β} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
-  toLocalEquiv_injective <| LocalEquiv.eq_of_eqOnSource_univ _ _ h s t
+  toPartialEquiv_injective <| LocalEquiv.eq_of_eqOnSource_univ _ _ h s t
 #align local_homeomorph.eq_of_eq_on_source_univ PartialHomeomorph.eq_of_eqOnSource_univ
 
 section Prod
 
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
-@[simps! (config := mfld_cfg) toLocalEquiv apply,
+@[simps! (config := mfld_cfg) toPartialEquiv apply,
   simps! (config := .lemmasOnly) source target symm_apply]
 def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ δ) :
     PartialHomeomorph (α × γ) (β × δ) where
@@ -1042,7 +1042,7 @@ def prod (e : PartialHomeomorph α β) (e' : PartialHomeomorph γ δ) :
   open_target := e.open_target.prod e'.open_target
   continuousOn_toFun := e.continuousOn.prod_map e'.continuousOn
   continuousOn_invFun := e.continuousOn_symm.prod_map e'.continuousOn_symm
-  toLocalEquiv := e.toLocalEquiv.prod e'.toLocalEquiv
+  toPartialEquiv := e.toPartialEquiv.prod e'.toPartialEquiv
 #align local_homeomorph.prod PartialHomeomorph.prod
 
 @[simp, mfld_simps]
@@ -1061,7 +1061,7 @@ theorem refl_prod_refl {α β : Type*} [TopologicalSpace α] [TopologicalSpace �
 theorem prod_trans {η : Type*} {ε : Type*} [TopologicalSpace η] [TopologicalSpace ε]
     (e : PartialHomeomorph α β) (f : PartialHomeomorph β γ) (e' : PartialHomeomorph δ η)
     (f' : PartialHomeomorph η ε) : (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
-  toLocalEquiv_injective <| e.1.prod_trans ..
+  toPartialEquiv_injective <| e.1.prod_trans ..
 #align local_homeomorph.prod_trans PartialHomeomorph.prod_trans
 
 theorem prod_eq_prod_of_nonempty {e₁ e₁' : PartialHomeomorph α β} {e₂ e₂' : PartialHomeomorph γ δ}
@@ -1093,12 +1093,12 @@ To ensure the maps `toFun` and `invFun` are inverse of each other on the new `so
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.
 To ensure that the new maps are continuous on `source`/`target`, it also assumes that `e.source` and
 `e'.source` meet `frontier s` on the same set and `e x = e' x` on this intersection. -/
-@[simps! (config := .asFn) toLocalEquiv apply]
+@[simps! (config := .asFn) toPartialEquiv apply]
 def piecewise (e e' : PartialHomeomorph α β) (s : Set α) (t : Set β) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
     (Heq : EqOn e e' (e.source ∩ frontier s)) : PartialHomeomorph α β where
-  toLocalEquiv := e.toLocalEquiv.piecewise e'.toLocalEquiv s t H H'
+  toPartialEquiv := e.toPartialEquiv.piecewise e'.toPartialEquiv s t H H'
   open_source := e.open_source.ite e'.open_source Hs
   open_target :=
     e.open_target.ite e'.open_target <| H.frontier.inter_eq_of_inter_eq_of_eqOn H'.frontier Hs Heq
@@ -1122,7 +1122,7 @@ theorem symm_piecewise (e e' : PartialHomeomorph α β) {s : Set α} {t : Set β
 #align local_homeomorph.symm_piecewise PartialHomeomorph.symm_piecewise
 
 /-- Combine two `PartialHomeomorph`s with disjoint sources and disjoint targets. We reuse
-`PartialHomeomorph.piecewise` then override `toLocalEquiv` to `LocalEquiv.disjointUnion`.
+`PartialHomeomorph.piecewise` then override `toPartialEquiv` to `LocalEquiv.disjointUnion`.
 This way we have better definitional equalities for `source` and `target`. -/
 def disjointUnion (e e' : PartialHomeomorph α β) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] (Hs : Disjoint e.source e'.source)
@@ -1133,7 +1133,7 @@ def disjointUnion (e e' : PartialHomeomorph α β) [∀ x, Decidable (x ∈ e.so
         (by
           rw [e.open_source.inter_frontier_eq]
           exact eqOn_empty _ _)).replaceEquiv
-    (e.toLocalEquiv.disjointUnion e'.toLocalEquiv Hs Ht)
+    (e.toPartialEquiv.disjointUnion e'.toPartialEquiv Hs Ht)
     (LocalEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 #align local_homeomorph.disjoint_union PartialHomeomorph.disjointUnion
 
@@ -1145,9 +1145,9 @@ variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpa
   [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, PartialHomeomorph (Xi i) (Yi i))
 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
-@[simps toLocalEquiv]
+@[simps toPartialEquiv]
 def pi : PartialHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
-  toLocalEquiv := LocalEquiv.pi fun i => (ei i).toLocalEquiv
+  toPartialEquiv := LocalEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
   open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
   continuousOn_toFun := continuousOn_pi.2 fun i =>
@@ -1324,7 +1324,7 @@ theorem symm_toPartialHomeomorph : e.symm.toPartialHomeomorph = e.toPartialHomeo
 @[simp, mfld_simps]
 theorem trans_toPartialHomeomorph :
     (e.trans e').toPartialHomeomorph = e.toPartialHomeomorph.trans e'.toPartialHomeomorph :=
-  PartialHomeomorph.toLocalEquiv_injective <| Equiv.trans_toLocalEquiv _ _
+  PartialHomeomorph.toPartialEquiv_injective <| Equiv.trans_toPartialEquiv _ _
 #align homeomorph.trans_to_local_homeomorph Homeomorph.trans_toPartialHomeomorph
 
 end Homeomorph
@@ -1337,7 +1337,7 @@ variable (f : α → β) (h : OpenEmbedding f)
 whose source is all of `α`. The converse is also true; see `PartialHomeomorph.to_openEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toPartialHomeomorph [Nonempty α] : PartialHomeomorph α β :=
-  PartialHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toLocalEquiv _ _)
+  PartialHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toPartialEquiv _ _)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toPartialHomeomorph
 

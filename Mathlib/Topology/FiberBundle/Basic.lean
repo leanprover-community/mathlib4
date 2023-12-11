@@ -529,7 +529,7 @@ theorem localTrivAsLocalEquiv_apply (p : Z.TotalSpace) :
 /-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
 theorem localTrivAsLocalEquiv_trans (i j : ι) :
     (Z.localTrivAsLocalEquiv i).symm.trans (Z.localTrivAsLocalEquiv j) ≈
-      (Z.trivChange i j).toLocalEquiv := by
+      (Z.trivChange i j).toPartialEquiv := by
   constructor
   · ext x
     simp only [mem_localTrivAsLocalEquiv_target, mfld_simps]
@@ -595,7 +595,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     convert this using 1
     dsimp [LocalEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
-  toLocalEquiv := Z.localTrivAsLocalEquiv i
+  toPartialEquiv := Z.localTrivAsLocalEquiv i
 #align fiber_bundle_core.local_triv FiberBundleCore.localTriv
 
 /-- Preferred local trivialization of a fiber bundle constructed from core, at a given point, as
@@ -651,7 +651,7 @@ theorem localTrivAsLocalEquiv_target :
 
 @[simp, mfld_simps]
 theorem localTrivAsLocalEquiv_symm :
-    (Z.localTrivAsLocalEquiv i).symm = (Z.localTriv i).toLocalEquiv.symm :=
+    (Z.localTrivAsLocalEquiv i).symm = (Z.localTriv i).toPartialEquiv.symm :=
   rfl
 #align fiber_bundle_core.local_triv_as_local_equiv_symm FiberBundleCore.localTrivAsLocalEquiv_symm
 
@@ -770,7 +770,7 @@ structure FiberPrebundle where
   mem_base_pretrivializationAt : ∀ x : B, x ∈ (pretrivializationAt x).baseSet
   pretrivialization_mem_atlas : ∀ x : B, pretrivializationAt x ∈ pretrivializationAtlas
   continuous_trivChange : ∀ e, e ∈ pretrivializationAtlas → ∀ e', e' ∈ pretrivializationAtlas →
-    ContinuousOn (e ∘ e'.toLocalEquiv.symm) (e'.target ∩ e'.toLocalEquiv.symm ⁻¹' e.source)
+    ContinuousOn (e ∘ e'.toPartialEquiv.symm) (e'.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source)
   totalSpaceMk_inducing : ∀ b : B, Inducing (pretrivializationAt b ∘ TotalSpace.mk b)
 #align fiber_prebundle FiberPrebundle
 
@@ -786,7 +786,7 @@ def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F
 #align fiber_prebundle.total_space_topology FiberPrebundle.totalSpaceTopology
 
 theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
-    @ContinuousOn _ _ _ a.totalSpaceTopology e.toLocalEquiv.symm e.target := by
+    @ContinuousOn _ _ _ a.totalSpaceTopology e.toPartialEquiv.symm e.target := by
   refine' fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono _) U h)
   exact le_iSup₂ (α := TopologicalSpace (TotalSpace F E)) e he
 #align fiber_prebundle.continuous_symm_of_mem_pretrivialization_atlas FiberPrebundle.continuous_symm_of_mem_pretrivializationAtlas
@@ -802,7 +802,7 @@ theorem isOpen_source (e : Pretrivialization F (π F E)) :
 
 theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivialization F (π F E))
     (he' : e' ∈ a.pretrivializationAtlas) :
-    IsOpen (e'.toLocalEquiv.target ∩ e'.toLocalEquiv.symm ⁻¹' e.source) := by
+    IsOpen (e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source) := by
   letI := a.totalSpaceTopology
   obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_symm_of_mem_pretrivializationAtlas he')
     e.source (a.isOpen_source e)
@@ -824,7 +824,7 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
       obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_trivChange _ he _ he') s hs
       have hu3 := congr_arg (fun s => (fun x : e'.target => (x : B × F)) ⁻¹' s) hu2
       simp only [Subtype.coe_preimage_self, preimage_inter, univ_inter] at hu3
-      refine ⟨u ∩ e'.toLocalEquiv.target ∩ e'.toLocalEquiv.symm ⁻¹' e.source, ?_, by
+      refine ⟨u ∩ e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source, ?_, by
         simp only [preimage_inter, inter_univ, Subtype.coe_preimage_self, hu3.symm]; rfl⟩
       rw [inter_assoc]
       exact hu1.inter (a.isOpen_target_of_mem_pretrivializationAtlas_inter e e' he')
@@ -900,7 +900,7 @@ continuity of a function `TotalSpace F E → X` on an open set `s` can be checke
 each point with the pretrivialization used for the construction at that point. -/
 theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSpace F E → X}
     {s : Set B} (hs : IsOpen s) (hf : ∀ b ∈ s,
-      ContinuousOn (f ∘ (a.pretrivializationAt b).toLocalEquiv.symm)
+      ContinuousOn (f ∘ (a.pretrivializationAt b).toPartialEquiv.symm)
         ((s ∩ (a.pretrivializationAt b).baseSet) ×ˢ (Set.univ : Set F))) :
     @ContinuousOn _ _ a.totalSpaceTopology _ f (π F E ⁻¹' s) := by
   letI := a.totalSpaceTopology

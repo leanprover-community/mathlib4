@@ -140,7 +140,7 @@ variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
     extChartAt (IB.prod 𝓘(𝕜, F)) x =
-      (trivializationAt F E x.proj).toLocalEquiv ≫
+      (trivializationAt F E x.proj).toPartialEquiv ≫
         (extChartAt IB x.proj).prod (LocalEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [LocalEquiv.trans_assoc, mfld_simps]
@@ -479,8 +479,8 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     refine' ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
       smoothOn_symm_coordChangeL IB e e', _⟩
     refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
-    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.localHomeomorph, trans_toLocalEquiv,
-        symm_toLocalEquiv]
+    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.localHomeomorph, trans_toPartialEquiv,
+        symm_toPartialEquiv]
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm
 #align smooth_fiberwise_linear.has_groupoid SmoothFiberwiseLinear.hasGroupoid

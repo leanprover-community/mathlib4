@@ -143,7 +143,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
-  unique_diff' : UniqueDiffOn 𝕜 toLocalEquiv.target
+  unique_diff' : UniqueDiffOn 𝕜 toPartialEquiv.target
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 #align model_with_corners ModelWithCorners
@@ -153,7 +153,7 @@ attribute [simp, mfld_simps] ModelWithCorners.source_eq
 /-- A vector space is a model with corners. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
-  toLocalEquiv := LocalEquiv.refl E
+  toPartialEquiv := LocalEquiv.refl E
   source_eq := rfl
   unique_diff' := uniqueDiffOn_univ
   continuous_toFun := continuous_id
@@ -171,7 +171,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 namespace ModelWithCorners
 
 /-- Coercion of a model with corners to a function. We don't use `e.toFun` because it is actually
-`e.toLocalEquiv.toFun`, so `simp` will apply lemmas about `toLocalEquiv`. While we may want to
+`e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`. While we may want to
 switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' (e : ModelWithCorners 𝕜 E H) : H → E := e.toFun
 
@@ -179,7 +179,7 @@ instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
 
 /-- The inverse to a model with corners, only registered as a local equiv. -/
 protected def symm : PartialEquiv E H :=
-  I.toLocalEquiv.symm
+  I.toPartialEquiv.symm
 #align model_with_corners.symm ModelWithCorners.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -199,9 +199,9 @@ initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_
 
 -- Register a few lemmas to make sure that `simp` puts expressions in normal form
 @[simp, mfld_simps]
-theorem toLocalEquiv_coe : (I.toLocalEquiv : H → E) = I :=
+theorem toPartialEquiv_coe : (I.toPartialEquiv : H → E) = I :=
   rfl
-#align model_with_corners.to_local_equiv_coe ModelWithCorners.toLocalEquiv_coe
+#align model_with_corners.to_local_equiv_coe ModelWithCorners.toPartialEquiv_coe
 
 @[simp, mfld_simps]
 theorem mk_coe (e : PartialEquiv H E) (a b c d) :
@@ -210,9 +210,9 @@ theorem mk_coe (e : PartialEquiv H E) (a b c d) :
 #align model_with_corners.mk_coe ModelWithCorners.mk_coe
 
 @[simp, mfld_simps]
-theorem toLocalEquiv_coe_symm : (I.toLocalEquiv.symm : E → H) = I.symm :=
+theorem toPartialEquiv_coe_symm : (I.toPartialEquiv.symm : E → H) = I.symm :=
   rfl
-#align model_with_corners.to_local_equiv_coe_symm ModelWithCorners.toLocalEquiv_coe_symm
+#align model_with_corners.to_local_equiv_coe_symm ModelWithCorners.toPartialEquiv_coe_symm
 
 @[simp, mfld_simps]
 theorem mk_symm (e : PartialEquiv H E) (a b c d) :
@@ -291,9 +291,9 @@ theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
 #align model_with_corners.preimage_image ModelWithCorners.preimage_image
 
 protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I := by
-  refine' (I.toLocalEquiv.image_eq_target_inter_inv_preimage _).trans _
+  refine' (I.toPartialEquiv.image_eq_target_inter_inv_preimage _).trans _
   · rw [I.source_eq]; exact subset_univ _
-  · rw [inter_comm, I.target_eq, I.toLocalEquiv_coe_symm]
+  · rw [inter_comm, I.target_eq, I.toPartialEquiv_coe_symm]
 #align model_with_corners.image_eq ModelWithCorners.image_eq
 
 protected theorem closedEmbedding : ClosedEmbedding I :=
@@ -376,7 +376,7 @@ variable (𝕜 E)
 
 /-- In the trivial model with corners, the associated local equiv is the identity. -/
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toLocalEquiv = LocalEquiv.refl E :=
+theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toPartialEquiv = LocalEquiv.refl E :=
   rfl
 #align model_with_corners_self_local_equiv modelWithCornersSelf_localEquiv
 
@@ -407,7 +407,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
     {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
     ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
-  { I.toLocalEquiv.prod I'.toLocalEquiv with
+  { I.toPartialEquiv.prod I'.toPartialEquiv with
     toFun := fun x => (I x.1, I' x.2)
     invFun := fun x => (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
@@ -424,7 +424,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
-  toLocalEquiv := LocalEquiv.pi fun i => (I i).toLocalEquiv
+  toPartialEquiv := LocalEquiv.pi fun i => (I i).toPartialEquiv
   source_eq := by simp only [pi_univ, mfld_simps]
   unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
@@ -448,10 +448,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {J : ModelWithCorners 𝕜 F G}
 
 @[simp, mfld_simps]
-theorem modelWithCorners_prod_toLocalEquiv :
-    (I.prod J).toLocalEquiv = I.toLocalEquiv.prod J.toLocalEquiv :=
+theorem modelWithCorners_prod_toPartialEquiv :
+    (I.prod J).toPartialEquiv = I.toPartialEquiv.prod J.toPartialEquiv :=
   rfl
-#align model_with_corners_prod_to_local_equiv modelWithCorners_prod_toLocalEquiv
+#align model_with_corners_prod_to_local_equiv modelWithCorners_prod_toPartialEquiv
 
 @[simp, mfld_simps]
 theorem modelWithCorners_prod_coe (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H') :
@@ -629,7 +629,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm
-  constructor <;> simp only [LocalEquiv.prod_source, PartialHomeomorph.prod_toLocalEquiv]
+  constructor <;> simp only [LocalEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv]
   · have h3 := ContDiffOn.prod_map he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
@@ -752,7 +752,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toLocalEquiv,
+  · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toPartialEquiv,
       LocalEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, LocalEquiv.ofSet_target, and_self]
     intro x hx
@@ -952,7 +952,7 @@ namespace PartialHomeomorph
 vector space. -/
 @[simp, mfld_simps]
 def extend : PartialEquiv M E :=
-  f.toLocalEquiv ≫ I.toLocalEquiv
+  f.toPartialEquiv ≫ I.toPartialEquiv
 #align local_homeomorph.extend PartialHomeomorph.extend
 
 theorem extend_coe : ⇑(f.extend I) = I ∘ f :=
@@ -973,7 +973,7 @@ theorem isOpen_extend_source : IsOpen (f.extend I).source := by
 #align local_homeomorph.is_open_extend_source PartialHomeomorph.isOpen_extend_source
 
 theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I := by
-  simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toLocalEquiv_coe_symm, inter_comm]
+  simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target PartialHomeomorph.extend_target
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
@@ -1550,7 +1550,7 @@ theorem extChartAt_prod (x : M × M') :
 
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
     (letI := ChartedSpace.comp H H' M'; extChartAt I x) =
-      (chartAt H' x).toLocalEquiv ≫ extChartAt I (chartAt H' x x) :=
+      (chartAt H' x).toPartialEquiv ≫ extChartAt I (chartAt H' x x) :=
   LocalEquiv.trans_assoc ..
 
 theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}

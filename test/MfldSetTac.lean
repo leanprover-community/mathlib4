@@ -30,20 +30,20 @@ noncomputable
 def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β α := test_sorry
 
 @[mfld_simps] lemma PartialHomeomorph.left_inv (e : PartialHomeomorph α β) {x : α}
-  (_h : x ∈ e.toLocalEquiv.source) :
+  (_h : x ∈ e.toPartialEquiv.source) :
   e.symm (e x) = x :=
 test_sorry
 
 @[mfld_simps] theorem PartialHomeomorph.symm_to_LocalEquiv (e : PartialHomeomorph α β) :
-  e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
+  e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 test_sorry
 
 @[mfld_simps] lemma PartialHomeomorph.coe_coe (e : PartialHomeomorph α β) :
-  (e.toLocalEquiv : α → β) = e :=
+  (e.toPartialEquiv : α → β) = e :=
 test_sorry
 
 @[mfld_simps] lemma PartialHomeomorph.coe_coe_symm (e : PartialHomeomorph α β) :
-  (e.toLocalEquiv.symm : β → α) = (e.symm : β → α) :=
+  (e.toPartialEquiv.symm : β → α) = (e.symm : β → α) :=
 test_sorry
 
 structure ModelWithCorners (𝕜 E H : Type u) extends LocalEquiv H E :=
@@ -62,11 +62,11 @@ instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (�
 test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe (I : ModelWithCorners 𝕜 E H) :
-  (I.toLocalEquiv : H → E) = I :=
+  (I.toPartialEquiv : H → E) = I :=
 test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe_symm (I : ModelWithCorners 𝕜 E H) :
-  (I.toLocalEquiv.symm : E → H) = I.symm :=
+  (I.toPartialEquiv.symm : E → H) = I.symm :=
 test_sorry
 
 end stub_lemmas
@@ -82,8 +82,8 @@ example (e : LocalEquiv α β) (e' : LocalEquiv β γ) :
 example (e : LocalEquiv α β) : (e.trans e.symm).source = e.source := by mfld_set_tac
 
 example (s : Set α) (f : PartialHomeomorph α β) :
-  f.symm.toLocalEquiv.source ∩ (f.toLocalEquiv.target ∩ Set.preimage f.symm s)
-  = f.symm.toLocalEquiv.source ∩ Set.preimage f.symm s := by mfld_set_tac
+  f.symm.toPartialEquiv.source ∩ (f.toPartialEquiv.target ∩ Set.preimage f.symm s)
+  = f.symm.toPartialEquiv.source ∩ Set.preimage f.symm s := by mfld_set_tac
 
 example
   {I : ModelWithCorners 𝕜 E H}
@@ -94,15 +94,15 @@ example
   (e₃ : PartialHomeomorph M'' H'')
   {f : M → M'}
   {g : M' → M''} :
-  (Set.preimage (f ∘ ((e₁.toLocalEquiv.trans I.toLocalEquiv).symm))
-      (e₂.toLocalEquiv.trans I'.toLocalEquiv).source) ⊆
+  (Set.preimage (f ∘ ((e₁.toPartialEquiv.trans I.toPartialEquiv).symm))
+      (e₂.toPartialEquiv.trans I'.toPartialEquiv).source) ⊆
     {y : E |
-    ((e₃.toLocalEquiv.trans I''.toLocalEquiv) ∘
-          (g ∘ f) ∘ ((e₁.toLocalEquiv.trans I.toLocalEquiv).symm)) y
-    = (((e₃.toLocalEquiv.trans I''.toLocalEquiv : M'' → E'') ∘
-             g ∘ ((e₂.toLocalEquiv.trans I'.toLocalEquiv).symm)) ∘
-          (e₂.toLocalEquiv.trans I'.toLocalEquiv : M' → E') ∘
-            f ∘ ((e₁.toLocalEquiv.trans I.toLocalEquiv).symm)) y} := by
+    ((e₃.toPartialEquiv.trans I''.toPartialEquiv) ∘
+          (g ∘ f) ∘ ((e₁.toPartialEquiv.trans I.toPartialEquiv).symm)) y
+    = (((e₃.toPartialEquiv.trans I''.toPartialEquiv : M'' → E'') ∘
+             g ∘ ((e₂.toPartialEquiv.trans I'.toPartialEquiv).symm)) ∘
+          (e₂.toPartialEquiv.trans I'.toPartialEquiv : M' → E') ∘
+            f ∘ ((e₁.toPartialEquiv.trans I.toPartialEquiv).symm)) y} := by
   mfld_set_tac
 
 end tests

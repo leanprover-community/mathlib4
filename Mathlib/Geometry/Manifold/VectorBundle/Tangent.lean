@@ -186,12 +186,12 @@ protected theorem chartAt (p : TM) :
   rfl
 #align tangent_bundle.chart_at TangentBundle.chartAt
 
-theorem chartAt_toLocalEquiv (p : TM) :
-    (chartAt (ModelProd H E) p).toLocalEquiv =
+theorem chartAt_toPartialEquiv (p : TM) :
+    (chartAt (ModelProd H E) p).toPartialEquiv =
       (tangentBundleCore I M).toFiberBundleCore.localTrivAsLocalEquiv (achart H p.1) ≫
-        (chartAt H p.1).toLocalEquiv.prod (LocalEquiv.refl E) :=
+        (chartAt H p.1).toPartialEquiv.prod (LocalEquiv.refl E) :=
   rfl
-#align tangent_bundle.chart_at_to_local_equiv TangentBundle.chartAt_toLocalEquiv
+#align tangent_bundle.chart_at_to_local_equiv TangentBundle.chartAt_toPartialEquiv
 
 theorem trivializationAt_eq_localTriv (x : M) :
     trivializationAt E (TangentSpace I) x =
@@ -327,7 +327,7 @@ end TangentBundleInstances
 between a product type and a sigma type, a.k.a. `TotalSpace.toProd`. -/
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
-    (chartAt (ModelProd H E) p).toLocalEquiv = (TotalSpace.toProd H E).toLocalEquiv := by
+    (chartAt (ModelProd H E) p).toPartialEquiv = (TotalSpace.toProd H E).toPartialEquiv := by
   ext x : 1
   · ext; · rfl
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
@@ -349,7 +349,7 @@ theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm := by
-  rw [← PartialHomeomorph.coe_coe, PartialHomeomorph.symm_toLocalEquiv,
+  rw [← PartialHomeomorph.coe_coe, PartialHomeomorph.symm_toPartialEquiv,
     tangentBundle_model_space_chartAt]; rfl
 #align tangent_bundle_model_space_coe_chart_at_symm tangentBundle_model_space_coe_chartAt_symm
 
