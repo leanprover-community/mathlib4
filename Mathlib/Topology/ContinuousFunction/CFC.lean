@@ -92,14 +92,9 @@ instance ContinuousMap.trivialStar {X R : Type*} [TopologicalSpace X] [Topologic
     [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R) where
   star_trivial _ := ContinuousMap.ext fun _ => star_trivial _
 
-instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Add Y] [ContinuousAdd Y]
-    [PartialOrder Y] [CovariantClass Y Y (· + ·) (· ≤ ·)] :
-    CovariantClass C(X, Y) C(X, Y) (· + ·) (· ≤ ·) where
-  elim _ _ _ h' x := add_le_add_left (h' x) _
-
 instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
-    [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E
-    where smul_assoc x _ _ := (smul_assoc (x : ℂ) _ _ : _)
+    [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
+  smul_assoc x _ _ := (smul_assoc (x : ℂ) _ _ : _)
 
 -- this is not so crazy, we already have the `•` in `Module.complexToReal`
 noncomputable instance Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] : Algebra ℝ A :=
@@ -527,8 +522,8 @@ lemma cfc₁_ring_inverse_comm {a : A} (ha : IsUnit a) [CFCClass F (a : A)]
   have key := cfc₁_inv₀On (F := F) a ha
   have foo : CFCClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha)) := by
     convert h
-  have : Subsingleton (CFCCoreClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha))) := by
-    convert h'
+  have : Subsingleton <| CFCCoreClass F <| cfc₁ F (a : A) <|
+      ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha := by convert h'
   convert cfc₁₂_comp (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha) f
   exact key.symm
 
@@ -537,10 +532,10 @@ lemma cfc₁_inv_comm (a : Aˣ) [CFCClass F (a : A)] [h : CFCClass F (↑a⁻¹ 
     cfc₁ F (a : A) (f.comp (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit)) =
       cfc₂ F (↑a⁻¹ : A) f := by
   have key := cfc₁_inv₀On_eq_inv (F := F) a
-  have foo : CFCClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit)) := by
-    convert h
-  have : Subsingleton (CFCCoreClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit))) := by
-    convert h'
+  have : CFCClass F <| cfc₁ F (a : A) <| ContinuousMap.inv₀On <|
+      spectrum.zero_not_mem F a.isUnit := by convert h
+  have : Subsingleton <| CFCCoreClass F <| cfc₁ F (a : A) <| ContinuousMap.inv₀On <|
+      spectrum.zero_not_mem F a.isUnit := by convert h'
   convert cfc₁₂_comp (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit) f
   exact key.symm
 
