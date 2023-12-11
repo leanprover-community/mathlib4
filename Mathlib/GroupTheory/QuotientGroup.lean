@@ -196,6 +196,8 @@ theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f
     ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
   map_prod (QuotientGroup.mk' N) _ _
 
+@[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
+
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
@@ -294,15 +296,8 @@ theorem map_comp_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.
 section Pointwise
 open Set
 
-@[to_additive]
-lemma image_coe : ((↑) : G → Q) '' N = 1 := by
-  ext a
-  dsimp
-  constructor
-  · rintro ⟨a, ha, rfl⟩
-    rwa [mem_one, QuotientGroup.eq_one_iff]
-  · rintro rfl
-    exact ⟨1, N.one_mem, rfl⟩
+@[to_additive (attr := simp)] lemma image_coe : ((↑) : G → Q) '' N = 1 :=
+  congr_arg ((↑) : Subgroup Q → Set Q) $ map_mk'_self N
 
 @[to_additive]
 lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N * s := by

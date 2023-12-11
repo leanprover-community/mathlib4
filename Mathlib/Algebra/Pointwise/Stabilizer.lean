@@ -12,11 +12,11 @@ import Mathlib.GroupTheory.QuotientGroup
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
 
-open Function Set
+open Function MulOpposite Set
 open scoped Pointwise
 
 namespace MulAction
-variable {G α : Type*} [Group G] [MulAction G α] {a : G}
+variable {G H α : Type*} [Group G] [Group H] [MulAction G α] {a : G}
 
 section Set
 
@@ -29,10 +29,12 @@ lemma stabilizer_singleton (b : α) : stabilizer G ({b} : Set α) = stabilizer G
 
 @[to_additive]
 lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b ∈ s ↔ b ∈ s := by
-  refine ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
-  · rw [← (smul_mem_smul_set_iff : a • b ∈ a • s ↔ _), mem_stabilizer_iff.1 h]
-  simp_rw [mem_stabilizer_iff, Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
+  refine mem_stabilizer_iff.trans ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
+  · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
+  simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
   exact ((MulAction.toPerm a).forall_congr' $ by simp [Iff.comm]).1 h
+
+-- TODO: Is there a lemma that could unify the following three very similar lemmas?
 
 @[to_additive (attr := simp)]
 lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
@@ -40,9 +42,23 @@ lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
   refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_left ha⟩
   simpa only [smul_eq_mul, SetLike.mem_coe, mul_one] using (h 1).2 s.one_mem
 
+@[to_additive (attr := simp)]
+lemma stabilizer_op_subgroup (s : Subgroup G) : stabilizer Gᵐᵒᵖ (s : Set G) = s.op := by
+  simp_rw [SetLike.ext_iff, mem_stabilizer_set]
+  simp
+  refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
+  simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using (h 1).2 s.one_mem
+
+@[to_additive (attr := simp)]
+lemma stabilizer_subgroup_op (s : Subgroup Gᵐᵒᵖ) : stabilizer G (s : Set Gᵐᵒᵖ) = s.unop := by
+  simp_rw [SetLike.ext_iff, mem_stabilizer_set]
+  refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
+  have : 1 * MulOpposite.op a ∈ s := (h 1).2 s.one_mem
+  simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using this
+
 @[to_additive]
-lemma map_stabilizer_le (f : G →* G) (s : Set G) :
-    (stabilizer G s).map f ≤ stabilizer G (f '' s) := by
+lemma map_stabilizer_le (f : G →* H) (s : Set G) :
+    (stabilizer G s).map f ≤ stabilizer H (f '' s) := by
   rintro a
   simp only [Subgroup.mem_map, mem_stabilizer_iff, exists_prop, forall_exists_index, and_imp]
   rintro a ha rfl

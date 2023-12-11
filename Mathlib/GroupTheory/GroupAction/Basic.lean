@@ -464,17 +464,24 @@ lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b 
   simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
-lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α) :
-    stabilizer G (a * b) = stabilizer G a := by
-  rw [← smul_eq_mul]
+lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)
+    (h : Injective (· • b : α → β)) : stabilizer G (a • b) = stabilizer G a := by
   refine' (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ _
-  simpa only [smul_eq_mul, mem_stabilizer_iff, ← smul_mul_assoc, mul_left_inj] using ha
+  simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
   (le_stabilizer_smul_right _ _).antisymm' $ (le_stabilizer_smul_right a⁻¹ _).trans_eq $ by
     rw [inv_smul_smul]
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
+    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ $ mul_left_injective _
+
+@[to_additive (attr := simp)]
+lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
+    stabilizer G (a * b) = stabilizer G b := stabilizer_smul_eq_right a _
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
