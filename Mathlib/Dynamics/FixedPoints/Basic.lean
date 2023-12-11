@@ -101,7 +101,7 @@ theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : �
 #align function.is_fixed_pt.preimage_iterate Function.IsFixedPt.preimage_iterate
 
 lemma image_iterate {s : Set α} (h : IsFixedPt (Set.image f) s) (n : ℕ) :
-    f^[n] '' s = s :=
+    IsFixedPt (Set.image f^[n]) s :=
   Set.image_iterate_eq ▸ h.iterate n
 
 protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
