@@ -73,15 +73,15 @@ lemma monotone_stabilizing {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ 
     ∀ i, a₂ ≥ i → i ≥ a₁ → f i = f a₁ := by
   intro i h₂ h₁
   apply le_antisymm
-  . rw[h_fa]; exact h_mon h₂
-  . exact h_mon h₁
+  · rw[h_fa]; exact h_mon h₂
+  · exact h_mon h₁
 
 lemma antitone_stabilizing {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂):
     ∀ i, a₂ ≥ i → i ≥ a₁ → f i = f a₁ := by
   intro i h₂ h₁
   apply le_antisymm
-  . exact h_anti h₁
-  . rw[h_fa]; exact h_anti h₂
+  · exact h_anti h₁
+  · rw[h_fa]; exact h_anti h₂
 
 end Monotone
 
@@ -120,10 +120,10 @@ lemma lfp_approx_def (a : Ordinal.{u}): lfp_approx f a =
 
 lemma lfp_approx_addition (a : Ordinal.{u}) : f (lfp_approx f a) = lfp_approx f (a+1) := by
   apply le_antisymm
-  . conv => right; rw[lfp_approx_def]
+  · conv => right; rw[lfp_approx_def]
     apply le_sSup; simp
     use a
-  . conv => left; rw[lfp_approx_def]
+  · conv => left; rw[lfp_approx_def]
     apply sSup_le; simp
     intros a' h
     apply f.2; apply lfp_approx_monotone; exact h
@@ -134,18 +134,18 @@ lemma lfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fix
   intro b hab; rw[mem_fixedPoints_iff] at h;
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
-  . conv => left; rw[lfp_approx_def]
+  · conv => left; rw[lfp_approx_def]
     apply sSup_le; simp
     intro a' ha'b
     by_cases haa : a' < a
-    . rw[lfp_approx_addition]
+    · rw[lfp_approx_addition]
       apply lfp_approx_monotone
       simp; exact haa
-    . simp at haa
+    · simp at haa
       cases (le_iff_lt_or_eq.mp haa) with
       | inl haa => specialize IH a' ha'b haa; rw[IH, h];
       | inr haa => rw[←haa, h];
-  . conv => right; rw[lfp_approx_def]
+  · conv => right; rw[lfp_approx_def]
     apply le_sSup; simp
     use a
 
@@ -166,8 +166,8 @@ lemma lfp_approx_has_cycle : ∃ i < ord $ succ #α, ∃ j < ord $ succ #α,
   use a.val; apply And.intro a.prop;
   use b.val; apply And.intro b.prop;
   apply And.intro
-  . intro h_eq; rw[Subtype.coe_inj] at h_eq; exact h_nab h_eq
-  . exact h_fab
+  · intro h_eq; rw[Subtype.coe_inj] at h_eq; exact h_nab h_eq
+  · exact h_fab
 
 lemma lfp_approx_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
     (h_fab : lfp_approx f a = lfp_approx f b):
@@ -181,10 +181,10 @@ lemma lfp_approx_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
     ∀ i ≥ a, lfp_approx f i ∈ (fixedPoints f) := by
   intro i h_i;
   by_cases h_ia : i = a
-  . rw[h_ia]; exact lfp_approx_one_fixedPoint f a b h h_fab
-  . apply lfp_approx_eq_fp f a
-    . exact lfp_approx_one_fixedPoint f a b h h_fab
-    . exact Ne.lt_of_le' h_ia h_i
+  · rw[h_ia]; exact lfp_approx_one_fixedPoint f a b h h_fab
+  · apply lfp_approx_eq_fp f a
+    · exact lfp_approx_one_fixedPoint f a b h h_fab
+    · exact Ne.lt_of_le' h_ia h_i
 
 lemma lfp_approx_has_fixedPoint_cardinal : lfp_approx f (ord $ succ #α) ∈ (fixedPoints f) := by
   let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := lfp_approx_has_cycle f
@@ -209,10 +209,10 @@ lemma lfp_approx_le_fixedPoint : ∀ a : (fixedPoints f), ∀ i : Ordinal, lfp_a
 
 theorem lfp_is_lfp_approx_cardinal : lfp_approx f (ord $ succ #α) = lfp f := by
   apply le_antisymm
-  . have h_lfp : ∃ x : fixedPoints f, lfp f = x := by use ⊥; exact rfl
+  · have h_lfp : ∃ x : fixedPoints f, lfp f = x := by use ⊥; exact rfl
     let ⟨x, h_x⟩ := h_lfp; rw[h_x]
     exact lfp_approx_le_fixedPoint f x (ord $ succ #α)
-  . have h_fix : ∃ x: fixedPoints f, lfp_approx f (ord $ succ #α) = x := by
+  · have h_fix : ∃ x: fixedPoints f, lfp_approx f (ord $ succ #α) = x := by
       simpa using lfp_approx_has_fixedPoint_cardinal f
     let ⟨x, h_x⟩ := h_fix; rw[h_x]
     exact lfp_le_fixed f x.prop
@@ -243,11 +243,11 @@ lemma gfp_approx_def (a : Ordinal.{u}): gfp_approx f a =
 
 lemma gfp_approx_addition (a : Ordinal.{u}) : f (gfp_approx f a) = gfp_approx f (a+1) := by
   apply le_antisymm
-  . conv => right; rw[gfp_approx_def]
+  · conv => right; rw[gfp_approx_def]
     apply le_sInf; simp
     intros a' h
     apply f.2; apply gfp_approx_antitone; exact h
-  . conv => left; rw[gfp_approx_def]
+  · conv => left; rw[gfp_approx_def]
     apply sInf_le; simp
     use a
 
@@ -257,17 +257,17 @@ lemma gfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fix
   intro b hab; rw[mem_fixedPoints_iff] at h;
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
-  . conv => left; rw[gfp_approx_def]
+  · conv => left; rw[gfp_approx_def]
     apply sInf_le
     use a
-  . conv => right; rw[gfp_approx_def]
+  · conv => right; rw[gfp_approx_def]
     apply le_sInf; simp
     intro a' ha'b
     by_cases haa : a' < a
-    . rw[gfp_approx_addition]
+    · rw[gfp_approx_addition]
       apply gfp_approx_antitone
       simp; exact haa
-    . simp at haa
+    · simp at haa
       cases (le_iff_lt_or_eq.mp haa) with
       | inl haa => specialize IH a' ha'b haa; rw[IH, h];
       | inr haa => rw[←haa, h];
@@ -289,8 +289,8 @@ lemma gfp_approx_has_cycle : ∃ i < ord $ succ #α, ∃ j < ord $ succ #α,
   use a.val; apply And.intro a.prop;
   use b.val; apply And.intro b.prop;
   apply And.intro
-  . intro h_eq; rw[Subtype.coe_inj] at h_eq; exact h_nab h_eq
-  . exact h_fab
+  · intro h_eq; rw[Subtype.coe_inj] at h_eq; exact h_nab h_eq
+  · exact h_fab
 
 lemma gfp_approx_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
     (h_fab : gfp_approx f a = gfp_approx f b):
@@ -304,10 +304,10 @@ lemma gfp_approx_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
     ∀ i ≥ a, gfp_approx f i ∈ (fixedPoints f) := by
   intro i h_i;
   by_cases h_ia : i = a
-  . rw[h_ia]; exact gfp_approx_one_fixedPoint f a b h h_fab
-  . apply gfp_approx_eq_fp f a
-    . exact gfp_approx_one_fixedPoint f a b h h_fab
-    . exact Ne.lt_of_le' h_ia h_i
+  · rw[h_ia]; exact gfp_approx_one_fixedPoint f a b h h_fab
+  · apply gfp_approx_eq_fp f a
+    · exact gfp_approx_one_fixedPoint f a b h h_fab
+    · exact Ne.lt_of_le' h_ia h_i
 
 lemma gfp_approx_has_fixedPoint_cardinal : gfp_approx f (ord $ succ #α) ∈ (fixedPoints f) := by
   let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := gfp_approx_has_cycle f
@@ -333,11 +333,11 @@ lemma gfp_approx_ge_fixedPoint : ∀ a : (fixedPoints f), ∀ i : Ordinal, gfp_a
 
 theorem gfp_is_gfp_approx_cardinal : gfp_approx f (ord $ succ #α) = gfp f := by
   apply le_antisymm
-  . have h_fix : ∃ x: fixedPoints f, gfp_approx f (ord $ succ #α) = x := by
+  · have h_fix : ∃ x: fixedPoints f, gfp_approx f (ord $ succ #α) = x := by
       simpa using gfp_approx_has_fixedPoint_cardinal f
     let ⟨x, h_x⟩ := h_fix; rw[h_x]
     exact fixed_le_gfp f x.prop
-  . have h_lfp : ∃ x : fixedPoints f, gfp f = x := by use ⊤; exact rfl
+  · have h_lfp : ∃ x : fixedPoints f, gfp f = x := by use ⊤; exact rfl
     let ⟨x, h_x⟩ := h_lfp; rw[h_x]
     exact gfp_approx_ge_fixedPoint f x (ord $ succ #α)
 
