@@ -333,21 +333,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
 
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
-  by_cases hB : ∃ s : Finset S, Nonempty (Basis s R S)
-  · obtain ⟨s, ⟨b⟩⟩ := hB
-    haveI := Module.Finite.of_fintype_basis b
-    haveI := (Module.free_def R S).mpr ⟨_, ⟨b⟩⟩
-    haveI := Module.Finite.of_fintype_basis (b.map e.toLinearEquiv)
-    haveI := (Module.free_def R T).mpr ⟨_, ⟨(b.map e.toLinearEquiv).reindex (e.image _)⟩⟩
-    dsimp [Algebra.norm_apply]
-    rw [← LinearMap.det_conj _ e.toLinearEquiv]
-    congr
-    ext; simp [LinearEquiv.conj_apply]
-  rw [norm_eq_one_of_not_exists_basis _ hB, norm_eq_one_of_not_exists_basis]
-  intro ⟨s, ⟨b⟩⟩
-  classical
-  exact hB ⟨s.image e.symm, ⟨(b.map e.symm.toLinearEquiv).reindex
-    ((e.symm.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
+  simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
 
 lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
@@ -359,9 +345,8 @@ lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     letI : Algebra A B := RingHom.toAlgebra e
     letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.norm_eq_matrix_det b,
-      Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
-    show e.toRingHom _ = _
-    rw [RingHom.map_det]
+      Algebra.norm_eq_matrix_det (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he])),
+      e.map_det]
     congr
     ext i j
     simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]

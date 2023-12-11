@@ -331,22 +331,7 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
 lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
     [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
     Algebra.trace A C (e x) = Algebra.trace A B x := by
-  by_cases hB : ∃ s : Finset B, Nonempty (Basis s A B)
-  · obtain ⟨s, ⟨b⟩⟩ := hB
-    haveI := Module.Finite.of_fintype_basis b
-    haveI := (Module.free_def A B).mpr ⟨_, ⟨b⟩⟩
-    haveI := Module.Finite.of_fintype_basis (b.map e.toLinearEquiv)
-    haveI := (Module.free_def A C).mpr ⟨_, ⟨(b.map e.toLinearEquiv).reindex (e.image _)⟩⟩
-    dsimp [Algebra.trace_apply]
-    rw [← LinearMap.trace_conj' _ e.toLinearEquiv]
-    congr
-    ext; simp [LinearEquiv.conj_apply]
-  rw [trace_eq_zero_of_not_exists_basis _ hB, trace_eq_zero_of_not_exists_basis]
-  rfl
-  intro ⟨s, ⟨b⟩⟩
-  classical
-  exact hB ⟨s.image e.symm, ⟨(b.map e.symm.toLinearEquiv).reindex
-    ((e.symm.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
+  simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]; congr; ext; simp
 
 lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
