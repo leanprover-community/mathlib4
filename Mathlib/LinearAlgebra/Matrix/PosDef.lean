@@ -72,22 +72,6 @@ theorem re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n �
     0 ≤ IsROrC.re (dotProduct (star x) (M.mulVec x)) :=
   IsROrC.nonneg_iff.mp (hM.2 _) |>.1
 
-theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n) :
-    (M.submatrix e e).PosSemidef := by
-  refine' ⟨hM.1.submatrix e, fun x => _⟩
-  have : (M.submatrix (⇑e) e).mulVec x = (M.mulVec fun i : n => x (e.symm i)) ∘ e := by
-    ext i
-    dsimp only [(· ∘ ·), mulVec, dotProduct]
-    rw [Finset.sum_bij' (fun i _ => e i) _ _ fun i _ => e.symm i] <;>
-      simp only [eq_self_iff_true, imp_true_iff, Equiv.symm_apply_apply, Finset.mem_univ,
-        submatrix_apply, Equiv.apply_symm_apply]
-  rw [this]
-  convert hM.2 fun i => x (e.symm i) using 3
-  unfold dotProduct
-  rw [Finset.sum_bij' (fun i _ => e i) _ _ fun i _ => e.symm i] <;>
-  simp
-#align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
-
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     {m : Type*} [Fintype m] (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
@@ -101,6 +85,14 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
     {m : Type*} [Fintype m] (B : Matrix m n R):
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
+
+theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) [DecidableEq n] :
+    (M.submatrix e e).PosSemidef := by
+  rw [(by simp : M = 1 * M * 1), submatrix_mul (e₂ := id) (he₂ := Function.bijective_id),
+    submatrix_mul (e₂ := id) (he₂ := Function.bijective_id), submatrix_id_id]
+  simpa only [conjTranspose_submatrix, conjTranspose_one] using
+    conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
+#align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
