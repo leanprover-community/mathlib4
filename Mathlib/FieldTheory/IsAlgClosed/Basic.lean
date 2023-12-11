@@ -398,13 +398,13 @@ end IsAlgClosure
 
 section Algebra.IsAlgebraic
 
-variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [IsAlgClosed A] [Algebra F K]
-  (hK : Algebra.IsAlgebraic F K) [Algebra F A]
+variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [Algebra F K] [Algebra F A]
+  (hK : Algebra.IsAlgebraic F K)
 
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K/F` an algebraic extension
   of fields. Then the images of `x` by the `F`-algebra morphisms from `K` to `A` are exactly
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
-theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly (x : K) :
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K) :
     (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A :=
   range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) hK x
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
