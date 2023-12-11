@@ -1016,11 +1016,13 @@ lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun (fun _ ↦ m) f κ μ)
 
 end Div
 
+section CommMonoid
+variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
+  [IsMarkovKernel κ]
+
 @[to_additive]
-theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type*} {β : Type*}
-    {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
-    (hf_Indep : iIndepFun (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i))
-    {s : Finset ι} {i : ι} (hi : i ∉ s) :
+theorem iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ ↦ m) f κ μ)
+    (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j in s, f j) (f i) κ μ := by
   classical
   have h_right : f i =
@@ -1041,11 +1043,12 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsMarkovKernel κ] {ι : Type
       h_meas_left h_meas_right
 
 @[to_additive]
-theorem iIndepFun.indepFun_prod_range_succ [IsMarkovKernel κ] {β : Type*}
-    {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ℕ → Ω → β}
+theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}
     (hf_Indep : iIndepFun (fun _ => m) f κ μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
     IndepFun (∏ j in Finset.range n, f j) (f n) κ μ :=
   hf_Indep.indepFun_finset_prod_of_not_mem hf_meas Finset.not_mem_range_self
+
+end CommMonoid
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
     (hs : iIndepSet s κ μ) :

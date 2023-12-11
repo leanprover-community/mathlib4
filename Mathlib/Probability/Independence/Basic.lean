@@ -682,7 +682,8 @@ lemma iIndepFun.isProbabilityMeasure [n : ∀ i, MeasurableSpace (κ i)] {f : �
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
-lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun m f μ) (hf_meas : ∀ i, Measurable (f i)) :
+lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun m f μ)
+    (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
   have := hf_Indep.isProbabilityMeasure
   kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
@@ -725,7 +726,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun (fun _ ↦ m) f μ)
-   (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
     IndepFun (f i) (f j * f k) μ :=
   have := hf_indep.isProbabilityMeasure
   kernel.iIndepFun.indepFun_mul_right hf_indep hf_meas i j k hij hik
@@ -752,7 +753,7 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun (fun _ ↦ m) f μ)
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun (fun _ ↦ m) f μ)
-   (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
     IndepFun (f i) (f j / f k) μ :=
   have := hf_indep.isProbabilityMeasure
   kernel.iIndepFun.indepFun_div_right hf_indep hf_meas i j k hij hik
