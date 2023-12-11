@@ -142,11 +142,11 @@ lemma modMonomial_idem (s : σ →₀ ℕ) (x : MvPolynomial σ R') :
     (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) %ᵐᵒⁿᵒᵐⁱᵃˡ s = x %ᵐᵒⁿᵒᵐⁱᵃˡ s :=
   x.modOf_idem _
 
-lemma mul_divMonomial (x y : MvPolynomial σ R') (s : σ →₀ ℕ) :
+lemma mul_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
     (x * y) /ᵐᵒⁿᵒᵐⁱᵃˡ s =
     monomial s 1 * (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y /ᵐᵒⁿᵒᵐⁱᵃˡ s) +
     (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s) +
-    (y /ᵐᵒⁿᵒᵐⁱᵃˡ s) * (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) +
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y /ᵐᵒⁿᵒᵐⁱᵃˡ s) +
     ((x %ᵐᵒⁿᵒᵐⁱᵃˡ s) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ s)) /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
   x.mul_divOf y s
 
