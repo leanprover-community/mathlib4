@@ -859,11 +859,11 @@ instance separableClosure.normal [Normal F E] : Normal F (separableClosure F E) 
   rw [← separableClosure.normalClosure_eq_self]
   exact normalClosure.normal F _ E
 
-/-- If `E` is algebraically closed, then the (relative) separable closure of `E / F` is a
+/-- If `E` is separably closed, then the (relative) separable closure of `E / F` is a
 separable closure of `F`. -/
-instance separableClosure.isSepClosure [IsAlgClosed E] : IsSepClosure F (separableClosure F E) := by
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) := by
   refine ⟨IsSepClosed.of_exists_root _ fun p hp hirr hsep ↦ ?_, isSeparable F E⟩
-  obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero E p (ne_of_gt (degree_pos_of_irreducible hirr))
+  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
   haveI := (isSeparable_adjoin_simple_iff_separable _ E).2
     ⟨IsAlgebraic.isIntegral ⟨p, hp.ne_zero, hx⟩, hsep.of_dvd <| minpoly.dvd _ x hx⟩
   let L := separableClosure F E
