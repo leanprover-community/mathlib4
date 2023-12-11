@@ -82,3 +82,13 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
 #align lift_of_splits Polynomial.lift_of_splits
 
 end Embeddings
+
+variable {R K L : Type*} [CommRing R] [Field K] [Field L] [Algebra R K] [Algebra R L] [Algebra K L]
+  [IsScalarTower R K L]
+
+theorem mem_range_of_minpoly_splits {x : L} (int : IsIntegral R x)
+    (h : Splits (algebraMap R K) (minpoly R x)) : x ∈ (algebraMap K L).range := by
+  change x ∈ Set.range (IsScalarTower.toAlgHom R K L)
+  apply Set.image_subset_range
+  rw [image_rootSet h, mem_rootSet']
+  exact ⟨((minpoly.monic int).map _).ne_zero, minpoly.aeval R x⟩

@@ -410,44 +410,38 @@ theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly (x : K) :
   range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) hK x
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
 
-/-- All `F`-`AlgHom`s from `K` to an algebraic closed field `A` factor through any subextension of
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension of
 `A/F` in which the minimal polynomial of elements of `K` splits. -/
 @[simps]
-def IntermediateField.algHomEquivAlgHomOfIsAlgClosed (L : IntermediateField F A)
+def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
   toFun := L.val.comp
-  invFun := by
-    refine fun f => f.codRestrict _ (fun x => ?_)
-    suffices f x ∈ L.val '' rootSet (minpoly F x) L by
-      obtain ⟨z, -, hz⟩ := this
-      rw [← hz]
-      exact SetLike.coe_mem z
-    rw [image_rootSet (hL x), ← Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly _ hK]
-    exact Set.mem_range_self f
+  invFun f := f.codRestrict _ fun x ↦ by
+    rw [← range_val]
+    apply mem_range_of_minpoly_splits (R := F) ((hK x).isIntegral.map f)
+    rw [minpoly.algHom_eq f f.injective]
+    exact hL x
   left_inv _ := rfl
   right_inv _ := by rfl
 
-theorem IntermediateField.algHomEquivAlgHomOfIsAlgClosed_apply_apply (L : IntermediateField F A)
+theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : IntermediateField F A)
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
-    algHomEquivAlgHomOfIsAlgClosed A hK L hL f x = algebraMap L A (f x) := rfl
+    algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
 
 /-- All `F`-`AlgHom`s from `K` to an algebraic closed field `A` factor through any subfield of `A`
 in which the minimal polynomial of elements of `K` splits. -/
-noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed (L : Type*) [Field L]
+noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
-    (K →ₐ[F] L) ≃ (K →ₐ[F] A) := by
-  refine (AlgEquiv.refl.arrowCongr
-    (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans ?_
-  refine IntermediateField.algHomEquivAlgHomOfIsAlgClosed
-    A hK (IsScalarTower.toAlgHom F L A).fieldRange ?_
-  exact fun x => splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
+  (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
+    IntermediateField.algHomEquivAlgHomOfSplits A hK (IsScalarTower.toAlgHom F L A).fieldRange
+    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
 
-theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed_apply_apply (L : Type*) [Field L]
+theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
     (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
-    Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed A hK L hL f x =
-    algebraMap L A (f x) := rfl
+    Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
 
 end Algebra.IsAlgebraic
