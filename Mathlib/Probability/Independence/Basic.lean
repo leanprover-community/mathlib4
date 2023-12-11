@@ -669,14 +669,13 @@ theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
 #align probability_theory.indep_fun.comp ProbabilityTheory.IndepFun.comp
 
 section iIndepFun
-variable {m : ∀ i, MeasurableSpace (κ i)} {f : ∀ i, Ω → κ i}
+variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
 @[nontriviality]
 lemma iIndepFun.of_subsingleton [IsProbabilityMeasure μ] [Subsingleton ι] : iIndepFun m f μ :=
   kernel.iIndepFun.of_subsingleton
 
-lemma iIndepFun.isProbabilityMeasure [n : ∀ i, MeasurableSpace (κ i)] {f : ∀ i, Ω → κ i}
-    (h : iIndepFun n f μ) : IsProbabilityMeasure μ :=
+lemma iIndepFun.isProbabilityMeasure (h : iIndepFun m f μ) : IsProbabilityMeasure μ :=
   ⟨by simpa using h.meas_biInter (S := ∅) (s := fun _ ↦ univ)⟩
 
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
@@ -699,11 +698,11 @@ set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_prod ProbabilityTheory.iIndepFun.indepFun_prod_mk
 
 open Finset in
-lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf: ∀ i, Measurable (f i))
+lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ := by
   classical
-  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), κ x) : κ i × κ j :=
+  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem $ mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by measurability
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
