@@ -404,9 +404,7 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
   · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
       Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩
-  rw [← φ.comp_algebraMap] at hA
-  exact fun x ↦ splits_of_splits_of_dvd _ ((minpoly.monic <| .of_finite F x).map _).ne_zero
-    ((splits_map_iff _ _).mpr <| by exact hA x) (minpoly.dvd_map_of_isScalarTower F _ x)
+  · exact fun x ↦ (IsIntegral.of_finite F x).minpoly_splits_tower_top (hA x)
 
 end Field
 
