@@ -374,7 +374,6 @@ lemma desc_f (p q : ℤ) (hpq : p + 1 = q) :
       (snd φ).v p p (add_zero p) ≫ β.f p := by
   simp [ext_from_iff _ _ _ hpq]
 
-
 end
 
 /-- Constructor for homotopies between morphisms from a mapping cone. -/
@@ -386,11 +385,9 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
     Homotopy f₁ f₂ :=
   (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by linarith), by
-    simp only [δ_descCochain _ _ _ _ _ (neg_add_self 1),
-      Int.negOnePow_zero, one_smul, Cochain.comp_add,
-      ext_cochain_from_iff φ (-1) 0 (neg_add_self 1),
-      inl_fst_assoc, inl_snd_assoc, inr_fst_assoc, add_zero,
-      inr_snd_assoc, zero_add, h₁, ← Cochain.ofHom_comp, h₂, and_self]⟩
+    simp only [Cochain.ofHom_comp] at h₂
+    simp [ext_cochain_from_iff _ _ _ (neg_add_self 1),
+      δ_descCochain _ _ _ _ _ (neg_add_self 1), h₁, h₂]⟩
 
 section
 
@@ -402,10 +399,12 @@ constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : 
 noncomputable def liftCochain : Cochain K (mappingCone φ) n :=
   α.comp (inl φ) (by linarith) + β.comp (Cochain.ofHom (inr φ)) (add_zero n)
 
+@[simp]
 lemma liftCochain_fst :
     (liftCochain φ α β h).comp (fst φ).1 h = α := by
   simp [liftCochain]
 
+@[simp]
 lemma liftCochain_snd :
     (liftCochain φ α β h).comp (snd φ) (add_zero n) = β := by
   simp [liftCochain]
@@ -436,6 +435,104 @@ lemma δ_liftCochain (m' : ℤ) (hm' : m + 1 = m') :
   abel
 
 end
+
+/-- Given `φ : F ⟶ G`, this is the cocycle in `Cocycle K (mappingCone φ) n` that is
+constructed from `α : Cochain K F m` (with `n + 1 = m`) and `β : Cocycle K G n`,
+when a suitable cocycle relation is satisfied. -/
+@[simps!]
+noncomputable def liftCocycle {K : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cocycle K F m) (β : Cochain K G n) (h : n + 1 = m)
+    (eq : δ n m β + α.1.comp (Cochain.ofHom φ) (add_zero m) = 0) :
+    Cocycle K (mappingCone φ) n :=
+  Cocycle.mk (liftCochain φ α β h) m h (by
+    simp only [δ_liftCochain φ α β h (m+1) rfl, eq,
+      Cocycle.δ_eq_zero, Cochain.zero_comp, neg_zero, add_zero])
+
+section
+
+variable {K : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G 0)
+    (eq : δ 0 1 β + α.1.comp (Cochain.ofHom φ) (add_zero 1) = 0)
+
+/-- Given `φ : F ⟶ G`, this is the morphism `K ⟶ mappingCone φ` that is constructed
+from a cocycle `α : Cochain K F 1` and a cochain `β : Cochain K G 0`
+when a suitable cocycle relation is satisfied. -/
+noncomputable def lift :
+    K ⟶ mappingCone φ :=
+  Cocycle.homOf (liftCocycle φ α β (zero_add 1) eq)
+
+@[simp]
+lemma ofHom_lift :
+    Cochain.ofHom (lift φ α β eq) = liftCochain φ α β (zero_add 1) := by
+  simp only [lift, Cocycle.cochain_ofHom_homOf_eq_coe, liftCocycle_coe]
+
+@[reassoc (attr := simp)]
+lemma lift_f_fst_v (p q : ℤ) (hpq : p + 1 = q) :
+    (lift φ α β eq).f p ≫ (fst φ).1.v p q hpq = α.1.v p q hpq := by
+  simp [lift]
+
+lemma lift_fst :
+    (Cochain.ofHom (lift φ α β eq)).comp (fst φ).1 (zero_add 1) = α.1 := by simp
+
+@[reassoc (attr := simp)]
+lemma lift_f_snd_v (p q : ℤ) (hpq : p + 0 = q) :
+    (lift φ α β eq).f p ≫ (snd φ).v p q hpq = β.v p q hpq := by
+  obtain rfl : q = p := by linarith
+  simp [lift]
+
+lemma lift_snd :
+    (Cochain.ofHom (lift φ α β eq)).comp (snd φ) (zero_add 0) = β := by simp
+
+lemma lift_f (p q : ℤ) (hpq : p + 1 = q) :
+    (lift φ α β eq).f p = α.1.v p q hpq ≫
+      (inl φ).v q p (by linarith) + β.v p p (add_zero p) ≫ (inr φ).f p := by
+  simp [ext_to_iff _ _ _ hpq]
+
+end
+
+/-- Constructor for homotopies between morphisms to a mapping cone. -/
+noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ mappingCone φ)
+    (α : Cochain K F 0) (β : Cochain K G (-1))
+    (h₁ : (Cochain.ofHom f₁).comp (fst φ).1 (zero_add 1) =
+      -δ 0 1 α + (Cochain.ofHom f₂).comp (fst φ).1 (zero_add 1))
+    (h₂ : (Cochain.ofHom f₁).comp (snd φ) (zero_add 0) =
+      δ (-1) 0 β + α.comp (Cochain.ofHom φ) (zero_add 0) +
+        (Cochain.ofHom f₂).comp (snd φ) (zero_add 0)) :
+    Homotopy f₁ f₂ :=
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨liftCochain φ α β (neg_add_self 1), by
+    simp [δ_liftCochain _ _ _ _ _ (zero_add 1), ext_cochain_to_iff _ _ _ (zero_add 1), h₁, h₂]⟩
+
+section
+
+variable {K L : CochainComplex C ℤ} {n m : ℤ}
+  (α : Cochain K F m) (β : Cochain K G n) {n' m' : ℤ} (α' : Cochain F L m') (β' : Cochain G L n')
+  (h : n + 1 = m) (h' : m' + 1 = n') (p : ℤ) (hp : n + n' = p)
+
+@[simp]
+lemma liftCochain_descCochain :
+    (liftCochain φ α β h).comp (descCochain φ α' β' h') hp =
+      α.comp α' (by linarith) + β.comp β' (by linarith) := by
+  simp [liftCochain, descCochain,
+    Cochain.comp_assoc α (inl φ) _ _ (show -1 + n' = m' by linarith) (by linarith)]
+
+lemma liftCochain_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + n' = p₃)
+    (q : ℤ) (hq : p₁ + m = q) :
+    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (descCochain φ α' β' h').v p₂ p₃ h₂₃ =
+      α.v p₁ q hq ≫ α'.v q p₃ (by linarith) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
+  have eq := Cochain.congr_v (liftCochain_descCochain φ α β α' β' h h' p hp) p₁ p₃ (by linarith)
+  simpa only [Cochain.comp_v _ _ hp p₁ p₂ p₃ h₁₂ h₂₃, Cochain.add_v,
+    Cochain.comp_v _ _ _ _ _ _ hq (show q + m' = p₃ by linarith)] using eq
+
+end
+
+lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochain K G 0)
+    (eq : δ 0 1 β + α.1.comp (Cochain.ofHom φ) (add_zero 1) = 0)
+    (α' : Cochain F L (-1)) (β' : G ⟶ L)
+    (eq' : δ (-1) 0 α' = Cochain.ofHom (φ ≫ β')) (n n' : ℤ) (hnn' : n + 1 = n') :
+    (lift φ α β eq).f n ≫ (desc φ α' β' eq').f n =
+    α.1.v n n' hnn' ≫ α'.v n' n (by linarith) + β.v n n (add_zero n) ≫ β'.f n := by
+  simp only [lift, desc, Cocycle.homOf_f, liftCocycle_coe, descCocycle_coe, Cocycle.ofHom_coe,
+    liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_self 1) 0
+    (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
 
 end mappingCone
 
