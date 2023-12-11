@@ -33,14 +33,14 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 * `PartialEquiv.trans`: the composition of two partial equivalences
 * `PartialEquiv.refl`: the identity partial equivalence
 * `PartialEquiv.ofSet`: the identity on a set `s`
-* `EqOnSource`: equivalence relation describing the "right" notion of equality for local
-  equivs (see below in implementation notes)
+* `EqOnSource`: equivalence relation describing the "right" notion of equality for partial
+  equivalences (see below in implementation notes)
 
 ## Implementation notes
 
 There are at least three possible implementations of partial equivalences:
 * equivs on subtypes
-* pairs of functions taking values in `Option α` and `Option β`, equal to none where the local
+* pairs of functions taking values in `Option α` and `Option β`, equal to none where the partial
 equivalence is not defined
 * pairs of functions defined everywhere, keeping the source and target as additional data
 

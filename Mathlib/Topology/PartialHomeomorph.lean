@@ -51,8 +51,7 @@ open Function Set Filter Topology
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-/-- partial homeomorphisms, defined on open subsets of the space -/
-/-- partial homeomorphisms, defined on open subsets of the space -/
+/-- Partial homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
 structure PartialHomeomorph (α : Type*) (β : Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends PartialEquiv α β where
@@ -719,7 +718,7 @@ theorem restrOpen_source (s : Set α) (hs : IsOpen s) : (e.restrOpen s hs).sourc
 /-- Restricting a partial homeomorphism `e` to `e.source ∩ interior s`. We use the interior to make
 sure that the restriction is well defined whatever the set s, since partial homeomorphisms are by
 definition defined on open sets. In applications where `s` is open, this coincides with the
-restriction of local equivalences -/
+restriction of partial equivalences -/
 @[simps! (config := mfld_cfg) apply symm_apply, simps! (config := .lemmasOnly) source target]
 protected def restr (s : Set α) : PartialHomeomorph α β :=
   e.restrOpen (interior s) isOpen_interior
@@ -775,7 +774,7 @@ section
 
 variable {s : Set α} (hs : IsOpen s)
 
-/-- The identity local equiv on a set `s` -/
+/-- The identity partial equivalence on a set `s` -/
 @[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
 def ofSet (s : Set α) (hs : IsOpen s) : PartialHomeomorph α α where
   toPartialEquiv := PartialEquiv.ofSet s
@@ -952,7 +951,7 @@ theorem _root_.Homeomorph.transPartialHomeomorph_eq_trans (e : α ≃ₜ β) :
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transPartialHomeomorph_eq_trans
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
-should really be considered the same local equivalence. -/
+should really be considered the same partial equivalence. -/
 def EqOnSource (e e' : PartialHomeomorph α β) : Prop :=
   e.source = e'.source ∧ EqOn e e' e.source
 #align local_homeomorph.eq_on_source PartialHomeomorph.EqOnSource
