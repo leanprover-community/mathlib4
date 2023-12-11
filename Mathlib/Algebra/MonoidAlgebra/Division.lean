@@ -244,7 +244,7 @@ lemma mul_modOf (x y : k[G]) (g : G) :
     (x * y) %ᵒᶠ g = ((x %ᵒᶠ g) * (y %ᵒᶠ g)) %ᵒᶠ g := by
   have := congr_arg₂ HMul.hMul (divOf_add_modOf x g) (divOf_add_modOf y g)
   simp only [mul_add, add_mul, (of'_commute (AddCommute.all g) _).symm.left_comm] at this
-  rw [←this]
+  rw [← this]
   simp_rw [add_modOf, mul_assoc, of'_mul_modOf, zero_add]
 
 end
