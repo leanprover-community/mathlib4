@@ -13,7 +13,7 @@ Given a site `(C, J)` and a category `D` which is equivalent to `C`, with `C` a
 and possibly in different universes, we transport the Grothendieck topology `J` on `C` to `D` and
 prove that the sheaf categories are equivalent.
 
-We also prove that sheafification and the property `HasSheafCompose` transports nicely over this
+We also prove that sheafification and the property `HasSheafCompose` transport nicely over this
 equivalence, and apply it to essentially small sites. We also provide instances for existence of
 sufficiently small limits in the sheaf category on the essentially small site.
 
