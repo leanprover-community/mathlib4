@@ -174,6 +174,8 @@ set_option linter.deprecated false in
 
 #align nat_add_zero Nat.add_zero
 
+theorem id_def : id = fun a : α ↦ a := rfl
+
 -- Combinator calculus
 namespace Combinator
 
