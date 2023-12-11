@@ -171,8 +171,8 @@ initialize_simps_projections PartialEquiv (toFun → apply, invFun → symm_appl
 
 -- Porting note: this can be proven with `dsimp only`
 -- @[simp, mfld_simps]
--- theorem coe_mk (f : α → β) (g s t ml mr il ir) : (PartialEquiv.mk f g s t ml mr il ir : α → β) = f
--- := by dsimp only
+-- theorem coe_mk (f : α → β) (g s t ml mr il ir) :
+--  (PartialEquiv.mk f g s t ml mr il ir : α → β) = f := by dsimp only
 -- #align local_equiv.coe_mk PartialEquiv.coe_mk
 #noalign local_equiv.coe_mk
 
@@ -333,7 +333,8 @@ theorem symm_symm : e.symm.symm = e := by
   rfl
 #align local_equiv.symm_symm PartialEquiv.symm_symm
 
-theorem symm_bijective : Function.Bijective (PartialEquiv.symm : PartialEquiv α β → PartialEquiv β α) :=
+theorem symm_bijective :
+    Function.Bijective (PartialEquiv.symm : PartialEquiv α β → PartialEquiv β α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 theorem image_source_eq_target : e '' e.source = e.target :=
@@ -762,7 +763,8 @@ theorem refl_trans : (PartialEquiv.refl α).trans e = e :=
 theorem trans_ofSet (s : Set β) : e.trans (ofSet s) = e.restr (e ⁻¹' s) :=
   PartialEquiv.ext (fun _ => rfl) (fun _ => rfl) rfl
 
-theorem trans_refl_restr (s : Set β) : e.trans ((PartialEquiv.refl β).restr s) = e.restr (e ⁻¹' s) :=
+theorem trans_refl_restr (s : Set β) :
+    e.trans ((PartialEquiv.refl β).restr s) = e.restr (e ⁻¹' s) :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl) (by simp [trans_source])
 #align local_equiv.trans_refl_restr PartialEquiv.trans_refl_restr
 
@@ -859,7 +861,8 @@ theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈
 #align local_equiv.eq_on_source.symm' PartialEquiv.EqOnSource.symm'
 
 /-- Two equivalent partial equivs have coinciding inverses on the target. -/
-theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : EqOn e.symm e'.symm e.target :=
+theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') :
+    EqOn e.symm e'.symm e.target :=
   -- Porting note: `h.symm'` dot notation doesn't work anymore because `h` is not recognised as
   -- `PartialEquiv.EqOnSource` for some reason.
   eqOn (symm' h)
@@ -1130,7 +1133,8 @@ theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 #align equiv.symm_to_local_equiv Equiv.symm_toPartialEquiv
 
 @[simp, mfld_simps]
-theorem trans_toPartialEquiv : (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
+theorem trans_toPartialEquiv :
+    (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
   PartialEquiv.ext (fun x => rfl) (fun x => rfl)
     (by simp [PartialEquiv.trans_source, Equiv.toPartialEquiv])
 #align equiv.trans_to_local_equiv Equiv.trans_toPartialEquiv

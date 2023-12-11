@@ -582,8 +582,8 @@ theorem contMDiffOn_iff_target :
         ∀ y : M',
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    PartialHomeomorph.refl_localEquiv, PartialEquiv.refl_trans, extChartAt, PartialHomeomorph.extend,
-    Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+    PartialHomeomorph.refl_localEquiv, PartialEquiv.refl_trans, extChartAt,
+    PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩

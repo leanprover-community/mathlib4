@@ -101,10 +101,10 @@ lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
   · apply h₂
   · rw [e.source_eq, e'.source_eq, h₃]
 
-/-- If the fiber is nonempty, then the projection to -/
+/-- If the fiber is nonempty, then the projection also is. -/
 lemma toPartialEquiv_injective [Nonempty F] :
-    Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := fun e e' h => by
-  refine ext' _ _ h ?_
+    Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := by
+  refine fun e e' h ↦ ext' _ _ h ?_
   simpa only [fst_image_prod, univ_nonempty, target_eq]
     using congr_arg (Prod.fst '' PartialEquiv.target ·) h
 

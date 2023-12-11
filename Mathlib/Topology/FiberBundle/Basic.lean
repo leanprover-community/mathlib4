@@ -483,9 +483,8 @@ between `proj ⁻¹ (baseSet i)` and `baseSet i × F`. As the fiber above `x` is
 chart with index `index_at x`, the trivialization in the fiber above x is by definition the
 coordinate change from i to `index_at x`, so it depends on `x`.
 The local trivialization will ultimately be a local homeomorphism. For now, we only introduce the
-partial equivalence version, denoted with a prime. In further developments, avoid this auxiliary version,
-and use `Z.local_triv` instead.
--/
+partial equivalence version, denoted with a prime.
+In further developments, avoid this auxiliary version, and use `Z.local_triv` instead. -/
 def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   source := Z.proj ⁻¹' Z.baseSet i
   target := Z.baseSet i ×ˢ univ

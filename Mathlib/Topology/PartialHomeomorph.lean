@@ -114,7 +114,8 @@ theorem mk_coe_symm (e : PartialEquiv α β) (a b c d) :
   rfl
 #align local_homeomorph.mk_coe_symm PartialHomeomorph.mk_coe_symm
 
-theorem toPartialEquiv_injective : Injective (toPartialEquiv : PartialHomeomorph α β → PartialEquiv α β)
+theorem toPartialEquiv_injective :
+    Injective (toPartialEquiv : PartialHomeomorph α β → PartialEquiv α β)
   | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, rfl => rfl
 #align local_homeomorph.to_local_equiv_injective PartialHomeomorph.toPartialEquiv_injective
 
@@ -238,8 +239,9 @@ theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
 #align local_homeomorph.source_preimage_target PartialHomeomorph.source_preimage_target
 
 @[deprecated toPartialEquiv_injective]
-theorem eq_of_localEquiv_eq {e e' : PartialHomeomorph α β} (h : e.toPartialEquiv = e'.toPartialEquiv) :
-    e = e' := toPartialEquiv_injective h
+theorem eq_of_localEquiv_eq {e e' : PartialHomeomorph α β}
+    (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
+  toPartialEquiv_injective h
 #align local_homeomorph.eq_of_local_equiv_eq PartialHomeomorph.eq_of_localEquiv_eq
 
 theorem eventually_left_inverse (e : PartialHomeomorph α β) {x} (hx : x ∈ e.source) :
@@ -472,9 +474,9 @@ following equivalent conditions hold:
 * `e.source ∩ e ⁻¹ t = e.source ∩ s`;
 * `∀ x ∈ e.source, e x ∈ t ↔ x ∈ s` (this one is used in the definition).
 
-This definition is a restatement of `PartialEquiv.IsImage` for partial homeomorphisms. In this section
-we transfer API about `PartialEquiv.IsImage` to partial homeomorphisms and add a few
-`PartialHomeomorph`-specific lemmas like `PartialHomeomorph.IsImage.closure`.
+This definition is a restatement of `PartialEquiv.IsImage` for partial homeomorphisms.
+In this section we transfer API about `PartialEquiv.IsImage` to partial homeomorphisms and
+add a few `PartialHomeomorph`-specific lemmas like `PartialHomeomorph.IsImage.closure`.
 -/
 
 /-- We say that `t : Set β` is an image of `s : Set α` under a partial homeomorphism `e`
@@ -680,7 +682,7 @@ theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.s
   image_isOpen_of_isOpen _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.image_isOpen_of_isOpen'
 
-/-- A `PartialEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
+/-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
 def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : PartialHomeomorph α β where
   toPartialEquiv := e
@@ -690,7 +692,7 @@ def ofContinuousOpenRestrict (e : PartialEquiv α β) (hc : ContinuousOn e e.sou
   continuousOn_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 #align local_homeomorph.of_continuous_open_restrict PartialHomeomorph.ofContinuousOpenRestrict
 
-/-- A `PartialEquiv` with continuous open forward map and an open source is a `PartialHomeomorph`. -/
+/-- A `PartialEquiv` with continuous open forward map and open source is a `PartialHomeomorph`. -/
 def ofContinuousOpen (e : PartialEquiv α β) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : PartialHomeomorph α β :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
@@ -741,7 +743,8 @@ theorem restr_toPartialEquiv' (s : Set α) (hs : IsOpen s) :
 
 theorem restr_eq_of_source_subset {e : PartialHomeomorph α β} {s : Set α} (h : e.source ⊆ s) :
     e.restr s = e :=
-  toPartialEquiv_injective <| PartialEquiv.restr_eq_of_source_subset <| interior_maximal h e.open_source
+  toPartialEquiv_injective <| PartialEquiv.restr_eq_of_source_subset <|
+    interior_maximal h e.open_source
 #align local_homeomorph.restr_eq_of_source_subset PartialHomeomorph.restr_eq_of_source_subset
 
 @[simp, mfld_simps]
@@ -819,7 +822,8 @@ protected def trans : PartialHomeomorph α γ :=
 #align local_homeomorph.trans PartialHomeomorph.trans
 
 @[simp, mfld_simps]
-theorem trans_toPartialEquiv : (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
+theorem trans_toPartialEquiv :
+    (e.trans e').toPartialEquiv = e.toPartialEquiv.trans e'.toPartialEquiv :=
   rfl
 #align local_homeomorph.trans_to_local_equiv PartialHomeomorph.trans_toPartialEquiv
 
@@ -915,7 +919,8 @@ theorem ofSet_trans_ofSet {s : Set α} (hs : IsOpen s) {s' : Set α} (hs' : IsOp
 #align local_homeomorph.of_set_trans_of_set PartialHomeomorph.ofSet_trans_ofSet
 
 theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :=
-  toPartialEquiv_injective <| PartialEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
+  toPartialEquiv_injective <|
+    PartialEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
 #align local_homeomorph.restr_trans PartialHomeomorph.restr_trans
 
 /-- Postcompose a partial homeomorphism with a homeomorphism.
