@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Data.TypeMax -- Porting note: added for universe issues
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Logic.Equiv.TransferInstance
 
@@ -64,7 +63,6 @@ class Module.Injective : Prop where
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
 #align module.injective Module.Injective
 
--- Porting note: egregious max u v abuse
 theorem Module.injective_object_of_injective_module [inj : Module.Injective R Q] :
     CategoryTheory.Injective (ModuleCat.of R Q) where
   factors g f m :=
