@@ -395,9 +395,6 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
     Finset.coe_univ, ← injective_iff_injOn_univ]
 
-lemma _root_.IntermediateField.finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
-  Subalgebra.bot_eq_top_iff_finrank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
-
 theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   constructor <;> intro h
