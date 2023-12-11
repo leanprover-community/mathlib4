@@ -431,7 +431,7 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
       convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
       simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
-        LocalEquiv.trans_source, LocalEquiv.symm_source, stereographic'_target,
+        PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
         stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]

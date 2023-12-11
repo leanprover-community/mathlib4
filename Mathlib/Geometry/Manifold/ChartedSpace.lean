@@ -122,12 +122,12 @@ universe u
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
 /- Notational shortcut for the composition of local homeomorphisms and local equivs, i.e.,
-`PartialHomeomorph.trans` and `LocalEquiv.trans`.
+`PartialHomeomorph.trans` and `PartialEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
 scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
 
-scoped[Manifold] infixr:100 " ≫ " => LocalEquiv.trans
+scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
 open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
@@ -392,7 +392,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       -- convert he.2
       -- rw [A.1]
       -- rfl
-      rw [A.1, symm_toPartialEquiv, LocalEquiv.symm_source]
+      rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
       exact he.2
 #align pregroupoid.groupoid Pregroupoid.groupoid
 
@@ -874,7 +874,7 @@ theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.sourc
 theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   have E : e.target ∩ e.symm ⁻¹' e.source = e.target :=
     Subset.antisymm (inter_subset_left _ _) fun x hx ↦
-      ⟨hx, LocalEquiv.target_subset_preimage_source _ hx⟩
+      ⟨hx, PartialEquiv.target_subset_preimage_source _ hx⟩
   simpa [LocalEquiv.trans_source, E] using c.open_source e e he he
 #align charted_space_core.open_target ChartedSpaceCore.open_target
 

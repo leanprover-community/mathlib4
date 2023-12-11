@@ -145,14 +145,14 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [LocalEquiv.trans_assoc, mfld_simps]
   -- porting note: should not be needed
-  rw [LocalEquiv.prod_trans, LocalEquiv.refl_trans]
+  rw [LocalEquiv.prod_trans, PartialEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
 protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
     (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
       ((extChartAt IB x.proj).target ∩
         (extChartAt IB x.proj).symm ⁻¹' (trivializationAt F E x.proj).baseSet) ×ˢ univ := by
-  rw [FiberBundle.extChartAt, LocalEquiv.trans_target, Trivialization.target_eq, inter_prod]
+  rw [FiberBundle.extChartAt, PartialEquiv.trans_target, Trivialization.target_eq, inter_prod]
   rfl
 
 theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
@@ -185,8 +185,8 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
-  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp, LocalEquiv.trans_apply,
-    LocalEquiv.prod_coe, LocalEquiv.refl_coe, extChartAt_self_apply, modelWithCornersSelf_coe,
+  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp, PartialEquiv.trans_apply,
+    PartialEquiv.prod_coe, PartialEquiv.refl_coe, extChartAt_self_apply, modelWithCornersSelf_coe,
     id_def]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=

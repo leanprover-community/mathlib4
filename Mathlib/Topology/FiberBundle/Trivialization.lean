@@ -106,7 +106,7 @@ lemma toPartialEquiv_injective [Nonempty F] :
     Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := fun e e' h => by
   refine ext' _ _ h ?_
   simpa only [fst_image_prod, univ_nonempty, target_eq]
-    using congr_arg (Prod.fst '' LocalEquiv.target ·) h
+    using congr_arg (Prod.fst '' PartialEquiv.target ·) h
 
 @[simp, mfld_simps]
 theorem coe_coe : ⇑e.toPartialEquiv = e :=
@@ -184,7 +184,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
   refine' inter_eq_right.mpr fun x hx => _
-  simp only [mem_preimage, LocalEquiv.invFun_as_coe, e.proj_symm_apply hx]
+  simp only [mem_preimage, PartialEquiv.invFun_as_coe, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 #align pretrivialization.preimage_symm_proj_base_set Pretrivialization.preimage_symm_proj_baseSet
 
@@ -205,24 +205,24 @@ theorem target_inter_preimage_symm_source_eq (e f : Pretrivialization F proj) :
 
 theorem trans_source (e f : Pretrivialization F proj) :
     (f.toPartialEquiv.symm.trans e.toPartialEquiv).source = (e.baseSet ∩ f.baseSet) ×ˢ univ := by
-  rw [LocalEquiv.trans_source, LocalEquiv.symm_source, e.target_inter_preimage_symm_source_eq]
+  rw [LocalEquiv.trans_source, PartialEquiv.symm_source, e.target_inter_preimage_symm_source_eq]
 #align pretrivialization.trans_source Pretrivialization.trans_source
 
 theorem symm_trans_symm (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).symm
       = e'.toPartialEquiv.symm.trans e.toPartialEquiv := by
-  rw [LocalEquiv.trans_symm_eq_symm_trans_symm, LocalEquiv.symm_symm]
+  rw [LocalEquiv.trans_symm_eq_symm_trans_symm, PartialEquiv.symm_symm]
 #align pretrivialization.symm_trans_symm Pretrivialization.symm_trans_symm
 
 theorem symm_trans_source_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).source = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
-  rw [LocalEquiv.trans_source, e'.source_eq, LocalEquiv.symm_source, e.target_eq, inter_comm,
+  rw [LocalEquiv.trans_source, e'.source_eq, PartialEquiv.symm_source, e.target_eq, inter_comm,
     e.preimage_symm_proj_inter, inter_comm]
 #align pretrivialization.symm_trans_source_eq Pretrivialization.symm_trans_source_eq
 
 theorem symm_trans_target_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).target = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
-  rw [← LocalEquiv.symm_source, symm_trans_symm, symm_trans_source_eq, inter_comm]
+  rw [← PartialEquiv.symm_source, symm_trans_symm, symm_trans_source_eq, inter_comm]
 #align pretrivialization.symm_trans_target_eq Pretrivialization.symm_trans_target_eq
 
 variable (e' : Pretrivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}

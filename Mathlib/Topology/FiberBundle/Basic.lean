@@ -535,10 +535,10 @@ theorem localTrivAsLocalEquiv_trans (i j : ι) :
     simp only [mem_localTrivAsLocalEquiv_target, mfld_simps]
     rfl
   · rintro ⟨x, v⟩ hx
-    simp only [trivChange, localTrivAsLocalEquiv, LocalEquiv.symm, true_and_iff,
-      Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, LocalEquiv.trans_source, mem_inter_iff,
+    simp only [trivChange, localTrivAsLocalEquiv, PartialEquiv.symm, true_and_iff,
+      Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
       and_true_iff, mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
-      LocalEquiv.coe_trans, TotalSpace.proj] at hx ⊢
+      PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 #align fiber_bundle_core.local_triv_as_local_equiv_trans FiberBundleCore.localTrivAsLocalEquiv_trans
 
@@ -584,7 +584,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsLocalEquiv Z j).source ∩ localTrivAsLocalEquiv Z j ⁻¹' s := ht
     rw [ts]
-    simp only [LocalEquiv.right_inv, preimage_inter, LocalEquiv.left_inv]
+    simp only [LocalEquiv.right_inv, preimage_inter, PartialEquiv.left_inv]
     let e := Z.localTrivAsLocalEquiv i
     let e' := Z.localTrivAsLocalEquiv j
     let f := e.symm.trans e'

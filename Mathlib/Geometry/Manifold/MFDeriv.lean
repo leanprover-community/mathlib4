@@ -2088,7 +2088,7 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
   -- this is just a reformulation of `UniqueMDiffOn.uniqueMDiffOn_preimage`, using as `e`
   -- the local chart at `x`.
   apply UniqueMDiffOn.uniqueDiffOn
-  rw [← LocalEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
+  rw [← PartialEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
   exact (hs.inter (chartAt H x).open_source).image_denseRange'
     (fun y hy ↦ hasMFDerivWithinAt_extChartAt I hy.2)
     fun y hy ↦ ((mdifferentiable_chart _ _).mfderiv_surjective hy.2).denseRange

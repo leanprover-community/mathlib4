@@ -1255,7 +1255,7 @@ theorem integral_image_eq_integral_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ
 theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
-  have : f '' f.source = f.target := LocalEquiv.image_source_eq_target f.toPartialEquiv
+  have : f '' f.source = f.target := PartialEquiv.image_source_eq_target f.toPartialEquiv
   rw [← this]
   apply integral_image_eq_integral_abs_det_fderiv_smul μ f.open_source.measurableSet _ f.injOn
   intro x hx

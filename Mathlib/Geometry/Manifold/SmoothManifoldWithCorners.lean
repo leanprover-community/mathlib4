@@ -153,7 +153,7 @@ attribute [simp, mfld_simps] ModelWithCorners.source_eq
 /-- A vector space is a model with corners. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
-  toPartialEquiv := LocalEquiv.refl E
+  toPartialEquiv := PartialEquiv.refl E
   source_eq := rfl
   unique_diff' := uniqueDiffOn_univ
   continuous_toFun := continuous_id
@@ -376,7 +376,7 @@ variable (𝕜 E)
 
 /-- In the trivial model with corners, the associated local equiv is the identity. -/
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toPartialEquiv = LocalEquiv.refl E :=
+theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
   rfl
 #align model_with_corners_self_local_equiv modelWithCornersSelf_localEquiv
 
@@ -424,7 +424,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
-  toPartialEquiv := LocalEquiv.pi fun i => (I i).toPartialEquiv
+  toPartialEquiv := PartialEquiv.pi fun i => (I i).toPartialEquiv
   source_eq := by simp only [pi_univ, mfld_simps]
   unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
@@ -753,8 +753,8 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
   · simp only [PartialHomeomorph.ofSet_apply, left_id, PartialHomeomorph.ofSet_toPartialEquiv,
-      LocalEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
-      PartialHomeomorph.ofSet_symm, LocalEquiv.ofSet_target, and_self]
+      PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
+      PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
     intro x hx
     refine mem_preimage.mpr ?_
     rw [← I.right_inv (interior_subset hx.right)] at hx
@@ -964,7 +964,7 @@ theorem extend_coe_symm : ⇑(f.extend I).symm = f.symm ∘ I.symm :=
 #align local_homeomorph.extend_coe_symm PartialHomeomorph.extend_coe_symm
 
 theorem extend_source : (f.extend I).source = f.source := by
-  rw [extend, LocalEquiv.trans_source, I.source_eq, preimage_univ, inter_univ]
+  rw [extend, PartialEquiv.trans_source, I.source_eq, preimage_univ, inter_univ]
 #align local_homeomorph.extend_source PartialHomeomorph.extend_source
 
 theorem isOpen_extend_source : IsOpen (f.extend I).source := by
@@ -973,7 +973,7 @@ theorem isOpen_extend_source : IsOpen (f.extend I).source := by
 #align local_homeomorph.is_open_extend_source PartialHomeomorph.isOpen_extend_source
 
 theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I := by
-  simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
+  simp_rw [extend, PartialEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target PartialHomeomorph.extend_target
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
@@ -1016,7 +1016,7 @@ theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
 
 theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
     (f.extend I).target ∈ 𝓝[range I] f.extend I y := by
-  rw [← LocalEquiv.image_source_eq_target, ← map_extend_nhds f I hy]
+  rw [← PartialEquiv.image_source_eq_target, ← map_extend_nhds f I hy]
   exact image_mem_map (extend_source_mem_nhds _ _ hy)
 #align local_homeomorph.extend_target_mem_nhds_within PartialHomeomorph.extend_target_mem_nhdsWithin
 
@@ -1178,7 +1178,7 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
 
 theorem extend_coord_change_source :
     ((f.extend I).symm ≫ f'.extend I).source = I '' (f.symm ≫ₕ f').source := by
-  simp_rw [LocalEquiv.trans_source, I.image_eq, extend_source, LocalEquiv.symm_source,
+  simp_rw [LocalEquiv.trans_source, I.image_eq, extend_source, PartialEquiv.symm_source,
     extend_target, inter_right_comm _ (range I)]
   rfl
 #align local_homeomorph.extend_coord_change_source PartialHomeomorph.extend_coord_change_source
@@ -1530,7 +1530,7 @@ theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
 
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity.-/
-theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = LocalEquiv.refl E := by
+theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
   simp only [mfld_simps]
 #align ext_chart_at_model_space_eq_id extChartAt_model_space_eq_id
 
@@ -1551,7 +1551,7 @@ theorem extChartAt_prod (x : M × M') :
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
     (letI := ChartedSpace.comp H H' M'; extChartAt I x) =
       (chartAt H' x).toPartialEquiv ≫ extChartAt I (chartAt H' x x) :=
-  LocalEquiv.trans_assoc ..
+  PartialEquiv.trans_assoc ..
 
 theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
