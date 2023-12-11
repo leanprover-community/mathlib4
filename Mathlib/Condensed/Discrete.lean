@@ -21,7 +21,8 @@ universe u v w
 
 open CategoryTheory Limits Opposite GrothendieckTopology
 
-variable (C : Type w) [Category.{u+1} C] [HasWeakSheafify (coherentTopology CompHaus) C]
+variable (C : Type w) [Category.{u+1} C]
+  [IsRightAdjoint <| sheafToPresheaf (coherentTopology CompHaus) C]
 
 /--
 The discrete condensed object associated to an object of `C` is the constant sheaf at that object.

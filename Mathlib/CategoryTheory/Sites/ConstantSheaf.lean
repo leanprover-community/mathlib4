@@ -37,7 +37,7 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
           simp }
       naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ } }
 
-variable [HasWeakSheafify J D]
+variable [IsRightAdjoint <| sheafToPresheaf J D]
 
 /--
 The functor which maps an object of `D` to the constant sheaf at that object, i.e. the

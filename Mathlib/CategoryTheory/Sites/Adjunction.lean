@@ -32,7 +32,7 @@ variable {E : Type w₂} [Category.{w₂'} E]
 
 variable {F : D ⥤ E} {G : E ⥤ D}
 
-variable [HasWeakSheafify J D] [HasSheafCompose J F]
+variable [IsRightAdjoint <| sheafToPresheaf J D] [HasSheafCompose J F]
 
 -- variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (S.index P).multicospan F]
 
