@@ -30,7 +30,7 @@ open BigOperators Polynomial
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
+variable {R : Type*} {F : Type u} {K : Type v} {L : Type w}
 
 namespace Polynomial
 
@@ -224,7 +224,7 @@ theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i �
 
 end CommRing
 
-variable [Field K] [Field L] [Field F]
+variable [CommRing R] [Field K] [Field L] [Field F]
 
 variable (i : K →+* L)
 
@@ -329,6 +329,21 @@ theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots =
       rw [map_id]).symm
 #align polynomial.roots_map Polynomial.roots_map
 
+theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
+    (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
+  classical
+    rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
+      ← roots_map _ ((splits_id_iff_splits (algebraMap R K)).mpr h), map_map, f.comp_algebraMap,
+      ← rootSet]
+#align polynomial.image_root_set Polynomial.image_rootSet
+
+theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
+    (h : p.Splits (algebraMap R K)) (f : K →ₐ[R] L) :
+    Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
+  rw [← image_rootSet h f, Algebra.adjoin_image, ← Algebra.map_top]
+  exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
+#align polynomial.adjoin_root_set_eq_range Polynomial.adjoin_rootSet_eq_range
+
 theorem eq_prod_roots_of_splits {p : K[X]} {i : K →+* L} (hsplit : Splits i p) :
     p.map i = C (i p.leadingCoeff) * ((p.map i).roots.map fun a => X - C a).prod := by
   rw [← leadingCoeff_map]; symm
@@ -354,6 +369,16 @@ theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Split
   simp
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
+
+variable (R) in
+theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
+    (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
+    f ∈ Polynomial.lifts (algebraMap R K) := by
+  rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
+  refine' Subring.multiset_prod_mem _ _ fun P hP => _
+  obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
+  exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
+#align polynomial.mem_lift_of_splits_of_roots_mem_range Polynomial.mem_lift_of_splits_of_roots_mem_range
 
 section UFD
 
@@ -414,51 +439,21 @@ theorem splits_id_of_splits {f : K[X]} (h : Splits i f)
     (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (RingHom.id K) f :=
   splits_of_comp (RingHom.id K) i h roots_mem_range
 
-section
-
-variable {R : Type*} [CommRing R] {f : R[X]}
-
-theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) (h : Splits i f) :
+theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) {f : R[X]} (h : Splits i f) :
     Splits (j.comp i) f :=
   (splits_map_iff i j).mp (splits_of_splits_id _ <| (splits_map_iff i <| .id K).mpr h)
 #align polynomial.splits_comp_of_splits Polynomial.splits_comp_of_splits
 
 variable [Algebra R K] [Algebra R L]
 
-theorem splits_of_algHom (h : Splits (algebraMap R K) f) (e : K →ₐ[R] L) :
+theorem splits_of_algHom {f : R[X]} (h : Splits (algebraMap R K) f) (e : K →ₐ[R] L) :
     Splits (algebraMap R L) f := by
   rw [← e.comp_algebraMap_of_tower R]; exact splits_comp_of_splits _ _ h
 
 variable (L) in
-theorem splits_of_isScalarTower [Algebra K L] [IsScalarTower R K L]
+theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
     (h : Splits (algebraMap R K) f) : Splits (algebraMap R L) f :=
   splits_of_algHom h (IsScalarTower.toAlgHom R K L)
-
-theorem image_rootSet (h : f.Splits (algebraMap R K))
-    (φ : K →ₐ[R] L) : φ '' f.rootSet K = f.rootSet L := by
-  classical
-    rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← φ.coe_toRingHom,
-      ← roots_map _ ((splits_id_iff_splits (algebraMap R K)).mpr h), map_map, φ.comp_algebraMap,
-      ← rootSet]
-#align polynomial.image_root_set Polynomial.image_rootSet
-
-theorem adjoin_rootSet_eq_range (h : f.Splits (algebraMap R K)) (φ : K →ₐ[R] L) :
-    Algebra.adjoin R (f.rootSet L) = φ.range ↔ Algebra.adjoin R (f.rootSet K) = ⊤ := by
-  rw [← image_rootSet h φ, Algebra.adjoin_image, ← Algebra.map_top]
-  exact (Subalgebra.map_injective φ.toRingHom.injective).eq_iff
-#align polynomial.adjoin_root_set_eq_range Polynomial.adjoin_rootSet_eq_range
-
-variable (R) in
-theorem mem_lift_of_splits_of_roots_mem_range {f : K[X]}
-    (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
-    f ∈ Polynomial.lifts (algebraMap R K) := by
-  rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
-  refine' Subring.multiset_prod_mem _ _ fun P hP => _
-  obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
-  exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
-#align polynomial.mem_lift_of_splits_of_roots_mem_range Polynomial.mem_lift_of_splits_of_roots_mem_range
-
-end
 
 /-- A polynomial splits if and only if it has as many roots as its degree. -/
 theorem splits_iff_card_roots {p : K[X]} :
