@@ -769,7 +769,7 @@ theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s,
 -- If we use `[DecidableEq β]` here, some rewrites fail because they find a wrong `Decidable`
 -- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
 @[to_additive]
-theorem prod_filter_ne_one [∀ x, Decidable (f x ≠ 1)] :
+theorem prod_filter_ne_one (s : Finset α) [∀ x, Decidable (f x ≠ 1)] :
     ∏ x in s.filter fun x => f x ≠ 1, f x = ∏ x in s, f x :=
   prod_filter_of_ne fun _ _ => id
 #align finset.prod_filter_ne_one Finset.prod_filter_ne_one
