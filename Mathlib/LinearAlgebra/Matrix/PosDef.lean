@@ -187,7 +187,7 @@ end sqrt
 end PosSemidef
 
 @[simp]
-theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
+theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) [DecidableEq m] [DecidableEq n] :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 #align matrix.pos_semidef_submatrix_equiv Matrix.posSemidef_submatrix_equiv
