@@ -3,6 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
+import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Sups
 import Mathlib.Logic.Function.Iterate
 
@@ -100,7 +101,7 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ �
 
 See also `Finset.mem_shadow_iff_exists_mem_card_add_one`. -/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
-  simp_rw [mem_shadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase, eq_comm]
+  simp_rw [mem_shadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase]
 
 /-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
 `𝒜`. -/
