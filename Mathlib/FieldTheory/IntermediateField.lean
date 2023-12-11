@@ -699,9 +699,6 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
   rfl
 #align intermediate_field.finrank_eq_finrank_subalgebra IntermediateField.finrank_eq_finrank_subalgebra
 
-theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
-  Subalgebra.bot_eq_top_iff_finrank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
-
 variable {F} {E}
 
 @[simp]

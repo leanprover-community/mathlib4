@@ -856,6 +856,9 @@ theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [ran
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
 
+protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+  Subalgebra.bot_eq_top_iff_finrank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
+
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 #align intermediate_field.rank_adjoin_eq_one_iff IntermediateField.rank_adjoin_eq_one_iff
