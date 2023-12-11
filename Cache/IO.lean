@@ -325,6 +325,16 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | ["MathlibExtras.lean"] => true
   | _ => false
 
+def findRoot (path : FilePath) : Option System.FilePath :=
+  match path.components with
+  | [h] =>
+    if h.endsWith ".lean" then
+      pkgDirs.find? (h.dropRight 5)
+    else
+      none
+  | h :: _ => pkgDirs.find? h
+  | [] => none
+
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
   let hashMap ← hashMap.filterExists true
@@ -338,10 +348,10 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      if isMathlibRoot || !isPathFromMathlib path then
-        config.push <| .str pathStr
-      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
+      if let some base := findRoot path then
+        config.push <| .mkObj [("file", pathStr), ("base", toString base)]
+      else
+        config
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
