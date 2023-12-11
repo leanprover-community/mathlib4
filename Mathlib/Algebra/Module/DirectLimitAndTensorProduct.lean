@@ -105,7 +105,7 @@ noncomputable def directLimitRight :
     directLimitRight f M (m ⊗ₜ of _ _ _ _ _ g) = of _ _ _ _ i (m ⊗ₜ g) := by
   simp [directLimitRight, congr_apply_of]
 
-@[simp] lemma directLimitRight_syymm_of_tmul {i : ι} (m : M) (g : G i) :
+@[simp] lemma directLimitRight_symm_of_tmul {i : ι} (m : M) (g : G i) :
     (directLimitRight f M).symm (of _ _ _ _ _ (m ⊗ₜ g)) = m ⊗ₜ of _ _ _ f _ g := by
   simp [directLimitRight, congr_symm_apply_of]
 
