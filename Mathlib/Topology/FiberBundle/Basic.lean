@@ -510,29 +510,29 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
 
 variable (i : ι)
 
-theorem mem_localTrivAsLocalEquiv_source (p : Z.TotalSpace) :
+theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
     p ∈ (Z.localTrivAsPartialEquiv i).source ↔ p.1 ∈ Z.baseSet i :=
   Iff.rfl
-#align fiber_bundle_core.mem_local_triv_as_local_equiv_source FiberBundleCore.mem_localTrivAsLocalEquiv_source
+#align fiber_bundle_core.mem_local_triv_as_local_equiv_source FiberBundleCore.mem_localTrivAsPartialEquiv_source
 
-theorem mem_localTrivAsLocalEquiv_target (p : B × F) :
+theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
   erw [mem_prod]
   simp only [and_true_iff, mem_univ]
-#align fiber_bundle_core.mem_local_triv_as_local_equiv_target FiberBundleCore.mem_localTrivAsLocalEquiv_target
+#align fiber_bundle_core.mem_local_triv_as_local_equiv_target FiberBundleCore.mem_localTrivAsPartialEquiv_target
 
-theorem localTrivAsLocalEquiv_apply (p : Z.TotalSpace) :
+theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
-#align fiber_bundle_core.local_triv_as_local_equiv_apply FiberBundleCore.localTrivAsLocalEquiv_apply
+#align fiber_bundle_core.local_triv_as_local_equiv_apply FiberBundleCore.localTrivAsPartialEquiv_apply
 
 /-- The composition of two local trivializations is the trivialization change Z.triv_change i j. -/
-theorem localTrivAsLocalEquiv_trans (i j : ι) :
+theorem localTrivAsPartialEquiv_trans (i j : ι) :
     (Z.localTrivAsPartialEquiv i).symm.trans (Z.localTrivAsPartialEquiv j) ≈
       (Z.trivChange i j).toPartialEquiv := by
   constructor
   · ext x
-    simp only [mem_localTrivAsLocalEquiv_target, mfld_simps]
+    simp only [mem_localTrivAsPartialEquiv_target, mfld_simps]
     rfl
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm, true_and_iff,
@@ -540,7 +540,7 @@ theorem localTrivAsLocalEquiv_trans (i j : ι) :
       and_true_iff, mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
-#align fiber_bundle_core.local_triv_as_local_equiv_trans FiberBundleCore.localTrivAsLocalEquiv_trans
+#align fiber_bundle_core.local_triv_as_local_equiv_trans FiberBundleCore.localTrivAsPartialEquiv_trans
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
@@ -556,8 +556,8 @@ theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := b
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
-  simp only [localTrivAsLocalEquiv_apply, prod_mk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
-    mem_localTrivAsLocalEquiv_source, and_true, mem_univ, mem_preimage]
+  simp only [localTrivAsPartialEquiv_apply, prod_mk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
+    mem_localTrivAsPartialEquiv_source, and_true, mem_univ, mem_preimage]
 #align fiber_bundle_core.open_source' FiberBundleCore.open_source'
 
 /-- Extended version of the local trivialization of a fiber bundle constructed from core,
@@ -589,7 +589,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     let e' := Z.localTrivAsPartialEquiv j
     let f := e.symm.trans e'
     have : IsOpen (f.source ∩ f ⁻¹' s) := by
-      rw [PartialEquiv.EqOnSource.source_inter_preimage_eq (Z.localTrivAsLocalEquiv_trans i j)]
+      rw [PartialEquiv.EqOnSource.source_inter_preimage_eq (Z.localTrivAsPartialEquiv_trans i j)]
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
     convert this using 1
@@ -633,27 +633,27 @@ theorem continuous_const_section (v : F)
 #align fiber_bundle_core.continuous_const_section FiberBundleCore.continuous_const_section
 
 @[simp, mfld_simps]
-theorem localTrivAsLocalEquiv_coe : ⇑(Z.localTrivAsPartialEquiv i) = Z.localTriv i :=
+theorem localTrivAsPartialEquiv_coe : ⇑(Z.localTrivAsPartialEquiv i) = Z.localTriv i :=
   rfl
-#align fiber_bundle_core.local_triv_as_local_equiv_coe FiberBundleCore.localTrivAsLocalEquiv_coe
+#align fiber_bundle_core.local_triv_as_local_equiv_coe FiberBundleCore.localTrivAsPartialEquiv_coe
 
 @[simp, mfld_simps]
-theorem localTrivAsLocalEquiv_source :
+theorem localTrivAsPartialEquiv_source :
     (Z.localTrivAsPartialEquiv i).source = (Z.localTriv i).source :=
   rfl
-#align fiber_bundle_core.local_triv_as_local_equiv_source FiberBundleCore.localTrivAsLocalEquiv_source
+#align fiber_bundle_core.local_triv_as_local_equiv_source FiberBundleCore.localTrivAsPartialEquiv_source
 
 @[simp, mfld_simps]
-theorem localTrivAsLocalEquiv_target :
+theorem localTrivAsPartialEquiv_target :
     (Z.localTrivAsPartialEquiv i).target = (Z.localTriv i).target :=
   rfl
-#align fiber_bundle_core.local_triv_as_local_equiv_target FiberBundleCore.localTrivAsLocalEquiv_target
+#align fiber_bundle_core.local_triv_as_local_equiv_target FiberBundleCore.localTrivAsPartialEquiv_target
 
 @[simp, mfld_simps]
-theorem localTrivAsLocalEquiv_symm :
+theorem localTrivAsPartialEquiv_symm :
     (Z.localTrivAsPartialEquiv i).symm = (Z.localTriv i).toPartialEquiv.symm :=
   rfl
-#align fiber_bundle_core.local_triv_as_local_equiv_symm FiberBundleCore.localTrivAsLocalEquiv_symm
+#align fiber_bundle_core.local_triv_as_local_equiv_symm FiberBundleCore.localTrivAsPartialEquiv_symm
 
 @[simp, mfld_simps]
 theorem baseSet_at : Z.baseSet i = (Z.localTriv i).baseSet :=
