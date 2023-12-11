@@ -230,13 +230,11 @@ theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) 
     refine' fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, _, _⟩, rfl⟩
     calc
       (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
-          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x :=
-        by noncomm_ring
+          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
     calc
       (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
-          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x :=
-        by noncomm_ring
+          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
   have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
   rw [mul_smul_comm r⁻¹ b a] at this
@@ -292,9 +290,7 @@ theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : St
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
-    rw [singleton_add, image_add_left, mem_preimage]
-    simp only
-    rw [add_comm, add_mem_iff, map_neg, neg_neg]
+    rw [singleton_add, image_add_left, mem_preimage, add_comm, add_mem_iff, map_neg, neg_neg]
 #align spectrum.singleton_add_eq spectrum.singleton_add_eq
 
 theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=

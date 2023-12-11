@@ -76,7 +76,7 @@ instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian
 #align is_artinian_submodule' isArtinian_submodule'
 
 theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : IsArtinian R s :=
-  isArtinian_of_injective (Submodule.ofLe h) (Submodule.ofLe_injective h)
+  isArtinian_of_injective (Submodule.inclusion h) (Submodule.inclusion_injective h)
 #align is_artinian_of_le isArtinian_of_le
 
 variable (M)
@@ -231,8 +231,8 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr ?_⟩
   simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
   intro x
-  suffices : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
-  · obtain ⟨y, hy⟩ := this; exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
+  rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
+  · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
   simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
     ← f.pow_apply m, ← mem_range, ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
@@ -260,7 +260,7 @@ theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R]
 
 See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
 theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
-    IsCompl (⨆ n,LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
+    IsCompl (⨆ n, LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
   obtain ⟨k, hk⟩ := eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
     f.eventually_iInf_range_pow_eq.and f.eventually_iSup_ker_pow_eq
   obtain ⟨h₁, h₂, h₃⟩ := hk k (le_refl k)
@@ -350,6 +350,9 @@ def IsArtinianRing (R) [Ring R] :=
 theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
+instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
+  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+
 theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
   have := subsingleton_of_zero_eq_one h01
   inferInstance
@@ -392,9 +395,9 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
     simp
 #align is_artinian_of_fg_of_artinian isArtinian_of_fg_of_artinian
 
-theorem isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
-    [IsArtinianRing R] (h : (⊤ : Submodule R M).FG) : IsArtinian R M :=
-  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ h
+instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
+    [IsArtinianRing R] [Module.Finite R M] : IsArtinian R M :=
+  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ Module.Finite.out
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_artinian_of_fg_of_artinian' isArtinian_of_fg_of_artinian'
 
@@ -445,7 +448,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
     sup_le_sup_left (smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _
   have : Jac * Ideal.span {x} ≤ J := by -- Need version 4 of Nakayama's lemma on Stacks
     by_contra H
-    refine' H (smul_sup_le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
+    refine' H (smul_le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
       (this.eq_of_not_lt (hJ' _ _)).ge)
     exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥

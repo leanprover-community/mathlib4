@@ -343,7 +343,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
         · refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        · simp [eq_iff_true_of_subsingleton]
+        · simp [autoParam, eq_iff_true_of_subsingleton]
       -- porting note : add `fac`, `uniq` manually
       fac := fun _ _ => by ext; simp [eq_iff_true_of_subsingleton]
       uniq := fun _ _ _ => by ext; simp [eq_iff_true_of_subsingleton] }
@@ -454,7 +454,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     Functor.id_obj, Functor.comp_obj, Iso.symm_hom, NatIso.op_inv, Iso.symm_inv, NatTrans.op_app,
     NatIso.ofComponents_hom_app, eqToIso.hom, eqToHom_op, Equivalence.Equivalence_mk'_unitInv,
     Equivalence.Equivalence_mk'_counitInv, NatIso.op_hom, unop_op, op_unop, eqToIso.inv,
-    NatIso.ofComponents_inv_app, eqToHom_unop, ←ℱ.map_comp, eqToHom_trans, eqToHom_map,
+    NatIso.ofComponents_inv_app, eqToHom_unop, ← ℱ.map_comp, eqToHom_trans, eqToHom_map,
     presheafEquivOfIso_unitIso_hom_app_app]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.to_pushforward_of_iso_app TopCat.Presheaf.toPushforwardOfIso_app

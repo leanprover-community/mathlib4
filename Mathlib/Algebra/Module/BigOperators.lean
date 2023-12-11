@@ -36,7 +36,7 @@ theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
 #align multiset.sum_smul_sum Multiset.sum_smul_sum
 
 theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
-    (∑ i in s, f i) • x = ∑ i in s, f i • x := ((smulAddHom R M).flip x).map_sum f s
+    (∑ i in s, f i) • x = ∑ i in s, f i • x := map_sum ((smulAddHom R M).flip x) f s
 #align finset.sum_smul Finset.sum_smul
 
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :

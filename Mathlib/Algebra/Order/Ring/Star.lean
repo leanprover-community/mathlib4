@@ -34,7 +34,7 @@ example {R : Type*} [OrderedSemiring R] [StarOrderedRing R] {x y : R} (hx : 0 �
     induction hz using AddSubmonoid.closure_induction' with
     | Hs _ h => obtain ⟨x, rfl⟩ := h; simp
     | H1 => simp
-    | Hmul x hx y hy => simp only [←nonneg_iff] at hx hy; aesop
+    | Hmul x hx y hy => simp only [← nonneg_iff] at hx hy; aesop
   -- `0 ≤ y * x`, and hence `y * x` is self-adjoint
   have := this _ <| mul_nonneg hy hx
   aesop
@@ -47,11 +47,11 @@ private lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrd
   induction hc using AddSubmonoid.closure_induction' with
   | Hs _ h =>
     obtain ⟨x, rfl⟩ := h
-    simp_rw [mul_assoc, mul_comm x, ←mul_assoc]
+    simp_rw [mul_assoc, mul_comm x, ← mul_assoc]
     exact conjugate_le_conjugate hab x
   | H1 => simp
   | Hmul x hx y hy =>
-    simp only [←nonneg_iff, add_mul] at hx hy ⊢
+    simp only [← nonneg_iff, add_mul] at hx hy ⊢
     apply add_le_add <;> aesop
 
 /-- A commutative star-ordered semiring is an ordered semiring.

@@ -556,7 +556,7 @@ theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * 
   exact coeToSubmodule_injective (coeSubmodule_mul _ _ _)
 #align fractional_ideal.coe_ideal_mul FractionalIdeal.coeIdeal_mul
 
-theorem mul_left_mono (I : FractionalIdeal S P) : Monotone ((· * ·) I) := by
+theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := by
   intro J J' h
   simp only [mul_def]
   exact mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
@@ -1598,7 +1598,7 @@ variable (x : P) (hx : IsIntegral R x)
 /-- `A[x]` is a fractional ideal for every integral `x`. -/
 theorem isFractional_adjoin_integral :
     IsFractional S (Subalgebra.toSubmodule (Algebra.adjoin R ({x} : Set P))) :=
-  isFractional_of_fg (FG_adjoin_singleton_of_integral x hx)
+  isFractional_of_fg hx.fg_adjoin_singleton
 #align fractional_ideal.is_fractional_adjoin_integral FractionalIdeal.isFractional_adjoin_integral
 
 /-- `FractionalIdeal.adjoinIntegral (S : Submonoid R) x hx` is `R[x]` as a fractional ideal,

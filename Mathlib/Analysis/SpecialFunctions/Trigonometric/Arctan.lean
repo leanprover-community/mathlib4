@@ -17,8 +17,6 @@ and `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whol
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Real
 
 open Set Filter
@@ -223,8 +221,8 @@ def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' y _ := tan_arctan y
   open_source := isOpen_Ioo
   open_target := isOpen_univ
-  continuous_toFun := continuousOn_tan_Ioo
-  continuous_invFun := continuous_arctan.continuousOn
+  continuousOn_toFun := continuousOn_tan_Ioo
+  continuousOn_invFun := continuous_arctan.continuousOn
 #align real.tan_local_homeomorph Real.tanLocalHomeomorph
 
 @[simp]

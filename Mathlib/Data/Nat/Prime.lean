@@ -174,7 +174,7 @@ theorem prime_three : Prime 3 := by decide
 
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
-  by_contra' h
+  by_contra! h
   revert h_two h_three hp
   -- Porting note: was `decide!`
   match p with
@@ -430,7 +430,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   constructor
   · intro h
-    rw [←h]
+    rw [← h]
     exact minFac_dvd n
   · intro h
     have ub := minFac_le_of_dvd (le_refl 2) h
@@ -585,16 +585,16 @@ theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p 
   pp.prime.dvd_of_dvd_pow h
 #align nat.prime.dvd_of_dvd_pow Nat.Prime.dvd_of_dvd_pow
 
-theorem Prime.pow_not_prime' {x n : ℕ} (hn : n ≠ 1) : ¬(x ^ n).Prime :=
-  pow_not_prime hn ∘ Nat.Prime.prime
-#align nat.prime.pow_not_prime' Nat.Prime.pow_not_prime'
+theorem Prime.not_prime_pow' {x n : ℕ} (hn : n ≠ 1) : ¬(x ^ n).Prime :=
+  not_irreducible_pow hn
+#align nat.prime.pow_not_prime' Nat.Prime.not_prime_pow'
 
-theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime :=
-  pow_not_prime' ((two_le_iff _).mp hn).2
-#align nat.prime.pow_not_prime Nat.Prime.pow_not_prime
+theorem Prime.not_prime_pow {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime :=
+  not_prime_pow' ((two_le_iff _).mp hn).2
+#align nat.prime.pow_not_prime Nat.Prime.not_prime_pow
 
 theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
-  not_imp_not.mp Prime.pow_not_prime' h
+  not_imp_not.mp Prime.not_prime_pow' h
 #align nat.prime.eq_one_of_pow Nat.Prime.eq_one_of_pow
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
