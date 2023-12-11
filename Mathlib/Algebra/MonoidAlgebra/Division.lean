@@ -210,10 +210,10 @@ lemma add_modOf (x y : AddMonoidAlgebra k G) (g : G) :
 lemma sub_modOf (x y : k'[G]) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g :=
   Finsupp.filter_sub _ _ _
 
-lemma modOf_idem (x : k'[G]) (g : G) : (x %ᵒᶠ g) %ᵒᶠ g = x %ᵒᶠ g := by
-  have eq1 : modOf _ g = modOf _ g := congr_arg (modOf . g)
-    (sub_eq_iff_eq_add.mpr (divOf_add_modOf x g).symm)
-  rwa [sub_modOf, of'_mul_modOf, sub_eq_zero, eq_comm] at eq1
+lemma modOf_idem (x : k[G]) (g : G) : (x %ᵒᶠ g) %ᵒᶠ g = x %ᵒᶠ g := by
+  rw [modOf, modOf, Finsupp.filter_filter]
+  congr
+  aesop
 
 theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :
     of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
