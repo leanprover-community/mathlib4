@@ -44,13 +44,13 @@ open Cardinal Ordinal SuccOrder Function
 
 def limitation : { i : Ordinal // i < (ord $ succ #α)} → α := λ i => g i
 
-lemma limitation_eq : ∀ i, limitation g i = g i := by
+theorem limitation_def : ∀ i, limitation g i = g i := by
   intro h; unfold limitation; exact rfl
 
 lemma mk_initialSeg_Subtype (ℵ : Cardinal ): #{ i : Ordinal // i < (ord  ℵ)} = lift.{u+1, u} ℵ := by
   simpa using mk_initialSeg (ord ℵ)
 
-lemma limitation_not_injective: ¬ Injective (limitation g) := by
+theorem limitation_not_injective: ¬ Injective (limitation g) := by
   intro h_inj
   have h₁ := by apply lift_mk_le_lift_mk_of_injective h_inj;
   rw[mk_initialSeg_Subtype (succ #α), Cardinal.lift_lift, Cardinal.lift_le] at h₁
@@ -69,14 +69,14 @@ variable {α : Type u}
 variable {β : Type v}
 variable [Preorder α] [PartialOrder β] (f: α → β)
 
-lemma monotone_stabilizing {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂):
+theorem monotone_stabilizing {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂):
     ∀ i, a₂ ≥ i → i ≥ a₁ → f i = f a₁ := by
   intro i h₂ h₁
   apply le_antisymm
   · rw[h_fa]; exact h_mon h₂
   · exact h_mon h₁
 
-lemma antitone_stabilizing {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂):
+theorem antitone_stabilizing {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂):
     ∀ i, a₂ ≥ i → i ≥ a₁ → f i = f a₁ := by
   intro i h₂ h₁
   apply le_antisymm
@@ -104,7 +104,7 @@ def lfp_approx (a : Ordinal.{u}) : α :=
 termination_by lfp_approx a => a
 decreasing_by exact h
 
-lemma lfp_approx_monotone : Monotone (lfp_approx f) := by
+theorem lfp_approx_monotone : Monotone (lfp_approx f) := by
   unfold Monotone; intros a b h; unfold lfp_approx
   refine sSup_le_sSup ?h; simp
   intros a' h'
@@ -115,27 +115,23 @@ def lfp_approx_hom : Ordinal.{u} →o α where
   toFun i := lfp_approx f i
   monotone' a b h := by simp; apply lfp_approx_monotone f h
 
-lemma lfp_approx_def (a : Ordinal.{u}): lfp_approx f a =
-    sSup { f (lfp_approx f b) | (b : Ordinal) (_ : b < a) } := by
-  conv => left; unfold lfp_approx
-
-lemma lfp_approx_addition (a : Ordinal.{u}) : f (lfp_approx f a) = lfp_approx f (a+1) := by
+theorem lfp_approx_addition (a : Ordinal.{u}) : f (lfp_approx f a) = lfp_approx f (a+1) := by
   apply le_antisymm
-  · conv => right; rw[lfp_approx_def]
+  · conv => right; unfold lfp_approx
     apply le_sSup; simp
     use a
-  · conv => left; rw[lfp_approx_def]
+  · conv => left; unfold lfp_approx
     apply sSup_le; simp
     intros a' h
     apply f.2; apply lfp_approx_monotone; exact h
 
 
-lemma lfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fixedPoints f)):
+theorem lfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fixedPoints f)):
     ∀ b > a, lfp_approx f b = lfp_approx f a := by
   intro b hab; rw[mem_fixedPoints_iff] at h;
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
-  · conv => left; rw[lfp_approx_def]
+  · conv => left; unfold lfp_approx
     apply sSup_le; simp
     intro a' ha'b
     by_cases haa : a' < a
@@ -146,11 +142,11 @@ lemma lfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fix
       cases (le_iff_lt_or_eq.mp haa) with
       | inl haa => specialize IH a' ha'b haa; rw[IH, h];
       | inr haa => rw[←haa, h];
-  · conv => right; rw[lfp_approx_def]
+  · conv => right; unfold lfp_approx
     apply le_sSup; simp
     use a
 
-lemma lfp_approx_eq_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fixedPoints f)):
+theorem lfp_approx_eq_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fixedPoints f)):
     ∀ b > a, lfp_approx f b ∈ (fixedPoints f)  := by
   intro b h_ab;
   rw[mem_fixedPoints_iff]
@@ -159,11 +155,11 @@ lemma lfp_approx_eq_fp (a : Ordinal.{u}) (h: lfp_approx f a ∈ (fixedPoints f))
   exact mem_fixedPoints_iff.mp h
 
 
-lemma lfp_approx_has_cycle : ∃ i < ord $ succ #α, ∃ j < ord $ succ #α,
+theorem lfp_approx_has_cycle : ∃ i < ord $ succ #α, ∃ j < ord $ succ #α,
     i ≠ j ∧ lfp_approx f i = lfp_approx f j := by
   have h_ninj := Function.Injective.not_exists_equal (limitation_not_injective $ lfp_approx f)
   let ⟨a, b, h_nab, h_fab⟩ := h_ninj
-  rw[limitation_eq, limitation_eq] at h_fab
+  rw[limitation_def, limitation_def] at h_fab
   use a.val; apply And.intro a.prop;
   use b.val; apply And.intro b.prop;
   apply And.intro
@@ -201,7 +197,7 @@ lemma lfp_approx_le_fixedPoint : ∀ a : (fixedPoints f), ∀ i : Ordinal, lfp_a
   intro ⟨a, h_a⟩ i
   induction i using Ordinal.induction with
   | h i IH =>
-    rw[lfp_approx_def]
+    unfold lfp_approx
     apply sSup_le; simp
     intro j h_j
     rw[←h_a]
@@ -232,37 +228,33 @@ def gfp_approx (a : Ordinal.{u}) : α :=
 termination_by gfp_approx a => a
 decreasing_by exact h
 
-lemma gfp_approx_antitone : Antitone (gfp_approx f) := by
+theorem gfp_approx_antitone : Antitone (gfp_approx f) := by
   unfold Antitone; intros a b h; unfold gfp_approx
   refine sInf_le_sInf ?h; simp
   intros a' h'
   use a'; apply And.intro; exact lt_of_lt_of_le h' h
   exact rfl
 
-lemma gfp_approx_def (a : Ordinal.{u}): gfp_approx f a =
-    sInf { f (gfp_approx f b) | (b : Ordinal) (_ : b < a) } := by
-  conv => left; unfold gfp_approx
-
-lemma gfp_approx_addition (a : Ordinal.{u}) : f (gfp_approx f a) = gfp_approx f (a+1) := by
+theorem gfp_approx_addition (a : Ordinal.{u}) : f (gfp_approx f a) = gfp_approx f (a+1) := by
   apply le_antisymm
-  · conv => right; rw[gfp_approx_def]
+  · conv => right; unfold gfp_approx
     apply le_sInf; simp
     intros a' h
     apply f.2; apply gfp_approx_antitone; exact h
-  · conv => left; rw[gfp_approx_def]
+  · conv => left; unfold gfp_approx
     apply sInf_le; simp
     use a
 
 
-lemma gfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fixedPoints f)):
+theorem gfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fixedPoints f)):
     ∀ b > a, gfp_approx f b = gfp_approx f a := by
   intro b hab; rw[mem_fixedPoints_iff] at h;
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
-  · conv => left; rw[gfp_approx_def]
+  · conv => left; unfold gfp_approx
     apply sInf_le
     use a
-  · conv => right; rw[gfp_approx_def]
+  · conv => right; unfold gfp_approx
     apply le_sInf; simp
     intro a' ha'b
     by_cases haa : a' < a
@@ -274,7 +266,7 @@ lemma gfp_approx_stabilizing_at_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fix
       | inl haa => specialize IH a' ha'b haa; rw[IH, h];
       | inr haa => rw[←haa, h];
 
-lemma gfp_approx_eq_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fixedPoints f)):
+theorem gfp_approx_eq_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fixedPoints f)):
     ∀ b > a, gfp_approx f b ∈ (fixedPoints f)  := by
   intro b h_ab;
   rw[mem_fixedPoints_iff]
@@ -283,11 +275,11 @@ lemma gfp_approx_eq_fp (a : Ordinal.{u}) (h: gfp_approx f a ∈ (fixedPoints f))
   exact mem_fixedPoints_iff.mp h
 
 
-lemma gfp_approx_has_cycle : ∃ i < ord $ succ #α, ∃ j < ord $ succ #α,
+theorem gfp_approx_has_cycle : ∃ i < ord $ succ #α, ∃ j < ord $ succ #α,
     i ≠ j ∧ gfp_approx f i = gfp_approx f j := by
   have h_ninj := Function.Injective.not_exists_equal (limitation_not_injective $ gfp_approx f)
   let ⟨a, b, h_nab, h_fab⟩ := h_ninj
-  rw[limitation_eq, limitation_eq] at h_fab
+  rw[limitation_def, limitation_def] at h_fab
   use a.val; apply And.intro a.prop;
   use b.val; apply And.intro b.prop;
   apply And.intro
@@ -325,7 +317,7 @@ lemma gfp_approx_ge_fixedPoint : ∀ a : (fixedPoints f), ∀ i : Ordinal, gfp_a
   intro ⟨a, h_a⟩ i
   induction i using Ordinal.induction with
   | h i IH =>
-    rw[gfp_approx_def]
+    unfold gfp_approx
     apply le_sInf; simp
     intro j h_j
     rw[←h_a]
