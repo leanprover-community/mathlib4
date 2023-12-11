@@ -78,7 +78,7 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
       obtain ⟨v₁, rfl⟩ := hm₁
       -- this is the first interesting goal
       rw [map_mul, mul_assoc, ih₁, mul_smul_comm, map_apply_ι, Nat.cast_succ, mul_add_one,
-        uzpow_add, mul_smul, ←mul_assoc, ←mul_assoc, ←smul_mul_assoc ((-1) ^ i₂), inl_apply]
+        uzpow_add, mul_smul, ← mul_assoc, ← mul_assoc, ← smul_mul_assoc ((-1) ^ i₂), inl_apply]
       clear ih₁
       congr 2
       induction hm₂ using Submodule.iSup_induction' with
@@ -94,8 +94,8 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
         | hmul m₂ hm₂ i x₂ _hx₂ ih₂ =>
           obtain ⟨v₂, rfl⟩ := hm₂
           -- this is the second interesting goal
-          rw [map_mul, map_apply_ι, inr_apply, Nat.cast_succ, ←mul_assoc, ι_inl_mul_ι_inr,
-            neg_mul, mul_assoc, ih₂, mul_smul_comm, ←mul_assoc, ←Units.neg_smul, uzpow_add,
+          rw [map_mul, map_apply_ι, inr_apply, Nat.cast_succ, ← mul_assoc, ι_inl_mul_ι_inr,
+            neg_mul, mul_assoc, ih₂, mul_smul_comm, ← mul_assoc, ← Units.neg_smul, uzpow_add,
             uzpow_one, mul_neg_one]
       | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
       | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
@@ -121,7 +121,7 @@ def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] 
       dsimp
       simp_rw [one_mul, uzpow_one, Units.neg_smul, one_smul]
       rw [ι_sq_scalar, ι_sq_scalar, mul_one]
-      simp_rw [←GradedTensorProduct.algebraMap_def, ←GradedTensorProduct.algebraMap_def']
+      simp_rw [← GradedTensorProduct.algebraMap_def, ← GradedTensorProduct.algebraMap_def']
       abel⟩
 
 @[simp]
