@@ -45,7 +45,7 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
     _ ≤ (Ioo 0 n).card := card_le_card_of_inj_on (fun s ↦ ∏ p in s, p) ?_ ?_
     _ = n - 1 := by rw [card_Ioo, tsub_zero]
     _ < n := tsub_lt_self hn.bot_lt zero_lt_one
-  · rw [card_image_of_injOn, card_Iio]
+  · rw [Finset.card_image_of_injOn, card_Iio]
     simpa using prod_primeFactors_invOn_squarefree.2.injOn.comp hf.injOn hf'
   · simp only [forall_mem_diffs, forall_image, mem_Ioo, mem_Iio]
     rintro i hi j hj

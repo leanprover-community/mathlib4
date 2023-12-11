@@ -38,7 +38,7 @@ protected def card (α : Type*) : ℕ :=
 #align nat.card Nat.card
 
 @[simp]
-theorem card_eq_fintype_card (α) [Fintype α] : Nat.card α = Fintype.card α :=
+theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 #align nat.card_eq_fintype_card Nat.card_eq_fintype_card
 
