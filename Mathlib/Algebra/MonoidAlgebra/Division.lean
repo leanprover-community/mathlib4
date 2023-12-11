@@ -204,12 +204,11 @@ lemma neg_modOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) %ᵒᶠ g = - (x %ᵒ
   rwa [add_left_inj, eq_comm] at eq1
 
 lemma add_modOf (x y : AddMonoidAlgebra k G) (g : G) :
-    (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g := by
-  dsimp [modOf]
-  rw [Finsupp.filter_add]
+    (x + y) %ᵒᶠ g = x %ᵒᶠ g + y %ᵒᶠ g :=
+  Finsupp.filter_add
 
-lemma sub_modOf (x y : k'[G]) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g := by
-  rw [sub_eq_add_neg, add_modOf, neg_modOf, sub_eq_add_neg]
+lemma sub_modOf (x y : k'[G]) (g : G) : (x - y) %ᵒᶠ g = x %ᵒᶠ g - y %ᵒᶠ g :=
+  Finsupp.filter_sub _ _ _
 
 lemma modOf_idem (x : k'[G]) (g : G) : (x %ᵒᶠ g) %ᵒᶠ g = x %ᵒᶠ g := by
   have eq1 : modOf _ g = modOf _ g := congr_arg (modOf . g)
