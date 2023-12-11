@@ -227,16 +227,20 @@ theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :
     exact dvd_mul_right _ _
 #align add_monoid_algebra.of'_dvd_iff_mod_of_eq_zero AddMonoidAlgebra.of'_dvd_iff_modOf_eq_zero
 
-lemma mul_divOf [IsCancelAdd k''] (x y : k''[G]) (g : G) :
+lemma mul_divOf (x y : k[G]) (g : G) :
     (x * y) /ᵒᶠ g =
-    of' k'' G g * (x /ᵒᶠ g) * (y /ᵒᶠ g) +
+    of' k G g * (x /ᵒᶠ g) * (y /ᵒᶠ g) +
     (x /ᵒᶠ g) * (y %ᵒᶠ g) +
-    (y /ᵒᶠ g) * (x %ᵒᶠ g) +
+    (x %ᵒᶠ g) * (y /ᵒᶠ g) +
     ((x %ᵒᶠ g) * (y %ᵒᶠ g)) /ᵒᶠ g := by
   rw [← congr_arg₂ (. * .) (divOf_add_modOf x g) ( divOf_add_modOf y g), add_mul, mul_add, mul_add,
-    add_divOf, add_divOf, add_divOf, mul_assoc, of'_mul_divOf, ← mul_assoc, mul_comm _ (of' _ _ g),
-    add_assoc, add_assoc, add_assoc, add_right_inj, mul_assoc, of'_mul_divOf, add_right_inj,
-    mul_comm, mul_assoc, of'_mul_divOf]
+    add_divOf, add_divOf, add_divOf, mul_assoc, of'_mul_divOf, ← mul_assoc,
+    ← of'_commute (AddCommute.all _) _,
+    add_assoc, add_assoc, add_assoc]
+  congr 1
+  rw [mul_assoc, of'_mul_divOf]
+  congr 1
+  rw [(of'_commute (AddCommute.all _) _).symm.left_comm, of'_mul_divOf]
 
 lemma mul_modOf (x y : k'''[G]) (g : G) :
     (x * y) %ᵒᶠ g = ((x %ᵒᶠ g) * (y %ᵒᶠ g)) %ᵒᶠ g := by
