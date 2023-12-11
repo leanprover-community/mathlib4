@@ -43,7 +43,7 @@ section Ring
 
 variable [CommRing F] [Ring K] [AddCommGroup A]
 
-variable [Algebra F K] [Module K A] [Module F A] [IsScalarTower F K A]
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
 variable [StrongRankCondition F] [StrongRankCondition K]
   [Module.Free F K] [Module.Free K A]
@@ -90,7 +90,7 @@ section Field
 
 variable [Field F] [DivisionRing K] [AddCommGroup A]
 
-variable [Algebra F K] [Module K A] [Module F A] [IsScalarTower F K A]
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
 namespace FiniteDimensional
 
@@ -111,6 +111,9 @@ theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Alge
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
 #align finite_dimensional.left FiniteDimensional.left
 
+theorem left' [FiniteDimensional F A] : FiniteDimensional F K :=
+  FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K A).toLinearMap _
+
 theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
@@ -122,10 +125,12 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 `dim_F(A) = dim_F(K) * dim_K(A)`.
 
 This is `FiniteDimensional.finrank_mul_finrank'` with one fewer finiteness assumption. -/
-theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A = finrank F A := by
+theorem finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   by_cases hA : FiniteDimensional K A
-  · replace hA : FiniteDimensional K A := hA -- porting note: broken instance cache
-    rw [finrank_mul_finrank']
+  · by_cases hK : FiniteDimensional F K
+    · rw [finrank_mul_finrank']
+    · rw [finrank_of_infinite_dimensional hK, zero_mul, finrank_of_infinite_dimensional]
+      exact mt (left F K A) hK
   · rw [finrank_of_infinite_dimensional hA, mul_zero, finrank_of_infinite_dimensional]
     exact mt (@right F K A _ _ _ _ _ _ _) hA
 #align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank

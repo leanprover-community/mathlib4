@@ -108,9 +108,9 @@ universe v₁ w₁
 
 variable {R S A}
 
-variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
+variable [Semiring R] [Semiring S] [AddCommMonoid A]
 
-variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
+variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
@@ -132,6 +132,19 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
+  haveI : IsScalarTower R S (ι' →₀ S) :=
+  { smul_assoc := fun r s a ↦ by
+      /- because A/S/R form a scalar tower, the linear equivalence `A ≃ₗ[S] ι' →₀ S` is
+        also R-linear, from which we can prove `IsScalarTower R S (ι' →₀ S)`. -/
+      let f : A ≃ₗ[R] ι' →₀ S :=
+      { __ := c.repr
+        map_smul' := fun r a ↦ ?_ }
+      · apply f.symm.injective
+        erw [c.repr.symm.map_smul, map_smul, c.repr.symm.map_smul, smul_assoc]
+      change c.repr _ = r • c.repr a
+      rw [← c.repr.eq_symm_apply, ← sum_single (c.repr a), smul_sum, map_finsupp_sum]
+      simp_rw [smul_single, ← smul_single_one _ (r • _), map_smul, smul_assoc, ← smul_sum,
+        ← map_smul, smul_single_one, ← map_finsupp_sum, sum_single, c.repr.symm_apply_apply] }
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
@@ -141,7 +154,7 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
-    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]
+    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]; rfl
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)

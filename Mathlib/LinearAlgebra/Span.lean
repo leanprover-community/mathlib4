@@ -150,6 +150,16 @@ theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, 
   ((@span_le (p := ⟨ ⟨⟨p, by intros x y; exact H1 x y⟩, H0⟩, H2⟩)) s).2 Hs h
 #align submodule.span_induction Submodule.span_induction
 
+open AddSubmonoid in
+theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ R • s) := by
+  refine le_antisymm (fun x hx ↦ span_induction hx
+    (fun x hx ↦ subset_closure ⟨1, x, trivial, hx, one_smul R x⟩)
+    (zero_mem _) (fun _ _ ↦ add_mem) fun r m hm ↦ closure_induction hm ?_ ?_ ?_) (closure_le.2 ?_)
+  · rintro _ ⟨r, m, -, hm, rfl⟩; exact smul_mem _ _ (subset_span hm)
+  · rintro _ ⟨r', m, -, hm, rfl⟩; exact subset_closure ⟨r * r', m, trivial, hm, mul_smul r r' m⟩
+  · rw [smul_zero]; apply zero_mem
+  · intro m m' hm hm'; rw [smul_add]; exact add_mem hm hm'
+
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
 theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule.span R s)

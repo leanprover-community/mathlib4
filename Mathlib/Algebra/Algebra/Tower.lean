@@ -305,6 +305,22 @@ theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ s
     fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
 #align submodule.smul_mem_span_smul_of_mem Submodule.smul_mem_span_smul_of_mem
 
+theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
+    span R (s • t) = (span S t).restrictScalars R :=
+  (span_le.2 fun _x hx =>
+    let ⟨p, _q, _hps, hqt, hpqx⟩ := Set.mem_smul.1 hx
+    hpqx ▸ (span S t).smul_mem p (subset_span hqt)).antisymm
+    fun p (hp : p ∈ span S t) => by
+      rw [← mem_toAddSubmonoid, span_eq_closure] at hp
+      refine AddSubmonoid.closure_induction hp ?_ (zero_mem _) fun _ _ ↦ add_mem
+      rintro _ ⟨s0, y, -, hy, rfl⟩
+      refine span_induction (hs ▸ mem_top : s0 ∈ span R s)
+        (fun x hx ↦ subset_span ⟨x, y, hx, hy, rfl⟩) ?_ ?_ ?_ <;> dsimp only
+      · rw [zero_smul]; apply zero_mem
+      · intro _ _; rw [add_smul]; apply add_mem
+      · intro r s0 hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
+#align submodule.span_smul_of_span_eq_top Submodule.span_smul_of_span_eq_top
+
 variable [SMulCommClass R S A]
 
 theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
@@ -326,17 +342,6 @@ theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S
     (fun x y ihx ihy => by rw [smul_add]; exact add_mem ihx ihy)
     fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
 #align submodule.smul_mem_span_smul' Submodule.smul_mem_span_smul'
-
-theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
-    span R (s • t) = (span S t).restrictScalars R :=
-  le_antisymm
-    (span_le.2 fun _x hx =>
-      let ⟨p, _q, _hps, hqt, hpqx⟩ := Set.mem_smul.1 hx
-      hpqx ▸ (span S t).smul_mem p (subset_span hqt))
-    fun _p hp =>
-    span_induction hp (fun x hx => one_smul S x ▸ smul_mem_span_smul hs (subset_span hx))
-      (zero_mem _) (fun _ _ => add_mem) fun _k _x hx => smul_mem_span_smul' hs hx
-#align submodule.span_smul_of_span_eq_top Submodule.span_smul_of_span_eq_top
 
 end Module
 
