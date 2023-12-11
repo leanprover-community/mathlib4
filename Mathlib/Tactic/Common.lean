@@ -103,9 +103,10 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
-import Mathlib.Tactic.Widget.Calc
-import Mathlib.Tactic.Widget.Congrm
-import Mathlib.Tactic.Widget.Conv
+/- Import of widgets disabled temporarily, as they break cache on windows. TODO: fix properly. -/
+-- import Mathlib.Tactic.Widget.Calc
+-- import Mathlib.Tactic.Widget.Congrm
+-- import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
