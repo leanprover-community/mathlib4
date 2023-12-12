@@ -961,18 +961,6 @@ def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β)
   map_sSup' := Set.image_sSup
 #align Sup_hom.set_image sSupHom.setImage
 
-/-- An equivalence of types yields an order isomorphism between their lattices of subsets. -/
-@[simps]
-def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
-    where
-  toFun s := e '' s
-  invFun s := e.symm '' s
-  left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id.def, image_id']
-  right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id.def, image_id']
-  map_rel_iff' :=
-    ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
-#align equiv.to_order_iso_set Equiv.toOrderIsoSet
-
 variable [CompleteLattice α] (x : α × α)
 
 /-- The map `(a, b) ↦ a ⊔ b` as a `sSupHom`. -/
