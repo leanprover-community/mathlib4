@@ -672,7 +672,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα' ▸ orderOf_dvd_card (x := g), by aesop⟩
   simp? [Nat.divisors_prime_pow hp 2] at this says
     simp only [Nat.divisors_prime_pow hp 2, Finset.mem_map, Finset.mem_range,
-      Function.Embedding.coeFn_mk, Nat.pow_eq] at this
+      Function.Embedding.coeFn_mk] at this
   obtain ⟨a, ha, ha'⟩ := this
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by aesop
