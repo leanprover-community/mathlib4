@@ -203,9 +203,11 @@ lemma StrictConvexOn.map_sum_eq_iff {w : ι → 𝕜} {p : ι → E} (hf : Stric
       simp [h j hj]
     rw [sum_congr rfl H, ← sum_smul, h₁, one_smul]
 
-/-- Canonical form of the equality case of Jensen's equality.  For a strictly concave function `f`
-and positive weights `w`, we have `f (∑ i in t, w i • p i) = ∑ i in t, w i • f (p i)` if and only if
-the points `p` are all equal (and in fact all equal to their center of mass wrt `w`). -/
+/-- Canonical form of the **equality case of Jensen's equality**.
+
+For a strictly concave function `f` and positive weights `w`, we have
+`f (∑ i in t, w i • p i) = ∑ i in t, w i • f (p i)` if and only if the points `p` are all equal
+(and in fact all equal to their center of mass wrt `w`). -/
 lemma StrictConcaveOn.map_sum_eq_iff (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i in t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i in t, w i • p i) = ∑ i in t, w i • f (p i) ↔ ∀ j ∈ t, p j = ∑ i in t, w i • p i := by
