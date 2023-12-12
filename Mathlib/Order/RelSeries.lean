@@ -54,7 +54,7 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
 instance [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
 
-variable {r}
+variable {r}>
 
 @[ext]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
@@ -163,15 +163,17 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-/-- start of a series -/
-def bot (x : RelSeries r) : α := x 0
+/-- start of a series .i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a₀`. Since a relation
+series is assumed to be non-empty, this is well defined. -/
+def head (x : RelSeries r) : α := x 0
 
-/-- end of a series -/
-def top (x : RelSeries r) : α := x <| Fin.last _
+/-- end of a series .i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a¬`.  Since a relation
+series is assumed to be non-empty, this is well defined. -/
+def last (x : RelSeries r) : α := x <| Fin.last _
 
-lemma bot_mem (x : RelSeries r) : x.bot ∈ x := ⟨_, rfl⟩
+lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
-lemma top_mem (x : RelSeries r) : x.top ∈ x := ⟨_, rfl⟩
+lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
 /--
 If `a_0 --r-> a_1 --r-> ... --r-> a_n` and `b_0 --r-> b_1 --r-> ... --r-> b_m` are two strict series
@@ -179,7 +181,7 @@ such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
 `a_0 --r-> a_1 --r-> ... --r-> a_n --r-> b_0 --r-> b_1 --r-> ... --r-> b_m`.
 -/
 @[simps]
-def append (p q : RelSeries r) (connect : r p.top q.bot) : RelSeries r where
+def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by ring)
   step := fun i => by
@@ -226,10 +228,11 @@ For two sets `α, β` and relation on them `r, s`, if `f : α → β` preserves 
 `a₀ --r-> a₁ --r-> ... --r-> aₙ ↦ f a₀ --s-> f a₁ --s-> ... --s-> f aₙ`
 -/
 @[simps]
-def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+def map (p : RelSeries r)
+    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
   length := p.length
   toFun := f.comp p
-  step := (map <| p.step .)
+  step := (hf <| p.step .)
 
 /--
 If `a_0 --r-> a_1 --r-> ... --r-> a_n` is an `r`-series and `a` is such that
