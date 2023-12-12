@@ -109,7 +109,8 @@ lemma reflection_symm (h : f x = 2) :
 applies when `Φ` does not span.
 
 This rather technical-looking lemma exists because it is exactly what is needed to establish various
-uniqueness results for root data / systems. -/
+uniqueness results for root data / systems. One might regard this lemma as lying at the boundary of
+linear algebra and combinatorics since the finiteness assumption is the key. -/
 lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
@@ -137,7 +138,8 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
   exact u.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo hΦ₁ hΦ₂ (hg₂.comp hf₂)
 
 /-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
-uniqueness result for root data. -/
+uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
+further remarks. -/
 lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hx' : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
