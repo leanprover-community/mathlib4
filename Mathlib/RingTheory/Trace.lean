@@ -331,7 +331,8 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
 lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
     [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
     Algebra.trace A C (e x) = Algebra.trace A B x := by
-  simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]; congr; ext; simp
+  simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]
+  congr; ext; simp [LinearEquiv.conj_apply]
 
 lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
