@@ -22,7 +22,7 @@ def valuedCspTermOfBinary {D C : Type} [OrderedAddCommMonoid C]
     (ok : ⟨2, Function.OfArity.uncurry f⟩ ∈ Γ) (i j : ι) : Γ.Term ι :=
   ⟨2, Function.OfArity.uncurry f, ok, ![i, j]⟩
 
--- Example: minimize `|x| + |y|` where `x` and `y` are rational numbers
+-- ## Example: minimize `|x| + |y|` where `x` and `y` are rational numbers
 
 private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry Abs.abs
 
@@ -35,8 +35,6 @@ private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCsp := rfl
 private def exampleFiniteValuedInstance : exampleFiniteValuedCsp.Instance (Fin 2) :=
   Multiset.ofList [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
 
-#eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
-
 example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
   unfold ValuedCsp.Instance.IsOptimumSolution
   unfold exampleFiniteValuedCsp
@@ -47,7 +45,7 @@ example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] 
   · simp [valuedCspTermOfUnary, ValuedCsp.Term.evalSolution, Function.OfArity.uncurry]
   positivity
 
--- Crisp domain
+-- ## Example: `B ≠ A ≠ C ≠ D ≠ B ≠ C` with three available labels (i.e., 3-coloring of K₄⁻)
 
 private def Bool_add_le_add_left (a b : Bool) :
   (a ≤ b) → ∀ (c : Bool), ((c || a) ≤ (c || b)) :=
@@ -55,7 +53,7 @@ by
   intro hab c
   cases a <;> cases b <;> cases c <;> trivial
 
--- Upside down !!
+-- For simpler implementation, we treat `false` as "satisfied" and `true` as "wrong" here.
 instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   __ := Bool.linearOrder
   add (a b : Bool) := a || b
@@ -65,8 +63,6 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   add_zero := Bool.or_false
   add_comm := Bool.or_comm
   add_le_add_left := Bool_add_le_add_left
-
--- Example: `B ≠ A ≠ C ≠ D ≠ B ≠ C` with three available labels (i.e., 3-coloring of K₄⁻)
 
 private def beqBool : (Fin 2 → Fin 3) → Bool := Function.OfArity.uncurry BEq.beq
 
@@ -109,21 +105,68 @@ private def exampleSolutionIncorrect5 : Fin 4 → Fin 3 := ![0, 1, 2, 1]
 private def exampleSolutionIncorrect6 : Fin 4 → Fin 3 := ![1, 0, 0, 1]
 private def exampleSolutionIncorrect7 : Fin 4 → Fin 3 := ![2, 2, 0, 2]
 
-#eval exampleCrispCspInstance.evalSolution exampleSolutionCorrect0 -- `false` means SATISFIED here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionCorrect1 -- `false` means SATISFIED here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionCorrect2 -- `false` means SATISFIED here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionCorrect3 -- `false` means SATISFIED here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionCorrect4 -- `false` means SATISFIED here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionCorrect5 -- `false` means SATISFIED here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect0 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect1 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect2 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect3 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect4 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect5 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect6 -- `true` means WRONG here
-#eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect7 -- `true` means WRONG here
+example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect0 :=
+  fun _ => Bool.false_le _
 
-example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect0 := by
-  intro _
-  apply Bool.false_le
+example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect1 :=
+  fun _ => Bool.false_le _
+
+example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect2 :=
+  fun _ => Bool.false_le _
+
+example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect3 :=
+  fun _ => Bool.false_le _
+
+example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect4 :=
+  fun _ => Bool.false_le _
+
+example : exampleCrispCspInstance.IsOptimumSolution exampleSolutionCorrect5 :=
+  fun _ => Bool.false_le _
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect0 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect1 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect2 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect3 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect4 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect5 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect6 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
+
+example : ¬exampleCrispCspInstance.IsOptimumSolution exampleSolutionIncorrect7 := by
+  unfold ValuedCsp.Instance.IsOptimumSolution
+  push_neg
+  use exampleSolutionCorrect0
+  rfl
