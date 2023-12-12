@@ -117,8 +117,10 @@ class NonUnitalNormedCommRing (α : Type*) extends NonUnitalNormedRing α where
 -- see Note [lower instance priority]
 /-- A non-unital normed commutative ring is a non-unital seminormed commutative ring. -/
 instance (priority := 100) NonUnitalNormedCommRing.toNonUnitalSeminormedCommRing
-    [β : NonUnitalNormedCommRing α] : NonUnitalSeminormedCommRing α :=
-  { β with }
+    [NonUnitalNormedCommRing α] : NonUnitalSeminormedCommRing α where
+  toNonUnitalSeminormedRing :=
+    NonUnitalNormedCommRing.toNonUnitalNormedRing.toNonUnitalSeminormedRing
+  mul_comm := mul_comm
 
 /-- A seminormed commutative ring is a commutative ring endowed with a seminorm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -137,14 +139,16 @@ class NormedCommRing (α : Type*) extends NormedRing α where
 -- see Note [lower instance priority]
 /-- A seminormed commutative ring is a non-unital seminormed commutative ring. -/
 instance (priority := 100) SeminormedCommRing.toNonUnitalSeminormedCommRing
-    [β : SeminormedCommRing α] : NonUnitalSeminormedCommRing α :=
-  { β with }
+    [SeminormedCommRing α] : NonUnitalSeminormedCommRing α where
+  toNonUnitalSeminormedRing := SeminormedCommRing.toSeminormedRing.toNonUnitalSeminormedRing
+  mul_comm := mul_comm
 
 -- see Note [lower instance priority]
 /-- A normed commutative ring is a non-unital normed commutative ring. -/
 instance (priority := 100) NormedCommRing.toNonUnitalNormedCommRing
-    [β : NormedCommRing α] : NonUnitalNormedCommRing α :=
-  { β with }
+    [NormedCommRing α] : NonUnitalNormedCommRing α where
+  toNonUnitalNormedRing := NormedCommRing.toNormedRing.toNonUnitalNormedRing
+  mul_comm := mul_comm
 
 -- see Note [lower instance priority]
 /-- A normed commutative ring is a seminormed commutative ring. -/
@@ -180,8 +184,10 @@ theorem NormOneClass.nontrivial (α : Type*) [SeminormedAddCommGroup α] [One α
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalSeminormedCommRing.toNonUnitalCommRing
-    [β : NonUnitalSeminormedCommRing α] : NonUnitalCommRing α :=
-  { β with }
+    [NonUnitalSeminormedCommRing α] : NonUnitalCommRing α where
+  toNonUnitalRing := NonUnitalSeminormedCommRing.toNonUnitalSeminormedRing.toNonUnitalRing
+  mul_comm := mul_comm
+
 
 -- see Note [lower instance priority]
 instance (priority := 100) SeminormedCommRing.toCommRing [β : SeminormedCommRing α] : CommRing α :=
