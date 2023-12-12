@@ -117,7 +117,7 @@ theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 :
 
 -- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
 set_option maxHeartbeats 400000 in
-theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j):
+theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
       (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
