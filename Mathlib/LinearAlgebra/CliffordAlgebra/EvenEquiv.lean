@@ -308,4 +308,3 @@ def evenEquivEvenNeg : CliffordAlgebra.even Q ≃ₐ[R] CliffordAlgebra.even (-Q
 attribute [nolint simpNF] evenEquivEvenNeg_apply evenEquivEvenNeg_symm_apply
 
 end CliffordAlgebra
-#lint
