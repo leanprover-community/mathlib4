@@ -112,14 +112,14 @@ theorem subset_upperBounds_mul (s t : Set M) :
 @[to_additive]
 theorem mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : a * b ∈ lowerBounds (s * t) :=
-  @mul_mem_upperBounds_mul Mᵒᵈ _ _ _ _ _ _ _ _ ha hb
+  mul_mem_upperBounds_mul (M := Mᵒᵈ) ha hb
 #align mul_mem_lower_bounds_mul mul_mem_lowerBounds_mul
 #align add_mem_lower_bounds_add add_mem_lowerBounds_add
 
 @[to_additive]
 theorem subset_lowerBounds_mul (s t : Set M) :
     lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
-  @subset_upperBounds_mul Mᵒᵈ _ _ _ _ _ _
+  subset_upperBounds_mul (M := Mᵒᵈ) _ _
 #align subset_lower_bounds_mul subset_lowerBounds_mul
 #align subset_lower_bounds_add subset_lowerBounds_add
 
@@ -156,6 +156,14 @@ theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆
 #align csupr_div ciSup_div
 #align csupr_sub ciSup_sub
 
+@[to_additive]
+theorem ciInf_mul (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  (OrderIso.mulRight a).map_ciInf hf
+
+@[to_additive]
+theorem ciInf_div (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
+  simp only [div_eq_mul_inv, ciInf_mul hf]
+
 end Right
 
 section Left
@@ -168,6 +176,10 @@ theorem mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆
   (OrderIso.mulLeft a).map_ciSup hf
 #align mul_csupr mul_ciSup
 #align add_csupr add_ciSup
+
+@[to_additive]
+theorem mul_ciInf (hf : BddBelow (Set.range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
+  (OrderIso.mulLeft a).map_ciInf hf
 
 end Left
 

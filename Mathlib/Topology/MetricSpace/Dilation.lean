@@ -52,7 +52,7 @@ needed.
 
 noncomputable section
 
-open Function Set
+open Function Set Bornology
 
 open scoped Topology ENNReal NNReal Classical
 
@@ -128,7 +128,7 @@ theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
 
 /-- Copy of a `Dilation` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →ᵈ β where
   toFun := f'
   edist_eq' := h.symm ▸ f.edist_eq'
@@ -268,7 +268,7 @@ theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist
 
 theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
   have hr : ratio f ≠ 0 := ratio_ne_zero f
-  exact_mod_cast
+  exact mod_cast
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
 #align dilation.antilipschitz Dilation.antilipschitz
 
@@ -520,6 +520,13 @@ theorem mapsTo_closedBall (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.closedBall x r') (Metric.closedBall (f x) (ratio f * r')) :=
   fun y hy => (dist_eq f y x).trans_le <| mul_le_mul_of_nonneg_left hy (NNReal.coe_nonneg _)
 #align dilation.maps_to_closed_ball Dilation.mapsTo_closedBall
+
+lemma tendsto_cobounded : Filter.Tendsto f (cobounded α) (cobounded β) :=
+  (Dilation.antilipschitz f).tendsto_cobounded
+
+@[simp]
+lemma comap_cobounded : Filter.comap f (cobounded β) = cobounded α :=
+  le_antisymm (lipschitz f).comap_cobounded_le (tendsto_cobounded f).le_comap
 
 end PseudoMetricDilation
 

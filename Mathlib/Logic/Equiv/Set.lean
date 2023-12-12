@@ -486,7 +486,7 @@ protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Inje
 #align equiv.set.image Equiv.Set.image
 #align equiv.set.image_apply Equiv.Set.image_apply
 
-@[simp]
+@[simp, nolint simpNF]  -- see std4#365 for the simpNF issue
 protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Injective f) (x : α)
     (h : x ∈ s) : (Set.image f s H).symm ⟨f x, ⟨x, ⟨h, rfl⟩⟩⟩ = ⟨x, h⟩ := by
   apply (Set.image f s H).injective
@@ -661,11 +661,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine' forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
-  -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
-  -- This regression is https://github.com/leanprover/lean4/issues/1926
-  by_cases hi : p i
-  · simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
-  · simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
+  by_cases hi : p i <;> simp [hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.

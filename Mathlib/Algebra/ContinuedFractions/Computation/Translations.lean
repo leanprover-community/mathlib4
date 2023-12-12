@@ -345,7 +345,7 @@ theorem convergents'_succ :
     rw [convergents'_of_int, fract_intCast, inv_zero, ← cast_zero, convergents'_of_int, cast_zero,
       div_zero, add_zero, floor_intCast]
   · rw [convergents', of_h_eq_floor, add_right_inj, convergents'Aux_succ_some (of_s_head h)]
-    exact congr_arg ((· / ·) 1) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
+    exact congr_arg (1 / ·) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
 #align generalized_continued_fraction.convergents'_succ GeneralizedContinuedFraction.convergents'_succ
 
 end Values
