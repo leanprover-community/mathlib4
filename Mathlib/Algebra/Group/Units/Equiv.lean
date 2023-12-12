@@ -31,6 +31,14 @@ theorem coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
 #align coe_to_units coe_toUnits
 #align coe_to_add_units coe_toAddUnits
 
+@[to_additive (attr := simp)]
+lemma toUnits_symm_eq_coe {G : Type*} [Group G] (x : Gˣ) : toUnits.symm x = x := rfl
+
+@[to_additive (attr := simp)]
+lemma toUnits_coe {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
+  simp_rw [MulEquiv.apply_eq_iff_symm_apply, toUnits_symm_eq_coe]
+
+
 namespace Units
 
 variable [Monoid M] [Monoid N] [Monoid P]
