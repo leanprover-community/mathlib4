@@ -193,7 +193,6 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_subalgebra.mk_coe LieSubalgebra.mk_coe
 
-@[simp]
 theorem coe_to_submodule_mk (p : Submodule R L) (h) :
     (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
   cases p
@@ -827,3 +826,4 @@ theorem ofSubalgebras_symm_apply (h : L₁'.map ↑e = L₂') (x : L₂') :
 #align lie_equiv.of_subalgebras_symm_apply LieEquiv.ofSubalgebras_symm_apply
 
 end LieEquiv
+#lint
