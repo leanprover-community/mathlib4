@@ -2595,9 +2595,9 @@ private lemma lt_iff_gt_of_add_eq_add' {M : Type*} [LinearOrderedSemiring M]
     a < c ↔ d < b :=
   lt_iff_gt_of_add_eq_add total-/
 
-lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
-    (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
-    x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂ ↔ x₁ = x₂ ∧ Y₁ = Y₂ ∧ z₁ = z₂ := by
+lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
+    (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
+    x₁ ++ [a₁] ++ z₁ = x₂ ++ [a₂] ++ z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
   constructor
   · intro together
     have xlens : x₁.length = x₂.length
