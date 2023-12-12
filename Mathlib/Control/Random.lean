@@ -97,7 +97,7 @@ instance : Random Bool where
   random := randBool
 
 instance {α : Type u} [Random α] : Random (ULift.{v} α) where
-  random {g} := ULiftable.up (random : RandG g α)
+  random := ULiftable.up random
 
 instance : BoundedRandom Nat where
   randomR := λ lo hi h _ => do
@@ -123,10 +123,9 @@ instance {n : Nat} : BoundedRandom (Fin n) where
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
 
 instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
-  randomR {g} lo hi h := do
-    let ⟨v⟩
-      ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _) : RandG g (ULift.{v} _))
-    pure ⟨ULift.up v.val, v.prop⟩
+  randomR lo hi h := do
+    let ⟨x⟩ ← ULiftable.up.{v} (BoundedRandom.randomR lo.down hi.down h)
+    pure ⟨ULift.up x.val, x.prop⟩
 
 end Random
 
