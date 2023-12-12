@@ -27,7 +27,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
 - `index_mul_card` : `H.index * Fintype.card H = Fintype.card G`
 - `index_dvd_card` : `H.index ∣ Fintype.card G`
-- `index_eq_mul_of_le` : If `H ≤ K`, then `H.index = K.index * (H.subgroupOf K).index`
+- `relindex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relindex_mul_relindex` : `relindex` is multiplicative in towers
 

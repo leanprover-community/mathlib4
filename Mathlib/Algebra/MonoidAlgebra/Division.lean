@@ -52,7 +52,7 @@ noncomputable def divOf (x : k[G]) (g : G) : k[G] :=
   -- the support, and discarding the elements of the support from which `g` can't be subtracted.
   -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
   -- then no discarding occurs.
-  @Finsupp.comapDomain.addMonoidHom _ _ _ _ ((· + ·) g) (add_right_injective g) x
+  @Finsupp.comapDomain.addMonoidHom _ _ _ _ (g + ·) (add_right_injective g) x
 #align add_monoid_algebra.div_of AddMonoidAlgebra.divOf
 
 local infixl:70 " /ᵒᶠ " => divOf
@@ -65,7 +65,7 @@ theorem divOf_apply (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g) g' = x (g + g') 
 @[simp]
 theorem support_divOf (g : G) (x : k[G]) :
     (x /ᵒᶠ g).support =
-      x.support.preimage ((· + ·) g) (Function.Injective.injOn (add_right_injective g) _) :=
+      x.support.preimage (g + ·) (Function.Injective.injOn (add_right_injective g) _) :=
   rfl
 #align add_monoid_algebra.support_div_of AddMonoidAlgebra.support_divOf
 

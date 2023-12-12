@@ -901,7 +901,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F)
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
     (g : β → α) (hs' : s.Nonempty := (Nonempty.image_iff _).1 hs) :
     (s.image f).sup' hs g = s.sup' hs' (g ∘ f) := by
-  rw [←WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
+  rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
 #align finset.sup'_image Finset.sup'_image
 
 @[simp]
@@ -1657,7 +1657,7 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
-  have Hne : (s.filter ((· < ·) x)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
+  have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
   have aux := (mem_filter.1 (min'_mem _ Hne))
   ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
 #align finset.exists_next_right Finset.exists_next_right
@@ -1752,7 +1752,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
     (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
   induction' s using Finset.strongInductionOn with s ihs
-  rcases(s.image f).eq_empty_or_nonempty with (hne | hne)
+  rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne

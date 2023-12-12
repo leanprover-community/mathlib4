@@ -1612,7 +1612,8 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
   | nil => simp
   | cons _ _ ih =>
     rw [Walk.cons_isPath_iff] at hp
-    simp [ih hp.1]
+    simp only [map_cons, cons_isPath_iff, ih hp.1, support_map, List.mem_map, not_exists, not_and,
+      true_and]
     intro x hx hf
     cases hinj hf
     exact hp.2 hx
@@ -2622,7 +2623,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
-    by_contra' hb
+    by_contra! hb
     have hb' : ∀ p : G.Walk w v, ⟦(w, v)⟧ ∈ p.edges := by
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse

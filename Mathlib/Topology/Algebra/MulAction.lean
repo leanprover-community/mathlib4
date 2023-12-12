@@ -140,6 +140,26 @@ instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
 #align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
 #align add_opposite.has_continuous_vadd AddOpposite.continuousVAdd
 
+@[to_additive]
+lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsCompact u) :
+    IsCompact (k • u) := by
+  rw [← Set.image_smul_prod]
+  exact IsCompact.image (hk.prod hu) continuous_smul
+
+@[to_additive]
+lemma smul_set_closure_subset (K : Set M) (L : Set X) :
+    closure K • closure L ⊆ closure (K • L) := by
+  rintro - ⟨x, y, hx, hy, rfl⟩
+  apply mem_closure_iff_nhds.2 (fun u hu ↦ ?_)
+  have A : (fun p ↦ p.fst • p.snd) ⁻¹' u ∈ 𝓝 (x, y) :=
+    (continuous_smul.continuousAt (x := (x, y))).preimage_mem_nhds hu
+  obtain ⟨a, ha, b, hb, hab⟩ :
+    ∃ a, a ∈ 𝓝 x ∧ ∃ b, b ∈ 𝓝 y ∧ a ×ˢ b ⊆ (fun p ↦ p.fst • p.snd) ⁻¹' u :=
+      mem_nhds_prod_iff.1 A
+  obtain ⟨x', ⟨x'a, x'K⟩⟩ : Set.Nonempty (a ∩ K) := mem_closure_iff_nhds.1 hx a ha
+  obtain ⟨y', ⟨y'b, y'L⟩⟩ : Set.Nonempty (b ∩ L) := mem_closure_iff_nhds.1 hy b hb
+  exact ⟨x' • y', hab (Set.mk_mem_prod x'a y'b), Set.smul_mem_smul x'K y'L⟩
+
 end SMul
 
 section Monoid
@@ -153,6 +173,16 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X where
       continuous_smul.comp ((Units.continuous_val.comp continuous_fst).prod_mk continuous_snd)
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
+
+/-- If an action is continuous, then composing this action with a continuous homomorphism gives
+again a continuous action. -/
+@[to_additive]
+theorem MulAction.continuousSMul_compHom
+    {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
+    letI : MulAction N X := MulAction.compHom _ f
+    ContinuousSMul N X := by
+  let _ : MulAction N X := MulAction.compHom _ f
+  exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
 end Monoid
 

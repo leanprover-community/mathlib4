@@ -101,6 +101,8 @@ theorem IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔
   ⟨fun h => neg_neg a ▸ h.neg, IsUnit.neg⟩
 #align is_unit.neg_iff IsUnit.neg_iff
 
+theorem isUnit_neg_one [Monoid α] [HasDistribNeg α] : IsUnit (-1 : α) := isUnit_one.neg
+
 theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
   (IsUnit.neg_iff _).symm.trans <| neg_sub x y ▸ Iff.rfl
 #align is_unit.sub_iff IsUnit.sub_iff
@@ -112,7 +114,7 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
-  rw [←mul_assoc, ←mul_assoc, mul_assoc a, mul_assoc (↑u₂⁻¹ : α), mul_inv, inv_mul, mul_one,
+  rw [← mul_assoc, ← mul_assoc, mul_assoc a, mul_assoc (↑u₂⁻¹ : α), mul_inv, inv_mul, mul_one,
     mul_one]
   -- porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
 #align units.divp_add_divp Units.divp_add_divp

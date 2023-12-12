@@ -55,6 +55,6 @@ macro_rules
           -- Pull out negations.
           neg_mul, mul_neg] |
         fail "`noncomm_ring` simp lemmas don't apply; try `abel` instead") <;>
-      first | abel1 | abel_nf ))
+      first | abel1 | abel_nf))
 
 end Mathlib.Tactic.NoncommRing

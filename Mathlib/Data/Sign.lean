@@ -34,7 +34,7 @@ namespace SignType
 
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
-   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp only)
+   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp)
 
 instance : Zero SignType :=
   ⟨zero⟩
@@ -155,7 +155,7 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨2, _⟩ => by simp
     | ⟨n + 3, h⟩ => by simp at h
   map_mul' a b := by
-    cases a <;> cases b <;> simp
+    cases a <;> cases b <;> rfl
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
@@ -360,7 +360,7 @@ theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
 theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.not_le]
 #align sign_nonneg_iff sign_nonneg_iff
 
@@ -368,7 +368,7 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.not_le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.le]
 #align sign_nonpos_iff sign_nonpos_iff
 

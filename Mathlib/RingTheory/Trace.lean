@@ -118,8 +118,8 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
--- Porting note: was `simp [-coe_lmul_eq_mul]`.
-  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, Matrix.scalar_apply_eq]
+  -- Porting note: was `simp [-coe_lmul_eq_mul]`.
+  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, scalar_apply, diagonal_apply_eq]
 
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
@@ -262,7 +262,7 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine' isIntegral_of_mem_of_FG K⟮x⟯.toSubalgebra _ x _
+  refine' .of_mem_of_fg K⟮x⟯.toSubalgebra _ x _
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (FiniteDimensional.of_fintype_basis b)
   · exact subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
@@ -292,7 +292,7 @@ theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
   conv =>
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [← @trace_trace _ _ K K⟮x⟯ _ _ _ _ _ _ _ _ _, trace_algebraMap, LinearMap.map_smul_of_tower]
+  rw [← trace_trace (L := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
 #align trace_eq_trace_adjoin trace_eq_trace_adjoin
 
 variable {K}
@@ -302,9 +302,7 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     algebraMap K F (Algebra.trace K L x) =
       finrank K⟮x⟯ L • ((minpoly K x).aroots F).sum := by
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← Algebra.smul_def,
-    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF]
--- Porting note: last `simp` was `IsScalarTower.algebraMap_smul` inside the `rw`.
-  simp only [eq_natCast, map_natCast, nsmul_eq_mul]
+    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF, IsScalarTower.algebraMap_smul]
 #align trace_eq_sum_roots trace_eq_sum_roots
 
 end EqSumRoots
@@ -319,7 +317,7 @@ attribute [-instance] Field.toEuclideanDomain
 
 theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegral R x) :
     IsIntegral R (Algebra.trace L F x) := by
-  have hx' : IsIntegral L x := isIntegral_of_isScalarTower hx
+  have hx' : IsIntegral L x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
   · refine' (IsIntegral.multiset_sum _).nsmul _
     intro y hy
@@ -366,7 +364,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.toRingHom.toAlgebra) := ?_
+  letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
   rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
     Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   refine' Finset.sum_congr rfl fun σ _ => _
@@ -446,7 +444,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
     BilinForm.sum_left,
     Fintype.sum_congr _ _ fun i : κ =>
-      @BilinForm.sum_right _ _ _ _ _ _ _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
+      BilinForm.sum_right _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
         b y * P.map (algebraMap A B) y β,
     sum_comm]
   congr; ext x
