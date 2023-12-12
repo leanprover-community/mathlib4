@@ -60,14 +60,13 @@ theorem toDerivation_injective :
   fun X Y h => by cases X; cases Y; congr
 #align left_invariant_derivation.coe_derivation_injective LeftInvariantDerivation.toDerivation_injective
 
-instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
+instance : NDFunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
   coe_injective' _ _ h := toDerivation_injective <| FunLike.ext' h
+
+instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
   map_smulₛₗ f := map_smul f.1.1
-
-instance : CoeFun (LeftInvariantDerivation I G) fun _ => C^∞⟮I, G; 𝕜⟯ → C^∞⟮I, G; 𝕜⟯ :=
-  ⟨FunLike.coe⟩
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} {r : 𝕜}
   {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
@@ -140,18 +139,12 @@ instance : Add (LeftInvariantDerivation I G) where
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
-  neg X := ⟨-X, fun g => by
-    -- porting note: was simp [left_invariant']
-    -- `rw` fails without detailed type annotations too; also it needs a lot of time
-    rw [map_neg (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_neg (𝒅ₕ (smoothLeftMul_one I g)),
-      left_invariant', map_neg (Derivation.evalAt (𝕜 := 𝕜) g)]⟩
+  -- Note: restored to state before port
+  neg X := ⟨-X, fun g => by simp [left_invariant']⟩
 
 instance : Sub (LeftInvariantDerivation I G) where
-  sub X Y := ⟨X - Y, fun g => by
-    -- porting note: was simp [left_invariant']
-    -- `rw` fails without detailed type annotations too; also it needs a lot of time
-    rw [map_sub (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_sub (𝒅ₕ (smoothLeftMul_one I g)),
-      map_sub (Derivation.evalAt (𝕜 := 𝕜) g), left_invariant', left_invariant']⟩
+  -- Note: restored to state before port
+  sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
 
 @[simp]
 theorem coe_add : ⇑(X + Y) = X + Y :=

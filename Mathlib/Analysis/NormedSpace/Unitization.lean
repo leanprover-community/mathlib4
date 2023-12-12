@@ -115,9 +115,7 @@ uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Pr
 it as a local instance to build the real one. -/
 @[reducible]
 noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
-  @NormedRing.induced _ (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) Unitization.instRing
-    Prod.normedRing _ (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
--- todo: why does Lean need these instances explictly?
+  NormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
 
 attribute [local instance] Unitization.normedRingAux
 
@@ -147,6 +145,8 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 
+-- Requires synthesis of `DistribMulAction` instances, so let's deprioritize this.
+attribute [instance 50] DistribMulActionHomClass.toAddMonoidHomClass
 
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
@@ -234,7 +234,9 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
-    rw [norm_def, map_smul, norm_smul, ← norm_def]
+    rw [norm_def, map_smul]
+    -- Note: this used to be `rw [norm_smul, ← norm_def]`
+    exact (norm_smul k (splitMul 𝕜 A x)).le
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,

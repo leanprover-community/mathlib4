@@ -83,14 +83,15 @@ structure Valuation extends R →*₀ Γ₀ where
 
 You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
-  extends MonoidWithZeroHomClass F R Γ₀ where
+  [NDFunLike F R Γ₀]
+  extends MonoidWithZeroHomClass F R Γ₀ : Prop where
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
 #align valuation_class ValuationClass
 
 export ValuationClass (map_add_le_max)
 
-instance [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
+instance [NDFunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
   ⟨fun f =>
     { toFun := f
       map_one' := map_one f
@@ -116,21 +117,17 @@ section Monoid
 
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
 
-instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
+instance : NDFunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
     congr
+
+instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
-
--- porting note: is this still helpful? Let's find out!!
-/- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
--- instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
-  -- FunLike.hasCoeToFun
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe

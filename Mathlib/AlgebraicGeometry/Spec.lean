@@ -241,9 +241,10 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
-        erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644 and #8386
+        rw [stalkIso_hom, stalkIso_inv]
+        erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
+            stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 
@@ -405,6 +406,9 @@ def toPushforwardStalkAlgHom :
   { StructureSheaf.toPushforwardStalk (algebraMap R S) p with commutes' := fun _ => rfl }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.to_pushforward_stalk_alg_hom AlgebraicGeometry.StructureSheaf.toPushforwardStalkAlgHom
+
+-- FIXME: ad hoc instance priority hack
+attribute [instance 50] NonUnitalAlgHomClass.toMulHomClass
 
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by

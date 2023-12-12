@@ -78,14 +78,16 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 #align path Path
 
--- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
--- this also fixed very strange `simp` timeout issues
-instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+instance Path.funLike : NDFunLike (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
     simp only [FunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
-  map_continuous := fun γ => by continuity
+
+-- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
+-- this also fixed very strange `simp` timeout issues
+instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+  map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
 
 -- porting note: not necessary in light of the instance above
 /-

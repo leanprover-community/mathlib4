@@ -62,6 +62,10 @@ instance : ConcreteCategory HeytAlg := by
   infer_instance
 
 -- Porting note: No idea why it does not find this instance...
+instance {X Y : HeytAlg.{u}} : NDFunLike (X ⟶ Y) ↑X ↑Y :=
+  HeytingHom.instFunLike
+
+-- Porting note: No idea why it does not find this instance...
 instance {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
   HeytingHom.instHeytingHomClass
 

@@ -258,7 +258,7 @@ def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
     where
   toFun := toLoop i
   invFun := fromLoop i
-  left_inv p := by ext; exact congr_arg p (Equiv.apply_symm_apply _ _)
+  left_inv p := by ext; exact congr_arg p (by dsimp; exact Equiv.apply_symm_apply _ _)
   right_inv := to_from i
   continuous_toFun := continuous_toLoop i
   continuous_invFun := continuous_fromLoop i

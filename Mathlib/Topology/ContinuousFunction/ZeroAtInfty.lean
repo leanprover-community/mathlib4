@@ -60,7 +60,7 @@ vanish at infinity.
 
 You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
 class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-    [Zero β] [TopologicalSpace β] extends ContinuousMapClass F α β where
+    [Zero β] [TopologicalSpace β] [NDFunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- Each member of the class tends to zero along the `cocompact` filter. -/
   zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
 #align zero_at_infty_continuous_map_class ZeroAtInftyContinuousMapClass
@@ -73,21 +73,18 @@ namespace ZeroAtInftyContinuousMap
 
 section Basics
 
-variable [TopologicalSpace β] [Zero β] [ZeroAtInftyContinuousMapClass F α β]
+variable [TopologicalSpace β] [Zero β] [NDFunLike F α β] [ZeroAtInftyContinuousMapClass F α β]
 
-instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass C₀(α, β) α β where
+instance instFunLike : NDFunLike C₀(α, β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass C₀(α, β) α β where
   map_continuous f := f.continuous_toFun
   zero_at_infty f := f.zero_at_infty'
-
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
-directly. -/
-instance instCoeFun : CoeFun C₀(α, β) fun _ => α → β :=
-  FunLike.hasCoeToFun
 
 instance instCoeTC : CoeTC F C₀(α, β) :=
   ⟨fun f =>
@@ -149,10 +146,8 @@ def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β)
 
 /-- A continuous function on a compact space is automatically a continuous function vanishing at
 infinity. This is not an instance to avoid type class loops. -/
-def zeroAtInftyContinuousMapClass.ofCompact {G : Type*} [ContinuousMapClass G α β]
-    [CompactSpace α] : ZeroAtInftyContinuousMapClass G α β where
-  coe g := g
-  coe_injective' f g h := FunLike.coe_fn_eq.mp h
+lemma zeroAtInftyContinuousMapClass.ofCompact {G : Type*} [NDFunLike G α β]
+    [ContinuousMapClass G α β] [CompactSpace α] : ZeroAtInftyContinuousMapClass G α β where
   map_continuous := map_continuous
   zero_at_infty := by simp
 #align zero_at_infty_continuous_map.zero_at_infty_continuous_map_class.of_compact ZeroAtInftyContinuousMap.zeroAtInftyContinuousMapClass.ofCompact
@@ -372,7 +367,8 @@ end AlgebraicStructure
 
 section Uniform
 
-variable [UniformSpace β] [UniformSpace γ] [Zero γ] [ZeroAtInftyContinuousMapClass F β γ]
+variable [UniformSpace β] [UniformSpace γ] [Zero γ]
+variable [NDFunLike F β γ] [ZeroAtInftyContinuousMapClass F β γ]
 
 theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
   (map_continuous f).uniformContinuous_of_tendsto_cocompact (zero_at_infty f)
@@ -393,7 +389,7 @@ section Metric
 
 open Metric Set
 
-variable [MetricSpace β] [Zero β] [ZeroAtInftyContinuousMapClass F α β]
+variable [MetricSpace β] [Zero β] [NDFunLike F α β] [ZeroAtInftyContinuousMapClass F α β]
 
 protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
   obtain ⟨K : Set α, hK₁, hK₂⟩ := mem_cocompact.mp

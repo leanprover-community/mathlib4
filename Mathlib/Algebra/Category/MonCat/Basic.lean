@@ -89,6 +89,10 @@ instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (X →* Y) X (fun _ => Y) by infer_instance
 
+@[to_additive]
+instance monoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
+  show MonoidHomClass (X →* Y) X Y by infer_instance
+
 -- porting note: added
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl

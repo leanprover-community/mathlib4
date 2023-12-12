@@ -434,7 +434,12 @@ variable {G f}
 
 @[simp]
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
-  Module.DirectLimit.lift_of _ _ _
+  Module.DirectLimit.lift_of
+    -- Note: had to make these arguments explicit.
+    (f := (fun i j hij => (f i j hij).toIntLinearMap))
+    (fun i => (g i).toIntLinearMap)
+    Hg
+    x
 #align add_comm_group.direct_limit.lift_of AddCommGroup.DirectLimit.lift_of
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x) :

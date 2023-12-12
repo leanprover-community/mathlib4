@@ -44,7 +44,7 @@ section
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
 class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology α]
-    [Bornology β] extends FunLike F α fun _ => β where
+    [Bornology β] [NDFunLike F α β] : Prop where
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
   comap_cobounded_le (f : F) : (cobounded β).comap f ≤ cobounded α
@@ -53,6 +53,8 @@ class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology 
 end
 
 export LocallyBoundedMapClass (comap_cobounded_le)
+
+variable [NDFunLike F α β]
 
 theorem Bornology.IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] (f : F)
     {s : Set α} (hs : IsBounded s) : IsBounded (f '' s) :=
@@ -76,19 +78,16 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
-instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
+instance : NDFunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
-  comap_cobounded_le f := f.comap_cobounded_le'
 
-/- omitting helper instance because it is not needed in Lean 4.
-/-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly.
-instance : CoeFun (LocallyBoundedMap α β) fun _ => α → β where
-  coe := LocallyBoundedMap.toFun -/ -/
+
+instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
+  comap_cobounded_le f := f.comap_cobounded_le'
 
 -- porting note: syntactic tautology because of the way coercions work
 #noalign locally_bounded_map.to_fun_eq_coe

@@ -94,13 +94,14 @@ lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero 
   rw [smul_pow, ha, smul_zero]
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
-    [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
+    [NDFunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
+    IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
 
 lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
-    [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
+    [NDFunLike F R S] [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
     IsNilpotent (f r) ↔ IsNilpotent r :=
   ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
 
@@ -148,7 +149,8 @@ theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x
 #align is_nilpotent_iff_eq_zero isNilpotent_iff_eq_zero
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
-    [MonoidWithZeroHomClass F R S] (f : F) (hf : Function.Injective f) [IsReduced S] :
+    [NDFunLike F R S] [MonoidWithZeroHomClass F R S]
+    (f : F) (hf : Function.Injective f) [IsReduced S] :
     IsReduced R := by
   constructor
   intro x hx
@@ -158,7 +160,7 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
 #align is_reduced_of_injective isReduced_of_injective
 
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
-    [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
+    [NDFunLike F R S] [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl

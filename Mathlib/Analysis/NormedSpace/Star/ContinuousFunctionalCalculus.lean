@@ -99,6 +99,9 @@ theorem spectrum_star_mul_self_of_isStarNormal :
 
 variable {a}
 
+-- HACK for a `simp` that barely times out
+attribute [-instance] ContinuousSemilinearMapClass.toSemilinearMapClass
+
 /-- This is the key lemma on the way to establishing spectral permanence for C⋆-algebras, which is
 established in `StarSubalgebra.spectrum_eq`. This lemma is superseded by
 `StarSubalgebra.coe_isUnit`, which does not require an `IsStarNormal` hypothesis and holds for

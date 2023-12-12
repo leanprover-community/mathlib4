@@ -57,7 +57,7 @@ theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedP
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
-theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [AddMonoidHomClass F M N]
+theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [NDFunLike F M N] [AddMonoidHomClass F M N]
     (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _

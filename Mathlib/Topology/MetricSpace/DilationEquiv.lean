@@ -29,10 +29,10 @@ variable (F : Type*) (X Y : outParam (Type*)) [PseudoEMetricSpace X] [PseudoEMet
 
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
-class DilationEquivClass extends EquivLike F X Y where
+class DilationEquivClass [EquivLike F X Y] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
-instance (priority := 100) [DilationEquivClass F X Y] : DilationClass F X Y :=
+instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
   { inferInstanceAs (FunLike F X fun _ ↦ Y), ‹DilationEquivClass F X Y› with }
 
 end Class
@@ -50,12 +50,14 @@ section PseudoEMetricSpace
 
 variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
-instance : DilationEquivClass (X ≃ᵈ Y) X Y where
+instance : EquivLike (X ≃ᵈ Y) X Y where
   coe f := f.1
   inv f := f.1.symm
   left_inv f := f.left_inv'
   right_inv f := f.right_inv'
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact FunLike.ext' h
+
+instance : DilationEquivClass (X ≃ᵈ Y) X Y where
   edist_eq' f := f.edist_eq'
 
 instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
@@ -180,7 +182,8 @@ end PseudoEMetricSpace
 
 section PseudoMetricSpace
 
-variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y] [DilationEquivClass F X Y]
+variable {X Y F : Type*} [PseudoMetricSpace X] [PseudoMetricSpace Y]
+variable [EquivLike F X Y] [DilationEquivClass F X Y]
 
 @[simp]
 lemma map_cobounded (e : F) : map e (cobounded X) = cobounded Y := by

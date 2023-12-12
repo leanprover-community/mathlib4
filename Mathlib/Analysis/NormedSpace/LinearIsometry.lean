@@ -142,19 +142,14 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
   toLinearMap_injective.eq_iff
 #align linear_isometry.to_linear_map_inj LinearIsometry.toLinearMap_inj
 
-instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance : NDFunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toLinearMap_injective (FunLike.coe_injective h)
+
+instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
-
--- porting note: These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
--- directly.
--- -/
--- instance : CoeFun (E →ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
---   ⟨fun f => f.toFun⟩
 
 @[simp]
 theorem coe_toLinearMap : ⇑f.toLinearMap = f :=
@@ -543,7 +538,7 @@ theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEqui
   toLinearEquiv_injective.eq_iff
 #align linear_isometry_equiv.to_linear_equiv_inj LinearIsometryEquiv.toLinearEquiv_inj
 
-instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
   coe_injective' f g h₁ h₂ := by
@@ -555,6 +550,8 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
     congr
   left_inv e := e.left_inv
   right_inv e := e.right_inv
+
+instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
@@ -1137,7 +1134,7 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
   { Equiv.prodAssoc E E₂ E₃ with
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
-    map_add' := by simp
+    map_add' := by simp [-_root_.map_add] -- HACK to fix timeout
     map_smul' := by simp
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩

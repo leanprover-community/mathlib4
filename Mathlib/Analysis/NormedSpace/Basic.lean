@@ -526,7 +526,8 @@ end NormedAlgebra
 See note [reducible non-instances] -/
 @[reducible]
 def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring β] [Algebra α β]
-    [SeminormedRing γ] [NormedAlgebra α γ] [NonUnitalAlgHomClass F α β γ] (f : F) :
+    [SeminormedRing γ] [NormedAlgebra α γ] [NDFunLike F β γ] [NonUnitalAlgHomClass F α β γ]
+    (f : F) :
     @NormedAlgebra α β _ (SeminormedRing.induced β γ f) := by
   -- Porting note: trouble with SeminormedRing β, Algebra α β, and unfolding seminorm
   refine @NormedAlgebra.mk (𝕜 := α) (𝕜' := β) _ ?_ ?_ ?_
@@ -539,7 +540,7 @@ def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring 
 -- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val
+  NormedAlgebra.induced 𝕜 S A S.val
 #align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
 
 section RestrictScalars

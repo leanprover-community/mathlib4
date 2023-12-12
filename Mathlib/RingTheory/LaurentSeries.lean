@@ -72,7 +72,7 @@ theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
 @[simp]
 theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
   ext
-  simp
+  simp [(PowerSeries.coeff _ _).map_zero] -- Note: this doesn't get picked up any more
 #align laurent_series.power_series_part_zero LaurentSeries.powerSeriesPart_zero
 
 @[simp]

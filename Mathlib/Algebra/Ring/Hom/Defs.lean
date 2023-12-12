@@ -76,11 +76,13 @@ section NonUnitalRingHomClass
 
 /-- `NonUnitalRingHomClass F α β` states that `F` is a type of non-unital (semi)ring
 homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. -/
-class NonUnitalRingHomClass (F : Type*) (α β : outParam (Type*)) [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] extends MulHomClass F α β, AddMonoidHomClass F α β
+class NonUnitalRingHomClass (F : Type*) (α β : outParam Type*) [NonUnitalNonAssocSemiring α]
+  [NonUnitalNonAssocSemiring β] [NDFunLike F α β]
+  extends MulHomClass F α β, AddMonoidHomClass F α β : Prop
 #align non_unital_ring_hom_class NonUnitalRingHomClass
 
-variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NDFunLike F α β]
+variable [NonUnitalRingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
 `NonUnitalRingHom`. This is declared as the default coercion from `F` to `α →ₙ+* β`. -/
@@ -101,7 +103,7 @@ section coe
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
-instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
+instance : NDFunLike (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -109,16 +111,11 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
     congr
     apply FunLike.coe_injective'
     exact h
+
+instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
-
--- Porting note:
--- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
--- directly. -/
--- instance : CoeFun (α →ₙ+* β) fun _ => α → β :=
---   ⟨fun f => f.toFun⟩
 
 -- Porting note: removed due to new `coe` in Lean4
 #noalign non_unital_ring_hom.to_fun_eq_coe
@@ -372,10 +369,12 @@ You should extend this class when you extend `RingHom`.
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
-class RingHomClass (F : Type*) (α β : outParam (Type*)) [NonAssocSemiring α]
-  [NonAssocSemiring β] extends MonoidHomClass F α β, AddMonoidHomClass F α β,
-  MonoidWithZeroHomClass F α β
+class RingHomClass (F : Type*) (α β : outParam Type*) [NonAssocSemiring α] [NonAssocSemiring β]
+    [NDFunLike F α β]
+  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
 #align ring_hom_class RingHomClass
+
+variable [NDFunLike F α β]
 
 set_option linter.deprecated false in
 /-- Ring homomorphisms preserve `bit1`. -/
@@ -413,7 +412,7 @@ See note [implicit instance arguments].
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
-instance instRingHomClass : RingHomClass (α →+* β) α β where
+instance instFunLike : NDFunLike (α →+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -421,18 +420,12 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
     congr
     apply FunLike.coe_injective'
     exact h
+
+instance instRingHomClass : RingHomClass (α →+* β) α β where
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'
   map_mul f := f.map_mul'
   map_one f := f.map_one'
-
--- Porting note:
--- These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
--- directly.
--- -/
--- instance : CoeFun (α →+* β) fun _ => α → β :=
---   ⟨RingHom.toFun⟩
 
 initialize_simps_projections RingHom (toFun → apply)
 
@@ -451,7 +444,8 @@ theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* �
 #align ring_hom.coe_mk RingHom.coe_mk
 
 @[simp]
-theorem coe_coe {F : Type*} [RingHomClass F α β] (f : F) : ((f : α →+* β) : α → β) = f :=
+theorem coe_coe {F : Type*} [NDFunLike F α β] [RingHomClass F α β] (f : F) :
+    ((f : α →+* β) : α → β) = f :=
   rfl
 #align ring_hom.coe_coe RingHom.coe_coe
 
@@ -571,13 +565,15 @@ protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
 #align ring_hom.map_mul RingHom.map_mul
 
 @[simp]
-theorem map_ite_zero_one {F : Type*} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
+theorem map_ite_zero_one {F : Type*} [NDFunLike F α β] [RingHomClass F α β] (f : F)
+    (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
   split_ifs with h <;> simp [h]
 #align ring_hom.map_ite_zero_one RingHom.map_ite_zero_one
 
 @[simp]
-theorem map_ite_one_zero {F : Type*} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
+theorem map_ite_one_zero {F : Type*} [NDFunLike F α β] [RingHomClass F α β] (f : F)
+    (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
   split_ifs with h <;> simp [h]
 #align ring_hom.map_ite_one_zero RingHom.map_ite_one_zero

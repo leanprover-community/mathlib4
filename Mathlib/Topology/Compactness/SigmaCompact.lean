@@ -337,9 +337,11 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
-instance : @RelHomClass (CompactExhaustion X) ℕ (Set X) LE.le HasSubset.Subset where
+instance : NDFunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+
+instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
   map_rel f _ _ h := monotone_nat_of_le_succ
     (fun n ↦ (f.subset_interior_succ' n).trans interior_subset) h
 

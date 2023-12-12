@@ -912,7 +912,7 @@ section Lattice
 variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 theorem uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.toEmbedding :=
-  Icc_toDual _ _
+  Icc_toDual (a ⊔ b) (a ⊓ b)
 #align finset.uIcc_to_dual Finset.uIcc_toDual
 
 @[simp]

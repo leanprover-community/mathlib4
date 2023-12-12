@@ -79,6 +79,8 @@ noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
     Quotient.mkₐ ℂ I
 #align ideal.to_character_space Ideal.toCharacterSpace
 
+section
+
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
@@ -87,6 +89,8 @@ theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
   simp_rw [Quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq]
   exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
 #align ideal.to_character_space_apply_eq_zero_of_mem Ideal.toCharacterSpace_apply_eq_zero_of_mem
+
+end
 
 /-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivalent
 to `gelfandTransform ℂ A a` takes the value zero at some character. -/
@@ -155,6 +159,8 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 #align gelfand_transform_isometry gelfandTransform_isometry
 
+-- HACK: a failing search for a `Star` instance is very expensive apparently!
+set_option synthInstance.maxHeartbeats 400000 in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩

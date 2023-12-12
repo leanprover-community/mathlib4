@@ -48,9 +48,9 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
-  (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B] extends RingHomClass F A B where
+class AlgHomClass (F : Type*) (R A B : outParam Type*)
+  {_ : outParam <| CommSemiring R} {_ : outParam <| Semiring A} {_ : outParam <| Semiring B}
+  [Algebra R A] [Algebra R B] [NDFunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
@@ -63,7 +63,7 @@ class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
 namespace AlgHomClass
 
 variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B]
+  [Algebra R A] [Algebra R B] [NDFunLike F A B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -76,12 +76,12 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
+def toAlgHom {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
   { (f : A →+* B) with
       toFun := f
       commutes' := AlgHomClass.commutes f }
 
-instance coeTC {F : Type*} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance coeTC {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -100,13 +100,15 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 -- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
 #noalign alg_hom.has_coe_to_fun
 
--- Porting note: This instance is moved.
-instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+instance funLike : NDFunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
+
+-- Porting note: This instance is moved.
+instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -121,7 +123,8 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
+protected theorem coe_coe {F : Type*} [NDFunLike F A B] [AlgHomClass F R A B] (f : F) :
+    ⇑(f : A →ₐ[R] B) = f :=
   rfl
 #align alg_hom.coe_coe AlgHom.coe_coe
 

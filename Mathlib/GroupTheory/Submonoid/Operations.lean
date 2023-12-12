@@ -167,7 +167,7 @@ end
 
 namespace Submonoid
 
-variable {F : Type*} [mc : MonoidHomClass F M N]
+variable {F : Type*} [NDFunLike F M N] [mc : MonoidHomClass F M N]
 
 open Set
 
@@ -999,7 +999,7 @@ end Submonoid
 
 namespace MonoidHom
 
-variable {F : Type*} [mc : MonoidHomClass F M N]
+variable {F : Type*} [NDFunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
