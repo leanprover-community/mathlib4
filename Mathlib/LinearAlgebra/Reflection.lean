@@ -106,7 +106,10 @@ lemma reflection_symm (h : f x = 2) :
   rfl
 
 /-- See also `Module.Dual.eq_of_preReflection_mapsTo'` for a variant of this lemma which
-applies when `Φ` does not span. -/
+applies when `Φ` does not span.
+
+This rather technical-looking lemma exists because it is exactly what is needed to establish various
+uniqueness results for root data / systems. -/
 lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
@@ -133,6 +136,8 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     simpa [hn₁, hn₀.ne', hx, sub_eq_zero] using hu n
   exact u.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo hΦ₁ hΦ₂ (hg₂.comp hf₂)
 
+/-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
+uniqueness result for root data. -/
 lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hx' : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
