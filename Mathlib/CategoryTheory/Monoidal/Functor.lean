@@ -2,15 +2,12 @@
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monoidal.functor
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.monoidal.functor from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # (Lax) monoidal functors
@@ -159,7 +156,7 @@ variable {C D}
 /-- The unit morphism of a (strong) monoidal functor as an isomorphism.
 -/
 noncomputable def MonoidalFunctor.εIso (F : MonoidalFunctor.{v₁, v₂} C D) :
-    tensorUnit D ≅ F.obj (tensorUnit C) :=
+    𝟙_ D ≅ F.obj (𝟙_ C) :=
   asIso F.ε
 #align category_theory.monoidal_functor.ε_iso CategoryTheory.MonoidalFunctor.εIso
 

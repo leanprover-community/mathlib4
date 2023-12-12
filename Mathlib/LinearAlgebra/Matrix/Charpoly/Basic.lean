@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.RingTheory.PolynomialAlgebra
+
+#align_import linear_algebra.matrix.charpoly.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -52,26 +49,27 @@ def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
 #align charmatrix charmatrix
 
 theorem charmatrix_apply (M : Matrix n n R) (i j : n) :
-    charmatrix M i j = X * (1 : Matrix n n R[X]) i j - C (M i j) :=
+    charmatrix M i j = (Matrix.diagonal fun _ : n => X) i j - C (M i j) :=
   rfl
 #align charmatrix_apply charmatrix_apply
 
 @[simp]
 theorem charmatrix_apply_eq (M : Matrix n n R) (i : n) :
     charmatrix M i i = (X : R[X]) - C (M i i) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_eq, map_apply]
+  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, map_apply,
+    diagonal_apply_eq]
 
 #align charmatrix_apply_eq charmatrix_apply_eq
 
 @[simp]
 theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
     charmatrix M i j = -C (M i j) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_ne _ _ _ h, map_apply,
-    sub_eq_neg_self]
+  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
+    map_apply, sub_eq_neg_self]
 #align charmatrix_apply_ne charmatrix_apply_ne
 
 theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
-  ext (k i j)
+  ext k i j
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
   by_cases h : i = j
   · subst h
@@ -84,7 +82,7 @@ theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M)
 
 theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
-  ext (i j x)
+  ext i j x
   by_cases h : i = j
   all_goals simp [h]
 #align charmatrix_reindex charmatrix_reindex
@@ -116,14 +114,14 @@ theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :
     (adjugate_mul _).symm
   -- Using the algebra isomorphism `Matrix n n R[X] ≃ₐ[R] Polynomial (Matrix n n R)`,
   -- we have the same identity in `Polynomial (Matrix n n R)`.
-  apply_fun matPolyEquiv  at h
+  apply_fun matPolyEquiv at h
   simp only [matPolyEquiv.map_mul, matPolyEquiv_charmatrix] at h
   -- Because the coefficient ring `Matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$
   -- is sent to zero, because the evaluation function puts the polynomial variable
   -- to the right of any coefficients, so everything telescopes.
-  apply_fun fun p => p.eval M  at h
+  apply_fun fun p => p.eval M at h
   rw [eval_mul_X_sub_C] at h
   -- Now $χ_M (t) I$, when thought of as a polynomial of matrices
   -- and evaluated at some `N` is exactly $χ_M (N)$.

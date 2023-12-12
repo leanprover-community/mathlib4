@@ -37,9 +37,9 @@ set -exo pipefail
 
 touch scripts/style-exceptions.txt
 
-git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py
-git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py
-git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py
+git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py "$@"
+git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
+git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
 
 # 2. Global checks on the mathlib repository
 
@@ -51,5 +51,16 @@ if [[ -n "$executable_files" ]]
 then
 	echo "ERROR: The following Lean files have the executable bit set."
 	echo "$executable_files"
+	exit 1
+fi
+
+# 2.2 Check that there are no filenames with the same lower-case reduction
+
+# `uniq -D`: print all duplicate lines
+ignore_case_clashes="$(git ls-files | sort --ignore-case | uniq -D --ignore-case)"
+
+if [ -n "${ignore_case_clashes}" ]; then
+	printf $'The following files have the same lower-case form:\n\n%s\n
+Please, make sure to avoid such clashes!\n' "${ignore_case_clashes}"
 	exit 1
 fi

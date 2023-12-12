@@ -10,6 +10,9 @@ A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for lean 4 kernel primitives.
 -/
+
+set_option autoImplicit true
+
 open Lean (HashMap HashSet)
 
 namespace Lean
@@ -110,7 +113,7 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
   | none => match E with
     | .bvar n => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i
     | .fvar _ => unreachable!
-    | .mvar _  => unreachable!
+    | .mvar _ => unreachable!
     | .sort l => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; pure i
     | .const n ls =>
       exportDef n

@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.polynomial.splits
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Prime
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.Lifts
+
+#align_import data.polynomial.splits from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Split polynomials
@@ -24,22 +21,16 @@ irreducible factors over `L` have degree `1`.
   field and a polynomial `f` saying that `f.map i` is zero or all of its irreducible factors over
   `L` have degree `1`.
 
-## Main statements
-
-* `lift_of_splits`: If `K` and `L` are field extensions of a field `F` and for some finite subset
-  `S` of `K`, the minimal polynomial of every `x ∈ K` splits as a polynomial with coefficients in
-  `L`, then `Algebra.adjoin F S` embeds into `L`.
-
 -/
 
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
+variable {R : Type*} {F : Type u} {K : Type v} {L : Type w}
 
 namespace Polynomial
 
@@ -64,6 +55,7 @@ theorem splits_zero : Splits i (0 : K[X]) :=
 #align polynomial.splits_zero Polynomial.splits_zero
 
 theorem splits_of_map_eq_C {f : K[X]} {a : L} (h : f.map i = C a) : Splits i f :=
+  letI := Classical.decEq L
   if ha : a = 0 then Or.inl (h.trans (ha.symm ▸ C_0))
   else
     Or.inr fun hg ⟨p, hp⟩ =>
@@ -112,6 +104,7 @@ theorem splits_of_natDegree_eq_one {f : K[X]} (hf : natDegree f = 1) : Splits i 
 #align polynomial.splits_of_nat_degree_eq_one Polynomial.splits_of_natDegree_eq_one
 
 theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (f * g) :=
+  letI := Classical.decEq L
   if h : (f * g).map i = 0 then Or.inl h
   else
     Or.inr @fun p hp hpf =>
@@ -153,6 +146,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, (s j).Splits i) → (∏ x in t, s x).Splits i := by
+  classical
   refine' Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => _
   rw [Finset.forall_mem_insert] at ht; rw [Finset.prod_insert hat]
   exact splits_mul i ht.1 (ih ht.2)
@@ -174,6 +168,7 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
+  letI := Classical.decEq L
   if hf0' : f.map i = 0 then by simp [eval₂_eq_eval_map, hf0']
   else
     let ⟨g, hg⟩ :=
@@ -181,7 +176,7 @@ theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map
         (show ¬IsUnit (f.map i) from mt isUnit_iff_degree_eq_zero.1 hf0) hf0'
     let ⟨x, hx⟩ := exists_root_of_degree_eq_one (hs.resolve_left hf0' hg.1 hg.2)
     let ⟨i, hi⟩ := hg.2
-    ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, MulZeroClass.zero_mul]⟩
+    ⟨x, by rw [← eval_map, hi, eval_mul, show _ = _ from hx, zero_mul]⟩
 #align polynomial.exists_root_of_splits' Polynomial.exists_root_of_splits'
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
@@ -211,7 +206,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   obtain ⟨q, he, hd, hr⟩ := exists_prod_multiset_X_sub_C_mul (p.map i)
   rw [← splits_id_iff_splits, ← he] at hsplit
   rw [← he] at hp
-  have hq : q ≠ 0 := fun h => hp (by rw [h, MulZeroClass.mul_zero])
+  have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
   rw [← hd, add_right_eq_self]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
@@ -229,7 +224,7 @@ theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i �
 
 end CommRing
 
-variable [Field K] [Field L] [Field F]
+variable [CommRing R] [Field K] [Field L] [Field F]
 
 variable (i : K →+* L)
 
@@ -256,12 +251,12 @@ theorem splits_of_splits_of_dvd {f g : K[X]} (hf0 : f ≠ 0) (hf : Splits i f) (
   exact (splits_of_splits_mul i hf0 hf).1
 #align polynomial.splits_of_splits_of_dvd Polynomial.splits_of_splits_of_dvd
 
-theorem splits_of_splits_gcd_left {f g : K[X]} (hf0 : f ≠ 0) (hf : Splits i f) :
+theorem splits_of_splits_gcd_left [DecidableEq K] {f g : K[X]} (hf0 : f ≠ 0) (hf : Splits i f) :
     Splits i (EuclideanDomain.gcd f g) :=
   Polynomial.splits_of_splits_of_dvd i hf0 hf (EuclideanDomain.gcd_dvd_left f g)
 #align polynomial.splits_of_splits_gcd_left Polynomial.splits_of_splits_gcd_left
 
-theorem splits_of_splits_gcd_right {f g : K[X]} (hg0 : g ≠ 0) (hg : Splits i g) :
+theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0) (hg : Splits i g) :
     Splits i (EuclideanDomain.gcd f g) :=
   Polynomial.splits_of_splits_of_dvd i hg0 hg (EuclideanDomain.gcd_dvd_right f g)
 #align polynomial.splits_of_splits_gcd_right Polynomial.splits_of_splits_gcd_right
@@ -273,11 +268,12 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
 
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → ((∏ x in t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
+  classical
   refine'
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)
       fun a t hat ih ht => _
-  rw [Finset.forall_mem_insert] at ht⊢
+  rw [Finset.forall_mem_insert] at ht ⊢
   rw [Finset.prod_insert hat, splits_mul_iff i ht.1 (Finset.prod_ne_zero_iff.2 ht.2), ih ht.2]
 #align polynomial.splits_prod_iff Polynomial.splits_prod_iff
 
@@ -329,21 +325,21 @@ theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (h
 
 theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective <| by
-      convert(natDegree_eq_card_roots hf).symm
+      convert (natDegree_eq_card_roots hf).symm
       rw [map_id]).symm
 #align polynomial.roots_map Polynomial.roots_map
 
-theorem image_rootSet [Algebra F K] [Algebra F L] {p : F[X]} (h : p.Splits (algebraMap F K))
-    (f : K →ₐ[F] L) : f '' p.rootSet K = p.rootSet L := by
+theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
+    (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
   classical
     rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
-      ← roots_map _ ((splits_id_iff_splits (algebraMap F K)).mpr h), map_map, f.comp_algebraMap,
+      ← roots_map _ ((splits_id_iff_splits (algebraMap R K)).mpr h), map_map, f.comp_algebraMap,
       ← rootSet]
 #align polynomial.image_root_set Polynomial.image_rootSet
 
-theorem adjoin_rootSet_eq_range [Algebra F K] [Algebra F L] {p : F[X]}
-    (h : p.Splits (algebraMap F K)) (f : K →ₐ[F] L) :
-    Algebra.adjoin F (p.rootSet L) = f.range ↔ Algebra.adjoin F (p.rootSet K) = ⊤ := by
+theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
+    (h : p.Splits (algebraMap R K)) (f : K →ₐ[R] L) :
+    Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
   rw [← image_rootSet h f, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
 #align polynomial.adjoin_root_set_eq_range Polynomial.adjoin_rootSet_eq_range
@@ -374,7 +370,8 @@ theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Split
 set_option linter.uppercaseLean3 false in
 #align polynomial.eq_X_sub_C_of_splits_of_single_root Polynomial.eq_X_sub_C_of_splits_of_single_root
 
-theorem mem_lift_of_splits_of_roots_mem_range (R : Type _) [CommRing R] [Algebra R K] {f : K[X]}
+variable (R) in
+theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
   rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
@@ -393,6 +390,7 @@ open UniqueFactorizationMonoid Associates
 
 theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
+  letI := Classical.decEq K
   if hf0 : f = 0 then hf0.symm ▸ splits_zero i
   else
     Or.inr @fun p hp hdp => by
@@ -427,13 +425,35 @@ theorem splits_iff_exists_multiset {f : K[X]} :
     splits_of_exists_multiset i hs⟩
 #align polynomial.splits_iff_exists_multiset Polynomial.splits_iff_exists_multiset
 
-theorem splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
-  -- Porting note: was
-  -- change i with (RingHom.id _).comp i at h
-  rw [← splits_map_iff]
-  rw [← RingHom.id_comp i, ← splits_map_iff i] at h
-  exact splits_of_splits_id _ h
+theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (j.comp i) f)
+    (roots_mem_range : ∀ a ∈ (f.map (j.comp i)).roots, a ∈ j.range) : Splits i f := by
+  choose lift lift_eq using roots_mem_range
+  rw [splits_iff_exists_multiset]
+  refine ⟨(f.map (j.comp i)).roots.pmap lift fun _ ↦ id, map_injective _ j.injective ?_⟩
+  conv_lhs => rw [Polynomial.map_map, eq_prod_roots_of_splits h]
+  simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
+    map_C, map_X, lift_eq, Multiset.pmap_eq_map]
+  rfl
+
+theorem splits_id_of_splits {f : K[X]} (h : Splits i f)
+    (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (RingHom.id K) f :=
+  splits_of_comp (RingHom.id K) i h roots_mem_range
+
+theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) {f : R[X]} (h : Splits i f) :
+    Splits (j.comp i) f :=
+  (splits_map_iff i j).mp (splits_of_splits_id _ <| (splits_map_iff i <| .id K).mpr h)
 #align polynomial.splits_comp_of_splits Polynomial.splits_comp_of_splits
+
+variable [Algebra R K] [Algebra R L]
+
+theorem splits_of_algHom {f : R[X]} (h : Splits (algebraMap R K) f) (e : K →ₐ[R] L) :
+    Splits (algebraMap R L) f := by
+  rw [← e.comp_algebraMap_of_tower R]; exact splits_comp_of_splits _ _ h
+
+variable (L) in
+theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
+    (h : Splits (algebraMap R K) f) : Splits (algebraMap R L) f :=
+  splits_of_algHom h (IsScalarTower.toAlgHom R K L)
 
 /-- A polynomial splits if and only if it has as many roots as its degree. -/
 theorem splits_iff_card_roots {p : K[X]} :
@@ -448,10 +468,10 @@ theorem splits_iff_card_roots {p : K[X]} :
     exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
-theorem aeval_root_derivative_of_splits [Algebra K L] {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ (P.map (algebraMap K L)).roots) :
+theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
+    (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) =
-    (((P.map <| algebraMap K L).roots.erase r).map fun a => r - a).prod := by
+    (((P.aroots L).erase r).map fun a => r - a).prod := by
   replace hmo := hmo.map (algebraMap K L)
   replace hP := (splits_id_iff_splits (algebraMap K L)).2 hP
   rw [aeval_def, ← eval_map, ← derivative_map]

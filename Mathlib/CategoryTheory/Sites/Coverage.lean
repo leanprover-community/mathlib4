@@ -35,7 +35,7 @@ All definitions are in the `CategoryTheory` namespace.
 - `Coverage.toGrothendieck C`: A function which associates a Grothendieck topology to any coverage.
 - `Coverage.gi`: The two functions above form a Galois insertion.
 - `Presieve.isSheaf_coverage`: Given `K : Coverage C` with associated
-  Grothendieck topology `J`, a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if
+  Grothendieck topology `J`, a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if
   it is a sheaf for `J`.
 
 # References
@@ -44,6 +44,8 @@ the following sources:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.
 - [nLab, *Coverage*](https://ncatlab.org/nlab/show/coverage)
 -/
+
+set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -101,12 +103,12 @@ lemma isSheafFor_of_factorsThru
     (h : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, T f → ∃ (R : Presieve Y),
       R.IsSeparatedFor P ∧ R.FactorsThruAlong S f):
     T.IsSheafFor P := by
-  simp only [←Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
+  simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
   refine ⟨?_, fun x hx => ?_⟩
   · intro x y₁ y₂ h₁ h₂
     refine hS.1.ext (fun Y g hg => ?_)
-    simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1  _)]
+    simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1 _)]
   let y : S.FamilyOfElements P := fun Y g hg => P.map (i _).op (x (e hg) (h1 _))
   have hy : y.Compatible := by
     intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
@@ -186,7 +188,7 @@ inductive saturate (K : Coverage C) : (X : C) → Sieve X → Prop where
 
 lemma eq_top_pullback {X Y : C} {S T : Sieve X} (h : S ≤ T) (f : Y ⟶ X) (hf : S f) :
     T.pullback f = ⊤ := by
-  ext Z ; intro g
+  ext Z g
   simp only [Sieve.pullback_apply, Sieve.top_apply, iff_true]
   apply h
   apply S.downward_closed
@@ -273,15 +275,34 @@ it is the infimum of all Grothendieck topologies whose associated coverage conta
 theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     sInf {J | K ≤ ofGrothendieck _ J } := by
   apply le_antisymm
-  · apply le_sInf ; intro J hJ
+  · apply le_sInf; intro J hJ
     intro X S hS
     induction hS with
-    | of X S hS => apply hJ ; assumption
+    | of X S hS => apply hJ; assumption
     | top => apply J.top_mem
     | transitive X R S _ _ H1 H2 => exact J.transitive H1 _ H2
   · apply sInf_le
     intro X S hS
     apply saturate.of _ _ hS
+
+instance : SemilatticeSup (Coverage C) where
+  sup x y :=
+  { covering := fun B ↦ x.covering B ∪ y.covering B
+    pullback := by
+      rintro X Y f S (hx | hy)
+      · obtain ⟨T, hT⟩ := x.pullback f S hx
+        exact ⟨T, Or.inl hT.1, hT.2⟩
+      · obtain ⟨T, hT⟩ := y.pullback f S hy
+        exact ⟨T, Or.inr hT.1, hT.2⟩ }
+  toPartialOrder := inferInstance
+  le_sup_left _ _ _ := Set.subset_union_left _ _
+  le_sup_right _ _ _ := Set.subset_union_right _ _
+  sup_le _ _ _ hx hy X := Set.union_subset_iff.mpr ⟨hx X, hy X⟩
+
+@[simp]
+lemma sup_covering (x y : Coverage C) (B : C) :
+    (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
+  rfl
 
 end Coverage
 
@@ -291,7 +312,7 @@ namespace Presieve
 
 /--
 The main theorem of this file: Given a coverage `K` on `C`,
-a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
+a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
 the associated Grothendieck topology.
 -/
 theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
@@ -314,11 +335,11 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
       · intro Z g hg
         obtain ⟨W, i, e, h1, h2⟩ := hT2 hg
         exact ⟨Z, 𝟙 _, g, ⟨W, i, e, h1, h2⟩, by simp⟩
-      · apply H ; assumption
+      · apply H; assumption
       · intro Z g _
         obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
         refine ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
-    | top => intros ; simpa using Presieve.isSheafFor_top_sieve _
+    | top => intros; simpa using Presieve.isSheafFor_top_sieve _
     | transitive X R S _ _ H1 H2 =>
       intro Y f
       simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
@@ -348,21 +369,37 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
         intro ZZ gg hgg
         simp only [← types_comp_apply]
         rw [← P.map_comp, ← P.map_comp, ← op_comp, ← op_comp, hz, hz]
-        · dsimp ; congr 1 ; simp only [Category.assoc, h]
+        · dsimp; congr 1; simp only [Category.assoc, h]
         · simpa [reassoc_of% h] using hgg
         · simpa using hgg
       obtain ⟨t, ht⟩ := H1' f q hq
       refine ⟨t, fun Z g hg => ?_⟩
       refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
       rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
-      swap ; simpa using hgg
+      swap; simpa using hgg
       refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
       rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
-      swap ; simpa using hggg
+      swap; simpa using hggg
       refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
       rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
       apply hx
       simp
+
+/--
+A presheaf is a sheaf for the Grothendieck topology generated by a union of coverages iff it is a
+sheaf for the Grothendieck topology generated by each coverage separately.
+-/
+theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
+    (Presieve.IsSheaf ((K ⊔ L).toGrothendieck C)) P ↔
+    (Presieve.IsSheaf (K.toGrothendieck C)) P ∧ (Presieve.IsSheaf (L.toGrothendieck C)) P := by
+  refine ⟨fun h ↦ ⟨Presieve.isSheaf_of_le _ ((gi C).gc.monotone_l le_sup_left) h,
+      Presieve.isSheaf_of_le _ ((gi C).gc.monotone_l le_sup_right) h⟩, fun h ↦ ?_⟩
+  rw [isSheaf_coverage, isSheaf_coverage] at h
+  rw [isSheaf_coverage]
+  intro X R hR
+  cases' hR with hR hR
+  · exact h.1 R hR
+  · exact h.2 R hR
 
 end Presieve
 

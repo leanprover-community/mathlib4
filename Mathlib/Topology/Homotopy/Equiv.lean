@@ -2,13 +2,10 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.homotopy.equiv
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homotopy.Basic
+
+#align_import topology.homotopy.equiv from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 
@@ -172,7 +169,7 @@ def prodCongr (h₁ : X ≃ₕ Y) (h₂ : Z ≃ₕ Z') : (X × Z) ≃ₕ (Y × Z
 
 /-- If `X i` is homotopy equivalent to `Y i` for each `i`, then the space of functions (a.k.a. the
 indexed product) `∀ i, X i` is homotopy equivalent to `∀ i, Y i`. -/
-def piCongrRight {ι : Type _} {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+def piCongrRight {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] (h : ∀ i, X i ≃ₕ Y i) :
     (∀ i, X i) ≃ₕ (∀ i, Y i) where
   toFun := .piMap fun i ↦ (h i).toFun

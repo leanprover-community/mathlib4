@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.fixed
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.Tower
+
+#align_import field_theory.fixed from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Fixed field under a group action.
@@ -48,7 +45,7 @@ variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] 
 
 /-- The subfield of F fixed by the field endomorphism `m`. -/
 def FixedBy.subfield : Subfield F where
-  carrier := fixedBy M F m
+  carrier := fixedBy F m
   zero_mem' := smul_zero m
   add_mem' hx hy := (smul_add m _ _).trans <| congr_arg₂ _ hx hy
   neg_mem' hx := (smul_neg m _).trans <| congr_arg _ hx
@@ -68,10 +65,8 @@ class IsInvariantSubfield (S : Subfield F) : Prop where
 
 variable (S : Subfield F)
 
---instance : MulSemiringAction M S := Submonoid.mulSemiringAction S.toSubmonoid
-
-instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] : MulSemiringAction M S
-    where
+instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
+    MulSemiringAction M S where
   smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
   one_smul s := Subtype.eq <| one_smul M s.1
   mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ s.1
@@ -81,8 +76,8 @@ instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] : Mul
   smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m s₁.1 s₂.1
 #align is_invariant_subfield.to_mul_semiring_action IsInvariantSubfield.toMulSemiringAction
 
-instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring
-    where smul_mem := IsInvariantSubfield.smul_mem
+instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
+  smul_mem := IsInvariantSubfield.smul_mem
 
 end InvariantSubfields
 
@@ -97,15 +92,15 @@ def subfield : Subfield F :=
     (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
 #align fixed_points.subfield FixedPoints.subfield
 
-instance : IsInvariantSubfield M (FixedPoints.subfield M F)
-    where smul_mem g x hx g' := by rw [hx, hx]
+instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
+  smul_mem g x hx g' := by rw [hx, hx]
 
-instance : SMulCommClass M (FixedPoints.subfield M F) F
-    where smul_comm m f f' := show m • (↑f * f') = f * m • f' by rw [smul_mul', f.prop m]
+instance : SMulCommClass M (FixedPoints.subfield M F) F where
+  smul_comm m f f' := show m • (↑f * f') = f * m • f' by rw [smul_mul', f.prop m]
 
-instance smul_comm_class' : SMulCommClass (FixedPoints.subfield M F) M F :=
+instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
   SMulCommClass.symm _ _ _
-#align fixed_points.smul_comm_class' FixedPoints.smul_comm_class'
+#align fixed_points.smul_comm_class' FixedPoints.smulCommClass'
 
 @[simp]
 theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
@@ -135,7 +130,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   rw [coe_insert] at hs ⊢
   rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
   rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
-  rw [Finsupp.mem_span_image_iff_total] at ha ; rcases ha with ⟨l, hl, hla⟩
+  rw [Finsupp.mem_span_image_iff_total] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.total_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
@@ -168,7 +163,6 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       ∑ x in s, (fun y => l y • MulAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
     sum_apply _ _ fun y => l y • toFun G F y]
-  dsimp only
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
 #align fixed_points.linear_independent_smul_of_linear_independent FixedPoints.linearIndependent_smul_of_linearIndependent
 
@@ -285,7 +279,7 @@ section Finite
 variable [Finite G]
 
 instance normal : Normal (FixedPoints.subfield G F) F :=
-  ⟨fun x => (isIntegral G F x).isAlgebraic _, fun x =>
+  ⟨fun x => (isIntegral G F x).isAlgebraic, fun x =>
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
@@ -294,7 +288,7 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
 #align fixed_points.normal FixedPoints.normal
 
 instance separable : IsSeparable (FixedPoints.subfield G F) F :=
-  ⟨isIntegral G F, fun x => by
+  ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
     erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,

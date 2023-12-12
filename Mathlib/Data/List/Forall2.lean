@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.list.forall2
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Infix
+
+#align_import data.list.forall2 from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Double universal quantification on a list
@@ -23,7 +20,7 @@ open Nat Function
 
 namespace List
 
-variable {α β γ δ : Type _} {R S : α → β → Prop} {P : γ → δ → Prop} {Rₐ : α → α → Prop}
+variable {α β γ δ : Type*} {R S : α → β → Prop} {P : γ → δ → Prop} {Rₐ : α → α → Prop}
 
 open Relator
 
@@ -202,8 +199,8 @@ theorem forall₂_iff_zip {l₁ l₂} :
     · cases length_eq_zero.1 h₁.symm
       constructor
     · cases' l₂ with b l₂
-      . simp at h₁
-      . simp only [length_cons, succ.injEq] at h₁
+      · simp at h₁
+      · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ <| fun h => h₂ <| by
             simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
@@ -248,7 +245,7 @@ theorem rel_map : ((R ⇒ P) ⇒ Forall₂ R ⇒ Forall₂ P) map map
   | _, _, h, _ :: _, _ :: _, Forall₂.cons h₁ h₂ => Forall₂.cons (h h₁) (rel_map (@h) h₂)
 #align list.rel_map List.rel_map
 
-theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (. ++ .) (. ++ .)
+theorem rel_append : (Forall₂ R ⇒ Forall₂ R ⇒ Forall₂ R) (· ++ ·) (· ++ ·)
   | [], [], _, _, _, hl => hl
   | _, _, Forall₂.cons h₁ h₂, _, _, hl => Forall₂.cons h₁ (rel_append h₂ hl)
 #align list.rel_append List.rel_append
@@ -311,13 +308,6 @@ theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) f
       | _, _, Option.Rel.none => rel_filterMap (@hfg) h₂
       | _, _, Option.Rel.some h => Forall₂.cons h (rel_filterMap (@hfg) h₂)
 #align list.rel_filter_map List.rel_filterMap
-
-@[to_additive]
-theorem rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
-    (Forall₂ R ⇒ R) prod prod :=
-  rel_foldl hf h
-#align list.rel_prod List.rel_prod
-#align list.rel_sum List.rel_sum
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
   that `forall₂ r l₁ l₂`. -/

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.sheafification
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Sites.Plus
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import category_theory.sites.sheafification from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -199,7 +196,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   dsimp only [toPlus, plusObj]
   delta Cover.toMultiequalizer
   dsimp [mk]
-  erw [←comp_apply]
+  erw [← comp_apply]
   rw [ι_colimMap_assoc, colimit.ι_pre, comp_apply, comp_apply]
   dsimp only [Functor.op]
   let e : (J.pullback I.f).obj (unop (op S)) ⟶ ⊤ := homOfLE (OrderTop.le_top _)
@@ -209,7 +206,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   apply Concrete.multiequalizer_ext
   intro i
   dsimp [diagram]
-  rw [←comp_apply, ←comp_apply, ←comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
+  rw [← comp_apply, ← comp_apply, ← comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
     Multiequalizer.lift_ι]
   erw [Meq.equiv_symm_eq_apply]
   let RR : S.Relation :=
@@ -227,7 +224,7 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
   apply congr_arg
   apply (Meq.equiv P ⊤).injective
   ext i
-  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ←comp_apply, Multiequalizer.lift_ι]
+  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← comp_apply, Multiequalizer.lift_ι]
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_eq_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_eq_mk
 
@@ -249,7 +246,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
-    apply_fun Multiequalizer.ι (W.unop.index P) I  at hh
+    apply_fun Multiequalizer.ι (W.unop.index P) I at hh
     convert hh
     all_goals
       dsimp [diagram]
@@ -260,7 +257,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     use op S, h1.op, h2.op
     apply Concrete.multiequalizer_ext
     intro i
-    apply_fun fun ee => ee i  at e
+    apply_fun fun ee => ee i at e
     convert e
     all_goals
       dsimp [diagram]
@@ -310,7 +307,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   let IS : S.Arrow := I.fromMiddle
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
-  apply_fun fun e => e IW  at hh
+  apply_fun fun e => e IW at hh
   convert hh using 1
   · let Rx : Sx.Relation :=
       ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ex _ I.hf,
@@ -333,7 +330,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
-  apply_fun fun e => e I  at hh
+  apply_fun fun e => e I at hh
   exact hh
 #align category_theory.grothendieck_topology.plus.inj_of_sep CategoryTheory.GrothendieckTopology.Plus.inj_of_sep
 
@@ -433,8 +430,8 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun Meq.equiv _ _  at h
-    apply_fun fun e => e I  at h
+    apply_fun Meq.equiv _ _ at h
+    apply_fun fun e => e I at h
     convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
   · rintro (x : (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
-
-! This file was ported from Lean 3 source module combinatorics.derangements.finite
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
+
+#align_import combinatorics.derangements.finite from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Derangements on fintypes
@@ -34,14 +31,14 @@ open derangements Equiv Fintype
 
 open BigOperators
 
-variable {α : Type _} [DecidableEq α] [Fintype α]
+variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
 -- porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
-theorem card_derangements_invariant {α β : Type _} [Fintype α] [DecidableEq α] [Fintype β]
+theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 #align card_derangements_invariant card_derangements_invariant
@@ -101,8 +98,8 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n
   -- porting note: the two `convert_to` weren't necessary before.
-  · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x }  = _ using 2; rfl
-  · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x }  = _ using 2; rfl
+  · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x } = _ using 2; rfl
+  · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x } = _ using 2; rfl
   -- knock out cases 0 and 1
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
@@ -110,7 +107,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     hyp _ (Nat.lt_add_of_pos_right zero_lt_two), hyp _ (lt_add_one _)]
 #align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
 
-theorem card_derangements_eq_numDerangements (α : Type _) [Fintype α] [DecidableEq α] :
+theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
   exact card_derangements_fin_eq_numDerangements

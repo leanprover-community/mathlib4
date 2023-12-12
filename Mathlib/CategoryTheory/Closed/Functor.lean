@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.functor
-! leanprover-community/mathlib commit cea27692b3fdeb328a2ddba6aabf181754543184
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import category_theory.closed.functor from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
 /-!
 # Cartesian closed functors
@@ -126,7 +123,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
 `exp_comparison F A` is an isomorphism
 -/
-class CartesianClosedFunctor where
+class CartesianClosedFunctor : Prop where
   comparison_iso : ∀ A, IsIso (expComparison F A)
 #align category_theory.cartesian_closed_functor CategoryTheory.CartesianClosedFunctor
 
@@ -142,12 +139,14 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   simp only [id_comp, comp_id]
   rw [← L.map_comp_assoc, prod.map_id_comp, assoc]
   -- Porting note: need to use `erw` here.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [expComparison_ev]
   rw [prod.map_id_comp, assoc, ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
   -- Porting note: need to use `erw` here.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [exp.ev_coev]
   rw [F.map_id (A ⨯ L.obj B), comp_id]
-  apply prod.hom_ext
+  ext
   · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_fst]
     simp
   · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_snd]
@@ -179,7 +178,7 @@ cartesian closed.
 TODO: Show the converse, that if `F` is cartesian closed and its left adjoint preserves binary
 products, then it is full and faithful.
 -/
-def cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [Full F] [Faithful F]
+theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [Full F] [Faithful F]
     [PreservesLimitsOfShape (Discrete WalkingPair) L] : CartesianClosedFunctor F where
   comparison_iso _ := expComparison_iso_of_frobeniusMorphism_iso F h _
 #align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts

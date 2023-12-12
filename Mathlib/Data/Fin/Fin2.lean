@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fin.fin2
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Tactic.NoMatch
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
+
+#align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Inductive type variant of `Fin`
@@ -110,7 +107,7 @@ def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + 
 
 /-- This is a simple type class inference prover for proof obligations
   of the form `m < n` where `m n : ℕ`. -/
-class IsLT (m n : ℕ) where
+class IsLT (m n : ℕ) : Prop where
   /-- The unique field of `Fin2.IsLT`, a proof that `m < n`. -/
   h : m < n
 #align fin2.is_lt Fin2.IsLT
@@ -124,9 +121,9 @@ instance IsLT.succ (m n) [l : IsLT m n] : IsLT (succ m) (succ n) :=
 /-- Use type class inference to infer the boundedness proof, so that we can directly convert a
 `Nat` into a `Fin2 n`. This supports notation like `&1 : Fin 3`. -/
 def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
-  | 0, _, ⟨h⟩ => absurd h (Nat.not_lt_zero _)
-  | succ _, 0, ⟨_⟩ => fz
-  | succ n, succ m, ⟨h⟩ => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h⟩)
+  | 0, _, h => absurd h.h (Nat.not_lt_zero _)
+  | succ _, 0, _ => fz
+  | succ n, succ m, h => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h.h⟩)
 #align fin2.of_nat' Fin2.ofNat'
 
 @[inherit_doc] local prefix:arg "&" => ofNat'

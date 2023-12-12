@@ -2,15 +2,11 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module data.set.intervals.surj_on
-! leanprover-community/mathlib commit a59dad53320b73ef180174aae867addd707ef00e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Function
+
+#align_import data.set.intervals.surj_on from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 
 /-!
 # Monotone surjective functions are surjective on intervals
@@ -21,7 +17,7 @@ permutations of interval endpoints.
 -/
 
 
-variable {α : Type _} {β : Type _} [LinearOrder α] [PartialOrder β] {f : α → β}
+variable {α : Type*} {β : Type*} [LinearOrder α] [PartialOrder β] {f : α → β}
 
 open Set Function
 

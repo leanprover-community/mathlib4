@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module algebra.bounds
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import algebra.bounds from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -28,7 +25,7 @@ open Pointwise
 
 section InvNeg
 
-variable {G : Type _} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
   [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
@@ -95,7 +92,7 @@ end InvNeg
 
 section mul_add
 
-variable {M : Type _} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
@@ -115,14 +112,14 @@ theorem subset_upperBounds_mul (s t : Set M) :
 @[to_additive]
 theorem mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : a * b ∈ lowerBounds (s * t) :=
-  @mul_mem_upperBounds_mul Mᵒᵈ _ _ _ _ _ _ _ _ ha hb
+  mul_mem_upperBounds_mul (M := Mᵒᵈ) ha hb
 #align mul_mem_lower_bounds_mul mul_mem_lowerBounds_mul
 #align add_mem_lower_bounds_add add_mem_lowerBounds_add
 
 @[to_additive]
 theorem subset_lowerBounds_mul (s t : Set M) :
     lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
-  @subset_upperBounds_mul Mᵒᵈ _ _ _ _ _ _
+  subset_upperBounds_mul (M := Mᵒᵈ) _ _
 #align subset_lower_bounds_mul subset_lowerBounds_mul
 #align subset_lower_bounds_add subset_lowerBounds_add
 
@@ -144,7 +141,7 @@ section ConditionallyCompleteLattice
 
 section Right
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
@@ -159,11 +156,19 @@ theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆
 #align csupr_div ciSup_div
 #align csupr_sub ciSup_sub
 
+@[to_additive]
+theorem ciInf_mul (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  (OrderIso.mulRight a).map_ciInf hf
+
+@[to_additive]
+theorem ciInf_div (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
+  simp only [div_eq_mul_inv, ciInf_mul hf]
+
 end Right
 
 section Left
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
@@ -171,6 +176,10 @@ theorem mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆
   (OrderIso.mulLeft a).map_ciSup hf
 #align mul_csupr mul_ciSup
 #align add_csupr add_ciSup
+
+@[to_additive]
+theorem mul_ciInf (hf : BddBelow (Set.range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
+  (OrderIso.mulLeft a).map_ciInf hf
 
 end Left
 

@@ -1,4 +1,5 @@
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.Nat.Interval
 
 example {x : Nat} (h : x ∈ [0, 2, 37]) : x ≤ 57 := by
   fin_cases h
@@ -27,6 +28,14 @@ by fin_cases p
 example (x2 : Fin 2) (x3 : Fin 3) : True := by
   fin_cases x2, x3
   all_goals trivial
+
+-- Checking that `fin_cases` can handle a metavariable for the type
+example (p : ℕ) (h2 : 2 < p) (h5 : p < 5) : p = 3 ∨ p = 4 := by
+  have hp : ?_ := ?foo
+  case foo => exact (Finset.mem_Ioo).2 ⟨h2, h5⟩
+  fin_cases hp
+  · norm_num
+  · norm_num
 
 -- TODO Restore the remaining tests from mathlib3:
 -- Some of these test the `with` and `using` clauses which haven't been re-implemented.

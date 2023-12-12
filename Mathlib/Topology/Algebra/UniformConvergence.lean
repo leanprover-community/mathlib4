@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.uniform_convergence
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Topology.Algebra.FilterBasis
+
+#align_import topology.algebra.uniform_convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -53,6 +50,8 @@ uniform convergence, strong dual
 
 -/
 
+set_option autoImplicit true
+
 
 open Filter
 
@@ -60,7 +59,7 @@ open Topology Pointwise UniformConvergence
 
 section AlgebraicInstances
 
-variable {α β ι R : Type _} {𝔖 : Set <| Set α}
+variable {α β ι R : Type*} {𝔖 : Set <| Set α}
 
 @[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) :=
@@ -130,7 +129,7 @@ end AlgebraicInstances
 
 section Group
 
-variable {α G ι : Type _} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
+variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
 
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
 @[to_additive "If `G` is a uniform additive group,
@@ -205,7 +204,7 @@ end Group
 
 section Module
 
-variable (𝕜 α E H : Type _) {hom : Type _} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
+variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
 
@@ -238,13 +237,13 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
     refine' ⟨U, hU, ⟨S, W⟩, ⟨hS, hW⟩, _⟩
     rw [Set.smul_subset_iff]
     intro a ha u hu x hx
-    rw [SMulHomClass.map_smul]
+    rw [map_smul]
     exact hUW (⟨ha, hu x hx⟩ : (a, φ u x) ∈ U ×ˢ W)
   · rintro a ⟨S, V⟩ ⟨hS, hV⟩
     have : Tendsto (fun x : E => a • x) (𝓝 0) (𝓝 <| a • (0 : E)) := tendsto_id.const_smul a
     rw [smul_zero] at this
     refine' ⟨⟨S, (a • ·) ⁻¹' V⟩, ⟨hS, this hV⟩, fun f hf x hx => _⟩
-    rw [SMulHomClass.map_smul]
+    rw [map_smul]
     exact hf x hx
   · rintro u ⟨S, V⟩ ⟨hS, hV⟩
     rcases h u S hS hV with ⟨r, hrpos, hr⟩
@@ -254,7 +253,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
     · rw [ha0]
       simpa using mem_of_mem_nhds hV
     · rw [mem_ball_zero_iff] at ha
-      rw [SMulHomClass.map_smul, Pi.smul_apply]
+      rw [map_smul, Pi.smul_apply]
       have : φ u x ∈ a⁻¹ • V := by
         have ha0 : 0 < ‖a‖ := norm_pos_iff.mpr ha0
         refine' (hr a⁻¹ _) (Set.mem_image_of_mem (φ u) hx)

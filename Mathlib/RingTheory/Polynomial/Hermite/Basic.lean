@@ -2,15 +2,12 @@
 Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.hermite.basic
-! leanprover-community/mathlib commit 938d3db9c278f8a52c0f964a405806f0f2b09b74
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
+#align_import ring_theory.polynomial.hermite.basic from "leanprover-community/mathlib"@"938d3db9c278f8a52c0f964a405806f0f2b09b74"
 
 /-!
 # Hermite polynomials
@@ -59,7 +56,7 @@ theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (h
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - derivative p)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -80,7 +77,7 @@ theorem hermite_one : hermite 1 = X := by
 /-! ### Lemmas about `Polynomial.coeff` -/
 
 
-section Coeff
+section coeff
 
 theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by
   simp [coeff_derivative]
@@ -99,25 +96,23 @@ theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 
   · apply coeff_C
   · have : n + k + 1 + 2 = n + (k + 2) + 1 := by ring
     rw [Nat.succ_eq_add_one, coeff_hermite_succ_succ, add_right_comm, this, ih k, ih (k + 2),
-      MulZeroClass.mul_zero, sub_zero]
+      mul_zero, sub_zero]
 #align polynomial.coeff_hermite_of_lt Polynomial.coeff_hermite_of_lt
 
 @[simp]
 theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
   induction' n with n ih
   · apply coeff_C
-  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, MulZeroClass.mul_zero, sub_zero]
+  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
     simp
 #align polynomial.coeff_hermite_self Polynomial.coeff_hermite_self
 
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
-  simp_rw [degree_le_iff_coeff_zero]
-   -- porting note: mathlib3 also had `simp_rw [WithBot.coe_lt_coe]` but it's not firing
-   -- so we add it manually later
+  simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
   · rintro m hnm
-    exact coeff_hermite_of_lt (WithBot.coe_lt_coe.1 hnm)
+    exact coeff_hermite_of_lt hnm
   · simp [coeff_hermite_self n]
 #align polynomial.degree_hermite Polynomial.degree_hermite
 
@@ -140,15 +135,15 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
   · rw [Nat.zero_eq, zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
   · cases' k with k
-    · rw [Nat.succ_add_eq_succ_add] at hnk
+    · rw [Nat.succ_add_eq_add_succ] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
-    · rw [coeff_hermite_succ_succ, ih, ih, MulZeroClass.mul_zero, sub_zero]
-      · rwa [Nat.succ_add_eq_succ_add] at hnk
+    · rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
+      · rwa [Nat.succ_add_eq_add_succ] at hnk
       · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
-end Coeff
+end coeff
 
 section CoeffExplicit
 
@@ -161,7 +156,7 @@ theorem coeff_hermite_explicit :
   | n + 1, 0 => by
     convert coeff_hermite_succ_zero (2 * n + 1) using 1
     -- porting note: ring_nf did not solve the goal on line 165
-    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] :
+    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] :
       2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
     push_cast
@@ -183,7 +178,7 @@ theorem coeff_hermite_explicit :
       -- Factor out double factorials.
       norm_cast
       -- porting note: ring_nf did not solve the goal on line 186
-      rw [(by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
+      rw [(by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
       congr 1
@@ -192,9 +187,9 @@ theorem coeff_hermite_explicit :
         (by ring : 2 * (n + 1) + k = 2 * n + 1 + (k + 1)),
         (by ring : 2 * n + (k + 2) = 2 * n + 1 + (k + 1))]
       rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel,
-      Int.negSucc_eq]
+        Int.negSucc_eq]
       -- porting note: ring could not solve the goal so the lines 195, 198-200 were added.
-      ring
+      ring_nf
       simp only [sub_eq_add_neg, ← neg_mul, ← right_distrib _ _ ((-(1 : ℤ)) ^ n), ← neg_add]
       norm_cast
       simp only [← add_assoc, add_comm]

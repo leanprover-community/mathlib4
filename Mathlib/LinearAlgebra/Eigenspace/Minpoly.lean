@@ -2,14 +2,11 @@
 Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.eigenspace.minpoly
-! leanprover-community/mathlib commit 8efcf8022aac8e01df8d302dcebdbc25d6a886c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.FieldTheory.Minpoly.Field
+
+#align_import linear_algebra.eigenspace.minpoly from "leanprover-community/mathlib"@"c3216069e5f9369e6be586ccbfcde2592b3cec92"
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -67,7 +64,7 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
 
 theorem isRoot_of_hasEigenvalue {f : End K V} {μ : K} (h : f.HasEigenvalue μ) :
     (minpoly K f).IsRoot μ := by
-  rcases(Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
+  rcases (Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
   refine' Or.resolve_right (smul_eq_zero.1 _) ne0
   simp [← aeval_apply_of_hasEigenvector ⟨H, ne0⟩, minpoly.aeval K f]
 #align module.End.is_root_of_has_eigenvalue Module.End.isRoot_of_hasEigenvalue
@@ -84,7 +81,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero f.isIntegral
-    rw [hp, con, MulZeroClass.mul_zero]
+    rw [hp, con, mul_zero]
   have : (aeval f) p = 0 := by
     have h_aeval := minpoly.aeval K f
     revert h_aeval
@@ -99,27 +96,18 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
   ⟨isRoot_of_hasEigenvalue, hasEigenvalue_of_isRoot⟩
 #align module.End.has_eigenvalue_iff_is_root Module.End.hasEigenvalue_iff_isRoot
 
+variable (f)
+
+lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+  have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
+  convert (minpoly K f).rootSet_finite K
+  ext μ
+  change f.HasEigenvalue μ ↔ _
+  rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
-noncomputable instance (f : End K V) : Fintype f.Eigenvalues :=
-  -- Porting note: added `show` to avoid unfolding `Set K` to `K → Prop`
-  show Fintype { μ : K | f.HasEigenvalue μ } from
-  Set.Finite.fintype
-    (by
-      have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
-      convert (minpoly K f).rootSet_finite K
-      ext μ
-      -- Porting note: was
-      -- have : μ ∈ {μ : K | f.eigenspace μ = ⊥ → False} ↔ ¬f.eigenspace μ = ⊥ := by tauto
-      -- convert rfl.mpr this
-      -- simp only [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-      --   HasEigenvalue]
-      -- which didn't work, but worked with
-      -- simp only [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-      --   HasEigenvalue, (Multiset.mem_toFinset), Algebra.id.map_eq_id, iff_self, Ne.def,
-      --   Polynomial.map_id, Finset.mem_coe]
-      -- but the code below is simpler.
-      rw [Set.mem_setOf_eq, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot,
-        coe_aeval_eq_eval])
+noncomputable instance : Fintype f.Eigenvalues :=
+  Set.Finite.fintype f.finite_hasEigenvalue
 
 end End
 

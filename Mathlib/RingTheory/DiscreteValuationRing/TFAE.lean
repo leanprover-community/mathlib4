@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.discrete_valuation_ring.tfae
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Nakayama
+
+#align_import ring_theory.discrete_valuation_ring.tfae from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -30,7 +27,7 @@ noetherian local domain `(R, m, k)`:
 -/
 
 
-variable (R : Type _) [CommRing R] (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped DiscreteValuation
 
@@ -71,15 +68,14 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
       exact Associated.mul_mul (this _ (Multiset.mem_cons_self _ _)) hn
   have : ∃ n : ℕ, x ^ n ∈ I := by
     obtain ⟨r, hr₁, hr₂⟩ : ∃ r : R, r ∈ I ∧ r ≠ 0 := by
-      by_contra' h; apply hI; rw [eq_bot_iff]; exact h
+      by_contra! h; apply hI; rw [eq_bot_iff]; exact h
     obtain ⟨n, u, rfl⟩ := H' r hr₂ (le_maximalIdeal hI' hr₁)
     use n
     rwa [← I.unit_mul_mem_iff_mem u.isUnit, mul_comm]
   use Nat.find this
   apply le_antisymm
   · change ∀ s ∈ I, s ∈ _
-    by_contra hI''
-    push_neg at hI''
+    by_contra! hI''
     obtain ⟨s, hs₁, hs₂⟩ := hI''
     apply hs₂
     by_cases hs₃ : s = 0; · rw [hs₃]; exact zero_mem _
@@ -98,7 +94,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   by_cases ne_bot : maximalIdeal R = ⊥
   · rw [ne_bot]; infer_instance
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ maximalIdeal R, a ≠ (0 : R) := by
-    by_contra' h'; apply ne_bot; rwa [eq_bot_iff]
+    by_contra! h'; apply ne_bot; rwa [eq_bot_iff]
   have hle : Ideal.span {a} ≤ maximalIdeal R := by rwa [Ideal.span_le, Set.singleton_subset_iff]
   have : (Ideal.span {a}).radical = maximalIdeal R := by
     rw [Ideal.radical_eq_sInf]
@@ -106,7 +102,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine'
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| IsDedekindDomain.dimensionLEOne _ (fun e => ha₂ _) hI.2).ge
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ _)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -115,14 +111,14 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     rw [hn, pow_zero, Ideal.one_eq_top] at this
     exact (Ideal.IsMaximal.ne_top inferInstance (eq_top_iff.mpr <| this.trans hle)).elim
   obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, ¬b ∈ Ideal.span {a} := by
-    by_contra' h'; rw [Nat.find_eq_iff] at hn ; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
+    by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
   have hb₃ : ∀ m ∈ maximalIdeal R, ∃ k : R, k * a = b * m := by
     intro m hm; rw [← Ideal.mem_span_singleton']; apply Nat.find_spec this
     rw [hn, pow_succ']; exact Ideal.mul_mem_mul hb₁ hm
   have hb₄ : b ≠ 0 := by rintro rfl; apply hb₂; exact zero_mem _
   let K := FractionRing R
   let x : K := algebraMap R K b / algebraMap R K a
-  let M := Submodule.map (Algebra.ofId R K).toLinearMap (maximalIdeal R)
+  let M := Submodule.map (Algebra.linearMap R K) (maximalIdeal R)
   have ha₃ : algebraMap R K a ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr ha₂
   by_cases hx : ∀ y ∈ M, x * y ∈ M
   · have := isIntegral_of_smul_mem_submodule M ?_ ?_ x hx
@@ -134,7 +130,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
-        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.ofId R K).toLinearMap = ⊤ := by
+        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
       by_contra h; apply hx
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
@@ -179,9 +175,9 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     exact ⟨inferInstance, ((DiscreteValuationRing.iff_pid_with_one_nonzero_prime R).mp H).2⟩
   tfae_have 4 → 3
   · rintro ⟨h₁, h₂⟩;
-    exact
-      ⟨inferInstance, fun I hI hI' =>
-        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R, h₁⟩
+    exact { h₁ with
+      maximalOfPrime := fun hI hI' => ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸
+        maximalIdeal.isMaximal R, }
   tfae_have 3 → 5
   · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 5 → 6
@@ -228,7 +224,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
       rw [LocalRing.jacobson_eq_maximalIdeal]
       exact bot_ne_top
     have :=
-      Submodule.smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
+      Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
     rw [Submodule.bot_smul, sup_bot_eq] at this
     rw [← sup_eq_left, eq_comm]
     exact le_sup_left.antisymm (h₁.trans <| le_of_eq this)
@@ -239,6 +235,12 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     intro H
     constructor
     intro I J
+    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
+    -- however the `tfae` hypotheses trigger a looping instance search.
+    -- See also:
+    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
+    -- As a workaround, add the desired instance ourselves.
+    let _ := Classical.decEq (Ideal R)
     by_cases hI : I = ⊥; · subst hI; left; exact bot_le
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI

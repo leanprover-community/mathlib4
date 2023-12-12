@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module category_theory.preadditive.functor_category
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Basic
+
+#align_import category_theory.preadditive.functor_category from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # Preadditive structure on functor categories
@@ -25,7 +22,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D)
     where
@@ -113,7 +110,7 @@ theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α
 #align category_theory.nat_trans.app_zsmul CategoryTheory.NatTrans.app_zsmul
 
 @[simp]
-theorem app_sum {ι : Type _} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
+theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
     (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
   simp only [← appHom_apply, map_sum]
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum

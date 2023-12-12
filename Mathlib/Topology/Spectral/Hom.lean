@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.spectral.hom
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.spectral.hom from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Spectral maps
@@ -24,13 +21,13 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `topology.spectral.basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
 -/
 
 
 open Function OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 section Unbundled
 
@@ -66,7 +63,7 @@ theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f
 end Unbundled
 
 /-- The type of spectral maps from `α` to `β`. -/
-structure SpectralMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+structure SpectralMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
   /-- function between topological spaces-/
   toFun : α → β
   /-- proof that `toFun` is a spectral map-/
@@ -78,7 +75,7 @@ section
 /-- `SpectralMapClass F α β` states that `F` is a type of spectral maps.
 
 You should extend this class when you extend `SpectralMap`. -/
-class SpectralMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class SpectralMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
   /-- statement that `F` is a type of spectral maps-/
   map_spectral (f : F) : IsSpectralMap f
@@ -119,7 +116,7 @@ instance : SpectralMapClass (SpectralMap α β) α β
   map_spectral f := f.spectral'
 
 -- Porting note: These CoeFun instances are not desirable in Lean 4.
---/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+--/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 --directly. -/
 --instance : CoeFun (SpectralMap α β) fun _ => α → β :=
 --  FunLike.hasCoeToFun
@@ -188,13 +185,13 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 
 @[simp]
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
-    (f ∘ g)= (f : ContinuousMap β γ) ∘  (g: ContinuousMap α β) := by
+    (f ∘ g)= (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) := by
    rfl
 
 -- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
-    simp only [@coe_comp]; rfl
+  rfl
 #align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]
@@ -213,12 +210,14 @@ theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
   ext fun _a => rfl
 #align spectral_map.id_comp SpectralMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
    fun a => of_eq (congrFun (congrArg comp a) f)⟩
 #align spectral_map.cancel_right SpectralMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

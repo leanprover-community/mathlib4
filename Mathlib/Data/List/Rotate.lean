@@ -2,14 +2,11 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.rotate
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
+
+#align_import data.list.rotate from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # List rotation
@@ -217,7 +214,7 @@ theorem rotate_singleton (x : α) (n : ℕ) : [x].rotate n = [x] :=
   rotate_replicate x 1 n
 #align list.rotate_singleton List.rotate_singleton
 
-theorem zipWith_rotate_distrib {α β γ : Type _} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
+theorem zipWith_rotate_distrib {α β γ : Type*} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
     (h : l.length = l'.length) :
     (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) := by
   rw [rotate_eq_drop_append_take_mod, rotate_eq_drop_append_take_mod,
@@ -229,7 +226,7 @@ theorem zipWith_rotate_distrib {α β γ : Type _} (f : α → β → γ) (l : L
 attribute [local simp] rotate_cons_succ
 
 --Porting note: removing @[simp], simp can prove it
-theorem zipWith_rotate_one {β : Type _} (f : α → α → β) (x y : α) (l : List α) :
+theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : List α) :
     zipWith f (x :: y :: l) ((x :: y :: l).rotate 1) = f x y :: zipWith f (y :: l) (l ++ [x]) := by
   simp
 #align list.zip_with_rotate_one List.zipWith_rotate_one
@@ -246,8 +243,8 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     · congr 1
       rw [length_drop] at hm
       have hm' := tsub_le_iff_left.1 hm
-      have : n % length l + m - length l < length l
-      · rw [tsub_lt_iff_left hm']
+      have : n % length l + m - length l < length l := by
+        rw [tsub_lt_iff_left hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
       rw [← add_right_inj l.length, ← add_tsub_assoc_of_le, add_tsub_tsub_cancel,
@@ -384,7 +381,7 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
       · exact tsub_lt_self (by simp) (by simp_all!)
 #align list.rotate_reverse List.rotate_reverse
 
-theorem map_rotate {β : Type _} (f : α → β) (l : List α) (n : ℕ) :
+theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
   induction' n with n hn IH generalizing l
   · simp
@@ -470,7 +467,7 @@ theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
 #align list.is_rotated.eqv List.IsRotated.eqv
 
 /-- The relation `List.IsRotated l l'` forms a `Setoid` of cycles. -/
-def IsRotated.setoid (α : Type _) : Setoid (List α) where
+def IsRotated.setoid (α : Type*) : Setoid (List α) where
   r := IsRotated
   iseqv := IsRotated.eqv
 #align list.is_rotated.setoid List.IsRotated.setoid
@@ -550,7 +547,7 @@ theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length +
 
 -- Porting note: @[congr] only works for equality.
 -- @[congr]
-theorem IsRotated.map {β : Type _} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
+theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
     map f l₁ ~r map f l₂ := by
   obtain ⟨n, rfl⟩ := h
   rw [map_rotate]

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.besicovitch_vector_space
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Covering.Besicovitch
+
+#align_import measure_theory.covering.besicovitch_vector_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
@@ -47,8 +44,6 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
 open scoped ENNReal Topology
@@ -57,7 +52,7 @@ noncomputable section
 
 namespace Besicovitch
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 namespace SatelliteConfig
 
@@ -131,7 +126,7 @@ end SatelliteConfig
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
 optimal number of families in the Besicovitch covering theorem. -/
-def multiplicity (E : Type _) [NormedAddCommGroup E] :=
+def multiplicity (E : Type*) [NormedAddCommGroup E] :=
   sSup {N | ∃ s : Finset E, s.card = N ∧ (∀ c ∈ s, ‖c‖ ≤ 2) ∧ ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖}
 #align besicovitch.multiplicity Besicovitch.multiplicity
 
@@ -151,7 +146,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   let μ : Measure E := Measure.addHaar
   let δ : ℝ := (1 : ℝ) / 2
   let ρ : ℝ := (5 : ℝ) / 2
-  have ρpos : 0 < ρ := by norm_num [ρ]
+  have ρpos : 0 < ρ := by norm_num
   set A := ⋃ c ∈ s, ball (c : E) δ with hA
   have D : Set.Pairwise (s : Set E) (Disjoint on fun c => ball (c : E) δ) := by
     rintro c hc d hd hcd
@@ -164,26 +159,26 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
-      _ = 5 / 2 := by norm_num [δ]
+      _ = 5 / 2 := by norm_num
   have I :
     (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) ≤
       ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) :=
     calc
       (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) = μ A := by
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
-        have I : 0 < δ := by norm_num [δ]
-        simp only [div_pow, μ.add_haar_ball_of_pos _ I]
+        have I : 0 < δ := by norm_num
+        simp only [div_pow, μ.addHaar_ball_of_pos _ I]
         simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := (measure_mono A_subset)
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
-        simp only [μ.add_haar_ball_of_pos _ ρpos]
+        simp only [μ.addHaar_ball_of_pos _ ρpos]
   have J : (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) ≤ ENNReal.ofReal (ρ ^ finrank ℝ E) :=
     (ENNReal.mul_le_mul_right (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
     simp [ENNReal.toReal_mul] at this
     simpa [div_eq_mul_inv, zero_le_two] using this
-  exact_mod_cast K
+  exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
@@ -215,7 +210,7 @@ theorem exists_goodδ :
     subsequence, to obtain a `1`-separated set in the ball of radius `2` with cardinality
     `N = multiplicity E + 1`. To formalize this, we work with functions `Fin N → E`.
      -/
-  by_contra' h
+  by_contra! h
   set N := multiplicity E + 1 with hN
   have :
     ∀ δ : ℝ, 0 < δ → ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧
@@ -269,13 +264,13 @@ theorem exists_goodδ :
   let s := Finset.image f Finset.univ
   have s_card : s.card = N := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin N
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [hf, forall_apply_eq_imp_iff', forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [hf, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖ := by
-    simp only [forall_apply_eq_imp_iff', forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne.def, exists_true_left, forall_apply_eq_imp_iff', forall_true_left, true_and]
+    simp only [forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
+      Ne.def, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
-    have : i ≠ j := fun h => by rw [h] at hij ; exact hij rfl
+    have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h'f i j this
   have : s.card ≤ multiplicity E := card_le_multiplicity hs h's
   rw [s_card, hN] at this
@@ -322,13 +317,13 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
   let s := Finset.image f Finset.univ
   have s_card : s.card = n := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin n
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [h, forall_apply_eq_imp_iff', forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [h, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, imp_true_iff, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖ := by
-    simp only [forall_apply_eq_imp_iff', forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne.def, exists_true_left, forall_apply_eq_imp_iff', forall_true_left, true_and]
+    simp only [forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
+      Ne.def, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
-    have : i ≠ j := fun h => by rw [h] at hij ; exact hij rfl
+    have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h' i j this
   have : s.card ≤ multiplicity E := card_le_multiplicity_of_δ hs h's
   rwa [s_card] at this
@@ -510,11 +505,11 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     split_ifs with h; · exact h
     by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]; norm_num
   refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
-  -- up to exchanging `i` and `j`, one can assume `∥c i∥ ≤ ∥c j∥`.
+  -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
   rcases le_or_lt ‖a.c j‖ 2 with (Hj | Hj)
-  -- case `∥c j∥ ≤ 2` (and therefore also `∥c i∥ ≤ 2`)
+  -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
   · simp_rw [Hj, hij.trans Hj, if_true]
     exact exists_normalized_aux1 a lastr hτ δ hδ1 hδ2 i j inej
   -- case `2 < ‖c j‖`

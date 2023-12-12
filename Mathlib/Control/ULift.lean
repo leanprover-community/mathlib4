@@ -2,22 +2,17 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jannis Limperg
-
-! This file was ported from Lean 3 source module control.ulift
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-
 import Mathlib.Mathport.Rename
+
+#align_import control.ulift from "leanprover-community/mathlib"@"99e8971dc62f1f7ecf693d75e75fbbabd55849de"
 
 /-!
 # Monadic instances for `ULift` and `PLift`
 
 In this file we define `Monad` and `IsLawfulMonad` instances on `PLift` and `ULift`. -/
 
-
-universe u v
+universe u v u' v'
 
 namespace PLift
 
@@ -93,16 +88,14 @@ end PLift
 
 namespace ULift
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {f : α → β}
 
 /-- Functorial action. -/
-protected def map (f : α → β) (a : ULift α) : ULift β :=
-  ULift.up.{u} (f a.down)
+protected def map (f : α → β) (a : ULift.{u'} α) : ULift.{v'} β := ULift.up.{v'} (f a.down)
 #align ulift.map ULift.map
 
 @[simp]
-theorem map_up (f : α → β) (a : α) : (ULift.up.{u} a).map f = ULift.up.{u} (f a) :=
-  rfl
+theorem map_up (f : α → β) (a : α) : (ULift.up.{u'} a).map f = ULift.up.{v'} (f a) := rfl
 #align ulift.map_up ULift.map_up
 
 /-- Embedding of pure values. -/
@@ -158,7 +151,7 @@ instance : LawfulMonad ULift where
 
 @[simp]
 theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
-     (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
+    (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
 #align ulift.rec.constant ULift.rec.constant
 
 end ULift

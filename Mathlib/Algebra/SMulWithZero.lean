@@ -2,16 +2,13 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.smul_with_zero
-! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Prod
+
+#align_import algebra.smul_with_zero from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 
 /-!
 # Introduce `SMulWithZero`
@@ -40,7 +37,7 @@ We also add an `instance`:
 -/
 
 
-variable {R R' M M' : Type _}
+variable {R R' M M' : Type*}
 
 section Zero
 
@@ -108,16 +105,16 @@ protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]
-  smul_zero c := by rw [←f.map_zero, ←smul, smul_zero]
+  smul_zero c := by rw [← f.map_zero, ← smul, smul_zero]
 #align function.surjective.smul_with_zero Function.Surjective.smulWithZero
 
 variable (M)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
-  smul := (· • ·) ∘ f
+  smul := (f · • ·)
   smul_zero m := smul_zero (f m)
-  zero_smul m := by show (f 0) • m = 0 ; rw [map_zero, zero_smul]
+  zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
 #align smul_with_zero.comp_hom SMulWithZero.compHom
 
 end Zero
@@ -168,7 +165,8 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
 
 protected lemma MulActionWithZero.subsingleton
     [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
-  ⟨λ x y => by rw [←one_smul R x, ←one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+  ⟨λ x y => by
+    rw [← one_smul R x, ← one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
 #align mul_action_with_zero.subsingleton MulActionWithZero.subsingleton
 
 protected lemma MulActionWithZero.nontrivial
@@ -178,7 +176,13 @@ protected lemma MulActionWithZero.nontrivial
 #align mul_action_with_zero.nontrivial MulActionWithZero.nontrivial
 
 variable {R M}
-variable [MulActionWithZero R M] [Zero M'] [SMul R M']
+variable [MulActionWithZero R M] [Zero M'] [SMul R M'] (p : Prop) [Decidable p]
+
+@[simp]
+lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then a • b else 0 := by
+  rw [ite_smul, zero_smul]
+
+lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
@@ -201,7 +205,6 @@ variable (M)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : R' →*₀ R) : MulActionWithZero R' M :=
   { SMulWithZero.compHom M f.toZeroHom with
-    smul := (· • ·) ∘ f
     mul_smul := fun r s m => by show f (r * s) • m = (f r) • (f s) • m; simp [mul_smul]
     one_smul := fun m => by show (f 1) • m = m; simp }
 #align mul_action_with_zero.comp_hom MulActionWithZero.compHom
@@ -210,7 +213,7 @@ end MonoidWithZero
 
 section GroupWithZero
 
-variable {α β : Type _} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
+variable {α β : Type*} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
 
 theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
@@ -226,7 +229,7 @@ end GroupWithZero
 
 /-- Scalar multiplication as a monoid homomorphism with zero. -/
 @[simps]
-def smulMonoidWithZeroHom {α β : Type _} [MonoidWithZero α] [MulZeroOneClass β]
+def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass β]
     [MulActionWithZero α β] [IsScalarTower α β β] [SMulCommClass α β β] : α × β →*₀ β :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom

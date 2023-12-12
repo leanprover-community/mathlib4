@@ -2,16 +2,13 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.spectrum
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+
+#align_import analysis.inner_product_space.spectrum from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -33,7 +30,7 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 * The definition `LinearMap.IsSymmetric.eigenvectorBasis` provides an orthonormal basis for `E`
   consisting of eigenvectors of `T`, with `LinearMap.IsSymmetric.eigenvalues` giving the
   corresponding list of eigenvalues, as real numbers.  The definition
-  `linear_map.is_symmetric.eigenvector_basis` gives the associated linear isometry equivalence
+  `LinearMap.IsSymmetric.eigenvectorBasis` gives the associated linear isometry equivalence
   from `E` to Euclidean space, and the theorem
   `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply` states that, when `T` is
   transferred via this equivalence to an operator on Euclidean space, it acts diagonally.
@@ -52,9 +49,9 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 
-variable {𝕜 : Type _} [IsROrC 𝕜] [dec_𝕜 : DecidableEq 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -132,7 +129,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
   haveI :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
-  exact Submodule.eq_bot_of_subsingleton _
+  exact Submodule.eq_bot_of_subsingleton
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
@@ -141,8 +138,6 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
     rw [iSup_ne_bot_subtype, hT.orthogonalComplement_iSup_eigenspaces_eq_bot]
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot' LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot'
 
--- porting note: a modest increast in the `synthInstance.maxHeartbeats`, but we should still fix it.
-set_option synthInstance.maxHeartbeats 23000 in
 /-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
 an internal direct sum decomposition of `E`.
 
@@ -267,8 +262,7 @@ theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
   intro w
-  simp_rw [← OrthonormalBasis.sum_repr_symm, LinearMap.map_sum, LinearMap.map_smul,
-    apply_eigenvectorBasis]
+  simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr
   intro a
   rw [smul_smul, mul_comm]
@@ -281,9 +275,6 @@ end IsSymmetric
 end LinearMap
 
 section Nonneg
-
--- porting note: lean4#2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 @[simp]
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
@@ -298,8 +289,8 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
   have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
+    rw [← IsROrC.ofReal_pow, ← IsROrC.ofReal_mul] at this
+    exact mod_cast this
   exact (zero_le_mul_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_nonneg_of_nonneg eigenvalue_nonneg_of_nonneg
 
@@ -310,8 +301,8 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
   have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
+    rw [← IsROrC.ofReal_pow, ← IsROrC.ofReal_mul] at this
+    exact mod_cast this
   exact (zero_lt_mul_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos
 

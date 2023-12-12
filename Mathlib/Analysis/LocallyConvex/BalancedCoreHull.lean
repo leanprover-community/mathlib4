@@ -2,13 +2,10 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.locally_convex.balanced_core_hull
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.LocallyConvex.Basic
+
+#align_import analysis.locally_convex.balanced_core_hull from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Balanced Core and Balanced Hull
@@ -44,7 +41,7 @@ balanced
 
 open Set Pointwise Topology Filter
 
-variable {𝕜 E ι : Type _}
+variable {𝕜 E ι : Type*}
 
 section balancedHull
 
@@ -177,7 +174,7 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   rintro a ha x ⟨y, hy, rfl⟩
   obtain rfl | h := eq_or_ne a 0
   · simp_rw [zero_smul, h0]
-  rw [mem_balancedCoreAux_iff] at hy⊢
+  rw [mem_balancedCoreAux_iff] at hy ⊢
   intro r hr
   have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
     rw [norm_smul, norm_inv]
@@ -237,7 +234,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     exact isClosedMap_smul_of_ne_zero ha' U hU
   · have : balancedCore 𝕜 U = ∅ := by
       contrapose! h
-      exact balancedCore_nonempty_iff.mp (Set.nonempty_iff_ne_empty.2 h)
+      exact balancedCore_nonempty_iff.mp h
     rw [this]
     exact isClosed_empty
 #align is_closed.balanced_core IsClosed.balancedCore

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
-
-! This file was ported from Lean 3 source module information_theory.hamming
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+
+#align_import information_theory.hamming from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Hamming spaces
@@ -35,9 +32,9 @@ section HammingDistNorm
 
 open Finset Function
 
-variable {α ι : Type _} {β : ι → Type _} [Fintype ι] [∀ i, DecidableEq (β i)]
+variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (β i)]
 
-variable {γ : ι → Type _} [∀ i, DecidableEq (γ i)]
+variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
 def hammingDist (x y : ∀ i, β i) : ℕ :=
@@ -247,13 +244,13 @@ end HammingDistNorm
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
-def Hamming {ι : Type _} (β : ι → Type _) : Type _ :=
+def Hamming {ι : Type*} (β : ι → Type*) : Type _ :=
   ∀ i, β i
 #align hamming Hamming
 
 namespace Hamming
 
-variable {α ι : Type _} {β : ι → Type _}
+variable {α ι : Type*} {β : ι → Type*}
 
 /-! Instances inherited from normal Pi types. -/
 
@@ -296,7 +293,7 @@ instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
 instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
   Pi.addCommGroup
 
-instance (α) [Semiring α] (β : ι → Type _) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
+instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
     Module α (Hamming β) :=
   Pi.module _ _ _
 
@@ -419,33 +416,33 @@ theorem dist_eq_hammingDist (x y : Hamming β) :
 instance : PseudoMetricSpace (Hamming β) where
   dist_self := by
     push_cast
-    exact_mod_cast hammingDist_self
+    exact mod_cast hammingDist_self
   dist_comm := by
     push_cast
-    exact_mod_cast hammingDist_comm
+    exact mod_cast hammingDist_comm
   dist_triangle := by
     push_cast
-    exact_mod_cast hammingDist_triangle
+    exact mod_cast hammingDist_triangle
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
     · refine' fun hs => ⟨1, zero_lt_one, fun hab => _⟩
-      rw_mod_cast [hammingDist_lt_one]  at hab
+      rw_mod_cast [hammingDist_lt_one] at hab
       rw [ofHamming_inj, ← mem_idRel] at hab
       exact hs hab
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
       rw [mem_idRel] at hab
       rw [hab]
       refine' hs (lt_of_eq_of_lt _ hε)
-      exact_mod_cast hammingDist_self _
+      exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
     push_cast
     refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
-    exact_mod_cast hammingDist_le_card_fintype
+    exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
 theorem nndist_eq_hammingDist (x y : Hamming β) :
@@ -469,7 +466,7 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
 -- porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
-  dist_eq := by push_cast; exact_mod_cast hammingDist_eq_hammingNorm
+  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :

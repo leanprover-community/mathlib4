@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.continuous_function.locally_constant
-! leanprover-community/mathlib commit f0339374016bccf700da0b2e0129d107c4346521
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.continuous_function.locally_constant from "leanprover-community/mathlib"@"f0339374016bccf700da0b2e0129d107c4346521"
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
@@ -20,7 +17,7 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 
 namespace LocallyConstant
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] (f : LocallyConstant X Y)
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : LocallyConstant X Y)
 
 /-- The inclusion of locally-constant functions into continuous functions as a multiplicative
 monoid hom. -/
@@ -39,7 +36,7 @@ def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y 
 
 /-- The inclusion of locally-constant functions into continuous functions as a linear map. -/
 @[simps]
-def toContinuousMapLinearMap (R : Type _) [Semiring R] [AddCommMonoid Y] [Module R Y]
+def toContinuousMapLinearMap (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
     [ContinuousAdd Y] [ContinuousConstSMul R Y] : LocallyConstant X Y →ₗ[R] C(X, Y) where
   toFun := (↑)
   map_add' x y := by
@@ -52,7 +49,7 @@ def toContinuousMapLinearMap (R : Type _) [Semiring R] [AddCommMonoid Y] [Module
 
 /-- The inclusion of locally-constant functions into continuous functions as an algebra map. -/
 @[simps]
-def toContinuousMapAlgHom (R : Type _) [CommSemiring R] [Semiring Y] [Algebra R Y]
+def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y]
     [TopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y) where
   toFun := (↑)
   map_one' := by

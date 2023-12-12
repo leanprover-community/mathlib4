@@ -2,17 +2,14 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.basic
-! leanprover-community/mathlib commit a5ff45a1c92c278b03b52459a620cfd9c49ebc80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
+
+#align_import category_theory.abelian.basic from "leanprover-community/mathlib"@"a5ff45a1c92c278b03b52459a620cfd9c49ebc80"
 
 /-!
 # Abelian categories
@@ -26,7 +23,7 @@ and if every monomorphism and epimorphism is normal.
 
 It should be noted that if we also assume coproducts, then preadditivity is
 actually a consequence of the other properties, as we show in
-`non_preadditive_abelian.lean`. However, this fact is of little practical
+`NonPreadditiveAbelian.lean`. However, this fact is of little practical
 relevance, since essentially all interesting abelian categories come with a
 preadditive structure. In this way, by requiring preadditivity, we allow the
 user to pass in the "native" preadditive structure for the specific category they are
@@ -34,7 +31,7 @@ working with.
 
 ## Main definitions
 
-* `Abelian` is the type class indicating that a category is abelian. It extends `preadditive`.
+* `Abelian` is the type class indicating that a category is abelian. It extends `Preadditive`.
 * `Abelian.image f` is `kernel (cokernel.π f)`, and
 * `Abelian.coimage f` is `cokernel (kernel.ι f)`.
 
@@ -42,7 +39,7 @@ working with.
 
 * In an abelian category, mono + epi = iso.
 * If `f : X ⟶ Y`, then the map `factorThruImage f : X ⟶ image f` is an epimorphism, and the map
-  `factor_thru_coimage f : coimage f ⟶ Y` is a monomorphism.
+  `factorThruCoimage f : coimage f ⟶ Y` is a monomorphism.
 * Factoring through the image and coimage is a strong epi-mono factorisation. This means that
   * every abelian category has images. We provide the isomorphism
     `imageIsoImage : abelian.image f ≅ limits.image f`.
@@ -74,7 +71,7 @@ convention:
 * If the statement of a theorem involves limits, the existence of these limits should be made an
   explicit typeclass parameter.
 * If a limit only appears in a proof, but not in the statement of a theorem, the limit should not
-  be a typeclass parameter, but instead be created using `abelian.has_pullbacks` or a similar
+  be a typeclass parameter, but instead be created using `Abelian.hasPullbacks` or a similar
   definition.
 
 ## References
@@ -150,7 +147,8 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
 
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
-  apply equalizer.hom_ext
+  dsimp
+  ext
   simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
     cokernel.π_desc_assoc]
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_mono_factorisation_e' CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageMonoFactorisation_e'
@@ -166,7 +164,7 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
         rw [imageMonoFactorisation_m]
         simp only [Category.assoc]
         rw [IsIso.inv_comp_eq]
-        apply coequalizer.hom_ext
+        ext
         simp }
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_factorisation CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageFactorisation
 
@@ -401,7 +399,7 @@ instance : IsIso (coimageImageComparison f) := by
     IsIso.of_iso
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
-  apply coequalizer.hom_ext; apply equalizer.hom_ext
+  ext
   change _ = _ ≫ (imageStrongEpiMonoFactorisation f).m
   simp [-imageStrongEpiMonoFactorisation_m]
 
@@ -420,7 +418,7 @@ abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
 theorem coimageIsoImage'_hom :
     (coimageIsoImage' f).hom =
       cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (Limits.image.ι f)]) := by
-  apply coequalizer.hom_ext
+  ext
   simp only [← cancel_mono (Limits.image.ι f), IsImage.isoExt_hom, cokernel.π_desc,
     Category.assoc, IsImage.lift_ι, coimageStrongEpiMonoFactorisation_m,
     Limits.image.fac]
@@ -445,7 +443,7 @@ theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image
 theorem imageIsoImage_inv :
     (imageIsoImage f).inv =
       kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factorThruImage f)]) := by
-  apply image.ext; apply equalizer.hom_ext
+  ext
   rw [IsImage.isoExt_inv, image.isImage_lift, Limits.image.fac_lift,
     imageStrongEpiMonoFactorisation_e, Category.assoc, kernel.lift_ι, equalizer_as_kernel,
     kernel.lift_ι, Limits.image.fac]
@@ -641,7 +639,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
     have : d = 0 := (cancel_epi f).1 (by simpa)
     -- ...or, in other words, e = 0.
     calc
-      e = biprod.inr ≫ biprod.desc (0 : X ⟶  R) e := by rw [biprod.inr_desc]
+      e = biprod.inr ≫ biprod.desc (0 : X ⟶ R) e := by rw [biprod.inr_desc]
       _ = biprod.inr ≫ biprod.desc f (-g) ≫ d := by rw [← hd]
       _ = biprod.inr ≫ biprod.desc f (-g) ≫ 0 := by rw [this]
       _ = (biprod.inr ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
@@ -675,7 +673,7 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
     have : d = 0 := (cancel_epi (-g)).1 (by simpa)
     -- ...or, in other words, e = 0.
     calc
-      e = biprod.inl ≫ biprod.desc e (0 : Y ⟶  R) := by rw [biprod.inl_desc]
+      e = biprod.inl ≫ biprod.desc e (0 : Y ⟶ R) := by rw [biprod.inl_desc]
       _ = biprod.inl ≫ biprod.desc f (-g) ≫ d := by rw [← hd]
       _ = biprod.inl ≫ biprod.desc f (-g) ≫ 0 := by rw [this]
       _ = (biprod.inl ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
@@ -726,7 +724,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
       _ = 0 := biprod.lift_fst _ _
     have : d = 0 := (cancel_mono f).1 (by simpa)
     calc
-      e = biprod.lift (0 : R ⟶  Y) e ≫ biprod.snd := by rw [biprod.lift_snd]
+      e = biprod.lift (0 : R ⟶ Y) e ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = (d ≫ biprod.lift f (-g)) ≫ biprod.snd := by rw [← hd]
       _ = (0 ≫ biprod.lift f (-g)) ≫ biprod.snd := by rw [this]
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [Category.assoc]
@@ -746,11 +744,11 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
     have : d ≫ (-g) = 0;
     calc
       d ≫ (-g) = d ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [biprod.lift_snd]
-      _ = biprod.lift e (0 : R ⟶  Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
+      _ = biprod.lift e (0 : R ⟶ Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_snd _ _
     have : d = 0 := (cancel_mono (-g)).1 (by simpa)
     calc
-      e = biprod.lift e (0 : R ⟶  Z) ≫ biprod.fst := by rw [biprod.lift_fst]
+      e = biprod.lift e (0 : R ⟶ Z) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = (d ≫ biprod.lift f (-g)) ≫ biprod.fst := by rw [← hd]
       _ = (0 ≫ biprod.lift f (-g)) ≫ biprod.fst := by rw [this]
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [Category.assoc]

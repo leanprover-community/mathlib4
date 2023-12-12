@@ -2,14 +2,11 @@
 Copyright (c) 2020 Ruben Van de Velde, Stanislas Polu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Stanislas Polu
-
-! This file was ported from Lean 3 source module imo.imo1972_q5
-! leanprover-community/mathlib commit 5f25c089cb34db4db112556f23c50d12da81b297
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import imo.imo1972_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
 /-!
 # IMO 1972 Q5
@@ -30,7 +27,7 @@ from `hneg` directly), finally raising a contradiction with `k' < k'`.
 theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x * g y)
     (hf2 : ∀ y, ‖f y‖ ≤ 1) (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 := by
   -- Suppose the conclusion does not hold.
-  by_contra' hneg
+  by_contra! hneg
   set S := Set.range fun x => ‖f x‖
   -- Introduce `k`, the supremum of `f`.
   let k : ℝ := sSup S
@@ -85,8 +82,8 @@ This is a more concise version of the proof proposed by Ruben Van de Velde.
 -/
 theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x * g y)
     (hf2 : BddAbove (Set.range fun x => ‖f x‖)) (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 := by
-  -- porting note: moved `by_contra'` up to avoid a bug
-  by_contra' H
+  -- porting note: moved `by_contra!` up to avoid a bug
+  by_contra! H
   obtain ⟨x, hx⟩ := hf3
   set k := ⨆ x, ‖f x‖
   have h : ∀ x, ‖f x‖ ≤ k := le_ciSup hf2
