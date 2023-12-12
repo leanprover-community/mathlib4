@@ -1069,6 +1069,8 @@ end Postcomposition
 
 section Periodicity
 
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
 /-! ### Summing translates of a function -/
 
 /-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
