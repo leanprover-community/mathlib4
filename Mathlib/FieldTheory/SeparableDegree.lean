@@ -674,7 +674,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
 only if it is a separable extension. -/
 theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     finSepDegree F E = finrank F E ↔ IsSeparable F E :=
-  ⟨fun heq ↦ ⟨IsIntegral.of_finite F, fun x ↦ by
+  ⟨fun heq ↦ ⟨fun x ↦ by
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
@@ -821,7 +821,7 @@ theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F
 
 /-- The (relative) separable closure of `E / F` is separable over `F`. -/
 instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ isIntegral_iff.2 x.2.1, fun x ↦ by simpa only [minpoly_eq] using x.2.2⟩
+  ⟨fun x ↦ by simpa only [minpoly_eq] using x.2.2⟩
 
 /-- An intermediate field of `E / F` is contained in the (relative) separable closure of `E / F`
 if all of its elements are separable over `F`. -/
