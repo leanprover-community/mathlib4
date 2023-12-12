@@ -50,6 +50,7 @@ ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
+ERR_ARR = 18 # space after "←"
 
 exceptions = []
 
@@ -86,7 +87,7 @@ def annotate_comments(enumerate_lines):
     """
     in_comment = False
     for line_nr, line, *rem in enumerate_lines:
-        if line.startswith("--"):
+        if line.lstrip().startswith("--"):
             yield line_nr, line, *rem, True
             continue
         if "/-" in line:
@@ -297,6 +298,19 @@ def isolated_by_dot_semicolon_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
+def left_arrow_check(lines, path):
+    errors = []
+    newlines = []
+    for line_nr, line, is_comment, in_string in annotate_strings(annotate_comments(lines)):
+        if is_comment or in_string:
+            newlines.append((line_nr, line))
+            continue
+        new_line = re.sub(r'←(?!%)(\S)', r'← \1', line)
+        if new_line != line:
+            errors += [(ERR_ARR, line_nr, path)]
+        newlines.append((line_nr, new_line))
+    return errors, newlines
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -343,6 +357,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
+        if errno == ERR_ARR:
+            output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
@@ -355,7 +371,8 @@ def lint(path, fix=False):
                             four_spaces_in_second_line,
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
-                            set_option_check]:
+                            set_option_check,
+                            left_arrow_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 

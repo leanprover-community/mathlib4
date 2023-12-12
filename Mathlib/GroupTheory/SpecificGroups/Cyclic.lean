@@ -125,7 +125,7 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
   classical
     use x
     simp_rw [← SetLike.mem_coe, ← Set.eq_univ_iff_forall]
-    rw [← Fintype.card_congr (Equiv.Set.univ α), ←Fintype.card_zpowers] at hx
+    rw [← Fintype.card_congr (Equiv.Set.univ α), ← Fintype.card_zpowers] at hx
     exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 #align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
 #align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_orderOf_eq_card
@@ -175,7 +175,7 @@ theorem isCyclic_of_surjective {H G F : Type*} [Group H] [Group G] [hH : IsCycli
 theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x, x ∈ zpowers g) :
     orderOf g = Fintype.card α := by
   classical
-    rw [←Fintype.card_zpowers]
+    rw [← Fintype.card_zpowers]
     apply Fintype.card_of_finset'
     simpa using hx
 #align order_of_eq_card_of_forall_mem_zpowers orderOf_eq_card_of_forall_mem_zpowers
@@ -188,7 +188,7 @@ theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cycli
   use a
   contrapose! k_lt_card_G
   convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
-  rw [←Fintype.card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
+  rw [← Fintype.card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
   exact fun x _ ↦ ha x
 
 @[to_additive Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples]
@@ -202,12 +202,12 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
       Infinite.exists_not_mem_finset
         (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
     apply hx
-    rw [←ho.mem_powers_iff_mem_range_orderOf, Submonoid.mem_powers_iff]
+    rw [← ho.mem_powers_iff_mem_range_orderOf, Submonoid.mem_powers_iff]
     obtain ⟨k, hk⟩ := h x
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
     · exact ⟨k, mod_cast hk⟩
-    rw [←zpow_mod_orderOf] at hk
+    rw [← zpow_mod_orderOf] at hk
     have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.orderOf_pos.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
     rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
@@ -233,7 +233,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         Nat.pos_of_ne_zero fun h => hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             cases' k with k k
-            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_ofNat, ←Int.ofNat_eq_coe, hk]
+            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_ofNat, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
