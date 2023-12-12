@@ -149,6 +149,8 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
 
+variable {K}
+
 theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
   -- We use `exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr` to get a nonzero
@@ -196,7 +198,7 @@ theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9:ℝ) = 3 from
     (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
     exact Real.pi_gt_three
-  refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge K h)
+  refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
   refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]

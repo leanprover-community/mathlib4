@@ -610,7 +610,8 @@ theorem convexBodySumFun_continuous :
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
 abbrev convexBodySum : Set (E K)  := { x | convexBodySumFun x ≤ B }
 
-theorem convexBodySum_volume_eq_zero {B} (hB : B ≤ 0) : volume (convexBodySum K B) = 0 := by
+theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
+    volume (convexBodySum K B) = 0 := by
   obtain hB | hB := lt_or_eq_of_le hB
   · suffices convexBodySum K B = ∅ by rw [this, measure_empty]
     ext x
@@ -631,7 +632,7 @@ theorem convexBodySum_mem {x : K} :
     ← Finset.sum_subtype_eq_sum_filter, Finset.subtype_univ, Nat.cast_one, one_mul, Nat.cast_ofNat]
   rfl
 
-theorem convexBodySum_symmetric (x : E K) (hx : x ∈ (convexBodySum K B)) :
+theorem convexBodySum_symmetric {x : E K} (hx : x ∈ (convexBodySum K B)) :
     -x ∈ (convexBodySum K B) := by
   rw [Set.mem_setOf, convexBodySumFun_neg]
   exact hx
@@ -675,7 +676,7 @@ open MeasureTheory MeasureTheory.Measure Real in
 theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
   obtain hB | hB := le_or_lt B 0
-  · rw [convexBodySum_volume_eq_zero K hB, ofReal_eq_zero.mpr hB, zero_pow, mul_zero]
+  · rw [convexBodySum_volume_eq_zero_of_le_zero K hB, ofReal_eq_zero.mpr hB, zero_pow, mul_zero]
     exact finrank_pos
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
       rw [mul_comm]
@@ -710,7 +711,7 @@ theorem convexBodySum_volume :
           exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ NrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ NrComplexPlaces K := by
-        rw [integral_finset_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_finset_prod_eq_pow _
+        rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _
           (fun x => exp (- 2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ =  (2 * Gamma (1 / 1 + 1)) ^ NrRealPlaces K *
@@ -777,7 +778,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
   have hB : 0 ≤ B := by
     contrapose! h
-    rw [convexBodySum_volume_eq_zero K (le_of_lt h)]
+    rw [convexBodySum_volume_eq_zero_of_le_zero K (le_of_lt h)]
     exact minkowskiBound_pos K
   -- Some inequalities that will be useful later on
   have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
@@ -790,7 +791,8 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     change DiscreteTopology  (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
-      h_fund (convexBodySum_symmetric K B) (convexBodySum_convex K B) (convexBodySum_compact K B) h
+      h_fund (fun _ ↦ convexBodySum_symmetric K B) (convexBodySum_convex K B)
+      (convexBodySum_compact K B) h
   rw [Submodule.mem_toAddSubgroup, mem_span_latticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨⟨a, ha⟩, ?_, ?_⟩
