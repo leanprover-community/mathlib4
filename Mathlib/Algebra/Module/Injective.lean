@@ -466,25 +466,13 @@ set_option linter.uppercaseLean3 false in
 
 protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
-  letI : AddCommGroup (Shrink.{v, u} I) := (equivShrink I).symm.addCommGroup
-  letI : Module R (Shrink.{v, u} I) := (equivShrink I).symm.module R
-  letI : AddCommGroup (Shrink.{v, u} R) := (equivShrink R).symm.addCommGroup
-  letI : Module R (Shrink.{v, u} R) := (equivShrink R).symm.module R
-  let eI := (equivShrink I).symm.linearEquiv R
-  let eR := (equivShrink R).symm.linearEquiv R
+  let eI := Shrink.linearEquiv I R
+  let eR := Shrink.linearEquiv R R
 
-  obtain ⟨g', hg'⟩ := @Module.Injective.out (self := inj) (Shrink I) (Shrink R)
-    _ _ _ _ (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
-    (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective)
-    (g ∘ₗ eI.toLinearMap)
+  obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
+    (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
 
-  refine ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ ?_⟩
-  specialize hg' (equivShrink I ⟨x, mx⟩)
-  simpa only [Equiv.linearEquiv, Equiv.addEquiv, Equiv.toFun_as_coe, Equiv.invFun_as_coe,
-    Equiv.symm_symm, AddEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AddEquiv.coe_mk, Equiv.coe_fn_mk,
-    AddEquiv.coe_toEquiv_symm, AddEquiv.symm_mk, Equiv.coe_fn_symm_mk, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, Submodule.coeSubtype, LinearMap.coe_mk,
-    AddHom.coe_mk, Function.comp_apply, Equiv.symm_apply_apply] using hg'
+  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa using hg' (equivShrink I ⟨x, mx⟩)⟩
 
 protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective.{u, v}⟩
@@ -494,18 +482,19 @@ end Module.Baer
 
 section ULift
 
+variable  {M : Type v} [AddCommGroup M] [Module R M]
+
 lemma Module.ulift_injective_of_injective
-    {M : Type v} [AddCommGroup M] [Module R M] (inj : Module.Injective.{u, v} R M) :
+    (inj : Module.Injective.{u, v} R M) :
     Module.Injective R (ULift.{max v' v} M) := by
-    letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
-    rw [← Module.Baer.iff_injective.{u, v}] at inj
-    rw [← Module.Baer.iff_injective.{u, max v' v}]
-    intro I g
-    obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
-    exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
+  letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
+  rw [← Module.Baer.iff_injective.{u, v}] at inj
+  rw [← Module.Baer.iff_injective.{u, max v' v}]
+  intro I g
+  obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
+  exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
-    {M : Type v} [AddCommGroup M] [Module R M]
     (inj : Module.Injective R (ULift.{max v v'} M)) :
     Module.Injective R M := by
   letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
@@ -515,14 +504,14 @@ lemma Module.injective_of_ulift_injective
   obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g)
   exact ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext_iff _ _ |>.mp <| hg' r hr⟩
 
-lemma Module.injective_iff_ulift_injective
-    (M : Type v) [AddCommGroup M] [Module R M] :
+variable (M)
+
+lemma Module.injective_iff_ulift_injective :
     Module.Injective R M ↔ Module.Injective R (ULift.{max v v'} M) :=
   ⟨Module.ulift_injective_of_injective.{u, v, v'} R,
    Module.injective_of_ulift_injective.{u, v, v'} R⟩
 
 instance ModuleCat.ulift_injective_of_injective
-    (M : Type v) [AddCommGroup M] [Module R M]
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
     CategoryTheory.Injective <| ModuleCat.of R (ULift.{max v v'} M) :=
   Module.injective_object_of_injective_module
