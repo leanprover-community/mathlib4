@@ -2559,9 +2559,9 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
-private lemma append_singleton_append_mem_left_of_length_lt {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
-    (together : x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂) (longer : x₂.length < x₁.length) :
-    Y₂ ∈ x₁ := by
+private lemma append_singleton_append_mem_left_of_length_lt {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
+    (together : x₁ ++ [a₁] ++ z₁ = x₂ ++ [a₂] ++ z₂) (longer : x₂.length < x₁.length) :
+    a₂ ∈ x₁ := by
   have middle := congr_fun (congr_arg get? together) x₂.length
   rw [
     append_assoc x₂,
