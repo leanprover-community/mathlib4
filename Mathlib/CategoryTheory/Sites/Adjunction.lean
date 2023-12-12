@@ -21,31 +21,24 @@ namespace CategoryTheory
 
 open GrothendieckTopology CategoryTheory Limits Opposite
 
-universe w₁ w₂ v u
+universe v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-variable {D : Type w₁} [Category.{max v u} D]
+variable {D : Type*} [Category D]
 
-variable {E : Type w₂} [Category.{max v u} E]
+variable {E : Type*} [Category E]
 
 variable {F : D ⥤ E} {G : E ⥤ D}
 
-variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (S.index P).multicospan F]
-
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable [HasWeakSheafify J D] [HasSheafCompose J F]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget : Sheaf J D ⥤ SheafOfTypes J :=
+abbrev sheafForget [ConcreteCategory D] [HasSheafCompose J (forget D)] : Sheaf J D ⥤ SheafOfTypes J :=
   sheafCompose J (forget D) ⋙ (sheafEquivSheafOfTypes J).functor
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_forget CategoryTheory.sheafForget
-
--- We need to sheafify...
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
 
 namespace Sheaf
 
@@ -112,6 +105,8 @@ instance [IsRightAdjoint F] : IsRightAdjoint (sheafCompose J F) :=
   ⟨_, adjunction J (Adjunction.ofRightAdjoint F)⟩
 
 section ForgetToType
+
+variable [ConcreteCategory D] [HasSheafCompose J (forget D)]
 
 /-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
 abbrev composeAndSheafifyFromTypes (G : Type max v u ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=

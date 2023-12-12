@@ -369,13 +369,7 @@ noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
 
 variable
-  [ConcreteCategory.{max v u} A]
-  [PreservesLimits (forget A)]
-  [ReflectsIsomorphisms (forget A)]
-  [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A]
-  [∀ (X : D), PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
-  [∀ (X : D), HasColimitsOfShape (K.Cover X)ᵒᵖ A]
+  [HasWeakSheafify J A] [HasWeakSheafify K A]
   [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
@@ -403,10 +397,9 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
   dsimp [Functor.preimage, Full.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
   erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
   dsimp [Adjunction.comp]
-  simp only [sheafificationAdjunction_unit_app, Category.comp_id, Functor.map_id,
-    whiskerLeft_id', GrothendieckTopology.sheafifyMap_comp,
-    GrothendieckTopology.sheafifyMap_sheafifyLift, Category.id_comp,
-    Category.assoc, GrothendieckTopology.toSheafify_sheafifyLift]
+  simp only [Category.comp_id, map_id, whiskerLeft_id', map_comp, Sheaf.instCategorySheaf_comp_val,
+    sheafificationAdjunction_counit_app_val, GrothendieckTopology.sheafifyMap_sheafifyLift,
+    Category.id_comp, Category.assoc, GrothendieckTopology.toSheafify_sheafifyLift]
   ext t s : 3
   dsimp [sheafPushforwardContinuous]
   congr 1
