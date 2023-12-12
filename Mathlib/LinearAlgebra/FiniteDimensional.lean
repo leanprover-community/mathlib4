@@ -138,8 +138,12 @@ theorem finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
-theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V :=
-  Module.Finite.of_fintype_basis h
+theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V := by
+  classical
+  cases nonempty_fintype ι
+  exact ⟨⟨Finset.univ.image h, by
+    convert h.span_eq
+    simp⟩⟩
 #align finite_dimensional.of_fintype_basis FiniteDimensional.of_fintype_basis
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
@@ -320,10 +324,8 @@ theorem finrank_pos_iff_exists_ne_zero [FiniteDimensional K V] : 0 < finrank K V
 /-- A finite dimensional space has positive `finrank` iff it is nontrivial. -/
 theorem finrank_pos_iff [FiniteDimensional K V] : 0 < finrank K V ↔ Nontrivial V :=
   Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_pos_iff_nontrivial K V _ _ _ _ _)
+    (by rw [← finrank_eq_rank]; norm_cast)
+    (rank_pos_iff_nontrivial (R := K))
 #align finite_dimensional.finrank_pos_iff FiniteDimensional.finrank_pos_iff
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
@@ -335,10 +337,8 @@ theorem finrank_pos [FiniteDimensional K V] [h : Nontrivial V] : 0 < finrank K V
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem finrank_zero_iff [FiniteDimensional K V] : finrank K V = 0 ↔ Subsingleton V :=
   Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_zero_iff K V _ _ _ _ _)
+    (by rw [← finrank_eq_rank]; norm_cast)
+    (rank_zero_iff (R := K))
 #align finite_dimensional.finrank_zero_iff FiniteDimensional.finrank_zero_iff
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
@@ -348,7 +348,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
-    @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
+    LinearIndependent.image_subtype (f := Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
   -- porting note: `letI` now uses `this` so we need to give different names
