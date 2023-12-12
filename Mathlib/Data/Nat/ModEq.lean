@@ -561,7 +561,8 @@ lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
       · simpa using h.1
       · simpa using h.2 _
 
-/-- The natural number less than `(l.map Prod.snd).prod` congruent to `(l.get i).1` mod `(l.get i).2` for all `i` -/
+/-- The natural number less than `(l.map Prod.snd).prod`
+  congruent to `(l.get i).1` mod `(l.get i).2` for all `i`. -/
 def chineseRemainderOfList : (l : List (ℕ × ℕ)) → (co : (l.map Prod.snd).Pairwise Coprime) →
     { k // ∀ i, k ≡ (l.get i).1 [MOD (l.get i).2] }
   | [],          _  => ⟨0, by simp⟩
@@ -578,7 +579,8 @@ def chineseRemainderOfList : (l : List (ℕ × ℕ)) → (co : (l.map Prod.snd).
         have : z ≡ (l.get i).1 [MOD (l.get i).2] := Nat.ModEq.trans this (ih.prop i)
         exact this⟩
 
-@[simp] theorem chineseRemainderOfList_nil : (chineseRemainderOfList [] List.Pairwise.nil : ℕ) = 0 := rfl
+@[simp] theorem chineseRemainderOfList_nil :
+    (chineseRemainderOfList [] List.Pairwise.nil : ℕ) = 0 := rfl
 
 theorem chineseRemainderOfList_lt_prod (l : List (ℕ × ℕ))
     (co : (l.map Prod.snd).Pairwise Coprime) (hl : ∀ a, (a, 0) ∉ l) :
@@ -589,6 +591,7 @@ theorem chineseRemainderOfList_lt_prod (l : List (ℕ × ℕ))
       pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod.mp co
     exact chineseRemainder_lt_mul co.2 a
       (chineseRemainderOfList l co.1)
-      (fun h => by simpa[h] using hl a) (by simpa using fun b => List.not_mem_of_not_mem_cons (hl b))
+      (fun h => by simpa[h] using hl a)
+      (by simpa using fun b => List.not_mem_of_not_mem_cons (hl b))
 
 end Nat
