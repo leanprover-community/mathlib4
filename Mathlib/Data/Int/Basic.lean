@@ -140,9 +140,6 @@ theorem sign_coe_add_one (n : ℕ) : Int.sign (n + 1) = 1 :=
   rfl
 #align int.sign_coe_add_one Int.sign_coe_add_one
 
-@[simp]
-theorem sign_negSucc (n : ℕ) : Int.sign -[n+1] = -1 :=
-  rfl
 #align int.sign_neg_succ_of_nat Int.sign_negSucc
 
 /-! ### succ and pred -/

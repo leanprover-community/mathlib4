@@ -161,7 +161,7 @@ theorem card_le_two_pow {x k : ℕ} :
       exact
         ⟨p.pred, (Nat.pred_lt (Nat.Prime.ne_zero hp.1)).trans_le ((hmp p) hp),
           Nat.succ_pred_eq_of_pos (Nat.Prime.pos hp.1)⟩
-    · simp [Nat.prod_factors m.succ_ne_zero, m.succ_sub_one]
+    · simp [Nat.prod_factors m.succ_ne_zero, m.add_one_sub_one]
   -- The number of elements of `M x k` with `e + 1` squarefree is bounded by the number of subsets
   -- of `[1, k]`.
   calc
@@ -191,7 +191,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
     refine'
-      ⟨a, b, ⟨⟨⟨_, fun p hp => _⟩, hab₂⟩, ⟨_, fun p hp => _⟩⟩, by simp_rw [hab₁, m.succ_sub_one]⟩
+      ⟨a, b, ⟨⟨⟨_, fun p hp => _⟩, hab₂⟩, ⟨_, fun p hp => _⟩⟩, by simp_rw [hab₁, m.add_one_sub_one]⟩
     · exact (Nat.succ_le_succ_iff.mp (Nat.le_of_dvd hm' ham)).trans_lt hm.1
     · exact hm.2 p ⟨hp.1, hp.2.trans ham⟩
     · calc
