@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Int.Basic
 # Coprimality and vanishing
 
 We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if and only if
-`a` and `p` are not coprime. We also provide lemmas for working with lists of coprimes.
+`a` and `p` are not coprime.
 -/
 
 namespace ZMod

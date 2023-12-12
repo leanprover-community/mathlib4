@@ -561,8 +561,8 @@ lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
       · simpa using h.1
       · simpa using h.2 _
 
-/-- The natural number less than `(l.map Prod.snd).prod`
-  congruent to `(l.get i).1` mod `(l.get i).2` for all `i`. -/
+/-- The natural number less than `(l.map Prod.snd).prod` congruent to
+`(l.get i).1` mod `(l.get i).2` for all  `i`. -/
 def chineseRemainderOfList : (l : List (ℕ × ℕ)) → (co : (l.map Prod.snd).Pairwise Coprime) →
     { k // ∀ i, k ≡ (l.get i).1 [MOD (l.get i).2] }
   | [],          _  => ⟨0, by simp⟩
