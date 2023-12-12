@@ -108,10 +108,9 @@ def gradedComm :
     (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
 
 /-- The braiding is symmetric. -/
+@[simp]
 theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 := by
-  rw [gradedComm, gradedComm]
-  dsimp
-  rw [LinearEquiv.symm_symm]
+  rw [gradedComm, gradedComm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
   ext
   rfl
 
