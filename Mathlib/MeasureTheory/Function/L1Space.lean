@@ -404,9 +404,9 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
       refine' lintegral_mono _
       intro i
-      -- After leanprover/lean4#2734, we need to do beta reduction `exact_mod_cast`
+      -- After leanprover/lean4#2734, we need to do beta reduction `exact mod_cast`
       beta_reduce
-      exact_mod_cast (nnnorm_smul_le c (f i))
+      exact mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_ne_top hfi.ne, coe_ne_top]
@@ -670,9 +670,9 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
   calc
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
-        -- After leanprover/lean4#2734, we need to do beta reduction before `exact_mod_cast`
+        -- After leanprover/lean4#2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
-        exact_mod_cast nnnorm_add_le _ _
+        exact mod_cast nnnorm_add_le _ _
     _ = _ := (lintegral_nnnorm_add_left hf.aestronglyMeasurable _)
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 #align measure_theory.integrable.add' MeasureTheory.Integrable.add'
@@ -747,7 +747,7 @@ theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (
     exact ENNReal.mul_lt_top ENNReal.coe_ne_top (ne_of_lt hint.2)
 #align measure_theory.integrable.bdd_mul MeasureTheory.Integrable.bdd_mul
 
-/-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
+/-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
 theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β] {f : α → β}
     (hf : Integrable f μ) {g : α → 𝕜} (g_aestronglyMeasurable : AEStronglyMeasurable g μ)
@@ -825,7 +825,7 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
-#align measure_theory.integrable.measurege_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
+#align measure_theory.integrable.measure_ge_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ > ε` is finite for all positive `ε`. -/

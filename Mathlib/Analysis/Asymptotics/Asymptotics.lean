@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.LocalHomeomorph
+import Mathlib.Topology.PartialHomeomorph
 
 #align_import analysis.asymptotics.asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -150,7 +150,7 @@ theorem isBigO_iff'' {g : α → E'''} :
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
-    rwa [←inv_inv c, inv_mul_le_iff (by positivity)] at hx
+    rwa [← inv_inv c, inv_mul_le_iff (by positivity)] at hx
 
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩
@@ -1692,7 +1692,7 @@ theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ}
     (fun x => f x ^ n) =o[l] fun x => g x ^ n := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction' n with n ihn
-  · simpa only [Nat.zero_eq, ←Nat.one_eq_succ_zero, pow_one]
+  · simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
   · convert h.mul ihn <;> simp [pow_succ]
 #align asymptotics.is_o.pow Asymptotics.IsLittleO.pow
 
@@ -1915,10 +1915,10 @@ theorem isLittleO_pure {x} : f'' =o[pure x] g'' ↔ f'' x = 0 :=
     _ ↔ f'' x = 0 := isLittleO_const_const_iff
 #align asymptotics.is_o_pure Asymptotics.isLittleO_pure
 
-theorem isLittleO_const_id_comap_norm_atTop (c : F'') :
-    (fun _x : E'' => c) =o[comap norm atTop] id :=
-  isLittleO_const_left.2 <| Or.inr tendsto_comap
-#align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_comap_norm_atTop
+theorem isLittleO_const_id_cobounded (c : F'') :
+    (fun _ => c) =o[Bornology.cobounded E''] id :=
+  isLittleO_const_left.2 <| .inr tendsto_norm_cobounded_atTop
+#align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_cobounded
 
 theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
   isLittleO_const_left.2 <| Or.inr tendsto_abs_atTop_atTop
@@ -2214,27 +2214,33 @@ end Asymptotics
 
 open Asymptotics
 
-theorem summable_of_isBigO {ι E} [NormedAddCommGroup E] [CompleteSpace E] {f : ι → E} {g : ι → ℝ}
-    (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
+theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
+    {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   let ⟨C, hC⟩ := h.isBigOWith
   .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O summable_of_isBigO
 
-theorem summable_of_isBigO_nat {E} [NormedAddCommGroup E] [CompleteSpace E] {f : ℕ → E} {g : ℕ → ℝ}
-    (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
+theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
+    {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO hg <| Nat.cofinite_eq_atTop.symm ▸ h
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O_nat summable_of_isBigO_nat
 
-namespace LocalHomeomorph
+lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
+    [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {f : E → F} {g : ι → E}
+    (hf : f =O[𝓝 0] id) (hg : Summable (‖g ·‖)) : Summable (‖f <| g ·‖) :=
+  summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
+    tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
+
+namespace PartialHomeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
-/-- Transfer `IsBigOWith` over a `LocalHomeomorph`. -/
-theorem isBigOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+/-- Transfer `IsBigOWith` over a `PartialHomeomorph`. -/
+theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} {C : ℝ} : IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   ⟨fun h =>
     h.comp_tendsto <| by
@@ -2245,25 +2251,25 @@ theorem isBigOWith_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.targ
       ((e.eventually_right_inverse hb).mono fun x hx => congr_arg f hx)
       ((e.eventually_right_inverse hb).mono fun x hx => congr_arg g hx)⟩
 set_option linter.uppercaseLean3 false in
-#align local_homeomorph.is_O_with_congr LocalHomeomorph.isBigOWith_congr
+#align local_homeomorph.is_O_with_congr PartialHomeomorph.isBigOWith_congr
 
-/-- Transfer `IsBigO` over a `LocalHomeomorph`. -/
-theorem isBigO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E} {g : β → F} :
-    f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
+/-- Transfer `IsBigO` over a `PartialHomeomorph`. -/
+theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+    {g : β → F} : f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
   exact exists_congr fun C => e.isBigOWith_congr hb
 set_option linter.uppercaseLean3 false in
-#align local_homeomorph.is_O_congr LocalHomeomorph.isBigO_congr
+#align local_homeomorph.is_O_congr PartialHomeomorph.isBigO_congr
 
-/-- Transfer `IsLittleO` over a `LocalHomeomorph`. -/
-theorem isLittleO_congr (e : LocalHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
+/-- Transfer `IsLittleO` over a `PartialHomeomorph`. -/
+theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsLittleO_def]
   exact forall₂_congr fun c _hc => e.isBigOWith_congr hb
 set_option linter.uppercaseLean3 false in
-#align local_homeomorph.is_o_congr LocalHomeomorph.isLittleO_congr
+#align local_homeomorph.is_o_congr PartialHomeomorph.isLittleO_congr
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 namespace Homeomorph
 
@@ -2276,7 +2282,7 @@ open Asymptotics
 /-- Transfer `IsBigOWith` over a `Homeomorph`. -/
 theorem isBigOWith_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} {C : ℝ} :
     IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
-  e.toLocalHomeomorph.isBigOWith_congr trivial
+  e.toPartialHomeomorph.isBigOWith_congr trivial
 set_option linter.uppercaseLean3 false in
 #align homeomorph.is_O_with_congr Homeomorph.isBigOWith_congr
 

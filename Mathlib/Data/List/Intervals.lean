@@ -73,7 +73,7 @@ theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, tsub_eq_zero_iff_le.mpr h]
 #align list.Ico.eq_nil_of_le List.Ico.eq_nil_of_le
 
-theorem map_add (n m k : ℕ) : (Ico n m).map ((· + ·) k) = Ico (n + k) (m + k) := by
+theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := by
   rw [Ico, Ico, map_add_range', add_tsub_add_eq_tsub_right m k, add_comm n k]
 #align list.Ico.map_add List.Ico.map_add
 
@@ -140,7 +140,7 @@ theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
 #align list.Ico.pred_singleton List.Ico.pred_singleton
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
-  by_cases n < m
+  by_cases h : n < m
   · rw [eq_cons h]
     exact chain_succ_range' _ _ 1
   · rw [eq_nil_of_le (le_of_not_gt h)]
