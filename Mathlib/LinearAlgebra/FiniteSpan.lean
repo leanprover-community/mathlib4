@@ -16,12 +16,11 @@ open Set Function
 open Submodule (span)
 
 /-- A linear equivalence which preserves a finite spanning set must have finite order. -/
-lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_image_subset
+lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
     {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-    {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {e : M ≃ₗ[R] M} (he : e '' Φ ⊆ Φ) :
+    {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {e : M ≃ₗ[R] M} (he : MapsTo e Φ Φ) :
     IsOfFinOrder e := by
-  replace he : BijOn e Φ Φ := e.toEquiv.image_eq_iff_bijOn.mp <|
-    (hΦ₁.equiv_image_eq_iff_subset e.toEquiv).mpr he
+  replace he : BijOn e Φ Φ := (hΦ₁.injOn_iff_bijOn_of_mapsTo he).mp (e.injective.injOn Φ)
   let e' := he.equiv
   have : Finite Φ := finite_coe_iff.mpr hΦ₁
   obtain ⟨k, hk₀, hk⟩ := isOfFinOrder_of_finite e'
