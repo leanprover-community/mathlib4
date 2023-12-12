@@ -13,10 +13,10 @@ This file contains basic definitions for root systems and root data.
 
 ## Main definitions / results:
 
- * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with finite
-   indexing set `ι` is the data of an `ι`-indexed subset of `M` ("the roots") and an `ι`-indexed
-   subset of `N` ("the coroots") satisfying the axioms familiar from the traditional theory of root
-   systems / data.
+ * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
+   `R`) a root pairing with finite indexing set `ι` is the data of an `ι`-indexed subset of `M`
+   ("the roots") and an `ι`-indexed subset of `N` ("the coroots") satisfying the axioms familiar
+   from the traditional theory of root systems / data.
  * `RootDatum`: A root datum is a root pairing for which the roots and coroots take values in
    finitely-generated free Abelian groups.
  * `RootSystem`: A root system is a root pairing for which the roots span their ambient module and
