@@ -89,7 +89,7 @@ def intoBoundary (n : ℕ) (j : Fin (n + 2)) : Δ[n] ⟶ ∂Δ[n + 1] where
   app k x := ⟨(standardSimplex.map (δ j)).app k x, fun h => by
     simpa using (show j ∈ Set.range (Fin.succAbove j) from Set.range_comp_subset_range _ _ (h j))⟩
 
---000Z, better way to say j ≠ i?
+--000Z, better way to say j ≠ i, (j : Fin.succAbove i) or {i}ᶜ
 def intoHorn (n : ℕ) (i j : Fin (n + 2)) (hj : j ≠ i) : Δ[n] ⟶ Λ[n + 1, i] where
   app k x := ⟨(standardSimplex.map (δ j)).app k x, by
     rw [Set.ne_univ_iff_exists_not_mem]
@@ -100,6 +100,9 @@ def intoHorn (n : ℕ) (i j : Fin (n + 2)) (hj : j ≠ i) : Δ[n] ⟶ Λ[n + 1, 
       simpa using (show j ∈ Set.range (Fin.succAbove j) from Set.range_comp_subset_range _ _ h)
      | inr h => exact hj h⟩
 
+lemma switchtohorn (n : ℕ) (i j : Fin (n + 2)) (hj : j ≠ i) (g : Δ[n+1] ⟶ X) :
+  standardSimplex.map (δ j) ≫ g = (intoHorn n i j hj) ≫ hornInclusion _ _ ≫ g := rfl
+
 example : X _[1] → X _[0] := X.map (δ 0).op
 
 def hornD0 : Δ[1] ⟶ Λ[2, 1] := (intoHorn 1 1 0 zero_ne_one)
@@ -108,29 +111,70 @@ def hornD2 : Δ[1] ⟶ Λ[2, 1] := by
   refine intoHorn 1 1 2 ?_
   sorry
 
-lemma switchtohorn (n : ℕ) (i j : Fin (n + 2)) (hj : j ≠ i) (g : Δ[n+1] ⟶ X) :
-  standardSimplex.map (δ j) ≫ g = (intoHorn n i j hj) ≫ hornInclusion _ _ ≫ g := rfl
+def HornD0 : Δ[1] ⟶ Λ[2, 2] := by
+  refine intoHorn 1 2 0 ?_
+  sorry
 
+def HornD1 : Δ[1] ⟶ Λ[2, 2] := by
+  refine intoHorn 1 2 1 ?_
+  sorry
+
+instance Nonemp (n : ℕ) (i : Fin (n + 2)) : Nonempty (horn (n + 1) i ⟶ X) := by
+  sorry
+
+--000Z
+def HornMapEmb (n : ℕ) (i : Fin (n + 2)) :
+  (Λ[n + 1, i] ⟶ X) → ( ({i}ᶜ : Set (Fin (n + 2))) → (Δ[n] ⟶ X) ) :=
+    fun f ⟨j, hj⟩ => (intoHorn n i j hj) ≫ f
+
+def HornMapEmbInjective (n : ℕ) (i : Fin (n + 2)) : Function.Injective (HornMapEmb X n i) := by
+  rintro f g h
+  ext k x
+  sorry
+
+noncomputable
+def HornMapEmbInverse (n : ℕ) (i : Fin (n + 2)) :
+  ( ({i}ᶜ : Set (Fin (n + 2))) → (Δ[n] ⟶ X) ) → (Λ[n + 1, i] ⟶ X) :=
+    Exists.choose (Function.Injective.hasLeftInverse (HornMapEmbInjective X n i))
+
+lemma HornMapEmbInverse1 (n : ℕ) (i : Fin (n + 2)) (f : Λ[n + 1, i] ⟶ X) :
+  HornMapEmbInverse X n i (HornMapEmb X n i f) = f :=
+    Exists.choose_spec (Function.Injective.hasLeftInverse (HornMapEmbInjective X n i)) f
+
+noncomputable
 def transHom {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
   Path a b → Path b c → (Λ[2,1] ⟶ X) := by
-    rintro ⟨p₀, h0₀, h0₁⟩ ⟨p₁, h1₀, h1₁⟩
-    refine {
-      app := by
-        rintro k ⟨x, hx⟩
-        have := yonedaEquiv.toFun p₀
-        sorry
-      naturality := sorry
-    }
+    rintro ⟨p₀, h0₀, h1₀⟩ ⟨p₂, h0₂, h1₂⟩
+    apply HornMapEmbInverse X 1 1
+    rintro ⟨j, hj : j ≠ 1⟩
+    by_cases j = 0
+    exact p₀
+    have : j = 2 := sorry
+    exact p₂
 
-@[simp]
-lemma transHom_compHorn0 {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p0 : Path a b) (p2 : Path b c) :
-  hornD0 ≫ (transHom p0 p2) = p0.p := sorry
+lemma transHom_compHorn0 {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p₀ : Path a b) (p₂ : Path b c) :
+  hornD0 ≫ (transHom p₀ p₂) = p₀.p := by
+    have h := HornMapEmbInverse1 X 1 1 (transHom p₀ p₂)
+    rw [← h]
+    dsimp [hornD0]
+    simp [transHom, hornD0, intoHorn, HornMapEmbInverse, HornMapEmb]
+    sorry
 
 @[simp]
 lemma transHom_compHorn2 {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p0 : Path a b) (p2 : Path b c) :
   hornD2 ≫ (transHom p0 p2) = p2.p := sorry
 
-lemma aux3 : d0 ≫ D1 = d0 ≫ D0 := rfl
+lemma aux1 : d1 ≫ D1 = d1 ≫ D2 := by
+  have := @δ_comp_δ_self 0 1
+  apply_fun (fun a => standardSimplex.map a) at this
+  exact this
+
+example : d0 ≫ D1 = d0 ≫ D0 := rfl
+
+lemma aux2 : d0 ≫ D2 = d1 ≫ D0 := by
+  have := @δ_comp_δ 0 0 1 (Nat.zero_le 1)
+  apply_fun (fun a => standardSimplex.map a) at this
+  exact this
 
 noncomputable
 def Path.trans {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
@@ -140,18 +184,59 @@ def Path.trans {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
     have hg := Exists.choose_spec (IsKan.cond _ _ (transHom p₀ p₂))
     refine ⟨?_, ?_, ?_⟩
     · exact D1 ≫ g
-    · change d0 ≫ D0 ≫ g = a
-      change d0 ≫ (intoHorn 1 1 0 zero_ne_one) ≫ hornInclusion _ _ ≫ g = a
-      rw [← hg, ← hornD0, transHom_compHorn0]
+    · change d0 ≫ hornD0 ≫ hornInclusion _ _ ≫ g = a
+      rw [← hg, transHom_compHorn0]
       exact p₀.hp0
-    · have : d1 ≫ D1 ≫ g = d1 ≫ D2 ≫ g := sorry
+    · have := aux1
+      apply_fun (fun a => a ≫ g) at this
+      change d1 ≫ D1 ≫ g = d1 ≫ D2 ≫ g at this
       rw [this]
       change d1 ≫ hornD2 ≫ hornInclusion _ _ ≫ g = c
       rw [← hg, transHom_compHorn2]
       exact p₂.hp1
 
+noncomputable
+def symmHom {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] :
+  Path a b → (Λ[2,2] ⟶ X) := by
+    rintro ⟨p, h0, h1⟩
+    apply HornMapEmbInverse X 1 2
+    rintro ⟨j, hj : j ≠ 2⟩
+    by_cases j = 1
+    exact p
+    have : j = 0 := sorry
+    exact standardSimplex.map (σ 0) ≫ a
+
+lemma symmHom_compHorn0 {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] (p : Path a b) :
+  HornD0 ≫ (symmHom p) = p.p := sorry
+
+@[simp]
+lemma symmHom_compHorn1 {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] (p : Path a b) :
+  HornD1 ≫ (symmHom p) = standardSimplex.map (σ 0) ≫ a := sorry
+
+noncomputable
 def Path.symm {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] :
-  Path a b → Path b a := sorry
+  Path a b → Path b a := by
+    intro p
+    let g := Exists.choose (IsKan.cond _ _ (symmHom p))
+    have hg := Exists.choose_spec (IsKan.cond _ _ (symmHom p))
+    refine ⟨D2 ≫ g, ?_, ?_⟩
+    · have := aux2
+      apply_fun (fun a => a ≫ g) at this
+      change d0 ≫ D2 ≫ g = d1 ≫ HornD0 ≫ hornInclusion _ _ ≫ g at this
+      rw [this, ← hg, symmHom_compHorn0]
+      exact p.hp1
+    · have := aux1
+      apply_fun (fun a => a ≫ g) at this
+      change d1 ≫ HornD1 ≫ hornInclusion _ _ ≫ g = d1 ≫ D2 ≫ g at this
+      rw [← this, ← hg, symmHom_compHorn1]
+      have aux := @δ_comp_σ_succ 0 0
+      apply_fun (fun x => (standardSimplex.map x) ≫ a) at aux
+      change d1 ≫ standardSimplex.map (σ 0) ≫ a = standardSimplex.map (𝟙 ([0] : SimplexCategory)) ≫ a at aux
+      rw [aux]
+      ext
+      change a.app _ ((standardSimplex.map (𝟙 ([0] : SimplexCategory))).app _ _) = _
+      dsimp [standardSimplex]
+      simp only [OrderHom.id_comp, Hom.mk_toOrderHom]
 
 noncomputable
 def ProdObjIso {X Y : SSet} (n) : (X ⨯ Y).obj n ≅ (X.obj n × Y.obj n) :=
