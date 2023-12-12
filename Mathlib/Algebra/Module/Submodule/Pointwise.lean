@@ -432,7 +432,6 @@ lemma mem_singleton_set_smul_submodule [SMulCommClass R R M] (r : R) (x : M) :
     x ∈ ({r} : Set R) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
   rw [singleton_set_smul_submodule_eq]
   change x ∈ (r • N : Set M) ↔ _
-  rw [coe_pointwise_smul]
   fconstructor <;>
   · rintro ⟨m, hm, rfl⟩; exact ⟨m, hm, rfl⟩
 
