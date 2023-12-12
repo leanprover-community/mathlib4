@@ -7,6 +7,9 @@ import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Data.Nat.Prime
+import Mathlib.Data.List.MinMax
+import Mathlib.Data.List.FinRange
 
 #align_import data.nat.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -529,5 +532,63 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
     help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
+
+lemma coprime_list_prod_iff_right {k} {l : List ℕ} :
+    Coprime k l.prod ↔ ∀ n ∈ l, Coprime k n := by
+  induction' l with m l ih <;> simp[Nat.coprime_mul_iff_right, *]
+
+lemma coprime_list_prod_iff_left {k} {l : List ℕ} :
+    Coprime l.prod k ↔ ∀ n ∈ l, Coprime k n := by
+  induction' l with m l ih <;> simp[Nat.coprime_mul_iff_left, *]
+  intro
+  exact coprime_comm
+
+lemma pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod {n} {l : List ℕ} :
+    (n :: l).Pairwise Coprime ↔ l.Pairwise Coprime ∧ Coprime n l.prod := by
+  rw[List.pairwise_cons, coprime_list_prod_iff_right, and_comm]
+
+lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
+    (∀ i, a ≡ b [MOD l.get i]) ↔ a ≡ b [MOD l.prod] := by
+  induction' l with m l ih <;> simp[Nat.modEq_one]
+  · rcases co with (_ | ⟨hm, hl⟩)
+    have : a ≡ b [MOD m] ∧ a ≡ b [MOD l.prod] ↔ a ≡ b [MOD m * l.prod] :=
+      Nat.modEq_and_modEq_iff_modEq_mul (coprime_list_prod_iff_right.mpr hm)
+    simp[← this, ← ih hl]
+    constructor
+    · intro h; exact ⟨by simpa using h ⟨0, by simp⟩, fun i => by simpa using h i.succ⟩
+    · intro h i
+      cases i using Fin.cases
+      · simpa using h.1
+      · simpa using h.2 _
+
+/-- The natural number less than `(l.map Prod.snd).prod` congruent to `(l.get i).1` mod `(l.get i).2` for all `i` -/
+def chineseRemainderOfList : (l : List (ℕ × ℕ)) → (co : (l.map Prod.snd).Pairwise Coprime) →
+    { k // ∀ i, k ≡ (l.get i).1 [MOD (l.get i).2] }
+  | [],          _  => ⟨0, by simp⟩
+  | (a, m) :: l, co => by
+    have hl : (l.map Prod.snd).Pairwise Coprime ∧ Coprime m (l.map Prod.snd).prod :=
+      pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod.mp co
+    let ih : { k // ∀ i, k ≡ (l.get i).1 [MOD (l.get i).2] } := chineseRemainderOfList l hl.1
+    let z := Nat.chineseRemainder hl.2 a ih
+    exact ⟨z, by
+      intro i; cases' i using Fin.cases with i <;> simp
+      · exact z.prop.1
+      · have : z ≡ ih [MOD (l.get i).2] := by
+          simpa using (modEq_iff_modEq_list_prod hl.1).mpr z.prop.2 (i.cast $ by simp)
+        have : z ≡ (l.get i).1 [MOD (l.get i).2] := Nat.ModEq.trans this (ih.prop i)
+        exact this⟩
+
+@[simp] theorem chineseRemainderOfList_nil : (chineseRemainderOfList [] List.Pairwise.nil : ℕ) = 0 := rfl
+
+theorem chineseRemainderOfList_lt_prod (l : List (ℕ × ℕ))
+    (co : (l.map Prod.snd).Pairwise Coprime) (hl : ∀ a, (a, 0) ∉ l) :
+    ↑(chineseRemainderOfList l co) < (l.map Prod.snd).prod := by
+  cases' l with p l <;> simp
+  · rcases p with ⟨a, m⟩; simp[chineseRemainderOfList]
+    have co : (l.map Prod.snd).Pairwise Coprime ∧ Coprime m (l.map Prod.snd).prod :=
+      pairwise_coprime_cons_iff_pairwise_coprime_coprime_prod.mp co
+    exact chineseRemainder_lt_mul co.2 a
+      (chineseRemainderOfList l co.1)
+      (fun h => by simpa[h] using hl a) (by simpa using fun b => List.not_mem_of_not_mem_cons (hl b))
 
 end Nat
