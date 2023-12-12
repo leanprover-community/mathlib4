@@ -48,19 +48,19 @@ theorem coprime_fintype_prod_right_iff {ι : Type*} [Fintype ι] [DecidableEq ι
     {x : ℕ} {s : ι → ℕ} : Coprime x (∏ i, s i) ↔ (∀ i : ι, Coprime x (s i)) := by
   simp[coprime_prod_right_iff]
 
-lemma coprime_list_prod_left_iff {k} {l : List ℕ} :
+theorem coprime_list_prod_left_iff {k} {l : List ℕ} :
     Coprime l.prod k ↔ ∀ n ∈ l, Coprime n k := by
   induction l <;> simp[Nat.coprime_mul_iff_left, *]
 
-lemma coprime_list_prod_right_iff {k} {l : List ℕ} :
+theorem coprime_list_prod_right_iff {k} {l : List ℕ} :
     Coprime k l.prod ↔ ∀ n ∈ l, Coprime k n := by
   induction l <;> simp[Nat.coprime_mul_iff_right, *]
 
-lemma coprime_multiset_prod_left_iff {k} {m : Multiset ℕ} :
+theorem coprime_multiset_prod_left_iff {k} {m : Multiset ℕ} :
     Coprime m.prod k ↔ ∀ n ∈ m, Coprime n k := by
   induction m using Multiset.induction <;> simp[Nat.coprime_mul_iff_left, *]
 
-lemma coprime_multiset_prod_right_iff {k} {m : Multiset ℕ} :
+theorem coprime_multiset_prod_right_iff {k} {m : Multiset ℕ} :
     Coprime k m.prod ↔ ∀ n ∈ m, Coprime k n := by
   induction m using Multiset.induction <;> simp[Nat.coprime_mul_iff_right, *]
 
