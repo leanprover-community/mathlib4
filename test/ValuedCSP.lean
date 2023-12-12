@@ -7,7 +7,7 @@ import Mathlib.Data.Fin.Tuple.Curry
 /-!
 # VCSP examples
 
-This file shows two simple examples of General-Valued Constraint Satisfaction Problems (see 
+This file shows two simple examples of General-Valued Constraint Satisfaction Problems (see
 [ValuedCSP definition](Mathlib/Combinatorics/Optimization/ValuedCSP.lean)).
 The first example is an optimization problem. The second example is a decision problem.
 -/
@@ -50,8 +50,10 @@ example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] 
 -- Crisp domain
 
 private def Bool_add_le_add_left (a b : Bool) :
-  (a = false ∨ b = true) → ∀ (c : Bool), (((c || a) = false) ∨ ((c || b) = true)) :=
-by simp
+  (a ≤ b) → ∀ (c : Bool), ((c || a) ≤ (c || b)) :=
+by
+  intro hab c
+  cases a <;> cases b <;> cases c <;> trivial
 
 -- Upside down !!
 instance crispCodomain : LinearOrderedAddCommMonoid Bool where
