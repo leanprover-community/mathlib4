@@ -334,7 +334,7 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
         slimTrace s!"{var} shrunk to {repr candidate} from {repr x}"
       let currentStep := OptionT.lift $ pure $ Sigma.mk candidate (addShrinks (n + 1) res)
       let nextStep := minimizeAux cfg var candidate (n + 1)
-      return ←(nextStep <|> currentStep)
+      return ← (nextStep <|> currentStep)
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
@@ -413,16 +413,16 @@ instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y)
 instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
   printProp := s!"{repr x} < {repr y}"
 
-instance And.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∧ y) where
+instance And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
   printProp := s!"{printProp x} ∧ {printProp y}"
 
-instance Or.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∨ y) where
+instance Or.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∨ y) where
   printProp := s!"{printProp x} ∨ {printProp y}"
 
-instance Iff.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ↔ y) where
+instance Iff.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ↔ y) where
   printProp := s!"{printProp x} ↔ {printProp y}"
 
-instance Imp.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x → y) where
+instance Imp.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x → y) where
   printProp := s!"{printProp x} → {printProp y}"
 
 instance Not.printableProp [PrintableProp x] : PrintableProp (¬x) where
@@ -480,6 +480,7 @@ def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand
 
 /-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
 def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
   | none => IO.runRand (Testable.runSuite p cfg)
   | some seed => IO.runRandWith seed (Testable.runSuite p cfg)

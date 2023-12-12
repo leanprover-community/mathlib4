@@ -58,9 +58,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
-instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 
-instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -373,7 +373,7 @@ instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (�
 instance add_contravariantClass_le :
     ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
-    by_contra' h'
+    by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.add_contravariantClass_le
 
@@ -829,10 +829,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
   · intro c hc H
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
-    · -- Porting note: `this` was inline in the `rw`, but now needs a preliminary `dsimp at this`.
-      have := IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc
-      dsimp at this
-      rw [← this, blsub_le_iff]
+    · rw [← IsNormal.blsub_eq.{u, u} (mul_isNormal ha) hc, blsub_le_iff]
       exact fun i hi => (H i hi).trans_lt (nmul_lt_nmul_of_pos_left hi ha)
 #align nat_ordinal.mul_le_nmul NatOrdinal.mul_le_nmul
 

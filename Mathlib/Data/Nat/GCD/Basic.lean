@@ -30,7 +30,8 @@ theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e :
   (dvd_antisymm (hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)) (dvd_gcd hda hdb)).symm
 #align nat.gcd_greatest Nat.gcd_greatest
 
--- Lemmas where one argument consists of addition of a multiple of the other
+/-! Lemmas where one argument consists of addition of a multiple of the other -/
+
 @[simp]
 theorem gcd_add_mul_right_right (m n k : ℕ) : gcd m (n + k * m) = gcd m n := by
   simp [gcd_rec m (n + k * m), gcd_rec m n]
@@ -69,7 +70,8 @@ theorem gcd_mul_left_add_left (m n k : ℕ) : gcd (n * k + m) n = gcd m n := by
   rw [gcd_comm, gcd_mul_left_add_right, gcd_comm]
 #align nat.gcd_mul_left_add_left Nat.gcd_mul_left_add_left
 
--- Lemmas where one argument consists of an addition of the other
+/-! Lemmas where one argument consists of an addition of the other -/
+
 @[simp]
 theorem gcd_add_self_right (m n : ℕ) : gcd m (n + m) = gcd m n :=
   Eq.trans (by rw [one_mul]) (gcd_add_mul_right_right m n 1)
@@ -89,7 +91,8 @@ theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
   rw [add_comm, gcd_add_self_right]
 #align nat.gcd_self_add_right Nat.gcd_self_add_right
 
--- Lemmas where one argument consists of a subtraction of the other
+/-! Lemmas where one argument consists of a subtraction of the other -/
+
 @[simp]
 theorem gcd_sub_self_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) m = gcd n m := by
   calc
@@ -132,7 +135,7 @@ theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
   apply dvd_antisymm
   · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
   · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
-    rw [←dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ←lcm_dvd_iff]
+    rw [← dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ← lcm_dvd_iff]
 
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
  rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]

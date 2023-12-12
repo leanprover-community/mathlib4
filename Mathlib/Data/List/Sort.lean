@@ -50,6 +50,14 @@ protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sort
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
   h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
+protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· > ·)) :
+    l.Sorted (· ≥ ·) :=
+  h.imp le_of_lt
+
+protected theorem Sorted.gt_of_ge [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≥ ·))
+    (h₂ : l.Nodup) : l.Sorted (· > ·) :=
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
+
 @[simp]
 theorem sorted_nil : Sorted r [] :=
   Pairwise.nil
@@ -146,7 +154,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
   rw [get_take', get_drop']
   rw [length_take] at hix
-  exact h.rel_nthLe_of_lt _ _ (ix.lt_add_right _ _ (lt_min_iff.mp hix).left)
+  exact h.rel_nthLe_of_lt _ _ (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
 end Sorted

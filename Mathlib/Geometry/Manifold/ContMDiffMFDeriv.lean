@@ -507,7 +507,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       refine' tangentMapWithin_subset (by mfld_set_tac) U'q _
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
-    dsimp only [(· ∘ ·)] at A B C D E ⊢
+    dsimp only [Function.comp_def] at A B C D E ⊢
     simp only [A, B, C, D, ← E]
   exact diff_DrirrflilDl.congr eq_comp
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within ContMDiffOn.contMDiffOn_tangentMapWithin
@@ -567,7 +567,7 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
   rcases p with ⟨x, v⟩
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by
     apply IsOpen.mem_nhds
-    apply (LocalHomeomorph.open_target _).preimage I.continuous_invFun
+    apply (PartialHomeomorph.open_target _).preimage I.continuous_invFun
     simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
     haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
@@ -581,9 +581,9 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     · exact differentiableAt_const _
     · exact ModelWithCorners.unique_diff_at_image I
     · exact differentiableAt_id'.prod (differentiableAt_const _)
-  simp only [Bundle.zeroSection, tangentMap, mfderiv, A, if_pos, chartAt,
-    FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply, tangentBundleCore,
-    Function.comp, ContinuousLinearMap.map_zero, mfld_simps]
+  simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
+    if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
+    tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1

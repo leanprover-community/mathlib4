@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
@@ -33,6 +33,11 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
     map_map]
   simp only [Function.comp, Fin.val_succ]
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
+
+theorem finRange_succ (n : ℕ) :
+    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
+  apply map_injective_iff.mpr Fin.val_injective
+  simp [range_succ, Function.comp_def]
 
 -- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
@@ -73,7 +78,7 @@ open List
 
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
-  rw [perm_ext ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
+  rw [perm_ext_iff_of_nodup ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
   simpa [mem_map, mem_finRange, true_and_iff, iff_true_iff] using σ.surjective
 #align equiv.perm.map_fin_range_perm Equiv.Perm.map_finRange_perm
 
