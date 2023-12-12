@@ -215,18 +215,25 @@ def prepareOp (sum : Expr) : Expr :=
   let opargs := sum.getAppArgs
   (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
-/-- `sumList prepOp exs` assumes that `prepOp` is an `Expr`ession representing a binary operation
-already fully applied up until its last two arguments and assumes that the last two arguments
-are the operands of the operation.
+/-- `sumList prepOp left_assoc? exs` assumes that `prepOp` is an `Expr`ession representing a
+binary operation already fully applied up until its last two arguments and assumes that the
+last two arguments are the operands of the operation.
 Such an expression is the result of `prepareOp`.
-If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp exs` returns
-`prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`.
+
+If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc? exs`
+returns
+* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `false`, and
+* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `true`.
 -/
 partial
-def sumList (prepOp : Expr) : List Expr → Expr
+def sumList (prepOp : Expr) (left_assoc? : Bool) : List Expr → Expr
   | []    => default
-  | [a]    => a
-  | a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
+  | [a]   => a
+  | a::as =>
+    if left_assoc? then
+      Expr.app (prepOp.app a) (sumList prepOp true as)
+    else
+      as.foldl (fun x y => Expr.app (prepOp.app x) y) a
 
 end ExprProcessing
 
@@ -273,7 +280,8 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
   let sums ← getOps op (← instantiateMVars tgt)
   let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
-    let resummed := sumList (prepareOp sum) reord
+    let left_assoc? := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
+    let resummed := sumList (prepareOp sum) left_assoc? reord
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
     (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
