@@ -188,11 +188,9 @@ example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal :=
 example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
-
-instance Module.real_complex_tower (E : Type*) [AddCommGroup E] [Module ℂ E] :
-    IsScalarTower ℝ ℂ E :=
-  RestrictScalars.isScalarTower ℝ ℂ E
-#align module.real_complex_tower Module.real_complex_tower
+example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
+    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
+  rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -212,6 +210,10 @@ another scalar action of `M` on `E` whenever the action of `ℂ` associates with
 instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
     [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
   smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
+#align module.real_complex_tower IsScalarTower.complexToReal
+
+-- check that the following instance is implied by the one above.
+example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
