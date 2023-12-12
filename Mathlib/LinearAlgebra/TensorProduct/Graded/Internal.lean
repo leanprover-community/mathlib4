@@ -123,7 +123,7 @@ noncomputable def auxEquiv : (𝒜 ᵍ⊗[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[
     auxEquiv R 𝒜 ℬ (a ᵍ⊗ₜ b) = decompose 𝒜 a ⊗ₜ decompose ℬ b := rfl
 
 @[simp] theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
-  rw [←of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, DirectSum.decompose_one,
+  rw [← of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, DirectSum.decompose_one,
     DirectSum.decompose_one, Algebra.TensorProduct.one_def]
 
 @[simp, nolint simpNF]  -- simpNF linter crashes
@@ -180,12 +180,12 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
   erw [decompose_coe, decompose_coe]
-  simp_rw [←lof_eq_of R]
+  simp_rw [← lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
   rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul,
-    ←zsmul_eq_smul_cast R, ←@Units.smul_def _ _ (_) (_)]
+    ← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
   dsimp
   simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
@@ -229,11 +229,11 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
   map_mul' a₁ a₂ := by
     dsimp
     classical
-    rw [←DirectSum.sum_support_decompose 𝒜 a₂, Finset.mul_sum]
+    rw [← DirectSum.sum_support_decompose 𝒜 a₂, Finset.mul_sum]
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
     congr
     ext i
-    rw [←SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
+    rw [← SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
       SetLike.coe_gOne, one_mul]
 
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
@@ -307,10 +307,10 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       dsimp
       rw [tmul_coe_mul_coe_tmul]
       rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul, map_smul]
-      rw [←zsmul_eq_smul_cast R, ←@Units.smul_def _ _ (_) (_)]
+      rw [← zsmul_eq_smul_cast R, ← @Units.smul_def _ _ (_) (_)]
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
       simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
-      simp_rw [mul_assoc (f a₁), ←mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
+      simp_rw [mul_assoc (f a₁), ← mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
         smul_mul_assoc, smul_smul, Int.units_mul_self, one_smul])
 
 @[simp]
@@ -329,14 +329,14 @@ def liftEquiv :
   toFun fg := lift 𝒜 ℬ _ _ fg.prop
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
-    rw [←F.map_mul, ←F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
+    rw [← F.map_mul, ← F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
       tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
   left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
     ext
     dsimp
-    rw [←F.map_mul, tmul_one_mul_one_tmul]
+    rw [← F.map_mul, tmul_one_mul_one_tmul]
 
 /-- Two algebra morphism from the graded tensor product agree if their compositions with the left
 and right inclusions agree. -/
@@ -356,7 +356,7 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
       simp_rw [auxEquiv_one, gradedComm_one, auxEquiv_symm_one])
     (fun x y => by
       dsimp
-      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq, ←gradedComm_gradedMul,
+      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq, ← gradedComm_gradedMul,
         auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
 
 @[simp] lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
@@ -366,7 +366,7 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
 @[simp] lemma comm_coe_tmul_coe {i j : ι} (a : 𝒜 i) (b : ℬ j) :
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
-    simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ←lof_eq_of R, gradedComm_of_tmul_of,
+    simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, auxEquiv_tmul, decompose_coe,
       lof_eq_of]
 

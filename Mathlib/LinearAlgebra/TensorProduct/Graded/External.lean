@@ -124,7 +124,7 @@ theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
   dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
     zsmul_eq_smul_cast R, map_smul, TensorProduct.directSum_symm_lof_tmul,
-    ←zsmul_eq_smul_cast, ←Units.smul_def]
+    ← zsmul_eq_smul_cast, ← Units.smul_def]
 
 theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
     gradedComm R 𝒜 ℬ (a ⊗ₜ lof R _ ℬ 0 b) = lof R _ ℬ _ b ⊗ₜ a := by
@@ -200,7 +200,7 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, zsmul_eq_smul_cast R, zsmul_eq_smul_cast R]
-  rw [←smul_tmul', map_smul, tmul_smul, map_smul, map_smul]
+  rw [← smul_tmul', map_smul, tmul_smul, map_smul, map_smul]
   dsimp
 
 variable {R}
@@ -246,10 +246,10 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   dsimp
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, zsmul_eq_smul_cast R,
     LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
-    ←DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ←DirectSum.of_mul_of,
-    ←DirectSum.lof_eq_of R, mul_assoc]
+    ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
+    ← DirectSum.lof_eq_of R, mul_assoc]
   save
-  simp_rw [←zsmul_eq_smul_cast R, ←Units.smul_def, smul_smul, ←uzpow_add, add_mul, mul_add]
+  simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, smul_smul, ← uzpow_add, add_mul, mul_add]
   congr 2
   abel
 
@@ -266,10 +266,10 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
   simp_rw [Units.smul_def, zsmul_eq_smul_cast R, map_smul, LinearMap.smul_apply]
   save
-  simp_rw [←zsmul_eq_smul_cast R, ←Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
-    ←DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
-    DirectSum.lof_eq_of, ←DirectSum.of_mul_of, ←DirectSum.lof_eq_of R]
-  simp_rw [←uzpow_add, mul_add, add_mul, mul_comm i₁ j₂]
+  simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
+    ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
+    DirectSum.lof_eq_of, ← DirectSum.of_mul_of, ← DirectSum.lof_eq_of R]
+  simp_rw [← uzpow_add, mul_add, add_mul, mul_comm i₁ j₂]
   congr 1
   abel_nf
   rw [two_nsmul, uzpow_add, uzpow_add, Int.units_mul_self, one_mul]
