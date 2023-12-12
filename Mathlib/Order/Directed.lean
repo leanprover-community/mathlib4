@@ -22,6 +22,11 @@ directed iff each pair of elements has a shared upper bound.
 * `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
   directed sets.
 
+## TODO
+
+Define connected orders (the transitive symmetric closure of `≤` is everything) and show that
+(co)directed orders are connected.
+
 ## References
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
@@ -306,29 +311,24 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
   ⟨b, a, h⟩
 #align exists_lt_of_directed_le exists_lt_of_directed_le
 
-end Preorder
+variable [PartialOrder β] {f : α → β} {s : Set α}
 
-section
+-- TODO: Generalise the following two lemmas to connected orders
 
-variable [Preorder α] [PartialOrder β] {f : α → β}
-
-/-- If `f` is monotone and antitone (increasing and decreasing) on `α` with a directed order,
-then `f` is constant.-/
-theorem Monotone.directed_constant [IsDirected α (· ≤ ·)]
-    (hf : Monotone f) (hf' : Antitone f) (a b : α) : f a = f b := by
+/-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
+lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
+    (a b : α) : f a = f b := by
   obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
   exact le_antisymm ((hf hac).trans $ hf' hbc) ((hf hbc).trans $ hf' hac)
 
-/-- If `f` is monotone and antitone (increasing and decreasing) on a directed set `s`,
-then `f` is constant on `s`.-/
-theorem MonotoneOn.directedOn_constant {a b : α} {s : Set α}
-    (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
-    (hs : DirectedOn (· ≤ ·) s)
-    (ha : a ∈ s) (hb : b ∈ s) : f a = f b := by
+/-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
+lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
+    (hs : DirectedOn (· ≤ ·) s) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → f a = f b := by
+  rintro a ha b hb
   obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
   exact le_antisymm ((hf ha hc hac).trans $ hf' hb hc hbc) ((hf hb hc hbc).trans $ hf' ha hc hac)
 
-end
+end Preorder
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :

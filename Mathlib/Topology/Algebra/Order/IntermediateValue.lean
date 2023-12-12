@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang, Johan Commelin
+Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
+import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.Basic
-import Mathlib.Data.Set.Intervals.Image
 
 #align_import topology.algebra.order.intermediate_value from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
