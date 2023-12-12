@@ -363,8 +363,8 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
       simp_rw [auxEquiv_one, gradedComm_one, auxEquiv_symm_one])
     (fun x y => by
       dsimp
-      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq, ← gradedComm_gradedMul,
-        auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
+      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq,
+        ← gradedComm_gradedMul, auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
 
 @[simp] lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R ℬ 𝒜 (comm 𝒜 ℬ x) = gradedComm R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) :=
