@@ -621,7 +621,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
   Quot.induction_on s fun l ↦ by simp only [cons_zero, ← coe_singleton, quot_mk_to_coe'', coe_le,
-    coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff']
+    coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
   simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne.def, and_not_self, or_false,
