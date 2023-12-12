@@ -519,7 +519,7 @@ theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f ''
 #align set.image_preimage_eq Set.image_preimage_eq
 
 @[simp]
-theorem preimage_subset_preimage {f : α → β} (s t : Set β) (h : Surjective f) :
+theorem preimage_subset_preimage {f : α → β} {s t : Set β} (h : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
   rw [← image_subset_iff, image_preimage_eq s h]
 
@@ -731,7 +731,7 @@ theorem image_univ {f : α → β} : f '' univ = range f := by
 #align set.image_univ Set.image_univ
 
 @[simp]
-theorem univ_subset_preimage {f : α → β} (s) : univ ⊆ f ⁻¹' s ↔ range f ⊆ s := by
+theorem univ_subset_preimage {f : α → β} {s} : univ ⊆ f ⁻¹' s ↔ range f ⊆ s := by
   rw [← image_subset_iff, image_univ]
 
 theorem image_subset_range (f : α → β) (s) : f '' s ⊆ range f := by
