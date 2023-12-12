@@ -241,7 +241,6 @@ def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
 -- Note: times out on linting CI
 attribute [nolint simpNF] equivEven_symm_apply
 
-set_option synthInstance.maxHeartbeats 30000 in
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
@@ -281,13 +280,13 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
 #align clifford_algebra.even_to_neg CliffordAlgebra.evenToNeg
 
 -- porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
-@[simp, nolint simpNF]
+@[simp] --, nolint simpNF]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
-set_option synthInstance.maxHeartbeats 100000 in
+set_option synthInstance.maxHeartbeats 30000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4
