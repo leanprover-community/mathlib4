@@ -1,8 +1,6 @@
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Tactic
-import Mathlib.Data.Fin.Basic
 
 open CategoryTheory Limits Simplicial SimplexCategory
 
@@ -47,12 +45,8 @@ universe u
 class IsKan (X : SSet) : Prop where
   cond : ∀ n i (f : Λ[n,i] ⟶ X), ∃ (g : Δ[n] ⟶ X), f = hornInclusion _ _ ≫ g
 
-def d0 : Δ[0] ⟶ Δ[1] := standardSimplex.map (δ 0)
-def d1 : Δ[0] ⟶ Δ[1] := standardSimplex.map (δ 1)
-
-def D0 : Δ[1] ⟶ Δ[2] := standardSimplex.map (δ 0)
-def D1 : Δ[1] ⟶ Δ[2] := standardSimplex.map (δ 1)
-def D2 : Δ[1] ⟶ Δ[2] := standardSimplex.map (δ 2)
+def d0 : Δ[0] ⟶ Δ[1] := SSet.standardSimplex.map (δ 1)
+def d1 : Δ[0] ⟶ Δ[1] := SSet.standardSimplex.map (δ 0)
 
 def ptIsTerminal : IsTerminal Δ[0] := Functor.isTerminalOfObjIsTerminal _ <|
   fun t => show IsTerminal (t.unop ⟶ [0]) from isTerminalHom _ _ isTerminalZero
@@ -84,84 +78,8 @@ def Path.rfl {X : SSet.{0}} (a : Δ[0] ⟶ X) : Path a a where
   hp0 := by slice_lhs 1 2 => simp
   hp1 := by slice_lhs 1 2 => simp
 
---000T
-def intoBoundary (n : ℕ) (j : Fin (n + 2)) : Δ[n] ⟶ ∂Δ[n + 1] where
-  app k x := ⟨(standardSimplex.map (δ j)).app k x, fun h => by
-    simpa using (show j ∈ Set.range (Fin.succAbove j) from Set.range_comp_subset_range _ _ (h j))⟩
-
---000Z, better way to say j ≠ i?
-def intoHorn (n : ℕ) (i j : Fin (n + 2)) (hj : j ≠ i) : Δ[n] ⟶ Λ[n + 1, i] where
-  app k x := ⟨(standardSimplex.map (δ j)).app k x, by
-    rw [Set.ne_univ_iff_exists_not_mem]
-    use j
-    intro h
-    cases h with
-     | inl h =>
-      simpa using (show j ∈ Set.range (Fin.succAbove j) from Set.range_comp_subset_range _ _ h)
-     | inr h => exact hj h⟩
-
-example : X _[1] → X _[0] := X.map (δ 0).op
-
-def hornD0 : Δ[1] ⟶ Λ[2,1] where
-  app := by
-    intro k x
-    refine ⟨?_, ?_⟩
-    apply D0.app k
-    exact x
-    sorry
-
-example : hornD0 = intoHorn 1 1 0 zero_ne_one := rfl
-
-def hornD2 : Δ[1] ⟶ Λ[2,1] where
-  app := by
-    intro k x
-    refine ⟨?_, ?_⟩
-    exact D2.app k x
-    sorry
-
-example : hornD2 = intoHorn 1 1 2 sorry := rfl
-
-lemma switchtohornd0 (g : Δ[2] ⟶ X) : D0 ≫ g = hornD0 ≫ hornInclusion _ _ ≫ g := rfl
-
-lemma switchtohornd2 (g : Δ[2] ⟶ X) : D2 ≫ g = hornD2 ≫ hornInclusion _ _ ≫ g := rfl
-
-def transHom {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
-  Path a b → Path b c → (Λ[2,1] ⟶ X) := by
-    rintro ⟨p₀, h0₀, h0₁⟩ ⟨p₁, h1₀, h1₁⟩
-    refine {
-      app := by
-        rintro k ⟨x, hx⟩
-        have := yonedaEquiv.toFun p₀
-        sorry
-      naturality := sorry
-    }
-
-@[simp]
-lemma transHom_compHorn0 {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p0 : Path a b) (p2 : Path b c) :
-  hornD0 ≫ (transHom p0 p2) = p0.p := sorry
-
-@[simp]
-lemma transHom_compHorn2 {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p0 : Path a b) (p2 : Path b c) :
-  hornD2 ≫ (transHom p0 p2) = p2.p := sorry
-
-lemma aux3 : d0 ≫ D1 = d0 ≫ D0 := rfl
-
 def Path.trans {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
-  Path a b → Path b c → Path a c := by
-    intro p₀ p₂
-    let g := Exists.choose (IsKan.cond _ _ (transHom p₀ p₂))
-    have hg := Exists.choose_spec (IsKan.cond _ _ (transHom p₀ p₂))
-    refine ⟨?_, ?_, ?_⟩
-    · exact D1 ≫ g
-    · change d0 ≫ D0 ≫ g = a
-      change d0 ≫ hornD0 ≫ hornInclusion _ _ ≫ g = a
-      rw [← hg, transHom_compHorn0]
-      exact p₀.hp0
-    · have : d1 ≫ D1 ≫ g = d1 ≫ D2 ≫ g := sorry
-      rw [this]
-      change d1 ≫ hornD2 ≫ hornInclusion _ _ ≫ g = c
-      rw [← hg, transHom_compHorn2]
-      exact p₂.hp1
+  Path a b → Path b c → Path a c := sorry
 
 def Path.symm {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] :
   Path a b → Path b a := sorry
