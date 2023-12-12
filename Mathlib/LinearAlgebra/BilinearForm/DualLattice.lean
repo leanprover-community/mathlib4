@@ -70,7 +70,7 @@ def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
       (by simp [← Algebra.smul_def]) }
 
 lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]
-  (N : Submodule R M) (hN : Submodule.span S (N : Set M) = ⊤) :
+    (N : Submodule R M) (hN : Submodule.span S (N : Set M) = ⊤) :
     Function.Injective (B.dualSubmoduleToDual N) := by
   intro x y e
   ext
