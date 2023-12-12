@@ -20,7 +20,7 @@ that satisfies `Module ι (Additive ℤˣ)`).
 ## Main results
 
 * `GradedTensorProduct R 𝒜 ℬ`: for families of submodules of `A` and `B` that form a graded algebra,
-  this is a type alias for `A ᵍ⊗[R] B` with the appropriate multiplication.
+  this is a type alias for `A ⊗[R] B` with the appropriate multiplication.
 * `GradedTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
 * `GradedTensorProduct.liftEquiv`: a universal property for graded tensor products
 
@@ -34,9 +34,17 @@ that satisfies `Module ι (Additive ℤˣ)`).
 * https://math.stackexchange.com/q/202718/1896
 * [*Algebra I*, Bourbaki : Chapter III, §4.7, example (2)][bourbaki1989]
 
+## Implementation notes
+
+We cannot put the multiplication on `A ⊗[R] B` directly as it would conflict with the existing
+multiplication defined without the $(-1)^{\deg a' \deg b}$ term. Furthermore, the ring `A` may not
+have a unique graduation, and so we need the chosen graduation `𝒜` to appear explicitly in the
+type.
+
 ## TODO
 
-Show that the tensor product of graded algebras is itself a graded algebra.
+* Show that the tensor product of graded algebras is itself a graded algebra.
+* Determine if replacing the synonym with a single-field structure improves performance.
 -/
 
 suppress_compilation
