@@ -546,7 +546,7 @@ def compLinearMap (f : M [Λ^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) : M₂ [Λ^�
 #align alternating_map.comp_linear_map AlternatingMap.compLinearMap
 
 theorem coe_compLinearMap (f : M [Λ^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) :
-    ⇑(f.compLinearMap g) = f ∘ (· ∘ ·) g :=
+    ⇑(f.compLinearMap g) = f ∘ (g ∘ ·) :=
   rfl
 #align alternating_map.coe_comp_linear_map AlternatingMap.coe_compLinearMap
 

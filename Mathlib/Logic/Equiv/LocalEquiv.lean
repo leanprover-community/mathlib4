@@ -71,7 +71,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 open Lean Meta Elab Tactic
 
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
-functions (`LocalEquiv`, `LocalHomeomorph`, etc).
+functions (`LocalEquiv`, `PartialHomeomorph`, etc).
 
 This is in a separate file from `Mathlib.Logic.Equiv.MfldSimpsAttr` because attributes need a new
 file to become functional.

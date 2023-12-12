@@ -135,10 +135,10 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
   · rw [Nat.zero_eq, zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
   · cases' k with k
-    · rw [Nat.succ_add_eq_succ_add] at hnk
+    · rw [Nat.succ_add_eq_add_succ] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
     · rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
-      · rwa [Nat.succ_add_eq_succ_add] at hnk
+      · rwa [Nat.succ_add_eq_add_succ] at hnk
       · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
