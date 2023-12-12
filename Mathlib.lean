@@ -1514,6 +1514,7 @@ import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Interval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
