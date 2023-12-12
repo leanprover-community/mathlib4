@@ -40,48 +40,48 @@ section Units
 
 @[to_additive (attr := simp)]
 lemma mem_units_iff (S : Submonoid M) (x : Mˣ) : x ∈ S.units ↔
-  ((x : M) ∈ S ∧ ((x⁻¹ : Mˣ) : M) ∈ S) := Iff.rfl
+    ((x : M) ∈ S ∧ ((x⁻¹ : Mˣ) : M) ∈ S) := Iff.rfl
 
 @[to_additive]
 lemma mem_units_iff_coe_mem (S : Submonoid M) (h : ∀ (x : Mˣ), ↑x ∈ S ↔ ↑x⁻¹ ∈ S)
-  (x : Mˣ) : x ∈ S.units ↔ ((x : M) ∈ S) := by rw [S.mem_units_iff, h, and_self]
+    (x : Mˣ) : x ∈ S.units ↔ ((x : M) ∈ S) := by rw [S.mem_units_iff, h, and_self]
 
 @[to_additive]
 lemma coe_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
-  (x : M) ∈ S := ((S.mem_units_iff _).mp h).1
+    (x : M) ∈ S := ((S.mem_units_iff _).mp h).1
 
 @[to_additive]
 lemma coe_coe_mem (S : Submonoid M) (x : S.units) :
-  ((x : Mˣ) : M) ∈ S := S.coe_mem_of_mem_units (SetLike.coe_mem _)
+    ((x : Mˣ) : M) ∈ S := S.coe_mem_of_mem_units (SetLike.coe_mem _)
 
 @[to_additive]
 lemma coe_inv_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
-  ((x⁻¹ : Mˣ) : M) ∈ S := ((S.mem_units_iff _).mp h).2
+    ((x⁻¹ : Mˣ) : M) ∈ S := ((S.mem_units_iff _).mp h).2
 
 @[to_additive]
 lemma coe_coe_inv_mem (S : Submonoid M) (x : S.units) :
-  ((x⁻¹ : Mˣ) : M) ∈ S := S.coe_inv_mem_of_mem_units (SetLike.coe_mem _)
+    ((x⁻¹ : Mˣ) : M) ∈ S := S.coe_inv_mem_of_mem_units (SetLike.coe_mem _)
 
 @[to_additive]
 lemma mem_units_of_coe_mem_coe_inv_mem (S : Submonoid M) {x : Mˣ}
-  (h₁ : (x : M) ∈ S) (h₂ : ((x⁻¹ : Mˣ) : M) ∈ S) : x ∈ S.units :=
+    (h₁ : (x : M) ∈ S) (h₂ : ((x⁻¹ : Mˣ) : M) ∈ S) : x ∈ S.units :=
   ((S.mem_units_iff _).mpr ⟨h₁, h₂⟩)
 
 @[to_additive]
 lemma coe_coe_inv_mul_coe_coe (S : Submonoid M) (x : Sˣ) :
-  ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congrArg ((↑) : S → M) (Units.inv_mul _)
+    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congrArg ((↑) : S → M) (Units.inv_mul _)
 
 @[to_additive]
 lemma coe_coe_mul_coe_coe_inv (S : Submonoid M) (x : Sˣ) :
-  ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congrArg ((↑) : S → M)  (Units.mul_inv _)
+    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congrArg ((↑) : S → M)  (Units.mul_inv _)
 
 @[to_additive]
 lemma coe_inv_coe_mul_coe_coe (S : Submonoid M) (x : S.units) :
-  ((x⁻¹ : Mˣ) : M) * ((x : Mˣ) : M) = 1 := Units.inv_mul _
+    ((x⁻¹ : Mˣ) : M) * ((x : Mˣ) : M) = 1 := Units.inv_mul _
 
 @[to_additive]
 lemma coe_coe_mul_coe_inv_coe (S : Submonoid M) (x : S.units) :
-  ((x : Mˣ) : M) * ((x⁻¹ : Mˣ) : M) = 1 := Units.mul_inv _
+    ((x : Mˣ) : M) * ((x⁻¹ : Mˣ) : M) = 1 := Units.mul_inv _
 
 @[to_additive]
 lemma units_top : (⊤ : Submonoid M).units = ⊤ := by
@@ -111,7 +111,7 @@ lemma units_le (S : Submonoid M) : S.units.toSubmonoid.map (Units.coeHom M) ≤ 
 
 @[to_additive]
 lemma le_units_iff (S : Submonoid M) (H : Subgroup Mˣ) :
-  H.toSubmonoid.map (Units.coeHom M) ≤ S ↔ H ≤ S.units := by
+    H.toSubmonoid.map (Units.coeHom M) ≤ S ↔ H ≤ S.units := by
   refine ⟨fun H => ?_, fun H => le_trans (fun _ => ?_) S.units_le⟩
   · intro x hx
     simp_rw [mem_units_iff]
