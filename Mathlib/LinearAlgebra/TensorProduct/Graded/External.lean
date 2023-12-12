@@ -114,8 +114,6 @@ theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 :
   ext
   rfl
 
--- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
-set_option maxHeartbeats 400000 in
 theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
       (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
@@ -172,7 +170,6 @@ theorem gradedComm_algebraMap (r : R) :
 
 end gradedComm
 
-set_option maxHeartbeats 4000000 in
 /-- The multiplication operation for tensor products of externally `ι`-graded algebras. -/
 noncomputable irreducible_def gradedMul :
     letI AB := (DirectSum _ 𝒜) ⊗[R] (DirectSum _ ℬ)
@@ -188,7 +185,6 @@ noncomputable irreducible_def gradedMul :
   refine TensorProduct.map ?_ LinearMap.id
   exact (gradedComm _ _ _).toLinearMap
 
-set_option maxHeartbeats 800000 in
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
     (a₁ : ⨁ i, 𝒜 i) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ⨁ i, ℬ i) :
     gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
@@ -233,7 +229,6 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by
   simpa only [_root_.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
-set_option maxHeartbeats 400000 in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
@@ -252,7 +247,6 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   congr 2
   abel
 
-set_option maxHeartbeats 800000 in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by

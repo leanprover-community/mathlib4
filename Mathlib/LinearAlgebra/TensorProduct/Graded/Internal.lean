@@ -180,7 +180,6 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
-set_option maxHeartbeats 800000 in
 /-- The characterization of this multiplication on partially homogenous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
