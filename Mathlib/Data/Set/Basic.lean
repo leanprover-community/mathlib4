@@ -2067,7 +2067,6 @@ theorem subset_insert_iff {s t : Set α} {x : α} :
     exact ⟨fun h ↦ Or.inr h, fun h ↦ h.elim (fun hst ↦ (diff_subset _ _).trans hst) id⟩
   rw [diff_singleton_eq_self hx]
   tauto
-#align set.subset_insert_iff Set.subset_insert_iff
 
 @[simp]
 theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = insert a s := by
@@ -2170,20 +2169,16 @@ theorem pair_eq_pair_iff {x y z w : α} :
 
 theorem pair_diff_left {x y : α} (hne : x ≠ y) : ({x, y} : Set α) \ {x} = {y} := by
   rw [insert_diff_of_mem _ (by exact rfl : x ∈ {x}), diff_singleton_eq_self (by simpa)]
-#align set.pair_diff_left Set.pair_diff_left
 
 theorem pair_diff_right {x y : α} (hne : x ≠ y) : ({x, y} : Set α) \ {y} = {x} := by
   rw [pair_comm, pair_diff_left hne.symm]
-#align set.pair_diff_right Set.pair_diff_right
 
 @[simp]
 theorem pair_subset_iff {x y : α} {s : Set α} : {x,y} ⊆ s ↔ x ∈ s ∧ y ∈ s := by
   rw [insert_subset_iff, singleton_subset_iff]
-#align set.pair_subset_iff Set.pair_subset_iff
 
 theorem pair_subset {x y : α} {s : Set α} (hx : x ∈ s) (hy : y ∈ s) : {x,y} ⊆ s :=
   pair_subset_iff.2 ⟨hx,hy⟩
-#align set.pair_subset Set.pair_subset
 
 theorem Nonempty.subset_pair_iff {x y : α} {s : Set α} (hs : s.Nonempty) :
     s ⊆ {x,y} ↔ s = {x} ∨ s = {y} ∨ s = {x,y} := by
@@ -2196,7 +2191,6 @@ theorem Nonempty.subset_pair_iff {x y : α} {s : Set α} (hs : s.Nonempty) :
   rw [Iff.comm, subset_antisymm_iff, diff_subset_iff, subset_diff, disjoint_singleton,
     and_iff_left hne.symm, ← and_assoc, and_comm, singleton_union, ← and_assoc, ← union_subset_iff,
     singleton_union, pair_comm, ← subset_antisymm_iff, eq_comm]
-#align set.nonempty.subset_pair_iff Set.Nonempty.subset_pair_iff
 
 /-! ### Powerset -/
 
