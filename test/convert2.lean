@@ -1,4 +1,4 @@
-import Mathlib.Data.List.Defs
+import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.Nat.Basic
 
 set_option linter.unreachableTactic false

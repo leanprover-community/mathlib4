@@ -342,11 +342,11 @@ def trans
 #align linear_equiv.trans LinearEquiv.trans
 
 /-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
-infixl:80 " ≪≫ₗ " =>
+notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
     RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids
-    RingHomInvPair.ids
+    RingHomInvPair.ids e₁ e₂
 
 variable {e₁₂} {e₂₃}
 
