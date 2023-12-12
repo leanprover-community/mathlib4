@@ -263,7 +263,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
     · exact this'
-    · exact Nat.lt_add_right (2 * n) (2 * m) 1 this'
+    · exact Nat.lt_add_right 1 this'
     · calc
         2 * n + 1 < 2 * n + 2 := lt.base _
         _ ≤ 2 * m := mul_le_mul_left 2 this
