@@ -191,11 +191,11 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) :
         α) =
-      (coeff α n) (∏ i : ℕ in s, indicatorSeries α ((· * i) '' c i)) := by
+      (coeff α n) (∏ i in s, indicatorSeries α ((· * i) '' c i)) := by
   simp_rw [coeff_prod, coeff_indicator, prod_boole, sum_boole]
-  congr 1
-  simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop, Set.mem_image,
-    not_exists]
+  apply congr_arg
+  simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
+    Set.mem_image, not_exists]
   set φ : (a : Nat.Partition n) →
     a ∈ filter (fun p ↦ (∀ (j : ℕ), Multiset.count j p.parts ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) univ →
     ℕ →₀ ℕ := fun p _ => {
@@ -208,36 +208,22 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   refine' Finset.card_congr φ _ _ _
   · intro a  ha
     simp only [not_forall, not_exists, not_and, exists_prop, mem_filter]
-    rw [mem_piAntidiagonal]
-    simp only [le_eq_subset]
+    rw [mem_piAntidiagonal']
+    dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
+    simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
+      mem_filter, true_and] at ha
     constructor
     constructor
     · intro i
       simp only [ne_eq, Multiset.mem_toFinset, not_not, mem_filter, and_imp]
-      intro hi _
-      simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop, mem_filter,
-        true_and] at ha
-      exact ha.2 i hi
-    · change Finsupp.sum (φ a ha) (fun _ x => x) = n
-      conv_rhs => simp [← a.parts_sum]
-      rw [sum_multiset_count_of_subset]
-      simp only [Finsupp.sum]
-      dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, Finsupp.coe_mk]
-      intro i
-      simp only [Multiset.mem_toFinset, not_not, mem_filter]
-      intro hi
-      apply And.intro hi
-      rintro ⟨rfl⟩
-      exact LT.lt.false (a.parts_pos hi)
-    · intro i _
-      simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.coe_mk,
-        mul_eq_mul_right_iff]
-      simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop, mem_filter,
-        true_and] at ha
-      use Multiset.count i a.parts
-      apply And.intro (ha.1 i)
-      left
-      rfl
+      exact fun hi _ => ha.2 i hi
+    · conv_rhs => simp [← a.parts_sum]
+      rw [sum_multiset_count_of_subset _ s]
+      simp only [smul_eq_mul]
+      · intro i
+        simp only [Multiset.mem_toFinset, not_not, mem_filter]
+        apply ha.2
+    · exact fun i _ => ⟨Multiset.count i a.parts, ha.1 i, rfl⟩
   · dsimp only
     intro p₁ p₂ hp₁ hp₂ h
     apply Nat.Partition.ext
@@ -251,13 +237,12 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
-      let h' := h.2
-      rw [Function.funext_iff] at h'
-      exact h' i
+      rw [Function.funext_iff] at h
+      exact h.2 i
   · simp only [mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
     suffices hf' : f ∈ piAntidiagonal s n
-    simp only [mem_piAntidiagonal] at hf'
+    simp only [mem_piAntidiagonal'] at hf'
     refine' ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, _, _⟩, _, _, _⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
@@ -266,7 +251,6 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate z]
     · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
       rw [← hf'.2]
-      rw [Finsupp.sum_of_support_subset _ hf'.1 _ (fun _ _ => rfl)]
       refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
       rcases hf₄ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
@@ -283,8 +267,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate hj₂]
     · ext i
       simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq]
-      simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, ite_mul, zero_mul,
-        Finsupp.coe_mk]
+      simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, ite_mul,
+        zero_mul, Finsupp.coe_mk]
       split_ifs with h
       · apply Nat.div_mul_cancel
         rcases hf₄ i h with ⟨w, _, hw₂⟩
@@ -292,8 +276,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       · apply symm
         rw [← Finsupp.not_mem_support_iff]
         exact not_mem_mono hf h
-    · rw [mem_piAntidiagonal]
-      exact ⟨hf, hf₃⟩
+    · exact mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
@@ -305,17 +288,13 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
   rw [partialOddGF]
   -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
   --               is improved.
-  refine Eq.trans ?_
+/-  refine Eq.trans ?_
     (Eq.trans (partialGF_prop α n ((range m).map mkOdd) ?_ (fun _ => Set.univ) fun _ _ => trivial)
-      (Eq.symm ?_))
+      (Eq.symm ?_)) -/
+  convert partialGF_prop α n ((range m).map mkOdd) ?_ (fun _ => Set.univ) fun _ _ => trivial using 2
   · congr
     simp only [true_and_iff, forall_const, Set.mem_univ]
-  · intro i
-    rw [mem_map]
-    rintro ⟨a, -, rfl⟩
-    exact Nat.succ_pos _
-  · congr 1
-    rw [Finset.prod_map]
+  · rw [Finset.prod_map]
     simp_rw [num_series']
     congr! 2 with x
     ext k
@@ -325,7 +304,11 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
       apply mul_comm
     rintro ⟨a_w, -, rfl⟩
     apply Dvd.intro_left a_w rfl
-#align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
+  · intro i
+    rw [mem_map]
+    rintro ⟨a, -, rfl⟩
+    exact Nat.succ_pos _
+ #align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
@@ -359,21 +342,23 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
   rw [partialDistinctGF]
   -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
   --               is improved.
-  refine Eq.trans ?_
+/-  refine Eq.trans ?_
     (Eq.trans (partialGF_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) ?_
       (fun _ => {0, 1}) fun _ _ => Or.inl rfl) (Eq.symm ?_))
+      -/
+  convert partialGF_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) ?_
+      (fun _ => {0, 1}) fun _ _ => Or.inl rfl using 2
   · congr
     congr! with p
     rw [Multiset.nodup_iff_count_le_one]
     congr! with i
     rcases Multiset.count i p.parts with (_ | _ | ms) <;> simp
+  · simp_rw [Finset.prod_map, two_series]
+    congr with i
+    simp [Set.image_pair]
   · simp only [mem_map, Function.Embedding.coeFn_mk]
     rintro i ⟨_, _, rfl⟩
     apply Nat.succ_pos
-  · congr 1
-    simp_rw [Finset.prod_map, two_series]
-    congr with i
-    simp [Set.image_pair]
 #align theorems_100.partial_distinct_gf_prop Theorems100.partialDistinctGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of distinct partitions
