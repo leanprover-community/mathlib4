@@ -496,14 +496,13 @@ theorem one_smul (b : α) : (1 : M) • b = b :=
 
 /-- `SMul` version of `one_mul_eq_id` -/
 @[to_additive "`VAdd` version of `zero_add_eq_id`"]
-theorem one_smul_eq_id : ((· • ·) (1 : M) : α → α) = id :=
-  funext <| one_smul _
+theorem one_smul_eq_id : (((1 : M) • ·) : α → α) = id := funext <| one_smul _
 #align one_smul_eq_id one_smul_eq_id
 #align zero_vadd_eq_id zero_vadd_eq_id
 
 /-- `SMul` version of `comp_mul_left` -/
 @[to_additive "`VAdd` version of `comp_add_left`"]
-theorem comp_smul_left (a₁ a₂ : M) : (· • ·) a₁ ∘ (· • ·) a₂ = ((· • ·) (a₁ * a₂) : α → α) :=
+theorem comp_smul_left (a₁ a₂ : M) : (a₁ • ·) ∘ (a₂ • ·) = (((a₁ * a₂) • ·) : α → α) :=
   funext fun _ => (mul_smul _ _ _).symm
 #align comp_smul_left comp_smul_left
 #align comp_vadd_left comp_vadd_left
@@ -733,6 +732,10 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
   SMulZeroClass.smul_zero _
 #align smul_zero smul_zero
 
+@[simp]
+lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
+    (a • if p then b else 0) = if p then a • b else 0 := by rw [smul_ite, smul_zero]
+
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/
 @[reducible]
@@ -781,7 +784,7 @@ def SMulZeroClass.compFun (f : N → M) :
 @[simps]
 def SMulZeroClass.toZeroHom (x : M) :
     ZeroHom A A where
-  toFun := (· • ·) x
+  toFun := (x • ·)
   map_zero' := smul_zero x
 #align smul_zero_class.to_zero_hom SMulZeroClass.toZeroHom
 #align smul_zero_class.to_zero_hom_apply SMulZeroClass.toZeroHom_apply
@@ -1053,7 +1056,7 @@ def MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction 
 /-- Scalar multiplication by `r` as a `MonoidHom`. -/
 def MulDistribMulAction.toMonoidHom (r : M) :
     A →* A where
-  toFun := (· • ·) r
+  toFun := (r • ·)
   map_one' := smul_one r
   map_mul' := smul_mul' r
 #align mul_distrib_mul_action.to_monoid_hom MulDistribMulAction.toMonoidHom
@@ -1121,12 +1124,13 @@ variable {α}
 This is generalized to bundled endomorphisms by:
 * `Equiv.Perm.applyMulAction`
 * `AddMonoid.End.applyDistribMulAction`
+* `AddMonoid.End.applyModule`
 * `AddAut.applyDistribMulAction`
 * `MulAut.applyMulDistribMulAction`
-* `RingHom.applyDistribMulAction`
 * `LinearEquiv.applyDistribMulAction`
 * `LinearMap.applyModule`
 * `RingHom.applyMulSemiringAction`
+* `RingAut.applyMulSemiringAction`
 * `AlgEquiv.applyMulSemiringAction`
 -/
 instance Function.End.applyMulAction :

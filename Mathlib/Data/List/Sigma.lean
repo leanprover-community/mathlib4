@@ -155,7 +155,7 @@ theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by sim
 
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
-  (perm_ext nd₀ nd₁).2 h
+  (perm_ext_iff_of_nodup nd₀ nd₁).2 h
 #align list.mem_ext List.mem_ext
 
 variable [DecidableEq α]
@@ -453,7 +453,7 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
 #align list.mem_keys_kerase_of_ne List.mem_keys_kerase_of_ne
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
-  rw [keys, kerase, erase_eq_eraseP, eraseP_map]; dsimp [Function.comp]
+  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp]
 #align list.keys_kerase List.keys_kerase
 
 theorem kerase_kerase {a a'} {l : List (Sigma β)} :
@@ -476,8 +476,10 @@ theorem NodupKeys.kerase (a : α) : NodupKeys l → (kerase a l).NodupKeys :=
 #align list.nodupkeys.kerase List.NodupKeys.kerase
 
 theorem Perm.kerase {a : α} {l₁ l₂ : List (Sigma β)} (nd : l₁.NodupKeys) :
-    l₁ ~ l₂ → kerase a l₁ ~ kerase a l₂ :=
-  Perm.erasep _ <| (nodupKeys_iff_pairwise.1 nd).imp <| by rintro x y h rfl; exact h
+    l₁ ~ l₂ → kerase a l₁ ~ kerase a l₂ := by
+  apply Perm.eraseP
+  apply (nodupKeys_iff_pairwise.1 nd).imp
+  intros; simp_all
 #align list.perm.kerase List.Perm.kerase
 
 @[simp]

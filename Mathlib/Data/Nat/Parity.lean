@@ -284,9 +284,8 @@ end
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply, but `simp` in Lean 4 currently
-simplifies decidable propositions. This may change in the future. -/
-example : ¬Even 25394535 := by simp only
+/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
+example : ¬Even 25394535 := by decide
 
 end Nat
 
@@ -306,7 +305,7 @@ theorem iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[bit0 n] = id := by
 #align function.involutive.iterate_bit0 Function.Involutive.iterate_bit0
 
 theorem iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[bit1 n] = f := by
-  rw [bit1, ←succ_eq_add_one, iterate_succ, hf.iterate_bit0, comp.left_id]
+  rw [bit1, ← succ_eq_add_one, iterate_succ, hf.iterate_bit0, comp.left_id]
 #align function.involutive.iterate_bit1 Function.Involutive.iterate_bit1
 
 end

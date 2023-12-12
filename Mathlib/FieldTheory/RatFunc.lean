@@ -528,7 +528,7 @@ macro "smul_tac" : tactic => `(tactic|
       (first
         | rintro (⟨⟩ : RatFunc _)
         | intro) <;>
-    simp_rw [←ofFractionRing_smul] <;>
+    simp_rw [← ofFractionRing_smul] <;>
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
       Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
@@ -689,6 +689,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
   rfl
 #align ratfunc.coe_map_ring_hom_eq_coe_map RatFunc.coe_mapRingHom_eq_coe_map
 
+set_option maxHeartbeats 300000 in
 -- TODO: Generalize to `FunLike` classes,
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non zero divisors to non zero divisors,
@@ -703,7 +704,7 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
   map_one' := by
     dsimp only -- porting note: force the function to be applied
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk]
-    simp only [map_one, Submonoid.coe_one, div_one]
+    simp only [map_one, OneMemClass.coe_one, div_one]
   map_mul' x y := by
     cases' x with x
     cases' y with y

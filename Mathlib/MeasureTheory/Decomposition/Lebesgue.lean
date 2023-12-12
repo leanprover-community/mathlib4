@@ -141,6 +141,9 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
       · simp [hr]
       · exact ENNReal.coe_ne_top
 
+theorem haveLebesgueDecomposition_withDensity (μ : Measure α) {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).HaveLebesgueDecomposition μ := ⟨⟨⟨0, f⟩, hf, .zero_left, (zero_add _).symm⟩⟩
+
 @[measurability]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
@@ -240,7 +243,8 @@ lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂�
     exact hμν
   · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
 
-lemma rnDeriv_singularPart (μ ν : Measure α) : (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
+lemma rnDeriv_singularPart (μ ν : Measure α) :
+    (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
   rw [rnDeriv_eq_zero]
   exact mutuallySingular_singularPart μ ν
 
@@ -471,13 +475,9 @@ theorem eq_withDensity_rnDeriv₀ {μ ν : Measure α} {s : Measure α} {f : α 
 
 theorem eq_rnDeriv₀ {μ ν : Measure α} [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f ν) (hs : s ⟂ₘ ν) (hadd : μ = s + ν.withDensity f) :
-    f =ᵐ[ν] μ.rnDeriv ν := by
-  refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf
-    (measurable_rnDeriv μ ν).aemeasurable _
-  intro a ha _
-  calc ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
-    _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv₀ hf hs hadd]
-    _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
+    f =ᵐ[ν] μ.rnDeriv ν :=
+  (withDensity_eq_iff_of_sigmaFinite hf (measurable_rnDeriv _ _).aemeasurable).mp
+    (eq_withDensity_rnDeriv₀ hf hs hadd)
 
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
@@ -495,10 +495,16 @@ lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] f
   (eq_rnDeriv (measurable_const) MutuallySingular.zero_left (by simp)).symm
 
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
-theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+theorem rnDeriv_withDensity₀ (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) :
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
   haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
-  (eq_rnDeriv hf MutuallySingular.zero_left this).symm
+  (eq_rnDeriv₀ hf MutuallySingular.zero_left this).symm
+
+/-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
+theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
+  rnDeriv_withDensity₀ ν hf.aemeasurable
 #align measure_theory.measure.rn_deriv_with_density MeasureTheory.Measure.rnDeriv_withDensity
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
