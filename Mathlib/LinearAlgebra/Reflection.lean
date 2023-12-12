@@ -27,7 +27,7 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
  * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
    that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
    linear map.
- * `Module.Dual.eq_of_preReflection_image_subset`: a uniqueness result about reflections preserving
+ * `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
    finite spanning sets that is useful in the theory of root data / systems.
 
 ## TODO
