@@ -682,6 +682,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
 #align equiv.linear_equiv Equiv.linearEquiv
 
 variable (α) in
+/-- Shrink `α` to a smaller universe preserves module structure. -/
 @[simps!]
 noncomputable def _root_.Shrink.linearEquiv [UnivLE.{u, v}] [AddCommMonoid α] [Module R α] :
     Shrink.{v} α ≃ₗ[R] α :=
@@ -707,7 +708,7 @@ protected def algebra (e : α ≃ β) [Semiring β] :
     simp [Algebra.commutes]
 #align equiv.algebra Equiv.algebra
 
-noncomputable instance [UnivLE.{u, v}] [AddCommMonoid α] [Semiring α] [Algebra R α] :
+noncomputable instance [UnivLE.{u, v}] [Semiring α] [Algebra R α] :
     Algebra R (Shrink.{v} α) :=
   (equivShrink α).symm.algebra _
 
@@ -729,6 +730,7 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
 #align equiv.alg_equiv Equiv.algEquiv
 
 variable (α) in
+/-- Shrink `α` to a smaller universe algebra multiplication. -/
 noncomputable def _root_.Shrink.algEquiv [UnivLE.{u, v}] [Semiring α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm
