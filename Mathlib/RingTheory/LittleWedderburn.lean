@@ -74,7 +74,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [Nat.cast_add, Nat.cast_sub h1qn, Nat.cast_sub hq.le, Nat.cast_one, Nat.cast_pow] at key
   suffices : Φₙ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card)
   · have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
-    rw [eval_sub, eval_pow, eval_X, eval_one, ←key, Int.dvd_add_left this] at contra
+    rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
     · convert Int.natAbs_dvd_natAbs.mpr contra
@@ -97,7 +97,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   -- We therefore get that `|x| = (q ^ n - 1) / (q ^ d - 1)`, and as `d` is a strict divisor of `n`,
   -- we do have that `Φₙ(q) | (q ^ n - 1) / (q ^ d - 1)`; extending this over the whole sum
   -- gives us the desired contradiction..
-  rw [Set.toFinset_card, ConjClasses.card_carrier, ←card_congr
+  rw [Set.toFinset_card, ConjClasses.card_carrier, ← card_congr
         (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, card_units, card_D]
   have hZx : Zx ≠ ⊤ := by
     by_contra! hZx
@@ -137,7 +137,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   let R_dr : DivisionRing R := Fintype.divisionRingOfIsDomain R
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
-  rw [←hn, ←Subring.card_top D]
+  rw [← hn, ← Subring.card_top D]
   exact Set.card_lt_card hR
 
 end LittleWedderburn
