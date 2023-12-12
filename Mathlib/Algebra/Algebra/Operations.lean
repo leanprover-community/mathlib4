@@ -14,6 +14,7 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -390,6 +391,20 @@ theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P,
   rfl
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
 
+lemma span_singleton_mul {x : A} {p : Submodule R A} :
+    Submodule.span R {x} * p = x • p := ext fun _ ↦ mem_span_singleton_mul
+
+lemma mem_smul_iff_inv_mul_mem {S} [Field S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+    (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
+  constructor
+  · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
+  · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
+
+lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+    (hx : x ∈ nonZeroDivisors S) :
+    x * y ∈ x • p ↔ y ∈ p :=
+  show Exists _ ↔ _ by simp [mul_cancel_left_mem_nonZeroDivisors hx]
+
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) :=
   { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
@@ -636,7 +651,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   mul_smul s t P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
   one_smul P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
+    simp_rw [HSMul.hSMul, SetSemiring.down_one, ← one_eq_span_one_set, one_mul]
   zero_smul P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _

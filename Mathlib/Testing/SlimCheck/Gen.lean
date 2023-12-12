@@ -42,7 +42,7 @@ open Random
 /-- Monad to generate random examples to test properties with.
 It has a `Nat` parameter so that the caller can decide on the
 size of the examples. -/
-abbrev Gen (m : Type u → Type v) (α : Type u) := ReaderT (ULift Nat) (Rand m) α
+abbrev Gen (m : Type u → Type v) (α : Type u) := ReaderT (ULift Nat) (RandT m) α
 
 instance [MonadLift m n] : MonadLiftT (Gen m) (Gen n) where
   monadLift x := fun s => x s
@@ -56,11 +56,11 @@ namespace Gen
 variable {m : Type u → Type v} [Monad m]
 
 /-- Lift `Random.random` to the `Gen` monad. -/
-def chooseAny (α : Type u) [Random α] : Gen m α :=
+def chooseAny (α : Type u) [Random m α] : Gen m α :=
   λ _ => rand α
 
 /-- Lift `BoundedRandom.randomR` to the `Gen` monad. -/
-def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) :
+def choose (α : Type u) [Preorder α] [BoundedRandom m α] (lo hi : α) (h : lo ≤ hi) :
     Gen m {a // lo ≤ a ∧ a ≤ hi} :=
   λ _ => randBound α lo hi h
 
@@ -72,10 +72,12 @@ lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ h
        exact h.right
        exact lt_of_le_of_lt (Nat.zero_le lo) h.left
 
+example : BoundedRandom m (ULift.{u, 0} ℕ) := Random.instBoundedRandomULiftInstPreorderULift
+
 /-- Generate a `Nat` example between `x` and `y` (exclusively). -/
 def chooseNatLt (lo hi : Nat) (h : lo < hi) :
     Gen m (ULift.{u} {a // lo ≤ a ∧ a < hi}) := do
-  let ⟨⟨n⟩, h⟩ ← choose (ULift Nat) (ULift.up lo.succ) (ULift.up hi) (Nat.succ_le_of_lt h)
+  let ⟨⟨n⟩, h⟩ ← (choose (ULift Nat) (ULift.up lo.succ) (ULift.up hi) (Nat.succ_le_of_lt h) : Gen Id _)
   return ULift.up ⟨n.pred, chooseNatLt_aux n h⟩
 
 /-- Get access to the size parameter of the `Gen` monad. -/
@@ -136,6 +138,6 @@ variable {m : Type* → Type*} {m₀} [ULiftable m₀ m] [Monad m] [MonadLiftT (
 
 /-- Execute a `Gen` inside the monad using `size` as the example size-/
 def Gen.run (x : Gen m α) (size : Nat) : m α :=
-  runRand $ show Rand m α from ReaderT.run x ⟨size⟩
+  IO.runRand $ show RandT m α from ReaderT.run x ⟨size⟩
 
 end SlimCheck

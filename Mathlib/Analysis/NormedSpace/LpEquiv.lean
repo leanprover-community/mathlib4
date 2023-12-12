@@ -80,16 +80,16 @@ theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
 #align equiv_lp_pi_Lp_norm equiv_lpPiLp_norm
 
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
-`[Fintype α]` and `[Fact (1 ≤ p)]`. -/
-def AddEquiv.lpPiLp [Fact (1 ≤ p)] : lp E p ≃+ PiLp p E :=
+`[Fintype α]`. -/
+def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g => rfl }
 #align add_equiv.lp_pi_Lp AddEquiv.lpPiLp
 
-theorem coe_addEquiv_lpPiLp [Fact (1 ≤ p)] (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
+theorem coe_addEquiv_lpPiLp  (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp coe_addEquiv_lpPiLp
 
-theorem coe_addEquiv_lpPiLp_symm [Fact (1 ≤ p)] (f : PiLp p E) :
+theorem coe_addEquiv_lpPiLp_symm (f : PiLp p E) :
     (AddEquiv.lpPiLp.symm f : ∀ i, E i) = f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp_symm coe_addEquiv_lpPiLp_symm

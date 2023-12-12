@@ -105,6 +105,9 @@ theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem (IsOpen : Set α �
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
 
+lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem (IsClosed : Set α → Prop) :=
+  fun _s hs _t ht _ ↦ IsClosed.inter hs ht
+
 theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     borel α = .generateFrom { s | IsClosed s } :=
   le_antisymm
@@ -1101,6 +1104,10 @@ instance Prod.borelSpace [SecondCountableTopologyEither α β] :
     BorelSpace (α × β) :=
   ⟨le_antisymm prod_le_borel_prod OpensMeasurableSpace.borel_le⟩
 #align prod.borel_space Prod.borelSpace
+
+instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+    [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
+  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
 
 protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=

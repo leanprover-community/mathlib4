@@ -190,6 +190,11 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
     · exact smul_mem _ _
 #align submodule.span_span_coe_preimage Submodule.span_span_coe_preimage
 
+@[simp]
+lemma span_setOf_mem_eq_top :
+    span R {x : span R s | (x : M) ∈ s} = ⊤ :=
+  span_span_coe_preimage
+
 theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
   refine' Eq.symm (AddSubmonoid.closure_eq_of_le subset_span _)

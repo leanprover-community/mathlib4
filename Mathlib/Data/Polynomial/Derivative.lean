@@ -273,7 +273,7 @@ theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : 
   rcases eq_or_ne f 0 with (rfl | hf)
   · exact natDegree_zero
   rw [natDegree_eq_zero_iff_degree_le_zero]
-  by_contra' f_nat_degree_pos
+  by_contra! f_nat_degree_pos
   rw [← natDegree_pos_iff_degree_pos] at f_nat_degree_pos
   let m := f.natDegree - 1
   have hm : m + 1 = f.natDegree := tsub_add_cancel_of_le f_nat_degree_pos
@@ -407,7 +407,7 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
         _ = Nat.descFactorial (m.succ + k) k.succ • p.coeff (m + k.succ) := by
           rw [← Nat.succ_add, Nat.descFactorial_succ, add_tsub_cancel_right]
         _ = Nat.descFactorial (m + k.succ) k.succ • p.coeff (m + k.succ) := by
-          rw [Nat.succ_add_eq_succ_add]
+          rw [Nat.succ_add_eq_add_succ]
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =

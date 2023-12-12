@@ -336,7 +336,7 @@ partial def minimizeAux [SampleableExt m α] {β : α → Prop} [∀ x, Testable
         slimTrace s!"{var} shrunk to {repr candidate} from {repr x}"
       let currentStep := OptionT.lift $ pure $ Sigma.mk candidate (addShrinks (n + 1) res)
       let nextStep := minimizeAux cfg var candidate (n + 1)
-      return ←(nextStep <|> currentStep)
+      return ← (nextStep <|> currentStep)
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
@@ -484,6 +484,7 @@ def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) :
 /-- Run a test suite for `p` in `MetaM` using the global RNG in `stdGenRef`. -/
 def Testable.checkMetaM (p : Prop) [Testable p] (cfg : Configuration := {}) :
     MetaM (TestResult p) :=
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
   | none => runRand (Testable.runSuite p cfg)
   | some seed => runRandWith seed (Testable.runSuite p cfg)

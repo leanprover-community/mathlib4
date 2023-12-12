@@ -128,7 +128,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
   simp only [binomial_eq_choose, Function.update_apply,
     h, Ne.def, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
-  rw [add_succ, choose_succ_succ, succ_add_eq_succ_add]
+  rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
 #align nat.binomial_succ_succ Nat.binomial_succ_succ
 
@@ -203,7 +203,7 @@ def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
 #align multiset.multinomial Multiset.multinomial
 
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
-    m.multinomial = m.card.choose (m.count a) * (m.filter ((· ≠ ·) a)).multinomial := by
+    m.multinomial = m.card.choose (m.count a) * (m.filter (a ≠ ·)).multinomial := by
   dsimp only [multinomial]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
@@ -258,7 +258,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
     rw [m.1.1.multinomial_filter_ne a]
-    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not ((· = ·) a), Multiset.map_add]
+    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]

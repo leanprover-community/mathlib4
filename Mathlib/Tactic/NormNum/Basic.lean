@@ -170,7 +170,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   simp only [Int.cast_add, Int.cast_mul, Int.cast_ofNat, ← mul_assoc,
     add_mul, mul_mul_invOf_self_cancel] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
-  simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ←mul_assoc] at h₁ h₂
+  simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
   simp only [mul_mul_invOf_self_cancel,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,

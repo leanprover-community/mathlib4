@@ -9,6 +9,7 @@ import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.MetricSpace.Equicontinuity
+import Mathlib.Algebra.Module.MinimalAxioms
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -767,7 +768,7 @@ open BigOperators
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
-  (@coeFnAddHom α β _ _ _ _).map_sum f s
+  map_sum coeFnAddHom f s
 #align bounded_continuous_function.coe_sum BoundedContinuousFunction.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α) :
@@ -1401,32 +1402,31 @@ functions from `α` to `β` is naturally a module over the algebra of bounded co
 functions from `α` to `𝕜`. -/
 
 
-instance hasSmul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) :=
-  ⟨fun (f : α →ᵇ 𝕜) (g : α →ᵇ β) =>
+instance hasSmul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
+  smul f g :=
     ofNormedAddCommGroup (fun x => f x • g x) (f.continuous.smul g.continuous) (‖f‖ * ‖g‖) fun x =>
       calc
         ‖f x • g x‖ ≤ ‖f x‖ * ‖g x‖ := norm_smul_le _ _
         _ ≤ ‖f‖ * ‖g‖ :=
           mul_le_mul (f.norm_coe_le_norm _) (g.norm_coe_le_norm _) (norm_nonneg _) (norm_nonneg _)
-        ⟩
 #align bounded_continuous_function.has_smul' BoundedContinuousFunction.hasSmul'
 
 instance module' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
-  Module.ofCore <|
-    { smul := (· • ·)
-      smul_add := fun _ _ _ => ext fun _ => smul_add _ _ _
-      add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
-      mul_smul := fun _ _ _ => ext fun _ => mul_smul _ _ _
-      one_smul := fun f => ext fun x => one_smul 𝕜 (f x) }
+  Module.ofMinimalAxioms
+      (fun _ _ _ => ext fun _ => smul_add _ _ _)
+      (fun _ _ _ => ext fun _ => add_smul _ _ _)
+      (fun _ _ _ => ext fun _ => mul_smul _ _ _)
+      (fun f => ext fun x => one_smul 𝕜 (f x))
 #align bounded_continuous_function.module' BoundedContinuousFunction.module'
 
-theorem norm_smul_le (f : α →ᵇ 𝕜) (g : α →ᵇ β) : ‖f • g‖ ≤ ‖f‖ * ‖g‖ :=
-  norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
-#align bounded_continuous_function.norm_smul_le BoundedContinuousFunction.norm_smul_le
-
-/- TODO: When `NormedModule` has been added to `Analysis.NormedSpace.Basic`, the above facts
-show that the space of bounded continuous functions from `α` to `β` is naturally a normed
+/- TODO: When `NormedModule` has been added to `Analysis.NormedSpace.Basic`, this
+shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
+instance : BoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
+  BoundedSMul.of_norm_smul_le fun _ _ =>
+    norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+#align bounded_continuous_function.norm_smul_le norm_smul_le
+
 end NormedAlgebra
 
 theorem NNReal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
