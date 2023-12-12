@@ -140,11 +140,11 @@ theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
 #align bilin_form.sub_right BilinForm.sub_right
 
 @[simp]
-lemma smul_left_of_tower {r : S} {x y : M} : B (r • x) y = r • B x y := by
+lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
   rw [← IsScalarTower.algebraMap_smul R r, smul_left, Algebra.smul_def]
 
 @[simp]
-lemma smul_right_of_tower {r : S} {x y : M} : B x (r • y) = r • B x y := by
+lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
   rw [← IsScalarTower.algebraMap_smul R r, smul_right, Algebra.smul_def]
 
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}

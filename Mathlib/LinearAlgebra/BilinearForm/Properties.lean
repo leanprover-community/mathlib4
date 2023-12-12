@@ -481,6 +481,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 where `B` is a nondegenerate (symmetric) bilinear form and `b` is a finite basis. -/
 noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) :
     Basis ι K V :=
+  haveI := FiniteDimensional.of_fintype_basis b
   b.dualBasis.map (B.toDual hB).symm
 #align bilin_form.dual_basis BilinForm.dualBasis
 
@@ -493,6 +494,7 @@ theorem dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Bas
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
+  have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
     LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
 #align bilin_form.apply_dual_basis_left BilinForm.apply_dualBasis_left
@@ -502,6 +504,7 @@ theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : 
   rw [sym, apply_dualBasis_left]
 #align bilin_form.apply_dual_basis_right BilinForm.apply_dualBasis_right
 
+@[simp]
 lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Fintype ι] [DecidableEq ι] (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
@@ -511,11 +514,13 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     apply_dualBasis_left]
   simp_rw [@eq_comm _ i j]
 
+@[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Fintype ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
   dualBasis_dualBasis_flip _ hB.flip b
 
+@[simp]
 lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
     [Fintype ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by

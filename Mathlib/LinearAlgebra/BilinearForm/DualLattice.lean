@@ -54,7 +54,7 @@ lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : 
   (x.prop y y.prop).choose_spec
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
--- TODO: Show that this is perfect when `N` is a lattice.
+-- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
 @[simps]
 noncomputable
 def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
@@ -79,10 +79,11 @@ lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R
   intro z hz
   simpa using congr_arg (algebraMap R S) (LinearMap.congr_fun e ⟨z, hz⟩)
 
-lemma dualSubmodule_span_of_basis {ι} [Fintype ι] [DecidableEq ι] [FiniteDimensional S M]
+lemma dualSubmodule_span_of_basis {ι} [Fintype ι] [DecidableEq ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (Submodule.span R (Set.range b)) =
       Submodule.span R (Set.range <| B.dualBasis hB b) := by
+  have := FiniteDimensional.of_fintype_basis b
   apply le_antisymm
   · intro x hx
     rw [← (B.dualBasis hB b).sum_repr x]
