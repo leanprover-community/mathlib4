@@ -158,7 +158,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 instance membership : Membership α (RelSeries r) :=
-  ⟨fun x s => x ∈ Set.range s⟩
+  ⟨(· ∈ Set.range ·)⟩
 
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
