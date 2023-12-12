@@ -68,7 +68,7 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   · rintro (rfl | rfl) <;> simp
 
 @[simp]
-lemma Nat.nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
+lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
   rw [← not_iff_not]
   simp only [Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, not_lt]
   match n with
