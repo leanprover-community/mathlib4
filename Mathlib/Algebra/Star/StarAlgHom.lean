@@ -452,7 +452,7 @@ theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
 
 /-- `algebraMap R A` as a `StarAlgHom` when `A` is a star algebra over `R`. -/
 @[simps]
-def StarAlgHom.ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
+def ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
     [Algebra R A] [StarModule R A] : R →⋆ₐ[R] A :=
   { Algebra.ofId R A with
     toFun := algebraMap R A
