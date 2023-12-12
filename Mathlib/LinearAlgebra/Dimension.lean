@@ -1121,7 +1121,7 @@ theorem rank_span_le (s : Set V) : Module.rank K (span K s) ≤ #s := by
   rw [← hsab, rank_span_set hlib]
 #align rank_span_le rank_span_le
 
-theorem rank_span_le_of_finite (s : Set V) (hs : s.Finite) : Module.rank R (span R s) ≤ #s := by
+theorem rank_span_le_of_finite {s : Set V} (hs : s.Finite) : Module.rank R (span R s) ≤ #s := by
   rw [Module.rank_def]
   apply ciSup_le'
   rintro ⟨t, ht⟩
