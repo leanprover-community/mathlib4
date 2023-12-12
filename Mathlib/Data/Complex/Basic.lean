@@ -51,6 +51,7 @@ theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
   | ⟨_, _⟩ => rfl
 #align complex.eta Complex.eta
 
+-- We only mark this lemma with `ext` *locally* to avoid it applying whenever terms of `ℂ` appear.
 theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
   | ⟨_, _⟩, ⟨_, _⟩, rfl, rfl => rfl
 #align complex.ext Complex.ext
