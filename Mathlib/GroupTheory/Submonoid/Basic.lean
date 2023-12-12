@@ -649,18 +649,6 @@ theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
 #align is_unit.mem_submonoid_iff IsUnit.mem_submonoid_iff
 #align is_add_unit.mem_add_submonoid_iff IsAddUnit.mem_addSubmonoid_iff
 
-/-- The multiplicative equivalence between the type of units of `M` and the submonoid whose elements
-  are the units of `M`. -/
-@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
-  and the additive submonoid whose elements are the additive units of `M`. "]
-noncomputable def unitsTypeEquivIsUnitSubmonoid :
-  Mˣ ≃* IsUnit.submonoid M where
-  toFun x := ⟨x, Units.isUnit x⟩
-  invFun x := x.prop.unit
-  left_inv x := IsUnit.unit_of_val_units _
-  right_inv x := by simp_rw [IsUnit.unit_spec]
-  map_mul' x y := by simp_rw [Units.val_mul]; rfl
-
 end IsUnit
 
 namespace MonoidHom
