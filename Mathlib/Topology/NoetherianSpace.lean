@@ -3,7 +3,6 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.noetherian_space from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -91,7 +90,7 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2
-  · refine' (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff  _)
+  · refine' (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff _)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4
   · exact noetherianSpace_iff_opens α

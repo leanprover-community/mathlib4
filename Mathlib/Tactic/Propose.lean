@@ -7,7 +7,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
@@ -38,19 +38,23 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.propose
 
-initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
-  DeclCache.mk "have?: init cache" {} fun name constInfo lemmas => do
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
+initialize proposeLemmas : DeclCache (DiscrTree Name) ←
+  DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        lemmas := lemmas.insertIfSpecific (← DiscrTree.mkPath (← inferType m)) name
+        let path ← DiscrTree.mkPath (← inferType m) discrTreeConfig
+        lemmas := lemmas.insertIfSpecific path name discrTreeConfig
       pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
@@ -73,11 +77,11 @@ We look up candidate lemmas from a discrimination tree using the first such expr
 
 Returns an array of pairs, containing the names of found lemmas and the resulting application.
 -/
-def propose (lemmas : DiscrTree Name s) (type : Expr) (required : Array Expr)
+def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
     (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := do
   guard !required.isEmpty
   let ty ← whnfR (← instantiateMVars (← inferType required[0]!))
-  let candidates ← lemmas.getMatch ty
+  let candidates ← lemmas.getMatch ty discrTreeConfig
   candidates.filterMapM fun lem : Name =>
     try
       trace[Tactic.propose] "considering {lem}"

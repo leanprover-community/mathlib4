@@ -267,7 +267,7 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
   rw [of, IntFractPair.seq1]
   simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
     Stream'.Seq.get?, Stream'.map]
-  rw [← Stream'.nth_succ, Stream'.nth, Option.map]
+  rw [← Stream'.get_succ, Stream'.get, Option.map]
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
 #align generalized_continued_fraction.of_s_head_aux GeneralizedContinuedFraction.of_s_head_aux
 
@@ -345,7 +345,7 @@ theorem convergents'_succ :
     rw [convergents'_of_int, fract_intCast, inv_zero, ← cast_zero, convergents'_of_int, cast_zero,
       div_zero, add_zero, floor_intCast]
   · rw [convergents', of_h_eq_floor, add_right_inj, convergents'Aux_succ_some (of_s_head h)]
-    exact congr_arg ((· / ·) 1) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
+    exact congr_arg (1 / ·) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
 #align generalized_continued_fraction.convergents'_succ GeneralizedContinuedFraction.convergents'_succ
 
 end Values
