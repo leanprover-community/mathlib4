@@ -13,7 +13,7 @@ We collect facts about factorials in context of modular arithmetic.
 
 ## Main statements
 
-* `Nat.descFactorialZMod`: For natural numbers `n` and `p`, where `n` is less than or equal to `p`
+* `ZMod.cast_descFactorial`: For natural numbers `n` and `p`, where `n` is less than or equal to `p`
   the descending factorial of `(p - 1)` taken `n` times modulo `p` equals `(-1) ^ n * n!`.
 
 ## See also
@@ -27,7 +27,7 @@ open Finset Nat
 
 namespace ZMod
 
-theorem descFactorial {n p : ℕ} (h : n ≤ p) :
+theorem cast_descFactorial {n p : ℕ} (h : n ≤ p) :
     (descFactorial (p - 1) n : ZMod p) = (-1) ^ n * n ! := by
   rw [descFactorial_eq_prod_range, ← prod_range_add_one_eq_factorial]
   simp only [cast_prod]
