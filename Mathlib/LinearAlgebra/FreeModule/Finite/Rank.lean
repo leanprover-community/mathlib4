@@ -244,10 +244,10 @@ open IsNoetherian
 section DivisionRing
 
 variable [AddCommGroup V] {V₂ : Type v'} [AddCommGroup V₂]
-variable [Ring R] [StrongRankCondition R] [Module R V]
+variable [Ring R] [StrongRankCondition R] [Module R V] [Module.Free R V]
 
 /-- See `FiniteDimensional.rank_lt_aleph0` for the inverse direction without `Module.Free R V`. -/
-lemma Module.rank_lt_alpeh0_iff [Module.Free R V] :
+lemma Module.rank_lt_alpeh0_iff :
     Module.rank R V < ℵ₀ ↔ Module.Finite R V := by
   rw [Free.rank_eq_card_chooseBasisIndex, mk_lt_aleph0_iff]
   exact ⟨fun h ↦ Finite.of_basis (Free.chooseBasis R V),
@@ -258,16 +258,16 @@ theorem FiniteDimensional.finrank_of_not_finite [Module.Free R V]
     FiniteDimensional.finrank R V = 0 :=
   dif_neg (rank_lt_alpeh0_iff.not.mpr h)
 
-theorem Module.finite_of_finrank_pos [Module.Free R V] (h : 0 < finrank R V) :
+theorem Module.finite_of_finrank_pos (h : 0 < finrank R V) :
     Module.Finite R V := by
   contrapose h
   simp [finrank_of_not_finite h]
 
-theorem Module.finite_of_finrank_eq_succ [Module.Free R V] {n : ℕ}
+theorem Module.finite_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R V = n.succ) : Module.Finite R V :=
   Module.finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 
-theorem Module.finite_iff_of_rank_eq_nsmul [Module.Free R V] {W} [AddCommGroup W]
+theorem Module.finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W]
     [Module R W] [Module.Free R W] {n : ℕ} (hn : n ≠ 0)
     (hVW : Module.rank R V = n • Module.rank R W) :
     Module.Finite R V ↔ Module.Finite R W := by
@@ -293,14 +293,14 @@ noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique �
 variable (R V)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R V)`. -/
-noncomputable def FiniteDimensional.finBasis [Module.Free R V] [Module.Finite R V] :
+noncomputable def FiniteDimensional.finBasis [Module.Finite R V] :
     Basis (Fin (finrank R V)) R V :=
   (Free.chooseBasis R V).reindex (Fintype.equivFinOfCardEq
     (finrank_eq_card_chooseBasisIndex R V).symm)
 #align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Free R V] [Module.Finite R V]
+noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Finite R V]
     {n : ℕ} (hn : finrank R V = n) :
     Basis (Fin n) R V :=
   (finBasis R V).reindex (Fin.castIso hn).toEquiv
@@ -309,7 +309,7 @@ noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Free R V] [Modul
 variable {R V}
 
 /-- A free module with rank 1 has a basis with one element. -/
-noncomputable def FiniteDimensional.basisUnique [Module.Free R V] (ι : Type*) [Unique ι]
+noncomputable def FiniteDimensional.basisUnique (ι : Type*) [Unique ι]
     (h : finrank R V = 1) :
     Basis ι R V :=
   haveI : Module.Finite R V :=
@@ -318,7 +318,7 @@ noncomputable def FiniteDimensional.basisUnique [Module.Free R V] (ι : Type*) [
 #align finite_dimensional.basis_unique FiniteDimensional.basisUnique
 
 @[simp]
-theorem FiniteDimensional.basisUnique_repr_eq_zero_iff [Module.Free R V] {ι : Type*} [Unique ι]
+theorem FiniteDimensional.basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     {h : finrank R V = 1} {v : V} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
