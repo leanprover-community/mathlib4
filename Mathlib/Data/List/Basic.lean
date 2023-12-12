@@ -25,7 +25,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ l₃ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -411,14 +411,6 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 #align list.append_left_inj List.append_left_inj
 
 #align list.map_eq_append_split List.map_eq_append_split
-
-lemma length_append_append :
-    (l₁ ++ l₂ ++ l₃).length = l₁.length + l₂.length + l₃.length := by
-  rw [length_append, length_append]
-
-lemma reverse_append_append :
-    (l₁ ++ l₂ ++ l₃).reverse = l₃.reverse ++ l₂.reverse ++ l₁.reverse := by
-  rw [reverse_append, reverse_append, append_assoc]
 
 /-! ### replicate -/
 
@@ -2617,13 +2609,14 @@ lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ 
       · intro contra_lt
         apply notin_z
         have reversed := congr_arg reverse together
-        rw [reverse_append_append, reverse_append_append,
-            reverse_singleton, reverse_singleton] at reversed
+        rw [reverse_append, reverse_append, reverse_append, reverse_append,
+            reverse_singleton, reverse_singleton, ← append_assoc, ← append_assoc] at reversed
         rw [← mem_reverse]
         apply append_singleton_append_mem_left_of_length_lt reversed
         rw [length_reverse, length_reverse]
         have total := congr_arg length together
-        rw [length_append_append, length_append_append, length_singleton, length_singleton] at total
+        rw [length_append, length_append, length_append, length_append,
+            length_singleton, length_singleton] at total
         rw [← lt_iff_gt_of_add_eq_add total]
         exact Nat.add_lt_add_right contra_lt 1
       rw [Nat.not_lt] at not_gt not_lt
