@@ -103,8 +103,6 @@ this is the same as the dimension of the space (i.e. the cardinality of any basi
 
 In particular this agrees with the usual notion of the dimension of a vector space.
 
-The definition is marked as protected to avoid conflicts with `_root_.rank`,
-the rank of a linear map.
 -/
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
