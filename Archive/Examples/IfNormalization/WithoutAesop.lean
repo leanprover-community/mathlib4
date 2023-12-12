@@ -14,7 +14,7 @@ In this variant we eschew the use of `aesop`, and instead write out the proofs.
 (In order to avoid duplicated names with `Result.lean`,
 we put primes on the declarations in the file.)
 -/
-set_option says.verify true
+
 set_option autoImplicit true
 
 namespace IfExpr
