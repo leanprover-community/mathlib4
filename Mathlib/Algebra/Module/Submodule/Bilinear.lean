@@ -71,7 +71,7 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
     exact subset_span ⟨_, _, ‹_›, ‹_›, rfl⟩
     all_goals intros; simp only [*, add_mem, smul_mem, zero_mem, _root_.map_zero, map_add,
                                  LinearMap.zero_apply, LinearMap.add_apply, LinearMap.smul_apply,
-                                 SMulHomClass.map_smul]
+                                 map_smul]
   · rw [span_le]
     rintro _ ⟨a, b, ha, hb, rfl⟩
     exact apply_mem_map₂ _ (subset_span ha) (subset_span hb)
@@ -178,3 +178,17 @@ theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : S
 #align submodule.map₂_span_singleton_eq_map_flip Submodule.map₂_span_singleton_eq_map_flip
 
 end Submodule
+
+lemma LinearMap.ker_restrictBilinear_eq_of_codisjoint
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+    {p q : Submodule R M} (hpq : Codisjoint p q)
+    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ x ∈ p, ∀ y ∈ q, B x y = 0) :
+    LinearMap.ker (p.restrictBilinear B) = (LinearMap.ker B).comap p.subtype := by
+  ext ⟨z, hz⟩
+  simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coeSubtype]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · ext w
+    obtain ⟨x, hx, y, hy, rfl⟩ := Submodule.exists_add_eq_of_codisjoint hpq w
+    simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
+  · ext ⟨x, hx⟩
+    simpa using LinearMap.congr_fun h x

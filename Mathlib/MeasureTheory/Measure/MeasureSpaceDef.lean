@@ -138,10 +138,11 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
 #align measure_theory.measure.ext MeasureTheory.Measure.ext
 
 theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by
-    rintro rfl s _hs
-    rfl, Measure.ext⟩
+  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 #align measure_theory.measure.ext_iff MeasureTheory.Measure.ext_iff
+
+theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
+  ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
 end Measure
 
@@ -189,7 +190,7 @@ theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
 #align measure_theory.nonempty_of_measure_ne_zero MeasureTheory.nonempty_of_measure_ne_zero
 
-theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
+@[gcongr] theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   μ.mono h
 #align measure_theory.measure_mono MeasureTheory.measure_mono
 
@@ -260,7 +261,7 @@ theorem measure_iUnion_fintype_le [Fintype β] (f : β → Set α) : μ (⋃ b, 
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert(measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
   apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
@@ -444,11 +445,9 @@ theorem ae_eq_trans {f g h : α → δ} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ]
   h₁.trans h₂
 #align measure_theory.ae_eq_trans MeasureTheory.ae_eq_trans
 
-theorem ae_le_of_ae_lt {f g : α → ℝ≥0∞} (h : ∀ᵐ x ∂μ, f x < g x) : f ≤ᵐ[μ] g := by
-  rw [Filter.EventuallyLE, ae_iff]
-  rw [ae_iff] at h
-  refine' measure_mono_null (fun x hx => _) h
-  exact not_lt.2 (le_of_lt (not_le.1 hx))
+theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ x ∂μ, f x < g x) :
+    f ≤ᵐ[μ] g :=
+  h.mono fun _ ↦ le_of_lt
 #align measure_theory.ae_le_of_ae_lt MeasureTheory.ae_le_of_ae_lt
 
 @[simp]
@@ -466,7 +465,6 @@ theorem ae_le_set : s ≤ᵐ[μ] t ↔ μ (s \ t) = 0 :=
   calc
     s ≤ᵐ[μ] t ↔ ∀ᵐ x ∂μ, x ∈ s → x ∈ t := Iff.rfl
     _ ↔ μ (s \ t) = 0 := by simp [ae_iff]; rfl
-
 #align measure_theory.ae_le_set MeasureTheory.ae_le_set
 
 theorem ae_le_set_inter {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
@@ -563,9 +561,9 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
-/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+/-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
-- `∅ : set α`
+- `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
@@ -617,21 +615,21 @@ theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
 
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
-(This property holds without the assumption `μ s ≠ ∞` when the space is sigma-finite,
-see `measure_toMeasurable_inter_of_sigmaFinite`).
+(This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
+σ-finite), see `measure_toMeasurable_inter_of_sFinite`).
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
 irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
-  if h : ∃ (t : _) (_ : t ⊇ s), MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
-    if h' : ∃ (t : _) (_ : t ⊇ s),
-      MeasurableSet t ∧ ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
+  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
+    if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
+      ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
 #align measure_theory.to_measurable MeasureTheory.toMeasurable
 
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
+  exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 #align measure_theory.subset_to_measurable MeasureTheory.subset_toMeasurable
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -644,15 +642,15 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.snd.1, h's.choose_spec.snd.1,
+  exacts [hs.choose_spec.2.1, h's.choose_spec.2.1,
           (exists_measurable_superset μ s).choose_spec.2.1]
 #align measure_theory.measurable_set_to_measurable MeasureTheory.measurableSet_toMeasurable
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  · exact measure_congr hs.choose_spec.snd.2
-  · simpa only [inter_univ] using h's.choose_spec.snd.2 univ MeasurableSet.univ
+  · exact measure_congr hs.choose_spec.2.2
+  · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2
 #align measure_theory.measure_to_measurable MeasureTheory.measure_toMeasurable
 

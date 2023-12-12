@@ -89,7 +89,6 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
-set_option maxHeartbeats 250000 in
 instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
@@ -262,7 +261,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine' ⟨fun {a b} e => _⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
-    by_contra' h
+    by_contra! h
     obtain ⟨_, ⟨x, hx₁, rfl⟩, ⟨x, hx₂, e'⟩⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
     replace e' := Subtype.eq e'

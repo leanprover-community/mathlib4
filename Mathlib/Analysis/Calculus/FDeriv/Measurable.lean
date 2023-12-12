@@ -115,9 +115,7 @@ namespace FDerivMeasurableAux
 at scale `r` by the linear map `L`, up to an error `ε`. We tweak the definition to make sure that
 this is an open set.-/
 def A (f : E → F) (L : E →L[𝕜] F) (r ε : ℝ) : Set E :=
-  { x |
-    ∃ r' ∈ Ioc (r / 2) r,
-      ∀ (y) (_ : y ∈ ball x r') (z) (_ : z ∈ ball x r'), ‖f z - f y - L (z - y)‖ < ε * r }
+  { x | ∃ r' ∈ Ioc (r / 2) r, ∀ y ∈ ball x r', ∀ z ∈ ball x r', ‖f z - f y - L (z - y)‖ < ε * r }
 #align fderiv_measurable_aux.A FDerivMeasurableAux.A
 
 /-- The set `B f K r s ε` is the set of points `x` around which there exists a continuous linear map
@@ -333,7 +331,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
     set m := k - 1
-    have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
+    have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
@@ -386,12 +384,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete {K : Set (E →L[𝕜] F
   -- simp [differentiable_set_eq_D K hK, D, isOpen_B.measurableSet, MeasurableSet.iInter,
   --   MeasurableSet.iUnion]
   simp only [D, differentiable_set_eq_D K hK]
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iUnion fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   exact isOpen_B.measurableSet
 #align measurable_set_of_differentiable_at_of_is_complete measurableSet_of_differentiableAt_of_isComplete
 
@@ -504,7 +497,7 @@ theorem B_mem_nhdsWithin_Ioi {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s 
     B f K r s ε ∈ 𝓝[>] x := by
   obtain ⟨L, LK, hL₁, hL₂⟩ : ∃ L : F, L ∈ K ∧ x ∈ A f L r ε ∧ x ∈ A f L s ε := by
     simpa only [B, mem_iUnion, mem_inter_iff, exists_prop] using hx
-  filter_upwards [A_mem_nhdsWithin_Ioi hL₁, A_mem_nhdsWithin_Ioi hL₂]with y hy₁ hy₂
+  filter_upwards [A_mem_nhdsWithin_Ioi hL₁, A_mem_nhdsWithin_Ioi hL₂] with y hy₁ hy₂
   simp only [B, mem_iUnion, mem_inter_iff, exists_prop]
   exact ⟨L, LK, hy₁, hy₂⟩
 #align right_deriv_measurable_aux.B_mem_nhds_within_Ioi RightDerivMeasurableAux.B_mem_nhdsWithin_Ioi
@@ -683,7 +676,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     have xmem : x ∈ Ico x (x + (1 / 2) ^ (n e + 1)) := by
       simp only [one_div, left_mem_Ico, lt_add_iff_pos_right, inv_pos, pow_pos, zero_lt_two,
         zero_lt_one]
-    filter_upwards [Icc_mem_nhdsWithin_Ici xmem]with y hy
+    filter_upwards [Icc_mem_nhdsWithin_Ici xmem] with y hy
     -- We need to show that `f y - f x - f' (y - x)` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y - x‖ ∼ 2 ^ (-k)`.
     rcases eq_or_lt_of_le hy.1 with (rfl | xy)
@@ -701,7 +694,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
     set m := k - 1
-    have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
+    have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
@@ -753,12 +746,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici_of_isComplete {K : Set F} (h
   -- simp [differentiable_set_eq_d K hK, D, measurableSet_b, MeasurableSet.iInter,
   --   MeasurableSet.iUnion]
   simp only [differentiable_set_eq_D K hK, D]
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iUnion fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   exact measurableSet_B
 #align measurable_set_of_differentiable_within_at_Ici_of_is_complete measurableSet_of_differentiableWithinAt_Ici_of_isComplete
 

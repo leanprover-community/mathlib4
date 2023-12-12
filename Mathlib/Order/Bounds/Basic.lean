@@ -67,7 +67,7 @@ def IsLeast (s : Set α) (a : α) : Prop :=
   a ∈ s ∧ a ∈ lowerBounds s
 #align is_least IsLeast
 
-/-- `a` is a greatest element of a set `s`; for a partial order, it is unique if exists -/
+/-- `a` is a greatest element of a set `s`; for a partial order, it is unique if exists. -/
 def IsGreatest (s : Set α) (a : α) : Prop :=
   a ∈ s ∧ a ∈ upperBounds s
 #align is_greatest IsGreatest
@@ -1577,7 +1577,7 @@ lemma bddBelow_pi {s : Set (∀ a, π a)} :
 
 lemma bddAbove_range_pi {F : ι → ∀ a, π a} :
     BddAbove (range F) ↔ ∀ a, BddAbove (range fun i ↦ F i a) := by
-  simp only [bddAbove_pi, ←range_comp]
+  simp only [bddAbove_pi, ← range_comp]
   rfl
 
 lemma bddBelow_range_pi {F : ι → ∀ a, π a} :

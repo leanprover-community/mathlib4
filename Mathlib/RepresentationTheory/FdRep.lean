@@ -34,6 +34,7 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 -/
 
+suppress_compilation
 
 universe u
 

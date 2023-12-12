@@ -43,19 +43,6 @@ def List.tryAllM [Monad m] [Alternative m] (L : List α) (f : α → m β) : m (
   return (R.filterMap (fun s => match s with | .inl a => a | _ => none),
     R.filterMap (fun s => match s with | .inr b => b | _ => none))
 
-namespace Lean.MVarId
-
-/--
-Given any tactic that takes a goal, and returns a sequence of alternative outcomes
-(each outcome consisting of a list of new subgoals),
-we can perform backtracking search by repeatedly applying the tactic.
--/
-def firstContinuation (results : MVarId → Nondet MetaM (List MVarId))
-    (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
-  (results g).firstM fun r => observing? do cont r
-
-end Lean.MVarId
-
 namespace Mathlib.Tactic
 
 /--
@@ -70,38 +57,39 @@ structure BacktrackConfig where
   /-- Maximum recursion depth. -/
   maxDepth : Nat := 6
   /-- An arbitrary procedure which can be used to modify the list of goals
-  before each attempt to apply a lemma.
+  before each attempt to generate alternatives.
   Called as `proc goals curr`, where `goals` are the original goals for `backtracking`,
   and `curr` are the current goals.
   Returning `some l` will replace the current goals with `l` and recurse
   (consuming one step of maximum depth).
-  Returning `none` will proceed to applying lemmas without changing goals.
+  Returning `none` will proceed to generating alternative without changing goals.
   Failure will cause backtracking.
   (defaults to `none`) -/
   proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none
-  /-- If `suspend g`, then we do not attempt to apply any further lemmas,
+  /-- If `suspend g`, then we do not consider alternatives for `g`,
   but return `g` as a new subgoal. (defaults to `false`) -/
   suspend : MVarId → MetaM Bool := fun _ => pure false
-  /-- `discharge g` is called on goals for which no lemmas apply.
+  /-- `discharge g` is called on goals for which there were no alternatives.
   If `none` we return `g` as a new subgoal.
   If `some l`, we replace `g` by `l` in the list of active goals, and recurse.
   If failure, we backtrack. (defaults to failure) -/
   discharge : MVarId → MetaM (Option (List MVarId)) := fun _ => failure
-  /-- If we solve any "independent" goals, don't fail. -/
+  /--
+  If we solve any "independent" goals, don't fail.
+  See `Lean.MVarId.independent?` for the definition of independence.
+  -/
   commitIndependentGoals : Bool := false
-
-def ppMVarIds (gs : List MVarId) : MetaM (List Format) := do
-  gs.mapM fun g => do ppExpr (← g.getType)
 
 /--
 Attempts to solve the `goals`, by recursively calling `alternatives g` on each subgoal that appears.
-`alternatives` returns a nondeterministic list of goals
-(this is essentially a lazy list of `List MVarId`,
-with the extra state required to backtrack in `MetaM`).
+`alternatives` returns a nondeterministic list of new subgoals generated from a goal.
 
 `backtrack` performs a backtracking search, attempting to close all subgoals.
 
 Further flow control options are available via the `Config` argument.
+
+Returns a list of subgoals which were "suspended" via the `suspend` or `discharge` hooks
+in `Config`. In the default configuration, `backtrack` will either return an empty list or fail.
 -/
 partial def backtrack (cfg : BacktrackConfig := {}) (trace : Name := .anonymous)
     (alternatives : MVarId → Nondet MetaM (List MVarId))
@@ -152,9 +140,9 @@ where
           run (n+1) gs (g :: acc)
         else
           try
-            -- We attempt to find an expression which can be applied,
-            -- and for which all resulting sub-goals can be discharged using `run n`.
-            g.firstContinuation alternatives (fun res => run n (res ++ gs) acc)
+            -- We attempt to find an alternative,
+            -- for which all resulting sub-goals can be discharged using `run n`.
+            (alternatives g).firstM fun r => observing? do run n (r ++ gs) acc
           catch _ =>
             -- No lemmas could be applied:
             match (← cfg.discharge g) with
@@ -164,13 +152,15 @@ where
             | some l => (withTraceNode trace
                 (fun _ => return m!"⏬ discharger generated new subgoals") do
               run n (l ++ gs) acc)
-  -- A wrapper around `run`, which works on "independent" goals separately first,
-  -- to reduce backtracking.
+  /--
+  A wrapper around `run`, which works on "independent" goals separately first,
+  to reduce backtracking.
+  -/
   processIndependentGoals (goals remaining : List MVarId) : MetaM (List MVarId) := do
     -- Partition the remaining goals into "independent" goals
     -- (which should be solvable without affecting the solvability of other goals)
     -- and all the others.
-    let (igs, ogs) ← remaining.partitionM (MVarId.independent? goals)
+    let (igs, ogs) ← remaining.partitionM (MVarId.isIndependentOf goals)
     if igs.isEmpty then
       -- If there are no independent goals, we solve all the goals together via backtracking search.
       return (← run cfg.maxDepth remaining [])
@@ -193,11 +183,16 @@ where
         return newSubgoals ++ failed ++ (← (processIndependentGoals goals' ogs <|> pure ogs))
       else if !failed.isEmpty then
         -- If `commitIndependentGoals` is `false`, and we failed on any of the independent goals,
-        -- the overall failure is inevitable so we can stop here.
+        -- then overall failure is inevitable so we can stop here.
         failure
       else
         -- Finally, having solved this batch of independent goals,
         -- recurse (potentially now finding new independent goals).
         return newSubgoals ++ (← processIndependentGoals goals' ogs)
+  /--
+  Pretty print a list of goals.
+  -/
+  ppMVarIds (gs : List MVarId) : MetaM (List Format) := do
+    gs.mapM fun g => do ppExpr (← g.getType)
 
 end Mathlib.Tactic

@@ -11,13 +11,11 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 # The `arctan` function.
 
 Inequalities, derivatives,
-and `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line.
+and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line.
 -/
 
 
 noncomputable section
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Real
 
@@ -211,8 +209,8 @@ theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
-/-- `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)
@@ -223,18 +221,18 @@ def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' y _ := tan_arctan y
   open_source := isOpen_Ioo
   open_target := isOpen_univ
-  continuous_toFun := continuousOn_tan_Ioo
-  continuous_invFun := continuous_arctan.continuousOn
-#align real.tan_local_homeomorph Real.tanLocalHomeomorph
+  continuousOn_toFun := continuousOn_tan_Ioo
+  continuousOn_invFun := continuous_arctan.continuousOn
+#align real.tan_local_homeomorph Real.tanPartialHomeomorph
 
 @[simp]
-theorem coe_tanLocalHomeomorph : ⇑tanLocalHomeomorph = tan :=
+theorem coe_tanPartialHomeomorph : ⇑tanPartialHomeomorph = tan :=
   rfl
-#align real.coe_tan_local_homeomorph Real.coe_tanLocalHomeomorph
+#align real.coe_tan_local_homeomorph Real.coe_tanPartialHomeomorph
 
 @[simp]
-theorem coe_tanLocalHomeomorph_symm : ⇑tanLocalHomeomorph.symm = arctan :=
+theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
   rfl
-#align real.coe_tan_local_homeomorph_symm Real.coe_tanLocalHomeomorph_symm
+#align real.coe_tan_local_homeomorph_symm Real.coe_tanPartialHomeomorph_symm
 
 end Real

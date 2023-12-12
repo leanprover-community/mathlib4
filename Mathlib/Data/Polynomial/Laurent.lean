@@ -510,8 +510,6 @@ theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
 
 section ExactDegrees
 
-open Classical
-
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
   rw [degree]
@@ -525,7 +523,8 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T LaurentPolynomial.degree_C_mul_T
 
-theorem degree_C_mul_T_ite (n : ℤ) (a : R) : degree (C a * T n) = ite (a = 0) ⊥ ↑n := by
+theorem degree_C_mul_T_ite [DecidableEq R] (n : ℤ) (a : R) :
+    degree (C a * T n) = if a = 0 then ⊥ else ↑n := by
   split_ifs with h <;>
     simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne.def,
       not_false_iff]
@@ -545,7 +544,7 @@ theorem degree_C {a : R} (a0 : a ≠ 0) : (C a).degree = 0 := by
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C LaurentPolynomial.degree_C
 
-theorem degree_C_ite (a : R) : (C a).degree = ite (a = 0) ⊥ 0 := by
+theorem degree_C_ite [DecidableEq R] (a : R) : (C a).degree = if a = 0 then ⊥ else 0 := by
   split_ifs with h <;> simp only [h, map_zero, degree_zero, degree_C, Ne.def, not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_ite LaurentPolynomial.degree_C_ite
@@ -614,14 +613,10 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
       refine' ⟨(f, ⟨_, this⟩), _⟩
       simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
         add_left_neg, T_zero, mul_one]
-    eq_iff_exists' := fun {f g} => by
+    exists_of_eq := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
-      refine' ⟨_, _⟩
-      · rintro rfl
-        exact ⟨1, rfl⟩
-      · rintro ⟨⟨h, hX⟩, h⟩
-        rcases Submonoid.mem_closure_singleton.mp hX with ⟨n, rfl⟩
-        exact (isRegular_X_pow n).left h }
+      rintro rfl
+      exact ⟨1, rfl⟩ }
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring
