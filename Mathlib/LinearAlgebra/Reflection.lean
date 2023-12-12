@@ -15,7 +15,7 @@ map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
  1. the kernel of `f` is fixed,
  2. the point `x ↦ -x`.
 
-Such endomorphisms are often called reflections of the module `M`. When `M` carries a inner product
+Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
 is characterised by properties 1 and 2 above, and is a linear isometry.
 
@@ -45,7 +45,7 @@ open Submodule (span)
 
 noncomputable section
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (x y : M) (f : Dual R M)
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (x : M) (f : Dual R M) (y : M)
 
 namespace Module
 
@@ -85,11 +85,11 @@ the endomorphism of `M` for which `y ↦ y - (f y) • x`.
 
 It is an involutive endomorphism of `M` fixing the kernel of `f` for which `x ↦ -x`. -/
 def reflection (h : f x = 2) : M ≃ₗ[R] M :=
-  LinearEquiv.ofBijective (preReflection x f) (involutive_preReflection h).bijective
+  { preReflection x f, (involutive_preReflection h).toPerm with }
 
 lemma reflection_apply (h : f x = 2) :
     reflection h y = y - (f y) • x :=
-  preReflection_apply x y f
+  preReflection_apply x f y
 
 @[simp]
 lemma reflection_apply_self (h : f x = 2) :
@@ -102,10 +102,8 @@ lemma involutive_reflection (h : f x = 2) :
 
 @[simp]
 lemma reflection_symm (h : f x = 2) :
-    (reflection h).symm = reflection h := by
-  ext m
-  rw [LinearEquiv.symm_apply_eq]
-  exact (involutive_reflection h m).symm
+    (reflection h).symm = reflection h :=
+  rfl
 
 /-- See also `Module.Dual.eq_of_preReflection_image_subset'` for a variant of this lemma which
 applies when `Φ` does not span. -/
