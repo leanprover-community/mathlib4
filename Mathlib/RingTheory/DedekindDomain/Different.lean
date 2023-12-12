@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Discriminant
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # The different ideal
@@ -33,11 +34,9 @@ open nonZeroDivisors IsLocalization Matrix Algebra
 
 /-- Under the AKLB setting, `Iᵛ := traceDual A K (I : Submodule B L)` is the
 `Submodule B L` such that `x ∈ Iᵛ ↔ ∀ y ∈ I, Tr(x, y) ∈ A` -/
+noncomputable
 def Submodule.traceDual (I : Submodule B L) : Submodule B L where
-  carrier := { s | ∀ a ∈ I, traceForm K L s a ∈ (algebraMap A K).range }
-  add_mem' hx hy a ha :=
-    BilinForm.add_left (B := traceForm K L) _ _ _ ▸ add_mem (hx a ha) (hy a ha)
-  zero_mem' a _ := BilinForm.zero_left (B := traceForm K L) a ▸ zero_mem _
+  __ := (traceForm K L).dualSubmodule (I.restrictScalars A)
   smul_mem' c x hx a ha := by
     rw [traceForm_apply, smul_mul_assoc, mul_comm, ← smul_mul_assoc, mul_comm]
     exact hx _ (Submodule.smul_mem _ c ha)
@@ -56,7 +55,7 @@ lemma le_traceDual_iff_map_le_one {I J : Submodule B L} :
     I ≤ Jᵛ ↔ ((I * J : Submodule B L).restrictScalars A).map
       ((trace K L).restrictScalars A) ≤ 1 := by
   rw [Submodule.map_le_iff_le_comap, Submodule.restrictScalars_mul, Submodule.mul_le]
-  simp [SetLike.le_def, traceDual]
+  simp [SetLike.le_def, mem_traceDual]
 
 lemma le_traceDual_mul_iff {I J J' : Submodule B L} :
     I ≤ (J * J')ᵛ ↔ I * J ≤ J'ᵛ := by
@@ -92,9 +91,9 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   have hinv : IsUnit (traceMatrix K b).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ b
   have H := mulVec_cramer (traceMatrix K b) fun i => trace K L (x * a * b i)
-  have : Function.HasLeftInverse (traceMatrix K b).mulVec :=
-    ⟨(traceMatrix K b)⁻¹.mulVec, fun v ↦ by simp [nonsing_inv_mul _ hinv]⟩
-  rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.injective.eq_iff,
+  have : Function.Injective (traceMatrix K b).mulVec
+  · rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
+  rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.eq_iff,
     traceMatrix_of_basis_mulVec] at H
   rw [← b.equivFun.symm_apply_apply (_ * _), b.equivFun_symm_apply]
   apply IsIntegral.sum
@@ -114,32 +113,6 @@ lemma isIntegral_discr_mul_of_mem_traceDual
     rw [mul_comm, ← hy, ← Algebra.smul_def]
     exact I.smul_mem _ (ha)
   · exact isIntegral_trace (RingHom.IsIntegralElem.mul _ (hb j) (hb k))
-
-lemma Submodule.traceDual_eq_span_dualBasis {ι} [Fintype ι] [DecidableEq ι]
-    (b : Basis ι K L) :
-    (Submodule.span A (Set.range b))ᵛ =
-      Submodule.span A (Set.range ((Algebra.traceForm K L).dualBasis
-        (traceForm_nondegenerate K L) b)) := by
-  apply le_antisymm
-  · intros x hx
-    rw [← ((Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) b).sum_repr x]
-    apply sum_mem
-    rintro i -
-    obtain ⟨a, ha : _ = Algebra.trace K L (x * b i)⟩ :=
-      hx (b i) (Submodule.subset_span (Set.mem_range_self _))
-    simp only [BilinForm.dualBasis_repr_apply, traceForm_apply, ← ha, algebraMap_smul]
-    apply Submodule.smul_mem _ a (Submodule.subset_span (Set.mem_range_self _))
-  · rw [Submodule.span_le]
-    rintro _ ⟨i, rfl⟩ a ha
-    rw [← Fintype.range_total (S := A) A] at ha
-    obtain ⟨v, rfl⟩ := ha
-    rw [Fintype.total_apply, traceForm_apply, Finset.mul_sum, map_sum]
-    apply sum_mem
-    rintro i -
-    rw [mul_comm, smul_mul_assoc, LinearMap.map_smul_of_tower, mul_comm, ← traceForm_apply,
-      BilinForm.apply_dualBasis_left, ← SetLike.mem_coe, RingHom.coe_range, ← Algebra.coe_bot]
-    refine (⊥ : Subalgebra A K).smul_mem ?_ (v i)
-    split; exact one_mem _; exact zero_mem _
 
 variable (A K)
 
