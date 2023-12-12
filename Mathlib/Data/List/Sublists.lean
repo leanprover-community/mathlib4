@@ -413,9 +413,11 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
 --Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
-  refine' Perm.map _ _
-  exact (perm_ext (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
-    (by simp)
+  apply Perm.map
+  apply (perm_ext_iff_of_nodup _ _).mpr
+  · simp
+  · exact nodup_sublists.mpr (nodup_finRange _)
+  · exact (nodup_sublists'.mpr (nodup_finRange _))
 #align list.sublists_perm_sublists' List.sublists_perm_sublists'
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :

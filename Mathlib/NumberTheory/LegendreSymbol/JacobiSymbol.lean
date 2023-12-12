@@ -412,7 +412,7 @@ end qrSign
 
 namespace jacobiSym
 
-/-- The Law of Quadratic Reciprocity for the Jacobi symbol, version with `qrSign` -/
+/-- The **Law of Quadratic Reciprocity for the Jacobi symbol**, version with `qrSign` -/
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`

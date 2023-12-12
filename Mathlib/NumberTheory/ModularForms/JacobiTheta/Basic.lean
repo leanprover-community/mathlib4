@@ -55,7 +55,8 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hR)
   refine' ⟨fun n => y ^ n.natAbs, summable_int_of_summable_nat _ _, fun hτ n => _⟩; pick_goal 3
   · refine' (norm_exp_mul_sq_le (hR.trans_le hτ) n).trans _
-    refine' pow_le_pow_of_le_left (exp_pos _).le (Real.exp_le_exp.mpr _) _
+    dsimp
+    gcongr rexp ?_ ^ _
     rwa [mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos)]
   all_goals
     simpa only [Int.natAbs_neg, Int.natAbs_ofNat] using
@@ -138,8 +139,7 @@ theorem norm_jacobiTheta_sub_one_le {z : ℂ} (hz : 0 < im z) :
       ‖jacobiTheta z - 1‖ = ↑2 * ‖∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * z)‖ := by
         rw [sub_eq_iff_eq_add'.mpr (jacobiTheta_eq_tsum_nat hz), norm_mul, Complex.norm_eq_abs,
           Complex.abs_two]
-      _ ≤ 2 * (rexp (-π * z.im) / (1 - rexp (-π * z.im))) := by
-        rwa [mul_le_mul_left (zero_lt_two' ℝ)]
+      _ ≤ 2 * (rexp (-π * z.im) / (1 - rexp (-π * z.im))) := by gcongr
       _ = 2 / (1 - rexp (-π * z.im)) * rexp (-π * z.im) := by rw [div_mul_comm, mul_comm]
   have : ∀ n : ℕ, ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * z)‖ ≤ rexp (-π * z.im) ^ (n + 1) := by
     intro n

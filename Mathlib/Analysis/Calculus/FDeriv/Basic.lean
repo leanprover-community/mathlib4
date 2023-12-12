@@ -528,32 +528,24 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
 
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem HasFDerivWithinAt_of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
     HasFDerivWithinAt f f' s x := by
-  by_cases hx : x ∈ s
-  · have : s = s\{x} ∪ {x} := by simpa using (insert_eq_self.2 hx).symm
-    have A : 𝓝[s] x = 𝓝[s\{x}] x ⊔ 𝓟 {x} := by
-      conv_lhs => rw [this]
-      simp only [union_singleton, nhdsWithin_insert, sup_comm, principal_singleton]
-    simp [HasFDerivWithinAt, HasFDerivAtFilter, A, h]
-  · rw [diff_singleton_eq_self hx] at h
-    simp [HasFDerivWithinAt, HasFDerivAtFilter, h]
+  rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h]
+  apply isLittleO_bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x := by
-  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
-  simp [HasFDerivWithinAt, HasFDerivAtFilter, h, IsLittleO, IsBigOWith]
+theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
+  .of_nhdsWithin_eq_bot <| eq_bot_mono (nhdsWithin_mono _ (diff_subset _ _)) <| by
+    rwa [mem_closure_iff_nhdsWithin_neBot, not_neBot] at h
 #align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_nmem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
   by_cases H : 𝓝[s \ {x}] x = ⊥
-  · exact HasFDerivWithinAt_of_nhdsWithin_eq_bot H
-  · simp only [fderivWithin]
-    rw [if_neg H]
-    dsimp only [DifferentiableWithinAt] at h
-    rw [dif_pos h]
+  · exact .of_nhdsWithin_eq_bot H
+  · unfold DifferentiableWithinAt at h
+    rw [fderivWithin, if_neg H, dif_pos h]
     exact Classical.choose_spec h
 #align differentiable_within_at.has_fderiv_within_at DifferentiableWithinAt.hasFDerivWithinAt
 
@@ -705,15 +697,11 @@ theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x
 @[simp]
 theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   ext1 x
-  by_cases H : 𝓝[univ \ {x}] x = ⊥
-  · have : Subsingleton E := by
-      apply not_nontrivial_iff_subsingleton.1
-      contrapose! H
-      have : (𝓝[{x}ᶜ] x).NeBot := Module.punctured_nhds_neBot 𝕜 E x
-      rw [compl_eq_univ_diff] at this
-      exact NeBot.ne this
-    exact Subsingleton.elim _ _
-  · simp [fderivWithin, fderiv, H]
+  nontriviality E
+  have H : 𝓝[univ \ {x}] x ≠ ⊥
+  · rw [← compl_eq_univ_diff, ← neBot_iff]
+    exact Module.punctured_nhds_neBot 𝕜 E x
+  simp [fderivWithin, fderiv, H]
 #align fderiv_within_univ fderivWithin_univ
 
 theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
@@ -905,7 +893,7 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
-  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) (eventually_of_forall fun _ => _root_.rfl)
+  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) .rfl
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 #align filter.eventually_eq.has_strict_fderiv_at_iff Filter.EventuallyEq.hasStrictFDerivAt_iff
@@ -1147,7 +1135,6 @@ end id
 section Const
 
 /-! ### Derivative of a constant function -/
-
 
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
