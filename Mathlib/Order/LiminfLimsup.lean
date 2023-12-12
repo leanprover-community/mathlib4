@@ -459,6 +459,12 @@ theorem bliminf_eq : bliminf u f p = sSup { a | ∀ᶠ x in f, p x → a ≤ u x
   rfl
 #align filter.bliminf_eq Filter.bliminf_eq
 
+lemma liminf_comp (u : β → α) (v : γ → β) (f : Filter γ) :
+    liminf (u ∘ v) f = liminf u (map v f) := rfl
+
+lemma limsup_comp (u : β → α) (v : γ → β) (f : Filter γ) :
+    limsup (u ∘ v) f = limsup u (map v f) := rfl
+
 end
 
 @[simp]
