@@ -659,7 +659,7 @@ noncomputable def unitsTypeEquivIsUnitSubmonoid :
   invFun x := x.prop.unit
   left_inv x := IsUnit.unit_of_val_units _
   right_inv x := by simp_rw [IsUnit.unit_spec]
-  map_mul' x y := by simp_rw [Units.val_mul] ; rfl
+  map_mul' x y := by simp_rw [Units.val_mul]; rfl
 
 end IsUnit
 

@@ -112,16 +112,16 @@ lemma units_le (S : Submonoid M) : S.units.toSubmonoid.map (Units.coeHom M) ≤ 
 @[to_additive]
 lemma le_units_iff (S : Submonoid M) (H : Subgroup Mˣ) :
     H.toSubmonoid.map (Units.coeHom M) ≤ S ↔ H ≤ S.units := by
-    refine ⟨fun H => ?_, fun H => le_trans (fun _ => ?_) S.units_le⟩
-    · intro x hx
-      simp_rw [mem_units_iff]
-      refine ⟨H ⟨x, hx, rfl⟩, H ⟨x⁻¹, ?_, rfl⟩⟩
-      simp_rw [Subgroup.coe_toSubmonoid, SetLike.mem_coe, inv_mem_iff]
-      exact hx
-    · simp_rw [mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply,
+  refine ⟨fun H => ?_, fun H => le_trans (fun _ => ?_) S.units_le⟩
+  · intro x hx
+    simp_rw [mem_units_iff]
+    refine ⟨H ⟨x, hx, rfl⟩, H ⟨x⁻¹, ?_, rfl⟩⟩
+    simp_rw [Subgroup.coe_toSubmonoid, SetLike.mem_coe, inv_mem_iff]
+    exact hx
+  · simp_rw [mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply,
       forall_exists_index, and_imp]
-      rintro y hy rfl
-      exact ⟨y, H hy, rfl⟩
+    rintro y hy rfl
+    exact ⟨y, H hy, rfl⟩
 
 /- TODO: It looks like this is a Galois connection. It might be worth defining the
 other map which sends H : Subgroup Mˣ to a Submonoid of M,
