@@ -376,7 +376,6 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
-set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity (_ : α) ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
@@ -387,7 +386,7 @@ def evalZpow : PositivityExt where eval {u α} zα pα e := do
     let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
-    haveI' : $b =Q bit0 $m := ⟨⟩
+    haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
     let _a ← synthInstanceQ q(LinearOrderedField $α)
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
