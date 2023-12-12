@@ -839,7 +839,7 @@ theorem sin_mul_I : sin (x * I) = sinh x * I := by
     ring_nf
     simp
   rw [← neg_neg (sinh x), ← h]
-  ext <;> simp
+  apply Complex.ext <;> simp
 set_option linter.uppercaseLean3 false in
 #align complex.sin_mul_I Complex.sin_mul_I
 
