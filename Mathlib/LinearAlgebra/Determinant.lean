@@ -442,9 +442,6 @@ theorem LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f 
   field_simp [IsUnit.ne_zero f.isUnit_det']
 #align linear_equiv.det_coe_symm LinearEquiv.det_coe_symm
 
--- HACK, but should be findable via `MulRingSeminormClass.toMonoidWithZeroHomClass` anyway
-attribute [-instance] MulRingSeminormClass.toMonoidHomClass
-
 /-- Builds a linear equivalence from a linear map whose determinant in some bases is a unit. -/
 @[simps]
 def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis ι R M'}

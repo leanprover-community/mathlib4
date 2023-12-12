@@ -183,9 +183,6 @@ end Reverse
 
 section List
 
--- HACK, but should be findable via `MulRingSeminormClass.toMonoidWithZeroHomClass` anyway
-attribute [-instance] MulRingSeminormClass.toMonoidHomClass
-
 /-- Taking the reverse of the product a list of $n$ vectors lifted via `ι` is equivalent to
 taking the product of the reverse of that list. -/
 theorem reverse_prod_map_ι :

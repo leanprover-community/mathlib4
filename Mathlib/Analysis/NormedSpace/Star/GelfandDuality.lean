@@ -159,8 +159,6 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 #align gelfand_transform_isometry gelfandTransform_isometry
 
--- HACK: a failing search for a `Star` instance is very expensive apparently!
-set_option synthInstance.maxHeartbeats 400000 in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A) := by
   refine' ⟨(gelfandTransform_isometry A).injective, _⟩
@@ -173,8 +171,8 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
         rintro - ⟨a, rfl⟩
         use star a
         ext1 φ
-        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, gelfandTransform_apply_apply, map_star,
-          IsROrC.star_def, ContinuousMap.star_apply] }
+        dsimp
+        simp only [map_star, IsROrC.star_def] }
   suffices rng = ⊤ from
     fun x => show x ∈ rng from this.symm ▸ StarSubalgebra.mem_top
   /- Because the `gelfandTransform ℂ A` is an isometry, it has closed range, and so by the
