@@ -180,6 +180,7 @@ example [StrictOrderedSemiring α] {a : α} {n : ℕ} (ha : 0 < a) : 0 < a ^ n :
 
 example [LinearOrderedSemifield α] (a : α) : 0 < a ^ (0 : ℤ) := by positivity
 example [LinearOrderedField α] (a : α) : 0 ≤ a ^ (18 : ℤ) := by positivity
+example [LinearOrderedField α] (a : α) : 0 ≤ a ^ (-34 : ℤ) := by positivity
 example [LinearOrderedSemifield α] {a : α} {n : ℤ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
 example [LinearOrderedSemifield α] {a : α} {n : ℤ} (ha : 0 < a) : 0 < a ^ n := by positivity
 

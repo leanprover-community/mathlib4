@@ -382,15 +382,25 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 def evalZpow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
-    let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
-    let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
-    guard (n % 2 = 0)
-    have m : Q(ℕ) := mkRawNatLit (n / 2)
-    haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
     let _a ← synthInstanceQ q(LinearOrderedField $α)
-    haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
-    pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
+    match ← whnfR b with
+    | .app (.app (.app (.const `OfNat.ofNat _) _) (.lit (Literal.natVal n))) _ =>
+      guard (n % 2 = 0)
+      have m : Q(ℕ) := mkRawNatLit (n / 2)
+      haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
+    | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
+      let b' ← whnfR b'
+      let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
+      let some n := (b'.getRevArg! 1).natLit? | throwError "not a ^ -n where n is a literal"
+      guard (n % 2 = 0)
+      have m : Q(ℕ) := mkRawNatLit (n / 2)
+      haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      pure (by exact .nonnegative q(zpow_bit0_nonneg $a (-$m)))
+    | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) :
