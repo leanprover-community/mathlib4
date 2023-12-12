@@ -351,7 +351,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
         simp only [yonedaEvaluation]
         ext
         dsimp
-        erw [Category.id_comp, ←FunctorToTypes.naturality]
+        erw [Category.id_comp, ← FunctorToTypes.naturality]
         simp only [Category.comp_id, yoneda_obj_map] }
   inv :=
     { app := fun F x =>
@@ -366,7 +366,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
         simp only [yoneda]
         ext
         dsimp
-        rw [←FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
+        rw [← FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
   hom_inv_id := by
     ext
     dsimp

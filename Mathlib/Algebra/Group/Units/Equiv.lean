@@ -55,7 +55,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
 #align units.coe_map_equiv Units.coe_mapEquiv
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+@[to_additive (attr := simps (config := .asFn) apply)
   "Left addition of an additive unit is a permutation of the underlying type."]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
@@ -80,7 +80,7 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
 #align add_units.add_left_bijective AddUnits.addLeft_bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+@[to_additive (attr := simps (config := .asFn) apply)
 "Right addition of an additive unit is a permutation of the underlying type."]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
@@ -120,7 +120,7 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.add_left Equiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
+theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
   rfl
 #align equiv.coe_mul_left Equiv.coe_mulLeft
 #align equiv.coe_add_left Equiv.coe_addLeft

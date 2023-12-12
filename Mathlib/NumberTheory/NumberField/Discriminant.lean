@@ -20,8 +20,6 @@ number field, discriminant
 -- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
 -- this file
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace NumberField
 
 open Classical NumberField Matrix NumberField.InfinitePlace
@@ -42,6 +40,22 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
+
+theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
+    discr K = discr L := by
+  let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
+  let e : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] ℂ) := by
+    refine Fintype.equivOfCardEq ?_
+    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
+  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
+    ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
+  change _ = algebraMap ℤ ℚ _
+  rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
+  congr
+  ext
+  simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
+    Basis.map_apply]
+  rfl
 
 open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
@@ -75,8 +89,8 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           ← coe_discr, map_intCast, ← Complex.nnnorm_int]
   ext : 2
   dsimp only
-  rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp, Equiv.symm_symm,
-    latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
+  rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
+    Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 

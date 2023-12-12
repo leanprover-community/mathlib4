@@ -7,7 +7,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Tactic.Ring
 
 #align_import linear_algebra.span from "leanprover-community/mathlib"@"10878f6bf1dab863445907ab23fbfcefcb5845d0"
 
@@ -190,6 +189,11 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
     · exact add_mem
     · exact smul_mem _ _
 #align submodule.span_span_coe_preimage Submodule.span_span_coe_preimage
+
+@[simp]
+lemma span_setOf_mem_eq_top :
+    span R {x : span R s | (x : M) ∈ s} = ⊤ :=
+  span_span_coe_preimage
 
 theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by

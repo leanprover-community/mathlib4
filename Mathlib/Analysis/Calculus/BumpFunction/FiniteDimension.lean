@@ -157,9 +157,8 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       _ ≤ M⁻¹ * δ n * M := (mul_le_mul_of_nonneg_left ((hR i x).trans (IR i hi)) (by positivity))
       _ = δ n := by field_simp
   choose r rpos hr using this
-  have S : ∀ x, Summable fun n => (r n • g n) x := by
-    intro x
-    refine' summable_of_nnnorm_bounded _ δc.summable fun n => _
+  have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
+    refine' .of_nnnorm_bounded _ δc.summable fun n => _
     rw [← NNReal.coe_le_coe, coe_nnnorm]
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
   refine' ⟨fun x => ∑' n, (r n • g n) x, _, _, _⟩
@@ -485,7 +484,7 @@ theorem y_smooth : ContDiffOn ℝ ⊤ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
           ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))
       apply ContDiffOn.pow
       simp_rw [← Real.norm_eq_abs]
-      apply @ContDiffOn.norm ℝ
+      apply ContDiffOn.norm ℝ
       · exact contDiffOn_fst
       · intro x hx; exact ne_of_gt hx.1.1
     · apply (u_smooth E).comp_contDiffOn

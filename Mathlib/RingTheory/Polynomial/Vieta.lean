@@ -35,8 +35,8 @@ section Semiring
 
 variable {R : Type*} [CommSemiring R]
 
-/-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
-`λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
+/-- A sum version of **Vieta's formula** for `Multiset`: the product of the linear terms `X + λ`
+where `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
 `esymm s` of the `λ`'s .-/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
@@ -68,7 +68,7 @@ theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
       rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
       exact Ne.irrefl hj2
   · rw [Finset.mem_range]
-    exact Nat.sub_lt_succ (Multiset.card s) k
+    exact Nat.lt_succ_of_le (Nat.sub_le (Multiset.card s) k)
 set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_add_C_coeff Multiset.prod_X_add_C_coeff
 
@@ -171,7 +171,7 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
         (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
-    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+    rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_eq_sum_esymm s
   simp_rw [Multiset.map_map, Function.comp_apply]
@@ -183,7 +183,7 @@ theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     MvPolynomial.esymm σ R (card σ - k) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
-    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+    rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   rw [this] at h ⊢
   rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_coeff s h

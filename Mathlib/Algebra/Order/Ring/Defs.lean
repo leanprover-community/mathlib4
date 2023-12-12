@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
@@ -100,13 +100,12 @@ immediate predecessors and what conditions are added to each of them.
   - `StrictOrderedRing` & totality of the order
   - `LinearOrderedSemiring` & additive inverses
   - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Domain` & linear order structure
+  - `Ring` & `IsDomain` & linear order structure
 * `LinearOrderedCommRing`
   - `StrictOrderedCommRing` & totality of the order
   - `LinearOrderedRing` & commutativity of multiplication
   - `LinearOrderedCommSemiring` & additive inverses
-  - `IsDomain` & linear order structure
-
+  - `CommRing` & `IsDomain` & linear order structure
 -/
 
 open Function
@@ -414,7 +413,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
+theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
@@ -723,7 +722,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
+theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 #align strict_anti_mul_left strictAnti_mul_left
 
