@@ -19,6 +19,7 @@ This is a basic API for the rank of finite free modules.
 
 
 --TODO: many results from `LinearAlgebra/FiniteDimensional` should be moved here.
+--TODO: This file contains many misplaced lemmas and should be reorganized.
 universe u v w v'
 
 variable (R : Type u) (M : Type v) (N : Type w)
