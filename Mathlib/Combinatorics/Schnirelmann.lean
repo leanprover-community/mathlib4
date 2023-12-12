@@ -174,7 +174,7 @@ Note this cannot be improved to `∃ᶠ n : ℕ in atTop`, as can be seen by `A 
 -/
 lemma exists_of_schnirelmannDensity_eq_zero {ε : ℝ} (hε : 0 < ε) (hA : schnirelmannDensity A = 0) :
     ∃ n, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < ε := by
-  by_contra' h
+  by_contra! h
   rw [← le_schnirelmannDensity_iff] at h
   linarith
 
