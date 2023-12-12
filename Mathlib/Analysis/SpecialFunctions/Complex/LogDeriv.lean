@@ -25,11 +25,11 @@ theorem isOpenMap_exp : IsOpenMap exp :=
   open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
-/-- `Complex.exp` as a `LocalHomeomorph` with `source = {z | -π < im z < π}` and
+/-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
-noncomputable def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
-  LocalHomeomorph.ofContinuousOpen
+noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
+  PartialHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
       source := {z : ℂ | z.im ∈ Ioo (-π) π}
@@ -48,11 +48,11 @@ noncomputable def expLocalHomeomorph : LocalHomeomorph ℂ ℂ :=
       left_inv' := fun x hx => log_exp hx.1 (le_of_lt hx.2)
       right_inv' := fun x hx => exp_log <| by rintro rfl; simp [lt_irrefl] at hx }
     continuous_exp.continuousOn isOpenMap_exp (isOpen_Ioo.preimage continuous_im)
-#align complex.exp_local_homeomorph Complex.expLocalHomeomorph
+#align complex.exp_local_homeomorph Complex.expPartialHomeomorph
 
 theorem hasStrictDerivAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : HasStrictDerivAt log x⁻¹ x :=
   have h0 : x ≠ 0 := by rintro rfl; simp [lt_irrefl] at h
-  expLocalHomeomorph.hasStrictDerivAt_symm h h0 <| by
+  expPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
     simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 #align complex.has_strict_deriv_at_log Complex.hasStrictDerivAt_log
 
@@ -62,7 +62,7 @@ theorem hasStrictFDerivAt_log_real {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) :
 #align complex.has_strict_fderiv_at_log_real Complex.hasStrictFDerivAt_log_real
 
 theorem contDiffAt_log {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) {n : ℕ∞} : ContDiffAt ℂ n log x :=
-  expLocalHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
+  expPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
     contDiff_exp.contDiffAt
 #align complex.cont_diff_at_log Complex.contDiffAt_log
 
@@ -148,4 +148,3 @@ theorem Differentiable.clog {f : E → ℂ} (h₁ : Differentiable ℂ f)
 #align differentiable.clog Differentiable.clog
 
 end LogDeriv
-
