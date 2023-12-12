@@ -125,7 +125,7 @@ variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
 `∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
 `discr ℚ b = discr ℚ b'`. -/
-theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral {K} [Field K] [NumberField K]
+theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
     (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
   replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j)
