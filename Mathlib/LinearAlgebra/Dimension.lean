@@ -1128,7 +1128,7 @@ theorem rank_span_le_of_finite {s : Set V} (hs : s.Finite) : Module.rank R (span
     (ht.map (f := Submodule.subtype _) (by simp)).image s (fun x ↦ by aesop)
 
 theorem rank_span_finset_le (s : Finset V) : Module.rank R (span R (s : Set V)) ≤ s.card := by
-  simpa using rank_span_le_of_finite _ s.finite_toSet
+  simpa using rank_span_le_of_finite s.finite_toSet
 
 theorem rank_span_of_finset (s : Finset V) : Module.rank R (span R (↑s : Set V)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
