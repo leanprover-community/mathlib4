@@ -83,7 +83,6 @@ lemma dualSubmodule_span_of_basis {ι} [Fintype ι] [DecidableEq ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (Submodule.span R (Set.range b)) =
       Submodule.span R (Set.range <| B.dualBasis hB b) := by
-  have := FiniteDimensional.of_fintype_basis b
   apply le_antisymm
   · intro x hx
     rw [← (B.dualBasis hB b).sum_repr x]
