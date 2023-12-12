@@ -67,3 +67,19 @@ theorem Finite.exists_min [Finite α] [Nonempty α] [LinearOrder β] (f : α →
   cases nonempty_fintype α
   simpa using exists_min_image univ f univ_nonempty
 #align finite.exists_min Finite.exists_min
+
+theorem iSup_finsetUniv [CompleteLattice α] [Fintype β] {f : β → α} :
+    ⨆ x ∈ Finset.univ, f x = ⨆ x, f x :=
+  by simp
+
+theorem iInf_finsetUniv [CompleteLattice α] [Fintype β] {f : β → α} :
+    ⨅ x ∈ Finset.univ, f x = ⨅ x, f x :=
+  iSup_finsetUniv (α := αᵒᵈ)
+
+theorem Set.biUnion_finsetUniv [Fintype β] {u : β → Set α} :
+    ⋃ x ∈ Finset.univ, u x = ⋃ x, u x :=
+  iSup_finsetUniv
+
+theorem Set.biInter_finsetUniv [Fintype β] {u : β → Set α} :
+    ⋂ x ∈ Finset.univ, u x = ⋂ x, u x :=
+  iInf_finsetUniv
