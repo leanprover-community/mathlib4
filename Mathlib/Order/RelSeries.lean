@@ -54,7 +54,7 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
 instance [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
 
-variable {r}>
+variable {r}
 
 @[ext]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
