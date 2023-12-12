@@ -45,11 +45,11 @@ abbrev Gen (α : Type u) := ReaderT (ULift Nat) Rand α
 namespace Gen
 
 /-- Lift `Random.random` to the `Gen` monad. -/
-def chooseAny (α : Type u) [Random α] : Gen α :=
+def chooseAny (α : Type u) [Random Id α] : Gen α :=
   λ _ => rand α
 
 /-- Lift `BoundedRandom.randomR` to the `Gen` monad. -/
-def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) :
+def choose (α : Type u) [Preorder α] [BoundedRandom Id α] (lo hi : α) (h : lo ≤ hi) :
     Gen {a // lo ≤ a ∧ a ≤ hi} :=
   λ _ => randBound α lo hi h
 
@@ -118,7 +118,7 @@ end Gen
 
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
 def Gen.run (x : Gen α) (size : Nat) : BaseIO α :=
-  IO.runRand $ ReaderT.run x ⟨size⟩
-
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
+  IO.runRand (ReaderT.run x ⟨size⟩:)
 
 end SlimCheck
