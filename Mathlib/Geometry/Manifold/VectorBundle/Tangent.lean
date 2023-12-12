@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Analysis.Convex.Normed
 
 #align_import geometry.manifold.vector_bundle.tangent from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -13,8 +14,8 @@ This file defines the tangent bundle as a smooth vector bundle.
 
 Let `M` be a smooth manifold with corners with model `I` on `(E, H)`. We define the tangent bundle
 of `M` using the `VectorBundleCore` construction indexed by the charts of `M` with fibers `E`.
-Given two charts `i, j : LocalHomeomorph M H`, the coordinate change between `i` and `j` at a point
-`x : M` is the derivative of the composite
+Given two charts `i, j : PartialHomeomorph M H`, the coordinate change between `i` and `j`
+at a point `x : M` is the derivative of the composite
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
@@ -31,7 +32,7 @@ This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
 -/
 
 
-open Bundle Set SmoothManifoldWithCorners LocalHomeomorph ContinuousLinearMap
+open Bundle Set SmoothManifoldWithCorners PartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle
 
@@ -57,7 +58,7 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
   refine' (ContDiffWithinAt.fderivWithin_right _ I.unique_diff le_top <| h hx).mono h
-  refine' (LocalHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
+  refine' (PartialHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
     (subset_maximalAtlas I i.2) x hx).mono_of_mem _
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 I hx
 #align cont_diff_on_fderiv_coord_change contDiffOn_fderiv_coord_change
@@ -180,8 +181,8 @@ namespace TangentBundle
 
 protected theorem chartAt (p : TM) :
     chartAt (ModelProd H E) p =
-      ((tangentBundleCore I M).toFiberBundleCore.localTriv (achart H p.1)).toLocalHomeomorph ≫ₕ
-        (chartAt H p.1).prod (LocalHomeomorph.refl E) :=
+      ((tangentBundleCore I M).toFiberBundleCore.localTriv (achart H p.1)).toPartialHomeomorph ≫ₕ
+        (chartAt H p.1).prod (PartialHomeomorph.refl E) :=
   rfl
 #align tangent_bundle.chart_at TangentBundle.chartAt
 
@@ -341,14 +342,14 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
     ⇑(chartAt (ModelProd H E) p) = TotalSpace.toProd H E := by
-  rw [← LocalHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
+  rw [← PartialHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
 #align tangent_bundle_model_space_coe_chart_at tangentBundle_model_space_coe_chartAt
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm := by
-  rw [← LocalHomeomorph.coe_coe, LocalHomeomorph.symm_toLocalEquiv,
+  rw [← PartialHomeomorph.coe_coe, PartialHomeomorph.symm_toLocalEquiv,
     tangentBundle_model_space_chartAt]; rfl
 #align tangent_bundle_model_space_coe_chart_at_symm tangentBundle_model_space_coe_chartAt_symm
 
@@ -422,7 +423,8 @@ def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp_rw [inTangentCoordinates, inCoordinates_tangent_bundle_core_model_space]
+  simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
+    inCoordinates_tangent_bundle_core_model_space]
 #align in_tangent_coordinates_model_space inTangentCoordinates_model_space
 
 theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}

@@ -331,20 +331,24 @@ end MonoidalOfChosenFiniteProducts
 open MonoidalOfChosenFiniteProducts
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-def monoidalOfChosenFiniteProducts : MonoidalCategory C := .ofTensorHom
-  (tensorUnit' := 𝒯.cone.pt)
-  (tensorObj := tensorObj ℬ)
-  (tensorHom := tensorHom ℬ)
-  (tensor_id := tensor_id ℬ)
-  (tensor_comp := tensor_comp ℬ)
-  (associator := BinaryFan.associatorOfLimitCone ℬ)
-  (leftUnitor := fun X ↦ BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit)
-  (rightUnitor := fun X ↦ BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit)
-  (pentagon := pentagon ℬ)
-  (triangle := triangle 𝒯 ℬ)
-  (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
-  (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
-  (associator_naturality := associator_naturality ℬ)
+def monoidalOfChosenFiniteProducts : MonoidalCategory C :=
+  letI : MonoidalCategoryStruct C :=
+    { tensorUnit := 𝒯.cone.pt
+      tensorObj := tensorObj ℬ
+      tensorHom := tensorHom ℬ
+      whiskerLeft := @fun X {_ _} g ↦ tensorHom ℬ (𝟙 X) g
+      whiskerRight := @fun{_ _} f Y ↦ tensorHom ℬ f (𝟙 Y)
+      associator := BinaryFan.associatorOfLimitCone ℬ
+      leftUnitor := fun X ↦ BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit
+      rightUnitor := fun X ↦ BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit}
+  .ofTensorHom
+    (tensor_id := tensor_id ℬ)
+    (tensor_comp := tensor_comp ℬ)
+    (pentagon := pentagon ℬ)
+    (triangle := triangle 𝒯 ℬ)
+    (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
+    (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
+    (associator_naturality := associator_naturality ℬ)
 #align category_theory.monoidal_of_chosen_finite_products CategoryTheory.monoidalOfChosenFiniteProducts
 
 namespace MonoidalOfChosenFiniteProducts

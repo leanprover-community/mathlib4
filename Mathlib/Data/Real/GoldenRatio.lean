@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu
 -/
 import Mathlib.Data.Real.Irrational
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.LinearRecurrence
@@ -40,9 +40,9 @@ def goldenConj :=
   (1 - Real.sqrt 5) / 2
 #align golden_conj goldenConj
 
-@[inherit_doc goldenRatio] scoped[Real] notation "φ" => goldenRatio
-@[inherit_doc goldenConj] scoped[Real] notation "ψ" => goldenConj
-open Real
+@[inherit_doc goldenRatio] scoped[goldenRatio] notation "φ" => goldenRatio
+@[inherit_doc goldenConj] scoped[goldenRatio] notation "ψ" => goldenConj
+open Real goldenRatio
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_gold : φ⁻¹ = -ψ := by

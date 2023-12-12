@@ -27,10 +27,8 @@ primitive and `foldMap_hom` as a defining property.
 ```
 def foldMap {α ω} [One ω] [Mul ω] (f : α → ω) : t α → ω := ...
 
-lemma foldMap_hom (α β)
-  [Monoid α] [Monoid β] (f : α →* β)
-  (g : γ → α) (x : t γ) :
-  f (foldMap g x) = foldMap (f ∘ g) x :=
+lemma foldMap_hom (α β) [Monoid α] [Monoid β] (f : α →* β) (g : γ → α) (x : t γ) :
+    f (foldMap g x) = foldMap (f ∘ g) x :=
 ...
 ```
 
@@ -321,6 +319,7 @@ theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
   simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
 @[simp]

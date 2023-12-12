@@ -88,8 +88,6 @@ open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {ι : Type*}
 
 variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
@@ -111,7 +109,7 @@ namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine' summable_of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
+  refine' .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
   · rw [Real.isConjugateExponent_iff] <;> norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -216,7 +214,7 @@ protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
       refine' tendsto_nhds_unique _ (lp.hasSum_norm H f)
       convert (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
       ext s
-      exact_mod_cast (hV.norm_sum f s).symm
+      exact mod_cast (hV.norm_sum f s).symm
 #align orthogonal_family.linear_isometry OrthogonalFamily.linearIsometry
 
 protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑' i, V i (f i) :=
@@ -240,7 +238,6 @@ protected theorem linearIsometry_apply_single {i : ι} (x : G i) :
   · simp [h]
 #align orthogonal_family.linear_isometry_apply_single OrthogonalFamily.linearIsometry_apply_single
 
-@[simp]
 protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
   simp

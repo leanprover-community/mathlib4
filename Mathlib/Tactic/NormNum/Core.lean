@@ -51,22 +51,25 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
 
 /-- Each `norm_num` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
+abbrev Entry := Array (Array DiscrTree.Key) × Name
 
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
   /-- The tree of `norm_num` extensions. -/
-  tree   : DiscrTree NormNumExt true := {}
+  tree   : DiscrTree NormNumExt := {}
   /-- Erased `norm_num`s. -/
   erased  : PHashSet Name := {}
   deriving Inhabited
+
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
 
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
   /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
-  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
+  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v discrTreeConfig) dt
   registerScopedEnvExtension {
     mkInitial := pure {}
     ofOLeanEntry := fun _ e@(_, n) ↦ return (e, ← mkNormNumExt n)
@@ -84,7 +87,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
     let normNums := normNumExt.getState (← getEnv)
-    let arr ← normNums.tree.getMatch e
+    let arr ← normNums.tree.getMatch e discrTreeConfig
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
@@ -177,7 +180,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e
+        DiscrTree.mkPath e discrTreeConfig
       normNumExt.add ((keys, declName), ext) kind
     | _ => throwUnsupportedSyntax
   erase := fun declName => do

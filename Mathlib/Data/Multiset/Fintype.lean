@@ -108,7 +108,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
       rintro ⟨x, i⟩
       simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
-      simp only [←and_assoc, exists_eq_right, and_iff_right_iff_imp]
+      simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
@@ -245,7 +245,7 @@ theorem Multiset.map_univ {β : Type*} (m : Multiset α) (f : α → β) :
 
 @[simp]
 theorem Multiset.card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by
-  rw [Finset.card, ←Multiset.card_map Prod.fst m.toEnumFinset.val]
+  rw [Finset.card, ← Multiset.card_map Prod.fst m.toEnumFinset.val]
   congr
   exact m.map_toEnumFinset_fst
 #align multiset.card_to_enum_finset Multiset.card_toEnumFinset

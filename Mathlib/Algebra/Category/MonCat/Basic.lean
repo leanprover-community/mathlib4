@@ -149,14 +149,14 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
----- porting note: added to ease the port of `RepresentationTheory.Action`
+---- porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive]
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
 
----- porting note: added to ease the port of `RepresentationTheory.Action`
+---- porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 
@@ -403,7 +403,9 @@ add_decl_doc addEquivIsoAddCommMonCatIso
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv (by aesop)
+    -- Again a problem that exists already creeps into other things leanprover/lean4#2644
+    -- this used to be `by aesop`; see next declaration
+    let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toMonCatIso
 set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos

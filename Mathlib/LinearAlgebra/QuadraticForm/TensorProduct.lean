@@ -66,16 +66,16 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R₁ := A) (Q₁.tmul Q₂)
-      = (associated (R₁ := A) Q₁).tmul (associated (R₁ := R) Q₂) := by
+    associated (R := A) (Q₁.tmul Q₂)
+      = (associated (R := A) Q₁).tmul (associated (R := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
   dsimp
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • (polarBilin Q₁).tmul (polarBilin Q₂) := by
-  simp_rw [←two_nsmul_associated A, ←two_nsmul_associated R, BilinForm.tmul, map_smul, tmul_smul,
-    ←smul_tmul', map_nsmul, associated_tmul]
+  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinForm.tmul, tmul_smul,
+    ← smul_tmul', map_nsmul, associated_tmul]
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
 
@@ -90,15 +90,15 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
     Q.baseChange A (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
   tensorDistrib_tmul _ _ _ _
 
-theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
-    associated (R₁ := A) (Q.baseChange A) = (associated (R₁ := R) Q).baseChange A := by
+theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
+    associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
 
-theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
+theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = (polarBilin Q).baseChange A := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
-    ←LinearMap.map_smul, smul_tmul', ←two_nsmul_associated R, coe_associatedHom, associated_sq,
+    ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
 
 end CommRing

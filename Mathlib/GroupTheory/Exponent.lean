@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Peel
 
 #align_import group_theory.exponent from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
@@ -34,6 +35,11 @@ it is equal to the lowest common multiple of the order of all elements of the gr
   `Finset.lcm` of the order of its elements.
 * `Monoid.exponent_eq_iSup_orderOf(')`: For a commutative cancel monoid, the exponent is
   equal to `⨆ g : G, orderOf g` (or zero if it has any order-zero elements).
+* `Monoid.exponent_pi` and `Monoid.exponent_prod`: The exponent of a finite product of monoids is
+  the least common multiple (`Finset.lcm` and `lcm`, respectively) of the exponents of the
+  constituent monoids.
+* `MonoidHom.exponent_dvd`: If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the
+  exponent of `M₁`.
 
 ## TODO
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
@@ -74,6 +80,21 @@ noncomputable def exponent :=
 
 variable {G}
 
+@[simp]
+theorem _root_.AddMonoid.exponent_additive :
+    AddMonoid.exponent (Additive G) = exponent G := rfl
+
+@[simp]
+theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
+    exponent (Multiplicative G) = AddMonoid.exponent G := rfl
+
+open MulOpposite in
+@[to_additive (attr := simp)]
+theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
+  simp only [Monoid.exponent, ExponentExists]
+  congr!
+  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
+
 @[to_additive]
 theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := by
   rw [exponent]
@@ -98,7 +119,7 @@ theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G
 
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
-  by_cases ExponentExists G
+  by_cases h : ExponentExists G
   · simp_rw [exponent, dif_pos h]
     exact (Nat.find_spec h).2 g
   · simp_rw [exponent, dif_neg h, pow_zero]
@@ -134,7 +155,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 
 @[to_additive]
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
-  by_contra' h
+  by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
   linarith
 #align monoid.exponent_min Monoid.exponent_min
@@ -144,10 +165,10 @@ theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G,
 theorem exp_eq_one_of_subsingleton [Subsingleton G] : exponent G = 1 := by
   apply le_antisymm
   · apply exponent_min' _ Nat.one_pos
-    simp
+    simp [eq_iff_true_of_subsingleton]
   · apply Nat.succ_le_of_lt
     apply exponent_pos_of_exists 1 Nat.one_pos
-    simp
+    simp [eq_iff_true_of_subsingleton]
 #align monoid.exp_eq_one_of_subsingleton Monoid.exp_eq_one_of_subsingleton
 #align add_monoid.exp_eq_zero_of_subsingleton AddMonoid.exp_eq_zero_of_subsingleton
 
@@ -203,7 +224,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     exact fun hd =>
       hp.one_lt.not_le
         ((mul_le_iff_le_one_left he).mp <|
-          Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_factorization h) hd)
+          Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
   obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ord_proj_dvd _ _
   obtain ⟨t, ht⟩ := Nat.exists_eq_succ_of_ne_zero (Finsupp.mem_support_iff.mp h)
   refine' ⟨g ^ k, _⟩
@@ -235,7 +256,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
       rw [h, zero_dvd_iff] at this
       exact htpos.ne' this
     refine' exponent_dvd_of_forall_pow_eq_one _ _ fun g => _
-    rw [pow_eq_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
+    rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
     apply Finset.dvd_prod_of_mem
     rw [← Finset.mem_coe, ht]
     exact Set.mem_range_self g
@@ -293,7 +314,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     apply order_dvd_exponent
   refine' Nat.dvd_of_factors_subperm he _
   rw [List.subperm_ext_iff]
-  by_contra' h
+  by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
   replace hp := Nat.prime_of_mem_factors hp
   simp only [Nat.factors_count_eq] at hpe
@@ -372,7 +393,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   replace hf := nat_card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
   refine' hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => _)
-  rw [← order_eq_card_zpowers']
+  rw [Nat.card_zpowers]
   exact Monoid.order_dvd_exponent (g : G)
 #align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
 #align card_dvd_exponent_nsmul_rank card_dvd_exponent_nsmul_rank
@@ -386,3 +407,58 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
+
+section PiProd
+
+open Finset Monoid
+
+@[to_additive]
+theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
+    (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
+  rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
+  push_neg at hj ⊢
+  peel hj with _ n hn
+  obtain ⟨m, hm⟩ := this
+  refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
+  simpa using congr_fun h j
+
+/-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
+@[to_additive]
+theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] [MonoidHomClass F M₁ M₂]
+    {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
+  refine Monoid.exponent_dvd_of_forall_pow_eq_one M₂ _ fun m₂ ↦ ?_
+  obtain ⟨m₁, rfl⟩ := hf m₂
+  rw [← map_pow, pow_exponent_eq_one, map_one]
+
+/-- The exponent of finite product of monoids is the `Finset.lcm` of the exponents of the
+constituent monoids. -/
+@[to_additive "The exponent of finite product of additive monoids is the `Finset.lcm` of the
+exponents of the constituent additive monoids."]
+theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
+    exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
+  refine dvd_antisymm ?_ ?_
+  · refine exponent_dvd_of_forall_pow_eq_one _ _ fun m ↦ ?_
+    ext i
+    rw [Pi.pow_apply, Pi.one_apply, ← orderOf_dvd_iff_pow_eq_one]
+    apply dvd_trans (Monoid.order_dvd_exponent (m i))
+    exact Finset.dvd_lcm (mem_univ i)
+  · apply Finset.lcm_dvd fun i _ ↦ ?_
+    exact MonoidHom.exponent_dvd (f := Pi.evalMonoidHom (M ·) i) (Function.surjective_eval i)
+
+/-- The exponent of product of two monoids is the `lcm` of the exponents of the
+individuaul monoids. -/
+@[to_additive AddMonoid.exponent_prod "The exponent of product of two additive monoids is the `lcm`
+of the exponents of the individuaul additive monoids."]
+theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
+    exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
+  refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
+  · refine exponent_dvd_of_forall_pow_eq_one _ _ fun g ↦ ?_
+    ext1
+    · rw [Prod.pow_fst, Prod.fst_one, ← orderOf_dvd_iff_pow_eq_one]
+      exact dvd_trans (Monoid.order_dvd_exponent (g.1)) <| dvd_lcm_left _ _
+    · rw [Prod.pow_snd, Prod.snd_one, ← orderOf_dvd_iff_pow_eq_one]
+      exact dvd_trans (Monoid.order_dvd_exponent (g.2)) <| dvd_lcm_right _ _
+  · exact MonoidHom.exponent_dvd (f := MonoidHom.fst M₁ M₂) Prod.fst_surjective
+  · exact MonoidHom.exponent_dvd (f := MonoidHom.snd M₁ M₂) Prod.snd_surjective
+
+end PiProd

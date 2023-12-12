@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Pi
-import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Algebra.Module.Basic
 
@@ -83,6 +83,8 @@ instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
 
 instance : Inhabited (FreeAbelianGroup α) :=
   ⟨0⟩
+
+instance [IsEmpty α] : Unique (FreeAbelianGroup α) := by unfold FreeAbelianGroup; infer_instance
 
 variable {α}
 
@@ -289,7 +291,7 @@ theorem sub_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
 /-- If `f : FreeAbelianGroup (α → β)`, then `f <*>` is an additive morphism
 `FreeAbelianGroup α →+ FreeAbelianGroup β`. -/
 def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
-  AddMonoidHom.mk' ((· <*> ·) f) fun x y ↦
+  AddMonoidHom.mk' (f <*> ·) fun x y ↦
     show lift (· <$> (x + y)) _ = _ by
       simp only [FreeAbelianGroup.map_add]
       exact lift.add' f _ _

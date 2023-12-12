@@ -150,7 +150,7 @@ theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
 
 /- TODO(Mario): finish the proof
 theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
-  mk ⟨sqrt_aux f, h⟩ = x :=
+    mk ⟨sqrt_aux f, h⟩ = x :=
 begin
   rcases sqrt_exists (le_max_left 0 (mk f)) with ⟨x, x0, hx⟩,
   suffices : ∃ h, mk ⟨sqrt_aux f, h⟩ = x,
@@ -380,7 +380,7 @@ def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
   let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
+  let ra ← catchNone <| core zα' pα' a
   assertInstancesCommute
   match ra with
   | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))

@@ -109,7 +109,7 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
 instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
-  ⟨fun c => (Quotient.map ((· • ·) c)) fun _ _ hf => smul_equiv_smul _ hf⟩
+  ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
 theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
@@ -221,7 +221,7 @@ noncomputable instance : Inv (Cauchy abv) :=
       by_cases hf : LimZero f
       · simp [hf, this.1 hf, Setoid.refl]
       · have hg := mt this.2 hf
-        simp [hf, hg]
+        simp only [hf, dite_false, hg]
         have If : mk (inv f hf) * mk f = 1 := mk_eq.2 (inv_mul_cancel hf)
         have Ig : mk (inv g hg) * mk g = 1 := mk_eq.2 (inv_mul_cancel hg)
         have Ig' : mk g * mk (inv g hg) = 1 := mk_eq.2 (mul_inv_cancel hg)
@@ -251,14 +251,14 @@ theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <
 protected theorem inv_mul_cancel {x : (Cauchy abv)} : x ≠ 0 → x⁻¹ * x = 1 :=
   Quotient.inductionOn x fun f hf => by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
-    simp [hf]
+    simp only [mk_eq_mk, hf, not_false_eq_true, inv_mk, mk_mul]
     exact Quotient.sound (CauSeq.inv_mul_cancel hf)
 #align cau_seq.completion.inv_mul_cancel CauSeq.Completion.inv_mul_cancel
 
 protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1 :=
   Quotient.inductionOn x fun f hf => by
     simp only [mk_eq_mk, ne_eq, mk_eq_zero] at hf
-    simp [hf]
+    simp only [mk_eq_mk, hf, not_false_eq_true, inv_mk, mk_mul]
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 

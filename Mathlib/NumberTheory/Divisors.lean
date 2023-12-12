@@ -202,6 +202,13 @@ theorem one_mem_properDivisors_iff_one_lt : 1 ∈ n.properDivisors ↔ 1 < n := 
 #align nat.one_mem_proper_divisors_iff_one_lt Nat.one_mem_properDivisors_iff_one_lt
 
 @[simp]
+lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
+  refine le_antisymm (Finset.sup_le fun _ ↦ divisor_le) ?_
+  rcases Decidable.eq_or_ne n 0 with rfl | hn
+  · apply zero_le
+  · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
+
+@[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
   ext
   simp
@@ -311,9 +318,8 @@ theorem perfect_iff_sum_divisors_eq_two_mul (h : 0 < n) :
 #align nat.perfect_iff_sum_divisors_eq_two_mul Nat.perfect_iff_sum_divisors_eq_two_mul
 
 theorem mem_divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ} :
-    x ∈ divisors (p ^ k) ↔ ∃ (j : ℕ) (_ : j ≤ k), x = p ^ j := by
+    x ∈ divisors (p ^ k) ↔ ∃ j ≤ k, x = p ^ j := by
   rw [mem_divisors, Nat.dvd_prime_pow pp, and_iff_left (ne_of_gt (pow_pos pp.pos k))]
-  simp
 #align nat.mem_divisors_prime_pow Nat.mem_divisors_prime_pow
 
 theorem Prime.divisors {p : ℕ} (pp : p.Prime) : divisors p = {1, p} := by
@@ -326,19 +332,19 @@ theorem Prime.properDivisors {p : ℕ} (pp : p.Prime) : properDivisors p = {1} :
     pp.divisors, pair_comm, erase_insert fun con => pp.ne_one (mem_singleton.1 con)]
 #align nat.prime.proper_divisors Nat.Prime.properDivisors
 
--- Porting note: Specified pow to Nat.pow
 theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
-    divisors (p ^ k) = (Finset.range (k + 1)).map ⟨Nat.pow p, pow_right_injective pp.two_le⟩ := by
+    divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), pow_right_injective pp.two_le⟩ := by
   ext a
-  simp only [mem_divisors, mem_map, mem_range, lt_succ_iff, Function.Embedding.coeFn_mk, Nat.pow_eq,
-    mem_divisors_prime_pow pp k]
-  have := mem_divisors_prime_pow pp k (x := a)
-  rw [mem_divisors] at this
-  rw [this]
-  refine ⟨?_, ?_⟩
-  · intro h; rcases h with ⟨x, hx, hap⟩; use x; tauto
-  · tauto
+  rw [mem_divisors_prime_pow pp]
+  simp [Nat.lt_succ, eq_comm]
 #align nat.divisors_prime_pow Nat.divisors_prime_pow
+
+theorem divisors_injective : Function.Injective divisors :=
+  Function.LeftInverse.injective sup_divisors_id
+
+@[simp]
+theorem divisors_inj {a b : ℕ} : a.divisors = b.divisors ↔ a = b :=
+  ⟨fun x => divisors_injective x, congrArg divisors⟩
 
 theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆ n.properDivisors) :
     ((∑ x in s, x) = ∑ x in n.properDivisors, x) → s = n.properDivisors := by
@@ -373,10 +379,8 @@ theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
       have hlt : ∑ x in n.succ.succ.properDivisors, x < n.succ.succ :=
         lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h) ne_n
       symm
-      rw [← mem_singleton,
-        eq_properDivisors_of_subset_of_sum_eq_sum
-          (singleton_subset_iff.2 (mem_properDivisors.2 ⟨h, hlt⟩)) sum_singleton,
-        mem_properDivisors]
+      rw [← mem_singleton, eq_properDivisors_of_subset_of_sum_eq_sum (singleton_subset_iff.2
+        (mem_properDivisors.2 ⟨h, hlt⟩)) (sum_singleton _ _), mem_properDivisors]
       refine' ⟨one_dvd _, Nat.succ_lt_succ (Nat.succ_pos _)⟩
 #align nat.sum_proper_divisors_dvd Nat.sum_properDivisors_dvd
 
@@ -405,8 +409,9 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       have := Nat.le_of_dvd ?_ hdvd
       · simp [hdvd, this]
         exact (le_iff_eq_or_lt.mp this).symm
-      · by_contra'
-        simp [nonpos_iff_eq_zero.mp this, this] at h
+      · by_contra!
+        simp only [nonpos_iff_eq_zero.mp this, this] at h
+        contradiction
   · exact fun h => Prime.properDivisors h
 #align nat.proper_divisors_eq_singleton_one_iff_prime Nat.properDivisors_eq_singleton_one_iff_prime
 
@@ -416,13 +421,13 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x in n.properDivisors, x = 1 �
   · cases n
     · simp [Nat.not_prime_one]
     · rw [← properDivisors_eq_singleton_one_iff_prime]
-      refine' ⟨fun h => _, fun h => h.symm ▸ sum_singleton⟩
+      refine' ⟨fun h => _, fun h => h.symm ▸ sum_singleton _ _⟩
       rw [@eq_comm (Finset ℕ) _ _]
       apply
         eq_properDivisors_of_subset_of_sum_eq_sum
           (singleton_subset_iff.2
             (one_mem_properDivisors_iff_one_lt.2 (succ_lt_succ (Nat.succ_pos _))))
-          (Eq.trans sum_singleton h.symm)
+          ((sum_singleton _ _).trans h.symm)
 #align nat.sum_proper_divisors_eq_one_iff_prime Nat.sum_properDivisors_eq_one_iff_prime
 
 theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ} :
