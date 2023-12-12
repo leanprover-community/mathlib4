@@ -370,7 +370,8 @@ protected def nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
 #align equiv.non_unital_non_assoc_semiring Equiv.nonUnitalNonAssocSemiring
 
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring (Shrink.{v} α) :=
+noncomputable instance [UnivLE.{u, v}] [NonUnitalNonAssocSemiring α] :
+    NonUnitalNonAssocSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocSemiring
 
 /-- Transfer `NonUnitalSemiring` across an `Equiv` -/
@@ -445,7 +446,8 @@ protected def nonUnitalCommSemiring [NonUnitalCommSemiring β] : NonUnitalCommSe
   apply e.injective.nonUnitalCommSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_comm_semiring Equiv.nonUnitalCommSemiring
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalCommSemiring α] : NonUnitalCommSemiring (Shrink.{v} α) :=
+noncomputable instance [UnivLE.{u, v}] [NonUnitalCommSemiring α] :
+    NonUnitalCommSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommSemiring
 
 /-- Transfer `CommSemiring` across an `Equiv` -/
@@ -473,7 +475,8 @@ protected def nonUnitalNonAssocRing [NonUnitalNonAssocRing β] : NonUnitalNonAss
   apply e.injective.nonUnitalNonAssocRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_non_assoc_ring Equiv.nonUnitalNonAssocRing
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (Shrink.{v} α) :=
+noncomputable instance [UnivLE.{u, v}] [NonUnitalNonAssocRing α] :
+    NonUnitalNonAssocRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocRing
 
 /-- Transfer `NonUnitalRing` across an `Equiv` -/
