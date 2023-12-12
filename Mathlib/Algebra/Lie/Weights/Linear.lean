@@ -40,9 +40,7 @@ or `R` has characteristic zero.
 
 open Set
 
-attribute [local instance]
-  isNoetherian_of_isNoetherianRing_of_finite
-  Module.free_of_finite_type_torsion_free'
+attribute [local instance] Module.free_of_finite_type_torsion_free'
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
