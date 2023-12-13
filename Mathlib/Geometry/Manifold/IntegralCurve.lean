@@ -662,8 +662,9 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
 lemma isIntegralCurveOn_piecewise [I.Boundaryless] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x}
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {γ γ' : ℝ → M}
-    {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a' b'))
-    {t₀ : ℝ} (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
+    {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
+    (hγ' : IsIntegralCurveOn γ' v (Ioo a' b')) {t₀ : ℝ}
+    (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     IsIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
   intros t ht
   by_cases hmem : t ∈ Ioo a b
