@@ -550,8 +550,8 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
       apply h.2
 #align matrix.pos_semidef.from_blocks₁₁ Matrix.PosSemidef.fromBlocks₁₁
 
-theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
-    (A : Matrix m m 𝕜) (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (hD : D.PosDef) [Invertible D] :
+theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n]  (A : Matrix m m 𝕜)
+    (B : Matrix m n 𝕜) {D : Matrix n n 𝕜} (hD : D.PosDef) [Invertible D] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
