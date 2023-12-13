@@ -910,7 +910,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 lemma support_tail {p : G.Walk v v} (hp : ¬p.Nil) :
     (p.tail hp).support = p.support.tail := by
-  rw [←cons_support_tail p hp, List.tail_cons]
+  rw [← cons_support_tail p hp, List.tail_cons]
 
 /-! ### Trails, paths, circuits, cycles -/
 
