@@ -147,15 +147,16 @@ theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
 
 end Span
 
-/-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, given bases for `X₁` and `X₃` indexed by `ι` and
-    `ι'` respectively, we get a basis for `X₂` indexed by `ι ⊕ ι'`. -/
+/-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, given bases for `X₁` and `X₃`
+indexed by `ι` and `ι'` respectively, we get a basis for `X₂` indexed by `ι ⊕ ι'`. -/
 noncomputable
 def Basis.ofShortExact
     (bN : Basis ι R S.X₁) (bP : Basis ι' R S.X₃) : Basis (ι ⊕ ι') R S.X₂ :=
   Basis.mk (linearIndependent_shortExact hS' bN.linearIndependent bP.linearIndependent)
     (span_rightExact hS'.exact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) hS'.epi_g)
 
-/-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free, then `X₂` is free.-/
+/-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
+then `X₂` is free.-/
 theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
     Module.Free R S.X₂ :=
   Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)
