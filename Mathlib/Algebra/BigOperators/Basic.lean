@@ -769,7 +769,7 @@ theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s,
 -- If we use `[DecidableEq β]` here, some rewrites fail because they find a wrong `Decidable`
 -- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
 @[to_additive]
-theorem prod_filter_ne_one [∀ x, Decidable (f x ≠ 1)] :
+theorem prod_filter_ne_one (s : Finset α) [∀ x, Decidable (f x ≠ 1)] :
     ∏ x in s.filter fun x => f x ≠ 1, f x = ∏ x in s, f x :=
   prod_filter_of_ne fun _ _ => id
 #align finset.prod_filter_ne_one Finset.prod_filter_ne_one
@@ -1153,11 +1153,11 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
     ∏ x in s, f x = ∏ x in t, g x := by
   classical
   calc
-    ∏ x in s, f x = ∏ x in s.filter fun x => f x ≠ 1, f x := prod_filter_ne_one.symm
+    ∏ x in s, f x = ∏ x in s.filter fun x => f x ≠ 1, f x := by rw [prod_filter_ne_one]
     _ = ∏ x in t.filter fun x => g x ≠ 1, g x :=
       prod_bij (fun a ha => i a (mem_filter.mp ha).1 $ by simpa using (mem_filter.mp ha).2)
         ?_ ?_ ?_ ?_
-    _ = ∏ x in t, g x := prod_filter_ne_one
+    _ = ∏ x in t, g x := prod_filter_ne_one _
   · intros a ha
     refine' (mem_filter.mp ha).elim _
     intros h₁ h₂

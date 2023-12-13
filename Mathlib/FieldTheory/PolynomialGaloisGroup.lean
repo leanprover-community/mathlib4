@@ -432,6 +432,7 @@ theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact (p.Splits (algebraMap ℚ ℂ)) :=
 #align polynomial.gal.splits_ℚ_ℂ Polynomial.Gal.splits_ℚ_ℂ
 
 attribute [local instance] splits_ℚ_ℂ
+attribute [local ext] Complex.ext
 
 /-- The number of complex roots equals the number of real roots plus
     the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
