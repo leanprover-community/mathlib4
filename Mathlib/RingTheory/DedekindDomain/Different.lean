@@ -94,7 +94,7 @@ lemma traceDual_top' :
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
   convert traceDual_top'
-  rw [← IsFractionRing.surjective_iff_isField (A := A) (K := K),
+  rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
     ← RingHom.range_top_iff_surjective, _root_.eq_top_iff, SetLike.le_def]
   rfl
@@ -108,6 +108,15 @@ variable [IsIntegrallyClosed A]
 lemma Submodule.mem_traceDual_iff_isIntegral {I : Submodule B L} {x} :
     x ∈ Iᵛ ↔ ∀ a ∈ I, IsIntegral A (traceForm K L x a) :=
   forall₂_congr (fun _ _ ↦ IsIntegrallyClosed.isIntegral_iff.symm)
+
+lemma Submodule.one_le_traceDual_one :
+    (1 : Submodule B L) ≤ 1ᵛ := by
+  rw [le_traceDual_iff_map_le_one, mul_one]
+  rintro _ ⟨x, ⟨x, rfl⟩, rfl⟩
+  apply IsIntegrallyClosed.isIntegral_iff.mp
+  apply isIntegral_trace
+  rw [IsIntegralClosure.isIntegral_iff (A := B)]
+  exact ⟨_, rfl⟩
 
 /-- If `b` is an `A`-integral basis of `L` with discriminant `b`, then `d • a * x` is integral over
   `A` for all `a ∈ I` and `x ∈ Iᵛ`. -/
@@ -167,7 +176,7 @@ def dual (I : FractionalIdeal B⁰ L) :
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
       · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
 
-variable {A K} {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
+variable [IsDedekindDomain B] {A K} {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
 
 lemma coe_dual :
     (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI]; rfl
@@ -226,25 +235,19 @@ lemma one_le_dual_one :
     1 ≤ dual A K (1 : FractionalIdeal B⁰ L) :=
   le_dual_inv_aux one_ne_zero (by rw [one_mul])
 
-lemma one_le_traceDual_one :
-    (1 : Submodule B L) ≤ 1ᵛ := by
-  rw [← FractionalIdeal.coe_one, ← FractionalIdeal.coe_dual, FractionalIdeal.coe_le_coe]
-  exact FractionalIdeal.one_le_dual_one
-  exact one_ne_zero
-
 lemma le_dual_iff :
     I ≤ dual A K J ↔ I * J ≤ dual A K 1 := by
   by_cases hI : I = 0
   · simp [hI, zero_le]
   rw [← coe_le_coe, ← coe_le_coe, coe_mul, coe_dual hJ, coe_dual_one, le_traceDual]
 
-variable [IsDedekindDomain B] [IsFractionRing B L]
+variable (I)
 
-lemma inv_le_dual (I : FractionalIdeal B⁰ L) :
+lemma inv_le_dual :
     I⁻¹ ≤ dual A K I :=
   if hI : I = 0 then by simp [hI] else le_dual_inv_aux hI (le_of_eq (mul_inv_cancel hI))
 
-lemma dual_inv_le (I : FractionalIdeal B⁰ L) :
+lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
   convert mul_right_mono ((dual A K I)⁻¹)
@@ -261,6 +264,14 @@ lemma dual_eq_mul_inv :
     rw [← le_dual_iff hI]
   rw [le_dual_iff hI, mul_assoc, inv_mul_cancel hI, mul_one]
 
+variable {I}
+
+lemma dual_div_dual :
+    dual A K J / dual A K I = I / J := by
+  rw [dual_eq_mul_inv J, dual_eq_mul_inv I, mul_div_mul_comm, div_self, one_mul]
+  exact inv_div_inv J I
+  simp only [ne_eq, dual_eq_zero_iff, one_ne_zero, not_false_eq_true]
+
 lemma dual_mul_self :
     dual A K I * I = dual A K 1 := by
   rw [dual_eq_mul_inv, mul_assoc, inv_mul_cancel hI, mul_one]
@@ -272,10 +283,13 @@ lemma self_mul_dual :
 lemma dual_inv :
     dual A K I⁻¹ = dual A K 1 * I := by rw [dual_eq_mul_inv, inv_inv]
 
+variable (I)
+
 @[simp]
 lemma dual_dual :
     dual A K (dual A K I) = I := by
-  rw [dual_eq_mul_inv, dual_eq_mul_inv I, mul_inv, inv_inv, ← mul_assoc, mul_inv_cancel, one_mul]
+  rw [dual_eq_mul_inv, dual_eq_mul_inv (I := I), mul_inv, inv_inv, ← mul_assoc, mul_inv_cancel,
+    one_mul]
   rw [dual_ne_zero_iff]
   exact one_ne_zero
 
@@ -285,6 +299,8 @@ lemma dual_involutive :
 lemma dual_injective :
     Function.Injective (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) :=
   dual_involutive.injective
+
+variable {I}
 
 @[simp]
 lemma dual_le_dual :
