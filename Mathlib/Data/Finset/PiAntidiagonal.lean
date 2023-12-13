@@ -277,7 +277,7 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
 
 lemma Finset.mapRange_piAntidiagonal_subset
     {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
-    (e : μ ≃+ μ') (s : Finset ι) (n : μ):
+    (e : μ ≃+ μ') (s : Finset ι) (n : μ) :
     Finset.map (Finsupp.mapRange.addEquiv e).toEmbedding  (piAntidiagonal s n) ⊆
       piAntidiagonal s (e n) := by
   intro f
@@ -299,11 +299,10 @@ lemma Finset.mapRange_piAntidiagonal_eq
   ext f
   constructor
   · apply Finset.mapRange_piAntidiagonal_subset
-  · set h :=  (Finsupp.mapRange.addEquiv e).toEquiv with hh
+  · set h := (Finsupp.mapRange.addEquiv e).toEquiv with hh
     intro hf
     rw [Finset.mem_map_equiv]
-    have : n = e.symm (e n) := by
-      exact (AddEquiv.eq_symm_apply e).mpr rfl
+    have : n = e.symm (e n) := (AddEquiv.eq_symm_apply e).mpr rfl
     rw [this]
     apply Finset.mapRange_piAntidiagonal_subset
     rw [← Finset.mem_map_equiv]
@@ -311,7 +310,6 @@ lemma Finset.mapRange_piAntidiagonal_eq
     rw [Finset.map_map, hh]
     convert Finset.map_refl
     apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
-
 
 end
 
@@ -497,8 +495,7 @@ theorem coeff_prod [HasPiAntidiagonal ι (σ →₀ ℕ)]
         simp only [mem_antidiagonal] at huv
         simp only [sum_map, Set.InjOn.embedding_apply, Finsupp.coe_update, ne_eq,
           Function.update_same]
-        rw [ih, mul_sum]
-        rw [← Finset.sum_attach]
+        rw [ih, mul_sum, ← Finset.sum_attach]
         apply Finset.sum_congr rfl
         rintro ⟨x, hx⟩ _
         rw [Finset.prod_insert ha]
@@ -508,25 +505,22 @@ theorem coeff_prod [HasPiAntidiagonal ι (σ →₀ ℕ)]
         · apply Finset.prod_congr rfl
           intro i hi
           rw [Function.update_noteq]
-          intro hi'; apply ha; simpa [hi'] using hi
+          exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, Finset.mem_coe, mem_antidiagonal]
       rintro ⟨u, v⟩ huv ⟨u', v'⟩ huv' h
       rw [Function.onFun_apply, disjoint_left]
-      intro k hk hl
-      simp only [mem_map, mem_attach, true_and, Subtype.exists] at hk hl
-      obtain ⟨k, hk, rfl⟩ := hk
-      obtain ⟨l, hl, hkl⟩ := hl
-      simp only [mem_piAntidiagonal] at hk hl
-      apply h
-      simp only [Prod.mk.inj_iff]
-      suffices : u = u'
-      apply And.intro this
-      rw [this, ← huv'] at huv
-      simpa only [add_right_inj] using huv
-      apply symm
+      intro _
+      simp only [mem_map, mem_attach, true_and, Subtype.exists]
+      rintro ⟨k, _, rfl⟩
+      rintro ⟨l, _, hkl⟩
       simp only [Set.InjOn.embedding, Function.Embedding.coeFn_mk, Set.restrict_apply] at hkl
       rw [FunLike.ext_iff] at hkl
-      simpa only [Finsupp.coe_update, Function.update_same] using hkl a
+      specialize hkl a
+      simp only [Finsupp.coe_update, Function.update_same] at hkl
+      simp only [hkl.symm, ← huv', add_right_inj] at huv
+      apply h
+      simp only [Prod.mk.inj_iff]
+      exact ⟨hkl.symm, huv⟩
 
 end MvPowerSeries
 end MvPowerSeries
@@ -544,30 +538,16 @@ variable {α : Type*} [CommSemiring α]
 -- Ugly proof, by rewriting as much as possible to use the case of
 -- multivariable power series
 
--- Which one of those should be kept?
-example (μ : Type*) [AddCommMonoid μ] : AddCommMonoid (Unit → μ) := by
-  exact Pi.addCommMonoid
-
-example (μ : Type*) [AddCommMonoid μ] : (Unit → μ) ≃+ μ := by
-  exact AddEquiv.piUnique fun _ ↦ μ
-
-def AddEquiv.piUnique (μ : Type*) [AddCommMonoid μ] : (Unit → μ) ≃+ μ := {
-  Equiv.piUnique  with
-  map_add' := fun m n => by simp }
-
-noncomputable example (α β : Type*) [Finite α] [Zero β]: (α →₀ β) ≃ (α → β) :=
-  Finsupp.equivFunOnFinite
-
 /-- When ι is finite and μ is an AddCommMonoid,
   then Finsupp.equivFunOnFinite gives and AddEquiv -/
 noncomputable def Finsupp.addEquivFunOnFinite {μ : Type*} [AddCommMonoid μ]
-  {ι : Type*} [Finite ι] : (ι →₀ μ) ≃+ (ι → μ) := {
+    {ι : Type*} [Finite ι] : (ι →₀ μ) ≃+ (ι → μ) := {
   Finsupp.equivFunOnFinite with
   map_add' := fun _ _ => rfl }
 
 /-- AddEquiv between (ι →₀ μ) and μ, when ι has a unique element -/
 noncomputable def AddEquiv.finsuppUnique {μ : Type*} [AddCommMonoid μ]
-  {ι : Type*} [Unique ι] : (ι →₀ μ) ≃+ μ := {
+    {ι : Type*} [Unique ι] : (ι →₀ μ) ≃+ μ := {
   Equiv.finsuppUnique with
   map_add' := fun _ _ => rfl }
 
