@@ -39,11 +39,11 @@ Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾
 we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
-It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we just say the restriction
+It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
 `M ↾ R` has ground set `R` and its independent sets are the `M`-independent subsets of `R`,
 we always get a matroid, in which the elements of `R \ M.E` aren't in any independent sets.
 We could instead define this matroid to always be 'smaller' than `M` by setting
-`(M ↾ R).E = R ∩ M.E`, but this is worse definitionally, and more generally less convenient.
+`(M ↾ R).E := R ∩ M.E`, but this is worse definitionally, and more generally less convenient.
 
 This makes it possible to actually restrict a matroid 'upwards'; for instance, if `M : Matroid α`
 satisfies `M.E = ∅`, then `M ↾ Set.univ` is the matroid on `α` whose ground set is all of `α`,
@@ -226,30 +226,50 @@ infix:50  " <r " => StrictRestriction
 
 /-- A type synonym for matroids with the restriction order.
   (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
-def Matroidᵣ (α : Type*) : Type _ := Matroid α
+@[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
+  toMatroid : Matroid α
+
+instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
+  coe := Matroidᵣ.toMatroid
+
+@[simp] theorem Matroidᵣ.coe_inj {M₁ M₂ : Matroidᵣ α} :
+    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := by
+  cases M₁; cases M₂; simp
 
 instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)
-  lt := (· <r ·)
-  le_refl M := ⟨M.E, Subset.rfl, M.restrict_ground_eq_self.symm⟩
-  le_trans _ _ _ := by
-    rintro ⟨R, hR, rfl⟩ ⟨R', hR', rfl⟩
-    rw [restrict_restrict_eq _ (show R ⊆ R' from hR)]
+  le_refl M := ⟨(M : Matroid α).E, Subset.rfl, (M : Matroid α).restrict_ground_eq_self.symm⟩
+  le_trans M₁ M₂ M₃ := by
+    rintro  ⟨R, hR, h₁⟩ ⟨R', hR', h₂⟩
+    change _ ≤r _
+    rw [h₂] at h₁ hR
+    rw [h₁, restrict_restrict_eq _ (show R ⊆ R' from hR)]
     exact ⟨R, hR.trans hR', rfl⟩
   le_antisymm M₁ M₂ := by
-    rintro ⟨R, hR, rfl⟩ ⟨R', hR', h⟩
-    rw [h] at hR
-    obtain (rfl : R = R') := hR.antisymm hR'
-    rwa [restrict_idem, eq_comm] at h
+    rintro ⟨R, hR, h⟩ ⟨R', hR', h'⟩
+    rw [h', restrict_ground_eq] at hR
+    rw [h, restrict_ground_eq] at hR'
+    rw [← Matroidᵣ.coe_inj, h, h', hR.antisymm hR', restrict_idem]
 
-@[simp] protected theorem Matroidᵣ.le_iff {M M' : Matroidᵣ α} : M ≤ M' ↔ M ≤r M' := Iff.rfl
-@[simp] protected theorem Matroidᵣ.lt_iff {M M' : Matroidᵣ α} : M < M' ↔ M <r M' := Iff.rfl
+@[simp] protected theorem Matroidᵣ.le_iff {M M' : Matroidᵣ α} :
+    M ≤ M' ↔ (M : Matroid α) ≤r (M' : Matroid α) := Iff.rfl
+
+@[simp] protected theorem Matroidᵣ.lt_iff {M M' : Matroidᵣ α} :
+    M < M' ↔ (M : Matroid α) <r (M' : Matroid α) := Iff.rfl
+
+theorem ofMatroid_le_iff {M M' : Matroid α} :
+    Matroidᵣ.ofMatroid M ≤ Matroidᵣ.ofMatroid M' ↔ M ≤r M' := by
+  simp
+
+theorem ofMatroid_lt_iff {M M' : Matroid α} :
+    Matroidᵣ.ofMatroid M < Matroidᵣ.ofMatroid M' ↔ M <r M' := by
+  simp
 
 theorem Restriction.refl : M ≤r M :=
-  le_refl (α := Matroidᵣ α) M
+  le_refl (Matroidᵣ.ofMatroid M)
 
-theorem Restriction.antisymm {M' : Matroid α} (h : M ≤r M') (h' : M' ≤r M) : M = M' :=
-  le_antisymm (α := Matroidᵣ α) h h'
+theorem Restriction.antisymm {M' : Matroid α} (h : M ≤r M') (h' : M' ≤r M) : M = M' := by
+  simpa using (ofMatroid_le_iff.2 h).antisymm (ofMatroid_le_iff.2 h')
 
 theorem Restriction.trans {M₁ M₂ M₃ : Matroid α} (h : M₁ ≤r M₂) (h' : M₂ ≤r M₃) : M₁ ≤r M₃ :=
   le_trans (α := Matroidᵣ α) h h'
@@ -273,11 +293,11 @@ theorem restriction_iff_exists : (N ≤r M) ↔ ∃ R, R ⊆ M.E ∧ N = M ↾ R
 theorem StrictRestriction.restriction (h : N <r M) : N ≤r M :=
   h.1
 
-theorem StrictRestriction.ne (h : N <r M) : N ≠ M :=
-  ne_of_lt (α := Matroidᵣ α) h
+theorem StrictRestriction.ne (h : N <r M) : N ≠ M := by
+  rintro rfl; rw [← ofMatroid_lt_iff] at h; simp at h
 
 theorem StrictRestriction.irrefl (M : Matroid α) : ¬ (M <r M) :=
-  lt_irrefl (α := Matroidᵣ α) M
+  fun h ↦ h.ne rfl
 
 theorem StrictRestriction.ssubset (h : N <r M) : N.E ⊂ M.E := by
   obtain ⟨R, -, rfl⟩ := h.1
@@ -293,8 +313,8 @@ theorem StrictRestriction.exists_eq_restrict (h : N <r M) : ∃ R, R ⊂ M.E ∧
 theorem Restriction.strictRestriction_of_ne (h : N ≤r M) (hne : N ≠ M) : N <r M :=
   ⟨h, fun h' ↦ hne <| h.antisymm h'⟩
 
-theorem Restriction.eq_or_strictRestriction (h : N ≤r M) : N = M ∨ N <r M :=
-  eq_or_lt_of_le (α := Matroidᵣ α) h
+theorem Restriction.eq_or_strictRestriction (h : N ≤r M) : N = M ∨ N <r M := by
+  simpa using eq_or_lt_of_le (ofMatroid_le_iff.2 h)
 
 theorem restrict_strictRestriction {M : Matroid α} (hR : R ⊂ M.E) : M ↾ R <r M := by
   refine (M.restrict_restriction R hR.subset).strictRestriction_of_ne (fun h ↦ ?_)
@@ -322,6 +342,15 @@ theorem Indep.of_restriction (hI : N.Indep I) (hNM : N ≤r M) : M.Indep I := by
 
 theorem Indep.indep_restriction (hI : M.Indep I) (hNM : N ≤r M) (hIN : I ⊆ N.E) : N.Indep I := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hI]
+
+theorem Basis.basis_restriction (hI : M.Basis I X) (hNM : N ≤r M) (hX : X ⊆ N.E) : N.Basis I X := by
+  obtain ⟨R, hR, rfl⟩ := hNM; rwa [basis_restrict_iff, and_iff_left (show X ⊆ R from hX)]
+
+theorem Basis.of_restriction (hI : N.Basis I X) (hNM : N ≤r M) : M.Basis I X := by
+  obtain ⟨R, hR, rfl⟩ := hNM; exact ((basis_restrict_iff hR).1 hI).1
+
+theorem Base.basis_of_restriction (hI : N.Base I) (hNM : N ≤r M) : M.Basis I N.E := by
+  obtain ⟨R, hR, rfl⟩ := hNM; rwa [base_restrict_iff] at hI
 
 theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
   obtain ⟨R, hR, rfl⟩ := hNM
