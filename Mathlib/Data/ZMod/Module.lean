@@ -15,6 +15,8 @@ variable {n : ℕ} {M M₁ : Type*} [AddCommGroup M] [AddCommGroup M₁]
 
 namespace ZMod
 
+/-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
+See note [reducible non-instances]. -/
 @[reducible]
 def module {n : ℕ} {M : Type*} [AddCommGroup M] (h : ∀ (x : M), n • x = 0) : Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
