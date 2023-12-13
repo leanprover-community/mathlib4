@@ -3,9 +3,9 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Data.Real.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Real.Archimedean
 
 /-!
 # Schnirelmann density
@@ -206,10 +206,10 @@ lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : 
   (schnirelmannDensity_eq_one_iff_of_zero_mem (by simp)).2 (by simp)
 
 lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem (by simp)
+  schnirelmannDensity_eq_zero_of_one_not_mem $ by simp
 
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem (by simp)
+  schnirelmannDensity_eq_zero_of_one_not_mem $ by simp [Nat.not_prime_one]
 
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
@@ -239,8 +239,8 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   · simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
     rintro _ y _ hy' rfl
     have hm : 2 ≤ m := hm.lt_of_le' hm'
-    simp only [Nat.mul_add_mod, Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,
-      ← Nat.le_sub_iff_add_le hn]
+    simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,
+      ← Nat.le_sub_iff_add_le hn, zero_lt_one]
     exact Nat.mul_le_of_le_div _ _ _ hy'
   rw [le_div_iff (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
   apply (Nat.cast_le.2 (card_le_of_subset this)).trans'
