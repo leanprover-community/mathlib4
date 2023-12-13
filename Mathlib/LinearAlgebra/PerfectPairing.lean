@@ -8,20 +8,22 @@ import Mathlib.LinearAlgebra.Dual
 /-!
 # Perfect pairings of modules
 
--- TODO Update this doc string
-
 A perfect pairing of two (left) modules may be defined either as:
  1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
     bijective. (It follows from this that both `M` and `N` are both reflexive modules.)
  2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
     reflexive.)
 
-The second definition is more convenient and we prove some basic facts about it here.
+In this file we provide a `PerfectPairing` definition corresponding to 1 above, together with logic
+to connect 1 and 2.
 
 ## Main definitions
 
+ * `PerfectPairing`
+ * `PerfectPairing.flip`
  * `LinearEquiv.flip`
  * `LinearEquiv.IsReflexive_of_equiv_Dual_of_IsReflexive`
+ * `LinearEquiv.toPerfectPairing`
 
 -/
 
@@ -29,10 +31,13 @@ open Function Module
 
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
+/-- A perfect pairing of two (left) modules over a commutative ring. -/
 structure PerfectPairing :=
   toLin : M →ₗ[R] N →ₗ[R] R
-  BijectiveLeft : Bijective toLin
-  BijectiveRight : Bijective toLin.flip
+  bijectiveLeft : Bijective toLin
+  bijectiveRight : Bijective toLin.flip
+
+attribute [nolint docBlame] PerfectPairing.toLin
 
 variable {R M N}
 
@@ -40,10 +45,11 @@ namespace PerfectPairing
 
 variable (p : PerfectPairing R M N)
 
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected def flip : PerfectPairing R N M where
   toLin := p.toLin.flip
-  BijectiveLeft := p.BijectiveRight
-  BijectiveRight := p.BijectiveLeft
+  bijectiveLeft := p.bijectiveRight
+  bijectiveRight := p.bijectiveLeft
 
 @[simp] lemma flip_flip : p.flip.flip = p := rfl
 
@@ -51,7 +57,16 @@ protected def flip : PerfectPairing R N M where
 
 end PerfectPairing
 
-variable [IsReflexive R M] (e : N ≃ₗ[R] Dual R M)
+variable [IsReflexive R M]
+
+/-- A reflexive module has a perfect pairing with its dual. -/
+@[simps]
+def IsReflexive.toPerfectPairingDual : PerfectPairing R (Dual R M) M where
+  toLin := LinearMap.id
+  bijectiveLeft := bijective_id
+  bijectiveRight := bijective_dual_eval R M
+
+variable (e : N ≃ₗ[R] Dual R M)
 
 namespace LinearEquiv
 
@@ -79,10 +94,12 @@ lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
   e.flip.flip = e :=
 by ext; rfl
 
-noncomputable def toPerfectPairing : PerfectPairing R M N where
-  toLin := e.flip
-  BijectiveLeft := e.flip.bijective
-  BijectiveRight := e.bijective
+/-- If `M` is reflexive then a linear equivalence `N ≃ Dual R M` is a perfect pairing. -/
+@[simps]
+noncomputable def toPerfectPairing : PerfectPairing R N M where
+  toLin := e
+  bijectiveLeft := e.bijective
+  bijectiveRight := e.flip.bijective
 
 end LinearEquiv
 
