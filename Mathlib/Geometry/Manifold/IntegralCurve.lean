@@ -750,6 +750,14 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless] {M : Type*} [TopologicalSpace
         have : t' ∉ Ioo a b := not_mem_Ioo_of_le (le_of_lt ht'.2)
         rw [piecewise, if_neg this]
 
+lemma Ioo_union_Ioo_eq_Ioo {α : Type*} [LinearOrder α] {a : α} {b : α} {c : α} {d : α}
+    (hab : a < b) (hbc : b < c) (hcd : c < d) : Ioo a c ∪ Ioo b d = Ioo a d := by
+  rw [Ioo_union_Ioo, min_eq_left (le_of_lt hab), max_eq_right (le_of_lt hcd)]
+  · rw [min_eq_left (le_of_lt (lt_trans hab hbc)), max_eq_right (le_of_lt (lt_trans hbc hcd))]
+    exact lt_trans (lt_trans hab hbc) hcd
+  · rw [min_eq_left (le_of_lt (lt_trans hbc hcd)), max_eq_right (le_of_lt (lt_trans hab hbc))]
+    exact hbc
+
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
   least on an open interval `Ioo (t₀ - ε) (t₀ + ε)`, then every point on `M` has a global integral
   curve passing through it.
@@ -767,14 +775,14 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
   * `S` is non-empty by assumption
   * suppose `S` is bounded above
   ** we wish to reach a contradiction
-  ** define `a = sSup S`
-  ** using `ε / 2` from the hypothesis, there exists `a' ∈ S` such that `a < a' + ε / 2`
-  ** using this `a'`, we obtain a local integral curve `γ` on `Ioo -a' a'`
-  ** obtain a local integral curve `γ1` starting at `-(a' - ε / 2)` with radius `ε`
-  ** obtain a local integral curve `γ2` starting at `a' - ε / 2` with radius `ε`
+  ** define `asup = sSup S`
+  ** using `ε / 2` from the hypothesis, there exists `a ∈ S` such that `asup < a + ε / 2`
+  ** using this `a`, we obtain a local integral curve `γ` on `Ioo -a a`
+  ** obtain a local integral curve `γ1` starting at `-(a - ε / 2)` with radius `ε`
+  ** obtain a local integral curve `γ2` starting at `a - ε / 2` with radius `ε`
   ** extend the original local integral curve to `γ_ext`, now defined on
-    `Ioo -(a' + ε / 2) (a' + ε / 2)`
-  ** this means `a' + ε / 2 ∈ S`, but `a < a' + ε / 2`, which is impossible as `sSup S`
+    `Ioo -(a + ε / 2) (a + ε / 2)`
+  ** this means `a + ε / 2 ∈ S`, but `asup < a + ε / 2`, which is impossible as `sSup S`
   * suppose `S` is not bounded above (this can be a separate lemma)
   ** for every `a : ℝ`, there is `a' ∈ S` such that `a < a'`
   ** construct a global integral curve `γ` as follows
@@ -794,9 +802,85 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
 
   have hnon : Set.Nonempty {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := ⟨ε, h x⟩
   by_cases hbdd : BddAbove {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)}
-  · sorry
-  ·
-    rw [not_bddAbove_iff] at hbdd
+  · set asup := sSup {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} with hasup
+    obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup hnon (ε := - (ε / 2))
+      (by rw [neg_lt, neg_zero]; exact half_pos hε)
+    rw [mem_setOf] at ha
+    rw [← hasup] at hlt
+    have hlt' : ε / 2 < a := by
+      apply lt_of_le_of_lt _ hlt
+      rw [le_add_neg_iff_add_le, ← mul_two, div_mul_cancel _ two_ne_zero, hasup]
+      apply le_csSup hbdd
+      rw [mem_setOf]
+      exact h x
+    obtain ⟨γ, h0, hγ⟩ := ha
+    obtain ⟨γ1_aux, h1_aux, hγ1_aux⟩ := h (γ (-(a - ε / 2)))
+    let γ1 := γ1_aux ∘ (fun t => t + (a - ε / 2))
+    have h1 : γ1 (-(a - ε / 2)) = γ (-(a - ε / 2)) := by
+      simp [h1_aux]
+    have hγ1 : IsIntegralCurveOn γ1 v (Ioo (-(a + ε / 2)) (-(a - 3 * ε / 2))) := by
+      convert hγ1_aux.comp_add (a - ε / 2)
+      ext t
+      rw [mem_Ioo, mem_setOf, mem_Ioo, ← sub_lt_iff_lt_add, neg_sub_left, sub_add_eq_add_sub,
+        ← add_sub, sub_self_div_two, ← lt_sub_iff_add_lt, ← sub_add, sub_add_eq_add_sub,
+        add_div_eq_mul_add_div (a := ε) (hc := two_ne_zero)]
+      nth_rw 5 [← mul_one (a := ε)]
+      rw [← mul_add, two_add_one_eq_three, mul_comm (a := ε), neg_sub]
+    obtain ⟨γ2_aux, h2_aux, hγ2_aux⟩ := h (γ (a - ε / 2))
+    let γ2 := γ2_aux ∘ (fun t => t + -(a - ε / 2))
+    have h2 : γ2 (a - ε / 2) = γ (a - ε / 2) := by
+      simp [h2_aux]
+    have hγ2 : IsIntegralCurveOn γ2 v (Ioo (a - 3 * ε / 2) (a + ε / 2)) := by
+      convert hγ2_aux.comp_add (-(a - ε / 2))
+      ext t
+      rw [mem_Ioo, mem_setOf, mem_Ioo, neg_sub, add_sub, lt_sub_iff_add_lt, ← sub_eq_neg_add,
+        ← sub_lt_iff_lt_add (b := t), sub_sub, add_div' (b := ε) (hc := two_ne_zero)]
+      nth_rw 4 [← mul_one (a := ε)]
+      rw [← mul_add, two_add_one_eq_three, sub_lt_iff_lt_add' (c := ε), ← lt_sub_iff_add_lt,
+        ← add_sub, sub_self_div_two, mul_comm ε]
+    set γ_ext : ℝ → M := piecewise (Ioo (-(a + ε / 2)) a)
+      (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
+    have hext : IsIntegralCurveOn γ_ext v (Ioo (-(a + ε / 2)) (a + ε / 2)) := by
+      have hsub1 : Ioo (-(a + ε / 2)) (a + ε / 2) =
+        Ioo (-(a + ε / 2)) a ∪ Ioo (a - 3 * ε / 2) (a + ε / 2) := by
+        rw [Ioo_union_Ioo_eq_Ioo] <;> linarith
+      rw [hsub1]
+      apply isIntegralCurveOn_piecewise I hv (t₀ := a - ε / 2)
+      · have hsub2 : Ioo (-(a + ε / 2)) a ⊆
+          Ioo (-a) a ∪ Ioo (-(a + ε / 2)) (-(a - 3 * ε / 2)) := by
+            intros t ht
+            by_cases ht' : -a < t
+            · exact mem_union_left _ ⟨ht', ht.2⟩
+            · rw [not_lt] at ht'
+              apply mem_union_right
+              use ht.1
+              linarith
+        apply IsIntegralCurveOn.mono _ hsub2
+        apply isIntegralCurveOn_piecewise I hv hγ hγ1 (t₀ := -(a - ε / 2))
+        · rw [mem_inter_iff, mem_Ioo, mem_Ioo, and_assoc, neg_lt_neg_iff, neg_lt_neg_iff,
+            neg_lt_neg_iff, neg_lt, sub_lt_self_iff, sub_lt_iff_lt_add, add_assoc, add_halves,
+            lt_add_iff_pos_right, sub_lt_sub_iff_left, div_lt_div_right two_pos]
+          refine ⟨half_pos hε, by linarith, hε, by linarith⟩
+        · exact h1.symm
+      · exact hγ2
+      · rw [mem_inter_iff, mem_Ioo, mem_Ioo, and_assoc, neg_add', sub_lt_sub_iff_right,
+          neg_lt_self_iff, sub_lt_self_iff, sub_lt_sub_iff_left, div_lt_div_right two_pos,
+          sub_lt_iff_lt_add, add_assoc, add_halves, lt_add_iff_pos_right]
+        refine ⟨?_, half_pos hε, by linarith, hε⟩
+        exact lt_trans (half_pos hε) hlt'
+      · rw [piecewise, if_pos, h2]
+        refine ⟨by linarith, by linarith⟩
+    have : a + ε / 2 ∈ {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)} := by
+      rw [mem_setOf]
+      refine ⟨γ_ext, ?_, hext⟩
+      rw [γ_ext_def, piecewise, if_pos, piecewise, if_pos, h0]
+      · rw [mem_Ioo, neg_lt, neg_zero, and_self]
+        apply lt_trans (half_pos hε) hlt'
+      · rw [mem_Ioo, neg_lt, neg_zero]
+        exact ⟨add_pos (lt_trans (half_pos hε) hlt') (half_pos hε), lt_trans (half_pos hε) hlt'⟩
+    rw [add_neg_lt_iff_lt_add, ← not_le] at hlt
+    exact absurd (le_csSup hbdd this) hlt
+  · rw [not_bddAbove_iff] at hbdd
     simp_rw [mem_setOf] at hbdd
     let γ_aux : ℕ → ℝ → M := fun n => by
       induction n
@@ -909,10 +993,3 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
     apply ((haux ⌊|t|⌋₊).2 t hmem).congr_of_eventuallyEq
     apply EqOn.eventuallyEq_of_mem (hext_eq_aux ⌊|t|⌋₊)
     exact Ioo_mem_nhds hmem.1 hmem.2
-
-
-
-  /-
-        -a         0       a-3ε/2   a-ε/2    a       a+ε/2
-        (          |       (        |        )       )
-  -/
