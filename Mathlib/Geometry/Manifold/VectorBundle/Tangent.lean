@@ -334,8 +334,9 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
   · -- porting note: was ext; · rfl; apply hEq_of_eq
     refine congr_arg (TotalSpace.mk _) ?_
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
-  simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv, FiberBundleCore.localTrivAsPartialEquiv,
-    VectorBundleCore.toFiberBundleCore_baseSet, tangentBundleCore_baseSet]
+  simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv,
+    FiberBundleCore.localTrivAsPartialEquiv, VectorBundleCore.toFiberBundleCore_baseSet,
+    tangentBundleCore_baseSet]
   simp only [mfld_simps]
 #align tangent_bundle_model_space_chart_at tangentBundle_model_space_chartAt
 
