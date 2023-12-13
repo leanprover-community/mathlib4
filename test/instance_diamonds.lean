@@ -25,7 +25,7 @@ open scoped Polynomial
 example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.instSMulRealComplex : SMul ℤ ℂ) :=
   rfl
 
-example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModuleComplexToAddCommMonoidToNonUnitalNonAssocSemiringToNonUnitalNonAssocCommSemiringToNonUnitalNonAssocCommRingToNonUnitalCommRingCommRing :=
+example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule :=
   rfl
 
 example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraComplexInstSemiringComplex :=
@@ -53,7 +53,7 @@ open scoped TensorProduct
 
 open Complex
 
-/- `tensor_product.algebra.module` forms a diamond with `has_mul.to_has_smul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
@@ -68,7 +68,7 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 #align tensor_product.f_apply TensorProduct.f_apply
 
-/- `tensor_product.algebra.module` forms a diamond with `has_mul.to_has_smul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
@@ -87,15 +87,19 @@ end TensorProduct
 
 section Units
 
-example (α : Type _) [Monoid α] : (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction αˣ (α × α)) = Prod.mulAction :=
+example (α : Type _) [Monoid α] :
+    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction αˣ (α × α)) =
+      Prod.mulAction :=
   rfl
 
 example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β i)] :
-    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ :=
+    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction Rˣ (∀ i, β i)) =
+      Pi.mulAction _ :=
   rfl
 
 example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.instDistribMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction :=
+    (Units.instDistribMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : DistribMulAction Rˣ α[X])
+      = Polynomial.distribMulAction :=
   rfl
 
 /-!
@@ -242,7 +246,8 @@ section ZMod
 variable {p : ℕ} [Fact p.Prime]
 
 example :
-    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instFieldZMod p)) = ZMod.commRing p :=
+    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instFieldZMod p)) =
+      ZMod.commRing p :=
   rfl
 
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) :=
