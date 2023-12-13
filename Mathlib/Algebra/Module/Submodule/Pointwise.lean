@@ -501,7 +501,7 @@ lemma sup_set_smul_submodule_eq_sup (s t : Set R) :
       (set_smul_submodule_mono_left _ le_sup_left)
       (set_smul_submodule_mono_left _ le_sup_right))
 
-lemma span_smul_submodule {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
+lemma coe_span_smul_submodule {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
     (s : Set R') (N : Submodule R' M') :
     (Ideal.span s : Set R') • N = s • N :=
   set_smul_submodule_eq_of_le _ _ _

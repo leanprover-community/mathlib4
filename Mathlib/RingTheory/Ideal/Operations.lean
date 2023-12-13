@@ -2323,10 +2323,10 @@ instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_zero := smul_bot
 #align submodule.module_submodule Submodule.moduleSubmodule
 
-lemma span_smul_submodule'
+lemma span_smul_submodule
     (s : Set R) (N : Submodule R M) :
     (Ideal.span s) • N = s • N := by
-  rw [smul_eq_set_smul, Submodule.span_smul_submodule]
+  rw [smul_eq_set_smul, coe_span_smul_submodule]
 
 end Submodule
 
