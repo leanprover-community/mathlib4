@@ -318,17 +318,6 @@ def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fi
 def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
   Equiv.piFinSuccAbove (fun _ => β) (.last _)
 
-#check Equiv.piFinCastSucc_apply
-#check Equiv.piFinCastSucc_symm_apply
-
--- lemma Equiv.piFinCastSucc_apply (n : ℕ) (β : Type u) :
---     ⇑(Equiv.piFinCastSucc n β) = fun f ↦ (f (.last _), fun j ↦ f (Fin.castSucc j)) := by
---   simp [Equiv.piFinCastSucc]
-
--- lemma Equiv.piFinCastSucc_symm_apply (n : ℕ) (β : Type u) :
---     ⇑(Equiv.piFinCastSucc n β).symm = fun f ↦ Fin.snoc f.2 f.1 := by
---   simp [Equiv.piFinCastSucc]
-
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n)
     where
