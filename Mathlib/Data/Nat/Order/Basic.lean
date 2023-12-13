@@ -490,6 +490,9 @@ theorem one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
   Nat.mod_eq_of_lt (add_lt_add_right n.succ_pos 1)
 #align nat.one_mod Nat.one_mod
 
+theorem one_mod_of_ne_one : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1
+  | 0, _ | (n + 2), _ => by simp
+
 theorem dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
   ⟨k / n, tsub_eq_of_eq_add_rev (Nat.mod_add_div k n).symm⟩
 #align nat.dvd_sub_mod Nat.dvd_sub_mod
