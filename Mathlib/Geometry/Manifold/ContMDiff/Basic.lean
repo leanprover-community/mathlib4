@@ -33,13 +33,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [CS' : ChartedSpace H' M']
+  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M']
   -- declare a manifold `M''` over the pair `(E'', H'')`.
   {E'' : Type*}
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
-  [CS'' : ChartedSpace H'' M'']
+  [ChartedSpace H'' M'']
   -- declare a smooth manifold `N` over the pair `(F, G)`.
   {F : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
@@ -405,6 +405,26 @@ end Inclusion
 /-! ### Open embeddings and their inverses are smooth -/
 
 section
+variable {α : Type*} {β : Type*} [TopologicalSpace α]
+  [TopologicalSpace β]
+variable (f : α → β) (h : OpenEmbedding f)
+
+variable [Nonempty α]
+
+lemma toLocalHomeomorph_left_inv' {x : α} : (h.toLocalHomeomorph f).symm (f x) = x := by
+  rw [← congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.left_inv]
+  exact Set.mem_univ _
+
+lemma toLocalHomeomorph_right_inv' {x : β} (hx : x ∈ Set.range f) :
+    f ((h.toLocalHomeomorph f).symm x) = x := by
+  rw [← congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.right_inv]
+  rwa [OpenEmbedding.toLocalHomeomorph_target]
+
+end
+
+
+
+section
 
 variable (I)
   [Nonempty M] {e : M → H} (h : OpenEmbedding e)
@@ -413,9 +433,10 @@ variable (I)
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is smooth. -/
-lemma contMDiff_openEmbedding : ContMDiff I I n e := by
+lemma contMDiff_openEmbedding :
+    @ContMDiff _ _ _ _ _ _ _ I _ _ h.singletonChartedSpace _ _ _ _ _ I _ _ _ n e := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [contMDiff_iff]
+  rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
   intros x y
   -- show the function is actually the identity on the range of I ∘ e
@@ -423,26 +444,26 @@ lemma contMDiff_openEmbedding : ContMDiff I I n e := by
   intros z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
-  sorry /- TODO: fix this proof! perhaps use `haveI := h.singletonChartedSpace`
   rw [h.toLocalHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
-    exact extChartAt_target_subset_range I x
+    exact haveI := h.singletonChartedSpace; extChartAt_target_subset_range I x
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
-    rw [extChartAt_target] at this
+    rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
     rw [mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toLocalHomeomorph_target] at this
-    exact this -/
+    exact this
 
 variable {I}
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is smooth. -/
 lemma contMDiffOn_openEmbedding_symm :
-    ContMDiffOn I I n (h.toLocalHomeomorph e).symm (range e) := by
+    @ContMDiffOn _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I _ _ h.singletonChartedSpace
+      n (OpenEmbedding.toLocalHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [contMDiffOn_iff]
+  rw [@contMDiffOn_iff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   constructor
   · rw [← h.toLocalHomeomorph_target]
     exact (h.toLocalHomeomorph e).continuousOn_symm
@@ -455,21 +476,22 @@ lemma contMDiffOn_openEmbedding_symm :
     have : I.symm z ∈ range e := by
       rw [ModelWithCorners.symm, ← mem_preimage]
       exact hz.2.1
-    -- TODO: fix the proof; `this` doesn't apply any more as z and z† don't unify...
-    sorry --rw [h.toLocalHomeomorph_right_inv e this]
-    --apply I.right_inv
-    --exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
+    rw [h.toLocalHomeomorph_right_inv e this]
+    apply I.right_inv
+    exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_openEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
-    ContMDiff I I' n f := by
+    @ContMDiff _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I' _ _ h'.singletonChartedSpace n f := by
   have : f = (h'.toLocalHomeomorph e').symm ∘ e' ∘ f := by
     ext
     rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toLocalHomeomorph_left_inv]
   rw [this]
-  apply (contMDiffOn_openEmbedding_symm h').comp_contMDiff hf (by intros; simp)
+  apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_openEmbedding_symm h') hf
+  simp
 
 end
