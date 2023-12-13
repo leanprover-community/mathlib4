@@ -746,7 +746,6 @@ theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 #align ring_equiv.to_ring_hom_refl RingEquiv.toRingHom_refl
 
-@[simp]
 theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
   rfl
 #align ring_equiv.to_monoid_hom_refl RingEquiv.toMonoidHom_refl

@@ -646,7 +646,6 @@ theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
   rfl
 #align ring_hom.coe_add_monoid_hom_id RingHom.coe_addMonoidHom_id
 
-@[simp]
 theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
   rfl
 #align ring_hom.coe_monoid_hom_id RingHom.coe_monoidHom_id
