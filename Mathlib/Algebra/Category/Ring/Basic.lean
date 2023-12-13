@@ -371,7 +371,7 @@ Ring equivalence are isomorphisms in category of commutative semirings
 -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
-    SemiRingCat.of X ≅ SemiRingCat.of Y where
+    CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 

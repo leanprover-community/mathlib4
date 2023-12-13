@@ -98,15 +98,8 @@ error: abel_nf made no progress
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
   abel_nf at *
 
-/--
-error: no goals to be solved
--/
--- This error message is confusing: it is saying that it closed the main goal,
--- and so then had nothing to do on the hypotheses.
--- The user has to guess that they should remove the `at *`.
-#guard_msgs in
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
-  abel_nf at *
+  abel_nf
 
 /--
 error: abel_nf made no progress
