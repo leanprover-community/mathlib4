@@ -429,6 +429,20 @@ theorem rootMultiplicity_eq_natTrailingDegree {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).natTrailingDegree :=
   rootMultiplicity_eq_rootMultiplicity.trans rootMultiplicity_eq_natTrailingDegree'
 
+theorem eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
+    (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t = (p.comp (X + C t)).trailingCoeff := by
+  obtain rfl | hp := eq_or_ne p 0
+  · rw [zero_divByMonic, eval_zero, zero_comp, trailingCoeff_zero]
+  have mul_eq := p.pow_mul_divByMonic_rootMultiplicity_eq t
+  set m := p.rootMultiplicity t
+  set g := p /ₘ (X - C t) ^ m
+  have : (g.comp (X + C t)).coeff 0 = g.eval t
+  · rw [coeff_zero_eq_eval_zero, eval_comp, eval_add, eval_X, eval_C, zero_add]
+  rw [← congr_arg (comp · <| X + C t) mul_eq, mul_comp, pow_comp, sub_comp, X_comp, C_comp,
+    add_sub_cancel, ← reverse_leadingCoeff, reverse_X_pow_mul, reverse_leadingCoeff, trailingCoeff,
+    Nat.le_zero.mp (natTrailingDegree_le_of_ne_zero <|
+      this ▸ eval_divByMonic_pow_rootMultiplicity_ne_zero t hp), this]
+
 section nonZeroDivisors
 
 open scoped nonZeroDivisors
@@ -494,27 +508,8 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
     (hpq : (p /ₘ (X - C x) ^ (p.rootMultiplicity x)).eval x *
       (q /ₘ (X - C x) ^ (q.rootMultiplicity x)).eval x ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
-  have h : p * q =
-      ((X - C x) ^ (p.rootMultiplicity x) * (p /ₘ (X - C x) ^ (p.rootMultiplicity x))) *
-      ((X - C x) ^ (q.rootMultiplicity x) * (q /ₘ (X - C x) ^ (q.rootMultiplicity x))) := by
-    simp only [pow_mul_divByMonic_rootMultiplicity_eq]
-  rw [mul_comm <| (X - C x) ^ (p.rootMultiplicity x), ← mul_assoc,
-    mul_assoc _ _ <| (X - C x) ^ (q.rootMultiplicity x), ← pow_add,
-    mul_comm _ <| (X - C x) ^ (p.rootMultiplicity x + q.rootMultiplicity x), mul_assoc] at h
-  have hpq' : p * q ≠ 0 := fun h' ↦ by
-    rw [h, mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (monic_X_sub_C x |>.pow _ |>.mem_nonZeroDivisors)] at h'
-    apply_fun eval x at h'
-    rw [eval_mul, eval_zero] at h'
-    exact hpq h'
-  refine le_antisymm ?_ ?_
-  · rw [rootMultiplicity_le_iff hpq', pow_succ', h, dvd_cancel_left_mem_nonZeroDivisors
-      (monic_X_sub_C x |>.pow _ |>.mem_nonZeroDivisors)]
-    intro ⟨f, h'⟩
-    apply_fun eval x at h'
-    exact hpq (by simpa only [eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul] using h')
-  · rw [le_rootMultiplicity_iff hpq', h]
-    exact dvd_mul_right _ _
+  simp_rw [eval_divByMonic_eq_trailingCoeff_comp] at hpq
+  simp_rw [rootMultiplicity_eq_natTrailingDegree, mul_comp, natTrailingDegree_mul' hpq]
 
 variable [IsDomain R] {p q : R[X]}
 
