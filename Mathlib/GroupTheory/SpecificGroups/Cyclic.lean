@@ -739,18 +739,18 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     rw [← Nat.card_zmultiples]
     exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
   exact (Int.quotientZmultiplesNatEquivZMod n)
-    |>.symm.trans (QuotientAddGroup.quotientAddEquivOfEq kereq
-    |>.symm.trans (QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj))
+    |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
+    |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 
 /-- Two cyclic groups of the same cardinality are isomorphic. -/
 noncomputable def mulEquivOfCyclicCardEq [Group G] [Group H] (hG : IsCyclic G)
     (hH : IsCyclic H) (hcard : Nat.card G = Nat.card H) : G ≃* H := hcard ▸
-  (zmodCyclicMulEquiv hG).symm |>.trans (zmodCyclicMulEquiv hH)
+  zmodCyclicMulEquiv hG |>.symm.trans (zmodCyclicMulEquiv hH)
 
 /-- Two cyclic additive groups of the same cardinality are isomorphic. -/
 noncomputable def addEquivofAddCyclicCardEq [AddGroup G] [AddGroup H] (hG : IsAddCyclic G)
     (hH : IsAddCyclic H) (hcard : Nat.card G = Nat.card H) : G ≃+ H := hcard ▸
-  (zmodAddCyclicAddEquiv hG).symm |>.trans (zmodAddCyclicAddEquiv hH)
+  zmodAddCyclicAddEquiv hG |>.symm.trans (zmodAddCyclicAddEquiv hH)
 
 /-- Two groups of the same prime cardinality are isomorphic. -/
 noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [Group G] [Group H]
