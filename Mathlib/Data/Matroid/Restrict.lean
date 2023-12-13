@@ -360,7 +360,7 @@ theorem Indep.exists_basis_subset_union_basis (hI : M.Indep I) (hIX : I ⊆ X) (
 
 theorem Indep.exists_insert_of_not_basis (hI : M.Indep I) (hIX : I ⊆ X) (hI' : ¬M.Basis I X)
     (hJ : M.Basis J X) : ∃ e ∈ J \ I, M.Indep (insert e I) := by
-  rw [← base_restrict_iff] at hI' ; rw [← base_restrict_iff] at hJ
+  rw [← base_restrict_iff] at hI'; rw [← base_restrict_iff] at hJ
   obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_base hI' hJ
   exact ⟨e, he, (restrict_indep_iff.mp hi).1⟩
 
@@ -374,7 +374,7 @@ theorem Basis.exchange (hIX : M.Basis I X) (hJX : M.Basis J X) (he : e ∈ I \ J
 
 theorem Basis.eq_exchange_of_diff_eq_singleton (hI : M.Basis I X) (hJ : M.Basis J X)
     (hIJ : I \ J = {e}) : ∃ f ∈ J \ I, J = insert f I \ {e} := by
-  rw [← base_restrict_iff] at hI hJ ; exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
+  rw [← base_restrict_iff] at hI hJ; exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
 
 theorem Basis'.encard_eq_encard (hI : M.Basis' I X) (hJ : M.Basis' J X) : I.encard = J.encard := by
   rw [← base_restrict_iff'] at hI hJ; exact hI.card_eq_card_of_base hJ
