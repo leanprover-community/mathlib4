@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
 import Mathlib.Data.Finset.Antidiagonal
-import Mathlib.Data.Finset.Antidiagonal
 
 #align_import data.finset.nat_antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -16,7 +15,6 @@ import Mathlib.Data.Finset.Antidiagonal
 This file defines the antidiagonals of ℕ × ℕ as finsets: the `n`-th antidiagonal is the finset of
 pairs `(i, j)` such that `i + j = n`. This is useful for polynomial multiplication and more
 generally for sums going from `0` to `n`.
-
 
 ## Notes
 
@@ -39,8 +37,7 @@ instance instHasAntidiagonal : HasAntidiagonal ℕ where
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by
-  simp [Finset.HasAntidiagonal.antidiagonal]
+theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
 #align finset.nat.card_antidiagonal Finset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
@@ -94,7 +91,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
     (antidiagonal n).filter (fun a ↦ a.snd ≤ k) = (antidiagonal k).map
       (Embedding.prodMap ⟨_, add_left_injective (n - k)⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
-  suffices i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i by simpa [mem_antidiagonal]
+  suffices i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i by simpa
   refine' ⟨fun hi ↦ ⟨k - j, tsub_add_cancel_of_le hi.2, _⟩, _⟩
   · rw [add_comm, tsub_add_eq_add_tsub h, ← hi.1, add_assoc, Nat.add_sub_of_le hi.2,
       add_tsub_cancel_right]
@@ -113,13 +110,13 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   rw [← map_prodComm_antidiagonal]
   simp_rw [aux₁, ← map_filter, antidiagonal_filter_snd_le_of_le h, map_map]
   ext ⟨i, j⟩
-  simpa [mem_antidiagonal] using aux₂ i j
+  simpa using aux₂ i j
 
 @[simp] lemma antidiagonal_filter_le_fst_of_le {n k : ℕ} (h : k ≤ n) :
     (antidiagonal n).filter (fun a ↦ k ≤ a.fst) = (antidiagonal (n - k)).map
       (Embedding.prodMap ⟨_, add_left_injective k⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
-  suffices i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i by simpa [mem_antidiagonal]
+  suffices i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i by simpa
   refine' ⟨fun hi ↦ ⟨i - k, _, tsub_add_cancel_of_le hi.2⟩, _⟩
   · rw [← Nat.sub_add_comm hi.2, hi.1]
   · rintro ⟨l, hl, rfl⟩
@@ -137,7 +134,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   rw [← map_prodComm_antidiagonal]
   simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h, map_map]
   ext ⟨i, j⟩
-  simpa [mem_antidiagonal] using aux₂ i j
+  simpa using aux₂ i j
 
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. --/
 @[simps]
