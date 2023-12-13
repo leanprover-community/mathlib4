@@ -180,7 +180,9 @@ lemma isIntegralCurve_comp_add {dt : ℝ} :
 end Translation
 
 /-! ### Scaling lemmas -/
+
 section Scaling
+
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
