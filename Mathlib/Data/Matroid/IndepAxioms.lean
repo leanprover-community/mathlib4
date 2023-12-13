@@ -44,7 +44,7 @@ made essentially invisible by the simplifier when working with `M`.
 Because of this setup, we don't define any API for `IndepMatroid`, as it would be
 a redundant copy of the existing API for `Matroid.Indep`.
 (In particular, one could define a natural equivalence `e : IndepMatroid α ≃ Matroid α`
-with `e.toFun = IndepMatroid.toMatroid`, but this would be pointless, as there is no need
+with `e.toFun = IndepMatroid.matroid`, but this would be pointless, as there is no need
 for the inverse of `e`).
 
 ## Main definitions
@@ -236,7 +236,7 @@ attribute [pp_dot] Indep E
         ⟨hB₀J.trans <| subset_insert _ _,hfi,insert_subset hfE₀ hJss⟩ (subset_insert _ _)))
 
     -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
-    rw [ncard_insert_of_not_mem heI₀ hI₀fin, ←Nat.lt_iff_add_one_le] at hcard
+    rw [ncard_insert_of_not_mem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
 
     obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
     exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
@@ -378,7 +378,7 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
     (indep_subset := indep_subset)
     (indep_aug := by
       refine fun {I J} hI hJ hIJ ↦ indep_aug hI hJ ?_
-      rwa [←Nat.cast_lt (α := ℕ∞), (hE.subset (subset_ground hJ)).cast_ncard_eq,
+      rwa [← Nat.cast_lt (α := ℕ∞), (hE.subset (subset_ground hJ)).cast_ncard_eq,
         (hE.subset (subset_ground hI)).cast_ncard_eq] )
     (indep_bdd := ⟨E.ncard, fun I hI ↦ by
       rw [hE.cast_ncard_eq]

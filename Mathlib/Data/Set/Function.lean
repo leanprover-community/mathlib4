@@ -68,7 +68,7 @@ theorem eq_restrict_iff {s : Set α} {f : ∀ a : s, π a} {g : ∀ a, π a} :
 
 @[simp]
 theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) = f '' s :=
-  (range_comp _ _).trans <| congr_arg ((· '' ·) f) Subtype.range_coe
+  (range_comp _ _).trans <| congr_arg (f '' ·) Subtype.range_coe
 #align set.range_restrict Set.range_restrict
 
 theorem image_restrict (f : α → β) (s t : Set α) :
@@ -371,6 +371,11 @@ theorem MapsTo.restrict_commutes (f : α → β) (s : Set α) (t : Set β) (h : 
 theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t x : β) = f x :=
   rfl
 #align set.maps_to.coe_restrict_apply Set.MapsTo.val_restrict_apply
+
+theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (k : ℕ) :
+    h.restrict^[k] x = f^[k] x := by
+  induction' k with k ih; · simp
+  simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
 
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
@@ -1004,6 +1009,10 @@ theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
   h.surjOn.image_eq_of_mapsTo h.mapsTo
 #align set.bij_on.image_eq Set.BijOn.image_eq
 
+lemma _root_.Equiv.image_eq_iff_bijOn (e : α ≃ β) : e '' s = t ↔ BijOn e s t :=
+  ⟨fun h ↦ ⟨(mapsTo_image e s).mono_right h.subset, e.injective.injOn _, h ▸ surjOn_image e s⟩,
+  BijOn.image_eq⟩
+
 lemma bijOn_id (s : Set α) : BijOn id s s := ⟨s.mapsTo_id, s.injOn_id, s.surjOn_id⟩
 #align set.bij_on_id Set.bijOn_id
 
@@ -1302,7 +1311,7 @@ theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨x', hx', rfl⟩ he
-  rw [←invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
+  rw [← invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
     (invFunOn f s) '' (f '' s) ⊆ s := by

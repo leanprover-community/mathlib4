@@ -61,7 +61,7 @@ theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
 theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
   cases n with
   | ofNat =>
-    rw [←negOfNat_eq, bodd_negOfNat]
+    rw [← negOfNat_eq, bodd_negOfNat]
     simp
   | negSucc n =>
     rw [neg_negSucc, bodd_coe, Nat.bodd_succ]
@@ -77,8 +77,8 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
   cases' n with n n <;>
   simp only [ofNat_eq_coe, ofNat_add_negSucc, negSucc_add_ofNat,
              negSucc_add_negSucc, bodd_subNatNat] <;>
-  simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_add, Bool.xor_comm, ←Nat.cast_add]
-  rw [←Nat.succ_add, add_assoc]
+  simp only [negSucc_coe, bodd_neg, bodd_coe, ← Nat.bodd_add, Bool.xor_comm, ← Nat.cast_add]
+  rw [← Nat.succ_add, add_assoc]
 -- Porting note: Heavily refactored proof, used to work all with `simp`:
 -- `by cases m with m m; cases n with n n; unfold has_add.add;`
 -- `simp [int.add, -of_nat_eq_coe, bool.xor_comm]`
@@ -89,7 +89,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   cases' m with m m <;> cases' n with n n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
-  simp only [negSucc_coe, bodd_neg, bodd_coe, ←Nat.bodd_mul]
+  simp only [negSucc_coe, bodd_neg, bodd_coe, ← Nat.bodd_mul]
 -- Porting note: Heavily refactored proof, used to be:
 -- `by cases m with m m; cases n with n n;`
 -- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.xor_comm]`
@@ -407,15 +407,15 @@ attribute [local simp] Int.zero_div
 
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
-    congr_arg ofNat (by simp [Nat.pow_add, mul_assoc])
+    congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by dsimp; simp [- Nat.shiftLeft_eq, ← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
+        by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
         dsimp
-        simp [- Nat.shiftLeft_eq, Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
+        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
@@ -433,7 +433,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 #align int.shiftl_sub Int.shiftLeft_sub
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
-  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
+  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftLeft_eq_mul_pow
 
@@ -445,7 +445,7 @@ theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
-  congr_arg ((↑) : ℕ → ℤ) (by simp)
+  congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
 #align int.one_shiftl Int.one_shiftLeft
 
 @[simp]

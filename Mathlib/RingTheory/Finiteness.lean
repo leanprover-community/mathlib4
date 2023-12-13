@@ -670,7 +670,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
   classical
     obtain ⟨s, hs⟩ := h.out
     refine' ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr fun x _ => _⟩⟩
-    apply @TensorProduct.induction_on _ _ _ _ _ _ _ _ _ x
+    apply TensorProduct.induction_on (motive := _) x
     · exact zero_mem _
     · intro x y
       -- Porting note: new TC reminder

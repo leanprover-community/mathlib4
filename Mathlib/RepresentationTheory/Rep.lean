@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.RepresentationTheory.Action
+import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 
 #align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
@@ -372,7 +372,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
-    rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
+    rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
     erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
     simp only [one_smul, smul_eq_mul, mul_one]
     · -- This goal didn't exist before leanprover/lean4#2644
@@ -431,9 +431,9 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
       comm := fun g => by
         refine' LinearMap.ext fun x => LinearMap.ext fun y => _
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
-        rw [←hom_comm_apply]
+        rw [← hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
-        simp only [←map_mul, mul_inv_self, map_one]
+        simp only [← map_mul, mul_inv_self, map_one]
         rfl }
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
@@ -686,7 +686,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
 /- Porting note: rest of broken proof was `simp`. -/
-        rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
+        rw [AddEquiv.trans_apply]
         rw [AddEquiv.trans_apply]
         erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
@@ -716,7 +716,7 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
           simp only [Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-          erw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
+          erw [AddEquiv.trans_apply,
             Representation.asModuleEquiv_symm_map_smul]
           rfl })
     fun g => by ext; apply unit_iso_comm

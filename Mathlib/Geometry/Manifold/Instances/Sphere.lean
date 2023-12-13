@@ -229,7 +229,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     · exact sq _
   -- Porting note : added to work around cancel_denoms and nlinarith failures
   have duh : ‖y.val‖ ^ 2 = 1 - a ^ 2 := by
-    rw [←Submodule.coe_norm, pythag]; ring
+    rw [← Submodule.coe_norm, pythag]; ring
   -- two facts which will be helpful for clearing denominators in the main calculation
   have ha : 1 - a ≠ 0 := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
@@ -281,7 +281,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`; this
 is the version as a local homeomorphism. -/
-def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
+def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
@@ -289,19 +289,19 @@ def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ �
   map_source' := by simp
   map_target' {w} _ := fun h => (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
   left_inv' x hx := stereo_left_inv hv fun h => hx (by
-    rw [←h] at hv
+    rw [← h] at hv
     apply Subtype.ext
     dsimp
     exact h)
   right_inv' w _ := stereo_right_inv hv w
   open_source := isOpen_compl_singleton
   open_target := isOpen_univ
-  continuous_toFun :=
+  continuousOn_toFun :=
     continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
       dsimp
       exact
         h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
-  continuous_invFun := (continuous_stereoInvFun hv).continuousOn
+  continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 #align stereographic stereographic
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
@@ -364,10 +364,10 @@ space `E`.  This version has codomain the Euclidean space of dimension `n`, and 
 composing the original sterographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    LocalHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
+    PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
-            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toLocalHomeomorph
+            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toPartialHomeomorph
 #align stereographic' stereographic'
 
 @[simp]
@@ -430,12 +430,12 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
-      simp only [LocalHomeomorph.trans_toLocalEquiv, LocalHomeomorph.symm_toLocalEquiv,
+      simp only [PartialHomeomorph.trans_toLocalEquiv, PartialHomeomorph.symm_toLocalEquiv,
         LocalEquiv.trans_source, LocalEquiv.symm_source, stereographic'_target,
         stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id.def, comp_apply, Submodule.subtypeL_apply, LocalHomeomorph.coe_coe_symm,
+      simp only [id.def, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
         innerSL_apply, Ne.def, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
@@ -511,7 +511,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   dsimp [chartAt]
   -- rw [LinearIsometryEquiv.toHomeomorph_symm]
-  -- rw [←LinearIsometryEquiv.coe_toHomeomorph]
+  -- rw [← LinearIsometryEquiv.coe_toHomeomorph]
   simp only [chartAt, stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
