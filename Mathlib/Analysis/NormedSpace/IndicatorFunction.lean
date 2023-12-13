@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Order.Support
 
 #align_import analysis.normed_space.indicator_function from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 

@@ -18,8 +18,11 @@ When `f'` is onto, we show that `f` is locally onto.
 When `f'` is a continuous linear equiv, we show that `f` is a homeomorphism
 between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toPartialHomeomorph` to
 be a `PartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
+between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toPartialHomeomorph` to
+be a `PartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
 
 Maps of this type naturally appear in the proof of the inverse function theorem (see next section),
+and `ApproximatesLinearOn.toPartialHomeomorph` will imply that the locally inverse function
 and `ApproximatesLinearOn.toPartialHomeomorph` will imply that the locally inverse function
 exists.
 
@@ -356,25 +359,25 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
 Should not be used outside of this file, because it is superseded by `toPartialHomeomorph` below.
 
 This is a first step towards the inverse function. -/
-def toLocalEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : LocalEquiv E F :=
-  (hf.injOn hc).toLocalEquiv _ _
-#align approximates_linear_on.to_local_equiv ApproximatesLinearOn.toLocalEquiv
+def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) : PartialEquiv E F :=
+  (hf.injOn hc).toPartialEquiv _ _
+#align approximates_linear_on.to_local_equiv ApproximatesLinearOn.toPartialEquiv
 
 /-- The inverse function is continuous on `f '' s`.
 Use properties of `PartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toLocalEquiv hc).symm (f '' s) := by
+    (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
-  refine' ((hf.antilipschitz hc).to_rightInvOn' _ (hf.toLocalEquiv hc).right_inv').continuous
-  exact fun x hx => (hf.toLocalEquiv hc).map_target hx
+  refine' ((hf.antilipschitz hc).to_rightInvOn' _ (hf.toPartialEquiv hc).right_inv').continuous
+  exact fun x hx => (hf.toPartialEquiv hc).map_target hx
 #align approximates_linear_on.inverse_continuous_on ApproximatesLinearOn.inverse_continuousOn
 
 /-- The inverse function is approximated linearly on `f '' s` by `f'.symm`. -/
 theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Subsingleton E ∨ c < N⁻¹) :
-    ApproximatesLinearOn (hf.toLocalEquiv hc).symm (f'.symm : F →L[𝕜] E) (f '' s)
+    ApproximatesLinearOn (hf.toPartialEquiv hc).symm (f'.symm : F →L[𝕜] E) (f '' s)
       (N * (N⁻¹ - c)⁻¹ * c) := fun x hx y hy ↦ by
-  set A := hf.toLocalEquiv hc
+  set A := hf.toPartialEquiv hc
   have Af : ∀ z, A z = f z := fun z => rfl
   rcases (mem_image _ _ _).1 hx with ⟨x', x's, rfl⟩
   rcases (mem_image _ _ _).1 hy with ⟨y', y's, rfl⟩
@@ -403,7 +406,7 @@ variable (f s)
 returns a local homeomorph with `toFun = f` and `source = s`. -/
 def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : PartialHomeomorph E F where
-  toLocalEquiv := hf.toLocalEquiv hc
+  toPartialEquiv := hf.toPartialEquiv hc
   open_source := hs
   open_target := hf.open_image f'.toNonlinearRightInverse hs <| by
     rwa [f'.toEquiv.subsingleton_congr] at hc
