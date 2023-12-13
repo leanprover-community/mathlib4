@@ -105,6 +105,12 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   map_smul' := smul_modByMonic
 #align polynomial.mod_by_monic_hom Polynomial.modByMonicHom
 
+theorem neg_modByMonic (p mod : R[X]) : (-p) %ₘ mod = - (p %ₘ mod) :=
+  (modByMonicHom mod).map_neg p
+
+theorem sub_modByMonic (a b mod : R[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod :=
+  (modByMonicHom mod).map_sub a b
+
 end
 
 section
@@ -133,9 +139,8 @@ instance : NoZeroDivisors R[X] where
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
-  rw [← WithBot.coe_eq_coe, ← Nat.cast_withBot, ←degree_eq_natDegree (mul_ne_zero hp hq),
-    WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree hp, ← Nat.cast_withBot,
-    ← degree_eq_natDegree hq, degree_mul]
+  rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
+    Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
@@ -371,7 +376,7 @@ introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the i
 theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
   classical
-  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, Nat.le_find_iff]
+  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   cases' n with n;
@@ -505,7 +510,7 @@ theorem exists_multiset_roots [DecidableEq R] :
         calc
           (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by
             congr
-            exact_mod_cast Multiset.card_cons _ _
+            exact mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
               exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
@@ -525,8 +530,8 @@ theorem exists_multiset_roots [DecidableEq R] :
 termination_by _ p _ => natDegree p
 decreasing_by {
   simp_wf
-  apply WithBot.coe_lt_coe.mp
-  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0, ←Nat.cast_withBot] at wf;
+  apply (Nat.cast_lt (α := WithBot ℕ)).mp
+  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf;
   assumption}
 #align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
 
@@ -821,8 +826,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
             rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
             exact degree_C_le))
   else by
-    rw [← WithBot.coe_le_coe]
-    simp only [← Nat.cast_withBot]
+    rw [← Nat.cast_le (α := WithBot ℕ)]
     rw [← degree_X_pow_sub_C (Nat.pos_of_ne_zero hn) a]
     exact card_roots (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a))
 #align polynomial.card_nth_roots Polynomial.card_nthRoots
@@ -855,6 +859,29 @@ theorem mem_nthRootsFinset {n : ℕ} (h : 0 < n) {x : R} :
 @[simp]
 theorem nthRootsFinset_zero : nthRootsFinset 0 R = ∅ := by classical simp [nthRootsFinset_def]
 #align polynomial.nth_roots_finset_zero Polynomial.nthRootsFinset_zero
+
+theorem mul_mem_nthRootsFinset
+    {η₁ η₂ : R} (hη₁ : η₁ ∈ nthRootsFinset n R) (hη₂ : η₂ ∈ nthRootsFinset n R) :
+    η₁ * η₂ ∈ nthRootsFinset n R := by
+  cases n with
+  | zero =>
+    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη₁
+  | succ n =>
+    rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
+    rw [mul_pow, hη₁, hη₂, one_mul]
+
+theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R) : η ≠ 0 := by
+  nontriviality R
+  rintro rfl
+  cases n with
+  | zero =>
+    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
+  | succ n =>
+    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
+    exact zero_ne_one hη
+
+theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
+  rw [mem_nthRootsFinset hn, one_pow]
 
 end NthRoots
 
@@ -914,17 +941,100 @@ theorem funext [Infinite R] {p q : R[X]} (ext : ∀ r : R, p.eval r = q.eval r) 
 
 variable [CommRing T]
 
-/-- The set of distinct roots of `p` in `E`.
+/-- Given a polynomial `p` with coefficients in a ring `T` and a `T`-algebra `S`, `aroots p S` is
+the multiset of roots of `p` regarded as a polynomial over `S`. -/
+noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
+  (p.map (algebraMap T S)).roots
 
-If you have a non-separable polynomial, use `Polynomial.roots` for the multiset
+theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+    p.aroots S = (p.map (algebraMap T S)).roots :=
+  rfl
+
+theorem mem_aroots' [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {a : S} :
+    a ∈ p.aroots S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
+  rw [mem_roots', IsRoot.def, ← eval₂_eq_eval_map, aeval_def]
+
+theorem mem_aroots [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {p : T[X]} {a : S} : a ∈ p.aroots S ↔ p ≠ 0 ∧ aeval a p = 0 := by
+  rw [mem_aroots', Polynomial.map_ne_zero_iff]
+  exact NoZeroSMulDivisors.algebraMap_injective T S
+
+theorem aroots_mul [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {p q : T[X]} (hpq : p * q ≠ 0) :
+    (p * q).aroots S = p.aroots S + q.aroots S := by
+  suffices : map (algebraMap T S) p * map (algebraMap T S) q ≠ 0
+  · rw [aroots_def, Polynomial.map_mul, roots_mul this]
+  rwa [← Polynomial.map_mul, Polynomial.map_ne_zero_iff
+    (NoZeroSMulDivisors.algebraMap_injective T S)]
+
+@[simp]
+theorem aroots_X_sub_C [CommRing S] [IsDomain S] [Algebra T S]
+    (r : T) : aroots (X - C r) S = {algebraMap T S r} := by
+  rw [aroots_def, Polynomial.map_sub, map_X, map_C, roots_X_sub_C]
+
+@[simp]
+theorem aroots_X [CommRing S] [IsDomain S] [Algebra T S] :
+    aroots (X : T[X]) S = {0} := by
+  rw [aroots_def, map_X, roots_X]
+
+@[simp]
+theorem aroots_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).aroots S = 0 := by
+  rw [aroots_def, map_C, roots_C]
+
+@[simp]
+theorem aroots_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).aroots S = 0 := by
+  rw [← C_0, aroots_C]
+
+@[simp]
+theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
+    (1 : T[X]).aroots S = 0 :=
+  aroots_C 1
+
+@[simp]
+theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
+    (C a * p).aroots S = p.aroots S := by
+  rw [aroots_def, Polynomial.map_mul, map_C, roots_C_mul]
+  rwa [map_ne_zero_iff]
+  exact NoZeroSMulDivisors.algebraMap_injective T S
+
+@[simp]
+theorem aroots_smul_nonzero [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
+    (a • p).aroots S = p.aroots S := by
+  rw [smul_eq_C_mul, aroots_C_mul _ ha]
+
+@[simp]
+theorem aroots_pow [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) (n : ℕ) :
+    (p ^ n).aroots S = n • p.aroots S := by
+  rw [aroots_def, Polynomial.map_pow, roots_pow]
+
+theorem aroots_X_pow [CommRing S] [IsDomain S] [Algebra T S] (n : ℕ) :
+    (X ^ n : T[X]).aroots S = n • ({0} : Multiset S) := by
+  rw [aroots_pow, aroots_X]
+
+theorem aroots_C_mul_X_pow [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {a : T} (ha : a ≠ 0) (n : ℕ) :
+    (C a * X ^ n : T[X]).aroots S = n • ({0} : Multiset S) := by
+  rw [aroots_C_mul _ ha, aroots_X_pow]
+
+@[simp]
+theorem aroots_monomial [CommRing S] [IsDomain S] [Algebra T S]
+    [NoZeroSMulDivisors T S] {a : T} (ha : a ≠ 0) (n : ℕ) :
+    (monomial n a).aroots S = n • ({0} : Multiset S) := by
+  rw [← C_mul_X_pow_eq_monomial, aroots_C_mul_X_pow ha]
+
+/-- The set of distinct roots of `p` in `S`.
+
+If you have a non-separable polynomial, use `Polynomial.aroots` for the multiset
 where multiple roots have the appropriate multiplicity. -/
 def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   haveI := Classical.decEq S
-  (p.map (algebraMap T S)).roots.toFinset
+  (p.aroots S).toFinset
 #align polynomial.root_set Polynomial.rootSet
 
 theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [DecidableEq S] :
-    p.rootSet S = (p.map (algebraMap T S)).roots.toFinset := by
+    p.rootSet S = (p.aroots S).toFinset := by
   rw [rootSet]
   convert rfl
 #align polynomial.root_set_def Polynomial.rootSet_def
@@ -932,7 +1042,7 @@ theorem rootSet_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] [Deci
 @[simp]
 theorem rootSet_C [CommRing S] [IsDomain S] [Algebra T S] (a : T) : (C a).rootSet S = ∅ := by
   classical
-  rw [rootSet_def, map_C, roots_C, Multiset.toFinset_zero, Finset.coe_empty]
+  rw [rootSet_def, aroots_C, Multiset.toFinset_zero, Finset.coe_empty]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_C Polynomial.rootSet_C
 
@@ -972,14 +1082,12 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
 theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S] {a : S} :
     a ∈ p.rootSet S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
   classical
-  rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_roots', IsRoot.def, ← eval₂_eq_eval_map,
-    aeval_def]
+  rw [rootSet_def, Finset.mem_coe, mem_toFinset, mem_aroots']
 #align polynomial.mem_root_set' Polynomial.mem_rootSet'
 
 theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
-  rw [mem_rootSet',
-    (map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S)).ne_iff' (Polynomial.map_zero _)]
+  rw [mem_rootSet', Polynomial.map_ne_zero_iff (NoZeroSMulDivisors.algebraMap_injective T S)]
 #align polynomial.mem_root_set Polynomial.mem_rootSet
 
 theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
@@ -1087,7 +1195,7 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     IsCoprime (X - C a) (X - C b) :=
   ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
     rw [neg_mul_comm, ← left_distrib, neg_add_eq_sub, sub_sub_sub_cancel_left, ← C_sub, ← C_mul]
-    rw [←C_1]
+    rw [← C_1]
     congr
     exact h.val_inv_mul⟩
 set_option linter.uppercaseLean3 false in
@@ -1215,7 +1323,7 @@ theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f 
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   by_cases hp0 : p = 0
   · simp only [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
-      rootMultiplicity_zero]
+      rootMultiplicity_zero, le_refl]
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
 
@@ -1230,7 +1338,7 @@ theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p
 theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A →+* B}
     (hf : Function.Injective f) : p.roots.map f ≤ (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero]; rfl
+  · simp only [hp0, roots_zero, Multiset.map_zero, Polynomial.map_zero, le_rfl]
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.map_roots_le_of_injective Polynomial.map_roots_le_of_injective
 
@@ -1243,7 +1351,7 @@ theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}
     (hf : Function.Injective f) : Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]; rfl
+  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero, le_rfl]
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 

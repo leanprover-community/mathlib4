@@ -192,13 +192,13 @@ theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m R) :
 #align matrix.to_linear_mapₛₗ₂'_aux_eq Matrix.toLinearMapₛₗ₂'_aux_eq
 
 theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m R) (x : n → R₁) (y : m → R₂) :
-  -- porting note: we don't seem to have `∑ i j` as valid notation yet
+    -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) * M i j * σ₂ (y j) :=
   rfl
 #align matrix.to_linear_mapₛₗ₂'_apply Matrix.toLinearMapₛₗ₂'_apply
 
 theorem Matrix.toLinearMap₂'_apply (M : Matrix n m R) (x : n → R) (y : m → R) :
-  -- porting note: we don't seem to have `∑ i j` as valid notation yet
+    -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMap₂' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   rfl
 #align matrix.to_linear_map₂'_apply Matrix.toLinearMap₂'_apply
@@ -603,9 +603,9 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     simp only [← mul_assoc, P.transpose_nonsing_inv]
     -- porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
-    · rw [mul_assoc, mul_assoc, ←mul_assoc J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
-    · rw [mul_assoc, mul_assoc, ←mul_assoc _ _ J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc _ _ J]
       rfl
   rw [Units.eq_mul_inv_iff_mul_eq]
   conv_rhs => rw [mul_assoc]

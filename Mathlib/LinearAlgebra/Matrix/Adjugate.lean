@@ -154,7 +154,7 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
 /-- Use linearity of `cramer` to take it out of a summation. -/
 theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
     (∑ x in s, cramer A (f x)) = cramer A (∑ x in s, f x) :=
-  (LinearMap.map_sum (cramer A)).symm
+  (map_sum (cramer A) ..).symm
 #align matrix.sum_cramer Matrix.sum_cramer
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
@@ -223,7 +223,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   apply Finset.sum_congr rfl
   intro σ _
   congr 1
-  by_cases i = σ j
+  by_cases h : i = σ j
   · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
     congr
     ext j'

@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 ## Implementation details
 
 Galois insertions can be used to lift order structures from one type to another.
-For example if `α` is a complete lattice, and `l : α → β`, and `u : β → α` form a Galois insertion,
+For example, if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,
 then `β` is also a complete lattice. `l` is the lower adjoint and `u` is the upper adjoint.
 
 An example of a Galois insertion is in group theory. If `G` is a group, then there is a Galois
@@ -56,8 +56,8 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → So
   {b b₁ b₂ : β}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
-  `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
-    but do not depend on the category theory library in mathlib. -/
+`l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
+but do not depend on the category theory library in mathlib. -/
 def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α) :=
   ∀ a b, l a ≤ b ↔ a ≤ u b
 #align galois_connection GaloisConnection
@@ -379,6 +379,16 @@ end GaloisConnection
 
 section
 
+/-- `sSup` and `Iic` form a Galois connection. -/
+theorem gc_sSup_Iic [CompleteSemilatticeSup α] :
+    GaloisConnection (sSup : Set α → α) (Iic : α → Set α) :=
+  fun _ _ ↦ sSup_le_iff
+
+/-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois connection. -/
+theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
+    GaloisConnection (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
+  fun _ _ ↦ le_sInf_iff.symm
+
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {f : α → β → γ} {s : Set α}
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
@@ -390,18 +400,18 @@ theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u�
 theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sSup s) (sInf t) :=
-  @sSup_image2_eq_sSup_sSup _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sSup_image2_eq_sSup_sSup (β := βᵒᵈ) h₁ h₂
 #align Sup_image2_eq_Sup_Inf sSup_image2_eq_sSup_sInf
 
 theorem sSup_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sInf s) (sSup t) :=
-  @sSup_image2_eq_sSup_sSup αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sSup_image2_eq_sSup_sSup (α := αᵒᵈ) h₁ h₂
 #align Sup_image2_eq_Inf_Sup sSup_image2_eq_sInf_sSup
 
 theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sInf s) (sInf t) :=
-  @sSup_image2_eq_sSup_sSup αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sSup_image2_eq_sSup_sSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 #align Sup_image2_eq_Inf_Inf sSup_image2_eq_sInf_sInf
 
 theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
@@ -412,18 +422,18 @@ theorem sInf_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap 
 theorem sInf_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sInf s) (sSup t) :=
-  @sInf_image2_eq_sInf_sInf _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sInf_image2_eq_sInf_sInf (β := βᵒᵈ) h₁ h₂
 #align Inf_image2_eq_Inf_Sup sInf_image2_eq_sInf_sSup
 
 theorem sInf_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) : sInf (image2 u s t) = u (sSup s) (sInf t) :=
-  @sInf_image2_eq_sInf_sInf αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sInf_image2_eq_sInf_sInf (α := αᵒᵈ) h₁ h₂
 #align Inf_image2_eq_Sup_Inf sInf_image2_eq_sSup_sInf
 
 theorem sInf_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     sInf (image2 u s t) = u (sSup s) (sSup t) :=
-  @sInf_image2_eq_sInf_sInf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  sInf_image2_eq_sInf_sInf (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 #align Inf_image2_eq_Sup_Sup sInf_image2_eq_sSup_sSup
 
 end
@@ -755,7 +765,7 @@ def GaloisCoinsertion.monotoneIntro [Preorder α] [Preorder β] {l : α → β} 
   (GaloisInsertion.monotoneIntro hl.dual hu.dual hlu hul).ofDual
 #align galois_coinsertion.monotone_intro GaloisCoinsertion.monotoneIntro
 
-/-- Make a `GaloisCoinsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
+/-- Make a `GaloisCoinsertion l u` from a `GaloisConnection l u` such that `∀ a, u (l a) ≤ a` -/
 def GaloisConnection.toGaloisCoinsertion {α β : Type*} [Preorder α] [Preorder β] {l : α → β}
     {u : β → α} (gc : GaloisConnection l u) (h : ∀ a, u (l a) ≤ a) : GaloisCoinsertion l u :=
   { choice := fun x _ => u x
@@ -937,11 +947,21 @@ end lift
 
 end GaloisCoinsertion
 
+/-- `sSup` and `Iic` form a Galois insertion. -/
+def gi_sSup_Iic [CompleteSemilatticeSup α] :
+    GaloisInsertion (sSup : Set α → α) (Iic : α → Set α) :=
+  gc_sSup_Iic.toGaloisInsertion fun _ ↦ le_sSup le_rfl
+
+/-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois coinsertion. -/
+def gci_Ici_sInf [CompleteSemilatticeInf α] :
+    GaloisCoinsertion (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
+  gc_Ici_sInf.toGaloisCoinsertion fun _ ↦ sInf_le le_rfl
+
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
 def WithBot.giUnbot'Bot [Preorder α] [OrderBot α] :
     GaloisInsertion (WithBot.unbot' ⊥) (some : α → WithBot α) where
-  gc _ _ := WithBot.unbot'_bot_le_iff
+  gc _ _ := WithBot.unbot'_le_iff (fun _ ↦ bot_le)
   le_l_u _ := le_rfl
   choice o _ := o.unbot' ⊥
   choice_eq _ _ := rfl

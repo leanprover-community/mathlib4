@@ -59,7 +59,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     simp [zsmul_eq_smul_cast ℝ 2]
   have x_ne_zero : x ≠ 0 := by simpa using sub_ne_zero.2 hab.symm
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
-    exists_linear_independent_pair_of_one_lt_rank h x_ne_zero
+    exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
     apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
     intro t t' htt'
@@ -89,12 +89,12 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
     at ht
   have JA : JoinedIn sᶜ a z := by
-    apply JoinedIn_of_segment_subset
+    apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
     convert ht.2
     exact Ia.symm
   have JB : JoinedIn sᶜ b z := by
-    apply JoinedIn_of_segment_subset
+    apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
     convert ht.1
     exact Ib.symm

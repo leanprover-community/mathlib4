@@ -43,11 +43,9 @@ density one for the rescaled copies `{x} + r • t` of a given set `t` with posi
 small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 assert_not_exists MeasureTheory.integral
 
-open TopologicalSpace Set Filter Metric
+open TopologicalSpace Set Filter Metric Bornology
 
 open scoped ENNReal Pointwise Topology NNReal
 
@@ -78,6 +76,29 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · classical convert parallelepiped_single (ι := ι) 1
     · exact zero_le_one
 #align basis.parallelepiped_basis_fun Basis.parallelepiped_basisFun
+
+/-- A parallelepiped can be expressed on the standard basis. -/
+theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (b : Basis ι ℝ E) :
+    b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
+      b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
+  classical
+  rw [← Basis.parallelepiped_basisFun, ← Basis.parallelepiped_map]
+  congr with x
+  simp
+
+open MeasureTheory MeasureTheory.Measure
+
+theorem Basis.map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
+    [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
+    (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
+    map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
+  have : IsAddHaarMeasure (map f b.addHaar) :=
+    AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
+  rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
+    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
+  erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
 
 namespace MeasureTheory
 
@@ -117,7 +138,7 @@ namespace Measure
 zero. This auxiliary lemma proves this assuming additionally that the set is bounded. -/
 theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
-    [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (sb : Bounded s) (hu : Bounded (range u))
+    [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (sb : IsBounded s) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   by_contra h
   apply lt_irrefl ∞
@@ -128,14 +149,14 @@ theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [NormedAddCommGro
     _ = μ (⋃ n, {u n} + s) := Eq.symm <| measure_iUnion hs fun n => by
       simpa only [image_add_left, singleton_add] using measurable_id.const_add _ h's
     _ = μ (range u + s) := by rw [← iUnion_add, iUnion_singleton_eq_range]
-    _ < ∞ := Bounded.measure_lt_top (hu.add sb)
+    _ < ∞ := (hu.add sb).measure_lt_top
 #align measure_theory.measure.add_haar_eq_zero_of_disjoint_translates_aux MeasureTheory.Measure.addHaar_eq_zero_of_disjoint_translates_aux
 
 /-- If a set is disjoint of its translates by infinitely many bounded vectors, then it has measure
 zero. -/
 theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
-    [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : Bounded (range u))
+    [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0
   · apply le_antisymm _ (zero_le _)
@@ -146,7 +167,7 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
       _ = 0 := by simp only [H, tsum_zero]
   intro R
   apply addHaar_eq_zero_of_disjoint_translates_aux μ u
-    (bounded_closedBall.mono (inter_subset_right _ _)) hu _ (h's.inter measurableSet_closedBall)
+    (isBounded_closedBall.subset (inter_subset_right _ _)) hu _ (h's.inter measurableSet_closedBall)
   refine pairwise_disjoint_mono hs fun n => ?_
   exact add_subset_add Subset.rfl (inter_subset_left _ _)
 #align measure_theory.measure.add_haar_eq_zero_of_disjoint_translates MeasureTheory.Measure.addHaar_eq_zero_of_disjoint_translates
@@ -158,10 +179,10 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain ⟨x, hx⟩ : ∃ x, x ∉ s := by
     simpa only [Submodule.eq_top_iff', not_exists, Ne.def, not_forall] using hs
   obtain ⟨c, cpos, cone⟩ : ∃ c : ℝ, 0 < c ∧ c < 1 := ⟨1 / 2, by norm_num, by norm_num⟩
-  have A : Bounded (range fun n : ℕ => c ^ n • x) :=
-    haveI : Tendsto (fun n : ℕ => c ^ n • x) atTop (𝓝 ((0 : ℝ) • x)) :=
+  have A : IsBounded (range fun n : ℕ => c ^ n • x) :=
+    have : Tendsto (fun n : ℕ => c ^ n • x) atTop (𝓝 ((0 : ℝ) • x)) :=
       (tendsto_pow_atTop_nhds_0_of_lt_1 cpos.le cone).smul_const x
-    bounded_range_of_tendsto _ this
+    isBounded_range_of_tendsto _ this
   apply addHaar_eq_zero_of_disjoint_translates μ _ A _
     (Submodule.closed_of_finiteDimensional s).measurableSet
   intro m n hmn
@@ -321,7 +342,7 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
 
 
 theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
-    Measure.map ((· • ·) r) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
+    Measure.map (r • ·) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
@@ -333,9 +354,9 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
 
 @[simp]
 theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
-    μ ((· • ·) r ⁻¹' s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s :=
+    μ ((r • ·) ⁻¹' s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s :=
   calc
-    μ ((· • ·) r ⁻¹' s) = Measure.map ((· • ·) r) μ s :=
+    μ ((r • ·) ⁻¹' s) = Measure.map (r • ·) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
       rw [map_addHaar_smul μ hr, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
@@ -401,14 +422,14 @@ general Haar measures on general commutative groups. -/
 
 theorem addHaar_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) : μ (ball x r) = μ (ball (0 : E) r) := by
-  have : ball (0 : E) r = (· + ·) x ⁻¹' ball x r := by simp [preimage_add_ball]
+  have : ball (0 : E) r = (x + ·) ⁻¹' ball x r := by simp [preimage_add_ball]
   rw [this, measure_preimage_add]
 #align measure_theory.measure.add_haar_ball_center MeasureTheory.Measure.addHaar_ball_center
 
 theorem addHaar_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (closedBall (0 : E) r) := by
-  have : closedBall (0 : E) r = (· + ·) x ⁻¹' closedBall x r := by simp [preimage_add_closedBall]
+  have : closedBall (0 : E) r = (x + ·) ⁻¹' closedBall x r := by simp [preimage_add_closedBall]
   rw [this, measure_preimage_add]
 #align measure_theory.measure.add_haar_closed_ball_center MeasureTheory.Measure.addHaar_closedBall_center
 
@@ -556,12 +577,12 @@ variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
 /-- The Lebesgue measure associated to an alternating map. It gives measure `|ω v|` to the
 parallelepiped spanned by the vectors `v₁, ..., vₙ`. Note that it is not always a Haar measure,
 as it can be zero, but it is always locally finite and translation invariant. -/
-noncomputable irreducible_def _root_.AlternatingMap.measure (ω : AlternatingMap ℝ G ℝ (Fin n)) :
+noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) :
     Measure G :=
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 #align alternating_map.measure AlternatingMap.measure
 
-theorem _root_.AlternatingMap.measure_parallelepiped (ω : AlternatingMap ℝ G ℝ (Fin n))
+theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
@@ -569,10 +590,10 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : AlternatingMap ℝ G 
     Real.ennnorm_eq_ofReal_abs]
 #align alternating_map.measure_parallelepiped AlternatingMap.measure_parallelepiped
 
-instance (ω : AlternatingMap ℝ G ℝ (Fin n)) : IsAddLeftInvariant ω.measure := by
+instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
-instance (ω : AlternatingMap ℝ G ℝ (Fin n)) : IsLocallyFiniteMeasure ω.measure := by
+instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
 end
@@ -823,7 +844,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       exact measure_mono (inter_subset_right _ _)
   refine this.congr fun r => ?_
   congr 1
-  apply measure_toMeasurable_inter_of_sigmaFinite
+  apply measure_toMeasurable_inter_of_sFinite
   simp only [image_add_left, singleton_add]
   apply (continuous_add_left (-x)).measurable (ht.const_smul₀ r)
 #align measure_theory.measure.tendsto_add_haar_inter_smul_one_of_density_one MeasureTheory.Measure.tendsto_addHaar_inter_smul_one_of_density_one

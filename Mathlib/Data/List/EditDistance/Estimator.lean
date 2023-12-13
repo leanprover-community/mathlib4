@@ -25,7 +25,7 @@ to avoid needing the entire edit distance calculation in unlikely search paths.
 
 set_option autoImplicit true
 
-variable {α β δ : Type} [CanonicallyLinearOrderedAddMonoid δ]
+variable {α β δ : Type} [CanonicallyLinearOrderedAddCommMonoid δ]
     (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--
@@ -88,7 +88,7 @@ instance estimator' :
     simp only at eq
     dsimp [EstimatorData.bound]
     rw [eq]
-    simp only [←split]
+    simp only [← split]
     constructor
     · simp only [List.minimum_of_length_pos_le_iff]
       exact suffixLevenshtein_minimum_le_levenshtein_append _ _ _
@@ -105,19 +105,19 @@ instance estimator' :
     | [y], split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff, List.reverse_nil, List.nil_append]
       right
-      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff)
-      · simpa using b_eq
+      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff) := by
+        simpa using b_eq
       rw [b_eq]
       constructor
       · refine (?_ : _ ≤ _).trans (List.minimum_of_length_pos_le_getElem _)
         simp only [List.minimum_of_length_pos_le_iff, List.coe_minimum_of_length_pos, d_eq]
         apply le_suffixLevenshtein_cons_minimum
-      · simp [←split]
+      · simp [← split]
     | y₁ :: y₂ :: t, split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff]
       right
-      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff)
-      · simpa using b_eq
+      have b_eq : e.bound = (List.minimum_of_length_pos _, List.length e.suff) := by
+        simpa using b_eq
       rw [b_eq]
       constructor
       · simp only [d_eq, List.minimum_of_length_pos_le_iff, List.coe_minimum_of_length_pos]
@@ -133,7 +133,7 @@ instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
   Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
-instance [CanonicallyLinearOrderedAddMonoid δ]
+instance [CanonicallyLinearOrderedAddCommMonoid δ]
     (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=

@@ -29,7 +29,8 @@ Furthermore, we have the following results:
 
 open Set Filter Topology
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : Filter α}
+  {s t s₁ s₂ t₁ t₂ : Set α} {x : α}
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set α) : Filter α :=
@@ -47,6 +48,8 @@ theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
 theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : α, x ∈ t → s ∈ 𝓝 x := by
   simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
+
+lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ a ∈ s, 𝓝 a ≤ f := by simp [nhdsSet]
 
 theorem bUnion_mem_nhdsSet {t : α → Set α} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
@@ -68,6 +71,17 @@ theorem mem_nhdsSet_iff_exists : s ∈ 𝓝ˢ t ↔ ∃ U : Set α, IsOpen U ∧
   rw [← subset_interior_iff_mem_nhdsSet, subset_interior_iff]
 #align mem_nhds_set_iff_exists mem_nhdsSet_iff_exists
 
+/-- A proposition is true on a set neighborhood of `s` iff it is true on a larger open set -/
+theorem eventually_nhdsSet_iff_exists {p : α → Prop} :
+    (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∃ t, IsOpen t ∧ s ⊆ t ∧ ∀ x, x ∈ t → p x :=
+  mem_nhdsSet_iff_exists
+
+/-- A proposition is true on a set neighborhood of `s`
+iff it is eventually true near each point in the set. -/
+theorem eventually_nhdsSet_iff_forall {p : α → Prop} :
+    (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝 x, p y :=
+  mem_nhdsSet_iff_forall
+
 theorem hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 #align has_basis_nhds_set hasBasis_nhdsSet
@@ -75,6 +89,9 @@ theorem hasBasis_nhdsSet (s : Set α) : (𝓝ˢ s).HasBasis (fun U => IsOpen U �
 theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
 #align is_open.mem_nhds_set IsOpen.mem_nhdsSet
+
+/-- An open set belongs to its own set neighborhoods filter. -/
+theorem IsOpen.mem_nhdsSet_self (ho : IsOpen s) : s ∈ 𝓝ˢ s := ho.mem_nhdsSet.mpr Subset.rfl
 
 theorem principal_le_nhdsSet : 𝓟 s ≤ 𝓝ˢ s := fun _s hs =>
   (subset_interior_iff_mem_nhdsSet.mpr hs).trans interior_subset
@@ -154,3 +171,9 @@ theorem Continuous.tendsto_nhdsSet {f : α → β} {t : Set β} (hf : Continuous
   ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU =>
     ⟨f ⁻¹' U, ⟨hU.1.preimage hf, hst.mono Subset.rfl hU.2⟩, fun _ => id⟩
 #align continuous.tendsto_nhds_set Continuous.tendsto_nhdsSet
+
+lemma Continuous.tendsto_nhdsSet_nhds {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {s : Set X} {y : Y} {f : X → Y} (h : Continuous f) (h' : EqOn f (fun _ ↦ y) s) :
+    Tendsto f (𝓝ˢ s) (𝓝 y) := by
+  rw [← nhdsSet_singleton]
+  exact h.tendsto_nhdsSet h'

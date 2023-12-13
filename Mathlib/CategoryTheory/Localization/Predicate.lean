@@ -249,7 +249,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
 def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
-  (D ⥤ E) ⥤ C ⥤ E :=
+    (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 
@@ -385,6 +385,9 @@ instance compRight {E' : Type*} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lift
 instance id : Lifting L W L (𝟭 D) :=
   ⟨Functor.rightUnitor L⟩
 #align category_theory.localization.lifting.id CategoryTheory.Localization.Lifting.id
+
+@[simps]
+instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which

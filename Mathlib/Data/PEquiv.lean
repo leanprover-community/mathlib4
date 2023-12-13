@@ -43,7 +43,7 @@ pequiv, partial equivalence
 universe u v w x
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `LocalEquiv` for a version that requires `toFun` and
+  of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
 `invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 structure PEquiv (α : Type u) (β : Type v) where
   /-- The underlying partial function of a `PEquiv` -/
@@ -55,7 +55,7 @@ structure PEquiv (α : Type u) (β : Type v) where
 #align pequiv PEquiv
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `LocalEquiv` for a version that requires `toFun` and
+  of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
 `invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 infixr:25 " ≃. " => PEquiv
 
@@ -135,8 +135,11 @@ theorem symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
 theorem symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
 #align pequiv.symm_symm PEquiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (PEquiv.symm : (α ≃. β) → β ≃. α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 theorem symm_injective : Function.Injective (@PEquiv.symm α β) :=
-  LeftInverse.injective symm_symm
+  symm_bijective.injective
 #align pequiv.symm_injective PEquiv.symm_injective
 
 theorem trans_assoc (f : α ≃. β) (g : β ≃. γ) (h : γ ≃. δ) :
@@ -392,7 +395,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp
+  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and]
   intros
   split_ifs <;> simp_all
 #align pequiv.trans_single_of_eq_none PEquiv.trans_single_of_eq_none

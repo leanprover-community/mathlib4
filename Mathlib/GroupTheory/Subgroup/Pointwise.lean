@@ -39,6 +39,16 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
 #align inv_coe_set inv_coe_set
 #align neg_coe_set neg_coe_set
 
+@[to_additive (attr := simp)]
+lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
+
+@[to_additive (attr := simp)]
+lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    MulOpposite.op a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
+
 variable [Group G] [AddGroup A] {s : Set G}
 
 namespace Subgroup
@@ -145,13 +155,13 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
 #align add_subgroup.closure_add_le AddSubgroup.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
+theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
-#align subgroup.sup_eq_closure Subgroup.sup_eq_closure
-#align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure
+#align subgroup.sup_eq_closure Subgroup.sup_eq_closure_mul
+#align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure_add
 
 @[to_additive]
 theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
@@ -165,7 +175,7 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `N` is normal."]
 theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
-  rw [sup_eq_closure]
+  rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   refine closure_induction'' (p := fun x => x ∈ (H : Set G) * (N : Set G)) hx ?_ ?_ ?_ ?_
   · rintro _ ⟨x, y, hx, hy, rfl⟩
@@ -240,7 +250,7 @@ theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
 
 -- porting note: deprecate?
 @[to_additive]
-theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : opposite H) (s : Set G) :
+theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
   smul_opposite_image_mul_preimage' g h s
 #align subgroup.smul_opposite_image_mul_preimage Subgroup.smul_opposite_image_mul_preimage

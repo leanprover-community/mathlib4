@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
 import Lean
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Core
 
 /-!
@@ -82,7 +81,7 @@ private def splitIf1 (cond : Expr) (hName : Name) (loc : Location) : TacticM Uni
 list is empty.
 -/
 private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : MetaM Name := do
-  match ←hNames.get with
+  match ← hNames.get with
   | [] => mkFreshUserName `h
   | n::ns => do hNames.set ns
                 if let `(binderIdent| $x:ident) := n
@@ -105,7 +104,7 @@ private partial def splitIfsCore
     (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
     List Expr → TacticM Unit := fun done ↦ withMainContext do
   let some (_,cond) ← findIfCondAt loc
-      | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-then-else conditions to split"
+      | Meta.throwTacticEx `split_ifs (← getMainGoal) "no if-then-else conditions to split"
 
   -- If `cond` is `¬p` then use `p` instead.
   let cond := if cond.isAppOf `Not then cond.getAppArgs[0]! else cond

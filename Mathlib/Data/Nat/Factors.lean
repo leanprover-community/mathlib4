@@ -129,6 +129,7 @@ theorem factors_eq_nil (n : ℕ) : n.factors = [] ↔ n = 0 ∨ n = 1 := by
     · exact factors_one
 #align nat.factors_eq_nil Nat.factors_eq_nil
 
+open scoped List in
 theorem eq_of_perm_factors {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h : a.factors ~ b.factors) :
     a = b := by simpa [prod_factors ha, prod_factors hb] using List.Perm.prod_eq h
 #align nat.eq_of_perm_factors Nat.eq_of_perm_factors
@@ -153,6 +154,9 @@ theorem mem_factors {n p} (hn : n ≠ 0) : p ∈ factors n ↔ Prime p ∧ p ∣
   ⟨fun h => ⟨prime_of_mem_factors h, dvd_of_mem_factors h⟩, fun ⟨hprime, hdvd⟩ =>
     (mem_factors_iff_dvd hn hprime).mpr hdvd⟩
 #align nat.mem_factors Nat.mem_factors
+
+@[simp] lemma mem_factors' {n p} : p ∈ n.factors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
+  cases n <;> simp [mem_factors, *]
 
 theorem le_of_mem_factors {n p : ℕ} (h : p ∈ n.factors) : p ≤ n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -203,7 +207,7 @@ theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.perm_factors_mul Nat.perm_factors_mul
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
-theorem perm_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) :
+theorem perm_factors_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factors ~ a.factors ++ b.factors := by
   rcases a.eq_zero_or_pos with (rfl | ha)
   · simp [(coprime_zero_left _).mp hab]
@@ -216,7 +220,7 @@ theorem factors_sublist_right {n k : ℕ} (h : k ≠ 0) : n.factors <+ (n * k).f
   cases' n with hn
   · simp [zero_mul]
   apply sublist_of_subperm_of_sorted _ (factors_sorted _) (factors_sorted _)
-  simp [(perm_factors_mul (Nat.succ_ne_zero _) h).subperm_left]
+  simp only [(perm_factors_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 #align nat.factors_sublist_right Nat.factors_sublist_right
 
@@ -257,7 +261,7 @@ theorem mem_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) {p : ℕ} :
 #align nat.mem_factors_mul Nat.mem_factors_mul
 
 /-- The sets of factors of coprime `a` and `b` are disjoint -/
-theorem coprime_factors_disjoint {a b : ℕ} (hab : a.coprime b) :
+theorem coprime_factors_disjoint {a b : ℕ} (hab : a.Coprime b) :
     List.Disjoint a.factors b.factors := by
   intro q hqa hqb
   apply not_prime_one
@@ -265,7 +269,7 @@ theorem coprime_factors_disjoint {a b : ℕ} (hab : a.coprime b) :
   exact prime_of_mem_factors hqa
 #align nat.coprime_factors_disjoint Nat.coprime_factors_disjoint
 
-theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
+theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : Coprime a b) (p : ℕ) :
     p ∈ (a * b).factors ↔ p ∈ a.factors ∪ b.factors := by
   rcases a.eq_zero_or_pos with (rfl | ha)
   · simp [(coprime_zero_left _).mp hab]
@@ -299,6 +303,14 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
         eq_prime_pow_of_unique_prime_dvd hn fun {_} hprime hdvd =>
           hprime.eq_two_or_odd'.resolve_right fun hodd => H ⟨_, hprime, hdvd, hodd⟩⟩
 #align nat.eq_two_pow_or_exists_odd_prime_and_dvd Nat.eq_two_pow_or_exists_odd_prime_and_dvd
+
+theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
+    4 ∣ n ∨ ∃ p, Prime p ∧ p ∣ n ∧ Odd p := by
+  obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
+  · contradiction
+  · contradiction
+  · simp [pow_succ, mul_assoc]
+  · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat
 

@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Function.OfArity
 import Mathlib.Order.WellFounded
 
 #align_import set_theory.zfc.basic from "leanprover-community/mathlib"@"f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a"
@@ -30,8 +31,6 @@ Then the rest is usual set theory.
 
 ## Other definitions
 
-* `Arity α n`: `n`-ary function `α → α → ... → α`. Defined inductively.
-* `Arity.const a n`: `n`-ary constant function equal to `a`.
 * `PSet.Type`: Underlying type of a pre-set.
 * `PSet.Func`: Underlying family of pre-sets of a pre-set.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
@@ -65,49 +64,7 @@ set_option linter.uppercaseLean3 false
 
 universe u v
 
-/-- The type of `n`-ary functions `α → α → ... → α`. -/
-def Arity (α : Type u) : ℕ → Type u
-  | 0 => α
-  | n + 1 => α → Arity α n
-#align arity Arity
-
-@[simp]
-theorem arity_zero (α : Type u) : Arity α 0 = α :=
-  rfl
-#align arity_zero arity_zero
-
-@[simp]
-theorem arity_succ (α : Type u) (n : ℕ) : Arity α n.succ = (α → Arity α n) :=
-  rfl
-#align arity_succ arity_succ
-
-namespace Arity
-
-/-- Constant `n`-ary function with value `a`. -/
-def const {α : Type u} (a : α) : ∀ n, Arity α n
-  | 0 => a
-  | n + 1 => fun _ => const a n
-#align arity.const Arity.const
-
-@[simp]
-theorem const_zero {α : Type u} (a : α) : const a 0 = a :=
-  rfl
-#align arity.const_zero Arity.const_zero
-
-@[simp]
-theorem const_succ {α : Type u} (a : α) (n : ℕ) : const a n.succ = fun _ => const a n :=
-  rfl
-#align arity.const_succ Arity.const_succ
-
-theorem const_succ_apply {α : Type u} (a : α) (n : ℕ) (x : α) : const a n.succ x = const a n :=
-  rfl
-#align arity.const_succ_apply Arity.const_succ_apply
-
-instance Arity.inhabited {α n} [Inhabited α] : Inhabited (Arity α n) :=
-  ⟨const default _⟩
-#align arity.arity.inhabited Arity.Arity.inhabited
-
-end Arity
+open Function (OfArity)
 
 /-- The type of pre-sets in universe `u`. A pre-set
   is a family of pre-sets indexed by a type in `Type u`.
@@ -151,7 +108,7 @@ def Equiv : PSet → PSet → Prop
 #align pSet.equiv PSet.Equiv
 
 theorem equiv_iff :
-   ∀ {x y : PSet},
+    ∀ {x y : PSet},
       Equiv x y ↔ (∀ i, ∃ j, Equiv (x.Func i) (y.Func j)) ∧ ∀ j, ∃ i, Equiv (x.Func i) (y.Func j)
   | ⟨_, _⟩, ⟨_, _⟩ => Iff.rfl
 #align pSet.equiv_iff PSet.equiv_iff
@@ -526,12 +483,13 @@ theorem lift_mem_embed : ∀ x : PSet.{u}, PSet.Lift.{u, max (u + 1) v} x ∈ em
 
 /-- Function equivalence is defined so that `f ~ g` iff `∀ x y, x ~ y → f x ~ g y`. This extends to
 equivalence of `n`-ary functions. -/
-def Arity.Equiv : ∀ {n}, Arity PSet.{u} n → Arity PSet.{u} n → Prop
+def Arity.Equiv : ∀ {n}, OfArity PSet.{u} PSet.{u} n → OfArity PSet.{u} PSet.{u} n → Prop
   | 0, a, b => PSet.Equiv a b
   | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
 #align pSet.arity.equiv PSet.Arity.Equiv
 
-theorem Arity.equiv_const {a : PSet.{u}} : ∀ n, Arity.Equiv (Arity.const a n) (Arity.const a n)
+theorem Arity.equiv_const {a : PSet.{u}} :
+    ∀ n, Arity.Equiv (OfArity.const PSet.{u} a n) (OfArity.const PSet.{u} a n)
   | 0 => Equiv.rfl
   | _ + 1 => fun _ _ _ => Arity.equiv_const _
 #align pSet.arity.equiv_const PSet.Arity.equiv_const
@@ -539,11 +497,11 @@ theorem Arity.equiv_const {a : PSet.{u}} : ∀ n, Arity.Equiv (Arity.const a n) 
 /-- `resp n` is the collection of n-ary functions on `PSet` that respect
   equivalence, i.e. when the inputs are equivalent the output is as well. -/
 def Resp (n) :=
-  { x : Arity PSet.{u} n // Arity.Equiv x x }
+  { x : OfArity PSet.{u} PSet.{u} n // Arity.Equiv x x }
 #align pSet.resp PSet.Resp
 
 instance Resp.inhabited {n} : Inhabited (Resp n) :=
-  ⟨⟨Arity.const default _, Arity.equiv_const _⟩⟩
+  ⟨⟨OfArity.const _ default _, Arity.equiv_const _⟩⟩
 #align pSet.resp.inhabited PSet.Resp.inhabited
 
 /-- The `n`-ary image of a `(n + 1)`-ary function respecting equivalence as a function respecting
@@ -598,10 +556,11 @@ namespace Resp
 
 /-- Helper function for `PSet.eval`. -/
 def evalAux :
-    ∀ {n}, { f : Resp n → Arity ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
+    ∀ {n},
+      { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
   | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
-    let F : Resp (n + 1) → Arity ZFSet (n + 1) := fun a =>
+    let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
       @Quotient.lift _ _ PSet.setoid (fun x => evalAux.1 (a.f x)) fun _ _ h =>
         evalAux.2 _ _ (a.2 _ _ h)
     ⟨F, fun b c h =>
@@ -611,11 +570,12 @@ def evalAux :
 #align pSet.resp.eval_aux PSet.Resp.evalAux
 
 /-- An equivalence-respecting function yields an n-ary ZFC set function. -/
-def eval (n) : Resp n → Arity ZFSet.{u} n :=
+def eval (n) : Resp n → OfArity ZFSet.{u} ZFSet.{u} n :=
   evalAux.1
 #align pSet.resp.eval PSet.Resp.eval
 
-theorem eval_val {n f x} : (@eval (n + 1) f : ZFSet → Arity ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
+theorem eval_val {n f x} :
+    (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
   rfl
 #align pSet.resp.eval_val PSet.Resp.eval_val
 
@@ -624,24 +584,25 @@ end Resp
 /-- A set function is "definable" if it is the image of some n-ary pre-set
   function. This isn't exactly definability, but is useful as a sufficient
   condition for functions that have a computable image. -/
-class inductive Definable (n) : Arity ZFSet.{u} n → Type (u + 1)
+class inductive Definable (n) : OfArity ZFSet.{u} ZFSet.{u} n → Type (u + 1)
   | mk (f) : Definable n (Resp.eval n f)
 #align pSet.definable PSet.Definable
 
 attribute [instance] Definable.mk
 
 /-- The evaluation of a function respecting equivalence is definable, by that same function. -/
-def Definable.EqMk {n} (f) : ∀ {s : Arity ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
+def Definable.EqMk {n} (f) :
+    ∀ {s : OfArity ZFSet.{u} ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
   | _, rfl => ⟨f⟩
 #align pSet.definable.eq_mk PSet.Definable.EqMk
 
 /-- Turns a definable function into a function that respects equivalence. -/
-def Definable.Resp {n} : ∀ (s : Arity ZFSet.{u} n) [Definable n s], Resp n
+def Definable.Resp {n} : ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [Definable n s], Resp n
   | _, ⟨f⟩ => f
 #align pSet.definable.resp PSet.Definable.Resp
 
 theorem Definable.eq {n} :
-    ∀ (s : Arity ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
+    ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
   | _, ⟨_⟩ => rfl
 #align pSet.definable.eq PSet.Definable.eq
 
@@ -652,11 +613,11 @@ namespace Classical
 open PSet
 
 /-- All functions are classically definable. -/
-noncomputable def allDefinable : ∀ {n} (F : Arity ZFSet n), Definable n F
+noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable n F
   | 0, F =>
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
-  | n + 1, (F : Arity ZFSet (n + 1)) => by
+  | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
     have I := fun x => allDefinable (F x)
     refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
     · dsimp [Arity.Equiv]
@@ -703,7 +664,7 @@ theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
 
 @[simp]
 theorem eval_mk {n f x} :
-    (@Resp.eval (n + 1) f : ZFSet → Arity ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
+    (@Resp.eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
   rfl
 #align Set.eval_mk ZFSet.eval_mk
 
@@ -1738,7 +1699,7 @@ theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
 theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = univ :=
   eq_univ_of_forall
     (by
-      by_contra' hnA
+      by_contra! hnA
       exact
         WellFounded.min_mem ZFSet.mem_wf _ hnA
           (hA fun x hx =>
@@ -1825,10 +1786,10 @@ theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u})
 private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
   (mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
-    rw [mem_toSet, ←mk_out x, mk_mem_iff, mk_out]
+    rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
     refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
     · rintro ⟨b, h2⟩
-      rw [←ZFSet.eq, ZFSet.mk_out] at h2
+      rw [← ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]
     · simp [PSet.Equiv.refl]
 

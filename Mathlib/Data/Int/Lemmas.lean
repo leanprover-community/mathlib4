@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Bitwise
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Nat.Order.Lemmas
 
 #align_import data.int.lemmas from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
@@ -122,9 +122,9 @@ attribute [local simp] Int.zero_div
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
-  · simp
+  · decide
   · show ofNat _ = _
-    rw [Nat.div_eq_zero] <;> simp
+    rw [Nat.div_eq_of_lt] <;> simp
   · decide
 #align int.div2_bit Int.div2_bit
 

@@ -68,7 +68,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     field_simp at H₂ ⊢
     linear_combination 1 / 2 * H₂
   have h₃ : ∀ x > 0, f x = x ∨ f x = 1 / x := by simpa [sub_eq_zero] using h₂
-  by_contra' h
+  by_contra! h
   rcases h with ⟨⟨b, hb, hfb₁⟩, ⟨a, ha, hfa₁⟩⟩
   obtain hfa₂ := Or.resolve_right (h₃ a ha) hfa₁
   -- f(a) ≠ 1/a, f(a) = a
@@ -83,7 +83,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   specialize h₃ (a * b) hab
   cases' h₃ with hab₁ hab₂
   -- f(ab) = ab → b^4 = 1 → b = 1 → f(b) = b → false
-  · rw [ hab₁, div_left_inj' h2ab_ne_0 ] at H₂
+  · rw [hab₁, div_left_inj' h2ab_ne_0] at H₂
     field_simp at H₂
     have hb₁ : b ^ 4 = 1 := by linear_combination -H₂
     obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by norm_num) hb₁

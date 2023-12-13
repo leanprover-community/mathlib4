@@ -96,7 +96,7 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs
-  rw [connectedComponent_eq_iInter_clopen, Set.mem_iInter] at hB
+  rw [connectedComponent_eq_iInter_isClopen, Set.mem_iInter] at hB
   let Z := { F : Ultrafilter α | s ∈ F }
   have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
@@ -191,7 +191,6 @@ theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
     ⟨c, le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h'⟩
   letI : TopologicalSpace α := ⊥
-  haveI : NormalSpace γ := normalOfCompactT2
   exact denseInducing_pure.continuous_extend h
 #align continuous_ultrafilter_extend continuous_ultrafilter_extend
 

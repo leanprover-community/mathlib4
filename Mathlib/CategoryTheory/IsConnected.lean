@@ -249,8 +249,8 @@ instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
 #align category_theory.is_preconnected_op CategoryTheory.isPreconnected_op
 
 /-- If `J` is connected, then `Jᵒᵖ` is connected as well. -/
-instance isConnected_op [IsConnected J] : IsConnected Jᵒᵖ
-    where is_nonempty := Nonempty.intro (op (Classical.arbitrary J))
+instance isConnected_op [IsConnected J] : IsConnected Jᵒᵖ where
+  is_nonempty := Nonempty.intro (op (Classical.arbitrary J))
 #align category_theory.is_connected_op CategoryTheory.isConnected_op
 
 theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconnected J :=

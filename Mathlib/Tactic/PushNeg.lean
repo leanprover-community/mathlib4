@@ -7,8 +7,9 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 import Lean
 import Mathlib.Lean.Expr
 import Mathlib.Logic.Basic
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
+import Mathlib.Init.Set
 
 set_option autoImplicit true
 
@@ -34,6 +35,17 @@ theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
+
+theorem not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
+  have A : ∀ (x : γ), ¬(x ∈ (∅ : Set γ)) := fun x ↦ id
+  simp only [Set.Nonempty, not_exists, eq_iff_iff]
+  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
+
+theorem ne_empty_eq_nonempty (s : Set γ) : (s ≠ ∅) = s.Nonempty := by
+  rw [ne_eq, ← not_nonempty_eq s, not_not]
+
+theorem empty_ne_eq_nonempty (s : Set γ) : (∅ ≠ s) = s.Nonempty := by
+  rw [ne_comm, ne_empty_eq_nonempty]
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
@@ -65,13 +77,25 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return mkSimpStep e (← mkAppM ``not_not_eq #[e])
   | (``And, #[p, q]) =>
       match ← getBoolOption `push_neg.use_distrib with
-      | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (←mkAppM ``not_and_eq #[p, q])
-      | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (←mkAppM ``not_and_or_eq #[p, q])
+      | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
+      | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (← mkAppM ``not_and_or_eq #[p, q])
   | (``Or, #[p, q]) =>
-      return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (←mkAppM ``not_or_eq #[p, q])
+      return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (← mkAppM ``not_or_eq #[p, q])
   | (``Iff, #[p, q]) =>
-      return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (←mkAppM ``not_iff #[p, q])
-  | (``Eq, #[_ty, e₁, e₂]) =>
+      return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (← mkAppM ``not_iff #[p, q])
+  | (``Eq, #[ty, e₁, e₂]) =>
+      if ty.isAppOfArity ``Set 1 then
+        -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`
+        if e₂.isAppOfArity ``EmptyCollection.emptyCollection 2 then
+          let thm ← mkAppM ``ne_empty_eq_nonempty #[e₁]
+          let some (_, _, rhs) := (← inferType thm).eq? | return none
+          return mkSimpStep rhs thm
+        -- test if equality is of the form `∅ = s`, and negate it to `s.Nonempty`
+        if e₁.isAppOfArity ``EmptyCollection.emptyCollection 2 then
+          let thm ← mkAppM ``empty_ne_eq_nonempty #[e₂]
+          let some (_, _, rhs) := (← inferType thm).eq? | return none
+          return mkSimpStep rhs thm
+      -- negate `a = b` to `a ≠ b`
       return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
   | (``Ne, #[_ty, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
@@ -79,6 +103,11 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``LT.lt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_lt_eq
   | (``GE.ge, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_ge_eq
   | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
+  | (``Set.Nonempty, #[_ty, e]) =>
+      -- negate `s.Nonempty` to `s = ∅`
+      let thm ← mkAppM ``not_nonempty_eq #[e]
+      let some (_, _, rhs) := (← inferType thm).eq? | return none
+      return mkSimpStep rhs thm
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
@@ -108,7 +137,7 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
   let myctx : Simp.Context :=
-    { config := { eta := true },
+    { config := { eta := true, zeta := false, proj := false },
       simpTheorems := #[ ]
       congrTheorems := (← getSimpCongrTheorems) }
   (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })

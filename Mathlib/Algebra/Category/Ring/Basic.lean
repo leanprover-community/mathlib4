@@ -121,8 +121,8 @@ instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_forget_to_Mon SemiRingCat.hasForgetToMonCat
 
-instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat
-    where  -- can't use BundledHom.mkHasForget₂, since AddCommMon is an induced category
+instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
+   -- can't use BundledHom.mkHasForget₂, since AddCommMon is an induced category
   forget₂ :=
     { obj := fun R => AddCommMonCat.of R
       -- Porting note: This doesn't work without the `(_ := _)` trick.
@@ -254,8 +254,8 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
 set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
 
-instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat
-    where -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
+instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat where
+  -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
   forget₂ :=
     { obj := fun R => AddCommGroupCat.of R
       -- Porting note: use `(_ := _)` similar to above.
@@ -371,7 +371,7 @@ Ring equivalence are isomorphisms in category of commutative semirings
 -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
-    SemiRingCat.of X ≅ SemiRingCat.of Y where
+    CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 

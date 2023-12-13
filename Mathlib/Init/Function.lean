@@ -3,10 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Logic
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Eqns
 
 #align_import init.function from "leanprover-community/lean"@"03a6a6015c0b12dce7b36b4a1f7205a92dfaa592"
 
@@ -23,6 +23,12 @@ namespace Function
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
+
+attribute [eqns comp_def] comp
+
+lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
+
+attribute [eqns flip_def] flip
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/

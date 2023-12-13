@@ -73,7 +73,7 @@ instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
 `n` and `b` are both positive.
 -/
 theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 ≤ n) (h₂ : 1 ≤ b) :
-    Nat.coprime n b := by
+    Nat.Coprime n b := by
   by_cases h₃ : 2 ≤ n
   · -- To prove that `n` is coprime with `b`, we need to show that for all prime factors of `n`,
     -- we can derive a contradiction if `n` divides `b`.
@@ -102,14 +102,14 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
     ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by
   have : 1 ≤ b ^ (n - 1) := one_le_pow_of_one_le h (n - 1)
-  -- For exact_mod_cast
+  -- For exact mod_cast
   rw [Nat.ModEq.comm]
   constructor
   · intro h₁
     apply Nat.modEq_of_dvd
-    exact_mod_cast h₁
+    exact mod_cast h₁
   · intro h₁
-    exact_mod_cast Nat.ModEq.dvd h₁
+    exact mod_cast Nat.ModEq.dvd h₁
 #align fermat_psp.probable_prime_iff_modeq Nat.probablePrime_iff_modEq
 
 /-- If `n` is a Fermat pseudoprime to base `b`, then `n` is coprime with `b`, assuming that `b` is
@@ -117,7 +117,7 @@ positive.
 
 This lemma is a small wrapper based on `coprime_of_probablePrime`
 -/
-theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.coprime n b := by
+theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.Coprime n b := by
   rcases h with ⟨hp, _, hn₂⟩
   exact coprime_of_probablePrime hp (by linarith) h₁
 #align fermat_psp.coprime_of_fermat_psp Nat.coprime_of_fermatPsp
@@ -140,8 +140,7 @@ private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  convert pow_lt_pow (Nat.lt_of_succ_le ha) hb
-  rw [pow_one]
+  exact self_lt_pow (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -245,11 +244,11 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- to prove this.
   have ha₃ : p ∣ b ^ (p - 1) - 1 := by
     have : ¬p ∣ b := mt (fun h : p ∣ b => dvd_mul_of_dvd_left h _) not_dvd
-    have : p.coprime b := Or.resolve_right (Nat.coprime_or_dvd_of_prime p_prime b) this
+    have : p.Coprime b := Or.resolve_right (Nat.coprime_or_dvd_of_prime p_prime b) this
     have : IsCoprime (b : ℤ) ↑p := this.symm.isCoprime
     have : ↑b ^ (p - 1) ≡ 1 [ZMOD ↑p] := Int.ModEq.pow_card_sub_one_eq_one p_prime this
-    have : ↑p ∣ ↑b ^ (p - 1) - ↑1 := by exact_mod_cast Int.ModEq.dvd (Int.ModEq.symm this)
-    exact_mod_cast this
+    have : ↑p ∣ ↑b ^ (p - 1) - ↑1 := mod_cast Int.ModEq.dvd (Int.ModEq.symm this)
+    exact mod_cast this
   -- Because `p - 1` is even, there is a `c` such that `2 * c = p - 1`. `nat_sub_dvd_pow_sub_pow`
   -- implies that `b ^ c - 1 ∣ (b ^ c) ^ 2 - 1`, and `(b ^ c) ^ 2 = b ^ (p - 1)`.
   have ha₄ : b ^ 2 - 1 ∣ b ^ (p - 1) - 1 := by
@@ -267,12 +266,12 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     -- We already proved that `b ^ 2 - 1 ∣ b ^ (p - 1) - 1`.
     -- Since `2 ∣ b ^ p + b` and `p ∣ b ^ p + b`, if we show that 2 and p are coprime, then we
     -- know that `2 * p ∣ b ^ p + b`
-    have q₁ : Nat.coprime p (b ^ 2 - 1) :=
+    have q₁ : Nat.Coprime p (b ^ 2 - 1) :=
       haveI q₂ : ¬p ∣ b ^ 2 - 1 := by
         rw [mul_comm] at not_dvd
         exact mt (fun h : p ∣ b ^ 2 - 1 => dvd_mul_of_dvd_left h _) not_dvd
       (Nat.Prime.coprime_iff_not_dvd p_prime).mpr q₂
-    have q₂ : p * (b ^ 2 - 1) ∣ b ^ (p - 1) - 1 := Nat.coprime.mul_dvd_of_dvd_of_dvd q₁ ha₃ ha₄
+    have q₂ : p * (b ^ 2 - 1) ∣ b ^ (p - 1) - 1 := Nat.Coprime.mul_dvd_of_dvd_of_dvd q₁ ha₃ ha₄
     have q₃ : p * (b ^ 2 - 1) * 2 ∣ (b ^ (p - 1) - 1) * (b ^ p + b) := mul_dvd_mul q₂ ha₂
     have q₄ : p * (b ^ 2 - 1) * 2 ∣ b * ((b ^ (p - 1) - 1) * (b ^ p + b)) :=
       dvd_mul_of_dvd_right q₃ _
@@ -334,7 +333,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
   exact Nat.lt_of_le_of_lt this (pow_gt_exponent _ b_ge_two)
 
-/-- For all positive bases, there exist Fermat infinite pseudoprimes to that base.
+/-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
 that `m ≤ n`. This form is similar to `Nat.exists_infinite_primes`.
 -/

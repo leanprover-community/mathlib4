@@ -3,10 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Logic.Nontrivial
+import Mathlib.Tactic.Spread
+import Mathlib.Util.AssertExists
 
 #align_import algebra.ring.defs from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
@@ -30,7 +31,6 @@ the present file is about their interaction.
 
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
-
 
 universe u v w x
 
@@ -213,6 +213,21 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- `mul_ite` and `ite_mul`.
 attribute [simp] mul_ite ite_mul
 
+section MulZeroClass
+variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
+
+lemma ite_zero_mul : ite P a 0 * b = ite P (a * b) 0 := by simp
+#align ite_mul_zero_left ite_zero_mul
+
+lemma mul_ite_zero : a * ite P b 0 = ite P (a * b) 0 := by simp
+#align ite_mul_zero_right mul_ite_zero
+
+lemma ite_zero_mul_ite_zero : ite P a 0 * ite Q b 0 = ite (P ∧ Q) (a * b) 0 := by
+  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
+#align ite_and_mul_zero ite_zero_mul_ite_zero
+
+end MulZeroClass
+
 -- Porting note: no @[simp] because simp proves it
 theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (a * if P then 1 else 0) = if P then a else 0 := by simp
@@ -223,18 +238,8 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
 
-theorem ite_mul_zero_left {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
-    ite P (a * b) 0 = ite P a 0 * b := by by_cases h : P <;> simp [h]
-#align ite_mul_zero_left ite_mul_zero_left
-
-theorem ite_mul_zero_right {α : Type*} [MulZeroClass α] (P : Prop) [Decidable P] (a b : α) :
-    ite P (a * b) 0 = a * ite P b 0 := by by_cases h : P <;> simp [h]
-#align ite_mul_zero_right ite_mul_zero_right
-
-theorem ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
-    (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
-  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
-#align ite_and_mul_zero ite_and_mul_zero
+/-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
+class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
@@ -372,31 +377,8 @@ theorem mul_sub_right_distrib (a b c : α) : (a - b) * c = a * c - b * c := by
 alias sub_mul := mul_sub_right_distrib
 #align sub_mul sub_mul
 
-variable {a b c d e : α}
-
-/-- An iff statement following from right distributivity in rings and the definition
-  of subtraction. -/
-theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b) * e + c = d :=
-  calc
-    a * e + c = b * e + d ↔ a * e + c = d + b * e := by simp [add_comm]
-    _ ↔ a * e + c - b * e = d :=
-      Iff.intro
-        (fun h => by
-          rw [h]
-          simp)
-        fun h => by
-        rw [← h]
-        simp
-    _ ↔ (a - b) * e + c = d := by simp [sub_mul, sub_add_eq_add_sub]
-#align mul_add_eq_mul_add_iff_sub_mul_add_eq mul_add_eq_mul_add_iff_sub_mul_add_eq
-
-/-- A simplification of one side of an equation exploiting right distributivity in rings
-  and the definition of subtraction. -/
-theorem sub_mul_add_eq_of_mul_add_eq_mul_add (h : a * e + c = b * e + d) : (a - b) * e + c = d :=
-  calc
-    (a - b) * e + c = a * e + c - b * e := by simp [sub_mul, sub_add_eq_add_sub]
-    _ = d := by rw [h]; simp [@add_sub_cancel α]
-#align sub_mul_add_eq_of_mul_add_eq_mul_add sub_mul_add_eq_of_mul_add_eq_mul_add
+#noalign mul_add_eq_mul_add_iff_sub_mul_add_eq
+#noalign sub_mul_add_eq_of_mul_add_eq_mul_add
 
 end NonUnitalNonAssocRing
 
@@ -424,18 +406,14 @@ variable [Ring α] {a b c d e : α}
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α where
-  __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
+instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
+  { ‹Ring α› with }
 #align ring.to_non_unital_ring Ring.toNonUnitalRing
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
-  __ := ‹Ring α›
-  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
-  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
+instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
+  { ‹Ring α› with }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
 /- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
@@ -448,8 +426,13 @@ instance (priority := 200) : Semiring α :=
 
 end Ring
 
+/-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
+multiplication. -/
+class NonUnitalNonAssocCommRing (α : Type u)
+  extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
+
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
+class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 #align non_unital_comm_ring NonUnitalCommRing
 
 -- see Note [lower instance priority]
@@ -484,3 +467,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
+
+/-!
+Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
+files, without importing `.Basic` theory development.
+
+These `assert_not_exists` statements guard against this returning.
+-/
+assert_not_exists DivisionMonoid.toDivInvOneMonoid
+assert_not_exists mul_rotate
