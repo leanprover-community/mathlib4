@@ -1911,8 +1911,8 @@ lemma real.cutoff_succ_eq_cutoff_add_single (f : real Z b) (u : Z) :
       simp [this, (h.trans' (lt_succ _)).not_le] at hx
 
 lemma real.cutoff_succ_aux_isLeast (S : Set (real Z b)) (u : Z)
-    (g : real Z b) (hg : IsLeast (cutoff u '' S) g)
-     : ∃ f ∈ S, IsLeast (cutoff (succ u) '' S) (cutoff (succ u) f) := by
+    (g : real Z b) (hg : IsLeast (cutoff u '' S) g) :
+    ∃ f ∈ S, IsLeast (cutoff (succ u) '' S) (cutoff (succ u) f) := by
   let S' : Set (Fin (b + 1)) := ((· (succ u)) ∘ Subtype.val) '' (S ∩ {g' | cutoff u g' = g})
   obtain ⟨g', hg'⟩ := hg.left
   have hN : S'.Nonempty := ⟨g'.val (succ u), g', hg', rfl⟩
