@@ -35,10 +35,8 @@ See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
 def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective $ toZModLinearMap n (M := M) (M₁ := M₁) := by
-  intro f g h
-  ext x
-  exact LinearMap.congr_fun h x
+theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
+  fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]
 theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
