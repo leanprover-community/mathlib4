@@ -741,6 +741,10 @@ theorem mod_succ_eq_iff_lt {a b : ℕ} : a % b.succ = a ↔ a < b.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
 #align nat.mod_succ_eq_iff_lt Nat.mod_succ_eq_iff_lt
 
+@[simp]
+theorem Nat.mod_succ (n : ℕ) : n % n.succ = n :=
+  Nat.mod_eq_of_lt (Nat.lt_succ_self _)
+
 -- Porting note `Nat.div_add_mod` is now in core.
 
 theorem mod_add_div' (m k : ℕ) : m % k + m / k * k = m := by
