@@ -397,7 +397,7 @@ def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
         (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
         (mulCommRelabelling _ _) }
   termination_by => (x, y)
-  decreasing_by pgame_wf_tac
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.mul_comm_relabelling SetTheory.PGame.mulCommRelabelling
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
@@ -477,7 +477,7 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
         change -(mk xl xr xL xR * _) ≡r _
         exact (negMulRelabelling _ _).symm
   termination_by => (x, y)
-  decreasing_by pgame_wf_tac
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 @[simp]
@@ -591,7 +591,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
         abel
   termination_by => (x, y, z)
-  decreasing_by pgame_wf_tac
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.quot_left_distrib SetTheory.PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
@@ -816,7 +816,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         rw [quot_mul_assoc (xR i) (yL j) (zL k)]
         abel
   termination_by => (x, y, z)
-  decreasing_by pgame_wf_tac
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.quot_mul_assoc SetTheory.PGame.quot_mul_assoc
 
 /-- `x * y * z` is equivalent to `x * (y * z).`-/

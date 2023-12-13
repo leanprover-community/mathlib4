@@ -82,8 +82,8 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
       Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
         (Nat.lt_add_of_pos_right (String.csize_pos _))
     loop (s.next p) (out.push c.toUInt8)
+    termination_by => utf8ByteSize s - p.byteIdx
   loop 0 ByteArray.empty
-termination_by => utf8ByteSize s - p.byteIdx
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/
