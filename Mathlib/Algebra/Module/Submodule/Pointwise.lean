@@ -346,6 +346,7 @@ lemma set_smul_submodule_le_of_le_le {s t : Set R} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_submodule_mono_left _ le_set) <| set_smul_submodule_mono_right _ le_submodule
 
+variable {s N} in
 @[elab_as_elim]
 lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
     (hx : x ∈ s • N)
@@ -412,15 +413,8 @@ lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
   · rintro rfl; exact Submodule.zero_mem _
 
 @[simp] lemma set_smul_bot_submodule : s • (⊥ : Submodule R M) = ⊥ :=
-  eq_bot_iff.mpr fun x hx => show x = 0 by
-    apply set_smul_submodule_inductionOn s ⊥ x hx _ _ _ _
-    · rintro r _ _ (rfl : _ = 0)
-      rw [smul_zero]
-    · rintro r m rfl
-      rw [smul_zero]
-    · rintro _ _ rfl rfl
-      rw [zero_add]
-    · rfl
+  eq_bot_iff.mpr fun x hx => show x = 0 from set_smul_submodule_inductionOn x hx
+    (by aesop) (by aesop) (by aesop) (by aesop)
 
 lemma singleton_set_smul_submodule_eq [SMulCommClass R R M] (r : R) :
     ({r} : Set R) • N = r • N := by
