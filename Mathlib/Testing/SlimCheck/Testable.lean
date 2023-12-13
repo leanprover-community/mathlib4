@@ -509,14 +509,14 @@ open Lean
 quantifiers and add `NamedBinder` annotations next to them. -/
 partial def addDecorations (e : Expr) : MetaM Expr :=
   Meta.transform e $ fun expr => do
-    if not (←Meta.inferType e).isProp then
+    if not (← Meta.inferType e).isProp then
       return .continue
     else if let Expr.forallE name type body data := expr then
       let n := name.toString
       let newType ← addDecorations type
       let newBody ← addDecorations body
       let rest := Expr.forallE name newType newBody data
-      return .done $ (←Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit n, rest])
+      return .done $ (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit n, rest])
     else
       return .continue
 
