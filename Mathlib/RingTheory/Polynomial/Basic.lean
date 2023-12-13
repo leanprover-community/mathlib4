@@ -698,9 +698,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
 
 end CommSemiring
 
-section Ring
-
-variable [Ring R]
+section Semiring
 
 /-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
 a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
@@ -715,6 +713,11 @@ theorem polynomial_not_module_finite {R : Type u} [Semiring R] [Nontrivial R]:
     exact hn Submodule.mem_top
   rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   exact one_ne_zero this
+end Semiring
+
+section Ring
+
+variable [Ring R]
 
 /-- `R[X]` is never a field for any ring `R`. -/
 theorem polynomial_not_isField : ¬IsField R[X] := by
