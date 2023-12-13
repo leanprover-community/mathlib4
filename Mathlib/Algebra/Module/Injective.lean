@@ -484,7 +484,7 @@ section ULift
 variable  {M : Type v} [AddCommGroup M] [Module R M]
 
 lemma Module.ulift_injective_of_injective
-    (inj : Module.Injective.{u, v} R M) :
+    (inj : Module.Injective R M) :
     Module.Injective R (ULift.{max v' v} M) := by
   letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
   rw [← Module.Baer.iff_injective.{u, v}] at inj
