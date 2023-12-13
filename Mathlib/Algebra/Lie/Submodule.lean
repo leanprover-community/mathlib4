@@ -823,7 +823,7 @@ def map : LieSubmodule R L M' :=
     lie_mem := fun {x m'} h ↦ by
       rcases h with ⟨m, hm, hfm⟩; use ⁅x, m⁆; constructor
       · apply N.lie_mem hm
-      · norm_cast at hfm; simp [hfm] }
+      · norm_cast at hfm; simp only [LieModuleHom.coe_toLinearMap, LieModuleHom.map_lie]; erw [hfm]}
 #align lie_submodule.map LieSubmodule.map
 
 @[simp] theorem coe_map : (N.map f : Set M') = f '' N := rfl

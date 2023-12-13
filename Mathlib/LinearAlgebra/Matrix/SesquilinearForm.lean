@@ -279,6 +279,7 @@ variable [Fintype n'] [Fintype m']
 
 variable [DecidableEq n'] [DecidableEq m']
 
+set_option maxHeartbeats 400000 in
 @[simp]
 theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (l : (n' → R) →ₗ[R] n → R)
     (r : (m' → R) →ₗ[R] m → R) :
@@ -438,6 +439,7 @@ variable [Fintype n'] [Fintype m']
 
 variable [DecidableEq n'] [DecidableEq m']
 
+set_option maxHeartbeats 3200000 in
 -- Cannot be a `simp` lemma because `b₁` and `b₂` must be inferred.
 theorem LinearMap.toMatrix₂_compl₁₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) (l : M₁' →ₗ[R] M₁)
     (r : M₂' →ₗ[R] M₂) :

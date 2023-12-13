@@ -216,6 +216,7 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
   rfl
 #align bilin_form.to_matrix'_apply BilinForm.toMatrix'_apply
 
+set_option maxHeartbeats 1600000 in
 -- Porting note: dot notation for bundled maps doesn't work in the rest of this section
 @[simp]
 theorem BilinForm.toMatrix'_comp (B : BilinForm R₂ (n → R₂)) (l r : (o → R₂) →ₗ[R₂] n → R₂) :
@@ -358,6 +359,7 @@ variable (c : Basis o R₂ M₂')
 
 variable [DecidableEq o]
 
+set_option maxHeartbeats 1600000 in
 -- Cannot be a `simp` lemma because `b` must be inferred.
 theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R₂] M₂) :
     BilinForm.toMatrix c (B.comp l r) =
