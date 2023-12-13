@@ -4243,15 +4243,6 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
 
 end Forall
 
-/-! ### Retroattributes
-
-The list definitions happen earlier than `to_additive`, so here we tag the few multiplicative
-definitions that couldn't be tagged earlier.
--/
-
-attribute [to_additive existing] List.prod -- `List.sum`
-attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
-
 /-! ### Miscellaneous lemmas -/
 
 theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
