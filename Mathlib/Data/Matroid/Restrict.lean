@@ -403,4 +403,3 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
 end Basis
 
 end Matroid
-#lint
