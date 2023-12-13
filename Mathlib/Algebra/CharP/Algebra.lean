@@ -31,7 +31,7 @@ Instances constructed from this result:
 
 
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same characteristic as `R`. -/
-theorem charP_of_injective_ringHom {R A : Type*} [CommSemiring R] [Semiring A] {f : R →+* A}
+theorem charP_of_injective_ringHom {R A : Type*} [Semiring R] [Semiring A] {f : R →+* A}
     (h : Function.Injective f) (p : ℕ) [CharP R p] : CharP A p where
   cast_eq_zero_iff' x := by
     rw [← CharP.cast_eq_zero_iff R p x, ← map_natCast f x, map_eq_zero_iff f h]
@@ -49,7 +49,7 @@ theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Alg
 
 /-- If a ring homomorphism `R →+* A` is injective and `R` has characteristic zero
 then so does `A`. -/
-theorem charZero_of_injective_ringHom {R A : Type*} [CommSemiring R] [Semiring A] {f : R →+* A}
+theorem charZero_of_injective_ringHom {R A : Type*} [Semiring R] [Semiring A] {f : R →+* A}
     (h : Function.Injective f) [CharZero R] : CharZero A where
   cast_injective _ _ _ := CharZero.cast_injective <| h <| by simpa only [map_natCast f]
 

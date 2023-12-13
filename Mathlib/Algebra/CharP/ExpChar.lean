@@ -122,7 +122,7 @@ theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 theorem expChar_of_injective_ringHom {R A : Type*}
-    [CommSemiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
+    [Semiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
     (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
   cases' hR with _ _ hprime _
   · haveI := charZero_of_injective_ringHom h; exact .zero
