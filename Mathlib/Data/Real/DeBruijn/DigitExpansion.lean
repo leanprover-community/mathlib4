@@ -24,25 +24,25 @@ section S01
 /-- A possibly infinite sequence of digits in `Fin (b + 1)`, which
 can represent a number system like the reals.
 It is constrained to not end in an infinite string of the top digit. -/
-structure FormalSeries (Z : Type*) [LT Z] (b : ℕ) where
+structure DigitExpansion (Z : Type*) [LT Z] (b : ℕ) where
   /-- The digit sequence, such that `b` is the base - 1. -/
   toFun : Z → Fin (b + 1)
   /-- The constraint that the sequence does not trail end infinitely at the top digit. -/
   bounded' : ¬∃ i₀, ∀ i > i₀, toFun i = b
 
-namespace FormalSeries
+namespace DigitExpansion
 
-instance funLike (Z : Type*) [LT Z] (b : ℕ) : FunLike (FormalSeries Z b) Z fun _ => Fin (b + 1)
+instance funLike (Z : Type*) [LT Z] (b : ℕ) : FunLike (DigitExpansion Z b) Z fun _ => Fin (b + 1)
     where
-  coe := FormalSeries.toFun
+  coe := DigitExpansion.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩; simp
 
 
-variable {Z : Type*} [LT Z] {b : ℕ} (f g : FormalSeries Z b) (i : Z)
+variable {Z : Type*} [LT Z] {b : ℕ} (f g : DigitExpansion Z b) (i : Z)
 
 -- extensional equality
 @[ext]
-theorem ext {f g : FormalSeries Z b} (h : ∀ x, f x = g x) : f = g :=
+theorem ext {f g : DigitExpansion Z b} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 
 @[simp]
@@ -50,10 +50,10 @@ theorem toFun_apply : f.toFun i = f i :=
   rfl
 
 @[simp]
-theorem mk_apply (f : Z → Fin (b + 1)) (hf) : (⟨f, hf⟩ : FormalSeries Z b) i = f i :=
+theorem mk_apply (f : Z → Fin (b + 1)) (hf) : (⟨f, hf⟩ : DigitExpansion Z b) i = f i :=
   rfl
 
-end FormalSeries
+end DigitExpansion
 
 end S01
 
@@ -80,7 +80,7 @@ instance base_nontrivial {b : ℕ} [hb : Fact (0 < b)] : Nontrivial (Fin (b + 1)
       have : 1 < b + 1 := Nat.succ_lt_succ_iff.mpr hb.out
       simp [Fin.ext_iff, Fin.val_one', Nat.mod_eq_of_lt this]⟩⟩
 
-theorem FormalSeries.exists_bounded {Z : Type*} [LT Z] {b : ℕ} (f : FormalSeries Z b) (z : Z) :
+theorem DigitExpansion.exists_bounded {Z : Type*} [LT Z] {b : ℕ} (f : DigitExpansion Z b) (z : Z) :
     ∃ x > z, f x < b := by
   have := f.bounded'
   push_neg at this
@@ -91,7 +91,7 @@ theorem FormalSeries.exists_bounded {Z : Type*} [LT Z] {b : ℕ} (f : FormalSeri
     simpa [Fin.lt_iff_val_lt_val] using h
 
 instance {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [hb : Fact (0 < b)] :
-    Zero (FormalSeries Z b) :=
+    Zero (DigitExpansion Z b) :=
   ⟨{  toFun := (0 : Z → Fin (b + 1))
       bounded' := by
         push_neg
@@ -101,7 +101,7 @@ instance {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [hb : F
 
 @[simp]
 theorem zero_apply {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [Fact (0 < b)]
-    (z : Z) : (0 : FormalSeries Z b) z = 0 :=
+    (z : Z) : (0 : DigitExpansion Z b) z = 0 :=
   rfl
 
 open scoped Classical
@@ -110,7 +110,7 @@ noncomputable section
 
 section S03
 
-variable {Z : Type*} [LT Z] {b : ℕ} (f g : FormalSeries Z b)
+variable {Z : Type*} [LT Z] {b : ℕ} (f g : DigitExpansion Z b)
 
 /-- Difference carry as an auxialiary function for defining subtraction. -/
 def difcar : Z → Fin (b + 1) := fun z =>
@@ -148,7 +148,7 @@ theorem difcar_le_one [Fact (0 < b)] (x : Z) : difcar f g x ≤ 1 := by
 
 variable {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
   {b : ℕ}
-variable {f g : FormalSeries Z b}
+variable {f g : DigitExpansion Z b}
 
 theorem difcar_pred_eq_one [Fact (0 < b)] {z : Z} (h : f z < g z) : difcar f g (pred z) = 1 := by
   rw [difcar_eq_one_iff]
@@ -185,11 +185,11 @@ theorem difcar_pred_eq_difcar [Fact (0 < b)] {z : Z} (h : f z = g z) :
     exact hz y hy hyz'
 
 @[simp]
-theorem difcar_zero_right [Fact (0 < b)] (f : FormalSeries Z b) (z : Z) : difcar f 0 z = 0 := by
+theorem difcar_zero_right [Fact (0 < b)] (f : DigitExpansion Z b) (z : Z) : difcar f 0 z = 0 := by
   simp [difcar_eq_zero_iff]
 
 @[simp]
-theorem difcar_self [Fact (0 < b)] (f : FormalSeries Z b) (z : Z) : difcar f f z = 0 := by
+theorem difcar_self [Fact (0 < b)] (f : DigitExpansion Z b) (z : Z) : difcar f f z = 0 := by
   simp [difcar_eq_zero_iff]
 
 theorem pred_min {Z : Type*} [LinearOrder Z] [PredOrder Z] (x y : Z) :
@@ -282,7 +282,7 @@ end Fin
 
 instance {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)] :
-    Sub (FormalSeries Z b) :=
+    Sub (DigitExpansion Z b) :=
   ⟨fun f g =>
     { toFun := fun x => f x - g x - difcar f g x
       bounded' := by
@@ -329,12 +329,12 @@ instance {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
 
 variable {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
-variable (f g : FormalSeries Z b)
+variable (f g : DigitExpansion Z b)
 
 theorem Int.neg_mod {a b : ℤ} : -a % b = (b - a) % b := by
   rw [← Int.add_emod_self_left, sub_eq_add_neg]
 
-protected theorem FormalSeries.sub_def (x : Z) : (f - g) x = f x - g x - difcar f g x :=
+protected theorem DigitExpansion.sub_def (x : Z) : (f - g) x = f x - g x - difcar f g x :=
   rfl
 
 theorem coe_sub (z : Z) :
@@ -371,11 +371,11 @@ theorem coe_sub (z : Z) :
         rw [Fin.val_one, Nat.succ_le_iff, tsub_pos_iff_lt]
         exact h'
 
-protected theorem FormalSeries.sub_zero (f : FormalSeries Z b) : f - 0 = f := by
-  ext; simp [FormalSeries.sub_def]
+protected theorem DigitExpansion.sub_zero (f : DigitExpansion Z b) : f - 0 = f := by
+  ext; simp [DigitExpansion.sub_def]
 
-protected theorem FormalSeries.sub_self (f : FormalSeries Z b) : f - f = 0 := by
-  ext; simp [FormalSeries.sub_def]
+protected theorem DigitExpansion.sub_self (f : DigitExpansion Z b) : f - f = 0 := by
+  ext; simp [DigitExpansion.sub_def]
 
 end S03
 
@@ -386,7 +386,7 @@ variable {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
 
 -- set_option pp.coercions false
 -- The paper mistakenly says `f - (g - h) = h - (f - g)`.
-protected theorem FormalSeries.sub_sub_comm (f g h : FormalSeries Z b) :
+protected theorem DigitExpansion.sub_sub_comm (f g h : DigitExpansion Z b) :
     f - (g - h) = h - (g - f) := by
   set p := difcar g h with hp
   set s := g - h with hs
@@ -582,76 +582,76 @@ section S05
 
 instance {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [Fact (0 < b)] :
-    Add (FormalSeries Z b) :=
+    Add (DigitExpansion Z b) :=
   ⟨fun f g => f - (0 - g)⟩
 
 variable {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
-variable (f g : FormalSeries Z b)
+variable (f g : DigitExpansion Z b)
 
 -- 5.1
-protected theorem FormalSeries.add_def : f + g = f - (0 - g) :=
+protected theorem DigitExpansion.add_def : f + g = f - (0 - g) :=
   rfl
 
 -- (i)
-protected theorem FormalSeries.add_zero : f + 0 = f :=
+protected theorem DigitExpansion.add_zero : f + 0 = f :=
   calc
     f + 0 = f - (0 - 0) := rfl
-    _ = f - 0 := by rw [FormalSeries.sub_zero]
-    _ = f := FormalSeries.sub_zero _
+    _ = f - 0 := by rw [DigitExpansion.sub_zero]
+    _ = f := DigitExpansion.sub_zero _
 
 -- (ii)
-protected theorem FormalSeries.add_comm : f + g = g + f :=
+protected theorem DigitExpansion.add_comm : f + g = g + f :=
   calc
     f + g = f - (0 - g) := rfl
-    _ = g - (0 - f) := (FormalSeries.sub_sub_comm _ _ _)
+    _ = g - (0 - f) := (DigitExpansion.sub_sub_comm _ _ _)
     _ = g + f := rfl
 
 -- (iii)
-protected theorem FormalSeries.add_assoc (f g h : FormalSeries Z b) : f + (g + h) = f + g + h :=
+protected theorem DigitExpansion.add_assoc (f g h : DigitExpansion Z b) : f + (g + h) = f + g + h :=
   calc
     f + (g + h) = f + (h + g) := by rw [g.add_comm]
-    _ = f - (0 - (h - (0 - g))) := by simp_rw [FormalSeries.add_def]
-    _ = f - (0 - g - (h - 0)) := by rw [FormalSeries.sub_sub_comm 0, FormalSeries.sub_zero]
-    _ = f - (0 - g - h) := by rw [FormalSeries.sub_zero]
-    _ = h - (0 - g - f) := (FormalSeries.sub_sub_comm _ _ _)
-    _ = h - (0 - g - (f - 0)) := by rw [FormalSeries.sub_zero]
-    _ = h - (0 - (f - (0 - g))) := by rw [FormalSeries.sub_sub_comm 0, FormalSeries.sub_zero]
-    _ = h + (f + g) := by simp_rw [FormalSeries.add_def]
-    _ = f + g + h := FormalSeries.add_comm _ _
+    _ = f - (0 - (h - (0 - g))) := by simp_rw [DigitExpansion.add_def]
+    _ = f - (0 - g - (h - 0)) := by rw [DigitExpansion.sub_sub_comm 0, DigitExpansion.sub_zero]
+    _ = f - (0 - g - h) := by rw [DigitExpansion.sub_zero]
+    _ = h - (0 - g - f) := (DigitExpansion.sub_sub_comm _ _ _)
+    _ = h - (0 - g - (f - 0)) := by rw [DigitExpansion.sub_zero]
+    _ = h - (0 - (f - (0 - g))) := by rw [DigitExpansion.sub_sub_comm 0, DigitExpansion.sub_zero]
+    _ = h + (f + g) := by simp_rw [DigitExpansion.add_def]
+    _ = f + g + h := DigitExpansion.add_comm _ _
 
 -- (iv)
-protected theorem FormalSeries.add_sub_cancel : g + (f - g) = f :=
+protected theorem DigitExpansion.add_sub_cancel : g + (f - g) = f :=
   calc
-    g + (f - g) = g - (0 - (f - g)) := FormalSeries.add_def _ _
-    _ = g - (g - (f - 0)) := by rw [FormalSeries.sub_sub_comm g f 0]
-    _ = g - (g - f) := by rw [FormalSeries.sub_zero]
-    _ = f - (g - g) := (FormalSeries.sub_sub_comm _ _ _)
-    _ = f - 0 := by rw [FormalSeries.sub_self]
-    _ = f := FormalSeries.sub_zero _
+    g + (f - g) = g - (0 - (f - g)) := DigitExpansion.add_def _ _
+    _ = g - (g - (f - 0)) := by rw [DigitExpansion.sub_sub_comm g f 0]
+    _ = g - (g - f) := by rw [DigitExpansion.sub_zero]
+    _ = f - (g - g) := (DigitExpansion.sub_sub_comm _ _ _)
+    _ = f - 0 := by rw [DigitExpansion.sub_self]
+    _ = f := DigitExpansion.sub_zero _
 
-instance : Neg (FormalSeries Z b) :=
+instance : Neg (DigitExpansion Z b) :=
   ⟨fun f => 0 - f⟩
 
-protected theorem FormalSeries.neg_def : -f = 0 - f :=
+protected theorem DigitExpansion.neg_def : -f = 0 - f :=
   rfl
 
 instance {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
-    [IsSuccArchimedean Z] {b : ℕ} [Fact (0 < b)] : AddCommGroup (FormalSeries Z b) where
+    [IsSuccArchimedean Z] {b : ℕ} [Fact (0 < b)] : AddCommGroup (DigitExpansion Z b) where
   add := (· + ·)
-  add_assoc _ _ _ := (FormalSeries.add_assoc _ _ _).symm
+  add_assoc _ _ _ := (DigitExpansion.add_assoc _ _ _).symm
   zero := 0
-  zero_add _ := by simp_rw [FormalSeries.add_def, FormalSeries.sub_sub_comm, FormalSeries.sub_zero]
-  add_zero := FormalSeries.add_zero
+  zero_add _ := by simp_rw [DigitExpansion.add_def, DigitExpansion.sub_sub_comm, DigitExpansion.sub_zero]
+  add_zero := DigitExpansion.add_zero
   neg f := -f
   sub f g := f - g
   sub_eq_add_neg f g := by
-    simp [g.neg_def, f.add_def, FormalSeries.sub_sub_comm 0, FormalSeries.sub_zero]
+    simp [g.neg_def, f.add_def, DigitExpansion.sub_sub_comm 0, DigitExpansion.sub_zero]
   add_left_neg f := by
-    rw [f.neg_def, FormalSeries.add_def]
-    simp [FormalSeries.sub_sub_comm,
-      FormalSeries.sub_sub_comm 0 0 f, FormalSeries.sub_zero, FormalSeries.sub_self]
-  add_comm _ _ := FormalSeries.add_comm _ _
+    rw [f.neg_def, DigitExpansion.add_def]
+    simp [DigitExpansion.sub_sub_comm,
+      DigitExpansion.sub_sub_comm 0 0 f, DigitExpansion.sub_zero, DigitExpansion.sub_self]
+  add_comm _ _ := DigitExpansion.add_comm _ _
 
 end S05
 
@@ -672,31 +672,31 @@ theorem Succ.rec' {Z : Type*} [LinearOrder Z] [SuccOrder Z] [IsSuccArchimedean Z
     · exact h1 _ hmn IH
     · exact IH _ hmk (le_of_lt_succ hkn')
 
-namespace FormalSeries
+namespace DigitExpansion
 
 /-- A sequence is positive iff it is not zero and has a left-tail of solely digit 0. -/
 protected def Positive {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) : Prop :=
+    (f : DigitExpansion Z b) : Prop :=
   f ≠ 0 ∧ ∃ x, ∀ y < x, f y = 0
 
 /-- A sequence is negative iff it is not zero and has a left-tail of solely the top digit. -/
 protected def Negative {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) : Prop :=
+    (f : DigitExpansion Z b) : Prop :=
   f ≠ 0 ∧ ∃ x, ∀ y < x, f y = b
 
 theorem not_positive_zero {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ}
-    [Fact (0 < b)] : ¬FormalSeries.Positive (0 : FormalSeries Z b) := fun H => H.left rfl
+    [Fact (0 < b)] : ¬DigitExpansion.Positive (0 : DigitExpansion Z b) := fun H => H.left rfl
 
 theorem not_negative_zero {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ}
-    [Fact (0 < b)] : ¬FormalSeries.Negative (0 : FormalSeries Z b) := fun H => H.left rfl
+    [Fact (0 < b)] : ¬DigitExpansion.Negative (0 : DigitExpansion Z b) := fun H => H.left rfl
 
 lemma not_positive_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z] [NoMaxOrder Z]
-    {b : ℕ} [Fact (0 < b)] (f : FormalSeries Z b) : ¬FormalSeries.Positive f := by
+    {b : ℕ} [Fact (0 < b)] (f : DigitExpansion Z b) : ¬DigitExpansion.Positive f := by
   rintro ⟨hne, -, -⟩
   simp [FunLike.ext_iff] at hne
 
 lemma not_negative_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z] [NoMaxOrder Z]
-    {b : ℕ} [Fact (0 < b)] (f : FormalSeries Z b) : ¬FormalSeries.Negative f := by
+    {b : ℕ} [Fact (0 < b)] (f : DigitExpansion Z b) : ¬DigitExpansion.Negative f := by
   rintro ⟨hne, -, -⟩
   simp [FunLike.ext_iff] at hne
 
@@ -704,11 +704,11 @@ lemma not_negative_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z]
 -- (i)
 theorem Negative.neg_positive {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z]
     [PredOrder Z] [NoMinOrder Z] [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
-    {f : FormalSeries Z b} (hf : f.Negative) : (-f).Positive := by
+    {f : DigitExpansion Z b} (hf : f.Negative) : (-f).Positive := by
   refine' ⟨_, _⟩
   · rw [Ne.def, neg_eq_iff_eq_neg, eq_comm, neg_zero]
     exact hf.left.symm
-  · simp_rw [f.neg_def, FormalSeries.sub_def]
+  · simp_rw [f.neg_def, DigitExpansion.sub_def]
     obtain ⟨x, hx⟩ := hf.right
     refine' ⟨pred x, fun y hy => _⟩
     simp_rw [hx y (hy.trans (pred_lt _)), zero_apply, zero_sub, sub_eq_zero]
@@ -718,7 +718,7 @@ theorem Negative.neg_positive {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxO
 
 variable {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
-variable {f g : FormalSeries Z b}
+variable {f g : DigitExpansion Z b}
 
 theorem Positive.exists_least_pos (hf : f.Positive) : ∃ x, 0 < f x ∧ ∀ y < x, f y = 0 := by
   obtain ⟨x, hx⟩ : ∃ x, ∀ y ≤ x, f y = 0 := by
@@ -794,7 +794,7 @@ theorem Positive.sub_negative (hf : f.Positive) (hg : g.Negative) : (f - g).Posi
   · obtain ⟨x, hx⟩ := hf.right
     obtain ⟨z, hz⟩ := hg.right
     refine' ⟨min (pred x) (pred z), fun y hy => _⟩
-    rw [FormalSeries.sub_def, sub_eq_zero, hx y (hy.trans _), hz y (hy.trans _), zero_sub,
+    rw [DigitExpansion.sub_def, sub_eq_zero, hx y (hy.trans _), hz y (hy.trans _), zero_sub,
       Fin.neg_coe_eq_one, eq_comm, difcar_eq_one_iff]
     · refine' ⟨min (pred x) (pred z), hy, _, fun w hw _ => _⟩
       · rw [hx, hz, Fin.lt_iff_val_lt_val]
@@ -813,11 +813,11 @@ theorem Positive.neg_negative (hf : f.Positive) : (-f).Negative := by
   refine' ⟨_, _⟩
   · rw [Ne.def, neg_eq_iff_eq_neg, eq_comm, neg_zero]
     exact hf.left.symm
-  · simp_rw [f.neg_def, FormalSeries.sub_def]
+  · simp_rw [f.neg_def, DigitExpansion.sub_def]
     obtain ⟨x, hx⟩ := hf.right
     obtain ⟨z, hz⟩ : ∃ z, 0 < f z := by
       by_contra!
-      refine' hf.left (FormalSeries.ext _)
+      refine' hf.left (DigitExpansion.ext _)
       simpa
     refine' ⟨pred x, fun y hy => _⟩
     simp_rw [hx y (hy.trans (pred_lt _)), zero_apply, sub_self, zero_sub]
@@ -835,7 +835,7 @@ theorem Negative.sub_positive (hf : f.Negative) (hg : g.Positive) : (f - g).Nega
   · obtain ⟨x, hx⟩ := hf.right
     obtain ⟨z, hz⟩ := hg.right
     refine' ⟨pred (min (pred x) (pred z)), fun y hy => _⟩
-    rw [FormalSeries.sub_def, hx y (hy.trans ((pred_lt _).trans _)),
+    rw [DigitExpansion.sub_def, hx y (hy.trans ((pred_lt _).trans _)),
       hz y (hy.trans ((pred_lt _).trans _)), sub_zero, sub_eq_self, difcar_eq_zero_iff]
     · intro w hw hfg
       rw [gt_iff_lt, ← succ_le_iff] at hw
@@ -913,11 +913,11 @@ theorem Positive.sub_positive (hf : f.Positive) (hg : g.Positive) (hne : f ≠ g
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, ⟨_, H, hx₀.right⟩⟩
     · rwa [Ne.def, sub_eq_zero]
     · rw [← hd'] at H
-      simp [FormalSeries.sub_def, hx₀.right _ hy, H _ hy]
+      simp [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy]
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, _⟩
     · rwa [Ne.def, sub_eq_zero]
     · rw [← hd] at H
-      simp only [FormalSeries.sub_def, hx₀.right _ hy, H _ hy, sub_self, zero_sub]
+      simp only [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy, sub_self, zero_sub]
       rw [neg_eq_iff_eq_neg, eq_comm, Fin.neg_coe_eq_one]
     · push_neg
       intro z hz
@@ -988,11 +988,11 @@ theorem Negative.sub_negative (hf : f.Negative) (hg : g.Negative) (hne : f ≠ g
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, ⟨_, H, hx₀.right⟩⟩
     · rwa [Ne.def, sub_eq_zero]
     · rw [← hd'] at H
-      simp [FormalSeries.sub_def, hx₀.right _ hy, H _ hy]
+      simp [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy]
   · refine' ⟨⟨_, x₀, fun y hy => _⟩, _⟩
     · rwa [Ne.def, sub_eq_zero]
     · rw [← hd] at H
-      simp only [FormalSeries.sub_def, hx₀.right _ hy, H _ hy, sub_self, zero_sub]
+      simp only [DigitExpansion.sub_def, hx₀.right _ hy, H _ hy, sub_self, zero_sub]
       rw [neg_eq_iff_eq_neg, Fin.neg_coe_eq_one]
     · push_neg
       intro z hz
@@ -1002,7 +1002,7 @@ theorem Negative.sub_negative (hf : f.Negative) (hg : g.Negative) (hne : f ≠ g
       · exact H.le
       · exact (hx₀.right _ hz').le
 
-end FormalSeries
+end DigitExpansion
 
 end S06
 
@@ -1014,7 +1014,7 @@ variable (Z : Type*) [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] 
 -- 7.1
 /-- A sequence is called real if it is either negative or zero or positive.
 -/
-def FormalSeries.real : AddSubgroup (FormalSeries Z b)
+def DigitExpansion.real : AddSubgroup (DigitExpansion Z b)
     where
   carrier := {f | f.Positive ∨ f.Negative ∨ f = 0}
   add_mem' := by
@@ -1044,22 +1044,22 @@ def FormalSeries.real : AddSubgroup (FormalSeries Z b)
     · exact Or.inl hf.neg_positive
     · simp
 
-instance : LT (FormalSeries.real Z b) :=
-  ⟨fun f g => (g - f : FormalSeries Z b).Positive⟩
+instance : LT (DigitExpansion.real Z b) :=
+  ⟨fun f g => (g - f : DigitExpansion Z b).Positive⟩
 
 variable {Z} {b}
-variable {f g : FormalSeries Z b}
+variable {f g : DigitExpansion Z b}
 
-protected theorem FormalSeries.real.apply_eq_coe_apply (f : FormalSeries.real Z b) (z : Z) :
-    (f : FormalSeries Z b) z = (f : FormalSeries Z b) z :=
+protected theorem DigitExpansion.real.apply_eq_coe_apply (f : DigitExpansion.real Z b) (z : Z) :
+    (f : DigitExpansion Z b) z = (f : DigitExpansion Z b) z :=
   rfl
 
-protected theorem FormalSeries.real.lt_def {f g : FormalSeries.real Z b} :
-    f < g ↔ (g - f : FormalSeries Z b).Positive :=
+protected theorem DigitExpansion.real.lt_def {f g : DigitExpansion.real Z b} :
+    f < g ↔ (g - f : DigitExpansion Z b).Positive :=
   Iff.rfl
 
 @[simp]
-lemma FormalSeries.real.eq_zero_of_isEmpty [IsEmpty Z] (f : FormalSeries.real Z b) : f = 0 := by
+lemma DigitExpansion.real.eq_zero_of_isEmpty [IsEmpty Z] (f : DigitExpansion.real Z b) : f = 0 := by
   rcases f with ⟨_, hf|hf|rfl⟩
   · exact absurd hf (not_positive_of_isEmpty _)
   · exact absurd hf (not_negative_of_isEmpty _)
@@ -1068,7 +1068,7 @@ lemma FormalSeries.real.eq_zero_of_isEmpty [IsEmpty Z] (f : FormalSeries.real Z 
 variable (b) (Z)
 
 -- 7.2(ii)
-instance FormalSeries.real.PartialOrder : PartialOrder (FormalSeries.real Z b)
+instance DigitExpansion.real.PartialOrder : PartialOrder (DigitExpansion.real Z b)
     where
   le f g := f = g ∨ f < g
   lt := (· < ·)
@@ -1079,15 +1079,15 @@ instance FormalSeries.real.PartialOrder : PartialOrder (FormalSeries.real Z b)
     · exact Or.inr hgh
     · exact Or.inr hfg
     · refine' Or.inr _
-      rw [FormalSeries.real.lt_def] at hfg hgh ⊢
-      rw [← sub_sub_sub_cancel_right _ _ (g : FormalSeries Z b), ← neg_sub (g : FormalSeries Z b) f]
+      rw [DigitExpansion.real.lt_def] at hfg hgh ⊢
+      rw [← sub_sub_sub_cancel_right _ _ (g : DigitExpansion Z b), ← neg_sub (g : DigitExpansion Z b) f]
       exact hgh.sub_negative hfg.neg_negative
   lt_iff_le_not_le f g := by
     constructor
     · intro h
       refine' ⟨Or.inr h, _⟩
-      rintro (rfl | H) <;> rw [FormalSeries.real.lt_def] at *
-      · refine' (_ : (g : FormalSeries Z b) ≠ g) rfl
+      rintro (rfl | H) <;> rw [DigitExpansion.real.lt_def] at *
+      · refine' (_ : (g : DigitExpansion Z b) ≠ g) rfl
         rw [Ne.def, ← sub_eq_zero]
         exact h.left
       · rw [← neg_sub] at H
@@ -1101,17 +1101,17 @@ instance FormalSeries.real.PartialOrder : PartialOrder (FormalSeries.real Z b)
     · rfl
     · rfl
     · exact hgf.symm
-    · rw [FormalSeries.real.lt_def] at hfg hgf
+    · rw [DigitExpansion.real.lt_def] at hfg hgf
       rw [← neg_sub] at hgf
       exact absurd hgf hfg.neg_negative.not_positive
 
-protected theorem FormalSeries.real.le_def {f g : FormalSeries.real Z b} :
-    f ≤ g ↔ f = g ∨ (g - f : FormalSeries Z b).Positive :=
+protected theorem DigitExpansion.real.le_def {f g : DigitExpansion.real Z b} :
+    f ≤ g ↔ f = g ∨ (g - f : DigitExpansion Z b).Positive :=
   Iff.rfl
 
 -- 7.2(i)
-noncomputable instance : LinearOrder (FormalSeries.real Z b) :=
-  { FormalSeries.real.PartialOrder _
+noncomputable instance : LinearOrder (DigitExpansion.real Z b) :=
+  { DigitExpansion.real.PartialOrder _
       _ with
     le_total := fun f g => by
       rcases hfg : f - g with ⟨h, H | H | rfl⟩ <;>
@@ -1128,33 +1128,33 @@ noncomputable instance : LinearOrder (FormalSeries.real Z b) :=
     decidableLE := Classical.decRel _ }
 
 -- 7.2(iii)
-instance : CovariantClass (FormalSeries.real Z b) (FormalSeries.real Z b) (· + ·) (· < ·) :=
-  ⟨fun _ _ _ => by simp_rw [FormalSeries.real.lt_def]; simp⟩
+instance : CovariantClass (DigitExpansion.real Z b) (DigitExpansion.real Z b) (· + ·) (· < ·) :=
+  ⟨fun _ _ _ => by simp_rw [DigitExpansion.real.lt_def]; simp⟩
 
 -- additional
-instance : CovariantClass (FormalSeries.real Z b) (FormalSeries.real Z b)
+instance : CovariantClass (DigitExpansion.real Z b) (DigitExpansion.real Z b)
     (Function.swap (· + ·)) (· < ·) :=
-  ⟨fun _ _ _ => by simp_rw [FormalSeries.real.lt_def]; simp⟩
+  ⟨fun _ _ _ => by simp_rw [DigitExpansion.real.lt_def]; simp⟩
 
-instance : CovariantClass (FormalSeries.real Z b) (FormalSeries.real Z b) (· + ·) (· ≤ ·) :=
-  ⟨fun _ _ _ => by simp_rw [FormalSeries.real.le_def]; simp⟩
+instance : CovariantClass (DigitExpansion.real Z b) (DigitExpansion.real Z b) (· + ·) (· ≤ ·) :=
+  ⟨fun _ _ _ => by simp_rw [DigitExpansion.real.le_def]; simp⟩
 
-instance : CovariantClass (FormalSeries.real Z b) (FormalSeries.real Z b)
+instance : CovariantClass (DigitExpansion.real Z b) (DigitExpansion.real Z b)
     (Function.swap (· + ·)) (· ≤ ·) :=
-  ⟨fun _ _ _ => by simp_rw [FormalSeries.real.le_def]; simp⟩
+  ⟨fun _ _ _ => by simp_rw [DigitExpansion.real.le_def]; simp⟩
 
 variable {Z} {b}
 
 -- 7.2(iv)
-theorem FormalSeries.real.positive_iff {f : FormalSeries.real Z b} :
-    (f : FormalSeries Z b).Positive ↔ 0 < f := by
-  simp [FormalSeries.real.lt_def]
+theorem DigitExpansion.real.positive_iff {f : DigitExpansion.real Z b} :
+    (f : DigitExpansion Z b).Positive ↔ 0 < f := by
+  simp [DigitExpansion.real.lt_def]
 
-theorem FormalSeries.real.negative_iff {f : FormalSeries.real Z b} :
-    (f : FormalSeries Z b).Negative ↔ f < 0 := by
-  simp only [FormalSeries.real.lt_def, AddSubgroup.coe_zero, zero_sub]
-  refine' ⟨FormalSeries.Negative.neg_positive, fun h => _⟩
-  rw [← neg_neg (f : FormalSeries Z b)]
+theorem DigitExpansion.real.negative_iff {f : DigitExpansion.real Z b} :
+    (f : DigitExpansion Z b).Negative ↔ f < 0 := by
+  simp only [DigitExpansion.real.lt_def, AddSubgroup.coe_zero, zero_sub]
+  refine' ⟨DigitExpansion.Negative.neg_positive, fun h => _⟩
+  rw [← neg_neg (f : DigitExpansion Z b)]
   exact h.neg_negative
 
 end S07
@@ -1163,41 +1163,41 @@ section S08
 
 variable (b) (Z)
 
-namespace FormalSeries
+namespace DigitExpansion
 
 variable (Z : Type*) [Nonempty Z] [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
   [NoMinOrder Z] [IsSuccArchimedean Z] (b : ℕ) [hb : Fact (0 < b)]
 
 /-- A sequence is a Hensel (or b-adic) number if it has a right-tail of solely digit 0. These
 sequences form an additive subgroup. -/
-def hensel : AddSubgroup (FormalSeries Z b) :=
-  AddSubgroup.ofSub {f : FormalSeries Z b | ∃ x, ∀ z > x, f z = 0} ⟨0, by simp⟩
+def hensel : AddSubgroup (DigitExpansion Z b) :=
+  AddSubgroup.ofSub {f : DigitExpansion Z b | ∃ x, ∀ z > x, f z = 0} ⟨0, by simp⟩
     (by
       simp only [gt_iff_lt, Set.mem_setOf_eq, forall_exists_index]
       intro f x hfx g y hgy
       use max x y
       intro z hz
       simp only [max_lt_iff] at hz
-      rw [← sub_eq_add_neg, FormalSeries.sub_def, hfx _ hz.left, hgy _ hz.right]
+      rw [← sub_eq_add_neg, DigitExpansion.sub_def, hfx _ hz.left, hgy _ hz.right]
       simp only [difcar_eq_zero_iff, sub_self, neg_zero, zero_sub, neg_eq_zero, gt_iff_lt]
       intro w hw
       simp [hfx _ (hz.left.trans hw), hgy _ (hz.right.trans hw)])
 
 /-- A sequence is a Hensel (or b-adic) integer if the right-tail past the 0th digit is
 solely digit 0. These sequences form an additive subgroup. -/
-def henselInt [Zero Z] : AddSubgroup (FormalSeries Z b) :=
-  AddSubgroup.ofSub {f : FormalSeries Z b | ∀ z > 0, f z = 0} ⟨0, by simp⟩
+def henselInt [Zero Z] : AddSubgroup (DigitExpansion Z b) :=
+  AddSubgroup.ofSub {f : DigitExpansion Z b | ∀ z > 0, f z = 0} ⟨0, by simp⟩
     (by
       simp only [gt_iff_lt, Set.mem_setOf_eq, forall_exists_index]
       intro f hf g hg z hz
-      simp only [← sub_eq_add_neg, FormalSeries.sub_def, hf _ hz, hg _ hz, difcar_eq_zero_iff,
+      simp only [← sub_eq_add_neg, DigitExpansion.sub_def, hf _ hz, hg _ hz, difcar_eq_zero_iff,
         sub_self, neg_zero, zero_sub, neg_eq_zero, gt_iff_lt]
       intro w hw
       simp [hf _ (hw.trans' hz), hg _ (hw.trans' hz)])
 
 /-- A sequence that is both real and Hensel is like the rationals. TODO: prove the equivalence.
 These sequences form an additive subgroup. -/
-def realHensel : AddSubgroup (FormalSeries Z b) :=
+def realHensel : AddSubgroup (DigitExpansion Z b) :=
   real Z b ⊓ hensel Z b
 
 /-- A sequence that is both real and Hensel as an additive subgroup of the real sequences. -/
@@ -1206,7 +1206,7 @@ def real.hensel : AddSubgroup (real Z b) :=
 
 /-- A sequence that is both real and a Hensel integer. TODO: prove the equivalence to integers.
 These sequences form an additive subgroup. -/
-def zStar [Zero Z] : AddSubgroup (FormalSeries Z b) :=
+def zStar [Zero Z] : AddSubgroup (DigitExpansion Z b) :=
   real Z b ⊓ henselInt Z b
 
 variable {Z} {b}
@@ -1215,15 +1215,15 @@ variable {Z} {b}
 theorem real.dense {f g : real Z b} (hfg : f > g) :
     ∃ h ∈ real.hensel Z b, f > h ∧ h > g := by
   set k := f - g with hk
-  have kpos : FormalSeries.Positive (k : FormalSeries Z b) := by
+  have kpos : DigitExpansion.Positive (k : DigitExpansion Z b) := by
     rw [real.positive_iff, hk]
     exact sub_pos_of_lt hfg
   obtain ⟨x, xpos, hx⟩ := kpos.exists_least_pos
-  let p' : FormalSeries Z b := ⟨fun y => if y ≤ x then 0 else if y = succ x then 1
-    else (f : FormalSeries Z b) y, ?_⟩
+  let p' : DigitExpansion Z b := ⟨fun y => if y ≤ x then 0 else if y = succ x then 1
+    else (f : DigitExpansion Z b) y, ?_⟩
   swap
   · rintro ⟨z, hz⟩
-    obtain ⟨w, hwz, hw⟩ := exists_bounded (f : FormalSeries Z b) z
+    obtain ⟨w, hwz, hw⟩ := exists_bounded (f : DigitExpansion Z b) z
     cases' le_or_lt w x with h h
     · specialize hz _ hwz
       simp only at hz
@@ -1231,7 +1231,7 @@ theorem real.dense {f g : real Z b} (hfg : f > g) :
       cases b
       · exact absurd hb.out (lt_irrefl _)
       · exact (Fin.last_pos : 0 < Fin.last _).ne hz
-    · obtain ⟨w', hww', hw'⟩ := exists_bounded (f : FormalSeries Z b) (succ w)
+    · obtain ⟨w', hww', hw'⟩ := exists_bounded (f : DigitExpansion Z b) (succ w)
       specialize hz w' ((lt_trans hwz (lt_succ _)).trans hww')
       simp only at hz
       rw [if_neg ((succ_strictMono h).trans hww').ne',
@@ -1250,7 +1250,7 @@ theorem real.dense {f g : real Z b} (hfg : f > g) :
   let p : real Z b := ⟨p', Or.inl ppos⟩
   refine' ⟨f - p, ⟨(f - p).prop, succ x, _⟩, _, _⟩
   · intro z hz
-    simp only [FormalSeries.sub_def, AddSubgroup.coeSubtype, AddSubgroup.coe_sub, Subtype.coe_mk,
+    simp only [DigitExpansion.sub_def, AddSubgroup.coeSubtype, AddSubgroup.coe_sub, Subtype.coe_mk,
       mk_apply, ne_of_gt hz, not_le_of_lt ((lt_trans (lt_succ x)) hz),
       real.apply_eq_coe_apply, difcar_eq_zero_iff, if_false, sub_self, zero_sub,
       neg_eq_zero, gt_iff_lt]
@@ -1271,10 +1271,10 @@ theorem real.dense {f g : real Z b} (hfg : f > g) :
 -- 8.3
 theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
     ∃ h : zStar Z b, (⟨_, h.prop.left⟩ : real Z b) > f := by
-  let q' : FormalSeries Z b := ⟨fun x => if x ≤ 0 then b else (f : FormalSeries Z b) x, ?_⟩
+  let q' : DigitExpansion Z b := ⟨fun x => if x ≤ 0 then b else (f : DigitExpansion Z b) x, ?_⟩
   swap
   · rintro ⟨z, hz⟩
-    obtain ⟨x, hx, hx'⟩ := exists_bounded (f : FormalSeries Z b) (max (succ z) (succ 0))
+    obtain ⟨x, hx, hx'⟩ := exists_bounded (f : DigitExpansion Z b) (max (succ z) (succ 0))
     refine' hx'.ne _
     simp only at hz
     rw [← hz x (lt_trans _ hx), if_neg (not_le_of_lt (lt_trans _ hx)),
@@ -1292,7 +1292,7 @@ theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
     · simp [q', hy.not_lt]
   let q : real Z b := ⟨q', Or.inr (Or.inl qneg)⟩
   refine' ⟨⟨f - q, (f - q).prop, fun z zpos => _⟩, _⟩
-  · simp only [FormalSeries.sub_def, not_le_of_lt zpos, real.apply_eq_coe_apply,
+  · simp only [DigitExpansion.sub_def, not_le_of_lt zpos, real.apply_eq_coe_apply,
       difcar_eq_zero_iff, Subtype.coe_mk, mk_apply, if_false, sub_self, zero_sub,
       neg_eq_zero, gt_iff_lt]
     intro x hx
@@ -1300,17 +1300,17 @@ theorem real.exists_lt_zStar [Zero Z] (f : real Z b) :
   · change f < f - q
     rwa [lt_sub_comm, sub_self, ← real.negative_iff]
 
-end FormalSeries
+end DigitExpansion
 end S08
 
 section S10
 
-namespace FormalSeries
+namespace DigitExpansion
 
 /-- An auxiliary function that truncates the right-tail of a sequence by setting that tail to
 all digit 0. Such truncation preserves order. -/
-def cutoff {Z : Type*} [LT Z] {b : ℕ} [hb : Fact (0 < b)] (z : Z) (f : FormalSeries Z b) :
-    FormalSeries Z b :=
+def cutoff {Z : Type*} [LT Z] {b : ℕ} [hb : Fact (0 < b)] (z : Z) (f : DigitExpansion Z b) :
+    DigitExpansion Z b :=
   ⟨fun x => if z < x then 0 else f x, by
     rintro ⟨y, hy⟩
     obtain ⟨w, hwy, hw⟩ := f.exists_bounded y
@@ -1327,20 +1327,20 @@ def cutoff {Z : Type*} [LT Z] {b : ℕ} [hb : Fact (0 < b)] (z : Z) (f : FormalS
     · exact hw.ne hy⟩
 
 theorem cutoff_apply_le {Z : Type*} [Preorder Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) (z x : Z) (h : x ≤ z) : f.cutoff z x = f x :=
+    (f : DigitExpansion Z b) (z x : Z) (h : x ≤ z) : f.cutoff z x = f x :=
   if_neg (not_lt_of_le h)
 
 @[simp]
 theorem cutoff_apply_self {Z : Type*} [Preorder Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) (z : Z) : f.cutoff z z = f z :=
+    (f : DigitExpansion Z b) (z : Z) : f.cutoff z z = f z :=
   cutoff_apply_le _ _ _ le_rfl
 
 theorem cutoff_apply_lt {Z : Type*} [LT Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) (z x : Z) (h : z < x) : f.cutoff z x = 0 :=
+    (f : DigitExpansion Z b) (z x : Z) (h : z < x) : f.cutoff z x = 0 :=
   if_pos h
 
 theorem cutoff_cutoff_of_le {Z : Type*} [LinearOrder Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) {z x : Z} (h : x ≤ z) : cutoff x (cutoff z f) = cutoff x f := by
+    (f : DigitExpansion Z b) {z x : Z} (h : x ≤ z) : cutoff x (cutoff z f) = cutoff x f := by
   ext y
   cases' le_or_lt y x with hyx hyx
   · rw [cutoff_apply_le _ _ _ hyx, cutoff_apply_le _ _ _ hyx, cutoff_apply_le _ _ _ (hyx.trans h)]
@@ -1348,13 +1348,13 @@ theorem cutoff_cutoff_of_le {Z : Type*} [LinearOrder Z] {b : ℕ} [Fact (0 < b)]
 
 @[simp]
 lemma cutoff_idem {Z : Type*} [LinearOrder Z] {b : ℕ} [Fact (0 < b)]
-    (f : FormalSeries Z b) (z : Z) : (cutoff z (cutoff z f)) = cutoff z f :=
+    (f : DigitExpansion Z b) (z : Z) : (cutoff z (cutoff z f)) = cutoff z f :=
   cutoff_cutoff_of_le _ le_rfl
 
 variable {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
 
-@[simp] lemma cutoff_zero (z : Z) : cutoff z (0 : FormalSeries Z b) = 0 := by
+@[simp] lemma cutoff_zero (z : Z) : cutoff z (0 : DigitExpansion Z b) = 0 := by
   ext y
   cases' le_or_lt y z with h h
   · rw [cutoff_apply_le _ _ _ h]
@@ -1367,9 +1367,9 @@ variable {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z]
 
 /-- An auxiliary function defining a sequence that has the specified digit at the specified
 position, and 0 elsewhere. Compare to `Pi.single`. Not included in the de Bruijn paper.
-The resulting sequence is real. See `FormalSeries.real.single` for the direct construction. -/
+The resulting sequence is real. See `DigitExpansion.real.single` for the direct construction. -/
 def single (z : Z) (n : Fin (b + 1)) :
-    FormalSeries Z b where
+    DigitExpansion Z b where
   toFun := fun x => if z = x then n else 0
   bounded' := by
     rintro ⟨x, hx⟩
@@ -1441,7 +1441,7 @@ lemma single_positive_of_ne_zero (z : Z) {n : Fin (b + 1)} (hn : n ≠ 0) : (sin
 
 end single
 
-lemma Negative.negative_cutoff {f : FormalSeries Z b} (hf : f.Negative) (z : Z) :
+lemma Negative.negative_cutoff {f : DigitExpansion Z b} (hf : f.Negative) (z : Z) :
     (f.cutoff z).Negative := by
   obtain ⟨hne, x, hx⟩ := hf
   refine' ⟨λ H => _, min x z, λ y hy => _⟩
@@ -1456,7 +1456,7 @@ lemma Negative.negative_cutoff {f : FormalSeries Z b} (hf : f.Negative) (z : Z) 
   · rw [lt_min_iff] at hy
     rw [cutoff_apply_le _ _ _ hy.right.le, hx _ hy.left]
 
-lemma negative_cutoff_iff {f : FormalSeries Z b} {z : Z} :
+lemma negative_cutoff_iff {f : DigitExpansion Z b} {z : Z} :
     (f.cutoff z).Negative ↔ f.Negative := by
   refine' ⟨_, fun h => Negative.negative_cutoff h z⟩
   rintro ⟨hne, x, hx⟩
@@ -1471,7 +1471,7 @@ lemma negative_cutoff_iff {f : FormalSeries Z b} {z : Z} :
   rw [cutoff_apply_lt _ _ _ hx]
   simp [Fin.ext_iff, hb.out.ne]
 
-lemma difcar_cutoff_cutoff_of_le (f g : FormalSeries Z b) (z x : Z) (hx : z ≤ x) :
+lemma difcar_cutoff_cutoff_of_le (f g : DigitExpansion Z b) (z x : Z) (hx : z ≤ x) :
     difcar (f.cutoff z) (g.cutoff z) x = 0 := by
   rw [difcar_eq_zero_iff]
   intros y hy hy'
@@ -1480,7 +1480,7 @@ lemma difcar_cutoff_cutoff_of_le (f g : FormalSeries Z b) (z x : Z) (hx : z ≤ 
 /-- An auxiliary function defining a sequence that has the specified digit at the specified
 position, and 0 elsewhere. Compare to `Pi.single`. Not included in the de Bruijn paper. -/
 def real.single (z : Z) (n : Fin (b + 1)) : real Z b :=
-  ⟨FormalSeries.single z n, by
+  ⟨DigitExpansion.single z n, by
     rcases eq_or_ne n 0 with rfl|hn
     · simp only [single_zero]
       exact Or.inr (Or.inr rfl)
@@ -1488,11 +1488,11 @@ def real.single (z : Z) (n : Fin (b + 1)) : real Z b :=
 
 @[simp]
 lemma real.val_single (z : Z) (n : Fin (b + 1)) :
-    (real.single z n : FormalSeries Z b) = FormalSeries.single z n := rfl
+    (real.single z n : DigitExpansion Z b) = DigitExpansion.single z n := rfl
 
 @[simp]
 lemma real.single_zero (z : Z) :
-    (real.single z (0 : Fin (b + 1))) = 0 := Subtype.ext (FormalSeries.single_zero z)
+    (real.single z (0 : Fin (b + 1))) = 0 := Subtype.ext (DigitExpansion.single_zero z)
 
 lemma real.single_injective (z : Z) :
     Function.Injective (real.single (b := b) z) := by
@@ -1513,8 +1513,8 @@ lemma real.single_strict_mono (z : Z) {n m : Fin (b + 1)} (h : n < m) :
   refine ⟨?_, z, fun y hy => ?_⟩
   · rw [FunLike.ne_iff]
     refine ⟨z, ?_⟩
-    simp [FormalSeries.sub_def, sub_eq_zero, h.ne']
-  · rw [FormalSeries.sub_def, difcar_eq_zero_iff.mpr]
+    simp [DigitExpansion.sub_def, sub_eq_zero, h.ne']
+  · rw [DigitExpansion.sub_def, difcar_eq_zero_iff.mpr]
     · simp [hy.ne']
     intro x _ H
     rcases eq_or_ne z x with rfl|h
@@ -1535,12 +1535,12 @@ lemma real.single_strict_anti_left_of_ne_zero {z x : Z} {n : Fin (b + 1)} (hn : 
   refine ⟨?_, z, fun y hy => ?_⟩
   · rw [FunLike.ne_iff]
     refine ⟨x, ?_⟩
-    simp only [val_single, FormalSeries.sub_def, single_apply_self, zero_apply, ne_eq]
+    simp only [val_single, DigitExpansion.sub_def, single_apply_self, zero_apply, ne_eq]
     rw [difcar_eq_zero_iff.mpr, sub_zero, sub_eq_zero]
     · simp [h.ne, hn.symm]
     intro _ hx
     simp [hx.ne]
-  · rw [FormalSeries.sub_def, difcar_eq_zero_iff.mpr]
+  · rw [DigitExpansion.sub_def, difcar_eq_zero_iff.mpr]
     · simp [hy.ne', (hy.trans h).ne']
     intro w hw H
     have : x = w
@@ -1574,7 +1574,7 @@ lemma real.single_lt_left_iff_of_ne_zero {z x : Z} {n : Fin (b + 1)} (hn : n ≠
 /-- An auxiliary function that truncates the right-tail of a sequence by setting that tail to
 all digit 0. Such truncation preserves order. -/
 def real.cutoff (z : Z) (f : real Z b) : real Z b :=
-  ⟨FormalSeries.cutoff z (f : FormalSeries Z b), by
+  ⟨DigitExpansion.cutoff z (f : DigitExpansion Z b), by
     rcases f with ⟨f, hf | hf | rfl⟩ <;> rw [Subtype.coe_mk]
     · obtain ⟨x, xpos, hx⟩ := hf.exists_least_pos
       cases' lt_or_le z x with h h
@@ -1594,15 +1594,15 @@ def real.cutoff (z : Z) (f : real Z b) : real Z b :=
 
 @[simp]
 lemma real.cutoff_zero (z : Z) : cutoff z (0 : real Z b) = 0 :=
-  Subtype.ext (FormalSeries.cutoff_zero z)
+  Subtype.ext (DigitExpansion.cutoff_zero z)
 
 @[simp]
 lemma real.val_cutoff (z : Z) (f : real Z b) :
-    (real.cutoff z f : FormalSeries Z b) = FormalSeries.cutoff z f := rfl
+    (real.cutoff z f : DigitExpansion Z b) = DigitExpansion.cutoff z f := rfl
 
 @[simp]
 lemma real.cutoff_idem (f : real Z b) (z : Z) : (cutoff z (cutoff z f)) = cutoff z f :=
-  Subtype.ext <| FormalSeries.cutoff_idem _ _
+  Subtype.ext <| DigitExpansion.cutoff_idem _ _
 
 lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     real.cutoff z f ≤ real.cutoff z g := by
@@ -1621,7 +1621,7 @@ lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     obtain ⟨a, ha, ha'⟩ := hfg'.exists_least_pos
     obtain ⟨m, hm'⟩ := hf.right
     obtain ⟨n, hn'⟩ := hg.right
-    simp_rw [FormalSeries.sub_def] at ha ha' ⊢
+    simp_rw [DigitExpansion.sub_def] at ha ha' ⊢
     refine' ⟨min (min m n) (min z a), _⟩
     simp only [ge_iff_le, le_pred_iff, pred_lt_iff, min_lt_iff, le_min_iff, lt_min_iff, and_imp]
     intros y hym hyn hyz hya
@@ -1650,7 +1650,7 @@ lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     refine' ⟨min (min (pred m) (pred n)) (min z a), _⟩
     simp only [ge_iff_le, le_pred_iff, pred_lt_iff, min_lt_iff, le_min_iff, lt_min_iff, and_imp]
     intros y hym hyn hyz hya
-    simp_rw [FormalSeries.sub_def] at ha' ⊢
+    simp_rw [DigitExpansion.sub_def] at ha' ⊢
     rw [cutoff_apply_le _ _ _ hyz.le, cutoff_apply_le _ _ _ hyz.le,
         hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))]
     specialize ha' y hya
@@ -1680,7 +1680,7 @@ lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     refine' ⟨min (min (pred m) (pred n)) (min z a), _⟩
     simp only [ge_iff_le, le_pred_iff, pred_lt_iff, min_lt_iff, le_min_iff, lt_min_iff, and_imp]
     intros y hym hyn hyz hya
-    simp_rw [FormalSeries.sub_def] at ha' ⊢
+    simp_rw [DigitExpansion.sub_def] at ha' ⊢
     rw [cutoff_apply_le _ _ _ hyz.le, cutoff_apply_le _ _ _ hyz.le,
         hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))]
     specialize ha' y hya
@@ -1702,7 +1702,7 @@ lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     obtain ⟨hne, x, hx⟩ := hg
     refine' ⟨by simpa [Subtype.ext_iff, sub_eq_zero] using Ne.symm H, x, _⟩
     intro y
-    simp only [FormalSeries.cutoff_zero, sub_zero]
+    simp only [DigitExpansion.cutoff_zero, sub_zero]
     intro hy
     cases' lt_or_le z y with hzy hzy
     · rw [cutoff_apply_lt _ _ _ hzy]
@@ -1726,7 +1726,7 @@ lemma real.cutoff_mono_left {z z' : Z} (f : real Z b) (h : z ≤ z') :
       simpa using cutoff_mono z' hf'.le
     · obtain ⟨-, x, hx'⟩ := hf'
       simp only [Subtype.ext_iff, val_cutoff, ZeroMemClass.coe_zero] at hf
-      suffices : FormalSeries.cutoff (b := b) z f (pred (min z x)) = 0
+      suffices : DigitExpansion.cutoff (b := b) z f (pred (min z x)) = 0
       · rw [cutoff_apply_le, hx'] at this
         · simp [Fin.ext_iff, hb.out.ne'] at this
         · simp [pred_min]
@@ -1734,26 +1734,26 @@ lemma real.cutoff_mono_left {z z' : Z} (f : real Z b) (h : z ≤ z') :
       simp [hf]
     · simp only [ZeroMemClass.coe_eq_zero] at hf'
       simp [hf']
-  have hle : ∀ y, (FormalSeries.cutoff z f.val) y ≤ (FormalSeries.cutoff z' f.val) y
+  have hle : ∀ y, (DigitExpansion.cutoff z f.val) y ≤ (DigitExpansion.cutoff z' f.val) y
   · intro y
     cases' le_or_lt y z with hyz hyz
     · rw [cutoff_apply_le _ _ _ hyz, cutoff_apply_le _ _ _ (hyz.trans h.le)]
     · simp [cutoff_apply_lt _ _ _ hyz]
-  by_cases hw : ∃ w ≤ z', z < w ∧ 0 < (f : FormalSeries Z b) w
+  by_cases hw : ∃ w ≤ z', z < w ∧ 0 < (f : DigitExpansion Z b) w
   · obtain ⟨w, hwz', hzw, hw⟩ := hw
     refine' le_of_lt ⟨_, pred z, _⟩
     · contrapose! hw
       simp only [val_cutoff] at hw
-      have : difcar (FormalSeries.cutoff z' f) (FormalSeries.cutoff (b := b) z f) w = 0
+      have : difcar (DigitExpansion.cutoff z' f) (DigitExpansion.cutoff (b := b) z f) w = 0
       · rw [difcar_eq_zero_iff]
         intro u
         simp [(hle u).not_lt]
-      rw [← zero_apply w, ← hw, FormalSeries.sub_def, cutoff_apply_lt _ _ _ hzw,
+      rw [← zero_apply w, ← hw, DigitExpansion.sub_def, cutoff_apply_lt _ _ _ hzw,
           cutoff_apply_le _ _ _ hwz', sub_zero, this]
       simp
     · intros y hy
       simp only [val_cutoff]
-      rw [FormalSeries.sub_def, cutoff_apply_le _ _ _ (hy.le.trans (pred_le _)),
+      rw [DigitExpansion.sub_def, cutoff_apply_le _ _ _ (hy.le.trans (pred_le _)),
           cutoff_apply_le _ _ _ ((hy.le.trans (pred_le _)).trans h.le), sub_self,
           zero_sub, neg_eq_zero, difcar_eq_zero_iff]
       intro u
@@ -1773,7 +1773,7 @@ lemma real.cutoff_mono_left {z z' : Z} (f : real Z b) (h : z ≤ z') :
 theorem real.cutoff_cutoff_of_le
     (f : real Z b) {z x : Z} (h : x ≤ z) : cutoff x (cutoff z f) = cutoff x f := by
   ext : 1
-  exact FormalSeries.cutoff_cutoff_of_le (b := b) f h
+  exact DigitExpansion.cutoff_cutoff_of_le (b := b) f h
 
 lemma real.le_of_forall_cutoff_le_cutoff {f g : real Z b} (h : ∀ z, cutoff z f ≤ cutoff z g) :
     f ≤ g := by
@@ -1793,7 +1793,7 @@ theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case wh
   obtain ⟨f, hf⟩ := id hn
   rcases g.prop with (hg|hg|hg)
   · have hgf := h hf
-    have hf' : FormalSeries.Positive (f : FormalSeries Z b)
+    have hf' : DigitExpansion.Positive (f : DigitExpansion Z b)
     · rw [positive_iff] at hg ⊢
       exact hg.trans_le hgf
     obtain ⟨-, v, hv'⟩ := hf'
@@ -1810,7 +1810,7 @@ theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case wh
     refine' ⟨pred (min u v), cutoff (pred (min u v)) f, ⟨f, hf, rfl⟩, _⟩
     rw [this]
     exact (cutoff_monotone _).mem_lowerBounds_image h
-  · by_cases hS : ∃ f ∈ S, FormalSeries.Negative (f : FormalSeries Z b)
+  · by_cases hS : ∃ f ∈ S, DigitExpansion.Negative (f : DigitExpansion Z b)
     · obtain ⟨f, hf, hf'⟩ := hS
       obtain ⟨-, v, hv'⟩ := hf'
       obtain ⟨-, u, hu'⟩ := hg
@@ -1826,7 +1826,7 @@ theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case wh
       refine' ⟨pred (min u v), cutoff (pred (min u v)) f, ⟨f, hf, rfl⟩, _⟩
       rw [this]
       exact (cutoff_monotone _).mem_lowerBounds_image h
-    · replace hS : ∀ f ∈ S, (f : FormalSeries Z b).Positive ∨ f = 0
+    · replace hS : ∀ f ∈ S, (f : DigitExpansion Z b).Positive ∨ f = 0
       · rintro ⟨f, hf'|hf'|hf'⟩ hf
         · simp [hf']
         · simpa using hS ⟨⟨_, _⟩, hf, hf'⟩
@@ -1854,7 +1854,7 @@ theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case wh
         exact (cutoff_monotone _).mem_lowerBounds_image h0
   · simp only [ZeroMemClass.coe_eq_zero] at hg
     subst g
-    have : ∀ f ∈ S, (f : FormalSeries Z b).Positive ∨ f = 0
+    have : ∀ f ∈ S, (f : DigitExpansion Z b).Positive ∨ f = 0
     · intro f hf
       rcases f.prop with hf'|hf'|hf'
       · simp [hf']
@@ -1880,10 +1880,10 @@ theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case wh
       exact (cutoff_monotone _).mem_lowerBounds_image h
 
 lemma real.cutoff_succ_eq_cutoff_add_single (f : real Z b) (u : Z) :
-    cutoff (succ u) f = cutoff u f + single (succ u) ((f : FormalSeries Z b) (succ u)) := by
+    cutoff (succ u) f = cutoff u f + single (succ u) ((f : DigitExpansion Z b) (succ u)) := by
   rw [← sub_eq_iff_eq_add]
   ext z : 2
-  simp only [AddSubgroupClass.coe_sub, val_cutoff, val_single, FormalSeries.sub_def]
+  simp only [AddSubgroupClass.coe_sub, val_cutoff, val_single, DigitExpansion.sub_def]
   rcases le_or_lt z u with h|h
   · rw [cutoff_apply_le _ _ _ h, single_apply_of_ne _ _ _ (h.trans_lt (lt_succ _)).ne',
         cutoff_apply_le _ _ _ (h.trans (le_succ _)), difcar_eq_zero_iff.mpr, sub_zero, sub_zero]
@@ -1934,7 +1934,7 @@ lemma real.cutoff_succ_aux_isLeast (S : Set (real Z b)) (u : Z)
       · exact (cutoff_cutoff_of_le _ (le_succ u)).symm
     · rw [hf]
       exact hg.right ⟨_, hp, rfl⟩
-  have key : (p' : FormalSeries Z b) (succ u) < (f : FormalSeries Z b) (succ u) := by
+  have key : (p' : DigitExpansion Z b) (succ u) < (f : DigitExpansion Z b) (succ u) := by
     rw [cutoff_succ_eq_cutoff_add_single, cutoff_succ_eq_cutoff_add_single, hup, H'] at H
     simpa using H
   refine key.not_le (hmin _ _ hp ?_ rfl)
@@ -1967,9 +1967,9 @@ theorem real.exists_isLeast_image_cutoff
     exact ⟨_, hf'⟩
 
 /-- The infimum sequence of a nonempty bounded below set. Such a sequence is real,
-directly constructed in `FormalSeries.real.cInf`. -/
+directly constructed in `DigitExpansion.real.cInf`. -/
 protected def real.cInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) :
-    FormalSeries Z b where
+    DigitExpansion Z b where
   toFun z := (real.exists_isLeast_image_cutoff S hn h z).choose.val z
   bounded' := by
     rintro ⟨x, hx⟩
@@ -2098,7 +2098,7 @@ protected lemma real.cInf_le (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelo
   by_contra!
   obtain ⟨z, zpos, hz⟩ := id this.exists_least_pos
   have hcf := le_antisymm (cutoff_mono z this.le) (key z)
-  rw [FormalSeries.sub_def, ← cutoff_apply_self, ← val_cutoff, ← hcf, val_cutoff,
+  rw [DigitExpansion.sub_def, ← cutoff_apply_self, ← val_cutoff, ← hcf, val_cutoff,
       cutoff_apply_self, sub_self, zero_sub] at zpos
   replace zpos : difcar (real.cInf S hn h).val f z = 1
   · refine (difcar_eq_zero_or_one _ _ z).resolve_left ?_
@@ -2144,5 +2144,5 @@ protected lemma real.cInf_lt_iff {S : Set (real Z b)} {hn : S.Nonempty} {h : Bdd
     contrapose! hg'
     exact hg'.trans (real.cInf_le _ _ _ _ hg)
 
-end FormalSeries
+end DigitExpansion
 end S10
