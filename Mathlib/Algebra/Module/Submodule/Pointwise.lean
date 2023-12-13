@@ -346,6 +346,7 @@ lemma set_smul_submodule_le_of_le_le {s t : Set R} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_submodule_mono_left _ le_set) <| set_smul_submodule_mono_right _ le_submodule
 
+@[elab_as_elim]
 lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
     (hx : x ∈ s • N)
     (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
