@@ -39,7 +39,7 @@ variable {Z : Type*} [LT Z] {b : ℕ} (f g : FormalSeries Z b) (i : Z)
 
 -- extensional equality
 @[ext]
-theorem ext (h : ∀ x, f x = g x) : f = g :=
+theorem ext {f g : FormalSeries Z b} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 
 @[simp]
@@ -714,6 +714,16 @@ theorem not_positive_zero {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] 
 theorem not_negative_zero {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ}
     [Fact (0 < b)] : ¬FormalSeries.Negative (0 : FormalSeries Z b) := fun H => H.left rfl
 
+lemma not_positive_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z] [NoMaxOrder Z]
+    {b : ℕ} [Fact (0 < b)] (f : FormalSeries Z b) : ¬FormalSeries.Positive f := by
+  rintro ⟨hne, -, -⟩
+  simp [FunLike.ext_iff] at hne
+
+lemma not_negative_of_isEmpty {Z : Type*} [IsEmpty Z] [Preorder Z] [SuccOrder Z] [NoMaxOrder Z]
+    {b : ℕ} [Fact (0 < b)] (f : FormalSeries Z b) : ¬FormalSeries.Negative f := by
+  rintro ⟨hne, -, -⟩
+  simp [FunLike.ext_iff] at hne
+
 -- 6.1 defined by separate cases to provide for separate lemmas
 -- (i)
 theorem Negative.neg_positive {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z]
@@ -834,7 +844,7 @@ theorem Positive.neg_negative (hf : f.Positive) : (-f).Negative :=
     obtain ⟨x, hx⟩ := hf.right
     obtain ⟨z, hz⟩ : ∃ z, 0 < f z := by
       by_contra!
-      refine' hf.left (FormalSeries.ext _ _ _)
+      refine' hf.left (FormalSeries.ext _)
       simpa
     refine' ⟨pred x, fun y hy => _⟩
     simp_rw [hx y (hy.trans (pred_lt _)), zero_apply, sub_self, zero_sub]
@@ -1083,6 +1093,13 @@ protected theorem FormalSeries.real.apply_eq_coe_apply (f : FormalSeries.real Z 
 protected theorem FormalSeries.real.lt_def {f g : FormalSeries.real Z b} :
     f < g ↔ (g - f : FormalSeries Z b).Positive :=
   Iff.rfl
+
+@[simp]
+lemma FormalSeries.real.eq_zero_of_isEmpty [IsEmpty Z] (f : FormalSeries.real Z b) : f = 0 := by
+  rcases f with ⟨_, hf|hf|rfl⟩
+  · exact absurd hf (not_positive_of_isEmpty _)
+  · exact absurd hf (not_negative_of_isEmpty _)
+  · rfl
 
 variable (b) (Z)
 
@@ -1963,11 +1980,11 @@ theorem real.exists_isLeast_image_cutoff
     rw [←this]
     exact ⟨⟨f, hf.left, rfl⟩, (cutoff_monotone  _).mem_lowerBounds_image hf.right⟩
   · revert hf
-    refine' Succ.rec' _ _ hw
+    refine' Succ.rec _ _ hw
     · intro h
       exact ⟨_, h⟩
-    intro u hwu IH hf
-    obtain ⟨g, hg⟩ := IH _ hwu le_rfl hf
+    intro u _ IH hf
+    obtain ⟨g, hg⟩ := IH hf
     obtain ⟨f, _, hf'⟩ := cutoff_succ_aux_isLeast S u g hg
     exact ⟨_, hf'⟩
 
@@ -2015,6 +2032,103 @@ protected def real.cInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow
     convert absurd (Fin.le_last _) (huf.trans_le' _).not_le
     simp [Fin.ext_iff]
 
+protected def real.cInf (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) : real Z b where
+  val := real.cInf_aux S hn h
+  property := by
+    cases' eq_or_ne (real.cInf_aux S hn h) 0 with h0 hne0
+    · rw [h0]
+      exact AddSubgroup.zero_mem (real Z b)
+    have := hne0
+    simp only [ne_eq, FunLike.ne_iff, zero_apply] at this
+    obtain ⟨k, hk⟩ := this
+    by_cases H : ∃ x, (real.exists_isLeast_image_cutoff S hn h x).choose.val.Negative
+    · obtain ⟨x, -, z, hz⟩ := H
+      obtain ⟨g, hg, hg'⟩ := (real.exists_isLeast_image_cutoff S hn h x).choose_spec.left
+      have hz' : z ≤ succ x := by
+        contrapose! hz
+        refine ⟨_, hz, ?_⟩
+        simp [←hg', val_cutoff, cutoff_apply_lt _ _ _ (lt_succ _), Fin.ext_iff, hb.out.ne]
+      suffices : ∀ y < z, real.cInf_aux S hn h y = b
+      · refine Or.inr (Or.inl ⟨hne0, _, this⟩)
+      intro y hy
+      simp only [real.cInf_aux, mk_apply]
+      obtain ⟨u, hu, hu'⟩ := (real.exists_isLeast_image_cutoff S hn h y).choose_spec.left
+      have hug : cutoff y u ≤ cutoff y g := hu'.le.trans <|
+        (real.exists_isLeast_image_cutoff S hn h y).choose_spec.right ⟨g, hg, rfl⟩
+      have hgu : cutoff x g ≤ cutoff x u := hg'.le.trans <|
+        (real.exists_isLeast_image_cutoff S hn h x).choose_spec.right ⟨u, hu, rfl⟩
+      replace hug : cutoff y u = cutoff y g := by
+        refine le_antisymm hug ?_
+        convert cutoff_mono y hgu using 1 <;>
+        rw [cutoff_cutoff_of_le _ (le_of_lt_succ (hy.trans_le hz'))]
+      rw [←hu', hug, val_cutoff, cutoff_apply_self,
+          ←cutoff_apply_le _ _ _ (le_of_lt_succ (hy.trans_le hz')), ←val_cutoff, hg', hz _ hy]
+    · push_neg at H
+      have := H k
+      obtain ⟨g, hg, hg'⟩ := (real.exists_isLeast_image_cutoff S hn h k).choose_spec.left
+      rcases (cutoff k g).prop with hgr|hgr|hgr
+      · obtain ⟨-, z, hz⟩ := hgr
+        refine Or.inl ⟨hne0, z, ?_⟩
+        intro y hy
+        simp only [real.cInf_aux, mk_apply]
+        obtain ⟨u, hu, hu'⟩ := (real.exists_isLeast_image_cutoff S hn h y).choose_spec.left
+        have hug : cutoff y u ≤ cutoff y g := hu'.le.trans <|
+          (real.exists_isLeast_image_cutoff S hn h y).choose_spec.right ⟨g, hg, rfl⟩
+        have hgu : cutoff k g ≤ cutoff k u := hg'.le.trans <|
+          (real.exists_isLeast_image_cutoff S hn h k).choose_spec.right ⟨u, hu, rfl⟩
+        cases' le_or_lt k y with hyk hyk
+        · simp only [real.cInf_aux, mk_apply, ←hg', hz _ (hyk.trans_lt hy),
+                     not_true_eq_false] at hk
+        replace hug : cutoff y u = cutoff y g := by
+          refine le_antisymm hug ?_
+          convert cutoff_mono y hgu using 1 <;>
+          rw [cutoff_cutoff_of_le _ hyk.le]
+        rw [←hu', hug, val_cutoff, cutoff_apply_self,
+            ←cutoff_apply_le _ _ _ hyk.le, ←val_cutoff, hz _ hy]
+      · rw [hg'] at hgr
+        exact absurd hgr (H _)
+      · simp only [real.cInf_aux, mk_apply, ←hg', hgr, zero_apply, not_true_eq_false] at hk
+
+protected lemma real.cInf_le (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) (f : real Z b)
+    (hf : f ∈ S) : real.cInf S hn h ≤ f := by
+  have key : ∀ z, cutoff z (real.cInf S hn h) ≤ cutoff z f
+  · intro z
+    obtain ⟨g, hg, hg'⟩ := (real.exists_isLeast_image_cutoff S hn h z).choose_spec.left
+    have hgf : cutoff z g ≤ cutoff z f := hg'.le.trans <|
+      (real.exists_isLeast_image_cutoff S hn h _).choose_spec.right ⟨f, hf, rfl⟩
+    have hcg : cutoff z (real.cInf S hn h) ≤ cutoff z g := by
+      refine le_of_eq ?_
+      ext i : 2
+      cases' lt_or_le z i with hi hi
+      · simp [cutoff_apply_lt, hi]
+      · rw [real.cInf, val_cutoff, cutoff_apply_le _ _ _ hi, val_cutoff]
+        simp only [real.cInf_aux, mk_apply]
+        obtain ⟨u, hu, hu'⟩ := (real.exists_isLeast_image_cutoff S hn h i).choose_spec.left
+        have hug : cutoff i u ≤ cutoff i g := hu'.le.trans <|
+          (real.exists_isLeast_image_cutoff S hn h i).choose_spec.right ⟨g, hg, rfl⟩
+        have hgu : cutoff z g ≤ cutoff z u := hg'.le.trans <|
+          (real.exists_isLeast_image_cutoff S hn h z).choose_spec.right ⟨u, hu, rfl⟩
+        replace hug : cutoff i u = cutoff i g := by
+          refine le_antisymm hug ?_
+          convert cutoff_mono i hgu using 1 <;>
+          rw [cutoff_cutoff_of_le _ hi]
+        rw [←hu', hug, val_cutoff, cutoff_apply_le _ _ _ hi, cutoff_apply_self]
+    exact hcg.trans hgf
+  by_contra!
+  obtain ⟨z, zpos, hz⟩ := id this.exists_least_pos
+  have hcf := le_antisymm (cutoff_mono z this.le) (key z)
+  rw [FormalSeries.sub_def, ←cutoff_apply_self, ←val_cutoff, ←hcf, val_cutoff,
+      cutoff_apply_self, sub_self, zero_sub] at zpos
+  replace zpos : difcar (real.cInf S hn h).val f z = 1
+  · refine (difcar_eq_zero_or_one _ _ z).resolve_left ?_
+    intro H
+    simp [H] at zpos
+  rw [difcar_eq_one_iff] at zpos
+  obtain ⟨x, -, IH⟩ := zpos
+  have hcf' := le_antisymm (cutoff_mono x this.le) (key x)
+  rw [Subtype.ext_iff, FunLike.ext_iff] at hcf'
+  specialize hcf' x
+  simp [IH.left.ne'] at hcf'
 
 end FormalSeries
 end S10
