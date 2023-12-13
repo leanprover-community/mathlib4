@@ -1882,7 +1882,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm _ (chart_mem_atlas _ _) h)]
   simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
     mfld_simps, (· ∘ ·)]
-  -- `simp` fails to apply `LocalEquiv.prod_symm` with `ModelProd`
+  -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
   congr
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 #align tangent_map_chart_symm tangentMap_chart_symm
@@ -2088,7 +2088,7 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
   -- this is just a reformulation of `UniqueMDiffOn.uniqueMDiffOn_preimage`, using as `e`
   -- the local chart at `x`.
   apply UniqueMDiffOn.uniqueDiffOn
-  rw [← LocalEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
+  rw [← PartialEquiv.image_source_inter_eq', inter_comm, extChartAt_source]
   exact (hs.inter (chartAt H x).open_source).image_denseRange'
     (fun y hy ↦ hasMFDerivWithinAt_extChartAt I hy.2)
     fun y hy ↦ ((mdifferentiable_chart _ _).mfderiv_surjective hy.2).denseRange

@@ -46,7 +46,8 @@ theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := openEmbedding_iff_continuous_injective_open.mp this
     haveI : Nonempty X := ⟨x⟩
-    exact ⟨PartialHomeomorph.ofContinuousOpenRestrict (Set.injOn_iff_injective.mpr inj).toLocalEquiv
+    exact ⟨PartialHomeomorph.ofContinuousOpenRestrict
+      (Set.injOn_iff_injective.mpr inj).toPartialEquiv
       (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,
       mem_interior_iff_mem_nhds.mpr hU, rfl⟩
 

@@ -359,8 +359,8 @@ theorem contMDiffWithinAt_iff_target :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _ _).comp_continuousWithinAt
-  simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, LocalEquiv.coe_trans,
-    ModelWithCorners.toLocalEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
+  simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
     chartAt_self_eq, PartialHomeomorph.refl_apply, comp.left_id]
   rfl
 #align cont_mdiff_within_at_iff_target contMDiffWithinAt_iff_target
@@ -582,8 +582,8 @@ theorem contMDiffOn_iff_target :
         ∀ y : M',
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    PartialHomeomorph.refl_localEquiv, LocalEquiv.refl_trans, extChartAt, PartialHomeomorph.extend,
-    Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+    PartialHomeomorph.refl_localEquiv, PartialEquiv.refl_trans, extChartAt,
+    PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
@@ -838,7 +838,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds {n : ℕ} :
     have hv₂ : MapsTo f ((extChartAt I x).symm '' v) (extChartAt I' (f x)).source := by
       rintro _ ⟨y, hy, rfl⟩
       exact (hsub hy).2.2
-    rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, LocalEquiv.image_symm_image_of_subset_target]
+    rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
     exact hsub.trans (inter_subset_left _ _)
 #align cont_mdiff_within_at_iff_cont_mdiff_on_nhds contMDiffWithinAt_iff_contMDiffOn_nhds
 
