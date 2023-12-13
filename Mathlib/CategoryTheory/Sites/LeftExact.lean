@@ -3,7 +3,6 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
@@ -216,12 +215,12 @@ instance preserveFiniteLimits_plusFunctor
 instance preservesLimitsOfShape_sheafification
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
-    PreservesLimitsOfShape K (J.sheafification D) :=
+    PreservesLimitsOfShape K (J.plusPlusFunctor D) :=
   Limits.compPreservesLimitsOfShape _ _
 
 instance preservesFiniteLimits_sheafification
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
-    PreservesFiniteLimits (J.sheafification D) :=
+    PreservesFiniteLimits (J.plusPlusFunctor D) :=
   Limits.compPreservesFiniteLimits _ _
 
 end CategoryTheory.GrothendieckTopology
@@ -243,7 +242,7 @@ variable (K : Type w')
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
 instance preservesLimitsOfShape_presheafToSheaf :
-    PreservesLimitsOfShape K (presheafToSheaf J D) := by
+    PreservesLimitsOfShape K (plusPlusSheaf J D) := by
   let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, max v u})
   haveI : HasLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) D :=
     Limits.hasLimitsOfShape_of_equivalence e
@@ -261,22 +260,26 @@ instance preservesLimitsOfShape_presheafToSheaf :
     reflectsLimitsOfShapeOfReflectsIsomorphisms
   -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
   have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
-      (presheafToSheaf J D ⋙ sheafToPresheaf J D) :=
+      (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
-  exact isLimitOfPreserves (presheafToSheaf J D ⋙ sheafToPresheaf J D) hS
+  exact isLimitOfPreserves (plusPlusSheaf J D ⋙ sheafToPresheaf J D) hS
 
 instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
-    PreservesFiniteLimits (presheafToSheaf J D) := by
+    PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros
   infer_instance
 
+instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
+
+instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
+
 instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
     FinitaryExtensive (Sheaf J D) :=
-  finitaryExtensive_of_reflective (sheafificationAdjunction _ _)
+  finitaryExtensive_of_reflective (plusPlusAdjunction _ _)
 
 instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
-  adhesive_of_reflective (sheafificationAdjunction _ _)
+  adhesive_of_reflective (plusPlusAdjunction _ _)
 
 instance SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]
     (J : GrothendieckTopology C) : FinitaryExtensive (Sheaf J (Type u)) :=

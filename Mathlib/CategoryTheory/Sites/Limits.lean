@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 #align_import category_theory.sites.limits from "leanprover-community/mathlib"@"95e83ced9542828815f53a1096a4d373c1b08a77"
@@ -211,9 +211,9 @@ In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is 
 @[simps]
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
-  pt := ⟨J.sheafify E.pt, GrothendieckTopology.Plus.isSheaf_plus_plus _ _⟩
+  pt := ⟨J.plusPlus E.pt, GrothendieckTopology.Plus.isSheaf_plus_plus _ _⟩
   ι :=
-    { app := fun k => ⟨E.ι.app k ≫ J.toSheafify E.pt⟩
+    { app := fun k => ⟨E.ι.app k ≫ J.toPlusPlus E.pt⟩
       naturality := fun i j f => by
         ext1
         dsimp
@@ -226,17 +226,17 @@ then `sheafifyCocone E` is a colimit cocone. -/
 @[simps]
 noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) where
-  desc S := ⟨J.sheafifyLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
+  desc S := ⟨J.plusPlusLift (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
   fac := by
     intro S j
     ext1
     dsimp [sheafifyCocone]
-    erw [Category.assoc, J.toSheafify_sheafifyLift, hE.fac]
+    erw [Category.assoc, J.toPlusPlus_plusPlusLift, hE.fac]
     rfl
   uniq := by
     intro S m hm
     ext1
-    apply J.sheafifyLift_unique
+    apply J.plusPlusLift_unique
     apply hE.uniq ((sheafToPresheaf J D).mapCocone S)
     intro j
     dsimp

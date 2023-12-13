@@ -139,20 +139,20 @@ variable (F : Cᵒᵖ ⥤ Type max u v)
 
 /-- The image of `F` in `J.sheafify F` is isomorphic to the sheafification. -/
 noncomputable def sheafificationIsoImagePresheaf :
-    J.sheafify F ≅ ((imagePresheaf (J.toSheafify F)).sheafify J).toPresheaf where
+    J.plusPlus F ≅ ((imagePresheaf (J.toPlusPlus F)).sheafify J).toPresheaf where
   hom :=
-    J.sheafifyLift (toImagePresheafSheafify J _)
+    J.plusPlusLift (toImagePresheafSheafify J _)
       ((isSheaf_iff_isSheaf_of_type J _).mpr <|
         Subpresheaf.sheafify_isSheaf _ <|
-          (isSheaf_iff_isSheaf_of_type J _).mp <| sheafify_isSheaf J _)
+          (isSheaf_iff_isSheaf_of_type J _).mp <| plusPlus_isSheaf J _)
   inv := Subpresheaf.ι _
   hom_inv_id :=
-    J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
+    J.plusPlus_hom_ext _ _ (J.plusPlus_isSheaf _) (by simp [toImagePresheafSheafify])
   inv_hom_id := by
     rw [← cancel_mono (Subpresheaf.ι _), Category.id_comp, Category.assoc]
     refine' Eq.trans _ (Category.comp_id _)
     congr 1
-    exact J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
+    exact J.plusPlus_hom_ext _ _ (J.plusPlus_isSheaf _) (by simp [toImagePresheafSheafify])
 #align category_theory.sheafification_iso_image_presheaf CategoryTheory.sheafificationIsoImagePresheaf
 
 -- We need to sheafify
@@ -165,7 +165,7 @@ variable {B : Type w} [Category.{max u v} B] [ConcreteCategory.{max u v} B]
   [∀ (α β : Type max u v) (fst snd : β → α),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan fst snd) B]
 
-theorem toSheafify_isLocallySurjective (F : Cᵒᵖ ⥤ B) : IsLocallySurjective J (J.toSheafify F) := by
+theorem toSheafify_isLocallySurjective (F : Cᵒᵖ ⥤ B) : IsLocallySurjective J (J.toPlusPlus F) := by
   rw [isLocallySurjective_iff_whisker_forget, ← toSheafify_comp_sheafifyCompIso_inv]
   apply IsLocallySurjective.comp
   · rw [isLocallySurjective_iff_imagePresheaf_sheafify_eq_top, Subpresheaf.eq_top_iff_isIso]

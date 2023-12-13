@@ -234,19 +234,28 @@ theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
   rw [Adjunction.homEquiv_counit]
   simp
 
-instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
-  (sheafToPresheaf J D).map_mono _
-#align category_theory.presheaf_mono_of_mono CategoryTheory.presheaf_mono_of_mono
+variable {J D}
 
-theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
-  ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
+/-- A sheaf `P` is isomorphic to its own sheafification. -/
+@[simps]
+noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D).obj P.val where
+  hom := ⟨(J.isoSheafify P.2).hom⟩
+  inv := ⟨(J.isoSheafify P.2).inv⟩
+  hom_inv_id := by
+    ext1
+    apply (J.isoSheafify P.2).hom_inv_id
+  inv_hom_id := by
+    ext1
+    apply (J.isoSheafify P.2).inv_hom_id
+#align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
-/-- porting note: added to ease the port of CategoryTheory.Sites.LeftExact -/
-@[simps! hom_app inv_app]
-noncomputable
-def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D := by rfl
+instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
+    IsIso ((sheafificationAdjunction J D).counit.app P) :=
+  isIso_of_fully_faithful (sheafToPresheaf J D) _
+#align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
+
+instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
+  NatIso.isIso_of_isIso_app _
+#align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 end CategoryTheory
