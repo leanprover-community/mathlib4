@@ -23,7 +23,7 @@ universe u
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 
-variable (A K) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
+variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
 variable [IsDomain A] [IsDomain B]
@@ -70,6 +70,34 @@ lemma le_traceDual_comm {I J : Submodule B L} :
 
 lemma le_traceDual_traceDual {I : Submodule B L} :
     I ≤ Iᵛᵛ := le_traceDual_comm.mpr le_rfl
+
+@[simp]
+lemma traceDual_bot :
+    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
+
+open scoped Classical in
+lemma traceDual_top' :
+    (⊤ : Submodule B L)ᵛ =
+      if ((LinearMap.range (Algebra.trace K L)).restrictScalars A ≤ 1) then ⊤ else ⊥ := by
+  classical
+  split_ifs with h
+  · rw [_root_.eq_top_iff]
+    exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
+  · rw [_root_.eq_bot_iff]
+    intro x hx
+    change ¬∀ x, _ → _ at h; push_neg at h
+    show x = 0; by_contra hx'
+    obtain ⟨_, ⟨b, rfl⟩, hb⟩ := h
+    apply hb
+    simpa [hx'] using hx (x⁻¹ * b) trivial
+
+lemma traceDual_top [Decidable (IsField A)] :
+    (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
+  convert traceDual_top'
+  rw [← IsFractionRing.surjective_iff_isField (A := A) (K := K),
+    LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
+    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff, SetLike.le_def]
+  rfl
 
 end Submodule
 
@@ -118,9 +146,11 @@ variable (A K)
 
 open scoped Classical
 
+namespace FractionalIdeal
+
 /-- The dual of a non-zero fractional ideal is the dual of the submodule under the traceform. -/
 noncomputable
-def FractionalIdeal.dual (I : FractionalIdeal B⁰ L) :
+def dual (I : FractionalIdeal B⁰ L) :
     FractionalIdeal B⁰ L :=
   if hI : I = 0 then 0 else
   ⟨Iᵛ, by
@@ -137,26 +167,26 @@ def FractionalIdeal.dual (I : FractionalIdeal B⁰ L) :
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
       · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
 
-variable {A K}
+variable {A K} {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
 
-lemma FractionalIdeal.coe_dual {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
+lemma coe_dual :
     (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI]; rfl
 
 @[simp]
-lemma FractionalIdeal.coe_dual_one :
+lemma coe_dual_one :
     (dual A K (1 : FractionalIdeal B⁰ L) : Submodule B L) = 1ᵛ := by
   rw [← coe_one, coe_dual]
   exact one_ne_zero
 
 @[simp]
-lemma FractionalIdeal.dual_zero :
+lemma dual_zero :
     dual A K (0 : FractionalIdeal B⁰ L) = 0 := by rw [dual, dif_pos rfl]
 
-lemma FractionalIdeal.mem_dual {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) {x} :
+lemma mem_dual {x} :
     x ∈ dual A K I ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range := by
   rw [dual, dif_neg hI]; rfl
 
-lemma FractionalIdeal.dual_ne_zero {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
+lemma dual_ne_zero :
     dual A K I ≠ 0 := by
   obtain ⟨b, hb, hb'⟩ := I.prop
   suffices algebraMap B L b ∈ dual A K I by
@@ -175,13 +205,13 @@ lemma FractionalIdeal.dual_ne_zero {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
   · exact (Algebra.smul_def _ _).symm
 
 @[simp]
-lemma FractionalIdeal.dual_eq_zero_iff {I : FractionalIdeal B⁰ L} :
+lemma dual_eq_zero_iff :
     dual A K I = 0 ↔ I = 0 := ⟨not_imp_not.mp dual_ne_zero, fun e ↦ e.symm ▸ dual_zero⟩
 
-lemma FractionalIdeal.dual_ne_zero_iff {I : FractionalIdeal B⁰ L} :
+lemma dual_ne_zero_iff :
     dual A K I ≠ 0 ↔ I ≠ 0 := dual_eq_zero_iff.not
 
-lemma FractionalIdeal.le_dual_inv_aux {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
+lemma le_dual_inv_aux (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
   rw [dual, dif_neg hI]
   intro x hx y hy
@@ -192,9 +222,9 @@ lemma FractionalIdeal.le_dual_inv_aux {I J : FractionalIdeal B⁰ L} (hI : I ≠
   rw [mul_comm] at hz
   exact ⟨z, hz⟩
 
-lemma FractionalIdeal.one_le_dual_one :
+lemma one_le_dual_one :
     1 ≤ dual A K (1 : FractionalIdeal B⁰ L) :=
-  FractionalIdeal.le_dual_inv_aux one_ne_zero (by rw [one_mul])
+  le_dual_inv_aux one_ne_zero (by rw [one_mul])
 
 lemma one_le_traceDual_one :
     (1 : Submodule B L) ≤ 1ᵛ := by
@@ -202,7 +232,7 @@ lemma one_le_traceDual_one :
   exact FractionalIdeal.one_le_dual_one
   exact one_ne_zero
 
-lemma FractionalIdeal.le_dual_iff {I J : FractionalIdeal B⁰ L} (hJ : J ≠ 0) :
+lemma le_dual_iff :
     I ≤ dual A K J ↔ I * J ≤ dual A K 1 := by
   by_cases hI : I = 0
   · simp [hI, zero_le]
@@ -210,19 +240,19 @@ lemma FractionalIdeal.le_dual_iff {I J : FractionalIdeal B⁰ L} (hJ : J ≠ 0) 
 
 variable [IsDedekindDomain B] [IsFractionRing B L]
 
-lemma FractionalIdeal.inv_le_dual (I : FractionalIdeal B⁰ L) :
+lemma inv_le_dual (I : FractionalIdeal B⁰ L) :
     I⁻¹ ≤ dual A K I :=
   if hI : I = 0 then by simp [hI] else le_dual_inv_aux hI (le_of_eq (mul_inv_cancel hI))
 
-lemma FractionalIdeal.dual_inv_le (I : FractionalIdeal B⁰ L) :
+lemma dual_inv_le (I : FractionalIdeal B⁰ L) :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
   convert mul_right_mono ((dual A K I)⁻¹)
-    (mul_left_mono I (FractionalIdeal.inv_le_dual (A := A) (K := K) I)) using 1
+    (mul_left_mono I (inv_le_dual (A := A) (K := K) I)) using 1
   · simp only [mul_inv_cancel hI, one_mul]
-  · simp only [mul_inv_cancel (FractionalIdeal.dual_ne_zero (hI := hI)), mul_assoc, mul_one]
+  · simp only [mul_inv_cancel (dual_ne_zero (hI := hI)), mul_assoc, mul_one]
 
-lemma FractionalIdeal.dual_eq_mul_inv (I : FractionalIdeal B⁰ L) :
+lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
@@ -231,34 +261,36 @@ lemma FractionalIdeal.dual_eq_mul_inv (I : FractionalIdeal B⁰ L) :
     rw [← le_dual_iff hI]
   rw [le_dual_iff hI, mul_assoc, inv_mul_cancel hI, mul_one]
 
-lemma FractionalIdeal.dual_mul_self {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
+lemma dual_mul_self :
     dual A K I * I = dual A K 1 := by
   rw [dual_eq_mul_inv, mul_assoc, inv_mul_cancel hI, mul_one]
 
-lemma FractionalIdeal.self_mul_dual (I : FractionalIdeal B⁰ L) (hI : I ≠ 0) :
+lemma self_mul_dual :
     I * dual A K I = dual A K 1 := by
   rw [mul_comm, dual_mul_self hI]
 
-lemma FractionalIdeal.dual_inv (I : FractionalIdeal B⁰ L) :
+lemma dual_inv :
     dual A K I⁻¹ = dual A K 1 * I := by rw [dual_eq_mul_inv, inv_inv]
 
 @[simp]
-lemma FractionalIdeal.dual_dual (I : FractionalIdeal B⁰ L) :
+lemma dual_dual :
     dual A K (dual A K I) = I := by
   rw [dual_eq_mul_inv, dual_eq_mul_inv I, mul_inv, inv_inv, ← mul_assoc, mul_inv_cancel, one_mul]
   rw [dual_ne_zero_iff]
   exact one_ne_zero
 
-lemma FractionalIdeal.dual_involutive :
+lemma dual_involutive :
     Function.Involutive (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) := dual_dual
 
-lemma FractionalIdeal.dual_injective :
+lemma dual_injective :
     Function.Injective (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) :=
   dual_involutive.injective
 
 @[simp]
-lemma FractionalIdeal.dual_le_dual {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0) :
+lemma dual_le_dual :
     dual A K I ≤ dual A K J ↔ J ≤ I := by
   nth_rewrite 2 [← dual_dual (A := A) (K := K) I]
   rw [le_dual_iff hJ, le_dual_iff (I := J), mul_comm]
   rwa [dual_ne_zero_iff]
+
+end FractionalIdeal
