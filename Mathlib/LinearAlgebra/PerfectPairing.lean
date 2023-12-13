@@ -22,7 +22,7 @@ to connect 1 and 2.
  * `PerfectPairing`
  * `PerfectPairing.flip`
  * `LinearEquiv.flip`
- * `LinearEquiv.IsReflexive_of_equiv_Dual_of_IsReflexive`
+ * `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
  * `LinearEquiv.toPerfectPairing`
 
 -/
@@ -42,6 +42,10 @@ attribute [nolint docBlame] PerfectPairing.toLin
 variable {R M N}
 
 namespace PerfectPairing
+
+instance instFunLike : FunLike (PerfectPairing R M N) M (fun _  ↦ N →ₗ[R] R) where
+  coe f := f.toLin
+  coe_injective' x y h := by cases x; cases y; simpa using h
 
 variable (p : PerfectPairing R M N)
 
@@ -73,7 +77,7 @@ namespace LinearEquiv
 /-- For a reflexive module `M`, an equivalence `N ≃ₗ[R] Dual R M` naturally yields an equivalence
 `M ≃ₗ[R] Dual R N`. Such equivalences are known as perfect pairings. -/
 noncomputable def flip : M ≃ₗ[R] Dual R N :=
-(evalEquiv R M).trans e.dualMap
+  (evalEquiv R M).trans e.dualMap
 
 @[simp] lemma coe_toLinearMap_flip : e.flip = (↑e : N →ₗ[R] Dual R M).flip := rfl
 
@@ -91,8 +95,8 @@ lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
   exact LinearEquiv.bijective _
 
 @[simp] lemma flip_flip (h : IsReflexive R N := isReflexive_of_equiv_dual_of_isReflexive e) :
-  e.flip.flip = e :=
-by ext; rfl
+    e.flip.flip = e := by
+  ext; rfl
 
 /-- If `M` is reflexive then a linear equivalence `N ≃ Dual R M` is a perfect pairing. -/
 @[simps]
