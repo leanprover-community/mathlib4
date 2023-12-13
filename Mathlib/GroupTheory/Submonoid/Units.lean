@@ -23,25 +23,6 @@ variable {M : Type*}
 
 variable [Monoid M]
 
---TODO - Find better place for these two things.
-
-/-- The unit group of a unit group is equivalent to the same group. -/
-@[to_additive " The additive unit group of an additive unit group is equivalent to the same
-group. " ]
-def unitsTypeUnitsTypeEquivUnitsType {M : Type*} [Monoid M] : Mˣˣ ≃* Mˣ := toUnits.symm
-
-/-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
-elements of `M`. -/
-@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
-  and the additive submonoid whose elements are the additive units of `M`. "]
-noncomputable def unitsTypeEquivIsUnitSubmonoid :
-  Mˣ ≃* IsUnit.submonoid M where
-  toFun x := ⟨x, Units.isUnit x⟩
-  invFun x := x.prop.unit
-  left_inv x := IsUnit.unit_of_val_units _
-  right_inv x := by simp_rw [IsUnit.unit_spec]
-  map_mul' x y := by simp_rw [Units.val_mul]; rfl
-
 open Pointwise in
 /-- The units of `S`, packaged as a subgroup of `Mˣ`.  -/
 @[to_additive " The additive units of `S`, packaged as an additive subgroup of `AddUnits M`. "]
@@ -173,12 +154,29 @@ lemma units_left_inverse :
     Function.LeftInverse (Submonoid.units (M := M)) (Subgroup.ofUnits (M := M)) :=
     ofUnits_units_gci.u_l_leftInverse
 
+/-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
+elements of `M`. -/
+@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
+  and the additive submonoid whose elements are the additive units of `M`. "]
+noncomputable def unitsTypeEquivIsUnitSubmonoid :
+  Mˣ ≃* IsUnit.submonoid M where
+  toFun x := ⟨x, Units.isUnit x⟩
+  invFun x := x.prop.unit
+  left_inv x := IsUnit.unit_of_val_units _
+  right_inv x := by simp_rw [IsUnit.unit_spec]
+  map_mul' x y := by simp_rw [Units.val_mul]; rfl
+
 /-- The equivalence between the subgroup of units of `S` and the submonoid of unit
 elements of `S`. -/
 @[to_additive (attr := simps!) " The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`.  "]
 noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsUnit.submonoid S :=
 S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
+
+/-- The unit group of a unit group is equivalent to the same group. -/
+@[to_additive " The additive unit group of an additive unit group is equivalent to the same
+group. " ]
+def unitsTypeUnitsTypeEquivUnitsType : Mˣˣ ≃* Mˣ := toUnits.symm
 
 end Units
 
