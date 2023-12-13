@@ -10,8 +10,6 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
---import Mathlib.Data.Finset.Antidiagonal
-
 import Mathlib.Data.Finset.PiAntidiagonal
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
