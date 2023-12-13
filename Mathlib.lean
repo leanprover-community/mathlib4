@@ -263,8 +263,6 @@ import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortExact.Abelian
-import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.IndicatorFunction
