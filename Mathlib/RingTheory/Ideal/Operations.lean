@@ -110,8 +110,8 @@ theorem smul_le {P : Submodule R M} : I • N ≤ P ↔ ∀ r ∈ I, ∀ n ∈ N
   map₂_le
 #align submodule.smul_le Submodule.smul_le
 
-lemma smul_eq_set_smul :
-    I • N = (I : Set R) • N :=
+@[simp, norm_cast]
+lemma coe_set_smul : (I : Set R) • N = I • N :=
   Eq.symm <| Submodule.set_smul_submodule_eq_of_le _ _ _
     (fun _ _ hr hx => smul_mem_smul hr hx)
     (smul_le.mpr fun _ hr _ hx => mem_set_smul_submodule_of_mem_mem _ _ hr hx)
@@ -2325,7 +2325,7 @@ instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
 
 lemma span_smul_submodule
     (s : Set R) (N : Submodule R M) :
-    (Ideal.span s) • N = s • N := by
+    Ideal.span s • N = s • N := by
   rw [smul_eq_set_smul, coe_span_smul_submodule]
 
 end Submodule

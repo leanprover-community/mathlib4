@@ -401,6 +401,7 @@ lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
     rintro ⟨c, hc1, rfl⟩ p hp
     simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
     exact Submodule.sum_mem _ λ r hr ↦ hp (hc1 hr) (c _).2
+
 @[simp] lemma empty_smul_submodule : (∅ : Set R) • N = ⊥ := by
   ext
   fconstructor
@@ -474,7 +475,7 @@ lemma set_smul_submodule_eq_iSup [SMulCommClass R R M] :
     rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
     exact mem_set_smul_submodule_of_mem_mem (mem1 := hx) (mem2 := hy)
 
-/-- subset of a ring has a distributive multiplicative action on its submodules-/
+/-- In a ring, sets acts on submodules. -/
 protected def pointwiseSetDistribMulActionSubmodule [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
   smul_zero s := set_smul_bot_submodule s
