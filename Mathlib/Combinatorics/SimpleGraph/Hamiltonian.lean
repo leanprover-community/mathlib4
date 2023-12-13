@@ -36,7 +36,7 @@ If `p` is a Hamiltonian path and `w` is a member of the vertex set of `p`, `w` i
 -/
 lemma IsHamiltonian.mem_support {p : G.Walk u v} (hp : p.IsHamiltonian)
     (w : V) : w ∈ p.support :=
-  by simp only [←List.count_pos_iff_mem, hp w]
+  by simp only [← List.count_pos_iff_mem, hp w]
 
 /-- The support of a Hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.support_toFinset {p : G.Walk u v} (hp : p.IsHamiltonian) :
@@ -50,10 +50,10 @@ If `p` is a Hamiltonian path of a graph `G` its length is one less than the numb
 lemma IsHamiltonian.length {p : G.Walk u v} (hp : p.IsHamiltonian) :
     p.length = Fintype.card V - 1 := by
   suffices : p.support.length = Fintype.card V
-  · rw [←this, length_support, Nat.add_sub_cancel]
+  · rw [← this, length_support, Nat.add_sub_cancel]
   have : ∑ u : V, p.support.count u = Fintype.card V
-  · rw [Finset.sum_congr rfl (fun x _ => hp x), ←Finset.card_univ, Finset.card_eq_sum_ones]
-  rw [←this, ←hp.support_toFinset, List.toFinset_sum_count_eq]
+  · rw [Finset.sum_congr rfl (fun x _ => hp x), ← Finset.card_univ, Finset.card_eq_sum_ones]
+  rw [← this, ← hp.support_toFinset, List.toFinset_sum_count_eq]
 
 /-- Hamiltonian paths are paths. -/
 lemma IsHamiltonian.isPath {p : G.Walk u v} (hp : p.IsHamiltonian) :
@@ -98,17 +98,17 @@ The length of a hamiltonian cycle is the size of the vertex set.
 -/
 lemma IsHamiltonianCycle.length {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card V := by
-  rw [←length_tail_add_one hp.not_Nil, hp.path_hamiltonian.length, Nat.sub_add_cancel]
+  rw [← length_tail_add_one hp.not_Nil, hp.path_hamiltonian.length, Nat.sub_add_cancel]
   rw [Nat.succ_le, Fintype.card_pos_iff]
   exact ⟨u⟩
 
 lemma IsHamiltonianCycle.support_count {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
     p.support.count v = 2 :=
-  by rw [support_eq_cons, List.count_cons_self, ←support_tail, hp.path_hamiltonian v]
+  by rw [support_eq_cons, List.count_cons_self, ← support_tail, hp.path_hamiltonian v]
 
 lemma IsHamiltonianCycle.support_count_of_ne {p : G.Walk v v} (hp : p.IsHamiltonianCycle)
     {h : u ≠ v} : p.support.count u = 1 :=
-  by rw [←cons_support_tail p, List.count_cons_of_ne h, hp.path_hamiltonian u]
+  by rw [← cons_support_tail p, List.count_cons_of_ne h, hp.path_hamiltonian u]
 
 end Walk
 
