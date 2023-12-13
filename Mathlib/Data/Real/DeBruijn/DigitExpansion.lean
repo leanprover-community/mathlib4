@@ -21,14 +21,17 @@ import Mathlib.Tactic.Positivity
 
 section S01
 
+/-- A possibly infinite sequence of digits in `Fin (b + 1)`, which
+can represent a number system like the reals.
+It is constrained to not end in an infinite string of the top digit. -/
 structure FormalSeries (Z : Type*) [LT Z] (b : ℕ) where
-  -- b will the base - 1
+  /-- The digit sequence, such that `b` is the base - 1. -/
   toFun : Z → Fin (b + 1)
+  /-- The constraint that the sequence does not trail end infinitely at the top digit. -/
   bounded' : ¬∃ i₀, ∀ i > i₀, toFun i = b
 
 namespace FormalSeries
 
--- we can treat it like a function
 instance funLike (Z : Type*) [LT Z] (b : ℕ) : FunLike (FormalSeries Z b) Z fun _ => Fin (b + 1)
     where
   coe := FormalSeries.toFun
@@ -109,6 +112,7 @@ section S03
 
 variable {Z : Type*} [LT Z] {b : ℕ} (f g : FormalSeries Z b)
 
+/-- Difference carry as an auxialiary function for defining subtraction. -/
 def difcar : Z → Fin (b + 1) := fun z =>
   if ∃ x > z, f x < g x ∧ ∀ y < x, z < y → f y ≤ g y then 1 else 0
 
@@ -670,10 +674,12 @@ theorem Succ.rec' {Z : Type*} [LinearOrder Z] [SuccOrder Z] [IsSuccArchimedean Z
 
 namespace FormalSeries
 
+/-- A sequence is positive iff it is not zero and has a left-tail of solely digit 0. -/
 protected def Positive {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [Fact (0 < b)]
     (f : FormalSeries Z b) : Prop :=
   f ≠ 0 ∧ ∃ x, ∀ y < x, f y = 0
 
+/-- A sequence is negative iff it is not zero and has a left-tail of solely the top digit. -/
 protected def Negative {Z : Type*} [Preorder Z] [SuccOrder Z] [NoMaxOrder Z] {b : ℕ} [Fact (0 < b)]
     (f : FormalSeries Z b) : Prop :=
   f ≠ 0 ∧ ∃ x, ∀ y < x, f y = b
@@ -1006,6 +1012,8 @@ variable (Z : Type*) [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] 
     [IsSuccArchimedean Z] (b : ℕ) [hb : Fact (0 < b)]
 
 -- 7.1
+/-- A sequence is called real if it is either negative or zero or positive.
+-/
 def FormalSeries.real : AddSubgroup (FormalSeries Z b)
     where
   carrier := {f | f.Positive ∨ f.Negative ∨ f = 0}
@@ -1153,20 +1161,6 @@ end S07
 
 section S08
 
--- TODO
-def AddSubgroup.subCopy {A : Type*} [AddCommGroup A] (s : Set A) (hn : s.Nonempty)
-    (hs : ∀ {f g : A}, f ∈ s → g ∈ s → f - g ∈ s) : AddSubgroup A
-    where
-  carrier := s
-  add_mem' := by
-    intros f g hf hg
-    rw [← sub_neg_eq_add]
-    refine' hs hf _
-    rw [← zero_sub, ← sub_self f]
-    exact hs (hs hf hf) hg
-  zero_mem' := Exists.elim hn fun x hx => sub_self x ▸ hs hx hx
-  neg_mem' := by intro f hf; simp_rw [← zero_sub, ← sub_self f]; exact hs (hs hf hf) hf
-
 variable (b) (Z)
 
 namespace FormalSeries
@@ -1174,34 +1168,44 @@ namespace FormalSeries
 variable (Z : Type*) [Nonempty Z] [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
   [NoMinOrder Z] [IsSuccArchimedean Z] (b : ℕ) [hb : Fact (0 < b)]
 
+/-- A sequence is a Hensel (or b-adic) number if it has a right-tail of solely digit 0. These
+sequences form an additive subgroup. -/
 def hensel : AddSubgroup (FormalSeries Z b) :=
-  AddSubgroup.subCopy {f : FormalSeries Z b | ∃ x, ∀ z > x, f z = 0} ⟨0, by simp⟩
+  AddSubgroup.ofSub {f : FormalSeries Z b | ∃ x, ∀ z > x, f z = 0} ⟨0, by simp⟩
     (by
       simp only [gt_iff_lt, Set.mem_setOf_eq, forall_exists_index]
-      intro f g x hfx y hgy
+      intro f x hfx g y hgy
       use max x y
       intro z hz
       simp only [max_lt_iff] at hz
-      rw [FormalSeries.sub_def, hfx _ hz.left, hgy _ hz.right]
+      rw [← sub_eq_add_neg, FormalSeries.sub_def, hfx _ hz.left, hgy _ hz.right]
       simp only [difcar_eq_zero_iff, sub_self, neg_zero, zero_sub, neg_eq_zero, gt_iff_lt]
       intro w hw
       simp [hfx _ (hz.left.trans hw), hgy _ (hz.right.trans hw)])
 
+/-- A sequence is a Hensel (or b-adic) integer if the right-tail past the 0th digit is
+solely digit 0. These sequences form an additive subgroup. -/
 def henselInt [Zero Z] : AddSubgroup (FormalSeries Z b) :=
-  AddSubgroup.subCopy {f : FormalSeries Z b | ∀ z > 0, f z = 0} ⟨0, by simp⟩
+  AddSubgroup.ofSub {f : FormalSeries Z b | ∀ z > 0, f z = 0} ⟨0, by simp⟩
     (by
-      intro f g hf hg z hz
-      simp only [FormalSeries.sub_def, hf _ hz, hg _ hz, difcar_eq_zero_iff, sub_self, neg_zero,
-        zero_sub, neg_eq_zero, gt_iff_lt]
+      simp only [gt_iff_lt, Set.mem_setOf_eq, forall_exists_index]
+      intro f hf g hg z hz
+      simp only [← sub_eq_add_neg, FormalSeries.sub_def, hf _ hz, hg _ hz, difcar_eq_zero_iff,
+        sub_self, neg_zero, zero_sub, neg_eq_zero, gt_iff_lt]
       intro w hw
       simp [hf _ (hw.trans' hz), hg _ (hw.trans' hz)])
 
+/-- A sequence that is both real and Hensel is like the rationals. TODO: prove the equivalence.
+These sequences form an additive subgroup. -/
 def realHensel : AddSubgroup (FormalSeries Z b) :=
   real Z b ⊓ hensel Z b
 
+/-- A sequence that is both real and Hensel as an additive subgroup of the real sequences. -/
 def real.hensel : AddSubgroup (real Z b) :=
   (realHensel Z b).comap (AddSubgroup.subtype _)
 
+/-- A sequence that is both real and a Hensel integer. TODO: prove the equivalence to integers.
+These sequences form an additive subgroup. -/
 def zStar [Zero Z] : AddSubgroup (FormalSeries Z b) :=
   real Z b ⊓ henselInt Z b
 
@@ -1303,6 +1307,8 @@ section S10
 
 namespace FormalSeries
 
+/-- An auxiliary function that truncates the right-tail of a sequence by setting that tail to
+all digit 0. Such truncation preserves order. -/
 def cutoff {Z : Type*} [LT Z] {b : ℕ} [hb : Fact (0 < b)] (z : Z) (f : FormalSeries Z b) :
     FormalSeries Z b :=
   ⟨fun x => if z < x then 0 else f x, by
@@ -1359,20 +1365,22 @@ section single
 variable {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z]
     {b : ℕ} [hb : Fact (0 < b)]
 
--- manual helper function
+/-- An auxiliary function defining a sequence that has the specified digit at the specified
+position, and 0 elsewhere. Compare to `Pi.single`. Not included in the de Bruijn paper.
+The resulting sequence is real. See `FormalSeries.real.single` for the direct construction. -/
 def single (z : Z) (n : Fin (b + 1)) :
     FormalSeries Z b where
-      toFun := fun x => if z = x then n else 0
-      bounded' := by
-        rintro ⟨x, hx⟩
-        specialize hx (succ (max x z)) (by simp)
-        dsimp only at hx
-        rw [if_neg, Fin.ext_iff, Fin.val_zero] at hx
-        · refine hb.out.ne' ?_
-          simp [hx]
-        · cases' le_total x z with h h
-          · simp [h, (lt_succ z).ne]
-          · simp [h, ((lt_succ x).trans_le' h).ne]
+  toFun := fun x => if z = x then n else 0
+  bounded' := by
+    rintro ⟨x, hx⟩
+    specialize hx (succ (max x z)) (by simp)
+    dsimp only at hx
+    rw [if_neg, Fin.ext_iff, Fin.val_zero] at hx
+    · refine hb.out.ne' ?_
+      simp [hx]
+    · cases' le_total x z with h h
+      · simp [h, (lt_succ z).ne]
+      · simp [h, ((lt_succ x).trans_le' h).ne]
 
 @[simp]
 lemma single_apply_self (z : Z) (n : Fin (b + 1)) : single z n z = n := if_pos rfl
@@ -1469,6 +1477,8 @@ lemma difcar_cutoff_cutoff_of_le (f g : FormalSeries Z b) (z x : Z) (hx : z ≤ 
   intros y hy hy'
   simp [cutoff_apply_lt _ _ _ (hx.trans_lt hy)] at hy'
 
+/-- An auxiliary function defining a sequence that has the specified digit at the specified
+position, and 0 elsewhere. Compare to `Pi.single`. Not included in the de Bruijn paper. -/
 def real.single (z : Z) (n : Fin (b + 1)) : real Z b :=
   ⟨FormalSeries.single z n, by
     rcases eq_or_ne n 0 with rfl|hn
@@ -1561,6 +1571,8 @@ lemma real.single_lt_left_iff_of_ne_zero {z x : Z} {n : Fin (b + 1)} (hn : n ≠
     single z n < single x n ↔ x < z :=
   (single_strictAnti_left_of_ne_zero hn).lt_iff_lt
 
+/-- An auxiliary function that truncates the right-tail of a sequence by setting that tail to
+all digit 0. Such truncation preserves order. -/
 def real.cutoff (z : Z) (f : real Z b) : real Z b :=
   ⟨FormalSeries.cutoff z (f : FormalSeries Z b), by
     rcases f with ⟨f, hf | hf | rfl⟩ <;> rw [Subtype.coe_mk]
@@ -1954,6 +1966,8 @@ theorem real.exists_isLeast_image_cutoff
     obtain ⟨f, _, hf'⟩ := cutoff_succ_aux_isLeast S u g hg
     exact ⟨_, hf'⟩
 
+/-- The infimum sequence of a nonempty bounded below set. Such a sequence is real,
+directly constructed in `FormalSeries.real.cInf`. -/
 protected def real.cInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) :
     FormalSeries Z b where
   toFun z := (real.exists_isLeast_image_cutoff S hn h z).choose.val z
@@ -1998,6 +2012,7 @@ protected def real.cInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow
     convert absurd (Fin.le_last _) (huf.trans_le' _).not_le
     simp [Fin.ext_iff]
 
+/-- The infimum sequence of a nonempty bounded below set. -/
 protected def real.cInf (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) : real Z b where
   val := real.cInf_aux S hn h
   property := by
