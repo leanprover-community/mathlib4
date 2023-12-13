@@ -373,6 +373,7 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] MonoidHomClass.toOneHomClass
+attribute [to_additive existing] MonoidHomClass.toMulHomClass
 
 @[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := .of_oneHomClass
 

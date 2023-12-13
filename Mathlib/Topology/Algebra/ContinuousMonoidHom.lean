@@ -76,6 +76,9 @@ class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
 
+-- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
+attribute [to_additive existing] ContinuousMonoidHomClass.toMonoidHomClass
+
 end
 
 /-- Reinterpret a `ContinuousMonoidHom` as a `MonoidHom`. -/
