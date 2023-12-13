@@ -297,79 +297,78 @@ variable [AddCommMonoid M] [Module R M]
 Let `s ⊆ R` be a set and `N ≤ M` be a submodule, then `s • N` is the smallest submodule containing
 all `r • n` where `r ∈ s` and `n ∈ N`.
 -/
-protected def pointwiseSetSMulSubmodule : SMul (Set R) (Submodule R M) where
+protected def pointwiseSetSMul : SMul (Set R) (Submodule R M) where
   smul s N := sInf { p | ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p }
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMulSubmodule
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMul
 
 variable (s : Set R) (N : Submodule R M)
 
-lemma mem_set_smul_submodule_def (x : M) :
+lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔
   x ∈ sInf { p : Submodule R M | ∀ ⦃r : R⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
 
-lemma mem_set_smul_submodule_of_mem_mem {r : R} {m : M} (mem1 : r ∈ s) (mem2 : m ∈ N) :
+lemma mem_set_smul_of_mem_mem {r : R} {m : M} (mem1 : r ∈ s) (mem2 : m ∈ N) :
     r • m ∈ s • N := by
-  rw [mem_set_smul_submodule_def, mem_sInf]
+  rw [mem_set_smul_def, mem_sInf]
   exact fun _ h => h mem1 mem2
 
-lemma set_smul_submodule_le (p : Submodule R M)
+lemma set_smul_le (p : Submodule R M)
     (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
     s • N ≤ p :=
   sInf_le closed_under_smul
 
-lemma set_smul_submodule_le_iff (p : Submodule R M) :
+lemma set_smul_le_iff (p : Submodule R M) :
     s • N ≤ p ↔
     ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p := by
   fconstructor
   · intro h r n hr hn
-    exact h <| mem_set_smul_submodule_of_mem_mem s N hr hn
-  · apply set_smul_submodule_le
+    exact h <| mem_set_smul_of_mem_mem s N hr hn
+  · apply set_smul_le
 
-lemma set_smul_submodule_eq_of_le (p : Submodule R M)
+lemma set_smul_eq_of_le (p : Submodule R M)
     (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p)
     (le : p ≤ s • N) :
     s • N = p :=
-  le_antisymm (set_smul_submodule_le s N p closed_under_smul) le
+  le_antisymm (set_smul_le s N p closed_under_smul) le
 
-lemma set_smul_submodule_mono_right {p q : Submodule R M} (le : p ≤ q) :
+lemma set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
-  set_smul_submodule_le _ _ _ fun _ _ hr hm => mem_set_smul_submodule_of_mem_mem (mem1 := hr)
+  set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)
 
-lemma set_smul_submodule_mono_left {s t : Set R} (le : s ≤ t) :
+lemma set_smul_mono_left {s t : Set R} (le : s ≤ t) :
     s • N ≤ t • N :=
-  set_smul_submodule_le _ _ _ fun _ _ hr hm => mem_set_smul_submodule_of_mem_mem (mem1 := le hr)
+  set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := le hr)
     (mem2 := hm)
 
 lemma set_smul_submodule_le_of_le_le {s t : Set R} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
-  le_trans (set_smul_submodule_mono_left _ le_set) <| set_smul_submodule_mono_right _ le_submodule
+  le_trans (set_smul_mono_left _ le_set) <| set_smul_mono_right _ le_submodule
 
 variable {s N} in
 @[elab_as_elim]
-lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
+lemma set_smul_inductionOn {prop : M → Prop} (x : M)
     (hx : x ∈ s • N)
     (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
     (smul₁ : ∀ (r : R) ⦃m : M⦄, prop m → prop (r • m))
     (add : ∀ ⦃m₁ m₂ : M⦄, prop m₁ → prop m₂ → prop (m₁ + m₂))
     (zero : prop 0) :
     prop x :=
-  set_smul_submodule_le s N
-  { carrier := {m : M | prop m}
-    add_mem' := λ {x y} ↦ @add x y
-    zero_mem' := zero
-    smul_mem' := smul₁ }
+  set_smul_le s N
+    { carrier := {m : M | prop m}
+      add_mem' := fun {x y} ↦ @add x y
+      zero_mem' := zero
+      smul_mem' := smul₁ }
     smul₀ hx
 
-lemma set_smul_submodule_eq_submodule_map [SMulCommClass R R N] :
+lemma set_smul_eq_map [SMulCommClass R R N] :
     s • N =
     Submodule.map
-      (N.subtype.comp (Finsupp.lsum R λ (r : R) ↦ ⟨⟨(r • .), smul_add r⟩,
-        λ (r' : R) (m : N) ↦ by dsimp; rw [smul_comm]⟩))
+      (N.subtype.comp (Finsupp.lsum R fun (r : R) ↦ ⟨⟨(r • .), smul_add r⟩, smul_comm _⟩))
       (Finsupp.supported N R s) := by
   classical
-  apply set_smul_submodule_eq_of_le
+  apply set_smul_eq_of_le
   · intro r n hr hn
     exact ⟨Finsupp.single r ⟨n, hn⟩, Finsupp.single_mem_supported _ _ hr, by simp⟩
 
@@ -380,54 +379,53 @@ lemma set_smul_submodule_eq_submodule_map [SMulCommClass R R N] :
       SetLike.val_smul]
     refine Submodule.sum_mem (p := s • N) (t := c.support) ?_ _ ⟨s • N, ?_⟩
     · rintro r hr
-      rw [mem_set_smul_submodule_def, Submodule.mem_sInf]
+      rw [mem_set_smul_def, Submodule.mem_sInf]
       rintro p hp
       exact hp (hc hr) (c r).2
     · ext x : 1
       simp only [Set.mem_iInter, SetLike.mem_coe]
       fconstructor
-      · refine λ h ↦ h λ r n hr hn ↦ ?_
-        rw [mem_set_smul_submodule_def, mem_sInf]
-        exact λ p hp ↦ hp hr hn
-      · exact λ h _ ↦ h
+      · refine fun h ↦ h fun r n hr hn ↦ ?_
+        rw [mem_set_smul_def, mem_sInf]
+        exact fun p hp ↦ hp hr hn
+      · aesop
 
-lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
+lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ s • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ s ∧ x = c.sum λ r m ↦ r • m := by
   fconstructor
   · intros h
-    rw [set_smul_submodule_eq_submodule_map] at h
+    rw [set_smul_eq_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩
 
-  · rw [mem_set_smul_submodule_def, Submodule.mem_sInf]
+  · rw [mem_set_smul_def, Submodule.mem_sInf]
     rintro ⟨c, hc1, rfl⟩ p hp
     simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
-    exact Submodule.sum_mem _ λ r hr ↦ hp (hc1 hr) (c _).2
+    exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).2
 
-@[simp] lemma empty_smul_submodule : (∅ : Set R) • N = ⊥ := by
+@[simp] lemma empty_set_smul : (∅ : Set R) • N = ⊥ := by
   ext
   fconstructor
   · intro hx
-    rw [mem_set_smul_submodule_def, Submodule.mem_sInf] at hx
+    rw [mem_set_smul_def, Submodule.mem_sInf] at hx
     exact hx ⊥ (λ r _ hr ↦ hr.elim)
   · rintro rfl; exact Submodule.zero_mem _
 
-@[simp] lemma set_smul_bot_submodule : s • (⊥ : Submodule R M) = ⊥ :=
-  eq_bot_iff.mpr fun x hx => show x = 0 from set_smul_submodule_inductionOn x hx
+@[simp] lemma set_smul_bot : s • (⊥ : Submodule R M) = ⊥ :=
+  eq_bot_iff.mpr fun x hx => show x = 0 from set_smul_inductionOn x hx
     (by aesop) (by aesop) (by aesop) (by aesop)
 
-lemma singleton_set_smul_submodule_eq [SMulCommClass R R M] (r : R) :
+lemma singleton_set_smul [SMulCommClass R R M] (r : R) :
     ({r} : Set R) • N = r • N := by
-  apply set_smul_submodule_eq_of_le
+  apply set_smul_eq_of_le
   · rintro r m rfl hm; exact ⟨m, hm, rfl⟩
   · rintro _ ⟨m, hm, rfl⟩
-    rw [mem_set_smul_submodule_def, Submodule.mem_sInf]
+    rw [mem_set_smul_def, Submodule.mem_sInf]
     intro p hp; exact hp rfl hm
 
-lemma mem_singleton_set_smul_submodule [SMulCommClass R R M] (r : R) (x : M) :
+lemma mem_singleton_set_smul [SMulCommClass R R M] (r : R) (x : M) :
     x ∈ ({r} : Set R) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
-  rw [singleton_set_smul_submodule_eq]
-  change x ∈ (r • N : Set M) ↔ _
+  rw [singleton_set_smul]
   fconstructor <;>
   · rintro ⟨m, hm, rfl⟩; exact ⟨m, hm, rfl⟩
 
@@ -435,19 +433,19 @@ lemma mem_singleton_set_smul_submodule [SMulCommClass R R M] (r : R) (x : M) :
 protected def pointwiseSetMulActionSubmodule [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
-    (mem_singleton_set_smul_submodule _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
+    (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
       fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
   mul_smul s t x := le_antisymm
-    (set_smul_submodule_le _ _ _ <| by
+    (set_smul_le _ _ _ <| by
       rintro _ n ⟨a, b, ha, hb, rfl⟩ hn
       rw [mul_smul]
-      apply mem_set_smul_submodule_of_mem_mem (mem1 := ha)
-      exact mem_set_smul_submodule_of_mem_mem (mem1 := hb) (mem2 := hn))
-    (set_smul_submodule_le _ _ _ <| by
+      apply mem_set_smul_of_mem_mem (mem1 := ha)
+      exact mem_set_smul_of_mem_mem (mem1 := hb) (mem2 := hn))
+    (set_smul_le _ _ _ <| by
       rintro r m hr hm
       have : SMulCommClass R R x := ⟨fun r s m => Subtype.ext <| show r • s • m.1 = s • r • m.1
         from smul_comm _ _ _⟩
-      rw [mem_set_smul_submodule] at hm
+      rw [mem_set_smul] at hm
       obtain ⟨c, hc1, rfl⟩ := hm
       delta Finsupp.sum
       simp only [AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
@@ -455,55 +453,55 @@ protected def pointwiseSetMulActionSubmodule [SMulCommClass R R M] :
       refine Submodule.sum_mem _ ?_
       intro r' hr'
       rw [← mul_smul]
-      apply mem_set_smul_submodule_of_mem_mem (mem2 := (c _).2)
+      apply mem_set_smul_of_mem_mem (mem2 := (c _).2)
       exact ⟨r, r', hr, hc1 hr', rfl⟩)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulActionSubmodule
 
-lemma set_smul_submodule_eq_iSup [SMulCommClass R R M] :
+lemma set_smul_eq_iSup [SMulCommClass R R M] :
     s • N = ⨆ (r ∈ s), r • N :=
-  set_smul_submodule_eq_of_le _ _ _
+  set_smul_eq_of_le _ _ _
     (fun r m hr hm => (show r • N ≤ _ by
       rw [iSup_subtype', ← sSup_range]
       exact le_sSup ⟨⟨r, hr⟩, rfl⟩) ⟨_, hm, rfl⟩) <| by
     rw [iSup_subtype', ← sSup_range, sSup_le_iff]
     rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact mem_set_smul_submodule_of_mem_mem (mem1 := hx) (mem2 := hy)
+    exact mem_set_smul_of_mem_mem (mem1 := hx) (mem2 := hy)
 
 /-- In a ring, sets acts on submodules. -/
-protected def pointwiseSetDistribMulActionSubmodule [SMulCommClass R R M] :
+protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
-  smul_zero s := set_smul_bot_submodule s
+  smul_zero s := set_smul_bot s
   smul_add s x y := le_antisymm
-    (set_smul_submodule_le _ _ _ <| by
+    (set_smul_le _ _ _ <| by
       rintro r m hr hm
       rw [add_eq_sup, Submodule.mem_sup] at hm
       obtain ⟨a, ha, b, hb, rfl⟩ := hm
       rw [smul_add, add_eq_sup, Submodule.mem_sup]
-      exact ⟨r • a, mem_set_smul_submodule_of_mem_mem (mem1 := hr) (mem2 := ha),
-        r • b, mem_set_smul_submodule_of_mem_mem (mem1 := hr) (mem2 := hb), rfl⟩)
-    (sup_le_iff.mpr ⟨set_smul_submodule_mono_right _ le_sup_left,
-      set_smul_submodule_mono_right _ le_sup_right⟩)
+      exact ⟨r • a, mem_set_smul_of_mem_mem (mem1 := hr) (mem2 := ha),
+        r • b, mem_set_smul_of_mem_mem (mem1 := hr) (mem2 := hb), rfl⟩)
+    (sup_le_iff.mpr ⟨set_smul_mono_right _ le_sup_left,
+      set_smul_mono_right _ le_sup_right⟩)
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulActionSubmodule
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulAction
 
-lemma sup_set_smul_submodule (s t : Set R) :
+lemma sup_set_smul (s t : Set R) :
     (s ⊔ t) • N = s • N ⊔ t • N :=
-  set_smul_submodule_eq_of_le _ _ _
+  set_smul_eq_of_le _ _ _
     (by rintro r n (hr|hr) hn
-        · exact Submodule.mem_sup_left (mem_set_smul_submodule_of_mem_mem _ _ hr hn)
-        · exact Submodule.mem_sup_right (mem_set_smul_submodule_of_mem_mem _ _ hr hn))
+        · exact Submodule.mem_sup_left (mem_set_smul_of_mem_mem _ _ hr hn)
+        · exact Submodule.mem_sup_right (mem_set_smul_of_mem_mem _ _ hr hn))
     (sup_le
-      (set_smul_submodule_mono_left _ le_sup_left)
-      (set_smul_submodule_mono_left _ le_sup_right))
+      (set_smul_mono_left _ le_sup_left)
+      (set_smul_mono_left _ le_sup_right))
 
-lemma coe_span_smul_submodule {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
+lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
     (s : Set R') (N : Submodule R' M') :
     (Ideal.span s : Set R') • N = s • N :=
-  set_smul_submodule_eq_of_le _ _ _
+  set_smul_eq_of_le _ _ _
     (by rintro r n hr hn
         induction' hr using Submodule.span_induction' with r h _ _ _ _ ihr ihs r r' hr hr'
-        · exact mem_set_smul_submodule_of_mem_mem _ _ h hn
+        · exact mem_set_smul_of_mem_mem _ _ h hn
         · rw [zero_smul]; exact Submodule.zero_mem _
         · rw [add_smul]; exact Submodule.add_mem _ ihr ihs
         · rw [mem_span_set] at hr
@@ -511,8 +509,8 @@ lemma coe_span_smul_submodule {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M
           rw [Finsupp.sum, Finset.smul_sum, Finset.sum_smul]
           refine Submodule.sum_mem _ fun i hi => ?_
           rw [← mul_smul, smul_eq_mul, mul_comm, mul_smul]
-          exact mem_set_smul_submodule_of_mem_mem _ _ (hc hi) <| Submodule.smul_mem _ _ hn) <|
-    set_smul_submodule_mono_left _ Submodule.subset_span
+          exact mem_set_smul_of_mem_mem _ _ (hc hi) <| Submodule.smul_mem _ _ hn) <|
+    set_smul_mono_left _ Submodule.subset_span
 
 end set_acting_on_submodules
 
