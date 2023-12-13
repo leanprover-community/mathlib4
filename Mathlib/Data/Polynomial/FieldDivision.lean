@@ -33,28 +33,9 @@ variable [CommRing R]
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
-    p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
-  have hp := pow_mul_divByMonic_rootMultiplicity_eq p t; rw [mul_comm] at hp
-  set m := p.rootMultiplicity t
-  set g := p /ₘ (X - C t) ^ m
-  have h : derivative p = derivative g * (X - C t) ^ m + g * (C (m : R)) * (X - C t) ^ (m - 1) := by
-    rw [← hp, derivative_mul, derivative_pow, map_sub, derivative_X, derivative_C, sub_zero,
-      mul_one, mul_assoc]
-  by_cases h1 : derivative g * (X - C t) ^ m = 0
-  · rw [h1, zero_add] at h
-    have := h.symm ▸ rootMultiplicity_mul_X_sub_C_pow (a := t) <| left_ne_zero_of_mul (h ▸ hnezero)
-    rw [this]
-    exact Nat.le_add_left (m - 1) _
-  by_cases h2 : g * (C (m : R)) * (X - C t) ^ (m - 1) = 0
-  · rw [h2, add_zero] at h
-    have := h.symm ▸ rootMultiplicity_mul_X_sub_C_pow (a := t) <| left_ne_zero_of_mul (h ▸ hnezero)
-    rw [this]
-    exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
-  refine le_min ?_ ?_ |>.trans <| h.symm ▸ rootMultiplicity_add t (h ▸ hnezero)
-  · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h1]
-    exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
-  · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h2]
-    exact Nat.le_add_left (m - 1) _
+    p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t :=
+  (le_rootMultiplicity_iff hnezero).2 <|
+    pow_sub_one_dvd_derivative_of_pow_dvd (p.pow_rootMultiplicity_dvd t)
 
 theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} (hpt : Polynomial.IsRoot p t)
@@ -62,67 +43,44 @@ theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
     (derivative p).rootMultiplicity t = p.rootMultiplicity t - 1 := by
   by_cases h : p = 0
   · simp only [h, map_zero, rootMultiplicity_zero]
-  have hp := pow_mul_divByMonic_rootMultiplicity_eq p t; rw [mul_comm] at hp
+  obtain ⟨g, hp, hndvd⟩ := p.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h t
   set m := p.rootMultiplicity t
   have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
-  set g := p /ₘ (X - C t) ^ m
-  have hndvd : ¬(X - C t) ^ m ∣ derivative p := fun hdvd ↦ by
-    rw [← hp, derivative_mul, derivative_pow, map_sub, derivative_X, derivative_C, sub_zero,
-      mul_one, ← mul_assoc] at hdvd
-    obtain ⟨q, hq⟩ := (dvd_add_right <| dvd_mul_left _ _).1 hdvd
-    rw [mul_comm _ q, show (X - C t) ^ m = (X - C t) * (X - C t) ^ (m - 1) by
-        rw [← pow_succ, hm], ← mul_assoc,
-      mul_cancel_right_mem_nonZeroDivisors
-        (monic_X_sub_C t |>.pow (m - 1) |>.mem_nonZeroDivisors)] at hq
-    apply_fun eval t at hq
-    rw [eval_mul, eval_mul, eval_sub, eval_X, eval_C, eval_C, sub_self, mul_zero,
-      mul_right_mem_nonZeroDivisors_eq_zero_iff hnzd] at hq
-    exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hq
+  have hndvd : ¬(X - C t) ^ m ∣ derivative p := by
+    rw [hp, derivative_mul, dvd_add_left (dvd_mul_right _ _),
+      derivative_X_sub_C_pow, ← hm, pow_succ', hm, mul_comm (C _), mul_assoc,
+      dvd_cancel_left_mem_nonZeroDivisors (monic_X_sub_C t |>.pow _ |>.mem_nonZeroDivisors)]
+    rw [dvd_iff_isRoot, IsRoot] at hndvd ⊢
+    rwa [eval_mul, eval_C, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd]
   have hnezero : derivative p ≠ 0 := fun h ↦ hndvd (by rw [h]; exact dvd_zero _)
   exact le_antisymm (by rwa [rootMultiplicity_le_iff hnezero, hm])
     (rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero _ t hnezero)
 
 theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n : ℕ}
-    (hn : n < p.rootMultiplicity t) : (derivative^[n] p).IsRoot t := by
-  revert p
-  induction' n with n ih
-  · intro p h
-    exact rootMultiplicity_pos'.1 h |>.2
-  · intro p h
-    rw [Function.iterate_succ, Function.comp_apply]
-    by_cases hzero : derivative p = 0
-    · rw [hzero, iterate_derivative_zero, IsRoot.def, eval_zero]
-    exact ih <| Nat.lt_of_lt_of_le (Nat.lt_pred_of_succ_lt h)
-      (rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero p t hzero)
+    (hn : n < p.rootMultiplicity t) : (derivative^[n] p).IsRoot t :=
+  dvd_iff_isRoot.mp <| (dvd_pow_self _ <| Nat.sub_ne_zero_of_lt hn).trans
+    (pow_sub_dvd_iterate_derivative_of_pow_dvd _ <| p.pow_rootMultiplicity_dvd t)
 
+open Finset in
 theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =
-      (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ (p.rootMultiplicity t)).eval t := by
-  have := congr_arg (fun f ↦ (derivative^[p.rootMultiplicity t] f).eval t) <|
-    pow_mul_divByMonic_rootMultiplicity_eq p t |>.symm
-  let m := rootMultiplicity t p
-  let f := fun (x : ℕ) => m.choose x •
-    (derivative^[m - x] (p /ₘ (X - C t) ^ m) * derivative^[x] ((X - C t) ^ m)) |>.eval t
-  have hf : ∀ x ∈ Finset.range m, f x = 0 := fun x hx ↦ by
-    replace hx := Nat.sub_pos_of_lt <| List.mem_range.mp hx
-    simp only [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_pow, eval_sub, eval_X,
-      eval_C, sub_self, zero_pow hx, smul_zero, mul_zero]
-  simp only at this
-  rw [this, mul_comm]
-  simp only [iterate_derivative_mul, eval_finset_sum]
-  simp only [Finset.sum_range_succ, Finset.sum_eq_zero hf]
-  simp only [Nat.choose_self, Nat.sub_self, Function.iterate_zero, id_eq,
-    iterate_derivative_X_sub_pow, pow_zero, nsmul_eq_mul, mul_one, one_smul, eval_mul,
-    eval_nat_cast, zero_add]
-  rw [Nat.descFactorial_self, mul_comm]
+      (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
+  set m := p.rootMultiplicity t with hm
+  conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
+  rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
+  · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
+      eval_nat_cast, nsmul_eq_mul]; rfl
+  · intro b hb hb0
+    rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
+      Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
+      zero_pow' b hb0, smul_zero, zero_mul, smul_zero]
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
     (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t)
     (hnzd : (n.factorial : R) ∈ nonZeroDivisors R) :
     n < p.rootMultiplicity t := by
-  by_contra h'
-  rw [not_lt] at h'
+  by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
   obtain ⟨q, hq⟩ := Nat.coe_nat_dvd (α := R) <| Nat.factorial_dvd_factorial h'
@@ -141,14 +99,13 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
   · simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
     exact Submonoid.one_mem _
   · rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
-    exact ⟨hnzd _ (Nat.le_refl _) (Nat.succ_ne_zero _),
-      ih <| fun m h1 h2 ↦ hnzd m (h1.trans <| Nat.le_succ n) h2⟩
+    exact ⟨hnzd _ le_rfl n.succ_ne_zero, ih fun m h ↦ hnzd m (h.trans n.le_succ)⟩
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
     (hnzd : (n.factorial : R) ∈ nonZeroDivisors R) :
     n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
-  ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
+  ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| hm.trans_lt hn,
     fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hr hnzd⟩
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
@@ -169,9 +126,8 @@ theorem one_lt_rootMultiplicity_iff_isRoot
     1 < p.rootMultiplicity t ↔ p.IsRoot t ∧ (derivative p).IsRoot t := by
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
-  by_cases hm0 : m = 0
-  · simpa only [hm0]
-  simpa only [Nat.le_antisymm hm <| Nat.pos_of_ne_zero hm0]
+  obtain (_|_|m) := m
+  exacts [h0, h1, by linarith [hm]]
 
 end CommRing
 
@@ -182,17 +138,14 @@ variable [CommRing R] [IsDomain R]
 theorem one_lt_rootMultiplicity_iff_isRoot_gcd
     [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ (gcd p (derivative p)).IsRoot t := by
-  simp only [one_lt_rootMultiplicity_iff_isRoot h, ← dvd_iff_isRoot]
-  exact ⟨fun ⟨h0, h1⟩ ↦ dvd_gcd h0 h1,
-    fun h ↦ ⟨h.trans <| gcd_dvd_left _ _, h.trans <| gcd_dvd_right _ _⟩⟩
+  simp_rw [one_lt_rootMultiplicity_iff_isRoot h, ← dvd_iff_isRoot, dvd_gcd_iff]
 
 theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
   by_cases h : p = 0
-  · simp only [h, map_zero, rootMultiplicity_zero]
+  · rw [h, map_zero, rootMultiplicity_zero]
   exact derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors hpt <|
-    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| Nat.pos_iff_ne_zero.1 <|
-      (rootMultiplicity_pos h).2 hpt
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 ((rootMultiplicity_pos h).2 hpt).ne'
 #align polynomial.derivative_root_multiplicity_of_root Polynomial.derivative_rootMultiplicity_of_root
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
