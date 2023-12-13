@@ -67,50 +67,47 @@ open AddSubgroup (zmultiples)
 
 noncomputable section
 
-variable (ι : Type*) [Finite ι] {R M N : Type*}
+variable (ι R M N : Type*) [Finite ι]
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  [IsReflexive R M] (e : N ≃ₗ[R] Dual R M)
 
 /-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with finite indexing set `ι`
 is the data of an `ι`-indexed subset of `M` ("the roots") and an `ι`-indexed subset of `N`
 ("the coroots") satisfying the axioms familiar from the traditional theory of root systems / data.
 
 It exists to allow for a convenient unification of the theories of root systems and root data. -/
-structure RootPairing :=
+structure RootPairing extends PerfectPairing R M N :=
   root : ι ↪ M
   coroot : ι ↪ N
-  coroot_root_two : ∀ i, e (coroot i) (root i) = 2
+  coroot_root_two : ∀ i, toLin.flip (coroot i) (root i) = 2
   mapsTo_preReflection_root :
-    ∀ i, MapsTo (preReflection (root i) (e (coroot i))) (range root) (range root)
+    ∀ i, MapsTo (preReflection (root i) (toLin.flip (coroot i))) (range root) (range root)
   mapsTo_preReflection_coroot :
-    ∀ i, MapsTo (preReflection (coroot i) (e.flip (root i))) (range coroot) (range coroot)
+    ∀ i, MapsTo (preReflection (coroot i) (toLin (root i))) (range coroot) (range coroot)
 
 attribute [nolint docBlame] RootPairing.root
 attribute [nolint docBlame] RootPairing.coroot
 
 /-- A root datum is a root pairing for which the roots and coroots take values in finitely-generated
 free Abelian groups. -/
-abbrev RootDatum {X₁ X₂ : Type*}
+abbrev RootDatum (X₁ X₂ : Type*)
     [AddCommGroup X₁] [Free ℤ X₁] [Finite ℤ X₁]
-    [AddCommGroup X₂]
-    (e : X₂ ≃+ Dual ℤ X₁) :=
-  RootPairing ι e.toIntLinearEquiv
+    [AddCommGroup X₂] :=
+  RootPairing ι ℤ X₁ X₂
 
-variable (R M) in
 /-- A root system is a root pairing for which the roots span their ambient module and the perfect
 pairing is the canonical one between `M` and `Dual R M`. -/
-structure RootSystem extends RootPairing ι (LinearEquiv.refl R (Dual R M)) :=
+structure RootSystem extends RootPairing ι R M N :=
   span_eq_top : span R (range root) = ⊤
 
 namespace RootPairing
 
-variable {e ι}
-variable (P : RootPairing ι e) (i : ι)
+variable {ι R M N}
+variable (P : RootPairing ι R M N) (i : ι)
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer.-/
 def IsCrystallographic : Prop :=
-  ∀ i, MapsTo (e (P.coroot i)) (range P.root) (zmultiples (1 : R))
+  ∀ i, MapsTo (P.toLin.flip (P.coroot i)) (range P.root) (zmultiples (1 : R))
 
 /-- A root pairing is said to be reduced if it never contains the double of a root.-/
 def IsReduced : Prop :=
@@ -123,15 +120,25 @@ lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.coroot_root_two i
 
 lemma root_coroot_two :
-    (e.flip (P.root i)) (P.coroot i) = 2 := by
+    (P.toLin (P.root i)) (P.coroot i) = 2 := by
   simpa only [LinearEquiv.flip_apply] using P.coroot_root_two i
+
+protected def flip : RootPairing ι R N M :=
+  { P.toPerfectPairing.flip with
+    root := P.coroot
+    coroot := P.root
+    coroot_root_two := P.root_coroot_two
+    mapsTo_preReflection_root := P.mapsTo_preReflection_coroot
+    mapsTo_preReflection_coroot := P.mapsTo_preReflection_root }
+
+@[simp] lemma flip_flip : P.flip.flip = P := rfl
 
 /-- The reflection associated to a root. -/
 def reflection : M ≃ₗ[R] M :=
   Module.reflection (P.coroot_root_two i)
 
 lemma reflection_apply (x : M) :
-    P.reflection i x = x - (e (P.coroot i) x) • P.root i :=
+    P.reflection i x = x - (P.toLin.flip (P.coroot i) x) • P.root i :=
   rfl
 
 @[simp]
@@ -144,7 +151,7 @@ def coreflection : N ≃ₗ[R] N :=
   Module.reflection (P.root_coroot_two i)
 
 lemma coreflection_apply (f : N) :
-    P.coreflection i f = f - (e.flip (P.root i) f) • P.coroot i :=
+    P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
   rfl
 
 lemma bijOn_reflection_root :
@@ -168,9 +175,9 @@ lemma coreflection_image_eq :
   (P.bijOn_coreflection_coroot i).image_eq
 
 lemma reflection_dualMap_eq_coreflection :
-    e.trans (P.reflection i).dualMap = (P.coreflection i).trans e := by
+    (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
   ext n m
-  simp [coreflection_apply, reflection_apply, mul_comm (e n (P.root i)), e.map_sub]
+  simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
@@ -178,7 +185,7 @@ roots. The proof depends crucially on the fact that there are finitely-many root
 Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI.
 See also `RootPairing.injOn_dualMap_subtype_span_root_coroot` for a more useful restatement. -/
 lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
-    (h : ∀ k, e (P.coroot i) (P.root k) = e (P.coroot j) (P.root k)) :
+    (h : ∀ k, P.toLin.flip (P.coroot i) (P.root k) = P.toLin.flip (P.coroot j) (P.root k)) :
     i = j := by
   set α := P.root i
   set β := P.root j
@@ -207,7 +214,7 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
   linarith [hnm.resolve_right (P.root.injective.ne this)]
 
 lemma injOn_dualMap_subtype_span_root_coroot [NoZeroSMulDivisors ℤ M] :
-    InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ e) (range P.coroot) := by
+    InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ P.toLin.flip) (range P.coroot) := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
   congr
   refine P.eq_of_forall_coroot_root_eq i j fun k ↦ ?_
@@ -219,11 +226,12 @@ unique.
 Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings. -/
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
-    {P₁ P₂ : RootPairing ι e}
+    {P₁ P₂ : RootPairing ι R M N}
+    (he : P₁.toLin = P₂.toLin)
     (hr : P₁.root = P₂.root)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
-  suffices P₁.coroot = P₂.coroot by cases P₁; cases P₂; congr
+  suffices P₁.coroot = P₂.coroot by cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr
   have := NoZeroSMulDivisors.int_of_charZero R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
@@ -232,33 +240,35 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_preReflection_root i
-  · exact hr ▸ P₂.coroot_root_two i
-  · exact hr ▸ P₂.mapsTo_preReflection_root i
+  · exact hr ▸ he ▸ P₂.coroot_root_two i
+  · exact hr ▸ he ▸ P₂.mapsTo_preReflection_root i
 
 /-- This lemma exists to support the definition `RootSystem.mk'` and usually should not be used
 directly. The lemma `RootPairing.coroot_eq_coreflection_of_root_eq_of_span_eq_top` or even
 `RootSystem.coroot_eq_coreflection_of_root_eq` will usually be more convenient. -/
 lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top' [CharZero R] [NoZeroSMulDivisors R M]
+    (p : PerfectPairing R M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
-    (hp : ∀ i, e (coroot i) (root i) = 2)
-    (hs : ∀ i, MapsTo (preReflection (root i) (e (coroot i))) (range root) (range root))
+    (hp : ∀ i, p.toLin.flip (coroot i) (root i) = 2)
+    (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
     (hsp : span R (range root) = ⊤)
-    {i j k : ι} (hk : root k = preReflection (root i) (e (coroot i)) (root j)) :
-    coroot k = preReflection (coroot i) (e.flip (root i)) (coroot j) := by
+    {i j k : ι} (hk : root k = preReflection (root i) (p.toLin.flip (coroot i)) (root j)) :
+    coroot k = preReflection (coroot i) (p.toLin (root i)) (coroot j) := by
   set α := root i
   set β := root j
   set α' := coroot i
   set β' := coroot j
-  set sα := preReflection α (e α')
-  set sβ := preReflection β (e β')
-  let sα' := preReflection α' (e.flip α)
-  have hij : preReflection (sα β) (e (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
-    ext; simp [← preReflection_preReflection β (e β') (hp i), preReflection_apply, e.map_sub]
+  set sα := preReflection α (p.toLin.flip α')
+  set sβ := preReflection β (p.toLin.flip β')
+  let sα' := preReflection α' (p.toLin α)
+  have hij : preReflection (sα β) (p.toLin.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
+    ext; simp [← preReflection_preReflection β (p.toLin.flip β') (hp i), preReflection_apply]
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
-  apply e.injective
+  apply p.BijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
-  · simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (e α' β), e.map_sub]
+  · simp only [LinearMap.flip_apply] at hp -- TODO Drop this once fix definition of `RootPairing`
+    simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (p.toLin α β')]
   · rw [hk, hij]
     exact (hs i).comp <| (hs j).comp (hs i)
 
@@ -269,8 +279,8 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulD
     (hsp : span R (range P.root) = ⊤)
     {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
     P.coroot k = P.coreflection i (P.coroot j) :=
-  coroot_eq_coreflection_of_root_eq_of_span_eq_top' P.root P.coroot P.coroot_root_two
-    P.mapsTo_preReflection_root hsp hk
+  coroot_eq_coreflection_of_root_eq_of_span_eq_top' P.toPerfectPairing P.root P.coroot
+    P.coroot_root_two P.mapsTo_preReflection_root hsp hk
 
 end RootPairing
 
@@ -279,29 +289,31 @@ namespace RootSystem
 open RootPairing
 
 variable {ι}
-variable (P : RootSystem ι R M)
+variable (P : RootSystem ι R M N)
 
 /-- In characteristic zero if there is no torsion, a root system is determined entirely by its
 roots. -/
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
-    {P₁ P₂ : RootSystem ι R M}
+    {P₁ P₂ : RootSystem ι R M N}
+    (he : P₁.toLin = P₂.toLin)
     (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
-  suffices ∀ P₁ P₂ : RootSystem ι R M, P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
-    have h₁ := this P₁ P₂ hr
-    have h₂ := this P₂ P₁ hr.symm
+  suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toLin = P₂.toLin → P₁.root = P₂.root →
+      range P₁.coroot ⊆ range P₂.coroot by
+    have h₁ := this P₁ P₂ he hr
+    have h₂ := this P₂ P₁ he.symm hr.symm
     cases' P₁ with P₁
     cases' P₂ with P₂
     congr
-    exact RootPairing.ext hr (le_antisymm h₁ h₂)
+    exact RootPairing.ext he hr (le_antisymm h₁ h₂)
   clear! P₁ P₂
-  rintro P₁ P₂ hr - ⟨i, rfl⟩
+  rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
-  apply (LinearEquiv.refl R (Dual R M)).injective
+  apply P₁.BijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
-  · exact hr ▸ P₂.coroot_root_two i
-  · exact hr ▸ P₂.mapsTo_preReflection_root i
+  · exact hr ▸ he ▸ P₂.coroot_root_two i
+  · exact hr ▸ he ▸ P₂.mapsTo_preReflection_root i
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_preReflection_root i
 
@@ -309,12 +321,14 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
 system, we do not need to check that the coroots are stable under reflections since this follows
 from the corresponding property for the roots. -/
 def mk' [CharZero R] [NoZeroSMulDivisors R M]
+    (p : PerfectPairing R M N)
     (root : ι ↪ M)
-    (coroot : ι ↪ Dual R M)
-    (hp : ∀ i, (coroot i) (root i) = 2)
-    (hs : ∀ i, MapsTo (preReflection (root i) (coroot i)) (range root) (range root))
+    (coroot : ι ↪ N)
+    (hp : ∀ i, p.toLin.flip (coroot i) (root i) = 2)
+    (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
     (hsp : span R (range root) = ⊤) :
-    RootSystem ι R M where
+    RootSystem ι R M N where
+  toPerfectPairing := p
   root := root
   coroot := coroot
   coroot_root_two := hp
@@ -323,8 +337,7 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
   mapsTo_preReflection_coroot := by
     rintro i - ⟨j, rfl⟩
     obtain ⟨k, h⟩ := hs i (mem_range_self j)
-    refine ⟨k, coroot_eq_coreflection_of_root_eq_of_span_eq_top' root coroot hp ?_ hsp h⟩
-    exact hs
+    exact ⟨k, coroot_eq_coreflection_of_root_eq_of_span_eq_top' p root coroot hp hs hsp h⟩
 
 /-- In characteristic zero if there is no torsion, if the `i`th reflection of the `j`th root is the
 `k`th root, then the corresponding relationship holds for coroots. -/

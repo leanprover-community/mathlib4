@@ -8,6 +8,8 @@ import Mathlib.LinearAlgebra.Dual
 /-!
 # Perfect pairings of modules
 
+-- TODO Update this doc string
+
 A perfect pairing of two (left) modules may be defined either as:
  1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
     bijective. (It follows from this that both `M` and `N` are both reflexive modules.)
@@ -23,9 +25,32 @@ The second definition is more convenient and we prove some basic facts about it 
 
 -/
 
-open Module
+open Function Module
 
-variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+structure PerfectPairing :=
+  toLin : M →ₗ[R] N →ₗ[R] R
+  BijectiveLeft : Bijective toLin
+  BijectiveRight : Bijective toLin.flip
+
+variable {R M N}
+
+namespace PerfectPairing
+
+variable (p : PerfectPairing R M N)
+
+protected def flip : PerfectPairing R N M where
+  toLin := p.toLin.flip
+  BijectiveLeft := p.BijectiveRight
+  BijectiveRight := p.BijectiveLeft
+
+@[simp] lemma flip_flip : p.flip.flip = p := rfl
+
+-- TODO `M` and `N` are both reflexive
+
+end PerfectPairing
+
 variable [IsReflexive R M] (e : N ≃ₗ[R] Dual R M)
 
 namespace LinearEquiv
@@ -53,6 +78,11 @@ lemma isReflexive_of_equiv_dual_of_isReflexive : IsReflexive R N := by
 @[simp] lemma flip_flip (h : IsReflexive R N := isReflexive_of_equiv_dual_of_isReflexive e) :
   e.flip.flip = e :=
 by ext; rfl
+
+noncomputable def toPerfectPairing : PerfectPairing R M N where
+  toLin := e.flip
+  BijectiveLeft := e.flip.bijective
+  BijectiveRight := e.bijective
 
 end LinearEquiv
 
