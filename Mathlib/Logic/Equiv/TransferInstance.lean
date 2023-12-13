@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.UnivLE
+import Mathlib.Logic.Small.Defs
 
 #align_import logic.equiv.transfer_instance from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
@@ -57,7 +57,7 @@ theorem one_def [One β] :
 #align equiv.zero_def Equiv.zero_def
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [One α] : One (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [One α] : One (Shrink.{v} α) :=
   (equivShrink α).symm.one
 
 /-- Transfer `Mul` across an `Equiv` -/
@@ -76,7 +76,7 @@ theorem mul_def [Mul β] (x y : α) :
 #align equiv.add_def Equiv.add_def
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [Mul α] : Mul (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Mul α] : Mul (Shrink.{v} α) :=
   (equivShrink α).symm.mul
 
 /-- Transfer `Div` across an `Equiv` -/
@@ -95,7 +95,7 @@ theorem div_def [Div β] (x y : α) :
 #align equiv.sub_def Equiv.sub_def
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [Div α] : Div (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Div α] : Div (Shrink.{v} α) :=
   (equivShrink α).symm.div
 
 -- Porting note: this should be called `inv`,
@@ -116,7 +116,7 @@ theorem inv_def [Inv β] (x : α) :
 #align equiv.neg_def Equiv.neg_def
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [Inv α] : Inv (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Inv α] : Inv (Shrink.{v} α) :=
   (equivShrink α).symm.Inv
 
 /-- Transfer `SMul` across an `Equiv` -/
@@ -131,7 +131,7 @@ theorem smul_def {R : Type*} [SMul R β] (r : R) (x : α) :
   rfl
 #align equiv.smul_def Equiv.smul_def
 
-noncomputable instance [UnivLE.{u, v}] (R : Type*) [SMul R α] : SMul R (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] (R : Type*) [SMul R α] : SMul R (Shrink.{v} α) :=
   (equivShrink α).symm.smul R
 
 /-- Transfer `Pow` across an `Equiv` -/
@@ -146,7 +146,7 @@ theorem pow_def {N : Type*} [Pow β N] (n : N) (x : α) :
   rfl
 #align equiv.pow_def Equiv.pow_def
 
-noncomputable instance [UnivLE.{u, v}] (N : Type*) [Pow α N] : Pow (Shrink.{v} α) N :=
+noncomputable instance [Small.{v} α] (N : Type*) [Pow α N] : Pow (Shrink.{v} α) N :=
   (equivShrink α).symm.pow N
 
 /-- An equivalence `e : α ≃ β` gives a multiplicative equivalence `α ≃* β` where
@@ -183,7 +183,7 @@ theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
 
 /-- Shrink `α` to a smaller universe preserves multiplication. -/
 @[to_additive "Shrink `α` to a smaller universe preserves addition."]
-noncomputable def _root_.Shrink.mulEquiv [UnivLE.{u, v}] [Mul α] : Shrink.{v} α ≃* α :=
+noncomputable def _root_.Shrink.mulEquiv [Small.{v} α] [Mul α] : Shrink.{v} α ≃* α :=
   (equivShrink α).symm.mulEquiv
 
 /-- An equivalence `e : α ≃ β` gives a ring equivalence `α ≃+* β`
@@ -218,7 +218,7 @@ theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves ring structure. -/
-noncomputable def _root_.Shrink.ringEquiv [UnivLE.{u, v}] [Ring α] : Shrink.{v} α ≃+* α :=
+noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Ring α] : Shrink.{v} α ≃+* α :=
   (equivShrink α).symm.ringEquiv
 
 /-- Transfer `Semigroup` across an `Equiv` -/
@@ -230,7 +230,7 @@ protected def semigroup [Semigroup β] : Semigroup α := by
 #align equiv.add_semigroup Equiv.addSemigroup
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [Semigroup α] : Semigroup (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Semigroup α] : Semigroup (Shrink.{v} α) :=
   (equivShrink α).symm.semigroup
 
 /-- Transfer `SemigroupWithZero` across an `Equiv` -/
@@ -242,7 +242,7 @@ protected def semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α :=
 #align equiv.semigroup_with_zero Equiv.semigroupWithZero
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) :=
   (equivShrink α).symm.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
@@ -254,7 +254,7 @@ protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
 #align equiv.add_comm_semigroup Equiv.addCommSemigroup
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [CommSemigroup α] : CommSemigroup (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [CommSemigroup α] : CommSemigroup (Shrink.{v} α) :=
   (equivShrink α).symm.commSemigroup
 
 /-- Transfer `MulZeroClass` across an `Equiv` -/
@@ -266,7 +266,7 @@ protected def mulZeroClass [MulZeroClass β] : MulZeroClass α := by
 #align equiv.mul_zero_class Equiv.mulZeroClass
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [MulZeroClass α] : MulZeroClass (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulZeroClass
 
 /-- Transfer `MulOneClass` across an `Equiv` -/
@@ -278,7 +278,7 @@ protected def mulOneClass [MulOneClass β] : MulOneClass α := by
 #align equiv.mul_one_class Equiv.mulOneClass
 #align equiv.add_zero_class Equiv.addZeroClass
 
-noncomputable instance [UnivLE.{u, v}] [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulOneClass
 
 /-- Transfer `MulZeroOneClass` across an `Equiv` -/
@@ -290,7 +290,7 @@ protected def mulZeroOneClass [MulZeroOneClass β] : MulZeroOneClass α := by
   apply e.injective.mulZeroOneClass _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.mul_zero_one_class Equiv.mulZeroOneClass
 
-noncomputable instance [UnivLE.{u, v}] [MulZeroOneClass α] : MulZeroOneClass (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [MulZeroOneClass α] : MulZeroOneClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulZeroOneClass
 
 /-- Transfer `Monoid` across an `Equiv` -/
@@ -304,7 +304,7 @@ protected def monoid [Monoid β] : Monoid α := by
 #align equiv.add_monoid Equiv.addMonoid
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [Monoid α] : Monoid (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Monoid α] : Monoid (Shrink.{v} α) :=
   (equivShrink α).symm.monoid
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
@@ -319,7 +319,7 @@ protected def commMonoid [CommMonoid β] : CommMonoid α := by
 
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [CommMonoid α] : CommMonoid (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [CommMonoid α] : CommMonoid (Shrink.{v} α) :=
   (equivShrink α).symm.commMonoid
 
 /-- Transfer `Group` across an `Equiv` -/
@@ -337,7 +337,7 @@ protected def group [Group β] : Group α := by
 
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [Group α] : Group (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Group α] : Group (Shrink.{v} α) :=
   (equivShrink α).symm.group
 
 /-- Transfer `CommGroup` across an `Equiv` -/
@@ -355,7 +355,7 @@ protected def commGroup [CommGroup β] : CommGroup α := by
 
 
 @[to_additive]
-noncomputable instance [UnivLE.{u, v}] [CommGroup α] : CommGroup (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [CommGroup α] : CommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.commGroup
 
 /-- Transfer `NonUnitalNonAssocSemiring` across an `Equiv` -/
@@ -370,7 +370,7 @@ protected def nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
 #align equiv.non_unital_non_assoc_semiring Equiv.nonUnitalNonAssocSemiring
 
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalNonAssocSemiring α] :
+noncomputable instance [Small.{v} α] [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocSemiring
 
@@ -384,7 +384,7 @@ protected def nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α :=
   apply e.injective.nonUnitalSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_semiring Equiv.nonUnitalSemiring
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalSemiring α] : NonUnitalSemiring (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [NonUnitalSemiring α] : NonUnitalSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalSemiring
 
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
@@ -396,7 +396,7 @@ protected def addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
     natCast_succ := fun n => e.injective (by simp [add_def, one_def]) }
 #align equiv.add_monoid_with_one Equiv.addMonoidWithOne
 
-noncomputable instance [UnivLE.{u, v}] [AddMonoidWithOne α] : AddMonoidWithOne (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [AddMonoidWithOne α] : AddMonoidWithOne (Shrink.{v} α) :=
   (equivShrink α).symm.addMonoidWithOne
 
 /-- Transfer `AddGroupWithOne` across an `Equiv` -/
@@ -410,7 +410,7 @@ protected def addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 #align equiv.add_group_with_one Equiv.addGroupWithOne
 
-noncomputable instance [UnivLE.{u, v}] [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
   (equivShrink α).symm.addGroupWithOne
 
 /-- Transfer `NonAssocSemiring` across an `Equiv` -/
@@ -421,7 +421,7 @@ protected def nonAssocSemiring [NonAssocSemiring β] : NonAssocSemiring α := by
   apply e.injective.nonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_assoc_semiring Equiv.nonAssocSemiring
 
-noncomputable instance [UnivLE.{u, v}] [NonAssocSemiring α] : NonAssocSemiring (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [NonAssocSemiring α] : NonAssocSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonAssocSemiring
 
 /-- Transfer `Semiring` across an `Equiv` -/
@@ -433,7 +433,7 @@ protected def semiring [Semiring β] : Semiring α := by
   apply e.injective.semiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.semiring Equiv.semiring
 
-noncomputable instance [UnivLE.{u, v}] [Semiring α] : Semiring (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Semiring α] : Semiring (Shrink.{v} α) :=
   (equivShrink α).symm.semiring
 
 /-- Transfer `NonUnitalCommSemiring` across an `Equiv` -/
@@ -446,7 +446,7 @@ protected def nonUnitalCommSemiring [NonUnitalCommSemiring β] : NonUnitalCommSe
   apply e.injective.nonUnitalCommSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_comm_semiring Equiv.nonUnitalCommSemiring
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalCommSemiring α] :
+noncomputable instance [Small.{v} α] [NonUnitalCommSemiring α] :
     NonUnitalCommSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommSemiring
 
@@ -459,7 +459,7 @@ protected def commSemiring [CommSemiring β] : CommSemiring α := by
   apply e.injective.commSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.comm_semiring Equiv.commSemiring
 
-noncomputable instance [UnivLE.{u, v}] [CommSemiring α] : CommSemiring (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [CommSemiring α] : CommSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.commSemiring
 
 /-- Transfer `NonUnitalNonAssocRing` across an `Equiv` -/
@@ -475,7 +475,7 @@ protected def nonUnitalNonAssocRing [NonUnitalNonAssocRing β] : NonUnitalNonAss
   apply e.injective.nonUnitalNonAssocRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_non_assoc_ring Equiv.nonUnitalNonAssocRing
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalNonAssocRing α] :
+noncomputable instance [Small.{v} α] [NonUnitalNonAssocRing α] :
     NonUnitalNonAssocRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocRing
 
@@ -492,7 +492,7 @@ protected def nonUnitalRing [NonUnitalRing β] : NonUnitalRing α := by
   apply e.injective.nonUnitalRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_ring Equiv.nonUnitalRing
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalRing α] : NonUnitalRing (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [NonUnitalRing α] : NonUnitalRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalRing
 
 /-- Transfer `NonAssocRing` across an `Equiv` -/
@@ -503,7 +503,7 @@ protected def nonAssocRing [NonAssocRing β] : NonAssocRing α := by
   apply e.injective.nonAssocRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_assoc_ring Equiv.nonAssocRing
 
-noncomputable instance [UnivLE.{u, v}] [NonAssocRing α] : NonAssocRing (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [NonAssocRing α] : NonAssocRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonAssocRing
 
 /-- Transfer `Ring` across an `Equiv` -/
@@ -515,7 +515,7 @@ protected def ring [Ring β] : Ring α := by
   apply e.injective.ring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.ring Equiv.ring
 
-noncomputable instance [UnivLE.{u, v}] [Ring α] : Ring (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Ring α] : Ring (Shrink.{v} α) :=
   (equivShrink α).symm.ring
 
 /-- Transfer `NonUnitalCommRing` across an `Equiv` -/
@@ -531,7 +531,7 @@ protected def nonUnitalCommRing [NonUnitalCommRing β] : NonUnitalCommRing α :=
   apply e.injective.nonUnitalCommRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_comm_ring Equiv.nonUnitalCommRing
 
-noncomputable instance [UnivLE.{u, v}] [NonUnitalCommRing α] : NonUnitalCommRing (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [NonUnitalCommRing α] : NonUnitalCommRing (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalCommRing
 
 /-- Transfer `CommRing` across an `Equiv` -/
@@ -543,7 +543,7 @@ protected def commRing [CommRing β] : CommRing α := by
   apply e.injective.commRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.comm_ring Equiv.commRing
 
-noncomputable instance [UnivLE.{u, v}] [CommRing α] : CommRing (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
 
 /-- Transfer `Nontrivial` across an `Equiv` -/
@@ -552,7 +552,7 @@ protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
   e.surjective.nontrivial
 #align equiv.nontrivial Equiv.nontrivial
 
-noncomputable instance [UnivLE.{u, v}] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
   (equivShrink α).symm.nontrivial
 
 /-- Transfer `IsDomain` across an `Equiv` -/
@@ -562,7 +562,7 @@ protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) :
 #align equiv.is_domain Equiv.isDomain
 
 
-noncomputable instance [UnivLE.{u, v}] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain  (Shrink.ringEquiv α)
 
 /-- Transfer `RatCast` across an `Equiv` -/
@@ -570,7 +570,7 @@ noncomputable instance [UnivLE.{u, v}] [Ring α] [IsDomain α] : IsDomain (Shrin
 protected def RatCast [RatCast β] : RatCast α where ratCast n := e.symm n
 #align equiv.has_rat_cast Equiv.RatCast
 
-noncomputable instance [UnivLE.{u, v}] [RatCast α] : RatCast (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [RatCast α] : RatCast (Shrink.{v} α) :=
   (equivShrink α).symm.RatCast
 
 /-- Transfer `DivisionRing` across an `Equiv` -/
@@ -587,7 +587,7 @@ protected def divisionRing [DivisionRing β] : DivisionRing α := by
   apply e.injective.divisionRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.division_ring Equiv.divisionRing
 
-noncomputable instance [UnivLE.{u, v}] [DivisionRing α] : DivisionRing (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [DivisionRing α] : DivisionRing (Shrink.{v} α) :=
   (equivShrink α).symm.divisionRing
 
 /-- Transfer `Field` across an `Equiv` -/
@@ -605,7 +605,7 @@ protected def field [Field β] : Field α := by
   apply e.injective.field _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.field Equiv.field
 
-noncomputable instance [UnivLE.{u, v}] [Field α] : Field (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [Field α] : Field (Shrink.{v} α) :=
   (equivShrink α).symm.field
 
 section R
@@ -624,7 +624,7 @@ protected def mulAction (e : α ≃ β) [MulAction R β] : MulAction R α :=
     mul_smul := by simp [smul_def, mul_smul] }
 #align equiv.mul_action Equiv.mulAction
 
-noncomputable instance [UnivLE.{u, v}] [MulAction R α] : MulAction R (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [MulAction R α] : MulAction R (Shrink.{v} α) :=
   (equivShrink α).symm.mulAction R
 
 /-- Transfer `DistribMulAction` across an `Equiv` -/
@@ -641,7 +641,7 @@ protected def distribMulAction (e : α ≃ β) [AddCommMonoid β] :
       DistribMulAction R α)
 #align equiv.distrib_mul_action Equiv.distribMulAction
 
-noncomputable instance [UnivLE.{u, v}] [AddCommMonoid α] [DistribMulAction R α] :
+noncomputable instance [Small.{v} α] [AddCommMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Shrink.{v} α) :=
   (equivShrink α).symm.distribMulAction R
 
@@ -664,7 +664,7 @@ protected def module (e : α ≃ β) [AddCommMonoid β] :
       Module R α)
 #align equiv.module Equiv.module
 
-noncomputable instance [UnivLE.{u, v}] [AddCommMonoid α] [Module R α] : Module R (Shrink.{v} α) :=
+noncomputable instance [Small.{v} α] [AddCommMonoid α] [Module R α] : Module R (Shrink.{v} α) :=
   (equivShrink α).symm.module R
 
 /-- An equivalence `e : α ≃ β` gives a linear equivalence `α ≃ₗ[R] β`
@@ -687,7 +687,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves module structure. -/
 @[simps!]
-noncomputable def _root_.Shrink.linearEquiv [UnivLE.{u, v}] [AddCommMonoid α] [Module R α] :
+noncomputable def _root_.Shrink.linearEquiv [Small.{v} α] [AddCommMonoid α] [Module R α] :
     Shrink.{v} α ≃ₗ[R] α :=
   Equiv.linearEquiv _ (equivShrink α).symm
 
@@ -711,7 +711,7 @@ protected def algebra (e : α ≃ β) [Semiring β] :
     simp [Algebra.commutes]
 #align equiv.algebra Equiv.algebra
 
-noncomputable instance [UnivLE.{u, v}] [Semiring α] [Algebra R α] :
+noncomputable instance [Small.{v} α] [Semiring α] [Algebra R α] :
     Algebra R (Shrink.{v} α) :=
   (equivShrink α).symm.algebra _
 
@@ -734,7 +734,7 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
 
 variable (α) in
 /-- Shrink `α` to a smaller universe algebra multiplication. -/
-noncomputable def _root_.Shrink.algEquiv [UnivLE.{u, v}] [Semiring α] [Algebra R α] :
+noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm
 
