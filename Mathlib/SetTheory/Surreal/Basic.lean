@@ -251,7 +251,7 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
         · apply (ox.moveRight jx).add oy
         · apply ox.add (oy.moveRight jy)⟩
 termination_by x y _ _ => (x, y) -- Porting note: Added `termination_by`
-decreasing_by pgame_wf_tac
+decreasing_by all_goals pgame_wf_tac
 #align pgame.numeric.add SetTheory.PGame.Numeric.add
 
 theorem sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=

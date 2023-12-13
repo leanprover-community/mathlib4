@@ -1161,7 +1161,7 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
-  termination_by fastGrowing o => o
+  termination_by o => o
 #align onote.fast_growing ONote.fastGrowing
 
 -- Porting note: the bug of the linter, should be fixed.

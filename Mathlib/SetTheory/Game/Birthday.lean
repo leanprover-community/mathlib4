@@ -89,7 +89,7 @@ theorem Relabelling.birthday_congr : ∀ {x y : PGame.{u}}, x ≡r y → birthda
     · exact ⟨_, (r.moveLeftSymm j).birthday_congr⟩
     · exact ⟨_, (r.moveRight j).birthday_congr.symm⟩
     · exact ⟨_, (r.moveRightSymm j).birthday_congr⟩
-termination_by birthday_congr x y _ => (x, y)
+termination_by x y _ => (x, y)
 #align pgame.relabelling.birthday_congr SetTheory.PGame.Relabelling.birthday_congr
 
 @[simp]
@@ -170,7 +170,7 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     · exact lt_max_of_lt_right ((nadd_le_nadd_right hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_left ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
     · exact lt_max_of_lt_right ((nadd_le_nadd_left hj _).trans_lt (lt_lsub _ _))
-termination_by birthday_add a b => (a, b)
+termination_by a b => (a, b)
 #align pgame.birthday_add SetTheory.PGame.birthday_add
 
 theorem birthday_add_zero : (a + 0).birthday = a.birthday := by simp
