@@ -544,6 +544,33 @@ variable {α : Type*} [CommSemiring α]
 -- Ugly proof, by rewriting as much as possible to use the case of
 -- multivariable power series
 
+-- Which one of those should be kept?
+example (μ : Type*) [AddCommMonoid μ] : AddCommMonoid (Unit → μ) := by
+  exact Pi.addCommMonoid
+
+example (μ : Type*) [AddCommMonoid μ] : (Unit → μ) ≃+ μ := by
+  exact AddEquiv.piUnique fun _ ↦ μ
+
+def AddEquiv.piUnique (μ : Type*) [AddCommMonoid μ] : (Unit → μ) ≃+ μ := {
+  Equiv.piUnique  with
+  map_add' := fun m n => by simp }
+
+noncomputable example (α β : Type*) [Finite α] [Zero β]: (α →₀ β) ≃ (α → β) :=
+  Finsupp.equivFunOnFinite
+
+/-- When ι is finite and μ is an AddCommMonoid,
+  then Finsupp.equivFunOnFinite gives and AddEquiv -/
+noncomputable def Finsupp.addEquivFunOnFinite {μ : Type*} [AddCommMonoid μ]
+  {ι : Type*} [Finite ι] : (ι →₀ μ) ≃+ (ι → μ) := {
+  Finsupp.equivFunOnFinite with
+  map_add' := fun _ _ => rfl }
+
+/-- AddEquiv between (ι →₀ μ) and μ, when ι has a unique element -/
+noncomputable def AddEquiv.finsuppUnique {μ : Type*} [AddCommMonoid μ]
+  {ι : Type*} [Unique ι] : (ι →₀ μ) ≃+ μ := {
+  Equiv.finsuppUnique with
+  map_add' := fun _ _ => rfl }
+
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [HasPiAntidiagonal ι ℕ]
     (f : ι → PowerSeries α) (d : ℕ) (s : Finset ι) :
@@ -553,32 +580,25 @@ theorem coeff_prod [HasPiAntidiagonal ι ℕ]
   simp only [PowerSeries.coeff]
   haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
   convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
-  set e : (Unit →₀ ℕ) ≃+ ℕ := {
-      Equiv.finsuppUnique with
-      map_add' := fun m n => by simp }
-  have := Finset.mapRange_piAntidiagonal_eq (ι := ι) e s (e.symm d)
-  have hd : e (e.symm d) = d := by
-    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, AddEquiv.symm_mk, AddEquiv.coe_mk,
-      Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, Equiv.apply_symm_apply]
-  rw [hd] at this
+  have := Finset.mapRange_piAntidiagonal_eq (ι := ι)
+    (AddEquiv.finsuppUnique (ι := Unit)) s (AddEquiv.finsuppUnique.symm d)
+  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv,
+    AddEquiv.apply_symm_apply] at this
   rw [← this, Finset.sum_map]
   apply Finset.sum_congr
   · apply congr_arg₂ _ rfl
-    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, AddEquiv.symm_mk, AddEquiv.coe_mk,
-      Equiv.coe_fn_symm_mk]
     ext
-    simp only [PUnit.default_eq_unit, Equiv.finsuppUnique_symm_apply_toFun, Finsupp.single_eq_same]
+    simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
     rfl
   · intro d _
     apply Finset.prod_congr rfl
     intro i _
     congr
-    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, AddEquiv.toEquiv_eq_coe,
-      Finsupp.mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply,
-      EquivLike.coe_coe, AddEquiv.coe_mk, Equiv.coe_fn_mk, Finsupp.mapRange_apply,
-      Equiv.finsuppUnique_apply, PUnit.default_eq_unit]
+    simp only [Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, EquivLike.coe_coe,
+      Finsupp.mapRange_apply]
     ext
     simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
+    rfl
 
 end PowerSeries
 
