@@ -3,16 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathbin.Algebra.Module.Pi
-import Mathbin.Data.Polynomial.Basic
-import Mathbin.GroupTheory.GroupAction.Prod
-import Mathbin.GroupTheory.GroupAction.Units
-import Mathbin.Data.Complex.Module
-import Mathbin.RingTheory.Algebraic
-import Mathbin.Data.Zmod.Basic
-import Mathbin.RingTheory.TensorProduct
-
-#align_import main
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.Data.Complex.Module
+import Mathlib.RingTheory.Algebraic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.TensorProduct
 
 /-! # Tests that instances do not form diamonds -/
 
@@ -24,17 +22,17 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.hasSmul : SMul ℤ ℂ) :=
+example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.instSMulRealComplex : SMul ℤ ℂ) :=
   rfl
 
-example : RestrictScalars.module ℝ ℂ ℂ = Complex.module :=
+example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModuleComplexToAddCommMonoidToNonUnitalNonAssocSemiringToNonUnitalNonAssocCommSemiringToNonUnitalNonAssocCommRingToNonUnitalCommRingCommRing :=
   rfl
 
-example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.algebra :=
+example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraComplexInstSemiringComplex :=
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.smul : SMul ℕ (α × β)) = AddMonoid.SMul :=
+    (Prod.smul : SMul ℕ (α × β)) = AddMonoid.toNatSMul :=
   rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
@@ -42,7 +40,7 @@ example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
   rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.SMul :=
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNatSMul :=
   rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
@@ -94,15 +92,15 @@ end TensorProduct
 
 section Units
 
-example (α : Type _) [Monoid α] : (Units.mulAction : MulAction αˣ (α × α)) = Prod.mulAction :=
+example (α : Type _) [Monoid α] : (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction αˣ (α × α)) = Prod.mulAction :=
   rfl
 
 example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β i)] :
-    (Units.mulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ :=
+    (Units.instMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ :=
   rfl
 
-example (R α : Type _) (β : α → Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.distribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction :=
+example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
+    (Units.instDistribMulActionUnitsToMonoidToDivInvMonoidInstGroupUnits : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction :=
   rfl
 
 /-!
@@ -143,17 +141,7 @@ end WithTop
 section Multiplicative
 
 example :
-    @Monoid.toMulOneClass (Multiplicative ℕ) (CommMonoid.toMonoid _) = Multiplicative.mulOneClass :=
-  rfl
-
--- `dunfold` can still break unification, but it's better to have `dunfold` break it than have the
--- above example fail.
-example :
-    @Monoid.toMulOneClass (Multiplicative ℕ) (CommMonoid.toMonoid _) = Multiplicative.mulOneClass :=
-  by
-  dsimp only [One.one, Multiplicative.mulOneClass]
-  fail_if_success rfl
-  ext
+    @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid = Multiplicative.mulOneClass :=
   rfl
 
 end Multiplicative
@@ -171,10 +159,10 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   by
   obtain ⟨u : k, hu⟩ := exists_ne (1 : k)
   intro h
-  simp only [SMul.ext_iff, Function.funext_iff, Finsupp.ext_iff] at h
+  simp only [SMul.ext_iff, SMul.smul_eq, Function.funext_iff, FunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comap_smul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
+  rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
     single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
@@ -184,12 +172,12 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul :=
   by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
-  haveI : Nontrivial k := ⟨⟨u, 1, units.ext.ne hu⟩⟩
+  haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
   intro h
-  simp only [SMul.ext_iff, Function.funext_iff, Finsupp.ext_iff] at h
+  simp only [SMul.ext_iff, SMul.smul_eq, Function.funext_iff, FunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comap_smul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
+  rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
     smul_eq_mul, single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
@@ -245,7 +233,7 @@ section Subtype
 -- this diamond is the reason that `fintype.to_locally_finite_order` is not an instance
 example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [@DecidableRel α (· < ·)]
     [@DecidableRel α (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
-    Subtype.locallyFiniteOrder p = Fintype.toLocallyFiniteOrder :=
+    Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder :=
   by
   fail_if_success rfl
   exact Subsingleton.elim _ _
@@ -260,14 +248,13 @@ section ZMod
 variable {p : ℕ} [Fact p.Prime]
 
 example :
-    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.field p)) = ZMod.commRing p :=
+    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instFieldZMod p)) = ZMod.commRing p :=
   rfl
 
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) :=
   rfl
 
-example : ZMod.commRing 0 = Int.commRing :=
+example : ZMod.commRing 0 = Int.instCommRingInt :=
   rfl
 
 end ZMod
-
