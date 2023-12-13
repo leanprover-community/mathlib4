@@ -157,7 +157,6 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
     Subalgebra.fg_of_submodule_fg <|
       have : IsNoetherianRing B₀ := isNoetherianRing_of_fg hAB₀
       have : Module.Finite B₀ C := ⟨hB₀C⟩
-      have : IsNoetherian B₀ C := isNoetherian_of_isNoetherianRing_of_finite B₀ C
       fg_of_injective (IsScalarTower.toAlgHom B₀ B C).toLinearMap hBCi
 #align fg_of_fg_of_fg fg_of_fg_of_fg
 

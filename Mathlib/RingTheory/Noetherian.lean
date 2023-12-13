@@ -594,9 +594,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 #align is_noetherian_of_fg_of_noetherian isNoetherian_of_fg_of_noetherian
 
--- It would be nice to make this an instance but it is empirically problematic, possibly because
--- of the loop that it causes with `Module.IsNoetherian.finite`
-theorem isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
+instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have : IsNoetherian R (⊤ : Submodule R M) :=

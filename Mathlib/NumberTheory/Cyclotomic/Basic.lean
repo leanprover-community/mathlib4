@@ -352,8 +352,7 @@ theorem numberField [h : NumberField K] [Finite S] [IsCyclotomicExtension S K L]
 /-- A finite cyclotomic extension of an integral noetherian domain is integral -/
 theorem integral [IsDomain B] [IsNoetherianRing A] [Finite S] [IsCyclotomicExtension S A B] :
     Algebra.IsIntegral A B :=
-  letI := IsCyclotomicExtension.finite S A B; isIntegral_of_noetherian <|
-    isNoetherian_of_isNoetherianRing_of_finite A B
+  letI := IsCyclotomicExtension.finite S A B; isIntegral_of_noetherian inferInstance
 #align is_cyclotomic_extension.integral IsCyclotomicExtension.integral
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/
