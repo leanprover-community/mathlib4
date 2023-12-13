@@ -1356,6 +1356,7 @@ import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.Girth
+import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
