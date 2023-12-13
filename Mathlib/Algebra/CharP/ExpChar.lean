@@ -113,8 +113,7 @@ end Nontrivial
 
 end Semiring
 
-theorem ExpChar.exists [Ring R] [NoZeroDivisors R] [Nontrivial R] :
-    ∃ q, ExpChar R q := by
+theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
   obtain ⟨p, h⟩ := CharP.exists R
   by_cases hp : p = 0
   · exact ⟨1, by rw [hp] at h; haveI := CharP.charP_to_charZero R; exact .zero⟩
