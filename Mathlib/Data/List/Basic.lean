@@ -1037,6 +1037,9 @@ theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
 alias sublist_nil_iff_eq_nil := sublist_nil
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
+@[simp] lemma sublist_singleton {l : List α} {a : α} : l <+ [a] ↔ l = [] ∨ l = [a] := by
+  constructor <;> rintro (_ | _) <;> aesop
+
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate
 
 theorem sublist_replicate_iff {l : List α} {a : α} {n : ℕ} :
@@ -4239,15 +4242,6 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
   decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall
-
-/-! ### Retroattributes
-
-The list definitions happen earlier than `to_additive`, so here we tag the few multiplicative
-definitions that couldn't be tagged earlier.
--/
-
-attribute [to_additive existing] List.prod -- `List.sum`
-attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 

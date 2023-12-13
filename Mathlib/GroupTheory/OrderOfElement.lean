@@ -43,7 +43,7 @@ section IsOfFinOrder
 
 -- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
 @[to_additive]
-theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1 ↔ x ^ n = 1 := by
+theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
   rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; dsimp; rw [mul_one]
 #align is_periodic_pt_mul_iff_pow_eq_one isPeriodicPt_mul_iff_pow_eq_one
 #align is_periodic_pt_add_iff_nsmul_eq_zero isPeriodicPt_add_iff_nsmul_eq_zero
@@ -53,7 +53,7 @@ exists `n ≥ 1` such that `x ^ n = 1`.-/
 @[to_additive "`IsOfFinAddOrder` is a predicate on an element `a` of an
 additive monoid to be of finite order, i.e. there exists `n ≥ 1` such that `n • a = 0`."]
 def IsOfFinOrder (x : G) : Prop :=
-  (1 : G) ∈ periodicPts ((· * ·) x)
+  (1 : G) ∈ periodicPts (x * ·)
 #align is_of_fin_order IsOfFinOrder
 #align is_of_fin_add_order IsOfFinAddOrder
 
@@ -350,6 +350,11 @@ theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.I
   simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
+
+@[to_additive]
+theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :
+    IsOfFinOrder (f x) ↔ IsOfFinOrder x := by
+  rw [← orderOf_pos_iff, orderOf_injective f hf x, ← orderOf_pos_iff]
 
 @[to_additive (attr := norm_cast, simp)]
 theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf y :=
@@ -1055,12 +1060,12 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
   toFun g := g ^ n
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by
-    have key := congr_arg ((· ^ ·) g) ((Nat.card G).gcd_eq_gcd_ab n)
+    have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
     dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul, zpow_ofNat, zpow_ofNat, zpow_ofNat, h.gcd_eq_one, pow_one,
       pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
   right_inv g := by
-    have key := congr_arg ((· ^ ·) g) ((Nat.card G).gcd_eq_gcd_ab n)
+    have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
     dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_ofNat, zpow_ofNat, zpow_ofNat, h.gcd_eq_one, pow_one,
       pow_card_eq_one', one_zpow, one_mul, eq_comm] at key

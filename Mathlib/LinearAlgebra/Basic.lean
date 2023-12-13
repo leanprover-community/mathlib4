@@ -218,7 +218,7 @@ def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      simpa only [map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+      simpa only [map_smulₛₗ] using congr_arg (τ₁₂ r • ·) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]

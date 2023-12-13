@@ -286,12 +286,8 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
         α) =
       coeff α n (partialOddGF m) := by
   rw [partialOddGF]
-  -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
-  --               is improved.
-/-  refine Eq.trans ?_
-    (Eq.trans (partialGF_prop α n ((range m).map mkOdd) ?_ (fun _ => Set.univ) fun _ _ => trivial)
-      (Eq.symm ?_)) -/
-  convert partialGF_prop α n ((range m).map mkOdd) ?_ (fun _ => Set.univ) fun _ _ => trivial using 2
+  convert partialGF_prop α n
+    ((range m).map mkOdd) _ (fun _ => Set.univ) (fun _ _ => trivial) using 2
   · congr
     simp only [true_and_iff, forall_const, Set.mem_univ]
   · rw [Finset.prod_map]
@@ -308,7 +304,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
     rw [mem_map]
     rintro ⟨a, -, rfl⟩
     exact Nat.succ_pos _
- #align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
+#align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
@@ -340,14 +336,9 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
         α) =
       coeff α n (partialDistinctGF m) := by
   rw [partialDistinctGF]
-  -- Porting note: `convert` timeouts. Please revert to `convert` when the performance of `convert`
-  --               is improved.
-/-  refine Eq.trans ?_
-    (Eq.trans (partialGF_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) ?_
-      (fun _ => {0, 1}) fun _ _ => Or.inl rfl) (Eq.symm ?_))
-      -/
-  convert partialGF_prop α n ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) ?_
-      (fun _ => {0, 1}) fun _ _ => Or.inl rfl using 2
+  convert partialGF_prop α n
+    ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1}) (fun _ _ => Or.inl rfl)
+    using 2
   · congr
     congr! with p
     rw [Multiset.nodup_iff_count_le_one]
