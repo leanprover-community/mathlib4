@@ -423,7 +423,7 @@ lemma contMDiff_openEmbedding :
   intros z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
-  rw [h.toLocalHomeomorph_right_inv]
+  rw [h.toPartialHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
     exact haveI := h.singletonChartedSpace; extChartAt_target_subset_range I x
@@ -432,7 +432,7 @@ lemma contMDiff_openEmbedding :
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
     rw [mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
-      h.toLocalHomeomorph_target] at this
+      h.toPartialHomeomorph_target] at this
     exact this
 
 variable {I}
@@ -440,12 +440,12 @@ variable {I}
 then the inverse of `e` is smooth. -/
 lemma contMDiffOn_openEmbedding_symm :
     @ContMDiffOn _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I _ _ h.singletonChartedSpace
-      n (OpenEmbedding.toLocalHomeomorph e h).symm (range e) := by
+      n (OpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [@contMDiffOn_iff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   constructor
-  · rw [← h.toLocalHomeomorph_target]
-    exact (h.toLocalHomeomorph e).continuousOn_symm
+  · rw [← h.toPartialHomeomorph_target]
+    exact (h.toPartialHomeomorph e).continuousOn_symm
   · intros z hz
     -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
@@ -455,7 +455,7 @@ lemma contMDiffOn_openEmbedding_symm :
     have : I.symm z ∈ range e := by
       rw [ModelWithCorners.symm, ← mem_preimage]
       exact hz.2.1
-    rw [h.toLocalHomeomorph_right_inv e this]
+    rw [h.toPartialHomeomorph_right_inv e this]
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _ _) hz.1
 
@@ -465,9 +465,9 @@ space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_openEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
     @ContMDiff _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I' _ _ h'.singletonChartedSpace n f := by
-  have : f = (h'.toLocalHomeomorph e').symm ∘ e' ∘ f := by
+  have : f = (h'.toPartialHomeomorph e').symm ∘ e' ∘ f := by
     ext
-    rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toLocalHomeomorph_left_inv]
+    rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toPartialHomeomorph_left_inv]
   rw [this]
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_openEmbedding_symm h') hf
