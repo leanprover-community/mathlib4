@@ -10,12 +10,14 @@ import Mathlib.Geometry.Manifold.MFDeriv
 /-!
 # Integral curves of vector fields on a manifold
 
-For any continuously differentiable vector field on a manifold `M` and any chosen interior point
-`x₀ : M`, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector of
-`γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around `t₀`.
+Let `M` be a manifold and `v : (x : M) → TangentSpace I x` be a vector field on `M`. An integral
+curve of `v` is a function `γ : ℝ → M` such that the derivative of `γ` at `t` equals `v (γ t)`. The
+integral curve may only be defined for all `t` within some subset of `ℝ`.
 
-As a corollary, such an integral curve exists for any starting point `x₀` if `M` is a manifold
-without boundary.
+Assume `v` is continuously differentiable. The existence theorem for solutions to ODEs implies that
+a unique local integral curve exists for any continuously differentiable vector field `v`. The
+uniqueness theorem for solutions to ODEs implies that integral curves of `v` are unique. These are
+the main results of this file.
 
 ## Main definition
 
@@ -30,17 +32,29 @@ For `IsIntegralCurveOn γ v s` and `IsIntegralCurveAt γ v t₀`, even though `�
 time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
 junk.
 
-## TODO
+## Implementation notes
 
-- Prove `comp_add`, `comp_smul` , etc. lemmas for `IsIntegralCurveOn`, and then derive versions for
-`IsIntegralCurveAt` and `IsIntegralCurve` as corollaries.
+For the existence and uniqueness theorems, we assume that the image of the integral curve lies in
+the interior of the manifold. The case where the integral curve may lie on the boundary of the
+manifold requires special treatment, and we leave it as a to-do.
+
+The uniqueness theorem requires the manifold to be Hausdorff (T2), so that the set on which two
+continuous functions agree is closed.
+
+We state simpler versions of the theorem for manifolds without boundary as corollaries.
+
+## To-do
+
+- The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
+  J. M. Lee. May require submanifolds.
 
 ## Tags
 
-integral curve, vector field, local existence
+integral curve, vector field, local existence, uniqueness
 -/
 
 open scoped Manifold
+
 open Set
 
 variable
@@ -69,19 +83,17 @@ def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t : �
 def IsIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) :=
   ∀ t : ℝ, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
-variable {γ : ℝ → M} {v : (x : M) → TangentSpace I x} {x₀ : M}
-  (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀)
-  {s : Set ℝ} {t₀ : ℝ}
+variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
 
-lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s) : IsIntegralCurveOn γ v s :=
-  fun t _ => h t
+lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
+    IsIntegralCurveOn γ v s := fun t _ => h t
 
-lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
+lemma isIntegralCurve_iff_isIntegralCurveOn :
+    IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
   ⟨fun h => h.isIntegralCurveOn _, fun h t => h t (mem_univ _)⟩
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
-    IsIntegralCurveAt γ v t :=
-  ⟨1, zero_lt_one, fun t _ => h t⟩
+    IsIntegralCurveAt γ v t := ⟨1, zero_lt_one, fun t _ => h t⟩
 
 lemma isIntegralCurve_iff_isIntegralCurveAt :
     IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
@@ -89,12 +101,19 @@ lemma isIntegralCurve_iff_isIntegralCurveAt :
     obtain ⟨ε, hε, h⟩ := h t
     exact h t (Real.ball_eq_Ioo _ _ ▸ Metric.mem_ball_self hε)⟩
 
-lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) {s' : Set ℝ} (hs : s' ⊆ s) :
-    IsIntegralCurveOn γ v s' :=
-  fun t ht => h t (mem_of_mem_of_subset ht hs)
+lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
+    IsIntegralCurveOn γ v s' := fun t ht => h t (mem_of_mem_of_subset ht hs)
 
-lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) {t : ℝ} (hs : s ∈ nhds t) :
-    IsIntegralCurveAt γ v t := by
+lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
+    IsIntegralCurveOn γ v (s ∪ s') := by
+  intros t ht
+  rw [mem_union] at ht
+  cases' ht with ht ht
+  · exact h _ ht
+  · exact h' _ ht
+
+lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ nhds t₀) :
+    IsIntegralCurveAt γ v t₀ := by
   rw [Metric.mem_nhds_iff] at hs
   obtain ⟨ε, hε, hmem⟩ := hs
   exact ⟨ε, hε, Real.ball_eq_Ioo _ _ ▸ h.mono hmem⟩
@@ -132,7 +151,7 @@ lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) 
   obtain ⟨ε, hε, h⟩ := hγ
   refine ⟨ε, hε, ?_⟩
   convert h.comp_add dt
-  ext t'
+  ext
   rw [sub_right_comm, sub_add_eq_add_sub, ← add_mem_Ioo_iff_left]
   rfl
 
@@ -179,8 +198,8 @@ lemma isIntegralCurvOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   ext t
   rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
 
-lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ}
-    (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
+lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
+    IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   obtain ⟨ε, hε, h⟩ := hγ
   refine ⟨ε / |a|, div_pos hε (abs_pos.mpr ha), ?_⟩
   convert h.comp_mul a
@@ -218,7 +237,7 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
   is a global integral curve of `v`. -/
-lemma isIntegralCurve_const (h : v x₀ = 0) : IsIntegralCurve (fun _ => x₀) v := by
+lemma isIntegralCurve_const {x : M} (h : v x = 0) : IsIntegralCurve (fun _ => x) v := by
   intro t
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
@@ -226,13 +245,15 @@ lemma isIntegralCurve_const (h : v x₀ = 0) : IsIntegralCurve (fun _ => x₀) v
 
 end Scaling
 
-variable (t₀)
+variable (t₀) {x₀ : M}
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
   of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around
   `t₀`.-/
-theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
+theorem exists_isIntegralCurveAt_of_contMDiffAt
+    (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀)
+    (hx : I.IsInteriorPoint x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
   -- express the differentiability of the section `v` in the local charts
   rw [contMDiffAt_iff] at hv
@@ -291,6 +312,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
-lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
+lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
+    (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
-  exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
+  exists_isIntegralCurveAt_of_contMDiffAt t₀ hv I.isInteriorPoint
