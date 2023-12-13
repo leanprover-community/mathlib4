@@ -206,11 +206,11 @@ section univ_zero
 variable {m : Type → Type v} [Monad m]
 
 instance Nat.sampleableExt : SampleableExt m Nat :=
-  mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
+  mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
 instance Fin.sampleableExt {n : Nat} :
     SampleableExt m (Fin (n.succ)) :=
-  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
+  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
     simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
     exact Nat.zero_le _))
 
@@ -257,8 +257,8 @@ instance : ULiftable Id.{u} Id.{v} := inferInstance
 
 attribute [pp_with_univ] SampleableExt
 
-instance Prod.sampleableExt {α : Type u₁} {β : Type u₂}
-    {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
+instance Prod.sampleableExt.{up₁,up₂} {α : Type u₁} {β : Type u₂}
+    {m₁ : Type up₁ → Type v₁} {m₂ : Type up₂ → Type v₂} {m : Type (max up₁ up₂) → Type v₃}
     [ULiftable m₁ m] [ULiftable m₂ m] [Monad m₁] [Monad m₂] [Monad m]
     [SampleableExt m₁ α] [SampleableExt m₂ β] :
     SampleableExt m (α × β) where

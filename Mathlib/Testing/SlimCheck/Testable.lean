@@ -130,7 +130,6 @@ instance : ToExpr Configuration where
     (toExpr cfg.traceSuccesses) (toExpr cfg.traceShrink) (toExpr cfg.traceShrinkCandidates)
     (toExpr cfg.randomSeed) (toExpr cfg.quiet)
 
-set_option maxHeartbeats 400000 in
 /--
 Allow elaboration of `Configuration` arguments to tactics.
 -/

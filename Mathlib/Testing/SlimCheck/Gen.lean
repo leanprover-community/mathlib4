@@ -44,8 +44,8 @@ It has a `Nat` parameter so that the caller can decide on the
 size of the examples. -/
 abbrev Gen (m : Type u → Type v) (α : Type u) := ReaderT (ULift Nat) (RandT m) α
 
-instance [MonadLift m n] : MonadLiftT (Gen m) (Gen n) where
-  monadLift x := fun s => x s
+-- instance [MonadLift m n] : MonadLiftT (Gen m) (Gen n) where
+--   monadLift x := fun s => x s
 
 attribute [pp_with_univ] Gen ULift
 
@@ -121,7 +121,7 @@ def permutationOf : (xs : List α) → Gen m { ys // xs ~ ys }
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α : Type u₁} {β : Type u₂}
-  {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
+  {m₁ : Type u₁ → Type v₁} {m₂ : Type u₂ → Type v₂} {m : Type (max u₁ u₂) → Type v₃}
   [ULiftable m₁ m] [ULiftable m₂ m] [Monad m₁] [Monad m₂] [Monad m]
   (x : Gen m₁ α) (y : Gen m₂ β) : Gen m (α × β) := do
   let ⟨a⟩ ← (ULiftable.up x : Gen m (ULift.{max u₁ u₂} α))
