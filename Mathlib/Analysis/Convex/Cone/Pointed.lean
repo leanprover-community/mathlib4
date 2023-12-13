@@ -19,8 +19,7 @@ as it allows us to use the `Module` API to work with convex cones.
 
 variable {𝕜 E F G : Type*}
 
--- TODO: remove `prettyPrint := false` once #6833 is merged
-local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
+local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
