@@ -1370,7 +1370,7 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
 
 @[simp]
 theorem nat_cast_add_one_eq_zero (n : ℕ) : (n : Fin (n + 1)) + 1 = 0 := by
-  rw [←neg_nat_cast_eq_one, ← sub_eq_add_neg, sub_self]
+  rw [← neg_nat_cast_eq_one, ← sub_eq_add_neg, sub_self]
 
 end AddGroup
 
