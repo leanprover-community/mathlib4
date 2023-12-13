@@ -132,8 +132,8 @@ lemma IsIntegralCurveOn.congr_of_eqOn (hs : IsOpen s) (h : IsIntegralCurveOn γ 
   apply (h t ht).congr_of_eventuallyEq
   exact Filter.eventuallyEq_of_mem (hs.mem_nhds ht) hγ.symm
 
-lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀) (hγ : γ =ᶠ[nhds t₀] γ') :
-    IsIntegralCurveAt γ' v t₀ := by
+lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀)
+    (hγ : γ =ᶠ[nhds t₀] γ') : IsIntegralCurveAt γ' v t₀ := by
   obtain ⟨ε, hε, h⟩ := h
   obtain ⟨s, hs, heqon⟩ := hγ.exists_mem
   obtain ⟨ε', hε', hss⟩ := Metric.mem_nhds_iff.mp hs
