@@ -423,7 +423,7 @@ lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
     · rfl
 
 lemma singleton_set_smul_submodule_eq [SMulCommClass R R M] (r : R) :
-    ({r} : Set R) • N = (r • N : Submodule R M) := by
+    ({r} : Set R) • N = r • N := by
   apply set_smul_submodule_eq_of_le
   · rintro r m rfl hm; exact ⟨m, hm, rfl⟩
   · rintro _ ⟨m, hm, rfl⟩
