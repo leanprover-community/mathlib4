@@ -759,7 +759,7 @@ lemma Ioo_union_Ioo_eq_Ioo {α : Type*} [LinearOrder α] {a : α} {b : α} {c : 
     exact hbc
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
-  least on an open interval `Ioo (t₀ - ε) (t₀ + ε)`, then every point on `M` has a global integral
+  least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral
   curve passing through it.
 
   See Lemma 9.15, Lee -/
