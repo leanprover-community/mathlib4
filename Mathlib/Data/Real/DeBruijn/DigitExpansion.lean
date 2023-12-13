@@ -641,7 +641,8 @@ instance {Z : Type*} [PartialOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z]
   add := (· + ·)
   add_assoc _ _ _ := (DigitExpansion.add_assoc _ _ _).symm
   zero := 0
-  zero_add _ := by simp_rw [DigitExpansion.add_def, DigitExpansion.sub_sub_comm, DigitExpansion.sub_zero]
+  zero_add _ := by
+    simp_rw [DigitExpansion.add_def, DigitExpansion.sub_sub_comm, DigitExpansion.sub_zero]
   add_zero := DigitExpansion.add_zero
   neg f := -f
   sub f g := f - g
@@ -1080,7 +1081,8 @@ instance DigitExpansion.real.PartialOrder : PartialOrder (DigitExpansion.real Z 
     · exact Or.inr hfg
     · refine' Or.inr _
       rw [DigitExpansion.real.lt_def] at hfg hgh ⊢
-      rw [← sub_sub_sub_cancel_right _ _ (g : DigitExpansion Z b), ← neg_sub (g : DigitExpansion Z b) f]
+      rw [← sub_sub_sub_cancel_right _ _ (g : DigitExpansion Z b),
+          ← neg_sub (g : DigitExpansion Z b) f]
       exact hgh.sub_negative hfg.neg_negative
   lt_iff_le_not_le f g := by
     constructor
