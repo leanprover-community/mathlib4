@@ -310,7 +310,7 @@ lemma mem_units_iff_coe_mem (T : Subgroup G) (x : Gˣ): x ∈ T.units ↔ (x : G
 @[to_additive]
 lemma mem_iff_toUnits_mem_units (T : Subgroup G) (x : G) : x ∈ T ↔ toUnits x ∈ T.units := by
     simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, Units.val_inv_eq_inv_val, inv_mem_iff,
-    and_self, coe_toUnits]
+    and_self, val_toUnits_apply]
 
 
 /-- The equivalence between the greatest subgroup of units contained within `T` and `T` itself. -/
