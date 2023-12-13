@@ -225,22 +225,22 @@ lemma unit_of_mem_ofUnits_spec_mem (S : Subgroup Mˣ) {x : M} {h : x ∈ S.ofUni
 
 @[to_additive]
 lemma unit_eq_unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
-  (h₂ : x ∈ S.ofUnits) : h₁.unit = S.unit_of_mem_ofUnits h₂ := Units.ext <| rfl
+    (h₂ : x ∈ S.ofUnits) : h₁.unit = S.unit_of_mem_ofUnits h₂ := Units.ext <| rfl
 
 @[to_additive]
 lemma unit_mem_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} {h₁ : IsUnit x}
-  (h₂ : x ∈ S.ofUnits) : h₁.unit ∈ S :=
-  S.unit_eq_unit_of_mem_ofUnits h₁ h₂ ▸ (S.unit_of_mem_ofUnits_spec_mem)
+    (h₂ : x ∈ S.ofUnits) : h₁.unit ∈ S :=
+    S.unit_eq_unit_of_mem_ofUnits h₁ h₂ ▸ (S.unit_of_mem_ofUnits_spec_mem)
 
 @[to_additive]
 lemma mem_ofUnits_of_isUnit_of_unit_mem (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
-  (h₂ : h₁.unit ∈ S) : x ∈ S.ofUnits := S.mem_ofUnits h₂ h₁.unit_spec
+    (h₂ : h₁.unit ∈ S) : x ∈ S.ofUnits := S.mem_ofUnits h₂ h₁.unit_spec
 
 @[to_additive]
 lemma mem_ofUnits_iff_exists_isUnit (S : Subgroup Mˣ) (x : M) :
-  x ∈ S.ofUnits ↔ ∃ h : IsUnit x, h.unit ∈ S :=
-  ⟨fun h => ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
-  fun ⟨hm, he⟩ => S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
+    x ∈ S.ofUnits ↔ ∃ h : IsUnit x, h.unit ∈ S :=
+    ⟨fun h => ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
+    fun ⟨hm, he⟩ => S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
 
 /-- The equivalence between the coercion of a subgroup `S` of `Mˣ` to a submonoid of `M` and
 the subgroup itself as a type. -/
