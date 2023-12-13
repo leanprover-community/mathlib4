@@ -95,7 +95,6 @@ theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 
 theorem inf_le_of_mem_convexHull {s : Finset E} (hf : ConcaveOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
     s.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
-  have : OrderedSMul 𝕜 βᵒᵈ := inferInstance
   le_sup_of_mem_convexHull hf.dual hx
 #align inf_le_of_mem_convex_hull inf_le_of_mem_convexHull
 
@@ -120,7 +119,6 @@ theorem ConvexOn.exists_ge_of_centerMass (h : ConvexOn 𝕜 s f) (hw₀ : ∀ i 
 `s` is greater than the value it takes on one of those points. -/
 theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ i ∈ t, 0 ≤ w i)
     (hw₁ : 0 < ∑ i in t, w i) (hp : ∀ i ∈ t, p i ∈ s) : ∃ i ∈ t, f (p i) ≤ f (t.centerMass w p) :=
-  have : OrderedSMul 𝕜 βᵒᵈ := inferInstance
   ConvexOn.exists_ge_of_centerMass (β := βᵒᵈ) h hw₀ hw₁ hp
 #align concave_on.exists_le_of_center_mass ConcaveOn.exists_le_of_centerMass
 
@@ -140,7 +138,6 @@ theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull �
 then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConcaveOn.exists_le_of_mem_convexHull (hf : ConcaveOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f y ≤ f x :=
-  have : OrderedSMul 𝕜 βᵒᵈ := inferInstance
   ConvexOn.exists_ge_of_mem_convexHull (β := βᵒᵈ) hf hx
 #align concave_on.exists_le_of_mem_convex_hull ConcaveOn.exists_le_of_mem_convexHull
 

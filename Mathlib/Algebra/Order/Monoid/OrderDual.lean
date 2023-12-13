@@ -81,8 +81,7 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
-  { OrderDual.instPartialOrder α, OrderDual.instCommMonoid with
-    mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
+  { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 #align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
 #align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 

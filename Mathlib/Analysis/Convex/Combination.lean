@@ -150,7 +150,6 @@ theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
 theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i in s, w i) :
     s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f :=
-  have : OrderedSMul R αᵒᵈ := inferInstance
   @centerMass_le_sup R _ αᵒᵈ _ _ _ _ _ _ _ hw₀ hw₁
 #align finset.inf_le_center_mass Finset.inf_le_centerMass
 

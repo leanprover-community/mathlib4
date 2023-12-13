@@ -332,18 +332,14 @@ lemma monovaryOn_iff_forall_smul_nonneg :
 
 lemma antivaryOn_iff_forall_smul_nonpos :
     AntivaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f j - f i) • (g j - g i) ≤ 0 :=
-  monovaryOn_toDual_right.symm.trans $ by
-    have : OrderedSMul α (OrderDual β) := inferInstance
-    rw [monovaryOn_iff_forall_smul_nonneg]; rfl
+  monovaryOn_toDual_right.symm.trans $ by rw [monovaryOn_iff_forall_smul_nonneg]; rfl
 
 lemma monovary_iff_forall_smul_nonneg : Monovary f g ↔ ∀ i j, 0 ≤ (f j - f i) • (g j - g i) :=
   monovaryOn_univ.symm.trans $ monovaryOn_iff_forall_smul_nonneg.trans $ by
     simp only [Set.mem_univ, forall_true_left]
 
 lemma antivary_iff_forall_smul_nonpos : Antivary f g ↔ ∀ i j, (f j - f i) • (g j - g i) ≤ 0 :=
-monovary_toDual_right.symm.trans $ by
-  have : OrderedSMul α (OrderDual β) := inferInstance
-  rw [monovary_iff_forall_smul_nonneg]; rfl
+monovary_toDual_right.symm.trans $ by rw [monovary_iff_forall_smul_nonneg]; rfl
 
 /-- Two functions monovary iff the rearrangement inequality holds. -/
 lemma monovaryOn_iff_smul_rearrangement :
@@ -357,9 +353,7 @@ lemma monovaryOn_iff_smul_rearrangement :
 lemma antivaryOn_iff_smul_rearrangement :
     AntivaryOn f g s ↔
       ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i • g i + f j • g j ≤ f i • g j + f j • g i :=
-  monovaryOn_toDual_right.symm.trans $ by
-    have : OrderedSMul α (OrderDual β) := inferInstance
-    rw [monovaryOn_iff_smul_rearrangement]; rfl
+  monovaryOn_toDual_right.symm.trans $ by rw [monovaryOn_iff_smul_rearrangement]; rfl
 
 /-- Two functions monovary iff the rearrangement inequality holds. -/
 lemma monovary_iff_smul_rearrangement :
@@ -370,9 +364,7 @@ lemma monovary_iff_smul_rearrangement :
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_smul_rearrangement :
     Antivary f g ↔ ∀ i j, f i • g i + f j • g j ≤ f i • g j + f j • g i :=
-  monovary_toDual_right.symm.trans $ by
-    have : OrderedSMul α (OrderDual β) := inferInstance
-    rw [monovary_iff_smul_rearrangement]; rfl
+  monovary_toDual_right.symm.trans $ by rw [monovary_iff_smul_rearrangement]; rfl
 
 alias ⟨MonovaryOn.sub_smul_sub_nonneg, _⟩ := monovaryOn_iff_forall_smul_nonneg
 alias ⟨AntivaryOn.sub_smul_sub_nonpos, _⟩ := antivaryOn_iff_forall_smul_nonpos
