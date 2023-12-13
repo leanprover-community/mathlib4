@@ -130,6 +130,7 @@ instance : ToExpr Configuration where
     (toExpr cfg.traceSuccesses) (toExpr cfg.traceShrink) (toExpr cfg.traceShrinkCandidates)
     (toExpr cfg.randomSeed) (toExpr cfg.quiet)
 
+set_option maxHeartbeats 400000 in
 /--
 Allow elaboration of `Configuration` arguments to tactics.
 -/
@@ -445,7 +446,7 @@ section IO
 open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
-def retry (cmd : Rand MetaM (TestResult p)) : Nat → Rand MetaM (TestResult p)
+def retry (cmd : RandT MetaM (TestResult p)) : Nat → RandT MetaM (TestResult p)
   | 0 => pure $ TestResult.gaveUp 1
   | n+1 => do
     let r ← cmd
@@ -463,7 +464,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand MetaM (TestResult p)
+  TestResult p → Nat → RandT MetaM (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -478,7 +479,7 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
 
 /-- Try to find a counter-example of `p`. -/
 def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) :
-    Rand MetaM (TestResult p) :=
+    RandT MetaM (TestResult p) :=
   Testable.runSuiteAux p cfg (success $ PSum.inl ()) cfg.numInst
 
 /-- Run a test suite for `p` in `MetaM` using the global RNG in `stdGenRef`. -/
@@ -486,8 +487,8 @@ def Testable.checkMetaM (p : Prop) [Testable p] (cfg : Configuration := {}) :
     MetaM (TestResult p) :=
   letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
-  | none => runRand (Testable.runSuite p cfg)
-  | some seed => runRandWith seed (Testable.runSuite p cfg)
+  | none => IO.runRand (Testable.runSuite p cfg)
+  | some seed => IO.runRandWith seed (Testable.runSuite p cfg)
 
 end IO
 

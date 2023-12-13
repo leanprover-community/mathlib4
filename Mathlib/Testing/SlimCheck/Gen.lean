@@ -50,10 +50,9 @@ instance [MonadLift m n] : MonadLiftT (Gen m) (Gen n) where
 attribute [pp_with_univ] Gen ULift
 
 instance [ULiftable m n] : ULiftable (Gen m) (Gen n) := by infer_instance
-
 namespace Gen
 
-variable {m : Type u → Type v} [Monad m]
+variable {m : Type u → Type v} {m₀ : Type → Type v} [Monad m] [Monad m₀]
 
 /-- Lift `Random.random` to the `Gen` monad. -/
 def chooseAny (α : Type u) [Random m α] : Gen m α :=
@@ -72,30 +71,27 @@ lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ h
        exact h.right
        exact lt_of_le_of_lt (Nat.zero_le lo) h.left
 
-example : BoundedRandom m (ULift.{u, 0} ℕ) := Random.instBoundedRandomULiftInstPreorderULift
-
 /-- Generate a `Nat` example between `x` and `y` (exclusively). -/
 def chooseNatLt (lo hi : Nat) (h : lo < hi) :
-    Gen m (ULift.{u} {a // lo ≤ a ∧ a < hi}) := do
-  let ⟨⟨n⟩, h⟩ ← (choose (ULift Nat) (ULift.up lo.succ) (ULift.up hi) (Nat.succ_le_of_lt h) : Gen Id _)
-  return ULift.up ⟨n.pred, chooseNatLt_aux n h⟩
+    Gen m₀ {a // lo ≤ a ∧ a < hi} := do
+  Subtype.map Nat.pred chooseNatLt_aux <$> choose Nat (lo.succ) hi (Nat.succ_le_of_lt h)
 
 /-- Get access to the size parameter of the `Gen` monad. -/
-def getSize : Gen m (ULift Nat) :=
-  return (← read)
+def getSize : Gen m₀ Nat :=
+  return (← read).down
 
 /-- Apply a function to the size parameter. -/
 def resize (f : Nat → Nat) (x : Gen m α) : Gen m α :=
   withReader (ULift.up ∘ f ∘ ULift.down) x
 
-variable {α : Type u}
+variable {α : Type u} [ULiftable m₀ m]
 
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def arrayOf (x : Gen m α) : Gen m (Array α) := do
-  let sz ← choose (ULift Nat) ⟨0⟩ (← getSize) (Nat.zero_le _)
+  let ⟨sz⟩ ← ULiftable.up <| choose Nat 0 (← ULiftable.up <| getSize).down (Nat.zero_le _)
   let mut res := #[]
-  for _ in [0:sz.val.down] do
+  for _ in [0:sz.val] do
     res := res.push (← x)
   pure res
 
@@ -106,12 +102,12 @@ def listOf (x : Gen m α) : Gen m (List α) :=
 
 /-- Given a list of example generators, choose one to create an example. -/
 def oneOf (xs : Array (Gen m α)) (pos : 0 < xs.size := by decide) : Gen m α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.size pos
+  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.size pos
   xs.get ⟨x, h2⟩
 
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen m α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.length pos
+  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
   pure $ xs.get ⟨x, h2⟩
 
 open List in

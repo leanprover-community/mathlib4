@@ -206,11 +206,11 @@ section univ_zero
 variable {m : Type → Type v} [Monad m]
 
 instance Nat.sampleableExt : SampleableExt m Nat :=
-  mkSelfContained (do choose Nat 0 (←getSize).down (Nat.zero_le _))
+  mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
 
 instance Fin.sampleableExt {n : Nat} :
     SampleableExt m (Fin (n.succ)) :=
-  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize).down) (by
+  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
     simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
     exact Nat.zero_le _))
 
@@ -219,20 +219,20 @@ instance Int.sampleableExt : SampleableExt m Int :=
     choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
-instance Rat.sampleableExt : SampleableExt Rat :=
+instance Rat.sampleableExt : SampleableExt m Rat :=
   mkSelfContained (do
     let d ← choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
     let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
     return Rat.divInt d n)
 
-instance Bool.sampleableExt : SampleableExt Bool :=
+instance Bool.sampleableExt : SampleableExt m Bool :=
   mkSelfContained $ chooseAny Bool
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
 and it otherwise chooses a character from `chars` with uniform probabilities.  -/
-def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
+def Char.sampleable [LawfulMonad m] (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
     SampleableExt m Char :=
   mkSelfContained do
     let x ← choose Nat 0 length (Nat.zero_le _)
@@ -242,7 +242,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     else
       elements chars pos
 
-instance Char.sampleableDefault : SampleableExt m Char :=
+instance Char.sampleableDefault [LawfulMonad m] : SampleableExt m Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
 instance Prop.sampleableExt : SampleableExt m Prop where
@@ -268,7 +268,8 @@ instance Prod.sampleableExt {α : Type u₁} {β : Type u₂}
   sample := prodOf (sample (m := m₁)) (sample (m := m₂))
   interp := Prod.map interp interp
 
-instance List.sampleableExt [SampleableExt m α] : SampleableExt m (List α) where
+instance List.sampleableExt {m₀} [Monad m₀] [ULiftable m₀ m] [SampleableExt m α] :
+    SampleableExt m (List α) where
   proxy := List (proxy _ α)
   sample := Gen.listOf sample
   interp := List.map interp
@@ -382,40 +383,9 @@ elab "#sample " e:term : command =>
   Command.runTermElabM fun _ => do
     let e ← Elab.Term.elabTermAndSynthesize e none
     let (repr_inst, gen) ← mkGenerator e
-    let printSamples ← mkAppOptM ``printSamples #[none, repr_inst, gen]
+    let printSamples ← mkAppOptM ``printSamples
+      #[none, none, none, repr_inst, q(IO), none, none, none, gen]
     let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
     _ ← code
 
-instance : LawfulFunctor (EStateM ε IO.RealWorld) where
-  map_const {α β} := funext <| fun a => by dsimp [Function.comp, EStateM, EStateM.instMonadEStateM]
-  id_map x := funext <| fun a => by
-    cases h : x a <;>
-      dsimp [Function.comp, EStateM, EStateM.instMonadEStateM, EStateM.map] <;>
-      simp [h]
-  comp_map f g x := funext <| fun a => by
-    cases h : x a <;>
-      dsimp [Function.comp, EStateM, EStateM.instMonadEStateM, EStateM.map] <;>
-      simp [h]
-
-instance : LawfulFunctor IO := inferInstanceAs <| LawfulFunctor (EStateM _ IO.RealWorld)
-
-@[pp_with_univ]
-abbrev ULiftId.{u1,v1} (α : Type v1) := Id (ULift.{u1} α)
-
-instance : Monad ULiftId where
-  pure a := .up a
-  bind a f := f a.down
-
-#check IO
-
-instance : LawfulMonad ULiftId := .mk' _ (fun _ => rfl) (fun _ _ => rfl) (fun _ _ _ => rfl)
-
-instance : ULiftable ULiftId ULiftId := sorry
-
-instance : ULiftable ULiftId.{u} ULiftId.{u} := sorry
-
-example : SampleableExt.{1} ULiftId.{max 0 1} ( Nat × ULift.{1} Nat) := Prod.sampleableExt
-  -- @Prod.sampleableExt Nat ( ULift.{1} Nat) (ULiftId) Id ULiftId _ _ _ _ _ _ _
-
-#sample Nat × Nat
 end SlimCheck
