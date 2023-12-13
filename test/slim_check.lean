@@ -25,21 +25,21 @@ issue: 1 < 0 does not hold
   admit
   trivial
 
--- example : true := by
---   have : (∀ x : ℕ, 2 ∣ x → x < 100)
---   success_if_fail_with_msg
---   "
--- ===================
--- Found problems!
-
--- x := 104
--- issue: 104 < 100 does not hold
--- (2 shrinks)
--- -------------------
--- "
---     slim_check (config := { randomSeed := some 257 })
---   admit
---   trivial
+example : true := by
+  have : (∀ x : ℕ, 2 ∣ x → x < 100)
+  success_if_fail_with_msg
+  "
+===================
+Found problems!
+x := 116
+guard: ⋯
+issue: 116 < 100 does not hold
+(0 shrinks)
+-------------------
+"
+    slim_check (config := { randomSeed := some 257, maxSize := 200 })
+  admit
+  trivial
 
 -- example (xs : List ℕ) (w : ∃ x ∈ xs, x < 3) : true := by
 --   have : ∀ y ∈ xs, y < 5
@@ -59,21 +59,21 @@ issue: 1 < 0 does not hold
 --   admit
 --   trivial
 
--- example (x : ℕ) (h : 2 ∣ x) : true := by
---   have : x < 100
---   success_if_fail_with_msg
---     "
--- ===================
--- Found problems!
-
--- x := 104
--- issue: 104 < 100 does not hold
--- (2 shrinks)
--- -------------------
--- "
---     slim_check (config := { randomSeed := some 257 })
---   admit
---   trivial
+example (x : ℕ) (h : 2 ∣ x) : true := by
+  have : x < 100
+  success_if_fail_with_msg
+    "
+===================
+Found problems!
+x := 116
+guard: ⋯
+issue: 116 < 100 does not hold
+(0 shrinks)
+-------------------
+"
+    slim_check (config := { randomSeed := some 257, maxSize := 200 })
+  admit
+  trivial
 
 example (α : Type) (xs ys : List α) : true := by
   have : xs ++ ys = ys ++ xs
