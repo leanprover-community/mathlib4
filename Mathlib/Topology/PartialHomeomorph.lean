@@ -1341,6 +1341,17 @@ noncomputable def toPartialHomeomorph [Nonempty α] : PartialHomeomorph α β :=
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toPartialHomeomorph
 
+variable [Nonempty α]
+
+lemma toPartialHomeomorph_left_inv {x : α} : (h.toPartialHomeomorph f).symm (f x) = x := by
+  rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.left_inv]
+  exact Set.mem_univ _
+
+lemma toPartialHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
+    f ((h.toPartialHomeomorph f).symm x) = x := by
+  rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
+  rwa [toPartialHomeomorph_target]
+
 end OpenEmbedding
 
 namespace TopologicalSpace.Opens
