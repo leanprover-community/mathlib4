@@ -294,8 +294,8 @@ section set_acting_on_submodules
 variable [AddCommMonoid M] [Module R M]
 
 /--
-let `S ⊆ R` be a set and `N ≤ M` be a submodule, then `S • N` is the smallest submodule containing
-all `r • n` where `r ∈ S` and `n ∈ N`.
+Let `s ⊆ R` be a set and `N ≤ M` be a submodule, then `s • N` is the smallest submodule containing
+all `r • n` where `r ∈ s` and `n ∈ N`.
 -/
 protected def pointwiseSetSMulSubmodule : SMul (Set R) (Submodule R M) where
   smul s N := sInf { p | ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p }
