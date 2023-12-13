@@ -15,6 +15,23 @@ variable {n : ℕ} {M M₁ : Type*} [AddCommGroup M] [AddCommGroup M₁]
 
 namespace ZMod
 
+@[reducible]
+def module {n : ℕ} {M : Type*} [AddCommGroup M] (h : ∀ (x : M), n • x = 0) : Module (ZMod n) M := by
+  have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
+    apply add_right_cancel (b := ((c / n) * n) • x)
+    rw [← add_nsmul, mul_nsmul, h, add_zero, Nat.mod_add_div']
+  exact match n with
+  | 0 => AddCommGroup.intModule M
+  | n + 1 => {
+      smul := fun (c : Fin (n + 1)) x ↦ c.val • x
+      smul_zero := fun _ ↦ nsmul_zero _
+      zero_smul := fun _ ↦ zero_nsmul _
+      smul_add := fun _ _ _ ↦ nsmul_add _ _ _
+      one_smul := fun _ ↦ (h_mod _ _).trans <| one_nsmul _
+      add_smul := fun _ _ _ ↦ (h_mod _ _).trans <| add_nsmul _ _ _
+      mul_smul := fun _ _ _ ↦ (h_mod _ _).trans <| mul_nsmul' _ _ _
+    }
+
 theorem map_smul (f : M →+ M₁) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   cases n with
   | zero => exact map_int_cast_smul f _ _ c x
