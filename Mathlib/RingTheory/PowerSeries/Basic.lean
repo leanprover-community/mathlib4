@@ -74,8 +74,6 @@ open BigOperators Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 
-open Finset (antidiagonal mem_antidiagonal)
-
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
 def MvPowerSeries (σ : Type*) (R : Type*) :=
