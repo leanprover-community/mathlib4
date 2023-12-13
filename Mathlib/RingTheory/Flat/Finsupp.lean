@@ -1,7 +1,7 @@
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.Algebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.DFinsupp
 
 set_option autoImplicit false
 
@@ -17,142 +17,68 @@ variable (N : Type*) [AddCommGroup N] [Module R N]
 variable (P : Type*) [AddCommGroup P] [Module R P]
 
 variable {M} {N} in
-open DirectSum in
-/-- The natural linear map `⨁̂ⁿ M → ⨁̂ⁿ N` induced on direct sums by a linear map `M → N`. -/
-def DirectSum.induced (ι : Type*) [DecidableEq ι] (f : M →ₗ[R] N) :
-    (⨁ _ : ι, M) →ₗ[R] (⨁ _ : ι, N) :=
-  (DirectSum.toModule R ι (⨁ _i : ι, N) fun i : ι => ((lof R ι (fun _ => N) i) ∘ₗ f))
-
-variable {M} {N} in
-open DirectSum in
-/-- The natural linear map `F : ⨁̂ⁿ M → ⨁̂ⁿ N` induced on direct sums by a linear map `f : M → N`
-satisfies `(F x) i = f (x i)`, for all `x` in `⨁̂ⁿ M`, for each index `i`. -/
-theorem DirectSum.induced_apply (ι : Type*) [DecidableEq ι] (f : M →ₗ[R] N)
-    (x : ⨁ _ : ι, M) (i : ι) :
-      induced R ι f x i = f (x i) := by
-  let induced' : (⨁ _ : ι, M) →ₗ[R] (⨁ _ : ι, N) := {
-    toFun := DFinsupp.mapRange (fun _ x => f x) (fun _ => f.map_zero)
-    map_add' := fun x y => DFinsupp.ext fun i => f.map_add' (x i) (y i)
-    map_smul' := fun r x => DFinsupp.ext fun i => f.map_smul r (x i)
-  }
-  change _ = induced' x i
-  conv => rhs ; rewrite [toModule.unique]
-  unfold induced
-  congr
-  ext i x
-  rewrite [LinearMap.comp_apply, LinearMap.comp_apply]
-  refine DirectSum.ext R fun j => ?_
-  change _ = f (lof R ι (fun _ => M) i x j)
-  rewrite [component.of]
-  split_ifs with h
-  . simp? says simp only [eq_rec_constant]
-    rw [h, lof_apply]
-  . rw [lof_eq_of, of_eq_of_ne _ i j _ h, f.map_zero]
-
-variable {M} {N} in
 /-- The linear map on direct sums induced by an injective linear map is injective. -/
-theorem DirectSum.induced_injective (ι : Type*) [DecidableEq ι] {ψ : M →ₗ[R] N}
-    (hinjective : Function.Injective ψ) : Function.Injective (DirectSum.induced R ι ψ) := by
-  refine fun x y h => DirectSum.ext R fun i => ?_
-  have : induced R ι ψ x i = induced R ι ψ y i := (DirectSum.ext_iff R).mp h i
-  rewrite [induced_apply, induced_apply] at this
-  exact hinjective this
+theorem DFinsupp.mapRange_injective (ι : Type*) {ψ : M →ₗ[R] N}
+    (hinjective : Function.Injective ψ) :
+      Function.Injective (DFinsupp.mapRange.linearMap (fun _ : ι => ψ)) :=
+  fun _ _ h => DirectSum.ext R fun i => hinjective <| (DirectSum.ext_iff R).mp h i
 
--- Auxiliary to the definition of rid_Finprod
-private def prod_pi_succ (k : ℕ) : (Fin k.succ → M) ≃ₗ[R] M × (Fin k → M) where
-  toFun := fun v => (v 0, Fin.tail v)
-  map_add' := fun x y => rfl
-  map_smul' := fun x y => rfl
-  invFun := fun (h, t) => Fin.cons h t
-  left_inv := Fin.cons_self_tail
-  right_inv := fun x => by ext ; rfl ; rfl
-
-private theorem prod_pi_succ_apply (k : ℕ) (v : Fin k.succ → M) :
-    prod_pi_succ R M k v = (v 0, Fin.tail v) := rfl
-
-private theorem prod_pi_succ_symm_apply (k : ℕ) (v : M × (Fin k → M)) :
-    (prod_pi_succ R M k).symm v = Fin.cons v.fst v.snd := rfl
-
+open DirectSum in
 /-- If `N` is an `R`-module then `Rⁿ ⊗ N ≃ Nⁿ`. -/
-def TensorProduct.rid_Finprod (n : ℕ) : N ⊗[R] (Fin n → R) ≃ₗ[R] Fin n → N :=
-  match n with
-  | Nat.zero =>
-    -- The zero map is a linear equivalence of zero modules.
-    have h₀ : ∀ (x : N ⊗[R] (Fin 0 → R)), x = 0 := by
-      intro x
-      induction x using TensorProduct.induction_on with
-      | zero => rfl
-      | tmul x y => rw [Matrix.empty_eq y, ← Matrix.zero_empty, tmul_zero]
-      | add x y ixh ihy => rw [ixh, ihy, add_zero]
-    have h₁ : ∀ (x : Fin 0 → N), x = 0 := fun x => by rw [Matrix.zero_empty, Matrix.empty_eq x]
-    { (0 : _ →ₗ[R] _) with
-      invFun := 0
-      left_inv := fun x => by rewrite [h₀ x] ; rfl
-      right_inv := fun x => by rewrite [h₁ x] ; rfl
-    }
-  | Nat.succ k =>
-    (((TensorProduct.congr (LinearEquiv.refl R N) (prod_pi_succ R R k)).trans
-      (TensorProduct.prodRight R N R (Fin k → R))).trans
-        (LinearEquiv.prod (TensorProduct.rid R N) (rid_Finprod k))).trans
-          (prod_pi_succ R N k).symm
+@[simps! apply]
+def TensorProduct.rid_DirectSum (ι : Type*) [DecidableEq ι] :
+    (N ⊗[R] ⨁ _ : ι, R) ≃ₗ[R] (⨁ _ : ι, N) :=
+  TensorProduct.directSumRight R N (fun _ : ι => R) ≪≫ₗ
+    DFinsupp.mapRange.linearEquiv (fun _ : ι => TensorProduct.rid R N)
 
-open DirectSum BigOperators in
+open DirectSum in
 /-- Applying the linear equivalence `rid_Finprod` to a simple element `x ⊗ r` of `N ⊗ Rⁿ`. -/
-theorem rid_Finprod_tmul (n : ℕ) (x : N) (r : Fin n → R) :
-    ⇑(rid_Finprod R N n) (x ⊗ₜ[R] r) = fun i : Fin n => r i • x := by
-  induction n with
-  | zero => simp only [Matrix.empty_eq]
-  | succ k ih =>
-    simp only [rid_Finprod, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
-      LinearEquiv.prod_apply, prodRight, prod_pi_succ_apply]
-    dsimp
-    rewrite [ih, prod_pi_succ_symm_apply]
-    erw [Fin.cons_self_tail (fun i => r i • x)]
+theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [DecidableEq ι]
+    (x : N) (r : ⨁ _ : ι, R) (i : ι) :
+      rid_DirectSum R N ι (x ⊗ₜ[R] r) i = r i • x := by
+  -- It suffices to show the equality holds when `r` is a Kronecker delta.
+  -- To show this we recast as an equality of linear maps ...
+  rewrite [show r i • x =
+        DFinsupp.mapRange.linearMap (fun _ => LinearMap.flip (LinearMap.lsmul R N) x) r i by
+      erw [DFinsupp.mapRange.linearMap_apply]
+      rewrite [DFinsupp.mapRange_def, DFinsupp.mk_apply]
+      split_ifs with h
+      . rw [LinearMap.flip_apply, LinearMap.lsmul_apply, Subtype.coe_mk]
+      . rw [DFinsupp.not_mem_support_iff.mp h, zero_smul],
+    ← mk_apply, ← LinearEquiv.coe_coe, ← LinearMap.comp_apply]
+  congr 2
+  -- ... and apply the default extensionality theorems (explicit here for clarity).
+  refine DirectSum.linearMap_ext R fun i : ι => LinearMap.ext_ring ?_
+  rewrite [LinearMap.comp_apply, LinearMap.comp_apply, LinearMap.comp_apply,
+    LinearEquiv.coe_coe, rid_DirectSum_apply, mk_apply, directSumRight_tmul_lof]
+  erw [DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange.linearMap_apply]
+  rw [← single_eq_lof, ← single_eq_lof, DFinsupp.mapRange_single, DFinsupp.mapRange_single,
+    LinearEquiv.coe_coe, rid_tmul, LinearMap.flip_apply, LinearMap.lsmul_apply]
 
 open Module.Free DirectSum in
 /-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
 product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁̂ⁿ N`. -/
 def rid_finite_free [Module.Finite R M] [Module.Free R M] :
     N ⊗[R] M ≃ₗ[R] ⨁ _ : Fin (Fintype.card (ChooseBasisIndex R M)), N :=
-  (TensorProduct.congr (LinearEquiv.refl R N)
-    ((chooseBasis R M).reindex (Fintype.equivFin (ChooseBasisIndex R M))).equivFun).trans <|
-  (rid_Finprod R N (Fintype.card (ChooseBasisIndex R M))).trans <|
-  (linearEquivFunOnFintype R (Fin (Fintype.card (ChooseBasisIndex R M))) (fun _ => N)).symm
-
--- Rewriting lemma auxiliary to rTensor_Finprod_free_equiv_induced
-private theorem rTensor_Finprod_equiv_induced.aux (ι : Type*) [DecidableEq ι] (i : ι) (f : M →ₗ[R] N) (x : M) :
-    (fun j : ι => Pi.single (f := fun _ => R) i (1 : R) j • f x) =
-      fun j : ι => Pi.single (f := fun _ => N) i (f x) j := by
-  ext j
-  rewrite [Pi.single_apply, Pi.single_apply]
-  split_ifs with h
-  . exact one_smul R _
-  . exact zero_smul R _
+  TensorProduct.congr (LinearEquiv.refl R N)
+    (((chooseBasis R M).reindex (Fintype.equivFin (ChooseBasisIndex R M))).equivFun ≪≫ₗ
+      (linearEquivFunOnFintype R (Fin <| Fintype.card <| ChooseBasisIndex R M)
+        (fun _ => R)).symm) ≪≫ₗ
+    rid_DirectSum R N (Fin <| Fintype.card <| ChooseBasisIndex R M)
 
 open DirectSum in
 /-- If `M` and `N` are `R`-modules and `f : M → N` a linear map, the tensor product of `f` and the
 identity `Rⁿ → Rⁿ` on a finite product is related by linear equivalences to the
 natural linear map `⨁̂ⁿ M → ⨁̂ⁿ N` induced by `f`.
-
-(The mixture of finite products and finite direct sums in this statement is of no mathematical
-significance. This lemma is auxiliary to `rTensor_finite_free_equiv_induced`.)
  -/
-theorem rTensor_Finprod_equiv_induced (n : ℕ) (f : M →ₗ[R] N) :
-    ((rid_Finprod R N n).trans (linearEquivFunOnFintype R (Fin n) (fun _ => N)).symm) ∘ₗ
-      rTensor (Fin n → R) f =
-        induced R (Fin n) f ∘ₗ
-          ((rid_Finprod R M n).trans (linearEquivFunOnFintype R (Fin n) (fun _ => M)).symm) := by
-  ext x i
-  simp
-  have π₀ := rTensor_Finprod_equiv_induced.aux R M N (Fin n) i f x
-  have π₁ := rTensor_Finprod_equiv_induced.aux R M M (Fin n) i LinearMap.id x
-  simp only [LinearMap.id_apply] at π₁
-  rewrite [rid_Finprod_tmul, rid_Finprod_tmul, π₀, π₁,
-      ← DFinsupp.single_eq_pi_single, ← DFinsupp.single_eq_pi_single,
-      linearEquivFunOnFintype_symm_coe, linearEquivFunOnFintype_symm_coe,
-      DirectSum.single_eq_lof R, DirectSum.single_eq_lof R]
-  symm
-  apply toModule_lof
+theorem rTensor_DirectSum_equiv_mapRange [DecidableEq R] (n : ℕ) (f : M →ₗ[R] N) :
+    (rid_DirectSum R N (Fin n) : (N ⊗[R] ⨁ _ : Fin n, R) →ₗ[R] ⨁ _, N) ∘ₗ f.rTensor (⨁ _, R) =
+      DFinsupp.mapRange.linearMap (fun _ : (Fin n) => f) ∘ₗ
+        (rid_DirectSum R M (Fin n) : (M ⊗[R] ⨁ _, R) →ₗ[R] ⨁ _, M) := by
+  refine TensorProduct.ext' fun x r => DFinsupp.ext fun i => ?_
+  rewrite [LinearMap.comp_apply, LinearMap.rTensor_tmul, LinearEquiv.coe_coe, rid_DirectSum_tmul]
+  erw [LinearMap.comp_apply, rid_DirectSum_tmul]
+  rw [LinearMap.map_smul]
 
 open DirectSum Module.Free in
 /-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free of rank `n`, and `f : N → P` is
@@ -160,43 +86,51 @@ a linear map, the tensor product of `f` and the identity `M → M` is related by
 given by `rid_finite_free` to the natural linear map `⨁̂ⁿ N → ⨁̂ⁿ P` induced by `f`.
 (This establishes a natural isomorphism between the functors `(· ⊗ M)` and `(⨁̂ⁿ ·)` whose
 component at `N` is `rid_finite_free R M N`.) -/
-theorem rTensor_finite_free_equiv_induced [Module.Finite R M] [Module.Free R M] (f : N →ₗ[R] P) :
-    rid_finite_free R M P ∘ₗ rTensor M f =
-      induced R (Fin (Fintype.card (ChooseBasisIndex R M))) f ∘ₗ rid_finite_free R M N := by
+theorem rTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R M] [Module.Free R M]
+    (f : N →ₗ[R] P) :
+    (rid_finite_free R M P : P ⊗[R] M →ₗ[R] ⨁ _ : Fin _, P) ∘ₗ f.rTensor M =
+      DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R M))) => f) ∘ₗ
+        (rid_finite_free R M N : N ⊗[R] M →ₗ[R] ⨁ _ : Fin _, N) := by
   let ι := ChooseBasisIndex R M
   let n := Fintype.card ι
   let ℰ := chooseBasis R M
-  let e₀' := TensorProduct.congr (LinearEquiv.refl R P) (ℰ.reindex (Fintype.equivFin ι)).equivFun
-  let e₁' := rid_Finprod R P n
-  let e₂' := (linearEquivFunOnFintype R (Fin n) (fun _ => P)).symm
-  let e₀ := TensorProduct.congr (LinearEquiv.refl R N) (ℰ.reindex (Fintype.equivFin ι)).equivFun
-  let e₁ := rid_Finprod R N n
-  let e₂ := (linearEquivFunOnFintype R (Fin n) (fun _ => N)).symm
-  let φ := rTensor M f
-  let φ' := rTensor (Fin n → R) f
-  let ψ := induced R (Fin (Fintype.card (ChooseBasisIndex R M))) f
+  let e₀ := TensorProduct.congr (LinearEquiv.refl R N) <|
+    (ℰ.reindex (Fintype.equivFin ι)).equivFun ≪≫ₗ
+      (linearEquivFunOnFintype R (Fin n) (fun _ => R)).symm
+  let e₁ := rid_DirectSum R N (Fin n)
+  let e₀' := TensorProduct.congr (LinearEquiv.refl R P) <|
+    (ℰ.reindex (Fintype.equivFin ι)).equivFun ≪≫ₗ
+      (linearEquivFunOnFintype R (Fin n) (fun _ => R)).symm
+  let e₁' := rid_DirectSum R P (Fin n)
+  let φ := f.rTensor M
+  let φ' := f.rTensor (⨁ _ : Fin n, R)
+  let ψ := DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R M))) => f)
   refine LinearMap.ext fun x => ?_
-  change e₁'.trans e₂' ((e₀' ∘ₗ φ) x) = (ψ ∘ₗ e₁.trans e₂) (e₀ x)
-  rewrite [show e₀' ∘ₗ φ = φ' ∘ₗ e₀ by ext x; simp]
-  change (e₁'.trans e₂' ∘ₗ φ') (e₀ x) = (ψ ∘ₗ e₁.trans e₂) (e₀ x)
-  rw [(rTensor_Finprod_equiv_induced R N P n f : e₁'.trans e₂' ∘ₗ φ' = ψ ∘ₗ e₁.trans e₂)]
+  change e₁' ((e₀' ∘ₗ φ) x) = (ψ ∘ₗ (e₁ : (N ⊗[R] ⨁ _, R) →ₗ[R] ⨁ _, N)) (e₀ x)
+  rewrite [show e₀' ∘ₗ φ = φ' ∘ₗ e₀ from TensorProduct.ext' fun _ _ => rfl,
+    LinearMap.comp_apply, LinearEquiv.coe_coe, ← LinearEquiv.coe_coe, ← LinearMap.comp_apply,
+    rTensor_DirectSum_equiv_mapRange R N P n f]
+  unfold_let e₀ e₁ ψ
+  rfl
 
 variable {N P} in
 open DirectSum Module.Free in
 /-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free, and `f : N → P` is an injective
 linear map, the tensor product of `f` and the identity `M → M` is also injective. -/
-theorem rTensor_finite_free_injective_of_injective [Module.Free R M] [Module.Finite R M]
-    (f : N →ₗ[R] P) (hf : Function.Injective f) : Function.Injective (rTensor M f) := by
-  rewrite [← (rTensor M f).id_comp, ← LinearEquiv.refl_toLinearMap,
+theorem rTensor_finite_free_injective_of_injective [DecidableEq R] [Module.Free R M]
+    [Module.Finite R M] (f : N →ₗ[R] P) (hf : Function.Injective f) :
+      Function.Injective (f.rTensor M) := by
+  rewrite [← (f.rTensor M).id_comp, ← LinearEquiv.refl_toLinearMap,
       ← (rid_finite_free R M P).self_trans_symm, LinearEquiv.coe_trans, LinearMap.comp_assoc,
-      rTensor_finite_free_equiv_induced, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      EmbeddingLike.comp_injective, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      EquivLike.injective_comp]
-  exact induced_injective R (Fin (Fintype.card (ChooseBasisIndex R M))) hf
+      rTensor_finite_free_equiv_mapRange, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      EmbeddingLike.comp_injective]
+  erw [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp]
+  exact DFinsupp.mapRange_injective R (Fin (Fintype.card (ChooseBasisIndex R M))) hf
 
 variable {N P} in
-theorem lTensor_finite_free_injective_of_injective [Module.Free R M] [Module.Finite R M]
-    (f : N →ₗ[R] P) (hf : Function.Injective f) : Function.Injective (lTensor M f) := by
+theorem lTensor_finite_free_injective_of_injective [DecidableEq R] [Module.Free R M]
+    [Module.Finite R M] (f : N →ₗ[R] P) (hf : Function.Injective f) :
+      Function.Injective (f.lTensor M) := by
   rw [← LinearMap.comm_comp_rTensor_comp_comm_eq]
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.bijective_comp,
     EmbeddingLike.comp_injective, EquivLike.injective_comp]
@@ -233,7 +167,7 @@ theorem mem_kernel_witness_left [DecidableEq M] [DecidableEq (M × N →₀ ℤ)
         Finset.mem_insert_self _ _⟩
     . obtain (⟨m₁, m₂, n, rfl, hm₁, hm₂⟩ | ⟨m, n₁, n₂, rfl, hm⟩ | ⟨r, m, n, rfl, hm⟩) := hs p hpt
       . left; exact ⟨m₁, m₂, n, rfl, Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hm₁),
-        Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hm₂)⟩
+          Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hm₂)⟩
       . right; left; exact ⟨m, n₁, n₂, rfl, Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hm)⟩
       . right; right; exact ⟨r, m, n, rfl, Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hm)⟩
   . refine ⟨insert m' s, fun p => ?_⟩
