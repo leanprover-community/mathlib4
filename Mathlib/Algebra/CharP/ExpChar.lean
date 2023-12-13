@@ -119,14 +119,20 @@ theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
   · exact ⟨1, by rw [hp] at h; haveI := CharP.charP_to_charZero R; exact .zero⟩
   exact ⟨p, haveI := NeZero.mk hp; .prime (CharP.char_is_prime_of_pos R p).out⟩
 
+/-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+theorem expChar_of_injective_ringHom {R A : Type*}
+    [CommSemiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
+    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
+  cases' hR with _ _ hprime _
+  · haveI := charZero_of_injective_ringHom h; exact .zero
+  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 theorem expChar_of_injective_algebraMap {R A : Type*}
     [CommSemiring R] [Semiring A] [Algebra R A] (h : Function.Injective (algebraMap R A))
-    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
-  cases' hR with _ _ hprime _
-  · haveI := charZero_of_injective_algebraMap h; exact .zero
-  haveI := charP_of_injective_algebraMap h q; exact .prime hprime
+    (q : ℕ) [ExpChar R q] : ExpChar A q := expChar_of_injective_ringHom h q
 
 theorem add_pow_expChar_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) (h : Commute x y) : (x + y) ^ q = x ^ q + y ^ q := by
