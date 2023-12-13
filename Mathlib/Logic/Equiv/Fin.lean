@@ -314,7 +314,6 @@ def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fi
 #align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
 #align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
 
-@[simps! (config := .asFn)]
 def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
   Equiv.piFinSuccAbove (fun _ => β) n
 
