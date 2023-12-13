@@ -478,6 +478,11 @@ instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 #align normed_algebra.id NormedAlgebra.id
 
+set_option pp.all true in
+#print NormedAlgebra.id
+set_option pp.all true in
+#print Algebra.id
+
 -- Porting note: cannot synth scalar tower ℚ ℝ k
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
