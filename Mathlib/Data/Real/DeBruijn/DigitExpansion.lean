@@ -1616,6 +1616,10 @@ lemma real.cutoff_zero (z : Z) : cutoff z (0 : real Z b) = 0 :=
 lemma real.val_cutoff (z : Z) (f : real Z b) :
     (real.cutoff z f : FormalSeries Z b) = FormalSeries.cutoff z f := rfl
 
+@[simp]
+lemma real.cutoff_idem (f : real Z b) (z : Z) : (cutoff z (cutoff z f)) = cutoff z f :=
+  Subtype.ext <| FormalSeries.cutoff_idem _ _
+
 lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     real.cutoff z f ≤ real.cutoff z g := by
   rcases hfg.eq_or_lt with rfl|hfg'
@@ -1967,12 +1971,49 @@ theorem real.exists_isLeast_image_cutoff
     obtain ⟨f, _, hf'⟩ := cutoff_succ_aux_isLeast S u g hg
     exact ⟨_, hf'⟩
 
--- protected def real.cInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) :
---     FormalSeries Z b where
---   toFun z := (real.exists_isLeast_image_cutoff S hn h z).choose.val z
---   bounded' := by
---     rintro ⟨x, hx⟩
---     obtain ⟨f, hf⟩ := id hn
+protected def real.cInf_aux (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) :
+    FormalSeries Z b where
+  toFun z := (real.exists_isLeast_image_cutoff S hn h z).choose.val z
+  bounded' := by
+    rintro ⟨x, hx⟩
+    obtain ⟨u, hu, hu'⟩ := (real.exists_isLeast_image_cutoff S hn h (succ x)).choose_spec.left
+    suffices : ∀ y > x, cutoff y (real.exists_isLeast_image_cutoff S hn h y).choose = cutoff y u
+    · obtain ⟨y, hy, hy'⟩ := u.val.exists_bounded x
+      refine absurd ?_ hy'.not_le
+      rw [←cutoff_apply_self, ←val_cutoff, ←this y hy, val_cutoff, cutoff_apply_self]
+      simpa using (hx y hy).ge
+    intro y hy
+    refine Succ.rec ?_ ?_ (succ_le_of_lt hy)
+    · obtain ⟨g, hg, hg'⟩ := (real.exists_isLeast_image_cutoff S hn h y).choose_spec.left
+      have hug : cutoff (succ x) u = cutoff (succ x) g := by
+        refine le_antisymm (((real.exists_isLeast_image_cutoff S hn h _).choose_spec.right
+            ⟨g, hg, rfl⟩).trans' hu'.le) ?_
+        rw [←cutoff_cutoff_of_le g (succ_le_of_lt hy), ←cutoff_cutoff_of_le u (succ_le_of_lt hy)]
+        refine cutoff_mono _ <| ((real.exists_isLeast_image_cutoff S hn h _).choose_spec.right
+            ⟨u, hu, rfl⟩).trans' hg'.le
+      rw [←hu', hug, cutoff_idem]
+    intro y hy IH
+    obtain ⟨F, hF, hF'⟩ := (real.exists_isLeast_image_cutoff S hn h y).choose_spec.left
+    obtain ⟨f, hf, hf'⟩ := (real.exists_isLeast_image_cutoff S hn h (succ y)).choose_spec.left
+    have hfF : cutoff y F = cutoff y f := by
+      refine le_antisymm (((real.exists_isLeast_image_cutoff S hn h _).choose_spec.right
+          ⟨f, hf, rfl⟩).trans' hF'.le) ?_
+      rw [←cutoff_cutoff_of_le F (le_succ _), ←cutoff_cutoff_of_le f (le_succ _), hf']
+      exact cutoff_mono _ <| (real.exists_isLeast_image_cutoff S hn h _).choose_spec.right
+          ⟨F, hF, rfl⟩
+    have : cutoff (succ y) f ≤ cutoff (succ y) u := by
+      rw [hf']
+      exact (real.exists_isLeast_image_cutoff S hn h _).choose_spec.right
+          ⟨u, hu, rfl⟩
+    cases' this.eq_or_lt with huf huf
+    · rw [←hf', huf, cutoff_idem]
+    specialize hx (succ y) <| (lt_succ _).trans_le (hy.trans (le_succ _))
+    simp only at hx
+    rw [cutoff_succ_eq_cutoff_add_single, cutoff_succ_eq_cutoff_add_single, ←hfF,
+        ←cutoff_idem _ y, hF', IH, add_lt_add_iff_left, single_lt_right_iff,
+        ←cutoff_apply_self, ←val_cutoff, hf', hx] at huf
+    convert absurd (Fin.le_last _) (huf.trans_le' _).not_le
+    simp [Fin.ext_iff]
 
 
 end FormalSeries
