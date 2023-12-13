@@ -619,7 +619,7 @@ def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
 theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))} (h : fs.Nonempty) :
     ∑ i, centroidWeightsWithCircumcenter fs i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter, add_zero, ←
-    fs.sum_centroidWeights_eq_one_of_nonempty ℝ h, Set.sum_indicator_subset _ fs.subset_univ]
+    fs.sum_centroidWeights_eq_one_of_nonempty ℝ h, ← sum_indicator_subset _ fs.subset_univ]
   rcongr
 #align affine.simplex.sum_centroid_weights_with_circumcenter Affine.Simplex.sum_centroidWeightsWithCircumcenter
 
@@ -632,7 +632,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
   simp_rw [centroid_def, affineCombination_apply, weightedVSubOfPoint_apply,
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
     pointsWithCircumcenter_point, zero_smul, add_zero, centroidWeights,
-    Set.sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
+    ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
       (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ =>
       zero_smul ℝ _,
     Set.indicator_apply]
