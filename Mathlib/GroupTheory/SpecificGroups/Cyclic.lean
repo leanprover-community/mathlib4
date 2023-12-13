@@ -712,22 +712,6 @@ theorem zmultiplesHom_ker_eq [AddGroup G] (g : G) :
   change _ ∣ m ↔ ∃ k, k * (addOrderOf g : ℤ) = m
   conv in _ * _ = _ => rw [mul_comm, eq_comm]
 
-/-- The isomorphism from `Multiplicative (ZMod n)` to any cyclic group of `Nat.card` equal to `n`.
- -/
-noncomputable def zmodCyclicMulEquiv [Group G] (h : IsCyclic G) :
-    Multiplicative (ZMod (Nat.card G)) ≃* G := by
-  let n := Nat.card G
-  let ⟨g, surj⟩ := Classical.indefiniteDescription _ h.exists_generator
-  have kereq : ((zpowersHom G) g).ker = zpowers (Multiplicative.ofAdd ↑(Nat.card G)) := by
-    rw [zpowersHom_ker_eq]
-    congr
-    rw [← Nat.card_zpowers]
-    exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact Int.quotientZmultiplesNatEquivZMod n |>.toMultiplicative
-    |>.symm.trans <| multiplicativeQuotientZpowersZmultiplesMulEquiv (n : ℤ)
-    |>.symm.trans <| QuotientGroup.quotientMulEquivOfEq kereq
-    |>.symm.trans <| QuotientGroup.quotientKerEquivOfSurjective (zpowersHom G g) surj
-
 /-- The isomorphism from `ZMod n` to any cyclic additive group of `Nat.card` equal to `n`. -/
 noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     ZMod (Nat.card G) ≃+ G := by
@@ -741,6 +725,12 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
   exact (Int.quotientZmultiplesNatEquivZMod n)
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
+
+/-- The isomorphism from `Multiplicative (ZMod n)` to any cyclic group of `Nat.card` equal to `n`.
+-/
+noncomputable def zmodCyclicMulEquiv [Group G] (h : IsCyclic G) :
+    Multiplicative (ZMod (Nat.card G)) ≃* G :=
+  AddEquiv.toMultiplicative <| zmodAddCyclicAddEquiv <| isAddCyclic_additive_iff.2 h
 
 /-- Two cyclic groups of the same cardinality are isomorphic. -/
 noncomputable def mulEquivOfCyclicCardEq [Group G] [Group H] (hG : IsCyclic G)
