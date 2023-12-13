@@ -35,7 +35,8 @@ variable [HasWeakSheafify J D] [HasSheafCompose J F]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget [ConcreteCategory D] [HasSheafCompose J (forget D)] : Sheaf J D ⥤ SheafOfTypes J :=
+abbrev sheafForget [ConcreteCategory D] [HasSheafCompose J (forget D)] :
+    Sheaf J D ⥤ SheafOfTypes J :=
   sheafCompose J (forget D) ⋙ (sheafEquivSheafOfTypes J).functor
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_forget CategoryTheory.sheafForget
