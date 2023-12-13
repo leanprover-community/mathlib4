@@ -342,7 +342,7 @@ lemma set_smul_mono_left {s t : Set R} (le : s ≤ t) :
   set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := le hr)
     (mem2 := hm)
 
-lemma set_smul_submodule_le_of_le_le {s t : Set R} {p q : Submodule R M}
+lemma set_smul_le_of_le_le {s t : Set R} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_mono_left _ le_set) <| set_smul_mono_right _ le_submodule
 
