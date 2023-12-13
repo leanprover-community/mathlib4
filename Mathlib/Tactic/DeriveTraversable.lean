@@ -179,7 +179,8 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
                     stx := ← `(attr| specialize) }] }
           declName := n'
           type := t'
-          value := e' }] {}
+          value := e'
+          termination := .none }] {}
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-- Similar to `mkInstanceName`, but for a `Expr` type. -/
@@ -244,7 +245,8 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
                     stx := ← `(attr| instance) }] }
           declName := instN
           type := tgt
-          value := val }] {}
+          value := val
+          termination := .none }] {}
 
 /-- Make the new deriving handler depends on other deriving handlers. -/
 def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
@@ -415,7 +417,8 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
               visibility := .protected }
           declName := n'
           type := t'
-          value := e' }] {}
+          value := e'
+          termination := .none }] {}
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-- The deriving handler for `Traversable`. -/
