@@ -26,7 +26,8 @@ variable [Monoid M]
 --TODO - Find better place for these two things.
 
 /-- The unit group of a unit group is equivalent to the same group. -/
-@[to_additive " The additive unit group of an additive unit group is equivalent to the same group. " ]
+@[to_additive " The additive unit group of an additive unit group is equivalent to the same
+group. " ]
 def unitsTypeUnitsTypeEquivUnitsType {M : Type*} [Monoid M] : Mˣˣ ≃* Mˣ := toUnits.symm
 
 /-- The multiplicative equivalence between the type of units of `M` and the submonoid whose elements
