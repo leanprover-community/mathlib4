@@ -415,7 +415,7 @@ then `e` is smooth. -/
 lemma contMDiff_openEmbedding :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
   haveI := h.singleton_smoothManifoldWithCorners I
-  rw [@contMDiff_iff _ _ _ _ _ H _ I M _ h.singletonChartedSpace]
+  rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
   intros x y
   -- show the function is actually the identity on the range of I ∘ e
