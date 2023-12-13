@@ -17,10 +17,10 @@ of the restriction `M ↾ R`, so this construction relates `Matroid.Basis` to `M
 If `N M : Matroid α` satisfy `N = M ↾ R` for some `R ⊆ M.E`,
 then we call `N` a 'restriction of `M`', and write `N ≤r M`. This is a partial order.
 
-This file proves that the restriction is a matroid, that `≤r` order is a partial order,
+This file proves that the restriction is a matroid and that the `≤r` order is a partial order,
 and gives related API.
 It also proves some `Basis` analogues of `Base` lemmas that, while they could be stated in
-`Data.Matroid.Basic`, are hard to prove without restrictions.
+`Data.Matroid.Basic`, are hard to prove without `Matroid.restrict` API.
 
 ## Main Definitions
 
@@ -117,6 +117,7 @@ section restrict
   but it is convenient not to require this. The elements of `R \ M.E` become 'loops'.  -/
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrict_indepMatroid R).matroid
 
+/-- `M ↾ R` means `M.restrict R`. -/
 infixl:65  " ↾ " => Matroid.restrict
 
 @[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := by
@@ -211,11 +212,16 @@ section Restriction
 
 variable {N : Matroid α}
 
+/-- `Restriction N M` means that `N = M ↾ R` for some subset `R` of `M.E` -/
 def Restriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 
+/-- `StrictRestriction N M` means that `N = M ↾ R` for some strict subset `R` of `M.E` -/
 def StrictRestriction (N M : Matroid α) : Prop := Restriction N M ∧ ¬ Restriction M N
 
+/-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
 infix:50  " ≤r " => Restriction
+
+/-- `N <r M` means that `N` is a `StrictRestriction` of `M`. -/
 infix:50  " <r " => StrictRestriction
 
 /-- A type synonym for matroids with the restriction order.
@@ -397,3 +403,4 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
 end Basis
 
 end Matroid
+#lint
