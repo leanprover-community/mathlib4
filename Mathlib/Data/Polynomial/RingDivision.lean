@@ -505,8 +505,8 @@ theorem le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
   exact mul_dvd_mul (pow_rootMultiplicity_dvd p x) (pow_rootMultiplicity_dvd q x)
 
 theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
-    (hpq : (p /ₘ (X - C x) ^ (p.rootMultiplicity x)).eval x *
-      (q /ₘ (X - C x) ^ (q.rootMultiplicity x)).eval x ≠ 0) :
+    (hpq : (p /ₘ (X - C x) ^ p.rootMultiplicity x).eval x *
+      (q /ₘ (X - C x) ^ q.rootMultiplicity x).eval x ≠ 0) :
     rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
   simp_rw [eval_divByMonic_eq_trailingCoeff_comp] at hpq
   simp_rw [rootMultiplicity_eq_natTrailingDegree, mul_comp, natTrailingDegree_mul' hpq]
