@@ -7,6 +7,9 @@ open Lean.Parser.Term
 open SubExpr
 open TSyntax.Compat
 
+/- similar to `Lean.PrettyPrinter.Delaborator.shouldGroupWithNext` (which is private),
+that also works if we just have an array of arguments we want to print (that is not necessarily
+part of a sequence of lambda's/pi's from an expression). -/
 def shouldGroupWithNext (bis : Array Expr) (k : Nat) : DelabM Bool := do
   if h : k + 1 < bis.size then
     let ppEType ← getPPOption getPPPiBinderTypes
@@ -20,6 +23,9 @@ def shouldGroupWithNext (bis : Array Expr) (k : Nat) : DelabM Bool := do
     return false
 
 /-- `info` optionally contains the identifier and type. -/
+/- similar to `Lean.PrettyPrinter.Delaborator.delabConstWithSignature.delabParams`
+but doesn't print the identifier `idStx`.
+-/
 partial def delabParamsImpl (groups : TSyntaxArray ``bracketedBinder)
     (curIds : Array Ident) (bis : Array Expr) (k : Nat) : Delab := do
   if h : k < bis.size then
@@ -64,7 +70,8 @@ def delabParams (bis : Array Expr) : MetaM FormatWithInfos := do
   --     inPattern := (← getOptions).getInPattern } |>.run {}
   return ⟨← ppTerm ⟨stx⟩, infos⟩
 
-/-- Pretty-prints a constant `c` as `c.{<levels>} <params> : <type>`. -/
+/-- Pretty-prints a constant `c` as `c.{<levels>} <explicit params> : <type>`. -/
+-- similar to `delabConstWithSignature`
 partial def delabConstOfTypeWithSignature (eType : Expr) : Delab := do
   let e ← getExpr
   -- use virtual expression node of arity 2 to separate name and type info
@@ -94,11 +101,11 @@ def showCmd (eValue : Expr) : MetaM MessageData := do
     let explicittype ← mkForallFVars explicits t
     let explicitMsg : MessageData :=
       m!"{ofFormatWithInfos <| delabExplicits eValue explicittype}"
-    let implicitMsg : MessageData :=
-      if implicits.isEmpty then "" else m!"\nimplicits:{ofFormatWithInfos <| delabParams implicits}"
     let instMsg : MessageData :=
       if insts.isEmpty then "" else m!"\ninstances:{ofFormatWithInfos <| delabParams insts}"
-    logInfo m!"{explicitMsg}{implicitMsg}{instMsg}"
+    let implicitMsg : MessageData :=
+      if implicits.isEmpty then "" else m!"\nimplicits:{ofFormatWithInfos <| delabParams implicits}"
+    logInfo m!"{explicitMsg}{instMsg}{implicitMsg}"
     return ""
 
 elab "#show " stx:term : command =>
@@ -126,4 +133,5 @@ elab "#show " stx:term : command =>
 #show extChartAt_source_mem_nhdsWithin
 #show ContDiff.of_le
 #show Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
+#check ContDiff.of_le
 #check ContDiff.of_le
