@@ -253,9 +253,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     ring
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
-      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul, @mul_smul _ _ _ ?_]
-  -- Porting note: this branch did not exit in ml3
+  · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv,
+      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul, mul_smul _]
+    -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     · rw [split, add_comm]
       ac_rfl
   -- Porting note: this branch did not exit in ml3
