@@ -101,18 +101,17 @@ example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
 /-!
 TODO: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/units.2Emul_action'.20diamond/near/246402813
 ```lean
-example {α : Type*} [comm_monoid α] :
-  (units.mul_action' : mul_action αˣ αˣ) = monoid.to_mul_action _ :=
-rfl -- fails
+example {α : Type*} [CommMonoid α] :
+    (Units.mulAction' : MulAction αˣ αˣ) = Monoid.toMulAction _ :=
+  rfl -- fails
 ```
 -/
-
 
 end Units
 
 end SMul
 
-/-! ## `with_top` (Type with point at infinity) instances -/
+/-! ## `WithTop` (Type with point at infinity) instances -/
 
 
 section WithTop
@@ -130,7 +129,7 @@ example (R : Type _) [h : StrictOrderedSemiring R] :
 
 end WithTop
 
-/-! ## `multiplicative` instances -/
+/-! ## `Multiplicative` instances -/
 
 
 section Multiplicative
@@ -141,14 +140,14 @@ example :
 
 end Multiplicative
 
-/-! ## `finsupp` instances-/
+/-! ## `Finsupp` instances-/
 
 
 section Finsupp
 
 open Finsupp
 
-/-- `finsupp.comap_has_smul` can form a non-equal diamond with `finsupp.smul_zero_class` -/
+/-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` -/
 example {k : Type _} [Semiring k] [Nontrivial k] :
     (Finsupp.comapSMul : SMul k (k →₀ k)) ≠ Finsupp.smulZeroClass.toSMul :=
   by
@@ -161,7 +160,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
     single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
-/-- `finsupp.comap_has_smul` can form a non-equal diamond with `finsupp.smul_zero_class` even when
+/-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` even when
 the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul :=
@@ -178,7 +177,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
 
 end Finsupp
 
-/-! ## `polynomial` instances -/
+/-! ## `Polynomial` instances -/
 
 
 section Polynomial
@@ -189,7 +188,7 @@ open scoped Polynomial
 
 open Polynomial
 
-/-- `polynomial.has_smul_pi` forms a diamond with `pi.has_smul`. -/
+/-- `Polynomial.hasSMulPi` forms a diamond with `Pi.instSMul`. -/
 example [Semiring R] [Nontrivial R] :
     Polynomial.hasSMulPi _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) :=
   by
@@ -197,7 +196,7 @@ example [Semiring R] [Nontrivial R] :
   simp_rw [SMul.ext_iff, Function.funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
-/-- `polynomial.has_smul_pi'` forms a diamond with `pi.has_smul`. -/
+/-- `Polynomial.hasSMulPi'` forms a diamond with `Pi.instSMul`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) :=
   by
@@ -205,27 +204,27 @@ example [CommSemiring R] [Nontrivial R] :
   simp_rw [SMul.ext_iff, Function.funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
-/-- `polynomial.has_smul_pi'` is consistent with `polynomial.has_smul_pi`. -/
+/-- `Polynomial.hasSMulPi'` is consistent with `Polynomial.hasSMulPi`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ = (Polynomial.hasSMulPi _ _ : SMul R[X] (R → R[X])) :=
   rfl
 
-/-- `polynomial.algebra_of_algebra` is consistent with `algebra_nat`. -/
+/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraNat`. -/
 example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = algebraNat :=
   rfl
 
-/-- `polynomial.algebra_of_algebra` is consistent with `algebra_int`. -/
+/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraInt`. -/
 example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = algebraInt _ :=
   rfl
 
 end Polynomial
 
-/-! ## `subtype` instances -/
+/-! ## `Subtype` instances -/
 
 
 section Subtype
 
--- this diamond is the reason that `fintype.to_locally_finite_order` is not an instance
+-- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
 example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [@DecidableRel α (· < ·)]
     [@DecidableRel α (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder :=
@@ -235,7 +234,7 @@ example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [@DecidableRel �
 
 end Subtype
 
-/-! ## `zmod` instances -/
+/-! ## `ZMod` instances -/
 
 
 section ZMod
