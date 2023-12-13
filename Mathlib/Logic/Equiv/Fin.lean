@@ -316,7 +316,7 @@ def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fi
 
 @[simps! (config := .asFn)]
 def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
-  Equiv.piFinSuccAboveEquiv (fun _ => β) n
+  Equiv.piFinSuccAbove (fun _ => β) n
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n)
