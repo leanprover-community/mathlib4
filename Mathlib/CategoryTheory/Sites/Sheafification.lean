@@ -223,7 +223,7 @@ variable (D)
 
 @[simp]
 theorem sheafificationAdjunction_unit_app {P : Cᵒᵖ ⥤ D} :
-  (sheafificationAdjunction J D).unit.app P = J.toSheafify P := rfl
+    (sheafificationAdjunction J D).unit.app P = J.toSheafify P := rfl
 
 @[simp]
 theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
