@@ -25,8 +25,9 @@ variable [Monoid M]
 
 --TODO - Find better place for these two things.
 
-@[to_additive]
-lemma unitsTypeUnitsTypeEquivUnitsType {M : Type*} [Monoid M] : Mˣˣ ≃* Mˣ := toUnits.symm
+/-- The unit group of a unit group is equivalent to the same group. -/
+@[to_additive " The additive unit group of an additive unit group is equivalent to the same group. " ]
+def unitsTypeUnitsTypeEquivUnitsType {M : Type*} [Monoid M] : Mˣˣ ≃* Mˣ := toUnits.symm
 
 /-- The multiplicative equivalence between the type of units of `M` and the submonoid whose elements
   are the units of `M`. -/
@@ -67,18 +68,22 @@ lemma Submonoid.ofunits_units_le (S : Submonoid M) : S.units.ofUnits ≤ S :=
 fun  _ ⟨_, hy, hx⟩ => hx ▸ hy.1
 
 @[to_additive]
-lemma Submonoid.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=
+lemma Subgroup.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=
 fun _ _ hST _ ⟨x, hx, hy⟩ => ⟨x, hST hx, hy⟩
 
 @[to_additive]
-lemma Submonoid.ofUnits_units_eq (S : Subgroup Mˣ) : S.ofUnits.units = S := SetLike.ext (fun _ => by
+lemma Subgroup.ofUnits_units_eq (S : Subgroup Mˣ) : S.ofUnits.units = S := SetLike.ext (fun _ => by
   exact ⟨fun ⟨⟨_, hx, hy⟩, _⟩ => (Units.ext hy) ▸ hx,
   fun hx => ⟨⟨_, hx, rfl⟩, ⟨_, S.inv_mem hx, rfl⟩⟩⟩)
 
-@[to_additive]
+/-- A Galois coinsertion exists between the coercion from a subgroup of units to a submonoid and
+the reduction from a submonoid to its unit group. -/
+@[to_additive " A Galois coinsertion exists between the coercion from a additive subgroup of
+additive units to a additive submonoid and the reduction from a additive submonoid to its unit
+group. " ]
 def unitsGaloisCoinsertion : GaloisCoinsertion (Subgroup.ofUnits) (Submonoid.units (M := M)) :=
-  GaloisCoinsertion.monotoneIntro Submonoid.units_mono Submonoid.ofUnits_mono
-  Submonoid.ofunits_units_le Submonoid.ofUnits_units_eq
+  GaloisCoinsertion.monotoneIntro Submonoid.units_mono Subgroup.ofUnits_mono
+  Submonoid.ofunits_units_le Subgroup.ofUnits_units_eq
 
 @[to_additive]
 lemma unitsGaloisConnection : GaloisConnection (Subgroup.ofUnits) (Submonoid.units (M := M)) :=
@@ -191,7 +196,7 @@ lemma mem_iff_toUnits_mem_units (T : Subgroup G) (x : G) : x ∈ T ↔ toUnits x
     and_self, coe_toUnits]
 
 /-- The equivalence between the greatest subgroup of units contained within `T` and `T` itself. -/
-@[to_additive (attr := simps!) " The equivalence between the greatest subgroup of additive units
+@[to_additive " The equivalence between the greatest subgroup of additive units
 contained within `T` and `T` itself. "]
 def unitsEquivSelf (T : Subgroup G) : T.units ≃* T :=
 T.unitsEquivUnitsType.trans (toUnits).symm
