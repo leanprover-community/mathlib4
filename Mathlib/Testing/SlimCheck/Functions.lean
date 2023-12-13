@@ -10,6 +10,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Std.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
@@ -146,8 +147,7 @@ instance Pi.sampleableExt : SampleableExt (α → β) where
   interp f := SampleableExt.interp ∘ f.apply
   sample := do
     let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
-    let ⟨x⟩ ← (ULiftable.up <|
-      SampleableExt.sample : Gen (ULift.{max u ub} (SampleableExt.proxy β)))
+    let ⟨x⟩ ← ULiftable.up.{max u ub} <| (SampleableExt.sample : Gen (SampleableExt.proxy β))
     pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
       Prod.map SampleableExt.interp id) x
   -- note: no way of shrinking the domain without an inverse to `interp`
@@ -245,6 +245,15 @@ instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt (α × β →
 end SampleableExt
 
 end TotalFunction
+
+end SlimCheck
+
+-- We need List perm notation from `List` namespace but can't open `_root_.List` directly,
+-- so have to close the `SlimCheck` namespace first.
+-- Lean issue: https://github.com/leanprover/lean4/issues/3045
+open List
+
+namespace SlimCheck
 
 /-- Data structure specifying a total function using a list of pairs
 and a default value returned when the input is not in the domain of

@@ -130,7 +130,7 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
     simp at h₂
     apply add_lt_add_of_le_of_lt
     exact mul_self_le_mul_self h₂
-    exact Nat.lt_add_right _ _ _ h
+    exact Nat.lt_add_right _ h
   · simp at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add

@@ -190,7 +190,7 @@ theorem MeasureTheory.volume_sum_rpow_lt_one :
     exact Finset.sum_nonneg' (fun _ => rpow_nonneg_of_nonneg (abs_nonneg _) _)
   · simp_rw [← rpow_mul (h₂ _), div_mul_cancel _ (ne_of_gt h₁), Real.rpow_one,
       ← Finset.sum_neg_distrib, exp_sum]
-    rw [integral_finset_prod_eq_pow ι fun x : ℝ => exp (- |x| ^ p), integral_comp_abs
+    rw [integral_fintype_prod_eq_pow ι fun x : ℝ => exp (- |x| ^ p), integral_comp_abs
       (f := fun x => exp (- x ^ p)), integral_exp_neg_rpow h₁]
   · rw [finrank_fintype_fun_eq_card]
 
@@ -264,7 +264,7 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
     exact Finset.sum_nonneg' (fun _ => rpow_nonneg_of_nonneg (norm_nonneg _) _)
   · simp_rw [← rpow_mul (h₂ _), div_mul_cancel _ (ne_of_gt h₁), Real.rpow_one,
       ← Finset.sum_neg_distrib, Real.exp_sum]
-    rw [integral_finset_prod_eq_pow ι fun x : ℂ => Real.exp (- ‖x‖ ^ p),
+    rw [integral_fintype_prod_eq_pow ι fun x : ℂ => Real.exp (- ‖x‖ ^ p),
       Complex.integral_exp_neg_rpow hp]
   · rw [finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul,
        Nat.cast_mul, Nat.cast_ofNat, Fintype.card, mul_comm]

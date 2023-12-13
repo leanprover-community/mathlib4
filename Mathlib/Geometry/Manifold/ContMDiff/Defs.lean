@@ -85,8 +85,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
   [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
-  {e : LocalHomeomorph M H}
-  {e' : LocalHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
+  {e : PartialHomeomorph M H}
+  {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
 
 /-- Property in the model space of a model with corners of being `C^n` within at set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define smooth
@@ -360,9 +360,9 @@ theorem contMDiffWithinAt_iff_target :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _ _).comp_continuousWithinAt
-  simp_rw [cont, ContDiffWithinAtProp, extChartAt, LocalHomeomorph.extend, LocalEquiv.coe_trans,
-    ModelWithCorners.toLocalEquiv_coe, LocalHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, LocalHomeomorph.refl_apply, comp.left_id]
+  simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, LocalEquiv.coe_trans,
+    ModelWithCorners.toLocalEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
+    chartAt_self_eq, PartialHomeomorph.refl_apply, comp.left_id]
   rfl
 #align cont_mdiff_within_at_iff_target contMDiffWithinAt_iff_target
 
@@ -583,7 +583,7 @@ theorem contMDiffOn_iff_target :
         ∀ y : M',
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_trans, extChartAt, LocalHomeomorph.extend,
+    PartialHomeomorph.refl_localEquiv, LocalEquiv.refl_trans, extChartAt, PartialHomeomorph.extend,
     Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor

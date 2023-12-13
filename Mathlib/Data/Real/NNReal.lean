@@ -278,6 +278,18 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
+instance : StarRing ℝ≥0 where
+  star := id
+  star_involutive _ := rfl
+  star_mul := mul_comm
+  star_add _ _ := rfl
+
+instance : TrivialStar ℝ≥0 where
+  star_trivial _ := rfl
+
+instance : StarModule ℝ≥0 ℝ where
+  star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
+
 -- verify that the above produces instances we might care about
 example : Algebra ℝ≥0 ℝ := by infer_instance
 
