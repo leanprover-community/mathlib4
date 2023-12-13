@@ -185,7 +185,8 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
       by_cases hx : x = a
       · rw [hx]
         simp only [Finsupp.coe_update, update_same]
-      · simp only [Finsupp.update, Finsupp.mem_support_iff, ne_eq, not_not, Finsupp.support_erase, Finsupp.coe_mk]
+      · simp only [Finsupp.update, Finsupp.mem_support_iff, ne_eq, not_not,
+          Finsupp.support_erase, Finsupp.coe_mk]
         simp only [update, dif_neg hx]
         simp only [Finsupp.erase, Finsupp.coe_mk]
         rw [if_neg hx]
