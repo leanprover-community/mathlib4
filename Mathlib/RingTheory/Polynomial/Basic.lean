@@ -704,7 +704,7 @@ variable [Ring R]
 
 /-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
 a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
-theorem polynomials_infinite_dimensional {R : Type u} [Semiring R] [Nontrivial R]:
+theorem polynomial_not_module_finite {R : Type u} [Semiring R] [Nontrivial R]:
     ¬ (Module.Finite R R[X]) := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
