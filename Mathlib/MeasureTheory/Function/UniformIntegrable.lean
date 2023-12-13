@@ -961,8 +961,9 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
     UniformIntegrable (fun n => (∑ i in Finset.range n, f i) / (n : α → ℝ)) p μ := by
   convert uniformIntegrable_average hp hf using 2 with n
   ext x
-  rw [Pi.smul_apply]
-  simp [div_eq_inv_mul]
+  -- `Pi.smul_apply _` forces explicit binders and relaxes transparency to use non-reducibly
+  -- defeq instances see documentation for `Lean.Meta.Simp.synthesizeArgs`
+  simp [div_eq_inv_mul, Pi.smul_apply _]
 #align measure_theory.uniform_integrable_average MeasureTheory.uniformIntegrable_average_real
 
 end UniformIntegrable
