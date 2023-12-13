@@ -31,21 +31,21 @@ theorem coprime_prod_right {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset �
 #align nat.coprime_prod_right Nat.coprime_prod_right
 
 theorem coprime_prod_left_iff {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
-    Coprime (∏ i : ι in t, s i) x ↔ (∀ i : ι, i ∈ t → Coprime (s i) x) :=
+    Coprime (∏ i in t, s i) x ↔ ∀ i ∈ t, Coprime (s i) x :=
   Finset.cons_induction_on t (by simp) fun i s his ih ↦ by
     rw [Finset.prod_cons, Nat.coprime_mul_iff_left, ih, Finset.forall_mem_cons]
 
 theorem coprime_prod_right_iff {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
-    Coprime x (∏ i : ι in t, s i) ↔ (∀ i : ι, i ∈ t → Coprime x (s i)) :=
+    Coprime x (∏ i in t, s i) ↔ ∀ i ∈ t, Coprime x (s i) :=
   Finset.cons_induction_on t (by simp) fun i s his ih ↦ by
     rw [Finset.prod_cons, Nat.coprime_mul_iff_right, ih, Finset.forall_mem_cons]
 
 theorem coprime_fintype_prod_left_iff {ι : Type*} [Fintype ι] {x : ℕ} {s : ι → ℕ} :
-    Coprime (∏ i, s i) x ↔ (∀ i : ι, Coprime (s i) x) := by
+    Coprime (∏ i, s i) x ↔ ∀ i, Coprime (s i) x := by
   simp [coprime_prod_left_iff]
 
 theorem coprime_fintype_prod_right_iff {ι : Type*} [Fintype ι]
-    {x : ℕ} {s : ι → ℕ} : Coprime x (∏ i, s i) ↔ (∀ i : ι, Coprime x (s i)) := by
+    {x : ℕ} {s : ι → ℕ} : Coprime x (∏ i, s i) ↔ ∀ i, Coprime x (s i) := by
   simp [coprime_prod_right_iff]
 
 theorem coprime_list_prod_left_iff {k} {l : List ℕ} :
