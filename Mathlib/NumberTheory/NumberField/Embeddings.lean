@@ -197,7 +197,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
     (hφ.embedding x : ℂ) = φ x := by
-  ext
+  apply Complex.ext
   · rfl
   · rw [ofReal_im, eq_comm, ← Complex.conj_eq_iff_im]
     exact RingHom.congr_fun hφ x
