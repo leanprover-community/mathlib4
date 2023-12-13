@@ -115,7 +115,8 @@ instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [
 instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiring α]
   [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingIsoClass F α β] :
     OrderRingHomClass F α β :=
-  { monotone := fun f _ _ => (map_le_map_iff f).2
+  { RingEquivClass.toRingHomClass with
+    monotone := fun f _ _ => (map_le_map_iff f).2
     -- porting note: used to be the following which times out
     --‹OrderRingIsoClass F α β› with monotone := fun f => OrderHomClass.mono f
     }

@@ -126,6 +126,9 @@ class OrderMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] 
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
 
+-- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
+attribute [to_additive existing] OrderMonoidHomClass.toMonoidHomClass
+
 end
 
 variable {_ : Preorder α} {_ : Preorder β} {_ : MulOneClass α} {_ : MulOneClass β}
