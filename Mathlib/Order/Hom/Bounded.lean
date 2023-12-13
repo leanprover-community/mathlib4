@@ -83,7 +83,8 @@ class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] exte
 
 You should extend this class when you extend `BoundedOrderHom`. -/
 class BoundedOrderHomClass (F : Type*) (α β : outParam <| Type*) [LE α] [LE β] [BoundedOrder α]
-  [BoundedOrder β] extends flat RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+    [BoundedOrder β]
+    extends flat RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
