@@ -256,7 +256,8 @@ end algebraMap
 #align ring_hom.to_algebra' RingHom.toAlgebra'
 
 /-- Creating an algebra from a morphism to a commutative semiring. -/
-@[reducible] def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
+@[reducible] def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
+    Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 #align ring_hom.to_algebra RingHom.toAlgebra
 
@@ -432,7 +433,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
 @[reducible] instance id : Algebra R R :=
-  { (RingHom.id R).toAlgebra with }
+  (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
 variable {R A}
