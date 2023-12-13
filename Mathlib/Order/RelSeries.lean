@@ -163,7 +163,7 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-/-- start of a series .i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a₀`. Since a relation
+/-- Start of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a₀`. Since a relation
 series is assumed to be non-empty, this is well defined. -/
 def head (x : RelSeries r) : α := x 0
 
