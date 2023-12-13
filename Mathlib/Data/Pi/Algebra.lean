@@ -114,7 +114,7 @@ instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
-theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
+theorem pow_apply {_ : ∀ i, Pow (f i) β} (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 #align pi.pow_apply Pi.pow_apply
 #align pi.smul_apply Pi.smul_apply
