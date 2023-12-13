@@ -1,5 +1,4 @@
 import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.TensorProduct.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.Algebra.DirectSum.Finsupp
@@ -389,19 +388,17 @@ theorem lTensor_free_injective_of_injective.aux' [DecidableEq M] [DecidableEq P]
           Finsupp.single_apply, SetLike.mk_smul_mk, Subtype.ext_iff]
 
 open TensorProductFinsupp in
-variable {R} {M} {N} {P} in
-/-- If `M` and `N` are `R`-modules, `M` has a basis `ℰ`, and `y : M × N →₀ ℤ` (representing an
-element of the free abelian group on `M × N`) is in the subgroup `TensorProductFinsupp.Null R M N`,
-then there is a finite subfamily `κ` of `ℰ` with span `L` for which `y` is the image of some
-`z : L × M → ℤ` under the mapping `L × N` to `M × N` induced by the inclusion of `L` in `M`,
-and z is in the subgroup `TensorProductFinsupp.Null R L N`. -/
-theorem lTensor_free_injective_of_injective.aux [DecidableEq M] [DecidableEq P]
-    [DecidableEq (M × N →₀ ℤ)] [Module.Free R M] {x : M ⊗[R] N} {ψ : N →ₗ[R] P}
-    (hψ : Injective ψ) (hx₀ : lTensor M ψ x = 0) :
-      ∃ (L : Submodule R M) (_ : Module.Free R L) (_ : L.FG)
-        (w : L ⊗[R] N), L.subtype.rTensor N w = x ∧ ψ.lTensor L w = 0 := by
-  -- Choose a representative `x' = ∑(mᵢ, nᵢ)` of x in the free abelian group on `M × N`.
+/-- If `M`, `N` and `P` are `R`-modules, `M` is free, and `ψ` is an injective linear map `N → P`,
+then `ψ.lTensor M`, the tensor product of the identity `M → M` with `ψ`, is also injective. -/
+theorem lTensor_free_injective_of_injective [DecidableEq R] [DecidableEq M] [DecidableEq P]
+    [DecidableEq (M × N →₀ ℤ)] [Module.Free R M]
+    (ψ : N →ₗ[R] P) (hψ : Injective ψ) : Injective (ψ.lTensor M) := by
+  -- Assuming `ψ.lTensor F x = 0`, show `x = 0`.
+  rewrite [injective_iff_map_eq_zero]
+  intro x hx₀
+  -- Choose a representative `x' = ∑(mᵢ, nᵢ)` of `x` in the free abelian group on `M × N`.
   let x' := Quotient.out' <| (TensorProductFinsupp.Equiv R M N).symm x
+  -- Then the image `y'` of `x'` under the map `(1, ψ)` is in `TensorProductFinsupp.Null R M P`.
   have hy' : lEmbed M hψ x' ∈ TensorProductFinsupp.Null R M P := by
     rewrite [← QuotientAddGroup.eq_zero_iff, ← QuotientAddGroup.mk'_apply,
       ← (TensorProductFinsupp.Equiv R M P).symm.map_zero, ← hx₀,
@@ -410,26 +407,19 @@ theorem lTensor_free_injective_of_injective.aux [DecidableEq M] [DecidableEq P]
     rw [mk'_lEmbed, lTensor_equiv',
       (TensorProductFinsupp.Equiv R M P).symm_apply_apply, QuotientAddGroup.mk'_apply,
       QuotientAddGroup.out_eq']
+  -- There is a free, finitely generated submodule `L ≤ M` and an element `w' : L × N →₀ ℤ`
+  -- whose image in `M × P →₀ ℤ` is equal to `x'` and whose image in `L × P →₀ ℤ` belongs to
+  -- `TensorProductFinsupp.Null R L P`.
   have ⟨L, hfree, hfg, w', hx', hz'⟩ := lTensor_free_injective_of_injective.aux' hψ hy'
-  refine ⟨L, hfree, hfg, TensorProductFinsupp.Equiv R L N <| QuotientAddGroup.mk' _ w', ?_, ?_⟩
-  . rw [rTensor_equiv', ← mk'_rEmbed N L.injective_subtype, hx',
-      QuotientAddGroup.mk'_apply, QuotientAddGroup.out_eq', LinearEquiv.apply_symm_apply]
-  . rewrite [lTensor_equiv', ← mk'_lEmbed L hψ, LinearEquiv.map_eq_zero_iff,
-      QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_zero_iff]
-    exact hz'
-
-theorem lTensor_free_injective_of_injective [DecidableEq M] [DecidableEq P]
-    [DecidableEq (M × N →₀ ℤ)] [Module.Free R M]
-    (ψ : N →ₗ[R] P) (hψ : Injective ψ) : Injective (lTensor M ψ) := by
-  -- Nontriviality
-  haveI [Subsingleton R] : Subsingleton (M ⊗[R] N) := by exact Module.subsingleton R _
-  refine (subsingleton_or_nontrivial R).elim
-    (fun _subsingleton x y _ => Subsingleton.allEq x y) (fun _nontrivial => ?_)
-  -- Assuming `lTensor F ψ x = 0`, show `x = 0`.
-  letI : AddGroup (M ⊗[R] N) := inferInstance -- Type class reminder
-  rewrite [injective_iff_map_eq_zero]
-  intro x hy
-  obtain ⟨L, hfree, hfg, w, rfl, hz⟩ := lTensor_free_injective_of_injective.aux hψ hy
   haveI : Module.Finite R L := ⟨(fg_top L).mpr hfg⟩
-  obtain rfl : w = 0 := lTensor_finite_free_injective_of_injective R L ψ hψ hz
-  rw [LinearMap.map_zero]
+  -- Descend to the quotient and apply `lTensor_finite_free_injective_of_injective`.
+  unfold_let x' at hx'
+  rw [← (TensorProductFinsupp.Equiv R M N).apply_symm_apply x,
+      ← QuotientAddGroup.out_eq' ((LinearEquiv.symm (TensorProductFinsupp.Equiv R M N)) x),
+      ← QuotientAddGroup.mk'_apply, ← hx', mk'_rEmbed, ← rTensor_equiv',
+      ← (L.subtype.rTensor N).map_zero]
+  apply congrArg (L.subtype.rTensor N)
+  rw [← LinearMap.map_eq_zero_iff _ (lTensor_finite_free_injective_of_injective R L ψ hψ),
+    lTensor_equiv', ← mk'_lEmbed L hψ, LinearEquiv.map_eq_zero_iff, QuotientAddGroup.mk'_apply,
+    QuotientAddGroup.eq_zero_iff]
+  exact hz'
