@@ -1343,14 +1343,14 @@ noncomputable def toPartialHomeomorph [Nonempty α] : PartialHomeomorph α β :=
 
 variable [Nonempty α]
 
-lemma toLocalHomeomorph_left_inv {x : α} : (h.toLocalHomeomorph f).symm (f x) = x := by
-  rw [← congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.left_inv]
+lemma toPartialHomeomorph_left_inv {x : α} : (h.toPartialHomeomorph f).symm (f x) = x := by
+  rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.left_inv]
   exact Set.mem_univ _
 
-lemma toLocalHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
-    f ((h.toLocalHomeomorph f).symm x) = x := by
-  rw [← congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.right_inv]
-  rwa [toLocalHomeomorph_target]
+lemma toPartialHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
+    f ((h.toPartialHomeomorph f).symm x) = x := by
+  rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
+  rwa [toPartialHomeomorph_target]
 
 end OpenEmbedding
 
