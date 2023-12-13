@@ -328,14 +328,7 @@ lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse 
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   ext w
-  show
-    (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
-    (∃ u v, u.reverse ∈ m ∧ v.reverse ∈ l ∧ u ++ v = w)
-  rw [exists_comm, List.reverse_involutive.surjective.exists]
-  refine exists_congr fun u => ?_
-  rw [List.reverse_involutive.surjective.exists]
-  refine exists_congr fun v => ?_
-  rw [and_left_comm, ← List.reverse_append, List.reverse_inj]
+  aesop
 
 variable (α) in
 /-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
