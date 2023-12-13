@@ -39,7 +39,7 @@ lemma pow_dvd_add_pow_of_pow_eq_zero_right (hy : y ^ n = 0) :
     x ^ m ∣ (x + y) ^ p := by
   rw [h_comm.add_pow']
   refine Finset.dvd_sum fun ⟨i, j⟩ hij ↦ ?_
-  rw [Finset.mem_antidiagonal] at hij
+  replace hij : i + j = p := by simpa using hij
   apply dvd_nsmul_of_dvd
   rcases le_or_lt m i with (hi : m ≤ i) | (hi : i + 1 ≤ m)
   · exact dvd_mul_of_dvd_left (pow_dvd_pow x hi) _
