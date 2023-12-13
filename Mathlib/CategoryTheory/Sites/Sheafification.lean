@@ -122,12 +122,10 @@ noncomputable abbrev sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
   presheafToSheaf J D ⋙ sheafToPresheaf J D
 #align category_theory.grothendieck_topology.sheafification CategoryTheory.GrothendieckTopology.sheafification
 
-@[simp]
 theorem sheafification_obj (P : Cᵒᵖ ⥤ D) : (J.sheafification D).obj P = J.sheafify P :=
   rfl
 #align category_theory.grothendieck_topology.sheafification_obj CategoryTheory.GrothendieckTopology.sheafification_obj
 
-@[simp]
 theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
     (J.sheafification D).map η = J.sheafifyMap η :=
   rfl
