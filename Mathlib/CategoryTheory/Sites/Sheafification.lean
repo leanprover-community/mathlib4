@@ -221,6 +221,8 @@ end GrothendieckTopology
 
 open GrothendieckTopology
 
+variable (D)
+
 @[simp]
 theorem sheafificationAdjunction_unit_app {P : Cᵒᵖ ⥤ D} :
   (sheafificationAdjunction J D).unit.app P = J.toSheafify P := rfl
@@ -231,5 +233,20 @@ theorem sheafificationAdjunction_counit_app_val (P : Sheaf J D) :
   unfold sheafifyLift
   rw [Adjunction.homEquiv_counit]
   simp
+
+instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
+  (sheafToPresheaf J D).map_mono _
+#align category_theory.presheaf_mono_of_mono CategoryTheory.presheaf_mono_of_mono
+
+theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
+  ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
+set_option linter.uppercaseLean3 false in
+#align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
+
+/-- porting note: added to ease the port of CategoryTheory.Sites.LeftExact -/
+@[simps! hom_app inv_app]
+noncomputable
+def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
+    J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D := by rfl
 
 end CategoryTheory
