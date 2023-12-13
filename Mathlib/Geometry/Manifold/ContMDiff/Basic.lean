@@ -431,7 +431,7 @@ lemma contMDiff_openEmbedding :
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
-    rw [mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
+    rw [mem_preimage, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toPartialHomeomorph_target] at this
     exact this
 
