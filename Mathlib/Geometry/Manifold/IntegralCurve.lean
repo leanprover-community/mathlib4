@@ -125,8 +125,9 @@ lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ
   obtain ⟨ε, hε, h⟩ := h t ht
   exact h t (Real.ball_eq_Ioo _ _ ▸ Metric.mem_ball_self hε)
 
-/-! ### Translation lemmas -/
 
+/-! ### Translation lemmas -/
+section Translation
 lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
@@ -176,8 +177,10 @@ lemma isIntegralCurve_comp_add {dt : ℝ} :
   ext
   simp only [Function.comp_apply, neg_add_cancel_right]
 
-/-! ### Scale lemmas -/
+end Translation
 
+/-! ### Scaling lemmas -/
+section Scaling
 lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
     IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intros t ht
@@ -258,6 +261,8 @@ lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
     Continuous γ := continuous_iff_continuousAt.mpr
       fun _ => (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
+end Scaling
+
 variable (t₀) {x₀ : M}
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
@@ -272,8 +277,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
-  obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
-    exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
+  obtain ⟨f, hf1, ε1, hε1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
       (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
   rw [← Real.ball_eq_Ioo] at hf2
   -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
@@ -281,7 +285,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   have hcont := (hf2 t₀ (Metric.mem_ball_self hε1)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
-    hcont _ (isOpen_interior.mem_nhds (ModelWithCorners.isInteriorPoint_iff.mp hx))
+    hcont _ (isOpen_interior.mem_nhds ((I.isInteriorPoint_iff).mp hx))
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨ε2, hε2, hf3⟩ := hnhds
   simp_rw [subset_def, mem_preimage] at hf3
@@ -304,7 +308,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
   have hft2 := mem_extChartAt_source I ((extChartAt I x₀).symm (f t))
   -- express the derivative of the integral curve in the local chart
-  refine ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') (h.continuousAt),
+  refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
