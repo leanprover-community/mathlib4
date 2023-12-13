@@ -369,22 +369,6 @@ lemma set_smul_le_of_le_le {s t : Set R} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_mono_left _ le_set) <| set_smul_mono_right _ le_submodule
 
--- variable {s N} in
--- @[elab_as_elim]
--- lemma set_smul_inductionOn {prop : M → Prop} (x : M)
---     (hx : x ∈ s • N)
---     (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
---     (smul₁ : ∀ (r : R) ⦃m : M⦄, prop m → prop (r • m))
---     (add : ∀ ⦃m₁ m₂ : M⦄, prop m₁ → prop m₂ → prop (m₁ + m₂))
---     (zero : prop 0) :
---     prop x :=
---   set_smul_le s N
---     { carrier := {m : M | prop m}
---       add_mem' := fun {x y} ↦ @add x y
---       zero_mem' := zero
---       smul_mem' := smul₁ }
---     smul₀ hx
-
 variable {s N} in
 @[elab_as_elim]
 lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
