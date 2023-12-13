@@ -430,7 +430,7 @@ lemma mem_singleton_set_smul [SMulCommClass R R M] (r : R) (x : M) :
   · rintro ⟨m, hm, rfl⟩; exact ⟨m, hm, rfl⟩
 
 /-- subset of a ring has a multiplicative action on its submodules-/
-protected def pointwiseSetMulActionSubmodule [SMulCommClass R R M] :
+protected def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
@@ -456,7 +456,7 @@ protected def pointwiseSetMulActionSubmodule [SMulCommClass R R M] :
       apply mem_set_smul_of_mem_mem (mem2 := (c _).2)
       exact ⟨r, r', hr, hc1 hr', rfl⟩)
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulActionSubmodule
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
 lemma set_smul_eq_iSup [SMulCommClass R R M] :
     s • N = ⨆ (r ∈ s), r • N :=
