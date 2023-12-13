@@ -180,6 +180,63 @@ theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n)
   exact (sum_fin _ (by simp_rw [zero_mul, forall_const]) (mem_degreeLT.mp hp)).symm
 #align polynomial.eval_eq_sum_degree_lt_equiv Polynomial.eval_eq_sum_degreeLTEquiv
 
+theorem degreeLT_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n := by
+  ext x
+  by_cases x_zero : x = 0
+  · simp_rw [x_zero, Submodule.zero_mem]
+  · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
+      ← natDegree_le_iff_degree_le, Nat.lt_succ]
+
+/-- For every polynomial `p` in the span of a set `s : K[X]`, there exists a polynomial of `p' ∈ s`
+  with higher degree. See also `degree_span'` -/
+theorem degree_span {s : Set R[X]} {p : R[X]} (hs : s.Nonempty) (hp : p ∈ Submodule.span R s) :
+    ∃ p' ∈ s, degree p ≤ degree p' := by
+  by_contra! h
+  by_cases hp_zero : p = 0
+  · rw [hp_zero, degree_zero] at h
+    rcases hs with ⟨x,hx⟩
+    exact not_lt_bot (h x hx)
+  · have : p ∈ degreeLT R (natDegree p) := by
+      refine (Submodule.span_le.mpr fun p' p'_mem => ?_) hp
+      rw [SetLike.mem_coe, mem_degreeLT, Nat.cast_withBot]
+      exact lt_of_lt_of_le (h p' p'_mem) degree_le_natDegree
+    rwa [mem_degreeLT, Nat.cast_withBot, degree_eq_natDegree hp_zero,
+      Nat.cast_withBot, lt_self_iff_false] at this
+
+/-- A stronger version of `degree_span` under the assumption that the set `s : R[X]` is finite.
+  There exists a polynomial `p' ∈ s` whose degree dominates the degree of every element of
+  `p ∈ span R s`-/
+theorem degree_span' {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
+    ∃ p' ∈ s, ∀ (p : R[X]), p ∈ Submodule.span R s → degree p ≤ degree p' := by
+  rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
+  refine ⟨a, has, fun p hp => ?_⟩
+  rcases degree_span hs hp with ⟨p', hp'⟩
+  have p'max := hmax p' hp'.left
+  by_cases h : degree a ≤ degree p'
+  · rw [← p'max h] at hp'; exact hp'.right
+  · exact le_trans hp'.right (not_le.mp h).le
+
+/-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
+theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
+    ∃ n : ℕ, Submodule.span R s ≤ degreeLE R n := by
+  by_cases s_emp : s.Nonempty
+  · by_contra!
+    rcases degree_span' s_fin s_emp with ⟨p', _, hp'max⟩
+    rcases SetLike.not_le_iff_exists.mp (this (natDegree p' + 1)) with ⟨p, hp, hp2⟩
+    apply hp2
+    rw [mem_degreeLE, Nat.cast_add, Nat.cast_one, ← Nat.cast_succ]
+    refine le_trans (le_trans (hp'max p hp) degree_le_natDegree) ?_
+    exact Nat.cast_le.mpr (Nat.le_succ (natDegree p'))
+  · rw [Set.not_nonempty_iff_eq_empty] at s_emp
+    rw [s_emp, Submodule.span_empty]
+    exact ⟨0, bot_le⟩
+
+/-- The span of every finite set of polynomials is contained in a `degreeLT n` for some `n`. -/
+theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
+    ∃ n : ℕ, Submodule.span R s ≤ degreeLT R n := by
+  rcases span_of_finite_le_degreeLE s_fin with ⟨n,_⟩
+  exact ⟨n+1, by rwa [degreeLT_eq_degreeLE]⟩
+
 /-- The finset of nonzero coefficients of a polynomial. -/
 def frange (p : R[X]) : Finset R :=
   letI := Classical.decEq R
@@ -644,6 +701,20 @@ end CommSemiring
 section Ring
 
 variable [Ring R]
+
+/-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
+a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
+theorem polynomials_infinite_dimensional {R : Type u} [Semiring R] [Nontrivial R]:
+    ¬ (Module.Finite R R[X]) := by
+  rw [Module.finite_def, Submodule.fg_def]
+  push_neg
+  intro s hs contra
+  rcases span_of_finite_le_degreeLE hs with ⟨n,hn⟩
+  have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
+    rw [contra] at hn
+    exact hn Submodule.mem_top
+  rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  exact one_ne_zero this
 
 /-- `R[X]` is never a field for any ring `R`. -/
 theorem polynomial_not_isField : ¬IsField R[X] := by
