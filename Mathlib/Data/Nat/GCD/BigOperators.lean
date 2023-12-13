@@ -30,21 +30,21 @@ theorem coprime_prod_right {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset �
   Finset.prod_induction s (fun y ↦ x.Coprime y) (fun a b ↦ Coprime.mul_right) (by simp)
 #align nat.coprime_prod_right Nat.coprime_prod_right
 
-theorem coprime_prod_left_iff {ι : Type*} [DecidableEq ι] {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
+theorem coprime_prod_left_iff {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
     Coprime (∏ i : ι in t, s i) x ↔ (∀ i : ι, i ∈ t → Coprime (s i) x) :=
-  Finset.induction_on t (by simp) fun i s his ih ↦ by
-    rw [Finset.prod_insert his, Nat.coprime_mul_iff_left, ih, Finset.forall_mem_insert]
+  Finset.cons_induction_on t (by simp) fun i s his ih ↦ by
+    rw [Finset.prod_cons, Nat.coprime_mul_iff_left, ih, Finset.forall_mem_cons]
 
-theorem coprime_prod_right_iff {ι : Type*} [DecidableEq ι] {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
+theorem coprime_prod_right_iff {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
     Coprime x (∏ i : ι in t, s i) ↔ (∀ i : ι, i ∈ t → Coprime x (s i)) :=
-  Finset.induction_on t (by simp) fun i s his ih ↦ by
-    rw [Finset.prod_insert his, Nat.coprime_mul_iff_right, ih, Finset.forall_mem_insert]
+  Finset.cons_induction_on t (by simp) fun i s his ih ↦ by
+    rw [Finset.prod_cons, Nat.coprime_mul_iff_right, ih, Finset.forall_mem_cons]
 
-theorem coprime_fintype_prod_left_iff {ι : Type*} [Fintype ι] [DecidableEq ι] {x : ℕ} {s : ι → ℕ} :
+theorem coprime_fintype_prod_left_iff {ι : Type*} [Fintype ι] {x : ℕ} {s : ι → ℕ} :
     Coprime (∏ i, s i) x ↔ (∀ i : ι, Coprime (s i) x) := by
   simp [coprime_prod_left_iff]
 
-theorem coprime_fintype_prod_right_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+theorem coprime_fintype_prod_right_iff {ι : Type*} [Fintype ι]
     {x : ℕ} {s : ι → ℕ} : Coprime x (∏ i, s i) ↔ (∀ i : ι, Coprime x (s i)) := by
   simp [coprime_prod_right_iff]
 
