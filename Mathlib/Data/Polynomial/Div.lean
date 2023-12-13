@@ -540,6 +540,12 @@ theorem pow_mul_divByMonic_rootMultiplicity_eq (p : R[X]) (a : R) :
   simp
 #align polynomial.div_by_monic_mul_pow_root_multiplicity_eq Polynomial.pow_mul_divByMonic_rootMultiplicity_eq
 
+theorem exists_eq_pow_rootMultiplicity_mul_and_not_dvd (p : R[X]) (hp : p ≠ 0) (a : R) :
+    ∃ q : R[X], p = (X - C a) ^ p.rootMultiplicity a * q ∧ ¬ (X - C a) ∣ q := by
+  classical
+  rw [rootMultiplicity_eq_multiplicity, dif_neg hp]
+  apply multiplicity.exists_eq_pow_mul_and_not_dvd
+
 end multiplicity
 
 end Ring
