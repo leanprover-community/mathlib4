@@ -1808,6 +1808,17 @@ theorem real.cutoff_cutoff_of_le
   ext : 1
   exact FormalSeries.cutoff_cutoff_of_le (b := b) f h
 
+lemma real.le_of_forall_cutoff_le_cutoff {f g : real Z b} (h : ∀ z, cutoff z f ≤ cutoff z g) :
+    f ≤ g := by
+  rw [←not_lt]
+  intro H
+  obtain ⟨hne, z, hz⟩ := id H
+  rw [sub_ne_zero, FunLike.ne_iff] at hne
+  obtain ⟨x, hx⟩ := hne
+  rw [←cutoff_apply_self f.val, ←val_cutoff, le_antisymm (h _) (cutoff_mono _ H.le),
+      val_cutoff, cutoff_apply_self] at hx
+  exact hx rfl
+
 theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S = {0}
     (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) :
     ∃ z x, IsLeast (real.cutoff z '' S) x := by
@@ -2129,6 +2140,39 @@ protected lemma real.cInf_le (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelo
   rw [Subtype.ext_iff, FunLike.ext_iff] at hcf'
   specialize hcf' x
   simp [IH.left.ne'] at hcf'
+
+protected lemma real.cInf_lt_iff {S : Set (real Z b)} {hn : S.Nonempty} {h : BddBelow S}
+    {f : real Z b} : real.cInf S hn h < f ↔ ∃ g ∈ S, g < f := by
+  constructor
+  · intro H
+    have : ∃ z, cutoff z (real.cInf S hn h) < cutoff z f := by
+      contrapose! H
+      exact le_of_forall_cutoff_le_cutoff H
+    obtain ⟨z, hz⟩ := this
+    obtain ⟨g, hg, hg'⟩ := (real.exists_isLeast_image_cutoff S hn h z).choose_spec.left
+    have : cutoff z (real.cInf S hn h) = cutoff z g := by
+      ext i : 2
+      cases' lt_or_le z i with hi hi
+      · simp [cutoff_apply_lt, hi]
+      · rw [real.cInf, val_cutoff, cutoff_apply_le _ _ _ hi, val_cutoff]
+        simp only [real.cInf_aux, mk_apply]
+        obtain ⟨u, hu, hu'⟩ := (real.exists_isLeast_image_cutoff S hn h i).choose_spec.left
+        have hug : cutoff i u ≤ cutoff i g := hu'.le.trans <|
+          (real.exists_isLeast_image_cutoff S hn h i).choose_spec.right ⟨g, hg, rfl⟩
+        have hgu : cutoff z g ≤ cutoff z u := hg'.le.trans <|
+          (real.exists_isLeast_image_cutoff S hn h z).choose_spec.right ⟨u, hu, rfl⟩
+        replace hug : cutoff i u = cutoff i g := by
+          refine le_antisymm hug ?_
+          convert cutoff_mono i hgu using 1 <;>
+          rw [cutoff_cutoff_of_le _ hi]
+        rw [←hu', hug, val_cutoff, cutoff_apply_le _ _ _ hi, cutoff_apply_self]
+    refine ⟨g, hg, ?_⟩
+    contrapose! hz
+    rw [this]
+    exact cutoff_mono _ hz
+  · rintro ⟨g, hg, hg'⟩
+    contrapose! hg'
+    exact hg'.trans (real.cInf_le _ _ _ _ hg)
 
 end FormalSeries
 end S10
