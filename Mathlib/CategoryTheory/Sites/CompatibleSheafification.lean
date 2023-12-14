@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+import Mathlib.CategoryTheory.Sites.LeftExact
 
 #align_import category_theory.sites.compatible_sheafification from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -155,6 +155,29 @@ theorem sheafifyCompIso_inv_eq_sheafifyLift :
   rw [Iso.comp_inv_eq]
   simp
 #align category_theory.grothendieck_topology.sheafify_comp_iso_inv_eq_sheafify_lift CategoryTheory.GrothendieckTopology.sheafifyCompIso_inv_eq_sheafifyLift
+
+-- We will sheafify `E`-valued presheaves in this section.
+variable [ConcreteCategory.{max v u} E] [PreservesLimits (forget E)]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget E)] [ReflectsIsomorphisms (forget E)]
+
+/-- The isomorphism between the sheafification of `P` composed with `F` and
+the sheafification of `P ⋙ F`. -/
+@[simps!]
+noncomputable def sheafifyCompIso' : J.sheafify P ⋙ F ≅ J.sheafify (P ⋙ F) :=
+  isoWhiskerRight (plusPlusIsoSheafify _ _ _).symm F ≪≫ J.sheafifyCompIso _ _ ≪≫
+    plusPlusIsoSheafify _ _ _
+
+/-- The isomorphism between the sheafification of `P` composed with `F` and
+the sheafification of `P ⋙ F`, functorially in `F`. -/
+@[simps!]
+noncomputable def sheafificationWhiskerLeftIso' (P : Cᵒᵖ ⥤ D)
+    [∀ (F : D ⥤ E) (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
+    [∀ (F : D ⥤ E) (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D),
+        PreservesLimit (W.index P).multicospan F] :
+    (whiskeringLeft _ _ E).obj (J.sheafify P) ≅
+    (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E :=
+  (whiskeringLeft Cᵒᵖ D E).mapIso (plusPlusIsoSheafify J D P).symm ≪≫
+    J.sheafificationWhiskerLeftIso P ≪≫ isoWhiskerLeft _ (plusPlusFunctorIsoSheafification J E)
 
 end
 
