@@ -183,8 +183,8 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.PNatPowAssoc
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
