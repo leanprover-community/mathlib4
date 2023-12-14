@@ -144,15 +144,6 @@ theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis b 
     finrank K V = Finset.card b := by rw [finrank_eq_card_basis h, Fintype.card_coe]
 #align finite_dimensional.finrank_eq_card_finset_basis FiniteDimensional.finrank_eq_card_finset_basis
 
-theorem finrank_eq_nat_card_basis {ι : Type w} (h : Basis ι K V) : finrank K V = Nat.card ι := by
-  cases finite_or_infinite ι
-  · letI := Fintype.ofFinite ι
-    rw [Nat.card_eq_fintype_card]
-    exact finrank_eq_card_basis h
-  · rw [Nat.card_eq_zero_of_infinite, finrank, toNat_eq_zero]
-    have := nontrivial_of_invariantBasisNumber K
-    exact .inr h.linearIndependent.aleph0_le_rank
-
 variable (K)
 
 /-- A ring satisfying `StrongRankCondition` (such as a `DivisionRing`) is one-dimensional as a
@@ -193,14 +184,33 @@ end FiniteDimensional
 
 section ZeroRank
 
-variable [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V] [Module.Free K V]
+variable [Ring K] [AddCommGroup V] [Module K V]
 
 open FiniteDimensional
 
+lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Nontrivial K] [Infinite ι] {v : ι → V}
+    (hv : LinearIndependent K v) : finrank K V = 0 := toNat_eq_zero.mpr <| .inr hv.aleph0_le_rank
+
+theorem finrank_eq_nat_card_basis {ι} [StrongRankCondition K]
+    (h : Basis ι K V) : finrank K V = Nat.card ι := by
+  cases finite_or_infinite ι
+  · letI := Fintype.ofFinite ι
+    rw [Nat.card_eq_fintype_card]
+    exact finrank_eq_card_basis h
+  · rw [Nat.card_eq_zero_of_infinite]
+    have := nontrivial_of_invariantBasisNumber K
+    exact h.linearIndependent.finrank_eq_zero_of_infinite
+
+variable [Module.Free K V]
+
 theorem finrank_eq_zero_of_basis_imp_not_finite
     (h : ∀ s : Set V, Basis.{v} (s : Set V) K V → ¬s.Finite) : finrank K V = 0 := by
+  cases subsingleton_or_nontrivial K
+  · have := Module.subsingleton K V
+    exact (h ∅ ⟨LinearEquiv.ofSubsingleton _ _⟩ Set.finite_empty).elim
   obtain ⟨_, ⟨b⟩⟩ := (Module.free_iff_set K V).mp ‹_›
-  exact dif_neg fun rank_lt => h _ b (b.finite_index_of_rank_lt_aleph0 rank_lt)
+  have := Set.Infinite.to_subtype (h _ b)
+  exact b.linearIndependent.finrank_eq_zero_of_infinite
 #align finrank_eq_zero_of_basis_imp_not_finite finrank_eq_zero_of_basis_imp_not_finite
 
 theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset V, Basis.{v} (s : Set V) K V → False) :
