@@ -164,7 +164,7 @@ theorem log_stirlingSeq_bounded_aux :
       rw [← sum_range_sub' log_stirlingSeq' n]
     _ ≤ ∑ k in range n, ↑1 / ↑4 * (↑1 / ↑((k + 1)) ^ 2) := (sum_le_sum fun k _ => h₁ k)
     _ = ↑1 / ↑4 * ∑ k in range n, ↑1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
-    _ ≤ 1 / 4 * d := mul_le_mul_of_nonneg_left h₂ <| by positivity
+    _ ≤ 1 / 4 * d := by gcongr
 #align stirling.log_stirling_seq_bounded_aux Stirling.log_stirlingSeq_bounded_aux
 
 /-- The sequence `log_stirlingSeq` is bounded below for `n ≥ 1`. -/

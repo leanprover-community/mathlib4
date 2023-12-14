@@ -332,7 +332,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   set i := c.index j
   push_neg at H
   have i_pos : (0 : ℕ) < i := by
-    by_contra' i_pos
+    by_contra! i_pos
     revert H
     simp [nonpos_iff_eq_zero.1 i_pos, c.sizeUpTo_zero]
   let i₁ := (i : ℕ).pred
@@ -835,7 +835,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · rw [add_comm] at this
         contradiction
       · cases' h with w h; cases' h with h₁ h₂
-        rw [←Fin.ext_iff] at h₂
+        rw [← Fin.ext_iff] at h₂
         rwa [h₂]
     · intro h
       apply Or.inr

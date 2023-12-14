@@ -515,6 +515,9 @@ theorem fromRel_top : fromRel (fun (x y : α) z => z : Symmetric ⊤) = Set.univ
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 #align sym2.from_rel_top Sym2.fromRel_top
 
+theorem fromRel_ne : fromRel (fun (x y : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+  ext z; exact z.ind (by simp)
+
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
   { mp := by intro h; apply Sym2.ind; aesop
@@ -568,7 +571,7 @@ private def fromVector : Vector α 2 → α × α
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     [a₁, b₁].Perm [a₂, b₂] ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ a₁ = b₂ ∧ b₁ = a₂ :=
   { mp := by
-      simp only [←Multiset.coe_eq_coe, ←Multiset.cons_coe, Multiset.coe_nil, Multiset.cons_zero,
+      simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.coe_nil, Multiset.cons_zero,
         Multiset.cons_eq_cons, Multiset.singleton_inj, ne_eq, Multiset.singleton_eq_cons_iff,
         exists_eq_right_right, and_true]
       tauto

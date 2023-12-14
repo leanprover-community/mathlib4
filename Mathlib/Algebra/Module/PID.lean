@@ -197,9 +197,9 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           Function.comp_apply]
       refine ⟨?_, ⟨?_⟩⟩
       · exact fun a => (fun i => (Option.rec (pOrder hN (s j)) k i : ℕ)) (finSuccEquiv d a)
-      · refine (((@lequivProdOfRightSplitExact _ _ _ _ _ _ _ _ _ _ _ _
-          ((f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
-          ((DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
+      · refine (((lequivProdOfRightSplitExact
+          (g := (f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
+          (f := (DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
               (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)).comp
             ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype ?_ ?_).symm.trans
           (((quotTorsionOfEquivSpanSingleton R N (s j)).symm.trans

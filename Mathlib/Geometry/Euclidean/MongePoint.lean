@@ -111,8 +111,8 @@ theorem mongePoint_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
 /-- The weights for the Monge point of an (n+2)-simplex, in terms of
 `pointsWithCircumcenter`. -/
 def mongePointWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index _ => ((n + 1 : ℕ) : ℝ)⁻¹
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex _ => ((n + 1 : ℕ) : ℝ)⁻¹
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_weights_with_circumcenter Affine.Simplex.mongePointWeightsWithCircumcenter
 
 /-- `mongePointWeightsWithCircumcenter` sums to 1. -/
@@ -161,8 +161,8 @@ centroid of an n-dimensional face, in terms of
 `pointsWithCircumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
 def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
     PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_vsub_face_centroid_weights_with_circumcenter Affine.Simplex.mongePointVSubFaceCentroidWeightsWithCircumcenter
 
 /-- `mongePointVSubFaceCentroidWeightsWithCircumcenter` is the
@@ -310,7 +310,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
   rw [Submodule.iInf_orthogonal, ← Submodule.span_iUnion] at hi
   have hu :
     ⋃ i : { i // i₁ ≠ i }, ({s.points i₁ -ᵥ s.points i} : Set V) =
-      (· -ᵥ ·) (s.points i₁) '' (s.points '' (Set.univ \ {i₁})) := by
+      (s.points i₁ -ᵥ ·) '' (s.points '' (Set.univ \ {i₁})) := by
     rw [Set.image_image]
     ext x
     simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_diff_singleton]
@@ -713,7 +713,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     have h₁₂₃ := h₁₂₃ i
     repeat' cases' h₁₂₃ with h₁₂₃ h₁₂₃
     · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
-    · rw [←h₂, dist_reflection_eq_of_mem _
+    · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
       exact t.dist_circumcenter_eq_circumradius _
     · rw [← h₃,

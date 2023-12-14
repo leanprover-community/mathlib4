@@ -275,7 +275,7 @@ variable {L M}
 
 namespace Embedding
 
-/-- The Tarski-Vaught test for elementarity of an embedding. -/
+/-- The **Tarski-Vaught test** for elementarity of an embedding. -/
 theorem isElementary_of_exists (f : M ↪[L] N)
     (htv :
       ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → M) (a : N),

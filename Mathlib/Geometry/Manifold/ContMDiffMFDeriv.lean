@@ -567,7 +567,7 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
   rcases p with ⟨x, v⟩
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by
     apply IsOpen.mem_nhds
-    apply (LocalHomeomorph.open_target _).preimage I.continuous_invFun
+    apply (PartialHomeomorph.open_target _).preimage I.continuous_invFun
     simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
     haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=

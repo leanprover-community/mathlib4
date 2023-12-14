@@ -91,6 +91,22 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
 #align function.support_eq_iff Function.support_eq_iff
 
 @[to_additive]
+theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
+    mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
+  mulSupport_subset_iff'.mpr fun x hfg ↦ by
+    by_cases hf : ∃ a, f a = x
+    · rw [extend, dif_pos hf, ← nmem_mulSupport]
+      rw [← Classical.choose_spec hf] at hfg
+      exact fun hg ↦ hfg ⟨_, hg, rfl⟩
+    · rw [extend_apply' _ _ _ hf]; rfl
+
+@[to_additive]
+theorem mulSupport_extend_one {f : α → M} {g : α → N} (hf : f.Injective) :
+    mulSupport (f.extend g 1) = f '' mulSupport g :=
+  mulSupport_extend_one_subset.antisymm <| by
+    rintro _ ⟨x, hx, rfl⟩; rwa [mem_mulSupport, hf.extend_apply]
+
+@[to_additive]
 theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
     Disjoint (mulSupport f) s ↔ EqOn f 1 s := by
   simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', not_mem_compl_iff, EqOn,

@@ -436,7 +436,7 @@ theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : S
 #align set.mem_image_iff_of_inverse Set.mem_image_iff_of_inverse
 
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
-  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ←image_inter H]
+  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
 #align set.image_compl_subset Set.image_compl_subset
 
 theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f '' s)ᶜ ⊆ f '' sᶜ :=
@@ -1003,7 +1003,7 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
 #align set.range_quotient_lift_on' Set.range_quotient_lift_on'
 
 instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Set α) (Set β) ((· '' ·) c) fun s => ∀ x ∈ s, p x where
+    CanLift (Set α) (Set β) (c '' ·) fun s => ∀ x ∈ s, p x where
   prf _ hs := subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
 #align set.can_lift Set.canLift
 

@@ -414,7 +414,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
+theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
@@ -723,7 +723,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
+theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 #align strict_anti_mul_left strictAnti_mul_left
 

@@ -15,7 +15,6 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-
 open MeasureTheory MeasureTheory.Measure Filter Set Function Classical ENNReal
 
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
@@ -51,6 +50,11 @@ lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
   simp [h'] at h
 
 namespace AEMeasurable
+
+protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h
+  hgm.nullMeasurable.congr hg.symm
+#align ae_measurable.null_measurable AEMeasurable.nullMeasurable
 
 lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :=
   ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
@@ -180,16 +184,8 @@ theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ �
 theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by
   ext1 s hs
-  let g' := hg.mk g
-  have A : map g (map f μ) = map g' (map f μ) := by
-    apply MeasureTheory.Measure.map_congr
-    exact hg.ae_eq_mk
-  have B : map (g ∘ f) μ = map (g' ∘ f) μ := by
-    apply MeasureTheory.Measure.map_congr
-    exact ae_of_ae_map hf hg.ae_eq_mk
-  simp only [A, B, hs, hg.measurable_mk.aemeasurable.comp_aemeasurable hf, hg.measurable_mk,
-    hg.measurable_mk hs, hf, map_apply, map_apply_of_aemeasurable]
-  rfl
+  rw [map_apply_of_aemeasurable hg hs, map_apply₀ hf (hg.nullMeasurable hs),
+    map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 #align ae_measurable.map_map_of_ae_measurable AEMeasurable.map_map_of_aemeasurable
 
 @[measurability]
@@ -239,11 +235,6 @@ theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s}
   filter_upwards [fg] with x hx
   simpa [Subtype.ext_iff]
 #align ae_measurable.subtype_mk AEMeasurable.subtype_mk
-
-protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :=
-  let ⟨_g, hgm, hg⟩ := h
-  hgm.nullMeasurable.congr hg.symm
-#align ae_measurable.null_measurable AEMeasurable.nullMeasurable
 
 end AEMeasurable
 
@@ -447,3 +438,24 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
     lift f' to α → t using hf't
     replace hf'm : NullMeasurable f' μ := hf'm.measurable'.subtype_mk
     exact (measurable_subtype_coe.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
+
+namespace MeasureTheory
+namespace Measure
+
+lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasurable f (Measure.sum m)) :
+    Measure.map f (Measure.sum m) = Measure.sum (fun i ↦ Measure.map f (m i)) := by
+  ext s hs
+  rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
+  have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
+  simp_rw [map_apply_of_aemeasurable (M _) hs]
+
+instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
+  by_cases H : AEMeasurable f μ
+  · rw [← sum_sFiniteSeq μ] at H ⊢
+    rw [map_sum H]
+    infer_instance
+  · rw [map_of_not_aemeasurable H]
+    infer_instance
+
+end Measure
+end MeasureTheory

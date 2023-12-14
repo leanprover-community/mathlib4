@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.FinCases
@@ -249,7 +250,7 @@ theorem nat_cast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n →
 @[simp]
 theorem int_cast_comp_cast : ((↑) : ℤ → R) ∘ ((↑) : ZMod n → ℤ) = (↑) := by
   cases n
-  · exact congr_arg ((· ∘ ·) Int.cast) ZMod.cast_id'
+  · exact congr_arg (Int.cast ∘ ·) ZMod.cast_id'
   · ext
     simp [ZMod, ZMod.cast]
 #align zmod.int_cast_comp_cast ZMod.int_cast_comp_cast
@@ -842,7 +843,7 @@ instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
     a + a = 0 ↔ a = 0 := by
   rw [Nat.odd_iff, ← Nat.two_dvd_ne_zero, ← Nat.prime_two.coprime_iff_not_dvd] at hn
-  rw [←mul_two, ←@Nat.cast_two (ZMod n), ←ZMod.coe_unitOfCoprime 2 hn, Units.mul_left_eq_zero]
+  rw [← mul_two, ← @Nat.cast_two (ZMod n), ← ZMod.coe_unitOfCoprime 2 hn, Units.mul_left_eq_zero]
 
 theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -a := by
   rwa [Ne, eq_neg_iff_add_eq_zero, add_self_eq_zero_iff_eq_zero hn]
@@ -1106,13 +1107,13 @@ theorem valMinAbs_natAbs_eq_min {n : ℕ} [hpos : NeZero n] (a : ZMod n) :
   · rw [Int.natAbs_ofNat]
     symm
     apply
-      min_eq_left (le_trans h (le_trans (Nat.half_le_of_sub_le_half _) (Nat.sub_le_sub_left n h)))
+      min_eq_left (le_trans h (le_trans (Nat.half_le_of_sub_le_half _) (Nat.sub_le_sub_left h n)))
     rw [Nat.sub_sub_self (Nat.div_le_self _ _)]
   · rw [← Int.natAbs_neg, neg_sub, ← Nat.cast_sub a.val_le]
     symm
     apply
       min_eq_right
-        (le_trans (le_trans (Nat.sub_le_sub_left n (lt_of_not_ge h)) (Nat.le_half_of_half_lt_sub _))
+        (le_trans (le_trans (Nat.sub_le_sub_left (lt_of_not_ge h) n) (Nat.le_half_of_half_lt_sub _))
           (le_of_not_ge h))
     rw [Nat.sub_sub_self (Nat.div_lt_self (lt_of_le_of_ne' (Nat.zero_le _) hpos.1) one_lt_two)]
     apply Nat.lt_succ_self

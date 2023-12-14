@@ -374,10 +374,10 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
   forall_congr' fun _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
 #align diffeomorph.cont_mdiff_diffeomorph_comp_iff Diffeomorph.contMDiff_diffeomorph_comp_iff
 
-theorem toLocalHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    h.toHomeomorph.toLocalHomeomorph.MDifferentiable I J :=
+theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+    h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
-#align diffeomorph.to_local_homeomorph_mdifferentiable Diffeomorph.toLocalHomeomorph_mdifferentiable
+#align diffeomorph.to_local_homeomorph_mdifferentiable Diffeomorph.toPartialHomeomorph_mdifferentiable
 
 section Constructions
 
@@ -442,7 +442,7 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
-  convert hs.uniqueMDiffOn_preimage (h.toLocalHomeomorph_mdifferentiable hn)
+  convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage]
 #align diffeomorph.unique_mdiff_on_image_aux Diffeomorph.uniqueMDiffOn_image_aux
 

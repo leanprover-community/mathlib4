@@ -182,17 +182,9 @@ namespace Expr
 
 /-! ### Declarations about `Expr` -/
 
-/-- If the expression is a constant, return that name. Otherwise return `Name.anonymous`. -/
-def constName (e : Expr) : Name :=
-  e.constName?.getD Name.anonymous
-
 def bvarIdx? : Expr → Option Nat
   | bvar idx => some idx
   | _        => none
-
-/-- Return the function (name) and arguments of an application. -/
-def getAppFnArgs (e : Expr) : Name × Array Expr :=
-  withApp e λ e a => (e.constName, a)
 
 /-- Invariant: `i : ℕ` should be less than the size of `as : Array Expr`. -/
 private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
@@ -453,7 +445,7 @@ def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
 /-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
 structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
 def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+  let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
   let some baseStruct := findField? (← getEnv) structName fieldName |
     throwError "No parent of {structName} has field {fieldName}"

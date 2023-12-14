@@ -56,7 +56,7 @@ theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t,
 theorem ConcaveOn.le_map_centerMass (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : 0 < ∑ i in t, w i) (hmem : ∀ i ∈ t, p i ∈ s) :
     t.centerMass w (f ∘ p) ≤ f (t.centerMass w p) :=
-  @ConvexOn.map_centerMass_le 𝕜 E βᵒᵈ _ _ _ _ _ _ _ _ _ _ _ _ hf h₀ h₁ hmem
+  ConvexOn.map_centerMass_le (β := βᵒᵈ) hf h₀ h₁ hmem
 #align concave_on.le_map_center_mass ConcaveOn.le_map_centerMass
 
 /-- Convex **Jensen's inequality**, `Finset.sum` version. -/
@@ -70,7 +70,7 @@ theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ 
 theorem ConcaveOn.le_map_sum (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : ∑ i in t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     (∑ i in t, w i • f (p i)) ≤ f (∑ i in t, w i • p i) :=
-  @ConvexOn.map_sum_le 𝕜 E βᵒᵈ _ _ _ _ _ _ _ _ _ _ _ _ hf h₀ h₁ hmem
+  ConvexOn.map_sum_le (β := βᵒᵈ) hf h₀ h₁ hmem
 #align concave_on.le_map_sum ConcaveOn.le_map_sum
 
 end Jensen
@@ -119,7 +119,7 @@ theorem ConvexOn.exists_ge_of_centerMass (h : ConvexOn 𝕜 s f) (hw₀ : ∀ i 
 `s` is greater than the value it takes on one of those points. -/
 theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ i ∈ t, 0 ≤ w i)
     (hw₁ : 0 < ∑ i in t, w i) (hp : ∀ i ∈ t, p i ∈ s) : ∃ i ∈ t, f (p i) ≤ f (t.centerMass w p) :=
-  @ConvexOn.exists_ge_of_centerMass 𝕜 E βᵒᵈ _ _ _ _ _ _ _ _ _ _ _ _ h hw₀ hw₁ hp
+  ConvexOn.exists_ge_of_centerMass (β := βᵒᵈ) h hw₀ hw₁ hp
 #align concave_on.exists_le_of_center_mass ConcaveOn.exists_le_of_centerMass
 
 /-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
@@ -138,7 +138,7 @@ theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull �
 then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConcaveOn.exists_le_of_mem_convexHull (hf : ConcaveOn 𝕜 (convexHull 𝕜 s) f) {x}
     (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f y ≤ f x :=
-  @ConvexOn.exists_ge_of_mem_convexHull 𝕜 E βᵒᵈ _ _ _ _ _ _ _ _ hf _ hx
+  ConvexOn.exists_ge_of_mem_convexHull (β := βᵒᵈ) hf hx
 #align concave_on.exists_le_of_mem_convex_hull ConcaveOn.exists_le_of_mem_convexHull
 
 end MaximumPrinciple
