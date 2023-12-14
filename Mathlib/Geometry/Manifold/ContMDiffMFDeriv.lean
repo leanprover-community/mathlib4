@@ -97,7 +97,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
           (range I) (extChartAt I (g x₀) (g ((extChartAt J x₀).symm x))))
       (range J) (extChartAt J x₀ x₀) := by
     rw [contMDiffAt_iff] at hf hg
-    simp_rw [Function.comp, uncurry, extChartAt_prod, LocalEquiv.prod_coe_symm,
+    simp_rw [Function.comp, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf ⊢
     refine' ContDiffWithinAt.fderivWithin _ hg.2 I.unique_diff hmn (mem_range_self _) _
     · simp_rw [extChartAt_to_inv]; exact hf.2
@@ -161,11 +161,11 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     symm
     rw [(h2x₂.mdifferentiableAt le_rfl).mfderiv]
     have hI := (contDiffWithinAt_ext_coord_change I (g x₂) (g x₀) <|
-      LocalEquiv.mem_symm_trans_source _ hx₂ <|
+      PartialEquiv.mem_symm_trans_source _ hx₂ <|
         mem_extChartAt_source I (g x₂)).differentiableWithinAt le_top
     have hI' :=
       (contDiffWithinAt_ext_coord_change I' (f x₀ (g x₀)) (f x₂ (g x₂)) <|
-            LocalEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
+            PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
               h3x₂).differentiableWithinAt le_top
     have h3f := (h2x₂.mdifferentiableAt le_rfl).2
     refine' fderivWithin.comp₃ _ hI' h3f hI _ _ _ _ (I.unique_diff _ <| mem_range_self _)
