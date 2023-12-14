@@ -488,7 +488,7 @@ lemma rel_last_eraseLast_last_of_pos_length (p : RelSeries r) (h : 0 < p.length)
   delta last
   congr
   ext
-  exact (Nat.succ_pred_eq_of_pos <| by linarith).symm
+  exact (Nat.succ_pred_eq_of_pos h).symm
 
 theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last) (hxs : x ∈ s) :
     x ∈ s.eraseLast := by
