@@ -167,8 +167,8 @@ theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
 series is assumed to be non-empty, this is well defined. -/
 def head (x : RelSeries r) : α := x 0
 
-/-- End of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its last element is `aₙ`.  Since a relation
-series is assumed to be non-empty, this is well defined. -/
+/-- End of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its last element is `aₙ`.  Since a 
+relation series is assumed to be non-empty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
