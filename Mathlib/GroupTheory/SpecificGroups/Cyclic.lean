@@ -770,4 +770,9 @@ noncomputable def addEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [AddGr
   rw [← Nat.card_eq_fintype_card] at hG hH
   exact hG.trans hH.symm
 
+attribute [to_additive existing zmultiplesHom_ker_eq] zpowersHom_ker_eq
+attribute [to_additive existing] zmodCyclicMulEquiv
+attribute [to_additive existing addEquivofAddCyclicCardEq] mulEquivOfCyclicCardEq
+attribute [to_additive existing] mulEquivOfPrimeCardEq
+
 end ZMod
