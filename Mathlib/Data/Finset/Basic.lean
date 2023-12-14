@@ -2497,7 +2497,6 @@ theorem attach_eq_empty_iff {s : Finset α} : s.attach = ∅ ↔ s = ∅ := by
 
 /-! ### piecewise -/
 
-
 section Piecewise
 
 /-- `s.piecewise f g` is the function equal to `f` on the finset `s`, and to `g` on its

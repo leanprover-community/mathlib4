@@ -255,6 +255,7 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
   equivFunOnFinite.symm_apply_apply f
 #align finsupp.equiv_fun_on_finite_symm_coe Finsupp.equivFunOnFinite_symm_coe
 
+
 /--
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
@@ -1011,6 +1012,19 @@ instance addZeroClass : AddZeroClass (α →₀ M) :=
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
   add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+/-- When ι is finite and μ is an AddCommMonoid,
+  then Finsupp.equivFunOnFinite gives and AddEquiv -/
+noncomputable def Finsupp.addEquivFunOnFinite {ι : Type*} [Finite ι] :
+    (ι →₀ M) ≃+ (ι → M) := {
+  Finsupp.equivFunOnFinite with
+  map_add' := fun _ _ => rfl }
+
+/-- AddEquiv between (ι →₀ μ) and μ, when ι has a unique element -/
+noncomputable def AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
+    (ι →₀ M) ≃+ M := {
+  Equiv.finsuppUnique with
+  map_add' := fun _ _ => rfl }
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x

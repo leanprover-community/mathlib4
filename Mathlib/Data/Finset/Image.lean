@@ -883,3 +883,12 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
 #align equiv.finset_congr_to_embedding Equiv.finsetCongr_toEmbedding
 
 end Equiv
+
+section InjOn
+
+variable {α β : Type*} {f : α → β}  {s : Set α} (hs : Set.InjOn f s)
+
+def Finset.map_of_injOn {s : Finset α} (hs : Set.InjOn f s) :
+    Finset β  := s.attach.map { inj' := hs.injective }
+
+end InjOn
