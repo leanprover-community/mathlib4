@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Monic
+import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
 #align_import algebra.polynomial.group_ring_action from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"

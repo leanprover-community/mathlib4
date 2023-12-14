@@ -214,9 +214,7 @@ and the ground ring. -/
 @[simps!]
 def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by
-      ext
-      simp [Algebra.ofId_apply, algebraMap_eq])
+    (by ext)
     (by
       ext i m
       exact IsEmpty.elim' he i)
@@ -270,7 +268,7 @@ def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
       intro r
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
       have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe_apply,
+      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv
 
@@ -441,13 +439,13 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   let σ' : Fin (n+1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
-  · rw [←support_coeff_finSuccEquiv]
+  · rw [← support_coeff_finSuccEquiv]
     exact hσ1
 
 theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, nonzero_iff_exists]
+  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
   · rintro ⟨m, hm⟩
     refine' ⟨cons i m, _, cons_zero _ _⟩
@@ -455,7 +453,7 @@ theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     simpa using hm
   · rintro ⟨m, h, rfl⟩
     refine' ⟨tail m, _⟩
-    rwa [← coeff, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
+    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
 #align mv_polynomial.fin_succ_equiv_support MvPolynomial.finSuccEquiv_support
 
 theorem finSuccEquiv_support' {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :

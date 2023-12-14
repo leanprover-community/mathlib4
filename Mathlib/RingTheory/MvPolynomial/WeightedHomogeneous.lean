@@ -185,7 +185,7 @@ theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
     contrapose! H
     by_cases h : coeff d φ = 0 <;>
       simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
-  rw [← Finsupp.mem_antidiagonal.mp hde, ← hφ aux.1, ← hψ aux.2, map_add]
+  rw [← mem_antidiagonal.mp hde, ← hφ aux.1, ← hψ aux.2, map_add]
 #align mv_polynomial.weighted_homogeneous_submodule_mul MvPolynomial.weightedHomogeneousSubmodule_mul
 
 /-- Monomials are weighted homogeneous. -/

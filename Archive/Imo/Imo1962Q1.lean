@@ -131,7 +131,18 @@ Now we combine these cases to show that 153846 is the smallest solution.
 
 
 theorem satisfied_by_153846 : ProblemPredicate 153846 := by
-  norm_num [ProblemPredicate]
+  -- This proof used to be the single line `norm_num [ProblemPredicate]`.
+  -- After leanprover/lean4#2790, that triggers a max recursion depth exception.
+  -- As a workaround, we manually apply `Nat.digits_of_two_le_of_pos` a few times
+  -- before invoking `norm_num`.
+  unfold ProblemPredicate
+  have two_le_ten : 2 ≤ 10 := by norm_num
+  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
+  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
+  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
+  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
+  norm_num
+  decide
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
 theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by

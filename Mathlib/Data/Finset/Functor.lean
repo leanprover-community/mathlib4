@@ -165,7 +165,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ←sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 

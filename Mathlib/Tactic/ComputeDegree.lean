@@ -448,12 +448,14 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
-        (← `(tactic| try any_goals conv_lhs => (simp only [Nat.cast_withBot]; norm_num)))
+        (← `(tactic| try any_goals conv_lhs =>
+                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]
         for g in ← getGoals do
-          let gs' ← run g do evalTactic (← `(tactic| try (any_goals norm_num <;> try assumption)))
+          let gs' ← run g do evalTactic (←
+            `(tactic| try (any_goals norm_num <;> norm_cast <;> try assumption)))
           new_goals := new_goals ++ gs'.toArray
           if ← gs'.anyM fun g' => g'.withContext do return (← g'.getType'').isConstOf ``False then
             false_goals := false_goals.push g

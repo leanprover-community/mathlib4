@@ -12,8 +12,8 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 # Maps on the unit circle
 
 In this file we prove some basic lemmas about `expMapCircle` and the restriction of `Complex.arg`
-to the unit circle. These two maps define a local equivalence between `circle` and `ℝ`, see
-`circle.argLocalEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
+to the unit circle. These two maps define a partial equivalence between `circle` and `ℝ`, see
+`circle.argPartialEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
 
 
@@ -45,10 +45,10 @@ theorem expMapCircle_arg (z : circle) : expMapCircle (arg z) = z :=
 
 namespace circle
 
-/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a local equivalence between `circle` and `ℝ`
+/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
-@[simps (config := { fullyApplied := false })]
-noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
+@[simps (config := .asFn)]
+noncomputable def argPartialEquiv : PartialEquiv circle ℝ where
   toFun := arg ∘ (↑)
   invFun := expMapCircle
   source := univ
@@ -57,15 +57,15 @@ noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   map_target' := mapsTo_univ _ _
   left_inv' z _ := expMapCircle_arg z
   right_inv' _ hx := arg_expMapCircle hx.1 hx.2
-#align circle.arg_local_equiv circle.argLocalEquiv
+#align circle.arg_local_equiv circle.argPartialEquiv
 
 /-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := expMapCircle ∘ (↑)
-  left_inv _ := argLocalEquiv.left_inv trivial
-  right_inv x := Subtype.ext <| argLocalEquiv.right_inv x.2
+  left_inv _ := argPartialEquiv.left_inv trivial
+  right_inv x := Subtype.ext <| argPartialEquiv.right_inv x.2
 #align circle.arg_equiv circle.argEquiv
 
 end circle
@@ -75,11 +75,11 @@ theorem leftInverse_expMapCircle_arg : LeftInverse expMapCircle (arg ∘ (↑)) 
 #align left_inverse_exp_map_circle_arg leftInverse_expMapCircle_arg
 
 theorem invOn_arg_expMapCircle : InvOn (arg ∘ (↑)) expMapCircle (Ioc (-π) π) univ :=
-  circle.argLocalEquiv.symm.invOn
+  circle.argPartialEquiv.symm.invOn
 #align inv_on_arg_exp_map_circle invOn_arg_expMapCircle
 
 theorem surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ :=
-  circle.argLocalEquiv.symm.surjOn
+  circle.argPartialEquiv.symm.surjOn
 #align surj_on_exp_map_circle_neg_pi_pi surjOn_expMapCircle_neg_pi_pi
 
 theorem expMapCircle_eq_expMapCircle {x y : ℝ} :

@@ -181,7 +181,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 theorem rank_le_of_submodule (s t : Submodule R M) (h : s ≤ t) :
     Module.rank R s ≤ Module.rank R t :=
-  (ofLe h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
+  (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
 #align rank_le_of_submodule rank_le_of_submodule
 
@@ -830,7 +830,7 @@ theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Ba
 theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
-    (b'.linearIndependent.map' (Submodule.ofLe hNO) (N.ker_ofLe O _))
+    (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_inclusion O _))
 #align basis.card_le_card_of_le Basis.card_le_card_of_le
 
 theorem Basis.mk_eq_rank (v : Basis ι R M) :
@@ -1108,7 +1108,7 @@ theorem rank_quotient_add_rank (p : Submodule K V) :
     exact rank_prod'.symm.trans f.rank_eq
 #align rank_quotient_add_rank rank_quotient_add_rank
 
-/-- rank-nullity theorem -/
+/-- The **rank-nullity theorem** -/
 theorem rank_range_add_rank_ker (f : V →ₗ[K] V₁) :
     Module.rank K (LinearMap.range f) + Module.rank K (LinearMap.ker f) = Module.rank K V := by
   haveI := fun p : Submodule K V => Classical.decEq (V ⧸ p)
@@ -1198,12 +1198,14 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule K V) :
     Module.rank K (s ⊔ t : Submodule K V) + Module.rank K (s ⊓ t : Submodule K V) =
     Module.rank K s + Module.rank K t :=
-  rank_add_rank_split (ofLe le_sup_left) (ofLe le_sup_right) (ofLe inf_le_left) (ofLe inf_le_right)
+  rank_add_rank_split
+    (inclusion le_sup_left) (inclusion le_sup_right)
+    (inclusion inf_le_left) (inclusion inf_le_right)
     (by
       rw [← map_le_map_iff' (ker_subtype <| s ⊔ t), Submodule.map_sup, Submodule.map_top, ←
-        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_ofLe, subtype_comp_ofLe,
-        range_subtype, range_subtype, range_subtype])
-    (ker_ofLe _ _ _) (by ext ⟨x, hx⟩; rfl)
+        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_inclusion,
+        subtype_comp_inclusion, range_subtype, range_subtype, range_subtype])
+    (ker_inclusion _ _ _) (by ext ⟨x, hx⟩; rfl)
     (by
       rintro ⟨b₁, hb₁⟩ ⟨b₂, hb₂⟩ eq
       obtain rfl : b₁ = b₂ := congr_arg Subtype.val eq

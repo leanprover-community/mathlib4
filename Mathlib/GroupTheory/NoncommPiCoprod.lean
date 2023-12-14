@@ -250,10 +250,10 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     cases' hxi with g' hg'f
     have hxi : orderOf f ∣ Fintype.card (H i) := by
       rw [← hg'f]
-      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
+      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
     have hxp : orderOf f ∣ ∏ j : { j // j ≠ i }, Fintype.card (H j) := by
       rw [← hgf, ← Fintype.card_pi]
-      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card_univ
+      exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
     change f = 1
     rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
     -- porting note: ouch, had to replace an ugly `convert`
@@ -294,7 +294,7 @@ theorem commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   exact hcomm i j hne x y hx hy
 #align subgroup.commute_subtype_of_commute Subgroup.commute_subtype_of_commute
-#align add_subgroup.commute_subtype_of_commute AddSubgroup.commute_subtype_of_commute
+#align add_subgroup.commute_subtype_of_commute AddSubgroup.addCommute_subtype_of_addCommute
 
 /-- The canonical homomorphism from a family of subgroups where elements from different subgroups
 commute -/

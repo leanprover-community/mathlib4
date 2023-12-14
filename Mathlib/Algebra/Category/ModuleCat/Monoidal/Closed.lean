@@ -66,8 +66,6 @@ open MonoidalCategory
 
 -- porting note: `CoeFun` was replaced by `FunLike`
 -- I can't seem to express the function coercion here without writing `@FunLike.coe`.
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
     @FunLike.coe _ _ _ LinearMap.instFunLike
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=

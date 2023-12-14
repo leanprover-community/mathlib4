@@ -44,8 +44,6 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
 open scoped ENNReal Topology
@@ -181,7 +179,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, inv_nonneg, ge_iff_le,
       div_pow] at this
     simpa [div_eq_mul_inv, zero_le_two] using this
-  exact_mod_cast K
+  exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
@@ -213,7 +211,7 @@ theorem exists_goodδ :
     subsequence, to obtain a `1`-separated set in the ball of radius `2` with cardinality
     `N = multiplicity E + 1`. To formalize this, we work with functions `Fin N → E`.
      -/
-  by_contra' h
+  by_contra! h
   set N := multiplicity E + 1 with hN
   have :
     ∀ δ : ℝ, 0 < δ → ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧

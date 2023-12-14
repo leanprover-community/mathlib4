@@ -44,7 +44,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance (p : ℕ) [h : CharP R p] : CharP R[X] p :=
+instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
@@ -631,7 +631,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     · rw [sum_insert ha, prod_insert ha, coeff_mul]
       apply sum_mem
       rintro ⟨i, j⟩ e
-      obtain rfl : i + j = k := Nat.mem_antidiagonal.mp e
+      obtain rfl : i + j = k := mem_antidiagonal.mp e
       apply Ideal.pow_le_pow add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
       exact
@@ -703,14 +703,14 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine' ⟨m + n, _⟩
-        rw [coeff_mul, ← Finset.insert_erase ((@Finset.Nat.mem_antidiagonal _ (m, n)).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
-        rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
+        rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
@@ -851,8 +851,8 @@ end Prime
 
 namespace Polynomial
 
-instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
-    where
+instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
+    WfDvdMonoid R[X] where
   wellFounded_dvdNotUnit := by
     classical
       refine'
@@ -860,8 +860,7 @@ instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R]
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), _⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (WellFounded.prod_lex (WithTop.wellFounded_lt <| WithBot.wellFounded_lt Nat.lt_wfRel.wf)
-            ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
@@ -1129,7 +1128,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
@@ -1222,6 +1221,22 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
+/-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
+only finitely many monic factors.
+(Note that its factors up to unit may be more than monic factors.)
+See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
+    Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
+  set G := { g : D[X] // g.Monic ∧ g ∣ f }
+  let y : Associates D[X] := Associates.mk f
+  have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
+  let H := { x : Associates D[X] // x ∣ y }
+  let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
+  let i : G → H := fun x ↦ ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  refine Fintype.ofInjective i fun x y heq ↦ ?_
+  rw [Subtype.mk.injEq] at heq ⊢
+  exact eq_of_monic_of_associated x.2.1 y.2.1 (Associates.mk_eq_mk_iff_associated.mp heq)
+
 end Polynomial
 
 namespace MvPolynomial
@@ -1249,7 +1264,8 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
         assumption
 
-instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
+instance (priority := 100) uniqueFactorizationMonoid :
+    UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
   obtain ⟨w, h, u, hw⟩ :=

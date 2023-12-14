@@ -5,6 +5,7 @@ Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 #align_import category_theory.sites.limits from "leanprover-community/mathlib"@"95e83ced9542828815f53a1096a4d373c1b08a77"
 
@@ -39,13 +40,13 @@ open Opposite
 
 section Limits
 
-universe w v u z
+universe w v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable {D : Type w} [Category.{max v u} D]
 
-variable {K : Type z} [SmallCategory K]
+variable {K : Type z} [Category.{z'} K]
 
 noncomputable section
 
@@ -166,6 +167,9 @@ instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) whe
 instance : HasLimitsOfShape K (Sheaf J D) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (sheafToPresheaf J D)
 
+instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
+  ⟨inferInstance⟩
+
 end
 
 instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
@@ -180,13 +184,13 @@ end Limits
 
 section Colimits
 
-universe w v u
+universe w v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable {D : Type w} [Category.{max v u} D]
 
-variable {K : Type max v u} [SmallCategory K]
+variable {K : Type z} [Category.{z'} K]
 
 -- Now we need a handful of instances to obtain sheafification...
 variable [ConcreteCategory.{max v u} D]
@@ -244,6 +248,9 @@ set_option linter.uppercaseLean3 false in
 instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk
     ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
+
+instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
+  ⟨inferInstance⟩
 
 instance [HasColimits D] : HasColimits (Sheaf J D) :=
   ⟨inferInstance⟩

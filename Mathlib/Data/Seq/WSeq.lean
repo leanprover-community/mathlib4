@@ -721,7 +721,7 @@ theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   | zero => simp [drop]
   | succ n n_ih =>
     -- Porting note: Was `simp [*, drop]`.
-    simp [drop, ←n_ih]
+    simp [drop, ← n_ih]
 #align stream.wseq.dropn_cons Stream'.WSeq.dropn_cons
 
 @[simp]
@@ -1305,7 +1305,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
       match Seq.destruct s with
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
-      | some (some a, s') => Sum.inr (a::l, s')) (l, s) = (· ++ ·) l.reverse <$> toList s := by
+      | some (some a, s') => Sum.inr (a :: l, s')) (l, s) = (l.reverse ++ ·) <$> toList s := by
   refine'
     Computation.eq_of_bisim
       (fun c1 c2 =>
@@ -1315,7 +1315,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
             | none => Sum.inl l.reverse
             | some (none, s') => Sum.inr (l, s')
             | some (some a, s') => Sum.inr (a::l, s')) (l' ++ l, s) ∧
-            c2 = Computation.map ((· ++ ·) l.reverse) (Computation.corec (fun ⟨l, s⟩ =>
+            c2 = Computation.map (l.reverse ++ ·) (Computation.corec (fun ⟨l, s⟩ =>
               match Seq.destruct s with
               | none => Sum.inl l.reverse
               | some (none, s') => Sum.inr (l, s')
@@ -1616,7 +1616,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply Nat.lt_succ_of_le (Nat.le_add_right _ _)
           let ⟨ob, mb, rob⟩ := IH _ this ST' rs5'
           refine' ⟨ob, _, rob⟩
-          · simp [destruct_join]
+          · simp (config := { unfoldPartialApp := true }) [destruct_join]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
             apply think_mem
@@ -1625,7 +1625,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
           simp only at rs5
           refine' ⟨some (b, append t' (join T')), _, _⟩
-          · simp [destruct_join]
+          · simp (config := { unfoldPartialApp := true }) [destruct_join]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
             apply think_mem
@@ -1697,7 +1697,8 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
             (map (fun a => cons a nil) s).join.destruct =
               (map (fun a => cons a nil) s').join.destruct ∧ destruct s = s'.destruct :=
           fun s => ⟨s, rfl, rfl⟩
-        induction' s using WSeq.recOn with a s s <;> simp [ret, ret_mem, this, Option.exists]
+        induction' s using WSeq.recOn with a s s <;>
+          simp (config := { unfoldPartialApp := true }) [ret, ret_mem, this, Option.exists]
   · exact ⟨s, rfl, rfl⟩
 #align stream.wseq.join_map_ret Stream'.WSeq.join_map_ret
 

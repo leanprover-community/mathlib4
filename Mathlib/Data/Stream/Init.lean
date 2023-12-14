@@ -591,7 +591,7 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min n m)
   | 0, n => by rw [min_zero, List.take_zero, take_zero]
   | m, 0 => by rw [zero_min, take_zero, List.take_nil]
-  | m+1, n+1 => by rw [take_succ, List.take_cons, Nat.min_succ_succ, take_succ, take_take]
+  | m+1, n+1 => by rw [take_succ, List.take_cons, Nat.succ_min_succ, take_succ, take_take]
 
 @[simp] theorem concat_take_get {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
   (take_succ' n).symm
@@ -608,7 +608,7 @@ theorem get?_take_succ (n : Nat) (s : Stream' α) :
 @[simp] theorem dropLast_take {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
   cases n; case zero => simp
-  case succ n => rw [take_succ', List.dropLast_concat, Nat.succ_sub_one]
+  case succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
 
 @[simp]
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
