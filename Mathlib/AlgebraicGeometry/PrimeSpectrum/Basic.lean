@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Topology.Sets.Closeds
@@ -927,7 +928,46 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
         ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ : _))
 #align prime_spectrum.localization_map_of_specializes PrimeSpectrum.localizationMapOfSpecializes
 
+variable (R) in
+@[simps] def bijection :
+    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsClosed s ∧ IsIrreducible s}ᵒᵈ :=
+  { toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isClosed_zeroLocus p.asIdeal,
+      isIrreducible_zeroLocus_iff _ |>.mpr <| by simpa only [p.IsPrime.radical] using p.IsPrime⟩
+    invFun := (fun s ↦ ⟨vanishingIdeal s.1, isIrreducible_iff_vanishingIdeal_isPrime.mp s.2.2⟩)
+    left_inv := fun p ↦ PrimeSpectrum.ext _ _ <|
+      by simp [PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, p.IsPrime.radical]
+    right_inv := fun s ↦ Subtype.ext <|
+      by simpa [zeroLocus_vanishingIdeal_eq_closure] using s.2.1.closure_eq
+    map_rel_iff' := by
+      intro p q
+      change zeroLocus _ ≤ zeroLocus _ ↔ _
+      simp [zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical] }
+
 end PrimeSpectrum
+
+/--
+ [Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
+-/
+def minimalPrimes.bijection : minimalPrimes R ≃o irreducibleComponents (PrimeSpectrum R)ᵒᵈ where
+  toFun p :=
+    let s := (PrimeSpectrum.bijection R ⟨p.1, p.2.1.1⟩)
+    OrderDual.toDual ⟨s.1, ⟨s.2.2,
+      fun t (ht : IsIrreducible t) (le : PrimeSpectrum.zeroLocus _ ⊆ t) ↦ by
+      show t ⊆ PrimeSpectrum.zeroLocus p
+      rw [PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
+      exact p.2.2 ⟨PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩
+        fun x hx ↦ (PrimeSpectrum.mem_vanishingIdeal _ _ |>.mp hx) ⟨p.1, p.2.1.1⟩ <|
+        show ⟨p.1, p.2.1.1⟩ ∈ t from le <| PrimeSpectrum.mem_zeroLocus _ _ |>.mpr <| le_refl _⟩⟩
+  invFun s := let p := (PrimeSpectrum.bijection R).symm <|
+    OrderDual.toDual ⟨s.1, isClosed_of_mem_irreducibleComponents _ s.2, s.2.1⟩
+    ⟨p.1, ⟨p.2, bot_le⟩, fun q ⟨hq, _⟩ (le : q ≤ PrimeSpectrum.vanishingIdeal s.1) ↦
+      fun x hx ↦  PrimeSpectrum.mem_vanishingIdeal _ _ |>.mp hx ⟨q, hq⟩ <|
+        s.2.2 (PrimeSpectrum.isIrreducible_zeroLocus_iff_of_radical _ hq.isRadical |>.mpr hq)
+          (PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr le) <|
+          PrimeSpectrum.mem_zeroLocus _ _ |>.mpr <| le_refl _⟩
+  left_inv := _
+  right_inv := _
+  map_rel_iff' := _
 
 namespace LocalRing
 
