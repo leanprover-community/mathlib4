@@ -88,8 +88,7 @@ variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ
 lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
     IsIntegralCurveOn γ v s := fun t _ ↦ h t
 
-lemma isIntegralCurve_iff_isIntegralCurveOn :
-    IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
+lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
   ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ h t (mem_univ _)⟩
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
@@ -107,21 +106,16 @@ lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
 lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
     IsIntegralCurveOn γ v (s ∪ s') := by
   intros t ht
-  rw [mem_union] at ht
   cases' ht with ht ht
   · exact h _ ht
   · exact h' _ ht
 
 lemma isIntegralCurveAt_iff :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  constructor
-  · intro h
-    obtain ⟨s, hs, h⟩ := h
-    obtain ⟨ε, hε, hsub⟩ := Metric.mem_nhds_iff.mp hs
-    exact ⟨ε, hε, h.mono hsub⟩
-  · intro h
-    obtain ⟨ε, hε, h⟩ := h
-    refine ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
+  refine ⟨?_,  fun ⟨ε, hε, h⟩ ↦ ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩⟩
+  rintro ⟨s, hs, h⟩
+  obtain ⟨ε, hε, hsub⟩ := Metric.mem_nhds_iff.mp hs
+  exact ⟨ε, hε, h.mono hsub⟩
 
 lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ nhds t₀) :
     IsIntegralCurveAt γ v t₀ := ⟨s, hs, h⟩
