@@ -84,10 +84,13 @@ section
 
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
 class OrderAddMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-  [AddZeroClass α] [AddZeroClass β] extends AddMonoidHomClass F α β where
+  [AddZeroClass α] [AddZeroClass β] extends flat AddMonoidHomClass F α β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] OrderAddMonoidHomClass.toFunLike
 
 end
 
@@ -121,10 +124,16 @@ section
 You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
 class OrderMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-  [MulOneClass α] [MulOneClass β] extends MonoidHomClass F α β where
+  [MulOneClass α] [MulOneClass β] extends flat MonoidHomClass F α β where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] OrderMonoidHomClass.toFunLike
+
+-- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
+attribute [to_additive existing] OrderMonoidHomClass.toMonoidHomClass
 
 end
 
@@ -184,10 +193,13 @@ ordered monoid with zero homomorphisms.
 
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
 class OrderMonoidWithZeroHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-  [MulZeroOneClass α] [MulZeroOneClass β] extends MonoidWithZeroHomClass F α β where
+  [MulZeroOneClass α] [MulZeroOneClass β] extends flat MonoidWithZeroHomClass F α β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
+
+-- lean4#2905
+attribute [-instance] MonoidWithZeroHomClass.toFunLike
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
 `OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/

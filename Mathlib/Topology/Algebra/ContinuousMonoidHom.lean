@@ -59,10 +59,13 @@ homomorphisms.
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
-  [TopologicalSpace A] [TopologicalSpace B] extends AddMonoidHomClass F A B where
+  [TopologicalSpace A] [TopologicalSpace B] extends flat AddMonoidHomClass F A B where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] ContinuousAddMonoidHomClass.toFunLike
 
 /-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
 homomorphisms.
@@ -71,10 +74,16 @@ You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 @[to_additive]
 class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
-    [TopologicalSpace A] [TopologicalSpace B] extends MonoidHomClass F A B where
+    [TopologicalSpace A] [TopologicalSpace B] extends flat MonoidHomClass F A B where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] ContinuousMonoidHomClass.toFunLike
+
+-- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
+attribute [to_additive existing] ContinuousMonoidHomClass.toMonoidHomClass
 
 end
 

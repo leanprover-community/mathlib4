@@ -448,7 +448,7 @@ theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X
   let J := map (mapRingHom i) I
   -- Porting note: moved ↓ this up a few lines, so that it can be used in the `have`
   have h_surj : Function.Surjective (mapRingHom i) := Polynomial.map_surjective i hi
-  have : IsPrime J := map_isPrime_of_surjective h_surj hi'
+  have : IsPrime J := (map_isPrime_of_surjective (f := mapRingHom i) :) h_surj hi'
   suffices h : J.jacobson = J
   · replace h := congrArg (comap (Polynomial.mapRingHom i)) h
     rw [← map_jacobson_of_surjective h_surj hi', comap_map_of_surjective _ h_surj,

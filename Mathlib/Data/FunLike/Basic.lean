@@ -83,7 +83,7 @@ structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
 (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerHomClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
-  extends MyHomClass F A B :=
+  extends flat MyHomClass F A B :=
 (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 @[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]

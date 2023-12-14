@@ -219,9 +219,12 @@ the additive monoid structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `DistribMulActionHom`. -/
 class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*) [Monoid M] [AddMonoid A]
-  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
-  AddMonoidHomClass F A B
+  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends flat SMulHomClass F M A B,
+  flat AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
+
+-- lean4#2905
+attribute [-instance] DistribMulActionHomClass.toFunLike
 
 /- porting note: Removed a @[nolint dangerousInstance] for
 DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
@@ -450,7 +453,7 @@ the ring structure and scalar multiplication by `M`.
 You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*) [Monoid M] [Semiring R]
   [Semiring S] [DistribMulAction M R] [DistribMulAction M S] extends
-  DistribMulActionHomClass F M R S, RingHomClass F R S
+  flat DistribMulActionHomClass F M R S, flat RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass

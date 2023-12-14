@@ -155,8 +155,11 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam (Type*)) [AddZeroClass M] [AddZeroClass N]
-  extends AddHomClass F M N, ZeroHomClass F M N
+  extends flat AddHomClass F M N, flat ZeroHomClass F M N
 #align add_monoid_hom_class AddMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] AddMonoidHomClass.toFunLike
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -353,8 +356,11 @@ infixr:25 " →* " => MonoidHom
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
 class MonoidHomClass (F : Type*) (M N : outParam (Type*)) [MulOneClass M] [MulOneClass N]
-  extends MulHomClass F M N, OneHomClass F M N
+  extends flat MulHomClass F M N, flat OneHomClass F M N
 #align monoid_hom_class MonoidHomClass
+
+-- lean4#2905
+attribute [-instance] MonoidHomClass.toFunLike
 
 @[to_additive]
 instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
@@ -373,6 +379,7 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] MonoidHomClass.toOneHomClass
+attribute [to_additive existing] MonoidHomClass.toMulHomClass
 
 @[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := .of_oneHomClass
 
@@ -487,8 +494,11 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
 class MonoidWithZeroHomClass (F : Type*) (M N : outParam (Type*)) [MulZeroOneClass M]
-  [MulZeroOneClass N] extends MonoidHomClass F M N, ZeroHomClass F M N
+  [MulZeroOneClass N] extends flat MonoidHomClass F M N, flat ZeroHomClass F M N
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
+
+-- lean4#2905
+attribute [-instance] MonoidWithZeroHomClass.toFunLike
 
 instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
   coe f := f.toFun

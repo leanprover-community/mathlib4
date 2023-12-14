@@ -78,10 +78,13 @@ infixl:25 " ≃+*o " => OrderRingIso
 /-- `OrderRingHomClass F α β` states that `F` is a type of ordered semiring homomorphisms.
 You should extend this typeclass when you extend `OrderRingHom`. -/
 class OrderRingHomClass (F : Type*) (α β : outParam <| Type*) [NonAssocSemiring α] [Preorder α]
-  [NonAssocSemiring β] [Preorder β] extends RingHomClass F α β where
+  [NonAssocSemiring β] [Preorder β] extends flat RingHomClass F α β where
   /-- The proposition that the function preserves the order. -/
   monotone (f : F) : Monotone f
 #align order_ring_hom_class OrderRingHomClass
+
+-- lean4#2905
+attribute [-instance] OrderRingHomClass.toFunLike
 
 /-- `OrderRingIsoClass F α β` states that `F` is a type of ordered semiring isomorphisms.
 You should extend this class when you extend `OrderRingIso`. -/
@@ -115,7 +118,8 @@ instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [
 instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiring α]
   [Preorder α] [NonAssocSemiring β] [Preorder β] [OrderRingIsoClass F α β] :
     OrderRingHomClass F α β :=
-  { monotone := fun f _ _ => (map_le_map_iff f).2
+  { RingEquivClass.toRingHomClass with
+    monotone := fun f _ _ => (map_le_map_iff f).2
     -- porting note: used to be the following which times out
     --‹OrderRingIsoClass F α β› with monotone := fun f => OrderHomClass.mono f
     }
