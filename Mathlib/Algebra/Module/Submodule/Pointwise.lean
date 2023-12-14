@@ -292,12 +292,24 @@ end
 /-!
 ### Sets acting on Submodules
 
-Let `R` be a (semi)ring and `M` an `R`-module. Then subsets of `R` can act on submodules of `M`.
-For subset `s ⊆ R` and submodule `N ≤ M`, we define `s • N` to be the smallest submodule containing
+Let `R` be a (semi)ring and `M` an `R`-module. Let `S` be a monoid which acts on `M` distributively,
+then subsets of `S` can act on submodules of `M`.
+For subset `s ⊆ S` and submodule `N ≤ M`, we define `s • N` to be the smallest submodule containing
 all `r • n` where `r ∈ s` and `n ∈ N`.
 
 #### Results
+For arbitrary monoids `S` acting distributively on `M`, there is an induction principle for `s • N`:
+To prove `P` holds for all `s • N`, it is enough
+to prove:
+- for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
+- for all `r` and `m ∈ s • N`, `P (r • n)`;
+- for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
+- `P 0`.
 
+To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+`x : M` and `hx : x ∈ s • N`
+
+When we consider subset of `R` acting on `M`
 - `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
 - `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
   `rᵢ ∈ s` and `nᵢ ∈ N`.
@@ -306,16 +318,17 @@ all `r • n` where `r ∈ s` and `n ∈ N`.
 
 
 #### Notes
-If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` (i.e. use `SetSemiring`),
+- If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
 then this action actually gives a module structure on submodules of `M` over subsets of `R`.
-
+- If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`
+  and `Submodule.singleton_set_smul` can be generalized as well.
 -/
 
 section set_acting_on_submodules
 
-variable {S : Type*} [Semiring S]
+variable {S : Type*} [Monoid S]
 
-variable [AddCommMonoid M] [Module R M] [Module S M]
+variable [AddCommMonoid M] [Module R M] [DistribMulAction S M]
 
 /--
 Let `s ⊆ R` be a set and `N ≤ M` be a submodule, then `s • N` is the smallest submodule containing
@@ -517,6 +530,7 @@ lemma set_smul_eq_iSup [SMulCommClass R R M] :
     rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
     exact mem_set_smul_of_mem_mem (mem1 := hx) (mem2 := hy)
 
+-- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
 protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
