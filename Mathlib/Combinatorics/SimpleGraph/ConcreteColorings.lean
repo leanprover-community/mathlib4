@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Iván Renison. All rights reserved.
+Copyright (c) 2023 Iván Renison· All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
@@ -24,8 +24,8 @@ This file defines colorings for some common graphs
 namespace SimpleGraph
 
 /-- Convert a `Fin 2` coloring in to a `Bool` coloring -/
-def Coloring.Fin2ToBool {α} {G : SimpleGraph α} (c : Coloring G (Fin 2))
-    : Coloring G Bool :=
+def Coloring.Fin2ToBool {α} {G : SimpleGraph α} (c : Coloring G (Fin 2)) :
+    Coloring G Bool :=
   Coloring.mk (fun v ↦ c v = 0) <| by
       intro v w
       intro (h : G.Adj v w)
@@ -80,12 +80,12 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool)
   | succ n ih =>
     have hn_cases : n = 0 ∨ 1 ≤ n := or_iff_not_imp_right.mpr Nat.eq_zero_of_not_pos
     apply Or.elim hn_cases
-    . intro (hn' : n = 0)
+    · intro (hn' : n = 0)
       have hu : u = 0 :=
         Fin.le_zero_iff.mp (le_of_le_of_eq (Fin.le_val_last u) (congrArg Nat.cast hn'))
       simp [hu]
       apply hc0
-    . intro (hn' : 1 ≤ n)
+    · intro (hn' : 1 ≤ n)
       let new_hom : pathGraph n →g G :=
         pathGraph_smaller_Hom G hom n (Nat.le_add_right n 1)
       have hhom0 : c (new_hom ⟨0, hn'⟩) = true := by
@@ -94,9 +94,9 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool)
       have h_new_hom := ih hn' new_hom hhom0
       have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp (Fin.is_le u)
       apply Or.elim hu
-      . intro (hun : u.val < n)
+      · intro (hun : u.val < n)
         exact h_new_hom ⟨u.val, hun⟩
-      . intro (hun : u.val = n)
+      · intro (hun : u.val = n)
         -- c (hom n) = true ↔ n % 2 = 0
         let last : Fin (n + 1) := ⟨n, Nat.lt.base n⟩
         let prev_last : Fin (n + 1) := ⟨n - 1, Nat.sub_lt_succ n 1⟩
@@ -110,7 +110,7 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool)
           rw [Bool.eq_not_iff.mpr (Coloring.valid c hGadj).symm]
           simp [h_c_prev_last.symm]
         simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
-        rw [←@Nat.sub_add_cancel n 1 hn']
+        rw [← @Nat.sub_add_cancel n 1 hn']
         apply (Nat.succ_mod_two_eq_zero_iff).symm
 
 -- What name shuld this have?
