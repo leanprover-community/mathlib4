@@ -913,7 +913,7 @@ theorem iUnion_sigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
 theorem iInter_sigma {γ : α → Type*} (s : Sigma γ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
   iInf_sigma
 
-theorem iInter_sigma' {γ : α → Type*} (s : ∀ i : α, γ i → Set β) :
+theorem iInter_sigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
     ⋂ i, ⋂ a, s i a = ⋂ ia : Sigma γ, s ia.1 ia.2 :=
   iInf_sigma' _
 

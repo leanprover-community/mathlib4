@@ -125,12 +125,12 @@ theorem _root_.biInf_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ 
     (f : ∀ i, α i → β) : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
   Eq.symm $ biInf_finsetSigma _ _ _
 
-theorem _root_.Set.biUnion_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i)) (u : Sigma α → Set β) :
-    ⋃ ij ∈ s.sigma t, u ij = ⋃ i ∈ s, ⋃ j ∈ t i, u ⟨i, j⟩ :=
+theorem _root_.Set.biUnion_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (u : Sigma α → Set β) : ⋃ ij ∈ s.sigma t, u ij = ⋃ i ∈ s, ⋃ j ∈ t i, u ⟨i, j⟩ :=
   biSup_finsetSigma _ _ _
 
-theorem _root_.Set.biUnion_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i)) (u : ∀ i, α i → Set β) :
-    ⋃ i ∈ s, ⋃ j ∈ t i, u i j = ⋃ ij ∈ s.sigma t, u ij.fst ij.snd :=
+theorem _root_.Set.biUnion_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (u : ∀ i, α i → Set β) : ⋃ i ∈ s, ⋃ j ∈ t i, u i j = ⋃ ij ∈ s.sigma t, u ij.fst ij.snd :=
   biSup_finsetSigma' _ _ _
 
 theorem _root_.Set.biInter_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
