@@ -128,29 +128,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
   exact hg _ hik
 #align linear_independent_smul linearIndependent_smul
 
-theorem IsScalarTower.isLinearMap (f : S →ₗ[S] A) : IsLinearMap R f where
-  map_add := map_add f
-  map_smul r s := by
-    rw [← mul_one (r • s), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
-
-theorem IsScalarTower.isLinearMap_finsupp {ι} (f : (ι →₀ S) →ₗ[S] A) : IsLinearMap R f where
-  map_add := map_add f
-  map_smul r s := by
-    rw [← sum_single s]; simp only [smul_sum, map_finsupp_sum, smul_single]
-    congr; ext i s
-    exact (IsScalarTower.isLinearMap (R := R) <| f.comp <| lsingle i).map_smul r s
-
 variable (R)
-
-theorem LinearMap.isScalarTower_of_injective (f : S →ₗ[S] A) (hf : Function.Injective f) :
-    IsScalarTower R S S where
-  smul_assoc r s _ :=
-    hf <| by rw [(IsScalarTower.isLinearMap f).map_smul r, map_smul, map_smul, smul_assoc]
-
-theorem LinearMap.isScalarTower_finsupp_of_injective {ι} (f : (ι →₀ S) →ₗ[S] A)
-    (hf : Function.Injective f) : IsScalarTower R S (ι →₀ S) where
-  smul_assoc r s _ :=
-    hf <| by rw [(IsScalarTower.isLinearMap_finsupp f).map_smul r, map_smul, map_smul, smul_assoc]
 
 -- LinearIndependent is enough if S is a ring.
 theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
@@ -158,7 +136,7 @@ theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : 
     (b.repr.symm.injective.comp <| single_injective _)
 
 theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
-  b.repr.symm.isScalarTower_finsupp_of_injective R b.repr.symm.injective
+  b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
 variable {R}
 

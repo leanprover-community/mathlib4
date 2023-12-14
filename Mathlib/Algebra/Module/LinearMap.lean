@@ -447,6 +447,11 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SM
   CompatibleSMul.map_smul fₗ c x
 #align linear_map.map_smul_of_tower LinearMap.map_smul_of_tower
 
+theorem isScalarTower_of_injective (R) {S} [Semiring S] [SMul R S] [SMul R M] [Module S M]
+    [SMul R M₂] [Module S M₂] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
+    (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
+  smul_assoc r s _ := hf <| by rw [f.map_smul_of_tower r, map_smul, map_smul, smul_assoc]
+
 /-- convert a linear map to an additive map -/
 def toAddMonoidHom : M →+ M₃ where
   toFun := f
