@@ -353,7 +353,6 @@ protected def commGroup [CommGroup β] : CommGroup α := by
 #align equiv.comm_group Equiv.commGroup
 #align equiv.add_comm_group Equiv.addCommGroup
 
-
 @[to_additive]
 noncomputable instance [Small.{v} α] [CommGroup α] : CommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.commGroup
