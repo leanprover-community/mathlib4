@@ -10,18 +10,18 @@ import Mathlib.Algebra.Module.LinearMap
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
 
-variable {n : ℕ} {M M₁ : Type*} [AddCommGroup M] [AddCommGroup M₁]
-  [Module (ZMod n) M] [Module (ZMod n) M₁]
+variable {n : ℕ} {G G₁ F S : Type*} [AddCommGroup G] [AddCommGroup G₁] [AddMonoidHomClass F G G₁]
+  [Module (ZMod n) G] [Module (ZMod n) G₁] { x : G } [SetLike S G] [AddSubgroupClass S G] {K : S}
 
 namespace ZMod
 
-theorem map_smul (f : M →+ M₁) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
-  cases n with
-  | zero => exact map_int_cast_smul f _ _ c x
-  | succ n =>
-    induction c using Fin.induction with
-    | zero => simp_rw [zero_smul, map_zero]
-    | succ c hc => simp_rw [← Fin.coeSucc_eq_succ, add_smul, one_smul, f.map_add, hc]
+theorem map_smul (f : F) (c : ZMod n) (x : G) : f (c • x) = c • f x := by
+  rw [← ZMod.int_cast_zmod_cast c]
+  exact map_int_cast_smul f _ _ c x
+
+theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
+  rw [← ZMod.int_cast_zmod_cast c, ← zsmul_eq_smul_cast]
+  exact zsmul_mem hx c
 
 end ZMod
 
@@ -33,12 +33,26 @@ variable (n)
 
 See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
-def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
+def toZModLinearMap (f : G →+ G₁) : G →ₗ[ZMod n] G₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
+theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (G := G) (G₁ := G₁) :=
   fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]
-theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
+theorem coe_toZModLinearMap (f : G →+ G₁) : ⇑(f.toZModLinearMap n) = f := rfl
 
 end AddMonoidHom
+
+namespace AddSubgroup
+
+/-- Reinterpret an additive subgroup as a `ℤ/nℤ`-submodule.
+
+See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
+def toZModSubmodule : AddSubgroup G ≃o Submodule (ZMod n) G where
+  toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
+  invFun := Submodule.toAddSubgroup
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := Iff.rfl
+
+end AddSubgroup
