@@ -447,7 +447,7 @@ lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
   simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
 
 /-- The isomorphism between a direct limit of a system of substructures and their union. -/
-noncomputable def DirectLimit.Equiv_iSup :
+noncomputable def Equiv_iSup :
     DirectLimit (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) ≃[L]
     (iSup S : L.Substructure M) := by
   rw [← rangeLiftInclusion]
