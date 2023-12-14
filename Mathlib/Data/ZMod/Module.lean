@@ -18,10 +18,10 @@ namespace ZMod
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
 @[reducible]
-def module {n : ℕ} {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) : Module (ZMod n) G := by
+def module {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) : Module (ZMod n) G := by
   have h_mod (c : ℕ) (x : G) : (c % n) • x = c • x := by
-    apply add_right_cancel (b := ((c / n) * n) • x)
-    rw [← add_nsmul, mul_nsmul, h, add_zero, Nat.mod_add_div']
+    apply add_right_cancel (b := (c / n * n) • x)
+    rw [← add_nsmul, Nat.mod_add_div', mul_nsmul, h, add_zero]
   exact match n with
   | 0 => AddCommGroup.intModule G
   | n + 1 => {
