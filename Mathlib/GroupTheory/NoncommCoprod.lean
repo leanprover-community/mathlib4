@@ -17,18 +17,16 @@ of the two morphisms commute, we obtain a canonical morphism
 `MonoidHom.noncommCoprod : M × N →* P` whose composition with `inl M N` coincides with `f`
 and whose composition with `inr M N` coincides with `g`.
 
-There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`.
+There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 
-Main theorems :
+## Main theorems:
 
 * `noncommCoprod_comp_inr` and `noncommCoprod_comp_inl` prove that the compositions
-of `MonoidHom.noncommCoprod f g _` with `inl M N` and `inr M N` coincide with `f` and `g`.
-
+  of `MonoidHom.noncommCoprod f g _` with `inl M N` and `inr M N` coincide with `f` and `g`.
 * `comp_noncommCoprod` proves that the composition of a morphism of monoids `h`
-with `noncommCoprod f g _` coincides with `noncommCoprod (h.comp f) (h.comp g)`.
+  with `noncommCoprod f g _` coincides with `noncommCoprod (h.comp f) (h.comp g)`.
 
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
-
 -/
 
 namespace MulHom
