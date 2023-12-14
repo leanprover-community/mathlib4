@@ -398,7 +398,8 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
 
   -- extract `εγ` from local existence of integral curve
   have hmfd := hγ
-  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hmfd
+  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Real.ball_eq_Ioo,
+    ← Metric.eventually_nhds_iff_ball] at hmfd
 
   -- extract `εmem` so `γ t` when expressed in the chart stays within `se`
   have hcont' : ContinuousAt ((extChartAt I (γ' t₀)) ∘ γ') t₀ :=
@@ -413,7 +414,8 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
 
   -- extract `εγ` from local existence of integral curve
   have hmfd' := hγ'
-  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hmfd'
+  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Real.ball_eq_Ioo,
+    ← Metric.eventually_nhds_iff_ball] at hmfd'
 
   have haux := hnhds.and <| hsrc.and <| hmfd.and <| hnhds'.and <| hsrc'.and hmfd'
   rw [Metric.eventually_nhds_iff_ball] at haux
@@ -451,7 +453,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
     · intros t ht
       rw [hv', h]
       have := hmfd'.hasDerivAt I t₀ ht (hsrc' t ht)
-      apply this.hasFDerivAt.congr_fderiv -- missing `hasDerivAt.congr_deriv` ?
+      apply this.hasFDerivAt.congr_fderiv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
         rw [Function.comp_apply, LocalEquiv.left_inv]
         exact hsrc' t ht
