@@ -77,7 +77,7 @@ example :
       (@TensorProduct.Algebra.module ℝ ℂ ℂ (ℂ ⊗[ℝ] ℂ) _ _ _ _ _ _ _ _ _ _ _ _).toSMul := by
   have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr_arg f c
   contrapose! contra
-  rw [SMul.ext_iff, SMul.smul_eq, @SMul.smul_eq _ _ (_)] at contra
+  rw [SMul.ext_iff, SMul.smul_eq_hSMul, @SMul.smul_eq_hSMul _ _ (_)] at contra
   replace contra := congr_fun (congr_fun contra (1 ⊗ₜ I)) (I ⊗ₜ 1)
   rw [TensorProduct.Algebra.smul_def (R := ℝ) (1 : ℂ) I (I ⊗ₜ[ℝ] (1 : ℂ))] at contra
   simpa only [Algebra.id.smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
@@ -157,7 +157,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   by
   obtain ⟨u : k, hu⟩ := exists_ne (1 : k)
   intro h
-  simp only [SMul.ext_iff, SMul.smul_eq, Function.funext_iff, FunLike.ext_iff] at h
+  simp only [SMul.ext_iff, SMul.smul_eq_hSMul, Function.funext_iff, FunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
@@ -172,7 +172,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
   haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
   intro h
-  simp only [SMul.ext_iff, SMul.smul_eq, Function.funext_iff, FunLike.ext_iff] at h
+  simp only [SMul.ext_iff, SMul.smul_eq_hSMul, Function.funext_iff, FunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
