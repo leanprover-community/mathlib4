@@ -257,36 +257,36 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀)
     (hx : I.IsInteriorPoint x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
-  -- express the differentiability of the section `v` in the local charts
+  -- express the differentiability of the vector field `v` in the local chart
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
-  obtain ⟨f, hf1, ε1, hε1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
-      (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
-  rw [← Real.ball_eq_Ioo] at hf2
-  -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
-  -- `f t ∈ interior (extChartAt I x₀).target`
-  have hcont := (hf2 t₀ (Metric.mem_ball_self hε1)).continuousAt
+  obtain ⟨f, hf1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
+    (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
+  simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf2
+  -- use continuity of `f` so that `f t` remains inside `interior (extChartAt I x₀).target`
+  have ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
+  have hcont := (hf2' t₀ (Metric.mem_ball_self ha)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
     hcont _ (isOpen_interior.mem_nhds ((I.isInteriorPoint_iff).mp hx))
-  rw [Metric.mem_nhds_iff] at hnhds
-  obtain ⟨ε2, hε2, hf3⟩ := hnhds
-  simp_rw [subset_def, mem_preimage] at hf3
+  rw [← eventually_mem_nhds] at hnhds
+  -- obtain an `ε` so that the above conditions both hold in an `ε`-neighbourhood of `t₀`
+  obtain ⟨ε, hε, haux⟩ := Metric.eventually_nhds_iff_ball.mp (hf2.and hnhds)
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
   refine ⟨(extChartAt I x₀).symm ∘ f,
     Eq.symm (by rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]),
-    min ε1 ε2, lt_min hε1 hε2, ?_⟩
+    ε, hε, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
   rw [← Real.ball_eq_Ioo] at ht
-  have hf3 := hf3 t <| mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
   have h : HasDerivAt f
     ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
         (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
       (v ((extChartAt I x₀).symm (f t))))
-    t := hf2 t <| mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
+    t := (haux t ht).1
   rw [← tangentCoordChange_def] at h
+  have hf3 := mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2
   have hf3' := mem_of_mem_of_subset hf3 interior_subset
   have hft1 := mem_preimage.mp <|
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
