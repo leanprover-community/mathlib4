@@ -1074,7 +1074,8 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
 #align list.decidable_sublist List.decidableSublist
 
 /--If the first element of two lists are different, then a sublist relation can be reduced. -/
-theorem sublist_cons_neq [DecidableEq α] {a b} (h₁ : a ≠ b) (h₂ : a::l₁ <+ b::l₂) : a::l₁ <+ l₂ := by
+theorem sublist_cons_neq [DecidableEq α] {a b} (h₁ : a ≠ b) (h₂ : a::l₁ <+ b::l₂) :
+    a::l₁ <+ l₂ := by
   have := isSublist_iff_sublist.mpr h₂
   rwa [isSublist, if_neg h₁, isSublist_iff_sublist] at this
 
@@ -3563,7 +3564,8 @@ theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 #align list.filter_false List.filter_false
 
-theorem filter_replicate {p : α → Bool} {n} {a : α} : List.filter p (List.replicate n a) = if p a then List.replicate n a else [] := by
+theorem filter_replicate {p : α → Bool} {n} {a : α} :
+    List.filter p (List.replicate n a) = if p a then List.replicate n a else [] := by
   induction n with
   | zero => simp
   | succ n ih => by_cases hf : p a <;> simp_all

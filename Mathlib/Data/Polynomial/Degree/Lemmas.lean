@@ -317,8 +317,9 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
 
 theorem natDegree_pos_of_nz_nextCoeff (h : p.nextCoeff ≠ 0) : p.natDegree > 0 := by
   rw [nextCoeff] at h
-  by_cases hpz : p.natDegree = 0 <;> simp_all only [ne_eq, zero_le, ite_true, ite_false, not_true_eq_false]
-  apply Nat.zero_lt_of_ne_zero hpz
+  by_cases hpz : p.natDegree = 0
+  · simp_all only [ne_eq, zero_le, ite_true, not_true_eq_false]
+  · apply Nat.zero_lt_of_ne_zero hpz
 
 theorem ne_zero_of_nz_nextCoeff (h : p.nextCoeff ≠ 0) : p ≠ 0 :=
   ne_zero_of_natDegree_gt (natDegree_pos_of_nz_nextCoeff h)

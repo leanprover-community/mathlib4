@@ -1817,6 +1817,7 @@ import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.CancelLeads
 import Mathlib.Data.Polynomial.Cardinal
 import Mathlib.Data.Polynomial.Coeff
+import Mathlib.Data.Polynomial.CoeffList
 import Mathlib.Data.Polynomial.Degree.CardPowDegree
 import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Degree.Lemmas
