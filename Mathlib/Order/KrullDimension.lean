@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fangming Li, Jujian Zhang
+Authors: Jujian Zhang, Fangming Li
 -/
 
 import Mathlib.Order.RelSeries
@@ -28,8 +28,8 @@ sum of `-∞` and the Krull dimension of any other varieties.
 
 section definitions
 
-variable {β : Type _} (r : Rel β β)
 variable (α : Type _) [Preorder α]
+variable {β : Type _} (r : Rel β β)
 
 /--
 Krull dimension of a set `α` with a binary relation `r` is the supremum of the rightmost index of
