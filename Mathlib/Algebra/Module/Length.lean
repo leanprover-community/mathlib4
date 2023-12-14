@@ -168,12 +168,11 @@ lemma moduleLength_strictMono [h : FiniteLengthModule R M]
     rw [show moduleLength R (⊤ : Submodule R M) = moduleLength R M from
       (moduleLength_congr Submodule.topEquiv.symm).symm]
     exact moduleLength_lt_of_proper_submodule N1 hN
-  · replace hN2 : N2 < ⊤
-    · rwa [lt_top_iff_ne_top]
+  · replace hN2 : N2 < ⊤ := lt_top_iff_ne_top |>.mpr hN2
     obtain ⟨s2, s20, s2last, -⟩ :=
       h.compositionSeries.exists_compositionSeries_with_smaller_length_of_lt_top N2 hN2
         h.head_eq h.last_eq
-    have lt' : LinearMap.range (Submodule.ofLe $ le_of_lt hN) < ⊤
+    have lt' : LinearMap.range (Submodule.inclusion $ le_of_lt hN) < ⊤
     · obtain ⟨x, hx1, hx2⟩ := (SetLike.lt_iff_le_and_exists.mp hN).2
       rw [lt_top_iff_ne_top]
       intros r
@@ -181,18 +180,18 @@ lemma moduleLength_strictMono [h : FiniteLengthModule R M]
       rw [← r, LinearMap.mem_range] at mem1
       obtain ⟨⟨y, hy1⟩, hy2⟩ := mem1
       rw [Subtype.ext_iff, Subtype.coe_mk] at hy2
-      simp only [Submodule.coe_ofLe] at hy2
+      simp only [Submodule.coe_inclusion] at hy2
       refine hx2 ?_
       rw [← hy2]
       exact hy1
     obtain ⟨s1, s10, s1last, s1_len⟩ := s2.exists_compositionSeries_with_smaller_length_of_lt_top
-      (LinearMap.range (Submodule.ofLe $ le_of_lt hN)) lt' s20 s2last
+      (LinearMap.range (Submodule.inclusion $ le_of_lt hN)) lt' s20 s2last
     rw [s2.moduleLength_eq_length s20 s2last, show moduleLength R N1 =
-      moduleLength R (LinearMap.range (Submodule.ofLe $ le_of_lt hN)) from ?_,
+      moduleLength R (LinearMap.range (Submodule.inclusion $ le_of_lt hN)) from ?_,
       s1.moduleLength_eq_length s10 s1last]
     · exact WithTop.coe_lt_coe.mpr s1_len
     · refine (moduleLength_congr ?_).symm
-      rw [Submodule.range_ofLe]
+      rw [Submodule.range_inclusion]
       exact Submodule.comapSubtypeEquivOfLe (le_of_lt hN)
 
 lemma IsFiniteLengthModule_iff_moduleLength_finite :
@@ -267,14 +266,15 @@ end LTSeries
 section decIssue
 
 variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
-
+#check RelSeries.ofLE
 lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
     moduleLength R M = krullDim (Submodule R M) :=
-le_antisymm (le_iSup_iff.mpr $ λ m hm ↦ moduleLength_eq_coe (h := h) ▸
-  hm (h.compositionSeries.OfLE $ λ _ _ h ↦ h.1)) $ iSup_le $ λ i ↦ by
+le_antisymm
+  (le_iSup_iff.mpr fun m hm ↦ moduleLength_eq_coe (h := h) ▸ hm
+    (h.compositionSeries.ofLE fun _ _ h ↦ h.1))
+  (iSup_le fun i ↦ by
     refine WithBot.coe_le_coe.mpr $ moduleLength_eq_coe (h := h) ▸ WithTop.coe_le_coe.mpr ?_
-    exact i.length_le_compositionSeries _ h.head_eq h.last_eq
-
+    exact i.length_le_compositionSeries _ h.head_eq h.last_eq)
 end decIssue
 
 section Noetherian_and_Artinian
