@@ -331,7 +331,13 @@ theorem bot_eraseTop (s : CompositionSeries X) : s.eraseTop.bot = s.bot :=
 #align composition_series.bot_erase_top CompositionSeries.bot_eraseTop
 
 theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ s.top) (hxs : x ∈ s) :
-    x ∈ s.eraseTop := RelSeries.mem_eraseLast_of_ne_of_mem hx hxs
+    x ∈ s.eraseTop := by
+  rcases hxs with ⟨i, rfl⟩
+  have hi : (i : ℕ) < (s.length - 1).succ := by
+    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx), Nat.succ_sub_one]
+    exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
+  refine' ⟨Fin.castSucc (n := s.length + 1) i, _⟩
+  simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
 #align composition_series.mem_erase_top_of_ne_of_mem CompositionSeries.mem_eraseTop_of_ne_of_mem
 
 theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
@@ -475,21 +481,9 @@ theorem append {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.top = s₂
       _ ≃ Sum (Fin t₁.length) (Fin t₂.length) := (Equiv.sumCongr h₁.choose h₂.choose)
       _ ≃ Fin (t₁.length + t₂.length) := finSumFinEquiv
 
-  ⟨e, by
-    intro i
-    refine' Fin.addCases _ _ i
-    · intro i
-      rw [append_castAdd, append_succ_castAdd]
-      simp only [Equiv.instTransSortSortSortEquivEquivEquiv_trans, finSumFinEquiv,
-        Equiv.trans_apply, Equiv.coe_fn_symm_mk, Fin.addCases_left, Equiv.sumCongr_apply,
-        Sum.map_inl, Equiv.coe_fn_mk, Sum.elim_inl, append_castAdd, append_succ_castAdd]
-      simpa [top, bot] using h₁.choose_spec i
-    · intro i
-      rw [append_natAdd, append_succ_natAdd]
-      simp only [Equiv.instTransSortSortSortEquivEquivEquiv_trans, finSumFinEquiv,
-        Equiv.trans_apply, Equiv.coe_fn_symm_mk, Fin.addCases_right, Equiv.sumCongr_apply,
-        Sum.map_inr, Equiv.coe_fn_mk, Sum.elim_inr, append_natAdd, append_succ_natAdd]
-      simpa [top, bot] using h₂.choose_spec i⟩
+  ⟨e, Fin.addCases
+    (fun i ↦ by erw [Equiv.trans_apply]; simpa [finSumFinEquiv] using h₁.choose_spec i)
+    (fun i ↦ by erw [Equiv.trans_apply]; simpa [finSumFinEquiv] using h₂.choose_spec i)⟩
 #align composition_series.equivalent.append CompositionSeries.Equivalent.append
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.top x₁}
