@@ -155,6 +155,9 @@ import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+import Mathlib.Algebra.Function.Finite
+import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Function.Support
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GCDMonoid.Div
 import Mathlib.Algebra.GCDMonoid.Finset
@@ -267,7 +270,6 @@ import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Algebra.Invertible.Defs
 import Mathlib.Algebra.Invertible.GroupWithZero
@@ -415,6 +417,7 @@ import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Algebra.Order.Support
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Algebra.Order.WithZero
@@ -476,7 +479,6 @@ import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
-import Mathlib.Algebra.Support
 import Mathlib.Algebra.Symmetrized
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
@@ -1245,6 +1247,7 @@ import Mathlib.CategoryTheory.Sites.Closed
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
@@ -1266,7 +1269,6 @@ import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.CategoryTheory.Sites.Subsheaf
@@ -1329,6 +1331,7 @@ import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Combinatorics.Schnirelmann
 import Mathlib.Combinatorics.SetFamily.CauchyDavenport
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Combinatorics.SetFamily.Compression.UV
@@ -2308,7 +2311,6 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Lean.SMap
-import Mathlib.Lean.System.IO
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
@@ -2461,6 +2463,7 @@ import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.QuotientPi
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Reflection
+import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.LinearAlgebra.Span
@@ -2495,9 +2498,9 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
-import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic
@@ -3067,6 +3070,7 @@ import Mathlib.RingTheory.Jacobson
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.Kaehler
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime

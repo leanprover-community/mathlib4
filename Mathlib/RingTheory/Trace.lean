@@ -328,6 +328,42 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
   · apply IsAlgClosed.splits_codomain
 #align algebra.is_integral_trace Algebra.isIntegral_trace
 
+lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+    [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
+    Algebra.trace A C (e x) = Algebra.trace A B x := by
+  simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]
+  congr; ext; simp [LinearEquiv.conj_apply]
+
+lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+    [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
+    e (Algebra.trace A C x) = Algebra.trace B C x := by
+  classical
+  by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
+  · obtain ⟨s, ⟨b⟩⟩ := h
+    letI : Algebra A B := RingHom.toAlgebra e
+    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+    rw [Algebra.trace_eq_matrix_trace b,
+      Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
+    show e.toAddMonoidHom _ = _
+    rw [AddMonoidHom.map_trace]
+    congr
+    ext i j
+    simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
+  rw [trace_eq_zero_of_not_exists_basis _ h, trace_eq_zero_of_not_exists_basis,
+    LinearMap.zero_apply, LinearMap.zero_apply, map_zero]
+  intro ⟨s, ⟨b⟩⟩
+  exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
+
+lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
+    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
+    Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
+  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
+  let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  rw [← Algebra.trace_eq_of_ringEquiv e₁ he, ← Algebra.trace_eq_of_algEquiv e',
+    RingEquiv.symm_apply_apply]
+  rfl
+
 section EqSumEmbeddings
 
 variable [Algebra K F] [IsScalarTower K L F]
