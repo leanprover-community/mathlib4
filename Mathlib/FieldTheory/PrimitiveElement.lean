@@ -360,7 +360,7 @@ theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
 theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
     (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
-  rw [← Fintype.ofEquiv_card <| Algebra.IsAlgebraic.algHomEquivAlgHomOfIsAlgClosed
+  rw [← Fintype.ofEquiv_card <| Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits
     (AlgebraicClosure L) (Algebra.IsAlgebraic.of_finite F E) _ hL]
   convert AlgHom.card F E (AlgebraicClosure L)
 
@@ -397,34 +397,14 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
 
 theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
-  rw [Field.primitive_element_iff_algHom_eq_of_eval' F A hA]
-  refine ⟨fun h _ eq => h eq, fun h φ₀ ψ₀ h' => ?_⟩
-  let K := normalClosure F E A
-  have : IsNormalClosure F E K := by
-    refine Algebra.IsAlgebraic.isNormalClosure_normalClosure ?_ hA
-    exact Algebra.IsAlgebraic.of_finite F E
-  have hK_mem : ∀ (ψ : E →ₐ[F] A) (x : E), ψ x ∈ K :=
-    fun ψ x => AlgHom.fieldRange_le_normalClosure ψ ⟨x, rfl⟩
-  let res : (E →ₐ[F] A) → (E →ₐ[F] K) := fun ψ => AlgHom.codRestrict ψ K.toSubalgebra (hK_mem ψ)
-  rsuffices ⟨σ, hσ⟩ : ∃ σ : K →ₐ[F] A, σ (⟨φ₀ α, hK_mem _ _⟩) = φ α
-  · suffices res φ₀ = res ψ₀ by
-      ext x
-      exact Subtype.mk_eq_mk.mp (AlgHom.congr_fun this x)
-    have eq₁ : φ = AlgHom.comp σ (res φ₀) := h (AlgHom.comp σ (res φ₀)) hσ.symm
-    have eq₂ : φ = AlgHom.comp σ (res ψ₀) := by
-      refine h (AlgHom.comp σ (res ψ₀)) ?_
-      simp_rw [← hσ, h']
-      rfl
-    ext1 x
-    exact (RingHom.injective σ.toRingHom) <| AlgHom.congr_fun (eq₁.symm.trans eq₂) x
-  refine IntermediateField.exists_algHom_of_splits_of_aeval ?_ ?_
-  · refine fun x => ⟨IsAlgebraic.isIntegral (IsAlgebraic.of_finite F x), ?_⟩
-    refine Polynomial.splits_of_algHom ?_ K.toSubalgebra.val
-    exact Normal.splits (IsNormalClosure.normal (K := E)) x
-  · rw [aeval_algHom_apply, _root_.map_eq_zero]
-    convert minpoly.aeval F α
-    letI : Algebra E K := (res φ₀).toAlgebra
-    exact minpoly.algebraMap_eq (algebraMap E K).injective α
+  refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
+    fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
+  letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
+  haveI := isSeparable_tower_top_of_isSeparable F F⟮α⟯ E
+  rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
+  · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
+      Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩
+  · exact fun x ↦ (IsIntegral.of_finite F x).minpoly_splits_tower_top (hA x)
 
 end Field
 

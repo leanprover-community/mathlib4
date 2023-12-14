@@ -133,6 +133,9 @@ theorem univ_prod {t : Set β} : (univ : Set α) ×ˢ t = Prod.snd ⁻¹' t := b
 theorem prod_univ {s : Set α} : s ×ˢ (univ : Set β) = Prod.fst ⁻¹' s := by simp [prod_eq]
 #align set.prod_univ Set.prod_univ
 
+@[simp] lemma prod_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
+  simp [eq_univ_iff_forall, forall_and]
+
 @[simp]
 theorem singleton_prod : ({a} : Set α) ×ˢ t = Prod.mk a '' t := by
   ext ⟨x, y⟩

@@ -621,7 +621,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
   Quot.induction_on s fun l ↦ by simp only [cons_zero, ← coe_singleton, quot_mk_to_coe'', coe_le,
-    coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff']
+    coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
   simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne.def, and_not_self, or_false,
@@ -2650,7 +2650,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
   Quotient.inductionOn s <| fun l => by
     simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count]
-    rw [List.filter_eq' l b, coe_replicate]
+    rw [List.filter_eq l b, coe_replicate]
 #align multiset.filter_eq' Multiset.filter_eq'
 
 theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (count b s) b := by
