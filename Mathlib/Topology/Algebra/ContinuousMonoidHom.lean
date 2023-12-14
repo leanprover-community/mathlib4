@@ -64,6 +64,9 @@ class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMon
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
 
+-- lean4#2905
+attribute [-instance] ContinuousAddMonoidHomClass.toFunLike
+
 /-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
 homomorphisms.
 
@@ -75,6 +78,9 @@ class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
 #align continuous_monoid_hom_class ContinuousMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] ContinuousMonoidHomClass.toFunLike
 
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] ContinuousMonoidHomClass.toMonoidHomClass

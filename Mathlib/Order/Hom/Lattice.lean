@@ -123,6 +123,9 @@ class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [
   map_bot (f : F) : f ⊥ = ⊥
 #align sup_bot_hom_class SupBotHomClass
 
+-- lean4#2905
+attribute [-instance] SupBotHomClass.toFunLike
+
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
@@ -132,6 +135,9 @@ class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [
   map_top (f : F) : f ⊤ = ⊤
 #align inf_top_hom_class InfTopHomClass
 
+-- lean4#2905
+attribute [-instance] InfTopHomClass.toFunLike
+
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `LatticeHom`. -/
@@ -140,6 +146,8 @@ class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Latt
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align lattice_hom_class LatticeHomClass
+
+attribute [-instance] LatticeHomClass.toFunLike
 
 /-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 

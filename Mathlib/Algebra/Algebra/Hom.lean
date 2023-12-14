@@ -54,6 +54,9 @@ class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
+-- lean4#2905
+attribute [-instance] AlgHomClass.toFunLike
+
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 

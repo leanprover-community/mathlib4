@@ -158,6 +158,9 @@ class AddMonoidHomClass (F : Type*) (M N : outParam (Type*)) [AddZeroClass M] [A
   extends flat AddHomClass F M N, flat ZeroHomClass F M N
 #align add_monoid_hom_class AddMonoidHomClass
 
+-- lean4#2905
+attribute [-instance] AddMonoidHomClass.toFunLike
+
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
 
@@ -356,6 +359,9 @@ class MonoidHomClass (F : Type*) (M N : outParam (Type*)) [MulOneClass M] [MulOn
   extends flat MulHomClass F M N, flat OneHomClass F M N
 #align monoid_hom_class MonoidHomClass
 
+-- lean4#2905
+attribute [-instance] MonoidHomClass.toFunLike
+
 @[to_additive]
 instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
   coe f := f.toFun
@@ -490,6 +496,9 @@ You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 class MonoidWithZeroHomClass (F : Type*) (M N : outParam (Type*)) [MulZeroOneClass M]
   [MulZeroOneClass N] extends flat MonoidHomClass F M N, flat ZeroHomClass F M N
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
+
+-- lean4#2905
+attribute [-instance] MonoidWithZeroHomClass.toFunLike
 
 instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
   coe f := f.toFun

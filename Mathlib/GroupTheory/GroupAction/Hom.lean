@@ -223,6 +223,9 @@ class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*) [Monoid M
   flat AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
 
+-- lean4#2905
+attribute [-instance] DistribMulActionHomClass.toFunLike
+
 /- porting note: Removed a @[nolint dangerousInstance] for
 DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
 

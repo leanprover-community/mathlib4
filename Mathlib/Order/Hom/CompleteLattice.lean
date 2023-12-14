@@ -107,6 +107,9 @@ class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align frame_hom_class FrameHomClass
 
+-- lean4#2905
+attribute [-instance] FrameHomClass.toFunLike
+
 /-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
@@ -116,6 +119,9 @@ class CompleteLatticeHomClass (F : Type*) (α β : outParam <| Type*) [CompleteL
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align complete_lattice_hom_class CompleteLatticeHomClass
+
+-- lean4#2905
+attribute [-instance] CompleteLatticeHomClass.toFunLike
 
 end
 

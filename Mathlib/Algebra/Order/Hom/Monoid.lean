@@ -89,6 +89,9 @@ class OrderAddMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder �
   monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
 
+-- lean4#2905
+attribute [-instance] OrderAddMonoidHomClass.toFunLike
+
 end
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -125,6 +128,9 @@ class OrderMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] 
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
+
+-- lean4#2905
+attribute [-instance] OrderMonoidHomClass.toFunLike
 
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] OrderMonoidHomClass.toMonoidHomClass
@@ -191,6 +197,9 @@ class OrderMonoidWithZeroHomClass (F : Type*) (α β : outParam <| Type*) [Preor
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
+
+-- lean4#2905
+attribute [-instance] MonoidWithZeroHomClass.toFunLike
 
 /-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
 `OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/

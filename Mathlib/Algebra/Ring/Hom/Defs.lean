@@ -80,6 +80,9 @@ class NonUnitalRingHomClass (F : Type*) (α β : outParam (Type*)) [NonUnitalNon
   [NonUnitalNonAssocSemiring β] extends flat MulHomClass F α β, flat AddMonoidHomClass F α β
 #align non_unital_ring_hom_class NonUnitalRingHomClass
 
+-- lean4#2905
+attribute [-instance] NonUnitalRingHomClass.toFunLike
+
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalRingHomClass F α β` into an actual
@@ -376,6 +379,9 @@ class RingHomClass (F : Type*) (α β : outParam (Type*)) [NonAssocSemiring α]
   [NonAssocSemiring β] extends flat MonoidHomClass F α β, flat AddMonoidHomClass F α β,
   MonoidWithZeroHomClass F α β
 #align ring_hom_class RingHomClass
+
+-- lean4#2905
+attribute [-instance] MonoidWithZeroHomClass.toFunLike
 
 set_option linter.deprecated false in
 /-- Ring homomorphisms preserve `bit1`. -/

@@ -72,6 +72,9 @@ class NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Typ
   flat MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
 
+-- lean4#2905
+attribute [-instance] NonUnitalAlgHomClass.toFunLike
+
 -- Porting note: commented out, not dangerous
 -- attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
 

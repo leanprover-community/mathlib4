@@ -91,6 +91,9 @@ class BoundedOrderHomClass (F : Type*) (α β : outParam <| Type*) [LE α] [LE �
   map_bot (f : F) : f ⊥ = ⊥
 #align bounded_order_hom_class BoundedOrderHomClass
 
+-- lean4#2905
+attribute [-instance] BoundedOrderHomClass.toFunLike
+
 end
 
 export TopHomClass (map_top)

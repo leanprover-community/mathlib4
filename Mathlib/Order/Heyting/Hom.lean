@@ -75,6 +75,9 @@ class HeytingHomClass (F : Type*) (α β : outParam <| Type*) [HeytingAlgebra α
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
 #align heyting_hom_class HeytingHomClass
 
+-- lean4#2905
+attribute [-instance] HeytingHomClass.toFunLike
+
 /-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
 You should extend this class when you extend `CoheytingHom`. -/
@@ -86,6 +89,9 @@ class CoheytingHomClass (F : Type*) (α β : outParam <| Type*) [CoheytingAlgebr
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align coheyting_hom_class CoheytingHomClass
 
+-- lean4#2905
+attribute [-instance] CoheytingHomClass.toFunLike
+
 /-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
 You should extend this class when you extend `BiheytingHom`. -/
@@ -96,6 +102,9 @@ class BiheytingHomClass (F : Type*) (α β : outParam <| Type*) [BiheytingAlgebr
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align biheyting_hom_class BiheytingHomClass
+
+-- lean4#2905
+attribute [-instance] BiheytingHomClass.toFunLike
 
 export HeytingHomClass (map_himp)
 

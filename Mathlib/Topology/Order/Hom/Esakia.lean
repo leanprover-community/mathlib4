@@ -66,6 +66,9 @@ class EsakiaHomClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace �
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align esakia_hom_class EsakiaHomClass
 
+-- lean4#2905
+attribute [-instance] EsakiaHomClass.toFunLike
+
 end
 
 export PseudoEpimorphismClass (exists_map_eq_of_map_le)

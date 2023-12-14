@@ -322,6 +322,9 @@ class StarAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   [Algebra R B] [Star B] extends flat AlgHomClass F R A B, flat StarHomClass F A B
 #align star_alg_hom_class StarAlgHomClass
 
+-- lean4#2905
+attribute [-instance] StarAlgHomClass.toFunLike
+
 -- Porting note: no longer needed
 ---- `R` becomes a metavariable but that's fine because it's an `outParam`
 --attribute [nolint dangerousInstance] StarAlgHomClass.toStarHomClass

@@ -83,6 +83,9 @@ class OrderRingHomClass (F : Type*) (α β : outParam <| Type*) [NonAssocSemirin
   monotone (f : F) : Monotone f
 #align order_ring_hom_class OrderRingHomClass
 
+-- lean4#2905
+attribute [-instance] OrderRingHomClass.toFunLike
+
 /-- `OrderRingIsoClass F α β` states that `F` is a type of ordered semiring isomorphisms.
 You should extend this class when you extend `OrderRingIso`. -/
 class OrderRingIsoClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Add α] [LE α] [Mul β]
