@@ -13,9 +13,9 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 ## Main definition
 - `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
+- `differentIdeal`: The different ideal of an extension of integral domains.
 
 ## TODO
-- Define the relative different ideal
 - Show properties of the different ideal
 -/
 
@@ -410,7 +410,7 @@ lemma differentialIdeal_le_fractionalIdeal_iff
   {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
     differentIdeal A B ≤ I ↔ (((I⁻¹ : _) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
-  rw [coeIdeal_different_ideal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
+  rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
     ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
   refine le_traceDual_iff_map_le_one.trans ?_
   simp
