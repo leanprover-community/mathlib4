@@ -835,8 +835,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       · apply hf
       · refine' fun y h₁ h₂ => ⟨y, IH _ _, _⟩
         · have := evaln_mono k.le_succ h₁
-          simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
-            Option.guard_eq_some', exists_const] at this
+          simp [evaln, Bind.bind] at this
           exact this.2
         · exact hg _ _ h₂
     · -- rfind' cf
