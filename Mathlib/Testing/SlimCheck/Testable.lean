@@ -480,6 +480,7 @@ def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand
 
 /-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
 def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
   | none => IO.runRand (Testable.runSuite p cfg)
   | some seed => IO.runRandWith seed (Testable.runSuite p cfg)
