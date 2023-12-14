@@ -336,7 +336,9 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
 `fun x => x • 1` is a ring homomorphism from `R` to `S`.
 
-This is the `RingHom` version of `MonoidHom.smulOneHom`. -/
+This is the `RingHom` version of `MonoidHom.smulOneHom`.
+
+When `R` is commutative, usually `algebraMap` should be preferred. -/
 @[simps!] def RingHom.smulOneHom [Semiring R] [Semiring S] [Module R S] [IsScalarTower R S S] :
     R →+* S where
   __ := MonoidHom.smulOneHom
