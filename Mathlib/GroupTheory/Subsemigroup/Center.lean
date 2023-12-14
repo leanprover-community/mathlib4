@@ -56,6 +56,10 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
+attribute [mk_iff isMulCentral_iff] IsMulCentral
+attribute [mk_iff isAddCentral_iff] IsAddCentral
+attribute [to_additive existing] isMulCentral_iff
+
 namespace IsMulCentral
 
 variable {a b c : M} [Mul M]
