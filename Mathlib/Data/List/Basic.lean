@@ -863,7 +863,7 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
-    simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
+    simp? at h says simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
     simp [h]
 #align list.cons_head'_tail List.cons_head?_tail
 
