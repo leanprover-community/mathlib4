@@ -555,7 +555,7 @@ theorem mul_swap_mul_self (i j : α) (σ : Perm α) : σ * Equiv.swap i j * Equi
 
 /-- A stronger version of `mul_right_injective` -/
 @[simp]
-theorem swap_mul_involutive (i j : α) : Function.Involutive ((· * ·) (Equiv.swap i j)) :=
+theorem swap_mul_involutive (i j : α) : Function.Involutive (Equiv.swap i j * ·) :=
   swap_mul_self_mul i j
 #align equiv.swap_mul_involutive Equiv.swap_mul_involutive
 

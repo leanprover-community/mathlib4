@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
+import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
 
@@ -13,9 +14,8 @@ import Mathlib.Data.List.Forall2
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
-counterparts. These are defined in [`Data.List.Defs`](./Defs).
+counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
 -/
-
 
 variable {ι α M N P M₀ G R : Type*}
 
@@ -103,6 +103,13 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
   List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons, h₂ hl]
 #align list.prod_hom_rel List.prod_hom_rel
 #align list.sum_hom_rel List.sum_hom_rel
+
+@[to_additive]
+theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
+    (Forall₂ R ⇒ R) prod prod :=
+  rel_foldl hf h
+#align list.rel_prod List.rel_prod
+#align list.rel_sum List.rel_sum
 
 @[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [MonoidHomClass F M N] (f : F) :

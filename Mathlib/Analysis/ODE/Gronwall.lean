@@ -229,7 +229,7 @@ set_option linter.uppercaseLean3 false in
 #align dist_le_of_trajectories_ODE dist_le_of_trajectories_ODE
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
-a given initial value provided that RHS is Lipschitz continuous in `x` within `s`,
+a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
 
 This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
@@ -238,8 +238,7 @@ theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E}
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
     (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
-    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) :
-    EqOn f g (Icc a b) := fun t ht ↦ by
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Icc a b) := fun t ht ↦ by
   have := dist_le_of_trajectories_ODE_of_mem_set hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
   rwa [zero_mul, dist_le_zero] at this
 set_option linter.uppercaseLean3 false in
