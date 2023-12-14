@@ -25,9 +25,9 @@ theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
 
 end ZMod
 
-namespace AddMonoidHom
-
 variable (n)
+
+namespace AddMonoidHom
 
 /-- Reinterpret an additive homomorphism as a `ℤ/nℤ`-linear map.
 
