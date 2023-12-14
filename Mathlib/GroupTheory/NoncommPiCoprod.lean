@@ -262,7 +262,7 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     rw [← hc]
     symm
     rw [← Nat.coprime_iff_gcd_eq_one]
-    apply Nat.coprime_prod_left
+    apply Nat.Coprime.prod_left
     intro j _
     apply hcoprime
     exact j.2

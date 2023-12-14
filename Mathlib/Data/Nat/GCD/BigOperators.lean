@@ -18,18 +18,6 @@ namespace Nat
 
 open BigOperators
 
-/-- See `IsCoprime.prod_left` for the corresponding lemma about `IsCoprime` -/
-theorem coprime_prod_left {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
-    (∀ i : ι, i ∈ t → Coprime (s i) x) → Coprime (∏ i : ι in t, s i) x :=
-  Finset.prod_induction s (fun y ↦ y.Coprime x) (fun a b ↦ Coprime.mul) (by simp)
-#align nat.coprime_prod_left Nat.coprime_prod_left
-
-/-- See `IsCoprime.prod_right` for the corresponding lemma about `IsCoprime` -/
-theorem coprime_prod_right {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
-    (∀ i : ι, i ∈ t → Coprime x (s i)) → Coprime x (∏ i : ι in t, s i) :=
-  Finset.prod_induction s (fun y ↦ x.Coprime y) (fun a b ↦ Coprime.mul_right) (by simp)
-#align nat.coprime_prod_right Nat.coprime_prod_right
-
 theorem coprime_prod_left_iff {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :
     Coprime (∏ i in t, s i) x ↔ ∀ i ∈ t, Coprime (s i) x :=
   Finset.cons_induction_on t (by simp) fun i s his ih ↦ by
@@ -39,6 +27,14 @@ theorem coprime_prod_right_iff {ι : Type*} {x : ℕ} {s : ι → ℕ} {t : Fins
     Coprime x (∏ i in t, s i) ↔ ∀ i ∈ t, Coprime x (s i) :=
   Finset.cons_induction_on t (by simp) fun i s his ih ↦ by
     rw [Finset.prod_cons, Nat.coprime_mul_iff_right, ih, Finset.forall_mem_cons]
+
+/-- See `IsCoprime.prod_left` for the corresponding lemma about `IsCoprime` -/
+alias ⟨_, Coprime.prod_left⟩ := coprime_prod_left_iff
+#align nat.coprime_prod_left Nat.Coprime.prod_left
+
+/-- See `IsCoprime.prod_right` for the corresponding lemma about `IsCoprime` -/
+alias ⟨_, Coprime.prod_right⟩ := coprime_prod_right_iff
+#align nat.coprime_prod_right Nat.Coprime.prod_right
 
 theorem coprime_fintype_prod_left_iff {ι : Type*} [Fintype ι] {x : ℕ} {s : ι → ℕ} :
     Coprime (∏ i, s i) x ↔ ∀ i, Coprime (s i) x := by
