@@ -10,12 +10,12 @@ import Mathlib.Algebra.Module.LinearMap
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
 
-variable {n : ℕ} {G G₁ F S : Type*} [AddCommGroup G] [AddCommGroup G₁] [AddMonoidHomClass F G G₁]
-  [Module (ZMod n) G] [Module (ZMod n) G₁] { x : G } [SetLike S G] [AddSubgroupClass S G] {K : S}
+variable {n : ℕ} {M M₁ F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [AddMonoidHomClass F M M₁]
+  [Module (ZMod n) M] [Module (ZMod n) M₁] { x : M } [SetLike S M] [AddSubgroupClass S M] {K : S}
 
 namespace ZMod
 
-theorem map_smul (f : F) (c : ZMod n) (x : G) : f (c • x) = c • f x := by
+theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   rw [← ZMod.int_cast_zmod_cast c]
   exact map_int_cast_smul f _ _ c x
 
@@ -33,13 +33,13 @@ namespace AddMonoidHom
 
 See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
-def toZModLinearMap (f : G →+ G₁) : G →ₗ[ZMod n] G₁ := { f with map_smul' := ZMod.map_smul f }
+def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (G := G) (G₁ := G₁) :=
+theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
   fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]
-theorem coe_toZModLinearMap (f : G →+ G₁) : ⇑(f.toZModLinearMap n) = f := rfl
+theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
 
 end AddMonoidHom
 
@@ -48,7 +48,7 @@ namespace AddSubgroup
 /-- Reinterpret an additive subgroup of a `ℤ/nℤ`-module as a `ℤ/nℤ`-submodule.
 
 See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
-def toZModSubmodule : AddSubgroup G ≃o Submodule (ZMod n) G where
+def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup
   left_inv _ := rfl
