@@ -160,6 +160,14 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
   · rw [smul_zero]; apply zero_mem
   · intro m m' hm hm'; rw [smul_add]; exact add_mem hm hm'
 
+@[elab_as_elim]
+theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
+    (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ a : R, ∀ x ∈ s, p (a • x)) : p x := by
+  rw [← mem_toAddSubmonoid, span_eq_closure] at h
+  refine AddSubmonoid.closure_induction h ?_ H0 H1
+  rintro _ ⟨r, m, -, hm, rfl⟩
+  exact H2 r m hm
+
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
 theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule.span R s)

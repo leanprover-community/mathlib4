@@ -297,6 +297,10 @@ variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 open IsScalarTower
 
+theorem span_le_restrictScalars_span (t : Set A) : span R t ≤ (span S t).restrictScalars R :=
+  fun x hx ↦ closure_induction hx (zero_mem _) (fun _ _ ↦ add_mem) fun r x hx ↦ by
+    rw [← one_smul S x, ← IsScalarTower.smul_assoc]; exact (span S t).smul_mem _ (subset_span hx)
+
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
   span_induction hks (fun c hc => subset_span <| Set.mem_smul.2 ⟨c, x, hc, hx, rfl⟩)
@@ -307,41 +311,28 @@ theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ s
 
 theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
     span R (s • t) = (span S t).restrictScalars R :=
-  (span_le.2 fun _x hx =>
-    let ⟨p, _q, _hps, hqt, hpqx⟩ := Set.mem_smul.1 hx
-    hpqx ▸ (span S t).smul_mem p (subset_span hqt)).antisymm
-    fun p (hp : p ∈ span S t) => by
-      rw [← mem_toAddSubmonoid, span_eq_closure] at hp
-      refine AddSubmonoid.closure_induction hp ?_ (zero_mem _) fun _ _ ↦ add_mem
-      rintro _ ⟨s0, y, -, hy, rfl⟩
+  le_antisymm
+    (span_le.2 fun _x ⟨p, _q, _hps, hqt, hpqx⟩ ↦ hpqx ▸ (span S t).smul_mem p (subset_span hqt))
+    fun p hp ↦ closure_induction hp (zero_mem _) (fun _ _ ↦ add_mem) fun s0 y hy ↦ by
       refine span_induction (hs ▸ mem_top : s0 ∈ span R s)
-        (fun x hx ↦ subset_span ⟨x, y, hx, hy, rfl⟩) ?_ ?_ ?_ <;> dsimp only
+        (fun x hx ↦ subset_span ⟨x, y, hx, hy, rfl⟩) ?_ ?_ ?_
       · rw [zero_smul]; apply zero_mem
       · intro _ _; rw [add_smul]; apply add_mem
       · intro r s0 hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
 #align submodule.span_smul_of_span_eq_top Submodule.span_smul_of_span_eq_top
 
-variable [SMulCommClass R S A]
+-- The following two lemmas were originally used to prove `span_smul_of_span_eq_top`
+-- but are now not needed.
+theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
+    (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) := by
+  rw [span_smul_of_span_eq_top hs] at hx ⊢; exact (span S t).smul_mem k hx
+#align submodule.smul_mem_span_smul' Submodule.smul_mem_span_smul'
 
 theorem smul_mem_span_smul {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
-    (hx : x ∈ span R t) : k • x ∈ span R (s • t) :=
-  span_induction hx (fun x hx => smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hx)
-    (by rw [smul_zero]; exact zero_mem _)
-    (fun x y ihx ihy => by rw [smul_add]; exact add_mem ihx ihy)
-    fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
+    (hx : x ∈ span R t) : k • x ∈ span R (s • t) := by
+  rw [span_smul_of_span_eq_top hs]
+  exact (span S t).smul_mem k (by apply span_le_restrictScalars_span t hx)
 #align submodule.smul_mem_span_smul Submodule.smul_mem_span_smul
-
-theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S} {x : A}
-    (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) :=
-  span_induction hx
-    (fun x hx => by
-      let ⟨p, q, _hp, hq, hpq⟩ := Set.mem_smul.1 hx
-      rw [← hpq, smul_smul]
-      exact smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hq)
-    (by rw [smul_zero]; exact zero_mem _)
-    (fun x y ihx ihy => by rw [smul_add]; exact add_mem ihx ihy)
-    fun c x hx => smul_comm c k x ▸ smul_mem _ _ hx
-#align submodule.smul_mem_span_smul' Submodule.smul_mem_span_smul'
 
 end Module
 

@@ -144,6 +144,15 @@ theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis b 
     finrank K V = Finset.card b := by rw [finrank_eq_card_basis h, Fintype.card_coe]
 #align finite_dimensional.finrank_eq_card_finset_basis FiniteDimensional.finrank_eq_card_finset_basis
 
+theorem finrank_eq_nat_card_basis {ι : Type w} (h : Basis ι K V) : finrank K V = Nat.card ι := by
+  cases finite_or_infinite ι
+  · letI := Fintype.ofFinite ι
+    rw [Nat.card_eq_fintype_card]
+    exact finrank_eq_card_basis h
+  · rw [Nat.card_eq_zero_of_infinite, finrank, toNat_eq_zero]
+    have := nontrivial_of_invariantBasisNumber K
+    exact .inr h.linearIndependent.aleph0_le_rank
+
 variable (K)
 
 /-- A ring satisfying `StrongRankCondition` (such as a `DivisionRing`) is one-dimensional as a

@@ -121,6 +121,19 @@ variable {M' : Type v'} [AddCommGroup M'] [Module R M']
 
 variable {M₁ : Type v} [AddCommGroup M₁] [Module R M₁]
 
+lemma LinearIndependent.cardinal_mk_le_rank [Nontrivial R]
+    {v : ι → M} (hv : LinearIndependent R v) :
+    lift.{v} #ι ≤ lift.{w} (Module.rank R M) := by
+  rw [Module.rank]
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup ⟨#M, ?_⟩ ⟨_, hv.to_subtype_range⟩)
+  · refine lift_mk_le_lift_mk_of_injective ((injective_codRestrict ?_).mpr hv.injective)
+    exact fun x ↦ ⟨x, rfl⟩
+  · rintro _ ⟨s, rfl⟩; apply mk_subtype_le
+
+lemma LinearIndependent.aleph0_le_rank [Nontrivial R] [Infinite ι]
+    {v : ι → M} (hv : LinearIndependent R v) : ℵ₀ ≤ Module.rank R M :=
+  aleph0_le_lift.mp <| (aleph0_le_lift.mpr <| aleph0_le_mk ι).trans hv.cardinal_mk_le_rank
+
 theorem LinearMap.lift_rank_le_of_injective (f : M →ₗ[R] M') (i : Injective f) :
     Cardinal.lift.{v'} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R M') := by
   simp only [Module.rank_def]

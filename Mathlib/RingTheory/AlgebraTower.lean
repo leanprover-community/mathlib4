@@ -128,23 +128,45 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
   exact hg _ hik
 #align linear_independent_smul linearIndependent_smul
 
+theorem IsScalarTower.isLinearMap (f : S →ₗ[S] A) : IsLinearMap R f where
+  map_add := map_add f
+  map_smul r s := by
+    rw [← mul_one (r • s), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
+
+theorem IsScalarTower.isLinearMap_finsupp {ι} (f : (ι →₀ S) →ₗ[S] A) : IsLinearMap R f where
+  map_add := map_add f
+  map_smul r s := by
+    rw [← sum_single s]; simp only [smul_sum, map_finsupp_sum, smul_single]
+    congr; ext i s
+    exact (IsScalarTower.isLinearMap (R := R) <| f.comp <| lsingle i).map_smul r s
+
+variable (R)
+
+theorem LinearMap.isScalarTower_of_injective (f : S →ₗ[S] A) (hf : Function.Injective f) :
+    IsScalarTower R S S where
+  smul_assoc r s _ :=
+    hf <| by rw [(IsScalarTower.isLinearMap f).map_smul r, map_smul, map_smul, smul_assoc]
+
+theorem LinearMap.isScalarTower_finsupp_of_injective {ι} (f : (ι →₀ S) →ₗ[S] A)
+    (hf : Function.Injective f) : IsScalarTower R S (ι →₀ S) where
+  smul_assoc r s _ :=
+    hf <| by rw [(IsScalarTower.isLinearMap_finsupp f).map_smul r, map_smul, map_smul, smul_assoc]
+
+-- LinearIndependent is enough if S is a ring.
+theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
+  (b.repr.symm.comp <| lsingle <| Classical.arbitrary ι).isScalarTower_of_injective R
+    (b.repr.symm.injective.comp <| single_injective _)
+
+theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
+  b.repr.symm.isScalarTower_finsupp_of_injective R b.repr.symm.injective
+
+variable {R}
+
 /-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
-  haveI : IsScalarTower R S (ι' →₀ S) :=
-  { smul_assoc := fun r s a ↦ by
-      /- because A/S/R form a scalar tower, the linear equivalence `A ≃ₗ[S] ι' →₀ S` is
-        also R-linear, from which we can prove `IsScalarTower R S (ι' →₀ S)`. -/
-      let f : A ≃ₗ[R] ι' →₀ S :=
-      { __ := c.repr
-        map_smul' := fun r a ↦ ?_ }
-      · apply f.symm.injective
-        erw [c.repr.symm.map_smul, map_smul, c.repr.symm.map_smul, smul_assoc]
-      change c.repr _ = r • c.repr a
-      rw [← c.repr.eq_symm_apply, ← sum_single (c.repr a), smul_sum, map_finsupp_sum]
-      simp_rw [smul_single, ← smul_single_one _ (r • _), map_smul, smul_assoc, ← smul_sum,
-        ← map_smul, smul_single_one, ← map_finsupp_sum, sum_single, c.repr.symm_apply_apply] }
+  haveI := c.isScalarTower_finsupp R
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
