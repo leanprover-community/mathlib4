@@ -2075,15 +2075,17 @@ all `f ∈ s`. -/
 def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f a ↦ f a) s t
 #align set.seq Set.seq
 
-theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t :=
-  (iUnion_image_left _).symm
-#align set.seq_def Set.seq_def
-
 @[simp]
 theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
     b ∈ seq s t ↔ ∃ f ∈ s, ∃ a ∈ t, (f : α → β) a = b :=
   Iff.rfl
 #align set.mem_seq_iff Set.mem_seq_iff
+
+lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
+
+theorem seq_def {s : Set (α → β)} {t : Set α} : seq s t = ⋃ f ∈ s, f '' t := by
+  rw [seq_eq_image2, iUnion_image_left]
+#align set.seq_def Set.seq_def
 
 theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
     seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
@@ -2105,7 +2107,7 @@ theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : 
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
     seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  simp only [seq, image2_image_left, image2_image2_left, image2_image2_right, comp_apply]
+  simp only [seq_eq_image2, image2_image_left, image2_image2_left, image2_image2_right, comp_apply]
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
@@ -2114,7 +2116,7 @@ theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
 #align set.image_seq Set.image_seq
 
 theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t := by
-  rw [seq, image2_image_left, image2_mk_eq_prod]
+  rw [seq_eq_image2, image2_image_left, image2_mk_eq_prod]
 #align set.prod_eq_seq Set.prod_eq_seq
 
 theorem prod_image_seq_comm (s : Set α) (t : Set β) :
@@ -2123,7 +2125,7 @@ theorem prod_image_seq_comm (s : Set α) (t : Set β) :
 #align set.prod_image_seq_comm Set.prod_image_seq_comm
 
 theorem image2_eq_seq (f : α → β → γ) (s : Set α) (t : Set β) : image2 f s t = seq (f '' s) t := by
-  rw [seq, image2_image_left]
+  rw [seq_eq_image2, image2_image_left]
 #align set.image2_eq_seq Set.image2_eq_seq
 
 end Seq
