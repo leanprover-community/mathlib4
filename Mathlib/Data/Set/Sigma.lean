@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.Says
 
 #align_import data.set.sigma from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
@@ -133,8 +134,37 @@ theorem sigma_inter_sigma : s₁.sigma t₁ ∩ s₂.sigma t₂ = (s₁ ∩ s₂
   simp [and_assoc, and_left_comm]
 #align set.sigma_inter_sigma Set.sigma_inter_sigma
 
-theorem biInter_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
-    ⋂ ij ∈ s.sigma t, u ij.1 ij.2 = ⋂ i ∈ s, ⋂ j : t i, u i j := by aesop
+theorem biSup_sigma [CompleteLattice ι'] (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → ι') :
+    ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  by apply eq_of_forall_ge_iff; intro; constructor <;> simp_all
+
+theorem biSup_sigma' [CompleteLattice ι'] (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → ι') :
+    ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm $ biSup_sigma _ _ _
+
+theorem biInf_sigma [CompleteLattice ι'] (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → ι') :
+    ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  @biSup_sigma _ ι'ᵒᵈ _ _ _ _ _
+
+theorem biInf_sigma' [CompleteLattice ι'] (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → ι') :
+    ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm $ biInf_sigma _ _ _
+
+theorem biInter_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : Sigma α → Set ι') :
+    ⋂ ij ∈ s.sigma t, u ij = ⋂ i ∈ s, ⋂ j ∈ t i, u ⟨i, j⟩ :=
+  biInf_sigma _ _ _
+
+theorem biInter_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
+    ⋂ i ∈ s, ⋂ j ∈ t i, u i j = ⋂ ij ∈ s.sigma t, u ij.fst ij.snd :=
+  biInf_sigma' _ _ _
+
+theorem biUnion_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : Sigma α → Set ι') :
+    ⋃ ij ∈ s.sigma t, u ij = ⋃ i ∈ s, ⋃ j ∈ t i, u ⟨i, j⟩ :=
+  biSup_sigma _ _ _
+
+theorem biUnion_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
+    ⋃ i ∈ s, ⋃ j ∈ t i, u i j = ⋃ ij ∈ s.sigma t, u ij.fst ij.snd :=
+  biSup_sigma' _ _ _
 
 theorem insert_sigma : (insert i s).sigma t = Sigma.mk i '' t i ∪ s.sigma t := by
   rw [insert_eq, union_sigma, singleton_sigma]

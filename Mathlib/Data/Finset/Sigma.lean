@@ -110,7 +110,12 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
 #align finset.inf_sigma Finset.inf_sigma
 
 theorem _root_.Set.biInter_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
-    (u : ∀ i, α i → Set β) : ⋂ ij ∈ s.sigma t, u ij.1 ij.2 = ⋂ i ∈ s, ⋂ j : t i, u i j := by aesop
+    (u : Sigma α → Set β) : ⋂ ij ∈ s.sigma t, u ij = ⋂ i ∈ s, ⋂ j ∈ t i, u ⟨i, j⟩ :=
+  by ext; constructor <;> simp_all
+
+theorem _root_.Set.biInter_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (u : ∀ i, α i → Set β) : ⋂ i ∈ s, ⋂ j ∈ t i, u i j = ⋂ ij ∈ s.sigma t, u ij.1 ij.2 :=
+  Eq.symm $ Set.biInter_finsetSigma _ _ _
 
 end Sigma
 

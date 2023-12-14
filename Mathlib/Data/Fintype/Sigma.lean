@@ -38,5 +38,11 @@ instance PSigma.fintype {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)]
 #align psigma.fintype PSigma.fintype
 
 lemma Set.biInter_finsetSigma_univ {β : α → Type*} [∀ a, Fintype (β a)]
+    (s : Finset α) (u : Sigma β → Set γ) :
+    ⋂ ij ∈ s.sigma (fun _ ↦ Finset.univ), u ij = ⋂ i ∈ s, ⋂ j : β i, u ⟨i, j⟩ :=
+  by ext; constructor <;> simp_all
+
+lemma Set.biInter_finsetSigma_univ' {β : α → Type*} [∀ a, Fintype (β a)]
     (s : Finset α) (u : ∀ i, β i → Set γ) :
-    ⋂ ij ∈ s.sigma (fun i ↦ Finset.univ), u ij.1 ij.2 = ⋂ i ∈ s, ⋂ j : β i, u i j := by aesop
+    ⋂ i ∈ s, ⋂ j : β i, u i j = ⋂ ij ∈ s.sigma (fun _ ↦ Finset.univ), u ij.fst ij.snd :=
+  Eq.symm $ Set.biInter_finsetSigma_univ _ _
