@@ -153,6 +153,35 @@ lemma isIntegral_discr_mul_of_mem_traceDual
 
 variable (A K)
 
+lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRing B)) :
+    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
+      traceDual A K (I.map (FractionRing.algEquiv B L)) := by
+  show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
+    traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
+  rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
+  ext x
+  simp only [AlgEquiv.toLinearEquiv_symm, AlgEquiv.toLinearEquiv_toLinearMap,
+    traceDual, traceForm_apply, Submodule.mem_comap, AlgEquiv.toLinearMap_apply,
+    Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+  apply (FractionRing.algEquiv B L).forall_congr
+  simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
+    EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
+  refine fun {y} ↦ (forall_congr' $ fun hy ↦ ?_)
+  rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
+    (FractionRing.algEquiv B L).toRingEquiv]
+  swap
+  · apply IsLocalization.ringHom_ext (M := A⁰); ext
+    simp only [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
+      RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+    rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
+      ← IsScalarTower.algebraMap_apply]
+  simp only [AlgEquiv.toRingEquiv_eq_coe, _root_.map_mul, AlgEquiv.coe_ringEquiv,
+    AlgEquiv.apply_symm_apply]
+  show (FractionRing.algEquiv A K).symm _ ∈ (algebraMap A (FractionRing A)).range ↔ _
+  rw [← (FractionRing.algEquiv A K).symm.toAlgHom.comp_algebraMap, ← RingHom.map_range,
+    AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ringHom_commutes, Subring.mem_map_equiv]
+  simp
+
 open scoped Classical
 
 namespace FractionalIdeal
@@ -310,3 +339,84 @@ lemma dual_le_dual :
   rwa [dual_ne_zero_iff]
 
 end FractionalIdeal
+
+variable (B)
+variable [IsDedekindDomain B]
+
+/-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
+as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
+def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
+  (1 / Submodule.traceDual A (FractionRing A) 1 : Submodule B (FractionRing B)).comap
+    (Algebra.linearMap B (FractionRing B))
+
+lemma coeSubmodule_differentIdeal_fractionRing
+    [NoZeroSMulDivisors A B] (hAB : Algebra.IsIntegral A B)
+    [IsSeparable (FractionRing A) (FractionRing B)]
+    [FiniteDimensional (FractionRing A) (FractionRing B)] :
+    coeSubmodule (FractionRing B) (differentIdeal A B) =
+      1 / Submodule.traceDual A (FractionRing A) 1 := by
+  have : IsIntegralClosure B A (FractionRing B) :=
+    isIntegralClosure_of_isIntegrallyClosed _ _ _ hAB
+  rw [coeSubmodule, differentIdeal, Submodule.map_comap_eq, inf_eq_right]
+  have := FractionalIdeal.dual_inv_le (A := A) (K := FractionRing A)
+    (1 : FractionalIdeal B⁰ (FractionRing B))
+  have : _ ≤ ((1 : FractionalIdeal B⁰ (FractionRing B)) : Submodule B (FractionRing B)) := this
+  simp only [← one_div, FractionalIdeal.val_eq_coe] at this
+  rw [FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _),
+    FractionalIdeal.coe_dual] at this
+  simpa only [FractionalIdeal.coe_one] using this
+  · exact one_ne_zero
+  · exact one_ne_zero
+
+lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
+    coeSubmodule L (differentIdeal A B) = 1 / Submodule.traceDual A K 1 := by
+  have : (FractionRing.algEquiv B L).toLinearEquiv.comp (Algebra.linearMap B (FractionRing B)) =
+    Algebra.linearMap B L := by ext; simp
+  rw [coeSubmodule, ← this]
+  have H : RingHom.comp (algebraMap (FractionRing A) (FractionRing B))
+    ↑(FractionRing.algEquiv A K).symm.toRingEquiv =
+      RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L)
+  · apply IsLocalization.ringHom_ext A⁰
+    ext
+    simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+      AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
+      ← IsScalarTower.algebraMap_apply]
+    rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+  have : IsSeparable (FractionRing A) (FractionRing B) := IsSeparable.of_equiv_equiv _ _ H
+  have : FiniteDimensional (FractionRing A) (FractionRing B) := Module.Finite.of_equiv_equiv _ _ H
+  simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]
+  rw [← coeSubmodule, coeSubmodule_differentIdeal_fractionRing _ _
+      (IsIntegralClosure.isIntegral_algebra _ L),
+    Submodule.map_div, ← AlgEquiv.toAlgHom_toLinearMap, Submodule.map_one]
+  congr 1
+  refine (map_equiv_traceDual A K _).trans ?_
+  congr 1
+  ext
+  simp
+
+variable (L)
+
+lemma coeIdeal_differentIdeal [NoZeroSMulDivisors A B] :
+    ↑(differentIdeal A B) = (FractionalIdeal.dual A K (1 : FractionalIdeal B⁰ L))⁻¹ := by
+  apply FractionalIdeal.coeToSubmodule_injective
+  simp only [FractionalIdeal.coe_div
+    (FractionalIdeal.dual_ne_zero (@one_ne_zero (FractionalIdeal B⁰ L) _ _ _)),
+    FractionalIdeal.coe_coeIdeal, coeSubmodule_differentIdeal A K, inv_eq_one_div,
+    FractionalIdeal.coe_dual_one, FractionalIdeal.coe_one]
+
+variable {A K B L}
+
+lemma differentialIdeal_le_fractionalIdeal_iff
+  {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
+    differentIdeal A B ≤ I ↔ (((I⁻¹ : _) : Submodule B L).restrictScalars A).map
+      ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
+  rw [coeIdeal_different_ideal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
+    ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
+  refine le_traceDual_iff_map_le_one.trans ?_
+  simp
+
+lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) [NoZeroSMulDivisors A B] :
+    differentIdeal A B ≤ I ↔ (((I⁻¹ : FractionalIdeal B⁰ L) : Submodule B L).restrictScalars A).map
+      ((Algebra.trace K L).restrictScalars A) ≤ 1 :=
+  (FractionalIdeal.coeIdeal_le_coeIdeal _).symm.trans
+    (differentialIdeal_le_fractionalIdeal_iff (I := (I : FractionalIdeal B⁰ L)) (by simpa))

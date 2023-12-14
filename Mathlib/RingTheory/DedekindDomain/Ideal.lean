@@ -770,6 +770,14 @@ theorem Associates.le_singleton_iff (x : A) (n : ℕ) (I : Ideal A) :
     Ideal.dvd_span_singleton]
 #align associates.le_singleton_iff Associates.le_singleton_iff
 
+lemma FractionalIdeal.le_inv_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I ≤ J⁻¹ ↔ J ≤ I⁻¹ := by
+  rw [inv_eq, inv_eq, le_div_iff_mul_le hI, le_div_iff_mul_le hJ, mul_comm]
+
+lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I⁻¹ ≤ J ↔ J⁻¹ ≤ I := by
+  simpa using le_inv_comm (A := A) (K := K) (inv_ne_zero hI) (inv_ne_zero hJ)
+
 open FractionalIdeal
 
 variable {K}
