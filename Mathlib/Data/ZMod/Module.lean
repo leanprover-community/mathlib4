@@ -45,7 +45,7 @@ end AddMonoidHom
 
 namespace AddSubgroup
 
-/-- Reinterpret an additive subgroup as a `ℤ/nℤ`-submodule.
+/-- Reinterpret an additive subgroup of a `ℤ/nℤ`-module as a `ℤ/nℤ`-submodule.
 
 See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
 def toZModSubmodule : AddSubgroup G ≃o Submodule (ZMod n) G where
