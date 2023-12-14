@@ -91,13 +91,13 @@ Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `
 series of `s`
 -/
 @[simps!]
-def OfLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
+def ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
   length := x.length
   toFun := x
-  step := fun _ => h _ _ <| x.step _
+  step _ := h _ _ <| x.step _
 
 lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-    (x.OfLE h : _ → _) = x := rfl
+    (x.ofLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
@@ -145,29 +145,19 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : Re
   toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_empty)
   step := fun i => List.chain'_iff_get.mp hx i i.2
 
+
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other.-/
-@[simps]
-protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} where
-  toFun := fun x => ⟨_, x.toList_ne_empty, x.toList_chain'⟩
-  invFun := fun x => fromListChain' _ x.2.1 x.2.2
-  left_inv := fun x => ext (by dsimp; rw [List.length_ofFn, Nat.pred_succ]) <| by
-    ext f
-    simp only [fromListChain'_toFun, Function.comp_apply, List.get_ofFn]
-    rfl
-  right_inv := by
-    intro x
-    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
-    · dsimp
-      rw [List.length_ofFn, fromListChain'_length, ← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
-      rw [List.length_pos]
-      exact x.2.1
-    · rw [List.get_ofFn, fromListChain'_toFun]
-      congr
+protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
+  toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
+  invFun x := fromListChain' _ x.2.1 x.2.2
+  left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
+  right_inv x := by
+    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 _ => List.get_ofFn _ _)
+    simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 end RelSeries
-
 
 namespace Rel
 
@@ -604,9 +594,6 @@ lemma exists_len_gt_of_infiniteDimensional [r.InfiniteDimensional] (n : ℕ) :
   ⟨RelSeries.withLength r (n + 1), RelSeries.length_withLength r _ ▸ lt_add_one _⟩
 
 end RelSeries
-
-section LTSeries
-
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
