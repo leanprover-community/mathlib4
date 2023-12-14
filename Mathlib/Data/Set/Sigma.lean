@@ -149,14 +149,6 @@ theorem _root_.biInf_sigma' [CompleteLattice ι'] (s : Set ι) (t : ∀ i, Set (
     (f : ∀ i, α i → ι') : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
   Eq.symm $ biInf_sigma _ _ _
 
-theorem biInter_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : Sigma α → Set ι') :
-    ⋂ ij ∈ s.sigma t, u ij = ⋂ i ∈ s, ⋂ j ∈ t i, u ⟨i, j⟩ :=
-  biInf_sigma _ _ _
-
-theorem biInter_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
-    ⋂ i ∈ s, ⋂ j ∈ t i, u i j = ⋂ ij ∈ s.sigma t, u ij.fst ij.snd :=
-  biInf_sigma' _ _ _
-
 theorem biUnion_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : Sigma α → Set ι') :
     ⋃ ij ∈ s.sigma t, u ij = ⋃ i ∈ s, ⋃ j ∈ t i, u ⟨i, j⟩ :=
   biSup_sigma _ _ _
@@ -164,6 +156,14 @@ theorem biUnion_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : Sigma α → Set
 theorem biUnion_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
     ⋃ i ∈ s, ⋃ j ∈ t i, u i j = ⋃ ij ∈ s.sigma t, u ij.fst ij.snd :=
   biSup_sigma' _ _ _
+
+theorem biInter_sigma (s : Set ι) (t : ∀ i, Set (α i)) (u : Sigma α → Set ι') :
+    ⋂ ij ∈ s.sigma t, u ij = ⋂ i ∈ s, ⋂ j ∈ t i, u ⟨i, j⟩ :=
+  biInf_sigma _ _ _
+
+theorem biInter_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (u : ∀ i, α i → Set ι') :
+    ⋂ i ∈ s, ⋂ j ∈ t i, u i j = ⋂ ij ∈ s.sigma t, u ij.fst ij.snd :=
+  biInf_sigma' _ _ _
 
 theorem insert_sigma : (insert i s).sigma t = Sigma.mk i '' t i ∪ s.sigma t := by
   rw [insert_eq, union_sigma, singleton_sigma]
