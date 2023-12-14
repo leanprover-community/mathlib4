@@ -294,7 +294,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
       f (n - 1) • (range n).sum g - f m • (range (m + 1)).sum g +
       Finset.sum (Ico m (n - 1)) (fun i => f i • (range (i + 1)).sum g -
       f (i + 1) • (range (i + 1)).sum g) := by
-    rw [← add_sub, add_comm, ←add_sub, ← sum_sub_distrib]
+    rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
   rw [h₄]
   have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
     intro i

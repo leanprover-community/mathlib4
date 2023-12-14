@@ -41,7 +41,7 @@ def applyConst (mvar : MVarId) (c : Name) (cfg : ApplyConfig := {}) : MetaM (Lis
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (λ mv e => do
       let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
-        Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+        Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"
       sg1.assign e
       pure sg2)

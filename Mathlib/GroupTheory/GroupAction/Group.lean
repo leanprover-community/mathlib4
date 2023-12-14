@@ -141,19 +141,19 @@ theorem Commute.smul_left_iff [Mul β] [SMulCommClass α β β] [IsScalarTower �
 #align commute.smul_left_iff Commute.smul_left_iff
 
 @[to_additive]
-protected theorem MulAction.bijective (g : α) : Function.Bijective ((· • ·) g : β → β) :=
+protected theorem MulAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MulAction.toPerm g).bijective
 #align mul_action.bijective MulAction.bijective
 #align add_action.bijective AddAction.bijective
 
 @[to_additive]
-protected theorem MulAction.injective (g : α) : Function.Injective ((· • ·) g : β → β) :=
+protected theorem MulAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MulAction.bijective g).injective
 #align mul_action.injective MulAction.injective
 #align add_action.injective AddAction.injective
 
 @[to_additive]
-protected theorem MulAction.surjective (g : α) : Function.Surjective ((· • ·) g : β → β) :=
+protected theorem MulAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MulAction.bijective g).surjective
 #align mul_action.surjective MulAction.surjective
 #align add_action.surjective AddAction.surjective
@@ -218,15 +218,15 @@ theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTowe
   Commute.smul_left_iff (Units.mk0 c hc)
 #align commute.smul_left_iff₀ Commute.smul_left_iff₀
 
-protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective ((· • ·) a : β → β) :=
+protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective (a • · : β → β) :=
   MulAction.bijective <| Units.mk0 a ha
 #align mul_action.bijective₀ MulAction.bijective₀
 
-protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective ((· • ·) a : β → β) :=
+protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective (a • · : β → β) :=
   (MulAction.bijective₀ ha).injective
 #align mul_action.injective₀ MulAction.injective₀
 
-protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective ((· • ·) a : β → β) :=
+protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective (a • · : β → β) :=
   (MulAction.bijective₀ ha).surjective
 #align mul_action.surjective₀ MulAction.surjective₀
 

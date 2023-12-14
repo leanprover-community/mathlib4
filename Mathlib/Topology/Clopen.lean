@@ -112,7 +112,7 @@ theorem IsClopen.preimage {s : Set Y} (h : IsClopen s) {f : X → Y} (hf : Conti
 
 theorem ContinuousOn.preimage_isClopen_of_isClopen {f : X → Y} {s : Set X} {t : Set Y}
     (hf : ContinuousOn f s) (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ f ⁻¹' t) :=
-  ⟨ContinuousOn.preimage_open_of_open hf hs.1 ht.1,
+  ⟨ContinuousOn.isOpen_inter_preimage hf hs.1 ht.1,
     ContinuousOn.preimage_isClosed_of_isClosed hf hs.2 ht.2⟩
 #align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_isClopen_of_isClopen
 

@@ -154,7 +154,8 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p,
       rw [map_finsupp_sum, Finsupp.sum_congr (g2 := fun μ' _ ↦ if μ' = μ then g (m μ) else 0) this,
         Finsupp.sum_ite_eq', if_pos hμ]
     rintro μ' hμ'
-    split_ifs with hμμ'; rw [hμμ']
+    split_ifs with hμμ'
+    · rw [hμμ']
     replace hm₂ : ((f - algebraMap K (End K V) μ') ^ finrank K V) (m μ') = 0 := by
       obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
       exact Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank _ _ k hk

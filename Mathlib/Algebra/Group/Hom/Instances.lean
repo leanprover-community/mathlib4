@@ -345,4 +345,22 @@ def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
 #align add_monoid.End.mul_right AddMonoid.End.mulRight
 #align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
+lemma AddMonoid.End.mulRight_eq_mulLeft_of_commute (a : R) (h : ∀ (b : R), Commute a b) :
+    mulRight a = mulLeft a :=
+  AddMonoidHom.ext fun _ ↦ (h _).eq.symm
+
 end Semiring
+
+section CommSemiring
+
+variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
+
+namespace AddMonoid.End
+
+lemma comm_mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) := by
+  ext a
+  exact mulRight_eq_mulLeft_of_commute _ (Commute.all _)
+
+end AddMonoid.End
+
+end CommSemiring

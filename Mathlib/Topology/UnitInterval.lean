@@ -72,7 +72,7 @@ instance hasOne : One I :=
   ⟨⟨1, by constructor <;> norm_num⟩⟩
 #align unit_interval.has_one unitInterval.hasOne
 
-instance : ZeroLEOneClass I := ⟨@zero_le_one ℝ _ _ _ _⟩
+instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
 instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
@@ -123,6 +123,9 @@ theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
+theorem symm_bijective : Function.Bijective (symm : I → I) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
@@ -141,7 +144,7 @@ theorem involutive_symm : Function.Involutive σ := symm_symm
 theorem bijective_symm : Function.Bijective σ := involutive_symm.bijective
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
-  rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le, sub_half]
+  rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
@@ -177,7 +180,7 @@ theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 #align unit_interval.le_one' unitInterval.le_one'
 
-instance : NeZero (1 : I) := ⟨fun h ↦ one_ne_zero <| congrArg Subtype.val h⟩
+instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor

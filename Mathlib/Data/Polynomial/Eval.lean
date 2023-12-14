@@ -156,7 +156,7 @@ theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
       map_add' := fun p q => eval₂_add _ _ }
   have A : ∀ y, eval₂ f x y = T y := fun y => rfl
   simp only [A]
-  rw [sum, T.map_sum, sum]
+  rw [sum, map_sum, sum]
 #align polynomial.eval₂_sum Polynomial.eval₂_sum
 
 theorem eval₂_list_sum (l : List R[X]) (x : S) : eval₂ f x l.sum = (l.map (eval₂ f x)).sum :=

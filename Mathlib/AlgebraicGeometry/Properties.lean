@@ -94,6 +94,7 @@ instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
+  rw [show (Scheme.Spec.obj <| op R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
@@ -261,7 +262,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine' ⟨fun {a b} e => _⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
-    by_contra' h
+    by_contra! h
     obtain ⟨_, ⟨x, hx₁, rfl⟩, ⟨x, hx₂, e'⟩⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
     replace e' := Subtype.eq e'
