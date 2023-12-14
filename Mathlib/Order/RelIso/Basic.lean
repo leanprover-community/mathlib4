@@ -657,10 +657,6 @@ theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :
 theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
-@[simp]
-theorem coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
-  rfl
-
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_iso.map_rel_iff RelIso.map_rel_iff

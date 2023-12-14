@@ -2129,7 +2129,7 @@ theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
-    f '' seq s t = seq ((· ∘ ·) f '' s) t := by
+    f '' seq s t = seq ((f ∘ ·) '' s) t := by
   rw [← singleton_seq, ← singleton_seq, seq_seq, image_singleton]
 #align set.image_seq Set.image_seq
 

@@ -301,6 +301,11 @@ theorem matPolyEquiv_smul_one (p : R[X]) :
   split_ifs <;> simp <;> rename_i h <;> simp [h]
 #align mat_poly_equiv_smul_one matPolyEquiv_smul_one
 
+@[simp]
+lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
+    matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
+  rw [← one_mul M, ← smul_mul_assoc, _root_.map_mul, matPolyEquiv_smul_one, one_mul]
+
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by
   intro k

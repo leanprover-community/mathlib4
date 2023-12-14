@@ -495,10 +495,16 @@ lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] f
   (eq_rnDeriv (measurable_const) MutuallySingular.zero_left (by simp)).symm
 
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
-theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+theorem rnDeriv_withDensity₀ (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) :
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
   haveI : ν.withDensity f = 0 + ν.withDensity f := by rw [zero_add]
-  (eq_rnDeriv hf MutuallySingular.zero_left this).symm
+  (eq_rnDeriv₀ hf MutuallySingular.zero_left this).symm
+
+/-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
+theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
+  rnDeriv_withDensity₀ ν hf.aemeasurable
 #align measure_theory.measure.rn_deriv_with_density MeasureTheory.Measure.rnDeriv_withDensity
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
