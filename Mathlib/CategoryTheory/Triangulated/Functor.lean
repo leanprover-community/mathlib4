@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Shift.CommShift
 # Triangulated functors
 
 In this file, when `C` and `D` are categories equipped with a shift by `ℤ` and
-`F : C ⥤ D` a functor which commutes with the shift, we define the induced
+`F : C ⥤ D` is a functor which commutes with the shift, we define the induced
 functor `F.mapTriangle : Triangle C ⥤ Triangle D` on the categories of
 triangles. When `C` and `D` are pretriangulated, a triangulated functor
 is such a functor `F` which also sends distinguished triangles to
@@ -24,9 +24,8 @@ open Category Limits Pretriangulated
 
 namespace Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
-  [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
-  (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
+variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ]
+  (F : C ⥤ D) [F.CommShift ℤ]
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
@@ -70,8 +69,8 @@ variable [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
 
-/-- A functor which commutes with the shift by `ℤ` is triangulated if it
-sends distinguished triangles to distinguished triangles. -/
+/-- A functor which commutes with the shift by `ℤ` is triangulated if
+it sends distinguished triangles to distinguished triangles. -/
 class IsTriangulated : Prop where
   map_distinguished (T : Triangle C) : (T ∈ distTriang C) → F.mapTriangle.obj T ∈ distTriang D
 
