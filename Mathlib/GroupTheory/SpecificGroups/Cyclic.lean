@@ -755,7 +755,9 @@ noncomputable def addEquivofAddCyclicCardEq [AddGroup G] [AddGroup H] [hG : IsAd
 /-- Two groups of the same prime cardinality are isomorphic. -/
 noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [Group G] [Group H]
     [Fact p.Prime] (hG : Fintype.card G = p) (hH : Fintype.card H = p) : G ≃* H := by
-  apply mulEquivOfCyclicCardEq (isCyclic_of_prime_card hG) (isCyclic_of_prime_card hH)
+  have hGcyc := isCyclic_of_prime_card hG
+  have hHcyc := isCyclic_of_prime_card hH
+  apply mulEquivOfCyclicCardEq
   rw [← Nat.card_eq_fintype_card] at hG hH
   exact hG.trans hH.symm
 
