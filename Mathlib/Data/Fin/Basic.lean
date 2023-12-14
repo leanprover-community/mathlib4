@@ -1257,27 +1257,27 @@ lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
 
 lemma eq_zero_of_neq_one (i : Fin 2) (hi : i ≠ 1) : i = 0 := by
   apply (em (i = 0)).elim
-  . intro (hi0 : i = 0)
+  · intro (hi0 : i = 0)
     exact hi0
-  . intro (hi0 : i ≠ 0)
+  · intro (hi0 : i ≠ 0)
     have hi1 : i = 1 := eq_one_of_neq_zero i hi0
     exact (hi hi1).elim
 
 lemma ne_cero_iff_eq_one {x : Fin 2} : x ≠ 0 ↔ x = 1 := by
   apply Iff.intro
-  . intro (hxne0 : x ≠ 0)
+  · intro (hxne0 : x ≠ 0)
     exact eq_one_of_neq_zero x hxne0
-  . intro (hx1 : x = 1)
+  · intro (hx1 : x = 1)
     subst hx1
     simp_all only [ne_eq, one_eq_zero_iff, succ.injEq, not_false_eq_true]
 
 lemma eq_zero_neq_eq_zero_of_neq {u v : Fin 2} (h : u ≠ v) : ¬(u = 0 ↔ v = 0) := by
   intro (h2 : u = 0 ↔ v = 0)
   apply (em (u = 0)).elim
-  . intro (hu0 : u = 0)
+  · intro (hu0 : u = 0)
     subst hu0
     simp_all only [ne_eq, eq_iff_iff, true_iff, not_true]
-  . intro (hu0 : u ≠ 0)
+  · intro (hu0 : u ≠ 0)
     have hu1 : u = 1 := eq_one_of_neq_zero u hu0
     have hv1 : v ≠ 1 := Ne.trans_eq h.symm hu1
     have hv0 : v = 0 := eq_zero_of_neq_one v hv1
@@ -1287,7 +1287,7 @@ lemma eq_zero_neq_eq_zero_of_neq {u v : Fin 2} (h : u ≠ v) : ¬(u = 0 ↔ v = 
 theorem mod_two_eq_zero_iff_mod_two_Fin2_eq_zero (a : ℕ) :
     (a % 2 = 0) ↔ (( a % 2 : Fin 2) = (0 : Fin 2)) := by
   have h2 : (2 : Fin 2) = (0 : Fin 2) := rfl
-  rw [h2, ←val_inj]
+  rw [h2, ← val_inj]
   simp
   rfl
 
@@ -1295,12 +1295,12 @@ theorem eq_mod_2_of_eq_zero_eq_mod_two_eq_zero {u : Fin 2} {v : Fin n}
     (h : ((u = 0)) = ((v.val % 2 = 0))) : u = ((v.val % 2) : Fin 2) := by
   rw [mod_two_eq_zero_iff_mod_two_Fin2_eq_zero v.val] at h
   apply (em (u = 0)).elim
-  . intro (hu0 : u = 0)
+  · intro (hu0 : u = 0)
     simp [hu0]
     symm
-    rw [←h]
+    rw [← h]
     apply hu0
-  . intro (hu0 : u ≠ 0)
+  · intro (hu0 : u ≠ 0)
     have hu1 : u = 1 := eq_one_of_neq_zero u hu0
     rw [eq_false hu0] at h
     have hv2 : (((v.val % 2) : Fin 2) ≠ 0) := not_of_eq_false h.symm
@@ -1321,16 +1321,16 @@ theorem eq_zero_of_Even {x : Fin 2} (h2 : Even x) : x = 0 := by
 
 theorem ven_iff_even_val (u : Fin 2) : Even u ↔ Even u.val := by
   apply Iff.intro
-  . intro (h : Even u)
+  · intro (h : Even u)
     have hu0 : u = 0 := eq_zero_of_Even h
     have hu0' : u.val = 0 := mk_eq_mk.mp hu0
     rw [hu0']
     exact Nat.even_iff.mpr rfl
-  . intro (h : Even u.val)
+  · intro (h : Even u.val)
     have hu0 : u.val = 0 := by
       have hu1 : 1 ≠ u.val := by
         intro (hu1' : 1 = u.val)
-        rw [←hu1'] at h
+        rw [← hu1'] at h
         exact Nat.not_even_one h
       exact Nat.lt_one_iff.mp (LE.le.lt_of_ne' (Nat.lt_succ.mp u.isLt) hu1)
     have hu0' : u = 0 := ext hu0
@@ -1388,7 +1388,7 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
     rw [add_right_comm, add_assoc, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
-    mod_eq_of_lt ((lt_succ_self _).trans hk)]
+    Nat.mod_eq_of_lt ((Nat.lt_succ_self _).trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff
 
 @[simp]
