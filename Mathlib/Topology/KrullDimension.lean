@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Fangming Li
 -/
 
 import Mathlib.Order.KrullDimension
-import Mathlib.Topology.SubsetProperties
 
 /-!
 # Krull dimension of a topological space
