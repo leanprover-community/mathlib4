@@ -115,7 +115,7 @@ theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i
 
 theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
-  Eq.symm $ biSup_finsetSigma _ _ _
+  Eq.symm (biSup_finsetSigma _ _ _)
 
 theorem _root_.biInf_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : Sigma α → β) : ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
@@ -123,7 +123,7 @@ theorem _root_.biInf_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i
 
 theorem _root_.biInf_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : ∀ i, α i → β) : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
-  Eq.symm $ biInf_finsetSigma _ _ _
+  Eq.symm (biInf_finsetSigma _ _ _)
 
 theorem _root_.Set.biUnion_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : Sigma α → Set β) : ⋃ ij ∈ s.sigma t, f ij = ⋃ i ∈ s, ⋃ j ∈ t i, f ⟨i, j⟩ :=
