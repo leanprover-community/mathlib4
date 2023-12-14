@@ -317,7 +317,6 @@ protected def commMonoid [CommMonoid β] : CommMonoid α := by
 #align equiv.comm_monoid Equiv.commMonoid
 #align equiv.add_comm_monoid Equiv.addCommMonoid
 
-
 @[to_additive]
 noncomputable instance [Small.{v} α] [CommMonoid α] : CommMonoid (Shrink.{v} α) :=
   (equivShrink α).symm.commMonoid
