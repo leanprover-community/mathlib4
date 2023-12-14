@@ -733,7 +733,7 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
 #align equiv.alg_equiv Equiv.algEquiv
 
 variable (α) in
-/-- Shrink `α` to a smaller universe algebra multiplication. -/
+/-- Shrink `α` to a smaller universe preserves algebra structure. -/
 noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm
