@@ -1231,6 +1231,10 @@ theorem C_sub : C (a - b) = C a - C b :=
   RingHom.map_sub C a b
 #align polynomial.C_sub Polynomial.C_sub
 
+theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
+ iterate 3 rw [← C_mul_X_pow_eq_monomial]
+ rw [C_sub, sub_mul]
+
 end Ring
 
 instance commRing [CommRing R] : CommRing R[X] :=

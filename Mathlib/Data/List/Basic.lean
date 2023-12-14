@@ -1073,6 +1073,11 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
           | _, _, Sublist.cons₂ t _, h => absurd rfl h⟩
 #align list.decidable_sublist List.decidableSublist
 
+/--If the first element of two lists are different, then a sublist relation can be reduced. -/
+theorem sublist_cons_neq [DecidableEq α] {a b} (h₁ : a ≠ b) (h₂ : a::l₁ <+ b::l₂) : a::l₁ <+ l₂ := by
+  have := isSublist_iff_sublist.mpr h₂
+  rwa [isSublist, if_neg h₁, isSublist_iff_sublist] at this
+
 /-! ### indexOf -/
 
 section IndexOf
@@ -1337,6 +1342,22 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
     (h : ∀ n h₁ h₂, nthLe l₁ n h₁ = nthLe l₂ n h₂) : l₁ = l₂ :=
   ext_get hl h
 #align list.ext_le List.ext_nthLe
+
+/-- If two lists are the same length and get! is the same on all indices, the lists are equal. -/
+theorem ext_get! [Inhabited α] (hl : length l₁ = length l₂)
+    (h : ∀ n, get! l₁ n = get! l₂ n) : l₁ = l₂ :=
+  ext fun n => by
+      cases h₃ : get? l₁ n <;> cases h₄ : get? l₂ n
+      case none.none => rfl
+      case none.some =>
+        exfalso
+        exact not_lt_of_ge (get?_eq_none.mp h₃) (hl ▸ (get?_eq_some.mp h₄).1)
+      case some.none =>
+        exfalso
+        exact not_lt_of_ge (get?_eq_none.mp h₄) (hl ▸ (get?_eq_some.mp h₃).1)
+      case some.some =>
+        congr
+        exact (get!_of_get? h₃) ▸ (get!_of_get? h₄) ▸ h n
 
 @[simp]
 theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
@@ -3542,6 +3563,11 @@ theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 #align list.filter_false List.filter_false
 
+theorem filter_replicate {p : α → Bool} {n} {a : α} : List.filter p (List.replicate n a) = if p a then List.replicate n a else [] := by
+  induction n with
+  | zero => simp
+  | succ n ih => by_cases hf : p a <;> simp_all
+
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
     ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
@@ -4365,6 +4391,11 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
     · exact ih (Nat.le_of_succ_le_succ hn)
 #align list.nthd_eq_default List.getD_eq_defaultₓ -- argument order
 
+theorem getD_reverse {l : List α} (i) (h : i < length l) :
+    getD l.reverse i = getD l (l.length - 1 - i) := by
+  funext a
+  rwa [List.getD_eq_get?, List.get?_reverse, ← List.getD_eq_get?]
+
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
 def decidableGetDNilNe {α} (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
@@ -4381,6 +4412,13 @@ theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := 
   | zero => simp
   | succ n ih => cases n <;> simp [ih]
 #align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
+
+@[simp]
+theorem getD_replicate_elem_eq {y} (i n) (h : i < n) :
+    getD (replicate n x) i y = x := by
+  rw [getD, get?_eq_get, get_replicate]
+  · exact Option.getD_some
+  · rwa [length_replicate]
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
     (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
