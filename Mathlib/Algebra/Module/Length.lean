@@ -266,7 +266,7 @@ end LTSeries
 section decIssue
 
 variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
-#check RelSeries.ofLE
+
 lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
     moduleLength R M = krullDim (Submodule R M) :=
 le_antisymm
