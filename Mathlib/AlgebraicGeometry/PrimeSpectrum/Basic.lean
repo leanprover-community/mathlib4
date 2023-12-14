@@ -945,29 +945,34 @@ variable (R) in
 
 end PrimeSpectrum
 
+open PrimeSpectrum in
 /--
  [Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
 -/
-def minimalPrimes.bijection : minimalPrimes R ≃o irreducibleComponents (PrimeSpectrum R)ᵒᵈ where
+def minimalPrimes.bijection : minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ where
   toFun p :=
     let s := (PrimeSpectrum.bijection R ⟨p.1, p.2.1.1⟩)
     OrderDual.toDual ⟨s.1, ⟨s.2.2,
       fun t (ht : IsIrreducible t) (le : PrimeSpectrum.zeroLocus _ ⊆ t) ↦ by
       show t ⊆ PrimeSpectrum.zeroLocus p
       rw [PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
-      exact p.2.2 ⟨PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩
-        fun x hx ↦ (PrimeSpectrum.mem_vanishingIdeal _ _ |>.mp hx) ⟨p.1, p.2.1.1⟩ <|
-        show ⟨p.1, p.2.1.1⟩ ∈ t from le <| PrimeSpectrum.mem_zeroLocus _ _ |>.mpr <| le_refl _⟩⟩
+      exact p.2.2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩
+        fun x hx ↦ (mem_vanishingIdeal _ _ |>.mp hx) ⟨p.1, p.2.1.1⟩ <|
+          le <| mem_zeroLocus _ _ |>.mpr <| le_refl _⟩⟩
   invFun s := let p := (PrimeSpectrum.bijection R).symm <|
     OrderDual.toDual ⟨s.1, isClosed_of_mem_irreducibleComponents _ s.2, s.2.1⟩
-    ⟨p.1, ⟨p.2, bot_le⟩, fun q ⟨hq, _⟩ (le : q ≤ PrimeSpectrum.vanishingIdeal s.1) ↦
-      fun x hx ↦  PrimeSpectrum.mem_vanishingIdeal _ _ |>.mp hx ⟨q, hq⟩ <|
-        s.2.2 (PrimeSpectrum.isIrreducible_zeroLocus_iff_of_radical _ hq.isRadical |>.mpr hq)
-          (PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr le) <|
-          PrimeSpectrum.mem_zeroLocus _ _ |>.mpr <| le_refl _⟩
-  left_inv := _
-  right_inv := _
-  map_rel_iff' := _
+    ⟨p.1, ⟨p.2, bot_le⟩, fun q ⟨hq, _⟩ (le : q ≤ vanishingIdeal s.1) ↦
+      fun x hx ↦  mem_vanishingIdeal _ _ |>.mp hx ⟨q, hq⟩ <|
+        s.2.2 (isIrreducible_zeroLocus_iff_of_radical _ hq.isRadical |>.mpr hq)
+          (subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr le) <|
+          mem_zeroLocus _ _ |>.mpr <| le_refl _⟩
+  left_inv p := Subtype.ext <| show vanishingIdeal (zeroLocus _) = p.1 by
+    rw [vanishingIdeal_zeroLocus_eq_radical, p.2.1.1.radical]
+  right_inv s := Subtype.ext <| show zeroLocus (vanishingIdeal <| OrderDual.toDual s.1) = s.1 by
+    erw [zeroLocus_vanishingIdeal_eq_closure,
+      closure_eq_iff_isClosed.mpr (isClosed_of_mem_irreducibleComponents _ s.2)]
+  map_rel_iff' {p q} := show zeroLocus (q.1 : Set R) ⊆ zeroLocus (p.1 : Set R) ↔ p ≤ q  by
+    rw [zeroLocus_subset_zeroLocus_iff, q.2.1.1.radical, Subtype.mk_le_mk]
 
 namespace LocalRing
 
