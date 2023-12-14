@@ -151,8 +151,9 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says simp only [ge_iff_le, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, pow_pos, cast_pred,
-      cast_pow, cast_ofNat] at h
+    simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
+      simp only [ge_iff_le, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, pow_pos, cast_pred,
+        cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
     · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
     · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)

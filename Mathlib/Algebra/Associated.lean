@@ -230,8 +230,9 @@ theorem irreducible_or_factor {α} [Monoid α] (x : α) (h : ¬IsUnit x) :
     Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
   haveI := Classical.dec
   refine' or_iff_not_imp_right.2 fun H => _
-  simp? [h, irreducible_iff] at H ⊢ says simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
-    true_and] at H ⊢
+  simp? [h, irreducible_iff] at H ⊢ says
+    simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
+      true_and] at H ⊢
   refine' fun a b h => by_contradiction fun o => _
   simp? [not_or] at o says simp only [not_or] at o
   exact H _ o.1 _ o.2 h.symm

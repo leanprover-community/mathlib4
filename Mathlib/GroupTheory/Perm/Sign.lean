@@ -376,7 +376,9 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
           if_neg (mem_finPairsLT.1 hab).not_le]
         split_ifs with h₁
         · dsimp [finPairsLT] at hab
-          simp? at hab says simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt, true_and] at hab
+          simp? at hab says
+            simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
+              true_and] at hab
           exact absurd h₁ (not_le_of_gt hab)
         · rfl
       else by
