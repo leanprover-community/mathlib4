@@ -328,7 +328,14 @@ lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse 
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   ext w
-  aesop
+  show
+    (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
+    (∃ u v, u.reverse ∈ m ∧ v.reverse ∈ l ∧ u ++ v = w)
+  rw [exists_comm, List.reverse_involutive.surjective.exists]
+  refine exists_congr fun u => ?_
+  rw [List.reverse_involutive.surjective.exists]
+  refine exists_congr fun v => ?_
+  rw [and_left_comm, ← List.reverse_append, List.reverse_inj]
 
 variable (α) in
 /-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
@@ -351,9 +358,8 @@ lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   show
     (∃ L, w.reverse = join L ∧ ∀ y, y ∈ L → y ∈ l) ↔
     (∃ L, w = join L ∧ ∀ y, y ∈ L → y.reverse ∈ l)
-  have :=
-    List.reverse_involutive (α := α).list_map.surjective.comp List.reverse_involutive.surjective
-  rw [this.exists]
+  rw [(List.reverse_involutive (α := α).list_map.surjective.comp
+    List.reverse_involutive.surjective).exists]
   simp only [Function.comp, List.reverse_involutive.eq_iff, reverse_join, reverse_map,
     List.reverse_reverse, List.map_map, List.map_id'']
   refine exists_congr fun a => and_congr_right' ?_
