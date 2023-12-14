@@ -356,7 +356,7 @@ lemma coeSubmodule_differentIdeal_fractionRing
     coeSubmodule (FractionRing B) (differentIdeal A B) =
       1 / Submodule.traceDual A (FractionRing A) 1 := by
   have : IsIntegralClosure B A (FractionRing B) :=
-    isIntegralClosure_of_isIntegrallyClosed _ _ _ hAB
+    IsIntegralClosure.of_isIntegrallyClosed _ _ _ hAB
   rw [coeSubmodule, differentIdeal, Submodule.map_comap_eq, inf_eq_right]
   have := FractionalIdeal.dual_inv_le (A := A) (K := FractionRing A)
     (1 : FractionalIdeal B⁰ (FractionRing B))

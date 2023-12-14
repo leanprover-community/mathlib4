@@ -103,7 +103,7 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
 
 variable (R S K)
 
-lemma isIntegralClosure_of_isIntegrallyClosed
+lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
     [Algebra S R] [Algebra S K] [IsScalarTower S R K] (hRS : Algebra.IsIntegral S R) :
     IsIntegralClosure R S K := by
   refine ⟨IsLocalization.injective _ le_rfl, fun {x} ↦
