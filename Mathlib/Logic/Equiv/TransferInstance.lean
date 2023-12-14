@@ -369,7 +369,6 @@ protected def nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
   apply e.injective.nonUnitalNonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_non_assoc_semiring Equiv.nonUnitalNonAssocSemiring
 
-
 noncomputable instance [Small.{v} α] [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring (Shrink.{v} α) :=
   (equivShrink α).symm.nonUnitalNonAssocSemiring
