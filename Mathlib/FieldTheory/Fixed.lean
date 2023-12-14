@@ -279,7 +279,7 @@ section Finite
 variable [Finite G]
 
 instance normal : Normal (FixedPoints.subfield G F) F :=
-  ⟨fun x => (isIntegral G F x).isAlgebraic _, fun x =>
+  ⟨fun x => (isIntegral G F x).isAlgebraic, fun x =>
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
@@ -288,7 +288,7 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
 #align fixed_points.normal FixedPoints.normal
 
 instance separable : IsSeparable (FixedPoints.subfield G F) F :=
-  ⟨isIntegral G F, fun x => by
+  ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
     erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,

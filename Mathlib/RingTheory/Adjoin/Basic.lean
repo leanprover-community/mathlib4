@@ -364,8 +364,7 @@ variable {R}
 theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] (r : A) (s : Set B) (B' : Subalgebra R B) (hs : r • s ⊆ B') {x : B}
     (hx : x ∈ adjoin R s) (hr : algebraMap A B r ∈ B') : ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ B' := by
-  -- porting note: use `replace` because we don't have `change ... at` yet
-  replace hx : x ∈ Subalgebra.toSubmodule (adjoin R s) := hx
+  change x ∈ Subalgebra.toSubmodule (adjoin R s) at hx
   rw [adjoin_eq_span, Finsupp.mem_span_iff_total] at hx
   rcases hx with ⟨l, rfl : (l.sum fun (i : Submonoid.closure s) (c : R) => c • (i : B)) = x⟩
   choose n₁ n₂ using fun x : Submonoid.closure s => Submonoid.pow_smul_mem_closure_smul r s x.prop
@@ -438,6 +437,11 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 theorem map_adjoin (φ : A →ₐ[R] B) (s : Set A) : (adjoin R s).map φ = adjoin R (φ '' s) :=
   (adjoin_image _ _ _).symm
 #align alg_hom.map_adjoin AlgHom.map_adjoin
+
+@[simp]
+theorem map_adjoin_singleton (e : A →ₐ[R] B) (x : A) :
+    (adjoin R {x}).map e = adjoin R {e x} := by
+  rw [map_adjoin, Set.image_singleton]
 
 theorem adjoin_le_equalizer (φ₁ φ₂ : A →ₐ[R] B) {s : Set A} (h : s.EqOn φ₁ φ₂) :
     adjoin R s ≤ φ₁.equalizer φ₂ :=

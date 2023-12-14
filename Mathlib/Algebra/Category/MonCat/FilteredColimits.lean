@@ -80,7 +80,7 @@ variable [IsFiltered J]
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
 noncomputable instance colimitOne :
-  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.Nonempty.some,1⟩
+  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
 #align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
 #align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
 
@@ -301,7 +301,7 @@ The only thing left to see is that it is a monoid homomorphism.
 def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
   toFun := (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
   map_one' := by
-    rw [colimit_one_eq F IsFiltered.Nonempty.some]
+    rw [colimit_one_eq F IsFiltered.nonempty.some]
     exact MonoidHom.map_one _
   map_mul' x y := by
     refine Quot.induction_on₂ x y ?_

@@ -194,6 +194,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   cases a; cases f n <;> simp
 #align computable_pred.to_re ComputablePred.to_re
 
+/-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   cases' h with _ h; skip
@@ -229,10 +230,12 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
             exact ⟨by infer_instance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
+/-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 #align computable_pred.halting_problem_re ComputablePred.halting_problem_re
 
+/-- The **Halting problem** is not computable -/
 theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 #align computable_pred.halting_problem ComputablePred.halting_problem

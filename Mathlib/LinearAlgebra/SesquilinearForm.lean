@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.LinearMap
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 

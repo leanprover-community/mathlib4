@@ -298,7 +298,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine ⟨fun {x hx} => ?_⟩
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
-    Submodule.one_eq_span, ←coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -560,7 +560,7 @@ theorem mul_right_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (
 #align fractional_ideal.mul_right_strict_mono FractionalIdeal.mul_right_strictMono
 
 theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
-    StrictMono ((· * ·) I) :=
+    StrictMono (I * ·) :=
   strictMono_of_le_iff_le fun _ _ => (mul_left_le_iff hI).symm
 #align fractional_ideal.mul_left_strict_mono FractionalIdeal.mul_left_strictMono
 
@@ -723,7 +723,7 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
 
 theorem Ideal.strictAnti_pow (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
-    StrictAnti ((· ^ ·) I : ℕ → Ideal A) :=
+    StrictAnti (I ^ · : ℕ → Ideal A) :=
   strictAnti_nat_of_succ_lt fun e =>
     Ideal.dvdNotUnit_iff_lt.mp ⟨pow_ne_zero _ hI0, I, mt isUnit_iff.mp hI1, pow_succ' I e⟩
 #align ideal.strict_anti_pow Ideal.strictAnti_pow

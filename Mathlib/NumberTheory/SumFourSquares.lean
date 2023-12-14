@@ -88,9 +88,9 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     rw [← hk]
     positivity
   lift k to ℕ using hk₀.le
-  refine ⟨a, b, k, Nat.cast_pos.1 hk₀, ?_, by exact_mod_cast hk⟩
+  refine ⟨a, b, k, Nat.cast_pos.1 hk₀, ?_, mod_cast hk⟩
   replace hk : a ^ 2 + b ^ 2 + 1 ^ 2 + 0 ^ 2 = k * p
-  · exact_mod_cast hk
+  · exact mod_cast hk
   refine lt_of_sum_four_squares_eq_mul hk ?_ ?_ ?_ ?_
   · exact (mul_le_mul' le_rfl ha).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact (mul_le_mul' le_rfl hb).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
@@ -101,7 +101,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
 theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
     ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
   let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
-  ⟨a, b, k, by exact_mod_cast hk, hkp⟩
+  ⟨a, b, k, mod_cast hk, hkp⟩
 #align int.exists_sq_add_sq_add_one_eq_k Int.exists_sq_add_sq_add_one_eq_k
 
 end Int

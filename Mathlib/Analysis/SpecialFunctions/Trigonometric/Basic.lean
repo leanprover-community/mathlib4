@@ -204,7 +204,7 @@ theorem coe_real_pi : (pi : ℝ) = π :=
   rfl
 #align nnreal.coe_real_pi NNReal.coe_real_pi
 
-theorem pi_pos : 0 < pi := by exact_mod_cast Real.pi_pos
+theorem pi_pos : 0 < pi := mod_cast Real.pi_pos
 #align nnreal.pi_pos NNReal.pi_pos
 
 theorem pi_ne_zero : pi ≠ 0 :=

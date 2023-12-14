@@ -118,7 +118,7 @@ instance colimitMulAction : MulAction R (M F) where
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
   smul_zero := fun r => by
-    erw [colimit_zero_eq _ (IsFiltered.Nonempty.some : J), colimit_smul_mk_eq, smul_zero]
+    erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul := fun x => by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x

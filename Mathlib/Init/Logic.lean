@@ -85,6 +85,9 @@ theorem eq_rec_compose {α β φ : Sort u} :
       (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
   | rfl, rfl, _ => rfl
 
+theorem heq_prop {P Q : Prop} (p : P) (q : Q) : HEq p q :=
+  Subsingleton.helim (propext <| iff_of_true p q) _ _
+
 /- and -/
 
 variable {a b c d : Prop}

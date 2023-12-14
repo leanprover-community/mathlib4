@@ -442,7 +442,7 @@ theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := b
     congr
     rfl
     rw [Cofix.dest]
-  rw [MvFunctor.map_map, MvFunctor.map_map, ←appendFun_comp_id, ←appendFun_comp_id]
+  rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros
   rfl

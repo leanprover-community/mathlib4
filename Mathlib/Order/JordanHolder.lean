@@ -340,7 +340,7 @@ theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
   constructor
   · rintro ⟨i, rfl⟩
     have hi : (i : ℕ) < s.length := by
-      conv_rhs => rw [← Nat.succ_sub_one s.length, Nat.succ_sub h]
+      conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
     -- Porting note: Was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]

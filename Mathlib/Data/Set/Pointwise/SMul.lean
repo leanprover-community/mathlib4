@@ -532,23 +532,35 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set 
 @[to_additive
       "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
-  mul_smul := by
-    intros
-    simp only [← image_smul, image_image, ← mul_smul]
-  one_smul := by
-    intros
-    simp only [← image_smul, one_smul, image_id']
+  mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
+  one_smul _ := by simp only [← image_smul, one_smul, image_id']
 #align set.mul_action_set Set.mulActionSet
 #align set.add_action_set Set.addActionSet
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
+/-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
+then the same is true for `(0 : Set β)`. -/
+protected def smulZeroClassSet [Zero β] [SMulZeroClass α β] :
+    SMulZeroClass α (Set β) where
+  smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+
+scoped[Pointwise] attribute [instance] Set.smulZeroClassSet
+
+/-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
+then so is `(· • ·) : α → Set β → Set β`. -/
+protected def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
+    DistribSMul α (Set β) where
+  smul_add _ _ _ := image_image2_distrib <| smul_add _
+
+scoped[Pointwise] attribute [instance] Set.distribSMulSet
+
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
 protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
-  smul_add _ _ _ := image_image2_distrib <| smul_add _
-  smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
+  smul_add := smul_add
+  smul_zero := smul_zero
 #align set.distrib_mul_action_set Set.distribMulActionSet
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -563,7 +575,7 @@ scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMul
 instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
   ⟨fun {s t} h ↦ by
-    by_contra' H
+    by_contra! H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
       ← hst.of_smul_right.subset_zero_iff] at H
@@ -574,7 +586,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
 instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
   ⟨fun {a s} h ↦ by
-    by_contra' H
+    by_contra! H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
@@ -650,7 +662,7 @@ theorem vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s :=
 #align set.vsub_singleton Set.vsub_singleton
 
 @[simp low+1]
-theorem singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (· -ᵥ ·) b '' t :=
+theorem singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (b -ᵥ ·) '' t :=
   image2_singleton_left
 #align set.singleton_vsub Set.singleton_vsub
 
@@ -704,7 +716,7 @@ theorem union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s�
   image2_union_inter_subset_union
 #align set.union_vsub_inter_subset_union Set.union_vsub_inter_subset_union
 
-theorem iUnion_vsub_left_image : ⋃ a ∈ s, (· -ᵥ ·) a '' t = s -ᵥ t :=
+theorem iUnion_vsub_left_image : ⋃ a ∈ s, (a -ᵥ ·) '' t = s -ᵥ t :=
   iUnion_image_left _
 #align set.Union_vsub_left_image Set.iUnion_vsub_left_image
 
@@ -857,9 +869,9 @@ theorem op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] {s t : Set α}
+variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
@@ -868,7 +880,7 @@ theorem pairwiseDisjoint_smul_iff :
 #align set.pairwise_disjoint_smul_iff Set.pairwiseDisjoint_smul_iff
 #align set.pairwise_disjoint_vadd_iff Set.pairwiseDisjoint_vadd_iff
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section Group
 

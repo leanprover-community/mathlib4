@@ -72,7 +72,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
   constructor
   · intro h
     refine ⟨x a, y a, FunLike.congr_fun h a |>.trans single_eq_same, ?_⟩
-    simp_rw [FunLike.ext_iff, ←forall_and]
+    simp_rw [FunLike.ext_iff, ← forall_and]
     intro i
     replace h := FunLike.congr_fun h i
     simp_rw [single_apply, Finsupp.add_apply] at h ⊢

@@ -179,7 +179,7 @@ theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K
 theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [IsAlgClosed k] [Algebra k K] (hf : Algebra.IsAlgebraic k K) :
     Function.Surjective (algebraMap k K) :=
-  algebraMap_surjective_of_isIntegral (Algebra.isAlgebraic_iff_isIntegral.mp hf)
+  algebraMap_surjective_of_isIntegral hf.isIntegral
 #align is_alg_closed.algebra_map_surjective_of_is_algebraic IsAlgClosed.algebraMap_surjective_of_isAlgebraic
 
 end IsAlgClosed
@@ -204,8 +204,7 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
-  ⟨fun _ => isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _), fun _ =>
-    (minpoly.irreducible (isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _))).separable⟩
+  ⟨fun _ => (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 
 namespace IsAlgClosed
@@ -216,7 +215,7 @@ variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Algebra K L
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨isAlgebraic_iff_isIntegral.1 (hL x), splits_codomain (minpoly K x)⟩)
+    (fun x _ ↦ ⟨(hL x).isIntegral, splits_codomain (minpoly K x)⟩)
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
@@ -310,7 +309,7 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
 theorem ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
-  ⟨IsAlgClosure.alg_closed J, Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic⟩
+  ⟨IsAlgClosure.alg_closed J, hKJ.trans IsAlgClosure.algebraic⟩
 #align is_alg_closure.of_algebraic IsAlgClosure.ofAlgebraic
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
@@ -330,7 +329,7 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
   of an algebraic extension of `K` -/
 noncomputable def equivOfAlgebraic (hKJ : Algebra.IsAlgebraic K J) : L ≃ₐ[K] M :=
-  equivOfAlgebraic' K J _ _ (Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic)
+  equivOfAlgebraic' K J _ _ (hKJ.trans IsAlgClosure.algebraic)
 #align is_alg_closure.equiv_of_algebraic IsAlgClosure.equivOfAlgebraic
 
 end EquivOfAlgebraic
@@ -351,11 +350,10 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : IsScalarTower S R L :=
     IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
-  refine'
+  refine
     ⟨equivOfAlgebraic' R S L M
-        (Algebra.isAlgebraic_of_larger_base_of_injective
-          (show Function.Injective (algebraMap S R) from hSR.injective) IsAlgClosure.algebraic),
-      _⟩
+        (IsAlgClosure.algebraic.tower_top_of_injective
+          (show Function.Injective (algebraMap S R) from hSR.injective)), ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
@@ -398,16 +396,49 @@ end EquivOfEquiv
 
 end IsAlgClosure
 
+section Algebra.IsAlgebraic
+
+variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [Algebra F K] [Algebra F A]
+  (hK : Algebra.IsAlgebraic F K)
+
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K/F` an algebraic extension
   of fields. Then the images of `x` by the `F`-algebra morphisms from `K` to `A` are exactly
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
-theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
-    [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
-    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A := by
-  have hFK := Algebra.isAlgebraic_iff_isIntegral.1 hK
-  ext a
-  rw [mem_rootSet_of_ne (minpoly.ne_zero (hFK x))]
-  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun x ↦ ⟨hFK x, IsAlgClosed.splits_codomain _⟩) ha⟩
-  rw [← hψ, aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K) :
+    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A :=
+  range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) hK x
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
+
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any intermediate
+field of `A/F` in which the minimal polynomial of elements of `K` splits. -/
+@[simps]
+def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
+  toFun := L.val.comp
+  invFun f := f.codRestrict _ fun x ↦
+    ((hK x).isIntegral.map f).mem_intermediateField_of_minpoly_splits <| by
+      rw [minpoly.algHom_eq f f.injective]; exact hL x
+  left_inv _ := rfl
+  right_inv _ := by rfl
+
+theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : IntermediateField F A)
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
+
+/-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension
+of `A/F` in which the minimal polynomial of elements of `K` splits. -/
+noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Field L]
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
+  (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
+    IntermediateField.algHomEquivAlgHomOfSplits A hK (IsScalarTower.toAlgHom F L A).fieldRange
+    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+
+theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
+    [Algebra F L] [Algebra L A] [IsScalarTower F L A]
+    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits A hK L hL f x = algebraMap L A (f x) := rfl
+
+end Algebra.IsAlgebraic

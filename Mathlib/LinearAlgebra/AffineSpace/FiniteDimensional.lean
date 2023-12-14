@@ -279,7 +279,7 @@ theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteD
 
 theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
     (hrank : finrank k V = n) : affineSpan k (Set.range T.points) = ⊤ := by
-  rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.Independent,
+  rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
 #align affine.simplex.span_eq_top Affine.Simplex.span_eq_top
 
@@ -336,7 +336,7 @@ theorem collinear_iff_finrank_le_one {s : Set P} [FiniteDimensional k (vectorSpa
     Collinear k s ↔ finrank k (vectorSpan k s) ≤ 1 := by
   have h := collinear_iff_rank_le_one k s
   rw [← finrank_eq_rank] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align collinear_iff_finrank_le_one collinear_iff_finrank_le_one
 
 alias ⟨Collinear.finrank_le_one, _⟩ := collinear_iff_finrank_le_one
@@ -630,7 +630,7 @@ theorem coplanar_iff_finrank_le_two {s : Set P} [FiniteDimensional k (vectorSpan
     Coplanar k s ↔ finrank k (vectorSpan k s) ≤ 2 := by
   have h : Coplanar k s ↔ Module.rank k (vectorSpan k s) ≤ 2 := Iff.rfl
   rw [← finrank_eq_rank] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align coplanar_iff_finrank_le_two coplanar_iff_finrank_le_two
 
 alias ⟨Coplanar.finrank_le_two, _⟩ := coplanar_iff_finrank_le_two
