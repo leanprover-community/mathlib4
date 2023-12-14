@@ -313,45 +313,47 @@ then this action actually gives a module structure on submodules of `M` over sub
 
 section set_acting_on_submodules
 
-variable [AddCommMonoid M] [Module R M]
+variable {S : Type*} [Semiring S]
+
+variable [AddCommMonoid M] [Module R M] [Module S M]
 
 /--
 Let `s ⊆ R` be a set and `N ≤ M` be a submodule, then `s • N` is the smallest submodule containing
 all `r • n` where `r ∈ s` and `n ∈ N`.
 -/
-protected def pointwiseSetSMul : SMul (Set R) (Submodule R M) where
-  smul s N := sInf { p | ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p }
+protected def pointwiseSetSMul : SMul (Set S) (Submodule R M) where
+  smul s N := sInf { p | ∀ ⦃r : S⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMul
 
-variable (s : Set R) (N : Submodule R M)
+variable (sR : Set R) (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔
-  x ∈ sInf { p : Submodule R M | ∀ ⦃r : R⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
+  x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
 
 variable {s N} in
 @[aesop safe]
-lemma mem_set_smul_of_mem_mem {r : R} {m : M} (mem1 : r ∈ s) (mem2 : m ∈ N) :
+lemma mem_set_smul_of_mem_mem {r : S} {m : M} (mem1 : r ∈ s) (mem2 : m ∈ N) :
     r • m ∈ s • N := by
   rw [mem_set_smul_def, mem_sInf]
   exact fun _ h => h mem1 mem2
 
 lemma set_smul_le (p : Submodule R M)
-    (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
+    (closed_under_smul : ∀ ⦃r : S⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p) :
     s • N ≤ p :=
   sInf_le closed_under_smul
 
 lemma set_smul_le_iff (p : Submodule R M) :
     s • N ≤ p ↔
-    ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p := by
+    ∀ ⦃r : S⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p := by
   fconstructor
   · intro h r n hr hn
     exact h <| mem_set_smul_of_mem_mem hr hn
   · apply set_smul_le
 
 lemma set_smul_eq_of_le (p : Submodule R M)
-    (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p)
+    (closed_under_smul : ∀ ⦃r : S⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p)
     (le : p ≤ s • N) :
     s • N = p :=
   le_antisymm (set_smul_le s N p closed_under_smul) le
@@ -361,24 +363,35 @@ lemma set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
   set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)
 
-lemma set_smul_mono_left {s t : Set R} (le : s ≤ t) :
+lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=
   set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := le hr)
     (mem2 := hm)
 
-lemma set_smul_le_of_le_le {s t : Set R} {p q : Submodule R M}
+lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_mono_left _ le_set) <| set_smul_mono_right _ le_submodule
 
 variable {s N} in
+/--
+Induction principal for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
+to prove:
+- for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
+- for all `r` and `m ∈ s • N`, `P (r • n)`;
+- for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
+- `P 0`.
+
+To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+`x : M` and `hx : x ∈ s • N`
+-/
 @[elab_as_elim]
 lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
     (x : M)
     (hx : x ∈ s • N)
-    (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄ (mem₁ : r ∈ s) (mem₂ : n ∈ N),
+    (smul₀ : ∀ ⦃r : S⦄ ⦃n : M⦄ (mem₁ : r ∈ s) (mem₂ : n ∈ N),
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
-    (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N),
-      motive m mem → motive (r • m) (Submodule.smul_mem _ r mem))
+    (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
+      motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
     (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁: m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
     (zero : motive 0 (Submodule.zero_mem _)) :
@@ -391,11 +404,13 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
     (fun _ _ mem mem' ↦ ⟨mem_set_smul_of_mem_mem mem mem', smul₀ mem mem'⟩) hx
   h
 
+-- Implementation note: if `N` is both an `R`-submodule and `S`-submodule and `SMulCommClass R S M`,
+-- this lemma is also true for any `s : Set S`.
 lemma set_smul_eq_map [SMulCommClass R R N] :
-    s • N =
+    sR • N =
     Submodule.map
       (N.subtype.comp (Finsupp.lsum R <| DistribMulAction.toLinearMap _ _))
-      (Finsupp.supported N R s) := by
+      (Finsupp.supported N R sR) := by
   classical
   apply set_smul_eq_of_le
   · intro r n hr hn
@@ -406,7 +421,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_mk,
       AddHom.coe_mk, Function.comp_apply, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid,
       SetLike.val_smul]
-    refine Submodule.sum_mem (p := s • N) (t := c.support) ?_ _ ⟨s • N, ?_⟩
+    refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
     · rintro r hr
       rw [mem_set_smul_def, Submodule.mem_sInf]
       rintro p hp
@@ -419,8 +434,8 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
         exact fun p hp ↦ hp hr hn
       · aesop
 
-lemma mem_set_smul (x : M) [SMulCommClass R R N] :
-    x ∈ s • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ s ∧ x = c.sum fun r m ↦ r • m := by
+lemma mem_set_smul(x : M) [SMulCommClass R R N] :
+    x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
   · intros h
     rw [set_smul_eq_map] at h
@@ -432,7 +447,7 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
     exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).2
 
-@[simp] lemma empty_set_smul : (∅ : Set R) • N = ⊥ := by
+@[simp] lemma empty_set_smul : (∅ : Set S) • N = ⊥ := by
   ext
   fconstructor
   · intro hx
@@ -443,6 +458,7 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
 @[simp] lemma set_smul_bot : s • (⊥ : Submodule R M) = ⊥ :=
   eq_bot_iff.mpr fun x hx ↦ by induction x, hx using set_smul_inductionOn <;> aesop
 
+-- TODO: `r • N` should be generalized to allow `r` to be an element of `S`.
 lemma singleton_set_smul [SMulCommClass R R M] (r : R) :
     ({r} : Set R) • N = r • N := by
   apply set_smul_eq_of_le
@@ -451,12 +467,26 @@ lemma singleton_set_smul [SMulCommClass R R M] (r : R) :
     rw [mem_set_smul_def, Submodule.mem_sInf]
     intro p hp; exact hp rfl hm
 
-lemma mem_singleton_set_smul [SMulCommClass R R M] (r : R) (x : M) :
-    x ∈ ({r} : Set R) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
-  rw [singleton_set_smul]
-  fconstructor <;>
-  · rintro ⟨m, hm, rfl⟩; exact ⟨m, hm, rfl⟩
+lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
+    x ∈ ({r} : Set S) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
+  fconstructor
+  · intro hx
+    induction' x, hx using Submodule.set_smul_inductionOn with
+      t n memₜ memₙ t n mem h m₁ m₂ mem₁ mem₂ h₁ h₂
+    · aesop
+    · rcases h with ⟨n, hn, rfl⟩
+      exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
+    · rcases h₁ with ⟨m₁, h₁, rfl⟩
+      rcases h₂ with ⟨m₂, h₂, rfl⟩
+      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
+    · exact ⟨0, Submodule.zero_mem _, by aesop⟩
+  · rintro ⟨m, hm, rfl⟩
+    aesop
 
+-- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
+-- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
+-- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
+-- should be true.
 /-- subset of a ring has a multiplicative action on its submodules-/
 protected def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
@@ -476,8 +506,9 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
 
+-- TODO: `r • N` should be generalized to allow `r` to be an element of `S`.
 lemma set_smul_eq_iSup [SMulCommClass R R M] :
-    s • N = ⨆ (r ∈ s), r • N :=
+    sR • N = ⨆ (r ∈ sR), r • N :=
   set_smul_eq_of_le _ _ _
     (fun r m hr hm => (show r • N ≤ _ by
       rw [iSup_subtype', ← sSup_range]
@@ -503,7 +534,7 @@ protected def pointwiseSetDistribMulAction [SMulCommClass R R M] :
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulAction
 
-lemma sup_set_smul (s t : Set R) :
+lemma sup_set_smul (s t : Set S) :
     (s ⊔ t) • N = s • N ⊔ t • N :=
   set_smul_eq_of_le _ _ _
     (by rintro _ _ (hr|hr) hn
