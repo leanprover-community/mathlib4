@@ -20,9 +20,9 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
 * `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
-* (when `P` is commutative) `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`,
-  and `comm` says that the elements in the ranges of `f` and `g` commute pairwise,
-  `f.noncommCoprod g comm` is the analogous `M × N →* P`.
+* (when `P` is commutative) `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`;
+* `f.noncommCoprod g comm` is the analogous `M × N →* P`,
+  where `comm` says that the elements in the ranges of `f` and `g` commute pairwise.
   (For general `Pi` types, there is `MonoidHom.noncommPiCoprod`.)
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
