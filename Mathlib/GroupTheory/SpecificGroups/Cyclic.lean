@@ -748,8 +748,8 @@ noncomputable def mulEquivOfCyclicCardEq [Group G] [Group H] [hG : IsCyclic G]
   zmodCyclicMulEquiv hG |>.symm.trans (zmodCyclicMulEquiv hH)
 
 /-- Two cyclic additive groups of the same cardinality are isomorphic. -/
-noncomputable def addEquivofAddCyclicCardEq [AddGroup G] [AddGroup H] (hG : IsAddCyclic G)
-    (hH : IsAddCyclic H) (hcard : Nat.card G = Nat.card H) : G ≃+ H := hcard ▸
+noncomputable def addEquivofAddCyclicCardEq [AddGroup G] [AddGroup H] [hG : IsAddCyclic G]
+    [hH : IsAddCyclic H] (hcard : Nat.card G = Nat.card H) : G ≃+ H := hcard ▸
   zmodAddCyclicAddEquiv hG |>.symm.trans (zmodAddCyclicAddEquiv hH)
 
 /-- Two groups of the same prime cardinality are isomorphic. -/
