@@ -1013,15 +1013,15 @@ instance addZeroClass : AddZeroClass (α →₀ M) :=
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
   add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
 
-/-- When ι is finite and μ is an AddCommMonoid,
-  then Finsupp.equivFunOnFinite gives and AddEquiv -/
-noncomputable def Finsupp.addEquivFunOnFinite {ι : Type*} [Finite ι] :
+/-- When ι is finite and M is an AddMonoid,
+  then Finsupp.equivFunOnFinite gives an AddEquiv -/
+noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
     (ι →₀ M) ≃+ (ι → M) := {
   Finsupp.equivFunOnFinite with
   map_add' := fun _ _ => rfl }
 
-/-- AddEquiv between (ι →₀ μ) and μ, when ι has a unique element -/
-noncomputable def AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
+/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
     (ι →₀ M) ≃+ M := {
   Equiv.finsuppUnique with
   map_add' := fun _ _ => rfl }
