@@ -339,8 +339,8 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
 This is the `RingHom` version of `MonoidHom.smulOneHom`.
 
 When `R` is commutative, usually `algebraMap` should be preferred. -/
-@[simps!] def RingHom.smulOneHom [Semiring R] [Semiring S] [Module R S] [IsScalarTower R S S] :
-    R →+* S where
+@[simps!] def RingHom.smulOneHom
+    [Semiring R] [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] : R →+* S where
   __ := MonoidHom.smulOneHom
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
