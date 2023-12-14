@@ -157,7 +157,6 @@ private lemma interList_qf_aux' (i : Fin s.length) :
   IsSimpleModule.equiv_punit_sum_equiv_of_equiv_submodule' (R := R) (m := s.qf i)
     (e := s.interList_qf_equiv N i)
 
-set_option maxHeartbeats 800000 in
 lemma interList_get_succ_eq_get_of_equiv_punit (i : Fin s.length)
     (e : s.interList_qf N i ≃ₗ[R] (PUnit : Type)) :
     s.interList_get_succ N i = s.interList_get N i := by
@@ -183,7 +182,6 @@ lemma eq_or_interList_qf_is_simple_module' (i : Fin s.length) :
   (s.eq_or_interList_qf_is_simple_module N i).recOn
     (Or.inl ∘ λ I ↦ I.default) (Or.inr ∘ λ I ↦ I.default)
 
-set_option maxHeartbeats 6400000 in
 lemma interList_get_eq_succ_or_covby (i : Fin s.length) :
     s.interList_get N i = s.interList_get_succ N i ∨
     s.interList_get N i ⋖ s.interList_get_succ N i := by
@@ -323,9 +321,7 @@ lemma eq_top_of_interList_nodup (s0 : s.head = ⊥) (slast : s.last = ⊤)
     (hinter : (s.interList N).Nodup) :  N = ⊤ := by
   classical
   have eq0 := s.eq_interList_get_of_head_eq_bot_and_interList_nodup N s0 hinter (Fin.last _)
-  rw [show s (Fin.last _) = _ from slast, interList_get_eq_aux] at eq0
-  pick_goal 2
-  · simp only [Fin.coe_cast, Fin.val_last, lt_add_iff_pos_right]
+  rw [show s (Fin.last _) = _ from slast, interList_get_eq_aux (hi := by simp)] at eq0
   simp only [Fin.coe_cast, Fin.val_last, Submodule.comap_inf, Submodule.comap_subtype_self,
     _root_.le_top, inf_of_le_right] at eq0
   rw [show s ⟨s.length, _⟩ = _ from slast] at eq0
