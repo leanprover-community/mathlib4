@@ -735,17 +735,19 @@ noncomputable def zmodCyclicMulEquiv [Group G] (h : IsCyclic G) :
     Multiplicative (ZMod (Nat.card G)) ≃* G :=
   AddEquiv.toMultiplicative <| zmodAddCyclicAddEquiv <| isAddCyclic_additive_iff.2 h
 
-/-- Two cyclic groups of the same cardinality are isomorphic. -/
-noncomputable def mulEquivOfCyclicCardEq [Group G] [Group H] [hG : IsCyclic G]
-    [hH : IsCyclic H] (hcard : Nat.card G = Nat.card H) : G ≃* H := hcard ▸
-  zmodCyclicMulEquiv hG |>.symm.trans (zmodCyclicMulEquiv hH)
-
 /-- Two cyclic additive groups of the same cardinality are isomorphic. -/
 noncomputable def addEquivofAddCyclicCardEq [AddGroup G] [AddGroup H] [hG : IsAddCyclic G]
     [hH : IsAddCyclic H] (hcard : Nat.card G = Nat.card H) : G ≃+ H := hcard ▸
   zmodAddCyclicAddEquiv hG |>.symm.trans (zmodAddCyclicAddEquiv hH)
 
+/-- Two cyclic groups of the same cardinality are isomorphic. -/
+@[to_additive existing addEquivofAddCyclicCardEq]
+noncomputable def mulEquivOfCyclicCardEq [Group G] [Group H] [hG : IsCyclic G]
+    [hH : IsCyclic H] (hcard : Nat.card G = Nat.card H) : G ≃* H := hcard ▸
+  zmodCyclicMulEquiv hG |>.symm.trans (zmodCyclicMulEquiv hH)
+
 /-- Two groups of the same prime cardinality are isomorphic. -/
+@[to_additive "Two additive groups of the same prime cardinality are isomorphic."]
 noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [Group G] [Group H]
     [Fact p.Prime] (hG : Fintype.card G = p) (hH : Fintype.card H = p) : G ≃* H := by
   have hGcyc := isCyclic_of_prime_card hG
@@ -754,18 +756,7 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [Group
   rw [← Nat.card_eq_fintype_card] at hG hH
   exact hG.trans hH.symm
 
-/-- Two additive groups of the same prime cardinality are isomorphic. -/
-noncomputable def addEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [AddGroup G] [AddGroup H]
-    [Fact p.Prime] (hG : Fintype.card G = p) (hH : Fintype.card H = p) : G ≃+ H := by
-  have hGcyc := isAddCyclic_of_prime_card hG
-  have hHcyc := isAddCyclic_of_prime_card hH
-  apply addEquivofAddCyclicCardEq
-  rw [← Nat.card_eq_fintype_card] at hG hH
-  exact hG.trans hH.symm
-
 attribute [to_additive existing zmultiplesHom_ker_eq] zpowersHom_ker_eq
 attribute [to_additive existing] zmodCyclicMulEquiv
-attribute [to_additive existing addEquivofAddCyclicCardEq] mulEquivOfCyclicCardEq
-attribute [to_additive existing] mulEquivOfPrimeCardEq
 
 end ZMod
