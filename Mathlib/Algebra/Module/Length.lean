@@ -178,12 +178,12 @@ lemma moduleLength_strictMono [h : FiniteLengthModule R M]
       rw [lt_top_iff_ne_top]
       intros r
       have mem1 : (⟨x, hx1⟩ : N2) ∈ (⊤ : Submodule R N2) := ⟨⟩
-      rw [←r, LinearMap.mem_range] at mem1
+      rw [← r, LinearMap.mem_range] at mem1
       obtain ⟨⟨y, hy1⟩, hy2⟩ := mem1
       rw [Subtype.ext_iff, Subtype.coe_mk] at hy2
       simp only [Submodule.coe_ofLe] at hy2
       refine hx2 ?_
-      rw [←hy2]
+      rw [← hy2]
       exact hy1
     obtain ⟨s1, s10, s1last, s1_len⟩ := s2.exists_compositionSeries_with_smaller_length_of_lt_top
       (LinearMap.range (Submodule.ofLe $ le_of_lt hN)) lt' s20 s2last
@@ -286,7 +286,7 @@ instance isNoetherian_of_finiteLength [h : FiniteLengthModule R M] :
   rw [isNoetherian_iff_wellFounded]
   refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨λ a ↦ ?_⟩
   let p : LTSeries (Submodule R M) := LTSeries.mk (h.compositionSeries.length + 1)
-    (λ x ↦ a x) λ i j h ↦ by rw [← gt_iff_lt]; erw [a.2]; exact h
+    (a ·) fun i j h ↦ by rw [← gt_iff_lt]; erw [a.2]; exact h
   have : h.compositionSeries.length + 1 ≤ h.compositionSeries.length :=
     p.length_le_compositionSeries _ h.head_eq h.last_eq
   norm_num at this

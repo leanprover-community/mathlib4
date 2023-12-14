@@ -84,7 +84,7 @@ lemma dedup_getLast_eq_getLast_of_chain'_wcovby [DecidableEq α] [PartialOrder �
   refine _root_.le_antisymm ?_ ?_
 
   · apply List.le_getLast_of_chain'_le _ _ (l_chain.imp $ λ _ _ ↦ Wcovby.le)
-    rw [←List.mem_dedup]
+    rw [← List.mem_dedup]
     exact List.getLast_mem _
 
   · have ne_nil2 : (y :: l').dedup ≠ []

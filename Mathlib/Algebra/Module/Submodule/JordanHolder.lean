@@ -47,7 +47,7 @@ lemma qf_def (i : Fin s.length) : s.qf i = s i.succ ⧸ₛ s i.castSucc := rfl
 
 instance qf_isSimpleModule (i : Fin s.length) : IsSimpleModule R $ s.qf i := by
   delta qf quot
-  rw [←covby_iff_quot_is_simple (s.strictMono.monotone _)]
+  rw [← covby_iff_quot_is_simple (s.strictMono.monotone _)]
   · exact s.step i
   · change i.1 ≤ i.1 + 1
     linarith

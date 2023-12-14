@@ -177,7 +177,7 @@ lemma dedup_length_lt_of_not_nodup (l : List α) (h : ¬ l.Nodup) :
     l.dedup.length < l.length := by
   contrapose! h
   have h' := _root_.le_antisymm h (List.Sublist.length_le (List.dedup_sublist l))
-  rw [←List.dedup_eq_self]
+  rw [← List.dedup_eq_self]
   exact List.Sublist.eq_of_length (List.dedup_sublist _) h'.symm
 
 lemma dedup_ne_nil_of_ne_nil (l : List α) (h : l ≠ List.nil) :

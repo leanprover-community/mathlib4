@@ -155,8 +155,8 @@ lemma PID_finiteDimensional (R : Type _) [CommRing R] [IsPrincipalIdealRing R]
     have hb : Prime b := Submodule.IsPrincipal.prime_generator_of_isPrime (f 2).asIdeal $
       Iff.mp bot_lt_iff_ne_bot (lt_trans (Ne.bot_lt hf1) hf12)
     obtain ⟨x, hx⟩ := (hb.dvd_prime_iff_associated ha).mp ⟨r, hr2⟩
-    rw [←hx] at hr2
-    rw [←mul_left_cancel₀ h hr2] at hr1
+    rw [← hx] at hr2
+    rw [← mul_left_cancel₀ h hr2] at hr1
     exact (hr1 x.isUnit).elim⟩
 
 lemma PID_eq_one_of_not_isField (R : Type _) [CommRing R] [IsPrincipalIdealRing R] [IsDomain R]
@@ -199,8 +199,8 @@ lemma PID_eq_one_of_not_isField (R : Type _) [CommRing R] [IsPrincipalIdealRing 
     have hb : Prime b := Submodule.IsPrincipal.prime_generator_of_isPrime (f 2).asIdeal $
       Iff.mp bot_lt_iff_ne_bot (lt_trans (Ne.bot_lt hf1) hf12)
     obtain ⟨x, hx⟩ := (hb.dvd_prime_iff_associated ha).mp ⟨r, hr2⟩
-    rw [←hx] at hr2
-    rw [←mul_left_cancel₀ h hr2] at hr1
+    rw [← hx] at hr2
+    rw [← mul_left_cancel₀ h hr2] at hr1
     exact (hr1 x.isUnit).elim)
 
 
