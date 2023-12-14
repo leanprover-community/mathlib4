@@ -1308,7 +1308,7 @@ such that ideals in `S` are prime ideals except for perhaps at most two.
 If `J` is not a subset of any of ideal in `S`, then there is an `x ∈ R` such that `x ∈ J` but `x` is
 not in any of the ideals in `S`.
 -/
-lemma Ideal.exists_mem_and_forall_not_mem_of_not_subset_and_at_most_two_non_primes
+lemma exists_mem_and_forall_not_mem_of_not_subset_and_at_most_two_non_primes
     {R : Type*} [CommRing R] (J : Ideal R)
     (S : Finset (Ideal R))
     (exists_prime : ∀ s ≤ S, 2 < s.card → ∃ p ∈ s, p.IsPrime)
