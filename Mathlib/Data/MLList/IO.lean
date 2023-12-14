@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Data.MLList.Basic
-import Mathlib.Lean.System.IO
 
 /-!
 # Reading from handles, files, and processes as lazy lists.
@@ -54,23 +53,3 @@ where put
   stdin.putStr input
   stdin.flush
   return child
-
-/--
-Variant of `MLList.fix?` that allows returning values of a different type.
--/
-partial def fix?' [Monad m] (f : α → m (Option (β × α))) (init : α) : MLList m β :=
-  squash fun _ => do
-    match ← f init with
-    | none => pure .nil
-    | some (b, a) => pure (.cons b (fix?' f a))
-
-/--
-Give a list of tasks, return the monadic lazy list which
-returns the values as they become available.
--/
-def ofTaskList (tasks : List (Task α)) : MLList BaseIO α :=
-  fix?' (init := tasks) fun t => do
-    if h : 0 < t.length then
-      some <$> IO.waitAny' t h
-    else
-      pure none
