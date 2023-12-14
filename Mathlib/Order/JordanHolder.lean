@@ -200,11 +200,8 @@ theorem toList_ne_nil (s : CompositionSeries X) : s.toList ≠ [] :=
   RelSeries.toList_ne_empty s
 #align composition_series.to_list_ne_nil CompositionSeries.toList_ne_nil
 
-theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) := fun p q h => by
-  apply (RelSeries.Equiv (r := IsMaximal (X := X))).injective _
-  ext1
-  rw [RelSeries.Equiv_apply_coe, RelSeries.Equiv_apply_coe]
-  exact h
+theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) := fun _ _ h ↦
+  (RelSeries.Equiv (r := IsMaximal (X := X))).injective <| Subtype.ext h
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=
@@ -494,7 +491,6 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
       _ ≃ Option (Fin s₂.length) := (Functor.mapEquiv Option hequiv.choose)
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
-
   ⟨e, fun i => by
     refine' Fin.lastCases _ _ i
     · simpa [top] using htop
