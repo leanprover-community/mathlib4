@@ -98,8 +98,7 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
-  { OrderDual.orderedCommMonoid, @OrderDual.instCancelCommMonoid α _ with
-    le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
+  { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
