@@ -57,9 +57,11 @@ open ComposableArrows
 
 section Four
 
-variable {R₁ R₂ : ComposableArrows C 3} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
-theorem mono_of_epi_of_mono_of_mono
+theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
+    (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
+    (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact)
     (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
     Mono (app' φ 2) := by
   apply mono_of_cancel_zero
@@ -67,22 +69,32 @@ theorem mono_of_epi_of_mono_of_mono
   have h₂ : f₂ ≫ R₁.map' 2 3 = 0 := by
     rw [← cancel_mono (app' φ 3 _), assoc, NatTrans.naturality, reassoc_of% h₁,
       zero_comp, zero_comp]
-  obtain ⟨A₁, π₁, _, f₁, hf₁⟩ := (hR₁.exact' 1 2 3).exact_up_to_refinements f₂ h₂
+  obtain ⟨A₁, π₁, _, f₁, hf₁⟩ := (hR₁'.exact 0).exact_up_to_refinements f₂ h₂
   dsimp at hf₁
   have h₃ : (f₁ ≫ app' φ 1) ≫ R₂.map' 1 2 = 0 := by
     rw [assoc, ← NatTrans.naturality, ← reassoc_of% hf₁, h₁, comp_zero]
-  obtain ⟨A₂, π₂, _, g₀, hg₀⟩ := (hR₂.exact' 0 1 2).exact_up_to_refinements _ h₃
+  obtain ⟨A₂, π₂, _, g₀, hg₀⟩ := (hR₂.exact 0).exact_up_to_refinements _ h₃
   obtain ⟨A₃, π₃, _, f₀, hf₀⟩ := surjective_up_to_refinements_of_epi (app' φ 0 _) g₀
   have h₄ : f₀ ≫ R₁.map' 0 1 = π₃ ≫ π₂ ≫ f₁ := by
     rw [← cancel_mono (app' φ 1 _), assoc, assoc, assoc, NatTrans.naturality,
       ← reassoc_of% hf₀, hg₀]
+    rfl
   rw [← cancel_epi π₁, comp_zero, hf₁, ← cancel_epi π₂, ← cancel_epi π₃, comp_zero,
-    comp_zero, ← reassoc_of% h₄, hR₁.toIsComplex.zero 0, comp_zero]
-#align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono
+    comp_zero, ← reassoc_of% h₄, ← R₁.map'_comp 0 1 2, hR₁, comp_zero]
+#align category_theory.abelian.mono_of_epi_of_mono_of_mono CategoryTheory.Abelian.mono_of_epi_of_mono_of_mono'
+
+theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) (h₃ : Mono (app' φ 3)) :
+    Mono (app' φ 2) :=
+  mono_of_epi_of_mono_of_mono' φ
+    (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
+    (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
 
 attribute [local instance] epi_comp
 
-theorem epi_of_epi_of_epi_of_mono
+theorem epi_of_epi_of_epi_of_mono'
+    (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
+    (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact) (hR₂' : R₂.map' 1 3 = 0)
     (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
     Epi (app' φ 1) := by
   rw [epi_iff_surjective_up_to_refinements]
@@ -91,12 +103,12 @@ theorem epi_of_epi_of_epi_of_mono
     surjective_up_to_refinements_of_epi (app' φ 2 _) (g₁ ≫ R₂.map' 1 2)
   have h₂ : f₂ ≫ R₁.map' 2 3 = 0 := by
     rw [← cancel_mono (app' φ 3 _), assoc, zero_comp, NatTrans.naturality, ← reassoc_of% h₁,
-      hR₂.toIsComplex.zero 1, comp_zero, comp_zero]
-  obtain ⟨A₂, π₂, _, f₁, h₃⟩ := (hR₁.exact' 1 2 3).exact_up_to_refinements _ h₂
+      ← R₂.map'_comp 1 2 3, hR₂', comp_zero, comp_zero]
+  obtain ⟨A₂, π₂, _, f₁, h₃⟩ := (hR₁.exact 0).exact_up_to_refinements _ h₂
   dsimp at f₁ h₃
   have h₄ : (π₂ ≫ π₁ ≫ g₁ - f₁ ≫ app' φ 1) ≫ R₂.map' 1 2 = 0 := by
     rw [sub_comp, assoc, assoc, assoc, ← NatTrans.naturality, ← reassoc_of% h₃, h₁, sub_self]
-  obtain ⟨A₃, π₃, _, g₀, h₅⟩ := (hR₂.exact' 0 1 2).exact_up_to_refinements _ h₄
+  obtain ⟨A₃, π₃, _, g₀, h₅⟩ := (hR₂.exact 0).exact_up_to_refinements _ h₄
   dsimp at g₀ h₅
   rw [comp_sub] at h₅
   obtain ⟨A₄, π₄, _, f₀, h₆⟩ := surjective_up_to_refinements_of_epi (app' φ 0 _) g₀
@@ -106,7 +118,14 @@ theorem epi_of_epi_of_epi_of_mono
     ← reassoc_of% h₆, ← h₅, comp_sub]
   dsimp
   rw [add_sub_cancel'_right]
-#align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono
+#align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono'
+
+theorem epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
+    (h₀ : Epi (app' φ 0)) (h₂ : Epi (app' φ 2)) (h₃ : Mono (app' φ 3)) :
+    Epi (app' φ 1) :=
+  epi_of_epi_of_epi_of_mono' φ (hR₁.exact 1).exact_toComposableArrows
+    (hR₂.exact 0).exact_toComposableArrows
+    (by simpa only [R₂.map'_comp 1 2 3] using hR₂.toIsComplex.zero 1) h₀ h₂ h₃
 
 end Four
 
@@ -119,11 +138,11 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : 
     (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
   dsimp at h₀ h₁ h₂ h₃
   have : Mono (app' φ 2) := by
-    apply mono_of_epi_of_mono_of_mono (R₁.exact_iff_δlast.1 hR₁).1
-      (R₂.exact_iff_δlast.1 hR₂).1 (δlastFunctor.map φ) <;> dsimp <;> infer_instance
+    apply mono_of_epi_of_mono_of_mono (δlastFunctor.map φ) (R₁.exact_iff_δlast.1 hR₁).1
+      (R₂.exact_iff_δlast.1 hR₂).1 <;> dsimp <;> infer_instance
   have : Epi (app' φ 2) := by
-    apply epi_of_epi_of_epi_of_mono (R₁.exact_iff_δ₀.1 hR₁).2 (R₂.exact_iff_δ₀.1 hR₂).2
-      (δ₀Functor.map φ) <;> dsimp <;> infer_instance
+    apply epi_of_epi_of_epi_of_mono (δ₀Functor.map φ) (R₁.exact_iff_δ₀.1 hR₁).2
+      (R₂.exact_iff_δ₀.1 hR₂).2 <;> dsimp <;> infer_instance
   apply isIso_of_mono_of_epi
 #align category_theory.abelian.is_iso_of_is_iso_of_is_iso_of_is_iso_of_is_iso CategoryTheory.Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
 
