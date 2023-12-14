@@ -903,12 +903,19 @@ theorem iInter_comm (s : ι → ι' → Set α) : ⋂ (i) (i'), s i i' = ⋂ (i'
   iInf_comm
 #align set.Inter_comm Set.iInter_comm
 
+theorem iUnion_sigma {γ : α → Type*} (s : Sigma γ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
+  iSup_sigma
+
+theorem iUnion_sigma' {γ : α → Type*} (s : ∀ i : α, γ i → Set β) :
+    ⋃ i, ⋃ a, s i a = ⋃ ia : Sigma γ, s ia.1 ia.2 :=
+  iSup_sigma' _
+
 theorem iInter_sigma {γ : α → Type*} (s : Sigma γ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
-  by ext; simp
+  iInf_sigma
 
 theorem iInter_sigma' {γ : α → Type*} (s : ∀ i : α, γ i → Set β) :
     ⋂ i, ⋂ a, s i a = ⋂ ia : Sigma γ, s ia.1 ia.2 :=
-  Eq.symm $ iInter_sigma _
+  iInf_sigma' _
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i₁ j₁ i₂ j₂) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i₂ j₂ i₁ j₁) -/
