@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! The pretriangulated structure on the homotopy category of complexes
 
@@ -30,7 +30,7 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 
 -/
 
-open CategoryTheory Limits CochainComplex.HomComplex Pretriangulated
+open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
   {K L : CochainComplex C ℤ} (φ : K ⟶ L)
@@ -59,9 +59,10 @@ lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.
 @[reassoc (attr := simp)]
 lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by aesop_cat
 
--- needs Functor.mapTriangle
---abbrev triangleh : Triangle (HomotopyCategory C (ComplexShape.up ℤ)) :=
---  (HomotopyCategory.quotient _ _).mapTriangle.obj (CochainComplex.MappingCone.triangle φ)
+/-- The (distinguished) triangle in the homotopy category that is associated to
+a morphism `φ : K ⟶ L` in the category `CochainComplex C ℤ`. -/
+noncomputable abbrev triangleh : Triangle (HomotopyCategory C (ComplexShape.up ℤ)) :=
+  (HomotopyCategory.quotient _ _).mapTriangle.obj (triangle φ)
 
 variable (K)
 
@@ -97,17 +98,79 @@ lemma triangleMapOfHomotopy_comm₃ :
   simp [ext_from_iff _ _ _ rfl, triangle, mapOfHomotopy,
     Cochain.rightShift_v _ 1 0 _ p p _ (p + 1) rfl]
 
-/-@[simps]
+/-- The morphism `triangleh φ₁ ⟶ triangleh φ₂` that is induced by a square that
+is commutative up to homotopy. -/
+@[simps]
 noncomputable def trianglehMapOfHomotopy :
     triangleh φ₁ ⟶ triangleh φ₂ where
   hom₁ := (HomotopyCategory.quotient _ _).map a
   hom₂ := (HomotopyCategory.quotient _ _).map b
-  hom₃ := (HomotopyCategory.quotient _ _).map (map H)
-  comm₁ := sorry
-  comm₂ := sorry
-  comm₃ := sorry -/
+  hom₃ := (HomotopyCategory.quotient _ _).map (mapOfHomotopy H)
+  comm₁ := by
+    dsimp
+    simp only [← Functor.map_comp]
+    exact HomotopyCategory.eq_of_homotopy _ _ H
+  comm₂ := by
+    dsimp
+    simp only [← Functor.map_comp, triangleMapOfHomotopy_comm₂]
+  comm₃ := by
+    dsimp
+    rw [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃, Functor.map_comp, assoc, assoc]
+    erw [← NatTrans.naturality]
+    rfl
 
 end mapOfHomotopy
+
+section map
+
+variable {K₁ L₁ K₂ L₂ K₃ L₃ : CochainComplex C ℤ} (φ₁ : K₁ ⟶ L₁) (φ₂ : K₂ ⟶ L₂) (φ₃ : K₃ ⟶ L₃)
+  (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂) (comm : φ₁ ≫ b = a ≫ φ₂)
+  (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃) (comm' : φ₂ ≫ b' = a' ≫ φ₃)
+
+/-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a commutative square. -/
+noncomputable def map : mappingCone φ₁ ⟶ mappingCone φ₂ :=
+  desc φ₁ ((Cochain.ofHom a).comp (inl φ₂) (zero_add _)) (b ≫ inr φ₂)
+    (by simp [reassoc_of% comm])
+
+lemma map_eq_mapOfHomotopy : map φ₁ φ₂ a b comm = mapOfHomotopy (Homotopy.ofEq comm) := by
+  simp [map, mapOfHomotopy]
+
+lemma map_id : map φ φ (𝟙 _) (𝟙 _) (by rw [id_comp, comp_id]) = 𝟙 _ := by
+  ext n
+  simp [ext_from_iff _ (n + 1) n rfl, map]
+
+@[reassoc]
+lemma map_comp : map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
+    map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
+  ext n
+  simp [ext_from_iff _ (n+1) n rfl, map]
+
+/-- The morphism `triangle φ₁ ⟶ triangle φ₂` that is induced by a commutative square. -/
+@[simps]
+noncomputable def triangleMap :
+    triangle φ₁ ⟶ triangle φ₂ where
+  hom₁ := a
+  hom₂ := b
+  hom₃ := map φ₁ φ₂ a b comm
+  comm₁ := comm
+  comm₂ := by
+    dsimp
+    rw [← triangleMapOfHomotopy_comm₂ (Homotopy.ofEq comm), map_eq_mapOfHomotopy]
+  comm₃ := by
+    dsimp
+    rw [← triangleMapOfHomotopy_comm₃ (Homotopy.ofEq comm), map_eq_mapOfHomotopy]
+
+end map
+
+variable (C)
+
+section Rotate
+
+-- needs Cocycle.leftShift
+-- noncomputable def rotateHomotopyEquiv :
+--   HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) := sorry
+
+end Rotate
 
 end mappingCone
 
