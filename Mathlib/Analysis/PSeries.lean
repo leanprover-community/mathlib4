@@ -140,7 +140,8 @@ end ENNReal
 
 namespace NNReal
 /-- for a series of `NNReal` version. -/
-theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
+theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0}
+    (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
     (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u) (hCpos : C > 0)
     (h_succ_diff : SuccDiffBounded C u) :
     (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ≥0)) * f (u k)) ↔ Summable f := by
