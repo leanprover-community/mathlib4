@@ -129,17 +129,15 @@ lemma PID_finiteDimensional (R : Type _) [CommRing R] [IsPrincipalIdealRing R]
     let b := Submodule.IsPrincipal.generator (f 2).asIdeal
     have hf1 : (f 1).asIdeal ≠ ⊥ := fun h ↦ by
       have : (f 0).asIdeal < (f 1).asIdeal
-      · rw [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
-          ⟨0, Nat.lt_of_succ_lt rid⟩ from ?_]
-        · exact s ⟨0, Nat.lt_of_succ_lt rid⟩
-        · ext; change 1 % (l + 1) = 1; rw [Nat.mod_eq_of_lt]; linarith
+      · simpa only [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
+          ⟨0, Nat.lt_of_succ_lt rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith] using
+          s ⟨0, Nat.lt_of_succ_lt rid⟩
       rw [h] at this
       exact (not_le_of_lt this bot_le).elim
     have hf12 : (f 1).asIdeal < (f 2).asIdeal := by
-      rw [show 1 = Fin.castSucc ⟨1, rid⟩ from ?_, show 2 = Fin.succ ⟨1, rid⟩ from ?_]
-      · exact s ⟨1, rid⟩
-      · ext; change 2 % (l + 1) = 2; rw [Nat.mod_eq_of_lt]; linarith
-      · ext; change 1 % (l + 1) = 1; rw [Nat.mod_eq_of_lt]; linarith
+      simpa only [show 1 = Fin.castSucc ⟨1, rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith,
+        show 2 = Fin.succ ⟨1, rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith] using
+        s ⟨1, rid⟩
     have lt1 : Ideal.span {a} < Ideal.span {b} := by
       rw [Ideal.span_singleton_generator, Ideal.span_singleton_generator]
       exact hf12
@@ -173,17 +171,15 @@ lemma PID_eq_one_of_not_isField (R : Type _) [CommRing R] [IsPrincipalIdealRing 
     let b := Submodule.IsPrincipal.generator (f 2).asIdeal
     have hf1 : (f 1).asIdeal ≠ ⊥ := fun h ↦ by
       have : (f 0).asIdeal < (f 1).asIdeal
-      · rw [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
-          ⟨0, Nat.lt_of_succ_lt rid⟩ from ?_]
-        · exact s ⟨0, Nat.lt_of_succ_lt rid⟩
-        · ext; change 1 % (l + 1) = 1; rw [Nat.mod_eq_of_lt]; linarith
+      · simpa only [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
+          ⟨0, Nat.lt_of_succ_lt rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith] using
+          s ⟨0, Nat.lt_of_succ_lt rid⟩
       rw [h] at this
       exact (not_le_of_lt this bot_le).elim
     have hf12 : (f 1).asIdeal < (f 2).asIdeal := by
-      rw [show 1 = Fin.castSucc ⟨1, rid⟩ from ?_, show 2 = Fin.succ ⟨1, rid⟩ from ?_]
-      · exact s ⟨1, rid⟩
-      · ext; change 2 % (l + 1) = 2; rw [Nat.mod_eq_of_lt]; linarith
-      · ext; change 1 % (l + 1) = 1; rw [Nat.mod_eq_of_lt]; linarith
+      simpa only [show 1 = Fin.castSucc ⟨1, rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith,
+        show 2 = Fin.succ ⟨1, rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith] using
+        s ⟨1, rid⟩
     have lt1 : Ideal.span {a} < Ideal.span {b} := by
       rw [Ideal.span_singleton_generator, Ideal.span_singleton_generator]
       exact hf12
