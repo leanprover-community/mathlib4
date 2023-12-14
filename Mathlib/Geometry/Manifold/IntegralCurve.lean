@@ -281,7 +281,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   obtain ⟨s, hs, haux⟩ := (hf2.and hnhds).exists_mem
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
   refine ⟨(extChartAt I x₀).symm ∘ f,
-    Eq.symm (by rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]),
+    Eq.symm (by rw [Function.comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
     s, hs, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
