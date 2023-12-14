@@ -332,20 +332,22 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 #align ring_hom.to_module RingHom.toModule
 
-/-- A homomorphism between semirings R and S can be equivalently described as a R-module S
-  such that S/S/R forms a scalar tower. -/
+/-- If S is a semiring, an R-module on S such that S/S/R is a scalar tower
+  gives rise to a RingHom from R to S. -/
+@[simps!] nonrec def RingHom.smulOneHom [Semiring R] [Semiring S]
+    [Module R S] [IsScalarTower R S S] : R →+* S where
+  __ := smulOneHom
+  map_zero' := zero_smul R 1
+  map_add' := (add_smul · · 1)
+
+/-- A homomorphism between semirings R and S can be equivalently described as a R-module
+  structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
-    (R →+* S) ≃ {inst : Module R S // IsScalarTower R S S} where
+    (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
   toFun f := let m := Module.compHom S f; ⟨m, ⟨fun r ↦ mul_assoc (f r)⟩⟩
-  invFun := fun ⟨_, _⟩ ↦
-    { toFun := fun r ↦ r • 1
-      map_zero' := zero_smul R 1
-      map_one' := one_smul R 1
-      map_add' := (add_smul · · 1)
-      map_mul' := fun r r' ↦ by simp_rw [← smul_eq_mul, smul_assoc, one_smul] }
+  invFun := fun ⟨_, _⟩ ↦ RingHom.smulOneHom
   left_inv f := RingHom.ext fun r ↦ mul_one (f r)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂
-    fun r s ↦ show (r • 1 : S) • s = r • s by rw [smul_assoc, one_smul]
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| Module.ext _ _ <| funext₂ <| smul_one_smul S
 
 section AddCommMonoid
 
