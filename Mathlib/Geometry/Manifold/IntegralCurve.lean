@@ -339,14 +339,93 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
 
 variable (I)
 
+section shrinkable
+
+def Shrinkable (p : ℝ → Prop) : Prop := ∀ {ε ε' : ℝ} (_ : 0 < ε') (_ : ε' ≤ ε) (_ : p ε), p ε'
+
+def Growable (p : ℝ → Prop) : Prop := ∀ {ε ε' : ℝ} (_ : 0 < ε) (_ : ε ≤ ε') (_ : p ε), p ε'
+
+lemma shrinkable_min {p q : ℝ → Prop} (hsp : Shrinkable p) (hsq : Shrinkable q) {εp εq : ℝ}
+    (hεp : 0 < εp) (hεq : 0 < εq) (hp : p εp) (hq : q εq) :
+    p (min εp εq) ∧ q (min εp εq) :=
+  ⟨hsp (lt_min hεp hεq) (min_le_left _ _) hp, hsq (lt_min hεp hεq) (min_le_right _ _) hq⟩
+
+lemma shrinkable_exists_and {p q : ℝ → Prop} (hsp : Shrinkable p) (hsq : Shrinkable q)
+    (hp : ∃ ε > 0, p ε) (hq : ∃ ε > 0, q ε) : ∃ ε > 0, p ε ∧ q ε := by
+  obtain ⟨εp, hεp, hp⟩ := hp
+  obtain ⟨εq, hεq, hq⟩ := hq
+  exact ⟨min εp εq, lt_min hεp hεq, shrinkable_min hsp hsq hεp hεq hp hq⟩
+
+lemma shrinkable_and {p q : ℝ → Prop} (hsp : Shrinkable p) (hsq : Shrinkable q) :
+    Shrinkable (fun ε => p ε ∧ q ε) := by
+  intros ε ε' hpos hle h
+  exact ⟨hsp hpos hle h.1, hsq hpos hle h.2⟩
+
+lemma shrinkable_forall_mem_set {α : Type*} {s : ℝ → Set α} (p : α → Prop)
+    (hs : ∀ x, Growable fun ε => x ∈ s ε) : Shrinkable (fun ε => ∀ x ∈ s ε, p x) := by
+  intros ε ε' hpos hle hp x hx
+  apply hp
+  exact hs x hpos hle hx
+
+lemma shrinkable_eqOn {α : Type*} {s : ℝ → Set ℝ} (f g : ℝ → α)
+    (hs : ∀ x, Growable fun ε => x ∈ s ε) : Shrinkable (fun ε => EqOn f g (s ε)) := by
+  intros ε ε' hpos hle hp
+  apply hp.mono
+  intros x hx
+  exact hs _ hpos hle hx
+
+lemma shrinkable_continuousOn {α : Type*} [TopologicalSpace α] {s : ℝ → Set ℝ} (f : ℝ → α)
+    (hs : ∀ x, Growable fun ε => x ∈ s ε) : Shrinkable (fun ε => ContinuousOn f (s ε)) := by
+  intros ε ε' hpos hle hp
+  apply hp.mono
+  intros x hx
+  exact hs _ hpos hle hx
+
+lemma growable_mem_Ioo (x : ℝ) : Growable fun ε ↦ x ∈ Ioo (t₀ - ε) (t₀ + ε) := by
+  intros ε ε' _ hle
+  simp_rw [← Real.ball_eq_Ioo]
+  apply Metric.ball_subset_ball hle
+
+end shrinkable
+
+lemma IsIntegralCurveOn.hasDerivAt {ε : ℝ}
+    (hγ : IsIntegralCurveOn γ v (Ioo (t₀ - ε) (t₀ + ε))) {t : ℝ} (ht : t ∈ Ioo (t₀ - ε) (t₀ + ε))
+    (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
+    HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
+      ((tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t))) t := by
+  -- turn `HasDerivAt` into comp of `HasMFDerivAt`
+  rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
+  have hsub : ContinuousLinearMap.comp
+      (mfderiv I I (↑(chartAt H (γ t₀))) (γ t))
+      (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (v (γ t))) =
+    ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ)
+      ((tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t))) := by
+    rw [ContinuousLinearMap.ext_iff]
+    intro a
+    rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply,
+      ContinuousLinearMap.one_apply, ContinuousLinearMap.map_smul_of_tower,
+      ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply]
+    congr
+    have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _)
+      ((extChartAt_source I (γ t₀)) ▸ hsrc)
+    rw [tangentCoordChange_def, mfderiv, if_pos this]
+    rfl
+  rw [← hsub]
+  apply HasMFDerivAt.comp t _ (hγ _ ht)
+  apply hasMFDerivAt_extChartAt
+  rw [← extChartAt_source I]
+  exact hsrc
+
 lemma isIntegralCurveAt_eqOn_of_contMDiffAt_aux
     (hγ : IsIntegralCurveAt γ v t₀) {se : Set E} (hse : se ∈ nhds (extChartAt I (γ t₀) (γ t₀))) :
-    ∃ ε > 0, (∀ x ∈ Ioo (t₀ - ε) (t₀ + ε), ((extChartAt I (γ t₀)) ∘ γ) x ∈ se) ∧
-      (∀ x ∈ Ioo (t₀ - ε) (t₀ + ε), γ x ∈ (extChartAt I (γ t₀)).source) ∧
+    ∃ ε > 0, (∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), ((extChartAt I (γ t₀)) ∘ γ) t ∈ se) ∧
+      (∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), γ t ∈ (extChartAt I (γ t₀)).source) ∧
       (∀ t ∈ Ioo (t₀ - ε) (t₀ + ε),
         HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
         (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t) ∧
       ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Ioo (t₀ - ε) (t₀ + ε)) := by
+
+  -- extract `εmem` so `γ t` when expressed in the chart stays within `se`
   have hcont : ContinuousAt ((extChartAt I (γ t₀)) ∘ γ) t₀ :=
     ContinuousAt.comp (continuousAt_extChartAt ..) hγ.continuousAt
   rw [continuousAt_def] at hcont
@@ -354,129 +433,63 @@ lemma isIntegralCurveAt_eqOn_of_contMDiffAt_aux
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨εmem, hεmem, hmem⟩ := hnhds
   simp_rw [subset_def, mem_preimage] at hmem
+
   -- extract `εsrc` so `γ t` stays within the interior of the chart around `γ t₀`
   have := continuousAt_def.mp hγ.continuousAt _ <| extChartAt_source_mem_nhds I (γ t₀)
   rw [Metric.mem_nhds_iff] at this
   obtain ⟨εsrc, hεsrc, hsrc⟩ := this
   simp_rw [subset_def, mem_preimage] at hsrc
+
   -- extract `εγ` from local existence of integral curve
   obtain ⟨εγ, hεγ, hγ⟩ := hγ
-  let ε := min εmem <| min εsrc εγ
-  have hε : 0 < ε := lt_min hεmem (lt_min hεsrc hεγ)
-  refine ⟨ε, hε, ?_, ?_, ?_, ?_⟩
-  · -- some mono lemmas for each of these here would be perfect. an API for "shrinking ε"?
-    intros t ht
-    apply hmem t
-    rw [← Real.ball_eq_Ioo] at ht
-    revert ht
-    apply Metric.ball_subset_ball
-    exact min_le_left _ _
-  · intros t ht
-    apply hsrc t
-    rw [← Real.ball_eq_Ioo] at ht
-    revert ht
-    apply Metric.ball_subset_ball
-    apply le_trans (min_le_right _ _)
-    exact min_le_left _ _
-  · intros t ht
-    -- turn `HasDerivAt` into comp of `HasMFDerivAt`
-    rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-    -- finagle to use `HasMFDerivAt.comp` on `hasMFDerivAt_extChartAt` and `this`
-    -- see, `htsrc` and `htγ` should be packed away in mono lemmas elsewhere
-    have htsrc : t ∈ Ioo (t₀ - εsrc) (t₀ + εsrc) := by
-      rw [← Real.ball_eq_Ioo]
-      rw [← Real.ball_eq_Ioo] at ht
-      revert ht
-      apply Metric.ball_subset_ball
-      apply le_trans (min_le_right _ _)
-      exact min_le_left _ _
-    have htγ : t ∈ Ioo (t₀ - εγ) (t₀ + εγ) := by
-      rw [← Real.ball_eq_Ioo]
-      rw [← Real.ball_eq_Ioo] at ht
-      revert ht
-      apply Metric.ball_subset_ball
-      apply le_trans (min_le_right _ _)
-      exact min_le_right _ _
-    have := (hasMFDerivAt_extChartAt I (x := γ t₀) (y := γ t) (by
-      rw [← extChartAt_source I]
-      apply hsrc
-      rw [Real.ball_eq_Ioo]
-      exact htsrc
-    )).comp t (hγ t htγ)
-    -- can we generalise the following to some lemmas?
-    have h2 : ContinuousLinearMap.comp
-      (mfderiv I I (↑(chartAt H (γ t₀))) (γ t))
-      (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (v (γ t))) =
-      ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ)
-      ((tangentCoordChange I (γ t) (γ t₀) (γ t)) (v (γ t))) := by
-      rw [ContinuousLinearMap.ext_iff]
-      intro a
-      rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply,
-        ContinuousLinearMap.one_apply, ContinuousLinearMap.map_smul_of_tower,
-        ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply]
-      congr
-      rw [tangentCoordChange_def, mfderiv]
-      have hdiff : MDifferentiableAt I I (↑(chartAt H (γ t₀))) (γ t) := by
-        apply mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _)
-        rw [← extChartAt_source I]
-        apply hsrc
-        apply mem_of_mem_of_subset ht
-        rw [← Real.ball_eq_Ioo]
-        apply Metric.ball_subset_ball
-        simp
-      simp only [hdiff, if_true]
-      rfl
-    rw [← h2]
-    exact this
-  · apply ContinuousOn.comp (continuousOn_extChartAt I (γ t₀))
-    -- see, these are again mono
-    · apply hγ.continuousOn.mono
-      rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
-      apply Metric.ball_subset_ball
-      simp
-    · apply MapsTo.mono_left hsrc
-      rw [← Real.ball_eq_Ioo]
-      apply Metric.ball_subset_ball
-      simp
 
--- what would an api look like to synthesise this by composing individual mono lemmas?
-lemma isIntegralCurveAt_eqOn_of_contMDiffAt_aux_mono {se : Set E} {ε ε' : ℝ} (hle : ε' ≤ ε)
-    (h : (∀ x ∈ Ioo (t₀ - ε) (t₀ + ε), ((extChartAt I (γ t₀)) ∘ γ) x ∈ se) ∧
-      (∀ x ∈ Ioo (t₀ - ε) (t₀ + ε), γ x ∈ (extChartAt I (γ t₀)).source) ∧
-      (∀ t ∈ Ioo (t₀ - ε) (t₀ + ε),
-        HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-        (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t) ∧
-      ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Ioo (t₀ - ε) (t₀ + ε)) ) :
-    (∀ x ∈ Ioo (t₀ - ε') (t₀ + ε'), ((extChartAt I (γ t₀)) ∘ γ) x ∈ se) ∧
-    (∀ x ∈ Ioo (t₀ - ε') (t₀ + ε'), γ x ∈ (extChartAt I (γ t₀)).source) ∧
-    (∀ t ∈ Ioo (t₀ - ε') (t₀ + ε'),
-      HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t) ∧
-    ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Ioo (t₀ - ε') (t₀ + ε')) := by
-  obtain ⟨h1, h2, h3, h4⟩ := h
-  -- all of these should be standard mono lemmas
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · intros t ht
-    apply h1 t
-    rw [← Real.ball_eq_Ioo]
-    rw [← Real.ball_eq_Ioo] at ht
-    revert ht
-    apply Metric.ball_subset_ball hle
-  · intros t ht
-    apply h2 t
-    rw [← Real.ball_eq_Ioo]
-    rw [← Real.ball_eq_Ioo] at ht
-    revert ht
-    apply Metric.ball_subset_ball hle
-  · intros t ht
-    apply h3 t
-    rw [← Real.ball_eq_Ioo]
-    rw [← Real.ball_eq_Ioo] at ht
-    revert ht
-    apply Metric.ball_subset_ball hle
-  · apply h4.mono
+  -- all this shrinkable stuff could be automatically synthesised, I feel
+  have hs1 :
+    Shrinkable (fun ε => (∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), ((extChartAt I (γ t₀)) ∘ γ) t ∈ se)) :=
+    shrinkable_forall_mem_set _ (growable_mem_Ioo t₀)
+  have hs2 :
+    Shrinkable (fun ε => ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), γ t ∈ (extChartAt I (γ t₀)).source) :=
+    shrinkable_forall_mem_set _ (growable_mem_Ioo t₀)
+  have hs3 :
+    Shrinkable (fun ε => ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
+      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t) :=
+    shrinkable_forall_mem_set _ (growable_mem_Ioo t₀)
+  have hs4 :
+    Shrinkable (fun ε => ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Ioo (t₀ - ε) (t₀ + ε))) := by
+    intros ε ε' _ hle h
+    apply h.mono
     rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
-    apply Metric.ball_subset_ball hle
+    exact Metric.ball_subset_ball hle
+  have hs5 : -- this is a repeat
+    Shrinkable (fun ε => ContinuousOn γ (Ioo (t₀ - ε) (t₀ + ε))) := by
+    intros ε ε' _ hle h
+    apply h.mono
+    rw [← Real.ball_eq_Ioo, ← Real.ball_eq_Ioo]
+    exact Metric.ball_subset_ball hle
+
+  apply shrinkable_exists_and hs1 (shrinkable_and hs2 (shrinkable_and hs3 hs4))
+  · refine ⟨εmem, hεmem, ?_⟩
+    simp_rw [← Real.ball_eq_Ioo]
+    exact hmem
+  · apply shrinkable_exists_and hs2 (shrinkable_and hs3 hs4)
+    · refine ⟨εsrc, hεsrc, ?_⟩
+      simp_rw [← Real.ball_eq_Ioo]
+      exact hsrc
+    · refine ⟨min εsrc εγ, lt_min hεsrc hεγ, ?_⟩ -- these two could use shrinkable lemmas
+      constructor
+      · intros _ ht
+        apply hγ.hasDerivAt
+        · revert ht
+          simp_rw [← Real.ball_eq_Ioo]
+          apply Metric.ball_subset_ball (min_le_right _ _)
+        · apply hsrc
+          revert ht
+          simp_rw [← Real.ball_eq_Ioo]
+          apply Metric.ball_subset_ball (min_le_left _ _)
+      · apply ContinuousOn.comp (continuousOn_extChartAt I (γ t₀))
+        · exact hs5 (lt_min hεsrc hεγ) (min_le_right _ _) hγ.continuousOn
+        · rw [Real.ball_eq_Ioo] at hsrc
+          apply hs2 (lt_min hεsrc hεγ) (min_le_left _ _) hsrc
 
 /-- Local integral curves are unique.
 
@@ -495,22 +508,29 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
     ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint ht₀)).snd
   have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun _ => hlip
-  obtain ⟨ε, hε, haux⟩ :=
+  obtain ⟨ε, hε, hmem, hsrc, hγ, hcont⟩ :=
     isIntegralCurveAt_eqOn_of_contMDiffAt_aux I t₀ hγ hs
-  obtain ⟨ε', hε', haux'⟩ :=
+  obtain ⟨ε', hε', hmem', hsrc', hγ', hcont'⟩ :=
     isIntegralCurveAt_eqOn_of_contMDiffAt_aux I t₀ hγ' (h ▸ hs)
-  have hpos : 0 < min ε ε' := lt_min_iff.mpr ⟨hε, hε'⟩
-  obtain ⟨hmem, hsrc, hγ, hcont⟩ := isIntegralCurveAt_eqOn_of_contMDiffAt_aux_mono
-    I t₀ (min_le_left _ _) haux
-  obtain ⟨hmem', hsrc', hγ', hcont'⟩ := isIntegralCurveAt_eqOn_of_contMDiffAt_aux_mono
-    I t₀ (min_le_right _ _) haux'
+
+  have hpos := lt_min hε hε'
   refine ⟨min ε ε', hpos, ?_⟩
+  -- some tactic here where I can just say "shrink ε in hcont to min ε ε'",
+  -- and it auto generates the goals
+  have hmem := shrinkable_forall_mem_set _ (growable_mem_Ioo t₀) hpos (min_le_left _ _) hmem
+  have hmem' := shrinkable_forall_mem_set _ (growable_mem_Ioo t₀) hpos (min_le_right _ _) hmem'
+  have hsrc := shrinkable_forall_mem_set _ (growable_mem_Ioo t₀) hpos (min_le_left _ _) hsrc
+  have hsrc' := shrinkable_forall_mem_set _ (growable_mem_Ioo t₀) hpos (min_le_right _ _) hsrc'
+  have hγ := shrinkable_forall_mem_set _ (growable_mem_Ioo t₀) hpos (min_le_left _ _) hγ
+  have hγ' := shrinkable_forall_mem_set _ (growable_mem_Ioo t₀) hpos (min_le_right _ _) hγ'
+  have hcont := shrinkable_continuousOn _ (growable_mem_Ioo t₀) hpos (min_le_left _ _) hcont
+  have hcont' := shrinkable_continuousOn _ (growable_mem_Ioo t₀) hpos (min_le_right _ _) hcont'
+
   have heqon : EqOn ((extChartAt I (γ t₀)) ∘ γ) ((extChartAt I (γ' t₀)) ∘ γ')
     (Ioo (t₀ - (min ε ε')) (t₀ + (min ε ε'))) := by
-    apply ODE_solution_unique_of_mem_set_Ioo hlip (t₀ := t₀) _ hcont _ hmem hcont' _ hmem'
-    · simp [h]
-    · rw [← Real.ball_eq_Ioo]
-      exact Metric.mem_ball_self hpos
+
+    apply ODE_solution_unique_of_mem_set_Ioo hlip (t₀ := t₀)
+      (Real.ball_eq_Ioo _ _ ▸ Metric.mem_ball_self hpos) hcont _ hmem hcont' _ hmem' (by simp [h])
     · intros t ht
       rw [hv']
       apply (hγ t ht).hasFDerivAt.congr_fderiv -- missing `hasDerivAt.congr_deriv` ?
@@ -525,6 +545,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
         rw [Function.comp_apply, LocalEquiv.left_inv]
         exact hsrc' t ht
       rw [this]
+
   refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
   · intros t ht
     rw [Function.comp_apply, Function.comp_apply, LocalEquiv.left_inv _ (hsrc _ ht)]
