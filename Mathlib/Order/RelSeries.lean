@@ -664,9 +664,9 @@ def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono
   step := fun i => strictMono <| lt_add_one i.1 }
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
-  Fin.strictMono_iff_lt_succ.mpr <| x.step
+  fun _ _ h => x.rel_of_lt h
 
-lemma monotone (x : LTSeries β) : Monotone x :=
+lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
 /--
