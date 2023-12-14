@@ -6,8 +6,6 @@ Authors: Robert Y. Lewis, Keeley Hoek
 import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.WithZero
-import Mathlib.Algebra.Parity
-import Mathlib.Init.CCLemmas
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
