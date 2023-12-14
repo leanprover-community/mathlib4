@@ -15,8 +15,12 @@ This is mostly useful to define pointwise operations and `Set.seq`.
 
 ## Notes
 
-This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry` and to
+This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry`, and to
 `Data.Option.NAry`. Please keep them in sync.
+
+We also define `Set.image3`.
+Its only purpose is to prove properties of `Set.image2`,
+and it should be rarely used outside of this file.
 -/
 
 open Function
@@ -174,13 +178,11 @@ theorem Subsingleton.image2 (hs : s.Subsingleton) (ht : t.Subsingleton) (f : α 
   apply (hs.prod ht).image
 
 theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t :=
-  subset_inter (image2_subset_right <| inter_subset_left _ _) <|
-    image2_subset_right <| inter_subset_right _ _
+  Monotone.map_inf_le (fun _ _ ↦ image2_subset_right) s s'
 #align set.image2_inter_subset_left Set.image2_inter_subset_left
 
 theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
-  subset_inter (image2_subset_left <| inter_subset_left _ _) <|
-    image2_subset_left <| inter_subset_right _ _
+  Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
 #align set.image2_inter_subset_right Set.image2_inter_subset_right
 
 @[simp]
