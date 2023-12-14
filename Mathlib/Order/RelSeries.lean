@@ -159,7 +159,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ ∅ ∧ x.Chain' r} w
     intro x
     refine Subtype.ext (List.ext_get ?_ <| fun n hn1 hn2 => ?_)
     · dsimp
-      rw [List.length_ofFn, fromListChain'_length, ←Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
+      rw [List.length_ofFn, fromListChain'_length, ← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos]
       rw [List.length_pos]
       exact x.2.1
     · rw [List.get_ofFn, fromListChain'_toFun]
