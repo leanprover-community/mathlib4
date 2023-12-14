@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Small.Defs
+import Mathlib.Logic.Small.Defs
 
 #align_import logic.equiv.transfer_instance from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
@@ -317,7 +318,6 @@ protected def commMonoid [CommMonoid β] : CommMonoid α := by
 #align equiv.comm_monoid Equiv.commMonoid
 #align equiv.add_comm_monoid Equiv.addCommMonoid
 
-
 @[to_additive]
 noncomputable instance [Small.{v} α] [CommMonoid α] : CommMonoid (Shrink.{v} α) :=
   (equivShrink α).symm.commMonoid
@@ -334,7 +334,6 @@ protected def group [Group β] : Group α := by
   apply e.injective.group _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.group Equiv.group
 #align equiv.add_group Equiv.addGroup
-
 
 @[to_additive]
 noncomputable instance [Small.{v} α] [Group α] : Group (Shrink.{v} α) :=
@@ -353,7 +352,6 @@ protected def commGroup [CommGroup β] : CommGroup α := by
 #align equiv.comm_group Equiv.commGroup
 #align equiv.add_comm_group Equiv.addCommGroup
 
-
 @[to_additive]
 noncomputable instance [Small.{v} α] [CommGroup α] : CommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.commGroup
@@ -368,7 +366,6 @@ protected def nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
   let nsmul := e.smul ℕ
   apply e.injective.nonUnitalNonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.non_unital_non_assoc_semiring Equiv.nonUnitalNonAssocSemiring
-
 
 noncomputable instance [Small.{v} α] [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring (Shrink.{v} α) :=
@@ -561,7 +558,6 @@ protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) :
   Function.Injective.isDomain e.toRingHom e.injective
 #align equiv.is_domain Equiv.isDomain
 
-
 noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain  (Shrink.ringEquiv α)
 
@@ -733,7 +729,7 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
 #align equiv.alg_equiv Equiv.algEquiv
 
 variable (α) in
-/-- Shrink `α` to a smaller universe algebra multiplication. -/
+/-- Shrink `α` to a smaller universe preserves algebra structure. -/
 noncomputable def _root_.Shrink.algEquiv [Small.{v} α] [Semiring α] [Algebra R α] :
     Shrink.{v} α ≃ₐ[R] α :=
   Equiv.algEquiv _ (equivShrink α).symm

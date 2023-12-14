@@ -55,7 +55,7 @@ theorem toTrivialization_apply {x : E} {I : Type*} [TopologicalSpace I]
   let h := Classical.choose_spec h.2
   let he := e.mk_proj_snd' h
   Subtype.ext
-    ((e.toLocalEquiv.eq_symm_apply (e.mem_source.mpr h)
+    ((e.toPartialEquiv.eq_symm_apply (e.mem_source.mpr h)
             (by rwa [he, e.mem_target, e.coe_fst (e.mem_source.mpr h)])).mpr
         he.symm).symm
 #align is_evenly_covered.to_trivialization_apply IsEvenlyCovered.toTrivialization_apply
