@@ -611,7 +611,6 @@ end
 
 /-! ### Injectivity on a set -/
 
-
 /-- `f` is injective on `a` if the restriction of `f` to `a` is injective. -/
 def InjOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
@@ -1870,3 +1869,10 @@ lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
 #align equiv.bij_on_swap Equiv.bijOn_swap
 
 end Equiv
+
+/-- The embedding associated with an map which is injective on a subset -/
+def Set.InjOn.embedding {f : α → β} {s : Set α} (hs : Set.InjOn f s) :
+    s ↪ β := { inj' := hs.injective }
+
+@[simp]
+lemma Set.InjOn.embedding_apply {a : s} : hs.embedding a = f a := rfl

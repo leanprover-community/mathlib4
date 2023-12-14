@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Logic.Embedding.Set
 
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Basic
@@ -40,21 +41,22 @@ with an explicit finiteness conditions on the support
 
 -/
 
-section Set.InjOn
+section InjOn
 
-variable {α β : Type*} {f : α → β}  {s : Finset α} (hs : Set.InjOn f s)
-
+variable {α β : Type*} {f : α → β}  {s : Set α} (hs : Set.InjOn f s)
+/-
 /-- The embedding associated with an map which is injective on a subset -/
 def Set.InjOn.embedding : s ↪ β := { inj' := hs.injective }
 
 @[simp]
 lemma Set.InjOn.embedding_apply {a : s} : hs.embedding a = f a := rfl
+-/
 
-/-- The Finset image of a Finset on which a function is injective -/
-def Finset.map_of_injOn : Finset β  :=
-  s.attach.map { inj' := hs.injective }
+def Finset.map_of_injOn {s : Finset α} (hs : Set.InjOn f s) :
+    Finset β  := s.attach.map { inj' := hs.injective }
 
-end Set.InjOn
+#find_home! Finset.map_of_injOn
+end InjOn
 
 namespace Finset
 
@@ -240,7 +242,7 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
           (piAntidiagonal s p.snd).attach.map
           (Set.InjOn.embedding (f := fun f => Finsupp.update f a p.fst)
           (fun f hf g hg => by
-            simp only [mem_coe, mem_piAntidiagonal] at hf hg
+            simp only [mem_val, mem_piAntidiagonal] at hf hg
             simp only [FunLike.ext_iff]
             apply forall_imp
             intro x
