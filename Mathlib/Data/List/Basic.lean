@@ -600,10 +600,7 @@ theorem reverse_eq_iff {l l' : List α} : l.reverse = l' ↔ l = l'.reverse :=
   reverse_involutive.eq_iff
 #align list.reverse_eq_iff List.reverse_eq_iff
 
-@[simp]
-theorem reverse_eq_nil {l : List α} : reverse l = [] ↔ l = [] :=
-  @reverse_inj _ l []
-#align list.reverse_eq_nil List.reverse_eq_nil
+#align list.reverse_eq_nil List.reverse_eq_nil_iff
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
