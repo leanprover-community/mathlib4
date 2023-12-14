@@ -628,7 +628,7 @@ lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type _}  [DecidableEq X] [Pa
     show l.length ≠ 0 by aesop) := by
   cases l with | nil => ?_ | cons x0 l => ?_
   · dsimp at hl
-    norm_num at hl
+    cases hl
 
   induction l generalizing x0 with | nil => ?_ | cons x1 l ih => ?_
   · dsimp
