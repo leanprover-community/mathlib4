@@ -61,8 +61,8 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
     trans := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨m3, s3⟩ ⟨u1, hu1⟩ ⟨u2, hu2⟩ => by
       use u1 * u2 * s2
       -- Put everything in the same shape, sorting the terms using `simp`
-      have hu1' := congr_arg ((· • ·) (u2 * s3)) hu1.symm
-      have hu2' := congr_arg ((· • ·) (u1 * s1)) hu2.symm
+      have hu1' := congr_arg ((u2 * s3) • ·) hu1.symm
+      have hu2' := congr_arg ((u1 * s1) • ·) hu2.symm
       simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
@@ -154,8 +154,8 @@ instance : Add (LocalizedModule S M) where
           mk_eq.mpr
             ⟨u1 * u2, by
               -- Put everything in the same shape, sorting the terms using `simp`
-              have hu1' := congr_arg ((· • ·) (u2 * s2 * s2')) hu1
-              have hu2' := congr_arg ((· • ·) (u1 * s1 * s1')) hu2
+              have hu1' := congr_arg ((u2 * s2 * s2') • ·) hu1
+              have hu2' := congr_arg ((u1 * s1 * s1') • ·) hu2
               simp only [smul_add, ← mul_smul, smul_assoc, mul_assoc, mul_comm,
                 mul_left_comm] at hu1' hu2' ⊢
               rw [hu1', hu2']⟩
@@ -320,7 +320,7 @@ instance : SMul (Localization S) (LocalizedModule S M) where
           (by
             rintro ⟨m1, t1⟩ ⟨m2, t2⟩ ⟨u, h⟩
             refine' mk_eq.mpr ⟨u, _⟩
-            have h' := congr_arg ((· • ·) (s • r)) h
+            have h' := congr_arg ((s • r) • ·) h
             simp only [← mul_smul, smul_eq_mul, mul_comm, mul_left_comm, Submonoid.smul_def,
               Submonoid.coe_mul] at h' ⊢
             rw [h'])))

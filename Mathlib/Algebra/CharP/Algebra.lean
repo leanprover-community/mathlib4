@@ -30,15 +30,16 @@ Instances constructed from this result:
 -/
 
 
+/-- If a ring homomorphism `R →+* A` is injective then `A` has the same characteristic as `R`. -/
+theorem charP_of_injective_ringHom {R A : Type*} [Semiring R] [Semiring A] {f : R →+* A}
+    (h : Function.Injective f) (p : ℕ) [CharP R p] : CharP A p where
+  cast_eq_zero_iff' x := by
+    rw [← CharP.cast_eq_zero_iff R p x, ← map_natCast f x, map_eq_zero_iff f h]
+
 /-- If the algebra map `R →+* A` is injective then `A` has the same characteristic as `R`. -/
 theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
-  { cast_eq_zero_iff' := fun x => by
-      rw [← CharP.cast_eq_zero_iff R p x]
-      change algebraMap ℕ A x = 0 ↔ algebraMap ℕ R x = 0
-      rw [IsScalarTower.algebraMap_apply ℕ R A x]
-      refine' Iff.trans _ h.eq_iff
-      rw [RingHom.map_zero] }
+  charP_of_injective_ringHom h p
 #align char_p_of_injective_algebra_map charP_of_injective_algebraMap
 
 theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
@@ -46,14 +47,16 @@ theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Alg
   charP_of_injective_algebraMap (algebraMap R A).injective p
 #align char_p_of_injective_algebra_map' charP_of_injective_algebraMap'
 
+/-- If a ring homomorphism `R →+* A` is injective and `R` has characteristic zero
+then so does `A`. -/
+theorem charZero_of_injective_ringHom {R A : Type*} [Semiring R] [Semiring A] {f : R →+* A}
+    (h : Function.Injective f) [CharZero R] : CharZero A where
+  cast_injective _ _ _ := CharZero.cast_injective <| h <| by simpa only [map_natCast f]
+
 /-- If the algebra map `R →+* A` is injective and `R` has characteristic zero then so does `A`. -/
 theorem charZero_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) [CharZero R] : CharZero A :=
-  { cast_injective := fun x y hxy => by
-      change algebraMap ℕ A x = algebraMap ℕ A y at hxy
-      rw [IsScalarTower.algebraMap_apply ℕ R A x] at hxy
-      rw [IsScalarTower.algebraMap_apply ℕ R A y] at hxy
-      exact CharZero.cast_injective (h hxy) }
+  charZero_of_injective_ringHom h
 #align char_zero_of_injective_algebra_map charZero_of_injective_algebraMap
 
 /-!

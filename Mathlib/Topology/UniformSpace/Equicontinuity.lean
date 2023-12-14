@@ -421,7 +421,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type*} {p₁ : 
 `x₀ : X` iff the family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is
 equicontinuous at `x₀`. -/
 theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
-    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((· ∘ ·) u ∘ F) x₀ := by
+    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((u ∘ ·) ∘ F) x₀ := by
   have := (UniformFun.postcomp_uniformInducing (α := ι) hu).inducing
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuousAt_iff]
   rfl
@@ -430,7 +430,7 @@ theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous iff the
 family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is equicontinuous. -/
 theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : UniformInducing u) :
-    Equicontinuous F ↔ Equicontinuous ((· ∘ ·) u ∘ F) := by
+    Equicontinuous F ↔ Equicontinuous ((u ∘ ·) ∘ F) := by
   congrm ∀ x, ?_
   rw [hu.equicontinuousAt_iff]
 #align uniform_inducing.equicontinuous_iff UniformInducing.equicontinuous_iff
@@ -439,7 +439,7 @@ theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β}
 iff the family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is uniformly
 equicontinuous. -/
 theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α → γ}
-    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((· ∘ ·) u ∘ F) := by
+    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((u ∘ ·) ∘ F) := by
   have := UniformFun.postcomp_uniformInducing (α := ι) hu
   rw [uniformEquicontinuous_iff_uniformContinuous, uniformEquicontinuous_iff_uniformContinuous,
     this.uniformContinuous_iff]

@@ -1156,7 +1156,7 @@ theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (
 
 instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
     SMul ℕ c.Quotient where
-  smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
+  smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
 @[to_additive existing AddCon.Quotient.nsmul]
@@ -1288,7 +1288,7 @@ instance hasDiv : Div c.Quotient :=
     subtraction. -/
 instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
     SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' ((· • ·) z)) fun _ _ => c.zsmul z⟩
+  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
 #align add_con.quotient.has_zsmul AddCon.Quotient.zsmul
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
@@ -1372,7 +1372,7 @@ section Actions
 @[to_additive]
 instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
     SMul α c.Quotient where
-  smul a := (Quotient.map' ((· • ·) a)) fun _ _ => c.smul a
+  smul a := (Quotient.map' (a • ·)) fun _ _ => c.smul a
 #align con.has_smul Con.instSMul
 #align add_con.has_vadd AddCon.instVAdd
 
