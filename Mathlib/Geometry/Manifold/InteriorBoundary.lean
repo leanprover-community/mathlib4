@@ -116,7 +116,7 @@ lemma ModelWithCorners.isInteriorPoint {x : M} : I.IsInteriorPoint x := by
   have : extChartAt I x = (chartAt H x).extend I := rfl
   rw [← this] at r
   rw [ModelWithCorners.isInteriorPoint_iff, r]
-  exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
+  exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
 
 /-- If `I` is boundaryless, `M` has full interior interior. -/
 lemma ModelWithCorners.interior_eq_univ : SmoothManifoldWithCorners.interior I M = univ := by
