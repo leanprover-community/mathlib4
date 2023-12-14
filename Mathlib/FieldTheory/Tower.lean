@@ -121,9 +121,7 @@ theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
 #align finite_dimensional.right FiniteDimensional.right
 
 /-- Tower law: if `A` is a `K`-vector space and `K` is a field extension of `F` then
-`dim_F(A) = dim_F(K) * dim_K(A)`.
-
-This is `FiniteDimensional.finrank_mul_finrank'` with one fewer finiteness assumption. -/
+`dim_F(A) = dim_F(K) * dim_K(A)`. -/
 theorem finrank_mul_finrank : finrank F K * finrank K A = finrank F A := finrank_mul_finrank' F K A
 #align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
 
