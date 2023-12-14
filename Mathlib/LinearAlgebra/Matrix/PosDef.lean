@@ -127,7 +127,6 @@ def delabSqrt : Delab :=
     withTheReader Context ({· with optionsPerPos}) delab
 
 -- test for custom elaborator
-variable [DecidableEq n] {A : Matrix n n 𝕜}  (hA : PosSemidef A)
 /--
 info: (_ : PosSemidef A).sqrt : Matrix n n 𝕜
 -/
@@ -143,6 +142,7 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
     exact Real.sqrt_nonneg _
   · simp only [IsROrC.ofReal_im]
 
+@[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   let C := hA.1.eigenvectorMatrix
   let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
@@ -162,7 +162,9 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   convert hA.1.spectral_theorem'.symm
   apply Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
 
-/-- If `A, B` are positive semidefinite and `A ^ 2 = B ^ 2`, then `A = B`. -/
+@[simp]
+lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
+
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by
   /- This is deceptively hard, much more difficult than the positive *definite* case. We follow a
   clever proof due to Koeber and Schäfer. The idea is that if `A ≠ B`, then `A - B` has a nonzero
