@@ -333,15 +333,15 @@ def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
 #align ring_hom.to_module RingHom.toModule
 
 /-- If S is a semiring, an R-module on S such that S/S/R is a scalar tower
-  gives rise to a RingHom from R to S. -/
+gives rise to a RingHom from R to S. -/
 @[simps!] nonrec def RingHom.smulOneHom [Semiring R] [Semiring S]
     [Module R S] [IsScalarTower R S S] : R →+* S where
   __ := smulOneHom
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
 
-/-- A homomorphism between semirings R and S can be equivalently described as a R-module
-  structure on S such that S/S/R is a scalar tower. -/
+/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
     (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where
   toFun f := let m := Module.compHom S f; ⟨m, ⟨fun r ↦ mul_assoc (f r)⟩⟩
