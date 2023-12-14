@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
