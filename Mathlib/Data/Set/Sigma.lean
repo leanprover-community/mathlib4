@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Says
 
 #align_import data.set.sigma from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
