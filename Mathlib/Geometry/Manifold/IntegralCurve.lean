@@ -298,7 +298,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   obtain ⟨s, hs, haux⟩ := (hf2.and hnhds).exists_mem
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
   refine ⟨(extChartAt I x₀).symm ∘ f,
-    Eq.symm (by rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]),
+    Eq.symm (by rw [Function.comp_apply, hf1, PartialEquiv.left_inv _ (mem_extChartAt_source ..)]),
     s, hs, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
@@ -452,7 +452,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
       have := hmfd.hasDerivAt I t₀ ht (hsrc t ht)
       apply this.hasFDerivAt.congr_fderiv -- missing `hasDerivAt.congr_deriv` ?
       have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
-        rw [Function.comp_apply, LocalEquiv.left_inv]
+        rw [Function.comp_apply, PartialEquiv.left_inv]
         exact hsrc t ht
       rw [this]
     · intros t ht
@@ -460,16 +460,16 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
       have := hmfd'.hasDerivAt I t₀ ht (hsrc' t ht)
       apply this.hasFDerivAt.congr_fderiv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
-        rw [Function.comp_apply, LocalEquiv.left_inv]
+        rw [Function.comp_apply, PartialEquiv.left_inv]
         exact hsrc' t ht
       rw [this]
 
   -- finally show `EqOn γ γ' _` by composing with the inverse of the local chart around `γ t₀`
   refine EqOn.trans ?_ (EqOn.trans (heqon.comp_left (g := (extChartAt I (γ t₀)).symm)) ?_)
   · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, LocalEquiv.left_inv _ (hsrc _ ht)]
+    rw [Function.comp_apply, Function.comp_apply, PartialEquiv.left_inv _ (hsrc _ ht)]
   · intros t ht
-    rw [Function.comp_apply, Function.comp_apply, h, LocalEquiv.left_inv _ (hsrc' _ ht)]
+    rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
 
 /-- Integral curves are unique on open intervals.
 
