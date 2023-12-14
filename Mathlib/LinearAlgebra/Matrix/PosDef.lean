@@ -86,8 +86,9 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
 
-theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) [DecidableEq n] :
+theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     (M.submatrix e e).PosSemidef := by
+  classical
   rw [(by simp : M = 1 * M * 1), submatrix_mul (e₂ := id) (he₂ := Function.bijective_id),
     submatrix_mul (e₂ := id) (he₂ := Function.bijective_id), submatrix_id_id]
   simpa only [conjTranspose_submatrix, conjTranspose_one] using
@@ -210,7 +211,7 @@ end sqrt
 end PosSemidef
 
 @[simp]
-theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) [DecidableEq m] [DecidableEq n] :
+theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 #align matrix.pos_semidef_submatrix_equiv Matrix.posSemidef_submatrix_equiv
