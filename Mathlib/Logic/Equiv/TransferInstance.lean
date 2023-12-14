@@ -334,7 +334,6 @@ protected def group [Group β] : Group α := by
 #align equiv.group Equiv.group
 #align equiv.add_group Equiv.addGroup
 
-
 @[to_additive]
 noncomputable instance [Small.{v} α] [Group α] : Group (Shrink.{v} α) :=
   (equivShrink α).symm.group
