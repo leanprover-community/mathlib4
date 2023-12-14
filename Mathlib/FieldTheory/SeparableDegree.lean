@@ -94,11 +94,11 @@ This file contains basics about the separable degree of a field extension.
 - `Polynomial.natSepDegree_dvd_natDegree_of_irreducible`: the separable degree of an irreducible
   polynomial divides its degree.
 
-- `Field.finSepDegree_adjoin_simple_eq_natSepDegree`: the (finite) separable degree of `F⟮α⟯ / F`
-  is equal to the separable degree of the minimal polynomial of `α` over `F`.
+- `IntermediateField.finSepDegree_adjoin_simple_eq_natSepDegree`: the (finite) separable degree of
+  `F⟮α⟯ / F` is equal to the separable degree of the minimal polynomial of `α` over `F`.
 
-- `Field.finSepDegree_adjoin_simple_eq_finrank_iff`: if `α` is algebraic over `F`, then the
-  separable degree of `F⟮α⟯ / F` is equal to the degree of `F⟮α⟯ / F` if and only if `α` is a
+- `IntermediateField.finSepDegree_adjoin_simple_eq_finrank_iff`: if `α` is algebraic over `F`, then
+  the separable degree of `F⟮α⟯ / F` is equal to the degree of `F⟮α⟯ / F` if and only if `α` is a
   separable element.
 
 - `Field.finSepDegree_dvd_finrank`: the separable degree of any field extension `E / F` divides
@@ -110,8 +110,10 @@ This file contains basics about the separable degree of a field extension.
 - `Field.finSepDegree_eq_finrank_iff`: if `E / F` is a finite extension, then its separable degree
   is equal to its degree if and only if it is a separable extension.
 
-- `Field.isSeparable_adjoin_simple_iff_separable`: `F⟮x⟯ / F` is a separable extension if and only
-  if `x` is a separable element.
+- `IntermediateField.isSeparable_adjoin_simple_iff_separable`: `F⟮x⟯ / F` is a separable extension
+  if and only if `x` is a separable element.
+
+- `IsSeparable.trans`: if `E / F` and `K / E` are both separable, then `K / F` is also separable.
 
 ## Tags
 
@@ -172,6 +174,10 @@ theorem finSepDegree_self : finSepDegree F F = 1 := by
     (Cardinal.one_le_iff_ne_zero.2 <| Cardinal.mk_ne_zero _)
   rw [finSepDegree, Nat.card, this, Cardinal.one_toNat]
 
+end Field
+
+namespace IntermediateField
+
 @[simp]
 theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := by
   rw [finSepDegree_eq_of_equiv _ _ _ (botEquiv F E), finSepDegree_self]
@@ -180,7 +186,7 @@ theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := b
 theorem finSepDegree_top : finSepDegree F (⊤ : IntermediateField F E) = finSepDegree F E :=
   finSepDegree_eq_of_equiv F _ E topEquiv
 
-section
+section Tower
 
 variable [Algebra E K] [IsScalarTower F E K]
 
@@ -192,7 +198,11 @@ theorem finSepDegree_bot' : finSepDegree F (⊥ : IntermediateField E K) = finSe
 theorem finSepDegree_top' : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K :=
   finSepDegree_eq_of_equiv _ _ _ ((topEquiv (F := E) (E := K)).restrictScalars F)
 
-end
+end Tower
+
+end IntermediateField
+
+namespace Field
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every
 element `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
@@ -521,7 +531,7 @@ theorem natSepDegree_eq_one_iff_of_monic_irreducible (q : ℕ) [ExpChar F q] (hm
 
 end Polynomial
 
-namespace Field
+namespace IntermediateField
 
 /-- The (finite) separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
 minimal polynomial of `α` over `F`. -/
@@ -558,33 +568,10 @@ theorem finSepDegree_adjoin_simple_eq_finrank_iff (α : E) (halg : IsAlgebraic F
   rw [finSepDegree_adjoin_simple_eq_natSepDegree F E α halg, adjoin.finrank halg.isIntegral,
     natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral)]
 
-/-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
-theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
-  by_cases hfd : FiniteDimensional F E
-  · let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K ∣ finrank F K
-    rw [← finSepDegree_top, ← finrank_top F E]
-    refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
-    · simp only [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
-    simp only at h ⊢
-    have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
-    set M := L⟮x⟯; clear_value M
-    letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
-    letI : Module L M := Algebra.toModule
-    letI : SMul L M := Algebra.toSMul
-    haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
-    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
-      FiniteDimensional.finrank_mul_finrank F L M] at hdvd
-  rw [finrank_of_infinite_dimensional hfd]
-  exact dvd_zero _
-
-/-- The separable degree of a finite extension `E / F` is smaller than the degree of `E / F`. -/
-theorem finSepDegree_le_finrank [FiniteDimensional F E] :
-    finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
-
 -- TODO: move to suitable file
 /-- If `E / F` is an infinite algebraic extension, then there exists intermediate field `L / F`
 with arbitrary large finite extension degree. -/
-lemma _root_.IntermediateField.exists_lt_finrank_of_not_finiteDimensional
+lemma exists_lt_finrank_of_not_finiteDimensional
     (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
   induction' n with n ih
@@ -610,6 +597,33 @@ lemma _root_.IntermediateField.exists_lt_finrank_of_not_finiteDimensional
     have h2 : F⟮x⟯ ≤ L' := le_sup_right
     exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
   rwa [hr] at this
+
+end IntermediateField
+
+namespace Field
+
+/-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
+theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
+  by_cases hfd : FiniteDimensional F E
+  · let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K ∣ finrank F K
+    rw [← finSepDegree_top, ← finrank_top F E]
+    refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
+    · simp only [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
+    simp only at h ⊢
+    have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
+    set M := L⟮x⟯; clear_value M
+    letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
+    letI : Module L M := Algebra.toModule
+    letI : SMul L M := Algebra.toSMul
+    haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
+    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
+      FiniteDimensional.finrank_mul_finrank F L M] at hdvd
+  rw [finrank_of_infinite_dimensional hfd]
+  exact dvd_zero _
+
+/-- The separable degree of a finite extension `E / F` is smaller than the degree of `E / F`. -/
+theorem finSepDegree_le_finrank [FiniteDimensional F E] :
+    finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
 
 /-- If `E / F` is a separable extension, then its separable degree is equal to its degree.
 When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elements.
@@ -657,6 +671,10 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
       FiniteDimensional.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
 
+end Field
+
+namespace IntermediateField
+
 lemma separable_of_mem_isSeparable {L : IntermediateField F E} [IsSeparable F L]
     {x : E} (h : x ∈ L) : IsIntegral F x ∧ (minpoly F x).Separable :=
   ⟨isIntegral_iff.1 <| IsSeparable.isIntegral F (K := L) ⟨x, h⟩, by
@@ -700,8 +718,10 @@ theorem isSeparable_adjoin_two_of_separable {x y : E}
   change finSepDegree F (restrictScalars F M) = finrank F (restrictScalars F M) at heq
   rwa [adjoin_adjoin_left F {x} {y}, Set.union_comm, Set.union_singleton] at heq
 
+end IntermediateField
+
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
-theorem _root_.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
+theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
     [IsSeparable F E] [IsSeparable E K] : IsSeparable F K := isSeparable_iff.2 fun x ↦ by
   let f := minpoly E x
   let E' : IntermediateField F E := adjoin F f.frange
@@ -736,6 +756,8 @@ theorem _root_.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
     eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
   change IsSeparable F (restrictScalars F E'⟮x⟯) at this
   exact separable_of_mem_isSeparable F K hx
+
+namespace Field
 
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/
 theorem separable_mul {x y : E}
