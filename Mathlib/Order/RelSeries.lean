@@ -7,7 +7,7 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Abel
 
 /-!
 # Series of a relation
@@ -183,44 +183,31 @@ such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
 @[simps]
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ Fin.cast (by ring)
+  toFun := Fin.append p q ∘ Fin.cast (by abel)
   step := fun i => by
     obtain (hi|rfl|hi) :=
       lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;>
-      · convert Fin.append_left p q _
-        rfl
+    · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
-      · convert Fin.append_left p q _
-        rfl
-      · convert Fin.append_right p q _
-        rfl
+      · convert Fin.append_left p q _; rfl
+      · convert Fin.append_right p q _; rfl
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-        i.2.trans <| by linarith⟩
+        i.2.trans <| by linarith!⟩
+      · ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
+      have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
+        (by exact i.2)⟩
       · ext
-        change _ = _ + (_ - _)
-        rw [Nat.add_sub_cancel']
         dsimp
-        exact hi
-      have hy : y = Fin.natAdd _ ⟨i - p.length, by
-        apply Nat.sub_lt_left_of_lt_add (le_of_lt hi); exact i.2⟩
-      · ext
-        change _ = _ + (_ - _)
-        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc]
-        rw [Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi)]
-        conv_rhs => rw [add_comm]
+        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
+          Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
       rw [hx, Fin.append_right, hy, Fin.append_right]
-      convert q.step ⟨i - (p.length + 1), ?_⟩
-      pick_goal 2
-      · apply Nat.sub_lt_left_of_lt_add hi
-        convert i.2 using 1
-        simp only [Fin.coe_castLE, Fin.val_last, Nat.succ_eq_add_one]
-        ring
-      · rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
-          Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
-        exact hi
+      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
+        by convert i.2 using 1; abel⟩
+      rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
+        Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
+      exact hi
 
 /--
 For two sets `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
