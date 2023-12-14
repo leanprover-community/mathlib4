@@ -62,7 +62,7 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 lemma _root_.ModelWithCorners.isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
   ⟨fun h ↦ (chartAt H x).mem_interior_extend_target _ (mem_chart_target H x) h,
-    fun h ↦ LocalHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
+    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
 
 variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
