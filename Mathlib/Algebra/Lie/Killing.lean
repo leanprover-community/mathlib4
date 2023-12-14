@@ -493,9 +493,10 @@ lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul [LieAlgebra.IsNilpotent K L]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ traceForm_weightSpace_eq K L M χ x y)
 
 -- The reverse inclusion should also hold: TODO prove this!
-lemma LieModule.dualAnnihilator_ker_traceForm_le_span_weight [LieAlgebra.IsNilpotent K L]
+lemma LieModule.range_traceForm_le_span_weight [LieAlgebra.IsNilpotent K L]
     [LinearWeights K L M] [IsTriangularizable K L M] [FiniteDimensional K L] :
-    (LinearMap.ker (traceForm K L M)).dualAnnihilator ≤ span K (range (weight.toLinear K L M)) := by
+    LinearMap.range (traceForm K L M) ≤ span K (range (weight.toLinear K L M)) := by
+  rw [← LinearMap.dualAnnihilator_ker_eq_range_of_comm _ (traceForm_comm K L M)]
   intro g hg
   simp only [Submodule.mem_dualAnnihilator, LinearMap.mem_ker] at hg
   by_contra contra
@@ -519,6 +520,7 @@ Killing form, the corresponding roots span the dual space of `H`. -/
 lemma LieAlgebra.IsKilling.span_weight_eq_top [FiniteDimensional K L] [IsKilling K L]
     (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L] :
     span K (range (weight.toLinear K H L)) = ⊤ := by
-  simpa using LieModule.dualAnnihilator_ker_traceForm_le_span_weight K H L
+  refine eq_top_iff.mpr (le_trans ?_ (LieModule.range_traceForm_le_span_weight K H L))
+  simp [← LinearMap.dualAnnihilator_ker_eq_range_of_comm _ (traceForm_comm K H L)]
 
 end Field
