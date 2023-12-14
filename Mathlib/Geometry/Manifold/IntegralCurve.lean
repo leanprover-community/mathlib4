@@ -142,24 +142,15 @@ lemma IsIntegralCurveOn.congr_of_eqOn (hs : IsOpen s) (h : IsIntegralCurveOn γ 
 
 lemma IsIntegralCurveAt.congr_of_eventuallyEq (h : IsIntegralCurveAt γ v t₀)
     (hγ : γ =ᶠ[nhds t₀] γ') : IsIntegralCurveAt γ' v t₀ := by
-  obtain ⟨ε, hε, h⟩ := h
-  obtain ⟨s, hs, heqon⟩ := hγ.exists_mem
-  obtain ⟨ε', hε', hss⟩ := Metric.mem_nhds_iff.mp hs
-  refine ⟨min ε ε', lt_min hε hε', ?_⟩
-  rw [← Real.ball_eq_Ioo] at *
+  simp_rw [IsIntegralCurveAt, IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem] at h --lemma?
+  obtain ⟨s, haux, hs1, hs2⟩ := eventually_nhds_iff.mp (h.and hγ)
+  refine ⟨s, hs1.mem_nhds hs2, ?_⟩
   intros t ht
-  have hh := h t (mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left _ _)))
-  rw [← heqon (mem_of_mem_of_subset ht
-    (subset_trans (Metric.ball_subset_ball (min_le_right _ _)) hss))]
-  apply hh.congr_of_eventuallyEq
-  rw [← Metric.isOpen_ball.mem_nhds_iff, Metric.mem_nhds_iff] at ht
-  obtain ⟨ε'', hε'', ht⟩ := ht
+  rw [← (haux t ht).2]
+  apply (haux t ht).1.congr_of_eventuallyEq
   rw [Filter.eventuallyEq_iff_exists_mem]
-  refine ⟨Metric.ball t ε'', Metric.ball_mem_nhds _ hε'', ?_⟩
-  apply heqon.symm.mono
-  apply subset_trans ht
-  apply subset_trans _ hss
-  exact Metric.ball_subset_ball (min_le_right _ _)
+  refine ⟨s, hs1.mem_nhds ht, ?_⟩
+  exact fun t' ht' => (haux t' ht').2.symm
 
 lemma IsIntegralCurve.congr (h : IsIntegralCurve γ v) (hγ : γ = γ') :
     IsIntegralCurve γ' v := by
