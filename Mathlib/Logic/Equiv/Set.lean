@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Says
 
 #align_import logic.equiv.set from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
