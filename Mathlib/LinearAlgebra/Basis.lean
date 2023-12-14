@@ -1394,6 +1394,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
 
 end Induction
 
+set_option maxHeartbeats 3200000 in
 /-- An element of a non-unital-non-associative algebra is in the center exactly when it commutes
 with the basis elements. -/
 lemma Basis.mem_center_iff {A}

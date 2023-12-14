@@ -99,6 +99,7 @@ namespace inhomogeneousCochains
 
 open Rep groupCohomology
 
+set_option maxHeartbeats 400000 in
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
 @[simps]

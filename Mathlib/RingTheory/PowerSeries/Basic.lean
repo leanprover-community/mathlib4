@@ -335,6 +335,7 @@ instance : Semiring (MvPowerSeries σ R) :=
 
 end Semiring
 
+set_option maxHeartbeats 300000 in
 instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
   { show Semiring (MvPowerSeries σ R) by infer_instance with
     mul_comm := fun φ ψ =>

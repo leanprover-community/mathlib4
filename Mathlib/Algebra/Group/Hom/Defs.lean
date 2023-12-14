@@ -1007,7 +1007,7 @@ def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
 #align mul_hom.id_apply MulHom.id_apply
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps, reducible)]
 def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
   toFun x := x
   map_one' := rfl

@@ -207,6 +207,7 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
   obtain ⟨m, rfl⟩ := (mem_posFittingCompOf R x m₁).mp hm₁ k
   simp [hB, hk]
 
+set_option maxHeartbeats 1600000 in
 lemma trace_toEndomorphism_eq_zero_of_mem_lcs
     {k : ℕ} {x : L} (hk : 1 ≤ k) (hx : x ∈ lowerCentralSeries R L L k) :
     trace R _ (toEndomorphism R L M x) = 0 := by

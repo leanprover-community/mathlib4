@@ -404,6 +404,7 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
         dsimp only [Subtype.coe_mk]; rw [← hx]; rfl)
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.mem_carrier_iff' AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff'
 
+set_option maxHeartbeats 400000 in
 theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
   refine' fun i => (q.2.mem_or_mem _).elim id id

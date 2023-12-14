@@ -635,8 +635,8 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
-def id (α : Type*) [NonAssocSemiring α] : α →+* α := by
-  refine' { toFun := _root_.id.. } <;> intros <;> rfl
+@[reducible] def id (α : Type*) [NonAssocSemiring α] : α →+* α :=
+  { AddMonoidHom.id α, MonoidHom.id α with }
 #align ring_hom.id RingHom.id
 
 instance : Inhabited (α →+* α) :=
@@ -652,7 +652,6 @@ theorem coe_addMonoidHom_id : (id α : α →+ α) = AddMonoidHom.id α :=
   rfl
 #align ring_hom.coe_add_monoid_hom_id RingHom.coe_addMonoidHom_id
 
-@[simp]
 theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
   rfl
 #align ring_hom.coe_monoid_hom_id RingHom.coe_monoidHom_id

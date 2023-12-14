@@ -28,7 +28,7 @@ open scoped Real Topology
 /-- The polar coordinates local homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
-def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
+def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (Real.sqrt (q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
   invFun p := (p.1 * cos p.2, p.1 * sin p.2)
   source := {q | 0 < q.1} ∪ {q | q.2 ≠ 0}
@@ -91,6 +91,7 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact Complex.equivRealProdClm.symm.continuous.continuousOn
 #align polar_coord polarCoord
 
+set_option maxHeartbeats 800000 in
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
       (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
@@ -160,8 +161,8 @@ open scoped Real
 
 /-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
-protected noncomputable def polarCoord : LocalHomeomorph ℂ (ℝ × ℝ) :=
-  equivRealProdClm.toHomeomorph.toLocalHomeomorph.trans polarCoord
+protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
+  equivRealProdClm.toHomeomorph.toPartialHomeomorph.trans polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by

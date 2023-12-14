@@ -273,6 +273,7 @@ theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Su
     exact Set.image_prod fun m m₂ => f m + g m₂
 #align linear_map.coprod_map_prod LinearMap.coprod_map_prod
 
+set_option maxHeartbeats 400000 in
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
 
