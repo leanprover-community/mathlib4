@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Bases
 
 #align_import order.filter.n_ary from "leanprover-community/mathlib"@"78f647f8517f021d839a7553d5dc97e79b508dea"
 
@@ -37,34 +37,23 @@ variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f 
 
 /-- The image of a binary function `m : α → β → γ` as a function `Filter α → Filter β → Filter γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
-    where
-  sets := { s | ∃ u v, u ∈ f ∧ v ∈ g ∧ image2 m u v ⊆ s }
-  univ_sets := ⟨univ, univ, univ_sets _, univ_sets _, subset_univ _⟩
-  sets_of_superset hs hst :=
-    Exists₂.imp (fun u v => And.imp_right <| And.imp_right fun h => Subset.trans h hst) hs
-  inter_sets := by
-    simp only [exists_prop, Set.mem_setOf_eq, subset_inter_iff]
-    rintro _ _ ⟨s₁, s₂, hs₁, hs₂, hs⟩ ⟨t₁, t₂, ht₁, ht₂, ht⟩
-    exact
-      ⟨s₁ ∩ t₁, s₂ ∩ t₂, inter_sets f hs₁ ht₁, inter_sets g hs₂ ht₂,
-        (image2_subset (inter_subset_left _ _) <| inter_subset_left _ _).trans hs,
-        (image2_subset (inter_subset_right _ _) <| inter_subset_right _ _).trans ht⟩
+def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ :=
+  ((f ×ˢ g).map (uncurry m)).copy { s | ∃ u ∈ f, ∃ v ∈ g, image2 m u v ⊆ s } fun _ ↦ by
+    simp only [mem_map, mem_prod_iff, image2_subset_iff, prod_subset_iff]; rfl
 #align filter.map₂ Filter.map₂
 
 @[simp 900]
-theorem mem_map₂_iff : u ∈ map₂ m f g ↔ ∃ s t, s ∈ f ∧ t ∈ g ∧ image2 m s t ⊆ u :=
+theorem mem_map₂_iff : u ∈ map₂ m f g ↔ ∃ s ∈ f, ∃ t ∈ g, image2 m s t ⊆ u :=
   Iff.rfl
 #align filter.mem_map₂_iff Filter.mem_map₂_iff
 
 theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map₂ m f g :=
-  ⟨_, _, hs, ht, Subset.rfl⟩
+  ⟨_, hs, _, ht, Subset.rfl⟩
 #align filter.image2_mem_map₂ Filter.image2_mem_map₂
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
     Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
-  ext s
-  simp [mem_prod_iff, prod_subset_iff]
+  rw [map₂, copy_eq]; rfl
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
@@ -77,11 +66,16 @@ theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g =
   simp only [← map_prod_eq_map₂, map_id']
 #align filter.map₂_mk_eq_prod Filter.map₂_mk_eq_prod
 
+protected lemma HasBasis.map₂ {ι ι' : Type*} {p : ι → Prop} {q : ι' → Prop} {s t}
+    (hf : f.HasBasis p s) (hg : g.HasBasis q t) (m : α → β → γ) :
+    (map₂ m f g).HasBasis (fun i : ι × ι' ↦ p i.1 ∧ q i.2) fun i ↦ image2 m (s i.1) (t i.2) := by
+  simpa only [← map_prod_eq_map₂, ← image_prod] using (hf.prod hg).map _
+
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,
 --   exact ⟨mem_of_superset hu h.1, mem_of_superset hv h.2⟩ }, λ h, image2_mem_map₂ h.1 h.2⟩
 theorem map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
-  fun _ ⟨s, t, hs, ht, hst⟩ => ⟨s, t, hf hs, hg ht, hst⟩
+  fun _ ⟨s, hs, t, ht, hst⟩ => ⟨s, hf hs, t, hg ht, hst⟩
 #align filter.map₂_mono Filter.map₂_mono
 
 theorem map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
@@ -95,31 +89,22 @@ theorem map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f�
 @[simp]
 theorem le_map₂_iff {h : Filter γ} :
     h ≤ map₂ m f g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈ g → image2 m s t ∈ h :=
-  ⟨fun H _ hs _ ht => H <| image2_mem_map₂ hs ht, fun H _ ⟨_, _, hs, ht, hu⟩ =>
+  ⟨fun H _ hs _ ht => H <| image2_mem_map₂ hs ht, fun H _ ⟨_, hs, _, ht, hu⟩ =>
     mem_of_superset (H hs ht) hu⟩
 #align filter.le_map₂_iff Filter.le_map₂_iff
 
 @[simp]
-theorem map₂_bot_left : map₂ m ⊥ g = ⊥ :=
-  empty_mem_iff_bot.1 ⟨∅, univ, trivial, univ_mem, image2_empty_left.subset⟩
+theorem map₂_eq_bot_iff : map₂ m f g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
+  rw [← map_prod_eq_map₂, map_eq_bot_iff, prod_eq_bot]
+#align filter.map₂_eq_bot_iff Filter.map₂_eq_bot_iff
+
+@[simp]
+theorem map₂_bot_left : map₂ m ⊥ g = ⊥ := map₂_eq_bot_iff.2 <| .inl rfl
 #align filter.map₂_bot_left Filter.map₂_bot_left
 
 @[simp]
-theorem map₂_bot_right : map₂ m f ⊥ = ⊥ :=
-  empty_mem_iff_bot.1 ⟨univ, ∅, univ_mem, trivial, image2_empty_right.subset⟩
+theorem map₂_bot_right : map₂ m f ⊥ = ⊥ := map₂_eq_bot_iff.2 <| .inr rfl
 #align filter.map₂_bot_right Filter.map₂_bot_right
-
-@[simp]
-theorem map₂_eq_bot_iff : map₂ m f g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
-  simp only [← empty_mem_iff_bot, mem_map₂_iff, subset_empty_iff, image2_eq_empty_iff]
-  constructor
-  · rintro ⟨s, t, hs, ht, rfl | rfl⟩
-    · exact Or.inl hs
-    · exact Or.inr ht
-  · rintro (h | h)
-    · exact ⟨_, _, h, univ_mem, Or.inl rfl⟩
-    · exact ⟨_, _, univ_mem, h, Or.inr rfl⟩
-#align filter.map₂_eq_bot_iff Filter.map₂_eq_bot_iff
 
 @[simp]
 theorem map₂_neBot_iff : (map₂ m f g).NeBot ↔ f.NeBot ∧ g.NeBot := by
@@ -127,16 +112,17 @@ theorem map₂_neBot_iff : (map₂ m f g).NeBot ↔ f.NeBot ∧ g.NeBot := by
   exact map₂_eq_bot_iff.not.trans not_or
 #align filter.map₂_ne_bot_iff Filter.map₂_neBot_iff
 
-theorem NeBot.map₂ (hf : f.NeBot) (hg : g.NeBot) : (map₂ m f g).NeBot :=
+protected theorem NeBot.map₂ (hf : f.NeBot) (hg : g.NeBot) : (map₂ m f g).NeBot :=
   map₂_neBot_iff.2 ⟨hf, hg⟩
 #align filter.ne_bot.map₂ Filter.NeBot.map₂
 
--- Porting note: Why do I have to specify the `Filter` namespace for `map₂` here?
-theorem NeBot.of_map₂_left (h : (Filter.map₂ m f g).NeBot) : f.NeBot :=
+instance map₂.neBot [NeBot f] [NeBot g] : NeBot (map₂ m f g) := .map₂ ‹_› ‹_›
+
+theorem NeBot.of_map₂_left (h : (map₂ m f g).NeBot) : f.NeBot :=
   (map₂_neBot_iff.1 h).1
 #align filter.ne_bot.of_map₂_left Filter.NeBot.of_map₂_left
 
-theorem NeBot.of_map₂_right (h : (Filter.map₂ m f g).NeBot) : g.NeBot :=
+theorem NeBot.of_map₂_right (h : (map₂ m f g).NeBot) : g.NeBot :=
   (map₂_neBot_iff.1 h).2
 #align filter.ne_bot.of_map₂_right Filter.NeBot.of_map₂_right
 
