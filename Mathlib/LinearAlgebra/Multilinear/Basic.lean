@@ -275,22 +275,24 @@ def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, 
 
 section
 
-variable (R M₂)
+variable (R M₂ M₃)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
--/
+/-- Equivalence between linear maps `M₂ →ₗ[R] M₃` and one-multilinear maps. -/
 @[simps]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : MultilinearMap R (fun _ : ι => M₂) M₂ where
-  toFun := Function.eval i'
-  map_add' m i x y := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-  map_smul' m i r x := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingleton
-#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply
-
+def ofSubsingleton [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ MultilinearMap R (fun _ : ι ↦ M₂) M₃ where
+  toFun f :=
+    { toFun := fun x ↦ f (x i)
+      map_add' := by intros; simp [update_eq_const_of_subsingleton]
+      map_smul' := by intros; simp [update_eq_const_of_subsingleton] }
+  invFun f :=
+    { toFun := fun x ↦ f fun _ ↦ x
+      map_add' := fun x y ↦ by simpa [update_eq_const_of_subsingleton] using f.map_add 0 i x y
+      map_smul' := fun c x ↦ by simpa [update_eq_const_of_subsingleton] using f.map_smul 0 i c x }
+  left_inv f := rfl
+  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingletonₓ
+#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply_applyₓ
 
 variable (M₁) {M₂}
 
@@ -838,6 +840,21 @@ instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M�
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 variable (R S M₁ M₂ M₃)
+
+section OfSubsingleton
+
+variable [AddCommMonoid M₃] [Semiring S] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+
+/-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
+and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
+@[simps (config := { simpRhs := true })]
+def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
+  { ofSubsingleton R M₂ M₃ i with
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
+
+end OfSubsingleton
 
 /-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
 @[simps apply symm_apply]

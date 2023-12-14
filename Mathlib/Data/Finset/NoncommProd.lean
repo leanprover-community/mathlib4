@@ -217,7 +217,7 @@ theorem noncommProd_eq_prod {α : Type*} [CommMonoid α] (s : Multiset α) :
 #align multiset.noncomm_prod_eq_prod Multiset.noncommProd_eq_prod
 #align multiset.noncomm_sum_eq_sum Multiset.noncommSum_eq_sum
 
-@[to_additive noncommSum_addCommute]
+@[to_additive]
 theorem noncommProd_commute (s : Multiset α) (comm) (y : α) (h : ∀ x ∈ s, Commute y x) :
     Commute y (s.noncommProd comm) := by
   induction s using Quotient.inductionOn
@@ -366,7 +366,7 @@ theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) 
 #align finset.noncomm_prod_eq_pow_card Finset.noncommProd_eq_pow_card
 #align finset.noncomm_sum_eq_card_nsmul Finset.noncommSum_eq_card_nsmul
 
-@[to_additive noncommSum_addCommute]
+@[to_additive]
 theorem noncommProd_commute (s : Finset α) (f : α → β) (comm) (y : β)
     (h : ∀ x ∈ s, Commute y (f x)) : Commute y (s.noncommProd f comm) := by
   apply Multiset.noncommProd_commute

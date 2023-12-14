@@ -370,7 +370,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain (H : Algebra.IsIntegra
   refine' ⟨comap (algebraMap S Sₚ) Qₚ, ⟨comap_isPrime _ Qₚ, _⟩⟩
   convert Localization.AtPrime.comap_maximalIdeal (I := P)
   rw [comap_comap, ← LocalRing.eq_maximalIdeal Qₚ_max,
-    ←@IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
+    ← @IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ) _
     _ _ _ _ _ (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) _ _]
   rfl

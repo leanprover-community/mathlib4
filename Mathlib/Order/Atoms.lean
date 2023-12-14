@@ -76,10 +76,10 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
     Subtype.mk_eq_mk.1 (ha.2 ⟨b, hba.le.trans a.prop⟩ hba)⟩
 #align is_atom.of_is_atom_coe_Iic IsAtom.of_isAtom_coe_Iic
 
-theorem isAtom_iff {a : α} : IsAtom a ↔ a ≠ ⊥ ∧ ∀ (b) (_ : b ≠ ⊥), b ≤ a → a ≤ b :=
+theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
     forall_congr' fun b => by simp only [Ne.def, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
-#align is_atom_iff isAtom_iff
+#align is_atom_iff isAtom_iff_le_of_ge
 
 end Preorder
 
@@ -93,6 +93,9 @@ theorem IsAtom.lt_iff (h : IsAtom a) : x < a ↔ x = ⊥ :=
 
 theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [le_iff_lt_or_eq, h.lt_iff]
 #align is_atom.le_iff IsAtom.le_iff
+
+lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
+  ha.le_iff.trans $ or_iff_right hb
 
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
@@ -164,9 +167,9 @@ theorem IsCoatom.of_isCoatom_coe_Ici {a : Set.Ici x} (ha : IsCoatom a) : IsCoato
   @IsAtom.of_isAtom_coe_Iic αᵒᵈ _ _ x a ha
 #align is_coatom.of_is_coatom_coe_Ici IsCoatom.of_isCoatom_coe_Ici
 
-theorem isCoatom_iff {a : α} : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ (b) (_ : b ≠ ⊤), a ≤ b → b ≤ a :=
-  @isAtom_iff αᵒᵈ _ _ _
-#align is_coatom_iff isCoatom_iff
+theorem isCoatom_iff_ge_of_le : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ b ≠ ⊤, a ≤ b → b ≤ a :=
+  isAtom_iff_le_of_ge (α := αᵒᵈ)
+#align is_coatom_iff isCoatom_iff_ge_of_le
 
 end Preorder
 
@@ -181,6 +184,8 @@ theorem IsCoatom.lt_iff (h : IsCoatom a) : a < x ↔ x = ⊤ :=
 theorem IsCoatom.le_iff (h : IsCoatom a) : a ≤ x ↔ x = ⊤ ∨ x = a :=
   h.dual.le_iff
 #align is_coatom.le_iff IsCoatom.le_iff
+
+lemma IsCoatom.le_iff_eq (ha : IsCoatom a) (hb : b ≠ ⊤) : a ≤ b ↔ b = a := ha.dual.le_iff_eq hb
 
 theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
@@ -1076,18 +1081,29 @@ instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π
 
 end Pi
 
+section BooleanAlgebra
+variable [BooleanAlgebra α] {a b : α}
+
+@[simp] lemma isAtom_compl : IsAtom aᶜ ↔ IsCoatom a := isCompl_compl.symm.isAtom_iff_isCoatom
+@[simp] lemma isCoatom_compl : IsCoatom aᶜ ↔ IsAtom a := isCompl_compl.symm.isCoatom_iff_isAtom
+
+protected alias ⟨IsAtom.of_compl, IsCoatom.compl⟩ := isAtom_compl
+protected alias ⟨IsCoatom.of_compl, IsAtom.compl⟩ := isCoatom_compl
+
+end BooleanAlgebra
+
 namespace Set
 
 theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
   ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
 #align set.is_atom_singleton Set.isAtom_singleton
 
-theorem isAtom_iff (s : Set α) : IsAtom s ↔ ∃ x, s = {x} := by
+theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   refine'
     ⟨_, by
       rintro ⟨x, rfl⟩
       exact isAtom_singleton x⟩
-  rw [_root_.isAtom_iff, bot_eq_empty, ← nonempty_iff_ne_empty]
+  rw [isAtom_iff_le_of_ge, bot_eq_empty, ← nonempty_iff_ne_empty]
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
     ⟨x, eq_singleton_iff_unique_mem.2

@@ -395,7 +395,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       tauto
     have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ :=
       continuous_ofReal.continuousAt.prod_map continuousAt_id
-    exact @ContinuousAt.comp (ℝ × ℂ) (ℂ × ℂ) ℂ _ _ _ _ (fun p => ⟨↑p.1, p.2⟩) ⟨0, y⟩ A B
+    exact ContinuousAt.comp (α := ℝ × ℂ) (f := fun p => ⟨↑p.1, p.2⟩) (x := ⟨0, y⟩) A B
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
@@ -410,7 +410,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
 
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
-  @ContinuousAt.comp _ _ _ _ _ _ _ _ x (continuousAt_ofReal_cpow x y h)
+  ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
     (continuous_id.prod_mk continuous_const).continuousAt
 #align complex.continuous_at_of_real_cpow_const Complex.continuousAt_ofReal_cpow_const
 
