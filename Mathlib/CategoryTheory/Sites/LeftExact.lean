@@ -274,12 +274,15 @@ instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
 
 variable (J D)
 
+/-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/
 def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D :=
   (plusPlusAdjunction J D).leftAdjointUniq (sheafificationAdjunction J D)
 
+/-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
 def plusPlusFunctorIsoSheafification : J.plusPlusFunctor D ≅ J.sheafification D :=
   isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
+/-- `plusPlus` is isomorphic to `sheafify`. -/
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.plusPlus P ≅ J.sheafify P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
