@@ -600,10 +600,7 @@ theorem reverse_eq_iff {l l' : List α} : l.reverse = l' ↔ l = l'.reverse :=
   reverse_involutive.eq_iff
 #align list.reverse_eq_iff List.reverse_eq_iff
 
-@[simp]
-theorem reverse_eq_nil {l : List α} : reverse l = [] ↔ l = [] :=
-  @reverse_inj _ l []
-#align list.reverse_eq_nil List.reverse_eq_nil
+#align list.reverse_eq_nil List.reverse_eq_nil_iff
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
@@ -1103,26 +1100,26 @@ theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
 #align list.index_of_cons_self List.indexOf_cons_self
 
 -- fun e => if_pos e
-theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) = 0
-  | e => by rw [e]; exact indexOf_cons_self b l
+theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
+  | e => by rw [← e]; exact indexOf_cons_self b l
 #align list.index_of_cons_eq List.indexOf_cons_eq
 
 -- fun n => if_neg n
 @[simp]
-theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
+theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
-    indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
+    indexOf a (b :: l) = if b = a then 0 else succ (indexOf a l) := by
   simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons, indexOf_cons]; split_ifs with h
+  simp only [length, mem_cons, indexOf_cons, eq_comm]; split_ifs with h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h
   · simp only [h, false_or_iff]
     rw [← ih]
@@ -1137,7 +1134,7 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
   simp only [length, indexOf_cons]
-  by_cases h : a = b
+  by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
 #align list.index_of_le_length List.indexOf_le_length
@@ -1152,16 +1149,16 @@ theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l�
   · exfalso
     exact not_mem_nil a h
   rw [List.cons_append]
-  by_cases hh : a = d₁
+  by_cases hh : d₁ = a
   · iterate 2 rw [indexOf_cons_eq _ hh]
-  rw [indexOf_cons_ne _ hh, indexOf_cons_ne _ hh, ih (mem_of_ne_of_mem hh h)]
+  rw [indexOf_cons_ne _ hh, indexOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
 #align list.index_of_append_of_mem List.indexOf_append_of_mem
 
 theorem indexOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
     indexOf a (l₁ ++ l₂) = l₁.length + indexOf a l₂ := by
   induction' l₁ with d₁ t₁ ih
   · rw [List.nil_append, List.length, zero_add]
-  rw [List.cons_append, indexOf_cons_ne _ (ne_of_not_mem_cons h), List.length,
+  rw [List.cons_append, indexOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
     ih (not_mem_of_not_mem_cons h), Nat.succ_add]
 #align list.index_of_append_of_not_mem List.indexOf_append_of_not_mem
 
@@ -1341,7 +1338,7 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 @[simp]
 theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
   | b :: l, h => by
-    by_cases h' : a = b <;>
+    by_cases h' : b = a <;>
       simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l]
 
 @[simp, deprecated indexOf_get]

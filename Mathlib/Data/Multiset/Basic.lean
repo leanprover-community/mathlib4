@@ -2650,7 +2650,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
   Quotient.inductionOn s <| fun l => by
     simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count]
-    rw [List.filter_eq' l b, coe_replicate]
+    rw [List.filter_eq l b, coe_replicate]
 #align multiset.filter_eq' Multiset.filter_eq'
 
 theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (count b s) b := by
