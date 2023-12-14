@@ -184,7 +184,7 @@ variable {K}
 
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     [FiniteDimensional K L] [IsSeparable K L]
-    (x : L) (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
+    {x : L} (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
     ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
   classical
