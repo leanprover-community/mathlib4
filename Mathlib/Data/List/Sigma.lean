@@ -205,7 +205,8 @@ theorem of_mem_dlookup {a : α} {b : β a} :
     by_cases h : a = a'
     · subst a'
       simp? at H says
-        simp only [ne_eq, not_true, dlookup_cons_eq, Option.mem_def, Option.some.injEq] at H
+        simp only [ne_eq, not_true_eq_false, dlookup_cons_eq, Option.mem_def,
+          Option.some.injEq] at H
       simp [H]
     · simp only [ne_eq, h, not_false_iff, dlookup_cons_ne] at H
       simp [of_mem_dlookup H]

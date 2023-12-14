@@ -1603,7 +1603,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
       simp only [destruct_join]
       exact ⟨none, mem_bind mT (ret_mem _), by rw [eq_of_pure_mem rs2.mem]; trivial⟩
     | some (s, S'), some (t, T'), ⟨st, ST'⟩, _, rs2, mT => by
-      simp? [destruct_append] at rs2 says simp only [destruct_append, destruct_append.aux] at rs2
+      simp? [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
       exact
         let ⟨k1, rs3, ek⟩ := of_results_think rs2
         let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
@@ -1623,7 +1623,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply mem_bind mt
             exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
-          simp? at rs5 says simp only at rs5
+          simp?  at rs5  says simp only [destruct_append.aux] at rs5
           refine' ⟨some (b, append t' (join T')), _, _⟩
           · simp (config := { unfoldPartialApp := true }) [destruct_join]
             apply mem_bind mT
