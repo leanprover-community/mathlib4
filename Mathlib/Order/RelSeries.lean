@@ -230,31 +230,23 @@ is another `r`-series
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
-  length := p.length + 1
   toFun :=  (Fin.castSucc i.succ).insertNth a p
-  step := fun m => by
-    set x := _; set y := _
-    change r x y
+  step m := by
+    set x := _; set y := _; change r x y
     obtain (hm|hm|hm) := lt_trichotomy m.1 i.1
-    · have hx : x = p m
-      · change Fin.insertNth _ _ _ _ = _
+    · convert p.step ⟨m, hm.trans i.2⟩
+      · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         pick_goal 2; exact hm.trans (lt_add_one _)
-        simp only [Fin.castLT_castSucc, eq_rec_constant]
-      convert p.step ⟨m, hm.trans i.2⟩
-      change Fin.insertNth _ _ _ _ = _
-      rw [Fin.insertNth_apply_below]
-      simp only [eq_rec_constant]
-      congr
-      change m.1 + 1 < i.1 + 1
-      simpa only [add_lt_add_iff_right]
-    · rw [show x = p m by
-        change Fin.insertNth _ _ _ _ = _
+        simp
+      · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2
-        · change m.1 < i.1 + 1
-          exact hm ▸ lt_add_one _
-        · simp only [Fin.castLT_castSucc, eq_rec_constant]]
+        pick_goal 2; change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
+        simp; rfl
+    · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
+        rw [Fin.insertNth_apply_below]
+        pick_goal 2; show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
+        simp]
       convert prev_connect
       · ext; exact hm
       · change Fin.insertNth _ _ _ _ = _
@@ -262,32 +254,26 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           Fin.insertNth_apply_same]
     · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
       obtain (hm|hm) := hm
-      · have hx : x = p ⟨m.1 - 1, (Nat.sub_lt (by linarith) (by linarith)).trans m.2⟩
+      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
-          rw [Fin.insertNth_apply_above]
-          swap; exact hm
+          rw [Fin.insertNth_apply_above (h := hm)]
           simp only [eq_rec_constant]
           congr
-        rw [show y = p m by
-          change Fin.insertNth _ _ _ _ = _
+        · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; exact hm.trans (lt_add_one _)
-          simp only [Fin.pred_succ, eq_rec_constant]]
-        convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
-        exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
-      · have hx : x = a
+          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
+            Fin.succ_mk]
+          congr
+          exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
+      · convert connect_next
         · change Fin.insertNth _ _ _ _ = _
-          have H : m.castSucc = i.succ.castSucc
-          · ext; change m.1 = i.1 + 1; rw [hm]
-          rw [H, Fin.insertNth_apply_same]
-        rw [show y = p m by
-          change Fin.insertNth _ _ _ _ = _
+          rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
+        · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
-          simp only [Fin.pred_succ, eq_rec_constant]]
-        convert connect_next
-        ext
-        exact hm.symm
+          simp only [Fin.pred_succ, eq_rec_constant]
+          congr; ext; exact hm.symm
 
 end RelSeries
 
