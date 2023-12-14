@@ -216,6 +216,10 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 #align matrix.is_hermitian_mul_mul_conj_transpose Matrix.isHermitian_mul_mul_conjTranspose
 
+lemma commute_iff [Fintype n] {A B : Matrix n n α}
+    (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
+  hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+
 end NonUnitalSemiring
 
 section Semiring
