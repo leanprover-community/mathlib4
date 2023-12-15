@@ -302,7 +302,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
         inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, smul_zero, and_self, lift_f_snd_v,
         inl_v_snd_v, inr_f_snd_v]
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
 noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
