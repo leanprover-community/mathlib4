@@ -2025,10 +2025,14 @@ theorem image2_iUnion_right (s : Set α) (t : ι → Set β) :
   simp only [← image_prod, prod_iUnion, image_iUnion]
 #align set.image2_Union_right Set.image2_iUnion_right
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iUnion₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
     image2 f (⋃ (i) (j), s i j) t = ⋃ (i) (j), image2 f (s i j) t := by simp_rw [image2_iUnion_left]
 #align set.image2_Union₂_left Set.image2_iUnion₂_left
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iUnion₂_right (s : Set α) (t : ∀ i, κ i → Set β) :
     image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) :=
   by simp_rw [image2_iUnion_right]
@@ -2046,12 +2050,16 @@ theorem image2_iInter_subset_right (s : Set α) (t : ι → Set β) :
   exact fun x hx y hy i => mem_image2_of_mem hx (hy _)
 #align set.image2_Inter_subset_right Set.image2_iInter_subset_right
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iInter₂_subset_left (s : ∀ i, κ i → Set α) (t : Set β) :
     image2 f (⋂ (i) (j), s i j) t ⊆ ⋂ (i) (j), image2 f (s i j) t := by
   simp_rw [image2_subset_iff, mem_iInter]
   exact fun x hx y hy i j => mem_image2_of_mem (hx _ _) hy
 #align set.image2_Inter₂_subset_left Set.image2_iInter₂_subset_left
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iInter₂_subset_right (s : Set α) (t : ∀ i, κ i → Set β) :
     image2 f s (⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), image2 f s (t i j) := by
   simp_rw [image2_subset_iff, mem_iInter]
