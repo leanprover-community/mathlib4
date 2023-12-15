@@ -12,7 +12,7 @@ $ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
 -/
 
 variable {R M : Type*}
-variable [CommRing R] [AddCommGroup M] {Q : QuadraticForm R M}
+variable [CommRing R] [AddCommGroup M] [Module R M] {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
