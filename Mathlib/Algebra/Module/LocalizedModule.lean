@@ -337,7 +337,7 @@ instance : SMul (Localization S) (LocalizedModule S M) where
 
 theorem mk_smul_mk (r : R) (m : M) (s t : S) :
     Localization.mk r s • mk m t = mk (r • m) (s * t) := by
-  dsimp only [HSMul.hSMul, SMul.smul]
+  dsimp only [HSMul.hsmul, SMul.smul]
   rw [Localization.liftOn_mk, liftOn_mk]
 #align localized_module.mk_smul_mk LocalizedModule.mk_smul_mk
 

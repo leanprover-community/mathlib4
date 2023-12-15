@@ -238,7 +238,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
-    dsimp only [HSMul.hSMul, instSMul, Quot.map]
+    dsimp only [HSMul.hsmul, instSMul, Quot.map]
     rw [map_add, map_one, add_comm, mk_mul, mk_mul, ← one_add_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar

@@ -47,7 +47,7 @@ open scoped Pointwise
 
 variable {α : Type*}
 
-#align left_coset HSMul.hSMul
+#align left_coset HSMul.hsmul
 #align left_add_coset HVAdd.hVAdd
 #noalign right_coset
 #noalign right_add_coset

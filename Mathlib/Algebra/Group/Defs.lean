@@ -35,7 +35,7 @@ actions and register the following instances:
 
 - `+`, `-`, `*`, `/`, `^` : the usual arithmetic operations; the underlying functions are
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
-- `a • b` is used as notation for `HSMul.hSMul a b`.
+- `a • b` is used as notation for `HSMul.hsmul a b`.
 - `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
 
 -/
@@ -68,7 +68,7 @@ See the module documentation near the macro for more details.
 class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a • b` computes the product of `a` and `b`.
   The meaning of this notation is type-dependent, but it is intended to be used for left actions. -/
-  hSMul : α → β → γ
+  hsmul : α → β → γ
 
 attribute [notation_class  smul Simps.copySecond] HSMul
 attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
@@ -92,7 +92,7 @@ class SMul (M : Type u) (α : Type v) where
 
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
-infixr:73 " • " => HSMul.hSMul
+infixr:73 " • " => HSMul.hsmul
 
 /-!
 We have a macro to make `x • y` notation participate in the expression tree elaborator,
@@ -126,18 +126,18 @@ then the expression tree elaborator would not be able to insert coercions within
 they would likely appear as `↑(x • y)` rather than `x • ↑y`, unlike other arithmetic operations.
 -/
 
-@[inherit_doc HSMul.hSMul]
-macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
+@[inherit_doc HSMul.hsmul]
+macro_rules | `($x • $y) => `(leftact% HSMul.hsmul $x $y)
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
 attribute [to_additive (reorder := 1 2) SMul] Pow
 attribute [to_additive (reorder := 1 2)] HPow
-attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
+attribute [to_additive existing (reorder := 1 2, 5 6) hsmul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
-  hSMul := SMul.smul
+  hsmul := SMul.smul
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
 

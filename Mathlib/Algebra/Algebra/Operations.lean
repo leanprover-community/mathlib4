@@ -643,17 +643,17 @@ variable (R A)
 
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
-  -- porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
+  -- porting note: have to unfold both `HSMul.hsmul` and `SMul.smul`
   smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
+    simp_rw [HSMul.hsmul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
   mul_smul s t P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
+    simp_rw [HSMul.hsmul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
   one_smul P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_one, ← one_eq_span_one_set, one_mul]
+    simp_rw [HSMul.hsmul, SetSemiring.down_one, ← one_eq_span_one_set, one_mul]
   zero_smul P := by
-    simp_rw [HSMul.hSMul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
+    simp_rw [HSMul.hsmul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _
 #align submodule.module_set Submodule.moduleSet
 

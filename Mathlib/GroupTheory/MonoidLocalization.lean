@@ -461,7 +461,7 @@ instance instSMulLocalization [SMul R M] [IsScalarTower R M M] : SMul R (Localiz
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
     c • (mk a b : Localization S) = mk (c • a) b := by
- simp only [HSMul.hSMul, instHSMul, SMul.smul, instSMulLocalization, Localization.smul]
+ simp only [HSMul.hsmul, instHSMul, SMul.smul, instSMulLocalization, Localization.smul]
  show liftOn (mk a b) (fun a b => mk (c • a) b) _ = _
  exact liftOn_mk (fun a b => mk (c • a) b) _ a b
 #align localization.smul_mk Localization.smul_mk

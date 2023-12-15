@@ -76,7 +76,7 @@ lemma IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
   rw [isSymm_iff_flip R]
   apply toLin.injective
   ext x₁ x₂ y₁ y₂
-  exact (congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)).symm
+  exact (congr_arg₂ (HSMul.hsmul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)).symm
 
 variable (A) in
 /-- The base change of a bilinear form. -/

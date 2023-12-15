@@ -227,7 +227,7 @@ nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : 
 theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
   simp (config := { unfoldPartialApp := true }) [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
-    HSMul.hSMul]
+    HSMul.hsmul]
 #align holor.mul_scalar_mul Holor.mul_scalar_mul
 
 -- holor slices
