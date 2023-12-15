@@ -53,10 +53,7 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
 theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
-  let e : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] ℂ) := by
-    refine Fintype.equivOfCardEq ?_
-    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
-  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
+  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv (integralBasis K) f,
     ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
