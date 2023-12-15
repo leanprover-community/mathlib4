@@ -12,6 +12,7 @@ import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Topology.KrullDimension
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.Topology.NoetherianSpace
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Krull dimension of a (commutative) ring
@@ -73,6 +74,8 @@ theorem eq_of_ringEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S)
   le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
     (le_of_surj R S e (EquivLike.surjective e))
 
+section field
+
 instance primeSpectrum_unique_of_field (F : Type _) [Field F] : Unique (PrimeSpectrum F) where
   default := ⟨⊥, Ideal.bot_prime⟩
   uniq := fun p ↦ PrimeSpectrum.ext _ _ $ Ideal.ext $ fun x ↦ by
@@ -84,6 +87,35 @@ instance finiteDimensionalType_of_field (F : Type _) [Field F] :
 
 lemma eq_zero_of_Field (F : Type _) [Field F] : ringKrullDim F = 0 :=
   krullDim.eq_zero_of_unique
+
+end field
+
+section dimension_0
+
+variable {R : Type _} [CommRing R]
+
+lemma _root_.Ideal.IsPrime.isMaximal_of_dim_zero
+    (I : Ideal R) (h : I.IsPrime) (dim0 : ringKrullDim R = 0) :
+    I.IsMaximal := by
+  obtain ⟨J, hJ1, hJ2⟩ := I.exists_le_maximal h.1
+  by_cases hIJ : I = J
+  · subst hIJ; exact hJ1
+  let x : LTSeries (PrimeSpectrum R) :=
+  { length := 1
+    toFun := ![⟨I, h⟩, ⟨J, hJ1.isPrime⟩]
+    step := by
+      intro i
+      fin_cases i
+      simp only [Fin.zero_eta, Fin.castSucc_zero, Matrix.cons_val_zero, Fin.succ_zero_eq_one,
+        Matrix.cons_val_one, Matrix.head_cons, ← PrimeSpectrum.asIdeal_lt_asIdeal]
+      refine ⟨hJ2, fun r ↦ ?_⟩
+      exact hIJ <| Eq.symm <| hJ1.eq_of_le h.1 r }
+  have : 1 ≤ ringKrullDim R :=
+    le_iSup (α := WithBot (WithTop ℕ)) (f := fun x : LTSeries _ ↦ x.length) x
+  rw [dim0] at this
+  norm_num at this
+
+end dimension_0
 
 section artinian
 
@@ -111,9 +143,9 @@ lemma eq_zero_of_isArtinianRing [IsArtinianRing R] : ringKrullDim R = 0 := by
       exact H0.eq_of_le (x 1).1.IsPrime.1 (le_of_lt this))
 
 open TopologicalSpace in
-lemma artinian_of_zero_dimensional_notherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
+lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
     IsArtinianRing R := by
-  have h1 := NoetherianSpace.finite_irreducibleComponents (α := PrimeSpectrum R)
+  have h1 := minimalPrimes.finiteOfIsNoetherianRing R
 
 end artinian
 

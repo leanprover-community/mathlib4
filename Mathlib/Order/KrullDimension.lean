@@ -129,8 +129,6 @@ lemma infiniteDimensional_of_strictMono
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
     InfiniteDimensionalOrder β :=
   ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
-  -- longRelSeries := λ n ↦ LTSeries.map (h.longRelSeries n) f hf
-  -- longRelSeries_length := λ n ↦ h.longRelSeries_length n
 
 lemma eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   rw [eq_len_of_finiteDimensionalType, Nat.cast_eq_zero]
