@@ -29,9 +29,21 @@ variable (S : ShortComplex (CochainComplex C ℤ))
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
-    (Cochain.mk (fun p q hpq => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by linarith) (by
+    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by linarith) (by
       ext p _ rfl
-      sorry)
+      have := mono_of_mono_fac (σ (p + 2)).f_r
+      have r_f := fun n => (σ n).r_f
+      have s_g := fun n => (σ n).s_g
+      dsimp at this r_f s_g ⊢
+      rw [δ_v 1 2 (by linarith) _ p (p + 2) (by linarith) (p + 1) (p + 1)
+        (by linarith) (by linarith), Cochain.mk_v, Cochain.mk_v,
+        show Int.negOnePow 2 = 1 by rfl, one_smul, assoc, assoc,
+        ← cancel_mono (S.f.f (p + 2)), add_comp, assoc, assoc, assoc,
+        assoc, assoc, assoc, zero_comp, ← S.f.comm, reassoc_of% (r_f (p + 1)),
+        sub_comp, comp_sub, comp_sub, assoc, id_comp, d_comp_d, comp_zero, zero_sub,
+        ← S.g.comm_assoc, reassoc_of% (s_g p), r_f (p + 2), comp_sub, comp_sub, comp_id,
+        comp_sub, ← S.g.comm_assoc, reassoc_of% (s_g (p + 1)), d_comp_d_assoc, zero_comp,
+        sub_zero, add_left_neg])
 
 /-- The canonical morphism `S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧` attached to a degreewise split
 short exact sequence of cochain complexes. -/
@@ -97,12 +109,9 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧ :=
   Hom.isoOfComponents (fun p => mappingConeHomOfDegreewiseSplitXIso S σ p _ rfl) (by
     rintro p _ rfl
-    have r_f : ∀ n, (σ n).r ≫ S.f.f n = 𝟙 _ - S.g.f n ≫ (σ n).s := fun n => by
-      have h := (σ n).id
-      dsimp at h
-      simp only [← h, ShortComplex.map_X₂, eval_obj, ShortComplex.map_X₁, add_sub_cancel]
+    have r_f := (σ (p + 1 + 1)).r_f
     have s_g := (σ (p + 1)).s_g
-    dsimp at s_g
+    dsimp at r_f s_g
     simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
       mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
       cocycleOfDegreewiseSplit, r_f]
