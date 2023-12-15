@@ -55,7 +55,7 @@ lemma exists_eq_ciInf_of_not_isPredLimit [Nonempty ι] [ConditionallyCompleteLin
 /-!
 ### ConditionallyCompleteLinearOrder
 
-The lemma names are primed to distinguish from the version in `ConditionallyCompleteLinearOrder`.
+The lemma names are primed to distinguish from the lemmas in `ConditionallyCompleteLinearOrder`.
 -/
 
 lemma csSup_mem_of_not_isSuccLimit' [ConditionallyCompleteLinearOrderBot α]
