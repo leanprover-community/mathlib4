@@ -96,12 +96,12 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
   have : ∀ k ∈ range n, (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤
     C * ((u (k + 1) - u k) * f (u (k + 1))) := by
     intro k _
-    have (k : ℕ) : (u (k + 1) - (u k : ℕ)) = ((u (k + 1) : ℝ≥0∞) - (u k : ℝ≥0∞) : ℝ≥0∞) := by
-      have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
-      simp [NNReal.coe_sub this]
     calc
       (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤ C * (u (k + 1) - u k) * f (u (k + 1)) := by
         apply mul_le_mul_of_nonneg_right _ (h_nonneg (u (k + 1)))
+        have (k : ℕ) : (u (k + 1) - (u k : ℕ)) = ((u (k + 1) : ℝ≥0∞) - (u k : ℝ≥0∞) : ℝ≥0∞) := by
+          have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
+          simp [NNReal.coe_sub this]
         simp_rw [this]
         exact_mod_cast h_succ_diff k
       _ = C * ((u (k + 1) - u k) * f (u (k + 1))) := by rw [mul_assoc]
