@@ -1601,13 +1601,9 @@ theorem dualMap_bijective_iff {f : V₁ →ₗ[K] V₂} :
 
 lemma dualAnnihilator_ker_eq_range_of_comm (f : V₂ →ₗ[K] Dual K V₂) (h : ∀ x y, f x y = f y x) :
     (ker f).dualAnnihilator = range f := by
-  suffices range f ≤ (ker f).dualAnnihilator by
-    refine (FiniteDimensional.eq_of_le_of_finrank_eq this ?_).symm
-    rw [← range_dualMap_eq_dualAnnihilator_ker, finrank_range_dualMap_eq_finrank_range]
-  rintro - ⟨x, rfl⟩
-  simp only [Submodule.mem_dualAnnihilator, mem_ker]
-  intro y hy
-  rw [h, hy, zero_apply]
+  change _ = range (f.flip.dualMap.comp (Module.evalEquiv K V₂).toLinearMap)
+  rw [← range_dualMap_eq_dualAnnihilator_ker, range_comp_of_range_eq_top _ (LinearEquiv.range _)]
+  congr; ext; apply h
 
 end LinearMap
 
