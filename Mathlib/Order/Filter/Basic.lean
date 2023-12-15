@@ -181,14 +181,13 @@ theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f
 #align filter.congr_sets Filter.congr_sets
 
 /-- Override `sets` field of a filter to provide better definitional equality. -/
-protected def copy (f : Filter α) (S : Set (Set α)) (hmem : ∀ s, s ∈ f ↔ s ∈ S) : Filter α where
+protected def copy (f : Filter α) (S : Set (Set α)) (hmem : ∀ s, s ∈ S ↔ s ∈ f) : Filter α where
   sets := S
-  univ_sets := (hmem _).mp univ_mem
-  sets_of_superset h hsub := (hmem _).1 <| mem_of_superset ((hmem _).2 h) hsub
-  inter_sets h₁ h₂ := (hmem _).1 <| inter_mem ((hmem _).2 h₁) ((hmem _).2 h₂)
+  univ_sets := (hmem _).2 univ_mem
+  sets_of_superset h hsub := (hmem _).2 <| mem_of_superset ((hmem _).1 h) hsub
+  inter_sets h₁ h₂ := (hmem _).2 <| inter_mem ((hmem _).1 h₁) ((hmem _).1 h₂)
 
-lemma copy_eq {S} (hmem : ∀ s, s ∈ f ↔ s ∈ S) : f.copy S hmem = f := Filter.ext fun _ ↦
-  (hmem _).symm
+lemma copy_eq {S} (hmem : ∀ s, s ∈ S ↔ s ∈ f) : f.copy S hmem = f := Filter.ext hmem
 
 @[simp] lemma mem_copy {S hmem} : s ∈ f.copy S hmem ↔ s ∈ S := Iff.rfl
 
