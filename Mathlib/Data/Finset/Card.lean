@@ -269,8 +269,8 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 
 lemma filter_card_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     (s.filter P).card ≤ n ↔ ∀ s' ≤ s, n < s'.card → ∃ a ∈ s', ¬ P a :=
-  (Multiset.filter_card_le_iff s.1 P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
-    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun x hx ↦ Multiset.subset_of_le hs' hx) h⟩
+  (s.1.filter_card_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun x hx ↦ subset_of_le hs' hx) h⟩
 
 @[simp]
 theorem card_map (f : α ↪ β) : (s.map f).card = s.card :=
