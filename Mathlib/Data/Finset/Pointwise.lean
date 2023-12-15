@@ -1591,7 +1591,7 @@ theorem image_smul : (s.image fun x => a • x) = a • s :=
 
 @[to_additive]
 theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = x := by
-  simp only [Finset.smul_finset_def, and_assoc, mem_image, exists_prop, Prod.exists, mem_product]
+  simp only [Finset.smul_finset_def, mem_image, exists_prop, Prod.exists, mem_product]
 #align finset.mem_smul_finset Finset.mem_smul_finset
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 
@@ -1735,14 +1735,14 @@ instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α
 @[to_additive vaddAssocClass'']
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Finset α) (Finset β) (Finset γ) :=
-  ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
+  ⟨fun a s t => coe_injective <| by simp only [coe_smul, smul_assoc]⟩
 #align finset.is_scalar_tower'' Finset.isScalarTower''
 #align finset.vadd_assoc_class'' Finset.vaddAssocClass''
 
 @[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Finset β) :=
-  ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, coe_smul, op_smul_eq_smul]⟩
+  ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, op_smul_eq_smul]⟩
 #align finset.is_central_scalar Finset.isCentralScalar
 #align finset.is_central_vadd Finset.isCentralVAdd
 

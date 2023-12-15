@@ -115,7 +115,7 @@ def remove_lemma_from_simp_only(filename):
 
 filelist = []
 
-for root, dirs, files in os.walk("Mathlib/Data"):
+for root, dirs, files in os.walk("Mathlib/Data/Finset"):
 	for file in files:
         #append the file name to the list
 		filelist.append(os.path.join(root,file))

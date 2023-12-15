@@ -180,7 +180,7 @@ lemma noncommProd_induction (s : Multiset α) (comm)
     (p : α → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p x) :
     p (s.noncommProd comm) := by
   induction' s using Quotient.inductionOn with l
-  simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
+  simp only [quot_mk_to_coe, noncommProd_coe] at base ⊢
   exact l.prod_induction p hom unit base
 
 @[to_additive]
@@ -204,7 +204,7 @@ theorem noncommProd_map [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F
 theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈ s, x = m) :
     s.noncommProd comm = m ^ Multiset.card s := by
   induction s using Quotient.inductionOn
-  simp only [quot_mk_to_coe, noncommProd_coe, coe_card, mem_coe] at *
+  simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at *
   exact List.prod_eq_pow_card _ m h
 #align multiset.noncomm_prod_eq_pow_card Multiset.noncommProd_eq_pow_card
 #align multiset.noncomm_sum_eq_card_nsmul Multiset.noncommSum_eq_card_nsmul
@@ -230,7 +230,7 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Multiset α) {a : α} (h : a
     (comm' := fun x hx y hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     a * (s.erase a).noncommProd comm' = s.noncommProd comm := by
   induction' s using Quotient.inductionOn with l
-  simp only [quot_mk_to_coe, mem_coe, coe_erase, noncommProd_coe] at comm h ⊢
+  simp only [quot_mk_to_coe, coe_erase, noncommProd_coe] at comm h ⊢
   suffices ∀ x ∈ l, ∀ y ∈ l, x * y = y * x by rw [List.prod_erase_of_comm h this]
   intro x hx y hy
   rcases eq_or_ne x y with rfl | hxy; rfl
@@ -476,7 +476,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
+    simp only [ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
       simp at hj
       simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,

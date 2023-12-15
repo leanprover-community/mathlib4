@@ -173,9 +173,9 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
       ext ⟨a, b⟩
       simp only [filter_union_right, mem_filter, mem_product]
       constructor <;> intro h <;> use h.1
-      · simp only [h.2, Function.comp_apply, Decidable.em, and_self]
+      · simp only [h.2, Decidable.em, and_self]
       · revert h
-        simp only [Function.comp_apply, and_imp]
+        simp only [and_imp]
         rintro _ _ (_|_) <;> simp [*]
     · apply Finset.disjoint_filter_filter'
       exact (disjoint_compl_right.inf_left _).inf_right _

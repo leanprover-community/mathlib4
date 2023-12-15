@@ -122,7 +122,7 @@ theorem map_perm {σ : Equiv.Perm α} (hs : { a | σ a ≠ a } ⊆ s) : s.map (�
 
 theorem map_toFinset [DecidableEq α] [DecidableEq β] {s : Multiset α} :
     s.toFinset.map f = (s.map f).toFinset :=
-  ext fun _ => by simp only [mem_map, Multiset.mem_map, exists_prop, Multiset.mem_toFinset]
+  ext fun _ => by simp only [mem_map, Multiset.mem_map, Multiset.mem_toFinset]
 #align finset.map_to_finset Finset.map_toFinset
 
 @[simp]
@@ -214,7 +214,7 @@ theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
 @[simp]
 theorem disjoint_map {s t : Finset α} (f : α ↪ β) :
     Disjoint (s.map f) (t.map f) ↔ Disjoint s t := by
-  simp only [disjoint_iff_ne, mem_map, exists_prop, exists_imp, and_imp]
+  simp only [disjoint_iff_ne, mem_map, exists_imp, and_imp]
   refine' ⟨fun h a ha b hb hab => h _ _ ha rfl _ _ hb rfl <| congr_arg _ hab, _⟩
   rintro h _ a ha rfl _ b hb rfl
   exact f.injective.ne (h _ ha _ hb)
@@ -280,7 +280,7 @@ theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) (range b)) := by
   refine' disjoint_iff_inf_le.mpr _
   intro k hk
-  simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
+  simp only [mem_range, inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
     at hk
   obtain ⟨a, _, ha⟩ := hk.2
   simpa [← ha] using hk.1
@@ -290,7 +290,7 @@ theorem disjoint_range_addRightEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addRightEmbedding a) (range b)) := by
   refine' disjoint_iff_inf_le.mpr _
   intro k hk
-  simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
+  simp only [mem_range, inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
     at hk
   obtain ⟨a, _, ha⟩ := hk.2
   simpa [← ha] using hk.1
@@ -347,7 +347,7 @@ variable {f g : α → β} {s : Finset α} {t : Finset β} {a : α} {b c : β}
 
 @[simp]
 theorem mem_image : b ∈ s.image f ↔ ∃ a ∈ s, f a = b := by
-  simp only [mem_def, image_val, mem_dedup, Multiset.mem_map, exists_prop]
+  simp only [mem_def, image_val, mem_dedup, Multiset.mem_map]
 #align finset.mem_image Finset.mem_image
 
 theorem mem_image_of_mem (f : α → β) {a} (h : a ∈ s) : f a ∈ s.image f :=
@@ -365,7 +365,7 @@ theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
 --@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
   rw [mem_image]
-  simp only [exists_prop, const_apply, exists_and_right]
+  simp only [const_apply, exists_and_right]
   rfl
 #align finset.mem_image_const Finset.mem_image_const
 
@@ -427,7 +427,7 @@ theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
-  ext fun _ => by simp only [mem_image, Multiset.mem_toFinset, exists_prop, Multiset.mem_map]
+  ext fun _ => by simp only [mem_image, Multiset.mem_toFinset, Multiset.mem_map]
 #align finset.image_to_finset Finset.image_toFinset
 
 theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).1 = s.1.map f :=
@@ -436,7 +436,7 @@ theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).1 = s.1.map f :=
 
 @[simp]
 theorem image_id [DecidableEq α] : s.image id = s :=
-  ext fun _ => by simp only [mem_image, exists_prop, id, exists_eq_right]
+  ext fun _ => by simp only [mem_image, id, exists_eq_right]
 #align finset.image_id Finset.image_id
 
 @[simp]
@@ -502,7 +502,7 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
 theorem image_filter {p : β → Prop} [DecidablePred p] :
     (s.image f).filter p = (s.filter λ a ↦ p (f a)).image f :=
   ext fun b => by
-    simp only [mem_filter, mem_image, exists_prop]
+    simp only [mem_filter, mem_image]
     exact
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
        by rintro ⟨x, ⟨h1, h2⟩, rfl⟩; exact ⟨⟨x, h1, rfl⟩, h2⟩⟩
@@ -510,7 +510,7 @@ theorem image_filter {p : β → Prop} [DecidablePred p] :
 
 theorem image_union [DecidableEq α] {f : α → β} (s₁ s₂ : Finset α) :
     (s₁ ∪ s₂).image f = s₁.image f ∪ s₂.image f :=
-  ext fun _ => by simp only [mem_image, mem_union, exists_prop, or_and_right, exists_or]
+  ext fun _ => by simp only [mem_image, mem_union, or_and_right, exists_or]
 #align finset.image_union Finset.image_union
 
 theorem image_inter_subset [DecidableEq α] (f : α → β) (s t : Finset α) :
@@ -544,7 +544,7 @@ theorem image_insert [DecidableEq α] (f : α → β) (a : α) (s : Finset α) :
 
 theorem erase_image_subset_image_erase [DecidableEq α] (f : α → β) (s : Finset α) (a : α) :
     (s.image f).erase (f a) ⊆ (s.erase a).image f := by
-  simp only [subset_iff, and_imp, exists_prop, mem_image, exists_imp, mem_erase]
+  simp only [subset_iff, and_imp, mem_image, exists_imp, mem_erase]
   rintro b hb x hx rfl
   exact ⟨_, ⟨ne_of_apply_ne f hb, hx⟩, rfl⟩
 #align finset.erase_image_subset_image_erase Finset.erase_image_subset_image_erase
@@ -553,7 +553,7 @@ theorem erase_image_subset_image_erase [DecidableEq α] (f : α → β) (s : Fin
 theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Finset α) (a : α) :
     (s.erase a).image f = (s.image f).erase (f a) := by
   refine' (erase_image_subset_image_erase _ _ _).antisymm' fun b => _
-  simp only [mem_image, exists_prop, mem_erase]
+  simp only [mem_image, mem_erase]
   rintro ⟨a', ⟨haa', ha'⟩, rfl⟩
   exact ⟨hf.ne haa', a', ha', rfl⟩
 #align finset.image_erase Finset.image_erase
@@ -590,10 +590,10 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq' [DecidableEq α] {f : ℕ → 
     a ∈ Set.range f ↔ a ∈ (Finset.range n).image fun i => f i := by
   constructor
   · rintro ⟨i, hi⟩
-    simp only [mem_image, exists_prop, mem_range]
+    simp only [mem_image, mem_range]
     exact ⟨i % n, Nat.mod_lt i hn, (rfl.congr hi).mp (h i)⟩
   · rintro h
-    simp only [mem_image, exists_prop, Set.mem_range, mem_range] at *
+    simp only [mem_image, Set.mem_range, mem_range] at *
     rcases h with ⟨i, _, ha⟩
     exact ⟨i, ha⟩
 #align finset.mem_range_iff_mem_finset_range_of_mod_eq' Finset.mem_range_iff_mem_finset_range_of_mod_eq'
@@ -708,7 +708,7 @@ theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a 
 
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
-  Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
+  Set.ext (by simp only [mem_coe, mem_filterMap, Set.mem_setOf_eq, implies_true])
 
 @[simp]
 theorem filterMap_some : s.filterMap some (by simp) = s :=

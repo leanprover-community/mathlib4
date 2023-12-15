@@ -1413,7 +1413,7 @@ def max' (s : Finset α) (H : s.Nonempty) : α :=
 variable (s : Finset α) (H : s.Nonempty) {x : α}
 
 theorem min'_mem : s.min' H ∈ s :=
-  mem_of_min <| by simp only [Finset.min, min', id_eq, coe_inf']; rfl
+  mem_of_min <| by simp only [min', id_eq, coe_inf']; rfl
 #align finset.min'_mem Finset.min'_mem
 
 theorem min'_le (x) (H2 : x ∈ s) : s.min' ⟨x, H2⟩ ≤ x :=
@@ -1439,7 +1439,7 @@ theorem min'_singleton (a : α) : ({a} : Finset α).min' (singleton_nonempty _) 
 #align finset.min'_singleton Finset.min'_singleton
 
 theorem max'_mem : s.max' H ∈ s :=
-  mem_of_max <| by simp only [max', Finset.max, id_eq, coe_sup']; rfl
+  mem_of_max <| by simp only [max', id_eq, coe_sup']; rfl
 #align finset.max'_mem Finset.max'_mem
 
 theorem le_max' (x) (H2 : x ∈ s) : x ≤ s.max' ⟨x, H2⟩ :=
@@ -1756,7 +1756,7 @@ theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι �
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne
-    simp only [mem_image, exists_prop] at H
+    simp only [mem_image] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
     refine' step _ _ (not_mem_erase a s) (fun x hx => _) (ihs _ <| erase_ssubset has)
@@ -1851,7 +1851,7 @@ theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β
       · intro hxi
         cases' hxi with hf hf
         · refine' ⟨a, _, hf⟩
-          simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert]
+          simp only [true_or_iff, Finset.mem_insert]
         · rcases hxs.mp hf with ⟨v, hv, hfv⟩
           refine' ⟨v, _, hfv⟩
           simp only [hv, or_true_iff, Finset.mem_insert]

@@ -127,7 +127,7 @@ theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image (Quotient.mk _) := by
   constructor
   · intro h
     use (x, y)
-    simp only [mem_product, h, and_self, true_and]
+    simp only [mem_product, h, true_and]
   · rintro ⟨⟨a, b⟩, h⟩
     simp only [mem_product, Sym2.eq_iff] at h
     obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
@@ -259,7 +259,7 @@ theorem sym_mono (h : s ⊆ t) (n : ℕ) : s.sym n ⊆ t.sym n := fun _m hm ↦
 @[simp]
 theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.sym n := by
   ext m
-  simp only [mem_inter, mem_sym_iff, imp_and, forall_and]
+  simp only [mem_inter, mem_sym_iff, forall_and]
 #align finset.sym_inter Finset.sym_inter
 
 @[simp]

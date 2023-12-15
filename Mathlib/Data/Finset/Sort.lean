@@ -195,7 +195,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
     orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
-  simp only [orderEmbOfFin_apply, Fin.val_mk, sorted_zero_eq_min']
+  simp only [orderEmbOfFin_apply, sorted_zero_eq_min']
 #align finset.order_emb_of_fin_zero Finset.orderEmbOfFin_zero
 
 /-- The bijection `orderEmbOfFin s h` sends `k-1` to the maximum of `s`. -/

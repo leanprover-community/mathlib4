@@ -98,7 +98,7 @@ theorem not_mem_of_mem_powerset_of_not_mem {s t : Finset α} {a : α} (ht : t �
 theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
   ext t
-  simp only [exists_prop, mem_powerset, mem_image, mem_union, subset_insert_iff]
+  simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
   by_cases h : a ∈ t
   · constructor
     · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
@@ -245,7 +245,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   rw [powersetCard_eq_filter, image_filter]
   congr 1
   ext t
-  simp only [mem_powerset, mem_filter, Function.comp_apply, and_congr_right_iff]
+  simp only [mem_powerset, mem_filter, and_congr_right_iff]
   intro ht
   have : x ∉ t := fun H => h (ht H)
   simp [card_insert_of_not_mem this, Nat.succ_inj']
@@ -310,7 +310,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     cases' (Nat.succ_le_of_lt hn).eq_or_lt with h' h'
     · simp [h']
     · intro x hx
-      simp only [mem_biUnion, exists_prop, id.def]
+      simp only [mem_biUnion, id.def]
       obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
         (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
       · refine' ⟨insert x t, _, mem_insert_self _ _⟩
@@ -333,13 +333,13 @@ theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext <| fun t => by
-    simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
+    simp only [mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical
       intro h
       have : map f (filter (fun x => (f x ∈ t)) s) = t := by
         ext x
-        simp only [mem_map, mem_filter, decide_eq_true_eq]
+        simp only [mem_map, mem_filter]
         exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,
           fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
       refine' ⟨_, _, this⟩
