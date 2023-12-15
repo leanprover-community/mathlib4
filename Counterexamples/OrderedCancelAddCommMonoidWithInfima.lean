@@ -5,7 +5,8 @@ Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.CompleteLattice
-/-
+
+/-!
 # OrderedCancelAddCommMonoid + CompleteSemilatticeInf = bad idea
 
 This file shows that combining `OrderedCancelAddCommMonoid` with
@@ -14,6 +15,7 @@ The same applies to any superclasses, e.g. combining
 `StrictOrderedSemiring` with `CompleteLattice`.
 The crux is that cancellation properties don't like the `⊥` and `⊤` elements.
 -/
+
 private class OrderedCancelAddCommMonoidCompleteSemilatticeInf (α : Type*)
   extends OrderedCancelAddCommMonoid α, CompleteSemilatticeInf α
 
