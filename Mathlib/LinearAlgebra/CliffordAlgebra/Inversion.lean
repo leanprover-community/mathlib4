@@ -5,7 +5,11 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 
-/-! # Results about inverses in Clifford algebras -/
+/-! # Results about inverses in Clifford algebras
+
+This contains some basic results about the inversion of vectors, related to the fact that
+$ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
+-/
 
 variable {R M : Type*}
 variable [CommRing R] [AddCommGroup M] {Q : QuadraticForm R M}
