@@ -234,8 +234,7 @@ theorem isHermitian_one [DecidableEq n] : (1 : Matrix n n α).IsHermitian :=
 #align matrix.is_hermitian_one Matrix.isHermitian_one
 
 theorem IsHermitian.pow [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsHermitian) (k : ℕ) :
-    (A ^ k).IsHermitian := by
-  rw [IsHermitian, conjTranspose_pow, h]
+    (A ^ k).IsHermitian := IsSelfAdjoint.pow h _
 
 end Semiring
 
@@ -257,6 +256,7 @@ theorem IsHermitian.adjugate [Fintype m] [DecidableEq m] {A : Matrix m m α} (hA
     A.adjugate.IsHermitian := by simp [IsHermitian, adjugate_conjTranspose, hA.eq]
 #align matrix.is_hermitian.adjugate Matrix.IsHermitian.adjugate
 
+/-- Note that `IsSelfAdjoint.zpow` does not apply to matrices as they are not a division ring. -/
 theorem IsHermitian.zpow [Fintype m] [DecidableEq m] {A : Matrix m m α} (h : A.IsHermitian)
     (k : ℤ) :
     (A ^ k).IsHermitian := by
