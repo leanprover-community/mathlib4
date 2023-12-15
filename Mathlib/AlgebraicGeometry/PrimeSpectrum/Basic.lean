@@ -933,7 +933,7 @@ variable (R) in
 Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
 irreducible set is a zero locus of some prime ideal.
 -/
-@[simps] def bijection :
+@[simps] protected def bijection :
     PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsClosed s ∧ IsIrreducible s}ᵒᵈ :=
   { toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isClosed_zeroLocus p.asIdeal,
       isIrreducible_zeroLocus_iff _ |>.mpr <| by simpa only [p.IsPrime.radical] using p.IsPrime⟩
@@ -955,13 +955,12 @@ open PrimeSpectrum in
 Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
 irreducible component is a zero locus of some minimal prime ideal.
 -/
-def minimalPrimes.bijection : minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ where
+protected def minimalPrimes.bijection : minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ where
   toFun p :=
     let s := (PrimeSpectrum.bijection R ⟨p.1, p.2.1.1⟩)
     OrderDual.toDual ⟨s.1, ⟨s.2.2,
-      fun t (ht : IsIrreducible t) (le : PrimeSpectrum.zeroLocus _ ⊆ t) ↦ by
-      show t ⊆ PrimeSpectrum.zeroLocus p
-      rw [PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
+      fun t (ht : IsIrreducible t) (le : zeroLocus _ ⊆ t) ↦ show t ⊆ zeroLocus p by
+      rw [subset_zeroLocus_iff_le_vanishingIdeal]
       exact p.2.2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩
         fun x hx ↦ (mem_vanishingIdeal _ _ |>.mp hx) ⟨p.1, p.2.1.1⟩ <|
           le <| mem_zeroLocus _ _ |>.mpr <| le_refl _⟩⟩
