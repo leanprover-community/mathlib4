@@ -481,7 +481,7 @@ end Module.Baer
 
 section ULift
 
-variable  {M : Type v} [AddCommGroup M] [Module R M]
+variable {M : Type v} [AddCommGroup M] [Module R M]
 
 lemma Module.ulift_injective_of_injective
     (inj : Module.Injective R M) :
