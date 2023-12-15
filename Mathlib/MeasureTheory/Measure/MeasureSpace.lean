@@ -287,16 +287,13 @@ theorem measure_eq_measure_larger_of_between_null_diff {s₁ s₂ s₃ : Set α}
   (measure_eq_measure_of_between_null_diff h12 h23 h_nulldiff).2
 #align measure_theory.measure_eq_measure_larger_of_between_null_diff MeasureTheory.measure_eq_measure_larger_of_between_null_diff
 
-theorem measure_compl (h₁ : MeasurableSet s) (h_fin : μ s ≠ ∞) : μ sᶜ = μ univ - μ s := by
-  rw [compl_eq_univ_diff]
-  exact measure_diff (subset_univ s) h₁ h_fin
-#align measure_theory.measure_compl MeasureTheory.measure_compl
-
-nonrec lemma NullMeasurableSet.measure_compl (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
+lemma measure_compl₀ (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
     μ sᶜ = μ Set.univ - μ s := by
-  rw [← measure_congr h.toMeasurable_ae_eq, ← measure_compl (measurableSet_toMeasurable _ _)]
-  · exact measure_congr h.toMeasurable_ae_eq.symm.compl
-  · rwa [measure_congr h.toMeasurable_ae_eq]
+  rw [← measure_add_measure_compl₀ h, ENNReal.add_sub_cancel_left hs]
+
+theorem measure_compl (h₁ : MeasurableSet s) (h_fin : μ s ≠ ∞) : μ sᶜ = μ univ - μ s :=
+  measure_compl₀ h₁.nullMeasurableSet h_fin
+#align measure_theory.measure_compl MeasureTheory.measure_compl
 
 lemma measure_inter_conull' (ht : μ (s \ t) = 0) : μ (s ∩ t) = μ s := by
   rw [← diff_compl, measure_diff_null']; rwa [← diff_eq]
