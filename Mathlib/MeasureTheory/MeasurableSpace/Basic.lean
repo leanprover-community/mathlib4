@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
 import Mathlib.GroupTheory.Coset
@@ -1158,7 +1157,7 @@ instance Sigma.instMeasurableSpace {α} {β : α → Type*} [m : ∀ a, Measurab
 #align sigma.measurable_space Sigma.instMeasurableSpace
 
 section prop
-variable [MeasurableSpace α] {p : α → Prop}
+variable [MeasurableSpace α] {p q : α → Prop}
 
 @[simp] theorem measurableSet_setOf : MeasurableSet {a | p a} ↔ Measurable p :=
   ⟨fun h ↦ measurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
@@ -1173,6 +1172,29 @@ alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 #align measurable_set.mem MeasurableSet.mem
+
+lemma Measurable.not (hp : Measurable p) : Measurable (¬ p ·) :=
+  measurableSet_setOf.1 hp.setOf.compl
+
+lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∧ q a :=
+  measurableSet_setOf.1 <| hp.setOf.inter hq.setOf
+
+lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
+  measurableSet_setOf.1 <| hp.setOf.union hq.setOf
+
+lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
+  measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
+
+lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
+  measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
+
+lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
+    Measurable fun a ↦ ∀ i, p i a :=
+  measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
+
+lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
+    Measurable fun a ↦ ∃ i, p i a :=
+  measurableSet_setOf.1 <| by rw [setOf_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
 
 end prop
 
@@ -1724,16 +1746,16 @@ def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
 /-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
 @[simps! (config := .asFn)]
-def piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
+def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
-  toEquiv := .piFinSuccAboveEquiv α i
+  toEquiv := .piFinSuccAbove α i
   measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp only [piFinSuccAboveEquiv_symm_apply, Fin.insertNth_apply_same, measurable_fst],
-      fun j => by simpa only [piFinSuccAboveEquiv_symm_apply, Fin.insertNth_apply_succAbove]
+    ⟨by simp only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_same, measurable_fst],
+      fun j => by simpa only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_succAbove]
         using (measurable_pi_apply _).comp measurable_snd⟩
-#align measurable_equiv.pi_fin_succ_above_equiv MeasurableEquiv.piFinSuccAboveEquiv
+#align measurable_equiv.pi_fin_succ_above_equiv MeasurableEquiv.piFinSuccAbove
 
 variable (π)
 
