@@ -3772,7 +3772,7 @@ theorem disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset
   classical
     refine' s.induction _ _
     · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
-    · intro i s his ih
+    · intro i s _ ih
       simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 #align finset.disjoint_bUnion_left Finset.disjoint_biUnion_left
 
