@@ -220,13 +220,8 @@ theorem degree_span' {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
 theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLE R n := by
   by_cases s_emp : s.Nonempty
-  · by_contra!
-    rcases degree_span' s_fin s_emp with ⟨p', _, hp'max⟩
-    rcases SetLike.not_le_iff_exists.mp (this (natDegree p' + 1)) with ⟨p, hp, hp2⟩
-    apply hp2
-    rw [mem_degreeLE, Nat.cast_add, Nat.cast_one, ← Nat.cast_succ]
-    refine le_trans (le_trans (hp'max p hp) degree_le_natDegree) ?_
-    exact Nat.cast_le.mpr (Nat.le_succ (natDegree p'))
+  · rcases degree_span' s_fin s_emp with ⟨p', _, hp'max⟩
+    exact ⟨natDegree p', fun p hp => mem_degreeLE.mpr ((hp'max _ hp).trans degree_le_natDegree)⟩
   · rw [Set.not_nonempty_iff_eq_empty] at s_emp
     rw [s_emp, Submodule.span_empty]
     exact ⟨0, bot_le⟩
@@ -702,7 +697,7 @@ section Semiring
 
 /-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
 a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
-theorem polynomial_not_module_finite {R : Type u} [Semiring R] [Nontrivial R]:
+theorem polynomial_not_module_finite {R : Type u} [Semiring R] [Nontrivial R] :
     ¬ (Module.Finite R R[X]) := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
