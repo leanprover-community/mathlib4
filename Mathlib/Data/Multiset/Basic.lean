@@ -2159,13 +2159,10 @@ lemma filter_card_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
   fconstructor
   · intro H s' hs' s'_card
     by_contra! rid
-    have card1 := card_le_of_le (monotone_filter_left P hs') |>.trans H
-    have card2 : card (s'.filter P) = card s'
-    · rw [filter_eq_self.mpr rid]
-    exact lt_irrefl _ <| lt_of_lt_of_le (card2.symm ▸ s'_card) card1
+    have card := card_le_of_le (monotone_filter_left P hs') |>.trans H
+    exact s'_card.not_le (filter_eq_self.mpr rid ▸ card)
   · contrapose!
-    intro H
-    exact ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
+    exact fun H ↦ ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
 
 /-! ### Simultaneously filter and map elements of a multiset -/
 
