@@ -114,10 +114,6 @@ end Measure
 
 open Measure
 
-lemma ae_iff_of_countable [MeasurableSingletonClass α] [Countable α] {μ : Measure α}
-    {p : α → Prop} : (∀ᵐ x ∂μ, p x) ↔ ∀ x, μ {x} ≠ 0 → p x := by
-  rw [ae_iff, ← μ.sum_smul_dirac]; simp [- Measure.sum_smul_dirac, or_iff_not_imp_left]
-
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ (dirac a).ae ↔ a ∈ s := by
   by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
 #align measure_theory.mem_ae_dirac_iff MeasureTheory.mem_ae_dirac_iff

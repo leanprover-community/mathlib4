@@ -211,6 +211,10 @@ theorem tsum_measure_preimage_singleton {s : Set β} (hs : s.Countable) {f : α 
   rw [← Set.biUnion_preimage_singleton, measure_biUnion hs (pairwiseDisjoint_fiber f s) hf]
 #align measure_theory.tsum_measure_preimage_singleton MeasureTheory.tsum_measure_preimage_singleton
 
+lemma measure_preimage_eq_zero_iff_of_countable {s : Set β} {f : α → β} (hs : s.Countable) :
+    μ (f ⁻¹' s) = 0 ↔ ∀ x ∈ s, μ (f ⁻¹' {x}) = 0 := by
+  rw [← biUnion_preimage_singleton, measure_biUnion_null_iff hs]
+
 /-- If `s` is a `Finset`, then the measure of its preimage can be found as the sum of measures
 of the fibers `f ⁻¹' {y}`. -/
 theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
@@ -441,23 +445,6 @@ theorem nonempty_inter_of_measure_lt_add {m : MeasurableSpace α} (μ : Measure 
     _ ≤ μ u := measure_mono (union_subset h's h't)
 
 #align measure_theory.nonempty_inter_of_measure_lt_add MeasureTheory.nonempty_inter_of_measure_lt_add
-
-lemma measure_preimage_eq_zero_iff_of_countable {s : Set β} {f : α → β} (hs : s.Countable) :
-    μ (f ⁻¹' s) = 0 ↔ ∀ x ∈ s, μ (f ⁻¹' {x}) = 0 := by
-  have : Countable s := hs.to_subtype
-  refine ⟨fun h x hx ↦ measure_mono_null (preimage_mono $ singleton_subset_iff.2 hx) h,
-    fun h ↦ (zero_le _).antisymm' ?_⟩
-  calc
-    _ = μ (⋃ x : s, f ⁻¹' {(x : β)}) := by simp
-    _ ≤ ∑' x : s, μ (f ⁻¹' {(x : β)}) := measure_iUnion_le _
-    _ = ∑' x : s, 0 := by congr with x; exact h x x.2
-    _ = 0 := tsum_zero
-
-lemma ae_of_countable [Countable α] {p : α → Prop} (h : ∀ x, μ {x} ≠ 0 → p x) : ∀ᵐ x ∂μ, p x := by
-  have : {x | ¬ p x} ⊆ {x | μ {x} = 0} := fun x ↦ not_imp_comm.1 $ h _
-  apply measure_mono_null this
-  rw [← biUnion_of_singleton {x | μ {x} = 0}, measure_biUnion_null_iff (Set.to_countable _)]
-  exact fun i ↦ id
 
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
 then `s` intersects `t`. Version assuming that `s` is measurable. -/
@@ -1278,18 +1265,10 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
 #align measure_theory.measure.map_to_outer_measure MeasureTheory.Measure.map_toOuterMeasure
 
 @[simp] lemma map_eq_zero_iff (hf : AEMeasurable f μ) : μ.map f = 0 ↔ μ = 0 := by
-  refine' ⟨fun h ↦ _, _⟩
-  · replace h := congr_fun (congr_arg (↑) h) Set.univ
-    rwa [map_apply_of_aemeasurable hf MeasurableSet.univ, Set.preimage_univ, coe_zero,
-      Pi.zero_apply, measure_univ_eq_zero] at h
-  · rintro rfl
-    exact Measure.map_zero _
+  simp_rw [← measure_univ_eq_zero, map_apply_of_aemeasurable hf .univ, preimage_univ]
 
 @[simp] lemma mapₗ_eq_zero_iff (hf : Measurable f) : Measure.mapₗ f μ = 0 ↔ μ = 0 := by
-  classical
-  rw [← map_eq_zero_iff hf.aemeasurable, map, dif_pos hf.aemeasurable,
-    mapₗ_congr hf hf.aemeasurable.measurable_mk]
-  exact hf.aemeasurable.ae_eq_mk
+  rw [mapₗ_apply_of_measurable hf, map_eq_zero_iff hf.aemeasurable]
 
 lemma map_ne_zero_iff (hf : AEMeasurable f μ) : μ.map f ≠ 0 ↔ μ ≠ 0 := (map_eq_zero_iff hf).not
 lemma mapₗ_ne_zero_iff (hf : Measurable f) : Measure.mapₗ f μ ≠ 0 ↔ μ ≠ 0 :=
@@ -1924,9 +1903,14 @@ open Measure
 
 open MeasureTheory
 
-lemma AEMeasurable.nullMeasurableSet_preimage {f : α → β} {μ : Measure α} {s : Set β}
+protected theorem _root_.AEMeasurable.nullMeasurable {f : α → β} (h : AEMeasurable f μ) :
+    NullMeasurable f μ :=
+  let ⟨_g, hgm, hg⟩ := h; hgm.nullMeasurable.congr hg.symm
+#align ae_measurable.null_measurable AEMeasurable.nullMeasurable
+
+lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β}
     (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
-  ⟨hf.mk _ ⁻¹' s, hf.measurable_mk hs, hf.ae_eq_mk.preimage _⟩
+  hf.nullMeasurable hs
 
 /-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
 measurable set. -/
