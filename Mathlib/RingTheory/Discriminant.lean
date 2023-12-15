@@ -75,6 +75,12 @@ theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).de
   unfold discr
   convert rfl
 
+variable {A C} in
+/-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
+theorem discr_eq_discr_of_algEquiv [Fintype ι] (b : ι → B) (f : B ≃ₐ[A] C) :
+    Algebra.discr A b = Algebra.discr A (f ∘ b) := by
+  rw [discr_def]; congr; ext
+  simp_rw [traceMatrix_apply, traceForm_apply, Function.comp, ← map_mul f, trace_eq_of_algEquiv]
 
 #align algebra.discr_def Algebra.discr_def
 
@@ -132,7 +138,7 @@ variable [Algebra K L] [Algebra K E]
 
 variable [Module.Finite K L] [IsAlgClosed E]
 
-/-- Over a field, if `b` is a basis, then `Algebra.discr K b ≠ 0`. -/
+/-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
   cases isEmpty_or_nonempty ι
@@ -150,7 +156,8 @@ theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
-/-- Over a field, if `b` is a basis, then `Algebra.discr K b` is a unit. -/
+/-- If `b` is a basis of a finite separable field extension `L/K`,
+  then `Algebra.discr K b` is a unit. -/
 theorem discr_isUnit_of_basis [IsSeparable K L] (b : Basis ι K L) : IsUnit (discr K b) :=
   IsUnit.mk0 _ (discr_not_zero_of_basis _ _)
 #align algebra.discr_is_unit_of_basis Algebra.discr_isUnit_of_basis
@@ -166,20 +173,6 @@ theorem discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι �
   rw [discr_def, RingHom.map_det, RingHom.mapMatrix_apply,
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans, det_mul, det_transpose, pow_two]
 #align algebra.discr_eq_det_embeddings_matrix_reindex_pow_two Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two
-
-/-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
-theorem discr_eq_discr_of_algEquiv {L' : Type*} [Field L'] [Algebra K L'] [IsSeparable K L]
-    (e : ι ≃ (L →ₐ[K] E)) (f : L ≃ₐ[K] L') :
-    Algebra.discr K b = Algebra.discr K (f ∘ b) := by
-  have : Module.Finite K L' := Module.Finite.equiv f.toLinearEquiv
-  have : IsSeparable K L' := IsSeparable.of_algHom K L f.symm
-  apply (NoZeroSMulDivisors.algebraMap_injective K E)
-  let e' : ι ≃ (L' →ₐ[K] E) := e.trans (f.arrowCongr AlgEquiv.refl)
-  rw [Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two _ _ _ e,
-    Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two _ _ _ e']
-  congr
-  ext
-  simp [Algebra.embeddingsMatrixReindex]
 
 /-- The discriminant of a power basis. -/
 theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
