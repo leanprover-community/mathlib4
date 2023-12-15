@@ -504,7 +504,7 @@ lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
   -- suppose artinian ring `R` has infinitely many maximal ideals, then we can find maximal ideals
   -- `fᵢ` for each `i : ℕ` such that `fᵢ ≠ fⱼ` for all `i ≠ j`.
   let f := Set.finite_or_infinite _ |>.resolve_left rid |>.natEmbedding
-  -- Then `f₀ ≤ f₀f₁ ≤ f₀f₁f₂ ≤ ...`
+  -- Then `f₀ ≥ f₀f₁ ≥ f₀f₁f₂ ≥ ...`
   let g : ℕ →o (Ideal R)ᵒᵈ :=
   { toFun := fun n ↦ OrderDual.toDual <| ∏ i in Finset.range n.succ, f i
     monotone' := monotone_nat_of_le_succ fun n ↦ OrderDual.toDual_le_toDual.mpr <| by
