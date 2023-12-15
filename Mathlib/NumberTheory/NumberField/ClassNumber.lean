@@ -73,6 +73,22 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
     exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| ideal_absNorm_ne_zero K J
 
+theorem classNumber_eq_one_of_abs_discr_lt
+    (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
+      ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
+    classNumber K = 1 := by
+  have : 0 < finrank ℚ K := finrank_pos
+  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
+    mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
+  rw [classNumber, Fintype.card_eq_one_iff]
+  refine ⟨1, fun C ↦ ?_⟩
+  obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
+  have : Ideal.absNorm I.1 = 1 := by
+    refine le_antisymm (Nat.lt_succ.mp ?_) (Nat.one_le_iff_ne_zero.mpr (ideal_absNorm_ne_zero K I))
+    exact Nat.cast_lt.mp <| lt_of_le_of_lt hI h
+  rw [ClassGroup.mk0_eq_one_iff, Ideal.absNorm_eq_one_iff.mp this]
+  exact top_isPrincipal
+
 end NumberField
 
 namespace Rat
