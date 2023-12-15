@@ -931,9 +931,9 @@ invertible when `algebraMap R A r` is. -/
 abbrev Invertible.algebraMapOfInvertibleAlgebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
     (h : Invertible (algebraMap R A r)) : Invertible (algebraMap R B r) where
   invOf := f ⅟(algebraMap R A r)
-  invOf_mul_self := by rw [← Algebra.commutes, ←Algebra.smul_def, ←map_smul, Algebra.smul_def,
+  invOf_mul_self := by rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul, Algebra.smul_def,
     mul_invOf_self, hf]
-  mul_invOf_self := by rw [← Algebra.smul_def, ←map_smul, Algebra.smul_def, mul_invOf_self, hf]
+  mul_invOf_self := by rw [← Algebra.smul_def, ← map_smul, Algebra.smul_def, mul_invOf_self, hf]
 
 /-- If there is a linear map `f : A →ₗ[R] B` that preserves `1`, then `algebraMap R B r` is
 a unit when `algebraMap R A r` is. -/
