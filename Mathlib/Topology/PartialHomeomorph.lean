@@ -717,6 +717,11 @@ theorem restrOpen_source (s : Set α) (hs : IsOpen s) : (e.restrOpen s hs).sourc
   rfl
 #align local_homeomorph.restr_open_source PartialHomeomorph.restrOpen_source
 
+theorem restrOpen_target (s : Set α) (hs : IsOpen s) :
+    (e.restrOpen s hs).target = e '' (e.source ∩ s) := by
+  rw [← PartialHomeomorph.image_source_eq_target]
+  exact rfl
+
 /-- Restricting a partial homeomorphism `e` to `e.source ∩ interior s`. We use the interior to make
 sure that the restriction is well defined whatever the set s, since partial homeomorphisms are by
 definition defined on open sets. In applications where `s` is open, this coincides with the

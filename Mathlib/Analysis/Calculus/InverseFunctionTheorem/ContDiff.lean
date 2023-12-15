@@ -59,6 +59,11 @@ def localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f 
   (hf.hasStrictFDerivAt' hf' hn).localInverse f f' a
 #align cont_diff_at.local_inverse ContDiffAt.localInverse
 
+lemma localInverse_eq_toLocalHomeomorph_symm {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
+    (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : 1 ≤ n) :
+    hf.localInverse hf' hn = (hf.toPartialHomeomorph f hf' hn).symm := by
+  rfl
+
 theorem localInverse_apply_image {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : 1 ≤ n) : hf.localInverse hf' hn (f a) = a :=
   (hf.hasStrictFDerivAt' hf' hn).localInverse_apply_image
