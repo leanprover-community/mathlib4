@@ -8,7 +8,7 @@ import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.Monic_nonRegular
-import Counterexamples.OrderedCancelAddCommMonoidWithInfima
+import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 import Counterexamples.Phillips
 import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
