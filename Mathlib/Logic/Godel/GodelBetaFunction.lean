@@ -41,24 +41,6 @@ Gödel, beta function
 
 namespace Nat
 
-/-- Maximum of a list's length and its largest element plus one -/
-def listSup (l : List ℕ) := max l.length (List.foldr max 0 l) + 1
-
-/-- A list of coprimes -/
-def coprimeList (l : List ℕ) : List (ℕ × ℕ) :=
-  List.ofFn (fun i : Fin l.length => (l.get i, (i + 1) * (listSup l)! + 1))
-
-@[simp] lemma coprimeList_length (l : List ℕ) : (coprimeList l).length = l.length :=
-  by simp[coprimeList, List.length_ofFn]
-
-lemma coprimeList_lt (l : List ℕ) (i) : ((coprimeList l).get i).1 < ((coprimeList l).get i).2 := by
-  have h₁ : l.get (i.cast $ by simp[coprimeList]) < listSup l :=
-    Nat.lt_add_one_iff.mpr (by simpa using Or.inr $ List.le_max_of_le (List.get_mem _ _ _) (by rfl))
-  have h₂ : listSup l ≤ (i + 1) * (listSup l)! + 1 :=
-    le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (succ_pos _))
-      (le_add_right _ _))
-  simpa only [coprimeList, List.get_ofFn] using lt_of_lt_of_le h₁ h₂
-
 lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a + 1) :=
   Nat.coprime_of_dvd (by
     intro p pp hn hm
@@ -76,30 +58,31 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
     apply Nat.not_prime_one at pp
     exact pp)
 
-lemma pairwise_coprime_coprimeList (l : List ℕ) :
-    ((coprimeList l).map Prod.snd).Pairwise Coprime := by
-  have : (coprimeList l).map Prod.snd = List.ofFn (fun i : Fin l.length => (i + 1) *
-      (listSup l)! + 1) := by
-    simp[coprimeList, Function.comp]
-  rw[this]
-  exact List.Nodup.pairwise_of_forall_ne
-    (List.nodup_ofFn_ofInjective $ by
-       intro i j; simp[listSup, ← Fin.ext_iff, Nat.factorial_ne_zero])
-    (by
-      simp[← Fin.ext_iff, not_or]
-      suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) *
-        (listSup l)! + 1)
-      · intro i j hij _
-        rcases Ne.lt_or_lt hij with (hij | hij)
-        · exact this i j hij
-        · exact coprime_comm.mp (this j i hij)
-      intro i j hij
-      have hjl : j < listSup l := lt_of_lt_of_le j.prop (le_step (le_max_left l.length
-        (List.foldr max 0 l)))
-      apply coprime_mul_succ
-        (Nat.succ_le_succ $ le_of_lt hij)
-        (Nat.dvd_factorial (by simp[Nat.succ_sub_succ, hij]) (by
-          simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hjl))))
+variable {m : ℕ}
+
+private def supOfSeq (a : Fin m → ℕ) := max m (Finset.sup .univ a) + 1
+
+private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
+
+private lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
+  have h₁ : a i < supOfSeq a :=
+    Nat.lt_add_one_iff.mpr (le_max_of_le_right $ Finset.le_sup (by simp))
+  have h₂ : supOfSeq a ≤ (i + 1) * (supOfSeq a)! + 1 :=
+    le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (succ_pos _))
+      (le_add_right _ _))
+  simpa only [coprimes, List.get_ofFn] using lt_of_lt_of_le h₁ h₂
+
+private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
+  intro i j hij
+  wlog ltij : i < j
+  · exact (this a hij.symm (lt_of_le_of_ne (Fin.not_lt.mp ltij) hij.symm)).symm
+  suffices : Coprime ((i + 1) * (supOfSeq a)! + 1) ((j + 1) * (supOfSeq a)! + 1)
+  · exact this
+  have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
+  exact coprime_mul_succ
+    (Nat.succ_le_succ $ le_of_lt ltij)
+    (Nat.dvd_factorial (by simp[Nat.succ_sub_succ, ltij]) (by
+      simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))
 
 /-- Gödel's Beta Function. This is similar to `(Encodable.decodeList).get i`, but it is easier to
 prove that it is arithmetically definable. -/
@@ -108,16 +91,18 @@ def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=
-  (chineseRemainderOfList (coprimeList l) (pairwise_coprime_coprimeList l) : ℕ).pair (listSup l)!
-
-lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b := by
-  simpa[show a % n = b % n from h] using mod_eq_of_lt hb
+  (chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
+    (by simp[coprimes])
+    (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
+  (supOfSeq l.get)!
 
 /-- **Gödel's Beta Function Lemma** -/
 lemma beta_function_lemma (l : List ℕ) (i : Fin l.length) :
     beta (unbeta l) i = l.get i := by
-  simpa[beta, unbeta, coprimeList] using mod_eq_of_modEq
-    ((chineseRemainderOfList (coprimeList l) (pairwise_coprime_coprimeList l)).2 (i.cast $ by simp))
-    (coprimeList_lt l _)
+  simpa[beta, unbeta, coprimes] using mod_eq_of_modEq
+    ((chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
+      (by simp[coprimes])
+      (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
+    (coprimes_lt l.get _)
 
 end Nat

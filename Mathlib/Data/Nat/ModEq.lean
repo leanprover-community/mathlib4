@@ -543,6 +543,9 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
 
+lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b := by
+  simpa[show a % n = b % n from h] using mod_eq_of_lt hb
+
 variable {ι : Type*}
 open BigOperators
 
