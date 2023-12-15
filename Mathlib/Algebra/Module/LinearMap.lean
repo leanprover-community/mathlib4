@@ -429,11 +429,6 @@ class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R 
 
 variable {M M₂}
 
-instance IsScalarTower.compatibleSMul_ring [Module R S] [Module S M] [IsScalarTower R S M] :
-    CompatibleSMul S M R S where
-  map_smul f r s := by
-    rw [← mul_one (r • s), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
-
 section
 
 variable {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SMul R M₂] [Module S M₂]
@@ -443,6 +438,11 @@ instance (priority := 100) IsScalarTower.compatibleSMul [SMul R S]
     CompatibleSMul M M₂ R S :=
   ⟨fun fₗ c x ↦ by rw [← smul_one_smul S c x, ← smul_one_smul S c (fₗ x), map_smul]⟩
 #align linear_map.is_scalar_tower.compatible_smul LinearMap.IsScalarTower.compatibleSMul
+
+instance IsScalarTower.compatibleSMul_ring [SMul R S] [IsScalarTower R S M] :
+    CompatibleSMul S M R S where
+  map_smul f r s := by
+    rw [← mul_one (r • s), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
 
 @[simp]
 theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) (c : R) (x : M) :
