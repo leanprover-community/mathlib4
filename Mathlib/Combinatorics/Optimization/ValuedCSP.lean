@@ -24,6 +24,8 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
    *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
+* [S. Bistarelli, U. Montanari, F. Rossi, T. Schiex, G. Verfaillie, H. Fargier,
+   *Semiring-Based CSPs and Valued CSPs: Frameworks, Properties, and Comparison*][bistarelli1999]
 
 -/
 
