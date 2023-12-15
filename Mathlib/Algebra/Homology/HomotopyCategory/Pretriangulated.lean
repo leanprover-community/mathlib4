@@ -265,7 +265,7 @@ end Rotate
 
 section Shift
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧')`. -/
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
