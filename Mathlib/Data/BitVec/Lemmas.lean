@@ -203,77 +203,19 @@ end
 ### `IntCast`
 -/
 
-@[simp]
-theorem Nat.bit_sub_bit (x y : ℕ) (a b : Bool) :
-    Nat.bit a x - Nat.bit b y = Nat.bit (a && !b) (x - y - (!a && b).toNat) := by
-  sorry
+proof_wanted ofFin_intCast (z : ℤ) :
+  ofFin (z : Fin (2^w)) = z
 
-@[simp]
-theorem Nat.testBit_bit_succ (a : Bool) (x i : ℕ) :
-    testBit (bit a x) (i + 1) = testBit x i := by
-  sorry
-
-/-- If every bit of `y` is also set in `x`, then subtraction coincides with XOR -/
-theorem Nat.sub_eq_xor_of (x y : ℕ) (h : ∀ i, (y.testBit i = true) → (x.testBit i = true)) :
-    x - y = x ^^^ y := by
-  induction' x using Nat.binaryRec with x₀ x ih generalizing y
-  · simp only [zero_testBit, imp_false, Bool.not_eq_true] at h
-    rw [zero_of_testBit_eq_false h]
-    rfl
-  · cases' y using Nat.binaryRec with y₀ y
-    · simp only [tsub_zero, xor_zero]
-    · specialize ih y <| by intro i; simpa using h (i + 1)
-      have : y₀ = true → x₀ = true := by
-        simpa only [testBit_zero] using h 0
-      cases y₀
-      case false =>
-        simp [-bit_false, ih]
-      case true =>
-        obtain rfl : x₀ = true := this rfl
-        simp [-bit_true, -bit_false, ih]
-
-@[simp] lemma ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z := by
-  simp only [Int.cast, IntCast.intCast, BitVec.ofInt, ge_iff_le, tsub_le_iff_right]
-  cases' z with z z
-  <;> rw [Int.castDef]
-  <;> simp only [Nat.cast, NatCast.natCast, Fin.ofNat_eq_val, ofFin_neg, ofFin_natCast, ge_iff_le,
-    tsub_le_iff_right]
-  · simp only [Neg.neg, BitVec.neg, BitVec.sub, HSub.hSub, Sub.sub, Fin.sub, Nat.sub_eq,
-      and_pow_two_is_mod, zero_mod, zero_add, Complement.complement, BitVec.not, HXor.hXor, Xor.xor,
-      BitVec.xor, toNat_ofFin, BitVec.ofNat, ofFin.injEq, Fin.mk.injEq, Nat.shiftLeft_eq_mul_pow,
-      one_mul]
-    rw [
-      sub_succ_mod (two_pow_pos w),
-      Nat.sub_sub,
-      Nat.mod_eq_of_lt <| Nat.sub_lt (two_pow_pos w) (Fin.size_pos'),
-      ← Nat.sub_sub
-    ]
-    show _ = (_ - 1) ^^^ _
-    apply Nat.sub_eq_xor_of
-    intro i hz
-    rw [testBit_two_pow_sub_one, decide_eq_true_eq]
-    rw [testBit_to_div_mod, decide_eq_true_eq] at hz
-    induction' w with w ih generalizing i z
-    · exfalso
-      simp only [Nat.zero_eq, _root_.pow_zero, mod_one, Nat.zero_div, zero_mod, ne_eq,
-        not_true_eq_false] at hz
-    · cases' i with i
-      · exact succ_pos w
-      · apply succ_lt_succ
-        apply ih (z / 2)
-        simpa only [Nat.pow_succ, Nat.mul_comm, ← Nat.div_div_eq_div_mul,
-          ← Nat.div_mod_eq_mod_mul_div] using hz
-
-@[simp] lemma toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
-  apply toFin_inj.mpr; simp only [ofFin_intCast]
+proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
 
 /-!
 ## Ring
 -/
 
-instance : CommRing (BitVec w) :=
-  toFin_injective.commRing _
-    toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
-    (Function.swap toFin_nsmul) (Function.swap toFin_zsmul) toFin_pow toFin_natCast toFin_intCast
+-- TODO: generalize to `CommRing` after  `ofFin_intCast` is proven
+instance : CommSemiring (BitVec w) :=
+  toFin_injective.commSemiring _
+    toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
+    toFin_pow toFin_natCast
 
 end Std.BitVec
