@@ -781,7 +781,7 @@ def basicOpen (r : R) : TopologicalSpace.Opens (PrimeSpectrum R) where
 #align prime_spectrum.basic_open PrimeSpectrum.basicOpen
 
 @[simp]
-theorem mem_basicOpen (f : R) (x : PrimeSpectrum R) : x ∈ basicOpen f  ↔ f ∉ x.asIdeal :=
+theorem mem_basicOpen (f : R) (x : PrimeSpectrum R) : x ∈ basicOpen f ↔ f ∉ x.asIdeal :=
   Iff.rfl
 #align prime_spectrum.mem_basic_open PrimeSpectrum.mem_basicOpen
 
