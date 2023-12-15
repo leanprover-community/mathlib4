@@ -225,23 +225,23 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
     (h : a ∉ s) (n : μ) :
     piAntidiagonal (insert a s) n = (antidiagonal n).biUnion
       (fun p : μ × μ =>
-          (piAntidiagonal s p.snd).attach.map
-          (Set.InjOn.embedding (f := fun f => Finsupp.update f a p.fst)
-          (fun f hf g hg => by
-            simp only [mem_val, mem_piAntidiagonal] at hf hg
-            simp only [FunLike.ext_iff]
-            apply forall_imp
-            intro x
-            by_cases hx : x = a
-            · intro _
-              have : g x = 0
-              · rw [← not_mem_support_iff, hx]
-                exact fun hx' => h (hg.1 hx')
-              rw [this]
-              · rw [← not_mem_support_iff, hx]
-                exact fun hx' => h (hf.1 hx')
-            · simp only [coe_update, ne_eq, Function.update, dif_neg hx]
-              exact id))) := by
+        (piAntidiagonal s p.snd).attach.map
+        (Set.InjOn.embedding (f := fun f => Finsupp.update f a p.fst)
+        (fun f hf g hg => by
+          simp only [mem_val, mem_piAntidiagonal] at hf hg
+          simp only [FunLike.ext_iff]
+          apply forall_imp
+          intro x
+          by_cases hx : x = a
+          · intro _
+            have : g x = 0
+            · rw [← not_mem_support_iff, hx]
+              exact fun hx' => h (hg.1 hx')
+            rw [this]
+            · rw [← not_mem_support_iff, hx]
+              exact fun hx' => h (hf.1 hx')
+          · simp only [coe_update, ne_eq, Function.update, dif_neg hx]
+            exact id))) := by
   ext f
   rw [mem_piAntidiagonal_insert h, mem_biUnion]
   apply exists_congr
