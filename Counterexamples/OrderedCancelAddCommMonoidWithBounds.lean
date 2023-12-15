@@ -15,12 +15,9 @@ The same applies to any superclasses, e.g. combining
 The crux is that cancellation properties don't like the `⊥` and `⊤` elements.
 -/
 
-private class BoundedOrderedCancelAddCommMonoid (α : Type*)
-  extends OrderedCancelAddCommMonoid α, BoundedOrder α
-
-example {α : Type*} [BoundedOrderedCancelAddCommMonoid α] :
-    (∃ x y : α, x < y) → False := by
-  rintro ⟨x, y, hxy⟩
+example {α : Type*} [OrderedCancelAddCommMonoid α] [BoundedOrder α] (x y : α) :
+    ¬(x < y) := by
+  intro hxy
   have blebpx : ⊥ ≤ ⊥ + x := bot_le
   have bpxlbpy : ⊥ + x < ⊥ + y := add_lt_add_left hxy ⊥
   have blbpy : ⊥ < ⊥ + y := blebpx.trans_lt bpxlbpy
