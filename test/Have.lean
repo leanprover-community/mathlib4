@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
+import Std.Tactic.GuardMsgs
 import Mathlib.Tactic.Have
 
 example : Nat := by
@@ -26,12 +27,12 @@ example {a : Nat} : a = a := by
   exact this
 
 example : True := by
-  (let _N) -- FIXME: lean4#1670
+  let _N; -- FIXME: lean4#1670
   exact Nat
   have
   · exact 0
   have _h : Nat
-  · exact 5
+  · exact this
   have _h' x : x < x + 1
   · exact Nat.lt.base x
   have _h'' (x : Nat) : x < x + 1
@@ -43,3 +44,10 @@ example : True := by
   have _q
   · exact 6
   simp
+
+/--
+error: type expected, got
+  (Nat.zero : Nat)
+-/
+#guard_msgs in
+example : True := by have h : Nat.zero

@@ -2,17 +2,14 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.order.lemmas
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Set.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
+
+#align_import data.nat.order.lemmas from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Further lemmas about the natural numbers
@@ -53,11 +50,20 @@ theorem set_eq_univ {S : Set ℕ} : S = Set.univ ↔ 0 ∈ S ∧ ∀ k : ℕ, k 
 
 /-! ### `div` -/
 
-
 protected theorem lt_div_iff_mul_lt {n d : ℕ} (hnd : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   rcases d.eq_zero_or_pos with (rfl | hd0); · simp [zero_dvd_iff.mp hnd]
   rw [← mul_lt_mul_left hd0, ← Nat.eq_mul_of_div_eq_right hnd rfl]
 #align nat.lt_div_iff_mul_lt Nat.lt_div_iff_mul_lt
+
+-- porting note: new lemma
+theorem mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
+  calc
+    d * (n / d) = n ↔ d * (n / d) = d * (n / d) + (n % d) := by rw [div_add_mod]
+    _ ↔ d ∣ n := by rw [self_eq_add_right, dvd_iff_mod_eq_zero]
+
+-- porting note: new lemma
+theorem mul_div_lt_iff_not_dvd {n d : ℕ} : d * (n / d) < n ↔ ¬(d ∣ n) :=
+  (mul_div_le _ _).lt_iff_ne.trans mul_div_eq_iff_dvd.not
 
 theorem div_eq_iff_eq_of_dvd_dvd {n x y : ℕ} (hn : n ≠ 0) (hx : x ∣ n) (hy : y ∣ n) :
     n / x = n / y ↔ x = y := by
@@ -77,9 +83,13 @@ protected theorem div_eq_zero_iff {a b : ℕ} (hb : 0 < b) : a / b = 0 ↔ a < b
       mul_zero, add_zero]⟩
 #align nat.div_eq_zero_iff Nat.div_eq_zero_iff
 
-protected theorem div_eq_zero {a b : ℕ} (hb : a < b) : a / b = 0 :=
-  (Nat.div_eq_zero_iff <| (zero_le a).trans_lt hb).mpr hb
-#align nat.div_eq_zero Nat.div_eq_zero
+protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
+  rw [ne_eq, Nat.div_eq_zero_iff hb.bot_lt, not_lt]
+
+protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
+  rw [pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
+
+#align nat.div_eq_zero Nat.div_eq_of_lt
 
 /-! ### `mod`, `dvd` -/
 
@@ -213,11 +223,6 @@ theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b :=
   exact mul_le_mul_left' (lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
-@[simp]
-theorem mod_div_self (m n : ℕ) : m % n / n = 0 := by
-  cases n
-  · exact (m % 0).div_zero
-  · case succ n => exact Nat.div_eq_zero (m.mod_lt n.succ_pos)
 #align nat.mod_div_self Nat.mod_div_self
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/

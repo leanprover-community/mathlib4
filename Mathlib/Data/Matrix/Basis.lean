@@ -1,27 +1,24 @@
 /-
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash
-
-! This file was ported from Lean 3 source module data.matrix.basis
-! leanprover-community/mathlib commit 320df450e9abeb5fc6417971e75acb6ae8bc3794
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
+Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
 
+#align_import data.matrix.basis from "leanprover-community/mathlib"@"320df450e9abeb5fc6417971e75acb6ae8bc3794"
+
 /-!
 # Matrices with a single non-zero element.
 
-This file provides `matrix.stdBasisMatrix`. The matrix `matrix.stdBasisMatrix i j c` has `c`
+This file provides `Matrix.stdBasisMatrix`. The matrix `Matrix.stdBasisMatrix i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
 
 
-variable {l m n : Type _}
+variable {l m n : Type*}
 
-variable {R α : Type _}
+variable {R α : Type*}
 
 namespace Matrix
 
@@ -68,17 +65,17 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   -- Porting note: was `convert`
   refine (Fintype.sum_eq_single i ?_).trans ?_; swap
   · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp
   · intro j' hj'
     -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
 
--- TODO: tie this up with the `basis` machinery of linear algebra
+-- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
@@ -175,36 +172,36 @@ theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
 
 @[simp]
 theorem mul_left_apply_same (b : n) (M : Matrix n n α) :
-    (stdBasisMatrix i j c ⬝ M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
+    (stdBasisMatrix i j c * M) i b = c * M j b := by simp [mul_apply, stdBasisMatrix]
 #align matrix.std_basis_matrix.mul_left_apply_same Matrix.StdBasisMatrix.mul_left_apply_same
 
 @[simp]
 theorem mul_right_apply_same (a : n) (M : Matrix n n α) :
-    (M ⬝ stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
+    (M * stdBasisMatrix i j c) a j = M a i * c := by simp [mul_apply, stdBasisMatrix, mul_comm]
 #align matrix.std_basis_matrix.mul_right_apply_same Matrix.StdBasisMatrix.mul_right_apply_same
 
 @[simp]
 theorem mul_left_apply_of_ne (a b : n) (h : a ≠ i) (M : Matrix n n α) :
-    (stdBasisMatrix i j c ⬝ M) a b = 0 := by simp [mul_apply, h.symm]
+    (stdBasisMatrix i j c * M) a b = 0 := by simp [mul_apply, h.symm]
 #align matrix.std_basis_matrix.mul_left_apply_of_ne Matrix.StdBasisMatrix.mul_left_apply_of_ne
 
 @[simp]
 theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
-    (M ⬝ stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
+    (M * stdBasisMatrix i j c) a b = 0 := by simp [mul_apply, hbj.symm]
 #align matrix.std_basis_matrix.mul_right_apply_of_ne Matrix.StdBasisMatrix.mul_right_apply_of_ne
 
 @[simp]
 theorem mul_same (k : n) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
-  ext (a b)
+    stdBasisMatrix i j c * stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
+  ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 #align matrix.std_basis_matrix.mul_same Matrix.StdBasisMatrix.mul_same
 
 @[simp]
 theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
-    stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 := by
-  ext (a b)
+    stdBasisMatrix i j c * stdBasisMatrix k l d = 0 := by
+  ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
   -- Porting note: was `simp [h₁, h, h.symm]`
@@ -218,6 +215,47 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
 #align matrix.std_basis_matrix.mul_of_ne Matrix.StdBasisMatrix.mul_of_ne
 
 end
+
+section Commute
+
+variable [Fintype n]
+
+theorem row_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
+    (hM : Commute (stdBasisMatrix i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
+  have := ext_iff.mpr hM i k
+  aesop
+
+theorem col_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
+    (hM : Commute (stdBasisMatrix i j 1) M) (hki : k ≠ i) : M k i = 0 := by
+  have := ext_iff.mpr hM k j
+  aesop
+
+theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
+    (hM : Commute (stdBasisMatrix i j 1) M) : M i i = M j j := by
+  have := ext_iff.mpr hM i j
+  aesop
+
+/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
+theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
+    M ∈ Set.range (Matrix.scalar n) := by
+  cases isEmpty_or_nonempty n
+  · exact ⟨0, Subsingleton.elim _ _⟩
+  obtain ⟨i⟩ := ‹Nonempty n›
+  refine ⟨M i i, Matrix.ext fun j k => ?_⟩
+  simp only [scalar_apply]
+  obtain rfl | hkl := Decidable.eq_or_ne j k
+  · rw [diagonal_apply_eq]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rfl
+    · exact diag_eq_of_commute_stdBasisMatrix (hM _ _ hij)
+  · push_neg at hkl
+    rw [diagonal_apply_ne _ hkl]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM k i hkl.symm) hkl]
+    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) hkl.symm]
+
+end Commute
 
 end StdBasisMatrix
 

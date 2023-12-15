@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.slope
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Tactic.FieldSimp
+
+#align_import linear_algebra.affine_space.slope from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Slope of a function
@@ -24,12 +21,9 @@ interval is convex on this interval.
 affine space, slope
 -/
 
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
-
 open AffineMap
 
-variable {k E PE : Type _} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]
+variable {k E PE : Type*} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]
 
 /-- `slope f a b = (b - a)⁻¹ • (f b -ᵥ f a)` is the slope of a function `f` on the interval
 `[a, b]`. Note that `slope f a a = 0`, not the derivative of `f` at `a`. -/
@@ -71,7 +65,7 @@ theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +
 
 @[simp]
 theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
-  ext (a b)
+  ext a b
   simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 #align slope_vadd_const slope_vadd_const
 
@@ -85,12 +79,12 @@ theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E))
   rw [← sub_smul_slope_vadd f a b, h, smul_zero, zero_vadd]
 #align eq_of_slope_eq_zero eq_of_slope_eq_zero
 
-theorem AffineMap.slope_comp {F PF : Type _} [AddCommGroup F] [Module k F] [AddTorsor F PF]
+theorem AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
     (f : PE →ᵃ[k] PF) (g : k → PE) (a b : k) : slope (f ∘ g) a b = f.linear (slope g a b) := by
   simp only [slope, (· ∘ ·), f.linear.map_smul, f.linearMap_vsub]
 #align affine_map.slope_comp AffineMap.slope_comp
 
-theorem LinearMap.slope_comp {F : Type _} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
+theorem LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
     (a b : k) : slope (f ∘ g) a b = f (slope g a b) :=
   f.toAffineMap.slope_comp g a b
 #align linear_map.slope_comp LinearMap.slope_comp

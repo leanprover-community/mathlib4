@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.isometric_smul
-! leanprover-community/mathlib commit 832a8ba8f10f11fea99367c469ff802e69a5b8ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Isometry
+
+#align_import topology.metric_space.isometric_smul from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Group actions by isometries
@@ -50,7 +47,7 @@ class IsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
   protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
 #align has_isometric_smul IsometricSMul
 
--- Porting note: Lean 4 doesn' support `[]` in classes, so make a lemma instead of `export`ing
+-- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
 @[to_additive]
 theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X]
     [IsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=
@@ -83,9 +80,16 @@ theorem edist_smul_left [SMul M X] [IsometricSMul M X] (c : M) (x y : X) :
 #align edist_smul_left edist_smul_left
 #align edist_vadd_left edist_vadd_left
 
+@[to_additive (attr := simp)]
+theorem ediam_smul [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
+    EMetric.diam (c • s) = EMetric.diam s :=
+  (isometry_smul _ _).ediam_image s
+#align ediam_smul ediam_smul
+#align ediam_vadd ediam_vadd
+
 @[to_additive]
 theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a : M) :
-    Isometry ((· * ·) a) :=
+    Isometry (a * ·) :=
   isometry_smul M a
 #align isometry_mul_left isometry_mul_left
 #align isometry_add_left isometry_add_left
@@ -272,8 +276,9 @@ theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c �
 #align emetric.vadd_ball EMetric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r :=
-  by rw [preimage_smul, smul_ball]
+theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) :
+    (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+  rw [preimage_smul, smul_ball]
 #align emetric.preimage_smul_ball EMetric.preimage_smul_ball
 #align emetric.preimage_vadd_ball EMetric.preimage_vadd_ball
 
@@ -285,7 +290,7 @@ theorem smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) : c • closedBall x r 
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) :
-    (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
+    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
   rw [preimage_smul, smul_closedBall]
 #align emetric.preimage_smul_closed_ball EMetric.preimage_smul_closedBall
 #align emetric.preimage_vadd_closed_ball EMetric.preimage_vadd_closedBall
@@ -294,7 +299,7 @@ variable [PseudoEMetricSpace G]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
-    (· * ·) a ⁻¹' ball b r = ball (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' ball b r = ball (a⁻¹ * b) r :=
   preimage_smul_ball a b r
 #align emetric.preimage_mul_left_ball EMetric.preimage_mul_left_ball
 #align emetric.preimage_add_left_ball EMetric.preimage_add_left_ball
@@ -309,7 +314,7 @@ theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ�
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
-    (· * ·) a ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
   preimage_smul_closedBall a b r
 #align emetric.preimage_mul_left_closed_ball EMetric.preimage_mul_left_closedBall
 #align emetric.preimage_add_left_closed_ball EMetric.preimage_add_left_closedBall
@@ -339,6 +344,13 @@ theorem nndist_smul [PseudoMetricSpace X] [SMul M X] [IsometricSMul M X] (c : M)
   (isometry_smul X c).nndist_eq x y
 #align nndist_smul nndist_smul
 #align nndist_vadd nndist_vadd
+
+@[to_additive (attr := simp)]
+theorem diam_smul [PseudoMetricSpace X] [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
+    Metric.diam (c • s) = Metric.diam s :=
+  (isometry_smul _ _).diam_image s
+#align diam_smul diam_smul
+#align diam_vadd diam_vadd
 
 @[to_additive (attr := simp)]
 theorem dist_mul_left [PseudoMetricSpace M] [Mul M] [IsometricSMul M M] (a b c : M) :
@@ -409,6 +421,15 @@ theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 #align nndist_div_left nndist_div_left
 #align nndist_sub_left nndist_sub_left
 
+/-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
+multiplication by `c : G` is bounded. See also `Bornology.IsBounded.smul₀` for a similar lemma about
+normed spaces. -/
+@[to_additive "Given an additive isometric action of `G` on `X`, the image of a bounded set in `X`
+under translation by `c : G` is bounded"]
+theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
+    (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
+  (isometry_smul X c).lipschitz.isBounded_image hs
+
 namespace Metric
 
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsometricSMul G X]
@@ -420,7 +441,7 @@ theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r 
 #align metric.vadd_ball Metric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
   rw [preimage_smul, smul_ball]
 #align metric.preimage_smul_ball Metric.preimage_smul_ball
 #align metric.preimage_vadd_ball Metric.preimage_vadd_ball
@@ -433,7 +454,7 @@ theorem smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = close
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
-    (· • ·) c ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
+    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
 #align metric.preimage_smul_closed_ball Metric.preimage_smul_closedBall
 #align metric.preimage_vadd_closed_ball Metric.preimage_vadd_closedBall
 
@@ -445,7 +466,7 @@ theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c •
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
-    (· • ·) c ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
+    (c • ·) ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
 #align metric.preimage_smul_sphere Metric.preimage_smul_sphere
 #align metric.preimage_vadd_sphere Metric.preimage_vadd_sphere
 
@@ -453,7 +474,7 @@ variable [PseudoMetricSpace G]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_ball [IsometricSMul G G] (a b : G) (r : ℝ) :
-    (· * ·) a ⁻¹' ball b r = ball (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' ball b r = ball (a⁻¹ * b) r :=
   preimage_smul_ball a b r
 #align metric.preimage_mul_left_ball Metric.preimage_mul_left_ball
 #align metric.preimage_add_left_ball Metric.preimage_add_left_ball
@@ -468,7 +489,7 @@ theorem preimage_mul_right_ball [IsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ)
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_left_closedBall [IsometricSMul G G] (a b : G) (r : ℝ) :
-    (· * ·) a ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
+    (a * ·) ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
   preimage_smul_closedBall a b r
 #align metric.preimage_mul_left_closed_ball Metric.preimage_mul_left_closedBall
 #align metric.preimage_add_left_closed_ball Metric.preimage_add_left_closedBall
@@ -485,7 +506,7 @@ end Metric
 
 section Instances
 
-variable {Y : Type _} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
+variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
   [IsometricSMul M X]
 
 @[to_additive]
@@ -530,12 +551,12 @@ instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
 #align ulift.has_isometric_vadd' ULift.isometricVAdd'
 
 @[to_additive]
-instance {ι} {X : ι → Type _} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
+instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
   ⟨fun c => isometry_dcomp (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
 
 @[to_additive]
-instance Pi.isometricSMul' {ι} {M X : ι → Type _} [Fintype ι] [∀ i, SMul (M i) (X i)]
+instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
   ⟨fun c => isometry_dcomp (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
@@ -543,7 +564,7 @@ instance Pi.isometricSMul' {ι} {M X : ι → Type _} [Fintype ι] [∀ i, SMul 
 #align pi.has_isometric_vadd' Pi.isometricVAdd'
 
 @[to_additive]
-instance Pi.isometricSMul'' {ι} {M : ι → Type _} [Fintype ι] [∀ i, Mul (M i)]
+instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsometricSMul (M i)ᵐᵒᵖ (M i)] :
     IsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
   ⟨fun c => isometry_dcomp (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩

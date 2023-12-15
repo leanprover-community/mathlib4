@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Classical
-import Mathlib.Tactic.PermuteGoals
+import Std.Tactic.PermuteGoals
 import Std.Tactic.GuardExpr
 
 noncomputable def foo : Bool := by

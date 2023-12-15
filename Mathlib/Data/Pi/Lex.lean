@@ -2,17 +2,15 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.pi.lex
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Order.WellFounded
+import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Mathport.Notation
+
+#align_import data.pi.lex from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Lexicographic order on Pi types
@@ -29,18 +27,15 @@ This file defines the lexicographic order for Pi types. `a` is less than `b` if 
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Oigma.Order`: Lexicographic order on `Σₗ i, α i`.
+* `Data.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
 
 
-variable {ι : Type _} {β : ι → Type _} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
+variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
 
 namespace Pi
-
-instance {α : Type _} : ∀ [Inhabited α], Inhabited (Lex α) :=
-  @fun x => x
 
 /-- The lexicographic relation on `Π i : ι, β i`, where `ι` is ordered by `r`,
   and each `β i` is ordered by `s`. -/
@@ -51,7 +46,7 @@ protected def Lex (x y : ∀ i, β i) : Prop :=
 /- This unfortunately results in a type that isn't delta-reduced, so we keep the notation out of the
 basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
-notation3 "Πₗ "(...)", "r:(scoped p => Lex (∀ i, p i)) => r
+notation3 (prettyPrint := false) "Πₗ "(...)", "r:(scoped p => Lex (∀ i, p i)) => r
 
 @[simp]
 theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i :=
@@ -89,7 +84,7 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
           exact fun h' => wf.not_lt_min _ _ h'
         have hne : a i ≠ b i := wf.min_mem _ hab
         cases' trichotomous_of s (a i) (b i) with hi hi
-        exacts[Or.inl ⟨i, hri, hi⟩,
+        exacts [Or.inl ⟨i, hri, hi⟩,
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 #align pi.is_trichotomous_lex Pi.isTrichotomous_lex
 
@@ -102,7 +97,7 @@ instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
   trans := by
     rintro a b c ⟨N₁, lt_N₁, a_lt_b⟩ ⟨N₂, lt_N₂, b_lt_c⟩
     rcases lt_trichotomy N₁ N₂ with (H | rfl | H)
-    exacts[⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ <| hj.trans H), lt_N₂ _ H ▸ a_lt_b⟩,
+    exacts [⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ <| hj.trans H), lt_N₂ _ H ▸ a_lt_b⟩,
       ⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ hj), a_lt_b.trans b_lt_c⟩,
       ⟨N₂, fun j hj => (lt_N₁ _ (hj.trans H)).trans (lt_N₂ _ hj), (lt_N₁ _ H).symm ▸ b_lt_c⟩]
 #align pi.lex.is_strict_order Pi.Lex.isStrictOrder
@@ -225,24 +220,49 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
     let ⟨_, hb⟩ := exists_lt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
---We might want the analog of `Pi.orderedCancelCommMonoid` as well in the future.
+section OrderedMonoid
+
+variable [LinearOrder ι]
+
 @[to_additive]
-instance Lex.orderedCommGroup [LinearOrder ι] [∀ a, OrderedCommGroup (β a)] :
-    OrderedCommGroup (Lex (∀ i, β i)) :=
-  { Pi.commGroup with
-    mul_le_mul_left := fun x y hxy z =>
-      hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
-        Or.inr ⟨i, fun j hji =>
-          show z j * x j = z j * y j by rw [hi.1 j hji], mul_lt_mul_left' hi.2 _⟩ }
+instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
+    OrderedCancelCommMonoid (Lex (∀ i, β i)) where
+  mul_le_mul_left _ _ hxy z :=
+    hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hji => congr_arg (z j * ·) (hi.1 j hji), mul_lt_mul_left' hi.2 _⟩
+  le_of_mul_le_mul_left _ _ _ hxyz :=
+    hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
+
+@[to_additive]
+instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
+    OrderedCommGroup (Lex (∀ i, β i)) where
+  mul_le_mul_left _ _ := mul_le_mul_left'
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
 #align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
 
+@[to_additive]
+noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
+    [∀ i, LinearOrderedCancelCommMonoid (β i)] :
+    LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
+  __ : OrderedCancelCommMonoid (Lex (∀ i, β i)) := inferInstance
+
+@[to_additive]
+noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
+    [∀ i, LinearOrderedCommGroup (β i)] :
+    LinearOrderedCommGroup (Lex (∀ i, β i)) where
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
+  mul_le_mul_left _ _ := mul_le_mul_left'
+
+end OrderedMonoid
+
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/
-theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι} (h₁ : i < j)
+theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
-  ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans h₁).ne), by
+  ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
-#align pi.lex_desc Pi.lex_desc
+#align pi.lex_desc Pi.lex_descₓ
 
 end Pi

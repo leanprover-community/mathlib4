@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.triangulated.triangulated
-! leanprover-community/mathlib commit 19786714ebe478f40b503acb4705fb058ba47303
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+
+#align_import category_theory.triangulated.triangulated from "leanprover-community/mathlib"@"19786714ebe478f40b503acb4705fb058ba47303"
 
 /-!
 # Triangulated Categories
@@ -27,7 +24,7 @@ open Limits Category Preadditive Pretriangulated
 
 open ZeroObject
 
-variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [Pretriangulated C]
 
 namespace Triangulated
@@ -59,7 +56,7 @@ instance (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
       (contractible_distinguished X) (contractible_distinguished X)) := by
   refine' ⟨⟨0, 0, _, _, _, _, isomorphic_distinguished _ (contractible_distinguished (0 : C)) _
-    (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl) (by simp) (by simp) (by simp))⟩⟩
+    (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl))⟩⟩
   all_goals apply Subsingleton.elim
 
 namespace Octahedron
@@ -122,7 +119,7 @@ open Triangulated
 
 /-- A triangulated category is a pretriangulated category which satisfies
 the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
-class IsTriangulated where
+class IsTriangulated : Prop where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :
     ∀ {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
@@ -150,11 +147,11 @@ def someOctahedron' [IsTriangulated C] : Octahedron comm h₁₂ h₂₃ h₁₃
 
 /-- A choice of octahedron given by the octahedron axiom. -/
 def someOctahedron [IsTriangulated C]
-  {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
-  {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
-  {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
-  {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
-  {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) :
+    {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
+    {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
+    {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
+    {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
+    {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) :
     Octahedron comm h₁₂ h₂₃ h₁₃ :=
   someOctahedron' _
 #align category_theory.triangulated.some_octahedron CategoryTheory.Triangulated.someOctahedron

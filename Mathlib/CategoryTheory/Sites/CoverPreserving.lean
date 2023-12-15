@@ -2,43 +2,46 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.cover_preserving
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.Tactic.ApplyFun
-/-!
-# Cover-preserving functors between sites.
 
-We define cover-preserving functors between sites as functors that push covering sieves to
-covering sieves. A cover-preserving and compatible-preserving functor `G : C ⥤ D` then pulls
-sheaves on `D` back to sheaves on `C` via `G.op ⋙ -`.
+#align_import category_theory.sites.cover_preserving from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+/-!
+# Cover-preserving and continuous functors between sites.
+
+We define the notion of continuous functor between sites: these are functors `G` such that
+the precomposition with `G.op` preserves sheaves of types (and actually sheaves in any
+category).
+
+In order to show that a functor is continuous, we define cover-preserving functors
+between sites as functors that push covering sieves to covering sieves.
+Then, a cover-preserving and compatible-preserving functor is continuous.
 
 ## Main definitions
 
+* `CategoryTheory.Functor.IsContinuous`: a functor between sites is continuous if the
+precomposition with this functor preserves sheaves.
 * `CategoryTheory.CoverPreserving`: a functor between sites is cover-preserving if it
 pushes covering sieves to covering sieves
 * `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
 if it pushes compatible families of elements to compatible families.
-* `CategoryTheory.pullbackSheaf`: the pullback of a sheaf along a cover-preserving and
-compatible-preserving functor.
-* `category_theory.Sites.pullback`: the induced functor `Sheaf K A ⥤ Sheaf J A` for a
-cover-preserving and compatible-preserving functor `G : (C, J) ⥤ (D, K)`.
+* `CategoryTheory.Functor.sheafPushforwardContinuous`: the induced functor
+`Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
+part of a morphism of sites, this would be understood as the pushforward functor
+even though it goes in the opposite direction as the functor `G`.
 
 ## Main results
 
-- `CategoryTheory.pullback_isSheaf_of_coverPreserving`: If `G : C ⥤ D` is
-cover-preserving and compatible-preserving, then `G ⋙ -` (`uᵖ`) as a functor
-`(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
+- `CategoryTheory.isContinuous_of_coverPreserving`: If `G : C ⥤ D` is
+cover-preserving and compatible-preserving, then `G` is a continuous functor,
+i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
 
 ## References
 
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
-* https://stacks.math.columbia.edu/tag/00WW
+* https://stacks.math.columbia.edu/tag/00WU
 
 -/
 
@@ -47,19 +50,12 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
-open CategoryTheory
-
-open Opposite
-
-open CategoryTheory.Presieve.FamilyOfElements
-
-open CategoryTheory.Presieve
-
-open CategoryTheory.Limits
+open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
+  CategoryTheory.Limits
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
 
 variable {A : Type u₃} [Category.{v₃} A]
 
@@ -68,7 +64,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology A}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
-if for all covering sieves `R` in `C`, `R.pushforward_functor G` is a covering sieve in `D`.
+if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
 -- porting note: removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
@@ -79,9 +75,6 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
 #align category_theory.id_cover_preserving CategoryTheory.idCoverPreserving
-
--- porting note: this line is not needed as the variables are already explicit
--- variable (J) (K)
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
@@ -95,11 +88,11 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
 `f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂`, `x g₁` and `x g₂` coincide when restricted via `fᵢ`.
 This is actually stronger than merely preserving compatible families because of the definition of
-`functor_pushforward` used.
+`functorPushforward` used.
 -/
 -- porting note: this doesn't work yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
-  Compatible :
+  compatible :
     ∀ (ℱ : SheafOfTypes.{w} K) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
       (_ : x.Compatible) {Y₁ Y₂} {X} (f₁ : X ⟶ G.obj Y₁) (f₂ : X ⟶ G.obj Y₂) {g₁ : Y₁ ⟶ Z}
       {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (_ : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
@@ -110,19 +103,16 @@ variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfT
 
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 
--- porting note: commenting out `include`
--- include h hG
-
-/-- `compatible_preserving` functors indeed preserve compatible families. -/
+/-- `CompatiblePreserving` functors indeed preserve compatible families. -/
 theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
     (x.functorPushforward G).Compatible := by
   rintro Z₁ Z₂ W g₁ g₂ f₁' f₂' H₁ H₂ eq
   unfold FamilyOfElements.functorPushforward
   rcases getFunctorPushforwardStructure H₁ with ⟨X₁, f₁, h₁, hf₁, rfl⟩
   rcases getFunctorPushforwardStructure H₂ with ⟨X₂, f₂, h₂, hf₂, rfl⟩
-  suffices : ℱ.val.map (g₁ ≫ h₁).op (x f₁ hf₁) = ℱ.val.map (g₂ ≫ h₂).op (x f₂ hf₂)
-  simpa using this
-  apply hG.Compatible ℱ h _ _ hf₁ hf₂
+  suffices ℱ.val.map (g₁ ≫ h₁).op (x f₁ hf₁) = ℱ.val.map (g₂ ≫ h₂).op (x f₂ hf₂) by
+    simpa using this
+  apply hG.compatible ℱ h _ _ hf₁ hf₂
   simpa using eq
 #align category_theory.presieve.family_of_elements.compatible.functor_pushforward CategoryTheory.Presieve.FamilyOfElements.Compatible.functorPushforward
 
@@ -132,11 +122,8 @@ theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
   unfold FamilyOfElements.functorPushforward
   rcases e₁ : getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
     ⟨X, g, f', hg, eq⟩
-  simpa using hG.Compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
+  simpa using hG.compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
 #align category_theory.compatible_preserving.apply_map CategoryTheory.CompatiblePreserving.apply_map
-
--- porting note: commenting out `omit`
--- omit h hG
 
 open Limits.WalkingCospan
 
@@ -149,10 +136,10 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     (Cones.postcompose (diagramIsoCospan (cospan g₁ g₂ ⋙ G)).inv).obj (PullbackCone.mk f₁ f₂ e)
   /-
     This can then be viewed as a cospan of structured arrows, and we may obtain an arbitrary cone
-    over it since `structured_arrow W u` is cofiltered.
+    over it since `StructuredArrow W u` is cofiltered.
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
-  let c' := IsCofiltered.cone (StructuredArrowCone.toDiagram c ⋙ StructuredArrow.pre _ _ _)
+  let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
   have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
     dsimp
@@ -187,57 +174,85 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F
       (F.map_injective <| by simpa using he)
 #align category_theory.compatible_preserving_of_downwards_closed CategoryTheory.compatiblePreservingOfDownwardsClosed
 
-/-- If `G` is cover-preserving and compatible-preserving,
-then `G.op ⋙ _` pulls sheaves back to sheaves.
+variable (J K)
+
+/-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type w`
+to sheaves. -/
+class Functor.IsContinuous : Prop where
+  op_comp_isSheafOfTypes (G : SheafOfTypes.{w} K) : Presieve.IsSheaf J (F.op ⋙ G.val)
+
+lemma Functor.op_comp_isSheafOfTypes [Functor.IsContinuous.{w} F J K]
+    (G : SheafOfTypes.{w} K) :
+    Presieve.IsSheaf J (F.op ⋙ G.val) :=
+  Functor.IsContinuous.op_comp_isSheafOfTypes _
+
+lemma Functor.isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
+    [Functor.IsContinuous.{w} F₁ J K] : Functor.IsContinuous.{w} F₂ J K where
+  op_comp_isSheafOfTypes G :=
+    Presieve.isSheaf_iso J (isoWhiskerRight (NatIso.op e.symm) _)
+      (F₁.op_comp_isSheafOfTypes J K G)
+
+instance Functor.isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
+  op_comp_isSheafOfTypes G := G.2
+
+lemma Functor.isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ A) (J : GrothendieckTopology C)
+    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
+    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
+    Functor.IsContinuous.{w} (F₁ ⋙ F₂) J L where
+  op_comp_isSheafOfTypes G := F₁.op_comp_isSheafOfTypes J K ⟨_, F₂.op_comp_isSheafOfTypes K L G⟩
+
+lemma Functor.isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ A} {F₁₂ : C ⥤ A}
+    (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
+    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
+    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
+    Functor.IsContinuous.{w} F₁₂ J L := by
+  have := Functor.isContinuous_comp F₁ F₂ J K L
+  apply Functor.isContinuous_of_iso e
+
+lemma Functor.op_comp_isSheaf [Functor.IsContinuous.{v₃} F J K] (G : Sheaf K A) :
+    Presheaf.IsSheaf J (F.op ⋙ G.val) :=
+  fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
+
+variable {F J K}
+
+/-- If `F` is cover-preserving and compatible-preserving,
+then `F` is a continuous functor.
 
 This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 -/
-theorem pullback_isSheaf_of_coverPreserving {G : C ⥤ D} (hG₁ : CompatiblePreserving.{v₃} K G)
-    (hG₂ : CoverPreserving J K G) (ℱ : Sheaf K A) : Presheaf.IsSheaf J (G.op ⋙ ℱ.val) := by
-  intro X U S hS x hx
-  change FamilyOfElements (G.op ⋙ ℱ.val ⋙ coyoneda.obj (op X)) _ at x
-  let H := ℱ.2 X _ (hG₂.cover_preserve hS)
-  let hx' := hx.functorPushforward hG₁ (sheafOver ℱ X)
-  constructor; swap
-  · apply H.amalgamate (x.functorPushforward G)
-    exact hx'
-  constructor
-  · intro V f hf
-    convert H.isAmalgamation hx' (G.map f) (image_mem_functorPushforward G S hf)
-    rw [hG₁.apply_map (sheafOver ℱ X) hx]
-  · intro y hy
-    refine'
-      H.isSeparatedFor _ y _ _ (H.isAmalgamation (hx.functorPushforward hG₁ (sheafOver ℱ X)))
-    rintro V f ⟨Z, f', g', h, rfl⟩
-    -- porting note: didn't need coercion (S : Presieve U) in Lean 3
-    erw [FamilyOfElements.comp_of_compatible (S.functorPushforward G) hx'
-        (image_mem_functorPushforward G (S : Presieve U) h) g']
-    dsimp
-    simp [hG₁.apply_map (sheafOver ℱ X) hx h, ← hy f' h]
-#align category_theory.pullback_is_sheaf_of_cover_preserving CategoryTheory.pullback_isSheaf_of_coverPreserving
+lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
+    (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
+  op_comp_isSheafOfTypes G X S hS x hx := by
+    apply exists_unique_of_exists_of_unique
+    · have H := G.2 _ (hF₂.cover_preserve hS)
+      exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
+        fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
+          (hF₁.apply_map _ hx hf)⟩
+    · intro y₁ y₂ hy₁ hy₂
+      apply (Presieve.isSeparated_of_isSheaf _ _ G.cond _ (hF₂.cover_preserve hS)).ext
+      rintro Y _ ⟨Z, g, h, hg, rfl⟩
+      dsimp
+      simp only [Functor.map_comp, types_comp_apply]
+      have H := (hy₁ g hg).trans (hy₂ g hg).symm
+      dsimp at H
+      rw [H]
 
-/-- The pullback of a sheaf along a cover-preserving and compatible-preserving functor. -/
-def pullbackSheaf {G : C ⥤ D} (hG₁ : CompatiblePreserving K G) (hG₂ : CoverPreserving J K G)
-    (ℱ : Sheaf K A) : Sheaf J A :=
-  ⟨G.op ⋙ ℱ.val, pullback_isSheaf_of_coverPreserving hG₁ hG₂ ℱ⟩
-#align category_theory.pullback_sheaf CategoryTheory.pullbackSheaf
+variable (F J K A)
 
-variable (A)
-
-/-- The induced functor from `Sheaf K A ⥤ Sheaf J A` given by `G.op ⋙ _`
-if `G` is cover-preserving and compatible-preserving.
+/-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `G.op ⋙ _`
+if `G` is a continuous functor.
 -/
-@[simps]
-def Sites.pullback {G : C ⥤ D} (hG₁ : CompatiblePreserving K G) (hG₂ : CoverPreserving J K G) :
+def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
     Sheaf K A ⥤ Sheaf J A where
-  obj ℱ := pullbackSheaf hG₁ hG₂ ℱ
-  map f := ⟨((whiskeringLeft _ _ _).obj G.op).map f.val⟩
+  obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
+  map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
   map_id ℱ := by
     ext1
-    apply ((whiskeringLeft _ _ _).obj G.op).map_id
+    apply ((whiskeringLeft _ _ _).obj F.op).map_id
   map_comp f g := by
     ext1
-    apply ((whiskeringLeft _ _ _).obj G.op).map_comp
-#align category_theory.sites.pullback CategoryTheory.Sites.pullback
+    apply ((whiskeringLeft _ _ _).obj F.op).map_comp
+#align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 end CategoryTheory

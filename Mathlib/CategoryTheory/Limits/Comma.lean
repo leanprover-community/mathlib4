@@ -2,17 +2,14 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.comma
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.StructuredArrow
+
+#align_import category_theory.limits.comma from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Limits and colimits in comma categories
@@ -30,15 +27,15 @@ namespace CategoryTheory
 
 open Category Limits
 
-universe w' w v u₁ u₂ u₃
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {J : Type w} [Category.{w'} J]
 
-variable {A : Type u₁} [Category.{v} A]
+variable {A : Type u₁} [Category.{v₁} A]
 
-variable {B : Type u₂} [Category.{v} B]
+variable {B : Type u₂} [Category.{v₂} B]
 
-variable {T : Type u₃} [Category.{v} T]
+variable {T : Type u₃} [Category.{v₃} T]
 
 namespace Comma
 
@@ -72,8 +69,8 @@ def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L
           w := ((isLimitOfPreserves R t₂).fac (limitAuxiliaryCone F c₁) j).symm }
       naturality := fun j₁ j₂ t => by
         ext
-        . simp [← c₁.w t]
-        . simp [← c₂.w t] }
+        · simp [← c₁.w t]
+        · simp [← c₂.w t] }
 #align category_theory.comma.cone_of_preserves CategoryTheory.Comma.coneOfPreserves
 
 /-- Provided that `R` preserves the appropriate limit, then the cone in `coneOfPreserves` is a
@@ -92,8 +89,8 @@ def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F �
           exact (s.π.app j).w }
   uniq s m w := by
     apply CommaMorphism.ext
-    . exact t₁.uniq ((fst L R).mapCone s) _ (fun j => by simp [← w])
-    . exact t₂.uniq ((snd L R).mapCone s) _ (fun j => by simp [← w])
+    · exact t₁.uniq ((fst L R).mapCone s) _ (fun j => by simp [← w])
+    · exact t₂.uniq ((snd L R).mapCone s) _ (fun j => by simp [← w])
 #align category_theory.comma.cone_of_preserves_is_limit CategoryTheory.Comma.coneOfPreservesIsLimit
 
 /-- (Implementation). An auxiliary cocone which is useful in order to construct colimits
@@ -123,15 +120,15 @@ def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙
           w := (isColimitOfPreserves L t₁).fac (colimitAuxiliaryCocone _ c₂) j }
       naturality := fun j₁ j₂ t => by
         ext
-        . simp [← c₁.w t]
-        . simp [← c₂.w t] }
+        · simp [← c₁.w t]
+        · simp [← c₂.w t] }
 #align category_theory.comma.cocone_of_preserves CategoryTheory.Comma.coconeOfPreserves
 
 /-- Provided that `L` preserves the appropriate colimit, then the cocone in `coconeOfPreserves` is
 a colimit. -/
 def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
-    IsColimit (coconeOfPreserves F t₁ c₂)  where
+    IsColimit (coconeOfPreserves F t₁ c₂) where
   desc s :=
     { left := t₁.desc ((fst L R).mapCocone s)
       right := t₂.desc ((snd L R).mapCocone s)
@@ -143,8 +140,8 @@ def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Coco
           exact (s.ι.app j).w }
   uniq s m w := by
     apply CommaMorphism.ext
-    . exact t₁.uniq ((fst L R).mapCocone s) _ (fun j => by simp [← w])
-    . exact t₂.uniq ((snd L R).mapCocone s) _ (fun j => by simp [← w])
+    · exact t₁.uniq ((fst L R).mapCocone s) _ (fun j => by simp [← w])
+    · exact t₂.uniq ((snd L R).mapCocone s) _ (fun j => by simp [← w])
 #align category_theory.comma.cocone_of_preserves_is_colimit CategoryTheory.Comma.coconeOfPreservesIsColimit
 
 instance hasLimit (F : J ⥤ Comma L R) [HasLimit (F ⋙ fst L R)] [HasLimit (F ⋙ snd L R)]
@@ -156,9 +153,10 @@ instance hasLimitsOfShape [HasLimitsOfShape J A] [HasLimitsOfShape J B]
     [PreservesLimitsOfShape J R] : HasLimitsOfShape J (Comma L R) where
 #align category_theory.comma.has_limits_of_shape CategoryTheory.Comma.hasLimitsOfShape
 
-instance hasLimits [HasLimits A] [HasLimits B] [PreservesLimits R] : HasLimits (Comma L R) :=
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [HasLimitsOfSize.{w, w'} B]
+    [PreservesLimitsOfSize.{w, w'} R] : HasLimitsOfSize.{w, w'} (Comma L R) :=
   ⟨fun _ _ => inferInstance⟩
-#align category_theory.comma.has_limits CategoryTheory.Comma.hasLimits
+#align category_theory.comma.has_limits CategoryTheory.Comma.hasLimitsOfSize
 
 instance hasColimit (F : J ⥤ Comma L R) [HasColimit (F ⋙ fst L R)] [HasColimit (F ⋙ snd L R)]
     [PreservesColimit (F ⋙ fst L R) L] : HasColimit F :=
@@ -169,10 +167,10 @@ instance hasColimitsOfShape [HasColimitsOfShape J A] [HasColimitsOfShape J B]
     [PreservesColimitsOfShape J L] : HasColimitsOfShape J (Comma L R) where
 #align category_theory.comma.has_colimits_of_shape CategoryTheory.Comma.hasColimitsOfShape
 
-instance hasColimits [HasColimits A] [HasColimits B] [PreservesColimits L] :
-    HasColimits (Comma L R) :=
+instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [HasColimitsOfSize.{w, w'} B]
+    [PreservesColimitsOfSize.{w, w'} L] : HasColimitsOfSize.{w, w'} (Comma L R) :=
   ⟨fun _ _ => inferInstance⟩
-#align category_theory.comma.has_colimits CategoryTheory.Comma.hasColimits
+#align category_theory.comma.has_colimits CategoryTheory.Comma.hasColimitsOfSize
 
 end Comma
 
@@ -223,16 +221,17 @@ instance hasLimitsOfShape [HasLimitsOfShape J A] [PreservesLimitsOfShape J G] :
     HasLimitsOfShape J (StructuredArrow X G) where
 #align category_theory.structured_arrow.has_limits_of_shape CategoryTheory.StructuredArrow.hasLimitsOfShape
 
-instance hasLimits [HasLimits A] [PreservesLimits G] : HasLimits (StructuredArrow X G) :=
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [PreservesLimitsOfSize.{w, w'} G] :
+    HasLimitsOfSize.{w, w'} (StructuredArrow X G) :=
   ⟨fun J hJ => by infer_instance⟩
-#align category_theory.structured_arrow.has_limits CategoryTheory.StructuredArrow.hasLimits
+#align category_theory.structured_arrow.has_limits CategoryTheory.StructuredArrow.hasLimitsOfSize
 
 noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
     CreatesLimit F (proj X G) :=
   letI : PreservesLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) G := i
   createsLimitOfReflectsIso fun _ t =>
-    { liftedCone := Comma.coneOfPreserves F pUnitCone t
-      makesLimit := Comma.coneOfPreservesIsLimit _ pUnitConeIsLimit _
+    { liftedCone := Comma.coneOfPreserves F punitCone t
+      makesLimit := Comma.coneOfPreservesIsLimit _ punitConeIsLimit _
       validLift := Cones.ext (Iso.refl _) fun _ => (id_comp _).symm }
 #align category_theory.structured_arrow.creates_limit CategoryTheory.StructuredArrow.createsLimit
 
@@ -240,8 +239,9 @@ noncomputable instance createsLimitsOfShape [PreservesLimitsOfShape J G] :
     CreatesLimitsOfShape J (proj X G) where
 #align category_theory.structured_arrow.creates_limits_of_shape CategoryTheory.StructuredArrow.createsLimitsOfShape
 
-noncomputable instance createsLimits [PreservesLimits G] : CreatesLimits (proj X G : _) where
-#align category_theory.structured_arrow.creates_limits CategoryTheory.StructuredArrow.createsLimits
+noncomputable instance createsLimitsOfSize [PreservesLimitsOfSize.{w, w'} G] :
+    CreatesLimitsOfSize.{w, w'} (proj X G : _) where
+#align category_theory.structured_arrow.creates_limits CategoryTheory.StructuredArrow.createsLimitsOfSize
 
 instance mono_right_of_mono [HasPullbacks A] [PreservesLimitsOfShape WalkingCospan G]
     {Y Z : StructuredArrow X G} (f : Y ⟶ Z) [Mono f] : Mono f.right :=
@@ -270,16 +270,17 @@ instance hasColimitsOfShape [HasColimitsOfShape J A] [PreservesColimitsOfShape J
     HasColimitsOfShape J (CostructuredArrow G X) where
 #align category_theory.costructured_arrow.has_colimits_of_shape CategoryTheory.CostructuredArrow.hasColimitsOfShape
 
-instance hasColimits [HasColimits A] [PreservesColimits G] : HasColimits (CostructuredArrow G X) :=
+instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [PreservesColimitsOfSize.{w, w'} G] :
+    HasColimitsOfSize.{w, w'} (CostructuredArrow G X) :=
   ⟨fun _ _ => inferInstance⟩
-#align category_theory.costructured_arrow.has_colimits CategoryTheory.CostructuredArrow.hasColimits
+#align category_theory.costructured_arrow.has_colimits CategoryTheory.CostructuredArrow.hasColimitsOfSize
 
 noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] :
     CreatesColimit F (proj G X) :=
   letI : PreservesColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) G := i
   createsColimitOfReflectsIso fun _ t =>
-    { liftedCocone := Comma.coconeOfPreserves F t pUnitCocone
-      makesColimit := Comma.coconeOfPreservesIsColimit _ _ pUnitCoconeIsColimit
+    { liftedCocone := Comma.coconeOfPreserves F t punitCocone
+      makesColimit := Comma.coconeOfPreservesIsColimit _ _ punitCoconeIsColimit
       validLift := Cocones.ext (Iso.refl _) fun _ => comp_id _ }
 #align category_theory.costructured_arrow.creates_colimit CategoryTheory.CostructuredArrow.createsColimit
 
@@ -287,8 +288,9 @@ noncomputable instance createsColimitsOfShape [PreservesColimitsOfShape J G] :
     CreatesColimitsOfShape J (proj G X) where
 #align category_theory.costructured_arrow.creates_colimits_of_shape CategoryTheory.CostructuredArrow.createsColimitsOfShape
 
-noncomputable instance createsColimits [PreservesColimits G] : CreatesColimits (proj G X : _) where
-#align category_theory.costructured_arrow.creates_colimits CategoryTheory.CostructuredArrow.createsColimits
+noncomputable instance createsColimitsOfSize [PreservesColimitsOfSize.{w, w'} G] :
+    CreatesColimitsOfSize.{w, w'} (proj G X : _) where
+#align category_theory.costructured_arrow.creates_colimits CategoryTheory.CostructuredArrow.createsColimitsOfSize
 
 instance epi_left_of_epi [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G]
     {Y Z : CostructuredArrow G X} (f : Y ⟶ Z) [Epi f] : Epi f.left :=

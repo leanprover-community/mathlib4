@@ -1,4 +1,5 @@
 import Mathlib.Tactic.SplitIfs
+import Std.Tactic.GuardMsgs
 
 example (x : Nat) (p : Prop) [Decidable p] : x = if p then x else x := by
   split_ifs with h1
@@ -29,19 +30,21 @@ example (p : Prop) [Decidable p] : if if ¬p then p else True then p else ¬p :=
   · exact h
   · exact h
 
-example (p q : Prop) [Decidable p] [Decidable q] :
+theorem foo (p q : Prop) [Decidable p] [Decidable q] :
     if if if p then ¬p else q then p else q then q else ¬p ∨ ¬q := by
   split_ifs with h1 h2 h3
   · exact h2
   · exact Or.inr h2
   · exact Or.inl h1
   · exact Or.inr h3
+/-- info: 'foo' does not depend on any axioms -/
+#guard_msgs in #print axioms foo
 
 example (p : Prop) [Decidable p] (h : (if p then 1 else 2) > 3) : False := by
   split_ifs at h
   cases h
-  · case inl.step h => cases h
-  · case inr h =>
+  · case pos.step h => cases h
+  · case neg h =>
     cases h
     case step h =>
       cases h

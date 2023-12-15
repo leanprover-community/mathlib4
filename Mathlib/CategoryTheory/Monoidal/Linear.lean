@@ -2,14 +2,11 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.linear
-! leanprover-community/mathlib commit 986c4d5761f938b2e1c43c01f001b6d9d88c2055
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Monoidal.Preadditive
+
+#align_import category_theory.monoidal.linear from "leanprover-community/mathlib"@"986c4d5761f938b2e1c43c01f001b6d9d88c2055"
 
 /-!
 # Linear monoidal categories
@@ -25,9 +22,9 @@ open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
 
-variable (R : Type _) [Semiring R]
+variable (R : Type*) [Semiring R]
 
-variable (C : Type _) [Category C] [Preadditive C] [Linear R C]
+variable (C : Type*) [Category C] [Preadditive C] [Linear R C]
 
 variable [MonoidalCategory C]
 
@@ -60,7 +57,7 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
-theorem monoidalLinearOfFaithful {D : Type _} [Category D] [Preadditive D] [Linear R D]
+theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
     [MonoidalCategory D] [MonoidalPreadditive D] (F : MonoidalFunctor D C) [Faithful F.toFunctor]
     [F.toFunctor.Additive] [F.toFunctor.Linear R] : MonoidalLinear R D :=
   { tensor_smul := by

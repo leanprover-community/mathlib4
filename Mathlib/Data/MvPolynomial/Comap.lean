@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.mv_polynomial.comap
-! leanprover-community/mathlib commit aba31c938d3243cc671be7091b28a1e0814647ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
+
+#align_import data.mv_polynomial.comap from "leanprover-community/mathlib"@"aba31c938d3243cc671be7091b28a1e0814647ee"
 
 /-!
 # `comap` operation on `MvPolynomial`
@@ -22,16 +19,16 @@ This file defines the `comap` function on `MvPolynomial`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
 
 
 namespace MvPolynomial
 
-variable {σ : Type _} {τ : Type _} {υ : Type _} {R : Type _} [CommSemiring R]
+variable {σ : Type*} {τ : Type*} {υ : Type*} {R : Type*} [CommSemiring R]
 
 /-- Given an algebra hom `f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R`
 and a variable evaluation `v : τ → R`,

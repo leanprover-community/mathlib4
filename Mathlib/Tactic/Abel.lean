@@ -14,6 +14,8 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 
@@ -146,7 +148,7 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
-  simp [h₁.symm, h₂.symm, termg, add_zsmul]
+  simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
@@ -156,7 +158,7 @@ theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
 /--
-Intepret the sum of two expressions in `abel`'s normal form.
+Interpret the sum of two expressions in `abel`'s normal form.
 -/
 partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
   | zero _, e₂ => do
@@ -212,13 +214,13 @@ theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smul c a = a') :
-  smul c (@term α _ n x a) = term n' x a' := by
+    (h₁ : c * n = n') (h₂ : smul c a = a') :
+    smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smulg c a = a') :
-  smulg c (@termg α _ n x a) = termg n' x a' := by
+    (h₁ : c * n = n') (h₂ : smulg c a = a') :
+    smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
@@ -299,7 +301,7 @@ def evalSMul' (eval : Expr → M (NormalExpr × Expr))
   trace[abel] "Calling NormNum on {e₁}"
   let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
-  match Meta.NormNum.isIntLit e₁' with
+  match e₁'.int? with
   | some n => do
     let c ← read
     let (e₂', p₂) ← eval e₂
@@ -424,10 +426,13 @@ declare_config_elab elabAbelNFConfig AbelNF.Config
 /--
 The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form.
 
+* `s`: a reference to the mutable state of `abel`, for persisting across calls.
+  This ensures that atom ordering is used consistently.
 * `cfg`: the configuration options
 * `e`: the expression to rewrite
 -/
-partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
+partial def abelNFCore
+    (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
     congrTheorems := ← getSimpCongrTheorems }
@@ -452,7 +457,7 @@ partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := d
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
           guard e.isApp -- all interesting group expressions are applications
-          let (a, pa) ← eval e |>.run (← mkContext e) |>.run cfg.red (evalAtom := evalAtom)
+          let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom
           let r ← simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
@@ -467,30 +472,32 @@ partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := d
 
 open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
-def abelNFTarget (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
+def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let r ← abelNFCore cfg tgt
+  let r ← abelNFCore s cfg tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
+    if r.expr == tgt then throwError "abel_nf made no progress"
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `abel_nf` to rewrite hypothesis `h`. -/
-def abelNFLocalDecl (cfg : AbelNF.Config) (fvarId : FVarId) :
+def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← abelNFCore cfg tgt
+  let myres ← abelNFCore s cfg tgt
+  if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
 /-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel`. -/
-syntax (name := abel_term) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+syntax (name := abel_term) "abel" (&" raw" <|> &" term")? (location)? : tactic
 /-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel!`. -/
-syntax (name := abel!_term) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
+syntax (name := abel!_term) "abel!" (&" raw" <|> &" term")? (location)? : tactic
 
 /--
 Simplification tactic for expressions in the language of abelian groups,
@@ -502,14 +509,15 @@ which rewrites all group expressions into a normal form.
 * `abel_nf` works as both a tactic and a conv tactic.
   In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? : tactic => do
+elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  withLocation loc (abelNFLocalDecl cfg) (abelNFTarget cfg)
-    fun _ ↦ throwError "abel_nf failed"
+  let s ← IO.mkRef {}
+  withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
+    fun _ ↦ throwError "abel_nf made no progress"
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
+@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)
 
 @[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? (config)? : conv
@@ -519,7 +527,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
   | `(conv| abel_nf $[!%$tk]? $(_cfg)?) => withMainContext do
     let mut cfg ← elabAbelNFConfig stx[2]
     if tk.isSome then cfg := { cfg with red := .default }
-    Conv.applySimpResult (← abelNFCore cfg (← instantiateMVars (← Conv.getLhs)))
+    Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? : conv => `(conv| abel_nf ! $(cfg)?)
@@ -543,7 +551,7 @@ macro (name := abel) "abel" : tactic =>
 
 /--
 The tactic `abel` evaluates expressions in abelian groups.
-This is the conv tactic version, which rewrites a target which is a abel equality to `True`.
+This is the conv tactic version, which rewrites a target which is an abel equality to `True`.
 
 See also the `abel` tactic.
 -/

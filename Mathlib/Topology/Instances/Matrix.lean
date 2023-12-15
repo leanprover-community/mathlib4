@@ -2,17 +2,14 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Eric Wieser
-
-! This file was ported from Lean 3 source module topology.instances.matrix
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Trace
+
+#align_import topology.instances.matrix from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Topological properties of matrices
@@ -38,7 +35,7 @@ This file is a place to collect topological results about matrices.
 
 open Matrix
 
-variable {X α l m n p S R : Type _} {m' n' : l → Type _}
+variable {X α l m n p S R : Type*} {m' n' : l → Type*}
 
 instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
   Pi.topologicalSpace
@@ -128,7 +125,7 @@ theorem Continuous.matrix_dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [Cont
 @[continuity]
 theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → Matrix m n R} {B : X → Matrix n p R} (hA : Continuous A)
-    (hB : Continuous B) : Continuous fun x => (A x).mul (B x) :=
+    (hB : Continuous B) : Continuous fun x => A x * B x :=
   continuous_matrix fun _ _ =>
     continuous_finset_sum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
 #align continuous.matrix_mul Continuous.matrix_mul
@@ -216,7 +213,6 @@ theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m 
   hA.update i hB
 #align continuous.matrix_update_row Continuous.matrix_updateRow
 
-set_option synthInstance.etaExperiment true in -- lean4#2074
 @[continuity]
 theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     {A : X → Matrix n n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :

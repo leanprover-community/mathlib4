@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
-
-! This file was ported from Lean 3 source module data.list.join
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
+
+#align_import data.list.join from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Join of a list of lists
@@ -18,7 +15,7 @@ in `Init.Data.List.Basic`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -71,7 +68,7 @@ theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join 
 
 @[simp]
 theorem length_join (L : List (List α)) : length (join L) = sum (map length L) := by
-  induction L <;> [rfl, simp only [*, join, map, sum_cons, length_append]]
+  induction L <;> [rfl; simp only [*, join, map, sum_cons, length_append]]
 #align list.length_join List.length_join
 
 @[simp]
@@ -133,18 +130,19 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
 
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 theorem drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum =
       get L i := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take]
-  simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_get]
+  simp only [this, length_map, take_sum_join, drop_sum_join, drop_take_succ_eq_cons_get,
+    join, append_nil]
 
 set_option linter.deprecated false in
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lenghts of sublists of index `< i`, and
+original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
 @[deprecated drop_take_succ_join_eq_get]
 theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.length) :
@@ -155,11 +153,10 @@ theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.
   simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_nthLe _ hi]
 #align list.drop_take_succ_join_eq_nth_le List.drop_take_succ_join_eq_nthLe
 
-set_option linter.deprecated false in
 /-- Auxiliary lemma to control elements in a join. -/
 @[deprecated]
 theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) :
+    (hj : j < (L.get ⟨i, hi⟩).length) :
     ((L.map length).take i).sum + j < ((L.map length).take (i + 1)).sum := by
   simp [hi, sum_take_succ, hj]
 #align list.sum_take_map_length_lt1 List.sum_take_map_length_lt1
@@ -229,5 +226,21 @@ theorem join_reverse (L : List (List α)) :
     L.reverse.join = (List.map List.reverse L).join.reverse := by
   simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
+
+/-- Any member of `l : List (List α))` is a sublist of `l.join` -/
+lemma sublist_join (l : List (List α)) {s : List α} (hs : s ∈ l) :
+    List.Sublist s (l.join) := by
+  induction l with
+  | nil =>
+    exfalso
+    exact not_mem_nil s hs
+  | cons t m ht =>
+    cases mem_cons.mp hs with
+    | inl h =>
+      rw [h]
+      simp only [join_cons, sublist_append_left]
+    | inr h =>
+      simp only [join_cons]
+      exact sublist_append_of_sublist_right (ht h)
 
 end List

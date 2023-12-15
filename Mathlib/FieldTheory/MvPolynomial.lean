@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module field_theory.mv_polynomial
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.MvPolynomial.Basic
+
+#align_import field_theory.mv_polynomial from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Multivariate polynomials over fields
@@ -58,7 +55,6 @@ variable {σ : Type u} {K : Type u} [Field K]
 
 open Classical
 
-set_option synthInstance.etaExperiment true in
 theorem rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]
 #align mv_polynomial.rank_mv_polynomial MvPolynomial.rank_mvPolynomial

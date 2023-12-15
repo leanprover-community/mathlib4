@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.ordered
-! leanprover-community/mathlib commit 78261225eb5cedc61c5c74ecb44e5b385d13b733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.Tactic.FieldSimp
+
+#align_import linear_algebra.affine_space.ordered from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
 
 /-!
 # Ordered modules as affine spaces
@@ -35,7 +32,7 @@ affine space, ordered module, slope
 
 open AffineMap
 
-variable {k E PE : Type _}
+variable {k E PE : Type*}
 
 /-!
 ### Monotonicity of `lineMap`
@@ -93,7 +90,7 @@ theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
 #align left_lt_line_map_iff_lt left_lt_lineMap_iff_lt
 
 theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
-  @left_lt_lineMap_iff_lt k Eᵒᵈ _ _ _ _ _ _ _ h
+  left_lt_lineMap_iff_lt (E := Eᵒᵈ) h
 #align line_map_lt_left_iff_lt lineMap_lt_left_iff_lt
 
 theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
@@ -101,7 +98,7 @@ theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
 #align line_map_lt_right_iff_lt lineMap_lt_right_iff_lt
 
 theorem right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
-  @lineMap_lt_right_iff_lt k Eᵒᵈ _ _ _ _ _ _ _ h
+  lineMap_lt_right_iff_lt (E := Eᵒᵈ) h
 #align right_lt_line_map_iff_lt right_lt_lineMap_iff_lt
 
 end OrderedRing
@@ -143,7 +140,7 @@ theorem left_le_midpoint : a ≤ midpoint k a b ↔ a ≤ b :=
 #align left_le_midpoint left_le_midpoint
 
 theorem lineMap_le_left_iff_le (h : 0 < r) : lineMap a b r ≤ a ↔ b ≤ a :=
-  @left_le_lineMap_iff_le k Eᵒᵈ _ _ _ _ _ _ _ h
+  left_le_lineMap_iff_le (E := Eᵒᵈ) h
 #align line_map_le_left_iff_le lineMap_le_left_iff_le
 
 @[simp]
@@ -161,7 +158,7 @@ theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
 #align midpoint_le_right midpoint_le_right
 
 theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
-  @lineMap_le_right_iff_le k Eᵒᵈ _ _ _ _ _ _ _ h
+  lineMap_le_right_iff_le (E := Eᵒᵈ) h
 #align right_le_line_map_iff_le right_le_lineMap_iff_le
 
 @[simp]
@@ -178,7 +175,7 @@ Given an interval `[a, b]` and a point `c ∈ (a, b)`, `c = lineMap a b r`, ther
 say that the point `(c, f c)` is above/below the segment `[(a, f a), (b, f b)]`:
 
 * compare `f c` to `lineMap (f a) (f b) r`;
-* compare `slope f a c` to `slope `f a b`;
+* compare `slope f a c` to `slope f a b`;
 * compare `slope f c b` to `slope f a b`;
 * compare `slope f a c` to `slope f c b`.
 
@@ -187,7 +184,7 @@ readable, we introduce local notation `c = lineMap a b r`. Then we prove lemmas 
 
 ```
 lemma map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
-  f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b :=
+    f c ≤ lineMap (f a) (f b) r ↔ slope f a c ≤ slope f a b :=
 ```
 
 For each inequality between `f c` and `lineMap (f a) (f b) r` we provide 3 lemmas:
@@ -221,7 +218,7 @@ theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f a b ≤ slope f a c :=
-  @map_le_lineMap_iff_slope_le_slope_left k Eᵒᵈ _ _ _ _ f a b r h
+  map_le_lineMap_iff_slope_le_slope_left (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 #align line_map_le_map_iff_slope_le_slope_left lineMap_le_map_iff_slope_le_slope_left
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is strictly below the
@@ -236,7 +233,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f a b < slope f a c :=
-  @map_lt_lineMap_iff_slope_lt_slope_left k Eᵒᵈ _ _ _ _ f a b r h
+  map_lt_lineMap_iff_slope_lt_slope_left (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 #align line_map_lt_map_iff_slope_lt_slope_left lineMap_lt_map_iff_slope_lt_slope_left
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly below the
@@ -255,7 +252,7 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/
 theorem lineMap_le_map_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a b :=
-  @map_le_lineMap_iff_slope_le_slope_right k Eᵒᵈ _ _ _ _ f a b r h
+  map_le_lineMap_iff_slope_le_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 #align line_map_le_map_iff_slope_le_slope_right lineMap_le_map_iff_slope_le_slope_right
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is strictly below the
@@ -270,7 +267,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a b :=
-  @map_lt_lineMap_iff_slope_lt_slope_right k Eᵒᵈ _ _ _ _ f a b r h
+  map_lt_lineMap_iff_slope_lt_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
 #align line_map_lt_map_iff_slope_lt_slope_right lineMap_lt_map_iff_slope_lt_slope_right
 
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is non-strictly below the
@@ -285,7 +282,7 @@ theorem map_le_lineMap_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
     lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a c :=
-  @map_le_lineMap_iff_slope_le_slope k Eᵒᵈ _ _ _ _ _ _ _ _ hab h₀ h₁
+  map_le_lineMap_iff_slope_le_slope (E := Eᵒᵈ) hab h₀ h₁
 #align line_map_le_map_iff_slope_le_slope lineMap_le_map_iff_slope_le_slope
 
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is strictly below the
@@ -300,7 +297,7 @@ theorem map_lt_lineMap_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a c :=
-  @map_lt_lineMap_iff_slope_lt_slope k Eᵒᵈ _ _ _ _ _ _ _ _ hab h₀ h₁
+  map_lt_lineMap_iff_slope_lt_slope (E := Eᵒᵈ) hab h₀ h₁
 #align line_map_lt_map_iff_slope_lt_slope lineMap_lt_map_iff_slope_lt_slope
 
 end LinearOrderedField

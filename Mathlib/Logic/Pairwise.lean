@@ -2,15 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.pairwise
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relation
 import Mathlib.Init.Set
+import Mathlib.Tactic.Common
+
+#align_import logic.pairwise from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relations holding pairwise
@@ -26,7 +24,7 @@ This file defines pairwise relations.
 
 open Set Function
 
-variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
 
 section Pairwise
 
@@ -49,7 +47,7 @@ theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ �
   forall₂_congr fun _i _j => not_imp_not.symm
 #align function.injective_iff_pairwise_ne Function.injective_iff_pairwise_ne
 
-alias Function.injective_iff_pairwise_ne ↔ Function.Injective.pairwise_ne _
+alias ⟨Function.Injective.pairwise_ne, _⟩ := Function.injective_iff_pairwise_ne
 #align function.injective.pairwise_ne Function.Injective.pairwise_ne
 
 namespace Set

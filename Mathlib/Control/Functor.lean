@@ -2,15 +2,13 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.functor
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
+import Mathlib.Tactic.Basic
 import Std.Tactic.Lint
+
+#align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Functors
@@ -30,9 +28,6 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
-
-attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
-
 universe u v w
 
 section Functor
@@ -43,11 +38,11 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
+theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
-    ((· <$> ·) g ∘ (· <$> ·) f : F α → F γ) = (· <$> ·) (g ∘ f) :=
+    ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext <| fun _ => (comp_map _ _ _).symm
   -- porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 #align functor.map_comp_map Functor.map_comp_map
@@ -79,7 +74,7 @@ namespace Functor
 `α` has a monoid structure, `Const α` has an `Applicative` instance.
 (If `α` has an additive monoid structure, see `Functor.AddConst`.) -/
 @[nolint unusedArguments]
-def Const (α : Type _) (_β : Type _) :=
+def Const (α : Type*) (_β : Type*) :=
   α
 #align functor.const Functor.Const
 
@@ -91,7 +86,7 @@ def Const.mk {α β} (x : α) : Const α β :=
 #align functor.const.mk Functor.Const.mk
 
 /-- `Const.mk'` is `Const.mk` but specialized to map `α` to
-`Const α PUnit`, where `PUnit` is the terminal object in `Type _`. -/
+`Const α PUnit`, where `PUnit` is the terminal object in `Type*`. -/
 def Const.mk' {α} (x : α) : Const α PUnit :=
   x
 #align functor.const.mk' Functor.Const.mk'
@@ -123,10 +118,10 @@ instance {α β} [Inhabited α] : Inhabited (Const α β) :=
 end Const
 
 /-- `AddConst α` is a synonym for constant functor `Const α`, mapping
-every type to `α`. When `α` has a additive monoid structure,
+every type to `α`. When `α` has an additive monoid structure,
 `AddConst α` has an `Applicative` instance. (If `α` has a
 multiplicative monoid structure, see `Functor.Const`.) -/
-def AddConst (α : Type _) :=
+def AddConst (α : Type*) :=
   Const α
 #align functor.add_const Functor.AddConst
 
@@ -187,19 +182,19 @@ variable [Functor F] [Functor G]
 
 /-- The map operation for the composition `Comp F G` of functors `F` and `G`. -/
 protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
-  | Comp.mk x => Comp.mk ((· <$> ·) h <$> x)
+  | Comp.mk x => Comp.mk ((h <$> ·) <$> x)
 #align functor.comp.map Functor.Comp.map
 
 instance functor : Functor (Comp F G) where map := @Comp.map F G _ _
 
 @[functor_norm]
-theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((· <$> ·) h <$> x) :=
+theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((h <$> ·) <$> x) :=
   rfl
 #align functor.comp.map_mk Functor.Comp.map_mk
 
 @[simp]
 protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
-    (h <$> x).run = (· <$> ·) h <$> x.run :=
+    (h <$> x).run = (h <$> ·) <$> x.run :=
   rfl
 #align functor.comp.run_map Functor.Comp.run_map
 
@@ -270,8 +265,8 @@ protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp 
   rfl
 #align functor.comp.run_seq Functor.Comp.run_seq
 
-instance : Applicative (Comp F G) :=
-  { instPureComp with map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
+instance instApplicativeComp : Applicative (Comp F G) :=
+  { map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
 
 end Comp
 

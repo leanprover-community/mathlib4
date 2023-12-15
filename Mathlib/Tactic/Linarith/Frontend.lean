@@ -2,7 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
@@ -58,8 +57,8 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 ## Fourier-Motzkin elimination
 
 The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transorms a set of inequalities in `n` variables to an equisatisfiable set in `n - 1`
-variables. Once all variables have been eliminated, we conclude that the original set was
+This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
 unsatisfiable iff the comparison `0 < 0` is in the resulting set.
 
 While performing this elimination, we track the history of each derived comparison. This allows us
@@ -117,6 +116,8 @@ The components of `linarith` are spread between a number of files for the sake o
 
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
+
+set_option autoImplicit true
 
 open Lean Elab Tactic Meta
 open Std
@@ -220,7 +221,7 @@ If `prefType` is given, it will first use the class of proofs of comparisons ove
 -- If it succeeds, the passed metavariable should have been assigned.
 def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     (hyps : List Expr) : MetaM Unit := do
-  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := do
+  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := g.withContext do
     linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" hyps
     let hyp_set ← partitionByType hyps
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
@@ -229,11 +230,11 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
         proveFalseByLinarith cfg g vs <|>
         findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
-  let preprocessors :=
-    (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
-    cfg.preprocessors.getD defaultPreprocessors
-  -- TODO restore when the `removeNe` preprocessor is implemented
-  -- let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
+  let mut preprocessors := cfg.preprocessors.getD defaultPreprocessors
+  if cfg.splitNe then
+    preprocessors := Linarith.removeNe :: preprocessors
+  if cfg.splitHypotheses then
+    preprocessors := Linarith.splitConjunctions.globalize.branching :: preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
     let r ← singleProcess g es
@@ -263,7 +264,7 @@ if it does not succeed at doing this.
   it will unfold semireducible definitions when trying to match atomic expressions.
 -/
 partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig := {})
-    (g : MVarId) : MetaM Unit := do
+    (g : MVarId) : MetaM Unit := g.withContext do
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
@@ -312,21 +313,23 @@ syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
-Equivalently, it can prove a linear inequality by assuming its negation and proving `false`.
+Equivalently, it can prove a linear inequality by assuming its negation and proving `False`.
 
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
-the rationals. While there is some special handling for non-dense orders like `nat` and `int`,
+the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
 goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
-example (x y z : ℚ) (h1 : 2*x  < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : false :=
+example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
+        (h3 : 12*y - 4* z < 0)  : False :=
 by linarith
 ```
 
 `linarith` will use all appropriate hypotheses and the negation of the goal, if applicable.
+Disequality hypotheses require case splitting and are not normally considered
+(see the `splitNe` option below).
 
 `linarith [t1, t2, t3]` will additionally use proof terms `t1, t2, t3`.
 
@@ -350,6 +353,10 @@ optional arguments:
   it will only unfold `reducible` definitions.
 * If `split_hypotheses` is true, `linarith` will split conjunctions in the context into separate
   hypotheses.
+* If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
+  For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
+  and so this runs linarith exponentially many times with respect to the number of
+  disequality hypotheses. (False by default.)
 * If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `false`.
   (True by default.)
 * `restrict_type` (not yet implemented in mathlib4)
@@ -383,6 +390,13 @@ syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
 @[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
+/-- Elaborate `t` in a way that is suitable for linarith. -/
+def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
+  let (e, mvars) ← elabTermWithHoles t none tactic
+  unless mvars.isEmpty do
+    throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
+  return e
+
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
@@ -390,13 +404,9 @@ declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
   | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
-    liftMetaFinishingTactic <|
-      Linarith.linarith o.isSome
-        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
-        ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
-
--- TODO restore this when `hint` is ported.
--- add_hint_tactic "linarith"
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
+    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
@@ -409,18 +419,12 @@ open Linarith
 
 elab_rules : tactic
   | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let cfg ← elabLinarithConfig (mkOptionalNode cfg)
-    let cfg :=
-    { cfg with
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
+    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := { cfg with
       preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
         [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
-    liftMetaFinishingTactic <|
-      Linarith.linarith o.isSome
-        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
-        (cfg.updateReducibility bang.isSome)
-
--- TODO restore this when `hint` is ported.
--- add_hint_tactic "nlinarith"
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc

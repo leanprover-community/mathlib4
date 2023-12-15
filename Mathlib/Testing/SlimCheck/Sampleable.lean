@@ -6,12 +6,16 @@ Authors: Henrik Böving, Simon Hudon
 import Mathlib.Testing.SlimCheck.Gen
 import Qq
 
+#align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
+
 /-!
 # `SampleableExt` Class
+
 This class permits the creation samples of a given type
-controlling the size of those values using the `Gen` monad`.
+controlling the size of those values using the `Gen` monad.
 
 # `Shrinkable` Class
+
 This class helps minimize examples by creating smaller versions of
 given values.
 
@@ -21,18 +25,20 @@ When testing a proposition like `∀ n : ℕ, prime n → n ≤ 100`,
 `SampleableExt` to generate small examples of ℕ and progressively increase
 in size. For each example `n`, `prime n` is tested. If it is false,
 the example will be rejected (not a test success nor a failure) and
-`SlimCheck` will move on to other examples. If `prime n` is true, `n
-≤ 100` will be tested. If it is false, `n` is a counter-example of `∀
-n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
+`SlimCheck` will move on to other examples. If `prime n` is true,
+`n ≤ 100` will be tested. If it is false, `n` is a counter-example of
+`∀ n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
 the test passes and `SlimCheck` moves on to trying more examples.
 
 This is a port of the Haskell QuickCheck library.
 
 ## Main definitions
-  * `SampleableExt` class
-  * `Shrinkable` class
+
+* `SampleableExt` class
+* `Shrinkable` class
 
 ### `SampleableExt`
+
 `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
 if this is what you want to do then `SampleableExt.mkSelfContained` is
@@ -48,11 +54,13 @@ as interpreted (using `interp`) as an object of the right type. If you
 are using it in the first way, this proxy type will simply be the type
 itself and the `interp` function `id`.
 
-### `Shrinkable
+### `Shrinkable`
+
 Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples.
 
 ## Shrinking
+
 Shrinking happens when `SlimCheck` find a counter-example to a
 property.  It is likely that the example will be more complicated than
 necessary so `SlimCheck` proceeds to shrink it as much as
@@ -72,8 +80,12 @@ argument, we know that `SlimCheck` is guaranteed to terminate.
 random testing
 
 ## References
-  * https://hackage.haskell.org/package/QuickCheck
+
+* https://hackage.haskell.org/package/QuickCheck
+
 -/
+
+set_option autoImplicit true
 
 namespace SlimCheck
 
@@ -148,6 +160,10 @@ instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
 instance Int.shrinkable : Shrinkable Int where
   shrink n := Nat.shrink n.natAbs |>.map (λ x => ([x, -x] : List ℤ)) |>.join
 
+instance Rat.shrinkable : Shrinkable Rat where
+  shrink r :=
+    (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
+
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
 
@@ -156,6 +172,13 @@ instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
   shrink := λ (fst,snd) =>
     let shrink1 := shrA.shrink fst |>.map fun x ↦ (x, snd)
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
+    shrink1 ++ shrink2
+
+instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
+    Shrinkable ((_ : α) × β) where
+  shrink := λ ⟨fst,snd⟩ =>
+    let shrink1 := shrA.shrink fst |>.map fun x ↦ ⟨x, snd⟩
+    let shrink2 := shrB.shrink snd |>.map fun x ↦ ⟨fst, x⟩
     shrink1 ++ shrink2
 
 open Shrinkable
@@ -173,18 +196,24 @@ section Samplers
 open SampleableExt
 
 instance Nat.sampleableExt : SampleableExt Nat :=
-  mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
+  mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
-  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
-    simp [Fin.ofNat, LE.le]
-    exact Nat.zero_le _
-  ))
+  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
+    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
+    exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
   mkSelfContained (do
-    choose Int (-(←getSize)) (←getSize)
+    choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
+
+instance Rat.sampleableExt : SampleableExt Rat :=
+  mkSelfContained (do
+    let d ← choose Int (-(← getSize)) (← getSize)
+      (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
+    let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
+    return Rat.divInt d n)
 
 instance Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained $ chooseAny Bool
@@ -205,7 +234,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
 instance Char.sampleableDefault : SampleableExt Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
-instance Prod.sampleableExt {α β : Type u} [SampleableExt α] [SampleableExt β] :
+instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
     SampleableExt (α × β) where
   proxy := Prod (proxy α) (proxy β)
   proxyRepr := inferInstance

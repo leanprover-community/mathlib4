@@ -2,15 +2,12 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.finite.matrix
-! leanprover-community/mathlib commit b1c23399f01266afe392a0d8f71f599a0dad4f7b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Finrank
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.free_module.finite.matrix from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
 /-!
 # Finite and free modules using matrices
@@ -40,7 +37,6 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
 variable [AddCommGroup N] [Module R N] [Module.Free R N]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Free R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
@@ -51,7 +47,6 @@ instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
 
 variable {R}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 instance Module.Finite.linearMap [Module.Finite R M] [Module.Finite R N] :
     Module.Finite R (M →ₗ[R] N) := by
   cases subsingleton_or_nontrivial R
@@ -88,7 +83,6 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 
 variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The finrank of `M →ₗ[R] N` is `(finrank R M) * (finrank R N)`. -/
 theorem FiniteDimensional.finrank_linearMap :
     finrank R (M →ₗ[R] N) = finrank R M * finrank R N := by

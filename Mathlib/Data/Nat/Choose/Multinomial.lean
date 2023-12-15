@@ -2,11 +2,6 @@
 Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
-
-! This file was ported from Lean 3 source module data.nat.choose.multinomial
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Nat.Choose.Sum
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
+
+#align_import data.nat.choose.multinomial from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # Multinomial
@@ -26,7 +23,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 ## Main results
 
-- `Finest.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
+- `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
 -/
 
@@ -37,7 +34,7 @@ open BigOperators
 
 namespace Nat
 
-variable {α : Type _} (s : Finset α) (f : α → ℕ) {a b : α} (n : ℕ)
+variable {α : Type*} (s : Finset α) (f : α → ℕ) {a b : α} (n : ℕ)
 
 /-- The multinomial coefficient. Gives the number of strings consisting of symbols
 from `s`, where `c ∈ s` appears with multiplicity `f c`.
@@ -129,10 +126,9 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false]
+    h, Ne.def, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
-  rw [add_succ, choose_succ_succ, succ_add_eq_succ_add]
-  simp only
+  rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
 #align nat.binomial_succ_succ Nat.binomial_succ_succ
 
@@ -166,7 +162,7 @@ end Nat
 
 namespace Finsupp
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Alternative multinomial definition based on a finsupp, using the support
   for the big operations
@@ -183,7 +179,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
-    by_cases a ∈ f.support
+    by_cases h : a ∈ f.support
     · rw [← Finset.insert_erase h, Nat.multinomial_insert _ f (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
@@ -197,21 +193,20 @@ end Finsupp
 
 namespace Multiset
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Alternative definition of multinomial based on `Multiset` delegating to the
   finsupp definition
 -/
-noncomputable def multinomial (m : Multiset α) : ℕ :=
+def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 #align multiset.multinomial Multiset.multinomial
 
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
-    m.multinomial = m.card.choose (m.count a) * (m.filter ((· ≠ ·) a)).multinomial := by
+    m.multinomial = m.card.choose (m.count a) * (m.filter (a ≠ ·)).multinomial := by
   dsimp only [multinomial]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
-  · simp only [toFinsupp_apply]
   · ext1 a
     rw [toFinsupp_apply, count_filter, Finsupp.coe_update]
     split_ifs with h
@@ -225,7 +220,7 @@ namespace Finset
 
 /-! ### Multinomial theorem -/
 
-variable {α : Type _} [DecidableEq α] (s : Finset α) {R : Type _}
+variable {α : Type*} [DecidableEq α] (s : Finset α) {R : Type*}
 
 /-- The multinomial theorem
 
@@ -247,21 +242,14 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
         -- Porting note : Lean cannot infer this instance by itself
-      · have : Zero (Sym α 0) := Sym.instZeroSymOfNatNatInstOfNatNat
-        exact ⟨0, by simp⟩
+      · have : Zero (Sym α 0) := Sym.instZeroSym
+        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-      simp only [zero_eq, Sym.val_eq_coe]
-      unfold Multiset.multinomial
-      unfold Finsupp.multinomial
-      unfold Finsupp.prod
-      simp only [factorial, prod_const_one, zero_lt_one, Nat.div_self]
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
-      haveI : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) :=
-      -- Porting note : slightly unusual indendation to fit within the line length limit
-      Finset.instIsEmptySubtypeMemFinsetInstMembershipFinsetEmptyCollectionInstEmptyCollectionFinset
+      haveI : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
@@ -270,7 +258,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
     rw [m.1.1.multinomial_filter_ne a]
-    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not ((· = ·) a), Multiset.map_add]
+    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]

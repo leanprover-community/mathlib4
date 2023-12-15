@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import pytz
 import datetime
 import github
 import os
@@ -22,44 +23,57 @@ if not os.path.exists('port-repos/mathlib'):
 GITHUB_TOKEN_FILE = 'port-repos/github-token'
 github_token = open(GITHUB_TOKEN_FILE).read().strip()
 
-mathlib3_root = 'port-repos/mathlib/src'
-mathlib4_root = 'Mathlib/'
+mathlib3_root = 'port-repos/mathlib'
+mathlib4_root = './'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
 
+align_import_re = re.compile(
+    r'^#align_import ([^ ]*) from "(leanprover-community/[a-z]*)" ?@ ?"([0-9a-f]*)"')
+
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
+    rel = Path(*rel.parts[1:])
     return str(rel.with_suffix('')).replace(os.sep, '.')
 
-graph = nx.DiGraph()
-
+paths = []
 for path in Path(mathlib3_root).glob('**/*.lean'):
-    if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
+    if path.relative_to(mathlib3_root).parts[0] not in ['src', 'archive', 'counterexamples']:
         continue
+    if path.relative_to(mathlib3_root).parts[1] in ['tactic', 'meta']:
+        continue
+    paths.append(path)
+
+graph = nx.DiGraph()
+for path in paths:
     graph.add_node(mk_label(path))
 
-for path in Path(mathlib3_root).glob('**/*.lean'):
-    if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
-        continue
+for path in paths:
     label = mk_label(path)
     for line in path.read_text().split('\n'):
         m = import_re.match(line)
         if m:
             imported = m.group(1)
-            if imported.startswith('tactic.') or imported.startswith('meta.'):
+            if imported.startswith('tactic.') or imported.startswith('meta.') or imported.startswith('.'):
                 continue
             if imported not in graph.nodes:
                 if imported + '.default' in graph.nodes:
                     imported = imported + '.default'
                 else:
-                    imported = 'lean_core.' + imported
+                    imported = imported
             graph.add_edge(imported, label)
 
 def get_mathlib4_module_commit_info(contents):
     module = repo = commit = None
     for line in contents.split('\n'):
+        m = align_import_re.match(line)
+        if m:
+            module = m.group(1)
+            repo = m.group(2)
+            commit = m.group(3)
+            break
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
@@ -67,16 +81,14 @@ def get_mathlib4_module_commit_info(contents):
         if m:
             repo = m.group(1)
             commit = m.group(2)
-        if import_re.match(line):
-            break
     return module, repo, commit
 
 # contains ported files
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
 data = dict()
 for path4 in Path(mathlib4_root).glob('**/*.lean'):
-    if path4.relative_to(mathlib4_root).parts[0] in \
-       ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
+    # we definitely do not want to look in `port-repos` here!
+    if path4.relative_to(mathlib4_root).parts[0] not in ('Mathlib', 'Archive', 'Counterexamples'):
         continue
     module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
@@ -96,10 +108,12 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         mathlib4_pr = None
 
     data[module] = {
-        'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
+        'mathlib4_file': str(path4.relative_to(mathlib4_root)),
         'mathlib4_pr': mathlib4_pr,
         'source': dict(repo=repo, commit=commit)
     }
+
+    graph.add_node(module)
 
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
@@ -107,7 +121,7 @@ nums = []
 sync_prs = defaultdict(set)
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
-    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
+    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0, tzinfo=pytz.UTC):
         continue
     if 'no-source-header' in (l.name for l in pr.labels):
         continue
@@ -132,7 +146,7 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode(encoding='utf8', errors='replace'))
         prs_of_import.setdefault(import_, []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"

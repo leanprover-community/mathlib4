@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.matrix
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.Determinant
+
+#align_import linear_algebra.affine_space.matrix from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Matrix results for barycentric co-ordinates
@@ -39,31 +36,31 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P)
 rows are the barycentric coordinates of `q` with respect to `p`.
 
 It is an affine equivalent of `Basis.toMatrix`. -/
-noncomputable def toMatrix {ι' : Type _} (q : ι' → P) : Matrix ι' ι k :=
+noncomputable def toMatrix {ι' : Type*} (q : ι' → P) : Matrix ι' ι k :=
   fun i j => b.coord j (q i)
 #align affine_basis.to_matrix AffineBasis.toMatrix
 
 @[simp]
-theorem toMatrix_apply {ι' : Type _} (q : ι' → P) (i : ι') (j : ι) :
+theorem toMatrix_apply {ι' : Type*} (q : ι' → P) (i : ι') (j : ι) :
     b.toMatrix q i j = b.coord j (q i) := rfl
 #align affine_basis.to_matrix_apply AffineBasis.toMatrix_apply
 
 @[simp]
 theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := by
-  ext (i j)
+  ext i j
   rw [toMatrix_apply, coord_apply, Matrix.one_eq_pi_single, Pi.single_apply]
 #align affine_basis.to_matrix_self AffineBasis.toMatrix_self
 
-variable {ι' : Type _} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
+variable {ι' : Type*} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
 
-theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : (∑ j, b.toMatrix q i j) = 1 := by
+theorem toMatrix_row_sum_one {ι' : Type*} (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
   simp
 #align affine_basis.to_matrix_row_sum_one AffineBasis.toMatrix_row_sum_one
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a right inverse, then `p` is affine independent. -/
 theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P) {A : Matrix ι ι' k}
-    (hA : b.toMatrix p ⬝ A = 1) : AffineIndependent k p := by
+    (hA : b.toMatrix p * A = 1) : AffineIndependent k p := by
   rw [affineIndependent_iff_eq_of_fintype_affineCombination_eq]
   intro w₁ w₂ hw₁ hw₂ hweq
   have hweq' : (b.toMatrix p).vecMul w₁ = (b.toMatrix p).vecMul w₂ := by
@@ -76,31 +73,31 @@ theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P
       ← Finset.univ.map_affineCombination p w₁ hw₁, ← Finset.univ.map_affineCombination p w₂ hw₂,
       hweq]
   replace hweq' := congr_arg (fun w => A.vecMul w) hweq'
-  simpa only [Matrix.vecMul_vecMul, ← Matrix.mul_eq_mul, hA, Matrix.vecMul_one] using hweq'
+  simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 #align affine_basis.affine_independent_of_to_matrix_right_inv AffineBasis.affineIndependent_of_toMatrix_right_inv
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a left inverse, then `p` spans the entire space. -/
 theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (p : ι' → P)
-    {A : Matrix ι ι' k} (hA : A ⬝ b.toMatrix p = 1) : affineSpan k (range p) = ⊤ := by
+    {A : Matrix ι ι' k} (hA : A * b.toMatrix p = 1) : affineSpan k (range p) = ⊤ := by
   suffices ∀ i, b i ∈ affineSpan k (range p) by
     rw [eq_top_iff, ← b.tot, affineSpan_le]
     rintro q ⟨i, rfl⟩
     exact this i
   intro i
-  have hAi : (∑ j, A i j) = 1 := by
+  have hAi : ∑ j, A i j = 1 := by
     calc
-      (∑ j, A i j) = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
+      ∑ j, A i j = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]
       _ = ∑ l, ∑ j, A i j * b.toMatrix p j l := by rw [Finset.sum_comm]
-      _ = ∑ l, (A ⬝ b.toMatrix p) i l := rfl
+      _ = ∑ l, (A * b.toMatrix p) i l := rfl
       _ = 1 := by simp [hA, Matrix.one_apply, Finset.filter_eq]
   have hbi : b i = Finset.univ.affineCombination k p (A i) := by
     apply b.ext_elem
     intro j
     rw [b.coord_apply, Finset.univ.map_affineCombination _ _ hAi,
       Finset.univ.affineCombination_eq_linear_combination _ _ hAi]
-    change _ = (A ⬝ b.toMatrix p) i j
+    change _ = (A * b.toMatrix p) i j
     simp_rw [hA, Matrix.one_apply, @eq_comm _ i j]
   rw [hbi]
   exact affineCombination_mem_affineSpan hAi p
@@ -120,8 +117,8 @@ theorem toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x
 
 variable [DecidableEq ι]
 
-theorem toMatrix_mul_toMatrix : b.toMatrix b₂ ⬝ b₂.toMatrix b = 1 := by
-  ext (l m)
+theorem toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
+  ext l m
   change (b₂.toMatrix b).vecMul (b.coords (b₂ l)) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]
 #align affine_basis.to_matrix_mul_to_matrix AffineBasis.toMatrix_mul_toMatrix
@@ -137,7 +134,6 @@ theorem isUnit_toMatrix_iff [Nontrivial k] (p : ι → P) :
     IsUnit (b.toMatrix p) ↔ AffineIndependent k p ∧ affineSpan k (range p) = ⊤ := by
   constructor
   · rintro ⟨⟨B, A, hA, hA'⟩, rfl : B = b.toMatrix p⟩
-    rw [Matrix.mul_eq_mul] at hA hA'
     exact ⟨b.affineIndependent_of_toMatrix_right_inv p hA,
       b.affineSpan_eq_top_of_toMatrix_left_inv p hA'⟩
   · rintro ⟨h_tot, h_ind⟩
@@ -166,7 +162,6 @@ theorem toMatrix_inv_vecMul_toMatrix (x : P) :
     Matrix.vecMul_one]
 #align affine_basis.to_matrix_inv_vec_mul_to_matrix AffineBasis.toMatrix_inv_vecMul_toMatrix
 
-set_option synthInstance.etaExperiment true in
 /-- If we fix a background affine basis `b`, then for any other basis `b₂`, we can characterise
 the barycentric coordinates provided by `b₂` in terms of determinants relative to `b`. -/
 theorem det_smul_coords_eq_cramer_coords (x : P) :

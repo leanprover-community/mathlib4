@@ -2,16 +2,14 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.basic
-! leanprover-community/mathlib commit 019ead10c09bb91f49b1b7005d442960b1e0485f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+
+#align_import ring_theory.mv_polynomial.basic from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Multivariate polynomials over commutative rings
@@ -28,8 +26,8 @@ that the monomials form a basis.
 
 ## Main statements
 
-* The multivariate polynomial ring over a commutative ring of positive characteristic has positive
-  characteristic.
+* The multivariate polynomial ring over a commutative semiring of characteristic `p` has
+  characteristic `p`, and similarly for `CharZero`.
 * `basisMonomials`: shows that the monomials form a basis of the vector space of multivariate
   polynomials.
 
@@ -41,15 +39,13 @@ Generalise to noncommutative (semi)rings
 
 noncomputable section
 
-open Classical
-
 open Set LinearMap Submodule
 
 open BigOperators Polynomial
 
 universe u v
 
-variable (σ : Type u) (R : Type v) [CommRing R] (p m : ℕ)
+variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
@@ -60,29 +56,31 @@ instance [CharP R p] : CharP (MvPolynomial σ R) p where
 
 end CharP
 
+section CharZero
+
+instance [CharZero R] : CharZero (MvPolynomial σ R) where
+  cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
+
+end CharZero
+
 section Homomorphism
 
-theorem mapRange_eq_map {R S : Type _} [CommRing R] [CommRing S] (p : MvPolynomial σ R)
+theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
-  -- `Finsupp.mapRange_finset_sum` expects `f : R →+ S`
-  change Finsupp.mapRange (f : R →+ S) (f : R →+ S).map_zero p = map f p
   rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
   refine' Finset.sum_congr rfl fun n _ => _
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
-  simp_all only [AddMonoidHom.coe_coe]
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map
 
 end Homomorphism
 
 section Degree
 
-set_option synthInstance.etaExperiment true in
 /-- The submodule of polynomials of total degree less than or equal to `m`.-/
 def restrictTotalDegree : Submodule R (MvPolynomial σ R) :=
   Finsupp.supported _ _ { n | (n.sum fun _ e => e) ≤ m }
 #align mv_polynomial.restrict_total_degree MvPolynomial.restrictTotalDegree
 
-set_option synthInstance.etaExperiment true in
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
 less than or equal to `m`.-/
 def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
@@ -97,16 +95,15 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
   rfl
 #align mv_polynomial.mem_restrict_total_degree MvPolynomial.mem_restrictTotalDegree
 
-set_option synthInstance.etaExperiment true in
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, Finsupp.mem_supported]
   rfl
 #align mv_polynomial.mem_restrict_degree MvPolynomial.mem_restrictDegree
 
-theorem mem_restrictDegree_iff_sup (p : MvPolynomial σ R) (n : ℕ) :
+theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ i, p.degrees.count i ≤ n := by
-  simp only [mem_restrictDegree, degrees, Multiset.count_finset_sup, Finsupp.count_toMultiset,
+  simp only [mem_restrictDegree, degrees_def, Multiset.count_finset_sup, Finsupp.count_toMultiset,
     Finset.sup_le_iff]
   exact ⟨fun h n s hs => h s hs n, fun h s hs n => h n s hs⟩
 #align mv_polynomial.mem_restrict_degree_iff_sup MvPolynomial.mem_restrictDegree_iff_sup

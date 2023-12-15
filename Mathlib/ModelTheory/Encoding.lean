@@ -2,16 +2,13 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.encoding
-! leanprover-community/mathlib commit 91288e351d51b3f0748f0a38faa7613fb0ae2ada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Encoding
 import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
 import Mathlib.SetTheory.Cardinal.Ordinal
+
+#align_import model_theory.encoding from "leanprover-community/mathlib"@"91288e351d51b3f0748f0a38faa7613fb0ae2ada"
 
 /-! # Encodings and Cardinality of First-Order Syntax
 
@@ -24,7 +21,7 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 `max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
 * `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
 `Σ n, L.BoundedFormula α n` is at most
-`max ℵ₀ (Cardinal.lift.{max u v} (#α) + Cardinal.lift.{u'} L.card)`.
+`max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
 
 ## TODO
 * `Primcodable` instances for terms and formulas, based on the `encoding`s
@@ -42,7 +39,7 @@ namespace Language
 
 variable {L : Language.{u, v}}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
 variable {α : Type u'} {β : Type v'}
 
@@ -120,23 +117,23 @@ theorem listEncode_injective :
   Term.encoding.encode_injective
 #align first_order.language.term.list_encode_injective FirstOrder.Language.Term.listEncode_injective
 
-theorem card_le : (#L.Term α) ≤ max ℵ₀ (#Sum α (Σi, L.Functions i)) :=
+theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
   lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
 #align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
-theorem card_sigma : (#Σn, L.Term (Sum α (Fin n))) = max ℵ₀ (#Sum α (Σi, L.Functions i)) := by
+theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
   refine' le_antisymm _ _
   · rw [mk_sigma]
-    refine' (sum_le_supᵢ_lift _).trans _
+    refine' (sum_le_iSup_lift _).trans _
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
-      csupᵢ_le_iff' (bddAbove_range _)]
+      ciSup_le_iff' (bddAbove_range _)]
     · refine' ⟨le_max_left _ _, fun i => card_le.trans _⟩
       refine' max_le (le_max_left _ _) _
-      rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift (#α)), lift_add,
+      rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
         add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast]
       exact add_le_add_right (nat_lt_aleph0 _).le _
     · rw [← one_le_iff_ne_zero]
-      refine' _root_.trans _ (le_csupᵢ (bddAbove_range _) 1)
+      refine' _root_.trans _ (le_ciSup (bddAbove_range _) 1)
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
@@ -211,7 +208,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
       simp only [SizeOf.sizeOf, List._sizeOf_1, ← add_assoc]
       exact le_max_of_le_right le_add_self⟩
   | Sum.inr (Sum.inl ⟨n, R⟩)::Sum.inr (Sum.inr k)::l =>
-    ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft).get? i).join.isSome then
+    ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft?).get? i).join.isSome then
         if h' : ∀ i, (Option.get _ (h i)).1 = k then
           ⟨k, BoundedFormula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
         else default
@@ -253,7 +250,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
       · simp only [eq_mp_eq_cast, cast_eq, eq_self_iff_true, heq_iff_eq, and_self_iff, nil_append]
       · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
     · rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
-      · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft (List.map (fun i : Fin φ_l =>
+      · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
           Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
             Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
           intro i
@@ -261,7 +258,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
             get?_eq_some, length_append, length_map, length_finRange]
           refine' ⟨lt_of_lt_of_le i.2 le_self_add, _⟩
           rw [get_append, get_map]
-          · simp only [Sum.getLeft, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
+          · simp only [Sum.getLeft?, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
               heq_iff_eq, and_self_iff]
           · simp only [length_map, length_finRange, is_lt]
         rw [dif_pos]
@@ -311,8 +308,8 @@ theorem listEncode_sigma_injective :
   BoundedFormula.encoding.encode_injective
 #align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.BoundedFormula.listEncode_sigma_injective
 
-theorem card_le : (#Σn, L.BoundedFormula α n) ≤
-    max ℵ₀ (Cardinal.lift.{max u v} (#α) + Cardinal.lift.{u'} L.card) := by
+theorem card_le : #(Σn, L.BoundedFormula α n) ≤
+    max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
   refine' lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans _)
   rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,
     max_le_iff]

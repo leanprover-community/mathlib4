@@ -2,11 +2,6 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Adam Topaz, Johan Commelin, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.abelian.exact
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Tactic.TFAE
+
+#align_import category_theory.abelian.exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Exact sequences in abelian categories
@@ -152,7 +149,7 @@ def isColimitCoimage (h : Exact f g) :
       (by rw [← cokernel.π_desc f u hu, ← Category.assoc, h.2, zero_comp]))
     (by aesop_cat) _
   intros _ _ _ _ hm
-  apply coequalizer.hom_ext
+  ext
   rw [hm, cokernel.π_desc]
 #align category_theory.abelian.is_colimit_coimage CategoryTheory.Abelian.isColimitCoimage
 
@@ -366,7 +363,7 @@ variable [PreservesFiniteLimits L] [PreservesFiniteColimits L]
 
 /-- A functor preserving finite limits and finite colimits preserves exactness. The converse
 result is also true, see `Functor.preservesFiniteLimitsOfMapExact` and
-`Functor.preservesFiniteCoimitsOfMapExact`. -/
+`Functor.preservesFiniteColimitsOfMapExact`. -/
 theorem map_exact {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (e1 : Exact f g) :
     Exact (L.map f) (L.map g) := by
   let hcoker := isColimitOfHasCokernelOfPreservesColimit L f

@@ -2,15 +2,12 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
-
-! This file was ported from Lean 3 source module category_theory.category.preorder
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.ULift
+
+#align_import category_theory.category.preorder from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 
@@ -71,7 +68,7 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLE
 
-alias homOfLE ← _root_.LE.le.hom
+alias _root_.LE.le.hom := homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
@@ -91,7 +88,7 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
-alias leOfHom ← _root_.Quiver.Hom.le
+alias _root_.Quiver.Hom.le := leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
 -- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
@@ -108,9 +105,9 @@ theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
-def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
+def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op
-#align category_theory.op_hom_of_le CategoryTheory.opHomOfLe
+#align category_theory.op_hom_of_le CategoryTheory.opHomOfLE
 
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
@@ -129,6 +126,8 @@ instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
 end CategoryTheory
 
 section
+
+open CategoryTheory
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 

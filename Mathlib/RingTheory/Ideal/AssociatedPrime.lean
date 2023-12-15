@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ideal.associated_prime
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Noetherian
+
+#align_import ring_theory.ideal.associated_prime from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -37,7 +34,7 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 -/
 
 
-variable {R : Type _} [CommRing R] (I J : Ideal R) (M : Type _) [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
@@ -53,14 +50,13 @@ def associatedPrimes : Set (Ideal R) :=
 
 variable {I J M R}
 
-variable {M' : Type _} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 #align associate_primes.mem_iff AssociatePrimes.mem_iff
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 #align is_associated_prime.is_prime IsAssociatedPrime.isPrime
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
   obtain ⟨x, rfl⟩ := h.2
@@ -70,7 +66,6 @@ theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Fun
     map_smul, ← f.map_zero, hf.eq_iff]
 #align is_associated_prime.map_of_injective IsAssociatedPrime.map_of_injective
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
     IsAssociatedPrime I M ↔ IsAssociatedPrime I M' :=
   ⟨fun h => h.map_of_injective l l.injective,
@@ -101,7 +96,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   rw [Submodule.mem_annihilator_span_singleton] at ha hab
   have H₁ : (R ∙ y).annihilator ≤ (R ∙ a • y).annihilator := by
     intro c hc
-    rw [Submodule.mem_annihilator_span_singleton] at hc⊢
+    rw [Submodule.mem_annihilator_span_singleton] at hc ⊢
     rw [smul_comm, hc, smul_zero]
   have H₂ : (Submodule.span R {a • y}).annihilator ≠ ⊤ := by
     rwa [Ne.def, Submodule.annihilator_eq_top_iff, Submodule.span_singleton_eq_bot]
@@ -111,12 +106,10 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
 
 variable {R}
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem associatedPrimes.subset_of_injective (hf : Function.Injective f) :
     associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h => h.map_of_injective f hf
 #align associated_primes.subset_of_injective associatedPrimes.subset_of_injective
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
     associatedPrimes R M = associatedPrimes R M' :=
   le_antisymm (associatedPrimes.subset_of_injective l l.injective)
@@ -145,7 +138,6 @@ theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
   exact Submodule.annihilator_mono le_top
 #align is_associated_prime.annihilator_le IsAssociatedPrime.annihilator_le
 
-set_option synthInstance.etaExperiment true in -- Porting note: added
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
   obtain ⟨hJ, x, e⟩ := h

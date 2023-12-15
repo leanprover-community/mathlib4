@@ -2,11 +2,6 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module order.jordan_holder
-! leanprover-community/mathlib commit 91288e351d51b3f0748f0a38faa7613fb0ae2ada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Lattice
 import Mathlib.Data.List.Sort
@@ -14,13 +9,15 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Data.Fintype.Card
 
+#align_import order.jordan_holder from "leanprover-community/mathlib"@"91288e351d51b3f0748f0a38faa7613fb0ae2ada"
+
 /-!
 # Jordan-Hölder Theorem
 
 This file proves the Jordan Hölder theorem for a `JordanHolderLattice`, a class also defined in
 this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a group, and
 `Submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
-seperately for both groups and modules, the proof in this file can be applied to both.
+separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
 The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
@@ -290,7 +287,7 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 theorem ofList_toList (s : CompositionSeries X) :
     ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
   refine' ext_fun _ _
-  · rw [length_ofList, length_toList, Nat.succ_sub_one]
+  · rw [length_ofList, length_toList, Nat.add_one_sub_one]
   · rintro ⟨i, hi⟩
     -- Porting note: Was `dsimp [ofList, toList]; rw [List.nthLe_ofFn']`.
     simp [ofList, toList, -List.ofFn_succ]
@@ -382,8 +379,7 @@ theorem forall_mem_eq_of_length_eq_zero {s : CompositionSeries X} (hs : s.length
 /-- Remove the largest element from a `CompositionSeries`. If the series `s`
 has length zero, then `s.eraseTop = s` -/
 @[simps]
-def eraseTop (s : CompositionSeries X) : CompositionSeries X
-    where
+def eraseTop (s : CompositionSeries X) : CompositionSeries X where
   length := s.length - 1
   series i := s ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
   step' i := by
@@ -415,9 +411,10 @@ theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ 
     x ∈ s.eraseTop := by
   rcases hxs with ⟨i, rfl⟩
   have hi : (i : ℕ) < (s.length - 1).succ := by
-    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx), Nat.succ_sub_one]
+    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx),
+      Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
-  refine' ⟨Fin.castSucc i, _⟩
+  refine' ⟨Fin.castSucc (n := s.length + 1) i, _⟩
   simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
 #align composition_series.mem_erase_top_of_ne_of_mem CompositionSeries.mem_eraseTop_of_ne_of_mem
 
@@ -428,7 +425,7 @@ theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
   constructor
   · rintro ⟨i, rfl⟩
     have hi : (i : ℕ) < s.length := by
-      conv_rhs => rw [← Nat.succ_sub_one s.length, Nat.succ_sub h]
+      conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
     -- Porting note: Was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
@@ -444,7 +441,7 @@ theorem lt_top_of_mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.leng
 theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseTop.top s.top := by
   have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.succ_sub_one s.length]; rw [Nat.succ_sub h]
+    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
   rw [top_eraseTop, top]
   convert s.step ⟨s.length - 1, Nat.sub_lt h zero_lt_one⟩; ext; simp [this]
 #align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseTop_top
@@ -452,7 +449,7 @@ theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
 section FinLemmas
 
 -- TODO: move these to `VecNotation` and rename them to better describe their statement
-variable {α : Type _} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
+variable {α : Type*} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
 
 theorem append_castAdd_aux (i : Fin m) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b
@@ -574,7 +571,8 @@ theorem snoc_castSucc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top 
 
 @[simp]
 theorem bot_snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) :
-    (snoc s x hsat).bot = s.bot := by rw [bot, bot, ← snoc_castSucc s _ _ 0, Fin.castSucc_zero]
+    (snoc s x hsat).bot = s.bot := by
+  rw [bot, bot, ← snoc_castSucc s x hsat 0, Fin.castSucc_zero' (n := s.length + 1)]
 #align composition_series.bot_snoc CompositionSeries.bot_snoc
 
 theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} :
@@ -598,7 +596,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
 theorem eq_snoc_eraseTop {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseTop s) s.top (isMaximal_eraseTop_top h) := by
   ext x
-  simp [mem_snoc, mem_eraseTop h]
+  simp only [mem_snoc, mem_eraseTop h, ne_eq]
   by_cases h : x = s.top <;> simp [*, s.top_mem]
 #align composition_series.eq_snoc_erase_top CompositionSeries.eq_snoc_eraseTop
 
@@ -698,16 +696,17 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
     dsimp only []
     refine' Fin.lastCases _ (fun i => _) i
     · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last, Fin.succ_last, snoc_last,
-        snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, snoc_last]
+        snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
+        snoc_last]
       exact hr₂
     · refine' Fin.lastCases _ (fun i => _) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
-          Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, snoc_last, snoc_last, Fin.succ_last,
-          snoc_last]
+          Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, snoc_last, snoc_last,
+          Fin.succ_last, snoc_last]
         exact hr₁
-      · erw [Equiv.swap_apply_of_ne_of_ne h2 h1, snoc_castSucc, snoc_castSucc, snoc_castSucc,
-          snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc,
-          snoc_castSucc, snoc_castSucc]
+      · erw [Equiv.swap_apply_of_ne_of_ne h2 h1, snoc_castSucc, snoc_castSucc,
+          snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc,
+          Fin.succ_castSucc, snoc_castSucc, snoc_castSucc, snoc_castSucc]
         exact (s.step i).iso_refl⟩
 #align composition_series.equivalent.snoc_snoc_swap CompositionSeries.Equivalent.snoc_snoc_swap
 

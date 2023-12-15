@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
 import Lean
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -25,6 +25,7 @@ open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab
+open Std.Tactic
 
 namespace Mathlib.Tactic.Find
 
@@ -49,7 +50,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isMatcher declName
 
 initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
-  DeclCache.mk "#find: init cache" {} fun _ c headMap ↦ do
+  DeclCache.mk "#find: init cache" failure {} fun _ c headMap ↦ do
     if (← isBlackListed c.name) then
       return headMap
     -- TODO: this should perhaps use `forallTelescopeReducing` instead,
@@ -94,7 +95,7 @@ Inside tactic proofs, the `#find` tactic can be used instead.
 There is also the `find` tactic which looks for
 lemmas which are `apply`able against the current goal.
 -/
-elab "#find" t:term : command =>
+elab "#find " t:term : command =>
   liftTermElabM do
     let t ← Term.elabTerm t none
     Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
@@ -128,7 +129,7 @@ elab "find" : tactic => do
 Tactic version of the `#find` command.
 See also the `find` tactic to search for theorems matching the current goal.
 -/
-elab "#find" t:term : tactic => do
+elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none
   Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
   findType t

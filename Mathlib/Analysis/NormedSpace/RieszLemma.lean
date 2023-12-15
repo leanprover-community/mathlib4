@@ -2,14 +2,12 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.riesz_lemma
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import analysis.normed_space.riesz_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Applications of the Hausdorff distance in normed spaces
@@ -30,11 +28,11 @@ open Set Metric
 
 open Topology
 
-variable {𝕜 : Type _} [NormedField 𝕜]
+variable {𝕜 : Type*} [NormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [SeminormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- Riesz's lemma, which usually states that it is possible to find a
 vector with norm 1 whose distance to a closed proper subspace is
@@ -53,7 +51,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
         hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
     let r' := max r 2⁻¹
     have hr' : r' < 1 := by
-      simp [hr]
+      simp only [ge_iff_le, max_lt_iff, hr, true_and]
       norm_num
     have hlt : 0 < r' := lt_of_lt_of_le (by norm_num) (le_max_right r 2⁻¹)
     have hdlt : d < d / r' := (lt_div_iff hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
@@ -66,7 +64,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
     refine' ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt _⟩
     have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
     calc
-      r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg _)
+      r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
       _ < d := by
         rw [← dist_eq_norm]
         exact (lt_div_iff' hlt).1 hxy₀
@@ -76,7 +74,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
 
 /--
 A version of Riesz lemma: given a strict closed subspace `F`, one may find an element of norm `≤ R`
-which is at distance  at least `1` of every element of `F`. Here, `R` is any given constant
+which is at distance at least `1` of every element of `F`. Here, `R` is any given constant
 strictly larger than the norm of an element of norm `> 1`. For a version without an `R`, see
 `riesz_lemma`.
 
@@ -101,18 +99,17 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   have yy' : y = d • y' := by simp [smul_smul, mul_inv_cancel d0]
   calc
     1 = ‖c‖ / R * (R / ‖c‖) := by field_simp [Rpos.ne', (zero_lt_one.trans hc).ne']
-    _ ≤ ‖c‖ / R * ‖d • x‖ := (mul_le_mul_of_nonneg_left ledx (div_nonneg (norm_nonneg _) Rpos.le))
+    _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
-      simp [norm_smul]
+      simp only [norm_smul]
       ring
-    _ ≤ ‖d‖ * ‖x - y'‖ :=
-      (mul_le_mul_of_nonneg_left (hx y' (by simp [Submodule.smul_mem _ _ hy])) (norm_nonneg _))
-    _ = ‖d • x - y‖ := by rw [yy', ←smul_sub, norm_smul]
+    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
+    _ = ‖d • x - y‖ := by rw [yy', ← smul_sub, norm_smul]
 #align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
-    closedBall x (infDist x (sᶜ)) ⊆ closure s := by
-  cases' eq_or_ne (infDist x (sᶜ)) 0 with h₀ h₀
+    closedBall x (infDist x sᶜ) ⊆ closure s := by
+  cases' eq_or_ne (infDist x sᶜ) 0 with h₀ h₀
   · rw [h₀, closedBall_zero']
     exact closure_mono (singleton_subset_iff.2 hx)
   · rw [← closure_ball x h₀]

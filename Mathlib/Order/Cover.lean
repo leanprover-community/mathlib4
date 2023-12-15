@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
-
-! This file was ported from Lean 3 source module order.cover
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Order.Antisymmetrization
+
+#align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # The covering relation
@@ -28,7 +25,7 @@ is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 open Set OrderDual
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section WeaklyCovers
 
@@ -54,8 +51,7 @@ theorem Wcovby.refl (a : α) : a ⩿ a :=
   ⟨le_rfl, fun _ hc => hc.not_lt⟩
 #align wcovby.refl Wcovby.refl
 
-theorem Wcovby.rfl : a ⩿ a :=
-  Wcovby.refl a
+@[simp] lemma Wcovby.rfl : a ⩿ a := Wcovby.refl a
 #align wcovby.rfl Wcovby.rfl
 
 protected theorem Eq.wcovby (h : a = b) : a ⩿ b :=
@@ -66,7 +62,7 @@ theorem wcovby_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
   ⟨h1, fun _ hac hcb => (hac.trans hcb).not_le h2⟩
 #align wcovby_of_le_of_le wcovby_of_le_of_le
 
-alias wcovby_of_le_of_le ← LE.le.wcovby_of_le
+alias LE.le.wcovby_of_le := wcovby_of_le_of_le
 
 theorem AntisymmRel.wcovby (h : AntisymmRel (· ≤ ·) a b) : a ⩿ b :=
   wcovby_of_le_of_le h.1 h.2
@@ -113,6 +109,12 @@ theorem wcovby_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
   and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
 #align wcovby_iff_Ioo_eq wcovby_iff_Ioo_eq
 
+lemma Wcovby.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
+  ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
+
+lemma Wcovby.of_le_of_le' (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : a ⩿ b :=
+  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
+
 theorem Wcovby.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
   ⟨f.le_iff_le.mp h.le, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 #align wcovby.of_image Wcovby.of_image
@@ -130,7 +132,7 @@ theorem Set.OrdConnected.apply_wcovby_apply_iff (f : α ↪o β) (h : (range f).
 #align set.ord_connected.apply_wcovby_apply_iff Set.OrdConnected.apply_wcovby_apply_iff
 
 @[simp]
-theorem apply_wcovby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
+theorem apply_wcovby_apply_iff {E : Type*} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
   (ordConnected_range (e : α ≃o β)).apply_wcovby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_wcovby_apply_iff apply_wcovby_apply_iff
 
@@ -144,10 +146,10 @@ theorem ofDual_wcovby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_wcovby_of_dual_iff ofDual_wcovby_ofDual_iff
 
-alias toDual_wcovby_toDual_iff ↔ _ Wcovby.toDual
+alias ⟨_, Wcovby.toDual⟩ := toDual_wcovby_toDual_iff
 #align wcovby.to_dual Wcovby.toDual
 
-alias ofDual_wcovby_ofDual_iff ↔ _ Wcovby.ofDual
+alias ⟨_, Wcovby.ofDual⟩ := ofDual_wcovby_ofDual_iff
 #align wcovby.of_dual Wcovby.ofDual
 
 end Preorder
@@ -169,7 +171,7 @@ theorem wcovby_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → 
 
 theorem Wcovby.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
   refine' ⟨fun h2 => h.eq_or_eq h2.1 h2.2, _⟩; rintro (rfl | rfl);
-  exacts[⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
+  exacts [⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
 #align wcovby.le_and_le_iff Wcovby.le_and_le_iff
 
 theorem Wcovby.Icc_eq (h : a ⩿ b) : Icc a b = {a, b} := by
@@ -231,10 +233,10 @@ theorem not_covby_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [Covby, h, true_and_iff, not_forall, exists_prop, not_not]
 #align not_covby_iff not_covby_iff
 
-alias not_covby_iff ↔ exists_lt_lt_of_not_covby _
+alias ⟨exists_lt_lt_of_not_covby, _⟩ := not_covby_iff
 #align exists_lt_lt_of_not_covby exists_lt_lt_of_not_covby
 
-alias exists_lt_lt_of_not_covby ← LT.lt.exists_lt_lt
+alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covby
 
 /-- In a dense order, nothing covers anything. -/
 theorem not_covby [DenselyOrdered α] : ¬a ⋖ b := fun h =>
@@ -257,10 +259,10 @@ theorem ofDual_covby_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b �
   and_congr_right' <| forall_congr' fun _ => forall_swap
 #align of_dual_covby_of_dual_iff ofDual_covby_ofDual_iff
 
-alias toDual_covby_toDual_iff ↔ _ Covby.toDual
+alias ⟨_, Covby.toDual⟩ := toDual_covby_toDual_iff
 #align covby.to_dual Covby.toDual
 
-alias ofDual_covby_ofDual_iff ↔ _ Covby.ofDual
+alias ⟨_, Covby.ofDual⟩ := ofDual_covby_ofDual_iff
 #align covby.of_dual Covby.ofDual
 
 end LT
@@ -292,6 +294,12 @@ theorem Wcovby.covby_of_not_le (h : a ⩿ b) (h2 : ¬b ≤ a) : a ⋖ b :=
 theorem Wcovby.covby_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
   ⟨h2, h.2⟩
 #align wcovby.covby_of_lt Wcovby.covby_of_lt
+
+lemma Covby.of_le_of_lt (hac : a ⋖ c) (hab : a ≤ b) (hbc : b < c) : b ⋖ c :=
+  ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
+
+lemma Covby.of_lt_of_le (hac : a ⋖ c) (hab : a < b) (hbc : b ≤ c) : a ⋖ b :=
+  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
 
 theorem not_covby_of_lt_of_lt (h₁ : a < b) (h₂ : b < c) : ¬a ⋖ c :=
   (not_covby_iff (h₁.trans h₂)).2 ⟨b, h₁, h₂⟩
@@ -356,7 +364,7 @@ theorem Set.OrdConnected.apply_covby_apply_iff (f : α ↪o β) (h : (range f).O
 #align set.ord_connected.apply_covby_apply_iff Set.OrdConnected.apply_covby_apply_iff
 
 @[simp]
-theorem apply_covby_apply_iff {E : Type _} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
+theorem apply_covby_apply_iff {E : Type*} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
   (ordConnected_range (e : α ≃o β)).apply_covby_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_covby_apply_iff apply_covby_apply_iff
 
@@ -386,10 +394,10 @@ theorem wcovby_iff_eq_or_covby : a ⩿ b ↔ a = b ∨ a ⋖ b :=
   wcovby_iff_covby_or_eq.trans or_comm
 #align wcovby_iff_eq_or_covby wcovby_iff_eq_or_covby
 
-alias wcovby_iff_covby_or_eq ↔ Wcovby.covby_or_eq _
+alias ⟨Wcovby.covby_or_eq, _⟩ := wcovby_iff_covby_or_eq
 #align wcovby.covby_or_eq Wcovby.covby_or_eq
 
-alias wcovby_iff_eq_or_covby ↔ Wcovby.eq_or_covby _
+alias ⟨Wcovby.eq_or_covby, _⟩ := wcovby_iff_eq_or_covby
 #align wcovby.eq_or_covby Wcovby.eq_or_covby
 
 theorem Covby.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c = b :=
@@ -469,20 +477,63 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
 end LinearOrder
 
 namespace Set
+variable {s t : Set α} {a : α}
 
-theorem wcovby_insert (x : α) (s : Set α) : s ⩿ insert x s := by
+@[simp] lemma wcovby_insert (x : α) (s : Set α) : s ⩿ insert x s := by
   refine' wcovby_of_eq_or_eq (subset_insert x s) fun t hst h2t => _
   by_cases h : x ∈ t
-  · exact Or.inr (subset_antisymm h2t <| insert_subset.mpr ⟨h, hst⟩)
+  · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
   · refine' Or.inl (subset_antisymm _ hst)
     rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
 #align set.wcovby_insert Set.wcovby_insert
 
-theorem covby_insert {x : α} {s : Set α} (hx : x ∉ s) : s ⋖ insert x s :=
-  (wcovby_insert x s).covby_of_lt <| ssubset_insert hx
+@[simp] lemma sdiff_singleton_wcovby (s : Set α) (a : α) : s \ {a} ⩿ s := by
+  by_cases ha : a ∈ s
+  · convert wcovby_insert a _
+    ext
+    simp [ha]
+  · simp [ha]
+
+@[simp] lemma covby_insert (ha : a ∉ s) : s ⋖ insert a s :=
+  (wcovby_insert _ _).covby_of_lt $ ssubset_insert ha
 #align set.covby_insert Set.covby_insert
 
+@[simp] lemma sdiff_singleton_covby (ha : a ∈ s) : s \ {a} ⋖ s :=
+  ⟨sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _, (sdiff_singleton_wcovby _ _).2⟩
+
+lemma _root_.Covby.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t :=
+  let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
+  ⟨a, ha, (hst.eq_of_not_ssuperset $ h.2 $ ssubset_insert ha).symm⟩
+
+lemma _root_.Covby.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
+  let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
+  ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' $
+    sdiff_lt (singleton_subset_iff.2 ha) $ singleton_ne_empty _).symm⟩
+
+lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t :=
+  ⟨Covby.exists_set_insert, by rintro ⟨a, ha, rfl⟩; exact covby_insert ha⟩
+
+lemma covby_iff_exists_sdiff_singleton : s ⋖ t ↔ ∃ a ∈ t, t \ {a} = s :=
+  ⟨Covby.exists_set_sdiff_singleton, by rintro ⟨a, ha, rfl⟩; exact sdiff_singleton_covby ha⟩
+
 end Set
+
+section Relation
+
+open Relation
+
+lemma wcovby_eq_reflGen_covby [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+  ext x y; simp_rw [wcovby_iff_eq_or_covby, @eq_comm _ x, reflGen_iff]
+
+lemma transGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
+    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+  rw [wcovby_eq_reflGen_covby, transGen_reflGen]
+
+lemma reflTransGen_wcovby_eq_reflTransGen_covby [PartialOrder α] :
+    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+  rw [wcovby_eq_reflGen_covby, reflTransGen_reflGen]
+
+end Relation
 
 namespace Prod
 
@@ -500,7 +551,7 @@ theorem swap_covby_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
 
 theorem fst_eq_or_snd_eq_of_wcovby : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
   refine' fun h => of_not_not fun hab => _
-  push_neg  at hab
+  push_neg at hab
   exact
     h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)
       (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)

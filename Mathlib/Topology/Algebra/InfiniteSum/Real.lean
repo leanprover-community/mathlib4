@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.real
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Instances.Real
+
+#align_import topology.algebra.infinite_sum.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sum in the reals
@@ -20,7 +17,7 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums.
 
 open Filter Finset BigOperators NNReal Topology
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
@@ -40,7 +37,7 @@ theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → �
   rw [edist_comm]
   -- Then use `hf` to simplify the goal to the same form
   refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ => hf _) ?_
-  exact_mod_cast hN.1
+  exact mod_cast hN.1
 #align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
 
 variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}

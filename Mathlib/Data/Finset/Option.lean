@@ -2,23 +2,20 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
-
-! This file was ported from Lean 3 source module data.finset.option
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
 
+#align_import data.finset.option from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
+
 /-!
-# Finite sets in `option α`
+# Finite sets in `Option α`
 
 In this file we define
 
 * `Option.toFinset`: construct an empty or singleton `Finset α` from an `Option α`;
 * `Finset.insertNone`: given `s : Finset α`, lift it to a finset on `Option α` using `Option.some`
   and then insert `Option.none`;
-* `Finset.eraseNone`: given `s : Finset (option α)`, returns `t : Finset α` such that
+* `Finset.eraseNone`: given `s : Finset (Option α)`, returns `t : Finset α` such that
   `x ∈ t ↔ some x ∈ s`.
 
 Then we prove some basic lemmas about these definitions.
@@ -29,7 +26,7 @@ finset, option
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Function
 
@@ -75,8 +72,15 @@ theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s
   | some a => Multiset.mem_cons.trans <| by simp
 #align finset.mem_insert_none Finset.mem_insertNone
 
+lemma forall_mem_insertNone {s : Finset α} {p : Option α → Prop} :
+    (∀ a ∈ insertNone s, p a) ↔ p none ∧ ∀ a ∈ s, p a := by simp [Option.forall]
+
 theorem some_mem_insertNone {s : Finset α} {a : α} : some a ∈ insertNone s ↔ a ∈ s := by simp
 #align finset.some_mem_insert_none Finset.some_mem_insertNone
+
+lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
+
+lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
 
 @[simp]
 theorem card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
@@ -94,11 +98,14 @@ theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ 
   simp [eraseNone]
 #align finset.mem_erase_none Finset.mem_eraseNone
 
-theorem eraseNone_eq_bunionᵢ [DecidableEq α] (s : Finset (Option α)) :
-    eraseNone s = s.bunionᵢ Option.toFinset := by
+lemma forall_mem_eraseNone {s : Finset (Option α)} {p : Option α → Prop} :
+    (∀ a ∈ eraseNone s, p a) ↔ ∀ a : α, (a : Option α) ∈ s → p a := by simp [Option.forall]
+
+theorem eraseNone_eq_biUnion [DecidableEq α] (s : Finset (Option α)) :
+    eraseNone s = s.biUnion Option.toFinset := by
   ext
   simp
-#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_bunionᵢ
+#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_biUnion
 
 @[simp]
 theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by

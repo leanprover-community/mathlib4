@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module order.partition.equipartition
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Equitable
 import Mathlib.Order.Partition.Finpartition
+
+#align_import order.partition.equipartition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Finite equipartitions
@@ -27,7 +24,7 @@ open Finset Fintype
 
 namespace Finpartition
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} (P : Finpartition s)
+variable {α : Type*} [DecidableEq α] {s t : Finset α} (P : Finpartition s)
 
 /-- An equipartition is a partition whose parts are all the same size, up to a difference of `1`. -/
 def IsEquipartition : Prop :=
@@ -42,6 +39,10 @@ theorem isEquipartition_iff_card_parts_eq_average :
 #align finpartition.is_equipartition_iff_card_parts_eq_average Finpartition.isEquipartition_iff_card_parts_eq_average
 
 variable {P}
+
+lemma not_isEquipartition :
+    ¬P.IsEquipartition ↔ ∃ a ∈ P.parts, ∃ b ∈ P.parts, Finset.card b + 1 < Finset.card a :=
+  Set.not_equitableOn
 
 theorem Set.Subsingleton.isEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
     P.IsEquipartition :=

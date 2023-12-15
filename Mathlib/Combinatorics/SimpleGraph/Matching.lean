@@ -2,14 +2,11 @@
 Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.matching
-! leanprover-community/mathlib commit 138448ae98f529ef34eeb61114191975ee2ca508
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+
+#align_import combinatorics.simple_graph.matching from "leanprover-community/mathlib"@"138448ae98f529ef34eeb61114191975ee2ca508"
 
 /-!
 # Matchings

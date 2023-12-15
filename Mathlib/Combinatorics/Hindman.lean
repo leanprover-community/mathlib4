@@ -2,15 +2,12 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module combinatorics.hindman
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Data.Stream.Init
+
+#align_import combinatorics.hindman from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Hindman's theorem on finite sums
@@ -144,9 +141,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
   · rcases h with ⟨U, hU, U_idem⟩
     refine' ⟨U, U_idem, _⟩
-    convert Set.mem_interᵢ.mp hU 0
+    convert Set.mem_iInter.mp hU 0
   · exact Ultrafilter.continuous_mul_left
-  · apply IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed
+  · apply IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
     · intro n U hU
       apply Eventually.mono hU
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
@@ -156,9 +153,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     · exact (ultrafilter_isClosed_basic _).isCompact
     · intro n
       apply ultrafilter_isClosed_basic
-  · exact IsClosed.isCompact (isClosed_interᵢ fun i => ultrafilter_isClosed_basic _)
+  · exact IsClosed.isCompact (isClosed_iInter fun i => ultrafilter_isClosed_basic _)
   · intro U hU V hV
-    rw [Set.mem_interᵢ] at *
+    rw [Set.mem_iInter] at *
     intro n
     rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
     apply Eventually.mono (hU n)
@@ -220,7 +217,7 @@ contains an FP-set. -/
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
   let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
-  let ⟨c, cs, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset aU scov)
+  let ⟨c, cs, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset aU scov)
   ⟨c, cs, exists_FP_of_large U idem c hc⟩
 set_option linter.uppercaseLean3 false in
 #align hindman.FP_partition_regular Hindman.FP_partition_regular
@@ -236,7 +233,7 @@ theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M
     (scov : ⊤ ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ a : Stream' M, FP a ⊆ c :=
   let ⟨U, hU⟩ :=
     exists_idempotent_of_compact_t2_of_continuous_mul_left (@Ultrafilter.continuous_mul_left M _)
-  let ⟨c, c_s, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset univ_mem scov)
+  let ⟨c, c_s, hc⟩ := (Ultrafilter.finite_sUnion_mem_iff sfin).mp (mem_of_superset univ_mem scov)
   ⟨c, c_s, exists_FP_of_large U hU c hc⟩
 set_option linter.uppercaseLean3 false in
 #align hindman.exists_FP_of_finite_cover Hindman.exists_FP_of_finite_cover
@@ -255,7 +252,7 @@ set_option linter.uppercaseLean3 false in
 #align hindman.FS_iter_tail_sub_FS Hindman.FS_iter_tail_sub_FS
 
 @[to_additive]
-theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.nth i ∈ FP a := by
+theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get i ∈ FP a := by
   induction' i with i ih generalizing a
   · apply FP.head
   · apply FP.tail
@@ -267,7 +264,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
-    a.nth i * a.nth j ∈ FP a := by
+    a.get i * a.get j ∈ FP a := by
   refine' FP_drop_subset_FP _ i _
   rw [← Stream'.head_drop]
   apply FP.cons
@@ -275,7 +272,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
-  rw [Stream'.tail_eq_drop, Stream'.nth_drop, Stream'.nth_drop] at this
+  rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
   convert this
   rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
 set_option linter.uppercaseLean3 false in
@@ -285,7 +282,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
-    (s.prod fun i => a.nth i) ∈ FP a := by
+    (s.prod fun i => a.get i) ∈ FP a := by
   refine' FP_drop_subset_FP _ (s.min' hs) _
   induction' s using Finset.strongInduction with s ih
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
