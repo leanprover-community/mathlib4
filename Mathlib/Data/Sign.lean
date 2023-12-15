@@ -286,6 +286,21 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
   classical simp [Finset.coe_insert]
 #align sign_type.range_eq SignType.range_eq
 
+@[simp, norm_cast] lemma SignType.cast_mul {α} [MulZeroOneClass α] [HasDistribNeg α]
+    (a b : SignType) :
+    ((a * b : SignType) : α) = (a : α) * b := by
+  simp_rw [← SignType.castHom_apply, map_mul]
+
+@[simp, norm_cast] lemma SignType.cast_pow {α} [MonoidWithZero α] [HasDistribNeg α]
+    (a : SignType) (k : Nat) :
+    ((a ^ k : SignType) : α) = (a : α) ^ k := by
+  simp_rw [← SignType.castHom_apply, map_pow]
+
+@[simp, norm_cast] lemma SignType.cast_zpow {α} [GroupWithZero α] [HasDistribNeg α]
+    (a : SignType) (k : Int) :
+    ((a ^ k : SignType) : α) = (a : α) ^ k := by
+  simp_rw [← SignType.castHom_apply, map_zpow₀]
+
 end SignType
 
 variable {α : Type*}
