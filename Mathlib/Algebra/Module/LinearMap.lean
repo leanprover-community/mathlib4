@@ -1375,6 +1375,22 @@ theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f 
   rfl
 #align linear_map.smul_right_apply LinearMap.smulRight_apply
 
+@[simp]
+lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext; simp
+
+@[simp]
+lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
+
+@[simp]
+lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
+  rcases eq_or_ne x 0 with rfl | hx; simp
+  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
+  ext v
+  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
+  rw [smul_eq_zero] at h
+  tauto
+
 end SMulRight
 
 end AddCommMonoid
