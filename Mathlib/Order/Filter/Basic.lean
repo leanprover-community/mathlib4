@@ -181,7 +181,7 @@ theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f
 #align filter.congr_sets Filter.congr_sets
 
 /-- Override `sets` field of a filter to provide better definitional equality. -/
-protected def copy (f : Filter α) (S : Set (Set α)) (hmem : ∀ s, s ∈ f ↔ s ∈ S) : Filter α where
+protected def copy (f : Filter α) (S : Set (Set α)) (hmem : ∀ s, s ∈ s ↔ s ∈ f) : Filter α where
   sets := S
   univ_sets := (hmem _).mp univ_mem
   sets_of_superset h hsub := (hmem _).1 <| mem_of_superset ((hmem _).2 h) hsub
