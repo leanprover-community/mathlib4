@@ -240,10 +240,10 @@ theorem getLsb_eq_of_getLsb' {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb' i 
     ∀ (i : ℕ), x.getLsb i = y.getLsb i := by
   simp only [getLsb, testBit]
   intro i
-  by_cases hi : i < w
+  cases' lt_or_le i w with hi hi
   · exact h ⟨i, hi⟩
   · have (z : BitVec w) : z.toNat < 2 ^ i :=
-      Nat.lt_of_lt_of_le z.toNat_lt (pow_le_pow (le_succ 1) (Nat.not_lt.mp hi))
+      Nat.lt_of_lt_of_le z.toNat_lt (pow_le_pow (le_succ 1) hi)
     rw [Nat.shiftRight_eq_zero_of_lt (this x), Nat.shiftRight_eq_zero_of_lt (this y)]
 
 /-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_msb` -/
