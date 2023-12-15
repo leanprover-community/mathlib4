@@ -175,14 +175,14 @@ section CompatibleSMul
 variable (R S M N ι : Type*)
 variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S N]
 
-instance LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
+instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
   map_smul f r m := by
     conv_rhs => rw [← sum_single m, map_finsupp_sum, smul_sum]
     erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsupp_sum]
     congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
 
-instance LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
+instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι →₀ N) R S where
   map_smul f r m := by ext i; apply ((lapply i).comp f).map_smul_of_tower
 
