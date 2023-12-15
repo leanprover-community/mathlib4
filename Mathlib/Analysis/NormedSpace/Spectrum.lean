@@ -248,7 +248,7 @@ theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded �
 
 end resolvent
 
-section OneSubSmul
+section OneSubSMul
 
 open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 
@@ -320,7 +320,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
   exact DifferentiableAt.comp z (differentiableAt_inverse hu) H₁.differentiableAt
 #align spectrum.differentiable_on_inverse_one_sub_smul spectrum.differentiableOn_inverse_one_sub_smul
 
-end OneSubSmul
+end OneSubSMul
 
 section GelfandFormula
 

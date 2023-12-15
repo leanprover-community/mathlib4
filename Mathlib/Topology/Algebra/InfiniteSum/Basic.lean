@@ -1345,7 +1345,7 @@ theorem Summable.countable_support [FirstCountableTopology G] [T1Space G]
 
 end TopologicalGroup
 
-section ConstSmul
+section ConstSMul
 
 variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
   [ContinuousConstSMul γ α] {f : β → α}
@@ -1395,7 +1395,7 @@ lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [Continuou
   change ¬ Summable (mul_g ∘ f)
   rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
 
-end ConstSmul
+end ConstSMul
 
 /-! ### Product and pi types -/
 
