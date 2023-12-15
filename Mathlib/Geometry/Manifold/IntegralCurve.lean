@@ -341,8 +341,6 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt t₀ hv I.isInteriorPoint
 
-variable (I)
-
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
@@ -360,6 +358,8 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
     ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
     mfderiv_chartAt_eq_tangentCoordChange I hsrc]
   rfl
+
+variable {t₀}
 
 /-- Local integral curves are unique.
 
@@ -439,7 +439,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
       (Real.ball_eq_Ioo _ _ ▸ (Metric.mem_ball_self hε)) hcont _ hmem hcont' _ hmem' (by simp [h])
     · intros t ht
       rw [hv']
-      have := hmfd.hasDerivAt I t₀ ht (hsrc t ht)
+      have := hmfd.hasDerivAt t₀ ht (hsrc t ht)
       apply this.congr_deriv
       have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
@@ -447,7 +447,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
       rw [this]
     · intros t ht
       rw [hv', h]
-      have := hmfd'.hasDerivAt I t₀ ht (hsrc' t ht)
+      have := hmfd'.hasDerivAt t₀ ht (hsrc' t ht)
       apply this.congr_deriv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
@@ -502,7 +502,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
       intro t₁ ht₁
       rw [mem_nhds_iff]
       obtain ⟨ε, hε, heqon⟩ : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) :=
-        isIntegralCurveAt_eqOn_of_contMDiffAt I _ (hip _ ht₁.2) hv.contMDiffAt
+        isIntegralCurveAt_eqOn_of_contMDiffAt (hip _ ht₁.2) hv.contMDiffAt
           (hγ.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
           (hγ'.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
           ht₁.1
@@ -531,7 +531,7 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
       constructor <;> linarith
     · rw [abs_of_nonneg (not_lt.mp ht)]
       constructor <;> linarith
-  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff I t₀
+  exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff
     (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ => hip t) hv
     (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
     (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
