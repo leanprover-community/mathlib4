@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.NumberField.Discriminant
 
 #align_import number_theory.number_field.class_number from "leanprover-community/mathlib"@"d0259b01c82eed3f50390a60404c63faf9e60b1f"
 
@@ -44,6 +44,34 @@ variable {K}
 theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (ringOfIntegers K) :=
   card_classGroup_eq_one_iff
 #align number_field.class_number_eq_one_iff NumberField.classNumber_eq_one_iff
+
+open FiniteDimensional NumberField.InfinitePlace
+
+open scoped nonZeroDivisors Real
+
+theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
+    ∃ I : (Ideal (𝓞 K))⁰, ClassGroup.mk0 I = C ∧
+      Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ NrComplexPlaces K *
+        ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
+  obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
+  obtain ⟨a, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K J
+  obtain ⟨I₀, hI⟩ := Ideal.dvd_iff_le.mpr <|
+    (Ideal.span_singleton_le_iff_mem J).mpr (Submodule.coe_mem a)
+  have : I₀ ≠ 0 := by
+    contrapose! h_nz
+    rw [h_nz, mul_zero, show 0 = (⊥ : Ideal (𝓞 K)) by rfl, Ideal.span_singleton_eq_bot] at hI
+    exact Submodule.coe_eq_zero.mp hI
+  let I := (⟨I₀, mem_nonZeroDivisors_iff_ne_zero.mpr this⟩ : (Ideal (𝓞 K))⁰)
+  refine ⟨I, ?_, ?_⟩
+  · suffices ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ by rw [this, hJ, inv_inv]
+    rw [ClassGroup.mk0_eq_mk0_inv_iff]
+    exact ⟨a, by rwa [ne_eq, Submodule.coe_eq_zero.not], by rw [mul_comm, hI]⟩
+  · rw [← Algebra.coe_norm_int, ← Int.cast_abs, ← Int.cast_natAbs, ← Ideal.absNorm_span_singleton,
+      hI, map_mul, Nat.cast_mul, Rat.cast_mul, Rat.cast_coe_nat, Rat.cast_coe_nat,
+      show Ideal.absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl, mul_div_assoc, mul_assoc,
+      mul_assoc] at h_nm
+    refine le_of_mul_le_mul_of_pos_left h_nm ?_
+    exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| ideal_absNorm_ne_zero K J
 
 end NumberField
 
