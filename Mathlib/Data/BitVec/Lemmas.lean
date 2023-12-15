@@ -194,6 +194,28 @@ lemma toFin_ofNat (n : ℕ) :
 end
 
 /-!
+### Distributivity of `Std.BitVec.toNat`
+-/
+
+section
+variable (x y : BitVec w)
+open BitVec (toNat)
+
+@[simp] lemma toNat_and : (x &&& y).toNat = x.toNat &&& y.toNat := rfl
+@[simp] lemma toNat_xor : (x ^^^ y).toNat = x.toNat ^^^ y.toNat := rfl
+
+/- `Std.BitVec.toNat_add` and `Std.BitVec.toNat_or` already exist in Std. -/
+
+lemma toNat_mul : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ w           := rfl
+lemma toNat_sub : (x - y).toNat = (x.toNat + (2 ^ w - y.toNat)) % 2 ^ w := rfl
+
+lemma toNat_neg : (-x).toNat = (2 ^ w - x.toNat) % 2 ^ w := by
+  simp only [Neg.neg, BitVec.neg, BitVec.sub_eq, toNat_sub, ofNat_eq_ofNat, toNat_ofNat, zero_mod,
+    zero_add]
+
+end
+
+/-!
 ### `IntCast`
 -/
 
@@ -212,5 +234,95 @@ instance : CommSemiring (BitVec w) :=
   toFin_injective.commSemiring _
     toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
     toFin_pow toFin_natCast
+
+/-!
+## Extensionality
+-/
+
+/-- If two bitvectors agree on all in-bound bits, then they agree on all bits -/
+private lemma getLsb_eq_of_getLsb' {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb' i = y.getLsb' i) :
+    ∀ (i : ℕ), x.getLsb i = y.getLsb i := by
+  simp only [getLsb, testBit]
+  intro i
+  cases' lt_or_le i w with hi hi
+  · exact h ⟨i, hi⟩
+  · have (z : BitVec w) : z.toNat < 2 ^ i :=
+      Nat.lt_of_lt_of_le z.toNat_lt (pow_le_pow_right (le_succ 1) hi)
+    rw [Nat.shiftRight_eq_zero_iff_lt.mpr (this x), Nat.shiftRight_eq_zero_iff_lt.mpr (this y)]
+
+/-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_msb` -/
+@[ext]
+theorem ext_lsb {x y : BitVec w} (h : ∀ i, x.getLsb' i = y.getLsb' i) : x = y := by
+  apply toNat_inj.mp
+  apply Nat.eq_of_testBit_eq
+  simp only [testBit_toNat]
+  exact getLsb_eq_of_getLsb' h
+
+theorem getLsb'_rev (x : BitVec w) (i : Fin w) :
+    x.getLsb' i.rev = x.getMsb' i := by
+  simp [getMsb', getMsb, getLsb', tsub_add_eq_tsub_tsub_swap]
+
+theorem getMsb'_rev (x : BitVec w) (i : Fin w) :
+    x.getMsb' i.rev = x.getLsb' i := by
+  rw [← getLsb'_rev, Fin.rev_involutive]
+
+/-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_lsb` -/
+theorem ext_msb {x y : BitVec w} (h : ∀ i, x.getMsb' i = y.getMsb' i) : x = y := by
+  ext i; simpa [← getLsb'_rev] using h i.rev
+
+/-!
+### Distributivity of `Std.BitVec.getLsb'`
+-/
+
+section
+variable (x y : BitVec w) (i : Fin w)
+
+@[simp] lemma getLsb'_and : (x &&& y).getLsb' i = (x.getLsb' i && y.getLsb' i) := by
+  simp only [getLsb', getLsb, toNat_and, testBit_land]
+
+@[simp] lemma getLsb'_or : (x ||| y).getLsb' i = (x.getLsb' i || y.getLsb' i) := by
+  simp only [getLsb', getLsb, toNat_or, testBit_lor]
+
+@[simp] lemma getLsb'_xor : (x ^^^ y).getLsb' i = (xor (x.getLsb' i) (y.getLsb' i)) := by
+  simp only [getLsb', getLsb, toNat_xor, testBit_xor]
+
+@[simp] lemma getLsb'_not : (~~~x).getLsb' i = !(x.getLsb' i) := by
+  simp only [getLsb', getLsb, Complement.complement, BitVec.not, toNat_xor, toNat_ofFin,
+    testBit_xor, Nat.testBit_ones, Fin.is_lt, decide_True, Bool.true_xor]
+
+@[simp] lemma getLsb'_ofNat_zero : getLsb' 0#w i = false := by
+  simp only [getLsb', getLsb, toNat_ofNat, zero_mod, zero_testBit]
+
+proof_wanted getLsb'_negOne : getLsb' (-1) i = true
+
+end
+
+/-!
+### Distributivity of `Std.BitVec.getMsb'`
+-/
+
+section
+variable (x y : BitVec w) (i : Fin w)
+
+@[simp] lemma getMsb'_and : (x &&& y).getMsb' i = (x.getMsb' i && y.getMsb' i) := by
+  simp only [← getLsb'_rev, getLsb'_and]
+
+@[simp] lemma getMsb'_or : (x ||| y).getMsb' i = (x.getMsb' i || y.getMsb' i) := by
+  simp only [← getLsb'_rev, getLsb'_or]
+
+@[simp] lemma getMsb'_xor : (x ^^^ y).getMsb' i = (xor (x.getMsb' i) (y.getMsb' i)) := by
+  simp only [← getLsb'_rev, getLsb'_xor]
+
+@[simp] lemma getMsb'_not : (~~~x).getMsb' i = !(x.getMsb' i) := by
+  simp only [← getLsb'_rev, getLsb'_not]
+
+@[simp] lemma getMsb'_ofNat_zero : getMsb' 0#w i = false := by
+  simp only [← getLsb'_rev, getLsb'_ofNat_zero]
+
+proof_wanted getMsb'_negOne : getMsb' (-1) i = true
+  -- Once we have `getLsb'_negOne`, this lemma trivially follows by
+  --   `simp only [← getLsb'_rev, getLsb'_negOne]`
+
+end
 
 end Std.BitVec
