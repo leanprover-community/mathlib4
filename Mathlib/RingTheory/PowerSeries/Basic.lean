@@ -2128,8 +2128,8 @@ theorem coeff_prod [HasPiAntidiagonal ι ℕ]
   simp only [PowerSeries.coeff]
   haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
   convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
-  have := Finset.mapRange_piAntidiagonal_eq (ι := ι)
-    (AddEquiv.finsuppUnique (ι := Unit)) s (AddEquiv.finsuppUnique.symm d)
+  have := Finset.HasPiAntidiagonal.mapRange_piAntidiagonal_eq
+    (e := AddEquiv.finsuppUnique (ι := Unit)) (s := s) (n := AddEquiv.finsuppUnique.symm d)
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv,
     AddEquiv.apply_symm_apply] at this
   rw [← this, Finset.sum_map]
