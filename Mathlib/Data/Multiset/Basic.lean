@@ -2154,7 +2154,7 @@ lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
   simp [(· ∘ ·), map_filter, hf.eq_iff]
 #align multiset.map_filter' Multiset.map_filter'
 
-lemma filter_card_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
+lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     card (s.filter P) ≤ n ↔ ∀ s' ≤ s, n < card s' → ∃ a ∈ s', ¬ P a := by
   fconstructor
   · intro H s' hs' s'_card
