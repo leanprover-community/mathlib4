@@ -10,29 +10,40 @@ import Mathlib.Algebra.Module.LinearMap
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
 
-variable {n : ℕ} {M M₁ : Type*} [AddCommGroup M] [AddCommGroup M₁]
-  [Module (ZMod n) M] [Module (ZMod n) M₁]
+variable {n : ℕ} {M M₁ : Type*}
 
-namespace ZMod
+/-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
+Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
+See note [reducible non-instances]. -/
+@[reducible]
+def AddCommMonoid.ZModModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
+    Module (ZMod n) M := by
+  have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
+    suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
+    rw [Nat.mod_add_div']
+  cases n; cases NeZero.ne 0 rfl
+  exact {
+    smul := fun (c : Fin _) x ↦ c.val • x
+    smul_zero := fun _ ↦ nsmul_zero _
+    zero_smul := fun _ ↦ zero_nsmul _
+    smul_add := fun _ _ _ ↦ nsmul_add _ _ _
+    one_smul := fun _ ↦ (h_mod _ _).trans <| one_nsmul _
+    add_smul := fun _ _ _ ↦ (h_mod _ _).trans <| add_nsmul _ _ _
+    mul_smul := fun _ _ _ ↦ (h_mod _ _).trans <| mul_nsmul' _ _ _
+  }
 
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
 @[reducible]
-def module {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) : Module (ZMod n) G := by
-  have h_mod (c : ℕ) (x : G) : (c % n) • x = c • x := by
-    apply add_right_cancel (b := (c / n * n) • x)
-    rw [← add_nsmul, Nat.mod_add_div', mul_nsmul, h, add_zero]
-  exact match n with
+def AddCommGroup.ZModModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
+    Module (ZMod n) G :=
+  match n with
   | 0 => AddCommGroup.intModule G
-  | n + 1 => {
-      smul := fun (c : Fin (n + 1)) x ↦ c.val • x
-      smul_zero := fun _ ↦ nsmul_zero _
-      zero_smul := fun _ ↦ zero_nsmul _
-      smul_add := fun _ _ _ ↦ nsmul_add _ _ _
-      one_smul := fun _ ↦ (h_mod _ _).trans <| one_nsmul _
-      add_smul := fun _ _ _ ↦ (h_mod _ _).trans <| add_nsmul _ _ _
-      mul_smul := fun _ _ _ ↦ (h_mod _ _).trans <| mul_nsmul' _ _ _
-    }
+  | _ + 1 => AddCommMonoid.ZModModule h
+
+variable [AddCommGroup M] [AddCommGroup M₁] [Module (ZMod n) M] [Module (ZMod n) M₁]
+
+namespace ZMod
 
 theorem map_smul (f : M →+ M₁) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   cases n with
