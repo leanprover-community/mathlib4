@@ -94,9 +94,9 @@ instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
-  have : ((Scheme.Spec.obj <| op R).toPresheafedSpace).presheaf.stalk x ≅
-    CommRingCat.of (Localization.AtPrime x.asIdeal) := StructureSheaf.stalkIso R x
-  exact isReduced_of_injective this.hom this.commRingCatIsoToRingEquiv.injective
+  rw [show (Scheme.Spec.obj <| op R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
+  exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
+    (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Scheme.Spec.obj <| op R) ↔ _root_.IsReduced R := by

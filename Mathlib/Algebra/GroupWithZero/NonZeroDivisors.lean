@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Devon Tuma
+Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.GroupTheory.Submonoid.Membership
@@ -13,7 +13,8 @@ import Mathlib.GroupTheory.Subgroup.MulOpposite
 # Non-zero divisors and smul-divisors
 
 In this file we define the submonoid `nonZeroDivisors` and `nonZeroSMulDivisors` of a
-`MonoidWithZero`.
+`MonoidWithZero`. We also define `nonZeroDivisorsLeft` and `nonZeroDivisorsRight` for
+non-commutative monoids.
 
 ## Notations
 
@@ -27,6 +28,50 @@ your own code.
 
 -/
 
+variable (M₀ : Type*) [MonoidWithZero M₀]
+
+/-- The collection of elements of a `MonoidWithZero` that are not left zero divisors form a
+`Submonoid`. -/
+def nonZeroDivisorsLeft : Submonoid M₀ where
+  carrier := {x | ∀ y, y * x = 0 → y = 0}
+  one_mem' := by simp
+  mul_mem' {x} {y} hx hy := fun z hz ↦ hx _ <| hy _ (mul_assoc z x y ▸ hz)
+
+@[simp] lemma mem_nonZeroDivisorsLeft_iff {x : M₀} :
+    x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, y * x = 0 → y = 0 :=
+  Iff.rfl
+
+/-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
+`Submonoid`. -/
+def nonZeroDivisorsRight : Submonoid M₀ where
+  carrier := {x | ∀ y, x * y = 0 → y = 0}
+  one_mem' := by simp
+  mul_mem' := fun {x} {y} hx hy z hz ↦ hy _ (hx _ ((mul_assoc x y z).symm ▸ hz))
+
+@[simp] lemma mem_nonZeroDivisorsRight_iff {x : M₀} :
+    x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 :=
+  Iff.rfl
+
+lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
+    nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
+  ext x; simp [mul_comm x]
+
+@[simp] lemma coe_nonZeroDivisorsLeft_eq [NoZeroDivisors M₀] [Nontrivial M₀] :
+    nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} := by
+  ext x
+  simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, forall_eq_or_imp, true_and,
+    Set.mem_setOf_eq]
+  refine' ⟨fun h ↦ _, fun hx y hx' ↦ by contradiction⟩
+  contrapose! h
+  exact ⟨1, h, one_ne_zero⟩
+
+@[simp] lemma coe_nonZeroDivisorsRight_eq [NoZeroDivisors M₀] [Nontrivial M₀] :
+    nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} := by
+  ext x
+  simp only [SetLike.mem_coe, mem_nonZeroDivisorsRight_iff, mul_eq_zero, Set.mem_setOf_eq]
+  refine' ⟨fun h ↦ _, fun hx y hx' ↦ by aesop⟩
+  contrapose! h
+  exact ⟨1, Or.inl h, one_ne_zero⟩
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
 def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
@@ -95,6 +140,20 @@ theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r 
 theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=
   mul_cancel_left_mem_nonZeroDivisors c.prop
 #align mul_cancel_left_coe_non_zero_divisor mul_cancel_left_coe_nonZeroDivisors
+
+theorem dvd_cancel_right_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : x * r ∣ y * r ↔ x ∣ y :=
+  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_right_mem_nonZeroDivisors hr, mul_assoc, mul_comm z r,
+    ← mul_assoc]⟩, fun ⟨z, h⟩ ↦ ⟨z, by rw [h, mul_assoc, mul_comm z r, ← mul_assoc]⟩⟩
+
+theorem dvd_cancel_right_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : x * c ∣ y * c ↔ x ∣ y :=
+  dvd_cancel_right_mem_nonZeroDivisors c.prop
+
+theorem dvd_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x ∣ r * y ↔ x ∣ y :=
+  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_left_mem_nonZeroDivisors hr, ← mul_assoc]⟩,
+    fun ⟨z, h⟩ ↦ ⟨z, by rw [h, ← mul_assoc]⟩⟩
+
+theorem dvd_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : c * x ∣ c * y ↔ x ∣ y :=
+  dvd_cancel_left_mem_nonZeroDivisors c.prop
 
 theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 := fun h ↦
   one_ne_zero (hx _ <| (one_mul _).trans h)

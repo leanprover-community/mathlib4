@@ -31,7 +31,7 @@ namespace AddHom
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := .asFn)]
 def mulLeft [Distrib R] (r : R) : AddHom R R where
-  toFun := (· * ·) r
+  toFun := (r * ·)
   map_add' := mul_add r
 #align add_hom.mul_left AddHom.mulLeft
 #align add_hom.mul_left_apply AddHom.mulLeft_apply

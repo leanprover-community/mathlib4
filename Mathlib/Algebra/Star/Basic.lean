@@ -488,9 +488,9 @@ export StarModule (star_smul)
 attribute [simp] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
-instance StarSemigroup.to_starModule [CommMonoid R] [StarMul R] : StarModule R R :=
+instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
-#align star_semigroup.to_star_module StarSemigroup.to_starModule
+#align star_semigroup.to_star_module StarMul.toStarModule
 
 namespace RingHomInvPair
 
