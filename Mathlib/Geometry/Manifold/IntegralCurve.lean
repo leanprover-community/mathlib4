@@ -457,7 +457,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
     · intros t ht
       rw [hv', h]
       have := hmfd'.hasDerivAt I t₀ ht (hsrc' t ht)
-      apply this.hasFDerivAt.congr_fderiv
+      apply this.congr_fderiv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
         exact hsrc' t ht
