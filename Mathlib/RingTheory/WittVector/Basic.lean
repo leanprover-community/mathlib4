@@ -165,7 +165,7 @@ elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
-    wittNSMul, wittZSMul, HSMul.hsmul, SMul.smul]
+    wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa (config := { unfoldPartialApp := true }) [WittVector.ghostFun, aeval_rename, aeval_bind₁,
     comp, uncurry, peval, eval] using this
   )))

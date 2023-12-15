@@ -438,11 +438,11 @@ protected irreducible_def smul [SMul R (FractionRing K[X])] : R → RatFunc K �
 instance [SMul R (FractionRing K[X])] : SMul R (RatFunc K) :=
   ⟨RatFunc.smul⟩
 
--- porting note: added `SMul.hsmul`.  using `simp?` produces `simp only [smul_def]`
+-- porting note: added `SMul.hSMul`.  using `simp?` produces `simp only [smul_def]`
 -- that does not close the goal
 theorem ofFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
     ofFractionRing (c • p) = c • ofFractionRing p := by
-  simp only [SMul.smul, HSMul.hsmul, RatFunc.smul]
+  simp only [SMul.smul, HSMul.hSMul, RatFunc.smul]
 #align ratfunc.of_fraction_ring_smul RatFunc.ofFractionRing_smul
 
 theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : RatFunc K) :

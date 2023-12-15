@@ -321,11 +321,11 @@ end NoZeroSMulDivisors
 open Lean.Meta Qq
 
 /-- Positivity extension for HSMul, i.e. (_ • _).  -/
-@[positivity HSMul.hsmul _ _]
+@[positivity HSMul.hSMul _ _]
 def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
-        (.const ``HSMul.hsmul [u1, _, _]) (M : Q(Type u1))) _) _) _)
-          (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match hsmul"
+        (.const ``HSMul.hSMul [u1, _, _]) (M : Q(Type u1))) _) _) _)
+          (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
   let zM : Q(Zero $M) ← synthInstanceQ (q(Zero $M))
   let pM : Q(PartialOrder $M) ← synthInstanceQ (q(PartialOrder $M))
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the

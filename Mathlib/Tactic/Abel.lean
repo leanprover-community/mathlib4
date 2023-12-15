@@ -349,9 +349,9 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     evalSMul' eval true e e₁ e₂
   | (``SMul.smul, #[.const ``Nat _, _, _, e₁, e₂]) =>
     evalSMul' eval false e e₁ e₂
-  | (``HSMul.hsmul, #[.const ``Int _, _, _, _, e₁, e₂]) =>
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, e₁, e₂]) =>
     evalSMul' eval true e e₁ e₂
-  | (``HSMul.hsmul, #[.const ``Nat _, _, _, _, e₁, e₂]) =>
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, e₁, e₂]) =>
     evalSMul' eval false e e₁ e₂
   | (``smul, #[_, _, e₁, e₂]) => evalSMul' eval false e e₁ e₂
   | (``smulg, #[_, _, e₁, e₂]) => evalSMul' eval true e e₁ e₂

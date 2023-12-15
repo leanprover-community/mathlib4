@@ -1013,7 +1013,7 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   match n, c.rα, c.dα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _
-  | ``HSMul.hsmul, _, _
+  | ``HSMul.hSMul, _, _
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _
   | ``Neg.neg, some _, _
   | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
@@ -1046,7 +1046,7 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨c, vc, p⟩ := evalMul sα va vb
       pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
     | _ => els
-  | ``HSMul.hsmul, _, _ => match e with
+  | ``HSMul.hSMul, _, _ => match e with
     | ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b

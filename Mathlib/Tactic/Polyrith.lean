@@ -144,7 +144,7 @@ partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   | ``HMul.hMul, _ | ``Mul.mul, _ => match e with
     | ~q($a * $b) => pure <| (← parse sα c a).mul (← parse sα c b)
     | _ => els
-  | ``HSMul.hsmul, _ => match e with
+  | ``HSMul.hSMul, _ => match e with
     | ~q(($a : ℕ) • ($b : «$α»)) => pure <| (← parse sℕ .nat a).mul (← parse sα c b)
     | _ => els
   | ``HPow.hPow, _ | ``Pow.pow, _ => match e with
