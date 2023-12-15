@@ -469,10 +469,9 @@ theorem insert_nil (a : α) : insert a nil = [a] :=
   rfl
 #align list.insert_nil List.insert_nil
 
-@[deprecated]
-theorem insert.def (a : α) (l : List α) : insert a l = if l.elem a then l else a :: l :=
+theorem insert_eq_ite (a : α) (l : List α) : insert a l = if l.elem a then l else a :: l :=
   rfl
-#align list.insert.def List.insert.def
+#align list.insert.def List.insert_eq_ite
 
 #align list.insert_of_mem List.insert_of_mem
 #align list.insert_of_not_mem List.insert_of_not_mem
