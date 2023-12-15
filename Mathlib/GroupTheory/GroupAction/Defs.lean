@@ -709,7 +709,7 @@ def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsSca
     M →* N where
   toFun x := x • (1 : N)
   map_one' := one_smul _ _
-  map_mul' x y := by dsimp; rw [smul_one_mul, smul_smul]
+  map_mul' x y := by rw [smul_one_mul, smul_smul]
 #align smul_one_hom MonoidHom.smulOneHom
 #align vadd_zero_hom AddMonoidHom.vaddZeroHom
 #align smul_one_hom_apply MonoidHom.smulOneHom_apply
