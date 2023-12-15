@@ -498,31 +498,26 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
       localization_surjective (nonZeroDivisors (R ⧸ p)) (FractionRing (R ⧸ p))⟩).isField _
     <| Field.toIsField <| FractionRing (R ⧸ p)
 
-open BigOperators in
+variable (R) in
+lemma prime_spectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
+  let Spec := {I : Ideal R | I.IsPrime}
+  obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
+    (range <| (Finset.inf · (fun x ↦ x.1) : Finset Spec → Ideal R)) ⟨⊤, ⟨∅, by simp⟩⟩
+  refine ⟨⟨s, fun p ↦ ?_⟩⟩
+  obtain ⟨q, ⟨hq1, hq2⟩⟩ : ∃ q ∈ s, q ≤ p
+  · classical
+    specialize H (p ⊓ s.inf fun x ↦ x.1) ⟨insert p s, by simp⟩
+    simpa only [mem_setOf_eq, coe_setOf, ge_iff_le, Finset.le_inf_iff, Subtype.coe_le_coe,
+      Subtype.forall, inf_lt_right, not_not, Ideal.IsPrime.inf_le' (hp := p.2)] using H
+  rwa [← Subtype.ext_iff.mpr <| @isMaximal_of_isPrime (p := q.1) _ _ q.2 |>.eq_of_le p.2.1 hq2]
+
+variable (R) in
 /--
 [Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
 -/
-lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
-  by_contra rid
-  -- suppose artinian ring `R` has infinitely many maximal ideals, then we can find maximal ideals
-  -- `fᵢ` for each `i : ℕ` such that `fᵢ ≠ fⱼ` for all `i ≠ j`.
-  let f := Set.finite_or_infinite _ |>.resolve_left rid |>.natEmbedding
-  -- Then `f₀ ≥ f₀f₁ ≥ f₀f₁f₂ ≥ ...`
-  let g : ℕ →o (Ideal R)ᵒᵈ :=
-  { toFun := fun n ↦ OrderDual.toDual <| ∏ i in Finset.range n.succ, f i
-    monotone' := monotone_nat_of_le_succ fun n ↦ OrderDual.toDual_le_toDual.mpr <| by
-      rw [Finset.prod_range_succ]
-      apply Ideal.mul_le_right }
-  -- Since `R` is artinian, `f₀f₁...f_N = f₀f₁...f_N f_{N + 1}` are equal for some `N : ℕ`
-  obtain ⟨N, hN⟩ := monotone_stabilizes_iff_artinian (R := R) (M := R) |>.mpr inferInstance g
-  have H := OrderDual.toDual_inj |>.mp <| hN (N + 1) (N.le_add_right 1)
-  conv_rhs at H => rw [Finset.prod_range_succ]
-  -- Then `f₀f₁...f_N ≤ f_{N + 1}` so that `fₖ ≤ f_{N + 1}` for some `k = 0, ... N`.
-  replace H := H.symm ▸
-    Ideal.mul_le_left (R := R) (I := ∏ i in Finset.range N.succ, f i) (J := f N.succ)
-  obtain ⟨k, hk1, hk2⟩ := (f N.succ).2.isPrime.prod_le (by aesop) |>.mp H
-  -- But `fₖ` is maximal so that `fₖ = f_{N + 1}`, this contradicts the injectivity of `f`.
-  rw [f.injective <| Subtype.ext <| (f k).2.eq_of_le (f N.succ).2.isPrime.1 hk2] at hk1
-  simp only [Finset.mem_range, lt_self_iff_false] at hk1
+lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
+  convert prime_spectrum_finite R using 3
+  exact ⟨Ideal.IsMaximal.isPrime, fun h => isMaximal_of_isPrime _⟩
+
 
 end IsArtinianRing
