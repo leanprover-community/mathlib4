@@ -630,6 +630,10 @@ lemma coe_smul (z : Cocycle F G n) (x : R) :
     (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
 
 @[simp]
+lemma coe_units_smul (z : Cocycle F G n) (x : Rˣ) :
+    (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
+
+@[simp]
 lemma coe_sub (z₁ z₂ : Cocycle F G n) :
     (↑(z₁ - z₂) : Cochain F G n) = (z₁ : Cochain F G n) - (z₂ : Cochain F G n) := rfl
 
