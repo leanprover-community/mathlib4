@@ -95,7 +95,7 @@ section dimension_0
 variable {R : Type _} [CommRing R]
 
 lemma _root_.Ideal.IsPrime.isMaximal_of_dim_zero
-    (I : Ideal R) (h : I.IsPrime) (dim0 : ringKrullDim R = 0) :
+    {I : Ideal R} (h : I.IsPrime) (dim0 : ringKrullDim R = 0) :
     I.IsMaximal := by
   obtain ⟨J, hJ1, hJ2⟩ := I.exists_le_maximal h.1
   by_cases hIJ : I = J
@@ -115,9 +115,31 @@ lemma _root_.Ideal.IsPrime.isMaximal_of_dim_zero
   rw [dim0] at this
   norm_num at this
 
+lemma _root_.Ideal.IsPrime.isMinimal_of_dim_zero
+    {I : Ideal R} (h : I.IsPrime) (dim0 : ringKrullDim R = 0) :
+    I ∈ minimalPrimes R := by
+  obtain ⟨p, hp, le⟩ := Ideal.exists_minimalPrimes_le (I := ⊥) (J := I) bot_le
+  by_cases hIp : I = p
+  · subst hIp; exact hp
+  let x : LTSeries (PrimeSpectrum R) :=
+  { length := 1
+    toFun := ![⟨p, hp.1.1⟩, ⟨I, h⟩]
+    step := by
+      intro i
+      fin_cases i
+      simp only [Fin.zero_eta, Fin.castSucc_zero, Matrix.cons_val_zero, Fin.succ_zero_eq_one,
+        Matrix.cons_val_one, Matrix.head_cons, ← PrimeSpectrum.asIdeal_lt_asIdeal]
+      refine ⟨le, ?_⟩
+      contrapose! hIp
+      exact le_antisymm hIp le }
+  have : 1 ≤ ringKrullDim R :=
+    le_iSup (α := WithBot (WithTop ℕ)) (f := fun x : LTSeries _ ↦ x.length) x
+  rw [dim0] at this
+  norm_num at this
+
 end dimension_0
 
-section artinian
+section artinian_and_noetherian
 
 variable (R : Type _) [CommRing R] [Nontrivial R]
 
@@ -142,12 +164,24 @@ lemma eq_zero_of_isArtinianRing [IsArtinianRing R] : ringKrullDim R = 0 := by
       rw [Subtype.ext_iff_val, PrimeSpectrum.ext_iff];
       exact H0.eq_of_le (x 1).1.IsPrime.1 (le_of_lt this))
 
+variable {R} in
+noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
+    [IsNoetherianRing R] (h : ringKrullDim R = 0) :
+    Fintype (PrimeSpectrum R) :=
+  letI fin1 : Fintype (minimalPrimes R) := @Fintype.ofFinite _ <|
+    Set.finite_coe_iff.mpr <| minimalPrimes.finiteOfIsNoetherianRing R
+  Fintype.ofInjective
+    (fun p ↦ ⟨p.asIdeal, p.IsPrime.isMinimal_of_dim_zero h⟩ : PrimeSpectrum R → minimalPrimes R)
+    (fun _ _ H ↦ PrimeSpectrum.ext _ _ <| Subtype.ext_iff.mp H)
+
 open TopologicalSpace in
 lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
     IsArtinianRing R := by
-  have h1 := minimalPrimes.finiteOfIsNoetherianRing R
+  letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
 
-end artinian
+  sorry
+
+end artinian_and_noetherian
 
 section PID
 
