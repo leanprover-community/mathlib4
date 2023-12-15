@@ -343,6 +343,8 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
 
 variable (I)
 
+/-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
+  expressed in the local chart around the initial point `γ t₀`. -/
 lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
     (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
     HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
@@ -449,7 +451,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
     · intros t ht
       rw [hv']
       have := hmfd.hasDerivAt I t₀ ht (hsrc t ht)
-      apply this.congr_fderiv
+      apply this.congr_deriv
       have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
         exact hsrc t ht
@@ -457,7 +459,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
     · intros t ht
       rw [hv', h]
       have := hmfd'.hasDerivAt I t₀ ht (hsrc' t ht)
-      apply this.congr_fderiv
+      apply this.congr_deriv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
         exact hsrc' t ht
