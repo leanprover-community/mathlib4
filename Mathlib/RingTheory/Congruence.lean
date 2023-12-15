@@ -234,7 +234,7 @@ theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Q
 
 end SMul
 
-section NegSubZsmul
+section NegSubZSMul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
@@ -252,29 +252,29 @@ theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 #align ring_con.coe_sub RingCon.coe_sub
 
-instance hasZsmul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
-#align ring_con.has_zsmul RingCon.hasZsmul
+instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
+#align ring_con.has_zsmul RingCon.hasZSMul
 
 @[simp, norm_cast]
 theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_zsmul RingCon.coe_zsmul
 
-end NegSubZsmul
+end NegSubZSMul
 
-section Nsmul
+section NSMul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNsmul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
-#align ring_con.has_nsmul RingCon.hasNsmul
+instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
+#align ring_con.has_nsmul RingCon.hasNSMul
 
 @[simp, norm_cast]
 theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_nsmul RingCon.coe_nsmul
 
-end Nsmul
+end NSMul
 
 section Pow
 

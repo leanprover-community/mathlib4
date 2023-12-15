@@ -481,7 +481,7 @@ end Conj
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
 
-section Zpow
+section ZPow
 
 @[to_additive (attr := continuity)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
@@ -545,7 +545,7 @@ theorem ContinuousOn.zpow {f : α → G} {s : Set α} (hf : ContinuousOn f s) (z
 #align continuous_on.zpow ContinuousOn.zpow
 #align continuous_on.zsmul ContinuousOn.zsmul
 
-end Zpow
+end ZPow
 
 section OrderedCommGroup
 
