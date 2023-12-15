@@ -166,7 +166,7 @@ theorem mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → �
     (hf₂ : ∀ i, f₂ i 0 = 0) (h : ∀ i, (f i ∘ f₂ i) 0 = 0) (g : Π₀ i : ι, β i) :
     mapRange (fun i => f i ∘ f₂ i) h g = mapRange f hf (mapRange f₂ hf₂ g) := by
   ext
-  simp only []; rfl
+  rfl
 #align dfinsupp.map_range_comp DFinsupp.mapRange_comp
 
 @[simp]

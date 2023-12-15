@@ -53,7 +53,7 @@ variable (s i)
 
 @[simp]
 theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s then f i hi else 0 := by
-  simp only [indicator, ne_eq, coe_mk]
+  simp only [indicator, coe_mk]
   congr
 #align finsupp.indicator_apply Finsupp.indicator_apply
 

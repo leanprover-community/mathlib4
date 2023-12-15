@@ -542,9 +542,9 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
   mem_support_toFun i := by
     classical
     rw [Function.update]
-    simp only [eq_rec_constant, dite_eq_ite, ne_eq]
+    simp only [eq_rec_constant, ne_eq]
     split_ifs with hb ha ha <;>
-      try simp only [*, not_false_iff, iff_true, not_true, iff_false]
+      try simp only [*, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
       simp
     · rw [Finset.mem_erase]
@@ -587,7 +587,7 @@ theorem support_update [DecidableEq α] [DecidableEq M] :
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
   classical
-  simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
+  simp only [update, ite_true, ne_eq, not_not]
   congr; apply Subsingleton.elim
 #align finsupp.support_update_zero Finsupp.support_update_zero
 
@@ -596,7 +596,7 @@ variable {b}
 theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
   classical
-  simp only [update, h, ite_false, mem_support_iff, ne_eq]
+  simp only [update, h, ite_false, ne_eq]
   congr; apply Subsingleton.elim
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
@@ -801,7 +801,7 @@ theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
 theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →₀ M)
     (he : Function.Injective e) : (Finsupp.mapRange e he0 f).support = f.support := by
   ext
-  simp only [Finsupp.mem_support_iff, Ne.def, Finsupp.mapRange_apply]
+  simp only [Finsupp.mem_support_iff, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
 #align finsupp.support_map_range_of_injective Finsupp.support_mapRange_of_injective
 
@@ -831,10 +831,10 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne.def]
+    · simp only [h, true_iff_iff]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne.def, ne_self_iff_false, not_true_eq_false]
+    · simp only [h, ne_self_iff_false, not_true_eq_false]
 #align finsupp.emb_domain Finsupp.embDomain
 
 @[simp]
