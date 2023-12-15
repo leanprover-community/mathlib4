@@ -77,9 +77,12 @@ instance : (quotient V c).Additive where
 
 open ZeroObject
 
--- TODO upgrade this to `HasZeroObject`, presumably for any `quotient`.
 instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
+
+instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
+  ⟨(quotient V c).obj 0, by
+    rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
 variable {V c}
 
