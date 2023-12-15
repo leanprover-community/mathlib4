@@ -164,6 +164,7 @@ end map
 
 section Rotate
 
+set_option maxHeartbeats 400000 in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalence to
 the mapping cone of `inr φ : L ⟶ mappingCone φ` is homotopy equivalent. -/
 noncomputable def rotateHomotopyEquiv :
