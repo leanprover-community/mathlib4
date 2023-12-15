@@ -286,20 +286,19 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
   classical simp [Finset.coe_insert]
 #align sign_type.range_eq SignType.range_eq
 
-@[simp, norm_cast] lemma SignType.cast_mul {α} [MulZeroOneClass α] [HasDistribNeg α]
-    (a b : SignType) :
-    ((a * b : SignType) : α) = (a : α) * b := by
-  simp_rw [← SignType.castHom_apply, map_mul]
+@[simp, norm_cast] lemma cast_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
+    ↑(a * b) = (a : α) * b :=
+  map_mul SignType.castHom _ _
 
-@[simp, norm_cast] lemma SignType.cast_pow {α} [MonoidWithZero α] [HasDistribNeg α]
+@[simp, norm_cast] lemma cast_pow {α} [MonoidWithZero α] [HasDistribNeg α]
     (a : SignType) (k : Nat) :
-    ((a ^ k : SignType) : α) = (a : α) ^ k := by
-  simp_rw [← SignType.castHom_apply, map_pow]
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_pow SignType.castHom _ _
 
-@[simp, norm_cast] lemma SignType.cast_zpow {α} [GroupWithZero α] [HasDistribNeg α]
+@[simp, norm_cast] lemma cast_zpow {α} [GroupWithZero α] [HasDistribNeg α]
     (a : SignType) (k : Int) :
-    ((a ^ k : SignType) : α) = (a : α) ^ k := by
-  simp_rw [← SignType.castHom_apply, map_zpow₀]
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_zpow₀ SignType.castHom _ _
 
 end SignType
 
