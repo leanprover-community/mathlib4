@@ -609,8 +609,6 @@ theorem chineseRemainderOfList_modEq_unique (l : List ι)
     exact chineseRemainder_modEq_unique this
       (hz i (by simp)) (ih co.of_cons (fun j hj => hz j (by simp [hj])))
 
-#check List.Perm.mem_iff
-
 theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
     (chineseRemainderOfList a s l co : ℕ) =
