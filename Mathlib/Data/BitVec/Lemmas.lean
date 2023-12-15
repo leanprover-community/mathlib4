@@ -211,7 +211,7 @@ proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
 ## Ring
 -/
 
--- TODO: generalize to `CommRing` after  `ofFin_intCast` is proven
+-- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
 instance : CommSemiring (BitVec w) :=
   toFin_injective.commSemiring _
     toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
