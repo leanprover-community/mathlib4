@@ -591,7 +591,7 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless] {M : Type*} [TopologicalSpace
             intros t' ht'
             rw [piecewise, if_pos]
             refine ⟨(max_lt_iff.mp ht'.1).1, ht'.2⟩
-          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff I t₀ _ _ hv
+          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff _ _ hv
           · apply IsIntegralCurveOn.congr_of_eqOn isOpen_Ioo (γ := γ) _ heqon
             apply hγ.mono
             exact Ioo_subset_Ioo (le_max_left _ _) le_rfl
@@ -629,7 +629,7 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless] {M : Type*} [TopologicalSpace
             intros t' ht'
             rw [piecewise, if_pos]
             exact ⟨ht'.1, (lt_min_iff.mp ht'.2).1⟩
-          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff I t₀ _ _ hv
+          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff _ _ hv
           · apply IsIntegralCurveOn.congr_of_eqOn isOpen_Ioo (γ := γ) _ heqon
             apply hγ.mono
             exact Ioo_subset_Ioo le_rfl (min_le_left _ _)
@@ -742,7 +742,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
         Ioo (-(a + ε / 2)) a ∪ Ioo (a - 3 * ε / 2) (a + ε / 2) := by
         rw [Ioo_union_Ioo_eq_Ioo] <;> linarith
       rw [hsub1]
-      apply isIntegralCurveOn_piecewise I hv (t₀ := a - ε / 2)
+      apply isIntegralCurveOn_piecewise hv (t₀ := a - ε / 2)
       · have hsub2 : Ioo (-(a + ε / 2)) a ⊆
           Ioo (-a) a ∪ Ioo (-(a + ε / 2)) (-(a - 3 * ε / 2)) := by
             intros t ht
@@ -753,7 +753,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
               use ht.1
               linarith
         apply IsIntegralCurveOn.mono _ hsub2
-        apply isIntegralCurveOn_piecewise I hv hγ hγ1 (t₀ := -(a - ε / 2))
+        apply isIntegralCurveOn_piecewise hv hγ hγ1 (t₀ := -(a - ε / 2))
         · rw [mem_inter_iff, mem_Ioo, mem_Ioo, and_assoc, neg_lt_neg_iff, neg_lt_neg_iff,
             neg_lt_neg_iff, neg_lt, sub_lt_self_iff, sub_lt_iff_lt_add, add_assoc, add_halves,
             lt_add_iff_pos_right, sub_lt_sub_iff_left, div_lt_div_right two_pos]
@@ -810,7 +810,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
             exact Nat.succ_pos _
           · rw [← Nat.cast_add_one, Nat.cast_pos]
             exact Nat.succ_pos _
-        · apply isIntegralCurveOn_piecewise I hv hn.2 (t₀ := 0)
+        · apply isIntegralCurveOn_piecewise hv hn.2 (t₀ := 0)
           · apply (Classical.choose_spec (Classical.choose_spec (hbdd (n + 1 + 1))).1).2.mono
             have hlt := (Classical.choose_spec (hbdd (n + 1 + 1))).2
             exact Ioo_subset_Ioo (neg_le_neg (le_of_lt hlt)) (le_of_lt hlt)
@@ -836,7 +836,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
         by_cases hmem : t ∈ (Ioo (-(n + 1 : ℝ)) (n + 1))
         · rw [hn hmem]
           -- this should be a separate lemma
-          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff I 0 _ _ hv (haux n).2
+          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff _ _ hv (haux n).2
           · apply (haux n.succ).2.mono
             apply Ioo_subset_Ioo
             · rw [neg_le_neg_iff, ← Nat.cast_add_one, ← Nat.cast_add_one]
