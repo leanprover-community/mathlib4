@@ -757,9 +757,9 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
 #align prime_spectrum.is_closed_range_comap_of_surjective PrimeSpectrum.isClosed_range_comap_of_surjective
 
 theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbedding (comap f) :=
-  { induced := (comap_inducing_of_surjective T' f hf).induced
+  { induced := (comap_inducing_of_surjective S f hf).induced
     inj := comap_injective_of_surjective f hf
-    closed_range := isClosed_range_comap_of_surjective T' f hf }
+    closed_range := isClosed_range_comap_of_surjective S f hf }
 #align prime_spectrum.closed_embedding_comap_of_surjective PrimeSpectrum.closedEmbedding_comap_of_surjective
 
 end SpecOfSurjective
