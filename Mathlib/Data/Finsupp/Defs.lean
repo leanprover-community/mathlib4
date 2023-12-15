@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
@@ -1214,7 +1215,7 @@ variable [AddMonoid M]
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar : SMul ℕ (α →₀ M) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
 instance addMonoid : AddMonoid (α →₀ M) :=
@@ -1276,7 +1277,7 @@ theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
