@@ -91,6 +91,7 @@ noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
 
+/-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
 def mapTriangleRotateIso :
     F.mapTriangle ⋙ Pretriangulated.rotate D ≅
