@@ -499,6 +499,9 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
     <| Field.toIsField <| FractionRing (R ⧸ p)
 
 open BigOperators in
+/--
+[Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
+-/
 lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
   by_contra rid
   -- suppose artinian ring `R` has infinitely many maximal ideals, then we can find maximal ideals
