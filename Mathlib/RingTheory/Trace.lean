@@ -644,4 +644,20 @@ theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
     (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
 #align trace_form_nondegenerate traceForm_nondegenerate
 
+theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
+    Algebra.trace K L ≠ 0 := by
+  intro e
+  let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
+  apply det_traceMatrix_ne_zero' pb
+  rw [show traceMatrix K pb.basis = 0 by ext; simp [e], Matrix.det_zero]
+  rw [← pb.finrank, ← Fin.pos_iff_nonempty]
+  exact finrank_pos
+
+theorem Algebra.trace_surjective [FiniteDimensional K L] [IsSeparable K L] :
+    Function.Surjective (Algebra.trace K L) := by
+  rw [← LinearMap.range_eq_top]
+  apply (IsSimpleOrder.eq_bot_or_eq_top (α := Ideal K) _).resolve_left
+  rw [LinearMap.range_eq_bot]
+  exact Algebra.trace_ne_zero K L
+
 end DetNeZero
