@@ -770,6 +770,8 @@ theorem Associates.le_singleton_iff (x : A) (n : ℕ) (I : Ideal A) :
     Ideal.dvd_span_singleton]
 #align associates.le_singleton_iff Associates.le_singleton_iff
 
+variable {K}
+
 lemma FractionalIdeal.le_inv_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
     I ≤ J⁻¹ ↔ J ≤ I⁻¹ := by
   rw [inv_eq, inv_eq, le_div_iff_mul_le hI, le_div_iff_mul_le hJ, mul_comm]
@@ -780,7 +782,6 @@ lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) 
 
 open FractionalIdeal
 
-variable {K}
 
 /-- Strengthening of `IsLocalization.exist_integer_multiples`:
 Let `J ≠ ⊤` be an ideal in a Dedekind domain `A`, and `f ≠ 0` a finite collection
