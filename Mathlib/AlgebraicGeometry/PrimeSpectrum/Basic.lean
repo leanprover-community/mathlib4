@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Topology.Sets.Closeds
@@ -927,7 +928,57 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
         ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ : _))
 #align prime_spectrum.localization_map_of_specializes PrimeSpectrum.localizationMapOfSpecializes
 
+variable (R) in
+/--
+Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
+irreducible set is a zero locus of some prime ideal.
+-/
+@[simps] def bijection :
+    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsClosed s ∧ IsIrreducible s}ᵒᵈ :=
+  { toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isClosed_zeroLocus p.asIdeal,
+      isIrreducible_zeroLocus_iff _ |>.mpr <| by simpa only [p.IsPrime.radical] using p.IsPrime⟩
+    invFun := (fun s ↦ ⟨vanishingIdeal s.1, isIrreducible_iff_vanishingIdeal_isPrime.mp s.2.2⟩)
+    left_inv := fun p ↦ PrimeSpectrum.ext _ _ <|
+      by simp [PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, p.IsPrime.radical]
+    right_inv := fun s ↦ Subtype.ext <|
+      by simpa [zeroLocus_vanishingIdeal_eq_closure] using s.2.1.closure_eq
+    map_rel_iff' := by
+      intro p q
+      change zeroLocus _ ≤ zeroLocus _ ↔ _
+      simp [zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical] }
+
 end PrimeSpectrum
+
+open PrimeSpectrum in
+/--
+[Stacks: Lemma 00ES (3)](https://stacks.math.columbia.edu/tag/00ES)
+Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
+irreducible component is a zero locus of some minimal prime ideal.
+-/
+def minimalPrimes.bijection : minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ where
+  toFun p :=
+    let s := (PrimeSpectrum.bijection R ⟨p.1, p.2.1.1⟩)
+    OrderDual.toDual ⟨s.1, ⟨s.2.2,
+      fun t (ht : IsIrreducible t) (le : PrimeSpectrum.zeroLocus _ ⊆ t) ↦ by
+      show t ⊆ PrimeSpectrum.zeroLocus p
+      rw [PrimeSpectrum.subset_zeroLocus_iff_le_vanishingIdeal]
+      exact p.2.2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩
+        fun x hx ↦ (mem_vanishingIdeal _ _ |>.mp hx) ⟨p.1, p.2.1.1⟩ <|
+          le <| mem_zeroLocus _ _ |>.mpr <| le_refl _⟩⟩
+  invFun s := let p := (PrimeSpectrum.bijection R).symm <|
+    OrderDual.toDual ⟨s.1, isClosed_of_mem_irreducibleComponents _ s.2, s.2.1⟩
+    ⟨p.1, ⟨p.2, bot_le⟩, fun q ⟨hq, _⟩ (le : q ≤ vanishingIdeal s.1) ↦
+      fun x hx ↦  mem_vanishingIdeal _ _ |>.mp hx ⟨q, hq⟩ <|
+        s.2.2 (isIrreducible_zeroLocus_iff_of_radical _ hq.isRadical |>.mpr hq)
+          (subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr le) <|
+          mem_zeroLocus _ _ |>.mpr <| le_refl _⟩
+  left_inv p := Subtype.ext <| show vanishingIdeal (zeroLocus _) = p.1 by
+    rw [vanishingIdeal_zeroLocus_eq_radical, p.2.1.1.radical]
+  right_inv s := Subtype.ext <| show zeroLocus (vanishingIdeal <| OrderDual.toDual s.1) = s.1 by
+    erw [zeroLocus_vanishingIdeal_eq_closure,
+      closure_eq_iff_isClosed.mpr (isClosed_of_mem_irreducibleComponents _ s.2)]
+  map_rel_iff' {p q} := show zeroLocus (q.1 : Set R) ⊆ zeroLocus (p.1 : Set R) ↔ p ≤ q  by
+    rw [zeroLocus_subset_zeroLocus_iff, q.2.1.1.radical, Subtype.mk_le_mk]
 
 namespace LocalRing
 
