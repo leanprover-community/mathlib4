@@ -54,4 +54,12 @@ theorem invOf_ι_mul_ι_mul_ι (a b : M) [Invertible (ι Q a)] [Invertible (Q a)
     smul_smul, smul_smul, invOf_mul_self, one_smul]
 #align clifford_algebra.inv_of_ι_mul_ι_mul_ι CliffordAlgebra.invOf_ι_mul_ι_mul_ι
 
+/-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`-/
+def invertibleOfInvertibleι [Invertible (2 : R)] (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
+  letI : Invertible (algebraMap _ (CliffordAlgebra Q) (Q m)) :=
+    (Invertible.mul ‹Invertible (ι Q m)› ‹Invertible (ι Q m)›).copy _ (ι_sq_scalar _ _).symm
+  letI invExt : Invertible (algebraMap _ (ExteriorAlgebra R M) (Q m)) :=
+    .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) ‹_›
+  (invExt.map ExteriorAlgebra.algebraMapInv).copy _ (by simp)
+
 end CliffordAlgebra
