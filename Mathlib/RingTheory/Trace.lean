@@ -680,7 +680,7 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L
   simp only [BilinForm.toDual_def, BilinForm.apply_dualBasis_left]
   apply (algebraMap K (AlgebraicClosure K)).injective
   have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
-    pb.gen pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
+    pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
   simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
