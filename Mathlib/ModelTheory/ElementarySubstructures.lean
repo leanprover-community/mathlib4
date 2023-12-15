@@ -14,8 +14,8 @@ import Mathlib.ModelTheory.ElementaryMaps
 
 ## Main Results
 * The Tarski-Vaught Test for substructures:
-`FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
-substructure to be elementary.
+  `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
+  substructure to be elementary.
  -/
 
 
