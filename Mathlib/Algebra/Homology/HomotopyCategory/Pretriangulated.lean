@@ -337,8 +337,8 @@ noncomputable def shiftTriangleIso (n : ℤ) :
 /-- The canonical isomorphism `(triangleh φ)⟦n⟧ ≅ triangleh (φ⟦n⟧')`. -/
 noncomputable def shiftTrianglehIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangleh φ) ≅ triangleh (φ⟦n⟧') :=
-  sorry ≪≫  -- this is the commutation of Functor.mapTriangle with the shift
-    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.mapIso (shiftTriangleIso φ n)
+  ((HomotopyCategory.quotient _ _).mapTriangle.commShiftIso n).symm.app _ ≪≫
+    (HomotopyCategory.quotient _ _).mapTriangle.mapIso (shiftTriangleIso φ n)
 
 end Shift
 
