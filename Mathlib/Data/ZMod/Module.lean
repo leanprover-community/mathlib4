@@ -11,7 +11,7 @@ import Mathlib.Algebra.Module.LinearMap
 -/
 
 variable {n : ℕ} {M M₁ F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [AddMonoidHomClass F M M₁]
-  [Module (ZMod n) M] [Module (ZMod n) M₁] { x : M } [SetLike S M] [AddSubgroupClass S M] {K : S}
+  [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M] [AddSubgroupClass S M] {x : M} {K : S}
 
 namespace ZMod
 
