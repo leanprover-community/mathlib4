@@ -821,6 +821,13 @@ theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDiff
 
 /-! ### Congruence lemmas for derivatives on manifolds -/
 
+theorem HasMFDerivAt.congr_mfderiv (h : HasMFDerivAt I I' f x f') (h' : f' = f₁') :
+    HasMFDerivAt I I' f x f₁' :=
+  h' ▸ h
+
+theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivWithinAt I I' f s x f') (h' : f' = f₁') :
+    HasMFDerivWithinAt I I' f s x f₁' :=
+  h' ▸ h
 
 theorem HasMFDerivWithinAt.congr_of_eventuallyEq (h : HasMFDerivWithinAt I I' f s x f')
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasMFDerivWithinAt I I' f₁ s x f' := by
@@ -839,14 +846,6 @@ theorem HasMFDerivWithinAt.congr_mono (h : HasMFDerivWithinAt I I' f s x f')
     (ht : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasMFDerivWithinAt I I' f₁ t x f' :=
   (h.mono h₁).congr_of_eventuallyEq (Filter.mem_inf_of_right ht) hx
 #align has_mfderiv_within_at.congr_mono HasMFDerivWithinAt.congr_mono
-
-theorem HasMFDerivAt.congr_mfderiv (h : HasMFDerivAt I I' f x f') (h' : f' = f₁') :
-    HasMFDerivAt I I' f x f₁' :=
-  h' ▸ h
-
-theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivWithinAt I I' f s x f') (h' : f' = f₁') :
-    HasMFDerivWithinAt I I' f s x f₁' :=
-  h' ▸ h
 
 theorem HasMFDerivAt.congr_of_eventuallyEq (h : HasMFDerivAt I I' f x f') (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasMFDerivAt I I' f₁ x f' := by
