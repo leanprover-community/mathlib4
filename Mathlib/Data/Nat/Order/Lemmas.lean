@@ -254,29 +254,4 @@ theorem div_lt_div_of_lt_of_dvd {a b d : ℕ} (hdb : d ∣ b) (h : a < b) : a / 
   exact lt_of_le_of_lt (mul_div_le a d) h
 #align nat.div_lt_div_of_lt_of_dvd Nat.div_lt_div_of_lt_of_dvd
 
-theorem sub_succ_mod {m : ℕ} (m_pos : m > 0) (y : ℕ) :
-    (m - (y + 1) % m) % m = (m - 1 - y % m) % m := by
-  induction' y using Nat.strongInductionOn with y ih
-  by_cases h : y + 1 < m
-  · rw [Nat.mod_eq_of_lt h, Nat.mod_eq_of_lt (lt_of_succ_lt h), Nat.sub_succ', Nat.sub_right_comm]
-  · by_cases h' : y + 1 = m
-    · simp only [h', mod_self, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, tsub_le_iff_right]
-      obtain rfl : y = m - 1 := by
-        apply Nat.succ_injective
-        show y + 1 = _ + 1
-        rw [h', Nat.sub_add_cancel m_pos]
-      have m_pred_lt : m - 1 < m := Nat.sub_one_lt_of_le m_pos Nat.le.refl
-      simp only [ge_iff_le, Nat.mod_eq_of_lt m_pred_lt, le_refl, tsub_eq_zero_of_le, zero_mod]
-    · have y_ge : y ≥ m := by
-        simp only [not_lt] at h
-        cases h
-        · contradiction
-        · assumption
-      rw [
-        Nat.mod_eq_sub_mod (Nat.ge_of_not_lt h),
-        Nat.mod_eq_sub_mod y_ge,
-        Nat.succ_sub y_ge
-      ]
-      apply ih _ (Nat.sub_lt (lt_of_lt_of_le m_pos y_ge) m_pos)
-
 end Nat
