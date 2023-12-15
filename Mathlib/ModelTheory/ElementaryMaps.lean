@@ -24,6 +24,7 @@ elementary embedding of any structure into a model of its elementary diagram.
 gives a simple criterion for an embedding to be elementary.
  -/
 
+
 open FirstOrder
 
 namespace FirstOrder

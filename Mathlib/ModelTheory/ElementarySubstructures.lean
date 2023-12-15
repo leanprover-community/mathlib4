@@ -27,7 +27,7 @@ namespace Language
 
 open Structure
 
-variable (L : Language) (M : Type*) (N : Type*) {P : Type*} {Q : Type*}
+variable {L : Language} {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
@@ -56,6 +56,8 @@ def IsElementary (S : L.Substructure M) : Prop :=
 
 end Substructure
 
+variable (L M)
+
 /-- An elementary substructure is one in which every formula applied to a tuple in the subtructure
   agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
@@ -65,7 +67,7 @@ structure ElementarySubstructure where
 #align first_order.language.elementary_substructure.to_substructure FirstOrder.Language.ElementarySubstructure.toSubstructure
 #align first_order.language.elementary_substructure.is_elementary' FirstOrder.Language.ElementarySubstructure.isElementary'
 
-variable {L M N}
+variable {L M}
 
 namespace ElementarySubstructure
 
@@ -103,7 +105,7 @@ theorem coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S 
 
 /-- The substructure `M` of the structure `M` is elementary. -/
 instance instTop : Top (L.ElementarySubstructure M) :=
-  ⟨⟨⊤, fun _ _ _ => (Substructure.realize_formula_top _ _).symm⟩⟩
+  ⟨⟨⊤, fun _ _ _ => Substructure.realize_formula_top.symm⟩⟩
 #align first_order.language.elementary_substructure.has_top FirstOrder.Language.ElementarySubstructure.instTop
 
 instance instInhabited : Inhabited (L.ElementarySubstructure M) :=
