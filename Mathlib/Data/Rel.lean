@@ -295,10 +295,10 @@ theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.pr
 
 theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
   intro x hx
-  simp only [Set.mem_inter_iff, dom] at hx
+  simp only [dom] at hx
   rcases hx with ⟨hx, ⟨y, rxy⟩⟩
   use y
-  simp only [image, Set.mem_setOf_eq]
+  simp only [image]
   exact ⟨⟨x, hx, rxy⟩, rxy⟩
 
 theorem image_preimage_subset_inter_codom (s : Set β) : s ∩ r.codom ⊆ r.image (r.preimage s) := by

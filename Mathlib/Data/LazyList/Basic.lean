@@ -79,7 +79,7 @@ instance : LawfulTraversable LazyList := by
     · rfl
     · simpa only [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
     · congr; apply ih
-  · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
+  · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_symm_mk]
     induction' xs using LazyList.rec with _ tl ih _ ih
     · simp only [List.traverse, map_pure]; rfl
     · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
@@ -173,11 +173,11 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     simp only [bind, Functor.map, pure, singleton]
     induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
-    · simp only [bind._eq_2, append, traverse._eq_2, Id.map_eq, cons.injEq, true_and]; congr
+    · simp only [bind._eq_2, append, traverse._eq_2, cons.injEq, true_and]; congr
     · ext; apply ih)
   (pure_bind := by
     intros
-    simp only [bind, pure, singleton, LazyList.bind]
+    simp only [pure, singleton, LazyList.bind]
     apply append_nil)
   (bind_assoc := by
     intro _ _ _ xs _ _

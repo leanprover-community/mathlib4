@@ -499,7 +499,7 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
 
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
-  simp only [Part.mem_bind_iff, exists_prop]
+  simp only [Part.mem_bind_iff]
   refine' ⟨_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
   rintro ⟨a, ha, hb⟩
   rwa [Part.get_eq_of_mem ha]
@@ -620,10 +620,10 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
   constructor <;> intro h
   · intro a h' b
     have h := h b
-    simp only [and_imp, exists_prop, bind_eq_bind, mem_bind_iff, exists_imp] at h
+    simp only [and_imp, bind_eq_bind, mem_bind_iff, exists_imp] at h
     apply h _ h'
   · intro b h'
-    simp only [exists_prop, bind_eq_bind, mem_bind_iff] at h'
+    simp only [bind_eq_bind, mem_bind_iff] at h'
     rcases h' with ⟨a, h₀, h₁⟩
     apply h _ h₀ _ h₁
 #align part.bind_le Part.bind_le

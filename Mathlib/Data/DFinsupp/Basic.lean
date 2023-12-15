@@ -166,7 +166,7 @@ theorem mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → �
     (hf₂ : ∀ i, f₂ i 0 = 0) (h : ∀ i, (f i ∘ f₂ i) 0 = 0) (g : Π₀ i : ι, β i) :
     mapRange (fun i => f i ∘ f₂ i) h g = mapRange f hf (mapRange f₂ hf₂ g) := by
   ext
-  simp only [mapRange_apply]; rfl
+  simp only []; rfl
 #align dfinsupp.map_range_comp DFinsupp.mapRange_comp
 
 @[simp]
@@ -601,7 +601,7 @@ theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := b
   ext i
   have h1 : (mk s x : ∀ i, β i) i = (mk s y : ∀ i, β i) i := by rw [H]
   obtain ⟨i, hi : i ∈ s⟩ := i
-  dsimp only [mk_apply, Subtype.coe_mk] at h1
+  dsimp only [mk_apply] at h1
   simpa only [dif_pos hi] using h1
 #align dfinsupp.mk_injective DFinsupp.mk_injective
 
@@ -1106,7 +1106,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 def support (f : Π₀ i, β i) : Finset ι :=
   (f.support'.lift fun xs => (Multiset.toFinset xs.1).filter fun i => f i ≠ 0) <| by
     rintro ⟨sx, hx⟩ ⟨sy, hy⟩
-    dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
+    dsimp only [Subtype.coe_mk] at *
     ext i; constructor
     · intro H
       rcases Finset.mem_filter.1 H with ⟨_, h⟩

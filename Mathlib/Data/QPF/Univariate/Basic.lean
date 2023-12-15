@@ -713,7 +713,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpP
   · rintro α p ⟨a, f⟩
     have h' := h
     rw [suppPreservation_iff_uniform] at h'
-    dsimp only [SuppPreservation, supp] at h
+    dsimp only [SuppPreservation] at h
     rw [liftp_iff_of_isUniform h', supp_eq_of_isUniform h', PFunctor.liftp_iff']
     simp only [image_univ, mem_range, exists_imp]
     constructor <;> intros <;> subst_vars <;> solve_by_elim

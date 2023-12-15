@@ -334,7 +334,7 @@ def keysLookupEquiv :
   toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
   invFun f := mk (f.1.1.sigma <| fun i => (f.1.2 i).toFinset).val <| by
     refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
-    simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
+    simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset]
     rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
     simpa using hx.symm.trans hy
   left_inv f := ext <| by simp
@@ -526,7 +526,7 @@ theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
   -- Porting note: golfed
   induction' xs with x xs
-  · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
+  · simp only [toFinmap_nil, not_mem_empty, not_mem_nil, exists_false]
   cases' x with fst_i snd_i
   -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]

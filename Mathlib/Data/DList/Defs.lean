@@ -56,7 +56,7 @@ attribute [local simp] Function.comp
 attribute [local simp] ofList toList empty singleton cons push append
 
 theorem toList_ofList (l : List α) : DList.toList (DList.ofList l) = l := by
-  cases l; rfl; simp only [DList.toList, DList.ofList, List.cons_append, List.append_nil]
+  cases l; rfl; simp only [DList.toList, DList.ofList, List.append_nil]
 #align dlist.to_list_of_list Std.DList.toList_ofList
 
 theorem ofList_toList (l : DList α) : DList.ofList (DList.toList l) = l := by

@@ -646,7 +646,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction' i with _ _ _ i_ih
-  simp only [comp, subtypeVal, repeatEq._eq_2, diagSub, prod.diag]
+  simp only [comp, subtypeVal, diagSub, prod.diag]
   apply @i_ih (drop α)
 #align typevec.diag_sub_val TypeVec.diag_sub_val
 
@@ -812,7 +812,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x
-  induction i <;> dsimp only [id, toSubtype', comp, subtypeVal, prod.mk] at *
+  induction i <;> dsimp only [toSubtype', comp, subtypeVal, prod.mk] at *
   simp [*]
 #align typevec.subtype_val_to_subtype' TypeVec.subtypeVal_toSubtype'
 

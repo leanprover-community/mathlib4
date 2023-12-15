@@ -353,14 +353,14 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
   unfold balanceL balanceR
   cases' r with rs rl rx rr
   · cases' l with ls ll lx lr; · rfl
-    cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;> dsimp only [dual, id] <;>
+    cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;> dsimp only [id] <;>
       try rfl
     split_ifs with h <;> repeat simp [h, add_comm]
   · cases' l with ls ll lx lr; · rfl
     dsimp only [dual, id]
     split_ifs; swap; · simp [add_comm]
     cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;> try rfl
-    dsimp only [dual, id]
+    dsimp only [id]
     split_ifs with h <;> simp [h, add_comm]
 #align ordnode.dual_balance_l Ordnode.dual_balanceL
 

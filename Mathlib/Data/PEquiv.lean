@@ -395,7 +395,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and]
+  simp only [mem_def, bind_eq_some, iff_false, not_exists]
   intros
   split_ifs <;> simp_all
 #align pequiv.trans_single_of_eq_none PEquiv.trans_single_of_eq_none
@@ -446,7 +446,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           · contrapose! h2
             rw [h2]
             rw [← h1, hf, h2] at hg
-            simp only [mem_def, true_iff_iff, eq_self_iff_true] at hg
+            simp only [true_iff_iff, eq_self_iff_true] at hg
             rw [hg]
           · contrapose! h1
             rw [h1] at hf h2
