@@ -86,21 +86,27 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
   simp [pow_succ, two_mul]
 
 theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
-    (hu : Monotone u) (h_succ_diff: SuccDiffBounded C u) :
+    (hu_strict : StrictMono u) (h_succ_diff: SuccDiffBounded C u) :
     ∀ (n : ℕ), ∑ k in range (n + 1), (u (k + 1) - u k) * f (u k) ≤
     (u 1 - u 0) * f (u 0) + C * ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   have h_nonneg : ∀ n, 0 ≤ f n := fun n => zero_le'
   intro n
   rw [sum_range_succ', add_comm]
   convert add_le_add_left _ ((u 1 - u 0) * f (u 0))
+  have (k : ℕ) : (u (k + 1) - (u k : ℕ)) = ((u (k + 1) : ℝ≥0∞) - (u k : ℝ≥0∞) : ℝ≥0∞) := by
+    have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
+    simp [NNReal.coe_sub this]
   have : ∀ k ∈ range n, (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤
     C * ((u (k + 1) - u k) * f (u (k + 1))) := by
     intro k _
     calc
       (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤ C * (u (k + 1) - u k) * f (u (k + 1)) := by
-        sorry
-        -- mul_le_mul_of_nonneg_right (h_succ_diff k) (h_nonneg (u (k + 1)))
+        apply mul_le_mul_of_nonneg_right _ (h_nonneg (u (k + 1)))
+        simp_rw [this]
+        exact_mod_cast h_succ_diff k
       _ = C * ((u (k + 1) - u k) * f (u (k + 1))) := by rw [mul_assoc]
+  have hu : Monotone u := by
+    apply StrictMono.monotone hu_strict
   calc
     ∑ k in range n, (u (k + 2) - u (k + 1)) * f (u (k + 1)) ≤
     ∑ k in range n, C * ((u (k + 1) - u k) * f (u (k + 1))) := sum_le_sum this
@@ -126,15 +132,13 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
 theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded C u) :
     ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
-  have hu : Monotone u := by
-    apply StrictMono.monotone hu_strict
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id)]
   refine'
     iSup_le fun n =>
       le_trans _
         (add_le_add_left
           (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) _) _)
-  apply Finset.sum_schlomilch_le hf h_pos hu h_succ_diff
+  apply Finset.sum_schlomilch_le hf h_pos hu_strict h_succ_diff
   apply zero_le _
 end ENNReal
 
