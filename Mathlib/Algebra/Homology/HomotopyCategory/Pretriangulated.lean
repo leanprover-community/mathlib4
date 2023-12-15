@@ -162,6 +162,18 @@ noncomputable def triangleMap :
 
 end map
 
+/-
+
+As the number of simp lemmas that are required in the proofs below is huge,
+we use the `simp? ... says` syntax: it is meant to ease the maintenance
+of this code as it gives a minimal list of lemmas with which `simp`
+is able to finish the proof.
+
+The `set_option maxHeartbeats` are necessary only when this code is compiled
+with `set_option says.verify true` (e.g. during CI).
+
+-/
+
 section Rotate
 
 set_option maxHeartbeats 400000 in
@@ -308,7 +320,7 @@ noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
   refine Triangle.isoMk _ _ (Iso.refl _) (n.negOnePow • Iso.refl _) (shiftIso φ n) ?_ ?_ ?_
   · simp? [Units.smul_def, smul_smul] says
-      simp [Triangle.shiftFunctor_obj, triangle_obj₁, triangle_obj₂, triangle_obj₃,
+      simp only [Triangle.shiftFunctor_obj, triangle_obj₁, triangle_obj₂, triangle_obj₃,
         triangle_mor₁, Units.smul_def, triangle_mor₂, Functor.comp_obj, Triangle.mk_obj₁,
         Triangle.mk_obj₂, Triangle.mk_mor₁, Preadditive.smul_iso_hom, Iso.refl_hom,
         Linear.comp_smul, comp_id, smul_smul, Int.units_coe_mul_self, one_smul, id_comp]
