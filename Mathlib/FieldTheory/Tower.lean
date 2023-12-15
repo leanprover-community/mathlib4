@@ -105,8 +105,8 @@ Note this cannot be an instance as Lean cannot infer `A`.
 -/
 theorem left [Nontrivial A] [FiniteDimensional F A] : FiniteDimensional F K :=
   let ⟨x, hx⟩ := exists_ne (0 : A)
-  let f := LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.isLinearMap_of_compatibleSMul F |>.mk' _
-  FiniteDimensional.of_injective f (smul_left_injective K hx)
+  FiniteDimensional.of_injective
+    (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
 #align finite_dimensional.left FiniteDimensional.left
 
 theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
