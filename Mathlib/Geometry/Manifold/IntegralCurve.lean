@@ -438,7 +438,6 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
   have hcont' := (continuousOn_extChartAt I (γ' t₀)).comp
     (IsIntegralCurveOn.continuousOn hmfd') hsrc'
 
-  -- todo: make up your mind whether to use `ball` or `Ioo`
   simp_rw [Real.ball_eq_Ioo] at hmem hsrc hmfd hcont hmem' hsrc' hmfd' hcont'
 
   -- `γ` and `γ'` are
@@ -522,11 +521,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
           (Ioo_subset_Ioo (by simp) (by simp)),
         isOpen_Ioo, ?_⟩
       rw [mem_Ioo]
-      constructor
-      · apply max_lt ht₁.2.1
-        simp [hε]
-      · apply lt_min ht₁.2.2
-        simp [hε]
+      exact ⟨max_lt ht₁.2.1 (by simp [hε]), lt_min ht₁.2.2 (by simp [hε])⟩
   intros t ht
   exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
 
