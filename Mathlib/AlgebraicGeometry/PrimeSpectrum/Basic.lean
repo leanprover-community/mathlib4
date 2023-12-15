@@ -955,7 +955,8 @@ open PrimeSpectrum in
 Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
 irreducible component is a zero locus of some minimal prime ideal.
 -/
-protected def minimalPrimes.bijection : minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ where
+protected def minimalPrimes.bijection :
+    minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ where
   toFun p :=
     let s := (PrimeSpectrum.bijection R ⟨p.1, p.2.1.1⟩)
     OrderDual.toDual ⟨s.1, ⟨s.2.2,
