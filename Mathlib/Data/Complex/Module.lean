@@ -75,7 +75,7 @@ instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
 instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
-instance [Semiring R] [Module R ℝ] : Module R ℂ where
+instance instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
