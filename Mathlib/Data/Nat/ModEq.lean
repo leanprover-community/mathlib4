@@ -391,7 +391,7 @@ theorem mod_lcm (hn : a ≡ b [MOD n]) (hm : a ≡ b [MOD m]) : a ≡ b [MOD lcm
 
 theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
     (hzan : z ≡ a [MOD n]) (hzbm : z ≡ b [MOD m]) : z ≡ chineseRemainder co a b [MOD n*m] := by
-  simpa[Nat.Coprime.lcm_eq_mul co] using
+  simpa [Nat.Coprime.lcm_eq_mul co] using
     mod_lcm (hzan.trans ((chineseRemainder co a b).prop.1).symm)
       (hzbm.trans ((chineseRemainder co a b).prop.2).symm)
 
@@ -544,7 +544,7 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b := by
-  simpa[show a % n = b % n from h] using mod_eq_of_lt hb
+  simpa [show a % n = b % n from h] using mod_eq_of_lt hb
 
 variable {ι : Type*}
 open BigOperators
@@ -609,18 +609,20 @@ theorem chineseRemainderOfList_modEq_unique (l : List ι)
     exact chineseRemainder_modEq_unique this
       (hz i (by simp)) (ih co.of_cons (fun j hj => hz j (by simp [hj])))
 
-theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l ~ l')
+#check List.Perm.mem_iff
+
+theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
     (chineseRemainderOfList a s l co : ℕ) =
-    chineseRemainderOfList a s l' (co.perm hl (fun _ _ ↦ coprime_comm.mpr)) := by
-  let z := chineseRemainderOfList a s l' (co.perm hl (fun _ _ ↦ coprime_comm.mpr))
+    chineseRemainderOfList a s l' (co.perm hl coprime_comm.mpr) := by
+  let z := chineseRemainderOfList a s l' (co.perm hl coprime_comm.mpr)
   have hlp : (l.map s).prod = (l'.map s).prod := List.Perm.prod_eq (List.Perm.map s hl)
   exact (chineseRemainderOfList_modEq_unique a s l co (z := z)
     (fun i hi => z.prop i (hl.symm.mem_iff.mpr hi))).symm.eq_of_lt_of_lt
       (chineseRemainderOfList_lt_prod _ _ _ _ hs)
       (by rw [hlp]
           exact chineseRemainderOfList_lt_prod _ _ _ _
-            (by simpa[List.Perm.mem_iff hl.symm] using hs))
+            (by simpa [List.Perm.mem_iff hl.symm] using hs))
 
 /-- The natural number less than `(m.map s).prod` congruent to
 `a i` mod `s i` for all  `i ∈ m`. -/
@@ -630,13 +632,13 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
   Quotient.recOn m
     (fun l nod _ co =>
       chineseRemainderOfList a s l (List.Nodup.pairwise_of_forall_ne nod co))
-    (fun l l' (pp : l ~ l') ↦
+    (fun l l' (pp : l.Perm l') ↦
       funext fun nod' : l'.Nodup =>
       have nod : l.Nodup := pp.symm.nodup_iff.mp nod'
       funext fun hs' : ∀ i ∈ l', s i ≠ 0 =>
-      have hs : ∀ i ∈ l, s i ≠ 0  := by simpa[List.Perm.mem_iff pp] using hs'
+      have hs : ∀ i ∈ l, s i ≠ 0  := by simpa [List.Perm.mem_iff pp] using hs'
       funext fun co' : Set.Pairwise {x | x ∈ l'} (Coprime on s) =>
-      have co : Set.Pairwise {x | x ∈ l} (Coprime on s) := by simpa[List.Perm.mem_iff pp] using co'
+      have co : Set.Pairwise {x | x ∈ l} (Coprime on s) := by simpa [List.Perm.mem_iff pp] using co'
       have lco : l.Pairwise (Coprime on s) := List.Nodup.pairwise_of_forall_ne nod co
       have : ∀ {m' e nod'' hs'' co''}, @Eq.ndrec (Multiset ι) l
         (fun m ↦ m.Nodup → (∀ i ∈ m, s i ≠ 0) →
@@ -665,7 +667,7 @@ def chineseRemainderOfFinset (t : Finset ι)
 theorem chineseRemainderOfFinset_lt_prod {t : Finset ι}
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
     chineseRemainderOfFinset a s t hs pp < ∏ i in t, s i := by
-  simpa[chineseRemainderOfFinset] using
+  simpa [chineseRemainderOfFinset] using
     chineseRemainderOfMultiset_lt_prod a s t.nodup (by simpa using hs) (by simpa using pp)
 
 end Nat
