@@ -5,7 +5,6 @@ Authors: Simon Hudon, Harun Khan
 -/
 
 import Mathlib.Data.BitVec.Defs
-import Mathlib.Tactic.Linarith
 
 /-!
 # Basic Theorems About Bitvectors
