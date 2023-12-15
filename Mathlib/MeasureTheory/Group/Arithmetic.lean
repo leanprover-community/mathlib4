@@ -532,8 +532,8 @@ instance (priority := 100) MeasurableDiv.toMeasurableInv [MeasurableSpace α] [G
 is a measurable function and for each `x` the map `c ↦ c +ᵥ x` is a measurable function. -/
 class MeasurableVAdd (M α : Type*) [VAdd M α] [MeasurableSpace M] [MeasurableSpace α] :
     Prop where
-  measurable_const_vadd : ∀ c : M, Measurable ((· +ᵥ ·) c : α → α)
-  measurable_vadd_const : ∀ x : α, Measurable fun c : M => c +ᵥ x
+  measurable_const_vadd : ∀ c : M, Measurable (c +ᵥ · : α → α)
+  measurable_vadd_const : ∀ x : α, Measurable (· +ᵥ x : M → α)
 #align has_measurable_vadd MeasurableVAdd
 #align has_measurable_vadd.measurable_const_vadd MeasurableVAdd.measurable_const_vadd
 #align has_measurable_vadd.measurable_vadd_const MeasurableVAdd.measurable_vadd_const
@@ -543,8 +543,8 @@ is a measurable function and for each `x` the map `c ↦ c • x` is a measurabl
 @[to_additive]
 class MeasurableSMul (M α : Type*) [SMul M α] [MeasurableSpace M] [MeasurableSpace α] :
     Prop where
-  measurable_const_smul : ∀ c : M, Measurable ((· • ·) c : α → α)
-  measurable_smul_const : ∀ x : α, Measurable fun c : M => c • x
+  measurable_const_smul : ∀ c : M, Measurable (c • · : α → α)
+  measurable_smul_const : ∀ x : α, Measurable (· • x : M → α)
 #align has_measurable_smul MeasurableSMul
 #align has_measurable_smul.measurable_const_smul MeasurableSMul.measurable_const_smul
 #align has_measurable_smul.measurable_smul_const MeasurableSMul.measurable_smul_const
