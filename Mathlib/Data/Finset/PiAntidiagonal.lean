@@ -25,39 +25,30 @@ In `Mathlib.Data.Finset.Antidiagonal` is defined a TypeClass
 which maps `n : μ` to a `Finset` of pairs `(a,b)`
 such that `a + b = n`.
 
-These functions apply to (ι →₀ ℕ), more generally to (ι →₀ μ)
+These functions apply to `ι →₀ ℕ`, more generally to `ι →₀ μ`
 under the additional assumption `OrderedSub μ` that make it
 a canonically ordered add monoid.
 In fact, we just need an AddMonoid with a compatible order,
 finite Iic, such that if a + b = n, then a, b ≤ n,
 and any other bound would be OK.
 
-In this file, we provide an analogous definition for ι → μ,
-with an explicit finiteness conditions on the support
+In this file, we provide an analogous definition for `ι →₀ μ`,
+with an explicit finiteness conditions on the support.
+This Finset could be viewed inside `ι → μ`, but the `Finsupp` condition
+provides a natural `DecidableEq` instance.
 
-* we define `Fin.hasAntidiagonal d`
+Consider types `ι` and `μ`, with `AddCommMonoid μ`.
 
-* For `s : Finset ι`,  we define `Finset.piAntidiagonal s n`
-  as the `Finset (ι → μ)` of functions with support in `s`
-  whose sum is equal to `n`.
-  Given `HasAntidiagonal μ`, this is indeed a Finset
+* The class `Finset.HasPiAntidiagonal ι μ` provides a finite set
+  `Finset.HasPiAntidiagonal.piAntidiagonal s n` of all functions
+  with finite support contained in `s` and sum `n : μ`
+  That condition is expressed by `HasPiAntidiagonal.mem_piAntidiagonal`
+* `Finset.HasPiAntidiagonal.mem_piAntidiagonal'` rewrites the `Finsupp.sum`
+  condition as a `Finset.sum`
+* Assuming `Finset.HasAntidiagonal μ`, we provide a member `Finset.HasAntidiagonal.HasPiAntidiagonal` of that class
+* The construction starts with `Finset.HasPiAntidiagonal.finAntidiagonal`,
+  a variant of `Finset.Nat.antidiagonalTuple`
 
--/
-
-/-
-section InjOn
-
-variable {α β : Type*} {f : α → β}  {s : Set α} (hs : Set.InjOn f s)
-/-- The embedding associated with an map which is injective on a subset -/
-def Set.InjOn.embedding : s ↪ β := { inj' := hs.injective }
-
-@[simp]
-lemma Set.InjOn.embedding_apply {a : s} : hs.embedding a = f a := rfl
-
-def Finset.map_of_injOn {s : Finset α} (hs : Set.InjOn f s) :
-    Finset β  := s.attach.map { inj' := hs.injective }
-
-end InjOn
 -/
 
 namespace Finset
@@ -380,6 +371,7 @@ noncomputable def piAntidiagonal' (s : Finset ι) (n : μ) : Finset (ι →₀ �
     inj' := Finsupp.embDomain_injective _ }
       -- fun f g => by simp only [Finsupp.embDomain_inj, imp_self] }
 
+-- Put it elsewhere !
 lemma mem_embDomain {α β M : Type*} [AddCommMonoid M] (f : α ↪ β) (g : β →₀ M) :
     (∃  (v : α →₀ M), Finsupp.embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
   constructor
