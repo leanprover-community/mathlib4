@@ -350,6 +350,8 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   nth_rw 4 [← (extChartAt I x₀).right_inv hf3']
   exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
 
+variable {t₀}
+
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
@@ -377,13 +379,11 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
     mfderiv_chartAt_eq_tangentCoordChange I hsrc]
   rfl
 
-variable {t₀}
-
 /-- Local integral curves are unique.
 
   If a continuously differentiable vector field `v` admits two local integral curves `γ γ' : ℝ → M`
   at `t₀` with `γ t₀ = γ' t₀`, then `γ` and `γ'` agree on some open interval around `t₀` -/
-theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t₀))
+theorem isIntegralCurveAt_eqOn_of_contMDiffAt (hγt₀ : I.IsInteriorPoint (γ t₀))
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) := by
@@ -397,7 +397,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
-    ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint ht₀)).snd
+    ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd
   have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun _ => hlip
 
   -- `γ t` when expressed in the local chart should remain inside `s`
@@ -457,7 +457,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
       (Real.ball_eq_Ioo _ _ ▸ (Metric.mem_ball_self hε)) hcont _ hmem hcont' _ hmem' (by simp [h])
     · intros t ht
       rw [hv']
-      have := hmfd.hasDerivAt t₀ ht (hsrc t ht)
+      have := hmfd.hasDerivAt ht (hsrc t ht)
       apply this.congr_deriv
       have : γ t = (extChartAt I (γ t₀)).symm (((extChartAt I (γ t₀)) ∘ γ) t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
@@ -465,7 +465,7 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
       rw [this]
     · intros t ht
       rw [hv', h]
-      have := hmfd'.hasDerivAt t₀ ht (hsrc' t ht)
+      have := hmfd'.hasDerivAt ht (hsrc' t ht)
       apply this.congr_deriv
       have : γ' t = (extChartAt I (γ' t₀)).symm (((extChartAt I (γ' t₀)) ∘ γ') t) := by
         rw [Function.comp_apply, PartialEquiv.left_inv]
@@ -479,14 +479,21 @@ theorem isIntegralCurveAt_eqOn_of_contMDiffAt (ht₀ : I.IsInteriorPoint (γ t�
   · intros t ht
     rw [Function.comp_apply, Function.comp_apply, h, PartialEquiv.left_inv _ (hsrc' _ ht)]
 
+theorem isIntegralCurveAt_eqOn_of_contMDiffAt_boundaryless [I.Boundaryless]
+    (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
+    (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
+    ∃ ε > 0, EqOn γ γ' (Ioo (t₀ - ε) (t₀ + ε)) :=
+  isIntegralCurveAt_eqOn_of_contMDiffAt I.isInteriorPoint hv hγ hγ' h
+
+variable [T2Space M] {a b : ℝ}
+
 /-- Integral curves are unique on open intervals.
 
   If a continuously differentiable vector field `v` admits two integral curves `γ γ' : ℝ → M`
   on some open interval `Ioo a b`, and `γ t₀ = γ' t₀` for some `t ∈ Ioo a b`, then `γ` and `γ'`
   agree on `Ioo a b`. -/
-theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x} {γ γ' : ℝ → M}
-    {a b : ℝ} (ht₀ : t₀ ∈ Ioo a b) (hip : ∀ t ∈ Ioo a b, I.IsInteriorPoint (γ t))
+theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
+    (hγt : ∀ t ∈ Ioo a b, I.IsInteriorPoint (γ t))
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
@@ -520,7 +527,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
       intro t₁ ht₁
       rw [mem_nhds_iff]
       obtain ⟨ε, hε, heqon⟩ : ∃ ε > 0, EqOn γ γ' (Ioo (t₁ - ε) (t₁ + ε)) :=
-        isIntegralCurveAt_eqOn_of_contMDiffAt (hip _ ht₁.2) hv.contMDiffAt
+        isIntegralCurveAt_eqOn_of_contMDiffAt (hγt _ ht₁.2) hv.contMDiffAt
           (hγ.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
           (hγ'.isIntegralCurveAt <| Ioo_mem_nhds ht₁.2.1 ht₁.2.2)
           ht₁.1
@@ -534,10 +541,18 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff {M : Type*} [TopologicalSpace M]
   intros t ht
   exact mem_setOf.mp ((subset_def ▸ hsub) t ht).1
 
-/-- Global integral curves are unique. -/
-theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    [SmoothManifoldWithCorners I M] [T2Space M] {v : (x : M) → TangentSpace I x} {γ γ' : ℝ → M}
-    (hip : ∀ t, I.IsInteriorPoint (γ t))
+theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [I.Boundaryless]
+    (ht₀ : t₀ ∈ Ioo a b)
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hγ : IsIntegralCurveOn γ v (Ioo a b)) (hγ' : IsIntegralCurveOn γ' v (Ioo a b))
+    (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) :=
+  isIntegralCurveOn_Ioo_eqOn_of_contMDiff ht₀ (fun _ _ => I.isInteriorPoint) hv hγ hγ' h
+
+/-- Global integral curves are unique.
+
+  If a continuously differentiable vector field `v` admits two global integral curves
+  `γ γ' : ℝ → M`, and `γ t₀ = γ' t₀` for some `t₀`, then `γ` and `γ'` are equal. -/
+theorem isIntegralCurve_eq_of_contMDiff (hγt : ∀ t, I.IsInteriorPoint (γ t))
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' := by
   ext t
@@ -550,9 +565,14 @@ theorem isIntegralCurve_eq_of_contMDiff {M : Type*} [TopologicalSpace M] [Charte
     · rw [abs_of_nonneg (not_lt.mp ht)]
       constructor <;> linarith
   exact isIntegralCurveOn_Ioo_eqOn_of_contMDiff
-    (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ => hip t) hv
+    (Real.ball_eq_Ioo t₀ T ▸ Metric.mem_ball_self hT) (fun t _ => hγt t) hv
     (IsIntegralCurveOn.mono (hγ.isIntegralCurveOn _) (subset_univ _))
     (IsIntegralCurveOn.mono (hγ'.isIntegralCurveOn _) (subset_univ _)) h ht
+
+theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
+  isIntegralCurve_eq_of_contMDiff (fun _ => I.isInteriorPoint) hv hγ hγ' h
 
 -- extend an integral curve by another one
 lemma isIntegralCurveOn_piecewise [I.Boundaryless] {M : Type*} [TopologicalSpace M]
