@@ -39,7 +39,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 * `Algebra.discr_mul_isIntegral_mem_adjoin` : let `K` be the fraction field of an integrally
   closed domain `R` and let `L` be a finite separable extension of `K`. Let `B : PowerBasis K L`
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
-  `(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`.
+  `(discr K B.basis) • z ∈ adjoin R ({B.gen} : Set L)`.
 
 ## Implementation details
 
@@ -310,7 +310,7 @@ theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsInte
 /-- Let `K` be the fraction field of an integrally closed domain `R` and let `L` be a finite
 separable extension of `K`. Let `B : PowerBasis K L` be such that `IsIntegral R B.gen`.
 Then for all, `z : L` that are integral over `R`, we have
-`(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`. -/
+`(discr K B.basis) • z ∈ adjoin R ({B.gen} : Set L)`. -/
 theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     [IsFractionRing R K] {B : PowerBasis K L} (hint : IsIntegral R B.gen) {z : L}
     (hz : IsIntegral R z) : discr K B.basis • z ∈ adjoin R ({B.gen} : Set L) := by

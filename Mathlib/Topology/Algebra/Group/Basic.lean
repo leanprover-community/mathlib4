@@ -1276,7 +1276,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
 
 /-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
 closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
-`ℚ` acting on `ℝ` by translation, and let `s : set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
+`ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`.
 To fix the proof, we would need to make two additional assumptions:
