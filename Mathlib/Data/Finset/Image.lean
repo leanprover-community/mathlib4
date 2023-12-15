@@ -888,7 +888,13 @@ section InjOn
 
 variable {α β : Type*} {f : α → β}  {s : Set α} (hs : Set.InjOn f s)
 
+/-- The image of a Finset under a map on which it is injective -/
 def Finset.map_of_injOn {s : Finset α} (hs : Set.InjOn f s) :
     Finset β  := s.attach.map { inj' := hs.injective }
+
+lemma Finset.map_of_injOn_eq_map (f : α ↪ β) {s : Finset α} :
+    Finset.map_of_injOn (Set.injOn_of_injective f.injective s) = s.map f := by
+  ext b
+  simp [Finset.map_of_injOn]
 
 end InjOn
