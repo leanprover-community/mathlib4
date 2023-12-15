@@ -57,21 +57,21 @@ def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
 
 @[simp]
 theorem toZModSubmodule_symm :
-    ⇑((AddSubgroup.toZModSubmodule n).symm : _ ≃o AddSubgroup M) = Submodule.toAddSubgroup :=
+    ⇑((toZModSubmodule n).symm : _ ≃o AddSubgroup M) = Submodule.toAddSubgroup :=
   rfl
 
 @[simp]
-theorem coe_toZModSubmodule (S : AddSubgroup M) : (AddSubgroup.toZModSubmodule n S : Set M) = S :=
+theorem coe_toZModSubmodule (S : AddSubgroup M) : (toZModSubmodule n S : Set M) = S :=
   rfl
 
 @[simp]
 theorem toZModSubmodule_toAddSubgroup (S : AddSubgroup M) :
-    (AddSubgroup.toZModSubmodule n S).toAddSubgroup = S :=
+    (toZModSubmodule n S).toAddSubgroup = S :=
   rfl
 
 @[simp]
-theorem _root_.ZMod.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M) :
-    AddSubgroup.toZModSubmodule n S.toAddSubgroup = S :=
+theorem _root_.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M) :
+    toZModSubmodule n S.toAddSubgroup = S :=
   rfl
 
 end AddSubgroup
