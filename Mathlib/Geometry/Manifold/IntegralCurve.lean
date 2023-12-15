@@ -87,42 +87,36 @@ def IsIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) :=
 variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
 
 lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
-    IsIntegralCurveOn γ v s := fun t _ => h t
+    IsIntegralCurveOn γ v s := fun t _ ↦ h t
 
-lemma isIntegralCurve_iff_isIntegralCurveOn :
-    IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
-  ⟨fun h => h.isIntegralCurveOn _, fun h t => h t (mem_univ _)⟩
+lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
+  ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ h t (mem_univ _)⟩
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
-    IsIntegralCurveAt γ v t := ⟨univ, Filter.univ_mem, fun t _ => h t⟩
+    IsIntegralCurveAt γ v t := ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
 
 lemma isIntegralCurve_iff_isIntegralCurveAt :
     IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
-  ⟨fun h => h.isIntegralCurveAt, fun h t => by
+  ⟨fun h ↦ h.isIntegralCurveAt, fun h t ↦ by
     obtain ⟨s, hs, h⟩ := h t
     exact h t (mem_of_mem_nhds hs)⟩
 
 lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
-    IsIntegralCurveOn γ v s' := fun t ht => h t (mem_of_mem_of_subset ht hs)
+    IsIntegralCurveOn γ v s' := fun t ht ↦ h t (mem_of_mem_of_subset ht hs)
 
 lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
     IsIntegralCurveOn γ v (s ∪ s') := by
   intros t ht
-  rw [mem_union] at ht
   cases' ht with ht ht
   · exact h _ ht
   · exact h' _ ht
 
 lemma isIntegralCurveAt_iff :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  constructor
-  · intro h
-    obtain ⟨s, hs, h⟩ := h
-    obtain ⟨ε, hε, hsub⟩ := Metric.mem_nhds_iff.mp hs
-    exact ⟨ε, hε, h.mono hsub⟩
-  · intro h
-    obtain ⟨ε, hε, h⟩ := h
-    refine ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
+  refine ⟨?_,  fun ⟨ε, hε, h⟩ ↦ ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩⟩
+  rintro ⟨s, hs, h⟩
+  obtain ⟨ε, hε, hsub⟩ := Metric.mem_nhds_iff.mp hs
+  exact ⟨ε, hε, h.mono hsub⟩
 
 lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ nhds t₀) :
     IsIntegralCurveAt γ v t₀ := ⟨s, hs, h⟩
@@ -149,7 +143,7 @@ lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
 
 lemma isIntegralCurveOn_comp_add {dt : ℝ} :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
-  refine ⟨fun hγ => hγ.comp_add _, fun hγ => ?_⟩
+  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   have := hγ.comp_add (-dt)
   simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq] at this
   convert this
@@ -167,7 +161,7 @@ lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) 
 
 lemma isIntegralCurveAt_comp_add {dt : ℝ} :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
-  refine ⟨fun hγ => hγ.comp_add _, fun hγ ↦ ?_⟩
+  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   have := hγ.comp_add (-dt)
   rw [sub_neg_eq_add, sub_add_cancel] at this
   convert this
@@ -181,7 +175,7 @@ lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
 
 lemma isIntegralCurve_comp_add {dt : ℝ} :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· + dt)) v := by
-  refine ⟨fun hγ => hγ.comp_add _, fun hγ ↦ ?_⟩
+  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
   convert hγ.comp_add (-dt)
   ext
   simp only [Function.comp_apply, neg_add_cancel_right]
@@ -202,7 +196,7 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
 
 lemma isIntegralCurvOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
-  refine ⟨fun hγ => hγ.comp_mul a, fun hγ ↦ ?_⟩
+  refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
   have := hγ.comp_mul a⁻¹
   simp_rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, mem_setOf_eq, mul_assoc,
     inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq] at this
@@ -222,7 +216,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a 
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  refine ⟨fun hγ => hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
+  refine ⟨fun hγ ↦ hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ← div_mul_eq_div_div_swap,
     inv_mul_eq_div, div_self ha, div_one, Function.comp.assoc] at this
@@ -237,7 +231,7 @@ lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
 
 lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
-  refine ⟨fun hγ => hγ.comp_mul _, fun hγ => ?_⟩
+  refine ⟨fun hγ ↦ hγ.comp_mul _, fun hγ ↦ ?_⟩
   have := hγ.comp_mul a⁻¹
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul] at this
   convert this
@@ -246,7 +240,7 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
   is a global integral curve of `v`. -/
-lemma isIntegralCurve_const {x : M} (h : v x = 0) : IsIntegralCurve (fun _ => x) v := by
+lemma isIntegralCurve_const {x : M} (h : v x = 0) : IsIntegralCurve (fun _ ↦ x) v := by
   intro t
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
@@ -277,7 +271,7 @@ variable (t₀) {x₀ : M}
   of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around
   `t₀`.-/
 theorem exists_isIntegralCurveAt_of_contMDiffAt
-    (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀)
+    (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
     (hx : I.IsInteriorPoint x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
   -- express the differentiability of the vector field `v` in the local chart
@@ -337,7 +331,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
 lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless]
-    (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) :
+    (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt t₀ hv I.isInteriorPoint
 
