@@ -658,6 +658,12 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
           | _, _, Sublist.cons _ s', h => s'
           | _, _, Sublist.cons₂ t _, h => absurd rfl h⟩
 
+/--If the first element of two lists are different, then a sublist relation can be reduced. -/
+theorem sublist_cons_neq [DecidableEq α] {a b} (h₁ : a ≠ b) (h₂ : a::l₁ <+ b::l₂) :
+    a::l₁ <+ l₂ := by
+  have := isSublist_iff_sublist.mpr h₂
+  rwa [isSublist, if_neg h₁, isSublist_iff_sublist] at this
+
 /-! ### indexOf -/
 
 section IndexOf
@@ -785,6 +791,22 @@ theorem ext_get_iff {l₁ l₂ : List α} :
 theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
   ⟨by rintro rfl _ _; rfl, ext_get?'⟩
+
+/-- If two lists are the same length and get! is the same on all indices, the lists are equal. -/
+theorem ext_get! [Inhabited α] (hl : length l₁ = length l₂)
+    (h : ∀ n, get! l₁ n = get! l₂ n) : l₁ = l₂ :=
+  ext fun n => by
+      cases h₃ : get? l₁ n <;> cases h₄ : get? l₂ n
+      case none.none => rfl
+      case none.some =>
+        exfalso
+        exact not_lt_of_ge (get?_eq_none.mp h₃) (hl ▸ (get?_eq_some.mp h₄).1)
+      case some.none =>
+        exfalso
+        exact not_lt_of_ge (get?_eq_none.mp h₄) (hl ▸ (get?_eq_some.mp h₃).1)
+      case some.some =>
+        congr
+        exact (get!_of_get? h₃) ▸ (get!_of_get? h₄) ▸ h n
 
 @[simp]
 theorem getElem_indexOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : indexOf a l < l.length),
@@ -1750,6 +1772,12 @@ theorem filter_true (l : List α) :
 theorem filter_false (l : List α) :
     filter (fun _ => false) l = [] := by induction l <;> simp [*, filter]
 
+theorem filter_replicate {p : α → Bool} {n} {a : α} :
+    List.filter p (List.replicate n a) = if p a then List.replicate n a else [] := by
+  induction n with
+  | zero => simp
+  | succ n ih => by_cases hf : p a <;> simp_all
+
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
     ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
@@ -2224,6 +2252,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
     · simp only [cons.sizeOf_spec, Nat.add_lt_add_iff_left]
       apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi
+
 
 section Disjoint
 
