@@ -45,8 +45,7 @@ variable [Ring F] [Ring K] [AddCommGroup A]
 
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
-variable [StrongRankCondition F] [StrongRankCondition K]
-  [Module.Free F K] [Module.Free K A]
+variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
@@ -66,9 +65,8 @@ theorem lift_rank_mul_lift_rank :
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
-theorem rank_mul_rank (F : Type u) (K A : Type v) [Ring F] [Ring K] [AddCommGroup A]
-    [Module F K] [Module K A] [Module F A] [IsScalarTower F K A] [StrongRankCondition F]
-    [StrongRankCondition K] [Module.Free F K] [Module.Free K A] :
+theorem rank_mul_rank (A : Type v) [AddCommGroup A]
+    [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 #align rank_mul_rank rank_mul_rank
@@ -107,9 +105,7 @@ Note this cannot be an instance as Lean cannot infer `A`.
 -/
 theorem left [Nontrivial A] [FiniteDimensional F A] : FiniteDimensional F K :=
   let ⟨x, hx⟩ := exists_ne (0 : A)
-  let f : K →ₗ[F] A :=
-    { __ := (LinearMap.ringLmapEquivSelf K ℕ A).symm x
-      map_smul' := (IsScalarTower.isLinearMap _).map_smul }
+  let f := LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.isLinearMap_of_compatibleSMul F |>.mk' _
   FiniteDimensional.of_injective f (smul_left_injective K hx)
 #align finite_dimensional.left FiniteDimensional.left
 
