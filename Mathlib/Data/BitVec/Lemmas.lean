@@ -203,6 +203,8 @@ end
 ### `IntCast`
 -/
 
+-- Either of these follows trivially fromt he other. Which one to
+-- prove is not yet clear.
 proof_wanted ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z
 
 proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
