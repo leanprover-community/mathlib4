@@ -142,11 +142,11 @@ instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : Add (VertexOperator R V) :=--inferInstance?
   {
-    add := fun a b =>
+    add := fun A B =>
       {
       toMap :=
         {
-        toFun := fun x => a.toMap x + b.toMap x
+        toFun := fun x => A.toMap x + B.toMap x
         map_add' := by
           intros
           simp only [map_add]
@@ -157,22 +157,22 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : Add (VertexOperator R V) :
       }
   }
 
-@[simp] lemma add_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (a b : VertexOperator R V)
-  (x : V): (a + b).toMap x = a.toMap x + b.toMap x := rfl
+@[simp] lemma add_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
+  (x : V): (A + B).toMap x = A.toMap x + B.toMap x := rfl
 
-@[simp] lemma add_coeff_eq [CommRing R] [AddCommGroup V] [Module R V] (a b : VertexOperator R V)
-  (n : ℤ) : coeff (a + b) n = coeff a n + coeff b n := by exact rfl
+@[simp] lemma add_coeff_eq [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
+  (n : ℤ) : coeff (A + B) n = coeff A n + coeff B n := by exact rfl
 
-@[simp] lemma add_index_eq [CommRing R] [AddCommGroup V] [Module R V] (a b : VertexOperator R V)
-  (n : ℤ) : (a + b) ⁅n⁆ = a ⁅n⁆ + b ⁅n⁆ := by exact rfl
+@[simp] lemma add_index_eq [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
+  (n : ℤ) : (A + B) ⁅n⁆ = A ⁅n⁆ + B ⁅n⁆ := by exact rfl
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : Neg (VertexOperator R V) :=
   {
-    neg := fun a =>
+    neg := fun A =>
     {
     toMap :=
       {
-      toFun := fun x => - a.toMap x
+      toFun := fun x => - A.toMap x
       map_add' := by
         intros
         simp only [map_add, neg_add_rev]
@@ -184,8 +184,8 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : Neg (VertexOperator R V) :
     }
   }
 
-@[simp] lemma neg_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (a : VertexOperator R V)
-    (x : V): (-a).toMap x = - a.toMap x := rfl
+@[simp] lemma neg_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V)
+    (x : V): (-A).toMap x = - A.toMap x := rfl
 
 -- can I use LinearMap.AddCommGroup here?
 instance [CommRing R] [AddCommGroup V] [Module R V] : AddCommGroup (VertexOperator R V) :=
@@ -213,10 +213,10 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : AddCommGroup (VertexOperat
   }
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : SMul R (VertexOperator R V) :=
-  { smul := fun r a =>
+  { smul := fun r A =>
     {toMap :=
       {
-        toFun := fun x => r • a.toMap x
+        toFun := fun x => r • A.toMap x
         map_add' := by
           intros
           ext n
@@ -231,13 +231,13 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : SMul R (VertexOperator R V
   }
 
 @[simp] lemma smul_toMap_eq [CommRing R] [AddCommGroup V] [Module R V] (r : R)
-    (a : VertexOperator R V) (x : V): (r • a).toMap x = r • a.toMap x := rfl
+    (A : VertexOperator R V) (x : V): (r • A).toMap x = r • A.toMap x := rfl
 
 @[simp] lemma smul_coeff_eq [CommRing R] [AddCommGroup V] [Module R V] (r : R)
-  (a : VertexOperator R V) (n : ℤ) : coeff (r • a) n = r • coeff a n := by exact rfl
+  (A : VertexOperator R V) (n : ℤ) : coeff (r • A) n = r • coeff A n := by exact rfl
 
 @[simp] lemma smul_index_eq [CommRing R] [AddCommGroup V] [Module R V] (r : R)
-  (a : VertexOperator R V) (n : ℤ) : (r • a) ⁅n⁆ = r • (a ⁅n⁆) := by exact rfl
+  (A : VertexOperator R V) (n : ℤ) : (r • A) ⁅n⁆ = r • (A ⁅n⁆) := by exact rfl
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R V) :=
   {
@@ -270,20 +270,21 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R
       simp only [smul_toMap_eq, zero_smul, HahnSeries.zero_coeff, zero_toFun]
   }
 
-instance [CommRing R] [AddCommGroup V] [Module R V] : Module R (VertexOperator R V) :=
-  {
-    add_smul := by
-      intros
-      ext x n
-      simp only [smul_toMap_eq, HahnSeries.smul_coeff, add_toMap_eq, HahnSeries.add_coeff',
-        Pi.add_apply, add_smul]
-    zero_smul := by
-      intros
-      ext x n
-      simp only [zero_smul, zero_toFun, HahnSeries.zero_coeff]
-  }
+/-!
+def localToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+    (A B : VertexOperator R V) (n : ℕ) : Prop := ∀ (k l : ℤ), Finset.sum
+    (m in Finset.antidiagonal n) (-1)^(m.1) • (Nat.choose n m.1) •
+    coeff a (k + m.1) (coeff b (l + m.2)) = Finset.sum (m : Finset.antidiagonal n) (-1)^(m.1) •
+    (Nat.choose n m.1) • coeff b (l + m.1) (coeff a (k + m.2))
 
--- locality of fields, order of locality
+open BigOperators
+
+open Polynomial Finset Finset.Nat
+
+∑ ij : ℕ × ℕ in antidiagonal k,
+
+-- locality of fields, order of locality, residue products, order of associativity
+-/
 
 end VertexAlg
 
@@ -473,11 +474,6 @@ theorem unit_comm (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgeb
 theorem unit_right (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgebra R V] (a : V) :
     coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
 
-
-
-/-!
-
-
--/
+-- cofiniteness?
 
 end VertexAlg

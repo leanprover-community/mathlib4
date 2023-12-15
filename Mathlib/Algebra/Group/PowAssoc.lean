@@ -132,4 +132,22 @@ instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M :=
     rw [pow_one]
   }
 
+@[simp, norm_cast]
+theorem Nat.cast_npow (R : Type u) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :
+    (↑(n ^ m) : R) = (↑n : R) ^ m := by
+  induction' m with m ih
+  · simp only [pow_zero, Nat.cast_one, npow_zero]
+  · rw [← Nat.add_one, npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
+
+@[simp, norm_cast]
+theorem Int.cast_npow (R : Type u) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
+    (n : ℤ) : ∀(m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
+  | 0 => by
+    rw [pow_zero, npow_zero, Int.cast_one]
+  | m + 1 => by
+    rw [npow_add, npow_one, Int.cast_mul, Int.cast_npow R n m, npow_add, npow_one]
+
+
+
+
 end Monoid

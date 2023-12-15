@@ -62,10 +62,10 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
         VertexAlg.zero_index, LinearMap.zero_apply]
     | succ n =>
       rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
-        (Nat.succ_ne_zero n)), Finset.sum_range_one, zero_add, Ring.choose_zero_right, one_smul,
-        Nat.cast_zero, add_zero, sub_zero]
+        (Nat.succ_ne_zero n)), Finset.sum_range_one, zero_add, Ring.choose_zero_right (0 : ℤ),
+        one_smul, Nat.cast_zero, add_zero, sub_zero]
       intro i hi
-      rw [Ring.choose_zero_pos i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
+      rw [Ring.choose_zero_pos ℤ i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
           zero_smul]
 
 theorem associativity_right (a b c : V) (s t : ℤ) : Borcherds_sum_2 R a b c 0 s t +
@@ -91,10 +91,10 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
     rw [index_zero_if_neg_order_leq b c s (toNat_sub_eq_zero_leq h), LinearMap.map_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr
-        (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right, one_smul,
-        Nat.cast_zero, add_zero, sub_zero, pow_zero, one_smul]
+        (Nat.succ_ne_zero n)), Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ),
+        one_smul, Nat.cast_zero, add_zero, sub_zero, pow_zero, one_smul]
     intro i hi
-    rw [Ring.choose_zero_pos i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
+    rw [Ring.choose_zero_pos ℤ i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
       zero_smul, smul_zero]
 
 theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s 0 =
@@ -106,10 +106,10 @@ theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s
     rw [index_zero_if_neg_order_leq a c r (toNat_sub_eq_zero_leq h), LinearMap.map_zero, neg_zero]
   | succ n =>
     rw [Finset.eventually_constant_sum ?_ (Nat.one_le_iff_ne_zero.mpr (Nat.succ_ne_zero n)),
-        Finset.sum_range_one, add_zero, Ring.choose_zero_right, one_smul, Nat.cast_zero, add_zero,
-        sub_zero, zero_add, add_zero, zpow_one, Units.neg_smul, one_smul]
+        Finset.sum_range_one, add_zero, Ring.choose_zero_right (0 : ℤ), one_smul, Nat.cast_zero,
+        add_zero, sub_zero, zero_add, add_zero, zpow_one, Units.neg_smul, one_smul]
     intro i hi
-    rw [Ring.choose_zero_pos i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
+    rw [Ring.choose_zero_pos ℤ i (Nat.ne_zero_iff_zero_lt.mp <| Nat.one_le_iff_ne_zero.mp <| hi),
         zero_smul, smul_zero]
 
 theorem Borcherds_id_at_zero_iff_commutator_formula (a b c : V) (r s : ℤ) :
@@ -127,6 +127,8 @@ theorem locality_left (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
     exact h
   rw [hrange, Finset.range_zero, Finset.sum_empty]
 
+-- need to revise locality : every field is local...
+
 theorem Borcherds_id_at_large_t_iff_locality (a b c : V) (r s t : ℤ) (h : - order R a b ≤ t) :
     Borcherds_id R a b c r s t ↔ locality R a b c r s t := by
   unfold Borcherds_id locality
@@ -140,6 +142,8 @@ theorem weak_assoc_right (a b c : V) (r s t: ℤ) (h : r ≥ - order R a c) :
     rw [Int.toNat_eq_zero, tsub_le_iff_right, zero_add, neg_le]
     exact h
   rw [hrange, Finset.range_zero, Finset.sum_empty]
+
+-- need to revise weak associativity : pairs of fields are weakly associative
 
 theorem Borcherds_id_at_large_r_iff_weak_assoc (a b c : V) (r s t: ℤ) (h : r ≥ - order R a c) :
     Borcherds_id R a b c r s t ↔ weak_associativity R a b c r s t := by
@@ -205,7 +209,7 @@ theorem borcherds2Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
       have h₂ : r + (t + 1) - (k + 1) = r + t - k := by linarith
       rw [h₂, add_assoc, add_comm 1 _] -- end first sum
       rw [add_assoc, add_comm 1 t] --end second sum
-      rw [Ring.choose_zero_right, Ring.choose_zero_right, add_assoc, add_comm 1 t] -- end third sum
+      rw [Ring.choose_zero_right (t + 1), Ring.choose_zero_right t, add_assoc, add_comm 1 t]
 
 theorem borcherds3Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
     (a b c : V) (r s t : ℤ) : Borcherds_sum_3 R a b c (r + 1) s t =
