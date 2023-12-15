@@ -327,8 +327,8 @@ noncomputable def shiftTriangleIso (n : ℤ) :
   · ext p
     dsimp
     simp? [shiftIso, Units.smul_def, ext_to_iff _ _ (p + 1) rfl, Cochain.shift_v'] says
-      simp only [Units.smul_def, HomologicalComplex.zsmul_f_apply, shiftFunctor_obj_X', assoc,
-        shiftFunctor_map_f', shiftIso, Linear.smul_comp, id_comp, ext_to_iff _ _ (p + 1) rfl,
+      simp only [Units.smul_def, HomologicalComplex.zsmul_f_apply, shiftFunctor_obj_X',
+        shiftFunctor_map_f', shiftIso, Linear.smul_comp, id_comp, ext_to_iff _ _ (p + 1) rfl, assoc,
         lift_f_fst_v, Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v',
         Linear.comp_smul, inr_f_fst_v, smul_zero, lift_f_snd_v, inr_f_snd_v, and_true]
     rw [smul_zero]
