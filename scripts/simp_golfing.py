@@ -44,6 +44,11 @@ def remove_lemma_from_simp_only(filename):
 
     print(f"Removing unnecessary lemmas from simp only in {filename}")
 
+    print("Building file and deps")
+    module_name = ".".join(filename[:-5].split("/"))
+    exit_code = os.system(f"lake build {module_name} > /dev/null")
+    assert(exit_code == 0)
+
     #  Represent the file as a list of lines
     with open(filename, "r") as f:
         lines = list(f)
@@ -90,7 +95,7 @@ def remove_lemma_from_simp_only(filename):
             with open(filename, "w") as f:
                 f.writelines(new_lines)
             # Get the code for the runtime
-            exit_code = os.system(f"lean --make {filename} > /dev/null")
+            exit_code = os.system(f"lake build {module_name} > /dev/null")
 
             if exit_code == 0:
                 print(f"Found removable lemma {lemma}")
@@ -104,14 +109,13 @@ def remove_lemma_from_simp_only(filename):
         i += 1
 
 
-
     # write whatever the current version of the lines is to file
     with open(filename, "w") as f:
         f.writelines(lines)
 
 filelist = []
 
-for root, dirs, files in os.walk("src/data"):
+for root, dirs, files in os.walk("Mathlib/Data"):
 	for file in files:
         #append the file name to the list
 		filelist.append(os.path.join(root,file))
