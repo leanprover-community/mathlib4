@@ -22,6 +22,8 @@ triangles were defined using termwise-split short exact sequences of cochain
 complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][verdier1996]
 (with the better sign conventions from the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000]).
+The equivalence with the definition using degreewise split short exact sequences
+is obtained in `Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit`.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
