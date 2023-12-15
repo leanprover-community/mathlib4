@@ -9,7 +9,7 @@ import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Interval
 
-/-! # Partial HasAntidibgonal for functions with finite support
+/-! # Partial HasAntidiagonal for functions with finite support
 
 Let `μ` be an AddCommMonoid.
 
@@ -265,8 +265,7 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
     · exact hg
 
 -- This should work under the assumption that e is an embedding and an AddHom
-lemma mapRange_piAntidiagonal_subset
-    {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
+lemma mapRange_piAntidiagonal_subset {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
     {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (piAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding ⊆ piAntidiagonal s (e n) := by
   intro f
@@ -278,8 +277,7 @@ lemma mapRange_piAntidiagonal_subset
   · exact subset_trans (support_mapRange) hsupp
   · rw [sum_mapRange_index (fun _ => rfl), ← hsum, _root_.map_finsupp_sum]
 
-lemma mapRange_piAntidiagonal_eq
-    {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
+lemma mapRange_piAntidiagonal_eq {μ' : Type*} [AddCommMonoid μ'] [HasPiAntidiagonal ι μ']
     {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (piAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding = piAntidiagonal s (e n) := by
   ext f
