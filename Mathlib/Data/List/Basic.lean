@@ -1113,7 +1113,6 @@ theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) 
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
-
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
