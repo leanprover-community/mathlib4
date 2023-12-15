@@ -296,6 +296,30 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
+@[simp]
+lemma pred_bit_false {x : ℕ} (h : x > 0) : pred (bit false x) = bit true (pred x) := by
+  cases x
+  · contradiction
+  · simp only [bit_val, mul_succ, cond_false, _root_.add_zero, Nat.pred_succ, cond_true]
+
+/-- The expressions `pred (1 <<< w)` represents the number with the `w` least significant bits as
+`1`, and all other bits `0`.
+It's used as the all-ones bitvector in the implementation of  `Std.BitVec.not` -/
+lemma testBit_ones (w i : ℕ) : testBit (pred <| 1 <<< w) i = decide (i < w) := by
+  induction' w with w ih generalizing i
+  · simp only [zero_eq, shiftLeft_zero, Nat.pred_succ, zero_testBit, not_lt_zero', decide_False]
+  · suffices
+      testBit (pred <| bit false (1 <<< w)) i = decide (i < w + 1)
+    by simpa only [bit_val, Bool.cond_false, shiftLeft_succ] using this
+    rw [Nat.pred_bit_false (by
+      rw [shiftLeft_eq_mul_pow, one_mul]
+      exact two_pow_pos w
+    )]
+    cases i
+    · simp only [Nat.zero_eq, testBit_zero, zero_lt_succ, decide_True]
+    · simp only [testBit_succ, ih, decide_eq_decide]
+      exact succ_lt_succ_iff.symm
+
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n

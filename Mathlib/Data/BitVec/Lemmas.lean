@@ -278,6 +278,10 @@ variable (x y : BitVec w) (i : Fin w)
 @[simp] lemma getLsb'_xor : (x ^^^ y).getLsb' i = (xor (x.getLsb' i) (y.getLsb' i)) := by
   simp only [getLsb', getLsb, toNat_xor, testBit_xor]
 
+@[simp] lemma getLsb'_not : (~~~x).getLsb' i = !(x.getLsb' i) := by
+  simp only [getLsb', getLsb, Complement.complement, BitVec.not, toNat_xor, toNat_ofFin,
+    testBit_xor, Nat.testBit_ones, Fin.is_lt, decide_True, Bool.true_xor]
+
 @[simp] lemma getLsb'_ofNat_zero : getLsb' 0#w i = false := by
   simp only [getLsb', getLsb, toNat_ofNat, zero_mod, zero_testBit]
 
