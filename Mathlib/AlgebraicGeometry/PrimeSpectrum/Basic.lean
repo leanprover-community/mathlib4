@@ -699,11 +699,12 @@ section SpecOfSurjective
 
 /-! The comap of a surjective ring homomorphism is a closed embedding between the prime spectra. -/
 
+
 open Function RingHom
 
-
 variable [CommRing R] [CommRing S]
-
+variable (f : R →+* S)
+variable {R}
 
 theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Surjective f)
     (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
@@ -721,10 +722,8 @@ theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegra
 #align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
 
 
-variable {T : Type u} (T' : Type v) [CommRing T] [CommRing T']
-variable (f : T →+* T')
 
-theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal T') :
+theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     comap f '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
   refine' fun p => ⟨_, fun h_I_p => _⟩
