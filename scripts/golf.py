@@ -82,10 +82,7 @@ def remove_lemma_from_simp_only(filename):
             new_line = line[:simp_only_start] + \
                 f"simp only [" + ", ".join(other_lemmas) + line[lemmas_end:]
             new_lines = list(lines)
-            # print("A", new_lines[i])
-            # print("B", lines[i])
-            # print("C", new_line)
-            # print("D", line)
+
             assert("simp only" in new_lines[i])
             new_lines[i] = new_line
 
