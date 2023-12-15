@@ -31,30 +31,11 @@ variable {L : Language} {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
-namespace Substructure
-
-@[simp]
-theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
-    {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
-    φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
-  rw [← Substructure.topEquiv.realize_boundedFormula φ]
-  simp
-#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
-
-@[simp]
-theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
-    φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
-  rw [← Substructure.topEquiv.realize_formula φ]
-  simp
-#align first_order.language.substructure.realize_formula_top FirstOrder.Language.Substructure.realize_formula_top
-
 /-- A substructure is elementary when every formula applied to a tuple in the subtructure
   agrees with its value in the overall structure. -/
-def IsElementary (S : L.Substructure M) : Prop :=
+def Substructure.IsElementary (S : L.Substructure M) : Prop :=
   ∀ ⦃n⦄ (φ : L.Formula (Fin n)) (x : Fin n → S), φ.Realize (((↑) : _ → M) ∘ x) ↔ φ.Realize x
 #align first_order.language.substructure.is_elementary FirstOrder.Language.Substructure.IsElementary
-
-end Substructure
 
 variable (L M)
 
