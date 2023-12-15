@@ -153,11 +153,10 @@ open Finsupp
 
 /-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` -/
 example {k : Type _} [Semiring k] [Nontrivial k] :
-    (Finsupp.comapSMul : SMul k (k →₀ k)) ≠ Finsupp.smulZeroClass.toSMul :=
-  by
+    (Finsupp.comapSMul : SMul k (k →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : k, hu⟩ := exists_ne (1 : k)
   intro h
-  simp only [SMul.ext_iff, SMul.smul_eq_hSMul, Function.funext_iff, FunLike.ext_iff] at h
+  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, FunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
@@ -167,12 +166,11 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
 /-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` even when
 the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
-    (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul :=
-  by
+    (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
   haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
   intro h
-  simp only [SMul.ext_iff, SMul.smul_eq_hSMul, Function.funext_iff, FunLike.ext_iff] at h
+  simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, FunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
@@ -194,18 +192,16 @@ open Polynomial
 
 /-- `Polynomial.hasSMulPi` forms a diamond with `Pi.instSMul`. -/
 example [Semiring R] [Nontrivial R] :
-    Polynomial.hasSMulPi _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) :=
-  by
+    Polynomial.hasSMulPi _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, Function.funext_iff, Polynomial.ext_iff] at h
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
 /-- `Polynomial.hasSMulPi'` forms a diamond with `Pi.instSMul`. -/
 example [CommSemiring R] [Nontrivial R] :
-    Polynomial.hasSMulPi' _ _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) :=
-  by
+    Polynomial.hasSMulPi' _ _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, Function.funext_iff, Polynomial.ext_iff] at h
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
 /-- `Polynomial.hasSMulPi'` is consistent with `Polynomial.hasSMulPi`. -/
@@ -231,8 +227,7 @@ section Subtype
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
 example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [@DecidableRel α (· < ·)]
     [@DecidableRel α (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
-    Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder :=
-  by
+    Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _
 
