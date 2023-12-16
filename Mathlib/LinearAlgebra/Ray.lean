@@ -158,6 +158,26 @@ theorem pos_smul_left {r : R} (h : SameRay R x y) (hr : 0 < r) : SameRay R (r �
   h.nonneg_smul_left hr.le
 #align same_ray.pos_smul_left SameRay.pos_smul_left
 
+--TODO: Can we unify with `sameRay_nonneg_smul_right`?
+/-- A vector is in the same ray as a nonnegative integer multiple of itself. -/
+lemma _root_.sameRay_nsmul_right (v : M) (n : ℕ) : SameRay R v (n • v) := by
+  rw [nsmul_eq_smul_cast R]; exact SameRay.sameRay_nonneg_smul_right v (Nat.cast_nonneg _)
+
+--TODO: Can we unify with `sameRay_nonneg_smul_right`?
+/-- A vector is in the same ray as a nonnegative integer multiple of itself. -/
+lemma _root_.sameRay_nsmul_left (v : M) (n : ℕ) : SameRay R (n • v) v :=
+  (sameRay_nsmul_right _ _).symm
+
+/-- A vector is in the same ray as a nonnegative integer multiple of one it is in the same ray as.
+-/
+lemma nsmul_right (h : SameRay R x y) (n : ℕ) : SameRay R x (n • y) :=
+  h.trans (sameRay_nsmul_right y _) fun hy ↦ Or.inr $ by rw [hy, smul_zero]
+
+/-- A nonnegative integer multiple of a vector is in the same ray as one it is in the same ray as.
+-/
+lemma nsmul_left (h : SameRay R x y) (n : ℕ) : SameRay R (n • x) y :=
+  (h.symm.nsmul_right _).symm
+
 /-- If two vectors are on the same ray then they remain so after applying a linear map. -/
 theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
   (h.imp fun hx => by rw [hx, map_zero]) <|
