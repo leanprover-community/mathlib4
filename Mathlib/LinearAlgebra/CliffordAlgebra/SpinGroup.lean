@@ -8,8 +8,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-
-#align_import main
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 
 /-!
 # The Pin group and the Spin group
@@ -40,10 +39,9 @@ statement presumably being true only in finite dimensions.
 Try to show the reverse statement is true in finite dimensions.
 -/
 
+variable {R : Type*} [CommRing R] [Nontrivial R]
 
-variable {R : Type _} [CommRing R]
-
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 variable {Q : QuadraticForm R M}
 
@@ -53,9 +51,29 @@ open CliffordAlgebra MulAction
 
 open scoped Pointwise
 
-def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible (Q m) :=
-  sorry
-#align invertible_of_invertible_ι invertibleOfInvertibleι
+def inv_of_inv_sq (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible ((ι Q m) * (ι Q m)) :=
+  Invertible.mul ‹_› ‹_›
+
+def inv_algebraMap_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible (algebraMap _ _ (Q m) : CliffordAlgebra Q) :=
+  Invertible.copy (inv_of_inv_sq m) _ (ι_sq_scalar _ _).symm
+
+def inv_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible (Q m) :=
+  letI : Invertible (algebraMap _ (CliffordAlgebra Q) (Q m)) :=
+    (Invertible.mul ‹Invertible (ι Q m)› ‹Invertible (ι Q m)›).copy  _ (ι_sq_scalar _ _).symm
+  letI bar : Invertible (algebraMap _ (ExteriorAlgebra R M) (Q m)) := {
+    invOf := equivExterior Q ⅟(algebraMap _ (CliffordAlgebra Q) (Q m))
+    invOf_mul_self := by
+      dsimp
+      rw [←Algebra.commutes, ←Algebra.smul_def, ←map_smul, Algebra.smul_def, mul_invOf_self, changeForm_one]
+    mul_invOf_self := by
+      dsimp
+      rw [←Algebra.smul_def, ←map_smul, Algebra.smul_def, mul_invOf_self, changeForm_one]
+  }
+  (bar.map ExteriorAlgebra.algebraMapInv).copy _ (by simp)
+
+#align invertible_of_invertible_ι inv_of_inv_ι
+
+-- TODO: below are not fixed yet
 
 /-- `lipschitz` is the subgroup closure of all the elements in the form of `ι Q m` where `ι`
 is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
