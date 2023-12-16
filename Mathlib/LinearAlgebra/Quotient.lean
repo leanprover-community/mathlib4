@@ -162,12 +162,11 @@ section Module
 
 variable {S : Type*}
 
--- Performance of `Function.Surjective.mulAction` is worse since it has to unify data to apply
--- TODO: leanprover-community/mathlib4#7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
-  { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
-    toSMul := instSMul' _ }
+  { toSMul := instSMul' _
+    one_smul := Quotient.ind' fun _ => congrArg _ <| one_smul ..
+    mul_smul := fun _ _ => Quotient.ind' fun _ => congrArg _ <| mul_smul .. }
 #align submodule.quotient.mul_action' Submodule.Quotient.mulAction'
 
 -- porting note: should this be marked as a `@[default_instance]`?
@@ -185,13 +184,10 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
 
--- Performance of `Function.Surjective.distribSMul` is worse since it has to unify data to apply
--- TODO: leanprover-community/mathlib4#7432
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
-  { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
-    toSMulZeroClass := smulZeroClass' _ }
+  { toSMulZeroClass := smulZeroClass' _
+    smul_add := fun _ => Quotient.ind₂' fun _ _ => congrArg _ <| smul_add .. }
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
 -- porting note: should this be marked as a `@[default_instance]`?
@@ -199,13 +195,11 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
--- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data
--- TODO: leanprover-community/mathlib4#7432
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
-  { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
-    toMulAction := mulAction' _ }
+  { toMulAction := mulAction' _
+    smul_zero := fun _ => congrArg _ <| smul_zero _
+    smul_add := fun _ => Quotient.ind₂' fun _ _ => congrArg _ <| smul_add .. }
 #align submodule.quotient.distrib_mul_action' Submodule.Quotient.distribMulAction'
 
 -- porting note: should this be marked as a `@[default_instance]`?
@@ -213,13 +207,11 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
 
--- Performance of `Function.Surjective.module` is worse since it has to unify data to apply
--- TODO: leanprover-community/mathlib4#7432
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
-  { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
-    toDistribMulAction := distribMulAction' _ }
+  { toDistribMulAction := distribMulAction' _
+    zero_smul := Quotient.ind' fun _ => congrArg _ <| zero_smul ..
+    add_smul := fun _ _ => Quotient.ind' fun _ => congrArg _ <| add_smul .. }
 #align submodule.quotient.module' Submodule.Quotient.module'
 
 -- porting note: should this be marked as a `@[default_instance]`?
