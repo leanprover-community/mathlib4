@@ -162,8 +162,8 @@ theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + deg
     (n : ℕ) (f : R[A]) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
   refine' OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp _) n f
-  exact degt0
-  exact degtm _ _
+  · exact degt0
+  · exact degtm _ _
 #align add_monoid_algebra.le_inf_support_pow AddMonoidAlgebra.le_inf_support_pow
 
 end AddMonoids

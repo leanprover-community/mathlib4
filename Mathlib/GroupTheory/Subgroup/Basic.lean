@@ -2317,7 +2317,7 @@ variable {H}
 
 /-- The `centralizer` of `H` is the subgroup of `g : G` commuting with every `h : H`. -/
 @[to_additive
-      "The `centralizer` of `H` is the additive subgroup of `g : G` commuting with\nevery `h : H`."]
+      "The `centralizer` of `H` is the additive subgroup of `g : G` commuting with every `h : H`."]
 def centralizer (s : Set G) : Subgroup G :=
   { Submonoid.centralizer s with
     carrier := Set.centralizer s
@@ -3717,7 +3717,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
 #align subgroup.commute_of_normal_of_disjoint Subgroup.commute_of_normal_of_disjoint
-#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.commute_of_normal_of_disjoint
+#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.addCommute_of_normal_of_disjoint
 
 end SubgroupNormal
 

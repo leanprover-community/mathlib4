@@ -5,6 +5,7 @@ Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Tactic.ApplyFun
 
 #align_import field_theory.finite.basic from "leanprover-community/mathlib"@"12a85fac627bea918960da036049d611b1a3ee43"

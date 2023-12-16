@@ -553,6 +553,10 @@ theorem totalDegree_le_degrees_card (p : MvPolynomial σ R) :
     exact Finset.sup_le fun s hs => Multiset.card_le_of_le <| Finset.le_sup hs
 #align mv_polynomial.total_degree_le_degrees_card MvPolynomial.totalDegree_le_degrees_card
 
+theorem totalDegree_le_of_support_subset (h : p.support ⊆ q.support) :
+    totalDegree p ≤ totalDegree q :=
+  Finset.sup_mono h
+
 @[simp]
 theorem totalDegree_C (a : R) : (C a : MvPolynomial σ R).totalDegree = 0 := by
   classical exact (supDegree_single 0 a).trans (ite_eq_right_iff.mpr fun _ => rfl)

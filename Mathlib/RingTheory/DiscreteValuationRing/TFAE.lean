@@ -224,7 +224,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
       rw [LocalRing.jacobson_eq_maximalIdeal]
       exact bot_ne_top
     have :=
-      Submodule.smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
+      Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
     rw [Submodule.bot_smul, sup_bot_eq] at this
     rw [← sup_eq_left, eq_comm]
     exact le_sup_left.antisymm (h₁.trans <| le_of_eq this)
