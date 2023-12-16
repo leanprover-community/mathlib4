@@ -58,7 +58,7 @@ theorem ppow_add [PNatPowAssoc M] (k n : ℕ+) (x : M) : x ^ (k + n) = x ^ k * x
 theorem ppow_one [PNatPowAssoc M] (x : M) : x ^ (1 : ℕ+) = x :=
   PNatPowAssoc.ppow_one x
 
-instance Pi_PNatPowAssoc {I : Type*} {f : I → Type*} [∀ i, Mul <| f i] [∀ i, Pow (f i) ℕ+]
+instance Pi.instPNatPowAssoc {I : Type*} {f : I → Type*} [∀ i, Mul <| f i] [∀ i, Pow (f i) ℕ+]
     [∀ i, PNatPowAssoc <| f i] : PNatPowAssoc (∀ i : I, f i) :=
   {
     ppow_add := by
