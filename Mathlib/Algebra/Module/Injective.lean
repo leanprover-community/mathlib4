@@ -446,8 +446,8 @@ protected theorem extension_property (h : Module.Baer R Q)
     (f : M →ₗ[R] N) (hf : Function.Injective f) (g : M →ₗ[R] Q) : ∃ h, h ∘ₗ f = g :=
   haveI : Fact (Function.Injective f) := ⟨hf⟩
   Exists.intro
-    { toFun := fun y ↦
-        (extensionOfMax f g).toLinearPMap ⟨y, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ trivial⟩
+    { toFun := ((extensionOfMax f g).toLinearPMap
+        ⟨·, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ ⟨⟩⟩)
       map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
       map_smul' := fun r x ↦  by rw [← LinearPMap.map_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
