@@ -886,8 +886,11 @@ theorem symm_symm (e : α ≃o β) : e.symm.symm = e := by
   rfl
 #align order_iso.symm_symm OrderIso.symm_symm
 
-theorem symm_injective : Function.Injective (symm : α ≃o β → β ≃o α) := fun e e' h => by
-  rw [← e.symm_symm, h, e'.symm_symm]
+theorem symm_bijective : Function.Bijective (OrderIso.symm : (α ≃o β) → β ≃o α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
+theorem symm_injective : Function.Injective (symm : α ≃o β → β ≃o α) :=
+  symm_bijective.injective
 #align order_iso.symm_injective OrderIso.symm_injective
 
 @[simp]

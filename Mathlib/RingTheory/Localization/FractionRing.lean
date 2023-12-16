@@ -44,6 +44,9 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 #align is_fraction_ring IsFractionRing
 
+instance {R : Type*} [Field R] : IsFractionRing R R :=
+  IsLocalization.at_units _ (fun _ ↦ isUnit_of_mem_nonZeroDivisors)
+
 /-- The cast from `Int` to `Rat` as a `FractionRing`. -/
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
@@ -139,6 +142,14 @@ noncomputable def toField : Field K :=
       rw [IsFractionRing.inv]
       exact dif_pos rfl }
 #align is_fraction_ring.to_field IsFractionRing.toField
+
+lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
+  mp h := (RingEquiv.ofBijective (algebraMap R K)
+      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
+  mpr h :=
+    letI := h.toField
+    (IsLocalization.atUnits R _ (S := K)
+      (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
 
 end CommRing
 
@@ -314,8 +325,7 @@ noncomputable def liftAlgebra [IsDomain R] [Field K] [Algebra R K]
   RingHom.toAlgebra (IsFractionRing.lift (NoZeroSMulDivisors.algebraMap_injective R _))
 
 -- Porting note: had to fill in the `_` by hand for this instance
-/-- Should be introduced locally after introducing `FractionRing.liftAlgebra` -/
-theorem isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
+instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
   exact IsScalarTower.of_algebraMap_eq fun x =>

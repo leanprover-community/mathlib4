@@ -5,8 +5,10 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Algebra.Group.ULift
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.RingTheory.Nilpotent
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -305,18 +307,20 @@ theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1
   linarith
 #align char_p.neg_one_ne_one CharP.neg_one_ne_one
 
-theorem CharP.neg_one_pow_char [CommRing R] (p : ℕ) [CharP R p] [Fact p.Prime] :
+theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
-  rw [← add_pow_char, add_left_neg, zero_pow (Fact.out (p := Nat.Prime p)).pos]
+  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), add_left_neg,
+    zero_pow (Fact.out (p := Nat.Prime p)).pos]
 #align char_p.neg_one_pow_char CharP.neg_one_pow_char
 
-theorem CharP.neg_one_pow_char_pow [CommRing R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
+theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p ^ n = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
-  rw [← add_pow_char_pow, add_left_neg, zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
+  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), add_left_neg,
+    zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
 #align char_p.neg_one_pow_char_pow CharP.neg_one_pow_char_pow
 
 theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
@@ -439,23 +443,6 @@ end CommRing
 
 end frobenius
 
-theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP R p] :
-    Function.Injective (frobenius R p) := fun x h H => by
-  rw [← sub_eq_zero] at H ⊢
-  rw [← frobenius_sub] at H
-  exact IsReduced.eq_zero _ ⟨_, H⟩
-#align frobenius_inj frobenius_inj
-
-/-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
-then every `a : R` is a square. -/
-theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
-    (a : R) : IsSquare a := by
-  cases nonempty_fintype R
-  exact
-    Exists.imp (fun b h => pow_two b ▸ Eq.symm h)
-      (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
-#align is_square_of_char_two' isSquare_of_charTwo'
-
 namespace CharP
 
 section
@@ -491,23 +478,6 @@ theorem ringChar_zero_iff_CharZero [NonAssocRing R] : ringChar R = 0 ↔ CharZer
   rw [ringChar.eq_iff, charP_zero_iff_charZero]
 
 end
-
-section CommRing
-
-variable [CommRing R] [IsReduced R] {R}
-
-@[simp]
-theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [Fact p.Prime] [CharP R p] (x : R) :
-    x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
-  induction' k with k hk
-  · rw [pow_zero, one_mul]
-  · refine' ⟨fun h => _, fun h => _⟩
-    · rw [pow_succ, mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at h
-      exact hk.1 (frobenius_inj R p h)
-    · rw [pow_mul', h, one_pow]
-#align char_p.pow_prime_pow_mul_eq_one_iff CharP.pow_prime_pow_mul_eq_one_iff
-
-end CommRing
 
 section Semiring
 

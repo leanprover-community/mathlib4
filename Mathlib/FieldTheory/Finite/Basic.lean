@@ -5,6 +5,7 @@ Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Tactic.ApplyFun
 
 #align_import field_theory.finite.basic from "leanprover-community/mathlib"@"12a85fac627bea918960da036049d611b1a3ee43"
@@ -156,11 +157,11 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
     ← Finset.mul_sum] at h_sum_map
   -- thus one of (a - 1) or ∑ G, x is zero
   have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
-    rw [←mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
+    rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
   apply Or.resolve_left hzero
   contrapose! ha
   ext
-  rwa [←sub_eq_zero]
+  rwa [← sub_eq_zero]
 
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 @[simp]
@@ -207,7 +208,7 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
   rcases hzero with h | h
   · contrapose! ha
     ext
-    rw [←sub_eq_zero]
+    rw [← sub_eq_zero]
     simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
       Units.val_one, h]
   · exact h

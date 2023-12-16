@@ -934,6 +934,22 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
 #align set.finite_le_nat Set.finite_le_nat
 
+section MapsTo
+
+variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+
+theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+  refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
+  have : Finite s := finite_coe_iff.mpr hs
+  exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
+
+theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+  refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
+  have : Finite s := finite_coe_iff.mpr hs
+  exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
+
+end MapsTo
+
 section Prod
 
 variable {s : Set α} {t : Set β}
@@ -964,7 +980,7 @@ protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
   refine' ⟨fun h => _, _⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
-    by_contra'
+    by_contra!
     exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
   · rintro (h | h)
     · exact h.1.prod_left h.2
@@ -1312,7 +1328,7 @@ alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
 
 lemma Infinite.exists_not_mem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
-  by_contra' h; exact hs $ ht.subset h
+  by_contra! h; exact hs $ ht.subset h
 
 lemma Infinite.exists_not_mem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_not_mem_finite t.finite_toSet
@@ -1322,7 +1338,7 @@ section Infinite
 variable [Infinite α]
 
 lemma Finite.exists_not_mem (hs : s.Finite) : ∃ a, a ∉ s := by
-  by_contra' h; exact infinite_univ (hs.subset fun a _ ↦ h _)
+  by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
 
 lemma _root_.Finset.exists_not_mem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_not_mem
 

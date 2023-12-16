@@ -54,7 +54,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, _root_.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
@@ -207,11 +207,10 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
     (have := FiniteDimensional.of_fintype_basis b
     -- Porting note: Lean cannot infer the instance above
-    @LinearMap.continuous_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this (e.toLinearMap))
+    LinearMap.continuous_of_finiteDimensional e.toLinearMap)
     (have := FiniteDimensional.of_fintype_basis (b.map e)
     -- Porting note: Lean cannot infer the instance above
-    @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _
-      e.surjective) :=
+    LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 

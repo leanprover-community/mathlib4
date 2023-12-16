@@ -77,7 +77,7 @@ theorem orbit_nonempty (a : α) : Set.Nonempty (orbit M a) :=
 #align add_action.orbit_nonempty AddAction.orbit_nonempty
 
 @[to_additive]
-theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo ((· • ·) m) (orbit M a) (orbit M a) :=
+theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
   Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
 #align mul_action.maps_to_smul_orbit MulAction.mapsTo_smul_orbit
 #align add_action.maps_to_vadd_orbit AddAction.mapsTo_vadd_orbit
@@ -303,7 +303,7 @@ of the orbit of `U` under `G`. -/
       union of the orbit of `U` under `G`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (· • ·) g '' U := by
+    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
@@ -385,7 +385,7 @@ theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
 #align add_action.orbit_rel.quotient.mem_orbit AddAction.orbitRel.Quotient.mem_orbit
 
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
-@[to_additive "Note that `hφ = quotient.out_eq'` is m useful choice here."]
+@[to_additive "Note that `hφ = Quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
