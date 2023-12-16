@@ -52,7 +52,7 @@ open CliffordAlgebra MulAction
 open scoped Pointwise
 
 def inv_of_inv_sq (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] :
-  Invertible ((ι Q m) * (ι Q m)) := Invertible.mul ‹_› ‹_›
+    Invertible ((ι Q m) * (ι Q m)) := Invertible.mul ‹_› ‹_›
 
 def inv_algebraMap_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] :
   Invertible (algebraMap _ _ (Q m) : CliffordAlgebra Q) :=
