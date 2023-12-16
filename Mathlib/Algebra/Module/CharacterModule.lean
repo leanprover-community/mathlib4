@@ -36,31 +36,30 @@ open CategoryTheory
 
 universe uR uM uN uD
 variable (R : Type uR) [CommRing R]
-variable (M : Type (max uR uM)) [AddCommGroup M] [Module R M]
-variable (N : Type (max uR uN)) [AddCommGroup N] [Module R N]
-variable (D : Type (max uR uD)) [AddCommGroup D] [Module R D]
-variable [injective_dual : Injective <| ModuleCat.of R D]
+variable (M : Type uM) [AddCommGroup M] [Module R M]
+variable (N : Type uN) [AddCommGroup N] [Module R N]
+variable (D : Type uD) [AddCommGroup D] [Module R D]
+variable [injective_dual : Module.Injective R D]
 
 -- we really want to consider only injective modules
 /--
 If `M` is an `R`-module, its `D`-character module is defined to be the `Hom_R(M, D)`
 -/
-@[nolint unusedArguments]
-def CharacterModule [Injective <| ModuleCat.of R D] : Type (max uR uM uD) := M →ₗ[R] D
+def CharacterModule := M →ₗ[R] D
 
-instance : FunLike (CharacterModule.{uR, uM, uD} R M D) M (fun _ ↦ D) :=
+instance : FunLike (CharacterModule R M D) M (fun _ ↦ D) :=
   inferInstanceAs <| FunLike (M →ₗ[R] D) M _
 
-instance : AddCommGroup (CharacterModule.{uR, uM, uD} R M D) :=
+instance : AddCommGroup (CharacterModule R M D) :=
   inferInstanceAs <| AddCommGroup <| M →ₗ[R] D
 
-instance : Module R (CharacterModule.{uR, uM, uD} R M D) :=
+instance : Module R (CharacterModule R M D) :=
   LinearMap.module
 
-instance : LinearMapClass (CharacterModule.{uR, uM, uD} R M D) R M D :=
+instance : LinearMapClass (CharacterModule R M D) R M D :=
   inferInstanceAs <| LinearMapClass (M →ₗ[R] D) R M D
 
-@[simp] lemma CharacterModule.smul_apply (f : CharacterModule.{uR, uM, uD} R M D) (r : R) (m : M) :
+@[simp] lemma CharacterModule.smul_apply (f : CharacterModule R M D) (r : R) (m : M) :
     (r • f) m = f (r • m) := by
   rw [LinearMap.smul_apply, f.map_smul]
 
@@ -72,7 +71,7 @@ For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N
 @[simps]
 def LinearMap.characterify
     (L : M →ₗ[R] N)  :
-    CharacterModule.{uR, uN, uD} R N D →ₗ[R] CharacterModule.{uR, uM, uD} R M D where
+    CharacterModule R N D →ₗ[R] CharacterModule R M D where
   toFun f := f ∘ₗ L
   map_add' _ _ := LinearMap.ext fun m ↦ by aesop
   map_smul' r c := LinearMap.ext fun m ↦ by
@@ -80,27 +79,11 @@ def LinearMap.characterify
     rw [CharacterModule.smul_apply, CharacterModule.smul_apply, LinearMap.comp_apply, c.map_smul,
       L.map_smul, c.map_smul]
 
-lemma LinearMap.characterify_surjective_of_injective
+lemma LinearMap.characterify_surjective_of_injective [UnivLE.{uR, uD}]
     {L : M →ₗ[R] N}
     (inj : Function.Injective L) :
-    Function.Surjective <| LinearMap.characterify.{uR, uM, uN, uD} D L := by
-  rintro (g : _ →ₗ[_] _)
-  let g'' : (ULift.{max uM uN uD uR} M) →ₗ[R] (ULift.{max uM uN uD uR} D) :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap
-  let L'' : ULift.{max uM uN uD uR} M →ₗ[R] ULift.{max uM uN uD uR} N :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ L ∘ₗ ULift.moduleEquiv.toLinearMap
-  let L' := ModuleCat.ofHom L''
-  have m1 : Mono <| L'
-  · rw [ModuleCat.mono_iff_injective]
-    intro _ _ h
-    exact ULift.down_inj |>.mp <| inj <| ULift.ext_iff _ _ |>.mp h
-
-  let g' := ModuleCat.ofHom g''
-  have : Injective (ModuleCat.of R <| ULift.{max uM uN uD uR} D)
-  · exact ModuleCat.ulift_injective_of_injective.{uR, max uR uD, max uM uN uR uD} R D
-  exact ⟨ULift.moduleEquiv.toLinearMap ∘ₗ Injective.factorThru g' L' ∘ₗ
-    ULift.moduleEquiv.symm.toLinearMap, FunLike.ext _ _ fun _ ↦ ULift.ext_iff _ _ |>.mp <|
-      FunLike.congr_fun (Injective.comp_factorThru g' L') _⟩
+    Function.Surjective <| LinearMap.characterify D L :=
+  Module.Baer.iff_injective.mpr injective_dual |>.extension_property L inj
 
 variable (R)
 
@@ -110,19 +93,18 @@ endofunctor on `R`-modules.
 -/
 @[simps!]
 def CharacterModuleFunctor :
-    (ModuleCat.{max uM uR, uR} R)ᵒᵖ ⥤ ModuleCat.{max uM uD uR, uR} R where
-  obj M := ModuleCat.of R <| CharacterModule.{uR, uM, uD} R M.unop D
-  map L := LinearMap.characterify.{uR, uM, uM, uD} D L.unop
+    (ModuleCat R)ᵒᵖ ⥤ ModuleCat R where
+  obj M := ModuleCat.of R <| CharacterModule R M.unop D
+  map L := LinearMap.characterify D L.unop
   map_id {_} := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
   map_comp _ _ := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
 
 namespace CharacterModuleFunctor
 
-lemma map_surjective_of_injective_unop
-    {M N : (ModuleCat.{max uM uR, uR} R)ᵒᵖ}
-    {L : M ⟶ N} (hL : Function.Injective L.unop) :
-    Function.Surjective <| (CharacterModuleFunctor.{uR, uM, uD} R D).map L :=
-  LinearMap.characterify_surjective_of_injective.{uR, uM, uM, uD} D hL
+lemma map_surjective_of_injective_unop [UnivLE.{uR, uD}]
+    {M N : (ModuleCat R)ᵒᵖ} {L : M ⟶ N} (hL : Function.Injective L.unop) :
+    Function.Surjective <| (CharacterModuleFunctor R D).map L :=
+  LinearMap.characterify_surjective_of_injective D hL
 
 end CharacterModuleFunctor
 
@@ -133,7 +115,7 @@ Equivalent modules have equivalent character modules
 -/
 @[simps!]
 def cong (e : M ≃ₗ[R] N) :
-    CharacterModule.{uR, uM, uD} R M D ≃ₗ[R] CharacterModule.{uR, uN, uD} R N D := by
+    CharacterModule R M D ≃ₗ[R] CharacterModule R N D := by
   refine LinearEquiv.ofLinear
     (e.symm.toLinearMap.characterify D) (e.toLinearMap.characterify D) ?_ ?_ <;>
   refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;> aesop
