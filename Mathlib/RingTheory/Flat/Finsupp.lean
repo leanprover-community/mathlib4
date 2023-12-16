@@ -52,7 +52,7 @@ theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [Decidable
 
 open Module.Free DirectSum in
 /-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
-product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁̂ⁿ N`. -/
+product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁ⁿ N`. -/
 def rid_finite_free [Module.Finite R M] [Module.Free R M] :
     N ⊗[R] M ≃ₗ[R] ⨁ _ : Fin (Fintype.card (ChooseBasisIndex R M)), N :=
   TensorProduct.congr (LinearEquiv.refl R N)
@@ -64,7 +64,7 @@ def rid_finite_free [Module.Finite R M] [Module.Free R M] :
 open DirectSum in
 /-- If `M` and `N` are `R`-modules and `f : M → N` a linear map, the tensor product of `f` and the
 identity `Rⁿ → Rⁿ` on a finite product is related by linear equivalences to the
-natural linear map `⨁̂ⁿ M → ⨁̂ⁿ N` induced by `f`.
+natural linear map `⨁ⁿ M → ⨁ⁿ N` induced by `f`.
  -/
 theorem rTensor_DirectSum_equiv_mapRange [DecidableEq R] (n : ℕ) (f : M →ₗ[R] N) :
     (rid_DirectSum R N (Fin n) : (N ⊗[R] ⨁ _ : Fin n, R) →ₗ[R] ⨁ _, N) ∘ₗ f.rTensor (⨁ _, R) =
@@ -78,8 +78,8 @@ theorem rTensor_DirectSum_equiv_mapRange [DecidableEq R] (n : ℕ) (f : M →ₗ
 open DirectSum Module.Free in
 /-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free of rank `n`, and `f : N → P` is
 a linear map, the tensor product of `f` and the identity `M → M` is related by linear equivalences
-given by `rid_finite_free` to the natural linear map `⨁̂ⁿ N → ⨁̂ⁿ P` induced by `f`.
-(This establishes a natural isomorphism between the functors `(· ⊗ M)` and `(⨁̂ⁿ ·)` whose
+given by `rid_finite_free` to the natural linear map `⨁ⁿ N → ⨁ⁿ P` induced by `f`.
+(This establishes a natural isomorphism between the functors `(· ⊗ M)` and `(⨁ⁿ ·)` whose
 component at `N` is `rid_finite_free R M N`.) -/
 theorem rTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R M] [Module.Free R M]
     (f : N →ₗ[R] P) :
@@ -185,7 +185,7 @@ theorem mem_kernel_witness_left [DecidableEq M] [DecidableEq (M × N →₀ ℤ)
       . right; right; exact ⟨r, m, n, rfl, Finset.mem_insert_of_mem hm⟩
 
 variable {R} {M} {N} in
-/-- Rewriting lemma auxiliary to `extend'`. -/
+/-- Rewriting lemma auxiliary to `lTensor_free_injective_of_injective.aux'`. -/
 private theorem map_comap {L : Submodule R M} {x : M × N →₀ ℤ}
     (hmem : ∀ y, y ∈ x.support → y.fst ∈ L) :
       TensorProductFinsupp.rEmbed N L.injective_subtype
