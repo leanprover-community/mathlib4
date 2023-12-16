@@ -689,7 +689,7 @@ lemma ltByCases_gt (h : y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ :
 
 @[simp]
 lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
-  ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
+    ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
 
 @[simp]
 lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
@@ -698,7 +698,7 @@ lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} 
 
 @[simp]
 lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-(p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
+    (p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₂ (p h') :=
     dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
 
@@ -731,6 +731,8 @@ lemma ltByCases_congr (x' y' : α) {h₁ : x < y → P} {h₂ : x = y → P} {h�
     · rw [ltByCases_eq h, ltByCases_eq ((eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc).mp h), hh'₂]
     · rw [ltByCases_gt h, ltByCases_gt (gtc.mpr h), hh'₃]
 
+/-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order,
+non-dependently. -/
 def switchThree (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ => q) (fun _ => r)
 
 variable {p q r : P}
