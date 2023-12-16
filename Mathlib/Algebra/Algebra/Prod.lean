@@ -112,13 +112,17 @@ end AlgHom
 
 section Unique
 
-/-- Multiplying by the trivial algebra from the left does not change the structure.-/
+/-- Multiplying by the trivial algebra from the left does not change the structure.
+
+This is the `AlgebraEquiv` version of `AddEquiv.uniqueProd`. -/
 def AlgebraEquiv.uniqueProd [Unique B] :
     (B × A) ≃ₐ[R] A := by
   refine AlgEquiv.ofLinearEquiv (AddEquiv.uniqueProd.toLinearEquiv ?_) ?_ ?_ <;>
   simp [AddEquiv.uniqueProd]
 
-/-- Multiplying by the trivial algebra from the right does not change the structure.-/
+/-- Multiplying by the trivial algebra from the right does not change the structure.
+
+This is the `AlgebraEquiv` version of `AddEquiv.prodUnique`. -/
 def AlgebraEquiv.prodUnique [Unique B] :
     (A × B) ≃ₐ[R] A := by
   refine AlgEquiv.ofLinearEquiv (AddEquiv.prodUnique.toLinearEquiv ?_) ?_ ?_ <;>

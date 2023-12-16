@@ -871,12 +871,16 @@ variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid N]
 variable [Module R M] [Module R N]
 
-/-- Multiplying by the trivial module from the left does not change the structure.-/
+/-- Multiplying by the trivial module from the left does not change the structure.
+
+This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
 def uniqueProd [Unique N] :
     (N × M) ≃ₗ[R] M :=
   AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
 
-/-- Multiplying by the trivial module from the right does not change the structure.-/
+/-- Multiplying by the trivial module from the right does not change the structure.
+
+This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
 def prodUnique [Unique N] :
     (M × N) ≃ₗ[R] M :=
   AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
