@@ -7,7 +7,6 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pairing
-import Mathlib.Data.Nat.ModEq
 
 /-!
 # Gödel's Beta Function Lemma
