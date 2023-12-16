@@ -469,7 +469,8 @@ theorem insert_nil (a : α) : insert a nil = [a] :=
   rfl
 #align list.insert_nil List.insert_nil
 
-theorem insert_eq_ite (a : α) (l : List α) : insert a l = if l.elem a then l else a :: l :=
+theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l := by
+  simp only [← elem_iff]
   rfl
 #align list.insert.def List.insert_eq_ite
 
