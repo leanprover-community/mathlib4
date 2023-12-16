@@ -140,7 +140,7 @@ theorem ascPochhammer_smeval_neg : ∀(n : ℕ),
       pow_zero, pow_one, one_smul, Nat.cast_add, Nat.cast_one, neg_add_rev, neg_add_cancel_comm,
       ascPochhammer_smeval_neg n, ← mul_assoc, mul_comm _ ((-1) ^ n),
       show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by linarith, ← mul_assoc, pow_add, pow_one,
-      Nat.factorial, Nat.cast_mul, ←mul_assoc, Nat.cast_succ]
+      Nat.factorial, Nat.cast_mul, ← mul_assoc, Nat.cast_succ]
 
 theorem ascPochhammer_succ_smeval_neg (n : ℕ) :
     smeval (-n : ℤ) (ascPochhammer ℕ (n + 1)) = 0 := by
@@ -182,7 +182,8 @@ theorem multichoose_smeval_neg_lt (n k : ℕ) (h : n < k) : multichoose (-n : �
   refine eq_of_smul_factorial_eq k ?_
   rw [factorial_smul_multichoose_eq_ascPochhammer, ascPochhammer_smeval_neg_lt n k h, smul_zero]
 
-theorem multichoose_succ_smeval_neg_cast [NatPowAssoc R] (n : ℕ) : multichoose (-n : R) (n + 1) = 0 := by
+theorem multichoose_succ_smeval_neg_cast [NatPowAssoc R] (n : ℕ) :
+    multichoose (-n : R) (n + 1) = 0 := by
   refine eq_of_smul_factorial_eq (n + 1) ?_
   rw [factorial_smul_multichoose_eq_ascPochhammer, smul_zero, smeval_at_neg_nat,
     ascPochhammer_succ_smeval_neg, Int.cast_zero]
