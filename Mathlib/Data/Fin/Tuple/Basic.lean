@@ -372,19 +372,24 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
 @[simp] lemma append_cast_left {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (n' : ℕ)
     (h : n' = n) :
     Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw [h]) := by
-  subst h
-  funext i
-  simp (config := {unfoldPartialApp := true}) only [Fin.append, Fin.addCases, comp_def, Fin.cast,
-    Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk, ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec,
-    id_eq, eq_mpr_eq_cast, cast_eq]
+  subst h; simp
 
 @[simp] lemma append_cast_right {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (m' : ℕ)
     (h : m' = m) :
     Fin.append xs (ys ∘ Fin.cast h) = Fin.append xs ys ∘ (Fin.cast <| by rw [h]) := by
-  subst h
-  funext i
-  simp only [append, addCases, cast, subNat_mk, natAdd_mk, Fin.eta, ge_iff_le, comp_apply,
-    eq_rec_constant]
+  subst h; simp
+
+lemma append_rev {m n} {α : Type*} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n)) :
+    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (cast (add_comm _ _) i) := by
+  rcases rev_surjective i with ⟨i, rfl⟩
+  rw [rev_rev]
+  induction i using Fin.addCases
+  · simp [rev_castAdd]
+  · simp [cast_rev, rev_addNat]
+
+lemma append_comp_rev {m n} {α : Type*} (xs : Fin m → α) (ys : Fin n → α) :
+    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (add_comm _ _) :=
+  funext <| append_rev xs ys
 
 end Append
 
@@ -664,52 +669,6 @@ theorem append_right_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
-theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
-    cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
-  simp only [Function.comp_apply, Function.comp_def]
-  induction' f using Fin.consInduction with n b f ih generalizing a
-  · funext; simp [Fin.rev, Fin.snoc]
-  · simp [Fin.snoc, ih]
-    split_ifs with lt_succ_n lt_n
-    · have isLt := Nat.sub_lt_self (succ_pos ↑i) (lt_n)
-      suffices ∀ h,
-          (⟨n + 1 - i.val, h⟩ : Fin (n + 2))
-          = Fin.succ (Fin.succ ⟨(n - (i.val + 1)), isLt⟩)
-      by simp only [Fin.rev, Nat.succ_sub_succ_eq_sub, this, Fin.cons_succ, Fin.coe_castLT];
-      intro _
-      have one_le_sub : 1 ≤ n - ↑i := Nat.le_sub_of_add_le' lt_n
-      simp only [ge_iff_le, Nat.sub_succ', tsub_le_iff_right, nonpos_iff_eq_zero,
-        tsub_eq_zero_iff_le, tsub_zero, Fin.succ_mk, Fin.mk.injEq,
-        Nat.sub_add_cancel (n := n - i.val - 0) one_le_sub,
-        Nat.sub_add_comm (Nat.lt_succ.mp lt_succ_n)
-      ]
-    · obtain rfl : i = ⟨n, .step <| .base n⟩ :=
-        eq_of_le_of_not_lt (Fin.succ_le_succ_iff.mp lt_succ_n) lt_n
-      simp only [Fin.rev, ge_iff_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
-        add_tsub_cancel_left, Fin.mk_one, Fin.cons_one, Fin.cons_zero]
-    · obtain rfl : i = Fin.last (n + 1) := by
-        apply eq_of_le_of_not_lt
-        · exact Nat.le_of_lt_succ i.prop
-        · exact lt_succ_n
-      simp only [Fin.rev_last, Fin.zero_eta, Fin.cons_zero]
-
-theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
-    Fin.cons a f ∘ Fin.rev = Fin.snoc (f ∘ Fin.rev) a := by
-  funext i; exact cons_rev ..
-
-theorem snoc_comp_rev {α n} (a : α) (f : Fin n → α) :
-    Fin.snoc f a ∘ Fin.rev = Fin.cons a (f ∘ Fin.rev) := by
-  have comp_rev_inj : Function.Injective (· ∘ Fin.rev : (Fin (n+1) → α) → _) :=
-    ((Fin.revPerm).arrowCongr (Equiv.refl _)).injective
-  apply comp_rev_inj
-  simp only [cons_comp_rev]
-  simp only [comp_def, rev_rev]
-
-theorem snoc_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
-    snoc (α := fun _ => α) f a i.rev = cons (α := fun _ => α) a (f ∘ Fin.rev : Fin _ → α) i := by
-  show (Fin.snoc f a ∘ Fin.rev) i = _
-  rw [snoc_comp_rev]
-
 theorem append_cons {α} (a : α) (as : Fin n → α) (bs : Fin m → α) :
     Fin.append (cons a as) bs
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
@@ -737,14 +696,6 @@ theorem append_snoc {α} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     simp [Nat.add_comm n m] at sub_lt
   · have := Nat.sub_lt_left_of_lt_add (Nat.not_lt.mp lt_n) lt_add
     contradiction
-
-proof_wanted append_rev {α} (a : Fin n → α) (b : Fin m → α) (i : Fin (n + m)) :
-    Fin.append a b i.rev
-    = Fin.append (b ∘ Fin.rev) (a ∘ Fin.rev) (i.cast <| Nat.add_comm ..)
-
-proof_wanted append_comp_rev {α} (a : Fin n → α) (b : Fin m → α) :
-    (Fin.append a b) ∘ Fin.rev
-    = Fin.append (b ∘ Fin.rev) (a ∘ Fin.rev) ∘ (Fin.cast <| Nat.add_comm ..)
 
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
@@ -903,6 +854,28 @@ theorem insertNth_zero_right [∀ j, Zero (α j)] (i : Fin (n + 1)) (x : α i) :
     i.insertNth x 0 = Pi.single i x :=
   insertNth_eq_iff.2 <| by simp [succAbove_ne, Pi.zero_def]
 #align fin.insert_nth_zero_right Fin.insertNth_zero_right
+
+lemma insertNth_rev {α : Type*} (i : Fin (n + 1)) (a : α) (f : Fin n → α) (j : Fin (n + 1)) :
+    insertNth (α := fun _ ↦ α) i a f (rev j) = insertNth (α := fun _ ↦ α) i.rev a (f ∘ rev) j := by
+  induction j using Fin.succAboveCases; exact rev i
+  · simp
+  · simp [rev_succAbove]
+
+theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
+    cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
+  simpa using insertNth_rev 0 a f i
+
+theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
+    Fin.cons a f ∘ Fin.rev = Fin.snoc (f ∘ Fin.rev) a := by
+  funext i; exact cons_rev ..
+
+theorem snoc_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
+    snoc (α := fun _ => α) f a i.rev = cons (α := fun _ => α) a (f ∘ Fin.rev : Fin _ → α) i := by
+  simpa using insertNth_rev (last n) a f i
+
+theorem snoc_comp_rev {α n} (a : α) (f : Fin n → α) :
+    Fin.snoc f a ∘ Fin.rev = Fin.cons a (f ∘ Fin.rev) :=
+  funext <| snoc_rev a f
 
 theorem insertNth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (x y : α i)
     (p q : ∀ j, α (i.succAbove j)) :
