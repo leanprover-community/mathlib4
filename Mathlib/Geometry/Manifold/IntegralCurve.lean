@@ -588,14 +588,22 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     IsIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
   intros t ht
+  -- five cases:
+  -- * `a < t < b`: agrees with `γ` by definition
+  -- * `a' < t < a`: agrees with `γ'` by definition
+  -- * `b < t < b'`: agrees with `γ'` by definition
+  -- * `t = a`: agrees with `γ'` propositionally by uniqueness
+  -- * `t = b`: agrees with `γ'` propositionally by uniqueness
   by_cases hmem : t ∈ Ioo a b
-  · rw [piecewise, if_pos hmem]
+  · -- case `a < t < b`
+    rw [piecewise, if_pos hmem]
     apply (hγ t hmem).congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo a b, Ioo_mem_nhds hmem.1 hmem.2, ?_⟩
     intros t' ht'
     rw [piecewise, if_pos ht']
-  · rw [piecewise, if_neg hmem]
+  · -- `t ∉ Ioo a b`
+    rw [piecewise, if_neg hmem]
     rw [mem_union] at ht
     have hmem' := Classical.or_iff_not_imp_left.mp ht hmem
     apply (hγ' t hmem').congr_of_eventuallyEq
@@ -603,7 +611,8 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
     rw [mem_Ioo, not_and, not_lt] at hmem
     by_cases hlt : a < t
     · by_cases hb : t = b
-      · refine ⟨Ioo (max a a') b', Ioo_mem_nhds (max_lt hlt hmem'.1) hmem'.2, ?_⟩
+      · -- case `t = b`
+        refine ⟨Ioo (max a a') b', Ioo_mem_nhds (max_lt hlt hmem'.1) hmem'.2, ?_⟩
         have : Ioo (max a a') b ∪ Ico b b' = Ioo (max a a') b' := by
           apply Ioo_union_Ico_eq_Ioo
           · rw [max_lt_iff, ← hb]
@@ -632,12 +641,14 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
         · intros t' ht'
           rw [piecewise, if_neg]
           exact not_mem_Ioo_of_ge ht'.1
-      · refine ⟨Ioo b b', Ioo_mem_nhds (lt_of_le_of_ne (hmem hlt) (Ne.symm hb)) hmem'.2, ?_⟩
+      · -- case `b < t < b'`
+        refine ⟨Ioo b b', Ioo_mem_nhds (lt_of_le_of_ne (hmem hlt) (Ne.symm hb)) hmem'.2, ?_⟩
         intros t' ht'
         have : t' ∉ Ioo a b := not_mem_Ioo_of_ge (le_of_lt ht'.1)
         rw [piecewise, if_neg this]
     · by_cases ha : t = a
-      · refine ⟨Ioo a' (min b b'),
+      · -- case `t = a`
+        refine ⟨Ioo a' (min b b'),
           Ioo_mem_nhds hmem'.1 (lt_min (ha ▸ lt_trans ht₀.1.1 ht₀.1.2) hmem'.2), ?_⟩
         have : Ioc a' a ∪ Ioo a (min b b') = Ioo a' (min b b') := by
           apply Ioc_union_Ioo_eq_Ioo
@@ -667,7 +678,8 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
           · exact ⟨ht₀.1.1, lt_min ht₀.1.2 ht₀.2.2⟩
           · intros
             exact ModelWithCorners.isInteriorPoint
-      · refine ⟨Ioo a' a, Ioo_mem_nhds hmem'.1 (lt_of_le_of_ne (not_lt.mp hlt) ha), ?_⟩
+      · -- case `a' < t < a`
+        refine ⟨Ioo a' a, Ioo_mem_nhds hmem'.1 (lt_of_le_of_ne (not_lt.mp hlt) ha), ?_⟩
         intros t' ht'
         have : t' ∉ Ioo a b := not_mem_Ioo_of_le (le_of_lt ht'.2)
         rw [piecewise, if_neg this]
