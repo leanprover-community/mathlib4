@@ -305,15 +305,11 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
 #align behrend.two_div_one_sub_two_div_e_le_eight Behrend.two_div_one_sub_two_div_e_le_eight
 
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ sqrt (log ↑N) := by
-  have : ((12 : ℕ) : ℝ) * log 2 ≤ log N := by
-    rw [← log_rpow zero_lt_two, log_le_log, rpow_nat_cast]
-    · norm_num1
-      exact mod_cast hN
-    · exact rpow_pos_of_pos zero_lt_two _
-    rw [cast_pos]
-    exact hN.trans_lt' (by norm_num1)
-  refine' (mul_le_mul_of_nonneg_right ((log_le_log _ <| by norm_num1).2
-      two_div_one_sub_two_div_e_le_eight) <| by norm_num1).trans _
+  have : (12 : ℕ) * log 2 ≤ log N := by
+    rw [← log_rpow zero_lt_two, rpow_nat_cast]
+    exact log_le_log (by positivity) (mod_cast hN)
+  refine (mul_le_mul_of_nonneg_right (log_le_log ?_ two_div_one_sub_two_div_e_le_eight) <| by
+    norm_num1).trans ?_
   · refine' div_pos zero_lt_two _
     rw [sub_pos, div_lt_one (exp_pos _)]
     exact exp_one_gt_d9.trans_le' (by norm_num1)
@@ -395,17 +391,15 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   have : (2 : ℝ) ^ ((6 : ℕ) : ℝ) ≤ N := by
     rw [rpow_nat_cast]
     exact (cast_le.2 hN).trans' (by norm_num1)
-  apply lt_of_lt_of_le _ ((log_le_log (rpow_pos_of_pos zero_lt_two _) _).2 this)
+  apply lt_of_lt_of_le _ (log_le_log (rpow_pos_of_pos zero_lt_two _) this)
   rw [log_rpow zero_lt_two, ← div_lt_iff']
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num1
-  rw [cast_pos]
-  exact hN.trans_lt' (by norm_num1)
 #align behrend.three_le_n_value Behrend.three_le_nValue
 
 theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (succ_pos'.trans_le hN₃)
-  rw [dValue, floor_pos, ← log_le_log zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
+  rw [dValue, floor_pos, ← log_le_log_iff zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
     div_mul_eq_mul_div, one_mul, sub_nonneg, le_div_iff]
   · have : (nValue N : ℝ) ≤ 2 * sqrt (log N) := by
       apply (ceil_lt_add_one <| sqrt_nonneg _).le.trans
@@ -417,9 +411,7 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
     rw [← mul_assoc, ← le_div_iff (Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 _), div_sqrt]
     · apply log_two_mul_two_le_sqrt_log_eight.trans
       apply Real.sqrt_le_sqrt
-      rw [log_le_log _ hN₀]
-      · exact mod_cast hN₃
-      · norm_num
+      exact log_le_log (by norm_num) (mod_cast hN₃)
     exact hN₃.trans_lt' (by norm_num)
   · exact cast_pos.2 (nValue_pos <| hN₃.trans' <| by norm_num)
   · exact (rpow_pos_of_pos hN₀ _).ne'
@@ -445,7 +437,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dValue N := by
   apply div_lt_floor _
-  rw [← log_le_log, log_rpow, mul_comm, ← div_eq_mul_one_div]
+  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_one_div]
   · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
     rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
     · norm_num; exact le_sqrt_log hN
@@ -458,13 +450,9 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dVa
       rw [one_lt_cast]
       exact hN.trans_lt' (by norm_num1)
     apply le_sqrt_of_sq_le
-    have : ((12 : ℕ) : ℝ) * log 2 ≤ log N := by
-      rw [← log_rpow zero_lt_two, log_le_log, rpow_nat_cast]
-      · norm_num1
-        exact mod_cast hN
-      · exact rpow_pos_of_pos zero_lt_two _
-      rw [cast_pos]
-      exact hN.trans_lt' (by norm_num1)
+    have : (12 : ℕ) * log 2 ≤ log N := by
+      rw [← log_rpow zero_lt_two, rpow_nat_cast]
+      exact log_le_log (by positivity) (mod_cast hN)
     refine' le_trans _ this
     rw [← div_le_iff']
     · exact log_two_gt_d9.le.trans' (by norm_num1)
@@ -474,9 +462,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (1 / nValue N : ℝ) / exp 1 < dVa
   · refine' div_pos zero_lt_two _
     rw [sub_pos, div_lt_one (exp_pos _)]
     exact lt_of_le_of_lt (by norm_num1) exp_one_gt_d9
-  apply rpow_pos_of_pos
-  rw [cast_pos]
-  exact hN.trans_lt' (by norm_num1)
+  positivity
 #align behrend.bound Behrend.bound
 
 theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
@@ -528,7 +514,7 @@ theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
 
 theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
     (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
-  rw [← log_le_log (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
+  rw [← log_le_log_iff (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
     div_le_iff (Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| one_lt_two.trans_le hN), div_sqrt,

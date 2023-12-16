@@ -188,7 +188,7 @@ theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a �
 
 /-- The sequence `stirlingSeq ∘ succ` is monotone decreasing -/
 theorem stirlingSeq'_antitone : Antitone (stirlingSeq ∘ succ) := fun n m h =>
-  (log_le_log (stirlingSeq'_pos m) (stirlingSeq'_pos n)).mp (log_stirlingSeq'_antitone h)
+  (log_le_log_iff (stirlingSeq'_pos m) (stirlingSeq'_pos n)).mp (log_stirlingSeq'_antitone h)
 #align stirling.stirling_seq'_antitone Stirling.stirlingSeq'_antitone
 
 /-- The limit `a` of the sequence `stirlingSeq` satisfies `0 < a` -/
