@@ -340,7 +340,7 @@ theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ 
   rw [← le_pow_iff_clog_le (lt_of_lt_of_le hc hb)]
   calc
     n ≤ c ^ clog c n := le_pow_clog hc _
-    _ ≤ b ^ clog c n := pow_le_pow_left hb _
+    _ ≤ b ^ clog c n := Nat.pow_le_pow_left hb _
 #align nat.clog_anti_left Nat.clog_anti_left
 
 theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _

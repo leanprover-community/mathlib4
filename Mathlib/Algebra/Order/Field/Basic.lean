@@ -619,7 +619,8 @@ theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ 
 
 theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
     1 / a ^ n < 1 / a ^ m := by
-  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right a1 mn) <;> positivity
+  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right a1 mn) <;>
+    exact pow_pos (zero_lt_one.trans a1) _
 #align one_div_pow_lt_one_div_pow_of_lt one_div_pow_lt_one_div_pow_of_lt
 
 theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
