@@ -124,7 +124,7 @@ end SinCos
 
 /-! ### `cosh` and `sinh` for `ℝ` and `ℂ` -/
 
-namespace SinhCosh
+section SinhCosh
 namespace Complex
 
 /-- The power series expansion of `Complex.cosh`. -/
