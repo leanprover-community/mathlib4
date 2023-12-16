@@ -442,22 +442,22 @@ theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of_max_to_submodule_eq_top Module.Baer.extensionOfMax_to_submodule_eq_top
 
+protected theorem extension_property (h : Module.Baer R Q)
+    (f : M →ₗ[R] N) (hf : Function.Injective f) (g : M →ₗ[R] Q) : ∃ h, h ∘ₗ f = g :=
+  haveI : Fact (Function.Injective f) := ⟨hf⟩
+  Exists.intro
+    { toFun := fun y ↦
+        (extensionOfMax f g).toLinearPMap ⟨y, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ trivial⟩
+      map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
+      map_smul' := fun r x ↦  by rw [← LinearPMap.map_smul]; dsimp } <|
+    LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
+
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective.-/
 protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
-  { out := fun X Y ins1 ins2 ins3 ins4 i hi f =>
-      haveI : Fact (Function.Injective i) := ⟨hi⟩
-      ⟨{  toFun := fun y =>
-            (extensionOfMax i f).toLinearPMap
-              ⟨y, (extensionOfMax_to_submodule_eq_top i f h).symm ▸ trivial⟩
-          map_add' := fun x y => by
-            rw [← LinearPMap.map_add]
-            congr
-          map_smul' := fun r x => by
-            rw [← LinearPMap.map_smul]
-            -- Porting note: used to be congr
-            dsimp },
-        fun x => ((extensionOfMax i f).is_extension x).symm⟩ }
+  { out := fun X Y ins1 ins2 ins3 ins4 i hi f ↦ by
+      obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
+      exact ⟨h, FunLike.congr_fun H⟩ }
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
@@ -475,7 +475,6 @@ protected theorem iff_injective [UnivLE.{u, v}] : Module.Baer R Q ↔ Module.Inj
   ⟨Module.Baer.injective, Module.Baer.of_injective.{u, v}⟩
 
 end Module.Baer
-
 
 section ULift
 
@@ -527,7 +526,7 @@ variable (M : Type uM) [AddCommGroup M] [Module R M] [inj : Module.Injective R M
 variable (P : Type uP) [AddCommGroup P] [Module R P]
 variable (P' : Type uP') [AddCommGroup P'] [Module R P']
 
-lemma Module.Injective.lifting_property
+lemma Module.Injective.extension_property
     (f : P →ₗ[R] P') (hf : Function.Injective f)
     (g : P →ₗ[R] M) : ∃ h : P' →ₗ[R] M, h ∘ₗ f = g := by
   have inj' : Module.Injective R (ULift.{max uM uP uP'} M) :=
