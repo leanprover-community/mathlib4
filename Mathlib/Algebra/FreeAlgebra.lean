@@ -171,6 +171,10 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
 
+instance instOpSMul {A} [CommSemiring A] [Algebra R A] :
+    SMul Rᵐᵒᵖ (FreeAlgebra A X) where
+  smul r := Quot.map (HMul.hMul · (algebraMap R A r.unop : Pre A X)) fun _ _ ↦ Rel.mul_compat_left
+
 instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
 
 instance instOne : One (FreeAlgebra R X) where one := Quot.mk _ 1
@@ -266,6 +270,24 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
     rintro ⟨⟩
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
+
+-- TODO: eliminate this once `Algebra R (FreeAlgebra A X)` implies it (mathlib4#7152)
+instance {A} [CommSemiring A] [Algebra R A] : IsCentralScalar R (FreeAlgebra A X) where
+  op_smul_eq_smul r := by
+    rintro ⟨⟩; exact (Quot.sound (.central_scalar)).symm
+
+-- TODO: eliminate this once `Algebra R (FreeAlgebra A X)` implies it (mathlib4#7152)
+instance {A} [CommSemiring A] [Algebra R A] : Module Rᵐᵒᵖ (FreeAlgebra A X) where
+  zero_smul x := by rw [← MulOpposite.op_zero, op_smul_eq_smul, zero_smul]
+  one_smul x := by rw [← MulOpposite.op_one, op_smul_eq_smul, one_smul]
+  add_smul r₁ r₂ x := by
+    induction r₁ using MulOpposite.rec'; induction r₂ using MulOpposite.rec'
+    simp_rw [← MulOpposite.op_add, op_smul_eq_smul, add_smul]
+  mul_smul r₁ r₂ x := by
+    induction r₁ using MulOpposite.rec'; induction r₂ using MulOpposite.rec'
+    simp_rw [← MulOpposite.op_mul, op_smul_eq_smul, mul_comm, mul_smul]
+  smul_zero r := by induction r using MulOpposite.rec'; rw [op_smul_eq_smul, smul_zero]
+  smul_add r x y:= by induction r using MulOpposite.rec'; simp_rw [op_smul_eq_smul, smul_add]
 
 -- verify there is no diamond
 variable (S : Type) [CommSemiring S] in
