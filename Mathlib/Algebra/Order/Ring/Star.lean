@@ -28,15 +28,9 @@ it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x * y = y * x := by
   -- nonnegative elements are self-adjoint; we prove it by hand to avoid adding imports
-  have : ∀ z : R, 0 ≤ z → star z = z := by
-    intros z hz
-    rw [nonneg_iff] at hz
-    induction hz using AddSubmonoid.closure_induction' with
-    | Hs _ h => obtain ⟨x, rfl⟩ := h; simp
-    | H1 => simp
-    | Hmul x hx y hy => simp only [← nonneg_iff] at hx hy; aesop
+  have : ∀ z : R, 0 ≤ z → star z = z := fun x => IsSelfAdjoint.of_nonneg
   -- `0 ≤ y * x`, and hence `y * x` is self-adjoint
-  have := this _ <| mul_nonneg hy hx
+  have : _ = _ := IsSelfAdjoint.of_nonneg <| mul_nonneg hy hx
   aesop
 
 /- This will be implied by the instance below, we only prove it to avoid duplicating the

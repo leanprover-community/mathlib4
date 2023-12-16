@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
@@ -228,6 +228,22 @@ lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
 @[simp]
 lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
   simpa using star_lt_star_iff (x := x) (y := 0)
+
+lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
+  unfold IsSelfAdjoint at *
+  rw [StarOrderedRing.le_iff] at h
+  obtain ⟨d, hd, rfl⟩ := h
+  rw [star_add, hx]
+  induction hd using AddSubmonoid.closure_induction' generalizing x with
+  | Hs _ h => obtain ⟨x, rfl⟩ := h; simp
+  | H1 => simp
+  | Hmul a _ b _ ha hb =>
+    replace ha : star a = a := by simpa using ha (star_zero _)
+    replace hb : star b = b := by simpa using hb (star_zero _)
+    simp only [star_add, ha, hb]
+
+lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
+  (isSelfAdjoint_zero R).mono hx
 
 end NonUnitalSemiring
 
