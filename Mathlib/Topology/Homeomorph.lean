@@ -70,8 +70,8 @@ instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨FunLike.coe⟩
 #align homeomorph.homeomorph_mk_coe Homeomorph.homeomorph_mk_coe
 
 /-- The unique homeomorphism between two empty types. -/
-protected def empty [IsEmpty X] [IsEmpty Y] : X ≃ₜ Y :=
-{ Equiv.equivOfIsEmpty X Y  with }
+protected def empty [IsEmpty X] [IsEmpty Y] : X ≃ₜ Y where
+  __ := Equiv.equivOfIsEmpty X Y
 
 /-- Inverse of a homeomorphism. -/
 protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
