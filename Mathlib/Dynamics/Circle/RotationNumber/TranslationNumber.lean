@@ -438,11 +438,11 @@ theorem iterate_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f^[n] ≤ 
   iterate_monotone n h
 #align circle_deg1_lift.iterate_mono CircleDeg1Lift.iterate_mono
 
-theorem pow_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x => by
+theorem pow_right_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x => by
   simp only [coe_pow, iterate_mono h n x]
-#align circle_deg1_lift.pow_mono CircleDeg1Lift.pow_mono
+#align circle_deg1_lift.pow_right_mono CircleDeg1Lift.pow_right_mono
 
-theorem pow_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f ^ n := fun _ _ h => pow_mono h n
+theorem pow_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f ^ n := fun _ _ h => pow_right_mono h n
 #align circle_deg1_lift.pow_monotone CircleDeg1Lift.pow_monotone
 
 /-!
@@ -802,7 +802,7 @@ theorem tendsto_translation_number' (x : ℝ) :
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
   le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n =>
-    div_le_div_of_le_of_nonneg (pow_mono h n 0) n.cast_nonneg
+    div_le_div_of_le_of_nonneg (pow_right_mono h n 0) n.cast_nonneg
 #align circle_deg1_lift.translation_number_mono CircleDeg1Lift.translationNumber_mono
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=

@@ -154,7 +154,7 @@ theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n 
 #align nat.log_eq_of_pow_le_of_lt_pow Nat.log_eq_of_pow_le_of_lt_pow
 
 theorem log_pow {b : ℕ} (hb : 1 < b) (x : ℕ) : log b (b ^ x) = x :=
-  log_eq_of_pow_le_of_lt_pow le_rfl (pow_lt_pow hb x.lt_succ_self)
+  log_eq_of_pow_le_of_lt_pow le_rfl (pow_lt_pow_right hb x.lt_succ_self)
 #align nat.log_pow Nat.log_pow
 
 theorem log_eq_one_iff' {b n : ℕ} : log b n = 1 ↔ b ≤ n ∧ n < b * b := by
@@ -195,7 +195,7 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]
   apply le_log_of_pow_le hc
   calc
-    c ^ log b n ≤ b ^ log b n := pow_le_pow_of_le_left' hb _
+    c ^ log b n ≤ b ^ log b n := pow_le_pow_left' hb _
     _ ≤ n := pow_log_le_self _ hn
 #align nat.log_anti_left Nat.log_anti_left
 
@@ -340,7 +340,7 @@ theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ 
   rw [← le_pow_iff_clog_le (lt_of_lt_of_le hc hb)]
   calc
     n ≤ c ^ clog c n := le_pow_clog hc _
-    _ ≤ b ^ clog c n := pow_le_pow_of_le_left hb _
+    _ ≤ b ^ clog c n := pow_le_pow_left hb _
 #align nat.clog_anti_left Nat.clog_anti_left
 
 theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _

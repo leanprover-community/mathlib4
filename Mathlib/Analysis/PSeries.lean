@@ -332,7 +332,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
       simp_rw [← one_div]
       gcongr
-      simpa using pow_le_pow A one_le_two
+      simpa using pow_le_pow_right A one_le_two
     _ = 2 / (k + 1) := by ring
 
 #align sum_Ioo_inv_sq_le sum_Ioo_inv_sq_le

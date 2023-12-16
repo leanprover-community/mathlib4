@@ -398,9 +398,9 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   case neg =>
     simp only [factorization_eq_zero_of_non_prime n pp]
     exact hn.bot_lt
-  rw [← pow_lt_iff_lt_right pp.two_le]
+  rw [← pow_lt_pow_iff_right pp.two_le]
   apply lt_of_le_of_lt (ord_proj_le p hn)
-  exact lt_of_lt_of_le (lt_two_pow n) (pow_le_pow_of_le_left pp.two_le n)
+  exact lt_of_lt_of_le (lt_two_pow n) (pow_le_pow_left pp.two_le n)
 #align nat.factorization_lt Nat.factorization_lt
 
 /-- An upper bound on `n.factorization p` -/
@@ -408,7 +408,7 @@ theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factoriz
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   by_cases pp : p.Prime
-  · exact (pow_le_iff_le_right pp.two_le).1 (le_trans (ord_proj_le p hn) hb)
+  · exact (pow_le_pow_iff_right pp.two_le).1 (le_trans (ord_proj_le p hn) hb)
   · simp [factorization_eq_zero_of_non_prime n pp]
 #align nat.factorization_le_of_le_pow Nat.factorization_le_of_le_pow
 
@@ -703,7 +703,7 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   simp only [Finset.mem_filter, mem_Ico, mem_Icc, and_congr_left_iff, and_congr_right_iff]
   rintro h1 -
   simp [lt_of_pow_dvd_right hn pp.two_le h1,
-    (pow_le_iff_le_right pp.two_le).1 ((le_of_dvd hn.bot_lt h1).trans hb)]
+    (pow_le_pow_iff_right pp.two_le).1 ((le_of_dvd hn.bot_lt h1).trans hb)]
 #align nat.Ico_filter_pow_dvd_eq Nat.Ico_filter_pow_dvd_eq
 
 /-! ### Factorization and coprimes -/

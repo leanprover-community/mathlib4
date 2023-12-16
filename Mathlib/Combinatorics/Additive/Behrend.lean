@@ -196,7 +196,7 @@ theorem addSalemSpencer_image_sphere :
 theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
   have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
-    Nat.pow_le_pow_of_le_left (Nat.le_sub_one_of_lt (hx i)) _
+    Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
   exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [card_fin, smul_eq_mul])
 #align behrend.sum_sq_le_of_mem_box Behrend.sum_sq_le_of_mem_box
 
@@ -428,7 +428,7 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
 
 theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   have : (2 * dValue N - 1) ^ nValue N ≤ (2 * dValue N) ^ nValue N :=
-    Nat.pow_le_pow_of_le_left (Nat.sub_le _ _) _
+    Nat.pow_le_pow_left (Nat.sub_le _ _) _
   apply this.trans
   suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (1 / nValue N : ℝ)
@@ -488,9 +488,9 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
   have hn₂ : 2 ≤ n := two_le_nValue (hN.trans' <| by norm_num1)
   have : (2 * dValue N - 1) ^ n ≤ N := le_N (hN.trans' <| by norm_num1)
   refine' ((bound_aux hd.ne' hn₂).trans <| cast_le.2 <| rothNumberNat.mono this).trans_lt' _
-  refine' (div_lt_div_of_lt hn <| pow_lt_pow_of_lt_left (bound hN) _ _).trans_le' _
+  refine (div_lt_div_of_lt hn <| pow_lt_pow_left (bound hN) ?_ ?_).trans_le' ?_
   · exact div_nonneg (rpow_nonneg_of_nonneg (cast_nonneg _) _) (exp_pos _).le
-  · exact tsub_pos_of_lt (three_le_nValue <| hN.trans' <| by norm_num1)
+  · exact (tsub_pos_of_lt $ three_le_nValue <| hN.trans' <| by norm_num1).ne'
   rw [← rpow_nat_cast, div_rpow (rpow_nonneg_of_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
     mul_comm (_ / _), mul_one_div, cast_sub hn₂, cast_two, same_sub_div hn.ne', exp_one_rpow,
     div_div, rpow_sub hN₀, rpow_one, div_div, div_eq_mul_inv]

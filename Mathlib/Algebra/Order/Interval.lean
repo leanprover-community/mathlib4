@@ -240,7 +240,7 @@ variable [Monoid α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive existing]
 instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ :=
-  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_of_le_left' s.fst_le_snd _⟩⟩
+  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 #align nonempty_interval.has_pow NonemptyInterval.hasPow
 
 namespace NonemptyInterval

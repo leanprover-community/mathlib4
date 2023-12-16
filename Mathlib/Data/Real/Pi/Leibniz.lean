@@ -112,13 +112,13 @@ theorem tendsto_sum_pi_div_four :
     exact (le_add_of_nonneg_right (sq_nonneg x) : (1 : ℝ) ≤ _)
   have hbound1 : ∀ x ∈ Ico (U : ℝ) 1, |f' x| ≤ 1 := by
     rintro x ⟨hx_left, hx_right⟩
-    have hincr := pow_le_pow_of_le_left (le_trans hU2 hx_left) (le_of_lt hx_right) (2 * k)
+    have hincr := pow_le_pow_left (le_trans hU2 hx_left) (le_of_lt hx_right) (2 * k)
     rw [one_pow (2 * k), ← abs_of_nonneg (le_trans hU2 hx_left)] at hincr
     rw [← abs_of_nonneg (le_trans hU2 hx_left)] at hx_right
     linarith [f'_bound x (mem_Icc.mpr (abs_le.mp (le_of_lt hx_right)))]
   have hbound2 : ∀ x ∈ Ico 0 (U : ℝ), |f' x| ≤ U ^ (2 * k) := by
     rintro x ⟨hx_left, hx_right⟩
-    have hincr := pow_le_pow_of_le_left hx_left (le_of_lt hx_right) (2 * k)
+    have hincr := pow_le_pow_left hx_left (le_of_lt hx_right) (2 * k)
     rw [← abs_of_nonneg hx_left] at hincr hx_right
     rw [← abs_of_nonneg hU2] at hU1 hx_right
     exact (f'_bound x (mem_Icc.mpr (abs_le.mp (le_trans (le_of_lt hx_right) hU1)))).trans hincr
