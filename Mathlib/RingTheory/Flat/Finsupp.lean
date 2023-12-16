@@ -251,82 +251,82 @@ theorem lTensor_free_injective_of_injective.aux [DecidableEq M] [DecidableEq P]
   let w : L × N →₀ ℤ := rEmbed_comap N L.injective_subtype x
   refine ⟨L, ⟨⟨κ, ℱ⟩⟩, ⟨κ.image ℰ, by rw [Finset.coe_image]⟩, w,
       by rw [rEmbed_map_comap N hmem₁], ?_⟩
-  . have hmemL₁ {m : M} (hm : m ∈ s ∨ m ∈ x.support.image Prod.fst) : m ∈ L := by
-      unfold_let L κ
-      rewrite [Basis.mem_span_image, Finset.coe_subset]
-      exact fun i hi => Finset.mem_sup.mpr ⟨m, Finset.mem_union.mpr hm, hi⟩
-    -- `L` is large enough that the equation `∑(mᵢ, nᵢ) = ∑ᵢ∑ⱼ(lᵢⱼ, pᵢⱼ)` lives in `L × N →₀ ℤ`.
-    let z : L × P →₀ ℤ := t.attach.sum fun p => f p.val • rEmbed_comap P L.injective_subtype p
-    -- Prove `w` maps to `z`.
-    rewrite [show lEmbed L hψ w = z by
-      -- First show that `y` comaps to `z`.
-      rewrite [← show rEmbed_comap P L.injective_subtype (lEmbed M hψ x) = z by
-        unfold_let z
-        rewrite [← hf]
-        unfold rEmbed_comap
-        ext a
-        rewrite [Finsupp.comapDomain_apply, ← Finset.sum_attach, Finsupp.finset_sum_apply,
-          Finsupp.finset_sum_apply]
-        exact Finset.sum_congr rfl fun p _ => by
-          rw [Finsupp.smul_apply, Finsupp.smul_apply, Finsupp.comapDomain_apply]]
-      -- Show the diagram (with vertical arrows reversed) commutes.
-      unfold_let w
-      rewrite [Finsupp.ext_iff']
-      refine ⟨Finset.ext fun a => ⟨?_, ?_⟩, fun a ha => ?_⟩
-      . unfold lEmbed rEmbed_comap
-        rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map]
-        rintro ⟨p, h, rfl⟩
-        rewrite [Finset.mem_preimage] at h
-        rewrite [Finsupp.comapDomain_support, Finset.mem_preimage, Finsupp.support_embDomain,
-          Finset.mem_map]
-        exact ⟨Prod.map L.subtype id p, h, rfl⟩
-      . unfold lEmbed rEmbed_comap
-        rewrite [Finsupp.comapDomain_support, Finset.mem_preimage, Finsupp.support_embDomain,
-          Finset.mem_map]
-        rintro ⟨p, h₁, h₂⟩
-        rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map]
-        refine ⟨(⟨p.fst, hmem₁ p h₁⟩, p.snd), (by rw [Finset.mem_preimage]; exact h₁), ?_⟩
-        simpa [Prod.ext_iff, Subtype.ext_iff] using h₂
-      . unfold lEmbed rEmbed_comap at ha
-        rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map] at ha
-        obtain ⟨p, h, rfl⟩ := ha
-        rewrite [Finset.mem_preimage] at h
-        unfold lEmbed rEmbed_comap
-        have : Prod.map L.subtype id ((Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) p) =
-          (Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) (Prod.map L.subtype id p) := rfl
-        rw [Finsupp.comapDomain_apply,
-          show Prod.map L.subtype id
-            ((Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) p) =
-              (Function.Embedding.mk _ (Injective.Prod_map injective_id hψ))
-                 (Prod.map L.subtype id p) from rfl,
-          Finsupp.embDomain_apply, Finsupp.comapDomain_apply, Finsupp.embDomain_apply]]
-    unfold TensorProductFinsupp.Null
-    rewrite [← span_int_eq_addSubgroup_closure, mem_toAddSubgroup]
-    unfold_let z
-    apply sum_mem
-    rintro p -
-    refine zsmul_mem (subset_span ?_) _
-    unfold rEmbed_comap
-    obtain (⟨m₁, m₂, n, hp, hm₁, hm₂⟩ | ⟨m, n₁, n₂, hp, hm⟩ | ⟨r, m, n, hp, hm⟩) :=
-        hts p.val p.property
-    . left
-      refine ⟨⟨m₁, hmemL₁ (.inl hm₁)⟩, ⟨m₂, hmemL₁ (.inl hm₂)⟩, n, Finsupp.ext fun (m', n') => ?_⟩
-      simp? [hp, Finsupp.single_apply,
-          Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
-          id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
-          Finsupp.single_apply, AddSubmonoid.mk_add_mk, Subtype.ext_iff]
-    . right; left
-      refine ⟨⟨m, hmemL₁ (.inl hm)⟩, n₁, n₂, Finsupp.ext fun (m', n') => ?_⟩
-      simp? [hp, Finsupp.single_apply,
-          Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
-          id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
-          Finsupp.single_apply, Subtype.ext_iff]
-    . right; right
-      refine ⟨r, ⟨m, hmemL₁ (.inl hm)⟩, n, Finsupp.ext fun (m', n') => ?_⟩
-      simp? [hp, Finsupp.single_apply,
-          Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
-          id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
-          Finsupp.single_apply, SetLike.mk_smul_mk, Subtype.ext_iff]
+  have hmemL₁ {m : M} (hm : m ∈ s ∨ m ∈ x.support.image Prod.fst) : m ∈ L := by
+    unfold_let L κ
+    rewrite [Basis.mem_span_image, Finset.coe_subset]
+    exact fun i hi => Finset.mem_sup.mpr ⟨m, Finset.mem_union.mpr hm, hi⟩
+  -- `L` is large enough that the equation `∑(mᵢ, nᵢ) = ∑ᵢ∑ⱼ(lᵢⱼ, pᵢⱼ)` lives in `L × N →₀ ℤ`.
+  let z : L × P →₀ ℤ := t.attach.sum fun p => f p.val • rEmbed_comap P L.injective_subtype p
+  -- Prove `w` maps to `z`.
+  rewrite [show lEmbed L hψ w = z by
+    -- First show that `y` comaps to `z`.
+    rewrite [← show rEmbed_comap P L.injective_subtype (lEmbed M hψ x) = z by
+      unfold_let z
+      rewrite [← hf]
+      unfold rEmbed_comap
+      ext a
+      rewrite [Finsupp.comapDomain_apply, ← Finset.sum_attach, Finsupp.finset_sum_apply,
+        Finsupp.finset_sum_apply]
+      exact Finset.sum_congr rfl fun p _ => by
+        rw [Finsupp.smul_apply, Finsupp.smul_apply, Finsupp.comapDomain_apply]]
+    -- Show the diagram (with vertical arrows reversed) commutes.
+    unfold_let w
+    rewrite [Finsupp.ext_iff']
+    refine ⟨Finset.ext fun a => ⟨?_, ?_⟩, fun a ha => ?_⟩
+    . unfold lEmbed rEmbed_comap
+      rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map]
+      rintro ⟨p, h, rfl⟩
+      rewrite [Finset.mem_preimage] at h
+      rewrite [Finsupp.comapDomain_support, Finset.mem_preimage, Finsupp.support_embDomain,
+        Finset.mem_map]
+      exact ⟨Prod.map L.subtype id p, h, rfl⟩
+    . unfold lEmbed rEmbed_comap
+      rewrite [Finsupp.comapDomain_support, Finset.mem_preimage, Finsupp.support_embDomain,
+        Finset.mem_map]
+      rintro ⟨p, h₁, h₂⟩
+      rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map]
+      refine ⟨(⟨p.fst, hmem₁ p h₁⟩, p.snd), (by rw [Finset.mem_preimage]; exact h₁), ?_⟩
+      simpa [Prod.ext_iff, Subtype.ext_iff] using h₂
+    . unfold lEmbed rEmbed_comap at ha
+      rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map] at ha
+      obtain ⟨p, h, rfl⟩ := ha
+      rewrite [Finset.mem_preimage] at h
+      unfold lEmbed rEmbed_comap
+      have : Prod.map L.subtype id ((Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) p) =
+        (Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) (Prod.map L.subtype id p) := rfl
+      rw [Finsupp.comapDomain_apply,
+        show Prod.map L.subtype id
+          ((Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) p) =
+            (Function.Embedding.mk _ (Injective.Prod_map injective_id hψ))
+               (Prod.map L.subtype id p) from rfl,
+        Finsupp.embDomain_apply, Finsupp.comapDomain_apply, Finsupp.embDomain_apply]]
+  unfold TensorProductFinsupp.Null
+  rewrite [← span_int_eq_addSubgroup_closure, mem_toAddSubgroup]
+  unfold_let z
+  apply sum_mem
+  rintro p -
+  refine zsmul_mem (subset_span ?_) _
+  unfold rEmbed_comap
+  obtain (⟨m₁, m₂, n, hp, hm₁, hm₂⟩ | ⟨m, n₁, n₂, hp, hm⟩ | ⟨r, m, n, hp, hm⟩) :=
+      hts p.val p.property
+  . left
+    refine ⟨⟨m₁, hmemL₁ (.inl hm₁)⟩, ⟨m₂, hmemL₁ (.inl hm₂)⟩, n, Finsupp.ext fun (m', n') => ?_⟩
+    simp? [hp, Finsupp.single_apply,
+        Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
+        id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
+        Finsupp.single_apply, AddSubmonoid.mk_add_mk, Subtype.ext_iff]
+  . right; left
+    refine ⟨⟨m, hmemL₁ (.inl hm)⟩, n₁, n₂, Finsupp.ext fun (m', n') => ?_⟩
+    simp? [hp, Finsupp.single_apply,
+        Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
+        id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
+        Finsupp.single_apply, Subtype.ext_iff]
+  . right; right
+    refine ⟨r, ⟨m, hmemL₁ (.inl hm)⟩, n, Finsupp.ext fun (m', n') => ?_⟩
+    simp? [hp, Finsupp.single_apply,
+        Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
+        id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
+        Finsupp.single_apply, SetLike.mk_smul_mk, Subtype.ext_iff]
 
 open TensorProductFinsupp in
 /-- If `M`, `N` and `P` are `R`-modules, `M` is free, and `ψ` is an injective linear map `N → P`,
