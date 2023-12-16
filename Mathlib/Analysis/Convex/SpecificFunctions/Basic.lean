@@ -219,7 +219,7 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
 
 namespace Real
 
-lemma exp_le_cosh_add_mul_sinh (ht : |t| ≤ 1) (x : ℝ) :
+lemma exp_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
     exp (t * x) ≤ cosh x + t * sinh x := by
   rw [abs_le] at ht
   calc
