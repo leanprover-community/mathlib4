@@ -207,7 +207,7 @@ theorem factorial_mul_pow_sub_le_factorial {n m : ℕ} (hnm : n ≤ m) : n ! * n
     apply mul_le_mul_left
     apply pow_le_pow_of_le_left (le_succ n)
   have := @Nat.factorial_mul_pow_le_factorial n (m - n)
-  simp [hnm] at this
+  simp? [hnm] at this says simp only [ge_iff_le, hnm, add_tsub_cancel_of_le] at this
   exact this
 #align nat.factorial_mul_pow_sub_le_factorial Nat.factorial_mul_pow_sub_le_factorial
 
