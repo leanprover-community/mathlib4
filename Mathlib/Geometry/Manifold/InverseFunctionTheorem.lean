@@ -176,6 +176,10 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       apply IsOpen.inter _ hs
       refine this.isOpen_preimage (t := t') hs ?_ htopen
       sorry -- TODO: need to tweak this argument; as-is requires ...⁻¹ ⊆ s
+    have hxU : x ∈ U := by
+      refine ⟨?_, hx⟩
+      show fderiv ℝ f x ∈ t'
+      exact mem_of_eq_of_mem hf'.fderiv hft
     -- TODO: argue f is a local homeomorphism, then the next three sorries are immediate
     have : MapsTo f s t := sorry
     have hm : MapsTo g t s := sorry
@@ -183,8 +187,8 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     have hu₁ : f '' U ⊆ t :=
       Subset.trans (image_subset _ (inter_subset_right _ _)) (mapsTo'.mp this)
     have hinv' : InvOn g f U (f '' U) := hinv.mono (inter_subset_right _ _) hu₁
-    have : ∃ V ⊆ t, IsOpen V ∧ ContDiffOn ℝ n g V := by
-      refine ⟨f '' U , hu₁, scifi, ?_⟩
+    have : ∃ V ⊆ t, f x ∈ V ∧ IsOpen V ∧ ContDiffOn ℝ n g V := by
+      refine ⟨f '' U , hu₁, mem_image_of_mem f hxU, scifi, ?_⟩
       suffices ∀ y : f '' U, ContDiffAt ℝ n g y by
         exact fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
       -- Show g is continuously differentiable at each y ∈ f(U).
@@ -196,6 +200,10 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       have : HasFDerivAt f f''.toContinuousLinearMap x' := by rw [hf''eq]; exact this
       let h := hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx'U))
       exact hx'y ▸ (contDiffPregroupoindIsIFT_aux h this hinv hm hn)
+    have : ∃ V ∈ 𝓝 (f x), ContDiffOn ℝ n g V := by -- XXX: do I need V ⊆ t?
+      rcases this with ⟨V, hVt, hxV, hV, hg⟩
+      exact ⟨V, hV.mem_nhds hxV, hg⟩
+
     sorry -- TODO: adjust conclusion of statement!
 
 -- FIXME: show that the analytic pregroupoid is also IFT
