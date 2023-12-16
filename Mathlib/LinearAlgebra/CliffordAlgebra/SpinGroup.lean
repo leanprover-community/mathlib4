@@ -14,13 +14,13 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 /-!
 # The Pin group and the Spin group
 
-In this file we define `lipschitz`, `pin_group` and `spin_group` and show they form a group.
+In this file we define `lipschitz`, `pinGroup` and `spinGroup` and show they form a group.
 
 ## Main definitions
 
 * `lipschitz`: the Lipschitz group with a quadratic form.
-* `pin_group`: the Pin group defined as the infimum of `lipschitz` and `unitary`.
-* `spin_group`: the Spin group defined as the infimum of `pin_group` and `clifford.even`.
+* `pinGroup`: the Pin group defined as the infimum of `lipschitz` and `unitary`.
+* `spinGroup`: the Spin group defined as the infimum of `pinGroup` and `clifford.even`.
 
 ## Implementation Notes
 
@@ -58,7 +58,7 @@ def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] 
 #align invertible_of_invertible_ι invertibleOfInvertibleι
 
 /-- `lipschitz` is the subgroup closure of all the elements in the form of `ι Q m` where `ι`
-is the canonical linear map `M →ₗ[R] clifford_algebra Q`. -/
+is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
 def lipschitz (Q : QuadraticForm R M) :=
   Subgroup.closure (coe ⁻¹' Set.range (ι Q) : Set (CliffordAlgebra Q)ˣ)
 #align lipschitz lipschitz
@@ -186,7 +186,7 @@ theorem coe_mem_lipschitz_iff_mem {x : (CliffordAlgebra Q)ˣ} :
   exact exists_eq_right
 #align coe_mem_lipschitz_iff_mem coe_mem_lipschitz_iff_mem
 
-/-- `pin_group Q` is defined as the infimum of `lipschitz Q` and `unitary (clifford_algebra Q)`.
+/-- `pinGroup Q` is defined as the infimum of `lipschitz Q` and `unitary (CliffordAlgebra Q)`.
 See `mem_iff`. -/
 def pinGroup (Q : QuadraticForm R M) : Submonoid (CliffordAlgebra Q) :=
   (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ⊓ unitary _
@@ -194,7 +194,7 @@ def pinGroup (Q : QuadraticForm R M) : Submonoid (CliffordAlgebra Q) :=
 
 namespace pinGroup
 
-/-- An element is in `pin_group Q` if and only if it is in `lipschitz Q` and `unitary`. -/
+/-- An element is in `pinGroup Q` if and only if it is in `lipschitz Q` and `unitary`. -/
 theorem mem_iff {x : CliffordAlgebra Q} :
     x ∈ pinGroup Q ↔
       x ∈ (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ∧
@@ -221,7 +221,7 @@ theorem units_mem_lipschitz {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup 
   (units_mem_iff.1 hx).1
 #align pin_group.units_mem_lipschitz pinGroup.units_mem_lipschitz
 
-/-- If x is in `pin_group Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
+/-- If x is in `pinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
 theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • (ι Q).range ≤ (ι Q).range :=
@@ -263,7 +263,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
   simp only [hy₃, hy₁, inv_mem_iff]
 #align pin_group.star_mem pinGroup.star_mem
 
-/-- An element is in `pin_group Q` if and only if `star x` is in `pin_group Q`.
+/-- An element is in `pinGroup Q` if and only if `star x` is in `pinGroup Q`.
 See `star_mem` for only one direction. -/
 @[simp]
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q :=
@@ -300,7 +300,7 @@ theorem hMul_star_self (x : pinGroup Q) : x * star x = 1 :=
   Subtype.ext <| coe_hMul_star_self x
 #align pin_group.mul_star_self pinGroup.hMul_star_self
 
-/-- `pin_group Q` forms a group where the inverse is `star`. -/
+/-- `pinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (pinGroup Q) :=
   { Submonoid.toMonoid _ with
     inv := star
@@ -323,7 +323,7 @@ theorem star_eq_inv' : (star : pinGroup Q → pinGroup Q) = Inv.inv :=
   rfl
 #align pin_group.star_eq_inv' pinGroup.star_eq_inv'
 
-/-- The elements in `pin_group Q` embed into (clifford_algebra Q)ˣ. -/
+/-- The elements in `pinGroup Q` embed into (CliffordAlgebra Q)ˣ. -/
 @[simps]
 def toUnits : pinGroup Q →* (CliffordAlgebra Q)ˣ
     where
@@ -346,7 +346,7 @@ open CliffordAlgebra MulAction
 
 open scoped Pointwise
 
-/-- `spin_group Q` is defined as the infimum of `pin_group Q` and `clifford_algebra.even Q`.
+/-- `spinGroup Q` is defined as the infimum of `pinGroup Q` and `CliffordAlgebra.even Q`.
 See `mem_iff`. -/
 def spinGroup (Q : QuadraticForm R M) :=
   pinGroup Q ⊓ (CliffordAlgebra.even Q).toSubring.toSubmonoid
@@ -354,7 +354,7 @@ def spinGroup (Q : QuadraticForm R M) :=
 
 namespace spinGroup
 
-/-- An element is in `spin_group Q` if and only if it is in `pin_group Q` and `even Q`. -/
+/-- An element is in `spinGroup Q` if and only if it is in `pinGroup Q` and `even Q`. -/
 theorem mem_iff {x : CliffordAlgebra Q} : x ∈ spinGroup Q ↔ x ∈ pinGroup Q ∧ x ∈ Even Q :=
   Iff.rfl
 #align spin_group.mem_iff spinGroup.mem_iff
@@ -371,7 +371,7 @@ theorem units_mem_lipschitz {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup
   pinGroup.units_mem_lipschitz (mem_pin hx)
 #align spin_group.units_mem_lipschitz spinGroup.units_mem_lipschitz
 
-/-- If x is in `spin_group Q`, then `involute x` is equal to x.-/
+/-- If x is in `spinGroup Q`, then `involute x` is equal to x.-/
 theorem mem_involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
   involute_eq_of_mem_even (mem_even hx)
 #align spin_group.mem_involute_eq spinGroup.mem_involute_eq
@@ -381,7 +381,7 @@ theorem units_involute_act_eq_conjAct {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈
   simp_rw [SMul.smul, ConjAct.ofConjAct_toConjAct, Units.mul_left_inj, mem_involute_eq hx]
 #align spin_group.units_involute_act_eq_conj_act spinGroup.units_involute_act_eq_conjAct
 
-/-- If x is in `spin_group Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
+/-- If x is in `spinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
 theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • (ι Q).range ≤ (ι Q).range :=
@@ -415,7 +415,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ s
   simp only [star_def, reverse_mem_even_odd_iff, involute_mem_even_odd_iff, hx₂]
 #align spin_group.star_mem spinGroup.star_mem
 
-/-- An element is in `spin_group Q` if and only if `star x` is in `spin_group Q`.
+/-- An element is in `spinGroup Q` if and only if `star x` is in `spinGroup Q`.
 See `star_mem` for only one direction.
 -/
 @[simp]
@@ -453,7 +453,7 @@ theorem hMul_star_self (x : spinGroup Q) : x * star x = 1 :=
   Subtype.ext <| coe_hMul_star_self x
 #align spin_group.mul_star_self spinGroup.hMul_star_self
 
-/-- `spin_group Q` forms a group where the inverse is `star`. -/
+/-- `spinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (spinGroup Q) :=
   { Submonoid.toMonoid _ with
     inv := star
@@ -476,7 +476,7 @@ theorem star_eq_inv' : (star : spinGroup Q → spinGroup Q) = Inv.inv :=
   rfl
 #align spin_group.star_eq_inv' spinGroup.star_eq_inv'
 
-/-- The elements in `spin_group Q` embed into (clifford_algebra Q)ˣ. -/
+/-- The elements in `spinGroup Q` embed into (CliffordAlgebra Q)ˣ. -/
 @[simps]
 def toUnits : spinGroup Q →* (CliffordAlgebra Q)ˣ
     where
