@@ -209,9 +209,9 @@ lemma star_lt_star_iff {x y : R} : star x < star y ↔ x < y := by
     rw [le_iff_lt_or_eq, le_iff_lt_or_eq, star_inj] at this
     simp_all
 
-lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [←star_le_star_iff, star_star]
+lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_le_star_iff, star_star]
 
-lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [←star_lt_star_iff, star_star]
+lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [← star_lt_star_iff, star_star]
 
 @[simp]
 lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
