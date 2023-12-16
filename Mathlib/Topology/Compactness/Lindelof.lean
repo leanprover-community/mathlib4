@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Josha Dekker.
+Authors: Josha Dekker.
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
