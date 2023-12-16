@@ -1177,7 +1177,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot α]
+variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
 
 @[simp]
 theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
@@ -1230,7 +1230,7 @@ theorem le_ciInf_iff' [Nonempty ι] {f : ι → α} {a : α} : a ≤ iInf f ↔ 
   le_ciInf_iff (OrderBot.bddBelow _)
 #align le_cinfi_iff' le_ciInf_iff'
 
-theorem csInf_le' {s : Set α} {a : α} (h : a ∈ s) : sInf s ≤ a := csInf_le (OrderBot.bddBelow _) h
+theorem csInf_le' (h : a ∈ s) : sInf s ≤ a := csInf_le (OrderBot.bddBelow _) h
 #align cInf_le' csInf_le'
 
 theorem ciInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := ciInf_le (OrderBot.bddBelow _) _
