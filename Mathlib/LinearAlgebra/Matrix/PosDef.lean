@@ -101,7 +101,8 @@ protected lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x => by
     rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _⟩
 
-protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) : PosSemidef (M ^ k) :=
+protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
+    PosSemidef (M ^ k) :=
   match k with
   | 0 => .one
   | 1 => by simpa using hM
