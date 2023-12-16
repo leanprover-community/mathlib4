@@ -6,7 +6,7 @@ import Mathlib.Data.Fin.Basic
 
 open CategoryTheory Limits Simplicial SimplexCategory
 
-variable (X Y X' Y': SSet) (m n : ℕ) (f : X ⟶ Y)
+variable (X Y : SSet) --(m n : ℕ) --(f : X ⟶ Y)
 
 namespace CategoryTheory
 
@@ -90,7 +90,7 @@ def intoBoundary (n : ℕ) (j : Fin (n + 2)) : Δ[n] ⟶ ∂Δ[n + 1] where
     simpa using (show j ∈ Set.range (Fin.succAbove j) from Set.range_comp_subset_range _ _ (h j))⟩
 
 --map n simplex into n+1 horn
---better way to say j ≠ i, (j : Fin.succAbove i) or {i}ᶜ
+--better way to say j ≠ i, maybe j ∈ {i}ᶜ
 def intoHorn (n : ℕ) (i j : Fin (n + 2)) (hj : j ≠ i) : Δ[n] ⟶ Λ[n + 1, i] where
   app k x := ⟨(standardSimplex.map (δ j)).app k x, by
     rw [Set.ne_univ_iff_exists_not_mem]
@@ -112,51 +112,190 @@ def HornD0 : Δ[1] ⟶ Λ[2, 2] := intoHorn 1 2 0 (by simp)
 
 def HornD1 : Δ[1] ⟶ Λ[2, 2] := intoHorn 1 2 1 (by simp)
 
-instance Nonemp (n : ℕ) (i : Fin (n + 2)) : Nonempty (Λ[n + 1, i] ⟶ X) := by
+def HornEmb1 : (Λ[2, 1] ⟶ X) → (Δ[1] ⟶ X) × (Δ[1] ⟶ X) := fun f => ⟨hornD0 ≫ f, hornD2 ≫ f⟩
+
+def HornEmb2 : (Λ[2, 2] ⟶ X) → (Δ[1] ⟶ X) × (Δ[1] ⟶ X) := fun f => ⟨HornD0 ≫ f, HornD1 ≫ f⟩
+
+lemma rangeδ (n : ℕ) (i : Fin (n + 2)) : Set.range (δ i) = {i}ᶜ := Fin.range_succAbove i
+
+def predAbove (n : ℕ) (i : Fin (n + 2)) (k : SimplexCategoryᵒᵖ) (x : Δ[n+1].obj k) : Fin (len k.unop + 1) →o Fin (n+1) where
+  toFun := (Fin.predAbove i) ∘ (asOrderHom x)
+  monotone' := Monotone.comp (Fin.predAbove_right_monotone _) (asOrderHom x).monotone
+
+--not right
+lemma ranged (n : ℕ) (i : Fin (n + 2)) (k : SimplexCategoryᵒᵖ) (x : (Δ[n+1]).obj k) :
+  x ∈ Set.range ((standardSimplex.map (δ i)).app k) ↔ Set.range (asOrderHom x) ⊆ {i}ᶜ := by
+    refine ⟨?_, ?_⟩
+    · rintro ⟨y, rfl⟩
+      refine subset_trans ?_ (subset_of_eq (Fin.range_succAbove i))
+      intro j hj
+      apply Set.range_comp_subset_range _ _
+      simpa only [Set.mem_range, Function.comp_apply]
+    · intro h
+      refine ⟨Hom.mk (predAbove n i k x), ?_⟩
+      dsimp [predAbove, standardSimplex, δ]
+      ext l
+      have goal : (asOrderHom x) l ≠ Fin.castSucc i := by
+        have : Fin.castSucc i = i := by
+          sorry
+        --apply h
+        --simp only [Set.mem_range, exists_apply_eq_apply]
+      have := Fin.succAbove_predAbove goal
+      simp at this ⊢
+      have gg : (Fin.castSucc (i : Fin (n+1))) = i := by
+        sorry
+      rw [gg] at this
+      rw [this]
+      rfl
+
+def tbd0 (k : SimplexCategoryᵒᵖ) (x : Δ[2].obj k) : Fin (len k.unop + 1) →o Fin 2 where
+  toFun := (Fin.predAbove (0 : Fin 2)) ∘ (asOrderHom x)
+  monotone' := Monotone.comp (Fin.predAbove_right_monotone _) (asOrderHom x).monotone
+
+lemma ranged0 (k : SimplexCategoryᵒᵖ) (x : Δ[2].obj k) :
+  x ∈ Set.range ((standardSimplex.map (δ 0)).app k) ↔ Set.range (asOrderHom x) ⊆ {0}ᶜ := by
+    refine ⟨?_, ?_⟩
+    · rintro ⟨y, rfl⟩
+      refine subset_trans ?_ (subset_of_eq (Fin.range_succAbove 0))
+      intro j hj
+      apply Set.range_comp_subset_range _ _
+      simpa only [Set.mem_range, Function.comp_apply]
+-- if (x : Δ[2].obj k) does not have 0 in its image as an order hom, (i.e. (asOrderHom x) ⊆ {0}ᶜ) then we can
+-- consider it as an element y of (Δ[1].obj k) which maps to x via d0
+-- i.e. get Fin (len k.unop + 1) → Fin (2), from Fin (len k.unop + 1) →o Fin (2 + 1), since 0 not in the image
+    · intro h
+      refine ⟨Hom.mk (tbd0 k x), ?_⟩
+      dsimp [tbd0, standardSimplex, δ]
+      ext l
+      have goal : (asOrderHom x) l ≠ Fin.castSucc 0 := by
+        apply h
+        simp only [Set.mem_range, exists_apply_eq_apply]
+      have := Fin.succAbove_predAbove goal
+      simp only [Fin.castSucc_zero, ne_eq, Fin.zero_succAbove, len_mk, Hom.toOrderHom_mk,
+        OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, OrderHom.coe_mk, Function.comp_apply,
+        Fin.succAboveEmb_apply] at this ⊢
+      rw [this]
+      rfl
+
+def tbd2 (k : SimplexCategoryᵒᵖ) (x : Δ[2].obj k) : Fin (len k.unop + 1) →o Fin 2 where
+  toFun := (Fin.predAbove (1 : Fin 2)) ∘ (asOrderHom x)
+  monotone' := Monotone.comp (Fin.predAbove_right_monotone _) (asOrderHom x).monotone
+
+-- not right
+lemma ranged2 (k : SimplexCategoryᵒᵖ) (x : Δ[2].obj k) :
+  x ∈ Set.range ((standardSimplex.map (δ 2)).app k) ↔ Set.range (asOrderHom x) ⊆ {2}ᶜ := by
+    refine ⟨?_, ?_⟩
+    · rintro ⟨y, rfl⟩
+      refine subset_trans ?_ (subset_of_eq (Fin.range_succAbove 2))
+      intro j hj
+      apply Set.range_comp_subset_range _ _
+      simpa only [Set.mem_range, Function.comp_apply]
+    · intro h
+      refine ⟨Hom.mk (tbd2 k x), ?_⟩
+      dsimp [tbd2, standardSimplex, δ]
+      ext l
+      have goal : (asOrderHom x) l ≠ Fin.castSucc 1 := by
+        sorry
+        --apply h
+        --simp only [Set.mem_range, exists_apply_eq_apply]
+      have := Fin.succAbove_predAbove goal
+      simp at this ⊢
+      rw [this]
+      rfl
+
+lemma partition1 (k : SimplexCategoryᵒᵖ) (x : Λ[2, 1].obj k) :
+  (x ∈ Set.range ((hornD0).app k)) ∨ (x ∈ Set.range ((hornD2).app k)) := by
+  obtain ⟨x ,hx⟩ := x
+  rw [Set.ne_univ_iff_exists_not_mem] at hx
+  obtain ⟨a, ha⟩ := hx
+  rw [Set.mem_union, not_or] at ha
+  by_cases a = 0 --if a = 0 ∉ range(x), then range(x) ⊆ {0}ᶜ
+  · have : Set.range (asOrderHom x) ⊆ {0}ᶜ := by
+      rw [Set.subset_compl_comm, Set.singleton_subset_iff]
+      rw [h] at ha
+      exact ha.1
+    left
+    rw [← ranged0] at this
+    refine ⟨Exists.choose this, by
+    dsimp [hornD0, intoHorn]
+    congr
+    exact Exists.choose_spec this⟩
+  · have : Set.range (asOrderHom x) ⊆ {2}ᶜ := by
+      rw [Set.subset_compl_comm, Set.singleton_subset_iff]
+      have : a = 2 := by
+        fin_cases a <;> simp
+        exact h rfl
+        exact ha.2 rfl
+      rw [this] at ha
+      exact ha.1
+    right
+    rw [← ranged 1 2 k] at this
+    refine ⟨Exists.choose this, by
+    dsimp [hornD2, intoHorn]
+    congr
+    exact Exists.choose_spec this⟩
+
+lemma HornEmb1Inj : Function.Injective (HornEmb1 X) := fun f g h => by
+  ext k x
+  cases partition1 k x with
+    | inl p =>
+      obtain ⟨y,hy⟩ := p
+      rw [← hy]
+      apply_fun (fun a => (a.1).app k y) at h
+      exact h
+    | inr p =>
+      obtain ⟨y,hy⟩ := p
+      rw [← hy]
+      apply_fun (fun a => (a.2).app k y) at h
+      exact h
+
+lemma aux2 : d0 ≫ D2 = d1 ≫ D0 := by
+  have := @δ_comp_δ 0 0 1 (Nat.zero_le 1)
+  apply_fun (fun a => standardSimplex.map a) at this
+  exact this
+
+@[simp]
+lemma aux2' : d0 ≫ hornD2 = d1 ≫ hornD0 := by
+  have := aux2
+  ext k x
+  apply_fun (fun a => a.app k x) at this
+  change (hornD2).app k (d0.app k x) = (hornD0).app k (d1.app k x)
+  dsimp [hornD0, hornD2, intoHorn]
+  congr
+
+lemma HornEmb1Range : Set.range (HornEmb1 X) = {z : (Δ[1] ⟶ X) × (Δ[1] ⟶ X) // d1 ≫ z.1 = d0 ≫ z.2 } := by
+  rw [Set.coe_eq_subtype]
+  congr
+  ext z
   refine ⟨?_, ?_⟩
-  sorry ; sorry
-
---000Z, need to add condition about d maps, not sure how
-def HornEmb (n : ℕ) (i : Fin (n + 2)) :
-  (Λ[n + 1, i] ⟶ X) → ( ({i}ᶜ : Set (Fin (n + 2))) → (Δ[n] ⟶ X) ) :=
-    fun f ⟨j, hj⟩ => (intoHorn n i j hj) ≫ f
-
--- in terms of simplices
-def HornEmbAlt (n : ℕ) (i : Fin (n + 2)) :
-  (Λ[n + 1, i] ⟶ X) → ( ({i}ᶜ : Set (Fin (n + 2))) → (X _[n]) ) :=
-    fun f ⟨j, hj⟩ => yonedaEquiv.toFun ((intoHorn n i j hj) ≫ f)
-
-variable (j : Fin (n+2))
-#check X.map (δ j).op
-
-def d {n : ℕ} (j : Fin (n + 2)) : X _[n+1] → X _[n] := X.map (δ j).op
-
---lemma (n : ℕ) (i : Fin (n + 2)) (f : (Λ[n + 1, i] ⟶ X)) (j k : {i}ᶜ) (h : j < k) :=
--- d
-
--- not true, injective on
--- subset satisfying: d_j (x_k) = d_(k-1) x_j, for all j,k ∈ {i}ᶜ with j < k
-def HornEmbInj (n : ℕ) (i : Fin (n + 2)) : Function.Injective (HornEmb X n i) := sorry
+  · rintro ⟨x,hz⟩
+    dsimp [HornEmb1] at hz
+    have h1 : hornD0 ≫ x = z.1 := by
+      apply_fun (fun a => a.1) at hz
+      exact hz
+    have h2 : hornD2 ≫ x = z.2 := by
+      apply_fun (fun a => a.2) at hz
+      exact hz
+    rw [← h1, ← h2]
+    have := aux2'.symm
+    apply_fun (fun a => a ≫ x) at this
+    exact this
+  · intro hz
+    refine ⟨?_, ?_⟩
+    sorry
+    sorry
 
 noncomputable
-def HornEmbInv (n : ℕ) (i : Fin (n + 2)) :
-  ( ({i}ᶜ : Set (Fin (n + 2))) → (Δ[n] ⟶ X) ) → (Λ[n + 1, i] ⟶ X) :=
-    Exists.choose (Function.Injective.hasLeftInverse (HornEmbInj X n i))
+def HornEmb1Equiv : (Λ[2, 1] ⟶ X) ≃ {z : (Δ[1] ⟶ X) × (Δ[1] ⟶ X) // d1 ≫ z.1 = d0 ≫ z.2 } := by
+  rw [← HornEmb1Range]
+  exact Equiv.ofInjective _ (HornEmb1Inj X)
 
-lemma HornEmbInv1 (n : ℕ) (i : Fin (n + 2)) (f : Λ[n + 1, i] ⟶ X) :
-  HornEmbInv X n i (HornEmb X n i f) = f :=
-    Exists.choose_spec (Function.Injective.hasLeftInverse (HornEmbInj X n i)) f
-
+-- the unique hom determined by (p₀.p, p₂.p) ∈ {z : (Δ[1] ⟶ X) × (Δ[1] ⟶ X) // d1 ≫ z.1 = d0 ≫ z.2 }
 noncomputable
-def transHom {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
-  Path a b → Path b c → (Λ[2,1] ⟶ X) := fun p₀ p₂ => by
-    apply HornEmbInv X 1 1
-    rintro ⟨j, hj : j ≠ 1⟩
-    by_cases j = 0
-    · exact p₀.p
-    · have : j = 2 := sorry
-      exact p₂.p
+def transHom {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p₀ : Path a b) (p₂ : Path b c) :
+  (Λ[2,1] ⟶ X) := (HornEmb1Equiv _).invFun ⟨⟨p₀.p, p₂.p⟩, by rw [p₀.hp1, p₂.hp0]⟩
 
+-- want that hornD0 ≫ (transHom p₀ p₂) = p₀.p = ((HornEmb1Equiv _).toFun (transHom p₀ p₂)).1
 lemma transHom_compHorn0 {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] (p₀ : Path a b) (p₂ : Path b c) :
   hornD0 ≫ (transHom p₀ p₂) = p₀.p := sorry
 
@@ -170,11 +309,6 @@ lemma aux1 : d1 ≫ D1 = d1 ≫ D2 := by
   exact this
 
 example : d0 ≫ D1 = d0 ≫ D0 := rfl
-
-lemma aux2 : d0 ≫ D2 = d1 ≫ D0 := by
-  have := @δ_comp_δ 0 0 1 (Nat.zero_le 1)
-  apply_fun (fun a => standardSimplex.map a) at this
-  exact this
 
 noncomputable
 def Path.trans {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
@@ -196,14 +330,14 @@ def Path.trans {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
 
 noncomputable
 def symmHom {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] :
-  Path a b → (Λ[2,2] ⟶ X) := by
-    rintro ⟨p, h0, h1⟩
-    apply HornEmbInv X 1 2
-    rintro ⟨j, hj : j ≠ 2⟩
-    by_cases j = 1
-    exact p
-    have : j = 0 := sorry
-    exact standardSimplex.map (σ 0) ≫ a
+  Path a b → (Λ[2,2] ⟶ X) := sorry
+    --rintro ⟨p, h0, h1⟩
+    --apply HornEmbInv X 1 2
+    --rintro ⟨j, hj : j ≠ 2⟩
+    --by_cases j = 1
+    --exact p
+    --have : j = 0 := sorry
+    --exact standardSimplex.map (σ 0) ≫ a
 
 lemma symmHom_compHorn0 {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] (p : Path a b) :
   HornD0 ≫ (symmHom p) = p.p := sorry
