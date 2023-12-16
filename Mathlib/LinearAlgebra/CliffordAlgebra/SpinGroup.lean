@@ -144,7 +144,7 @@ theorem mem_lipschitz_conjAct_le [Invertible (2 : R)]
 
 /-- This is another version of `mem_lipschitz_conj_act_le` which uses `involute`.-/
 theorem mem_lipschitz_involute_le [Invertible (2 : R)]
-  {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q) (b : M) :
+    {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q) (b : M) :
   involute ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
   revert b
   unfold lipschitz at hx
