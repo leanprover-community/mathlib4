@@ -15,7 +15,6 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 ## TODO
 Define the restriction of norms and traces.
 
-
 -/
 open BigOperators nonZeroDivisors
 
@@ -91,7 +90,7 @@ lemma algebraMap_galRestrictHom_apply (σ : L →ₐ[K] L) (x : B) :
     algebraMap B L (galRestrictHom A K L B σ x) = σ (algebraMap B L x) := by
   simp [galRestrictHom, Subalgebra.algebraMap_eq]
 
-@[simp]
+@[simp, nolint unusedHavesSuffices] -- false positive from unfolding galRestrictHom
 lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
     (galRestrictHom A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) := by
   have := (IsFractionRing.injective A K).isDomain
