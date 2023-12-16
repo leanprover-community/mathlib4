@@ -2,6 +2,42 @@
 import os
 import re
 
+def extract_simp_rw_from_simp_only(filename):
+
+    lines = list(open(filename, "r"))
+
+    # Find first line with a simp_only
+    for line in list(lines):
+        if "simp only" in line:
+            break
+
+    print(f"Bot found line {line}")
+
+    simp_only_start = line.find("simp only")
+    lemmas_start = line.find("[") + 1
+    lemmas_end = line.find("]")
+    lemmas = line[lemmas_start:lemmas_end].split(", ")
+    print("Lemmas found:", lemmas)
+    for lemma in lemmas:
+        assert("," not in lemma)
+        other_lemmas = list(lemmas)
+        other_lemmas.remove(lemma)
+        new_line = line[:simp_only_start] + \
+            f"simp_rw [{lemma}], " + \
+            f"simp only [" + ", ".join(other_lemmas) + line[lemmas_end:]
+        new_lines = list(lines)
+        new_lines[lines.index(line)] = new_line
+
+        f = open(filename, "w")
+        f.writelines(new_lines)
+        f.close()
+        exit_code = os.system(f"lean --make {filename} > /dev/null")
+        if exit_code != 0:
+            f = open(filename, "w")
+            f.writelines(lines)
+            f.close()
+        else:
+            break
 
 def remove_lemma_from_simp_only(filename):
 
