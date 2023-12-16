@@ -210,22 +210,8 @@ theorem mem_kernel_witness_left [DecidableEq M] [DecidableEq (M × N →₀ ℤ)
       . right; left; exact ⟨m, n₁, n₂, rfl, Finset.mem_insert_of_mem hm⟩
       . right; right; exact ⟨r, m, n, rfl, Finset.mem_insert_of_mem hm⟩
 
-variable {R} {M} {N} in
-/-- Rewriting lemma auxiliary to `lTensor_free_injective_of_injective.aux'`. -/
-private theorem map_comap {L : Submodule R M} {x : M × N →₀ ℤ}
-    (hmem : ∀ y, y ∈ x.support → y.fst ∈ L) :
-      TensorProductFinsupp.rEmbed N L.injective_subtype
-        (TensorProductFinsupp.rEmbed_comap N L.injective_subtype x) = x := by
-  unfold TensorProductFinsupp.rEmbed TensorProductFinsupp.rEmbed_comap
-  rewrite [Finsupp.embDomain_eq_mapDomain]
-  have : Set.SurjOn (Prod.map L.subtype id)
-      ((Prod.map L.subtype id) ⁻¹' x.support) (x.support : Set (M × N)) :=
-    fun y hy => ⟨(⟨y.fst, hmem y hy⟩, y.snd), by exact hy, rfl⟩
-  erw [Finsupp.mapDomain_comapDomain _ (Injective.Prod_map L.injective_subtype injective_id) x
-    this.subset_range]
-
-open TensorProductFinsupp (lEmbed rEmbed rEmbed_comap) in
 variable {R} {M} {N} {P} in
+open TensorProductFinsupp (lEmbed rEmbed rEmbed_comap rEmbed_map_comap) in
 /-- If `M` and `N` are `R`-modules, `M` has a basis `ℰ`, and `x : M × N →₀ ℤ` (representing an
 element of the free abelian group on `M × N`), if `ψ : N → P` is an injective linear map,
 and if the image `y` of `x` in `M × P →₀ ℤ` is in the subgroup `TensorProductFinsupp.Null R M P`,
@@ -241,9 +227,8 @@ and the image of `w` in `M × N →₀ ℤ` is equal to `x`.
                   ↓                (1 × ψ)                ↓
             x : M × N →₀ ℤ    -----------------→    y : M × P →₀ ℤ
 
-This lemma is auxiliary to `lTensor_free_injective_of_injective.aux`.
--/
-theorem lTensor_free_injective_of_injective.aux' [DecidableEq M] [DecidableEq P]
+This lemma is auxiliary to `lTensor_free_injective_of_injective.aux`. -/
+theorem lTensor_free_injective_of_injective.aux [DecidableEq M] [DecidableEq P]
     [DecidableEq (M × N →₀ ℤ)] [Module.Free R M] {x : M × N →₀ ℤ} {ψ : N →ₗ[R] P}
     (hψ : Injective ψ) (hy : lEmbed M hψ x ∈ TensorProductFinsupp.Null R M P) :
       ∃ (L : Submodule R M) (_ : Module.Free R L) (_ : L.FG) (w : L × N →₀ ℤ),
@@ -264,7 +249,8 @@ theorem lTensor_free_injective_of_injective.aux' [DecidableEq M] [DecidableEq P]
     (Basis.mem_span_image _).mpr <| fun a ha => Finset.mem_sup.mpr
       ⟨p.fst, Finset.mem_union_right _ <| Finset.mem_image.mpr ⟨p, hp, rfl⟩, ha⟩
   let w : L × N →₀ ℤ := rEmbed_comap N L.injective_subtype x
-  refine ⟨L, ⟨⟨κ, ℱ⟩⟩, ⟨κ.image ℰ, by rw [Finset.coe_image]⟩, w, by rw [map_comap hmem₁], ?_⟩
+  refine ⟨L, ⟨⟨κ, ℱ⟩⟩, ⟨κ.image ℰ, by rw [Finset.coe_image]⟩, w,
+      by rw [rEmbed_map_comap N hmem₁], ?_⟩
   . have hmemL₁ {m : M} (hm : m ∈ s ∨ m ∈ x.support.image Prod.fst) : m ∈ L := by
       unfold_let L κ
       rewrite [Basis.mem_span_image, Finset.coe_subset]
@@ -365,7 +351,7 @@ theorem lTensor_free_injective_of_injective [DecidableEq R] [DecidableEq M] [Dec
   -- There is a free, finitely generated submodule `L ≤ M` and an element `w' : L × N →₀ ℤ`
   -- whose image in `M × P →₀ ℤ` is equal to `x'` and whose image in `L × P →₀ ℤ` belongs to
   -- `TensorProductFinsupp.Null R L P`.
-  have ⟨L, hfree, hfg, w', hx', hz'⟩ := lTensor_free_injective_of_injective.aux' hψ hy'
+  have ⟨L, hfree, hfg, w', hx', hz'⟩ := lTensor_free_injective_of_injective.aux hψ hy'
   haveI : Module.Finite R L := ⟨(fg_top L).mpr hfg⟩
   -- Descend to the quotient and apply `lTensor_finite_free_injective_of_injective`.
   unfold_let x' at hx'
