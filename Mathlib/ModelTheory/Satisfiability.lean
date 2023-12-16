@@ -228,8 +228,8 @@ section
 -- Porting note: This instance interrupts synthesizing instances.
 attribute [-instance] FirstOrder.Language.withConstants_expansion
 
-/-- The Upward Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
-and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
+/-- The **Upward Löwenheim–Skolem Theorem**: If `κ` is a cardinal greater than the cardinalities of
+`L` and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h2 : Cardinal.lift.{w} #M ≤ Cardinal.lift.{w'} κ) :
@@ -683,8 +683,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
   ⟨hS, fun φ => by
     obtain ⟨_, _⟩ := Theory.exists_model_card_eq ⟨hS.some, hT hS.some⟩ κ h1 h2
     rw [Theory.models_sentence_iff, Theory.models_sentence_iff]
-    by_contra con
-    push_neg at con
+    by_contra! con
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine' hMF _

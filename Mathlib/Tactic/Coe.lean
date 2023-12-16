@@ -43,15 +43,6 @@ elab "(" "↑" ")" : term <= expectedType =>
     else
       throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
 
-/-- `⇑ t` coerces `t` to a function. -/
--- the precedence matches that of `coeNotation`
-elab:1024 (name := coeFunNotation) "⇑" m:term:1024 : term => do
-  let x ← elabTerm m none
-  if let some ty ← coerceToFunction? x then
-    return ty
-  else
-    throwError "cannot coerce to function{indentExpr x}"
-
 /-- Partially applied function coercion.  Equivalent to the η-reduction of `(⇑ ·)` -/
 elab "(" "⇑" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "⇑" expectedType fun b x => do
@@ -59,14 +50,6 @@ elab "(" "⇑" ")" : term <= expectedType =>
       ensureHasType b ty
     else
       throwError "cannot coerce to function{indentExpr x}"
-
-/-- `↥ t` coerces `t` to a type. -/
-elab:1024 (name := coeSortNotation) "↥" t:term:1024 : term => do
-  let x ← elabTerm t none
-  if let some ty ← coerceToSort? x then
-    return ty
-  else
-    throwError "cannot coerce to sort{indentExpr x}"
 
 /-- Partially applied type coercion.  Equivalent to the η-reduction of `(↥ ·)` -/
 elab "(" "↥" ")" : term <= expectedType =>

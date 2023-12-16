@@ -75,7 +75,7 @@ instance NormalSpace.completelyRegularSpace [NormalSpace X] : CompletelyRegularS
   intro x K hK hx
   have cx : IsClosed {x} := by apply T1Space.t1
   have d : Disjoint {x} K := by rwa [Set.disjoint_iff, subset_empty_iff, singleton_inter_eq_empty]
-  let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_closed cx hK d
+  let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_isClosed cx hK d
   let g : X → I := fun x => ⟨f x, hficc x⟩
   have cg : Continuous g := cf.subtype_mk hficc
   have hgx : g x = 0 := Subtype.ext (hfx (mem_singleton_iff.mpr (Eq.refl x)))

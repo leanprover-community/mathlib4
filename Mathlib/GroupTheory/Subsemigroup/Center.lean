@@ -228,9 +228,9 @@ theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ 
 theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
     a + b ∈ Set.center M  where
   comm _ := by rw [add_mul, mul_add, ha.comm, hb.comm]
-  left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ←add_mul, ←add_mul]
-  mid_assoc _ _ := by rw [mul_add, add_mul, ha.mid_assoc, hb.mid_assoc, ←mul_add, ←add_mul]
-  right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ←mul_add, ←mul_add]
+  left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ← add_mul, ← add_mul]
+  mid_assoc _ _ := by rw [mul_add, add_mul, ha.mid_assoc, hb.mid_assoc, ← mul_add, ← add_mul]
+  right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ← mul_add, ← mul_add]
 #align set.add_mem_center Set.add_mem_center
 
 @[simp]
@@ -247,7 +247,7 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
   fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
-  rw [←Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
+  rw [← Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
 #align set.subset_center_units Set.subset_center_units
 #align set.subset_add_center_add_units Set.subset_addCenter_add_units
 

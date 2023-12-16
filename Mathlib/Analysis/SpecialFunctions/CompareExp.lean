@@ -69,7 +69,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem of_isBigO_im_re_pow (hre : Tendsto re l atTop) (n : ℕ) (hr : im =O[l] fun z => z.re ^ n) :
     IsExpCmpFilter l :=
-  of_isBigO_im_re_rpow hre n <| by exact_mod_cast hr
+  of_isBigO_im_re_rpow hre n <| mod_cast hr
 set_option linter.uppercaseLean3 false in
 #align complex.is_exp_cmp_filter.of_is_O_im_re_pow Complex.IsExpCmpFilter.of_isBigO_im_re_pow
 

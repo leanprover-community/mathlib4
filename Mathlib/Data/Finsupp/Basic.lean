@@ -664,7 +664,7 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
     by_cases h : a ∈ v₁.support ∪ v₂.support
     · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
         · apply Set.union_subset hv₁ hv₂
-          exact_mod_cast h
+          exact mod_cast h
     · simp only [not_or, mem_union, not_not, mem_support_iff] at h
       simp [h]
 #align finsupp.map_domain_inj_on Finsupp.mapDomain_injOn
@@ -1706,7 +1706,7 @@ def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     by_cases h : a ∈ s
     · lift a to s using h
       exact embDomain_apply _ _ _
-    rw [embDomain_notin_range, eq_comm, ←Finsupp.not_mem_support_iff]
+    rw [embDomain_notin_range, eq_comm, ← Finsupp.not_mem_support_iff]
     · exact fun hs => h <| hf hs
     · simp [h]
   right_inv f := ext <| embDomain_apply _ f

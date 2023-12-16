@@ -433,7 +433,7 @@ theorem IsCycle.zpowersEquivSupport_symm_apply {σ : Perm α} (hσ : IsCycle σ)
 #align equiv.perm.is_cycle.zpowers_equiv_support_symm_apply Equiv.Perm.IsCycle.zpowersEquivSupport_symm_apply
 
 protected theorem IsCycle.orderOf (hf : IsCycle f) : orderOf f = f.support.card := by
-  rw [←Fintype.card_zpowers, ← Fintype.card_coe]
+  rw [← Fintype.card_zpowers, ← Fintype.card_coe]
   convert Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
 #align equiv.perm.is_cycle.order_of Equiv.Perm.IsCycle.orderOf
 

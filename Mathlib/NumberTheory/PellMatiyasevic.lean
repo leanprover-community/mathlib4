@@ -610,7 +610,7 @@ theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j �
         (by
           delta xz; delta yz
           rw [mul_comm (xn _ _ : ℤ)]
-          exact_mod_cast (xn_modEq_x2n_add_lem _ n j))
+          exact mod_cast (xn_modEq_x2n_add_lem _ n j))
         ((dvd_mul_right _ _).mul_left _)
   rw [two_mul, add_tsub_assoc_of_le h, xn_add, add_assoc, ← zero_add 0]
   exact
@@ -1001,7 +1001,7 @@ theorem eq_pow_of_pell {m n k} :
     have na : n ≤ xn hw1 j := (Nat.le_self_pow hk0.ne' _).trans hnka.le
     have te : (t : ℤ) = 2 * xn hw1 j * n - n * n - 1 := by
       rw [sub_sub, eq_sub_iff_add_eq]
-      exact_mod_cast ta.symm
+      exact mod_cast ta.symm
     have : xn a1 k ≡ yn a1 k * (xn hw1 j - n) + n ^ k [MOD t] := by
       apply modEq_of_dvd
       rw [te, Nat.cast_add, Nat.cast_mul, Int.ofNat_sub na]

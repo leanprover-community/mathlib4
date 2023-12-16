@@ -360,7 +360,7 @@ theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
 theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.not_le]
 #align sign_nonneg_iff sign_nonneg_iff
 
@@ -368,7 +368,7 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.not_le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.le]
 #align sign_nonpos_iff sign_nonpos_iff
 

@@ -267,8 +267,7 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
       (by ext; apply one_smul)
       (by intros x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
-    by_contra h'
-    push_neg at h'
+    by_contra! h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
@@ -467,6 +466,30 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
     use f.symm y, hy.map (f.symm : S →ₐ[R] A)
     simp
 #align integral_closure_map_alg_equiv integralClosure_map_algEquiv
+
+/-- An `AlgHom` between two rings restrict to an `AlgHom` between the integral closures inside
+them. -/
+def integralClosure_algHom_restrict [Algebra R S] (f : A →ₐ[R] S) :
+    integralClosure R A →ₐ[R] integralClosure R S :=
+  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+
+@[simp]
+theorem integralClosure_coe_algHom_restrict [Algebra R S] (f : A →ₐ[R] S)
+    (x : integralClosure R A) : (integralClosure_algHom_restrict f x : S) = f (x : A) := rfl
+
+/-- An `AlgEquiv` between two rings restrict to an `AlgEquiv` between the integral closures inside
+them. -/
+noncomputable def integralClosure_algEquiv_restrict [Algebra R S] (f : A ≃ₐ[R] S) :
+    integralClosure R A ≃ₐ[R] integralClosure R S := by
+  refine AlgEquiv.ofBijective (integralClosure_algHom_restrict f) ⟨?_, ?_⟩
+  · erw [AlgHom.injective_codRestrict]
+    exact (EquivLike.injective f).comp Subtype.val_injective
+  · rintro ⟨y, hy⟩
+    exact ⟨⟨f.symm y, hy.map f.symm⟩, by rw [Subtype.mk_eq_mk]; simp⟩
+
+@[simp]
+theorem integralClosure_coe_algEquiv_restrict [Algebra R S] (f : A ≃ₐ[R] S)
+    (x : integralClosure R A) : (integralClosure_algEquiv_restrict f x : S) = f (x : A) := rfl
 
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2

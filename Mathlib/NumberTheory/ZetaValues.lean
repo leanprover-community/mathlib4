@@ -167,7 +167,7 @@ def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=
 
 theorem periodizedBernoulli.continuous {k : ℕ} (hk : k ≠ 1) : Continuous (periodizedBernoulli k) :=
   AddCircle.liftIco_zero_continuous
-    (by exact_mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
+    (mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
     (Polynomial.continuous _).continuousOn
 #align periodized_bernoulli.continuous periodizedBernoulli.continuous
 

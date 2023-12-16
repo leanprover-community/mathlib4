@@ -261,7 +261,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     In this proof, we use explicit coercions `↑s` for `s : A` as otherwise the system tries to find
     a `CoeFun` instance on `↥A`, which is too costly.
     -/
-  by_contra' h
+  by_contra! h
   -- We will formulate things in terms of the type of countable subsets of `α`, as this is more
   -- convenient to formalize the inductive construction.
   let A : Set (Set α) := {t | t.Countable}

@@ -235,7 +235,7 @@ theorem intervalIntegrable_one_div_one_add_sq :
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :
     IntervalIntegrable (fun x : ℝ => (↑1 + x ^ 2)⁻¹) μ a b := by
-  field_simp; exact_mod_cast intervalIntegrable_one_div_one_add_sq
+  field_simp; exact mod_cast intervalIntegrable_one_div_one_add_sq
 #align interval_integral.interval_integrable_inv_one_add_sq intervalIntegral.intervalIntegrable_inv_one_add_sq
 
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
@@ -368,8 +368,8 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
 
 theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  replace h : -1 < (n : ℝ) ∨ (n : ℝ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]; · exact_mod_cast h
-  exact_mod_cast integral_rpow h
+  replace h : -1 < (n : ℝ) ∨ (n : ℝ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]; · exact mod_cast h
+  exact mod_cast integral_rpow h
 #align integral_zpow integral_zpow
 
 @[simp]
@@ -571,7 +571,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
       ring
     convert (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
     · field_simp; ring
-    · exact_mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
+    · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
     refine' continuous_ofReal.mul _
     apply Continuous.cpow

@@ -257,7 +257,7 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : A
     simp only [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
       coe_two, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
-    exact_mod_cast hℒ fun _ => zero_le_two
+    exact mod_cast hℒ fun _ => zero_le_two
 #align probability_theory.evariance_def' ProbabilityTheory.evariance_def'
 
 /-- *Chebyshev's inequality* for `ℝ≥0∞`-valued variance. -/

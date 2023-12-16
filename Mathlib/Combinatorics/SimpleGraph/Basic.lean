@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Sym.Card
 
 #align_import combinatorics.simple_graph.basic from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
@@ -383,7 +383,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
       exact x.irrefl h.1
     inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
     top_le_sup_compl := fun G v w hvw => by
-      by_cases G.Adj v w
+      by_cases h : G.Adj v w
       · exact Or.inl h
       · exact Or.inr ⟨hvw, h⟩
     sSup := sSup
@@ -538,6 +538,14 @@ variable (G₁ G₂)
 theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 #align simple_graph.edge_set_bot SimpleGraph.edgeSet_bot
+
+@[simp]
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} :=
+  Sym2.fromRel_ne
+
+@[simp]
+theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ {e | ¬e.IsDiag} :=
+  fun _ h => (Sym2.fromRel_irreflexive (sym := G.symm)).mp G.loopless h
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -966,6 +974,22 @@ theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
 theorem edgeSet_univ_card : (univ : Finset G.edgeSet).card = G.edgeFinset.card :=
   Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
 #align simple_graph.edge_set_univ_card SimpleGraph.edgeSet_univ_card
+
+variable [Fintype V] [DecidableEq V]
+
+@[simp]
+theorem edgeFinset_top : (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
+  rw [← coe_inj]; simp
+
+/-- The complete graph on `n` vertices has `n.choose 2` edges. -/
+theorem card_edgeFinset_top_eq_card_choose_two :
+    (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
+  simp_rw [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
+
+/-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
+theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
+  rw [← card_edgeFinset_top_eq_card_choose_two]
+  exact card_le_of_subset (edgeFinset_mono le_top)
 
 end EdgeFinset
 

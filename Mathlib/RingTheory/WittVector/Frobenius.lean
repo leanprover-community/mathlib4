@@ -188,8 +188,8 @@ theorem map_frobeniusPoly (n : ℕ) :
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
         (p : ℚ) ^ (n - i - v p ⟨j + 1, j.succ_pos⟩) by
     have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by
-      intro; apply pow_ne_zero; exact_mod_cast hp.1.ne_zero
-    simpa [aux, -one_div, field_simps] using this.symm
+      intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
+    simpa [aux, -one_div, -pow_eq_zero_iff', field_simps] using this.symm
   rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
     map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
   ring

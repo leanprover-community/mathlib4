@@ -721,7 +721,7 @@ theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   | zero => simp [drop]
   | succ n n_ih =>
     -- Porting note: Was `simp [*, drop]`.
-    simp [drop, ←n_ih]
+    simp [drop, ← n_ih]
 #align stream.wseq.dropn_cons Stream'.WSeq.dropn_cons
 
 @[simp]

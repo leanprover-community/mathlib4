@@ -78,7 +78,7 @@ variable {α : Type u}
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
-  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (←getSize) (Nat.zero_le _) : Gen (ULift ℕ))
+  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (← getSize) (Nat.zero_le _) : Gen (ULift ℕ))
   let mut res := #[]
   for _ in [0:sz] do
     res := res.push (← x)

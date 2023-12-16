@@ -428,7 +428,7 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 @[simp]
 nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ by exact_mod_cast (one_lt_two : 1 < 2)
+  coe_one ▸ coe_two ▸ mod_cast (one_lt_two : 1 < 2)
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 @[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
@@ -954,7 +954,7 @@ theorem coe_max (r p : ℝ≥0) : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : 
 
 theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b = ⊤)
     (h_nnreal : a ≠ ⊤ → b ≠ ⊤ → a.toNNReal ≤ b.toNNReal) : a ≤ b := by
-  by_contra' hlt
+  by_contra! hlt
   lift b to ℝ≥0 using hlt.ne_top
   lift a to ℝ≥0 using mt h coe_ne_top
   refine hlt.not_le ?_
@@ -1442,7 +1442,7 @@ protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) 
 
 -- porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
-  simp only [div_eq_mul_inv, mul_right_comm, ←mul_assoc]
+  simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]
 #align ennreal.mul_comm_div ENNReal.mul_comm_div
 
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
@@ -2195,11 +2195,11 @@ alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 
 @[simp]
 lemma ofReal_lt_nat_cast {p : ℝ} {n : ℕ} (hn : n ≠ 0) : ENNReal.ofReal p < n ↔ p < n := by
-  exact_mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
+  exact mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
 
 @[simp]
 lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
-  exact_mod_cast ofReal_lt_nat_cast one_ne_zero
+  exact mod_cast ofReal_lt_nat_cast one_ne_zero
 
 @[simp]
 lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
@@ -2212,7 +2212,7 @@ lemma nat_cast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofRe
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
-  exact_mod_cast nat_cast_le_ofReal one_ne_zero
+  exact mod_cast nat_cast_le_ofReal one_ne_zero
 
 @[simp]
 lemma ofNat_le_ofReal {n : ℕ} [h : n.AtLeastTwo] {p : ℝ} :

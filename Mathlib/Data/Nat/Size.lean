@@ -32,10 +32,7 @@ theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) 
 end
 
 #align nat.one_shiftl Nat.one_shiftLeft
-
-theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
-
 #align nat.shiftr_eq_div_pow Nat.shiftRight_eq_div_pow
 
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
@@ -118,7 +115,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   by_cases h : bit b n = 0
   · apply this h
   rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul, ← bit0_val]
-  exact bit_lt_bit0 _ (by simpa [shiftRight_eq_div_pow] using IH)
+  exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=

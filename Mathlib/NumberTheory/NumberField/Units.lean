@@ -41,8 +41,6 @@ fundamental system `fundSystem`.
 number field, units
  -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped NumberField
 
 noncomputable section
@@ -56,10 +54,6 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
 #align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
-
-theorem Algebra.coe_norm_int {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) :
-    Algebra.norm ℤ x = Algebra.norm ℚ (x : K) :=
-  (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
 
 end Rat
 
@@ -472,7 +466,7 @@ open dirichletUnitTheorem FiniteDimensional Classical
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
 instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
-  refine discreteTopology_of_open_singleton_zero ?_
+  refine discreteTopology_of_isOpen_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by norm_num)
   · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective _)

@@ -21,7 +21,6 @@ with `1`.
 * Characteristic zero implies that the additive monoid is infinite.
 -/
 
-
 namespace Nat
 
 variable {R : Type*} [AddMonoidWithOne R] [CharZero R]
@@ -98,17 +97,17 @@ section
 
 variable {R : Type*} [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
-theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
+@[simp] theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 #align neg_eq_self_iff neg_eq_self_iff
 
-theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
+@[simp] theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
   eq_neg_iff_add_eq_zero.trans add_self_eq_zero
 #align eq_neg_self_iff eq_neg_self_iff
 
 theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 ∨ a = b := by
   rw [← sub_eq_zero, ← mul_sub, mul_eq_zero, sub_eq_zero] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align nat_mul_inj nat_mul_inj
 
 theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n ≠ 0) : a = b := by
@@ -121,7 +120,7 @@ theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
   simp only [(two_mul a).symm, (two_mul b).symm] at h
   refine' nat_mul_inj' _ two_ne_zero
-  exact_mod_cast h
+  exact mod_cast h
 #align bit0_injective bit0_injective
 
 theorem bit1_injective : Function.Injective (bit1 : R → R) := fun a b h => by

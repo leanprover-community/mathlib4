@@ -488,7 +488,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
     Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
   intro ε hε
-  by_cases ε < ∞; swap
+  by_cases h : ε < ∞; swap
   · rw [not_lt, top_le_iff] at h
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
@@ -876,13 +876,13 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
             (eventually_of_forall fun x hx => _)
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
         _ ≤ snorm (f (ℐ C)) p μ := snorm_indicator_le _
-    specialize this (2 * max M 1 * HPow.hPow δ⁻¹ (1 / p.toReal))
+    specialize this (2 * max M 1 * δ⁻¹ ^ (1 / p.toReal))
     rw [ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
       smul_eq_mul, mul_assoc, NNReal.inv_rpow,
       inv_mul_cancel (NNReal.rpow_pos (NNReal.coe_pos.1 hδpos)).ne.symm, mul_one, ENNReal.coe_mul,
       ← NNReal.inv_rpow] at this
     refine' (lt_of_le_of_lt (le_trans
-      (hM <| ℐ <| 2 * max M 1 * HPow.hPow δ⁻¹ (1 / p.toReal)) (le_max_left (M : ℝ≥0∞) 1))
+      (hM <| ℐ <| 2 * max M 1 * δ⁻¹ ^ (1 / p.toReal)) (le_max_left (M : ℝ≥0∞) 1))
         (lt_of_lt_of_le _ this)).ne rfl
     rw [← ENNReal.coe_one, ← ENNReal.coe_max, ← ENNReal.coe_mul, ENNReal.coe_lt_coe]
     exact lt_two_mul_self (lt_max_of_lt_right one_pos)

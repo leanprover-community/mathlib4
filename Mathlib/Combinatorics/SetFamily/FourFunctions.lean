@@ -116,7 +116,7 @@ lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈
 
 lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert a s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
-  rw [collapse_eq ha, ←hts, if_pos ht]
+  rw [collapse_eq ha, ← hts, if_pos ht]
   split_ifs
   · exact le_add_of_nonneg_left $ hf _
   · rw [zero_add]
@@ -152,14 +152,14 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     · rw [add_zero, add_mul]
       refine' (add_le_add (h ‹_› ‹_›) $ h ‹_› ‹_›).trans _
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
-        (insert_union _ _ _), insert_inter_of_not_mem ‹_›, ←mul_add]
+        (insert_union _ _ _), insert_inter_of_not_mem ‹_›, ← mul_add]
       exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl $ inter_mem_infs ‹_› ‹_›) $
         add_nonneg (h₄ _) $ h₄ _
     · rw [zero_add, add_mul]
       refine' (add_le_add (h ‹_› ‹_›) $ h ‹_› ‹_›).trans _
       rw [collapse_of_mem ‹_› (inter_mem_infs ‹_› ‹_›) (inter_mem_infs ‹_› ‹_›)
         (inter_insert_of_not_mem ‹_›) (insert_inter_distrib _ _ _).symm, union_insert,
-        insert_union_distrib, ←add_mul]
+        insert_union_distrib, ← add_mul]
       exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
         (insert_union_distrib _ _ _).symm $ union_mem_sups ‹_› ‹_›) $ add_nonneg (h₃ _) $ h₃ _
     · rw [add_zero, mul_zero]
@@ -168,7 +168,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     split_ifs
     · refine' (add_le_add (h ‹_› ‹_›) $ h ‹_› ‹_›).trans _
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
-        (union_insert _ _ _), inter_insert_of_not_mem ‹_›, ←mul_add]
+        (union_insert _ _ _), inter_insert_of_not_mem ‹_›, ← mul_add]
       exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl $ inter_mem_infs ‹_› ‹_›) $
         add_nonneg (h₄ _) $ h₄ _
     · rw [mul_zero, add_zero]
@@ -187,8 +187,8 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     · refine' (add_le_add (h ‹_› ‹_›) $ h ‹_› ‹_›).trans _
       rw [collapse_of_mem ‹_› (inter_mem_infs ‹_› ‹_›) (inter_mem_infs ‹_› ‹_›)
         (insert_inter_of_not_mem ‹_›) (insert_inter_distrib _ _ _).symm,
-        insert_inter_of_not_mem ‹_›, ←insert_inter_distrib, insert_union, insert_union_distrib,
-        ←add_mul]
+        insert_inter_of_not_mem ‹_›, ← insert_inter_distrib, insert_union, insert_union_distrib,
+        ← add_mul]
       exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
         (insert_union_distrib _ _ _).symm $ union_mem_sups ‹_› ‹_›) $ add_nonneg (h₃ _) $ h₃ _
     · rw [mul_zero, add_zero]
@@ -210,7 +210,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     _ = ∑ s in u.powerset ∩ 𝒜, f s + ∑ s in u.powerset.image (insert a) ∩ 𝒜, f s := ?_
     _ = ∑ s in u.powerset ∩ 𝒜, f s + ∑ s in ((insert a u).powerset \ u.powerset) ∩ 𝒜, f s := ?_
     _ = ∑ s in 𝒜, f s := ?_
-  · rw [←sum_ite_mem, ←sum_ite_mem, sum_image, ←sum_add_distrib]
+  · rw [← sum_ite_mem, ← sum_ite_mem, sum_image, ← sum_add_distrib]
     · exact sum_congr rfl fun s hs ↦ collapse_eq (not_mem_mono (mem_powerset.1 hs) hu) _ _
     · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ not_mem_mono (mem_powerset.1 hs) hu
   · congr with s
@@ -221,7 +221,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     · rw [insert_erase (erase_ne_self.1 fun hs ↦ ?_)]
       rw [hs] at h
       exact h.2 h.1
-  · rw [←sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left), ←inter_distrib_right,
+  · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left), ← inter_distrib_right,
       union_sdiff_of_subset (powerset_mono.2 $ subset_insert _ _), inter_eq_right.2 h𝒜]
 
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
@@ -278,13 +278,13 @@ lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 �
     (extend g (f₃ ∘ (↑)) 0) (extend g (f₄ ∘ (↑)) 0) (extend_nonneg (fun _ ↦ h₁ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
-  simpa only [←hs', ←ht', ←map_sups, ←map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
+  simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
     using this
   rintro s t
   classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
-    · simp_rw [←sup_eq_union, ←inf_eq_inter, ←map_sup, ←map_inf, hg.extend_apply]
+    · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
     · simpa [extend_apply' _ _ _ ht] using mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)
@@ -330,7 +330,7 @@ lemma fkg (hμ₀ : 0 ≤ μ) (hf₀ : 0 ≤ f) (hg₀ : 0 ≤ g) (hf : Monotone
   refine' four_functions_theorem_univ (μ * f) (μ * g) μ _ (mul_nonneg hμ₀ hf₀) (mul_nonneg hμ₀ hg₀)
     hμ₀ (mul_nonneg hμ₀ $ mul_nonneg hf₀ hg₀) (fun a b ↦ _)
   dsimp
-  rw [mul_mul_mul_comm, ←mul_assoc (μ (a ⊓ b))]
+  rw [mul_mul_mul_comm, ← mul_assoc (μ (a ⊓ b))]
   exact mul_le_mul (hμ _ _) (mul_le_mul (hf le_sup_left) (hg le_sup_right) (hg₀ _) $ hf₀ _)
     (mul_nonneg (hf₀ _) $ hg₀ _) $ mul_nonneg (hμ₀ _) $ hμ₀ _
 
@@ -348,10 +348,10 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
   · rintro s t
     simp_rw [map_eq_image]
     exact image_image₂_distrib fun a b ↦ rfl
-  simpa [←card_compls (_ ⊻ _), ←map_sup, ←map_inf, ←this] using
+  simpa [← card_compls (_ ⊻ _), ← map_sup, ← map_inf, ← this] using
     (s.map ⟨_, liftLatticeHom_injective⟩).le_card_infs_mul_card_sups
       (t.map ⟨_, liftLatticeHom_injective⟩)ᶜˢ
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : s.card ≤ (s \\ s).card :=
-  le_of_pow_le_pow 2 (zero_le _) two_pos $ by simpa [←sq] using s.le_card_diffs_mul_card_diffs s
+  le_of_pow_le_pow 2 (zero_le _) two_pos $ by simpa [← sq] using s.le_card_diffs_mul_card_diffs s

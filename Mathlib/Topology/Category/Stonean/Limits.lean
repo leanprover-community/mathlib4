@@ -329,15 +329,9 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
     apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
     have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
     have := Stonean.createsPullbacksOfOpenEmbedding f this
-    refine @preservesLimitOfReflectsOfPreserves _ _ _ _ _ _ _ _ _ Stonean.toCompHaus
-      compHausToTop inferInstance ?_
-    apply (config := { allowSynthFailures := true }) ReflectsLimitsOfShape.reflectsLimit
-    apply (config := { allowSynthFailures := true }) ReflectsLimitsOfSize.reflectsLimitsOfShape
-    exact reflectsLimitsOfSizeShrink _
+    exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
 instance : FinitaryExtensive Stonean.{u} :=
-  have := fullyFaithfulReflectsLimits Stonean.toCompHaus
-  have := fullyFaithfulReflectsColimits Stonean.toCompHaus
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean

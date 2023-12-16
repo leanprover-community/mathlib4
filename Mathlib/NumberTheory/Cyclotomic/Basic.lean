@@ -161,7 +161,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     intro t ht
     obtain ⟨ζ, hζ⟩ := hprim ht
     rw [mem_singleton_iff, ← PNat.coe_eq_one_iff]
-    exact_mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
+    exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
 -- Porting note: `R := A` was not needed.
     · exact ⟨fun h => h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩

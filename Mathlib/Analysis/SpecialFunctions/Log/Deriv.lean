@@ -77,7 +77,7 @@ theorem deriv_log' : deriv log = Inv.inv :=
 
 theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   suffices : ContDiffOn ℝ ⊤ log {0}ᶜ; exact this.of_le le_top
-  refine' (contDiffOn_top_iff_deriv_of_open isOpen_compl_singleton).2 _
+  refine' (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 _
   simp [differentiableOn_log, contDiffOn_inv]
 #align real.cont_diff_on_log Real.contDiffOn_log
 

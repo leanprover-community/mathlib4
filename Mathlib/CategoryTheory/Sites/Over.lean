@@ -124,22 +124,26 @@ lemma over_forget_coverPreserving (X : C) :
     CoverPreserving (J.over X) J (Over.forget X) where
   cover_preserve hS := hS
 
-lemma over_forget_coverLifting (X : C) :
-    CoverLifting (J.over X) J (Over.forget X) where
-  cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
-
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
-  Compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+  compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
     let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
     exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
 
+instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
+  cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
+
+instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
+  Functor.isContinuous_of_coverPreserving
+    (over_forget_compatiblePreserving J X)
+    (over_forget_coverPreserving J X)
+
 /-- The pullback functor `Sheaf J A ⥤ Sheaf (J.over X) A` -/
 abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
     Sheaf J A ⥤ Sheaf (J.over X) A :=
-  Sites.pullback A (J.over_forget_compatiblePreserving X) (J.over_forget_coverPreserving X)
+  (Over.forget X).sheafPushforwardContinuous _ _ _
 
 end GrothendieckTopology
 

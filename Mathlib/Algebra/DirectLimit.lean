@@ -103,6 +103,9 @@ instance module : Module R (DirectLimit G f) :=
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
+instance unique [IsEmpty ι] : Unique (DirectLimit G f) :=
+  inferInstanceAs <| Unique (Quotient _)
+
 variable (R ι)
 
 /-- The canonical map from a component to the direct limit. -/
@@ -160,11 +163,13 @@ theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
 #align module.direct_limit.lift_of Module.DirectLimit.lift_of
 
-theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →ₗ[R] P) (x) :
+theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →ₗ[R] P) (x) :
     F x =
       lift R ι G f (fun i => F.comp <| of R ι G f i)
-        (fun i j hij x => by rw [LinearMap.comp_apply, of_f]; rfl) x :=
-  DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
+        (fun i j hij x => by rw [LinearMap.comp_apply, of_f]; rfl) x := by
+  cases isEmpty_or_nonempty ι
+  · simp_rw [Subsingleton.elim x 0, _root_.map_zero]
+  · exact DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
 #align module.direct_limit.lift_unique Module.DirectLimit.lift_unique
 
 section Totalize
@@ -294,6 +299,8 @@ instance : AddCommGroup (DirectLimit G f) :=
 instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
+instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →ₗ[ℤ] DirectLimit G f :=
   Module.DirectLimit.of ℤ ι G (fun i j hij => (f i j hij).toIntLinearMap) i
@@ -342,9 +349,11 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   Module.DirectLimit.lift_of _ _ _
 #align add_comm_group.direct_limit.lift_of AddCommGroup.DirectLimit.lift_of
 
-theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x) :
-    F x = lift G f P (fun i => F.comp (of G f i).toAddMonoidHom) (fun i j hij x => by simp) x :=
-  DirectLimit.induction_on x fun i x => by simp
+theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x) :
+    F x = lift G f P (fun i => F.comp (of G f i).toAddMonoidHom) (fun i j hij x => by simp) x := by
+  cases isEmpty_or_nonempty ι
+  · simp_rw [Subsingleton.elim x 0, _root_.map_zero]
+  · exact DirectLimit.induction_on x fun i x => by simp
 #align add_comm_group.direct_limit.lift_unique AddCommGroup.DirectLimit.lift_unique
 
 end DirectLimit
@@ -671,9 +680,14 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _
 #align ring.direct_limit.lift_of Ring.DirectLimit.lift_of
 
-theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x) :
-    F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x :=
-  DirectLimit.induction_on x fun i x => by simp [lift_of]
+theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x) :
+    F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x := by
+  cases isEmpty_or_nonempty ι
+  · apply FunLike.congr_fun
+    apply Ideal.Quotient.ringHom_ext
+    refine FreeCommRing.hom_ext fun ⟨i, _⟩ ↦ ?_
+    exact IsEmpty.elim' inferInstance i
+  · exact DirectLimit.induction_on x fun i x => by simp [lift_of]
 #align ring.direct_limit.lift_unique Ring.DirectLimit.lift_unique
 
 end DirectLimit

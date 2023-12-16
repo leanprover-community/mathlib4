@@ -53,12 +53,20 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " rws:rwRuleSeq g:(location)? : tactic => do
-  evalTactic (← `(tactic| simp%$s (config := { failIfUnchanged := false }) only $g ?))
+elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
+  let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
+    match cfg with
+    | Option.none =>
+      `(config| (config := ({ failIfUnchanged := false } : Lean.Meta.Simp.Config)))
+    | Option.some c => match c with
+      | `(config| (config := $cfg)) =>
+        `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
+      | _ => throwError "malformed cfg"
+  evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e only [←$e:term] $g ?)
+        `(tactic| simp%$e $[$cfg]? only [←$e:term] $g ?)
       else
-        `(tactic| simp%$e only [$e:term] $g ?))
+        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))

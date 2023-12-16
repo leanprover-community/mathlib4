@@ -1833,7 +1833,7 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
       obtain ⟨t, htu, ht, htf⟩ := mem_nhds_iff.mp (Filter.inter_mem hu h_nhds)
       use f.target ∩ f.symm ⁻¹' t
       refine' ⟨IsOpen.mem_nhds _ _, _⟩
-      · exact f.preimage_open_of_open_symm ht
+      · exact f.isOpen_inter_preimage_symm ht
       · exact mem_inter ha (mem_preimage.mpr htf)
       intro x hx
       obtain ⟨hxu, e, he⟩ := htu hx.2
@@ -1895,6 +1895,33 @@ theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ �
     f.toLocalHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm_deriv Homeomorph.contDiff_symm_deriv
 
+namespace LocalHomeomorph
+
+variable (𝕜)
+
+/-- Restrict a local homeomorphism to the subsets of the source and target
+that consist of points `x ∈ f.source`, `y = f x ∈ f.target`
+such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
+
+Note that `n` is a natural number, not `∞`,
+because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
+@[simps! apply symm_apply source target]
+def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
+  haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
+      {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
+    simp [hx, and_comm]
+  H.restr <| isOpen_iff_mem_nhds.2 <| fun x ⟨hxs, hxf, hxf'⟩ ↦
+    inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
+    f.continuousAt hxs hxf'.eventually
+
+lemma contDiffOn_restrContDiff_source (f : LocalHomeomorph E F) (n : ℕ) :
+    ContDiffOn 𝕜 n f (f.restrContDiff 𝕜 n).source := fun _x hx ↦ hx.2.1.contDiffWithinAt
+
+lemma contDiffOn_restrContDiff_target (f : LocalHomeomorph E F) (n : ℕ) :
+    ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n).target := fun _x hx ↦ hx.2.1.contDiffWithinAt
+
+end LocalHomeomorph
+
 end FunctionInverse
 
 section deriv
@@ -1937,11 +1964,11 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (formulated with `deriv`) is `C^n`. -/
-theorem contDiffOn_succ_iff_deriv_of_open {n : ℕ} (hs : IsOpen s₂) :
+theorem contDiffOn_succ_iff_deriv_of_isOpen {n : ℕ} (hs : IsOpen s₂) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 n (deriv f₂) s₂ := by
   rw [contDiffOn_succ_iff_derivWithin hs.uniqueDiffOn]
-  exact Iff.rfl.and (contDiffOn_congr fun _ => derivWithin_of_open hs)
-#align cont_diff_on_succ_iff_deriv_of_open contDiffOn_succ_iff_deriv_of_open
+  exact Iff.rfl.and (contDiffOn_congr fun _ => derivWithin_of_isOpen hs)
+#align cont_diff_on_succ_iff_deriv_of_open contDiffOn_succ_iff_deriv_of_isOpen
 
 /-- A function is `C^∞` on a domain with unique derivatives if and only if it is differentiable
 there, and its derivative (formulated with `derivWithin`) is `C^∞`. -/
@@ -1961,11 +1988,11 @@ theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
 
 /-- A function is `C^∞` on an open domain if and only if it is differentiable
 there, and its derivative (formulated with `deriv`) is `C^∞`. -/
-theorem contDiffOn_top_iff_deriv_of_open (hs : IsOpen s₂) :
+theorem contDiffOn_top_iff_deriv_of_isOpen (hs : IsOpen s₂) :
     ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (deriv f₂) s₂ := by
   rw [contDiffOn_top_iff_derivWithin hs.uniqueDiffOn]
-  exact Iff.rfl.and <| contDiffOn_congr fun _ => derivWithin_of_open hs
-#align cont_diff_on_top_iff_deriv_of_open contDiffOn_top_iff_deriv_of_open
+  exact Iff.rfl.and <| contDiffOn_congr fun _ => derivWithin_of_isOpen hs
+#align cont_diff_on_top_iff_deriv_of_open contDiffOn_top_iff_deriv_of_isOpen
 
 protected theorem ContDiffOn.derivWithin (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (derivWithin f₂ s₂) s₂ := by
@@ -1978,26 +2005,26 @@ protected theorem ContDiffOn.derivWithin (hf : ContDiffOn 𝕜 n f₂ s₂) (hs 
     exact ((contDiffOn_succ_iff_derivWithin hs).1 (hf.of_le hmn)).2
 #align cont_diff_on.deriv_within ContDiffOn.derivWithin
 
-theorem ContDiffOn.deriv_of_open (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂) (hmn : m + 1 ≤ n) :
+theorem ContDiffOn.deriv_of_isOpen (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (deriv f₂) s₂ :=
-  (hf.derivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (derivWithin_of_open hs hx).symm
-#align cont_diff_on.deriv_of_open ContDiffOn.deriv_of_open
+  (hf.derivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (derivWithin_of_isOpen hs hx).symm
+#align cont_diff_on.deriv_of_open ContDiffOn.deriv_of_isOpen
 
 theorem ContDiffOn.continuousOn_derivWithin (h : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
     (hn : 1 ≤ n) : ContinuousOn (derivWithin f₂ s₂) s₂ :=
   ((contDiffOn_succ_iff_derivWithin hs).1 (h.of_le hn)).2.continuousOn
 #align cont_diff_on.continuous_on_deriv_within ContDiffOn.continuousOn_derivWithin
 
-theorem ContDiffOn.continuousOn_deriv_of_open (h : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂)
+theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂)
     (hn : 1 ≤ n) : ContinuousOn (deriv f₂) s₂ :=
-  ((contDiffOn_succ_iff_deriv_of_open hs).1 (h.of_le hn)).2.continuousOn
-#align cont_diff_on.continuous_on_deriv_of_open ContDiffOn.continuousOn_deriv_of_open
+  ((contDiffOn_succ_iff_deriv_of_isOpen hs).1 (h.of_le hn)).2.continuousOn
+#align cont_diff_on.continuous_on_deriv_of_open ContDiffOn.continuousOn_deriv_of_isOpen
 
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
   and its derivative (formulated in terms of `deriv`) is `C^n`. -/
 theorem contDiff_succ_iff_deriv {n : ℕ} :
     ContDiff 𝕜 (n + 1 : ℕ) f₂ ↔ Differentiable 𝕜 f₂ ∧ ContDiff 𝕜 n (deriv f₂) := by
-  simp only [← contDiffOn_univ, contDiffOn_succ_iff_deriv_of_open, isOpen_univ,
+  simp only [← contDiffOn_univ, contDiffOn_succ_iff_deriv_of_isOpen, isOpen_univ,
     differentiableOn_univ]
 #align cont_diff_succ_iff_deriv contDiff_succ_iff_deriv
 

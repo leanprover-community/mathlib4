@@ -59,7 +59,7 @@ theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x * x') (y * y') := by
   unfold SemiconjBy
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
-  rw [←mul_assoc, h.eq, mul_assoc, h'.eq, ←mul_assoc]
+  rw [← mul_assoc, h.eq, mul_assoc, h'.eq, ← mul_assoc]
 #align semiconj_by.mul_right SemiconjBy.mul_right
 #align add_semiconj_by.add_right AddSemiconjBy.add_right
 
@@ -69,7 +69,7 @@ semiconjugates `x` to `z`. -/
 semiconjugates `x` to `z`."]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
   unfold SemiconjBy
-  rw [mul_assoc, hb.eq, ←mul_assoc, ha.eq, mul_assoc]
+  rw [mul_assoc, hb.eq, ← mul_assoc, ha.eq, mul_assoc]
 #align semiconj_by.mul_left SemiconjBy.mul_left
 #align add_semiconj_by.add_left AddSemiconjBy.add_left
 

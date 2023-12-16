@@ -147,7 +147,7 @@ theorem lt_of_floor_lt (h : ⌊a⌋₊ < n) : a < n :=
   lt_of_not_le fun h' => (le_floor h').not_lt h
 #align nat.lt_of_floor_lt Nat.lt_of_floor_lt
 
-theorem lt_one_of_floor_lt_one (h : ⌊a⌋₊ < 1) : a < 1 := by exact_mod_cast lt_of_floor_lt h
+theorem lt_one_of_floor_lt_one (h : ⌊a⌋₊ < 1) : a < 1 := mod_cast lt_of_floor_lt h
 #align nat.lt_one_of_floor_lt_one Nat.lt_one_of_floor_lt_one
 
 theorem floor_le (ha : 0 ≤ a) : (⌊a⌋₊ : α) ≤ a :=
@@ -202,8 +202,8 @@ theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a := by
 #align nat.le_floor_iff' Nat.le_floor_iff'
 
 @[simp]
-theorem one_le_floor_iff (x : α) : 1 ≤ ⌊x⌋₊ ↔ 1 ≤ x := by
-  exact_mod_cast @le_floor_iff' α _ _ x 1 one_ne_zero
+theorem one_le_floor_iff (x : α) : 1 ≤ ⌊x⌋₊ ↔ 1 ≤ x :=
+  mod_cast @le_floor_iff' α _ _ x 1 one_ne_zero
 #align nat.one_le_floor_iff Nat.one_le_floor_iff
 
 theorem floor_lt' (hn : n ≠ 0) : ⌊a⌋₊ < n ↔ a < n :=
@@ -253,7 +253,7 @@ theorem floor_eq_on_Ico (n : ℕ) : ∀ a ∈ (Set.Ico n (n + 1) : Set α), ⌊a
 
 theorem floor_eq_on_Ico' (n : ℕ) :
     ∀ a ∈ (Set.Ico n (n + 1) : Set α), (⌊a⌋₊ : α) = n :=
-  fun x hx => by exact_mod_cast floor_eq_on_Ico n x hx
+  fun x hx => mod_cast floor_eq_on_Ico n x hx
 #align nat.floor_eq_on_Ico' Nat.floor_eq_on_Ico'
 
 @[simp]
@@ -453,7 +453,7 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
 
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   -- Porting note: broken `convert floor_add_nat ha 1`
-  rw [←cast_one, floor_add_nat ha 1]
+  rw [← cast_one, floor_add_nat ha 1]
 #align nat.floor_add_one Nat.floor_add_one
 
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
@@ -473,8 +473,8 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
 #align nat.floor_sub_nat Nat.floor_sub_nat
 
 @[simp]
-theorem floor_sub_one [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 := by
-  exact_mod_cast floor_sub_nat a 1
+theorem floor_sub_one [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 :=
+  mod_cast floor_sub_nat a 1
 
 @[simp]
 theorem floor_sub_ofNat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : ℕ) [n.AtLeastTwo] :
@@ -810,7 +810,7 @@ theorem floor_sub_int (a : α) (z : ℤ) : ⌊a - z⌋ = ⌊a⌋ - z :=
 theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by rw [← Int.cast_ofNat, floor_sub_int]
 #align int.floor_sub_nat Int.floor_sub_nat
 
-@[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := by exact_mod_cast floor_sub_nat a 1
+@[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_nat a 1
 
 @[simp]
 theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
@@ -881,7 +881,7 @@ theorem fract_add_nat (a : α) (m : ℕ) : fract (a + m) = fract a := by
 #align int.fract_add_nat Int.fract_add_nat
 
 @[simp]
-theorem fract_add_one (a : α) : fract (a + 1) = fract a := by exact_mod_cast fract_add_nat a 1
+theorem fract_add_one (a : α) : fract (a + 1) = fract a := mod_cast fract_add_nat a 1
 
 @[simp]
 theorem fract_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : fract (a + OfNat.ofNat n) = fract a :=
@@ -895,7 +895,7 @@ theorem fract_int_add (m : ℤ) (a : α) : fract (↑m + a) = fract a := by rw [
 theorem fract_nat_add (n : ℕ) (a : α) : fract (↑n + a) = fract a := by rw [add_comm, fract_add_nat]
 
 @[simp]
-theorem fract_one_add (a : α) : fract (1 + a) = fract a := by exact_mod_cast fract_nat_add 1 a
+theorem fract_one_add (a : α) : fract (1 + a) = fract a := mod_cast fract_nat_add 1 a
 
 @[simp]
 theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) : fract (OfNat.ofNat n + a) = fract a :=
@@ -914,7 +914,7 @@ theorem fract_sub_nat (a : α) (n : ℕ) : fract (a - n) = fract a := by
 #align int.fract_sub_nat Int.fract_sub_nat
 
 @[simp]
-theorem fract_sub_one (a : α) : fract (a - 1) = fract a := by exact_mod_cast fract_sub_nat a 1
+theorem fract_sub_one (a : α) : fract (a - 1) = fract a := mod_cast fract_sub_nat a 1
 
 @[simp]
 theorem fract_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : fract (a - OfNat.ofNat n) = fract a :=
@@ -930,7 +930,7 @@ theorem fract_add_le (a b : α) : fract (a + b) ≤ fract a + fract b := by
 
 theorem fract_add_fract_le (a b : α) : fract a + fract b ≤ fract (a + b) + 1 := by
   rw [fract, fract, fract, sub_add_sub_comm, sub_add, sub_le_sub_iff_left]
-  exact_mod_cast le_floor_add_floor a b
+  exact mod_cast le_floor_add_floor a b
 #align int.fract_add_fract_le Int.fract_add_fract_le
 
 @[simp]
@@ -1235,7 +1235,7 @@ theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [�
 @[simp]
 theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
   -- Porting note: broken `convert ceil_add_int a (1 : ℤ)`
-  rw [←ceil_add_int a (1 : ℤ), cast_one]
+  rw [← ceil_add_int a (1 : ℤ), cast_one]
 #align int.ceil_add_one Int.ceil_add_one
 
 @[simp]
@@ -1291,7 +1291,7 @@ theorem ceil_zero : ⌈(0 : α)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
 theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_intCast]
 #align int.ceil_one Int.ceil_one
 
-theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by exact_mod_cast ha.trans (le_ceil a)
+theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 #align int.ceil_nonneg Int.ceil_nonneg
 
 theorem ceil_eq_iff : ⌈a⌉ = z ↔ ↑z - 1 < a ∧ a ≤ z := by
@@ -1307,8 +1307,8 @@ theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z
   ceil_eq_iff.mpr ⟨h₀, h₁⟩
 #align int.ceil_eq_on_Ioc Int.ceil_eq_on_Ioc
 
-theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, (⌈a⌉ : α) = z := fun a ha => by
-  exact_mod_cast ceil_eq_on_Ioc z a ha
+theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, (⌈a⌉ : α) = z := fun a ha =>
+  mod_cast ceil_eq_on_Ioc z a ha
 #align int.ceil_eq_on_Ioc' Int.ceil_eq_on_Ioc'
 
 theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
@@ -1453,7 +1453,7 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
   -- Porting note: broken `convert round_add_int a 1`
-  rw [←round_add_int a 1, cast_one]
+  rw [← round_add_int a 1, cast_one]
 #align round_add_one round_add_one
 
 @[simp]
@@ -1466,12 +1466,12 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
   -- Porting note: broken `convert round_sub_int a 1`
-  rw [←round_sub_int a 1, cast_one]
+  rw [← round_sub_int a 1, cast_one]
 #align round_sub_one round_sub_one
 
 @[simp]
-theorem round_add_nat (x : α) (y : ℕ) : round (x + y) = round x + y := by
-  exact_mod_cast round_add_int x y
+theorem round_add_nat (x : α) (y : ℕ) : round (x + y) = round x + y :=
+  mod_cast round_add_int x y
 #align round_add_nat round_add_nat
 
 @[simp]
@@ -1480,8 +1480,8 @@ theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
   round_add_nat x n
 
 @[simp]
-theorem round_sub_nat (x : α) (y : ℕ) : round (x - y) = round x - y := by
-  exact_mod_cast round_sub_int x y
+theorem round_sub_nat (x : α) (y : ℕ) : round (x - y) = round x - y :=
+  mod_cast round_sub_int x y
 #align round_sub_nat round_sub_nat
 
 @[simp]

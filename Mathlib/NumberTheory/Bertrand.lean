@@ -124,17 +124,13 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
-  have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
-  have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
-  refine' _root_.trans (mul_le_mul _ _ _ _)
-      (Bertrand.real_main_inequality (by exact_mod_cast n_large))
-  · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
-    refine' Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast n2_pos) _
-    exact_mod_cast Real.nat_sqrt_le_real_sqrt
-  · exact Real.rpow_le_rpow_of_exponent_le (by norm_num1) (cast_div_le.trans (by norm_cast))
-  · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
-  · refine' mul_nonneg (Nat.cast_nonneg _) _
-    exact Real.rpow_nonneg_of_nonneg (mul_nonneg zero_le_two (Nat.cast_nonneg _)) _
+  refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  gcongr
+  · have n2_pos : 0 < 2 * n := by positivity
+    exact mod_cast n2_pos
+  · exact_mod_cast Real.nat_sqrt_le_real_sqrt
+  · norm_num1
+  · exact cast_div_le.trans (by norm_cast)
 #align bertrand_main_inequality bertrand_main_inequality
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
@@ -220,7 +216,7 @@ for each number ≤ n.
 theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
-  by_cases p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
+  by_cases h : p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
   exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
 #align nat.exists_prime_lt_and_le_two_mul_succ Nat.exists_prime_lt_and_le_two_mul_succ
 
