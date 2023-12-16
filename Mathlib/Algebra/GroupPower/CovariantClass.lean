@@ -56,20 +56,20 @@ theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
 #align pow_le_one' pow_le_one'
 #align nsmul_nonpos nsmul_nonpos
 
-@[to_additive nsmul_le_nsmul]
-theorem pow_le_pow' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
+@[to_additive nsmul_le_nsmul_left]
+theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   let ⟨k, hk⟩ := Nat.le.dest h
   calc
     a ^ n ≤ a ^ n * a ^ k := le_mul_of_one_le_right' (one_le_pow_of_one_le' ha _)
     _ = a ^ m := by rw [← hk, pow_add]
-#align pow_le_pow' pow_le_pow'
-#align nsmul_le_nsmul nsmul_le_nsmul
+#align pow_le_pow' pow_le_pow_right'
+#align nsmul_le_nsmul nsmul_le_nsmul_left
 
-@[to_additive nsmul_le_nsmul_of_nonpos]
-theorem pow_le_pow_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
-  @pow_le_pow' Mᵒᵈ _ _ _ _ _ _ ha h
-#align pow_le_pow_of_le_one' pow_le_pow_of_le_one'
-#align nsmul_le_nsmul_of_nonpos nsmul_le_nsmul_of_nonpos
+@[to_additive nsmul_le_nsmul_left_of_nonpos]
+theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
+  pow_le_pow_right' (M := Mᵒᵈ) ha h
+#align pow_le_pow_of_le_one' pow_le_pow_right_of_le_one'
+#align nsmul_le_nsmul_of_nonpos nsmul_le_nsmul_left_of_nonpos
 
 @[to_additive nsmul_pos]
 theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k := by
@@ -256,17 +256,17 @@ theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 :=
 
 variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
 
-@[to_additive nsmul_le_nsmul_iff]
-theorem pow_le_pow_iff' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
+@[to_additive nsmul_le_nsmul_iff_left]
+theorem pow_le_pow_iff_right' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
   (pow_right_strictMono' ha).le_iff_le
-#align pow_le_pow_iff' pow_le_pow_iff'
-#align nsmul_le_nsmul_iff nsmul_le_nsmul_iff
+#align pow_le_pow_iff' pow_le_pow_iff_right'
+#align nsmul_le_nsmul_iff nsmul_le_nsmul_iff_left
 
-@[to_additive nsmul_lt_nsmul_iff]
-theorem pow_lt_pow_iff' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
+@[to_additive nsmul_lt_nsmul_iff_left]
+theorem pow_lt_pow_iff_right' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   (pow_right_strictMono' ha).lt_iff_lt
-#align pow_lt_pow_iff' pow_lt_pow_iff'
-#align nsmul_lt_nsmul_iff nsmul_lt_nsmul_iff
+#align pow_lt_pow_iff' pow_lt_pow_iff_right'
+#align nsmul_lt_nsmul_iff nsmul_lt_nsmul_iff_left
 
 end CovariantLE
 
@@ -274,11 +274,11 @@ section CovariantLESwap
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
-@[to_additive lt_of_nsmul_lt_nsmul]
-theorem lt_of_pow_lt_pow' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
+@[to_additive lt_of_nsmul_lt_nsmul_right]
+theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
   (pow_mono_right _).reflect_lt
-#align lt_of_pow_lt_pow' lt_of_pow_lt_pow'
-#align lt_of_nsmul_lt_nsmul lt_of_nsmul_lt_nsmul
+#align lt_of_pow_lt_pow' lt_of_pow_lt_pow_left'
+#align lt_of_nsmul_lt_nsmul lt_of_nsmul_lt_nsmul_right
 
 @[to_additive min_lt_of_add_lt_two_nsmul]
 theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by
@@ -298,11 +298,11 @@ section CovariantLTSwap
 
 variable [CovariantClass M M (· * ·) (· < ·)] [CovariantClass M M (swap (· * ·)) (· < ·)]
 
-@[to_additive le_of_nsmul_le_nsmul]
-theorem le_of_pow_le_pow' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
+@[to_additive le_of_nsmul_le_nsmul_right']
+theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
   (pow_left_strictMono hn).le_iff_le.1
-#align le_of_pow_le_pow' le_of_pow_le_pow'
-#align le_of_nsmul_le_nsmul le_of_nsmul_le_nsmul
+#align le_of_pow_le_pow' le_of_pow_le_pow_left'
+#align le_of_nsmul_le_nsmul le_of_nsmul_le_nsmul_right'
 
 @[to_additive min_le_of_add_le_two_nsmul]
 theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by

@@ -94,11 +94,11 @@ def sMod (p : ℕ) : ℕ → ℤ
   | i + 1 => (sMod p i ^ 2 - 2) % (2 ^ p - 1)
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
-theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
+theorem mersenne_int_pos {p : ℕ} (hp : p ≠ 0) : (0 : ℤ) < 2 ^ p - 1 :=
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp.ne'
 
-theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
-  (mersenne_int_pos w).ne'
+theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 :=
+  (mersenne_int_pos hp).ne'
 #align lucas_lehmer.mersenne_int_ne_zero LucasLehmer.mersenne_int_ne_zero
 
 theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
@@ -111,10 +111,10 @@ theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
 theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [sMod]
 #align lucas_lehmer.s_mod_mod LucasLehmer.sMod_mod
 
-theorem sMod_lt (p : ℕ) (w : 0 < p) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
+theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p w)).trans_eq ?_
-  exact abs_of_nonneg (mersenne_int_pos w).le
+  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  exact abs_of_nonneg (mersenne_int_pos hp).le
 #align lucas_lehmer.s_mod_lt LucasLehmer.sMod_lt
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
