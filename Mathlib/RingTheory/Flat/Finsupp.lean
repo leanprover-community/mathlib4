@@ -31,21 +31,16 @@ def TensorProduct.rid_DirectSum (ι : Type*) [DecidableEq ι] :
   TensorProduct.directSumRight R N (fun _ : ι => R) ≪≫ₗ
     DFinsupp.mapRange.linearEquiv (fun _ : ι => TensorProduct.rid R N)
 
-open DirectSum in
-/-- Applying the linear equivalence `rid_Finprod` to a simple element `x ⊗ r` of `N ⊗ Rⁿ`. -/
+open DirectSum LinearMap in
+/-- Applying the linear equivalence `rid_DirectSum` to a simple element `x ⊗ r` of `N ⊗ Rⁿ`. -/
 theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [DecidableEq ι]
     (x : N) (r : ⨁ _ : ι, R) (i : ι) :
       rid_DirectSum R N ι (x ⊗ₜ[R] r) i = r i • x := by
   -- It suffices to show the equality holds when `r` is a Kronecker delta.
   -- To show this we recast as an equality of linear maps ...
-  rewrite [show r i • x =
-        DFinsupp.mapRange.linearMap (fun _ => LinearMap.flip (LinearMap.lsmul R N) x) r i by
-      erw [DFinsupp.mapRange.linearMap_apply]
-      rewrite [DFinsupp.mapRange_def, DFinsupp.mk_apply]
-      split_ifs with h
-      . rw [LinearMap.flip_apply, LinearMap.lsmul_apply, Subtype.coe_mk]
-      . rw [DFinsupp.not_mem_support_iff.mp h, zero_smul],
-    ← mk_apply, ← LinearEquiv.coe_coe, ← LinearMap.comp_apply]
+  have h : r i • x = DFinsupp.mapRange.linearMap (fun _ => flip (lsmul R N) x) r i := by
+    rw [DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_apply, flip_apply, lsmul_apply]
+  rw [h, ← mk_apply, ← LinearEquiv.coe_coe, ← LinearMap.comp_apply]
   congr 2
   -- ... and apply the default extensionality theorems (explicit here for clarity).
   refine DirectSum.linearMap_ext R fun i : ι => LinearMap.ext_ring ?_
@@ -53,7 +48,7 @@ theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [Decidable
     LinearEquiv.coe_coe, rid_DirectSum_apply, mk_apply, directSumRight_tmul_lof]
   erw [DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange.linearMap_apply]
   rw [← single_eq_lof, ← single_eq_lof, DFinsupp.mapRange_single, DFinsupp.mapRange_single,
-    LinearEquiv.coe_coe, rid_tmul, LinearMap.flip_apply, LinearMap.lsmul_apply]
+    LinearEquiv.coe_coe, rid_tmul, flip_apply, lsmul_apply]
 
 open Module.Free DirectSum in
 /-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
