@@ -220,13 +220,8 @@ theorem degree_span' {s : Set R[X]} (s_fin : s.Finite) (hs : s.Nonempty) :
 theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLE R n := by
   by_cases s_emp : s.Nonempty
-  · by_contra!
-    rcases degree_span' s_fin s_emp with ⟨p', _, hp'max⟩
-    rcases SetLike.not_le_iff_exists.mp (this (natDegree p' + 1)) with ⟨p, hp, hp2⟩
-    apply hp2
-    rw [mem_degreeLE, Nat.cast_add, Nat.cast_one, ← Nat.cast_succ]
-    refine le_trans (le_trans (hp'max p hp) degree_le_natDegree) ?_
-    exact Nat.cast_le.mpr (Nat.le_succ (natDegree p'))
+  · rcases degree_span' s_fin s_emp with ⟨p', _, hp'max⟩
+    exact ⟨natDegree p', fun p hp => mem_degreeLE.mpr ((hp'max _ hp).trans degree_le_natDegree)⟩
   · rw [Set.not_nonempty_iff_eq_empty] at s_emp
     rw [s_emp, Submodule.span_empty]
     exact ⟨0, bot_le⟩
@@ -234,8 +229,21 @@ theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
 /-- The span of every finite set of polynomials is contained in a `degreeLT n` for some `n`. -/
 theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLT R n := by
-  rcases span_of_finite_le_degreeLE s_fin with ⟨n,_⟩
-  exact ⟨n+1, by rwa [degreeLT_eq_degreeLE]⟩
+  rcases span_of_finite_le_degreeLE s_fin with ⟨n, _⟩
+  exact ⟨n + 1, by rwa [degreeLT_eq_degreeLE]⟩
+
+/-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
+a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
+theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
+  rw [Module.finite_def, Submodule.fg_def]
+  push_neg
+  intro s hs contra
+  rcases span_of_finite_le_degreeLE hs with ⟨n,hn⟩
+  have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
+    rw [contra] at hn
+    exact hn Submodule.mem_top
+  rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  exact one_ne_zero this
 
 /-- The finset of nonzero coefficients of a polynomial. -/
 def frange (p : R[X]) : Finset R :=
