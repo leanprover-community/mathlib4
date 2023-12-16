@@ -208,7 +208,7 @@ theorem eraseLead_natDegree_lt (f0 : 2 ≤ f.support.card) : (eraseLead f).natDe
       natDegree_mem_support_of_nonzero <| eraseLead_ne_zero f0
 #align polynomial.erase_lead_nat_degree_lt Polynomial.eraseLead_natDegree_lt
 
-theorem natDegree_pos_of_eraseLead_nz (h : f.eraseLead ≠ 0) : 0 < f.natDegree := by
+theorem natDegree_pos_of_eraseLead_ne_zero (h : f.eraseLead ≠ 0) : 0 < f.natDegree := by
   by_contra h₂
   rw [eq_C_of_natDegree_eq_zero (Nat.eq_zero_of_not_pos h₂)] at h
   simp at h
@@ -231,7 +231,7 @@ theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDeg
 
 theorem eraseLead_natDegree_of_nextCoeff (h : f.nextCoeff ≠ 0) :
     f.natDegree = f.eraseLead.natDegree + 1 := by
-  have hpos := natDegree_pos_of_nz_nextCoeff h
+  have hpos := natDegree_pos_of_nextCoeff_ne_zero h
   suffices f.natDegree - 1 ≤ f.eraseLead.natDegree by
     have := (add_le_add_iff_right 1).mpr this
     rw [Nat.sub_add_cancel hpos] at this
@@ -244,13 +244,13 @@ theorem eraseLead_natDegree_of_nextCoeff (h : f.nextCoeff ≠ 0) :
     apply Eq.symm
     apply eraseLead_coeff_of_ne
     exact Nat.pred_ne_self (Nat.ne_zero_iff_zero_lt.mpr hpos)
-  rw [nextCoeff, if_neg (natDegree_pos_of_nz_nextCoeff h).ne.symm, this] at h
+  rw [nextCoeff, if_neg (natDegree_pos_of_nextCoeff_ne_zero h).ne.symm, this] at h
   apply le_natDegree_of_ne_zero h
 
-theorem eraseLead_natDegree_of_zero_nextCoeff (h : f.nextCoeff = 0) :
+theorem eraseLead_natDegree_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
     f.eraseLead.natDegree ≤ f.natDegree - 2  := by
   by_cases hepz : f.eraseLead = 0; case pos => simp_all
-  have hdp : f.natDegree ≠ 0 := (natDegree_pos_of_eraseLead_nz hepz).ne.symm
+  have hdp : f.natDegree ≠ 0 := (natDegree_pos_of_eraseLead_ne_zero hepz).ne.symm
   suffices f.natDegree - 1 ≠ f.eraseLead.natDegree by
     exact Nat.le_pred_of_lt (lt_of_le_of_ne (eraseLead_natDegree_le f) this.symm)
   by_contra h₂
@@ -285,13 +285,13 @@ theorem leadingCoeff_eraseLead_eq_nextCoeff (h : f.nextCoeff ≠ 0) :
     f.nextCoeff = f.eraseLead.leadingCoeff := by
   have hd : f.natDegree = f.eraseLead.natDegree + 1 := eraseLead_natDegree_of_nextCoeff h
   rw [leadingCoeff, nextCoeff]
-  simp only [coeff_natDegree, if_neg (natDegree_pos_of_nz_nextCoeff h).ne]
+  simp only [coeff_natDegree, if_neg (natDegree_pos_of_nextCoeff_ne_zero h).ne]
   rw [leadingCoeff, eraseLead_natDegree_of_nextCoeff h]
   apply Eq.symm
   apply Polynomial.eraseLead_coeff_of_ne
   linarith
 
-theorem ne_zero_eraseLead_of_nz_nextCoeff (h : f.nextCoeff ≠ 0) : f.eraseLead ≠ 0 :=
+theorem eraseLead_ne_zero_of_nextCoeff_ne_zero (h : f.nextCoeff ≠ 0) : f.eraseLead ≠ 0 :=
   leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h ▸ h)
 
 end EraseLead
