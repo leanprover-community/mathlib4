@@ -95,6 +95,18 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
+lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
+  ⟨isHermitian_one, fun x => by
+    rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _; ⟩
+
+lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) : PosSemidef (M ^ k) :=
+  match k with
+  | 0 => .one
+  | 1 => by simpa using hM
+  | (k + 2) => by
+    rw [pow_succ', pow_succ]
+    simpa only [hM.isHermitian.eq] using (pow hM k).mul_mul_conjTranspose_same M
+
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
@@ -203,8 +215,12 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   exact hv <| Matrix.dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
     (IsROrC.ofReal_ne_zero.mpr ht) aux
 
-lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt :=
-  hA.eq_of_sq_eq_sq hB.posSemidef_sqrt (hB.sq_sqrt.symm ▸ hAB)
+lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
+  (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
+
+lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt := by
+  subst B
+  rw [hA.sqrt_sq]
 
 end sqrt
 
