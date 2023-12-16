@@ -76,8 +76,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     {m : Type*} [Fintype m] (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
   constructor
-  · rw [IsHermitian, conjTranspose_mul, conjTranspose_mul, conjTranspose_conjTranspose,
-      Matrix.mul_assoc, hA.1]
+  · exact isHermitian_conjTranspose_mul_mul B hA.1
   · intro x
     simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (mulVec B x)
 
@@ -95,17 +94,20 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
-lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
-  ⟨isHermitian_one, fun x => by
-    rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _; ⟩
+protected lemma zero [DecidableEq n] : PosSemidef (0 : Matrix n n R) :=
+  ⟨isHermitian_zero, by simp⟩
 
-lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) : PosSemidef (M ^ k) :=
+protected lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
+  ⟨isHermitian_one, fun x => by
+    rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _⟩
+
+protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) : PosSemidef (M ^ k) :=
   match k with
   | 0 => .one
   | 1 => by simpa using hM
   | (k + 2) => by
     rw [pow_succ', pow_succ]
-    simpa only [hM.isHermitian.eq] using (pow hM k).mul_mul_conjTranspose_same M
+    simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
