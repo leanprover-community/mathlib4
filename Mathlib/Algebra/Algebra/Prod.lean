@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Equiv
 
 #align_import algebra.algebra.prod from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -108,3 +109,19 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C)
 #align alg_hom.prod_equiv AlgHom.prodEquiv
 
 end AlgHom
+
+section Unique
+
+/-- Multiplying by the trivial algebra from the left does not change the structure.-/
+def AlgebraEquiv.uniqueProd [Unique B] :
+    (B × A) ≃ₐ[R] A := by
+  refine AlgEquiv.ofLinearEquiv (AddEquiv.uniqueProd.toLinearEquiv ?_) ?_ ?_ <;>
+  simp [AddEquiv.uniqueProd]
+
+/-- Multiplying by the trivial algebra from the right does not change the structure.-/
+def AlgebraEquiv.prodUnique [Unique B] :
+    (A × B) ≃ₐ[R] A := by
+  refine AlgEquiv.ofLinearEquiv (AddEquiv.prodUnique.toLinearEquiv ?_) ?_ ?_ <;>
+  simp [AddEquiv.prodUnique]
+
+end Unique
