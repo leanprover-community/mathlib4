@@ -672,7 +672,7 @@ lemma exists_subgroup_le_card_pow_prime_of_le_card {m p : ℕ} (hp : p.Prime) (h
   let e : H' ≃* H'.map H.subtype := H'.equivMapOfInjective (Subgroup.subtype H) H.subtype_injective
   exact Nat.card_congr e.symm.toEquiv
 
-lemma exists_subgroup_subset_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {H : Subgroup G}
+lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {H : Subgroup G}
     (hk : k ≤ Nat.card H) (hk₀ : k ≠ 0) : ∃ H' ≤ H, Nat.card H' ≤ k ∧ k < p * Nat.card H' := by
   obtain ⟨m, hmk, hkm⟩ : ∃ s, p ^ s ≤ k ∧ k < p ^ (s + 1) :=
     exists_nat_pow_near (Nat.one_le_iff_ne_zero.2 hk₀) hp.one_lt
