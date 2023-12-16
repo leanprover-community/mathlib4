@@ -184,7 +184,7 @@ theorem log_pos (hx : 1 < x) : 0 < log x :=
 #align real.log_pos Real.log_pos
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have : 1 < -x := by linarith
   exact log_pos this
 
@@ -198,7 +198,7 @@ theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
 #align real.log_neg Real.log_neg
 
 theorem log_neg_of_lt_zero (h0 : x < 0) (h1 : -1 < x) : log x < 0 := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have h0' : 0 < -x := by linarith
   have h1' : -x < 1 := by linarith
   exact log_neg h0' h1'
@@ -231,7 +231,7 @@ theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
     exact log_nonneg this
 
 theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
-  rw [←log_neg_eq_log, neg_neg]
+  rw [← log_neg_eq_log, neg_neg]
   exact log_nat_cast_nonneg _
 
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
@@ -243,8 +243,8 @@ theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact mod_cast hn
-          rw [←log_neg_eq_log]
+          have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
+          rw [← log_neg_eq_log]
           exact log_nonneg this
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
@@ -346,6 +346,9 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
+
+lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
@@ -508,21 +511,21 @@ lemma log_pos_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n =
 lemma log_pos_of_isRat :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
 lemma log_pos_of_isRat_neg :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
 lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : 0 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
@@ -530,7 +533,7 @@ lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
     → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : -1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg_of_lt_zero h₁' h₂'
@@ -554,7 +557,7 @@ def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
 def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  match ←NormNum.derive a with
+  match ← NormNum.derive a with
   | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
     assumeInstancesCommute
     have p : Q(NormNum.IsNat $a $lit) := p

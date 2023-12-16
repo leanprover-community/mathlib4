@@ -115,9 +115,7 @@ namespace FDerivMeasurableAux
 at scale `r` by the linear map `L`, up to an error `ε`. We tweak the definition to make sure that
 this is an open set.-/
 def A (f : E → F) (L : E →L[𝕜] F) (r ε : ℝ) : Set E :=
-  { x |
-    ∃ r' ∈ Ioc (r / 2) r,
-      ∀ (y) (_ : y ∈ ball x r') (z) (_ : z ∈ ball x r'), ‖f z - f y - L (z - y)‖ < ε * r }
+  { x | ∃ r' ∈ Ioc (r / 2) r, ∀ y ∈ ball x r', ∀ z ∈ ball x r', ‖f z - f y - L (z - y)‖ < ε * r }
 #align fderiv_measurable_aux.A FDerivMeasurableAux.A
 
 /-- The set `B f K r s ε` is the set of points `x` around which there exists a continuous linear map
@@ -386,12 +384,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete {K : Set (E →L[𝕜] F
   -- simp [differentiable_set_eq_D K hK, D, isOpen_B.measurableSet, MeasurableSet.iInter,
   --   MeasurableSet.iUnion]
   simp only [D, differentiable_set_eq_D K hK]
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iUnion fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   exact isOpen_B.measurableSet
 #align measurable_set_of_differentiable_at_of_is_complete measurableSet_of_differentiableAt_of_isComplete
 
@@ -753,12 +746,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici_of_isComplete {K : Set F} (h
   -- simp [differentiable_set_eq_d K hK, D, measurableSet_b, MeasurableSet.iInter,
   --   MeasurableSet.iUnion]
   simp only [differentiable_set_eq_D K hK, D]
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iUnion fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
-  refine MeasurableSet.iInter fun _ => ?_
+  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
   exact measurableSet_B
 #align measurable_set_of_differentiable_within_at_Ici_of_is_complete measurableSet_of_differentiableWithinAt_Ici_of_isComplete
 

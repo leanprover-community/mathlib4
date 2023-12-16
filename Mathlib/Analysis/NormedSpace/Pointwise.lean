@@ -117,7 +117,7 @@ theorem set_smul_sphere_zero {s : Set 𝕜} (hs : 0 ∉ s) (r : ℝ) :
     _ = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) := by ext; simp [eq_comm]
 
 /-- Image of a bounded set in a normed space under scalar multiplication by a constant is
-bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
+bounded. See also `Bornology.IsBounded.smul` for a similar lemma about an isometric action. -/
 theorem Bornology.IsBounded.smul₀ {s : Set E} (hs : IsBounded s) (c : 𝕜) : IsBounded (c • s) :=
   (lipschitzWith_smul c).isBounded_image hs
 #align metric.bounded.smul Bornology.IsBounded.smul₀

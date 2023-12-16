@@ -26,7 +26,7 @@ https://en.wikipedia.org/wiki/Moore_plane#Proof_that_the_Moore_plane_is_not_norm
 theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
     [DiscreteTopology s] : #s < 𝔠 := by
   -- Proof by contradiction: assume `𝔠 ≤ #s`
-  by_contra' h
+  by_contra! h
   -- Choose a countable dense set `t : Set X`
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
   haveI := htc.to_subtype

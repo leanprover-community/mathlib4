@@ -201,7 +201,7 @@ assumptions. -/
 theorem continuous_eval_const (a : α) :
     Continuous fun f : C(α, β) => f a := by
   refine continuous_def.2 fun U hU ↦ ?_
-  convert ContinuousMap.isOpen_gen (isCompact_singleton (a := a)) hU using 1
+  convert ContinuousMap.isOpen_gen (isCompact_singleton (x := a)) hU using 1
   ext; simp [CompactOpen.gen]
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
 #align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const

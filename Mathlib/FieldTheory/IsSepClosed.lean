@@ -193,7 +193,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
 instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
-  ⟨fun x ↦ (IsSeparable.isIntegral' x).isAlgebraic,
+  ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
     fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
 
 end IsSepClosure
@@ -207,7 +207,7 @@ variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L
   closed extension M of K. -/
 noncomputable irreducible_def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨IsSeparable.isIntegral' x, splits_codomain _ (IsSeparable.separable K x)⟩)
+    (fun x _ ↦ ⟨IsSeparable.isIntegral K x, splits_codomain _ (IsSeparable.separable K x)⟩)
     (IntermediateField.adjoin_univ K L)
 
 end IsSepClosed

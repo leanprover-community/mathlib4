@@ -62,7 +62,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
   have : ∀ UV : s, ∃ f : C(X, ℝ),
       EqOn f 0 UV.1.1 ∧ EqOn f (fun _ => ε UV) UV.1.2ᶜ ∧ ∀ x, f x ∈ Icc 0 (ε UV) := by
     intro UV
-    rcases exists_continuous_zero_one_of_closed isClosed_closure
+    rcases exists_continuous_zero_one_of_isClosed isClosed_closure
         (hB.isOpen UV.2.1.2).isClosed_compl (hd UV) with
       ⟨f, hf₀, hf₁, hf01⟩
     exact ⟨ε UV • f, fun x hx => by simp [hf₀ (subset_closure hx)], fun x hx => by simp [hf₁ hx],
