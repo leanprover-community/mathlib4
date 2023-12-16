@@ -140,6 +140,7 @@ def toLEList (x : BitVec w) : List Bool :=
 def toBEList (x : BitVec w) : List Bool :=
   List.ofFn x.getMsb'
 
+
 /-- Create a bitvector from a function that maps index `i` to the `i`-th least significant bit -/
 def ofLEFn {w} (f : Fin w → Bool) : BitVec w :=
   match w with
@@ -149,5 +150,12 @@ def ofLEFn {w} (f : Fin w → Bool) : BitVec w :=
 /-- Create a bitvector from a function that maps index `i` to the `i`-th most significant bit -/
 def ofBEFn {w} (f : Fin w → Bool) : BitVec w :=
   ofLEFn (f ∘ Fin.rev)
+
+instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
+instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
+instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
+
 
 end Std.BitVec

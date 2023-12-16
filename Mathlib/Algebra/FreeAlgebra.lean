@@ -239,7 +239,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp only [HSMul.hSMul, instSMul, Quot.map]
-    rw [map_add, map_one, add_comm, mk_mul, mk_mul, ←one_add_mul (_ : FreeAlgebra R X)]
+    rw [map_add, map_one, add_comm, mk_mul, mk_mul, ← one_add_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar
 
@@ -276,10 +276,10 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     IsScalarTower R S (FreeAlgebra A X) where
   smul_assoc r s x := by
     change algebraMap S A (r • s) • x = algebraMap R A _ • (algebraMap S A _ • x)
-    rw [←smul_assoc]
+    rw [← smul_assoc]
     congr
     simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
-    rw [smul_assoc, ←smul_one_mul]
+    rw [smul_assoc, ← smul_one_mul]
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
     SMulCommClass R S (FreeAlgebra A X) where
@@ -593,7 +593,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range_aeval`. -/
 theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
     Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
-  simp only [← Algebra.map_top, ←adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+  simp only [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
     (· ∘ ·), lift_ι_apply]
 
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/

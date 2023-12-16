@@ -185,7 +185,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
   dsimp [Function.Surjective]
   intro h y
-  by_contra' hy
+  by_contra! hy
   let C := Set.range f
   have hC : IsClosed C := (isCompact_range f.continuous).isClosed
   let U := Cᶜ

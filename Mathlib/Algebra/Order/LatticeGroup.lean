@@ -382,7 +382,7 @@ theorem one_le_abs
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     1 ≤ |a| := by
   apply pow_two_semiclosed _ _
-  rw [abs_eq_sup_inv, pow_two, mul_sup,  sup_mul, ←pow_two, mul_left_inv, sup_comm, ← sup_assoc]
+  rw [abs_eq_sup_inv, pow_two, mul_sup,  sup_mul, ← pow_two, mul_left_inv, sup_comm, ← sup_assoc]
   apply le_sup_right
 
 -- The proof from Bourbaki A.VI.12 Prop 9 d)
@@ -425,7 +425,7 @@ calc
   (a ⊔ b) / (a ⊓ b) = (a ⊔ b) * (a⁻¹ ⊔ b⁻¹) := by rw [div_eq_mul_inv, ← inv_inf_eq_sup_inv]
   _ = (a * a⁻¹ ⊔ b * a⁻¹) ⊔ (a * b⁻¹ ⊔ b * b⁻¹) := by rw [mul_sup, sup_mul, sup_mul]
   _ = (1 ⊔ b / a) ⊔ (a / b ⊔ 1) := by
-    rw [mul_right_inv, mul_right_inv, ←div_eq_mul_inv, ←div_eq_mul_inv]
+    rw [mul_right_inv, mul_right_inv, ← div_eq_mul_inv, ← div_eq_mul_inv]
   _ = 1 ⊔ b / a ⊔ (1 / (b / a) ⊔ 1) := by rw [one_div_div]
   _ = 1 ⊔ (b / a) ⊔ ((b / a)⁻¹ ⊔ 1) := by rw [inv_eq_one_div]
   _ = 1 ⊔ (((b / a) ⊔ (b / a)⁻¹) ⊔ 1) := by rw [sup_assoc, sup_assoc]
@@ -657,12 +657,12 @@ variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Mod
 
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) :
     x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
-  rw [←LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub x y, two_smul, ←two_smul α,
+  rw [← LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
     smul_smul, invOf_mul_self, one_smul]
 
 lemma sup_eq_half_smul_add_add_abs_sub (x y : β) :
     x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
-  rw [←LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub x y, two_smul, ←two_smul α,
+  rw [← LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
     smul_smul, invOf_mul_self, one_smul]
 
 end invertible

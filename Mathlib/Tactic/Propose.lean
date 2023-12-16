@@ -46,7 +46,7 @@ initialize registerTraceClass `Tactic.propose
 def discrTreeConfig : WhnfCoreConfig := {}
 
 initialize proposeLemmas : DeclCache (DiscrTree Name) ←
-  DeclCache.mk "have?: init cache" {} fun name constInfo lemmas => do
+  DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do

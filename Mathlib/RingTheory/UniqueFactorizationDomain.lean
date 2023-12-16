@@ -955,7 +955,7 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
 #align unique_factorization_monoid.exists_reduced_factors' UniqueFactorizationMonoid.exists_reduced_factors'
 
 theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
-    Function.Injective ((· ^ ·) a : ℕ → R) := by
+    Function.Injective (a ^ · : ℕ → R) := by
   letI := Classical.decEq R
   intro i j hij
   letI : Nontrivial R := ⟨⟨a, 0, ha0⟩⟩
@@ -1919,10 +1919,6 @@ end Associates
 section
 
 open Associates UniqueFactorizationMonoid
-
-theorem Associates.quot_out {α : Type*} [CommMonoid α] (a : Associates α) :
-    Associates.mk (Quot.out a) = a := by rw [← quot_mk_eq_mk, Quot.out_eq]
-#align associates.quot_out Associates.quot_out
 
 /-- `toGCDMonoid` constructs a GCD monoid out of a unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelCommMonoidWithZero α]

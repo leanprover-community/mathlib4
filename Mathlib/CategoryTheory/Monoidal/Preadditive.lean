@@ -97,7 +97,7 @@ theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
   rw [← tensor_id_comp_id_tensor]
   let tQ := (((tensoringLeft C).obj Q).mapAddHom : (R ⟶ S) →+ _)
   change _ ≫ tQ _ = _
-  rw [tQ.map_sum, Preadditive.comp_sum]
+  rw [map_sum, Preadditive.comp_sum]
   dsimp [Functor.mapAddHom]
   simp only [tensor_id_comp_id_tensor]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
@@ -107,7 +107,7 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
   rw [← tensor_id_comp_id_tensor]
   let tQ := (((tensoringRight C).obj P).mapAddHom : (R ⟶ S) →+ _)
   change tQ _ ≫ _ = _
-  rw [tQ.map_sum, Preadditive.sum_comp]
+  rw [map_sum, Preadditive.sum_comp]
   dsimp [Functor.mapAddHom]
   simp only [tensor_id_comp_id_tensor]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor

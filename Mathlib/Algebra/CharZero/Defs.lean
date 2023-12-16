@@ -132,7 +132,7 @@ instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : N
 
 instance charZero_one {M} [AddMonoidWithOne M] [CharZero M] : NeZero (1 : M) where
   out := by
-    rw [←Nat.cast_one, Nat.cast_ne_zero]
+    rw [← Nat.cast_one, Nat.cast_ne_zero]
     trivial
 
 instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZero M] :

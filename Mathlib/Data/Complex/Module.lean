@@ -50,6 +50,8 @@ open ComplexConjugate
 
 variable {R : Type*} {S : Type*}
 
+attribute [local ext] Complex.ext
+
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
@@ -73,7 +75,7 @@ instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
 instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
-instance [Semiring R] [Module R ℝ] : Module R ℂ where
+instance instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
@@ -461,7 +463,7 @@ theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   -- Porting note: was
   -- simp [smul_comm I, smul_smul I]
   rw [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm]
-  simp [←smul_assoc]
+  simp [← smul_assoc]
 set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
@@ -527,7 +529,7 @@ open Submodule
 
 lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
   refine eq_top_iff'.mpr fun x ↦ ?_
-  rw [←realPart_add_I_smul_imaginaryPart x]
+  rw [← realPart_add_I_smul_imaginaryPart x]
   exact add_mem (subset_span (ℜ x).property) <|
     SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
 
@@ -548,7 +550,7 @@ lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
 
 @[simp]
 lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
-  rw [realPart_apply_coe, star_def, conj_ofReal, ←two_smul ℝ (r : ℂ)]
+  rw [realPart_apply_coe, star_def, conj_ofReal, ← two_smul ℝ (r : ℂ)]
   simp
 
 @[simp]
@@ -558,8 +560,8 @@ lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = _    := by congrm (ℜ $((re_add_im z).symm))
   _          = z.re := by
-    rw [map_add, AddSubmonoid.coe_add, mul_comm, ←smul_eq_mul, realPart_I_smul]
-    simp [conj_ofReal, ←two_mul]
+    rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
+    simp [conj_ofReal, ← two_mul]
 end RealImaginaryPart
 
 section Rational

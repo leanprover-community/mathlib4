@@ -409,7 +409,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       have := Nat.le_of_dvd ?_ hdvd
       · simp [hdvd, this]
         exact (le_iff_eq_or_lt.mp this).symm
-      · by_contra'
+      · by_contra!
         simp only [nonpos_iff_eq_zero.mp this, this] at h
         contradiction
   · exact fun h => Prime.properDivisors h
@@ -445,9 +445,8 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 
--- Porting note: Specified pow to Nat.pow
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
-    properDivisors (p ^ k) = (Finset.range k).map ⟨Nat.pow p, pow_right_injective pp.two_le⟩ := by
+    properDivisors (p ^ k) = (Finset.range k).map ⟨HPow.hPow p, pow_right_injective pp.two_le⟩ := by
   ext a
   simp only [mem_properDivisors, Nat.isUnit_iff, mem_map, mem_range, Function.Embedding.coeFn_mk,
     pow_eq]
