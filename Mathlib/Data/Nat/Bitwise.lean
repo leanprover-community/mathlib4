@@ -296,10 +296,11 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-lemma pred_bit_false {x : ℕ} (h : x > 0) : pred (bit false x) = bit true (pred x) := by
+@[simp]
+lemma pred_bit0 {x : ℕ} (h : x > 0) : pred (bit0 x) = bit true (pred x) := by
   cases x
   · contradiction
-  · simp only [bit_val, mul_succ, cond_false, _root_.add_zero, Nat.pred_succ, cond_true]
+  · simp only [bit0_val, mul_succ, Nat.pred_succ, bit_val, cond_true]
 
 /-- The expressions `pred (1 <<< w)` represents the number with the `w` least significant bits as
 `1`, and all other bits `0`.
@@ -310,7 +311,7 @@ lemma testBit_ones (w i : ℕ) : testBit (pred <| 1 <<< w) i = decide (i < w) :=
   · suffices
       testBit (pred <| bit false (1 <<< w)) i = decide (i < w + 1)
     by simpa only [bit_val, Bool.cond_false, shiftLeft_succ] using this
-    rw [Nat.pred_bit_false (by
+    rw [bit_false, Nat.pred_bit0 (by
       rw [shiftLeft_eq_mul_pow, one_mul]
       exact two_pow_pos w
     )]
