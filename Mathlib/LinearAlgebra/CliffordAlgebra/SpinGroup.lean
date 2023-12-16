@@ -51,11 +51,12 @@ open CliffordAlgebra MulAction
 
 open scoped Pointwise
 
-def inv_of_inv_sq (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible ((ι Q m) * (ι Q m)) :=
-  Invertible.mul ‹_› ‹_›
+def inv_of_inv_sq (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] :
+  Invertible ((ι Q m) * (ι Q m)) := Invertible.mul ‹_› ‹_›
 
-def inv_algebraMap_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible (algebraMap _ _ (Q m) : CliffordAlgebra Q) :=
-  Invertible.copy (inv_of_inv_sq m) _ (ι_sq_scalar _ _).symm
+def inv_algebraMap_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] :
+  Invertible (algebraMap _ _ (Q m) : CliffordAlgebra Q) :=
+    Invertible.copy (inv_of_inv_sq m) _ (ι_sq_scalar _ _).symm
 
 def inv_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible (Q m) :=
   letI : Invertible (algebraMap _ (CliffordAlgebra Q) (Q m)) :=
@@ -64,10 +65,11 @@ def inv_of_inv_ι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertibl
     invOf := equivExterior Q ⅟(algebraMap _ (CliffordAlgebra Q) (Q m))
     invOf_mul_self := by
       dsimp
-      rw [←Algebra.commutes, ←Algebra.smul_def, ←map_smul, Algebra.smul_def, mul_invOf_self, changeForm_one]
+      rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul, Algebra.smul_def, mul_invOf_self,
+        changeForm_one]
     mul_invOf_self := by
       dsimp
-      rw [←Algebra.smul_def, ←map_smul, Algebra.smul_def, mul_invOf_self, changeForm_one]
+      rw [← Algebra.smul_def, ← map_smul, Algebra.smul_def, mul_invOf_self, changeForm_one]
   }
   (bar.map ExteriorAlgebra.algebraMapInv).copy _ (by simp)
 
@@ -85,8 +87,9 @@ def lipschitz (Q : QuadraticForm R M) :=
 set_option synthInstance.maxHeartbeats 25000 in
 /-- If x is in `lipschitz Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
-theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} [Invertible (2 : R)]
-    (hx : x ∈ lipschitz Q) : ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) := by
+theorem mem_lipschitz_conjAct_le [Invertible (2 : R)]
+    {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q) :
+    ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) := by
   unfold lipschitz at hx
   apply Subgroup.closure_induction'' hx
   · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
@@ -94,8 +97,8 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} [Invertible (2 : R)
     have : Invertible (ι Q a) := by rwa [ha]
     have : Invertible (Q a) := inv_of_inv_ι a
     rw [LinearMap.mem_range]
-    simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply, ConjAct.ofConjAct_toConjAct,
-                SetLike.mem_coe, LinearMap.mem_range] at hz -- diff
+    simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
+                ConjAct.ofConjAct_toConjAct, SetLike.mem_coe] at hz
     subst hb
     suffices ∃ y : M, ι Q y = ι Q a * ι Q b * ⅟ (ι Q a) by simp_all only [invOf_units]
     rw [ι_mul_ι_mul_invOf_ι Q a b]
@@ -105,41 +108,44 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} [Invertible (2 : R)
     have : Invertible (ι Q a) := by rwa [ha]
     have : Invertible (Q a) := inv_of_inv_ι a
     rw [LinearMap.mem_range]
-    simp [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply, ConjAct.ofConjAct_toConjAct,
-                ConjAct.toConjAct_inv, inv_inv] at hz -- diff
+    simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
+      ConjAct.ofConjAct_toConjAct, ConjAct.toConjAct_inv, map_inv, inv_inv] at hz
     subst hb
-    suffices ∃ y : M, ι Q y = ⅟ (ι Q a) * ι Q b * ι Q a by simp_all only [invOf_units]
+    suffices ∃ y : M, ι Q y = ⅟ (ι Q a) * ι Q b * ι Q a by
+      simp_all only [invOf_units]
+      done
     rw [invOf_ι_mul_ι_mul_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
   · simp only [ConjAct.toConjAct_one, (one_smul _ (LinearMap.range (ι Q))), le_refl]
   · intro x y hx1 hy1 z hz
     simp only [ConjAct.toConjAct_mul] at hz
-    suffices (ConjAct.toConjAct x * ConjAct.toConjAct y) • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) by
-      exact this hz
+    suffices
+      (ConjAct.toConjAct x * ConjAct.toConjAct y) • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) by
+        exact this hz
     rintro m ⟨a, ⟨b, hb⟩, ha⟩
-    simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply, Units.val_mul, mul_inv_rev] at ha
+    simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply, Units.val_mul,
+      mul_inv_rev] at ha
     subst hb
     have hb : ↑x * (↑y * (ι Q b) * ↑y⁻¹) * ↑x⁻¹ = m := by
       simp [← ha, ConjAct.toConjAct_mul, ConjAct.units_smul_def, mul_assoc]
     have hy2 : ↑y * (ι Q) b * ↑y⁻¹ ∈ ConjAct.toConjAct y • LinearMap.range (ι Q) := by
-      simp only [HSMul.hSMul, SMul.smul, exists_exists_eq_and, exists_apply_eq_apply, Submodule.mem_map,
-        LinearMap.mem_range, DistribMulAction.toLinearMap_apply, ConjAct.ofConjAct_toConjAct]
-    specialize hy1 hy2
-    have hx2 : ↑x * (↑y * (ι Q) b * ↑y⁻¹) * ↑x⁻¹ ∈ ConjAct.toConjAct x • LinearMap.range (ι Q) := by
-      simp only [HSMul.hSMul, SMul.smul, Units.mul_left_inj, Units.mul_right_inj, exists_exists_eq_and,
+      simp only [HSMul.hSMul, SMul.smul, exists_exists_eq_and, exists_apply_eq_apply,
         Submodule.mem_map, LinearMap.mem_range, DistribMulAction.toLinearMap_apply,
         ConjAct.ofConjAct_toConjAct]
+    specialize hy1 hy2
+    have hx2 : ↑x * (↑y * (ι Q) b * ↑y⁻¹) * ↑x⁻¹ ∈ ConjAct.toConjAct x • LinearMap.range (ι Q) := by
+      simp only [HSMul.hSMul, SMul.smul, Units.mul_left_inj, Units.mul_right_inj,
+        exists_exists_eq_and, Submodule.mem_map, LinearMap.mem_range,
+        DistribMulAction.toLinearMap_apply, ConjAct.ofConjAct_toConjAct]
       exact hy1
     specialize hx1 hx2
     rwa [hb] at hx1
 #align mem_lipschitz_conj_act_le mem_lipschitz_conjAct_le
 
-#print mem_lipschitz_conjAct_le
-
 /-- This is another version of `mem_lipschitz_conj_act_le` which uses `involute`.-/
-theorem mem_lipschitz_involute_le {x : (CliffordAlgebra Q)ˣ} [Invertible (2 : R)]
-    (hx : x ∈ lipschitz Q) (b : M) : involute ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
-  by
+theorem mem_lipschitz_involute_le [Invertible (2 : R)]
+  {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q) (b : M) :
+  involute ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
   revert b
   unfold lipschitz at hx
   apply Subgroup.closure_induction'' hx
@@ -180,8 +186,7 @@ theorem mem_lipschitz_involute_le {x : (CliffordAlgebra Q)ˣ} [Invertible (2 : R
 #align mem_lipschitz_involute_le mem_lipschitz_involute_le
 
 theorem coe_mem_lipschitz_iff_mem {x : (CliffordAlgebra Q)ˣ} :
-    ↑x ∈ (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔ x ∈ lipschitz Q :=
-  by
+    ↑x ∈ (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔ x ∈ lipschitz Q := by
   simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
   norm_cast
   exact exists_eq_right
@@ -248,8 +253,7 @@ theorem hMul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : 
 #align pin_group.mul_star_self_of_mem pinGroup.hMul_star_self_of_mem
 
 /-- See `star_mem_iff` for both directions. -/
-theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q :=
-  by
+theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q := by
   rw [mem_iff] at hx ⊢
   refine' ⟨_, unitary.star_mem hx.2⟩
   rcases hx with ⟨⟨y, hy₁, hy₂⟩, hx₂, hx₃⟩
@@ -269,8 +273,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
 /-- An element is in `pinGroup Q` if and only if `star x` is in `pinGroup Q`.
 See `star_mem` for only one direction. -/
 @[simp]
-theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q :=
-  by
+theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
   refine' ⟨_, star_mem⟩
   intro hx
   convert star_mem hx
@@ -412,8 +415,7 @@ theorem hMul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) :
 #align spin_group.mul_star_self_of_mem spinGroup.hMul_star_self_of_mem
 
 /-- See `star_mem_iff` for both directions. -/
-theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q :=
-  by
+theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q := by
   rw [mem_iff] at hx ⊢
   cases' hx with hx₁ hx₂
   refine' ⟨pinGroup.star_mem hx₁, _⟩
@@ -426,8 +428,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ s
 See `star_mem` for only one direction.
 -/
 @[simp]
-theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q :=
-  by
+theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
   refine' ⟨_, star_mem⟩
   intro hx
   convert star_mem hx
