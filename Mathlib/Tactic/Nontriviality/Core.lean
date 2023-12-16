@@ -27,7 +27,7 @@ including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
-  guard (←instantiateMVars (← inferType p)).isProp
+  guard (← instantiateMVars (← inferType p)).isProp
   g.withContext do
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1

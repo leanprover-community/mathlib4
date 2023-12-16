@@ -670,7 +670,7 @@ theorem coeff_one [DecidableEq σ] (m) : coeff m (1 : MvPolynomial σ R) = if 0 
   coeff_C m 1
 #align mv_polynomial.coeff_one MvPolynomial.coeff_one
 
--- porting note: `simp` can prove this
+@[simp]
 theorem coeff_zero_C (a) : coeff 0 (C a : MvPolynomial σ R) = a :=
   single_eq_same
 #align mv_polynomial.coeff_zero_C MvPolynomial.coeff_zero_C
