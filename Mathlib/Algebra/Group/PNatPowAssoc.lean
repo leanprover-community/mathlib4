@@ -59,32 +59,14 @@ theorem ppow_one [PNatPowAssoc M] (x : M) : x ^ (1 : ℕ+) = x :=
   PNatPowAssoc.ppow_one x
 
 instance Pi.instPNatPowAssoc {I : Type*} {f : I → Type*} [∀ i, Mul <| f i] [∀ i, Pow (f i) ℕ+]
-    [∀ i, PNatPowAssoc <| f i] : PNatPowAssoc (∀ i : I, f i) :=
-  {
-    ppow_add := by
-      intros
-      ext
-      simp only [Pi.pow_apply, Pi.mul_apply, ppow_add]
-    ppow_one := by
-      intros
-      ext
-      simp only [Pi.pow_apply, ppow_one]
-  }
+    [∀ i, PNatPowAssoc <| f i] : PNatPowAssoc (∀ i, f i) where
+    ppow_add _ _ _ := by ext; simp [ppow_add]
+    ppow_one _ := by ext; simp
 
 instance {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M] [Mul N] [Pow N ℕ+] [PNatPowAssoc N] :
-    PNatPowAssoc (M × N) :=
-  {
-    ppow_add := by
-      intros
-      ext
-      simp only [Prod.pow_fst, Prod.fst_mul, ppow_add]
-      simp only [Prod.pow_snd, Prod.snd_mul, ppow_add]
-    ppow_one := by
-      intros
-      ext
-      simp only [Prod.pow_fst, ppow_one]
-      simp only [Prod.pow_snd, ppow_one]
-  }
+    PNatPowAssoc (M × N) where
+  ppow_add _ _ _ := by ext <;> simp [ppow_add]
+  ppow_one _ := by ext <;> simp
 
 theorem ppow_mul_assoc [PNatPowAssoc M] (k m n : ℕ+) (x : M) :
     (x ^ k * x ^ m) * x ^ n = x ^ k * (x ^ m * x ^ n) := by
