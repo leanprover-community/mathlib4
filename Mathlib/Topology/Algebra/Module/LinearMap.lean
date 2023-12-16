@@ -312,21 +312,10 @@ theorem exists_ne_zero {f : M₁ →SL[σ₁₂] M₂} (hf : f ≠ 0) : ∃ x, f
   by_contra! h
   exact hf (ContinuousLinearMap.ext h)
 
-section
-
-variable (R₁ M₁)
-
+variable (R₁ M₁) in
 /-- the identity map as a continuous linear map. -/
 protected def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
-
-end
-
-instance one : One (M₁ →L[R₁] M₁) :=
-  ⟨.id R₁ M₁⟩
-
-theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
-  rfl
 
 theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x :=
   rfl
@@ -346,6 +335,16 @@ theorem toContinuousAddMonoidHom_id :
 @[simp, norm_cast]
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
+
+instance one : One (M₁ →L[R₁] M₁) :=
+  ⟨.id R₁ M₁⟩
+
+theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
+  rfl
 
 @[simp]
 theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
