@@ -118,8 +118,8 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
--- Porting note: was `simp [-coe_lmul_eq_mul]`.
-  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, Matrix.scalar_apply_eq]
+  -- Porting note: was `simp [-coe_lmul_eq_mul]`.
+  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, scalar_apply, diagonal_apply_eq]
 
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
@@ -292,7 +292,7 @@ theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
   conv =>
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [← @trace_trace _ _ K K⟮x⟯ _ _ _ _ _ _ _ _ _, trace_algebraMap, LinearMap.map_smul_of_tower]
+  rw [← trace_trace (L := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
 #align trace_eq_trace_adjoin trace_eq_trace_adjoin
 
 variable {K}
@@ -327,6 +327,42 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
     exact minpoly.aeval_of_isScalarTower R x y hy
   · apply IsAlgClosed.splits_codomain
 #align algebra.is_integral_trace Algebra.isIntegral_trace
+
+lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+    [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
+    Algebra.trace A C (e x) = Algebra.trace A B x := by
+  simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]
+  congr; ext; simp [LinearEquiv.conj_apply]
+
+lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+    [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
+    e (Algebra.trace A C x) = Algebra.trace B C x := by
+  classical
+  by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
+  · obtain ⟨s, ⟨b⟩⟩ := h
+    letI : Algebra A B := RingHom.toAlgebra e
+    letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+    rw [Algebra.trace_eq_matrix_trace b,
+      Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
+    show e.toAddMonoidHom _ = _
+    rw [AddMonoidHom.map_trace]
+    congr
+    ext i j
+    simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
+  rw [trace_eq_zero_of_not_exists_basis _ h, trace_eq_zero_of_not_exists_basis,
+    LinearMap.zero_apply, LinearMap.zero_apply, map_zero]
+  intro ⟨s, ⟨b⟩⟩
+  exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
+
+lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
+    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
+    Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
+  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
+  let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  rw [← Algebra.trace_eq_of_ringEquiv e₁ he, ← Algebra.trace_eq_of_algEquiv e',
+    RingEquiv.symm_apply_apply]
+  rfl
 
 section EqSumEmbeddings
 
@@ -364,7 +400,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.toRingHom.toAlgebra) := ?_
+  letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
   rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
     Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   refine' Finset.sum_congr rfl fun σ _ => _
@@ -444,7 +480,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
     BilinForm.sum_left,
     Fintype.sum_congr _ _ fun i : κ =>
-      @BilinForm.sum_right _ _ _ _ _ _ _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
+      BilinForm.sum_right _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
         b y * P.map (algebraMap A B) y β,
     sum_comm]
   congr; ext x
@@ -607,5 +643,21 @@ theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
     (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
 #align trace_form_nondegenerate traceForm_nondegenerate
+
+theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
+    Algebra.trace K L ≠ 0 := by
+  intro e
+  let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
+  apply det_traceMatrix_ne_zero' pb
+  rw [show traceMatrix K pb.basis = 0 by ext; simp [e], Matrix.det_zero]
+  rw [← pb.finrank, ← Fin.pos_iff_nonempty]
+  exact finrank_pos
+
+theorem Algebra.trace_surjective [FiniteDimensional K L] [IsSeparable K L] :
+    Function.Surjective (Algebra.trace K L) := by
+  rw [← LinearMap.range_eq_top]
+  apply (IsSimpleOrder.eq_bot_or_eq_top (α := Ideal K) _).resolve_left
+  rw [LinearMap.range_eq_bot]
+  exact Algebra.trace_ne_zero K L
 
 end DetNeZero

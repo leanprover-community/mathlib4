@@ -31,17 +31,15 @@ theorem imo2020_q2 (a b c d : ℝ) (hd0 : 0 < d) (hdc : d ≤ c) (hcb : c ≤ b)
     (a + 2 * b + 3 * c + 4 * d) * a ^ a * b ^ b * c ^ c * d ^ d =
         (a + 2 * b + 3 * c + 4 * d) * (a ^ a * b ^ b * c ^ c * d ^ d) := by ac_rfl
     _ ≤ (a + 2 * b + 3 * c + 4 * d) * (a * a + b * b + c * c + d * d) := by gcongr; linarith
-    _ = (a + 2 * b + 3 * c + 4 * d) * (a * a) + (a + 2 * b + 3 * c + 4 * d) * (b * b)
-        + (a + 2 * b + 3 * c + 4 * d) * (c * c) + (a + 2 * b + 3 * c + 4 * d) * (d * d) := by ring
-    _ ≤ (a + 3 * b + 3 * c + 3 * d) * (a * a) + (3 * a + b + 3 * c + 3 * d) * (b * b)
-        + (3 * a + 3 * b + c + 3 * d) * (c * c) + (3 * a + 3 * b + 3 * c + d) * (d * d) := by
-        -- Porting note: after #2220 is fixed we can change all `a * a` to `a ^ 2` and automation
-        -- will work better
-        gcongr ?_ * _ + ?_ * _ + ?_ * _ + ?_ * _ <;> (try linarith) <;> apply mul_self_nonneg
-    _ < (a + 3 * b + 3 * c + 3 * d) * (a * a) + (3 * a + b + 3 * c + 3 * d) * (b * b)
-        + (3 * a + 3 * b + c + 3 * d) * (c * c) + (3 * a + 3 * b + 3 * c + d) * (d * d)
+    _ = (a + 2 * b + 3 * c + 4 * d) * a ^ 2 + (a + 2 * b + 3 * c + 4 * d) * b ^ 2
+        + (a + 2 * b + 3 * c + 4 * d) * c ^ 2 + (a + 2 * b + 3 * c + 4 * d) * d ^ 2 := by ring
+    _ ≤ (a + 3 * b + 3 * c + 3 * d) * a ^ 2 + (3 * a + b + 3 * c + 3 * d) * b ^ 2
+        + (3 * a + 3 * b + c + 3 * d) * c ^ 2 + (3 * a + 3 * b + 3 * c + d) * d ^ 2 := by
+        gcongr ?_ * _ + ?_ * _ + ?_ * _ + ?_ * _ <;> linarith
+    _ < (a + 3 * b + 3 * c + 3 * d) * a ^ 2 + (3 * a + b + 3 * c + 3 * d) * b ^ 2
+        + (3 * a + 3 * b + c + 3 * d) * c ^ 2 + (3 * a + 3 * b + 3 * c + d) * d ^ 2
         + (6 * a * b * c + 6 * a * b * d + 6 * a * c * d + 6 * b * c * d) :=
         (lt_add_of_pos_right _ (by apply_rules [add_pos, mul_pos, zero_lt_one] <;> linarith))
-    _ = HPow.hPow (a + b + c + d) 3 := by ring -- Porting note: See issue #2220
+    _ = (a + b + c + d) ^ 3 := by ring
     _ = 1 := by simp [h1]
 #align imo2020_q2 imo2020_q2

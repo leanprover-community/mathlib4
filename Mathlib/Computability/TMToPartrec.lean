@@ -1545,7 +1545,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp [List.reverseAux] at e
+    simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
     refine' h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1590,7 +1590,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
         ⟨some (q₁.pred q₂), s, K'.elim (trPosNum a.succ ++ Γ'.cons :: trList v) l₁ c d⟩
         ⟨some (unrev q₂), s', K'.elim (l₂' ++ Γ'.cons :: trList v) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp [List.reverseAux] at e
+    simp only [List.reverseAux] at e
     refine' h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1686,7 +1686,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       · simp
       rw [trList, List.headI, trNat, Nat.cast_succ, Num.add_one, Num.succ, List.tail]
       cases (n : Num).succ' <;> exact ⟨rfl, rfl⟩
-    by_cases v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
+    by_cases h : v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
     · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
       refine' ⟨c, h₁, TransGen.head rfl _⟩
       simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,
@@ -1729,7 +1729,8 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
     have := Turing.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
-    simp [stepNormal_eval, -TM2.step] at this
+    simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff, Cfg.halt.injEq,
+      exists_eq_right] at this
     obtain ⟨_, ⟨⟩, h⟩ := this hv
     exact h
 #align turing.partrec_to_TM2.tr_eval Turing.PartrecToTM2.tr_eval
@@ -1992,7 +1993,7 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
 
 theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStmts₁ q ∪ K ⊆ S)
     (H₃ : K ⊆ S → Supports K S) : Supports (trStmts₁ q ∪ K) S := by
-  simp [Finset.union_subset_iff] at H₂
+  simp only [Finset.union_subset_iff] at H₂
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 #align turing.partrec_to_TM2.tr_stmts₁_supports' Turing.PartrecToTM2.trStmts₁_supports'
 

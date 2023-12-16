@@ -319,7 +319,8 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
                       (mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)) a1p
               erw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
               exact ha t
-        simp at y0l; simp at yl2
+        simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.neg_re, add_right_neg,
+          Zsqrtd.neg_im, neg_neg] at yl2
         exact
           match y, y0l, (yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩) with
           | 0, y0l, _ => y0l (le_refl 0)
@@ -610,7 +611,7 @@ theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j �
         (by
           delta xz; delta yz
           rw [mul_comm (xn _ _ : ℤ)]
-          exact_mod_cast (xn_modEq_x2n_add_lem _ n j))
+          exact mod_cast (xn_modEq_x2n_add_lem _ n j))
         ((dvd_mul_right _ _).mul_left _)
   rw [two_mul, add_tsub_assoc_of_le h, xn_add, add_assoc, ← zero_add 0]
   exact
@@ -1001,7 +1002,7 @@ theorem eq_pow_of_pell {m n k} :
     have na : n ≤ xn hw1 j := (Nat.le_self_pow hk0.ne' _).trans hnka.le
     have te : (t : ℤ) = 2 * xn hw1 j * n - n * n - 1 := by
       rw [sub_sub, eq_sub_iff_add_eq]
-      exact_mod_cast ta.symm
+      exact mod_cast ta.symm
     have : xn a1 k ≡ yn a1 k * (xn hw1 j - n) + n ^ k [MOD t] := by
       apply modEq_of_dvd
       rw [te, Nat.cast_add, Nat.cast_mul, Int.ofNat_sub na]

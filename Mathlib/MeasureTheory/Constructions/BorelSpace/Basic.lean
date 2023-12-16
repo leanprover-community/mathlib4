@@ -105,6 +105,9 @@ theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem (IsOpen : Set α �
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
 
+lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem (IsClosed : Set α → Prop) :=
+  fun _s hs _t ht _ ↦ IsClosed.inter hs ht
+
 theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     borel α = .generateFrom { s | IsClosed s } :=
   le_antisymm
@@ -135,7 +138,9 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
       simp [Set.ext_iff, ha']
     · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
-      simp [Set.ext_iff] at vu
+      simp? [Set.ext_iff] at vu says
+        simp only [Set.ext_iff, mem_iUnion, mem_setOf_eq, exists_prop, Subtype.exists,
+          exists_and_right] at vu
       have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
         simp only [compl_Iio, iUnion_coe_set, Set.ext_iff, mem_Ioi, mem_iUnion, mem_Ici,
           exists_prop, Subtype.exists, exists_and_right]
@@ -282,6 +287,12 @@ instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace 
     [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
   ⟨by borelize α; symm; apply borel_comap⟩
 #align subtype.borel_space Subtype.borelSpace
+
+instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
+  have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
+  have : ∀ s, @MeasurableSet α (borel α) s := fun s ↦ measurableSet_generateFrom (isOpen_discrete s)
+  exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
@@ -1095,6 +1106,10 @@ instance Prod.borelSpace [SecondCountableTopologyEither α β] :
     BorelSpace (α × β) :=
   ⟨le_antisymm prod_le_borel_prod OpensMeasurableSpace.borel_le⟩
 #align prod.borel_space Prod.borelSpace
+
+instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+    [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
+  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
 
 protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
@@ -2276,7 +2291,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
       simp only [Set.mem_setOf_eq]
       refine' fun hif => hif.trans _
-      exact_mod_cast hij
+      exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 
 section NormedAddCommGroup

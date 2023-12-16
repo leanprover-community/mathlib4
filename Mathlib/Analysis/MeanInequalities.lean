@@ -189,8 +189,8 @@ namespace NNReal
 /-- The geometric mean is less than or equal to the arithmetic mean, weighted version
 for `NNReal`-valued functions. -/
 theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) :
-    (∏ i in s, z i ^ (w i : ℝ)) ≤ ∑ i in s, w i * z i := by
-  exact_mod_cast
+    (∏ i in s, z i ^ (w i : ℝ)) ≤ ∑ i in s, w i * z i :=
+  mod_cast
     Real.geom_mean_le_arith_mean_weighted _ _ _ (fun i _ => (w i).coe_nonneg)
       (by assumption_mod_cast) fun i _ => (z i).coe_nonneg
 #align nnreal.geom_mean_le_arith_mean_weighted NNReal.geom_mean_le_arith_mean_weighted

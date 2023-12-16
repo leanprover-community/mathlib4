@@ -58,7 +58,7 @@ theorem abs_mul_exp_arg_mul_I (x : ℂ) : ↑(abs x) * exp (arg x * I) = x := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   · have : abs x ≠ 0 := abs.ne_zero hx
-    ext <;> field_simp [sin_arg, cos_arg hx, this, mul_comm (abs x)]
+    apply Complex.ext <;> field_simp [sin_arg, cos_arg hx, this, mul_comm (abs x)]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_mul_exp_arg_mul_I Complex.abs_mul_exp_arg_mul_I
 
@@ -472,7 +472,7 @@ theorem arg_mul_cos_add_sin_mul_I_coe_angle {r : ℝ} (hr : 0 < r) (θ : Real.An
   induction' θ using Real.Angle.induction_on with θ
   rw [Real.Angle.cos_coe, Real.Angle.sin_coe, Real.Angle.angle_eq_iff_two_pi_dvd_sub]
   use ⌊(π - θ) / (2 * π)⌋
-  exact_mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ
+  exact mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ
 set_option linter.uppercaseLean3 false in
 #align complex.arg_mul_cos_add_sin_mul_I_coe_angle Complex.arg_mul_cos_add_sin_mul_I_coe_angle
 

@@ -110,7 +110,7 @@ theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n +
     · apply Subset.trans Finsupp.support_single_subset
       simpa using mem_range.mp hx
     · apply pow_ne_zero
-      exact_mod_cast hp.out.ne_zero
+      exact mod_cast hp.out.ne_zero
 #align witt_vector.remainder_vars WittVector.remainder_vars
 
 /-- This is the polynomial whose degree we want to get a handle on. -/
@@ -212,7 +212,7 @@ theorem polyOfInterest_vars_eq (n : ℕ) : (polyOfInterest p n).vars =
   have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by norm_cast
   rw [polyOfInterest, this, vars_C_mul]
   apply pow_ne_zero
-  exact_mod_cast hp.out.ne_zero
+  exact mod_cast hp.out.ne_zero
 #align witt_vector.poly_of_interest_vars_eq WittVector.polyOfInterest_vars_eq
 
 theorem polyOfInterest_vars (n : ℕ) : (polyOfInterest p n).vars ⊆ univ ×ˢ range (n + 1) := by

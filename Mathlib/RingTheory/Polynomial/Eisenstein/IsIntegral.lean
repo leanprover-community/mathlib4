@@ -44,7 +44,7 @@ open Polynomial
 theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     ((cyclotomic p ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
   refine Monic.isEisensteinAt_of_mem_of_not_mem ?_
-      (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (by exact_mod_cast hp.out.ne_zero)).2 <|
+      (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) (fun {i hi} => ?_) ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
     refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => ?_
@@ -77,7 +77,7 @@ set_option linter.uppercaseLean3 false in
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
     ((cyclotomic (p ^ (n + 1)) ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
   refine Monic.isEisensteinAt_of_mem_of_not_mem ?_
-      (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (by exact_mod_cast hp.out.ne_zero)).2 <|
+      (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) ?_ ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
     refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h => ?_
@@ -95,7 +95,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       · simp only [ite_eq_right_iff]
         rintro ⟨k, hk⟩
         rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
-          natDegree_cyclotomic, Nat.totient_prime_pow hp.out (Nat.succ_pos _), Nat.succ_sub_one]
+          natDegree_cyclotomic, Nat.totient_prime_pow hp.out (Nat.succ_pos _), Nat.add_one_sub_one]
           at hn hi
         rw [hk, pow_succ, mul_assoc] at hi
         rw [hk, mul_comm, Nat.mul_div_cancel _ hp.out.pos]

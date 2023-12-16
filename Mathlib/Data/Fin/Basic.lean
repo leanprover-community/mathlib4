@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.WithZero
+import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
@@ -510,8 +511,8 @@ instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
-  simp [←Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
--- porting note: here and in the next lemma, had to use `←Nat.one_eq_succ_zero`.
+  simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
+-- porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
 #align fin.nontrivial_iff_two_le Fin.nontrivial_iff_two_le
 
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
@@ -536,6 +537,18 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
 
 instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
+
+instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
+  ⟨0⟩
+
+instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
+  haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
+  inferInstance
+
+@[simp]
+theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
+  rfl
+#align fin.default_eq_zero Fin.default_eq_zero
 
 section from_ad_hoc
 
@@ -627,23 +640,23 @@ end Bit
 section OfNatCoe
 
 @[simp]
-theorem ofNat_eq_val (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n) = a :=
+theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n) = a :=
   rfl
-#align fin.of_nat_eq_coe Fin.ofNat_eq_val
+#align fin.of_nat_eq_coe Fin.ofNat''_eq_cast
+
+@[simp] lemma val_nat_cast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
 -- porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number.  -/
-theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a := by
-  rw [← ofNat_eq_val]
-  exact Nat.mod_eq_of_lt h
+theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
+  Nat.mod_eq_of_lt h
 #align fin.coe_val_of_lt Fin.val_cast_of_lt
 
 /-- Converting the value of a `Fin (n + 1)` to `Fin (n + 1)` results
 in the same value.  -/
-theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a := by
-  rw [Fin.eq_iff_veq]
-  exact val_cast_of_lt a.isLt
+theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+  ext <| val_cast_of_lt a.isLt
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
 
 -- porting note: this is syntactically the same as `val_cast_of_lt`
@@ -652,9 +665,13 @@ theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a 
 -- porting note: this is syntactically the same as `cast_val_of_lt`
 #align fin.coe_coe_eq_self Fin.cast_val_eq_self
 
-theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by
-  rw [← Fin.ofNat_eq_val, Fin.ofNat'', Fin.last]
-  simp only [Nat.mod_eq_of_lt n.lt_succ_self]
+@[simp] lemma nat_cast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
+
+@[simp] lemma nat_cast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
+  simp [eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+
+@[simp]
+theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
 #align fin.coe_nat_eq_last Fin.cast_nat_eq_last
 
 theorem le_val_last (i : Fin (n + 1)) : i ≤ n := by
@@ -669,19 +686,13 @@ end OfNatCoe
 #align fin.zero_ne_one Fin.zero_ne_one
 
 @[simp]
-theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by
-  constructor
-  · intro h
-    have := congr_arg ((↑) : Fin n → ℕ) h
-    simp only [val_zero', val_one', @eq_comm _ 0, ← Nat.dvd_iff_mod_eq_zero] at this
-    exact eq_one_of_dvd_one this
-  · rintro rfl
-    rfl
-#align fin.zero_eq_one_iff Fin.zero_eq_one_iff
+theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
+  rw [← Nat.cast_one, nat_cast_eq_zero, Nat.dvd_one]
+#align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 @[simp]
-theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by rw [eq_comm, zero_eq_one_iff]
-#align fin.one_eq_zero_iff Fin.one_eq_zero_iff
+theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by rw [eq_comm, one_eq_zero_iff]
+#align fin.zero_eq_one_iff Fin.zero_eq_one_iff
 
 end Add
 
@@ -1226,6 +1237,12 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
   cases a; cases b; rfl
 #align fin.coe_sub Fin.coe_sub
 
+theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
+#align fin.eq_zero Fin.eq_zero
+
+instance uniqueFinOne : Unique (Fin 1) where
+  uniq _ := Subsingleton.elim _ _
+
 @[simp]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 #align fin.coe_fin_one Fin.coe_fin_one
@@ -1237,7 +1254,7 @@ lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
   · simp
-  rw [Fin.coe_neg, Fin.val_one, Nat.succ_sub_one, Nat.mod_eq_of_lt]
+  rw [Fin.coe_neg, Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
   constructor
 #align fin.coe_neg_one Fin.coe_neg_one
 

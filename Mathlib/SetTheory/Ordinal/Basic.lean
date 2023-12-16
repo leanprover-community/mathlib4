@@ -584,7 +584,7 @@ instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
-`induction` tactic, as in `induction i using Ordinal.induction with i IH`. -/
+`induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
   lt_wf.induction i h
@@ -1224,7 +1224,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
   of `Ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
- @[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 #align ordinal.univ Ordinal.univ
@@ -1475,7 +1475,7 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
   equivalently the cardinal of `Ordinal.{u}`, or `Cardinal.{u}`,
   as an element of `Cardinal.{v}` (when `u < v`). -/
-@[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ :=
   lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ
@@ -1509,7 +1509,7 @@ theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
-  rw [←h', lift.principalSeg_coe, ← lift_card]
+  rw [← h', lift.principalSeg_coe, ← lift_card]
   apply lift_lt_univ'
 #align cardinal.ord_univ Cardinal.ord_univ
 

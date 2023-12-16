@@ -241,7 +241,7 @@ end SeminormAux
 
 /-! ### Algebraic properties -/
 
-section Smul
+section SMul
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
   [SMulCommClass ℝ 𝕜' F]
@@ -309,7 +309,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
         exact ((c : ℝ) • f).decay' }⟩
 #align schwartz_map.has_zsmul SchwartzMap.instZSMul
 
-end Smul
+end SMul
 
 section Zero
 
@@ -543,7 +543,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   refine' Finset.sum_le_sum fun i hi => _
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
   refine' mul_le_mul _ _ (by positivity) (by positivity)
-  · exact_mod_cast Nat.choose_le_choose i hk
+  · exact mod_cast Nat.choose_le_choose i hk
   · trans
     · exact le_seminorm 𝕜 i n f x
     · apply Seminorm.le_def.1

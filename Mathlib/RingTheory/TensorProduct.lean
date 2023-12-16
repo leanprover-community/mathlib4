@@ -64,7 +64,9 @@ variable (r : R) (f g : M →ₗ[R] N)
 
 variable (A)
 
-/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
+/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
+
+This "base change" operation is also known as "extension of scalars". -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
@@ -98,6 +100,10 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   ext
   simp [baseChange_tmul]
 #align linear_map.base_change_smul LinearMap.baseChange_smul
+
+lemma baseChange_comp {P : Type*} [AddCommMonoid P] [Module R P] (g : N →ₗ[R] P) :
+    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+  ext; simp
 
 variable (R A M N)
 
@@ -173,7 +179,7 @@ instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
-  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
+  rw [natCast_def, ← nsmul_one, smul_tmul, nsmul_one]
 
 end AddCommMonoidWithOne
 
@@ -442,7 +448,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   ext a b
   have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
   dsimp at *
-  rwa [←f.map_mul, ←g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
+  rwa [← f.map_mul, ← g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext <| fun _ => H _ _) (AlgHom.ext <| fun _ => H _ _)
@@ -513,7 +519,7 @@ instance instRing : Ring (A ⊗[R] B) where
   __ := instNonAssocRing
 
 theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
-  rw [intCast_def, ←zsmul_one, smul_tmul, zsmul_one]
+  rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
@@ -1084,8 +1090,11 @@ theorem basis_repr_symm_apply (a : A) (i : ι) :
   rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
--- Porting note: simpNF linter failed on `basis_repr_symm_apply`
 @[simp]
+theorem basis_apply (i : ι) :
+    Algebra.TensorProduct.basis A b i = 1 ⊗ₜ b i :=
+  Algebra.TensorProduct.basis_repr_symm_apply b 1 i
+
 theorem basis_repr_symm_apply' (a : A) (i : ι) :
     a • Algebra.TensorProduct.basis A b i = a ⊗ₜ b i := by
   simpa using basis_repr_symm_apply b a i
@@ -1095,6 +1104,23 @@ end Basis
 end TensorProduct
 
 end Algebra
+
+namespace LinearMap
+
+open Algebra.TensorProduct
+
+variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
+  [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
+  [CommRing R] [CommRing A] [Algebra R A]
+  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+
+@[simp]
+lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :
+    toMatrix (basis A b₁) (basis A b₂) (f.baseChange A) =
+    (toMatrix b₁ b₂ f).map (algebraMap R A) := by
+  ext; simp [toMatrix_apply]
+
+end LinearMap
 
 namespace Module
 

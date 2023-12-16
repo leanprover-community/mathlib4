@@ -179,8 +179,8 @@ theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
 
 instance : TotallyDisconnectedSpace ℝₗ :=
   ⟨fun _ _ hs x hx y hy =>
-    le_antisymm (hs.subset_clopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
-      (hs.subset_clopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
+    le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
+      (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
 
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
