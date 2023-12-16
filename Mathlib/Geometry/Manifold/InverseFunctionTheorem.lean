@@ -47,12 +47,15 @@ where
   /-- Our property is **monotone** on open sets: if `s` is open and `s ⊆ t`, then
     `f ∈ P` on `t` implies `f ∈ P` on `s`. -/
   monotonicity : ∀ {f s t}, IsOpen s → s ⊆ t → property f t → property f s
-  /-- If `f ∈ P` is differentiable at `x` with invertible differential `df_x`,
-    a local inverse `g` of `f` at `f x` also lies in `P`.
+  /-- If `f ∈ P` on `s` and `f` is differentiable at `x` with invertible differential `df_x`,
+    a local inverse `g` of `f` at `f x` also lies in `P` on some open neighbourhood `t` of `f x`.
     It is sufficient to consider the case of `s` open.
     We assume the existence of `g`; this holds automatically over ℝ or ℂ. -/
   inverse : ∀ {f g s t x}, ∀ {f' : E ≃L[ℝ] E}, IsOpen s → x ∈ s → property f s →
-    HasFDerivAt (𝕜 := ℝ) f f' x → InvOn g f s t → property g t
+  -- We need t' to be open to deduce that `f` is a local structomorphism:
+  -- that definition requires a partial homeomorphism in the (pre-)groupoid,
+  -- which our setting only yields around x; that source is *open*.
+    HasFDerivAt (𝕜 := ℝ) f f' x → InvOn g f s t → ∃ t' ⊆ t, f x ∈ t' ∧ IsOpen t' ∧ property g t'
 
 /-- The groupoid associated to an IFT pre-groupoid. -/
 def IFTPregroupoid.groupoid (P : IFTPregroupoid E) : StructureGroupoid E :=
@@ -98,23 +101,41 @@ lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
   let s' := (f_loc.source ∩ s)
   have hs' : IsOpen s' := f_loc.open_source.inter hs
   have hfP' : P.property f s' := P.monotonicity hs' (inter_subset_right _ _) hfP
-  -- Since `P` is an IFTPregroupoid, `P.property g t` for `t := f_loc.target` open.
+  -- Since `P` is an IFTPregroupoid, `P.property g t'` for some open set
+  -- `t' ⊆ t := f_loc.target` containing `x`.
   have hinv' : InvOn f_loc.symm f_loc s' (f_loc '' s') :=
     f_loc.invOn.mono (inter_subset_left _ _) (image_subset _ (inter_subset_left _ _))
   let p := P.inverse hs' (mem_inter hx' hx) hfP' hf' hinv'
 
-  have aux : f_loc.source ∩ s' = s' := by simp
-  have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by rw [f_loc.restrOpen_target s' hs', aux]
-  -- Thus, f and g define a local homeomorphism.
-  have : P.groupoid.IsLocalStructomorphWithinAt f s' x := by
+  rcases p with ⟨t', htt', hxt', ht', hP⟩
+  let s'' := s' ∩ f ⁻¹' t'
+  have : ContinuousOn f s' := hf.continuousOn.mono (inter_subset_right _ _)
+  have hs'' : IsOpen s'' := this.isOpen_inter_preimage hs' ht'
+  have hG : P.groupoid.IsLocalStructomorphWithinAt f s'' x := by
     intro hx
-    refine ⟨f_loc.restrOpen s' hs', ?_, eqOn_refl f _, ?_⟩
+    refine ⟨f_loc.restrOpen s'' hs'', ?_, eqOn_refl f _, ?_⟩
     · apply mem_groupoid_of_pregroupoid.mpr
-      rw [f_loc.restrOpen_source, aux]
-      exact ⟨hfP', this ▸ p⟩
-    · rw [f_loc.restrOpen_source]; apply (mem_inter hx' hx)
-  exact ⟨s', mem_inter hx' hx, hs', this⟩
+      --have aux : f_loc.source ∩ s' = s' := by simp
+      rw [f_loc.restrOpen_source]--, aux]
+      -- show property on s' first, then use monotonicity. tomorrow or so!
+      sorry -- TODO: complete the proof!
+    · rw [f_loc.restrOpen_source]
+      apply (mem_inter hx' hx)
+  refine ⟨s'', by apply mem_inter (mem_inter hx' hx); exact hxt', hs'', hG⟩
 
+
+  -- have aux : f_loc.source ∩ s' = s' := by simp
+  -- have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by rw [f_loc.restrOpen_target s' hs', aux]
+  -- -- Thus, f and g define a local homeomorphism.
+  -- have : P.groupoid.IsLocalStructomorphWithinAt f s' x := by
+  --   intro hx
+  --   refine ⟨f_loc.restrOpen s' hs', ?_, eqOn_refl f _, ?_⟩
+  --   · apply mem_groupoid_of_pregroupoid.mpr
+  --     rw [f_loc.restrOpen_source, aux]
+  --     sorry -- TODO: fix proof!
+  --     --exact ⟨hfP', this ▸ p⟩
+
+#exit
 /-- The pregroupoid of `C^n` functions on `E`. -/
 def contDiffPregroupoidBasic : Pregroupoid E := {
   property := fun f s ↦ ContDiffOn ℝ n f s
@@ -200,11 +221,8 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       have : HasFDerivAt f f''.toContinuousLinearMap x' := by rw [hf''eq]; exact this
       let h := hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx'U))
       exact hx'y ▸ (contDiffPregroupoindIsIFT_aux h this hinv hm hn)
-    have : ∃ V ∈ 𝓝 (f x), ContDiffOn ℝ n g V := by -- XXX: do I need V ⊆ t?
-      rcases this with ⟨V, hVt, hxV, hV, hg⟩
-      exact ⟨V, hV.mem_nhds hxV, hg⟩
-
-    sorry -- TODO: adjust conclusion of statement!
+    rcases this with ⟨V, hVt, hxV, hV, hg⟩
+    exact ⟨V, hVt, hxV, hV, hg⟩
 
 -- FIXME: show that the analytic pregroupoid is also IFT
 
