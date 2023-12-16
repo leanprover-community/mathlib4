@@ -28,7 +28,7 @@ lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
 
 variable (C : Type _) [Category C] [Abelian C] (degrees : ℤ → ℤ × ℤ) (r₀ : ℤ)
 
-structure SpectralSequence where
+structure SpectralSequence' where
   page' (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ) : C
   d' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : ℤ × ℤ) (h : pq + degrees r = pq') :
     page' r hr pq ⟶ page' r hr pq'
@@ -41,7 +41,7 @@ structure SpectralSequence where
         page' r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right]; linarith)) pq₂
 
 abbrev CohomologicalSpectralSequence :=
-  SpectralSequence C (fun r => ⟨r, 1-r⟩)
+  SpectralSequence' C (fun r => ⟨r, 1-r⟩)
 
 abbrev E₀CohomologicalSpectralSequence :=
   CohomologicalSpectralSequence C 0
@@ -53,7 +53,7 @@ abbrev E₂CohomologicalSpectralSequence :=
   CohomologicalSpectralSequence C 2
 
 abbrev HomologicalSpectralSequence :=
-  SpectralSequence C (fun r => ⟨-r, r-1⟩)
+  SpectralSequence' C (fun r => ⟨-r, r-1⟩)
 
 abbrev E₀HomologicalSpectralSequence :=
   HomologicalSpectralSequence C 0
@@ -65,13 +65,13 @@ abbrev E₂HomologicalSpectralSequence :=
   HomologicalSpectralSequence C 2
 
 
-namespace SpectralSequence
+namespace SpectralSequence'
 
 variable {C r₀ degrees}
-variable (E : SpectralSequence C degrees r₀)
+variable (E : SpectralSequence' C degrees r₀)
 
 @[pp_dot]
-class HasPage (E : SpectralSequence C degrees r₀) (r : ℤ) : Prop where
+class HasPage (E : SpectralSequence' C degrees r₀) (r : ℤ) : Prop where
   le' : r₀ ≤ r
 
 instance : E.HasPage r₀ where
@@ -779,25 +779,25 @@ lemma StronglyConvergesTo.hasInfinityPageAt (pq : ℤ × ℤ) :
     E.HasInfinityPageAt pq :=
   (h.stronglyConvergesToInDegree (c.stripe pq)).hasInfinityPageAt pq rfl
 
-end SpectralSequence
+end SpectralSequence'
 
 namespace CohomologicalSpectralSequence
 
 variable {C r₀}
 variable (E : CohomologicalSpectralSequence C r₀)
 
-def cohomologicalStripes : SpectralSequence.ConvergenceStripes where
+def cohomologicalStripes : SpectralSequence'.ConvergenceStripes where
   stripe pq := pq.1 + pq.2
   position n i := ⟨n+1-i, i-1⟩
 
 abbrev CollapsesAt (n i : ℤ) :=
-  SpectralSequence.CollapsesAt E cohomologicalStripes n i
+  SpectralSequence'.CollapsesAt E cohomologicalStripes n i
 
 abbrev StronglyConvergesToInDegree (n : ℤ) (X : C) :=
-  SpectralSequence.StronglyConvergesToInDegree E cohomologicalStripes n X
+  SpectralSequence'.StronglyConvergesToInDegree E cohomologicalStripes n X
 
 abbrev StronglyConvergesTo (X : ℤ → C) :=
-  SpectralSequence.StronglyConvergesTo E cohomologicalStripes X
+  SpectralSequence'.StronglyConvergesTo E cohomologicalStripes X
 
 class IsFirstQuadrant : Prop :=
   isZero (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ) (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r pq)
