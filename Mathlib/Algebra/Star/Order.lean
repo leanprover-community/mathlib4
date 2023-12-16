@@ -185,4 +185,48 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
   by simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
+@[simp]
+lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
+  suffices ∀ x y, x ≤ y → star x ≤ star y from
+    ⟨by simpa only [star_star] using this (star x) (star y), this x y⟩
+  intro x y h
+  rw [StarOrderedRing.le_iff] at h ⊢
+  obtain ⟨d, hd, rfl⟩ := h
+  refine ⟨star d, ?_, star_add _ _⟩
+  induction hd using AddSubmonoid.closure_induction' with
+  | Hs y hy =>
+    obtain ⟨z, rfl⟩ := Set.mem_range.mpr hy
+    rw [star_mul, star_star]
+    exact AddSubmonoid.subset_closure ⟨z, rfl⟩
+  | H1 => rw [star_zero _]; exact zero_mem _
+  | Hmul z _ w _ hz hw => rw [star_add]; exact add_mem hz hw
+
+@[simp]
+lemma star_lt_star_iff {x y : R} : star x < star y ↔ x < y := by
+  by_cases h : x = y
+  · simp [h]
+  · have := star_le_star_iff (x := x) (y := y)
+    rw [le_iff_lt_or_eq, le_iff_lt_or_eq, star_inj] at this
+    simp_all
+
+lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [←star_le_star_iff, star_star]
+
+lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [←star_lt_star_iff, star_star]
+
+@[simp]
+lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
+  simpa using star_le_star_iff (x := 0) (y := x)
+
+@[simp]
+lemma star_nonpos_iff {x : R} : star x ≤ 0 ↔ x ≤ 0 := by
+  simpa using star_le_star_iff (x := x) (y := 0)
+
+@[simp]
+lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
+  simpa using star_lt_star_iff (x := 0) (y := x)
+
+@[simp]
+lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
+  simpa using star_lt_star_iff (x := x) (y := 0)
+
 end NonUnitalSemiring
