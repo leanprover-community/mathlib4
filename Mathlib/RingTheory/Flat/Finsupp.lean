@@ -50,6 +50,21 @@ theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [Decidable
   rw [← single_eq_lof, ← single_eq_lof, DFinsupp.mapRange_single, DFinsupp.mapRange_single,
     LinearEquiv.coe_coe, rid_tmul, flip_apply, lsmul_apply]
 
+open DirectSum in
+/-- If `N` is an `R`-module then `Rⁿ ⊗ N ≃ Nⁿ`. -/
+@[simps! apply]
+def TensorProduct.lid_DirectSum (ι : Type*) [DecidableEq ι] :
+    (⨁ _ : ι, R) ⊗[R] N ≃ₗ[R] (⨁ _ : ι, N) :=
+  TensorProduct.comm R (⨁ _ : ι, R) N ≪≫ₗ TensorProduct.rid_DirectSum R N ι
+
+open DirectSum in
+/-- Applying the linear equivalence `rid_Finprod` to a simple element `x ⊗ r` of `N ⊗ Rⁿ`. -/
+theorem TensorProduct.lid_DirectSum_tmul [DecidableEq R] (ι : Type*) [DecidableEq ι]
+    (x : N) (r : ⨁ _ : ι, R) (i : ι) :
+      lid_DirectSum R N ι (r ⊗ₜ[R] x) i = r i • x := by
+  unfold lid_DirectSum
+  rw [LinearEquiv.trans_apply, comm_tmul, rid_DirectSum_tmul]
+
 open Module.Free DirectSum in
 /-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
 product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁ⁿ N`. -/
@@ -60,6 +75,17 @@ def rid_finite_free [Module.Finite R M] [Module.Free R M] :
       (linearEquivFunOnFintype R (Fin <| Fintype.card <| ChooseBasisIndex R M)
         (fun _ => R)).symm) ≪≫ₗ
     rid_DirectSum R N (Fin <| Fintype.card <| ChooseBasisIndex R M)
+
+open Module.Free DirectSum in
+/-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
+product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁ⁿ N`. -/
+def lid_finite_free [Module.Finite R M] [Module.Free R M] :
+    M ⊗[R] N ≃ₗ[R] ⨁ _ : Fin (Fintype.card (ChooseBasisIndex R M)), N :=
+  TensorProduct.congr
+    (((chooseBasis R M).reindex (Fintype.equivFin (ChooseBasisIndex R M))).equivFun ≪≫ₗ
+      (linearEquivFunOnFintype R (Fin <| Fintype.card <| ChooseBasisIndex R M)
+        (fun _ => R)).symm) (LinearEquiv.refl R N) ≪≫ₗ
+    lid_DirectSum R N (Fin <| Fintype.card <| ChooseBasisIndex R M)
 
 open DirectSum in
 /-- If `M` and `N` are `R`-modules and `f : M → N` a linear map, the tensor product of `f` and the
