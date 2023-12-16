@@ -75,9 +75,7 @@ lemma NormedAddCommGroup.completeSpace_of_summable_implies_tendsto
 space.  -/
 lemma NormedAddCommGroup.summable_implies_tendsto_of_complete [CompleteSpace E] (u : ℕ → E)
     (hu : Summable (‖u ·‖)) : ∃ a, Tendsto (fun n => ∑ i in range n, u i) atTop (𝓝 a) := by
-  have h_cauchy : CauchySeq (fun n => ∑ i in range n, u i) := by
-    refine cauchySeq_of_summable_dist ?_
-    simp [dist_eq_norm, sum_range_succ, hu]
-  exact cauchySeq_tendsto_of_complete h_cauchy
+  refine cauchySeq_tendsto_of_complete <| cauchySeq_of_summable_dist ?_
+  simp [dist_eq_norm, sum_range_succ, hu]
 
 end Normed
