@@ -700,10 +700,6 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [
       case succ n hn =>
         have h1 : γ_aux (Nat.succ n) = piecewise (Ioo (-(n + 1 : ℝ)) (n + 1)) (γ_aux n)
           (choose (h (n + 1 + 1))) := rfl
-        have h2 : Ioo (-(n + 1 + 1 : ℝ)) (n + 1 + 1) =
-          Ioo (-(n + 1 : ℝ)) (n + 1) ∪ Ioo (-((n : ℝ) + 1 + 1)) (n + 1 + 1) := by
-            rw [union_eq_self_of_subset_left]
-            exact Ioo_subset_Ioo (by linarith) (by linarith)
         rw [h1, Nat.cast_succ]
         constructor
         · rw [piecewise, if_pos, hn.1]
