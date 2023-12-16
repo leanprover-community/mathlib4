@@ -3,10 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-
 import Mathlib.Data.Fintype.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Game.Birthday
+import Mathlib.SetTheory.Game.Relabelling
 
 #align_import set_theory.game.short from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -19,6 +19,9 @@ In particular, this means there is a finite set of moves at every point.
 We prove that the order relations `≤` and `<`, and the equivalence relation `≈`, are decidable on
 short games, although unfortunately in practice `decide` doesn't seem to be able to
 prove anything using these instances.
+
+TODO: This is not the real "short game". It is only defined for `PGame`.
+  Maybe it needs to be renamed or refactored in the future.
 -/
 
 -- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
