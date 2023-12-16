@@ -406,7 +406,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
       exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
-    exact fg_span (LinearIndependent.finite h_lind)
+    exact fg_span (LinearIndependent.setFinite h_lind)
 
 theorem Zlattice.module_finite : Module.Finite ℤ L :=
   Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K hs))
