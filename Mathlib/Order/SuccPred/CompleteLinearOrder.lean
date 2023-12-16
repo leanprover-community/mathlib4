@@ -16,7 +16,6 @@ open Order
 
 variable {ι α : Type*}
 
-/-! ### ConditionallyCompleteLinearOrder -/
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] {s : Set α}
 
@@ -56,15 +55,10 @@ lemma exists_eq_ciInf_of_not_isPredLimit [Nonempty ι]
 
 end ConditionallyCompleteLinearOrder
 
-/-!
-### ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrder α] {s : Set α}
-
-The lemma names are primed to distinguish from the lemmas in `ConditionallyCompleteLinearOrder`.
--/
 section ConditionallyCompleteLinearOrderBot
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α}
 
+/-- See `csSup_mem_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
 lemma csSup_mem_of_not_isSuccLimit'
     (hbdd : BddAbove s) (hlim : ¬ IsSuccLimit (sSup s)) :
     sSup s ∈ s := by
@@ -72,12 +66,16 @@ lemma csSup_mem_of_not_isSuccLimit'
   · simp [isSuccLimit_bot] at hlim
   · exact csSup_mem_of_not_isSuccLimit hs hbdd hlim
 
+/-- See `exists_of_ciSup_eq_of_not_isSuccLimit` for the
+`ConditionallyCompleteLinearOrder` version. -/
 lemma exists_of_ciSup_eq_of_not_isSuccLimit'
     (f : ι → α) (hf : BddAbove (Set.range f)) (x : α) (hx : ¬ IsSuccLimit x) (h : ⨆ i, f i = x) :
     ∃ i, f i = x := by
   subst h
   exact csSup_mem_of_not_isSuccLimit' hf hx
 
+/-- See `exists_eq_ciSup_of_not_isSuccLimit` for the
+`ConditionallyCompleteLinearOrder` version. -/
 lemma exists_eq_ciSup_of_not_isSuccLimit'
     (f : ι → α) (hf : BddAbove (Set.range f)) (hx : ¬ IsSuccLimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
@@ -85,7 +83,6 @@ lemma exists_eq_ciSup_of_not_isSuccLimit'
 
 end ConditionallyCompleteLinearOrderBot
 
-/-! ### CompleteLinearOrder -/
 section CompleteLinearOrder
 variable [CompleteLinearOrder α] {s : Set α}
 
