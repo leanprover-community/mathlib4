@@ -209,7 +209,7 @@ theorem convexOn_const (c : β) (hs : Convex 𝕜 s) : ConvexOn 𝕜 s fun _ : E
 #align convex_on_const convexOn_const
 
 theorem concaveOn_const (c : β) (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s fun _ => c :=
-  @convexOn_const _ _ βᵒᵈ _ _ _ _ _ _ c hs
+  convexOn_const (β := βᵒᵈ) _ hs
 #align concave_on_const concaveOn_const
 
 theorem convexOn_of_convex_epigraph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 }) :
@@ -220,7 +220,7 @@ theorem convexOn_of_convex_epigraph (h : Convex 𝕜 { p : E × β | p.1 ∈ s �
 
 theorem concaveOn_of_convex_hypograph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 ≤ f p.1 }) :
     ConcaveOn 𝕜 s f :=
-  @convexOn_of_convex_epigraph 𝕜 E βᵒᵈ _ _ _ _ _ _ _ h
+  convexOn_of_convex_epigraph (β := βᵒᵈ) h
 #align concave_on_of_convex_hypograph concaveOn_of_convex_hypograph
 
 end Module
@@ -264,7 +264,7 @@ theorem convexOn_iff_convex_epigraph :
 
 theorem concaveOn_iff_convex_hypograph :
     ConcaveOn 𝕜 s f ↔ Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
-  @convexOn_iff_convex_epigraph 𝕜 E βᵒᵈ _ _ _ _ _ _ _ f
+  convexOn_iff_convex_epigraph (β := βᵒᵈ)
 #align concave_on_iff_convex_hypograph concaveOn_iff_convex_hypograph
 
 end OrderedSMul
@@ -329,7 +329,7 @@ theorem concaveOn_iff_forall_pos {s : Set E} {f : E → β} :
     ConcaveOn 𝕜 s f ↔
       Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
         a • f x + b • f y ≤ f (a • x + b • y) :=
-  @convexOn_iff_forall_pos 𝕜 E βᵒᵈ _ _ _ _ _ _ _
+  convexOn_iff_forall_pos (β := βᵒᵈ)
 #align concave_on_iff_forall_pos concaveOn_iff_forall_pos
 
 theorem convexOn_iff_pairwise_pos {s : Set E} {f : E → β} :
@@ -351,7 +351,7 @@ theorem concaveOn_iff_pairwise_pos {s : Set E} {f : E → β} :
       Convex 𝕜 s ∧
         s.Pairwise fun x y =>
           ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • f x + b • f y ≤ f (a • x + b • y) :=
-  @convexOn_iff_pairwise_pos 𝕜 E βᵒᵈ _ _ _ _ _ _ _
+  convexOn_iff_pairwise_pos (β := βᵒᵈ)
 #align concave_on_iff_pairwise_pos concaveOn_iff_pairwise_pos
 
 /-- A linear map is convex. -/
@@ -429,7 +429,7 @@ theorem LinearOrder.concaveOn_of_lt (hs : Convex 𝕜 s)
     (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
       a • f x + b • f y ≤ f (a • x + b • y)) :
     ConcaveOn 𝕜 s f :=
-  @LinearOrder.convexOn_of_lt _ _ βᵒᵈ _ _ _ _ _ _ s f hs hf
+  LinearOrder.convexOn_of_lt (β := βᵒᵈ) hs hf
 #align linear_order.concave_on_of_lt LinearOrder.concaveOn_of_lt
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic
@@ -459,7 +459,7 @@ theorem LinearOrder.strictConcaveOn_of_lt (hs : Convex 𝕜 s)
     (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
       a • f x + b • f y < f (a • x + b • y)) :
     StrictConcaveOn 𝕜 s f :=
-  @LinearOrder.strictConvexOn_of_lt _ _ βᵒᵈ _ _ _ _ _ _ _ _ hs hf
+  LinearOrder.strictConvexOn_of_lt (β := βᵒᵈ) hs hf
 #align linear_order.strict_concave_on_of_lt LinearOrder.strictConcaveOn_of_lt
 
 end LinearOrder
@@ -1054,7 +1054,7 @@ theorem concaveOn_iff_div {f : E → β} :
     ConcaveOn 𝕜 s f ↔
       Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → 0 < a + b →
         (a / (a + b)) • f x + (b / (a + b)) • f y ≤ f ((a / (a + b)) • x + (b / (a + b)) • y) :=
-  @convexOn_iff_div _ _ βᵒᵈ _ _ _ _ _ _ _
+  convexOn_iff_div (β := βᵒᵈ)
 #align concave_on_iff_div concaveOn_iff_div
 
 theorem strictConvexOn_iff_div {f : E → β} :
@@ -1074,7 +1074,7 @@ theorem strictConcaveOn_iff_div {f : E → β} :
     StrictConcaveOn 𝕜 s f ↔
       Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
         (a / (a + b)) • f x + (b / (a + b)) • f y < f ((a / (a + b)) • x + (b / (a + b)) • y) :=
-  @strictConvexOn_iff_div _ _ βᵒᵈ _ _ _ _ _ _ _
+  strictConvexOn_iff_div (β := βᵒᵈ)
 #align strict_concave_on_iff_div strictConcaveOn_iff_div
 
 end SMul
