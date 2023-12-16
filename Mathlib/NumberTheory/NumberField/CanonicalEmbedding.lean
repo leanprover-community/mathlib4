@@ -438,56 +438,61 @@ theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
   rw [← Basis.sum_repr (integralBasis K) x, map_sum]
   simp_rw [map_rat_smul]
-  refine Submodule.sum_mem _ (fun i _ ↦ Submodule.smul_mem _ _ (Submodule.subset_span ?_))
+  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span ?_)
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
 variable (I : (Ideal (𝓞 K))⁰)
 
-set_option maxHeartbeats 300000 in
-open LinearMap LinearEquiv in
-theorem det_idealLatticeBasis_eq_norm
+theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
+    (latticeBasis K).repr (mixedEmbedding K x) i = (integralBasis K).repr x i := by
+  rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
+    Rat.cast_inj]
+  let f := (mixedEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
+    (fun x ↦ mem_rat_span_latticeBasis K x)
+  suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
+    (integralBasis K).repr.toLinearMap from FunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext (integralBasis K) (fun i ↦ ?_)
+  have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
+    apply Subtype.val_injective
+    rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
+      latticeBasis_apply]
+    rfl
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
+
+theorem det_idealBasis_eq_norm
     (e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I)) :
     |Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (idealBasis K I) ∘ e))| =
       Ideal.absNorm (I : Ideal (𝓞 K)) := by
-  rw [Basis.det_apply]
-  let f := (mixedEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
-    (fun x ↦ mem_rat_span_latticeBasis K x)
-  let g := ((latticeBasis K).restrictScalars ℚ).repr.trans (integralBasis K).repr.symm
-  have h₁ : f ∘ (idealBasis K I) ∘ e = g.symm ∘ (idealBasis K I) ∘ e := by
-    suffices f = g.symm from congrArg ( · ∘ (idealBasis K I) ∘ e) (congrArg FunLike.coe this)
-    refine Basis.ext (integralBasis K) (fun i ↦ Subtype.val_injective ?_)
-    rw [codRestrict_apply, AlgHom.toLinearMap_apply, coe_coe, trans_symm, symm_symm, trans_apply,
-      Basis.repr_symm_apply, Basis.repr_self, Finsupp.total_single, one_smul,
-      Basis.restrictScalars_apply, latticeBasis_apply]
-    rfl
-  have h₂ : ((latticeBasis K).restrictScalars ℚ).map g = integralBasis K := by
-    ext
-    simp only [trans_symm, symm_symm, Basis.map_apply, trans_apply, Basis.repr_self,
-      Basis.repr_symm_apply, Finsupp.total_single, one_smul]
-  erw [← (latticeBasis K).restrictScalars_toMatrix ℚ (f ∘ (idealBasis K I) ∘ e)]
-  rw [h₁, ← ((latticeBasis K).restrictScalars ℚ).toMatrix_map, h₂, ← RingHom.map_det,
-    ← Basis.det_apply, eq_ratCast, ← Rat.cast_abs, ← Equiv.symm_symm e, ← Basis.coe_reindex,
+  have : Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (idealBasis K I) ∘ e)) =
+      (algebraMap ℚ ℝ) ((Basis.det (integralBasis K)) ((idealBasis K I) ∘ e)) := by
+    rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
+    congr
+    ext i j
+    simp_rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply, Function.comp_apply]
+    exact latticeBasis_repr_apply K _ i
+  rw [this, eq_ratCast, ← Rat.cast_abs, ← Equiv.symm_symm e, ← Basis.coe_reindex,
     det_idealBasis_eq_ideal_absNorm K I e, Rat.cast_coe_nat]
 
+/-- A `ℝ`-basis of `ℝ^r₁ × ℂ^r₂` that is also a `ℤ`-basis of the image of the ideal `I`. -/
 def idealLatticeBasis :
     Basis (ChooseBasisIndex ℤ I) ℝ (E K) := by
   let e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I) := by
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex, ideal_rank_eq]
+  refine Basis.reindex ?_ e
   suffices IsUnit ((latticeBasis K).det ((mixedEmbedding K) ∘ (idealBasis K I) ∘ e)) by
     rw [← is_basis_iff_det] at this
-    refine Basis.mk ?_ (by rw [← EquivLike.range_comp _ e, Function.comp.assoc, this.2])
-    convert LinearIndependent.comp this.1 e.symm e.symm.injective
-    exact (e.eq_comp_symm _ _).mpr rfl
-  rw [isUnit_iff_ne_zero, ne_eq, ← abs_eq_zero.not, det_idealLatticeBasis_eq_norm,
-    Nat.cast_eq_zero, ← ne_eq]
+    exact Basis.mk this.1 (by rw [this.2])
+  rw [isUnit_iff_ne_zero, ne_eq, ← abs_eq_zero.not, det_idealBasis_eq_norm, Nat.cast_eq_zero,
+    ← ne_eq]
   exact ideal_absNorm_ne_zero K I
 
 @[simp]
 theorem idealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
     idealLatticeBasis K I i = (mixedEmbedding K) (idealBasis K I i) := by
-  simp only [idealLatticeBasis, Basis.coe_mk, Function.comp_apply]
+  simp only [idealLatticeBasis, Basis.coe_reindex, Basis.coe_mk, Function.comp_apply,
+    Equiv.apply_symm_apply]
 
 theorem mem_span_idealLatticeBasis (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (idealLatticeBasis K I)) ↔
@@ -828,7 +833,7 @@ theorem volume_fundamentalDomain_idealLatticeBasis_eq :
     measure_fundamentalDomain ((idealLatticeBasis K I).reindex e), show
     (Basis.reindex (idealLatticeBasis K I) e) = (mixedEmbedding K) ∘ (idealBasis K I) ∘
     e.symm by ext1; simp only [Basis.coe_reindex, Function.comp_apply, idealLatticeBasis_apply],
-    det_idealLatticeBasis_eq_norm, ENNReal.ofReal_coe_nat]
+    det_idealBasis_eq_norm, ENNReal.ofReal_coe_nat]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_

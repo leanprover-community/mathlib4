@@ -3,27 +3,11 @@ import Mathlib.RingTheory.ClassGroup
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.Ideal.Norm
 
-section Basis
-
-open Submodule
-
-variable {ι : Type*} (R : Type*)  {M S : Type*} [CommRing R] [CommRing S] [Nontrivial S]
-  [AddCommGroup M] [Algebra R S] [Module S M] [Module R M] [IsScalarTower R S M]
-  [NoZeroSMulDivisors R S] (b : Basis ι S M)
-
-theorem Basis.restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] (v : ι → span R (Set.range b)) :
-    (algebraMap R S).mapMatrix ((b.restrictScalars R).toMatrix v) =
-      b.toMatrix (fun i ↦ (v i : M)) := by
-  ext
-  rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
-    Basis.restrictScalars_repr_apply, Basis.toMatrix_apply]
-
-end Basis
-
 section extendScalars
 
 open FiniteDimensional Submodule
 
+--- Generalize?
 variable {ι R K : Type*} [Fintype ι] [Nonempty ι] [CommRing R] [Field K] [Algebra R K]
   [IsFractionRing R K] {V : Type*} [CommRing V] [Algebra R V] [Module K V] {M : Submodule R V}
   [IsScalarTower R K V] (b : Basis ι R M) (h : Fintype.card ι = finrank K V)
@@ -31,7 +15,7 @@ variable {ι R K : Type*} [Fintype ι] [Nonempty ι] [CommRing R] [Field K] [Alg
 /-- Docstring -/
 noncomputable def Basis.extendScalars : Basis ι K V :=
   basisOfLinearIndependentOfCardEqFinrank
-    (( LinearIndependent.iff_fractionRing R K).mp <|
+    ((LinearIndependent.iff_fractionRing R K).mp <|
       LinearIndependent.map' b.linearIndependent _ (ker_subtype M)) h
 
 @[simp]
@@ -64,21 +48,6 @@ theorem Basis.extendScalars_mem_span  (x : V) :
 
 end extendScalars
 
-section ClassGroup
-
-theorem ClassGroup.mk0_eq_mk0_inv_iff {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R]
-    {I : (nonZeroDivisors (Ideal R))} {J : ↥(nonZeroDivisors (Ideal R))} :
-    ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ ↔
-      ∃ (x : R) (_ : x ≠ 0), ↑I * ↑J = Ideal.span {x} := by
-  rw [eq_inv_iff_mul_eq_one, ← map_mul, ClassGroup.mk0_eq_one_iff, Submodule.IsPrincipal_iff,
-    Submonoid.coe_mul]
-  refine ⟨fun ⟨a, ha⟩ ↦ ⟨a, ?_, ha⟩, fun ⟨a, _, ha⟩ ↦ ⟨a, ha⟩⟩
-  by_contra!
-  rw [this, Submodule.span_zero_singleton] at ha
-  exact nonZeroDivisors.coe_ne_zero _ <| J.prop _ ha
-
-end ClassGroup
-
 section Ring
 
 open scoped nonZeroDivisors
@@ -99,6 +68,22 @@ theorem Ideal.nonZeroDivisors_coe_top : ((⊤ : (Ideal R)⁰) : Ideal R) = ⊤ :
 
 end Ring
 
+section Ideal
+
+open Module
+open scoped nonZeroDivisors
+
+variable {R S : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S] [IsDomain S]
+  [Algebra R S] [Module.Free R S] [Module.Finite R S]  (I : (Ideal S)⁰)
+
+instance : Module.Free R I :=
+  Free.of_basis (I.1.selfBasis (Free.chooseBasis R S) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
+
+instance : Module.Finite R I :=
+   Finite.of_basis (I.1.selfBasis (Free.chooseBasis R S) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
+
+end Ideal
+
 open NumberField FiniteDimensional Module
 
 namespace NumberField
@@ -111,12 +96,6 @@ variable (I : (Ideal (𝓞 K))⁰)
 
 attribute [local instance 2000] inst_ringOfIntegersAlgebra Algebra.toSMul Algebra.toModule
   Submodule.module
-
-instance : Module.Free ℤ I :=
-  Free.of_basis (I.1.selfBasis (RingOfIntegers.basis K) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
-
-instance : Module.Finite ℤ I :=
-  Finite.of_basis (I.1.selfBasis (RingOfIntegers.basis K) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
 
 theorem ideal_rank_eq : finrank ℤ I = finrank ℤ (𝓞 K) := by
   let b := (I.1.selfBasis (RingOfIntegers.basis K) (mem_nonZeroDivisors_iff_ne_zero.mp I.2))
