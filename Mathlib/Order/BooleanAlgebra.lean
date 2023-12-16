@@ -326,6 +326,15 @@ theorem le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
 #align le_sdiff_iff le_sdiff_iff
 
+@[simp] lemma sdiff_eq_right : x \ y = y ↔ x = ⊥ ∧ y = ⊥ := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨h, rfl⟩ := disjoint_sdiff_self_left.eq_iff.1 h
+    simpa using h
+  · rintro ⟨rfl, rfl⟩
+    exact bot_sdiff
+
+lemma sdiff_ne_right : x \ y ≠ y ↔ x ≠ ⊥ ∨ y ≠ ⊥ := sdiff_eq_right.not.trans not_and_or
+
 theorem sdiff_lt_sdiff_right (h : x < y) (hz : z ≤ x) : x \ z < y \ z :=
   (sdiff_le_sdiff_right h.le).lt_of_not_le
     fun h' => h.not_le <| le_sdiff_sup.trans <| sup_le_of_le_sdiff_right h' hz
