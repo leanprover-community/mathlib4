@@ -301,10 +301,10 @@ theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v 
 
 lemma _root_.LinearIndependent.finite {ι : Type*} [FiniteDimensional K V] {f : ι → V}
     (h : LinearIndependent K f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 $ FiniteDimensional.lt_aleph0_of_linearIndependent h
+  Cardinal.lt_aleph0_iff_finite.1 <| FiniteDimensional.lt_aleph0_of_linearIndependent h
 
 theorem not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [FiniteDimensional K V]
-    (v : ι → V) : ¬LinearIndependent K v := mt LinearIndependent.finite $ @not_finite _ _
+    (v : ι → V) : ¬LinearIndependent K v := mt LinearIndependent.finite <| @not_finite _ _
 #align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
 
 theorem _root_.LinearIndependent.setFinite [FiniteDimensional K V] {b : Set V}
