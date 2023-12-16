@@ -16,7 +16,7 @@ variable {n : ℕ} {M M₁ : Type*}
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
 @[reducible]
-def AddCommMonoid.ZModModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
+def AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
     Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
@@ -35,11 +35,11 @@ def AddCommMonoid.ZModModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n �
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
 @[reducible]
-def AddCommGroup.ZModModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
+def AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
   | 0 => AddCommGroup.intModule G
-  | _ + 1 => AddCommMonoid.ZModModule h
+  | _ + 1 => AddCommMonoid.zmodModule h
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [AddMonoidHomClass F M M₁]
   [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M] [AddSubgroupClass S M] {x : M} {K : S}
