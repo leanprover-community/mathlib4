@@ -40,8 +40,6 @@ noncomputable section
 
 universe u v v'
 
-variable [UnivLE.{u, v}]
-
 variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
 
 /--
@@ -94,7 +92,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Module.Baer
 
-variable {R Q} {M N : Type v} [AddCommGroup M] [AddCommGroup N]
+variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
 
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
@@ -463,7 +461,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
-protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := by
+protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
   let eI := Shrink.linearEquiv I R
   let eR := Shrink.linearEquiv R R
@@ -473,7 +471,7 @@ protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q :=
 
   exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa using hg' (equivShrink I ⟨x, mx⟩)⟩
 
-protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
+protected theorem iff_injective [UnivLE.{u, v}] : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective.{u, v}⟩
 
 end Module.Baer
@@ -481,7 +479,7 @@ end Module.Baer
 
 section ULift
 
-variable {M : Type v} [AddCommGroup M] [Module R M]
+variable {M : Type v} [AddCommGroup M] [Module R M] [UnivLE.{u, v}]
 
 lemma Module.ulift_injective_of_injective
     (inj : Module.Injective R M) :
@@ -518,3 +516,32 @@ instance ModuleCat.ulift_injective_of_injective
       (inj := Module.injective_module_of_injective_object (inj := inj)))
 
 end ULift
+
+section lifting_property
+
+universe uR uM uP uP'
+
+variable [UnivLE.{uR, uM}]
+variable (R : Type uR) [Ring R]
+variable (M : Type uM) [AddCommGroup M] [Module R M] [inj : Module.Injective R M]
+variable (P : Type uP) [AddCommGroup P] [Module R P]
+variable (P' : Type uP') [AddCommGroup P'] [Module R P']
+
+lemma Module.Injective.lifting_property
+    (f : P →ₗ[R] P') (hf : Function.Injective f)
+    (g : P →ₗ[R] M) : ∃ h : P' →ₗ[R] M, h ∘ₗ f = g := by
+  have inj' : Module.Injective R (ULift.{max uM uP uP'} M) :=
+    Module.ulift_injective_of_injective.{uR, uM, max uM uP uP'} R inj
+  obtain ⟨h, H⟩ := inj'.out
+    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ f ∘ₗ ULift.moduleEquiv.toLinearMap :
+      ULift.{max uM uP uP'} P →ₗ[R] ULift.{max uM uP uP'} P')
+    (ULift.moduleEquiv.symm.injective.comp (hf.comp ULift.moduleEquiv.injective))
+    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap)
+  refine ⟨ULift.moduleEquiv.toLinearMap ∘ₗ h ∘ₗ ULift.moduleEquiv.symm.toLinearMap, ?_⟩
+  ext x
+  specialize H (ULift.up x)
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ULift.moduleEquiv_apply,
+    ULift.moduleEquiv_symm_apply] at H ⊢
+  rw [H]
+
+end lifting_property
