@@ -194,4 +194,28 @@ lemma star_eq_self_of_nonneg {x : R} (hx : 0 ≤ x) : star x = x := by
   | H1 => exact star_zero _
   | Hmul z _ w _ hz hw => rw [star_add, hz, hw]
 
+@[simp]
+lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
+  suffices ∀ x, 0 ≤ x → 0 ≤ star x from
+    ⟨by simpa only [star_star] using this (star x), this x⟩
+  intro x hx
+  rwa [star_eq_self_of_nonneg hx]
+
+
+@[simp]
+lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
+  suffices ∀ x y, x ≤ y → star x ≤ star y from
+    ⟨by simpa only [star_star] using this (star x) (star y), this x y⟩
+  intro x y h
+  rw [StarOrderedRing.le_iff] at h ⊢
+  obtain ⟨d, hd, rfl⟩ := h
+  refine ⟨star d, ?_, star_add _ _⟩
+  induction hd using AddSubmonoid.closure_induction' with
+  | Hs y hy =>
+    obtain ⟨z, rfl⟩ := Set.mem_range.mpr hy
+    dsimp at *
+    rw [star_mul, star_star]
+  | H1 => exact star_zero _
+  | Hmul z _ w _ hz hw => rw [star_add, hz, hw]
+
 end NonUnitalSemiring

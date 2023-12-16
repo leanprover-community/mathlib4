@@ -110,6 +110,14 @@ protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : 
     rw [pow_succ', pow_succ]
     simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
+protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) :
+    PosSemidef (M⁻¹) := by
+  by_cases h : IsUnit M.det
+  ·
+    simpa [h, conjTranspose_nonsing_inv] using hM.mul_mul_conjTranspose_same (M⁻¹)
+  · rw [nonsing_inv_apply_not_isUnit _ h]
+    exact .zero
+
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
@@ -119,6 +127,13 @@ theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
   convert hM.2 (star x) using 1
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+
+theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := by
+  refine ⟨IsHermitian.conjTranspose hM.1, fun x => ?_⟩
+  rw [star_le]
+  convert hM.2 (star x) using 1
+  rw [mulVec_conjTranspose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm, star_vecMul,
+    star_star]
 
 section sqrt
 
