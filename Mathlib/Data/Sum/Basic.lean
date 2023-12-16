@@ -269,7 +269,7 @@ theorem exists_of_liftRel_left_isRight (h₁ : LiftRel r s x y) (h₂ : x.isRigh
 
 theorem exists_of_liftRel_right_isRight (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
-exists_of_liftRel_left_isRight h₁ (isRight_eq_of_liftRel h₁ ▸ h₂)
+  exists_of_liftRel_left_isRight h₁ (isRight_eq_of_liftRel h₁ ▸ h₂)
 
 end LiftRel
 
