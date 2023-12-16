@@ -247,12 +247,13 @@ theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
 #align list.singleton_eq List.singleton_eq
 
-theorem insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) : Insert.insert x l = x :: l :=
-  if_neg h
+theorem insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) :
+    Insert.insert x l = x :: l :=
+  insert_of_not_mem h
 #align list.insert_neg List.insert_neg
 
 theorem insert_pos [DecidableEq α] {x : α} {l : List α} (h : x ∈ l) : Insert.insert x l = l :=
-  if_pos h
+  insert_of_mem h
 #align list.insert_pos List.insert_pos
 
 theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List α) = [x, y] := by

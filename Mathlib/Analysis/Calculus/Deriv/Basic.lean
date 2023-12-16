@@ -616,14 +616,14 @@ theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s
 
 theorem HasStrictDerivAt.congr_deriv (h : HasStrictDerivAt f f' x) (h' : f' = g') :
     HasStrictDerivAt f g' x :=
-  h' ▸ h
+  h.congr_fderiv <| congr_arg _ h'
 
 theorem HasDerivAt.congr_deriv (h : HasDerivAt f f' x) (h' : f' = g') : HasDerivAt f g' x :=
-  h' ▸ h
+  HasFDerivAt.congr_fderiv h <| congr_arg _ h'
 
 theorem HasDerivWithinAt.congr_deriv (h : HasDerivWithinAt f f' s x) (h' : f' = g') :
     HasDerivWithinAt f g' s x :=
-  h' ▸ h
+  HasFDerivWithinAt.congr_fderiv h <| congr_arg _ h'
 
 theorem HasDerivAt.congr_of_eventuallyEq (h : HasDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasDerivAt f₁ f' x :=
