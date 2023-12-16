@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -165,8 +164,8 @@ theorem weightedVSubOfPoint_indicator_subset (w : ι → k) (p : ι → P) (b : 
     (h : s₁ ⊆ s₂) :
     s₁.weightedVSubOfPoint p b w = s₂.weightedVSubOfPoint p b (Set.indicator (↑s₁) w) := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply]
-  exact
-    Set.sum_indicator_subset_of_eq_zero w (fun i wi => wi • (p i -ᵥ b : V)) h fun i => zero_smul k _
+  exact Eq.symm $
+    sum_indicator_subset_of_eq_zero w (fun i wi => wi • (p i -ᵥ b : V)) h fun i => zero_smul k _
 #align finset.weighted_vsub_of_point_indicator_subset Finset.weightedVSubOfPoint_indicator_subset
 
 /-- A weighted sum, over the image of an embedding, equals a weighted
@@ -248,7 +247,7 @@ from the given points, as a linear map on the weights.  This is
 intended to be used when the sum of the weights is 0; that condition
 is specified as a hypothesis on those lemmas that require it. -/
 def weightedVSub (p : ι → P) : (ι → k) →ₗ[k] V :=
-  s.weightedVSubOfPoint p (Classical.choice S.Nonempty)
+  s.weightedVSubOfPoint p (Classical.choice S.nonempty)
 #align finset.weighted_vsub Finset.weightedVSub
 
 /-- Applying `weightedVSub` with given weights.  This is for the case
@@ -258,7 +257,7 @@ that base point will cancel out later); a more typical use case for
 `weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero` and then
 using `weightedVSubOfPoint_apply`. -/
 theorem weightedVSub_apply (w : ι → k) (p : ι → P) :
-    s.weightedVSub p w = ∑ i in s, w i • (p i -ᵥ Classical.choice S.Nonempty) := by
+    s.weightedVSub p w = ∑ i in s, w i • (p i -ᵥ Classical.choice S.nonempty) := by
   simp [weightedVSub, LinearMap.sum_apply]
 #align finset.weighted_vsub_apply Finset.weightedVSub_apply
 
@@ -371,7 +370,7 @@ points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
 def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
     where
-  toFun w := s.weightedVSubOfPoint p (Classical.choice S.Nonempty) w +ᵥ Classical.choice S.Nonempty
+  toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
 #align finset.affine_combination Finset.affineCombination
@@ -395,7 +394,7 @@ point with
 then using `weightedVSubOfPoint_apply`. -/
 theorem affineCombination_apply (w : ι → k) (p : ι → P) :
     (s.affineCombination k p) w =
-      s.weightedVSubOfPoint p (Classical.choice S.Nonempty) w +ᵥ Classical.choice S.Nonempty :=
+      s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty :=
   rfl
 #align finset.affine_combination_apply Finset.affineCombination_apply
 
@@ -438,8 +437,8 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
   simp only [affineCombination, weightedVSubOfPoint_apply, id.def, vadd_right_cancel_iff,
     Function.comp_apply, AffineMap.coe_mk]
-  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.Nonempty)
-  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.Nonempty)
+  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
+  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
   change univ.sum g₁ = (image f univ).sum g₂
   have hgf : g₁ = g₂ ∘ f := by
     ext
@@ -633,8 +632,8 @@ variable {k V}
 theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
     (p : ι → P) (w : ι → k) (hw : s.sum w = 1) (f : P →ᵃ[k] P₂) :
     f (s.affineCombination k p w) = s.affineCombination k (f ∘ p) w := by
-  have b := Classical.choice (inferInstance : AffineSpace V P).Nonempty
-  have b₂ := Classical.choice (inferInstance : AffineSpace V₂ P₂).Nonempty
+  have b := Classical.choice (inferInstance : AffineSpace V P).nonempty
+  have b₂ := Classical.choice (inferInstance : AffineSpace V₂ P₂).nonempty
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p hw b,
     s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w (f ∘ p) hw b₂, ←
     s.weightedVSubOfPoint_vadd_eq_of_sum_eq_one w (f ∘ p) hw (f b) b₂]
@@ -903,7 +902,7 @@ theorem centroidWeightsIndicator_def :
 /-- The sum of the weights for the centroid indexed by a `Fintype`. -/
 theorem sum_centroidWeightsIndicator [Fintype ι] :
     ∑ i, s.centroidWeightsIndicator k i = ∑ i in s, s.centroidWeights k i :=
-  (Set.sum_indicator_subset _ (subset_univ _)).symm
+  sum_indicator_subset _ (subset_univ _)
 #align finset.sum_centroid_weights_indicator Finset.sum_centroidWeightsIndicator
 
 /-- In the characteristic zero case, the weights in the centroid
@@ -1100,7 +1099,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     let s' := insert i0 s
     let w' := Set.indicator (↑s) w
     have h' : ∑ i in s', w' i = 0 := by
-      rw [← h, Set.sum_indicator_subset _ (Finset.subset_insert i0 s)]
+      rw [← h, Finset.sum_indicator_subset _ (Finset.subset_insert i0 s)]
     have hs' : s'.weightedVSub p w' = p1 -ᵥ p i0 := by
       rw [hs]
       exact (Finset.weightedVSub_indicator_subset _ _ (Finset.subset_insert i0 s)).symm

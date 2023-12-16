@@ -33,6 +33,8 @@ along with a term `a : α` if the value is `True`.
 
 -/
 
+universe u
+
 namespace Option
 
 variable {α β γ δ : Type*}
@@ -110,7 +112,7 @@ theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
 #align option.bind_eq_bind Option.bind_eq_bind
 
@@ -326,7 +328,7 @@ theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   cases u
-  by_cases h : p <;> simp [_root_.guard, h]
+  by_cases h : p <;> simp [_root_.guard, h]; rfl
 #align option.guard_eq_some' Option.guard_eq_some'
 
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :

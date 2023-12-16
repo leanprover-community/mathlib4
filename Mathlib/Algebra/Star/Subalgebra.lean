@@ -445,6 +445,7 @@ theorem adjoin_toSubalgebra (s : Set A) :
   rfl
 #align star_subalgebra.adjoin_to_subalgebra StarSubalgebra.adjoin_toSubalgebra
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarSubalgebra.subset_adjoin
@@ -611,8 +612,10 @@ instance adjoinCommRingOfIsStarNormal (R : Type u) {A : Type v} [CommRing R] [St
 
 variable {R} -- porting note: redundant binder annotation update
 
-instance completeLattice : CompleteLattice (StarSubalgebra R A) :=
-  GaloisInsertion.liftCompleteLattice StarSubalgebra.gi
+instance completeLattice : CompleteLattice (StarSubalgebra R A) where
+  __ := GaloisInsertion.liftCompleteLattice StarSubalgebra.gi
+  bot := { toSubalgebra := ⊥, star_mem' := fun ⟨r, hr⟩ => ⟨star r, hr ▸ algebraMap_star_comm _⟩ }
+  bot_le S := (bot_le : ⊥ ≤ S.toSubalgebra)
 
 instance inhabited : Inhabited (StarSubalgebra R A) :=
   ⟨⊤⟩
@@ -701,18 +704,14 @@ theorem iInf_toSubalgebra {ι : Sort*} (S : ι → StarSubalgebra R A) :
   SetLike.coe_injective <| by simp
 #align star_subalgebra.infi_to_subalgebra StarSubalgebra.iInf_toSubalgebra
 
-theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := by
-  change Algebra.adjoin R (∅ ∪ star ∅) = Algebra.adjoin R ∅
-  simp
+theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := rfl
 #align star_subalgebra.bot_to_subalgebra StarSubalgebra.bot_toSubalgebra
 
-theorem mem_bot {x : A} : x ∈ (⊥ : StarSubalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := by
-  rw [← mem_toSubalgebra, bot_toSubalgebra, Algebra.mem_bot]
+theorem mem_bot {x : A} : x ∈ (⊥ : StarSubalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 #align star_subalgebra.mem_bot StarSubalgebra.mem_bot
 
 @[simp]
-theorem coe_bot : ((⊥ : StarSubalgebra R A) : Set A) = Set.range (algebraMap R A) := by
-  simp [Set.ext_iff, mem_bot]
+theorem coe_bot : ((⊥ : StarSubalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 #align star_subalgebra.coe_bot StarSubalgebra.coe_bot
 
 theorem eq_top_iff {S : StarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
@@ -737,7 +736,7 @@ variable [hF : StarAlgHomClass F R A B] (f g : F)
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A :=
   { toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
-    star_mem' := @fun a (ha : f a = g a) => by simpa only [←map_star] using congrArg star ha }
+    star_mem' := @fun a (ha : f a = g a) => by simpa only [← map_star] using congrArg star ha }
 -- porting note: much like `StarSubalgebra.copy` the old proof was broken and hard to fix
 #align star_alg_hom.equalizer StarAlgHom.equalizer
 

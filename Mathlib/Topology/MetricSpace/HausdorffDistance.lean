@@ -162,8 +162,9 @@ theorem mem_iff_infEdist_zero_of_closed (h : IsClosed s) : x ∈ s ↔ infEdist 
 
 /-- The infimum edistance of a point to a set is positive if and only if the point is not in the
 closure of the set. -/
-theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} : 0 < infEdist x E ↔ x ∉ closure E :=
-  by rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
+theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} :
+    0 < infEdist x E ↔ x ∉ closure E := by
+  rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 #align emetric.inf_edist_pos_iff_not_mem_closure EMetric.infEdist_pos_iff_not_mem_closure
 
 theorem infEdist_closure_pos_iff_not_mem_closure {x : α} {E : Set α} :
@@ -217,7 +218,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
     have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
       ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 a_lt_one
-    rcases((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
+    rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
     simp only [mem_iUnion, mem_Ici, mem_preimage]
     exact ⟨n, hn.le⟩
   show Monotone F

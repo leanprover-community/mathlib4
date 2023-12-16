@@ -122,9 +122,9 @@ attribute [local simp] Int.zero_div
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
-  · simp
+  · decide
   · show ofNat _ = _
-    rw [Nat.div_eq_zero] <;> simp
+    rw [Nat.div_eq_of_lt] <;> simp
   · decide
 #align int.div2_bit Int.div2_bit
 

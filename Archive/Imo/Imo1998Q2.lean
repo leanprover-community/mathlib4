@@ -45,19 +45,19 @@ set_option linter.uppercaseLean3 false
 
 open scoped Classical
 
-variable {C J : Type _} (r : C → J → Prop)
+variable {C J : Type*} (r : C → J → Prop)
 
 namespace Imo1998Q2
 
 noncomputable section
 
 /-- An ordered pair of judges. -/
-abbrev JudgePair (J : Type _) :=
+abbrev JudgePair (J : Type*) :=
   J × J
 #align imo1998_q2.judge_pair Imo1998Q2.JudgePair
 
 /-- A triple consisting of contestant together with an ordered pair of judges. -/
-abbrev AgreedTriple (C J : Type _) :=
+abbrev AgreedTriple (C J : Type*) :=
   C × JudgePair J
 #align imo1998_q2.agreed_triple Imo1998Q2.AgreedTriple
 
@@ -168,7 +168,7 @@ theorem A_card_upper_bound {k : ℕ}
 
 end
 
-theorem add_sq_add_sq_sub {α : Type _} [Ring α] (x y : α) :
+theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
 #align imo1998_q2.add_sq_add_sq_sub Imo1998Q2.add_sq_add_sq_sub
 

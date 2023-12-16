@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
 import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Analysis.Convex.Basic
 
 #align_import topology.homotopy.path from "leanprover-community/mathlib"@"bb9d1c5085e0b7ea619806a68c5021927cecb2a6"
@@ -116,6 +116,9 @@ def symm (F : Homotopy p₀ p₁) : Homotopy p₁ p₀ :=
 theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
   ContinuousMap.HomotopyRel.symm_symm F
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
+
+theorem symm_bijective : Function.Bijective (Homotopy.symm : Homotopy p₀ p₁ → Homotopy p₁ p₀) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /--
 Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p₀ p₂` by putting the first

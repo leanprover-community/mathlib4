@@ -148,7 +148,7 @@ def ofNatCode : ℕ → Code
   | n + 4 =>
     let m := n.div2.div2
     have hm : m < n + 4 := by
-      simp [Nat.div2_val]
+      simp only [div2_val]
       exact
         lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
           (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -170,7 +170,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | n + 4 => by
     let m := n.div2.div2
     have hm : m < n + 4 := by
-      simp [Nat.div2_val]
+      simp only [div2_val]
       exact
         lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
           (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -180,7 +180,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     have IH1 := encode_ofNatCode m.unpair.1
     have IH2 := encode_ofNatCode m.unpair.2
     conv_rhs => rw [← Nat.bit_decomp n, ← Nat.bit_decomp n.div2]
-    simp [encodeCode, ofNatCode]
+    simp only [ofNatCode._eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
 
@@ -201,7 +201,7 @@ theorem ofNatCode_eq : ofNat Code = ofNatCode :=
 
 theorem encode_lt_pair (cf cg) :
     encode cf < encode (pair cf cg) ∧ encode cg < encode (pair cf cg) := by
-  simp [encodeCode_eq, encodeCode]
+  simp only [encodeCode_eq, encodeCode]
   have := Nat.mul_le_mul_right (Nat.pair cf.encodeCode cg.encodeCode) (by decide : 1 ≤ 2 * 2)
   rw [one_mul, mul_assoc] at this
   have := lt_of_le_of_lt this (lt_add_of_pos_right _ (by decide : 0 < 4))
@@ -221,7 +221,7 @@ theorem encode_lt_prec (cf cg) :
 #align nat.partrec.code.encode_lt_prec Nat.Partrec.Code.encode_lt_prec
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
-  simp [encodeCode_eq, encodeCode]
+  simp only [encodeCode_eq, encodeCode]
   have := Nat.mul_le_mul_right cf.encodeCode (by decide : 1 ≤ 2 * 2)
   rw [one_mul, mul_assoc] at this
   refine' lt_of_le_of_lt (le_trans this _) (lt_add_of_pos_right _ (by decide : 0 < 4))
@@ -370,7 +370,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
     G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
       some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp [Nat.div2_val]
+    simp only [div2_val]
     exact
       lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
         (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -477,7 +477,7 @@ theorem rec_prim {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc
     G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
       some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp [Nat.div2_val]
+    simp only [div2_val]
     exact
       lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
         (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -589,7 +589,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
     G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
       some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp [Nat.div2_val]
+    simp only [div2_val]
     exact
       lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
         (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -788,7 +788,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       ∀ {k k₂ n x : ℕ} {o₁ o₂ : Option ℕ},
         k ≤ k₂ → (x ∈ o₁ → x ∈ o₂) →
           x ∈ do { guard (n ≤ k); o₁ } → x ∈ do { guard (n ≤ k₂); o₂ } := by
-      simp [Bind.bind]
+      simp only [Option.mem_def, bind, Option.bind_eq_some, Option.guard_eq_some', exists_and_left,
+        exists_const, and_imp]
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
     simp at h ⊢
@@ -803,7 +804,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       exact h.imp fun a => And.imp (hg _ _) (hf _ _)
     · -- prec cf cg
       revert h
-      simp [Bind.bind]
+      simp only [unpaired, bind, Option.mem_def]
       induction n.unpair.2 <;> simp
       · apply hf
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
@@ -892,7 +893,8 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n :=
               le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
             evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
             evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
-        simp [evaln, Bind.bind]
+        simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
+          Option.guard_eq_some', exists_and_left, exists_const]
         exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
     case rfind' cf hf =>
       rcases h with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩

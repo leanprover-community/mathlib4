@@ -114,7 +114,7 @@ theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
   gcd.induction x y (by simp) fun x y h IH s t s' t' => by
-    simp [xgcdAux_rec, h, IH]
+    simp only [h, xgcdAux_rec, IH]
     rw [← gcd_rec]
 #align nat.xgcd_aux_fst Nat.xgcdAux_fst
 

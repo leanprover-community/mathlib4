@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -587,7 +587,7 @@ theorem span_singleton_mul_left_inj [IsDomain R] {x : R} (hx : x ≠ 0) :
 #align ideal.span_singleton_mul_left_inj Ideal.span_singleton_mul_left_inj
 
 theorem span_singleton_mul_right_injective [IsDomain R] {x : R} (hx : x ≠ 0) :
-    Function.Injective ((· * ·) (span {x} : Ideal R)) := fun _ _ =>
+    Function.Injective ((span {x} : Ideal R) * ·) := fun _ _ =>
   (span_singleton_mul_right_inj hx).mp
 #align ideal.span_singleton_mul_right_injective Ideal.span_singleton_mul_right_injective
 
@@ -632,12 +632,18 @@ theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 #align ideal.finset_inf_span_singleton Ideal.finset_inf_span_singleton
 
-theorem iInf_span_singleton {ι : Type*} [Fintype ι] (I : ι → R)
+theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
-    ⨅ i, Ideal.span ({I i} : Set R) = Ideal.span {∏ i, I i} := by
+    ⨅ i, span ({I i} : Set R) = span {∏ i, I i} := by
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
+
+theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
+    {I : ι → ℕ} (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
+    ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
+  rw [iInf_span_singleton, Nat.cast_prod]
+  exact fun i j h ↦ (hI i j h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -1695,6 +1701,41 @@ theorem comap_bot_of_injective : Ideal.comap f ⊥ = ⊥ :=
 
 end Injective
 
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm (map f I) = I`. -/
+@[simp]
+theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
+    (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
+#align ideal.map_of_equiv Ideal.map_of_equiv
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
+  then `comap f (comap f.symm I) = I`. -/
+@[simp]
+theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
+    (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
+  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
+    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
+#align ideal.comap_of_equiv Ideal.comap_of_equiv
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
+theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
+  le_antisymm (Ideal.map_le_comap_of_inverse _ _ _ (Equiv.left_inv' _))
+      (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
+#align ideal.map_comap_of_equiv Ideal.map_comap_of_equiv
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
+@[simp]
+theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm = I.map f :=
+  (map_comap_of_equiv I f).symm
+
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
+@[simp]
+theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.map f.symm = I.comap f :=
+  map_comap_of_equiv I (RingEquiv.symm f)
+
+
+
 end Semiring
 
 section Ring
@@ -1768,27 +1809,6 @@ theorem comap_le_comap_iff_of_surjective (I J : Ideal S) : comap f I ≤ comap f
 
 end Surjective
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f (map f.symm) = I`. -/
-@[simp]
-theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
-    (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, map_map,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
-#align ideal.map_of_equiv Ideal.map_of_equiv
-
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm (comap f) = I`. -/
-@[simp]
-theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
-    (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
-  rw [← RingEquiv.toRingHom_eq_coe, ← RingEquiv.toRingHom_eq_coe, comap_comap,
-    RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, comap_id]
-#align ideal.comap_of_equiv Ideal.comap_of_equiv
-
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
-theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
-  le_antisymm (le_comap_of_map_le (map_of_equiv I f).le)
-    (le_map_of_comap_le_of_surjective _ f.surjective (comap_of_equiv I f).le)
-#align ideal.map_comap_of_equiv Ideal.map_comap_of_equiv
 
 section Bijective
 
@@ -2012,6 +2032,9 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
+  -- This used to be the end of the proof before leanprover/lean4#2644
+  erw [LinearEquiv.coe_ofEq_apply, LinearEquiv.ofInjective_apply, Algebra.coe_lmul_eq_mul,
+    LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
@@ -2025,6 +2048,21 @@ theorem constr_basisSpanSingleton {N : Type*} [Semiring N] [Module N S] [SMulCom
 end Basis
 
 end Ideal
+
+section span_range
+variable {α R : Type*} [Semiring R]
+
+theorem Finsupp.mem_ideal_span_range_iff_exists_finsupp {x : R} {v : α → R} :
+    x ∈ Ideal.span (Set.range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a * v i) = x :=
+  Finsupp.mem_span_range_iff_exists_finsupp
+
+/-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
+-/
+theorem mem_ideal_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
+    x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
+  mem_span_range_iff_exists_fun _
+
+end span_range
 
 theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
     Associates.mk (Ideal.span {r} : Ideal R) ≠ 0 ↔ r ≠ 0 := by
@@ -2174,6 +2212,14 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
   mem_comap.2 (((RingHom.mem_ker f).1 hx).symm ▸ K.zero_mem)
 #align ideal.ker_le_comap Ideal.ker_le_comap
 
+theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : Ideal R}
+    [IsPrime I] : IsPrime (map f I) := by
+  have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
+  rw [h, map_comap_of_equiv I (f : R ≃+* S)]
+  exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S))
+#align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
+
+
 end Semiring
 
 section Ring
@@ -2223,10 +2269,6 @@ theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injecti
   rw [map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot f).mp hf, le_bot_iff]
 #align ideal.map_eq_bot_iff_of_injective Ideal.map_eq_bot_iff_of_injective
 
-theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : Ideal R}
-    [IsPrime I] : IsPrime (map f I) :=
-  map_isPrime_of_surjective (EquivLike.surjective f) <| by simp only [RingHom.ker_equiv, bot_le]
-#align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
 
 end Ring
 
@@ -2367,3 +2409,15 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
 #align ring_hom.eq_lift_of_right_inverse RingHom.eq_liftOfRightInverse
 
 end RingHom
+
+namespace AlgHom
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
+
+lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+
+lemma coe_ideal_map (I : Ideal A) :
+    Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
+
+end AlgHom

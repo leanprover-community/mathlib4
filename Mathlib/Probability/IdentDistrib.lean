@@ -162,7 +162,7 @@ theorem aestronglyMeasurable_fst [TopologicalSpace γ] [MetrizableSpace γ] [Ope
 theorem aestronglyMeasurable_snd [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable g ν := by
   refine' aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨h.aemeasurable_snd, _⟩
-  rcases(aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
+  rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
   refine' ⟨closure t, t_sep.closure, _⟩
   apply h.ae_mem_snd isClosed_closure.measurableSet
   filter_upwards [ht] with x hx using subset_closure hx
@@ -192,7 +192,7 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
   by_cases hf : AEStronglyMeasurable f μ
   · have A : AEStronglyMeasurable id (Measure.map f μ) := by
       rw [aestronglyMeasurable_iff_aemeasurable_separable]
-      rcases(aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
+      rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
       refine' ⟨aemeasurable_id, ⟨closure t, t_sep.closure, _⟩⟩
       rw [ae_map_iff h.aemeasurable_fst]
       · filter_upwards [ht] with x hx using subset_closure hx

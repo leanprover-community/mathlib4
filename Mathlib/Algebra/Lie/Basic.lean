@@ -3,7 +3,6 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Bracket
 import Mathlib.LinearAlgebra.Basic
 
@@ -222,10 +221,10 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   abel
 #align lie_jacobi lie_jacobi
 
-instance LieRing.intLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
-#align lie_ring.int_lie_algebra LieRing.intLieAlgebra
+instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
+#align lie_ring.int_lie_algebra LieRing.instLieAlgebra
 
-instance : LieRingModule L (M →ₗ[R] N) where
+instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
       map_add' := fun m n => by
@@ -252,7 +251,7 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
   rfl
 #align lie_hom.lie_apply LieHom.lie_apply
 
-instance : LieModule R L (M →ₗ[R] N)
+instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N)
     where
   smul_lie t x f := by
     ext n
@@ -260,6 +259,24 @@ instance : LieModule R L (M →ₗ[R] N)
   lie_smul t x f := by
     ext n
     simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
+
+/-- We could avoid defining this by instead defining a `LieRingModule L R` instance with a zero
+bracket and relying on `LinearMap.instLieRingModule`. We do not do this because in the case that
+`L = R` we would have a non-defeq diamond via `Ring.instBracket`. -/
+instance Module.Dual.instLieRingModule : LieRingModule L (M →ₗ[R] R) where
+  bracket := fun x f ↦
+    { toFun := fun m ↦ - f ⁅x, m⁆
+      map_add' := by simp [-neg_add_rev, neg_add]
+      map_smul' := by simp }
+  add_lie := fun x y m ↦ by ext n; simp [-neg_add_rev, neg_add]
+  lie_add := fun x m n ↦ by ext p; simp [-neg_add_rev, neg_add]
+  leibniz_lie := fun x m n ↦ by ext p; simp
+
+@[simp] lemma Module.Dual.lie_apply (f : M →ₗ[R] R) : ⁅x, f⁆ m = - f ⁅x, m⁆ := rfl
+
+instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
+  smul_lie := fun t x m ↦ by ext n; simp
+  lie_smul := fun t x m ↦ by ext n; simp
 
 end BasicProperties
 
@@ -615,6 +632,9 @@ theorem symm_symm (e : L₁ ≃ₗ⁅R⁆ L₂) : e.symm.symm = e := by
   ext
   rfl
 #align lie_equiv.symm_symm LieEquiv.symm_symm
+
+theorem symm_bijective : Function.Bijective (LieEquiv.symm : (L₁ ≃ₗ⁅R⁆ L₂) → L₂ ≃ₗ⁅R⁆ L₁) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem apply_symm_apply (e : L₁ ≃ₗ⁅R⁆ L₂) : ∀ x, e (e.symm x) = x :=
@@ -1090,6 +1110,10 @@ theorem apply_eq_iff_eq_symm_apply {m : M} {n : N} (e : M ≃ₗ⁅R,L⁆ N) :
 theorem symm_symm (e : M ≃ₗ⁅R,L⁆ N) : e.symm.symm = e := by
   rfl
 #align lie_module_equiv.symm_symm LieModuleEquiv.symm_symm
+
+theorem symm_bijective :
+    Function.Bijective (LieModuleEquiv.symm : (M ≃ₗ⁅R,L⁆ N) → N ≃ₗ⁅R,L⁆ M) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- Lie module equivalences are transitive. -/
 @[trans]

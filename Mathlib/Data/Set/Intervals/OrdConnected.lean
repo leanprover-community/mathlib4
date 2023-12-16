@@ -78,6 +78,29 @@ protected theorem Icc_subset (s : Set α) [hs : OrdConnected s] {x y} (hx : x �
   hs.out hx hy
 #align set.Icc_subset Set.Icc_subset
 
+@[simp]
+lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Icc x y = Icc x.1 y :=
+  (Subtype.image_preimage_val s (Icc x.1 y)).trans <| inter_eq_left.2 <| s.Icc_subset x.2 y.2
+
+@[simp]
+lemma image_subtype_val_Ico {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Ico x y = Ico x.1 y :=
+  (Subtype.image_preimage_val s (Ico x.1 y)).trans <| inter_eq_left.2 <|
+    Ico_subset_Icc_self.trans <| s.Icc_subset x.2 y.2
+
+@[simp]
+lemma image_subtype_val_Ioc {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Ioc x y = Ioc x.1 y :=
+  (Subtype.image_preimage_val s (Ioc x.1 y)).trans <| inter_eq_left.2 <|
+    Ioc_subset_Icc_self.trans <| s.Icc_subset x.2 y.2
+
+@[simp]
+lemma image_subtype_val_Ioo {s : Set α} [OrdConnected s] (x y : s) :
+    Subtype.val '' Ioo x y = Ioo x.1 y :=
+  (Subtype.image_preimage_val s (Ioo x.1 y)).trans <| inter_eq_left.2 <|
+    Ioo_subset_Icc_self.trans <| s.Icc_subset x.2 y.2
+
 theorem OrdConnected.inter {s t : Set α} (hs : OrdConnected s) (ht : OrdConnected t) :
     OrdConnected (s ∩ t) :=
   ⟨fun _ hx _ hy => subset_inter (hs.out hx.1 hy.1) (ht.out hx.2 hy.2)⟩

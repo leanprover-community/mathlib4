@@ -275,7 +275,7 @@ variable {L M}
 
 namespace Embedding
 
-/-- The Tarski-Vaught test for elementarity of an embedding. -/
+/-- The **Tarski-Vaught test** for elementarity of an embedding. -/
 theorem isElementary_of_exists (f : M ↪[L] N)
     (htv :
       ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → M) (a : N),
@@ -292,7 +292,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
   · intros
     simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
   · intros
-    simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
+    simp only [BoundedFormula.Realize, ← Sum.comp_elim, realize_term]
     erw [map_rel f]
   · intro _ _ _ ih1 ih2 _
     simp [ih1, ih2]

@@ -115,17 +115,6 @@ def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
 
 end Name
 
-namespace NameSet
-
-/-- The union of two `NameSet`s. -/
-def append (s t : NameSet) : NameSet :=
-  s.mergeBy (fun _ _ _ => .unit) t
-
-instance : Append NameSet where
-  append := NameSet.append
-
-end NameSet
-
 namespace ConstantInfo
 
 /-- Checks whether this `ConstantInfo` is a definition, -/
@@ -193,21 +182,23 @@ namespace Expr
 
 /-! ### Declarations about `Expr` -/
 
-/-- If the expression is a constant, return that name. Otherwise return `Name.anonymous`. -/
-def constName (e : Expr) : Name :=
-  e.constName?.getD Name.anonymous
-
 def bvarIdx? : Expr → Option Nat
   | bvar idx => some idx
   | _        => none
 
-/-- Return the function (name) and arguments of an application. -/
-def getAppFnArgs (e : Expr) : Name × Array Expr :=
-  withApp e λ e a => (e.constName, a)
+/-- Invariant: `i : ℕ` should be less than the size of `as : Array Expr`. -/
+private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
+  | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
+  | _,       as, _ => as
 
-/-- Like `Expr.getUsedConstants`, but produce a `NameSet`. -/
-def getUsedConstants' (e : Expr) : NameSet :=
-  e.foldConsts {} fun c cs => cs.insert c
+/-- Given `f a b c`, return `#[f a, f a b, f a b c]`.
+Each entry in the array is an `Expr.app`,
+and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
+@[inline]
+def getAppApps (e : Expr) : Array Expr :=
+  let dummy := mkSort levelZero
+  let nargs := e.getAppNumArgs
+  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
@@ -283,6 +274,11 @@ def isExplicitNumber : Expr → Bool
 /-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
 def fvarId? : Expr → Option FVarId
   | .fvar n => n
+  | _ => none
+
+/-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
+def type? : Expr → Option Level
+  | .sort u => u.dec
   | _ => none
 
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
@@ -449,7 +445,7 @@ def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
 /-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
 structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
 def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+  let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
   let some baseStruct := findField? (← getEnv) structName fieldName |
     throwError "No parent of {structName} has field {fieldName}"
@@ -459,6 +455,30 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
     let .const _structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   mkDirectProjection e fieldName
+
+/-- If `e` is a projection of the structure constructor, reduce the projection.
+Otherwise returns `none`. If this function detects that expression is ill-typed, throws an error.
+For example, given `Prod.fst (x, y)`, returns `some x`. -/
+def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
+  let .const cname _ := e.getAppFn | return none
+  let some pinfo ← getProjectionFnInfo? cname | return none
+  let args := e.getAppArgs
+  if ha : args.size = pinfo.numParams + 1 then
+    -- The last argument of a projection is the structure.
+    let sarg := args[pinfo.numParams]'(ha ▸ pinfo.numParams.lt_succ_self)
+    -- Check that the structure is a constructor expression.
+    unless sarg.getAppFn.isConstOf pinfo.ctorName do
+      return none
+    let sfields := sarg.getAppArgs
+    -- The ith projection extracts the ith field of the constructor
+    let sidx := pinfo.numParams + pinfo.i
+    if hs : sidx < sfields.size then
+      return some (sfields[sidx]'hs)
+    else
+      throwError m!"ill-formed expression, {cname} is the {pinfo.i + 1}-th projection function {
+          ""}but {sarg} does not have enough arguments"
+  else
+    return none
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
@@ -484,14 +504,37 @@ Fails if the rewrite produces any subgoals.
 def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
 
-end Expr
+/-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
+    return a `forall x, Not (p x)` and a proof for it.
 
-/-- Return all names appearing in the type or value of a `ConstantInfo`. -/
-def ConstantInfo.getUsedConstants (c : ConstantInfo) : NameSet :=
-  let tc := c.type.getUsedConstants'
-  match c.value? with
-  | none => tc
-  | some v => tc ++ v.getUsedConstants'
+    This function handles nested existentials. -/
+partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
+  let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
+  go lvl A p hNotEx
+where
+  /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
+      return a `forall x, Not (p x)` and a proof for it.
+
+      This function handles nested existentials. -/
+  go (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
+    let xn ← mkFreshUserName `x
+    withLocalDeclD xn A fun x => do
+      let px := p.beta #[x]
+      let notPx := mkNot px
+      let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx
+      if let .app (.app (.const ``Exists [lvl']) A') p' := px then
+        let hNotPxN ← mkFreshUserName `h
+        withLocalDeclD hNotPxN notPx fun hNotPx => do
+          let (qx, hQx) ← go lvl' A' p' hNotPx
+          let allQx ← mkForallFVars #[x] qx
+          let hNotPxImpQx ← mkLambdaFVars #[hNotPx] hQx
+          let hAllQx ← mkLambdaFVars #[x] (.app hNotPxImpQx (.app hAllNotPx x))
+          return (allQx, hAllQx)
+      else
+        let allNotPx ← mkForallFVars #[x] notPx
+        return (allNotPx, hAllNotPx)
+
+end Expr
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
   except that this returns the (last component of the) projection names instead of the parent names.
@@ -520,7 +563,7 @@ def Name.requiredModules (n : Name) : CoreM NameSet := do
   let env ← getEnv
   let mut requiredModules : NameSet := {}
   let ci ← getConstInfo n
-  for n in ci.getUsedConstants do
+  for n in ci.getUsedConstantsAsSet do
     match env.getModuleFor? n with
     | some m =>
       if ¬ (`Init).isPrefixOf m then
@@ -538,7 +581,7 @@ def Environment.requiredModules (env : Environment) : NameSet := Id.run do
   let localConstantInfos := env.constants.map₂
   let mut requiredModules : NameSet := {}
   for (_, ci) in localConstantInfos do
-    for n in ci.getUsedConstants do
+    for n in ci.getUsedConstantsAsSet do
       match env.getModuleFor? n with
       | some m =>
         if ¬ (`Init).isPrefixOf m then

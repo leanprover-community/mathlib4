@@ -135,12 +135,14 @@ theorem sublistsAux_eq_bind :
       rw [append_bind, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
-theorem sublists_eq_sublistsAux (l : List α) :
-    sublists l = l.foldr sublistsAux [[]] := by
-  simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
-  rw [← foldr_hom Array.toList]
-  · rfl
-  · intros _ _; congr <;> simp
+@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
+  ext α l : 2
+  trans l.foldr sublistsAux [[]]
+  · rw [sublistsAux_eq_bind, sublists]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
+    rw [← foldr_hom Array.toList]
+    · rfl
+    · intros _ _; congr <;> simp
 
 #noalign list.sublists_aux₁_eq_sublists_aux
 #noalign list.sublists_aux_cons_eq_sublists_aux₁
@@ -154,7 +156,7 @@ theorem sublists_eq_sublistsAux (l : List α) :
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
-  simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
+  simp only [sublists, foldr_append]
   induction l₁
   · case nil => simp
   · case cons a l₁ ih =>
@@ -411,9 +413,11 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
 --Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
-  refine' Perm.map _ _
-  exact (perm_ext (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
-    (by simp)
+  apply Perm.map
+  apply (perm_ext_iff_of_nodup _ _).mpr
+  · simp
+  · exact nodup_sublists.mpr (nodup_finRange _)
+  · exact (nodup_sublists'.mpr (nodup_finRange _))
 #align list.sublists_perm_sublists' List.sublists_perm_sublists'
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :

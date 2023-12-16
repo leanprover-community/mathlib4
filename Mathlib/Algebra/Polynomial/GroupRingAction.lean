@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Monic
+import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
 #align_import algebra.polynomial.group_ring_action from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
@@ -91,10 +91,9 @@ variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
 
-open Classical
-
 /-- the product of `(X - g • x)` over distinct `g • x`. -/
 noncomputable def prodXSubSmul (x : R) : R[X] :=
+  letI := Classical.decEq R
   (Finset.univ : Finset (G ⧸ MulAction.stabilizer G x)).prod fun g ↦
     Polynomial.X - Polynomial.C (ofQuotientStabilizer G x g)
 #align prod_X_sub_smul prodXSubSmul
@@ -104,11 +103,13 @@ theorem prodXSubSmul.monic (x : R) : (prodXSubSmul G R x).Monic :=
 #align prod_X_sub_smul.monic prodXSubSmul.monic
 
 theorem prodXSubSmul.eval (x : R) : (prodXSubSmul G R x).eval x = 0 :=
+  letI := Classical.decEq R
   (map_prod ((Polynomial.aeval x).toRingHom.toMonoidHom : R[X] →* R) _ _).trans <|
     Finset.prod_eq_zero (Finset.mem_univ <| QuotientGroup.mk 1) <| by simp
 #align prod_X_sub_smul.eval prodXSubSmul.eval
 
 theorem prodXSubSmul.smul (x : R) (g : G) : g • prodXSubSmul G R x = prodXSubSmul G R x :=
+  letI := Classical.decEq R
   Finset.smul_prod.trans <|
     Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]

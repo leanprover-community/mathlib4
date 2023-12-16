@@ -129,7 +129,7 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ+) : (rootsOfUnity k M).map 
 
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
-    ((ζ ^ m : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
+    (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
 #align roots_of_unity.coe_pow rootsOfUnity.coe_pow
 
@@ -253,7 +253,7 @@ variable {k R}
 theorem map_rootsOfUnity_eq_pow_self [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
-  rw [← restrictRootsOfUnity_coe_apply, hm, zpow_eq_mod_orderOf, ← Int.toNat_of_nonneg
+  rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
       (m.emod_nonneg (Int.coe_nat_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_ofNat, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
@@ -264,8 +264,6 @@ end IsDomain
 section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 -- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
@@ -760,7 +758,7 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
 theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
     (hξ : ξ ∈ rootsOfUnity k R) : ∃ (i : ℕ), i < k ∧ ζ ^ i = ξ := by
   obtain ⟨n, rfl⟩ : ∃ n : ℤ, ζ ^ n = ξ := by rwa [← h.zpowers_eq] at hξ
-  have hk0 : (0 : ℤ) < k := by exact_mod_cast k.pos
+  have hk0 : (0 : ℤ) < k := mod_cast k.pos
   let i := n % k
   have hi0 : 0 ≤ i := Int.emod_nonneg _ (ne_of_gt hk0)
   lift i to ℕ using hi0 with i₀ hi₀
@@ -949,7 +947,7 @@ variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ
 noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   let μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
-    rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe, orderOf_units, orderOf_subgroup]
+    rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe, orderOf_units, Subgroup.orderOf_coe]
   MonoidHom.toHomUnits
     { toFun := fun σ => (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
@@ -961,7 +959,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
         nth_rw 1 [← pow_one μ'] at h
-        rw [← Nat.cast_one, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq μ', h]
+        rw [← Nat.cast_one, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq, h]
       map_mul' := by
         intro x y
         dsimp only
@@ -978,7 +976,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         rw [← pow_mul] at hxy
         replace hxy : μ' ^ (hx'.choose * hy'.choose) = μ' ^ hxy'.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using hxy)
-        rw [← Nat.cast_mul, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq μ', hxy] }
+        rw [← Nat.cast_mul, ZMod.nat_cast_eq_nat_cast_iff, ← ho, ← pow_eq_pow_iff_modEq, hxy] }
 #align is_primitive_root.aut_to_pow IsPrimitiveRoot.autToPow
 
 -- We are not using @[simps] in aut_to_pow to avoid a timeout.
@@ -993,11 +991,11 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
   rw [IsPrimitiveRoot.coe_autToPow_apply]
   generalize_proofs h
   have := h.choose_spec
-  dsimp only [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_algHom] at this
   refine' (_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans this.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 2
-  rw [pow_eq_pow_iff_modEq, ZMod.val_nat_cast, hμ.eq_orderOf, ← orderOf_subgroup, ← orderOf_units]
+  rw [pow_eq_pow_iff_modEq, ZMod.val_nat_cast, hμ.eq_orderOf, ← Subgroup.orderOf_coe,
+    ← orderOf_units]
   exact Nat.mod_modEq _ _
 #align is_primitive_root.aut_to_pow_spec IsPrimitiveRoot.autToPow_spec
 

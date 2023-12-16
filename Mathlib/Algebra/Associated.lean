@@ -215,15 +215,16 @@ theorem of_irreducible_mul {α} [Monoid α] {x y : α} : Irreducible (x * y) →
   | ⟨_, h⟩ => h _ _ rfl
 #align of_irreducible_mul of_irreducible_mul
 
-theorem of_irreducible_pow {α} [Monoid α] {x : α} {n : ℕ} (hn : n ≠ 1) :
-    Irreducible (x ^ n) → IsUnit x := by
-  obtain hn | hn := hn.lt_or_lt
-  · simp only [Nat.lt_one_iff.mp hn, IsEmpty.forall_iff, not_irreducible_one, pow_zero]
-  intro h
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hn
-  rw [pow_succ, add_comm] at h
-  exact (or_iff_left_of_imp isUnit_pow_succ_iff.mp).mp (of_irreducible_mul h)
-#align of_irreducible_pow of_irreducible_pow
+theorem not_irreducible_pow {α} [Monoid α] {x : α} {n : ℕ} (hn : n ≠ 1) :
+    ¬ Irreducible (x ^ n) := by
+  cases n with
+  | zero => simp
+  | succ n =>
+    intro ⟨h₁, h₂⟩
+    have := h₂ _ _ (pow_succ _ _)
+    rw [isUnit_pow_iff (Nat.succ_ne_succ.mp hn), or_self] at this
+    exact h₁ (this.pow _)
+#noalign of_irreducible_pow
 
 theorem irreducible_or_factor {α} [Monoid α] (x : α) (h : ¬IsUnit x) :
     Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
@@ -301,9 +302,9 @@ section CommMonoid
 variable [CommMonoid α] {a : α}
 
 theorem Irreducible.not_square (ha : Irreducible a) : ¬IsSquare a := by
+  rw [isSquare_iff_exists_sq]
   rintro ⟨b, rfl⟩
-  simp only [irreducible_mul_iff, or_self_iff] at ha
-  exact ha.1.not_unit ha.2
+  exact not_irreducible_pow one_lt_two.ne' ha
 #align irreducible.not_square Irreducible.not_square
 
 theorem IsSquare.not_irreducible (ha : IsSquare a) : ¬Irreducible a := fun h => h.not_square ha
@@ -368,9 +369,9 @@ theorem Prime.not_square (hp : Prime p) : ¬IsSquare p :=
 theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_square ha
 #align is_square.not_prime IsSquare.not_prime
 
-theorem pow_not_prime {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
-  hp.not_unit <| IsUnit.pow _ <| of_irreducible_pow hn <| hp.irreducible
-#align pow_not_prime pow_not_prime
+theorem not_prime_pow {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
+  not_irreducible_pow hn hp.irreducible
+#align pow_not_prime not_prime_pow
 
 end CancelCommMonoidWithZero
 
@@ -599,7 +600,7 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
     let ⟨u, hu⟩ := h
     ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
       hu ▸ by
-        simp [Units.mul_right_dvd]
+        simp only [IsUnit.mul_iff, Units.isUnit, and_true, IsUnit.mul_right_dvd]
         intro a b
         exact hp.dvd_or_dvd⟩⟩
 #align associated.prime Associated.prime
@@ -778,6 +779,11 @@ theorem quot_mk_eq_mk [Monoid α] (a : α) : Quot.mk Setoid.r a = Associates.mk 
   rfl
 #align associates.quot_mk_eq_mk Associates.quot_mk_eq_mk
 
+@[simp]
+theorem quot_out [Monoid α] (a : Associates α) : Associates.mk (Quot.out a) = a := by
+  rw [← quot_mk_eq_mk, Quot.out_eq]
+#align associates.quot_out Associates.quot_outₓ
+
 theorem forall_associated [Monoid α] {p : Associates α → Prop} :
     (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
@@ -817,7 +823,7 @@ instance [Monoid α] [Subsingleton α] :
     apply Quotient.recOnSubsingleton₂
     intro a b
     congr
-    simp
+    simp [eq_iff_true_of_subsingleton]
 
 theorem mk_injective [Monoid α] [Unique (Units α)] : Function.Injective (@Associates.mk α _) :=
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
@@ -832,8 +838,7 @@ instance instMul : Mul (Associates α) :=
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
         rw [← h₁, ← h₂]
-        simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]
-        ⟩⟩
+        simp only [Units.val_mul, mul_left_comm, mul_comm]⟩⟩
 
 theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl
@@ -899,7 +904,9 @@ instance uniqueUnits : Unique (Associates α)ˣ where
   uniq := Associates.units_eq_one
 #align associates.unique_units Associates.uniqueUnits
 
-theorem coe_unit_eq_one (u : (Associates α)ˣ) : (u : Associates α) = 1 := by simp
+@[simp]
+theorem coe_unit_eq_one (u : (Associates α)ˣ) : (u : Associates α) = 1 := by
+  simp [eq_iff_true_of_subsingleton]
 #align associates.coe_unit_eq_one Associates.coe_unit_eq_one
 
 theorem isUnit_iff_eq_one (a : Associates α) : IsUnit a ↔ a = 1 :=
@@ -912,8 +919,8 @@ theorem isUnit_iff_eq_bot {a : Associates α} : IsUnit a ↔ a = ⊥ := by
 
 theorem isUnit_mk {a : α} : IsUnit (Associates.mk a) ↔ IsUnit a :=
   calc
-    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 :=
-    by rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
+    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by
+      rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
 #align associates.is_unit_mk Associates.isUnit_mk
 
@@ -1122,8 +1129,7 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α)
     have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
     exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
 
-instance : NoZeroDivisors (Associates α) :=
-  by infer_instance
+instance : NoZeroDivisors (Associates α) := by infer_instance
 
 theorem le_of_mul_le_mul_left (a b c : Associates α) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
   | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩
@@ -1157,9 +1163,9 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
 instance : CanonicallyOrderedCommMonoid (Associates α) where
-    exists_mul_of_le := fun h => h
-    le_self_mul := fun _ b => ⟨b, rfl⟩
-    bot_le := fun _ => one_le
+  exists_mul_of_le := fun h => h
+  le_self_mul := fun _ b => ⟨b, rfl⟩
+  bot_le := fun _ => one_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm
@@ -1213,7 +1219,7 @@ theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero α] {p q : α} (h : 
     ¬Associated p q := by
   rintro ⟨a, rfl⟩
   obtain ⟨hp, x, hx, hx'⟩ := h
-  rcases(mul_right_inj' hp).mp hx' with rfl
+  rcases (mul_right_inj' hp).mp hx' with rfl
   exact hx a.isUnit
 #align dvd_not_unit.not_associated DvdNotUnit.not_associated
 

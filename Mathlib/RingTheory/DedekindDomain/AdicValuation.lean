@@ -78,8 +78,8 @@ multiplicative valuation. -/
 def intValuationDef (r : R) : ℤₘ₀ :=
   if r = 0 then 0
   else
-    Multiplicative.ofAdd
-      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
+    ↑(Multiplicative.ofAdd
+      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
@@ -429,7 +429,8 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
       --Porting note: added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
@@ -438,7 +439,8 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       --Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
       --   v.valuation_le_one _
-      rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by

@@ -30,7 +30,7 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
@@ -44,7 +44,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance (p : ℕ) [h : CharP R p] : CharP R[X] p :=
+instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
@@ -71,7 +71,7 @@ theorem degreeLE_mono {m n : WithBot ℕ} (H : m ≤ n) : degreeLE R m ≤ degre
   mem_degreeLE.2 (le_trans (mem_degreeLE.1 hf) H)
 #align polynomial.degree_le_mono Polynomial.degreeLE_mono
 
-theorem degreeLE_eq_span_X_pow {n : ℕ} :
+theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
     degreeLE R n = Submodule.span R ↑((Finset.range (n + 1)).image fun n => (X : R[X]) ^ n) := by
   apply le_antisymm
   · intro p hp
@@ -111,7 +111,7 @@ theorem degreeLT_mono {m n : ℕ} (H : m ≤ n) : degreeLT R m ≤ degreeLT R n 
   mem_degreeLT.2 (lt_of_lt_of_le (mem_degreeLT.1 hf) <| WithBot.coe_le_coe.2 H)
 #align polynomial.degree_lt_mono Polynomial.degreeLT_mono
 
-theorem degreeLT_eq_span_X_pow {n : ℕ} :
+theorem degreeLT_eq_span_X_pow [DecidableEq R] {n : ℕ} :
     degreeLT R n = Submodule.span R ↑((Finset.range n).image fun n => X ^ n : Finset R[X]) := by
   apply le_antisymm
   · intro p hp
@@ -182,6 +182,7 @@ theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n)
 
 /-- The finset of nonzero coefficients of a polynomial. -/
 def frange (p : R[X]) : Finset R :=
+  letI := Classical.decEq R
   Finset.image (fun n => p.coeff n) p.support
 #align polynomial.frange Polynomial.frange
 
@@ -190,10 +191,11 @@ theorem frange_zero : frange (0 : R[X]) = ∅ :=
 #align polynomial.frange_zero Polynomial.frange_zero
 
 theorem mem_frange_iff {p : R[X]} {c : R} : c ∈ p.frange ↔ ∃ n ∈ p.support, c = p.coeff n := by
-  simp [frange, eq_comm]
+  simp [frange, eq_comm, (Finset.mem_image)]
 #align polynomial.mem_frange_iff Polynomial.mem_frange_iff
 
 theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
+  classical
   simp only [frange]
   rw [Finset.image_subset_iff]
   simp only [mem_support_iff, ne_eq, mem_singleton, ← C_1, coeff_C]
@@ -203,7 +205,8 @@ theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
 #align polynomial.frange_one Polynomial.frange_one
 
 theorem coeff_mem_frange (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.frange := by
-  simp only [frange, exists_prop, mem_support_iff, Finset.mem_image, Ne.def]
+  classical
+  simp only [frange, exists_prop, mem_support_iff, (Finset.mem_image), Ne.def]
   exact ⟨n, h, rfl⟩
 #align polynomial.coeff_mem_frange Polynomial.coeff_mem_frange
 
@@ -265,6 +268,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.frange : Set R)) 
   ∑ i in p.support,
     monomial i
       (⟨p.coeff i,
+          letI := Classical.decEq R
           if H : p.coeff i = 0 then H.symm ▸ (Subring.closure _).zero_mem
           else Subring.subset_closure (p.coeff_mem_frange _ H)⟩ :
         Subring.closure (↑p.frange : Set R))
@@ -272,6 +276,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.frange : Set R)) 
 
 @[simp]
 theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑(coeff (restriction p) n) = coeff p n := by
+  classical
   simp only [restriction, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
     Ne.def, ite_not]
   split_ifs with h
@@ -343,14 +348,16 @@ return the corresponding polynomial whose coefficients are in `T`. -/
 def toSubring (hp : (↑p.frange : Set R) ⊆ T) : T[X] :=
   ∑ i in p.support,
     monomial i
-      (⟨p.coeff i, if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_frange _ H)⟩ :
-        T)
+      (⟨p.coeff i,
+        letI := Classical.decEq R
+        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_frange _ H)⟩ : T)
 #align polynomial.to_subring Polynomial.toSubring
 
 variable (hp : (↑p.frange : Set R) ⊆ T)
 
 @[simp]
 theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n := by
+  classical
   simp only [toSubring, coeff_monomial, finset_sum_coeff, mem_support_iff, Finset.sum_ite_eq',
     Ne.def, ite_not]
   split_ifs with h
@@ -427,8 +434,10 @@ theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff 
 
 @[simp]
 theorem frange_ofSubring {p : T[X]} : (↑(p.ofSubring T).frange : Set R) ⊆ T := by
+  classical
   intro i hi
-  simp only [frange, Set.mem_image, mem_support_iff, Ne.def, Finset.mem_coe, Finset.coe_image] at hi
+  simp only [frange, Set.mem_image, mem_support_iff, Ne.def, Finset.mem_coe,
+    (Finset.coe_image)] at hi
   rcases hi with ⟨n, _, h'n⟩
   rw [← h'n, coeff_ofSubring]
   exact Subtype.mem (coeff p n : T)
@@ -538,7 +547,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     rw [← sum_monomial_eq f]
     refine' (I.map C : Ideal R[X]).sum_mem fun n _ => _
-    simp [← C_mul_X_pow_eq_monomial]
+    simp only [← C_mul_X_pow_eq_monomial, ne_eq]
     rw [mul_comm]
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 set_option linter.uppercaseLean3 false in
@@ -622,7 +631,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     · rw [sum_insert ha, prod_insert ha, coeff_mul]
       apply sum_mem
       rintro ⟨i, j⟩ e
-      obtain rfl : i + j = k := Nat.mem_antidiagonal.mp e
+      obtain rfl : i + j = k := mem_antidiagonal.mp e
       apply Ideal.pow_le_pow add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
       exact
@@ -694,14 +703,14 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine' ⟨m + n, _⟩
-        rw [coeff_mul, ← Finset.insert_erase ((@Finset.Nat.mem_antidiagonal _ (m, n)).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
-        rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
+        rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
@@ -728,6 +737,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.FG (I.degreeLE n) :=
+  letI := Classical.decEq R
   isNoetherian_submodule_left.1
     -- porting note: times out without explicit `R`.
     (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLE_eq_span_X_pow (R := R)).symm⟩) _
@@ -841,8 +851,8 @@ end Prime
 
 namespace Polynomial
 
-instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
-    where
+instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
+    WfDvdMonoid R[X] where
   wellFounded_dvdNotUnit := by
     classical
       refine'
@@ -850,8 +860,7 @@ instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R]
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), _⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (WellFounded.prod_lex (WithTop.wellFounded_lt <| WithBot.wellFounded_lt Nat.lt_wfRel.wf)
-            ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
@@ -1103,6 +1112,7 @@ theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Fi
 instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     NoZeroDivisors (MvPolynomial σ R) :=
   ⟨fun {p} {q} h => by
+    classical
     obtain ⟨s, p, rfl⟩ := exists_finset_rename p
     obtain ⟨t, q, rfl⟩ := exists_finset_rename q
     have :
@@ -1118,7 +1128,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
@@ -1155,6 +1165,7 @@ theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPoly
 theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     f ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R)) ↔
       ∀ m : σ →₀ ℕ, f.coeff m ∈ I := by
+  classical
   constructor
   · intro hf
     apply @Submodule.span_induction _ _ _ _ Semiring.toModule f _ _ hf
@@ -1203,10 +1214,28 @@ namespace Polynomial
 
 attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
+  letI := Classical.decEq (Associates D)
+  letI := Classical.decEq D
   haveI : NormalizationMonoid D := Inhabited.default
   haveI := toNormalizedGCDMonoid D
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
+
+/-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
+only finitely many monic factors.
+(Note that its factors up to unit may be more than monic factors.)
+See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
+    Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
+  set G := { g : D[X] // g.Monic ∧ g ∣ f }
+  let y : Associates D[X] := Associates.mk f
+  have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
+  let H := { x : Associates D[X] // x ∣ y }
+  let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
+  let i : G → H := fun x ↦ ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  refine Fintype.ofInjective i fun x y heq ↦ ?_
+  rw [Subtype.mk.injEq] at heq ⊢
+  exact eq_of_monic_of_associated x.2.1 y.2.1 (Associates.mk_eq_mk_iff_associated.mp heq)
 
 end Polynomial
 
@@ -1235,7 +1264,8 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
         assumption
 
-instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
+instance (priority := 100) uniqueFactorizationMonoid :
+    UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
   obtain ⟨w, h, u, hw⟩ :=

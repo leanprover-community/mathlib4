@@ -377,7 +377,7 @@ theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
     rcases ha with ⟨la, ha, eqa⟩
     rcases hb with ⟨lb, hb, eqb⟩
     exists la ++ lb
-    simp [eqa.symm, eqb.symm, or_imp]
+    simp only [List.mem_append, or_imp, List.prod_append, eqa.symm, eqb.symm, and_true]
     exact fun a => ⟨ha a, hb a⟩
 #align monoid.exists_list_of_mem_closure Monoid.exists_list_of_mem_closure
 #align add_monoid.exists_list_of_mem_closure AddMonoid.exists_list_of_mem_closure

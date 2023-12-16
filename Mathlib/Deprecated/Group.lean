@@ -3,10 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Algebra.Hom.Ring.Defs
-import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import deprecated.group from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 

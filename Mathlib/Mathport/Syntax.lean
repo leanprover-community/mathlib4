@@ -9,7 +9,7 @@ import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.Basic
 import Mathlib.RingTheory.WittVector.Basic
@@ -48,11 +48,11 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
+import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith
@@ -62,16 +62,13 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
@@ -162,8 +159,6 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- S -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
-
-/- S -/ syntax (name := hint) "hint" : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic

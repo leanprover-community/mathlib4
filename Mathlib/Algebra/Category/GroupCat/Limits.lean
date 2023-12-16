@@ -465,4 +465,8 @@ def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddCommGroupCat.kernelIsoKerOver_inv_left_apply
+  AddCommGroupCat.kernelIsoKerOver_hom_left_apply_coe
+
 end AddCommGroupCat

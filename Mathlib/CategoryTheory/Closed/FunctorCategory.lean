@@ -78,6 +78,10 @@ instance monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply_app
+  Functor.monoidalClosed_closed_isAdj_adj_homEquiv_symm_apply_app
+
 theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
   rfl
 #align category_theory.functor.ihom_map CategoryTheory.Functor.ihom_map

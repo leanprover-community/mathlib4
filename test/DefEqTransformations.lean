@@ -2,6 +2,8 @@ import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
 import Std.Tactic.GuardExpr
 
+set_option autoImplicit true
+
 private axiom test_sorry : ∀ {α}, α
 namespace Tests
 
@@ -79,6 +81,12 @@ example (m n : Nat) : (m == n) = true := by
   unfold_projs
   guard_target =ₛ Nat.beq m n = true
   exact test_sorry
+
+example {α : Type u} (f : α → α) (a : α) :
+    (fun x => (fun x => f x) x) a = f a := by
+  eta_reduce
+  guard_target =ₛ f a = f a
+  rfl
 
 example (f : Nat → Nat) : (fun a => f a) = (fun a => f (f a)) := by
   eta_expand

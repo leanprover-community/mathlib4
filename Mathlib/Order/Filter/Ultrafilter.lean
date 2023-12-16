@@ -150,7 +150,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨hf.1⟩
-  le_of_le g hg := (isAtom_iff.1 hf).2 g hg.ne
+  le_of_le g hg := (isAtom_iff_le_of_ge.1 hf).2 g hg.ne
 #align ultrafilter.of_atom Ultrafilter.ofAtom
 
 theorem nonempty_of_mem (hs : s ∈ f) : s.Nonempty :=
@@ -315,7 +315,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 
 theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = pure x := by
   rw [← biUnion_of_singleton s] at h'
-  rcases(Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
+  rcases (Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
   exact ⟨a, has, eq_of_le (Filter.le_pure_iff.2 haf)⟩
 #align ultrafilter.eq_pure_of_finite_mem Ultrafilter.eq_pure_of_finite_mem
 
