@@ -457,7 +457,7 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
 end DescFactorial
 
 lemma factorial_two_mul_le (n : ℕ) : (2 * n)! ≤ (2 * n) ^ n * n ! := by
-  rw [two_mul, ←factorial_mul_ascFactorial, mul_comm]
+  rw [two_mul, ← factorial_mul_ascFactorial, mul_comm]
   exact mul_le_mul_right' (ascFactorial_le_pow_add _ _) _
 
 lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 * n) ! := by
