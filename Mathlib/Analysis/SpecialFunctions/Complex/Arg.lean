@@ -521,6 +521,74 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
 
 alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
 
+section slitPlane
+
+/-!
+### Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
+-/
+
+/-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
+def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
+
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := by
+  ext
+  simp [mem_slitPlane_iff]
+
+/-- An alternative description of the slit plane as consisting of nonzero complex numbers
+whose argument is not π. -/
+lemma mem_slitPlane_iff' {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ Real.pi ∧ z ≠ 0 := by
+  simp only [mem_slitPlane_iff, ne_eq, arg_eq_pi_iff, not_and]
+  refine ⟨fun H ↦ ⟨fun h ↦ H.resolve_left fun h' ↦ lt_irrefl 0 <| h'.trans h, fun h ↦ ?_⟩,
+          fun H ↦ ?_⟩
+  · simp only [h, zero_re, lt_self_iff_false, zero_im, not_true_eq_false, or_self] at H
+  · by_contra! h
+    simp only [h.2, not_true_eq_false] at H
+    have h₁ : z = 0 ↔ z.re = 0 ∧ z.im = 0 := ext_iff
+    have h₂ : z.re ≤ 0 ↔ z.re = 0 ∨ z.re < 0 := le_iff_eq_or_lt
+    tauto
+
+lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
+  (mem_slitPlane_iff'.mp hz).2
+
+lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
+  (mem_slitPlane_iff'.mp hz).1
+
+lemma mem_slitPlane_of_pos {x : ℝ} (hx : 0 < x) : ↑x ∈ slitPlane := by
+  simp [mem_slitPlane_iff, hx]
+
+open scoped ComplexOrder in
+lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
+  mem_slitPlane_iff.trans not_le_zero_iff.symm
+
+/-- The slit plane is star-shaped with respect to the point `1`. -/
+lemma slitPlane_star_shaped {z : ℂ} (hz : 1 + z ∈ slitPlane) {t : ℝ} (ht : t ∈ Set.Icc 0 1) :
+    1 + t * z ∈ slitPlane := by
+  rw [Set.mem_Icc] at ht
+  simp only [slitPlane, Set.mem_setOf_eq, add_re, one_re, add_im, one_im, zero_add, mul_re,
+    ofReal_re, ofReal_im, zero_mul, sub_zero, mul_im, add_zero, mul_eq_zero] at hz ⊢
+  by_contra! H
+  simp only [mul_eq_zero] at H hz
+  have ht₀ : t ≠ 0
+  · rintro rfl
+    simp only [zero_mul, add_zero, true_or, and_true] at H
+    norm_num at H
+  simp only [ht₀, false_or] at H
+  replace hz := hz.neg_resolve_right H.2
+  replace H := H.1
+  have H' := mul_pos (ht.1.eq_or_lt.resolve_left ht₀.symm) hz
+  nlinarith
+
+/-- The slit plane contains the open unit ball of radius `1` around `1`. -/
+lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane := by
+  simp only [slitPlane, Set.mem_setOf_eq, add_re, one_re, add_im, one_im, zero_add]
+  simp only [norm_eq_abs] at hz
+  by_contra! H
+  linarith only [H.1, neg_lt_of_abs_lt <| (abs_re_le_abs z).trans_lt hz]
+
+end slitPlane
+
 section Continuity
 
 variable {x z : ℂ}
@@ -555,12 +623,11 @@ theorem arg_eq_nhds_of_im_neg (hz : im z < 0) : arg =ᶠ[𝓝 z] fun x => -Real.
   ((continuous_im.tendsto _).eventually (gt_mem_nhds hz)).mono fun _ => arg_of_im_neg
 #align complex.arg_eq_nhds_of_im_neg Complex.arg_eq_nhds_of_im_neg
 
-theorem continuousAt_arg (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt arg x := by
+theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
   have h₀ : abs x ≠ 0 := by
     rw [abs.ne_zero_iff]
-    rintro rfl
-    simp at h
-  rw [← lt_or_lt_iff_ne] at h
+    exact slitPlane_ne_zero h
+  rw [mem_slitPlane_iff, ← lt_or_lt_iff_ne] at h
   rcases h with (hx_re | hx_im | hx_im)
   exacts [(Real.continuousAt_arcsin.comp
           (continuous_im.continuousAt.div continuous_abs.continuousAt h₀)).congr
@@ -619,7 +686,7 @@ theorem tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
 #align complex.tendsto_arg_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
 theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg : ℂ → Real.Angle) x := by
-  by_cases hs : 0 < x.re ∨ x.im ≠ 0
+  by_cases hs : x ∈ slitPlane
   · exact Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg hs)
   · rw [← Function.comp.right_id (((↑) : ℝ → Real.Angle) ∘ arg),
       (Function.funext_iff.2 fun _ => (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
@@ -633,6 +700,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       rw [Function.update_eq_iff]
       exact ⟨by simp, fun z hz => arg_neg_coe_angle hz⟩
     rw [ha]
+    replace hs := mem_slitPlane_iff.mpr.mt hs
     push_neg at hs
     refine'
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl _))).add
