@@ -438,11 +438,11 @@ theorem iterate_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f^[n] ≤ 
   iterate_monotone n h
 #align circle_deg1_lift.iterate_mono CircleDeg1Lift.iterate_mono
 
-theorem pow_right_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x => by
+theorem pow_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x => by
   simp only [coe_pow, iterate_mono h n x]
-#align circle_deg1_lift.pow_right_mono CircleDeg1Lift.pow_right_mono
+#align circle_deg1_lift.pow_mono CircleDeg1Lift.pow_mono
 
-theorem pow_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f ^ n := fun _ _ h => pow_right_mono h n
+theorem pow_monotone (n : ℕ) : Monotone fun f : CircleDeg1Lift => f ^ n := fun _ _ h => pow_mono h n
 #align circle_deg1_lift.pow_monotone CircleDeg1Lift.pow_monotone
 
 /-!

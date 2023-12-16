@@ -202,13 +202,9 @@ theorem add_factorial_le_factorial_add (i : ℕ) {n : ℕ} (n1 : 1 ≤ n) : i + 
 #align nat.add_factorial_le_factorial_add Nat.add_factorial_le_factorial_add
 
 theorem factorial_mul_pow_sub_le_factorial {n m : ℕ} (hnm : n ≤ m) : n ! * n ^ (m - n) ≤ m ! := by
-  suffices n ! * (n + 1) ^ (m - n) ≤ m ! from by
-    apply LE.le.trans _ this
-    apply mul_le_mul_left
-    apply pow_le_pow_left (le_succ n)
-  have := @Nat.factorial_mul_pow_le_factorial n (m - n)
-  simp [hnm] at this
-  exact this
+  calc
+    _ ≤ n ! * (n + 1) ^ (m - n) := mul_le_mul_left' (Nat.pow_le_pow_left n.le_succ _) _
+    _ ≤ _ := by simpa [hnm] using @Nat.factorial_mul_pow_le_factorial n (m - n)
 #align nat.factorial_mul_pow_sub_le_factorial Nat.factorial_mul_pow_sub_le_factorial
 
 end Factorial
@@ -306,11 +302,8 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
     rw [add_assoc n (k + 1) 1, mul_comm <| (n + (k + 2)) ^ (k + 1)]
-    refine'
-      Nat.mul_lt_mul' le_rfl
-        ((ascFactorial_le_pow_add n _).trans_lt
-          (pow_lt_pow_left (lt_add_one _) (succ_pos _)))
-        (succ_pos _)
+    exact mul_lt_mul_of_pos_left ((ascFactorial_le_pow_add n _).trans_lt $
+      Nat.pow_lt_pow_left (lt_add_one _) k.succ_ne_zero) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
 
 theorem ascFactorial_pos (n k : ℕ) : 0 < n.ascFactorial k :=

@@ -358,4 +358,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : s.card ≤ (s \\ s).card :=
-  le_of_pow_le_pow_left 2 (zero_le _) two_pos $ by simpa [← sq] using s.le_card_diffs_mul_card_diffs s
+  le_of_pow_le_pow_left 2 (zero_le _) two_ne_zero $ by
+    simpa [← sq] using s.le_card_diffs_mul_card_diffs s

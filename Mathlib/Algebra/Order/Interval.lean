@@ -230,7 +230,7 @@ end Mul
 -- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
 instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_of_le_right s.fst_le_snd _⟩⟩
+  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right' s.fst_le_snd _⟩⟩
 #align nonempty_interval.has_nsmul NonemptyInterval.hasNSMul
 
 section Pow

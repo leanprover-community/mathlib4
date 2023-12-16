@@ -86,7 +86,7 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
-  convert add_le_add_left (nsmul_le_nsmul_of_le_right (sum_condensed_le' hf n) 2) (f 1)
+  convert add_le_add_left (nsmul_le_nsmul_right'f 1)
   simp [sum_range_succ', add_comm, pow_succ, mul_nsmul', sum_nsmul]
 #align finset.sum_condensed_le Finset.sum_condensed_le
 
@@ -111,7 +111,7 @@ theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     iSup_le fun n =>
       le_trans _
         (add_le_add_left
-          (nsmul_le_nsmul_of_le_right (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
+          (nsmul_le_nsmul_right' (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
   simpa using Finset.sum_condensed_le hf n
 #align ennreal.tsum_condensed_le ENNReal.tsum_condensed_le
 

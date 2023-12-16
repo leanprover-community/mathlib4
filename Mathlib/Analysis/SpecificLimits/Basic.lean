@@ -96,7 +96,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
 
 theorem tendsto_add_one_pow_atTop_atTop_of_pos [LinearOrderedSemiring α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
-  (tendsto_atTop_atTop_of_monotone' fun _ _ ↦ pow_le_pow_right (le_add_of_nonneg_left (le_of_lt h))) <|
+  tendsto_atTop_atTop_of_monotone' (fun _ _ ↦ pow_le_pow_right $ le_add_of_nonneg_left h.le) <|
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 #align tendsto_add_one_pow_at_top_at_top_of_pos tendsto_add_one_pow_atTop_atTop_of_pos
 

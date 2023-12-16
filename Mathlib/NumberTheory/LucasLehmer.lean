@@ -53,7 +53,7 @@ theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
 theorem one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
   lt_tsub_iff_right.2 <|
     calc 1 + 1 = 2 ^ 1 := by rw [one_add_one_eq_two, pow_one]
-    _ < 2 ^ p := Nat.pow_lt_pow_right one_lt_two hp
+    _ < 2 ^ p := pow_lt_pow_right one_lt_two hp
 
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
