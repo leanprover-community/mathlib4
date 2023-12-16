@@ -160,9 +160,11 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
   · rw [smul_zero]; apply zero_mem
   · intro m m' hm hm'; rw [smul_add]; exact add_mem hm hm'
 
+/-- A variant of `span_induction` that combines `∀ x ∈ s, p x` and `∀ r x, p x → p (r • x)`
+into a single condition `∀ r, ∀ x ∈ s, p (r • x)`, which can be easier to verify. -/
 @[elab_as_elim]
 theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
-    (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ a : R, ∀ x ∈ s, p (a • x)) : p x := by
+    (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ r : R, ∀ x ∈ s, p (r • x)) : p x := by
   rw [← mem_toAddSubmonoid, span_eq_closure] at h
   refine AddSubmonoid.closure_induction h ?_ H0 H1
   rintro _ ⟨r, m, -, hm, rfl⟩
