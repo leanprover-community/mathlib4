@@ -296,7 +296,6 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-@[simp]
 lemma pred_bit_false {x : ℕ} (h : x > 0) : pred (bit false x) = bit true (pred x) := by
   cases x
   · contradiction
