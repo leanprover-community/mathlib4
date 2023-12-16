@@ -161,6 +161,7 @@ proof_wanted ofLEFn_eq_finRange_map_fold (f : Fin w → Bool) :
         |>.foldr (· ||| ·) 0#w
       )
 
+/-!
 ### Distributivity of `Std.BitVec.ofFin`
 -/
 section
