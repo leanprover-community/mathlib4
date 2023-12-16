@@ -60,7 +60,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
 /-- Local trivialization for trivial bundle. -/
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   -- porting note: golfed
-  toLocalHomeomorph := (homeomorphProd B F).toLocalHomeomorph
+  toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ
   source_eq := rfl
@@ -153,7 +153,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
   have hf₁ : Continuous f₁ := (Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
-    e₁.toLocalHomeomorph.continuousOn.prod_map e₂.toLocalHomeomorph.continuousOn
+    e₁.toPartialHomeomorph.continuousOn.prod_map e₂.toPartialHomeomorph.continuousOn
   have hf₃ : Continuous f₃ :=
     (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
   refine' ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn _).congr _
@@ -236,7 +236,7 @@ theorem baseSet_prod : (prod e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet 
 #align trivialization.base_set_prod Trivialization.baseSet_prod
 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
-    (prod e₁ e₂).toLocalEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
+    (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 #align trivialization.prod_symm_apply Trivialization.prod_symm_apply
 
 end Trivialization

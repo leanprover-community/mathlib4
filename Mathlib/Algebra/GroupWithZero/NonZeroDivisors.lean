@@ -141,6 +141,20 @@ theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * 
   mul_cancel_left_mem_nonZeroDivisors c.prop
 #align mul_cancel_left_coe_non_zero_divisor mul_cancel_left_coe_nonZeroDivisors
 
+theorem dvd_cancel_right_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : x * r ∣ y * r ↔ x ∣ y :=
+  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_right_mem_nonZeroDivisors hr, mul_assoc, mul_comm z r,
+    ← mul_assoc]⟩, fun ⟨z, h⟩ ↦ ⟨z, by rw [h, mul_assoc, mul_comm z r, ← mul_assoc]⟩⟩
+
+theorem dvd_cancel_right_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : x * c ∣ y * c ↔ x ∣ y :=
+  dvd_cancel_right_mem_nonZeroDivisors c.prop
+
+theorem dvd_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x ∣ r * y ↔ x ∣ y :=
+  ⟨fun ⟨z, _⟩ ↦ ⟨z, by rwa [← mul_cancel_left_mem_nonZeroDivisors hr, ← mul_assoc]⟩,
+    fun ⟨z, h⟩ ↦ ⟨z, by rw [h, ← mul_assoc]⟩⟩
+
+theorem dvd_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : c * x ∣ c * y ↔ x ∣ y :=
+  dvd_cancel_left_mem_nonZeroDivisors c.prop
+
 theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 := fun h ↦
   one_ne_zero (hx _ <| (one_mul _).trans h)
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
