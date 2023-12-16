@@ -372,10 +372,10 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
   obtain rfl | hjmi := eq_or_ne j (m.cons i)
   · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul, prod_pow] using
       coeff_monomial m m (1 : R)
-  · simp only [hjmi, if_false]
+  · simp only [hjmi]
     obtain hij | rfl := ne_or_eq i (j 0)
     · simp only [hij, if_false, coeff_zero]
-    simp only [eq_self_iff_true, if_true]
+    simp only [if_true]
     have hmj : m ≠ j.tail := by
       rintro rfl
       rw [cons_tail] at hjmi

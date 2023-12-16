@@ -104,7 +104,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · rfl
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
-    simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
+    simp only [truncate, Function.comp, eq_self_iff_true, heq_iff_eq]
     -- porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
@@ -261,7 +261,7 @@ set_option linter.uppercaseLean3 false in
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
 def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.Idx) (x : M F) : M F :=
-  if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
+  if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [H']) i.2)
   else default
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ichildren PFunctor.M.ichildren
@@ -341,7 +341,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   dsimp only [M.mk]
   induction' n with n
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
-  dsimp only [Approx.sMk, dest, head]
+  dsimp only [Approx.sMk, dest]
   cases' h : x.approx (succ n) with _ hd ch
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
@@ -436,7 +436,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
     PFunctor.M.cases f (M.mk x) = f x := by
-  dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
+  dsimp only [M.mk, PFunctor.M.cases, dest, head, head']
   cases x; dsimp only [Approx.sMk]
   simp only [Eq.mpr]
   apply congrFun
@@ -520,7 +520,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     subst x_a
-    · simp only [dif_pos, eq_self_iff_true, casesOn_mk']
+    · simp only [dif_pos, casesOn_mk']
       rw [ps_ih]
       intro h'
       apply h
@@ -548,7 +548,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Idx) :
     ichildren i (M.mk x) = x.iget i := by
-  dsimp only [ichildren, PFunctor.Obj.iget]
+  dsimp only [PFunctor.Obj.iget]
   congr with h
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ichildren_mk PFunctor.M.ichildren_mk
@@ -556,7 +556,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
     {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
-  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk']; rfl
+  simp only [ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk']; rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.isubtree_cons PFunctor.M.isubtree_cons
 
@@ -573,13 +573,13 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_cons PFunctor.M.iselect_cons
 
 theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
-  dsimp only [M.corec, M.mk]
+  dsimp only [M.corec]
   congr with n
   cases' n with n
   · dsimp only [sCorec, Approx.sMk]
-  · dsimp only [sCorec, Approx.sMk]
+  · dsimp only [sCorec]
     cases h : f x₀
-    dsimp only [PFunctor.map]
+    dsimp only []
     congr
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_def PFunctor.M.corec_def
@@ -602,7 +602,7 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     subst z
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
-    simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq]
+    simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
 
     have := mk_inj h₁
     cases this; clear h₁

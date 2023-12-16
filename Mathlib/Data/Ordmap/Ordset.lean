@@ -360,7 +360,7 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
     dsimp only [dual, id]
     split_ifs; swap; · simp [add_comm]
     cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;> try rfl
-    dsimp only [id]
+    dsimp only []
     split_ifs with h <;> simp [h, add_comm]
 #align ordnode.dual_balance_l Ordnode.dual_balanceL
 

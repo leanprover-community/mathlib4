@@ -39,7 +39,7 @@ theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFins
     rintro g hg hgf a
     rw [← hgf]
     exact hg a
-  · simp only [piFinset, mem_map, forall_prop_of_true, exists_prop, mem_univ, mem_pi]
+  · simp only [piFinset, mem_map, forall_prop_of_true, mem_univ, mem_pi]
     exact fun hf => ⟨fun a _ => f a, hf, rfl⟩
 #align fintype.mem_pi_finset Fintype.mem_piFinset
 

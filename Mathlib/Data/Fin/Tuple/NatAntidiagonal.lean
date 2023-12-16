@@ -156,7 +156,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
   | k + 1, n => by
     simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
+    simp only [Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
     simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and_iff, lt_self_iff_false,
       false_or_iff]
     refine' ⟨fun _ _ _ => antidiagonalTuple_pairwise_pi_lex k _, _⟩

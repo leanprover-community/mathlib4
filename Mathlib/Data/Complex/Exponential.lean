@@ -108,7 +108,7 @@ theorem isCauSeq_series_of_abv_le_of_isCauSeq {f : ℕ → β} {g : ℕ → α} 
   clear hk ji j
   induction' k with k' hi
   · simp [abv_zero abv]
-  · simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
+  · simp only [Nat.succ_add, Finset.sum_range_succ_comm]
     simp only [add_assoc, sub_eq_add_neg]
     refine le_trans (abv_add _ _ _) ?_
     simp only [sub_eq_add_neg] at hi
@@ -495,7 +495,7 @@ theorem exp_zero : exp 0 = 1 := by
     induction' j with j ih
     · dsimp [exp']; simp [show Nat.succ 0 = 1 from rfl]
     · rw [← ih (by simp [show 1 = Nat.succ 0 from rfl, Nat.succ_le_succ])]
-      simp only [sum_range_succ, pow_succ]
+      simp only [sum_range_succ]
       simp
 #align complex.exp_zero Complex.exp_zero
 
@@ -1058,13 +1058,13 @@ theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ =
 
 theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by
-  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv, one_mul]
+  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 #align complex.tan_sq_div_one_add_tan_sq Complex.tan_sq_div_one_add_tan_sq
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
   have h1 : x + 2 * x = 3 * x := by ring
   rw [← h1, cos_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, mul_add, mul_sub, mul_one, sq]
+  simp only [cos_two_mul, sin_two_mul, mul_sub, mul_one, sq]
   have h2 : 4 * cos x ^ 3 = 2 * cos x * cos x * cos x + 2 * cos x * cos x ^ 2 := by ring
   rw [h2, cos_sq']
   ring
@@ -1073,7 +1073,7 @@ theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
 theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
   have h1 : x + 2 * x = 3 * x := by ring
   rw [← h1, sin_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, cos_sq']
+  simp only [cos_two_mul, sin_two_mul]
   have h2 : cos x * (2 * sin x * cos x) = 2 * sin x * cos x ^ 2 := by ring
   rw [h2, cos_sq']
   ring
@@ -1322,7 +1322,7 @@ theorem inv_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ =
 
 theorem tan_sq_div_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by
-  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv, one_mul]
+  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 #align real.tan_sq_div_one_add_tan_sq Real.tan_sq_div_one_add_tan_sq
 
 theorem inv_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) : (sqrt (1 + tan x ^ 2))⁻¹ = cos x := by
@@ -1468,7 +1468,7 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
   calc
     ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
-      simp only [exp', const_apply, re_sum]
+      simp only [exp', re_sum]
       norm_cast
       refine sum_le_sum_of_subset_of_nonneg (range_mono hj) fun _ _ _ ↦ ?_
       positivity
@@ -1684,7 +1684,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
       rw [geom_sum_eq, div_le_iff_of_neg]
       · trans (-1 : ℝ)
         · linarith
-        · simp only [neg_le_sub_iff_le_add, div_pow, Nat.cast_succ, le_add_iff_nonneg_left]
+        · simp only [neg_le_sub_iff_le_add, Nat.cast_succ, le_add_iff_nonneg_left]
           positivity
       · linarith
       · linarith

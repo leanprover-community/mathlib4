@@ -273,7 +273,7 @@ theorem coe_add_eq_ite {n : ℕ} (a b : ZMod n) :
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
-  simp only [Fin.val_add_eq_ite, Int.ofNat_succ, Int.ofNat_le]
+  simp only [Fin.val_add_eq_ite, Int.ofNat_le]
   norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
@@ -816,7 +816,7 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
       haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
       have left_inv : Function.LeftInverse inv_fun to_fun := by
         intro x
-        dsimp only [dvd_mul_left, dvd_mul_right, ZMod.castHom_apply]
+        dsimp only [dvd_mul_right, ZMod.castHom_apply]
         conv_rhs => rw [← ZMod.nat_cast_zmod_val x]
         rw [if_neg hmn0, ZMod.eq_iff_modEq_nat, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
@@ -861,7 +861,7 @@ theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
 theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
   cases a
   · simp only [Int.natAbs_ofNat, Int.cast_ofNat, Int.ofNat_eq_coe]
-  · simp only [neg_eq_self_mod_two, Nat.cast_succ, Int.natAbs, Int.cast_negSucc]
+  · simp only [neg_eq_self_mod_two, Int.natAbs, Int.cast_negSucc]
 #align zmod.nat_abs_mod_two ZMod.natAbs_mod_two
 
 @[simp]

@@ -562,7 +562,7 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
   Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
-    simp only [mem_image, mem_support_iff, Ne.def] at hx
+    simp only [mem_image, mem_support_iff] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
     simp only [mem_support_iff]
     rw [mapDomain_apply' (↑s.support : Set _) _ _ hf]
@@ -703,7 +703,7 @@ theorem comapDomain_apply [Zero M] (f : α → β) (l : β →₀ M) (hf : Set.I
 theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →₀ M) (g : β → M → N)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) :
     (comapDomain f l hf.injOn).sum (g ∘ f) = l.sum g := by
-  simp only [comapDomain_apply, (· ∘ ·), comapDomain]
+  simp only [(· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 #align finsupp.sum_comap_domain Finsupp.sum_comapDomain
 
@@ -842,7 +842,7 @@ theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀
     · simp [some_zero, h_zero]
     · intro f₁ f₂ h₁ h₂
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
-      simp only [Pi.add_apply, Finsupp.coe_add]
+      simp only [Finsupp.coe_add]
       rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
     · rintro (_ | a) m <;> simp [h_zero, h_add]
@@ -1209,7 +1209,7 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
   classical
     have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
       rintro ⟨b₁, b₂⟩
-      simp only [single_apply, Prod.ext_iff, ite_and]
+      simp only [Prod.ext_iff, ite_and]
       split_ifs <;> simp [single_apply, *]
     rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
     · intro b _ b_ne
@@ -1548,7 +1548,7 @@ variable {α M}
 
 theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
-  simp only [mem_support_iff, Ne.def]
+  simp only [mem_support_iff]
   exact mt fun h => h.symm ▸ smul_zero _
 #align finsupp.support_smul Finsupp.support_smul
 

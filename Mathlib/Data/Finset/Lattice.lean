@@ -1413,7 +1413,7 @@ def max' (s : Finset α) (H : s.Nonempty) : α :=
 variable (s : Finset α) (H : s.Nonempty) {x : α}
 
 theorem min'_mem : s.min' H ∈ s :=
-  mem_of_min <| by simp only [min', id_eq, coe_inf']; rfl
+  mem_of_min <| by simp only [min', coe_inf']; rfl
 #align finset.min'_mem Finset.min'_mem
 
 theorem min'_le (x) (H2 : x ∈ s) : s.min' ⟨x, H2⟩ ≤ x :=
@@ -1439,7 +1439,7 @@ theorem min'_singleton (a : α) : ({a} : Finset α).min' (singleton_nonempty _) 
 #align finset.min'_singleton Finset.min'_singleton
 
 theorem max'_mem : s.max' H ∈ s :=
-  mem_of_max <| by simp only [max', id_eq, coe_sup']; rfl
+  mem_of_max <| by simp only [max', coe_sup']; rfl
 #align finset.max'_mem Finset.max'_mem
 
 theorem le_max' (x) (H2 : x ∈ s) : x ≤ s.max' ⟨x, H2⟩ :=

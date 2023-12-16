@@ -178,7 +178,7 @@ theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) :
 -- `rintro` below acts on it.
   clear b
   ext x
-  simp only [exists_prop, Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
+  simp only [Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
   constructor
   · rintro ⟨x, hx, rfl⟩
     exact ⟨hx, le_tsub_of_add_le_right <| x.2⟩
@@ -193,7 +193,7 @@ theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) :
 -- `rintro` below acts on it.
   clear b
   ext x
-  simp only [exists_prop, Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
+  simp only [Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
   constructor
   · rintro ⟨x, hx, rfl⟩
     exact ⟨hx, le_tsub_of_add_le_right <| x.2⟩

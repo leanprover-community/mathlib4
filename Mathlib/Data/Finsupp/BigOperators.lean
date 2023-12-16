@@ -58,7 +58,7 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
     x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
-  simp only [Finset.sup_eq_union, Finsupp.mem_support_iff, exists_prop]
+  simp only [Finset.sup_eq_union, exists_prop]
   induction' l with hd tl IH
   · simp
   · simp only [foldr, Function.comp_apply, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,

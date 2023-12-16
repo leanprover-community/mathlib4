@@ -1360,7 +1360,7 @@ theorem succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.s
 
 theorem succAbove_eq_zero_iff [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) :
     a.succAbove b = 0 ↔ b = 0 := by
-  simp only [← succAbove_ne_zero_zero ha, ← succAboveEmb_apply, OrderEmbedding.eq_iff_eq, iff_self]
+  simp only [← succAbove_ne_zero_zero ha, ← succAboveEmb_apply, OrderEmbedding.eq_iff_eq]
 #align fin.succ_above_eq_zero_iff Fin.succAbove_eq_zero_iff
 
 theorem succAbove_ne_zero [NeZero n] {a : Fin (n + 1)} {b : Fin n} (ha : a ≠ 0) (hb : b ≠ 0) :
@@ -1569,7 +1569,7 @@ theorem one_succAbove_succ {n : ℕ} (j : Fin n) :
 @[simp]
 theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   have := succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 2))
-  simp only [succ_zero_eq_one, val_zero, Nat.cast_zero, zero_succAbove, succ_one_eq_two] at this
+  simp only [val_zero, Nat.cast_zero, zero_succAbove, succ_one_eq_two] at this
   exact this
 #align fin.one_succ_above_one Fin.one_succAbove_one
 
@@ -1586,7 +1586,7 @@ def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
 theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_val_le_val, coe_pred]
+  all_goals simp only [le_iff_val_le_val]
   · exact pred_le_pred H
   · calc
       _ ≤ _ := Nat.pred_le _
@@ -1692,12 +1692,12 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
     rw [if_pos]
     rfl
     exact H
-    simp only [castSucc_mk, mk_lt_mk, not_lt]
+    simp only [mk_lt_mk, not_lt]
     apply le_of_lt H
   · rw [dif_pos]
     rw [if_neg]
     · simp
-    · simp only [pred, Fin.mk_lt_mk, not_lt]
+    · simp only [Fin.mk_lt_mk, not_lt]
       exact Nat.le_sub_one_of_lt (h.symm.lt_of_le H)
     · exact lt_of_le_of_ne H h.symm
 #align fin.succ_above_pred_above Fin.succAbove_predAbove
@@ -1712,11 +1712,11 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
   rcases i with ⟨i, _⟩
   dsimp
   split_ifs with h₁ h₂ h₃
-  · simp only [← val_fin_lt, not_lt] at h₁ h₂
+  · simp only [not_lt] at h₁ h₂
     exact (Nat.lt_le_asymm h₁ (le_of_lt h₂)).elim
   · rfl
   · rfl
-  · simp only [← val_fin_lt, not_lt] at h₁ h₃
+  · simp only [not_lt] at h₁ h₃
     contradiction
 #align fin.pred_above_succ_above Fin.predAbove_succAbove
 
@@ -1760,7 +1760,7 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
               using h₂)]
       ext
       have h₀ : (b : ℕ) < n + 1 := by
-        simp only [le_iff_val_le_val, coe_castSucc] at h₂
+        simp only [le_iff_val_le_val] at h₂
         simpa only [lt_succ_iff] using h₂.trans a.is_le
       have h₁ : (b.succ : ℕ) < n + 2 := by
         rw [← Nat.succ_lt_succ_iff] at h₀

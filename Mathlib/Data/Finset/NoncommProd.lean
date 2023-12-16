@@ -204,7 +204,7 @@ theorem noncommProd_map [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F
 theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈ s, x = m) :
     s.noncommProd comm = m ^ Multiset.card s := by
   induction s using Quotient.inductionOn
-  simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at *
+  simp only [quot_mk_to_coe, noncommProd_coe] at *
   exact List.prod_eq_pow_card _ m h
 #align multiset.noncomm_prod_eq_pow_card Multiset.noncommProd_eq_pow_card
 #align multiset.noncomm_sum_eq_card_nsmul Multiset.noncommSum_eq_card_nsmul
@@ -476,7 +476,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    simp only [ne_eq, Pi.mulSingle_eq_same]
+    simp only [Pi.mulSingle_eq_same]
     · intro j hj
       simp at hj
       simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,

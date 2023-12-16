@@ -1591,7 +1591,7 @@ theorem image_smul : (s.image fun x => a • x) = a • s :=
 
 @[to_additive]
 theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = x := by
-  simp only [Finset.smul_finset_def, mem_image, exists_prop, Prod.exists, mem_product]
+  simp only [Finset.smul_finset_def, mem_image, Prod.exists, mem_product]
 #align finset.mem_smul_finset Finset.mem_smul_finset
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 

@@ -310,7 +310,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     cases' (Nat.succ_le_of_lt hn).eq_or_lt with h' h'
     · simp [h']
     · intro x hx
-      simp only [mem_biUnion, id.def]
+      simp only [mem_biUnion]
       obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
         (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
       · refine' ⟨insert x t, _, mem_insert_self _ _⟩
@@ -333,7 +333,7 @@ theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext <| fun t => by
-    simp only [mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
+    simp only [mem_powersetCard, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical
       intro h

@@ -243,7 +243,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     · refine' rename (Subtype.map id _) p * X ⟨n, s.mem_insert_self n⟩
       simp (config := { contextual := true }) only [id.def, or_true_iff, Finset.mem_insert,
         forall_true_iff]
-    · simp only [rename_rename, rename_X, Subtype.coe_mk, AlgHom.map_mul]
+    · simp only [rename_rename, rename_X, AlgHom.map_mul]
       rfl
 #align mv_polynomial.exists_finset_rename MvPolynomial.exists_finset_rename
 
@@ -284,8 +284,8 @@ end Rename
 theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPolynomial σ ℤ) :
     eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := by
   apply MvPolynomial.induction_on p (fun n => by simp only [eval₂_C, rename_C])
-    (fun p q hp hq => by simp only [hp, hq, rename, eval₂_add, AlgHom.map_add])
-    fun p n hp => by simp only [eval₂_mul, hp, eval₂_X, comp_apply, map_mul, rename_X, eval₂_mul]
+    (fun p q hp hq => by simp only [hp, hq, eval₂_add, AlgHom.map_add])
+    fun p n hp => by simp only [hp, eval₂_X, comp_apply, map_mul, rename_X, eval₂_mul]
 #align mv_polynomial.eval₂_cast_comp MvPolynomial.eval₂_cast_comp
 
 section Coeff

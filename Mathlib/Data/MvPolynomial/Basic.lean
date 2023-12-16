@@ -756,7 +756,7 @@ theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [NoZeroSM
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support \ q.support ⊆ (p + q).support := by
   intro m hm
-  simp only [Classical.not_not, mem_support_iff, Finset.mem_sdiff, Ne.def] at hm
+  simp only [Classical.not_not, mem_support_iff, Finset.mem_sdiff] at hm
   simp [hm.2, hm.1]
 #align mv_polynomial.support_sdiff_support_subset_support_add MvPolynomial.support_sdiff_support_subset_support_add
 
@@ -963,7 +963,7 @@ theorem eval₂_eq (g : R →+* S₁) (X : σ → S₁) (f : MvPolynomial σ R) 
 
 theorem eval₂_eq' [Fintype σ] (g : R →+* S₁) (X : σ → S₁) (f : MvPolynomial σ R) :
     f.eval₂ g X = ∑ d in f.support, g (f.coeff d) * ∏ i, X i ^ d i := by
-  simp only [eval₂_eq, ← Finsupp.prod_pow]
+  simp only [← Finsupp.prod_pow]
   rfl
 #align mv_polynomial.eval₂_eq' MvPolynomial.eval₂_eq'
 
@@ -1310,8 +1310,8 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
     simp only [hp, hq, (map f).map_add, coeff_add]
     rw [f.map_add]
   · intro p i hp m
-    simp only [hp, (map f).map_mul, map_X]
-    simp only [hp, mem_support_iff, coeff_mul_X']
+    simp only [(map f).map_mul, map_X]
+    simp only [hp, coeff_mul_X']
     split_ifs
     · rfl
     rw [f.map_zero]

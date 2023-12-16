@@ -172,7 +172,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
 
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
-  simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
+  simp only [liftP_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
   · intro
@@ -205,7 +205,7 @@ open Set MvFunctor
 
 theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
     @supp.{u} _ P.Obj _ α (⟨a, f⟩ : P α) i = f i '' univ := by
-  ext x; simp only [supp, image_univ, mem_range, mem_setOf_eq]
+  ext x; simp only [supp, image_univ, mem_setOf_eq]
   constructor <;> intro h
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
     rw [liftP_iff']

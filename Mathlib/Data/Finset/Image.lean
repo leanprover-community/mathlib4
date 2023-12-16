@@ -280,7 +280,7 @@ theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) (range b)) := by
   refine' disjoint_iff_inf_le.mpr _
   intro k hk
-  simp only [mem_range, inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
+  simp only [inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
     at hk
   obtain ⟨a, _, ha⟩ := hk.2
   simpa [← ha] using hk.1
@@ -290,7 +290,7 @@ theorem disjoint_range_addRightEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addRightEmbedding a) (range b)) := by
   refine' disjoint_iff_inf_le.mpr _
   intro k hk
-  simp only [mem_range, inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
+  simp only [inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
     at hk
   obtain ⟨a, _, ha⟩ := hk.2
   simpa [← ha] using hk.1
@@ -593,7 +593,7 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq' [DecidableEq α] {f : ℕ → 
     simp only [mem_image, mem_range]
     exact ⟨i % n, Nat.mod_lt i hn, (rfl.congr hi).mp (h i)⟩
   · rintro h
-    simp only [mem_image, Set.mem_range, mem_range] at *
+    simp only [mem_image, mem_range] at *
     rcases h with ⟨i, _, ha⟩
     exact ⟨i, ha⟩
 #align finset.mem_range_iff_mem_finset_range_of_mod_eq' Finset.mem_range_iff_mem_finset_range_of_mod_eq'

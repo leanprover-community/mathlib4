@@ -1028,7 +1028,7 @@ they are equal. -/
 theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ (i : ι) (y : β i), f (single i y) = g (single i y)) : f = g := by
   refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_iUnion_range_single fun f hf => _
-  simp only [Set.mem_iUnion, Set.mem_range] at hf
+  simp only [Set.mem_iUnion] at hf
   rcases hf with ⟨x, y, rfl⟩
   apply H
 #align dfinsupp.add_hom_ext DFinsupp.addHom_ext
@@ -1106,7 +1106,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 def support (f : Π₀ i, β i) : Finset ι :=
   (f.support'.lift fun xs => (Multiset.toFinset xs.1).filter fun i => f i ≠ 0) <| by
     rintro ⟨sx, hx⟩ ⟨sy, hy⟩
-    dsimp only [Subtype.coe_mk] at *
+    dsimp only [] at *
     ext i; constructor
     · intro H
       rcases Finset.mem_filter.1 H with ⟨_, h⟩
@@ -1241,7 +1241,7 @@ theorem zipWith_def {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁
     {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i} {g₂ : Π₀ i, β₂ i} :
     zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.1 (g₁ i.1) (g₂ i.1) := by
   ext i
-  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne.def] at h1 h2 <;>
+  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not] at h1 h2 <;>
     simp [h1, h2, hf]
 #align dfinsupp.zip_with_def DFinsupp.zipWith_def
 
@@ -1742,13 +1742,13 @@ theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂
   rw [mapRange_def]
   refine' (Finset.prod_subset support_mk_subset _).trans _
   · intro i h1 h2
-    simp only [mem_support_toFun, ne_eq] at h1
+    simp only [ne_eq] at h1
     simp only [Finset.coe_sort_coe, mem_support_toFun, mk_apply, ne_eq, h1, not_false_iff,
       dite_eq_ite, ite_true, not_not] at h2
     simp [h2, h0]
   · refine' Finset.prod_congr rfl _
     intro i h1
-    simp only [mem_support_toFun, ne_eq] at h1
+    simp only [mem_support_toFun] at h1
     simp [h1]
 #align dfinsupp.prod_map_range_index DFinsupp.prod_mapRange_index
 #align dfinsupp.sum_map_range_index DFinsupp.sum_mapRange_index
@@ -1906,7 +1906,7 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
   toFun f :=
     (f.support'.lift fun s => ∑ i in Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
-      dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
+      dsimp only [toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left _ _
       have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right _ _
       refine'
@@ -1927,24 +1927,24 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
   map_add' := by
     rintro ⟨f, sf, hf⟩ ⟨g, sg, hg⟩
     change (∑ i in _, _) = (∑ i in _, _) + ∑ i in _, _
-    simp only [coe_add, coe_mk', Subtype.coe_mk, Pi.add_apply, map_add, Finset.sum_add_distrib]
+    simp only [coe_add, coe_mk', Pi.add_apply, map_add, Finset.sum_add_distrib]
     congr 1
     · refine' (Finset.sum_subset _ _).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inl
       · intro i _ H2
-        simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
+        simp only [Multiset.mem_toFinset] at H2
         rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
     · refine' (Finset.sum_subset _ _).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr
       · intro i _ H2
-        simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
+        simp only [Multiset.mem_toFinset] at H2
         rw [(hg i).resolve_left H2, AddMonoidHom.map_zero]
   map_zero' := by
-    simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
+    simp only [coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
 #align dfinsupp.sum_add_hom DFinsupp.sumAddHom
 
 @[simp]
@@ -1967,7 +1967,7 @@ theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decida
   change (∑ i in _, _) = ∑ i in Finset.filter _ _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]
   intro i _
-  dsimp only [coe_mk', Subtype.coe_mk] at *
+  dsimp only [Subtype.coe_mk] at *
   split_ifs with h
   rfl
   rw [not_not.mp h, AddMonoidHom.map_zero]

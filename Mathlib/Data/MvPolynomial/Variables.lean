@@ -150,7 +150,7 @@ theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → Mv
     (∑ i in s, f i).degrees ≤ s.sup fun i => (f i).degrees := by
   classical
   refine' s.induction _ _
-  · simp only [Finset.sum_empty, Finset.sup_empty, degrees_zero]
+  · simp only [Finset.sup_empty, degrees_zero]
     exact le_rfl
   · intro i s his ih
     rw [Finset.sup_insert, Finset.sum_insert his]
@@ -187,7 +187,7 @@ theorem degrees_pow (p : MvPolynomial σ R) : ∀ n : ℕ, (p ^ n).degrees ≤ n
 theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
     i ∈ p.degrees ↔ ∃ d, p.coeff d ≠ 0 ∧ i ∈ d.support := by
   classical
-  simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset, exists_prop]
+  simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset]
 #align mv_polynomial.mem_degrees MvPolynomial.mem_degrees
 
 theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degrees) :
@@ -244,7 +244,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   contrapose! hi
   rw [Finset.sum_eq_zero]
   intro j hj
-  simp only [exists_prop, mem_degrees] at hi
+  simp only [mem_degrees] at hi
   specialize hi j ⟨x, hx, hj⟩
   rw [Finsupp.single_apply, if_neg hi]
 #align mv_polynomial.degrees_rename MvPolynomial.degrees_rename
@@ -324,7 +324,7 @@ theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
-  simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
+  simp only [vars_def, Multiset.mem_toFinset] at hx ⊢
   simpa using Multiset.mem_of_le (degrees_add _ _) hx
 #align mv_polynomial.vars_add_subset MvPolynomial.vars_add_subset
 
@@ -520,7 +520,7 @@ theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
   classical
   by_cases c : i = j
-  · simp only [c, if_true, eq_self_iff_true, degreeOf_def, degrees_X, Multiset.count_singleton]
+  · simp only [if_true, eq_self_iff_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, if_false, degreeOf_def, degrees_X]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.degree_of_X MvPolynomial.degreeOf_X
@@ -873,7 +873,7 @@ theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).vars ⊆ φ.vars.image f := by
   classical
   intro i hi
-  simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
+  simp only [vars_def, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
   simpa only [Multiset.mem_map] using degrees_rename _ _ hi
 #align mv_polynomial.vars_rename MvPolynomial.vars_rename
 

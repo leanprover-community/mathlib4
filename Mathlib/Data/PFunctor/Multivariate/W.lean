@@ -208,7 +208,7 @@ theorem wRec_eq {α : TypeVec n} {C : Type*}
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
   rw [wMk, wRec]; dsimp; rw [wpRec_eq]
-  dsimp only [wPathDestLeft_wPathCasesOn, wPathDestRight_wPathCasesOn]
+  dsimp only [wPathDestRight_wPathCasesOn]
   congr
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_rec_eq MvPFunctor.wRec_eq

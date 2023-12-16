@@ -304,7 +304,7 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
   split_ifs with h
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp
-    · simp only [Nat.succ_eq_add_one, add_lt_add_iff_right, Fin.val_mk] at h
+    · simp only [Nat.succ_eq_add_one, add_lt_add_iff_right] at h
       simp [h]
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp at h
@@ -335,7 +335,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
   · rw [Fin.val_mk] at h
     exact (Nat.mod_eq_of_lt h).symm
   · rw [Fin.val_mk, not_lt] at h
-    simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
+    simp only [Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
     refine' (Nat.mod_eq_of_lt _).symm
     rw [tsub_lt_iff_left h]
     exact add_lt_add i.2 i.2

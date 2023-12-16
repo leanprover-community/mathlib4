@@ -178,7 +178,7 @@ theorem Finset.prod_univ_pi [DecidableEq α] [Fintype α] [CommMonoid β] {δ : 
     ⟨fun a _ => x a, by simp_all⟩
   -- Porting note: old proof was `by simp`
   intro a ha
-  simp only [Fintype.piFinset, mem_map, mem_pi, Function.Embedding.coeFn_mk]
+  simp only [Fintype.piFinset, mem_map, Function.Embedding.coeFn_mk]
   exact ⟨a, by simpa using ha, by simp⟩
 #align finset.prod_univ_pi Finset.prod_univ_pi
 #align finset.sum_univ_pi Finset.sum_univ_pi
@@ -270,7 +270,7 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (f : ∀ (a : α) (_ha : p a), β) (g : ∀ (a : α) (_ha : ¬p a), β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
-  simp only [prod_dite, attach_eq_univ]
+  simp only [prod_dite]
   congr 1
   · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // p x } => f x x.2
   · exact (Equiv.subtypeEquivRight $ by simp).prod_comp fun x : { x // ¬p x } => g x x.2

@@ -173,11 +173,11 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
     simp only [bind, Functor.map, pure, singleton]
     induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
-    · simp only [bind._eq_2, append, traverse._eq_2, cons.injEq, true_and]; congr
+    · simp only [bind._eq_2, append, traverse._eq_2, true_and]; congr
     · ext; apply ih)
   (pure_bind := by
     intros
-    simp only [pure, singleton, LazyList.bind]
+    simp only [pure, LazyList.bind]
     apply append_nil)
   (bind_assoc := by
     intro _ _ _ xs _ _

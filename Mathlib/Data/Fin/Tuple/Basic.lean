@@ -476,13 +476,13 @@ def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)
 @[simp]
 theorem init_snoc : init (snoc p x) = p := by
   ext i
-  simp only [init, snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [init, snoc, coe_castSucc, is_lt, dite_true]
   convert cast_eq rfl (p i)
 #align fin.init_snoc Fin.init_snoc
 
 @[simp]
 theorem snoc_castSucc : snoc p x (castSucc i) = p i := by
-  simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [snoc, coe_castSucc, is_lt, dite_true]
   convert cast_eq rfl (p i)
 #align fin.snoc_cast_succ Fin.snoc_castSucc
 
@@ -569,7 +569,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
-  · simp only [init, snoc, h, cast_eq, dite_true]
+  · simp only [snoc, h, cast_eq, dite_true]
     have _ : castSucc (castLT j h) = j := castSucc_castLT _ _
     rw [← cast_eq rfl (q j)]
     congr

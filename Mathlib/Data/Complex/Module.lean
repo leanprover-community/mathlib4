@@ -389,7 +389,7 @@ def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
         star_val_eq, smul_neg, neg_neg]⟩
   map_add' a b := by
     ext
-    simp only [AddSubgroup.coe_add, smul_add, AddMemClass.mk_add_mk]
+    simp only [AddSubgroup.coe_add, smul_add]
   map_smul' a b := by
     ext
     simp only [neg_smul, skewAdjoint.val_smul, AddSubgroup.coe_mk, RingHom.id_apply,
