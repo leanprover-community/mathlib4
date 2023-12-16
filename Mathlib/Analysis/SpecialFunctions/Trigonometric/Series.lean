@@ -164,7 +164,7 @@ lemma cosh_le_exp_half_sq (x : ℝ) : cosh x ≤ exp (x ^ 2 / 2) := by
   simp only [div_pow, pow_mul, smul_eq_mul, inv_mul_eq_div, div_div]
   gcongr
   norm_cast
-  exact Nat.two_pow_mul_factorial_le_factorial_two_mul
+  exact Nat.two_pow_mul_factorial_le_factorial_two_mul _
 
 end Real
 end SinhCosh
