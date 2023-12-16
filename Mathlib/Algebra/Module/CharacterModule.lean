@@ -39,7 +39,6 @@ variable (R : Type uR) [CommRing R]
 variable (M : Type uM) [AddCommGroup M] [Module R M]
 variable (N : Type uN) [AddCommGroup N] [Module R N]
 variable (D : Type uD) [AddCommGroup D] [Module R D]
-variable [injective_dual : Module.Injective R D]
 
 -- we really want to consider only injective modules
 /--
@@ -79,7 +78,8 @@ def LinearMap.characterify
     rw [CharacterModule.smul_apply, CharacterModule.smul_apply, LinearMap.comp_apply, c.map_smul,
       L.map_smul, c.map_smul]
 
-lemma LinearMap.characterify_surjective_of_injective [UnivLE.{uR, uD}]
+lemma LinearMap.characterify_surjective_of_injective
+    [UnivLE.{uR, uD}] [injective_dual : Module.Injective R D]
     {L : M →ₗ[R] N}
     (inj : Function.Injective L) :
     Function.Surjective <| LinearMap.characterify D L :=
@@ -101,7 +101,7 @@ def CharacterModuleFunctor :
 
 namespace CharacterModuleFunctor
 
-lemma map_surjective_of_injective_unop [UnivLE.{uR, uD}]
+lemma map_surjective_of_injective_unop [UnivLE.{uR, uD}] [Module.Injective R D]
     {M N : (ModuleCat R)ᵒᵖ} {L : M ⟶ N} (hL : Function.Injective L.unop) :
     Function.Surjective <| (CharacterModuleFunctor R D).map L :=
   LinearMap.characterify_surjective_of_injective D hL
