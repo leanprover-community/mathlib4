@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Module.PID
 import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 open Polynomial
 
@@ -18,11 +19,12 @@ theorem snd_finite [Module R M] [Module R N] [Finite R (M × N)]: Finite R N :=
   Module.Finite.equiv (Submodule.sndEquiv R M N)
 
 
-theorem LinearEquiv.uniqueProd {M N : Type u} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Unique N] :
+
+theorem LinearEquiv.uniqueProd {M N : Type u} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Unique N] :
     (N × M) ≃ₗ[R] M :=
   AddEquiv.uniqueProd.toLinearEquiv (fun _ _ => by simp [AddEquiv.uniqueProd])
 
-theorem LinearEquiv.prodUnique {M N : Type u} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Unique N] :
+theorem LinearEquiv.prodUnique {M N : Type u} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Unique N] :
     (M × N) ≃ₗ[R] M :=
   AddEquiv.prodUnique.toLinearEquiv (fun _ _ => by simp [AddEquiv.prodUnique])
 
@@ -58,6 +60,8 @@ theorem hehe3 : Unique (Fin 0 →₀ R[X]) := inferInstance
 theorem hehe4 : ∃ (ι : Type u) (_ : Fintype ι) (p : ι → R[X]) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
     Nonempty (AEval' φ ≃ₗ[R[X]] DirectSum ι fun i ↦ R[X] ⧸ Submodule.span R[X] {p i ^ e i})  := by
   rcases hehe R M φ with ⟨ι,x,p,hp,e,⟨h⟩⟩
-  refine ⟨ι,x,p,hp,e,⟨?_⟩⟩
-  --have := LinearEquiv.uniqueProd (DirectSum ι fun i ↦ R[X] ⧸ Submodule.span R[X] {p i ^ e i}) (Fin 0 →₀ R[X])
-  exact LinearEquiv h this
+  exact ⟨ι,x,p,hp,e,⟨LinearEquiv.trans h (LinearEquiv.uniqueProd R[X])⟩⟩
+
+
+theorem jordan_normal_form : ∃ (ι : Type u) (_ : Fintype ι) (μ : ι → R) (e : ι → ℕ),
+  Nonempty (M ≃ₗ[R] DirectSum ι fun i ↦ Module.End.generalizedEigenspace φ (μ i) (e i)) := by sorry
