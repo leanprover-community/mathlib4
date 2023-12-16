@@ -664,24 +664,11 @@ theorem exists_ne_zero {f : M₁ →SL[σ₁₂] M₂} (hf : f ≠ 0) : ∃ x, f
   exact hf (ContinuousLinearMap.ext h)
 #align continuous_linear_map.exists_ne_zero ContinuousLinearMap.exists_ne_zero
 
-section
-
-variable (R₁ M₁)
-
+variable (R₁ M₁) in
 /-- the identity map as a continuous linear map. -/
 def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
 #align continuous_linear_map.id ContinuousLinearMap.id
-
-end
-
-instance one : One (M₁ →L[R₁] M₁) :=
-  ⟨id R₁ M₁⟩
-#align continuous_linear_map.has_one ContinuousLinearMap.one
-
-theorem one_def : (1 : M₁ →L[R₁] M₁) = id R₁ M₁ :=
-  rfl
-#align continuous_linear_map.one_def ContinuousLinearMap.one_def
 
 theorem id_apply (x : M₁) : id R₁ M₁ x = x :=
   rfl
@@ -701,6 +688,18 @@ theorem coe_id' : ⇑(id R₁ M₁) = _root_.id :=
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = id _ _ := by
   rw [← coe_id, coe_inj]
 #align continuous_linear_map.coe_eq_id ContinuousLinearMap.coe_eq_id
+
+instance one : One (M₁ →L[R₁] M₁) :=
+  ⟨id R₁ M₁⟩
+#align continuous_linear_map.has_one ContinuousLinearMap.one
+
+theorem one_def : (1 : M₁ →L[R₁] M₁) = id R₁ M₁ :=
+  rfl
+#align continuous_linear_map.one_def ContinuousLinearMap.one_def
+
+@[simp, norm_cast]
+theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
+  rfl
 
 @[simp]
 theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
