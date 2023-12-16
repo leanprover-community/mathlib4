@@ -78,7 +78,7 @@ theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   rw [← (Ideal.Quotient.mk _).map_mul, ← (Ideal.Quotient.mk _).map_one, Ideal.Quotient.eq,
     Ideal.mem_jacobson_bot] at h1 h2
   specialize h1 1
-  simp at h1
+  simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
   exact h1.1
 #align is_local_ring_hom_of_le_jacobson_bot isLocalRingHom_of_le_jacobson_bot
 
