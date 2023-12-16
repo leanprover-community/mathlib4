@@ -229,8 +229,8 @@ theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
 /-- The span of every finite set of polynomials is contained in a `degreeLT n` for some `n`. -/
 theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLT R n := by
-  rcases span_of_finite_le_degreeLE s_fin with ⟨n,_⟩
-  exact ⟨n+1, by rwa [degreeLT_eq_degreeLE]⟩
+  rcases span_of_finite_le_degreeLE s_fin with ⟨n, _⟩
+  exact ⟨n + 1, by rwa [degreeLT_eq_degreeLE]⟩
 
 /-- The finset of nonzero coefficients of a polynomial. -/
 def frange (p : R[X]) : Finset R :=
