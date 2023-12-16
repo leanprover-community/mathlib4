@@ -200,7 +200,6 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
-    
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
