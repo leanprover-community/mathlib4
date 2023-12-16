@@ -574,6 +574,64 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff (fun _ => I.isInteriorPoint) hv hγ hγ' h
 
+-- todo: flip `t` and `t'`
+lemma exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless] [T2Space M]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
+    (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a a' : ℝ} (hpos : 0 < a')
+    (hle : a' ≤ a) : EqOn (choose (h a')) (choose (h a)) (Ioo (-a') a') := by
+  have ⟨h0', hγ'⟩ := choose_spec (h a')
+  have ⟨h0, hγ⟩ := choose_spec (h a)
+  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless (t₀ := 0) _ hv hγ' (hγ.mono _)
+    (by rw [h0', h0])
+  · rw [mem_Ioo, ← abs_lt, abs_zero]
+    exact hpos
+  · apply Ioo_subset_Ioo <;> linarith
+
+lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless] [T2Space M]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
+    (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
+    EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
+  intros t' ht'
+  by_cases hlt : |t'| + 1 < a
+  · apply exists_isIntegralCurveOn_Ioo_eqOn hv h
+    · exact add_pos_of_nonneg_of_pos (abs_nonneg _) zero_lt_one
+    · exact le_of_lt hlt
+    · rw [mem_Ioo, ← abs_lt]
+      exact lt_add_one _
+  · apply (exists_isIntegralCurveOn_Ioo_eqOn hv h _ _ _).symm
+    · have := lt_trans ht'.1 ht'.2
+      rw [neg_lt_self_iff] at this
+      exact this
+    · exact not_lt.mp hlt
+    · exact ht'
+
+lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2Space M]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
+    (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) :
+    ∃ γ, γ 0 = x ∧ IsIntegralCurve γ v := by
+  refine ⟨fun t' ↦ choose (h (|t'| + 1)) t', (choose_spec (h (|0| + 1))).1, ?_⟩
+  intro t
+  apply HasMFDerivAt.congr_of_eventuallyEq (f := choose (h (|t| + 1)))
+  · apply (choose_spec (h (|t| + 1))).2 t
+    rw [mem_Ioo, ← abs_lt]
+    exact lt_add_one _
+  · rw [Filter.eventuallyEq_iff_exists_mem]
+    refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_, ?_⟩
+    · have := lt_add_of_pos_right |t| zero_lt_one
+      rw [abs_lt] at this
+      exact Ioo_mem_nhds this.1 this.2
+    · apply integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn hv
+
+lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2Space M]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
+    (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
+      ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) := by
+  constructor
+  · rintro ⟨γ, h1, h2⟩
+    intro a
+    exact ⟨γ, h1, h2.isIntegralCurveOn _⟩
+  · apply exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv
+
 /-- The extension of an integral curve by another integral curve is an integral curve.
 
   If two integral curves are defined on overlapping open intervals, and they agree at a point in
@@ -683,124 +741,6 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
         intros t' ht'
         have : t' ∉ Ioo a b := not_mem_Ioo_of_le (le_of_lt ht'.2)
         rw [piecewise, if_neg this]
-
-lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2Space M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
-    (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
-      ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) := by
-  constructor
-  · rintro ⟨γ, h1, h2⟩
-    intro a
-    exact ⟨γ, h1, h2.isIntegralCurveOn _⟩
-  · intro h
-    -- auxiliary definition: `γ_aux (n + 1)` is the integral curve obtained by extending the domain
-    -- of `γ_aux n` by 1 on each end
-    let γ_aux : ℕ → ℝ → M := fun n => by
-      induction n
-      case zero =>
-        exact choose (h 1)
-      case succ n γ_prev =>
-        exact piecewise (Ioo (-(n + 1 : ℝ)) (n + 1)) γ_prev
-          (choose (h (n + 1 + 1)))
-    --  each `γ_aux n` is indeed an integral curve on `Ioo (-(n + 1)) (n + 1)`
-    have haux : ∀ n : ℕ, γ_aux n 0 = x ∧
-      IsIntegralCurveOn (γ_aux n) v (Ioo (-(n + 1)) (n + 1)) := fun n => by
-      induction n
-      case zero =>
-        use (choose_spec (h 1)).1
-        convert (choose_spec (h 1)).2 <;> simp
-      case succ n hn =>
-        have h1 : γ_aux (Nat.succ n) = piecewise (Ioo (-(n + 1 : ℝ)) (n + 1)) (γ_aux n)
-          (choose (h (n + 1 + 1))) := rfl
-        rw [h1, Nat.cast_succ]
-        constructor
-        · rw [piecewise, if_pos, hn.1]
-          constructor
-          · rw [neg_lt, neg_zero, ← Nat.cast_add_one, Nat.cast_pos]
-            exact Nat.succ_pos _
-          · rw [← Nat.cast_add_one, Nat.cast_pos]
-            exact Nat.succ_pos _
-        · apply (isIntegralCurveOn_piecewise hv hn.2
-            (t₀ := 0) _ _ _).mono (subset_union_right _ _)
-          · apply (choose_spec (h (n + 1 + 1))).2
-          · simp only [neg_add_rev, gt_iff_lt, add_neg_lt_iff_lt_add, not_lt, ge_iff_le,
-            le_add_neg_iff_add_le, neg_add_lt_iff_lt_add, le_neg_add_iff_add_le, mem_inter_iff,
-            mem_Ioo, zero_add, add_zero, and_assoc]
-            refine ⟨by linarith, by linarith, by linarith, by linarith⟩
-          · rw [(choose_spec (h (n + 1 + 1))).1]
-            exact hn.1
-    -- the desired global integral curve
-    set γ_ext : ℝ → M := fun t => γ_aux (Nat.floor |t|) t with γ_ext_def
-    have hext_eq_aux : ∀ n : ℕ, EqOn γ_ext (γ_aux n) (Ioo (-(n + 1 : ℝ)) (n + 1)) := fun n => by
-      induction n
-      case zero =>
-        intros t ht
-        rw [γ_ext_def]
-        show γ_aux ⌊|t|⌋₊ t = γ_aux 0 t
-        have : ⌊|t|⌋₊ = 0 := by
-          rw [Nat.floor_eq_zero, abs_lt]
-          rw [CharP.cast_eq_zero, zero_add] at ht
-          exact ht
-        rw [this]
-      case succ n hn =>
-        intros t ht
-        by_cases hmem : t ∈ (Ioo (-(n + 1 : ℝ)) (n + 1))
-        · rw [hn hmem]
-          -- this should be a separate lemma
-          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff _ _ hv (haux n).2
-          · apply (haux n.succ).2.mono
-            apply Ioo_subset_Ioo
-            · rw [neg_le_neg_iff, ← Nat.cast_add_one, ← Nat.cast_add_one]
-              apply Nat.cast_le_cast
-              exact Nat.le_succ _
-            · rw [← Nat.cast_add_one, ← Nat.cast_add_one]
-              apply Nat.cast_le_cast
-              exact Nat.le_succ _
-          · rw [(haux n).1, (haux n.succ).1]
-          · exact hmem
-          · rw [mem_Ioo, neg_lt_zero, ← Nat.cast_add_one, Nat.cast_pos]
-            exact ⟨Nat.succ_pos _, Nat.succ_pos _⟩
-          · intros
-            exact ModelWithCorners.isInteriorPoint
-        · rw [γ_ext_def]
-          show γ_aux ⌊|t|⌋₊ t = γ_aux (n + 1) t
-          have : ⌊|t|⌋₊ = n + 1 := by
-            rw [Nat.floor_eq_iff (abs_nonneg _)]
-            rw [mem_Ioo, neg_lt] at ht
-            by_cases hlt : t < 0
-            · rw [abs_of_neg hlt]
-              refine ⟨?_, ht.1⟩
-              rw [mem_Ioo, not_and', not_lt, le_neg, ← Nat.cast_add_one] at hmem
-              apply hmem
-              apply lt_trans hlt
-              rw [Nat.cast_pos]
-              exact Nat.succ_pos _
-            · rw [not_lt] at hlt
-              rw [abs_of_nonneg hlt]
-              refine ⟨?_, ht.2⟩
-              rw [mem_Ioo, not_and, not_lt, ← Nat.cast_add_one] at hmem
-              apply hmem
-              apply lt_of_lt_of_le _ hlt
-              rw [neg_lt, neg_zero, Nat.cast_pos]
-              exact Nat.succ_pos _
-          rw [this]
-    refine ⟨γ_ext, by simp [(choose_spec (h 1)).1], ?_⟩
-    intro t
-    have hmem : t ∈ Ioo (-((⌊|t|⌋₊ : ℝ) + 1)) (⌊|t|⌋₊ + 1) := by
-      rw [mem_Ioo]
-      by_cases ht : t < 0
-      · rw [abs_of_neg ht, neg_lt]
-        refine ⟨Nat.lt_floor_add_one _, lt_trans ht ?_⟩
-        rw [← Nat.cast_add_one, Nat.cast_pos]
-        exact Nat.succ_pos _
-      · rw [not_lt] at ht
-        rw [abs_of_nonneg ht, neg_lt]
-        refine ⟨lt_of_le_of_lt (neg_le_neg ht) ?_, Nat.lt_floor_add_one _⟩
-        rw [neg_zero, ← Nat.cast_add_one, Nat.cast_pos]
-        exact Nat.succ_pos _
-    apply ((haux ⌊|t|⌋₊).2 t hmem).congr_of_eventuallyEq
-    apply EqOn.eventuallyEq_of_mem (hext_eq_aux ⌊|t|⌋₊)
-    exact Ioo_mem_nhds hmem.1 hmem.2
 
 -- this is a useful lemma, but adding it to the `Ioo` part of mathlib would mean an explosion of
 -- lemmas...
