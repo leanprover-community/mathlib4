@@ -777,16 +777,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [I.Boundaryless] {M : Type*} [
   ** extend the original local integral curve to `γ_ext`, now defined on
     `Ioo -(a + ε / 2) (a + ε / 2)`
   ** this means `a + ε / 2 ∈ S`, but `asup < a + ε / 2`, which is impossible as `sSup S`
-  * suppose `S` is not bounded above (this can be a separate lemma)
-  ** for every `a : ℝ`, there is `a' ∈ S` such that `a < a'`
-  ** construct a global integral curve `γ` as follows
-  *** for each `n : ℕ`, define `γ_aux n` to be some local integral curve on `Ioo -n n`
-  *** for each `t : ℝ`, define `γ t = γ_aux ⌈|t|⌉₊ t`
-  *** if `t` is not an integer, then `γ` is locally equal to `γ_aux ⌈|t|⌉₊`, which is a local
-    integral curve
-  *** if `t` is an integer, then we can use the uniqueness theorem to show that `γ` is locally equal
-    to `γ_aux (t + 1)`, since `γ_aux t` and `γ_aux (t + 1)` have the same initial condition
-  ** that's the global integral curve we need
+  * suppose `S` is not bounded above (this is a separate lemma)
 
   `hbdd : ∀ (t : ℝ), ∃ a, (∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) ∧ t < a`
   `choose (hbdd n)` picks `a > n` such that some integral curve is defined on `Ioo -n n`
