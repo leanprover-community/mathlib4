@@ -288,6 +288,9 @@ theorem Restriction.subset (h : N ≤r M) : N.E ⊆ M.E := by
 theorem Restriction.exists_eq_restrict (h : N ≤r M) : ∃ R ⊆ M.E, N = M ↾ R :=
   h
 
+theorem Restriction.of_subset {R' : Set α} (M : Matroid α) (h : R ⊆ R') : (M ↾ R) ≤r (M ↾ R') := by
+  rw [← restrict_restrict_eq M h]; exact restrict_restriction _ _ h
+
 theorem restriction_iff_exists : (N ≤r M) ↔ ∃ R, R ⊆ M.E ∧ N = M ↾ R := by
   use Restriction.exists_eq_restrict; rintro ⟨R, hR, rfl⟩; exact restrict_restriction M R hR
 
@@ -321,6 +324,14 @@ theorem restrict_strictRestriction {M : Matroid α} (hR : R ⊂ M.E) : M ↾ R <
   refine (M.restrict_restriction R hR.subset).strictRestriction_of_ne (fun h ↦ ?_)
   rw [← h, restrict_ground_eq] at hR
   exact hR.ne rfl
+
+theorem Restriction.strictRestriction_of_ground_ne (h : N ≤r M) (hne : N.E ≠ M.E) : N <r M := by
+  rw [← h.eq_restrict]
+  exact restrict_strictRestriction (h.subset.ssubset_of_ne hne)
+
+theorem StrictRestriction.of_ssubset {R' : Set α} (M : Matroid α) (h : R ⊂ R') :
+    (M ↾ R) <r (M ↾ R') :=
+  (Restriction.of_subset M h.subset).strictRestriction_of_ground_ne h.ne
 
 theorem Restriction.finite {M : Matroid α} [M.Finite] (h : N ≤r M) : N.Finite := by
   obtain ⟨R, hR, rfl⟩ := h
