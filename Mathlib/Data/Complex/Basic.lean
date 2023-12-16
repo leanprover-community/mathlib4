@@ -563,7 +563,7 @@ theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
 end
 -- @[simp]
 /- Porting note: `simp` attribute removed as the result could be proved
-by `simp only [Complex.conj_i, @neg_neg]`
+by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
   ext_iff.2 <| by simp
@@ -647,14 +647,14 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
 
 -- @[simp]
 /- Porting note: `simp` attribute removed as linter reports this can be proved
-by `simp only []` -/
+by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 #align complex.norm_sq_zero Complex.normSq_zero
 
 -- @[simp]
 /- Porting note: `simp` attribute removed as linter reports this can be proved
-by `simp only []` -/
+by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
 #align complex.norm_sq_one Complex.normSq_one
@@ -892,14 +892,14 @@ set_option linter.uppercaseLean3 false in
 
 -- @[simp]
 /- Porting note: `simp` attribute removed as linter reports this can be proved
-by `simp only []` -/
+by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align complex.norm_sq_inv Complex.normSq_inv
 
 -- @[simp]
 /- Porting note: `simp` attribute removed as linter reports this can be proved
-by `simp only []` -/
+by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align complex.norm_sq_div Complex.normSq_div

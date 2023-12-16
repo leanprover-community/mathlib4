@@ -138,14 +138,14 @@ theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
 
 -- @[simp]
 /- Porting note: `simp` attribute removed as linter reports this can be proved
-by `simp only []` -/
+by `simp only [@map_pow]` -/
 theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 #align complex.abs_pow Complex.abs_pow
 
 -- @[simp]
 /- Porting note: `simp` attribute removed as linter reports this can be proved
-by `simp only []` -/
+by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 #align complex.abs_zpow Complex.abs_zpow
