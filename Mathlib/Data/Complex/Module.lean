@@ -50,6 +50,8 @@ open ComplexConjugate
 
 variable {R : Type*} {S : Type*}
 
+attribute [local ext] Complex.ext
+
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 

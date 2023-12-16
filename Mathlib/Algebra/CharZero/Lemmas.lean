@@ -3,8 +3,9 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Algebra.Function.Support
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Data.Nat.Cast.Field
 
 #align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -20,6 +21,8 @@ with `1`.
 
 * Characteristic zero implies that the additive monoid is infinite.
 -/
+
+open Function Set
 
 namespace Nat
 
@@ -49,9 +52,8 @@ theorem cast_div_charZero {k : Type*} [DivisionSemiring k] [CharZero k] {m n : �
 
 end Nat
 
-section
-
-variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
+section AddMonoidWithOne
+variable {α M : Type*} [AddMonoidWithOne M] [CharZero M] {n : ℕ}
 
 instance CharZero.NeZero.two : NeZero (2 : M) :=
   ⟨by
@@ -59,7 +61,18 @@ instance CharZero.NeZero.two : NeZero (2 : M) :=
     rwa [Nat.cast_two] at this⟩
 #align char_zero.ne_zero.two CharZero.NeZero.two
 
-end
+namespace Function
+
+lemma support_nat_cast (hn : n ≠ 0) : support (n : α → M) = univ :=
+  support_const <| Nat.cast_ne_zero.2 hn
+#align function.support_nat_cast Function.support_nat_cast
+
+lemma mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
+  mulSupport_const <| Nat.cast_ne_one.2 hn
+#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+
+end Function
+end AddMonoidWithOne
 
 section
 
