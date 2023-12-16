@@ -189,7 +189,8 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
 
 /-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
   `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
-theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]} (hs : s.Nonempty) (hp : p ∈ Submodule.span R s) :
+theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
+    (hs : s.Nonempty) (hp : p ∈ Submodule.span R s) :
     ∃ p' ∈ s, degree p ≤ degree p' := by
   by_contra! h
   by_cases hp_zero : p = 0
