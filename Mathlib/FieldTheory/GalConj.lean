@@ -72,6 +72,28 @@ theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
 
 end IntermediateField
 
+namespace Polynomial
+
+variable {T : Type _} [CommRing T]
+
+-- Compare `Polynomial.rootSet`
+noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
+  (p.map (algebraMap T S)).roots
+#align polynomial.aroots Polynomial.aroots
+
+theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+    p.aroots S = (p.map (algebraMap T S)).roots :=
+  rfl
+#align polynomial.aroots_def Polynomial.aroots_def
+
+theorem aroots_map (p : T[X]) (S) (A) [CommRing S] [Algebra T S] [CommRing A]
+    [IsDomain A] [Algebra S A] [Algebra T A] [IsScalarTower T S A] :
+    (p.map (algebraMap T S)).aroots A = p.aroots A := by
+  rw [aroots_def, map_map, ← IsScalarTower.algebraMap_eq T S A]
+#align polynomial.aroots_map Polynomial.aroots_map
+
+end Polynomial
+
 section GalConjClasses
 
 variable (F : Type _) [Field F] (E : Type _) [Field E] [Algebra F E]
@@ -320,30 +342,11 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   rw [minpoly_out, minpoly_out, h]
 #align gal_conj_classes.minpoly.inj GalConjClasses.minpoly_inj
 
-notation:1023 p ".[" S "]-roots" =>
-  Polynomial.roots (Polynomial.map (algebraMap _ S) p)
-
-open Lean PrettyPrinter.Delaborator SubExpr in
-@[delab app.Polynomial.roots]
-def delabPolynomialRoots : Delab := do
-  let e ← getExpr
-  guard $ e.isAppOfArity' ``Polynomial.roots 4
-  let (A, B) ← withNaryArg 3 do
-    let e ← getExpr
-    guard $ e.isAppOfArity' ``Polynomial.map 6
-    let A ← withNaryArg 4 do
-      let e ← getExpr
-      guard $ e.isAppOfArity' ``algebraMap 5
-      withNaryArg 1 delab
-    let B ← withNaryArg 5 delab
-    pure (A, B)
-  `($B.[$A]-roots)
-
-theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _) := fun _ _ =>
+theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _ _) := fun _ _ =>
   minpoly_inj
 #align gal_conj_classes.minpoly.injective GalConjClasses.minpoly_injective
 
-theorem nodup_aroots_minpoly (c : GalConjClasses F E) : (minpoly c).[E]-roots.Nodup :=
+theorem nodup_aroots_minpoly (c : GalConjClasses F E) : ((minpoly c).aroots E).Nodup :=
   nodup_roots c.separable_minpoly.map
 #align gal_conj_classes.minpoly.nodup_aroots GalConjClasses.nodup_aroots_minpoly
 
@@ -365,7 +368,7 @@ theorem rootSet_minpoly_eq_orbit [Normal F E] (c : GalConjClasses F E) :
 #align gal_conj_classes.root_set_minpoly_eq_orbit GalConjClasses.rootSet_minpoly_eq_orbit
 
 theorem aroots_minpoly_eq_orbit_val [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
-    (c : GalConjClasses F E) : (minpoly c).[E]-roots = c.orbit.toFinset.1 := by
+    (c : GalConjClasses F E) : (minpoly c).aroots E = c.orbit.toFinset.1 := by
   simp_rw [← rootSet_minpoly_eq_orbit, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val]
   symm; rw [Multiset.dedup_eq_self]
   exact nodup_roots ((separable_map _).mpr c.separable_minpoly)
@@ -373,7 +376,7 @@ theorem aroots_minpoly_eq_orbit_val [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [N
 
 theorem orbit_eq_mk_aroots_minpoly [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) :
-    c.orbit.toFinset = ⟨(minpoly c).[E]-roots, c.nodup_aroots_minpoly⟩ := by
+    c.orbit.toFinset = ⟨(minpoly c).aroots E, c.nodup_aroots_minpoly⟩ := by
   simp only [aroots_minpoly_eq_orbit_val]
 #align gal_conj_classes.orbit_eq_mk_aroots_minpoly GalConjClasses.orbit_eq_mk_aroots_minpoly
 
