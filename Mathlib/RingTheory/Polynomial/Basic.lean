@@ -232,6 +232,19 @@ theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
   rcases span_of_finite_le_degreeLE s_fin with ⟨n, _⟩
   exact ⟨n + 1, by rwa [degreeLT_eq_degreeLE]⟩
 
+/-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
+a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
+theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
+  rw [Module.finite_def, Submodule.fg_def]
+  push_neg
+  intro s hs contra
+  rcases span_of_finite_le_degreeLE hs with ⟨n,hn⟩
+  have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
+    rw [contra] at hn
+    exact hn Submodule.mem_top
+  rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  exact one_ne_zero this
+
 /-- The finset of nonzero coefficients of a polynomial. -/
 def frange (p : R[X]) : Finset R :=
   letI := Classical.decEq R
@@ -692,23 +705,6 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
 #align polynomial.coeff_prod_mem_ideal_pow_tsub Polynomial.coeff_prod_mem_ideal_pow_tsub
 
 end CommSemiring
-
-section Semiring
-
-/-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
-a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
-theorem polynomial_not_module_finite {R : Type u} [Semiring R] [Nontrivial R] :
-    ¬ (Module.Finite R R[X]) := by
-  rw [Module.finite_def, Submodule.fg_def]
-  push_neg
-  intro s hs contra
-  rcases span_of_finite_le_degreeLE hs with ⟨n,hn⟩
-  have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
-    rw [contra] at hn
-    exact hn Submodule.mem_top
-  rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
-  exact one_ne_zero this
-end Semiring
 
 section Ring
 
