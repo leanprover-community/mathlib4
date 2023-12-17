@@ -158,7 +158,7 @@ lemma mul_modMonomial_finsupp_single (i : σ) (x y : MvPolynomial σ R) :
     (x * y) %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1 =
     (x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) := by
   refine AddMonoidAlgebra.mul_modOf_of_minimal _ _ _ fun a b ha hb h => ?_
-  rw [←le_iff_exists_add, Finsupp.single_le_iff] at ha hb h
+  rw [← le_iff_exists_add, Finsupp.single_le_iff] at ha hb h
   rw [not_le, Nat.lt_one_iff] at ha hb
   rw [Finsupp.add_apply, ha, hb, zero_add] at h
   cases h
