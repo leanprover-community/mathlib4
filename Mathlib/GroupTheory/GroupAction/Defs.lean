@@ -661,6 +661,13 @@ theorem isPretransitive_compHom
   obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
   exact ⟨e, rfl⟩
 
+@[to_additive]
+theorem isPretransitive_of_compHom
+    {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G]
+    (f : E →* F) [h : letI := compHom G f; IsPretransitive E G] :
+    IsPretransitive F G :=
+  letI := compHom G f; ⟨fun x y ↦ let ⟨g, hg⟩ := h.exists_smul_eq x y; ⟨f g, hg⟩⟩
+
 end MulAction
 
 end
