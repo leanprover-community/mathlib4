@@ -33,39 +33,38 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
   simp only [toPointedCone, mem_span_finset, mem_span_finset, coe_sort_coe, coe_mem,
     not_true_eq_false, Subtype.exists, exists_prop]
 
+
   by_cases hf : ∃ i₀, i₀ ∈ t ∧ f i₀ = 0
   · replace ⟨i₀, hi₀t, hf⟩ := hf
     use i₀, hi₀t, f
     rwa [sum_erase_eq_sub, hf, zero_smul, sub_zero, combo]
-  · push_neg at hf
-    have hf' : ∀ i ∈ t, 0 < f i := by
-      intro i hi
-      specialize hf i hi
-      exact zero_lt_iff.mpr hf
-    clear hf
+  ·
 
     let g' := Function.extend Subtype.val g 0
 
     obtain (hneg | hpos) := Ne.lt_or_lt hnzero
     · let s := @Finset.filter _ (fun z => g' z < 0) (fun _ => LinearOrder.decidableLT _ _) t
       obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => g' z / f z) $ ⟨c, by {
-        simp only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
-          mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and]
-        rwa [Function.Injective.extend_apply Subtype.val_injective] }⟩
+        simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
+          mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
+          Function.Injective.extend_apply Subtype.val_injective] }⟩
       rw [mem_filter] at hd₁
       use d
       constructor
       · aesop
       · let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
-        -- proof that the image consists of non-negative elements
         rw [sub_nonneg]
         by_cases hzt : z ∈ t
         · by_cases hzs : z ∈ s
           · specialize hd₂ z hzs
             rw [mem_filter] at hzs
+            have hfneg : ∀ i ∈ t, 0 < f i := by
+              intro i hi
+              push_neg at hf
+              exact zero_lt_iff.mpr (hf i hi)
             rwa [← div_le_iff_of_neg hzs.2, ← inv_le_inv_of_neg, inv_div, inv_div]
-            · exact div_neg_of_pos_of_neg (hf' d hd₁.1) hd₁.2
-            · exact div_neg_of_pos_of_neg (hf' z hzt) hzs.2
+            · exact div_neg_of_pos_of_neg (hfneg d hd₁.1) hd₁.2
+            · exact div_neg_of_pos_of_neg (hfneg z hzt) hzs.2
           · rw [mem_filter] at hzs
             push_neg at hzs
             specialize hzs hzt
@@ -78,12 +77,9 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
           exact zero_le (f z) }⟩
         use k
         rw [sum_erase]
-        · simp
-          simp_rw [sub_smul]
-          simp only [Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib]
-          rw [combo]
-          simp only [Subtype.exists, exists_prop, exists_eq_right, sub_eq_self]
-          simp_rw [mul_smul, ← Finset.smul_sum]
+        · simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
+            Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib, combo,
+            Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul, ← Finset.smul_sum]
           convert smul_zero (f d / g' d)
           rw [← relation]
           conv_lhs => rw [←Finset.sum_coe_sort]
