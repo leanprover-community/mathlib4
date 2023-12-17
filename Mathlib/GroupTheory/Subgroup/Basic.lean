@@ -3544,11 +3544,11 @@ def subgroupCongr (h : H = K) : H ≃* K :=
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_apply (h : H = K) (x) :
-  (MulEquiv.subgroupCongr h x : G) = x := rfl
+    (MulEquiv.subgroupCongr h x : G) = x := rfl
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_symm_apply (h : H = K) (x) :
-  ((MulEquiv.subgroupCongr h).symm x : G) = x := rfl
+    ((MulEquiv.subgroupCongr h).symm x : G) = x := rfl
 
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
 use `Subgroup.equiv_map_of_injective`. -/

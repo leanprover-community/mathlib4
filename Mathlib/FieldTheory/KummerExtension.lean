@@ -420,7 +420,7 @@ lemma MulEquiv.subgroupCongr_apply {G} [Group G] {H₁ H₂ : Subgroup G} (e : H
   (MulEquiv.subgroupCongr e x : G) = x := rfl
 
 lemma MulEquiv.subgroupCongr_symm_apply {G} [Group G] {H₁ H₂ : Subgroup G} (e : H₁ = H₂) (x) :
-  ((MulEquiv.subgroupCongr e).symm x : G) = x := rfl
+    ((MulEquiv.subgroupCongr e).symm x : G) = x := rfl
 
 lemma autEquivZmod_symm_apply {ζ : K} (hζ : IsPrimitiveRoot ζ n)
     (α : L) (hα : α ^ n = algebraMap K L a) (m : ℤ) :
