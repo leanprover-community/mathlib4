@@ -515,7 +515,7 @@ variable [CommSemiring B] [Algebra R B]
 
 instance instCommSemiring : CommSemiring (A ⊗[R] B) where
   toSemiring := inferInstance
-  mul_comm x y :=
+  mul_comm x y := by
     refine TensorProduct.induction_on x ?_ ?_ ?_
     · simp
     · intro a₁ b₁
