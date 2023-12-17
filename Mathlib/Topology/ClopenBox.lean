@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Separation
+import Mathlib.Topology.CompactOpen
 /-!
 
 # Clopen subsets in cartesian products
@@ -31,21 +31,14 @@ open scoped Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-theorem isOpen_setOf_singleton_prod_isCompact_subset {K : Set Y} (hK : IsCompact K)
-    {W : Set (X × Y)} (hW : IsOpen W) : IsOpen {x : X | {x} ×ˢ K ⊆ W} := by
-  rw [isOpen_iff_mem_nhds]
-  intro x hx
-  -- if `{x} ×ˢ K ⊆ W`, then `W` includes a product of a nhd of `x` and a set nhd of `K`
-  rw [mem_setOf_eq, ← hW.mem_nhdsSet, isCompact_singleton.nhdsSet_prod_eq hK,
-    nhdsSet_singleton, mem_prod_iff] at hx
-  rcases hx with ⟨U, hU, V, hV, hW⟩
-  refine mem_of_superset hU fun x' hx' ↦ ?_
-  simp? says simp only [singleton_prod, image_subset_iff, mem_setOf_eq]
-  exact fun y hy ↦ hW <| mk_mem_prod hx' <| subset_of_mem_nhdsSet hV hy
-
 lemma isOpen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurry f))
     {K : Set Y} (hK : IsCompact K) {W : Set Z} (hW : IsOpen W) : IsOpen {x | MapsTo (f x) K W} := by
-  simpa using isOpen_setOf_singleton_prod_isCompact_subset hK (hW.preimage hf)
+  simpa only [mapsTo']
+    using (ContinuousMap.isOpen_gen hK hW).preimage (ContinuousMap.curry ⟨_, hf⟩).continuous
+
+theorem isOpen_setOf_singleton_prod_isCompact_subset {K : Set Y} (hK : IsCompact K)
+    {W : Set (X × Y)} (hW : IsOpen W) : IsOpen {x : X | {x} ×ˢ K ⊆ W} := by
+  simpa using isOpen_setOf_mapsTo_isCompact (f := Prod.mk) continuous_id hK hW
 
 lemma isClosed_setOf_mapsTo {f : X → Y → Z} (hf : ∀ y, Continuous (f · y)) (s : Set Y) {t : Set Z}
     (ht : IsClosed t) : IsClosed {x | MapsTo (f x) s t} := by

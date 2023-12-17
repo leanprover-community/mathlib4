@@ -366,8 +366,7 @@ def curry' (f : C(α × β, γ)) (a : α) : C(β, γ) :=
 
 /-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
 theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
-  have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ := by ext; rfl
-  hf ▸ Continuous.comp (continuous_comp f) continuous_coev
+  Continuous.comp (continuous_comp f) continuous_coev
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
