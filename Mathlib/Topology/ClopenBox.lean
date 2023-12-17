@@ -26,61 +26,38 @@ cartesian products of compact spaces (this is relevant to the theory of light pr
 
 -/
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+open Function Set Filter
+open scoped Topology
 
-theorem isOpen_set_of_singleton_prod_contained {V : Set Y} (hV : IsCompact V) {W : Set (X × Y)}
-    (hW : IsOpen W) : IsOpen {x : X | {x} ×ˢ V ⊆ W} := by
-  -- This argument is a version of [engelking1989], Lemma 3.1.15
-  let U := {x : X | {x} ×ˢ V ⊆ W}
-  have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
+theorem isOpen_setOf_singleton_prod_isCompact_subset {K : Set Y} (hK : IsCompact K)
+    {W : Set (X × Y)} (hW : IsOpen W) : IsOpen {x : X | {x} ×ˢ K ⊆ W} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
-  rw [mem_nhds_iff]
-  -- We show that `U` contains an open neighbourhood of each of its points.
-  rw [isOpen_prod_iff] at hW
-  -- The fact that `W` is open gives an open cover of the compact set `V`, together with a
-  -- collection of open neighbourhoods of `x`, such that the collection of products is contained
-  -- in `W`. We extract a finite subcover and the desired open neighbourhood of `x` is the
-  -- (finite, thus open) intersection of the corresponding neighbourhoods.
-  rw [isCompact_iff_finite_subcover] at hV
-  obtain ⟨I, hI⟩ := hV
-    (fun (v : V) ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose)
-    (fun v ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose_spec.2.1)
-    (fun v hv ↦ Set.mem_iUnion.mpr ⟨⟨v, hv⟩,
-      (hW x v (hUV ⟨hx, hv⟩)).choose_spec.choose_spec.2.2.2.1⟩)
-  let t := ⋂ i ∈ I, (fun v ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose) i
-  refine ⟨t, ?_, ?_, ?_⟩
-  -- The intersection is indeed contained in `U`:
-  · intro x' hx'
-    have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx' h.1, h.2⟩
-    refine subset_trans hxt ?_
-    intro ⟨z, w⟩ ⟨hz, hw⟩
-    replace hw := hI hw
-    simp only [Set.mem_iUnion] at hw
-    obtain ⟨i, hi, hw⟩ := hw
-    apply (hW x i.val (hUV ⟨hx, i.prop⟩)).choose_spec.choose_spec.2.2.2.2
-    refine ⟨?_, hw⟩
-    simp only [Set.mem_iInter] at hz
-    exact hz _ hi
-  -- The intersection is open:
-  · exact Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
-      fun v _ ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose_spec.1
-  -- The intersection contains `x`
-  · simp only [Set.mem_iInter]
-    exact fun v _ ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose_spec.2.2.1
+  -- if `{x} ×ˢ K ⊆ W`, then `W` includes a product of a nhd of `x` and a set nhd of `K`
+  rw [mem_setOf_eq, ← hW.mem_nhdsSet, isCompact_singleton.nhdsSet_prod_eq hK,
+    nhdsSet_singleton, mem_prod_iff] at hx
+  rcases hx with ⟨U, hU, V, hV, hW⟩
+  refine mem_of_superset hU fun x' hx' ↦ ?_
+  simp? says simp only [singleton_prod, image_subset_iff, mem_setOf_eq]
+  exact fun y hy ↦ hW <| mk_mem_prod hx' <| subset_of_mem_nhdsSet hV hy
+
+lemma isOpen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurry f))
+    {K : Set Y} (hK : IsCompact K) {W : Set Z} (hW : IsOpen W) : IsOpen {x | MapsTo (f x) K W} := by
+  simpa using isOpen_setOf_singleton_prod_isCompact_subset hK (hW.preimage hf)
 
 variable [CompactSpace Y] (W : Set (X × Y)) (hW : IsClopen W)
 
 theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
-    ∃ (U : Set X) (V : Set Y) (_ : IsClopen U) (_ : IsClopen V),
-    a ∈ U ∧ b ∈ V ∧ (U ×ˢ V : Set (X × Y)) ⊆ W := by
+    ∃ (U : Set X) (V : Set Y), IsClopen U ∧ IsClopen V ∧ a ∈ U ∧ b ∈ V ∧ U ×ˢ V ⊆ W := by
   let V : Set Y := {y | (a, y) ∈ W}
   let U : Set X := {x | {x} ×ˢ V ⊆ W}
   have hp : Continuous (fun (y : Y) ↦ (a, y)) := Continuous.Prod.mk _
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
-  refine ⟨U, V, ⟨isOpen_set_of_singleton_prod_contained (hW.2.preimage hp).isCompact hW.1, ?_⟩,
+  refine ⟨U, V, ⟨isOpen_setOf_singleton_prod_isCompact_subset (hW.2.preimage hp).isCompact hW.1, ?_⟩,
     ⟨hW.1.preimage hp, hW.2.preimage hp⟩, fun ⟨_, _⟩ hw ↦ ?_, h, hUV⟩
-  -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
+  -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
   -- definition of `U`. It is the proof of [buzyakovaClopenBox], Lemma 2.
   · apply isClosed_of_closure_subset
     intro x hx
