@@ -68,19 +68,19 @@ theorem TensorProduct.lid_DirectSum_tmul [DecidableEq R] (ι : Type*) [Decidable
   rw [LinearEquiv.trans_apply, comm_tmul, rid_DirectSum_tmul]
 
 open Module.Free DirectSum in
-/-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
-product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁ⁿ N`. -/
-def rid_finite_free [Module.Finite R M] [Module.Free R M] :
-    N ⊗[R] M ≃ₗ[R] ⨁ _ : Fin (Fintype.card (ChooseBasisIndex R M)), N :=
-  TensorProduct.congr (LinearEquiv.refl R N)
-    (((chooseBasis R M).reindex (Fintype.equivFin (ChooseBasisIndex R M))).equivFun ≪≫ₗ
-      (linearEquivFunOnFintype R (Fin <| Fintype.card <| ChooseBasisIndex R M)
+/-- If `M` and `N` are `R`-modules and `N` is finite and free, of rank `n`, then the tensor
+product of `M` and `N` is equivalent to a finite direct sum, `M ⊗ N ≃ ⨁ⁿ M`. -/
+def rid_finite_free [Module.Finite R N] [Module.Free R N] :
+    M ⊗[R] N ≃ₗ[R] ⨁ _ : Fin (Fintype.card (ChooseBasisIndex R N)), M :=
+  TensorProduct.congr (LinearEquiv.refl R M)
+    (((chooseBasis R N).reindex (Fintype.equivFin (ChooseBasisIndex R N))).equivFun ≪≫ₗ
+      (linearEquivFunOnFintype R (Fin <| Fintype.card <| ChooseBasisIndex R N)
         (fun _ => R)).symm) ≪≫ₗ
-    rid_DirectSum R N (Fin <| Fintype.card <| ChooseBasisIndex R M)
+    rid_DirectSum R M (Fin <| Fintype.card <| ChooseBasisIndex R N)
 
 open Module.Free DirectSum in
 /-- If `M` and `N` are `R`-modules and `M` is finite and free, of rank `n`, then the tensor
-product of `M` and `N` is equivalent to a finite direct sum, `N ⊗ M ≃ ⨁ⁿ N`. -/
+product of `M` and `N` is equivalent to a finite direct sum, `M ⊗ N ≃ ⨁ⁿ N`. -/
 def lid_finite_free [Module.Finite R M] [Module.Free R M] :
     M ⊗[R] N ≃ₗ[R] ⨁ _ : Fin (Fintype.card (ChooseBasisIndex R M)), N :=
   TensorProduct.congr
@@ -103,53 +103,55 @@ theorem rTensor_DirectSum_equiv_mapRange [DecidableEq R] (n : ℕ) (f : M →ₗ
   rw [LinearMap.map_smul]
 
 open DirectSum Module.Free in
-/-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free of rank `n`, and `f : N → P` is
-a linear map, the tensor product of `f` and the identity `M → M` is related by linear equivalences
-given by `rid_finite_free` to the natural linear map `⨁ⁿ N → ⨁ⁿ P` induced by `f`.
-(This establishes a natural isomorphism between the functors `(· ⊗ M)` and `(⨁ⁿ ·)` whose
-component at `N` is `rid_finite_free R M N`.) -/
-theorem rTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R M] [Module.Free R M]
-    (f : N →ₗ[R] P) :
-    (rid_finite_free R M P : P ⊗[R] M →ₗ[R] ⨁ _ : Fin _, P) ∘ₗ f.rTensor M =
-      DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R M))) => f) ∘ₗ
-        (rid_finite_free R M N : N ⊗[R] M →ₗ[R] ⨁ _ : Fin _, N) := by
-  let ι := ChooseBasisIndex R M
+/-- If `M`, `N` and `P` are `R`-modules, `N` is finite and free of rank `n`, and `f : M → P` is
+a linear map, the tensor product of `f` and the identity `N → N` is related by linear equivalences
+given by `rid_finite_free` to the natural linear map `⨁ⁿ M → ⨁ⁿ P` induced by `f`.
+(This establishes a natural isomorphism between the functors `(· ⊗ N)` and `(⨁ⁿ ·)` whose
+component at `M` is `rid_finite_free R N M`.) -/
+theorem rTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R N] [Module.Free R N]
+    (f : M →ₗ[R] P) :
+    (rid_finite_free R P N : P ⊗[R] N →ₗ[R] ⨁ _ : Fin _, P) ∘ₗ f.rTensor N =
+      DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R N))) => f) ∘ₗ
+        (rid_finite_free R M N : M ⊗[R] N →ₗ[R] ⨁ _ : Fin _, M) := by
+  let ι := ChooseBasisIndex R N
   let n := Fintype.card ι
-  let ℰ := chooseBasis R M
-  let e₀ := TensorProduct.congr (LinearEquiv.refl R N) <|
+  let ℰ := chooseBasis R N
+  let e₀ := TensorProduct.congr (LinearEquiv.refl R M) <|
     (ℰ.reindex (Fintype.equivFin ι)).equivFun ≪≫ₗ
       (linearEquivFunOnFintype R (Fin n) (fun _ => R)).symm
-  let e₁ := rid_DirectSum R N (Fin n)
+  let e₁ := rid_DirectSum R M (Fin n)
   let e₀' := TensorProduct.congr (LinearEquiv.refl R P) <|
     (ℰ.reindex (Fintype.equivFin ι)).equivFun ≪≫ₗ
       (linearEquivFunOnFintype R (Fin n) (fun _ => R)).symm
   let e₁' := rid_DirectSum R P (Fin n)
-  let φ := f.rTensor M
+  let φ := f.rTensor N
   let φ' := f.rTensor (⨁ _ : Fin n, R)
-  let ψ := DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R M))) => f)
+  let ψ := DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R N))) => f)
   refine LinearMap.ext fun x => ?_
-  change e₁' ((e₀' ∘ₗ φ) x) = (ψ ∘ₗ (e₁ : (N ⊗[R] ⨁ _, R) →ₗ[R] ⨁ _, N)) (e₀ x)
+  change e₁' ((e₀' ∘ₗ φ) x) = (ψ ∘ₗ (e₁ : (M ⊗[R] ⨁ _, R) →ₗ[R] ⨁ _, M)) (e₀ x)
   rewrite [show e₀' ∘ₗ φ = φ' ∘ₗ e₀ from TensorProduct.ext' fun _ _ => rfl,
     LinearMap.comp_apply, LinearEquiv.coe_coe, ← LinearEquiv.coe_coe, ← LinearMap.comp_apply,
-    rTensor_DirectSum_equiv_mapRange R N P n f]
+    rTensor_DirectSum_equiv_mapRange R M P n f]
   unfold_let e₀ e₁ ψ
   rfl
 
-variable {N P} in
+variable {M P} in
 open DirectSum Module.Free in
-/-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free, and `f : N → P` is an injective
-linear map, the tensor product of `f` and the identity `M → M` is also injective. -/
-theorem rTensor_finite_free_injective_of_injective [DecidableEq R] [Module.Free R M]
-    [Module.Finite R M] (f : N →ₗ[R] P) (hf : Function.Injective f) :
-      Function.Injective (f.rTensor M) := by
-  rewrite [← (f.rTensor M).id_comp, ← LinearEquiv.refl_toLinearMap,
-      ← (rid_finite_free R M P).self_trans_symm, LinearEquiv.coe_trans, LinearMap.comp_assoc,
+/-- If `M`, `N` and `P` are `R`-modules, `N` is finite and free, and `f : M → P` is an injective
+linear map, the tensor product `f.rTensor N` of `f` with the identity `N → N` is also injective. -/
+theorem rTensor_finite_free_injective_of_injective [DecidableEq R] [Module.Free R N]
+    [Module.Finite R N] (f : M →ₗ[R] P) (hf : Function.Injective f) :
+      Function.Injective (f.rTensor N) := by
+  rewrite [← (f.rTensor N).id_comp, ← LinearEquiv.refl_toLinearMap,
+      ← (rid_finite_free R P N).self_trans_symm, LinearEquiv.coe_trans, LinearMap.comp_assoc,
       rTensor_finite_free_equiv_mapRange, LinearMap.coe_comp, LinearEquiv.coe_coe,
       EmbeddingLike.comp_injective]
   erw [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp]
-  exact DFinsupp.mapRange_injective R (Fin (Fintype.card (ChooseBasisIndex R M))) hf
+  exact DFinsupp.mapRange_injective R (Fin (Fintype.card (ChooseBasisIndex R N))) hf
 
 variable {N P} in
+/-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free, and `f : N → P` is an injective
+linear map, the tensor product `f.lTensor M' of the identity `M → M` with `f` is also injective. -/
 theorem lTensor_finite_free_injective_of_injective [DecidableEq R] [Module.Free R M]
     [Module.Finite R M] (f : N →ₗ[R] P) (hf : Function.Injective f) :
       Function.Injective (f.lTensor M) := by
