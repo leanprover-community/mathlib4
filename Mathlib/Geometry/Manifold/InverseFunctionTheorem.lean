@@ -140,7 +140,6 @@ lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
   --     sorry -- TODO: fix proof!
   --     --exact ⟨hfP', this ▸ p⟩
 
-#exit
 /-- The pregroupoid of `C^n` functions on `E`. -/
 def contDiffPregroupoidBasic : Pregroupoid E := {
   property := fun f s ↦ ContDiffOn ℝ n f s
@@ -185,6 +184,8 @@ lemma contDiffPregroupoindIsIFT_aux [CompleteSpace E] {f g : E → E} {s t : Set
   -- apply fderiv_congr to rewrite g' with g
   sorry
 
+-- also want a version of the IFT with HasStrictFDerivAt; uses the below under the hood
+
 /-- If `E` is complete and `n ≥ 1`, the pregroupoid of `C^n` functions
   is an IFT pregroupoid.
   The proof relies on the mean value theorem, which is why ℝ or ℂ is required. -/
@@ -195,15 +196,11 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     intro f g s t x f' hs hx hf hf' hinv
     -- Since f is continuously differentiable on s, there's a neighbourhood `U` of `x` s.t.
     -- `df_x'` is an isomorphism for all `x' ∈ U`.
-    rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht, htopen, hft⟩
-    let U := (fun x ↦ fderiv ℝ f x) ⁻¹' t' ∩ s
-    have : IsOpen U := by
-      have : ContinuousOn (fun x ↦ fderiv ℝ f x) s := hf.continuousOn_fderiv_of_isOpen hs hn
-      apply IsOpen.inter _ hs
-      refine this.isOpen_preimage (t := t') hs ?_ htopen
-      sorry -- TODO: need to tweak this argument; as-is requires ...⁻¹ ⊆ s
+    rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht', ht'open, hft⟩
+    let U := s ∩ (fun x ↦ fderiv ℝ f x) ⁻¹' t'
+    have : IsOpen U := (hf.continuousOn_fderiv_of_isOpen hs hn).isOpen_inter_preimage hs ht'open
     have hxU : x ∈ U := by
-      refine ⟨?_, hx⟩
+      refine ⟨hx, ?_⟩
       show fderiv ℝ f x ∈ t'
       exact mem_of_eq_of_mem hf'.fderiv hft
     -- TODO: argue f is a local homeomorphism, then the next three sorries are immediate
@@ -211,23 +208,19 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     have hm : MapsTo g t s := sorry
     have scifi : IsOpen (f '' U) := sorry -- need to argue harder: f is a local homeo or so
     have hu₁ : f '' U ⊆ t :=
-      Subset.trans (image_subset _ (inter_subset_right _ _)) (mapsTo'.mp this)
-    have hinv' : InvOn g f U (f '' U) := hinv.mono (inter_subset_right _ _) hu₁
-    have : ∃ V ⊆ t, f x ∈ V ∧ IsOpen V ∧ ContDiffOn ℝ n g V := by
-      refine ⟨f '' U , hu₁, mem_image_of_mem f hxU, scifi, ?_⟩
-      suffices ∀ y : f '' U, ContDiffAt ℝ n g y by
-        exact fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
-      -- Show g is continuously differentiable at each y ∈ f(U).
-      intro ⟨y, x', hx'U, hx'y⟩
-      have : x' ∈ (fun x ↦ fderiv ℝ f x) ⁻¹' t' := mem_of_mem_inter_left hx'U
-      -- Last step: upgrade `fderiv ℝ f x'` to an isomorphism, using `x' ∈ U`.
-      rcases ht this with ⟨f'', hf''eq⟩
-      have : HasFDerivAt f (fderiv ℝ f x') x' := sorry -- standard, skipped for now
-      have : HasFDerivAt f f''.toContinuousLinearMap x' := by rw [hf''eq]; exact this
-      let h := hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx'U))
-      exact hx'y ▸ (contDiffPregroupoindIsIFT_aux h this hinv hm hn)
-    rcases this with ⟨V, hVt, hxV, hV, hg⟩
-    exact ⟨V, hVt, hxV, hV, hg⟩
+      Subset.trans (image_subset _ (inter_subset_left _ _)) (mapsTo'.mp this)
+    refine ⟨f '' U , hu₁, mem_image_of_mem f hxU, scifi, ?_⟩
+    suffices ∀ y : f '' U, ContDiffAt ℝ n g y from fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
+    -- Show g is continuously differentiable at each y ∈ f(U).
+    intro ⟨y, x', hx'U, hx'y⟩
+    have : x' ∈ (fun x ↦ fderiv ℝ f x) ⁻¹' t' := mem_of_mem_inter_right hx'U
+    -- Last step: upgrade `fderiv ℝ f x'` to an isomorphism, using `x' ∈ U`.
+    rcases ht' this with ⟨f'', hf''eq⟩
+    have hs : s ∈ 𝓝 x' := hs.mem_nhds (mem_of_mem_inter_left hx'U)
+    have : HasFDerivAt f f''.toContinuousLinearMap x' := by
+      rw [hf''eq]
+      exact ((hf.contDiffAt hs).differentiableAt hn).hasFDerivAt
+    exact hx'y ▸ (contDiffPregroupoindIsIFT_aux (hf.contDiffAt hs) this hinv hm hn)
 
 -- FIXME: show that the analytic pregroupoid is also IFT
 
