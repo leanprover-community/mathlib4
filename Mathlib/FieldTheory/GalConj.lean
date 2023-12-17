@@ -90,17 +90,19 @@ def IsGalConj (x y : E) : Prop :=
   (IsGalConj.setoid F E).r x y
 #align is_gal_conj IsGalConj
 
-notation:50 -- need to fix the precedence
-x " ≈g[" F "] " y => IsGalConj F x y
+scoped[IsGalConj] notation:50 -- need to fix the precedence
+  x " ≈g[" F "] " y => IsGalConj F x y
 
-instance IsGalConj.decidable [DecidableEq E] [Fintype (E ≃ₐ[F] E)] (x y : E) :
+open scoped IsGalConj
+
+namespace IsGalConj
+
+instance decidable [DecidableEq E] [Fintype (E ≃ₐ[F] E)] (x y : E) :
     Decidable (x ≈g[F] y) :=
   Fintype.decidableExistsFintype
 
 instance [DecidableEq E] [Fintype (E ≃ₐ[F] E)] : DecidableEq (GalConjClasses F E) :=
   @Quotient.decidableEq _ (IsGalConj.setoid F E) (IsGalConj.decidable F)
-
-namespace IsGalConj
 
 instance : IsEquiv E (IsGalConj F) :=
   letI := IsGalConj.setoid F E
@@ -303,16 +305,10 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   rw [← out_equiv_out]
   refine' ⟨f.symm, _⟩
   dsimp only [AlgEquiv.smul_def]
-  -- Porting note: was
-  -- simp_rw [AlgEquiv.symm_apply_eq, ← IntermediateField.AdjoinSimple.algebraMap_gen F c.out, ←
-  --   IntermediateField.AdjoinSimple.algebraMap_gen F d.out, AlgEquiv.liftNormal_commutes]
-  suffices (algebraMap F⟮d.out⟯ E) (IntermediateField.AdjoinSimple.gen F d.out) =
-      (algebraMap F⟮d.out⟯ E) (f' (IntermediateField.AdjoinSimple.gen F c.out)) by
-    rw [AlgEquiv.symm_apply_eq]
-    rw [IntermediateField.AdjoinSimple.algebraMap_gen] at this
-    simp_rw [this]
-    simp_rw [← AlgEquiv.liftNormal_commutes]
-    rw [IntermediateField.AdjoinSimple.algebraMap_gen]
+  rw [AlgEquiv.symm_apply_eq]
+  conv in out c => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F c.out]
+  conv in out d => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F d.out]
+  rw [AlgEquiv.liftNormal_commutes]
   apply congr_arg
   simp_rw [AlgEquiv.trans_apply, ← fd.symm_apply_eq,
     IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]

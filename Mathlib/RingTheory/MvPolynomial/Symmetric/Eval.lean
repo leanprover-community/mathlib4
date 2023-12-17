@@ -45,11 +45,10 @@ variable [CommSemiring R] [Monoid S] [DistribMulAction S R] [IsScalarTower S R R
 lemma pow_smul_esymm (s : S) (n : ℕ) (m : Multiset R) :
     s ^ n • m.esymm n = (m.map (s • ·)).esymm n := by
   rw [esymm, smul_sum, map_map]
-  dsimp [(· ∘ ·)]
-  refine (?_ : _ = ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum).trans ?_
+  trans ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum
   · refine congr_arg _ (map_congr rfl (fun x hx ↦ ?_))
     rw [Function.comp_apply, (mem_powersetCard.1 hx).2]
-  simp_rw [← prod_map_smul, esymm, powersetCard_map, map_map, (· ∘ ·)]
+  · simp_rw [← prod_map_smul, esymm, powersetCard_map, map_map, (· ∘ ·)]
 
 end Multiset
 
@@ -131,9 +130,9 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
     algebraMap S A (scaleAEvalRoots σ R q p) =
       aevalMultiset σ R ((q.map (algebraMap S A)).roots.map (fun x ↦ q.leadingCoeff • x)) p := by
   rw [scaleAEvalRoots_apply]
-  refine (?_ : _ = aeval (fun i : Fin _ ↦ algebraMap S A (q.leadingCoeff ^ (↑i + 1)) *
+  trans aeval (fun i : Fin _ ↦ algebraMap S A (q.leadingCoeff ^ (i + 1 : ℕ)) *
     (q.map (algebraMap S A)).roots.esymm (↑i + 1))
-      ((equiv_symmetricSubalgebra R rfl).symm p)).trans ?_
+      ((equiv_symmetricSubalgebra R rfl).symm p)
   · simp_rw [← aeval_algebraMap_apply, (· ∘ ·), map_mul, ← Polynomial.coeff_map]
     congr
     funext i
@@ -151,7 +150,7 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
     · rw [tsub_tsub_cancel_of_le h]
     · rw [Polynomial.natDegree_map_eq_of_injective inj]
       exact tsub_le_self
-  simp_rw [← Algebra.smul_def, Multiset.pow_smul_esymm, ← aevalMultiset_apply]
+  · simp_rw [← Algebra.smul_def, Multiset.pow_smul_esymm, ← aevalMultiset_apply]
 
 variable (σ)
 
@@ -187,12 +186,11 @@ lemma aevalMultiset_sumPolynomial
   rw [coe_sumPolynomial, map_sum]
   simp_rw [← Polynomial.aeval_algHom_apply, aeval_X, (· ∘ ·)]
   generalize_proofs h
-  refine (?_ : _ =
-    ∑ x : Fin m.toList.length, (Polynomial.aeval (m.toList.get x)) p).trans ?_
+  trans ∑ x : Fin m.toList.length, (Polynomial.aeval (m.toList.get x)) p
   · rw [← Equiv.sum_comp (Fintype.equivOfCardEq h)]
-  rw [Finset.sum]
-  apply congr_arg
-  conv_rhs => rw [eq_univ_map, Multiset.map_map]
+  · rw [Finset.sum]
+    apply congr_arg
+    conv_rhs => rw [eq_univ_map, Multiset.map_map]
 
 end symmetricSubalgebra
 
