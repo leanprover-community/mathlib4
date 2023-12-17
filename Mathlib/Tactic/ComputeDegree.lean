@@ -478,6 +478,19 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
 
+/-- `monicity` tries to solve a goal of the form `Monic f`.
+It converts the goal into a goal of the form `natDegree f ≤ n` and one of the form `f.coeff n = 1`
+and calls `compute_degree` on those two goals.
+
+The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on the two side-goals.
+-/
+macro (name := monicityMacro) "monicity" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
+
+@[inherit_doc monicityMacro]
+macro "monicity!" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
+
 end Tactic
 
 end Mathlib.Tactic.ComputeDegree
