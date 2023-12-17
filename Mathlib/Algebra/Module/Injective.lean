@@ -544,3 +544,21 @@ lemma Module.Injective.extension_property
   rw [H]
 
 end lifting_property
+
+section CommRing
+
+variable (R Q : Type*) [CommRing R] [AddCommGroup Q] [Module R Q]
+
+protected lemma Module.Baer.iff_surjective :
+    Module.Baer R Q ↔
+    ∀ (I : Ideal R), Function.Surjective <| LinearMap.domRestrict' (M₂ := Q) I := by
+  fconstructor
+  · intro H I g
+    obtain ⟨L, H⟩:= H I g
+    refine ⟨L, LinearMap.ext fun x => H x.1 x.2⟩
+  · intro H I g
+    obtain ⟨L, H⟩ := H I g
+    refine ⟨L, fun x hx => by convert FunLike.congr_fun H ⟨x, hx⟩⟩
+
+
+end CommRing

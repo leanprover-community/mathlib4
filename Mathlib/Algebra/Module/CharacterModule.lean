@@ -80,7 +80,7 @@ def LinearMap.characterify
 
 lemma LinearMap.characterify_surjective_of_injective
     [UnivLE.{uR, uD}] [injective_dual : Module.Injective R D]
-    {L : M →ₗ[R] N}
+    (L : M →ₗ[R] N)
     (inj : Function.Injective L) :
     Function.Surjective <| LinearMap.characterify D L :=
   Module.Baer.iff_injective.mpr injective_dual |>.extension_property L inj
@@ -104,7 +104,7 @@ namespace CharacterModuleFunctor
 lemma map_surjective_of_injective_unop [UnivLE.{uR, uD}] [Module.Injective R D]
     {M N : (ModuleCat R)ᵒᵖ} {L : M ⟶ N} (hL : Function.Injective L.unop) :
     Function.Surjective <| (CharacterModuleFunctor R D).map L :=
-  LinearMap.characterify_surjective_of_injective D hL
+  L.unop.characterify_surjective_of_injective D hL
 
 end CharacterModuleFunctor
 
@@ -169,8 +169,9 @@ LinearEquiv.ofLinear
 
 section addCommGroup
 
-universe uA
+universe uA uB
 variable (A : Type uA) [AddCommGroup A]
+variable (B : Type uB) [AddCommGroup B]
 
 /--
 the character module of abelian group `A` in unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`
@@ -179,6 +180,112 @@ abbrev unitRationalCircle : Type uA :=
   CharacterModule ℤ A (AddCircle (1 : ℚ))
 
 namespace unitRationalCircle
+
+section module
+
+variable (R : Type*) [CommRing R] [Module R A] [Module R B]
+
+instance domModule : Module R (unitRationalCircle A) where
+  smul r l :=
+  { toFun := fun x => l (r • x)
+    map_add' := fun x y => by dsimp; rw [smul_add, map_add]
+    map_smul' := fun s x => by dsimp; rw [← smul_comm, l.map_smul] }
+  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [one_smul]
+  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [mul_smul, smul_comm]
+  smul_zero r := rfl
+  smul_add r l₁ l₂ := LinearMap.ext fun x => show (l₁ + _) _ = _ by
+    rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
+  add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
+    rw [add_smul, map_add]
+  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [zero_smul, map_zero]
+
+@[simp] lemma domModule_smul_apply (r : R) (c : unitRationalCircle A) (a : A) :
+  (r • c) a = c (r • a) := rfl
+
+@[simps!]
+noncomputable def uncurry :
+    (B →ₗ[R] unitRationalCircle A) →ₗ[R] unitRationalCircle (B ⊗[R] A) where
+  toFun c := (liftAddHom
+      { toFun := fun b => c b
+        map_zero' := by aesop
+        map_add' := by aesop } <| by aesop).toIntLinearMap
+  map_add' _ _ := LinearMap.ext fun z ↦ by
+    refine z.induction_on ?_ ?_ ?_ <;> aesop
+  map_smul' r c := LinearMap.ext fun z ↦ by
+    refine z.induction_on ?_ ?_ ?_
+    · aesop
+    · intro b a
+      dsimp
+      set c' : unitRationalCircle (B ⊗[R] A) := (liftAddHom _ _).toIntLinearMap
+      change _ = (r • c') (b ⊗ₜ[R] a)
+      simp only [domModule_smul_apply]
+      erw [AddMonoidHom.coe_toIntLinearMap, liftAddHom_tmul]
+      simp
+    · aesop
+
+@[simps!]
+noncomputable def curry :
+    unitRationalCircle (B ⊗[R] A) →ₗ[R] (B →ₗ[R] unitRationalCircle A) where
+  toFun c :=
+  { toFun := fun b ↦
+    { toFun := fun a ↦ c (b ⊗ₜ a)
+      map_add' := by simp [tmul_add]
+      map_smul' := by simp }
+    map_add' := fun _ _ ↦ LinearMap.ext fun _ ↦ by
+      simp only [add_tmul, map_add, LinearMap.coe_mk, AddHom.coe_mk]; rfl
+    map_smul' := fun r _ ↦ LinearMap.ext fun _ ↦ by
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply]
+      set c' : unitRationalCircle A := _
+      change _ = (r • c') _
+      simp only [domModule_smul_apply]
+      rw [LinearMap.coe_mk, AddHom.coe_mk, smul_tmul] }
+  map_add' _ _ := LinearMap.ext fun _ ↦ by aesop
+  map_smul' r x := LinearMap.ext fun y ↦ LinearMap.ext fun z ↦ by
+    simp only [domModule_smul_apply, LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply,
+      LinearMap.smul_apply]
+    set c' : unitRationalCircle A := _
+    change _ = (r • c') _
+    simp only [domModule_smul_apply]
+    rw [LinearMap.coe_mk, AddHom.coe_mk, smul_tmul', ← smul_tmul]
+
+@[simps!]
+noncomputable def homEquiv :
+    unitRationalCircle (B ⊗[R] A) ≃ₗ[R] (B →ₗ[R] unitRationalCircle A) :=
+  LinearEquiv.ofLinear
+    (curry (R := R) (A := A) (B := B))
+    (uncurry (R := R) (A := A) (B := B))
+    (LinearMap.ext fun _ ↦ by aesop)
+    (LinearMap.ext fun _ ↦ LinearMap.ext fun z ↦ by
+      refine z.induction_on ?_ ?_ ?_ <;> aesop)
+
+@[simps]
+def cong (e : A ≃ₗ[R] B) : unitRationalCircle A ≃ₗ[R] unitRationalCircle B :=
+  LinearEquiv.ofLinear
+    { __ := e.symm.toLinearMap.toAddMonoidHom.toIntLinearMap.characterify (AddCircle (1 : ℚ))
+      map_smul' := fun r c ↦ LinearMap.ext fun b ↦ by
+        simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.characterify_apply,
+          LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe,
+          LinearEquiv.coe_coe, Function.comp_apply, RingHom.id_apply]
+        set c' : unitRationalCircle B := _
+        change _ = (r • c') _
+        simp only [domModule_smul_apply]
+        rw [LinearMap.comp_apply, domModule_smul_apply (r := r) (c := c)]
+        aesop }
+    { __ := e.toLinearMap.toAddMonoidHom.toIntLinearMap.characterify (AddCircle (1 : ℚ))
+      map_smul' := fun r c ↦ LinearMap.ext fun b ↦ by
+        simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.characterify_apply,
+          LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe,
+          LinearEquiv.coe_coe, Function.comp_apply, RingHom.id_apply]
+        set c' : unitRationalCircle A := _
+        change _ = (r • c') _
+        simp only [domModule_smul_apply]
+        rw [LinearMap.comp_apply, domModule_smul_apply (r := r) (c := c)]
+        aesop }
+    (LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop)
+    (LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop)
+
+end module
+
 /--
 `ℤ⋆`, the character module of `ℤ` in rational circle
 -/

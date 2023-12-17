@@ -9,6 +9,7 @@ import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Module.Projective
+import Mathlib.Algebra.Module.CharacterModule
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
@@ -75,6 +76,11 @@ class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] 
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
+def Flat.rTensor_preserves_injectiveness
+    (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop :=
+  ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M)
+
 namespace Flat
 
 variable (R : Type u) [CommRing R]
@@ -123,7 +129,7 @@ theorem iff_rTensor_injective' :
   letI : AddCommGroup (I ⊗[R] M) := inferInstance -- Type class reminder
   rewrite [injective_iff_map_eq_zero]
   intro x hx₀
-  obtain ⟨J, hfg, hle, y, rfl⟩ := exists_fg_le_eq_rTensor_inclusion x
+  obtain ⟨J, hfg, hle, y, rfl⟩ := Submodule.exists_fg_le_eq_rTensor_inclusion x
   rewrite [← rTensor_comp_apply] at hx₀
   letI : AddCommGroup (J ⊗[R] M) := inferInstance -- Type class reminder
   rw [(injective_iff_map_eq_zero _).mp (h hfg) y hx₀, _root_.map_zero]
@@ -186,7 +192,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     apply TensorProduct.ext'
     intro a m
     simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, directSumRight_symm_lof_tmul,
-      rTensor_tmul, coeSubtype, lid_tmul, map_smul]
+      rTensor_tmul, Submodule.coeSubtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp
@@ -222,6 +228,139 @@ instance of_projective [h : Projective R M] : Flat R M := by
   rw [Module.projective_def'] at h
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
+
+
+open BigOperators in
+/--
+Lambek
+-/
+lemma rTensor_preserves_injectiveness_of_injective_characterModule
+    (h : Module.Injective R <| CharacterModule.unitRationalCircle M) :
+    Flat.rTensor_preserves_injectiveness R M := by
+  intros A B _ _ _ _ L hL
+  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  rintro z (hz : _ = 0)
+  show z = 0
+  by_contra rid
+  obtain ⟨g, hg⟩ := CharacterModule.unitRationalCircle.exists_character_apply_ne_zero_of_ne_zero rid
+  let f : A →ₗ[R] (CharacterModule.unitRationalCircle M) :=
+  { toFun := fun a =>
+    { toFun := fun m => g (a ⊗ₜ m)
+      map_add' := fun _ _ => by simp only [tmul_add, map_add]
+      map_smul' := fun _ _ => by simp [tmul_smul, map_smul] }
+    map_add' := fun _ _ => LinearMap.ext fun _ => by
+      simp only [add_tmul, map_add, coe_mk, AddHom.coe_mk]; rfl
+    map_smul' := fun _ _ => LinearMap.ext fun _ => by
+      simp only [coe_mk, AddHom.coe_mk, RingHom.id_apply]
+      change _ = g _
+      rw [tmul_smul, smul_tmul'] }
+  obtain ⟨f', hf'⟩ := h.out L hL f
+  obtain ⟨ι, a, m, s, rfl⟩ := TensorProduct.exists_rep z
+  have := CharacterModule.homEquiv _ _ _ _ f'.toAddMonoidHom.toIntLinearMap
+  let g' : (CharacterModule.unitRationalCircle <| B ⊗[R] M) :=
+    CharacterModule.unitRationalCircle.homEquiv _ _ _ |>.symm f'
+  have EQ : g' (∑ i in s, L (a i) ⊗ₜ m i) = 0
+  · simp only [map_sum, rTensor_tmul] at hz
+    rw [hz, map_zero]
+  refine hg ?_
+  rw [map_sum] at EQ ⊢
+  convert EQ using 1
+  refine Finset.sum_congr rfl fun x _ => ?_
+  erw [AddMonoidHom.coe_toIntLinearMap]
+  rw [liftAddHom_tmul]
+  simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, hf', coe_mk, AddHom.coe_mk]
+  rfl
+
+lemma _root_.Module.Baer.characterModule_of_ideal
+    (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
+    Module.Baer R (CharacterModule.unitRationalCircle M) := by
+  rw [Module.Baer.iff_surjective]
+  letI : Module.Injective ℤ (AddCircle (1 : ℚ)) := by
+    erw [Module.injective_iff_injective_object, AddCommGroupCat.injective_as_module_iff]
+    have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
+    apply AddCommGroupCat.injective_of_divisible _
+  rintro I (L : _ →ₗ[_] _)
+  letI :  AddCommGroup (I ⊗[R] M) := inferInstance
+  obtain ⟨F, hF⟩ := LinearMap.characterify_surjective_of_injective (R := ℤ) (AddCircle (1 : ℚ))
+    (L := (TensorProduct.lift ((lsmul R M).comp I.subtype))) (inj I) <|
+      AddMonoidHom.toIntLinearMap <| TensorProduct.liftAddHom
+        { toFun := fun i => L i
+          map_zero' := by aesop
+          map_add' := by aesop } <| by aesop
+
+  refine ⟨CharacterModule.unitRationalCircle.curry _ _ _ <|
+    (CharacterModule.unitRationalCircle.cong _ _ _ (TensorProduct.lid _ _)).symm F,
+    FunLike.ext _ _ fun i => FunLike.ext _ _ fun m => ?_⟩
+  simp only [domRestrict'_apply]
+  erw [CharacterModule.unitRationalCircle.cong_symm_apply_apply]
+  have EQ := FunLike.congr_fun hF (i ⊗ₜ m)
+  simp only [characterify_apply] at EQ
+  rw [LinearMap.comp_apply] at EQ
+  simp only [coe_restrictScalars, lift.tmul, coe_comp, Submodule.coeSubtype, Function.comp_apply,
+    lsmul_apply] at EQ
+  exact EQ
+
+lemma Flat.rTensor_preserves_injectiveness_of_ideal
+    (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
+    Flat.rTensor_preserves_injectiveness R M := by
+  apply rTensor_preserves_injectiveness_of_injective_characterModule
+  apply Module.Baer.injective
+  apply Module.Baer.characterModule_of_ideal
+  assumption
+
+lemma Flat.of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
+    (h : rTensor_preserves_injectiveness R M) :
+    Flat R M := by
+  rw [Flat.iff_rTensor_injective']
+  intro I x y eq1
+  let e : I ⊗[R] M ≃ₗ[R] (Shrink I) ⊗[R] M := LinearEquiv.ofLinear
+    ((Shrink.linearEquiv I R).symm.toLinearMap.rTensor M)
+    ((Shrink.linearEquiv I R).toLinearMap.rTensor M)
+    (LinearMap.ext fun z ↦ z.induction_on (by aesop)
+      (fun i m ↦ by
+        simp only [coe_comp, Function.comp_apply, rTensor_tmul, LinearEquiv.coe_coe,
+          Shrink.linearEquiv_apply, Shrink.linearEquiv_symm_apply, id_coe, id_eq]
+        erw [Equiv.symm_apply_apply]) (by aesop))
+    (LinearMap.ext fun z ↦ z.induction_on (by aesop)
+      (fun i m ↦ by
+        simp only [coe_comp, Function.comp_apply, rTensor_tmul, LinearEquiv.coe_coe,
+          Shrink.linearEquiv_apply, Shrink.linearEquiv_symm_apply, id_coe, id_eq]
+        erw [Equiv.symm_apply_apply]) (by aesop))
+  apply_fun e using e.injective
+  have H := @h (Shrink I) (Shrink R) _ _ _ _
+    ((Shrink.linearEquiv R R).symm.toLinearMap ∘ₗ I.subtype ∘ₗ (Shrink.linearEquiv I R).toLinearMap)
+    ((Shrink.linearEquiv R R).symm.injective.comp
+      (Subtype.val_injective.comp (Shrink.linearEquiv I R).injective))
+  refine @H (e x) (e y) ?_
+  set L : Shrink I ⊗[R] M →ₗ[R] Shrink R ⊗[R] M := _
+  convert_to L (e x) = L (e y)
+  suffices eq2 : L ∘ₗ e.toLinearMap =
+    (rTensor M (Shrink.linearEquiv R R).symm.toLinearMap) ∘ₗ rTensor M (Submodule.subtype I)
+  · erw [FunLike.congr_fun eq2 x, FunLike.congr_fun eq2 y, LinearMap.comp_apply, eq1,
+      LinearMap.comp_apply]
+  refine TensorProduct.ext <| LinearMap.ext fun i ↦ LinearMap.ext fun m ↦ ?_
+  simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    LinearEquiv.ofLinear_apply, rTensor_tmul, Shrink.linearEquiv_symm_apply, Submodule.coeSubtype,
+    Shrink.linearEquiv_apply]
+  congr
+  erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply]
+
+lemma Flat.iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
+    Flat R M ↔ Flat.rTensor_preserves_injectiveness R M where
+  mp h := by
+    apply rTensor_preserves_injectiveness_of_ideal
+    rw [Flat.iff_rTensor_injective'] at h
+    intro I x y eq1
+    specialize h I
+    apply h
+    suffices : (TensorProduct.lid _ _).symm.toLinearMap ∘ₗ
+      (lift (lsmul R M ∘ₗ Submodule.subtype I)) = rTensor M (Submodule.subtype I)
+    · rw [← this, LinearMap.comp_apply, LinearMap.comp_apply, eq1]
+    refine TensorProduct.ext <| LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ ?_
+    simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      lift.tmul, Submodule.coeSubtype, lsmul_apply, map_smul, lid_symm_apply, rTensor_tmul]
+    rw [smul_tmul', smul_eq_mul, mul_one]
+  mpr := of_rTensor_preserves_injectiveness R M
 
 end Flat
 

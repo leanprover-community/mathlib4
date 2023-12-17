@@ -5,7 +5,9 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.SuppressCompilation
+
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
@@ -1392,6 +1394,27 @@ instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M] [DistribMulAc
     [CompatibleSMul R S M N] : CompatibleSMul R Sˣ M N :=
   ⟨fun s m n => (CompatibleSMul.smul_tmul (s : S) m n : _)⟩
 #align tensor_product.compatible_smul.unit TensorProduct.CompatibleSMul.unit
+
+open BigOperators in
+lemma exists_rep (z : M ⊗[R] N) :
+    ∃ (ι : Type max u_2 u_3) (ms : ι → M) (ns : ι → N) (s : Finset ι), z = ∑ i in s, ms i ⊗ₜ ns i := by
+  classical
+  have EQ := span_tmul_eq_top R M N
+  have mem1 : z ∈ ⊤ := Submodule.mem_top (R := R)
+  rw [←EQ, mem_span_set] at mem1
+  obtain ⟨c, hc1, rfl⟩ := mem1
+  choose m n hm using hc1
+  refine ⟨M ⊗[R] N, fun i => if hi : i ∈ c.support then c i • m hi else 0,
+    fun i => if hi : i ∈ c.support then n hi else 0, c.support, ?_⟩
+  rw [Finsupp.sum]
+  refine Finset.sum_congr rfl (fun i hi => ?_)
+  dsimp only
+  split_ifs with h
+  · specialize hm h
+    rw [←smul_tmul']
+    congr 1
+    exact hm.symm
+  · exact False.elim (h hi)
 
 end TensorProduct
 
