@@ -677,8 +677,7 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
     IsIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
   intros t ht
   by_cases hmem : t ∈ Ioo a b
-  · -- for `a < t < b` the piecewise function is equal to `γ`
-    rw [piecewise, if_pos hmem]
+  · rw [piecewise, if_pos hmem]
     apply (hγ t hmem).congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo a b, isOpen_Ioo.mem_nhds hmem, ?_⟩
