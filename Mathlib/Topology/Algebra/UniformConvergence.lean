@@ -50,16 +50,12 @@ uniform convergence, strong dual
 
 -/
 
-set_option autoImplicit true
-
-
 open Filter
-
-open Topology Pointwise UniformConvergence
+open scoped Topology Pointwise UniformConvergence
 
 section AlgebraicInstances
 
-variable {α β ι R : Type*} {𝔖 : Set <| Set α}
+variable {α β ι R : Type*} {𝔖 : Set <| Set α} {x : α}
 
 @[to_additive]
 instance [Monoid β] : Monoid (α →ᵤ β) :=
@@ -95,10 +91,41 @@ instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
 
 instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
 
+instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
+    IsScalarTower M N (α →ᵤ β) :=
+  Pi.isScalarTower
+
+instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    SMulCommClass M N (α →ᵤ β) :=
+  Pi.smulCommClass
+
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
+
+instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+    DistribMulAction M (α →ᵤ β) :=
+  Pi.distribMulAction _
+
+instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
+  Pi.module _ _ _
+
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
   Pi.module _ _ _
 
 instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
+
+instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
+    IsScalarTower M N (α →ᵤ[𝔖] β) :=
+  Pi.isScalarTower
+
+instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    SMulCommClass M N (α →ᵤ[𝔖] β) :=
+  Pi.smulCommClass
+
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
+
+instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+    DistribMulAction M (α →ᵤ[𝔖] β) :=
+  Pi.distribMulAction _
 
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   Pi.module _ _ _
@@ -106,28 +133,28 @@ instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[�
 -- Porting note: unfortunately `simp` will no longer use `Pi.one_apply` etc.
 -- on `α →ᵤ β` or `α →ᵤ[𝔖] β`, so we restate some of these here. More may be needed later.
 @[to_additive (attr := simp)]
-lemma UniformFun.one_apply [Monoid β] : (1 : α →ᵤ β) x = 1 := Pi.one_apply x
+lemma UniformFun.one_apply [Monoid β] : (1 : α →ᵤ β) x = 1 := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.one_apply [Monoid β] : (1 : α →ᵤ[𝔖] β) x = 1 := Pi.one_apply x
+lemma UniformOnFun.one_apply [Monoid β] : (1 : α →ᵤ[𝔖] β) x = 1 := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformFun.mul_apply [Monoid β] : (f * g : α →ᵤ β) x = f x * g x := Pi.mul_apply f g x
+lemma UniformFun.mul_apply [Monoid β] {f g} : (f * g : α →ᵤ β) x = f x * g x := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.mul_apply [Monoid β] : (f * g : α →ᵤ[𝔖] β) x = f x * g x := Pi.mul_apply f g x
+lemma UniformOnFun.mul_apply [Monoid β] {f g}: (f * g : α →ᵤ[𝔖] β) x = f x * g x := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformFun.inv_apply [Group β] : (f : α →ᵤ β)⁻¹ x = (f x)⁻¹ := Pi.inv_apply f x
+lemma UniformFun.inv_apply [Group β] {f} : (f : α →ᵤ β)⁻¹ x = (f x)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.inv_apply [Group β] : (f : α →ᵤ[𝔖] β)⁻¹ x = (f x)⁻¹ := Pi.inv_apply f x
+lemma UniformOnFun.inv_apply [Group β] {f} : (f : α →ᵤ[𝔖] β)⁻¹ x = (f x)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformFun.div_apply [Group β] : (f / g : α →ᵤ β) x = f x / g x := Pi.div_apply f g x
+lemma UniformFun.div_apply [Group β] {f g} : (f / g : α →ᵤ β) x = f x / g x := rfl
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.div_apply [Group β] : (f / g : α →ᵤ[𝔖] β) x = f x / g x := Pi.div_apply f g x
+lemma UniformOnFun.div_apply [Group β] {f g} : (f / g : α →ᵤ[𝔖] β) x = f x / g x := rfl
 
 end AlgebraicInstances
 
