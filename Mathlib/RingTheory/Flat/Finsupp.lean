@@ -88,6 +88,10 @@ def lid_finite_free [Module.Finite R M] [Module.Free R M] :
         (fun _ => R)).symm) (LinearEquiv.refl R N) ≪≫ₗ
     lid_DirectSum R N (Fin <| Fintype.card <| ChooseBasisIndex R M)
 
+theorem lid_finite_free_eq [Module.Finite R M] [Module.Free R M] :
+    lid_finite_free R M N = ((TensorProduct.comm R M N).trans <| rid_finite_free R N M) :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
+
 open DirectSum in
 /-- If `M` and `N` are `R`-modules and `f : M → N` a linear map, the tensor product of `f` and the
 identity `Rⁿ → Rⁿ` on a finite product is related by linear equivalences to the
@@ -133,6 +137,24 @@ theorem rTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R N] [
     rTensor_DirectSum_equiv_mapRange R M P n f]
   unfold_let e₀ e₁ ψ
   rfl
+
+open DirectSum Module.Free in
+/-- If `M`, `N` and `P` are `R`-modules, `M` is finite and free of rank `n`, and `f : N → P` is
+a linear map, the tensor product `f.lTensor M` of the identity `N → N` with `f` is related by
+linear equivalences `lid_finite_free` to the natural linear map `⨁ⁿ N → ⨁ⁿ P` induced by `f`.
+(This establishes a natural isomorphism between the functors `(M ⊗ ·)` and `(⨁ⁿ ·)` whose
+component at `N` is `lid_finite_free R N M`.) -/
+theorem lTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R M] [Module.Free R M]
+    (f : N →ₗ[R] P) :
+    (lid_finite_free R M P).toLinearMap ∘ₗ f.lTensor M =
+      DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R M))) => f) ∘ₗ
+        (lid_finite_free R M N).toLinearMap := by
+  rw [lid_finite_free_eq, (id rfl : TensorProduct.comm R M P = (TensorProduct.comm R P M).symm),
+    ← LinearMap.comm_comp_rTensor_comp_comm_eq, LinearEquiv.coe_trans, LinearMap.comp_assoc,
+    ← LinearMap.comp_assoc _ (TensorProduct.comm R P M).toLinearMap _, LinearEquiv.comp_coe,
+    LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, LinearMap.id_comp,
+    ← LinearMap.comp_assoc, rTensor_finite_free_equiv_mapRange,
+    LinearMap.comp_assoc, LinearEquiv.comp_coe, lid_finite_free_eq]
 
 variable {M P} in
 open DirectSum Module.Free in
