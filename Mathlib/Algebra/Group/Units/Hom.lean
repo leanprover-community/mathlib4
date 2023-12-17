@@ -93,6 +93,10 @@ theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (
 #align units.map_comp Units.map_comp
 #align add_units.map_comp AddUnits.map_comp
 
+@[to_additive]
+lemma map_injective {f : M →* N} (hf : Function.Injective f) :
+    Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
+
 variable (M)
 
 @[to_additive (attr := simp)]
