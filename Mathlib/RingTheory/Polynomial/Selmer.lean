@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Data.Polynomial.UnitTrinomial
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.Tactic.LinearCombination
 
@@ -187,23 +188,62 @@ instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :
     MulAction.IsPretransitive α β :=
   ⟨fun _ _ ↦ ⟨1, Subsingleton.elim _ _⟩⟩
 
+@[simp] lemma roots_neg {R : Type*} [CommRing R] [IsDomain R] (p : R[X]) :
+    roots (-p) = roots p := by
+  rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
+
+@[simp] lemma aroots_neg {T S : Type*} [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
+    (p : T[X]) : aroots (-p) S = aroots p S := by
+  rw [aroots, Polynomial.map_neg, roots_neg]
+
+@[simp] lemma rootSet_neg {T S : Type*} [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
+    (p : T[X]) : rootSet (-p) S = rootSet p S := by
+  rw [rootSet, aroots_neg, ← rootSet]
+
+@[simp] lemma rootSet_one {T S : Type*} [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] :
+    rootSet (1 : T[X]) S = ∅ := by
+  rw [rootSet, aroots_one, Finset.coe_eq_empty]; rfl
+
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   let f : ℚ[X] := X ^ n - X - 1
   change Function.Bijective (Gal.galActionHom f ℂ)
-  have h1 : MulAction.IsPretransitive f.Gal (f.rootSet ℂ)
+  have : MulAction.IsPretransitive f.Gal (f.rootSet ℂ)
   · rcases eq_or_ne n 1 with rfl | hn
-    · have key : IsEmpty (rootSet f ℂ)
-      · simp_rw [pow_one, sub_self, zero_sub]
-        rw [← C_1, ← C_neg, rootSet_C]
-        simp
+    · have : IsEmpty (rootSet f ℂ) := by simp
       infer_instance
-    apply galAction_isPretransitive
-    apply X_pow_sub_X_sub_one_irreducible_rat hn
+    exact galAction_isPretransitive (X_pow_sub_X_sub_one_irreducible_rat hn)
+  -- roots lie in the ring of integers OK
+  -- if q is a prime idea of OK, then there is a ring homomorphism to the finite field OK/q
+  -- the whole Galois group acts on OK
+  -- the decomposition group acts on OK/q
+  -- the inertia group acts trivially on OK/q
+  --
+  -- there are n roots in OK
+  -- there are n or n-1 roots in OK/q (possible double root)
+  -- Let σ(x) = x (mod p) for all x in OK
+  -- If there are n roots in OK/q, then σ must act trivially on the roots in OK
+  -- If x and y collapse (mod p), then maybe σ swaps x and y, but no more
+  -- Now run through p's and σ's
+
+  -- the key is proving closure/generating
+  -- we need to know that if a subgroup contains every σ(x) = x (mod p) for every p, then it's ⊤
+  -- we need to know that if a subfield is fixed by ..., then it's ⊥
+  -- key facts from algebraic number theory: p divides discriminant implies ramified
+  -- ramified means there exists σ(x) = x (mod p)
+
+
   let S : Set f.Gal := ⋃ (p : Nat.Primes), sorry -- tricky
   -- ramification theory
   have hS1 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ) := sorry
-  have hS2 : Subgroup.closure S = ⊤ := sorry -- Minkowski
+  have hS2 : Subgroup.closure S = ⊤
+  · -- if not, then the fixed field is a field extension of positive degree
+    -- it has large discriminant
+    -- it has a ramified prime
+    -- contradicting inertia subgroup stuff
+    sorry
   refine' ⟨Gal.galActionHom_injective f ℂ, keylemma' S hS1 hS2⟩
+
+#check NumberField.discr_gt_one
 
 end Polynomial
