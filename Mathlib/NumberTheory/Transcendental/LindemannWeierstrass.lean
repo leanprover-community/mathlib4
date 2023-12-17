@@ -33,7 +33,7 @@ open scoped BigOperators Classical Polynomial Nat
 
 open Finset Polynomial
 
-variable {R A : Type _} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Algebra R A]
 
 
 open Complex
@@ -287,7 +287,7 @@ instance K'.isSplittingField : IsSplittingField ℚ (K' p) p :=
 set_option linter.uppercaseLean3 false in
 #align aux.K'.is_splitting_field Aux.K'.isSplittingField
 
-abbrev K : Type _ :=
+abbrev K : Type* :=
   p.SplittingField
 set_option linter.uppercaseLean3 false in
 #align aux.K Aux.K
@@ -328,7 +328,7 @@ end Aux
 namespace Quot
 
 @[reducible] --, elab_as_elim]
-protected def liftFinsupp {α : Type _} {r : α → α → Prop} {β : Type _} [Zero β] (f : α →₀ β)
+protected def liftFinsupp {α : Type*} {r : α → α → Prop} {β : Type*} [Zero β] (f : α →₀ β)
     (h : ∀ a b, r a b → f a = f b) : Quot r →₀ β := by
   refine' ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨_, _⟩⟩
   · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact Finsupp.mem_support_iff.mp hb
@@ -336,7 +336,7 @@ protected def liftFinsupp {α : Type _} {r : α → α → Prop} {β : Type _} [
     rw [lift_mk _ h]; refine' fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
 #align quot.lift_finsupp Quot.liftFinsupp
 
-theorem liftFinsupp_mk {α : Type _} {r : α → α → Prop} {γ : Type _} [Zero γ] (f : α →₀ γ)
+theorem liftFinsupp_mk {α : Type*} {r : α → α → Prop} {γ : Type*} [Zero γ] (f : α →₀ γ)
     (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) : Quot.liftFinsupp f h (Quot.mk r a) = f a :=
   rfl
 #align quot.lift_finsupp_mk Quot.liftFinsupp_mk
@@ -346,13 +346,13 @@ end Quot
 namespace Quotient
 
 @[reducible] --, elab_as_elim]
-protected def liftFinsupp {α : Type _} {β : Type _} [s : Setoid α] [Zero β] (f : α →₀ β) :
+protected def liftFinsupp {α : Type*} {β : Type*} [s : Setoid α] [Zero β] (f : α →₀ β) :
     (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
   Quot.liftFinsupp f
 #align quotient.lift_finsupp Quotient.liftFinsupp
 
 @[simp]
-theorem liftFinsupp_mk' {α : Type _} {β : Type _} [Setoid α] [Zero β] (f : α →₀ β)
+theorem liftFinsupp_mk' {α : Type*} {β : Type*} [Setoid α] [Zero β] (f : α →₀ β)
     (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) : Quotient.liftFinsupp f h (Quotient.mk' x) = f x :=
   rfl
 #align quotient.lift_finsupp_mk Quotient.liftFinsupp_mk'
@@ -377,12 +377,12 @@ abbrev K' : IntermediateField ℚ ℂ :=
 set_option linter.uppercaseLean3 false in
 #align K' K'
 
-abbrev K : Type _ :=
+abbrev K : Type* :=
   (Poly s).SplittingField
 set_option linter.uppercaseLean3 false in
 #align K K
 
-abbrev Gal : Type _ :=
+abbrev Gal : Type* :=
   (Poly s).Gal
 set_option linter.uppercaseLean3 false in
 #align Gal Gal
@@ -487,7 +487,7 @@ theorem support_ratCoeffEquiv (x : ratCoeff s) :
 
 section
 
-variable (F : Type _) [Field F] [Algebra ℚ F]
+variable (F : Type*) [Field F] [Algebra ℚ F]
 
 noncomputable def mapDomainFixed : Subalgebra F (AddMonoidAlgebra F (K s)) where
   carrier := {x | ∀ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x = x}
@@ -529,7 +529,7 @@ end
 
 section toConjEquiv
 
-variable (F : Type _) [Field F] [Algebra ℚ F]
+variable (F : Type*) [Field F] [Algebra ℚ F]
 
 open GalConjClasses
 
@@ -743,7 +743,7 @@ section Eval
 
 set_option linter.uppercaseLean3 false
 
-variable (F : Type _) [Field F] [Algebra F ℂ]
+variable (F : Type*) [Field F] [Algebra F ℂ]
 
 def Eval : AddMonoidAlgebra F (K s) →ₐ[F] ℂ :=
   AddMonoidAlgebra.lift F (K s) ℂ
@@ -899,7 +899,7 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
 
 end
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
 abbrev range (u : ι → ℂ) (v : ι → ℂ) : Finset ℂ :=
   univ.image u ∪ univ.image v
@@ -1133,7 +1133,7 @@ theorem linear_independent_exp_exists_prime (n : ℕ) (a : ℝ) (c : ℝ) :
   rwa [Nat.cast_lt]
 #align linear_independent_exp_exists_prime linear_independent_exp_exists_prime
 
-theorem exists_sum_map_aroot_smul_eq {R S : Type _} [CommRing R] [Field S] [Algebra R S] (p : R[X])
+theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])
     (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
     (inj : Function.Injective (algebraMap R S))
     (card_aroots : Multiset.card (p.map (algebraMap R S)).roots = p.natDegree) :

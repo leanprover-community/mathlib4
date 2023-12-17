@@ -1102,6 +1102,11 @@ theorem aroots_monomial [CommRing S] [IsDomain S] [Algebra T S]
     (monomial n a).aroots S = n • ({0} : Multiset S) := by
   rw [← C_mul_X_pow_eq_monomial, aroots_C_mul_X_pow ha]
 
+theorem aroots_map (p : T[X]) (S) (A) [CommRing S] [Algebra T S] [CommRing A]
+    [IsDomain A] [Algebra S A] [Algebra T A] [IsScalarTower T S A] :
+    (p.map (algebraMap T S)).aroots A = p.aroots A := by
+  rw [aroots_def, map_map, ← IsScalarTower.algebraMap_eq T S A]
+
 /-- The set of distinct roots of `p` in `S`.
 
 If you have a non-separable polynomial, use `Polynomial.aroots` for the multiset

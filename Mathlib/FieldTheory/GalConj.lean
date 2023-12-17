@@ -47,7 +47,7 @@ end HEq
 
 namespace AlgEquiv
 
-variable {R : Type _} [CommSemiring R] {A₁ A₂ : Type _}
+variable {R : Type*} [CommSemiring R] {A₁ A₂ : Type*}
 
 variable [Semiring A₁] [Semiring A₂]
 
@@ -63,7 +63,7 @@ end AlgEquiv
 
 namespace IntermediateField
 
-variable (F : Type _) [Field F] {E : Type _} [Field E] [Algebra F E] {α : E}
+variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
 
 theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
     (adjoinRootEquivAdjoin F h).symm (AdjoinSimple.gen F α) = AdjoinRoot.root (minpoly F α) := by
@@ -72,31 +72,9 @@ theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
 
 end IntermediateField
 
-namespace Polynomial
-
-variable {T : Type _} [CommRing T]
-
--- Compare `Polynomial.rootSet`
-noncomputable abbrev aroots (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Multiset S :=
-  (p.map (algebraMap T S)).roots
-#align polynomial.aroots Polynomial.aroots
-
-theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
-    p.aroots S = (p.map (algebraMap T S)).roots :=
-  rfl
-#align polynomial.aroots_def Polynomial.aroots_def
-
-theorem aroots_map (p : T[X]) (S) (A) [CommRing S] [Algebra T S] [CommRing A]
-    [IsDomain A] [Algebra S A] [Algebra T A] [IsScalarTower T S A] :
-    (p.map (algebraMap T S)).aroots A = p.aroots A := by
-  rw [aroots_def, map_map, ← IsScalarTower.algebraMap_eq T S A]
-#align polynomial.aroots_map Polynomial.aroots_map
-
-end Polynomial
-
 section GalConjClasses
 
-variable (F : Type _) [Field F] (E : Type _) [Field E] [Algebra F E]
+variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 def IsGalConj.setoid :=
   MulAction.orbitRel (E ≃ₐ[F] E) E
@@ -342,7 +320,7 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   rw [minpoly_out, minpoly_out, h]
 #align gal_conj_classes.minpoly.inj GalConjClasses.minpoly_inj
 
-theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _ _) := fun _ _ =>
+theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _) := fun _ _ =>
   minpoly_inj
 #align gal_conj_classes.minpoly.injective GalConjClasses.minpoly_injective
 
