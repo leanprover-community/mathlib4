@@ -1,6 +1,8 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.PageInfinity
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
+universe w₁ w₂ w₃ v u
+
 lemma Nat.eq_add_of_le {i j : ℕ} (hij : i ≤ j) :
     ∃ (d : ℕ), j = i + d :=
   ⟨j - i, by rw [← Nat.sub_eq_iff_eq_add' hij]⟩
@@ -9,14 +11,15 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C] [Abelian C]
-  (ι : Type*) {c : ℤ → ComplexShape ι} {r₀ : ℤ}
+variable {C : Type u} [Category.{v} C] [Abelian C]
+  (ι : Type w₁) {c : ℤ → ComplexShape ι} {r₀ : ℤ}
 
 namespace SpectralSequence
 
+@[nolint checkUnivs]
 structure ConvergenceStripes where
-  σ : Type*
-  α (n : σ) : Type*
+  σ : Type w₂
+  α (n : σ) : Type w₃
   hα (n : σ) : LinearOrder (α n) := by infer_instance
   pred (n : σ) (i : α n) : WithBot (α n)
   pred_lt n (i : α n) : pred n i < WithBot.some i := by aesop
@@ -156,15 +159,21 @@ lemma pred'_monotone (n : s.σ) (i j : WithBot (s.α n)) (hij : i ≤ j) :
     · exact bot_le
     · exact s.pred_monotone _ _ _ (by simpa using hij)
 
+lemma le_pred'_of_lt (n : s.σ) (i j : WithBot (s.α n)) (hi : i < j) :
+    i ≤ s.pred' n j := by
+  obtain _ | i := i
+  · simp
+  · obtain _ | j := j
+    · simp at hi
+    · by_contra!
+      simp only [not_le] at this
+      have := lt_of_le_of_lt (s.discrete n j i this) (WithBot.some_lt_some.1 hi)
+      simp at this
+
 lemma lt_iff_le_pred' (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) :
     i < j ↔ i ≤ s.pred' n j := by
   constructor
-  · intro hij
-    obtain _ | j := j
-    · simp at hij
-    · by_contra!
-      have := lt_of_le_of_lt (s.discrete n _ _ this) (WithBot.some_lt_some.1 hij)
-      simp at this
+  · apply s.le_pred'_of_lt
   · intro h
     obtain _ | j := j
     · erw [pred'_bot] at h
@@ -299,7 +308,7 @@ end ConvergenceStripes
 
 variable (E : SpectralSequence C c r₀)
 
-class CollapsesAt (n : s.σ) (i : s.α n) where
+class CollapsesAt (n : s.σ) (i : s.α n) : Prop where
   condition : ∀ (k : s.α n) (_ : k ≠ i), IsZero (E.pageInfinity (s.position n k))
 
 lemma isZero_of_collapsesAt (n : s.σ) (i : s.α n) [h : E.CollapsesAt s n i]
@@ -549,8 +558,41 @@ lemma isIso_filtration_map_iff (i j : WithBot (s.α n)) (φ : i ⟶ j) :
         rw [← hl]
         apply s.sub_le_self
 
+lemma isIso_filtrationι_of_GE (i j : WithBot (s.α n)) (hij : i ≤ j)
+    (hi : IsIso (h.filtrationι i)) :
+    IsIso (h.filtrationι j) := by
+  have := epi_of_epi_fac (h.filtration_map_ι (homOfLE hij))
+  apply isIso_of_mono_of_epi
+
+lemma isIso_filtation_map_of_isIso_filtrationι (i j : WithBot (s.α n)) (φ : i ⟶ j)
+    (hi : IsIso (h.filtrationι i)) :
+    IsIso (h.filtration.map φ) := by
+  have := h.isIso_filtrationι_of_GE i j (leOfHom φ) hi
+  exact IsIso.of_isIso_fac_right (h.filtration_map_ι φ)
+
+lemma isIso_filtrationι_iff (i : WithBot (s.α n)) :
+    IsIso (h.filtrationι i) ↔ ∀ (j : s.α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
+      IsZero (E.pageInfinity pq) := by
+  constructor
+  · intro hi j hij pq hpq
+    rw [← h.isIso_filtration_map_from_pred_iff _ j (homOfLE (s.pred_le n j)) rfl pq hpq]
+    apply h.isIso_filtation_map_of_isIso_filtrationι
+    exact h.isIso_filtrationι_of_GE _ _ (s.le_pred'_of_lt n _ _ hij) hi
+  · obtain ⟨j, hj⟩ := h.exists_isIso
+    obtain hij | hij := le_total i (WithBot.some j)
+    · intro hi
+      rw [← h.filtration_map_ι (homOfLE hij)]
+      have := (h.isIso_filtration_map_iff i j (homOfLE hij)).2 (by
+        intro k hk _ pq hpq
+        exact hi k (lt_of_le_of_lt hk (s.pred_lt n k)) pq hpq)
+      infer_instance
+    · intro
+      exact h.isIso_filtrationι_of_GE _ _ hij hj
+
 end StronglyConvergesToInDegree
 
 end SpectralSequence
 
 end CategoryTheory
+
+#lint
