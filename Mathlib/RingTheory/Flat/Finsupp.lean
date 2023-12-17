@@ -37,8 +37,7 @@ theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [Decidable
     (x : N) (r : ⨁ _ : ι, R) (i : ι) : rid_DirectSum R N ι (x ⊗ₜ[R] r) i = r i • x := by
   -- It suffices to show the equality holds when `r` is a Kronecker delta.
   -- To show this we recast as an equality of linear maps ...
-  suffices ((rid_DirectSum R N ι : N ⊗[R] (⨁ _ : ι, R) →ₗ[R] (⨁ _ : ι, N)) ∘ₗ
-        mk R N (⨁ _ : ι, R) x) r i =
+  suffices ((rid_DirectSum R N ι).toLinearMap ∘ₗ mk R N (⨁ _ : ι, R) x) r i =
       DFinsupp.mapRange.linearMap (fun _ => LinearMap.flip (lsmul R N) x) r i by
     rewrite [LinearMap.comp_apply, LinearEquiv.coe_coe, mk_apply,
       DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_apply, flip_apply, lsmul_apply] at this
@@ -94,9 +93,9 @@ open DirectSum in
 identity `Rⁿ → Rⁿ` on a finite product is related by linear equivalences to the
 natural linear map `⨁ⁿ M → ⨁ⁿ N` induced by `f`. -/
 theorem rTensor_DirectSum_equiv_mapRange [DecidableEq R] (n : ℕ) (f : M →ₗ[R] N) :
-    (rid_DirectSum R N (Fin n) : (N ⊗[R] ⨁ _ : Fin n, R) →ₗ[R] ⨁ _, N) ∘ₗ f.rTensor (⨁ _, R) =
+    (rid_DirectSum R N (Fin n)).toLinearMap ∘ₗ f.rTensor (⨁ _, R) =
       DFinsupp.mapRange.linearMap (fun _ : (Fin n) => f) ∘ₗ
-        (rid_DirectSum R M (Fin n) : (M ⊗[R] ⨁ _, R) →ₗ[R] ⨁ _, M) := by
+        (rid_DirectSum R M (Fin n)).toLinearMap := by
   refine TensorProduct.ext' fun x r => DFinsupp.ext fun i => ?_
   rewrite [LinearMap.comp_apply, LinearMap.rTensor_tmul, LinearEquiv.coe_coe, rid_DirectSum_tmul]
   erw [LinearMap.comp_apply, rid_DirectSum_tmul]
@@ -110,9 +109,9 @@ given by `rid_finite_free` to the natural linear map `⨁ⁿ M → ⨁ⁿ P` ind
 component at `M` is `rid_finite_free R N M`.) -/
 theorem rTensor_finite_free_equiv_mapRange [DecidableEq R] [Module.Finite R N] [Module.Free R N]
     (f : M →ₗ[R] P) :
-    (rid_finite_free R P N : P ⊗[R] N →ₗ[R] ⨁ _ : Fin _, P) ∘ₗ f.rTensor N =
+    (rid_finite_free R P N).toLinearMap ∘ₗ f.rTensor N =
       DFinsupp.mapRange.linearMap (fun _ : (Fin (Fintype.card (ChooseBasisIndex R N))) => f) ∘ₗ
-        (rid_finite_free R M N : M ⊗[R] N →ₗ[R] ⨁ _ : Fin _, M) := by
+        (rid_finite_free R M N).toLinearMap := by
   let ι := ChooseBasisIndex R N
   let n := Fintype.card ι
   let ℰ := chooseBasis R N
