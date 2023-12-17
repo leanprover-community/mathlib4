@@ -76,6 +76,8 @@ class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] 
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
+/-- An `R`-module is flat if for all injectives `R`-linear maps `L : N → N'`, `L ⊗ 𝟙 M` is also
+  injective. -/
 def Flat.rTensor_preserves_injectiveness
     (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop :=
   ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
@@ -256,7 +258,6 @@ lemma rTensor_preserves_injectiveness_of_injective_characterModule
       rw [tmul_smul, smul_tmul'] }
   obtain ⟨f', hf'⟩ := h.out L hL f
   obtain ⟨ι, a, m, s, rfl⟩ := TensorProduct.exists_rep z
-  have := CharacterModule.homEquiv _ _ _ _ f'.toAddMonoidHom.toIntLinearMap
   let g' : (CharacterModule.unitRationalCircle <| B ⊗[R] M) :=
     CharacterModule.unitRationalCircle.homEquiv _ _ _ |>.symm f'
   have EQ : g' (∑ i in s, L (a i) ⊗ₜ m i) = 0
@@ -300,7 +301,7 @@ lemma _root_.Module.Baer.characterModule_of_ideal
     lsmul_apply] at EQ
   exact EQ
 
-lemma Flat.rTensor_preserves_injectiveness_of_ideal
+lemma rTensor_preserves_injectiveness_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Flat.rTensor_preserves_injectiveness R M := by
   apply rTensor_preserves_injectiveness_of_injective_characterModule
@@ -308,7 +309,7 @@ lemma Flat.rTensor_preserves_injectiveness_of_ideal
   apply Module.Baer.characterModule_of_ideal
   assumption
 
-lemma Flat.of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
+lemma of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
     (h : rTensor_preserves_injectiveness R M) :
     Flat R M := by
   rw [Flat.iff_rTensor_injective']
@@ -345,7 +346,7 @@ lemma Flat.of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
   congr
   erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply]
 
-lemma Flat.iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
+lemma iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
     Flat R M ↔ Flat.rTensor_preserves_injectiveness R M where
   mp h := by
     apply rTensor_preserves_injectiveness_of_ideal

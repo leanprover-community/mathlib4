@@ -185,6 +185,10 @@ section module
 
 variable (R : Type*) [CommRing R] [Module R A] [Module R B]
 
+/--
+If `A` is an `R`-module, then the group homomorphisms `A ⟶ ℚ ⧸ ℤ` also has an `R`-module structure
+by acting on the domain: `r • f : a ↦ f (r • a)`
+-/
 instance domModule : Module R (unitRationalCircle A) where
   smul r l :=
   { toFun := fun x => l (r • x)
@@ -202,6 +206,11 @@ instance domModule : Module R (unitRationalCircle A) where
 @[simp] lemma domModule_smul_apply (r : R) (c : unitRationalCircle A) (a : A) :
   (r • c) a = c (r • a) := rfl
 
+/--
+If `A, B` are `R`-modules, then every `L : B →ₗ[R] (A →ₗ[ℤ] ℚ ⧸ ℤ)` induces
+`(B ⊗[R] A) →ₗ[ℤ] ℚ ⧸ ℤ`. In another word, there is an `R`-linear map from `Hom_R(B, A⋆)` to
+`(B ⊗[R] A)⋆`
+-/
 @[simps!]
 noncomputable def uncurry :
     (B →ₗ[R] unitRationalCircle A) →ₗ[R] unitRationalCircle (B ⊗[R] A) where
@@ -223,6 +232,11 @@ noncomputable def uncurry :
       simp
     · aesop
 
+/--
+If `A, B` are `R`-modules, then every `L : (B ⊗[R] A) →ₗ[ℤ] ℚ ⧸ ℤ` induces a map
+`B →ₗ[R] (A →ₗ[ℤ] ℚ ⧸ ℤ)`. In another word, there is an `R`-linear map from `(B ⊗[R] A)⋆ to
+`Hom_R(B, A⋆)`.
+-/
 @[simps!]
 noncomputable def curry :
     unitRationalCircle (B ⊗[R] A) →ₗ[R] (B →ₗ[R] unitRationalCircle A) where
@@ -248,6 +262,10 @@ noncomputable def curry :
     simp only [domModule_smul_apply]
     rw [LinearMap.coe_mk, AddHom.coe_mk, smul_tmul', ← smul_tmul]
 
+/--
+When `A` and `B` are `R`-modules, `Hom_R(B, A⋆)` and `(B ⊗[A] A)⋆` are equivalent as `R`-modules,
+where `X⋆` is the collection of group homomorphism `X → ℚ ⧸ ℤ`.
+-/
 @[simps!]
 noncomputable def homEquiv :
     unitRationalCircle (B ⊗[R] A) ≃ₗ[R] (B →ₗ[R] unitRationalCircle A) :=
@@ -258,6 +276,10 @@ noncomputable def homEquiv :
     (LinearMap.ext fun _ ↦ LinearMap.ext fun z ↦ by
       refine z.induction_on ?_ ?_ ?_ <;> aesop)
 
+/--
+When `A` and `B` are equivalent `R`-modules, `A⋆` and `B⋆` are equivalent as `R`-modules as well,
+where `X⋆` is the collection of group homomorphism `X → ℚ ⧸ ℤ`.
+-/
 @[simps!]
 def cong (e : A ≃ₗ[R] B) : unitRationalCircle A ≃ₗ[R] unitRationalCircle B :=
   LinearEquiv.ofLinear
