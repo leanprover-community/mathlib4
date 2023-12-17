@@ -99,6 +99,24 @@ noncomputable instance (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) :
 lemma pred_le (n : s.σ) (i : s.α n) : s.pred n i ≤ WithBot.some i :=
   (s.pred_lt n i).le
 
+lemma pred_monotone (n : s.σ) (i j : s.α n) (hij : i ≤ j) :
+    s.pred n i ≤ s.pred n j := by
+  obtain _ | rfl := hij.lt_or_eq
+  · by_contra!
+    by_cases hi : ∃ (k : s.α n), k = s.pred n i
+    · obtain ⟨k, hk⟩ := hi
+      have hj := s.discrete n j k (by simpa only [← hk] using this)
+      have hk' := s.pred_lt n i
+      rw [← hk] at hk'
+      replace hij : WithBot.some i ≤ WithBot.some j := WithBot.some_le_some.2 hij
+      replace hj : WithBot.some j ≤ WithBot.some k := WithBot.some_le_some.2 hj
+      have := lt_of_le_of_lt (hij.trans hj) hk'
+      simp at this
+    · rw [← WithBot.ne_bot_iff_exists, ne_eq, not_not] at hi
+      rw [hi] at this
+      simp at this
+  · rfl
+
 def pred' (n : s.σ) : WithBot (s.α n) → WithBot (s.α n)
   | ⊥ => ⊥
   | WithBot.some x => s.pred n x
@@ -128,6 +146,15 @@ lemma pred_injective (n : s.σ) (i j : s.α n) (hij : s.pred n i = s.pred n j) :
     · exact (this j i hij.symm h).symm
   intro i j hij h
   exact le_antisymm h (s.discrete n j i (by simpa only [← hij] using s.pred_lt n i))
+
+lemma pred'_monotone (n : s.σ) (i j : WithBot (s.α n)) (hij : i ≤ j) :
+    s.pred' n i ≤ s.pred' n j := by
+  obtain _ | j := j
+  · obtain rfl :=le_bot_iff.1 hij
+    rfl
+  · obtain _ | i := i
+    · exact bot_le
+    · exact s.pred_monotone _ _ _ (by simpa using hij)
 
 def sub' (n : s.σ) : ℕ → WithBot (s.α n) → WithBot (s.α n)
   | 0 => id
@@ -217,7 +244,7 @@ lemma sub_injective (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ : ℕ)
   · exact Or.inl h
   · exact Or.inr (by simp)
 
-/-lemma exists_sub_le (n : s.σ) (i : WithBot (s.α n)) (j : s.α n) :
+lemma exists_sub_le (n : s.σ) (i : WithBot (s.α n)) (j : s.α n) :
     ∃ (k : ℕ), s.sub n i k ≤ WithBot.some j := by
   obtain _ | i := i
   · exact ⟨0, by simp⟩
@@ -228,7 +255,6 @@ lemma sub_injective (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ : ℕ)
       apply bot_le
     · let S : Set ℕ := fun k => (WithBot.some j) < s.sub n (WithBot.some i) k
       have hS : S.Finite := by
-        let X : Set (s.α n) := fun k => j ≤ k ∧ k ≤ i
         let φ : S → s.segment' n j i :=
           fun x => ⟨s.sub n i x.1, LT.lt.le x.2, s.sub_le_self _ _ _⟩
         refine' ⟨Fintype.ofInjective φ _⟩
@@ -240,11 +266,19 @@ lemma sub_injective (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ : ℕ)
         · ext
           exact h
       obtain ⟨k, hk⟩ : ∃ (k : ℕ), ∀ (x : S), x < k := by
-        sorry
+        by_cases hS' : Nonempty S
+        · obtain ⟨l, hl⟩ := S.exists_upper_bound_image id hS
+          exact ⟨l + 1, fun ⟨x, hx⟩ => lt_of_le_of_lt (hl _ hx) (by simp)⟩
+        · simp only [nonempty_subtype, not_exists] at hS'
+          exact ⟨0, fun ⟨x, hx⟩ => by simpa using hS' x hx⟩
       refine' ⟨k, _⟩
       by_contra!
       have h := hk ⟨k, this⟩
-      simp at h-/
+      simp at h
+
+/-lemma exists_sub_eq (n : s.σ) (i j : s.α n) (hij : i ≤ j) :
+    ∃ (k : ℕ), s.sub n j k = i := by
+  sorry-/
 
 end ConvergenceStripes
 
@@ -354,6 +388,30 @@ lemma isIso_filtration_map_from_pred_iff (i : WithBot (s.α n)) (j : s.α n)
     IsIso (h.filtration.map φ) ↔ IsZero (E.pageInfinity pq) :=
   (h.shortExact i j hij pq hpq).isIso_f_iff
 
+lemma isIso_filtration_map_from_pred'_iff
+    (i j : WithBot (s.α n)) (φ : i ⟶ j) (hij : s.pred' n j = i) :
+    IsIso (h.filtration.map φ) ↔
+      ∀ (k : s.α n) (_ : j = WithBot.some k) (pq : ι) (_ : s.position n k = pq),
+        IsZero (E.pageInfinity pq) := by
+  obtain _ | j := j
+  · constructor
+    · intro _ k (hk : ⊥ = WithBot.some k)
+      simp at hk
+    · intro
+      obtain rfl : i = none := by
+        have : i ≤ ⊥ := leOfHom φ
+        simpa using this
+      obtain rfl : φ = 𝟙 _ := rfl
+      infer_instance
+  · constructor
+    · intro hφ k hk pq hpq
+      obtain rfl : j = k := by
+        change some j = some k at hk
+        simpa only [Option.some.injEq] using hk
+      exact (h.isIso_filtration_map_from_pred_iff i j φ hij pq hpq).1 inferInstance
+    · intro H
+      exact (h.isIso_filtration_map_from_pred_iff i j φ hij _ rfl).2 (H j rfl _ rfl)
+
 lemma isIso_filtration_map_comp_iff (i j k : WithBot (s.α n)) (f : i ⟶ j) (g : j ⟶ k) :
     IsIso (h.filtration.map (f ≫ g)) ↔
       IsIso (h.filtration.map f) ∧ IsIso (h.filtration.map g) := by
@@ -377,13 +435,104 @@ lemma isZero_of_isIso_filtration_map (i j : WithBot (s.α n)) (φ : i ⟶ j)
     h.isIso_filtration_map_from_pred_iff _ k _ rfl pq hpq] at hφ
   exact hφ.2.1
 
+lemma isIso_filtration_map'_iff (i j : WithBot (s.α n)) (φ : j ⟶ i) (k : ℕ) (hk : s.sub n i k = j) :
+    IsIso (h.filtration.map φ) ↔
+      ∀ (d : ℕ) (_ : d < k) (j : s.α n) (_ : s.sub n i d = WithBot.some j)
+          (pq : ι) (_ : s.position n j = pq),
+        IsZero (E.pageInfinity pq) := by
+  subst hk
+  induction' k with k hk
+  · simp only [Nat.zero_eq, ConvergenceStripes.sub_zero, not_lt_zero', forall_eq',
+      IsEmpty.forall_iff, forall_const, iff_true]
+    change IsIso (h.filtration.map (𝟙 _))
+    infer_instance
+  · erw [h.isIso_filtration_map_comp_iff (s.sub n i (k + 1)) (s.sub n i k) i
+      (homOfLE (s.sub_antitone _ _ _  _ (by linarith))) (homOfLE (s.sub_le_self n i k)), hk,
+      h.isIso_filtration_map_from_pred'_iff _ _ _ (by rw [s.sub_succ])]
+    constructor
+    · rintro ⟨h₁, h₂⟩ d hd j hj pq hpq
+      have hd' : d ≤ k := by linarith
+      obtain hd'' | rfl := hd'.lt_or_eq
+      · exact h₂ d hd'' j hj pq hpq
+      · exact h₁ j hj pq hpq
+    · intro H
+      constructor
+      · intro l hl pq hpq
+        exact H k (by linarith) l hl pq hpq
+      · intro d hd j hj pq hpq
+        exact H d (by linarith) j hj pq hpq
+
+lemma isZero_filtration_obj_none : IsZero (h.filtration.obj none) := by
+  obtain ⟨j, hj⟩ := h.exists_isZero
+  rw [IsZero.iff_id_eq_zero]
+  let φ : ⊥ ⟶ s.pred n j := homOfLE bot_le
+  rw [← cancel_mono (h.filtration.map φ)]
+  apply hj.eq_of_tgt
+
+lemma isZero_filtration_obj_iff (i : WithBot (s.α n)) :
+    IsZero (h.filtration.obj i) ↔
+      ∀ (j : s.α n) (_ : WithBot.some j ≤ i) (pq : ι) (_ : s.position n j = pq),
+        IsZero (E.pageInfinity pq) := by
+  constructor
+  · intro hi j hj pq hpq
+    rw [IsZero.iff_id_eq_zero, ← cancel_epi (h.π j pq hpq)]
+    apply IsZero.eq_of_src
+    rw [IsZero.iff_id_eq_zero, ← cancel_mono (h.filtration.map (homOfLE hj))]
+    apply hi.eq_of_tgt
+  · intro hi
+    obtain ⟨j, hj⟩ := h.exists_isZero
+    obtain ⟨k, hk⟩ := s.exists_sub_le n i j
+    let φ : s.sub n i (k + 1) ⟶ i := homOfLE (s.sub_le_self n i (k + 1))
+    have : IsIso (h.filtration.map φ) := by
+      rw [h.isIso_filtration_map'_iff i _ _ (k + 1) rfl]
+      intro d _ j hj pq hpq
+      exact hi j (by rw [← hj]; apply s.sub_le_self) pq hpq
+    refine IsZero.of_iso ?_ (asIso (h.filtration.map φ)).symm
+    let α : s.sub n i (k + 1) ⟶ s.pred n j := homOfLE (by
+      rw [s.sub_succ, ← s.pred'_some]
+      exact s.pred'_monotone _ _ _ hk)
+    rw [IsZero.iff_id_eq_zero, ← cancel_mono (h.filtration.map α)]
+    apply hj.eq_of_tgt
+
 /-lemma isIso_filtration_map_iff (i j : WithBot (s.α n)) (φ : i ⟶ j) :
     IsIso (h.filtration.map φ) ↔
       ∀ (k : s.α n) (h₁ : i ≤ s.pred n k) (h₂ : WithBot.some k ≤ j)
         (pq : ι) (hpq : s.position n k = pq), IsZero (E.pageInfinity pq) := by
   constructor
   · apply isZero_of_isIso_filtration_map
-  · sorry-/
+  · intro H
+    obtain _ | j := j
+    · obtain rfl : i = ⊥ := by
+        have : i ≤ ⊥ := leOfHom φ
+        simpa using this
+      obtain rfl : φ = 𝟙 _ := rfl
+      infer_instance
+    · revert i φ H
+      suffices ∀ (i : s.α n) (φ : WithBot.some i ⟶ WithBot.some j), (∀ (k : s.α n)
+          (_ : WithBot.some i ≤ s.pred n k) (_ : k ≤ j) (pq : ι)
+          (hpq : s.position n k = pq), IsZero (E.pageInfinity pq)) → IsIso (h.filtration.map φ) by
+        intro i φ H
+        obtain _ | i := i
+        · refine ⟨0, h.isZero_filtration_obj_none.eq_of_src _ _, IsZero.eq_of_src ?_ _ _⟩
+          rw [isZero_filtration_obj_iff]
+          intro k hk pq hpq
+          exact H k bot_le hk pq hpq
+        · apply this
+          intro k h₁ h₂ pq hpq
+          exact H k h₁ (WithBot.some_le_some.2 h₂) pq hpq
+      intro i φ H
+      have hij : i ≤ j := WithBot.some_le_some.1 (leOfHom φ)
+      obtain ⟨k, hk⟩ := s.exists_sub_eq n i j hij
+      rw [h.isIso_filtration_map'_iff j i φ k hk]
+      intro d hd l hl pq hpq
+      refine' H l ?_ ?_ pq hpq
+      · rw [← s.pred'_some, ← hl, ← s.sub_one, s.sub_sub n j d 1 _ rfl, ← hk]
+        apply s.sub_antitone
+        linarith
+      · rw [← WithBot.some_le_some]
+        change (WithBot.some l) ≤ (WithBot.some j)
+        rw [← hl]
+        apply s.sub_le_self-/
 
 end StronglyConvergesToInDegree
 
