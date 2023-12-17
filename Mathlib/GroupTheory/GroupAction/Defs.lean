@@ -718,7 +718,7 @@ def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsSca
 /-- A monoid homomorphism between two monoids M and N can be equivalently specified by a
 multiplicative action of M on N that is compatible with the multiplication on N. -/
 @[to_additive "A monoid homomorphism between two additive monoids M and N can be equivalently
-  specified by a additive action of M on N that is compatible with the addition on N."]
+  specified by an additive action of M on N that is compatible with the addition on N."]
 def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
     (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
   toFun f := let a := MulAction.compHom N f; ⟨a, ⟨fun m ↦ mul_assoc (f m)⟩⟩

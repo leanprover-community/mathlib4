@@ -130,7 +130,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
 
 variable (R)
 
--- LinearIndependent is enough if S is a ring.
+-- LinearIndependent is enough if S is a ring rather than semiring.
 theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
   (b.repr.symm.comp <| lsingle <| Classical.arbitrary ι).isScalarTower_of_injective R
     (b.repr.symm.injective.comp <| single_injective _)
