@@ -1222,13 +1222,13 @@ f (s.piecewise a v) - f (s.piecewise b v) = Finset.sum Finset.univ (fun (i : Fin
 f (fun j => if h : j ∈ s then (if (s.orderIsoOfFin hs).symm ⟨j, h⟩ < i then a j
 else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v j)) := by
   by_cases hn : n = 0
-  . have h : IsEmpty (Fin n) := by rw [← Fintype.card_eq_zero_iff, hn]; exact Fintype.card_fin 0
+  · have h : IsEmpty (Fin n) := by rw [← Fintype.card_eq_zero_iff, hn]; exact Fintype.card_fin 0
     have he : Finset.univ (α := Fin n) = ∅ := Finset.univ_eq_empty_iff.mpr h
     have heq : s.piecewise a v = s.piecewise b v := by
       rw [hn, Finset.card_eq_zero] at hs
       rw [hs, Finset.piecewise_empty, Finset.piecewise_empty]
     rw [he, Finset.sum_empty, heq, sub_self]
-  . have hn := Nat.succ_pred hn
+  · have hn := Nat.succ_pred hn
     have heq : ∀ (i : Fin n), (fun j => if h : j ∈ s then
         (if (s.orderIsoOfFin hs).symm ⟨j, h⟩ < i then a j else
         if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v j) =
@@ -1239,9 +1239,9 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
       intro i
       ext j
       by_cases h : j ∈ s
-      . simp only [h, dite_true]
+      · simp only [h, dite_true]
         by_cases h' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ < i
-        . simp only [h', ite_true]
+        · simp only [h', ite_true]
           have h'' : j ≠ s.orderIsoOfFin hs i := by
             by_contra habs
             have habs' : ⟨j, h⟩ = s.orderIsoOfFin hs i := by
@@ -1251,9 +1251,9 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
             simp only [OrderIso.symm_apply_apply, lt_self_iff_false] at h'
           rw [Function.update_noteq h'']
           simp only [h, le_of_lt h', ite_true, dite_eq_ite]
-        . simp only [h', ite_false]
+        · simp only [h', ite_false]
           by_cases h'' : j = s.orderIsoOfFin hs i
-          . have h''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i := by
+          · have h''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i := by
               have haux : ⟨j, h⟩ = s.orderIsoOfFin hs i := by
                 rw [← SetCoe.ext_iff]
                 simp only
@@ -1264,7 +1264,7 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
             rw [h'']
             erw [Function.update_same]
             rfl
-          . rw [Function.update_noteq h'']
+          · rw [Function.update_noteq h'']
             simp only [h, dite_true]
             have h''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≠ i := by
               by_contra habs
@@ -1275,7 +1275,7 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
               rw [lt_iff_not_le, not_not] at h'
               exact ⟨h', Ne.symm h'''⟩
             simp only [h''', ite_false, h'''']
-      . have h' : j ≠ s.orderIsoOfFin hs i := by
+      · have h' : j ≠ s.orderIsoOfFin hs i := by
           by_contra habs
           rw [habs] at h
           simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem, not_true_eq_false] at h
@@ -1317,16 +1317,16 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
         s.piecewise a v := by
       ext j
       by_cases h : j ∈ s
-      . simp only [h, Finset.piecewise_eq_of_mem]
+      · simp only [h, Finset.piecewise_eq_of_mem]
         by_cases h' : j = s.orderIsoOfFin hs m₂
-        . rw [h', Function.update_same]
-        . rw [Function.update_noteq h']
+        · rw [h', Function.update_same]
+        · rw [Function.update_noteq h']
           simp only [h, dite_true]
           have h'' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ m₂ := by
             apply Nat.le_pred_of_lt
             exact ((s.orderIsoOfFin hs).symm ⟨j, h⟩).2
           simp only [h'', ite_true]
-      . simp only [h, not_false_eq_true, Finset.piecewise_eq_of_not_mem]
+      · simp only [h, not_false_eq_true, Finset.piecewise_eq_of_not_mem]
         have h' : j ≠ s.orderIsoOfFin hs m₂ := by
           by_contra habs
           rw [habs] at h
@@ -1338,10 +1338,10 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
         (((Finset.orderIsoOfFin s hs) m₁)) (b ↑((Finset.orderIsoOfFin s hs) m₁))) = s.piecewise b v := by
       ext j
       by_cases h : j ∈ s
-      . simp only [h, Finset.piecewise_eq_of_mem]
+      · simp only [h, Finset.piecewise_eq_of_mem]
         by_cases h' : j = s.orderIsoOfFin hs m₁
-        . rw [h', Function.update_same]
-        . rw [Function.update_noteq h']
+        · rw [h', Function.update_same]
+        · rw [Function.update_noteq h']
           simp only [h, dite_true]
           have h'' : ¬ (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ m₁ := by
             simp only [not_le]
@@ -1351,7 +1351,7 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
             rw [← habs', OrderIso.apply_symm_apply] at h'
             simp only [not_true_eq_false] at h'
           simp only [h'', ite_false]
-      . have h' : j ≠ s.orderIsoOfFin hs m₁ := by
+      · have h' : j ≠ s.orderIsoOfFin hs m₁ := by
           by_contra habs
           rw [habs] at h
           simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem, not_true_eq_false] at h
@@ -1409,8 +1409,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
       congr
       ext j
       by_cases h : j ∈ s
-      . by_cases h' : j = s.orderIsoOfFin hs i
-        . have h'' : j ≠ s.orderIsoOfFin hs (I i hi) := by
+      · by_cases h' : j = s.orderIsoOfFin hs i
+        · have h'' : j ≠ s.orderIsoOfFin hs (I i hi) := by
             by_contra habs
             rw [h'] at habs
             simp only [Finset.coe_orderIsoOfFin_apply, id_eq, eq_mpr_eq_cast, RelEmbedding.inj] at habs
@@ -1427,10 +1427,10 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
             exact ⟨Nat.pred_le _, Nat.pred_ne_self (hmem i hi)⟩
           simp only [h''', ite_false]
           rw [h', Function.update_same]
-        . rw [Function.update_noteq h']
+        · rw [Function.update_noteq h']
           simp only [h, dite_true]
           by_cases h'' : j = s.orderIsoOfFin hs (I i hi)
-          . have h''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ (I i hi) := by
+          · have h''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ (I i hi) := by
               rw [OrderIso.symm_apply_le]
               change j ≤ _
               rw [h'']
@@ -1440,10 +1440,10 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
               exact Nat.pred_le _
             simp only [h'''', ite_true]
             rw [h'', Function.update_same]
-          . rw [Function.update_noteq h'']
+          · rw [Function.update_noteq h'']
             simp only [h, dite_true]
             by_cases h''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ i
-            . simp only [h''', ite_true]
+            · simp only [h''', ite_true]
               have h'''' : (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ I i hi := by
                 apply Nat.le_pred_of_lt
                 rw [lt_iff_le_and_ne]
@@ -1452,11 +1452,11 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
                 rw [← (Fin.eq_of_val_eq habs)] at h'
                 simp only [OrderIso.apply_symm_apply, not_true_eq_false] at h'
               simp only [h'''', ite_true]
-            . simp only [h''', ite_false]
+            · simp only [h''', ite_false]
               have h'''' : ¬ (s.orderIsoOfFin hs).symm ⟨j, h⟩ ≤ I i hi :=
                 fun habs => h''' (le_trans habs (Nat.pred_le _))
               simp only [h'''', ite_false]
-      . have h' : ∀ (r : Fin n), j ≠ s.orderIsoOfFin hs r := by
+      · have h' : ∀ (r : Fin n), j ≠ s.orderIsoOfFin hs r := by
           intro r
           by_contra habs
           rw [habs] at h
