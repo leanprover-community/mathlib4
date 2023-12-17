@@ -1402,7 +1402,7 @@ lemma exists_rep (z : M ⊗[R] N) :
   classical
   have EQ := span_tmul_eq_top R M N
   have mem1 : z ∈ ⊤ := Submodule.mem_top (R := R)
-  rw [←EQ, mem_span_set] at mem1
+  rw [← EQ, mem_span_set] at mem1
   obtain ⟨c, hc1, rfl⟩ := mem1
   choose m n hm using hc1
   refine ⟨M ⊗[R] N, fun i => if hi : i ∈ c.support then c i • m hi else 0,
@@ -1412,7 +1412,7 @@ lemma exists_rep (z : M ⊗[R] N) :
   dsimp only
   split_ifs with h
   · specialize hm h
-    rw [←smul_tmul']
+    rw [← smul_tmul']
     congr 1
     exact hm.symm
   · exact False.elim (h hi)
