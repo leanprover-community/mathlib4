@@ -212,7 +212,7 @@ instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
 
 theorem boundedSpace_coinduced_iff {α β : Type*} [Bornology α] {f : α → β} {hf : f.Injective} :
     @BoundedSpace _ (Bornology.coinduced f hf) ↔ BoundedSpace α := by
-  rw [← @isBounded_univ _ (Bornology.coinduced f hf), ←isBounded_univ, isBounded_coinduced,
+  rw [← @isBounded_univ _ (Bornology.coinduced f hf), ← isBounded_univ, isBounded_coinduced,
     preimage_univ]
 
 instance ULift.instBoundedSpace {α : Type*} [Bornology α] [BoundedSpace α] :
