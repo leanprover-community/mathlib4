@@ -442,8 +442,8 @@ theorem le_himp_himp : a ≤ (a ⇨ b) ⇨ b :=
   le_himp_iff.2 inf_himp_le
 #align le_himp_himp le_himp_himp
 
-@[simp] lemma himp_eq_himp : b ⇨ a = a ⇨ b ↔ a = b := by simp [le_antisymm_iff]
-lemma himp_ne_himp : b ⇨ a ≠ a ⇨ b ↔ a ≠ b := himp_eq_himp.not
+@[simp] lemma himp_eq_himp_iff : b ⇨ a = a ⇨ b ↔ a = b := by simp [le_antisymm_iff]
+lemma himp_ne_himp_iff : b ⇨ a ≠ a ⇨ b ↔ a ≠ b := himp_eq_himp_iff.not
 
 theorem himp_triangle (a b c : α) : (a ⇨ b) ⊓ (b ⇨ c) ≤ a ⇨ c := by
   rw [le_himp_iff, inf_right_comm, ← le_himp_iff]
@@ -701,8 +701,8 @@ theorem sdiff_sdiff_le : a \ (a \ b) ≤ b :=
   sdiff_le_iff.2 le_sdiff_sup
 #align sdiff_sdiff_le sdiff_sdiff_le
 
-@[simp] lemma sdiff_eq_sdiff : a \ b = b \ a ↔ a = b := by simp [le_antisymm_iff]
-lemma sdiff_ne_sdiff : a \ b ≠ b \ a ↔ a ≠ b := sdiff_eq_sdiff.not
+@[simp] lemma sdiff_eq_sdiff_iff : a \ b = b \ a ↔ a = b := by simp [le_antisymm_iff]
+lemma sdiff_ne_sdiff_iff : a \ b ≠ b \ a ↔ a ≠ b := sdiff_eq_sdiff_iff.not
 
 theorem sdiff_triangle (a b c : α) : a \ c ≤ a \ b ⊔ b \ c := by
   rw [sdiff_le_iff, sup_left_comm, ← sdiff_le_iff]
