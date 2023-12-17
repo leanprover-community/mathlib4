@@ -208,15 +208,11 @@ variable {r : α → γ → Prop} {s : β → δ → Prop} {x : Sum α β} {y : 
   {a : α} {b : β} {c : γ} {d : δ}
 
 theorem isLeft_congr (h : LiftRel r s x y) : x.isLeft ↔ y.isLeft := by cases h <;> rfl
-
 theorem isRight_congr (h : LiftRel r s x y) : x.isRight ↔ y.isRight := by cases h <;> rfl
 
 theorem isLeft_left (h : LiftRel r s x (inl c)) : x.isLeft := by cases h; rfl
-
 theorem isLeft_right (h : LiftRel r s (inl a) y) : y.isLeft := by cases h; rfl
-
 theorem isRight_left (h : LiftRel r s x (inr d)) : x.isRight := by cases h; rfl
-
 theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
 
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
