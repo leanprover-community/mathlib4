@@ -49,7 +49,7 @@ section Normed
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-/-- A normed additive group is complete if an absolutely convergent series converges in the
+/-- A normed additive group is complete if any absolutely convergent series converges in the
 space.  -/
 lemma NormedAddCommGroup.completeSpace_of_summable_implies_tendsto
     (h : ∀ u : ℕ → E,
