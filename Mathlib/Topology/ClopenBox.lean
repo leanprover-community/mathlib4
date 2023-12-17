@@ -9,12 +9,13 @@ import Mathlib.Topology.Sets.Closeds
 /-!
 # Clopen subsets in cartesian products
 
-In general, a clopen subset in a cartesian product of topological spaces cannot be written as a
-union of "clopen boxes", i.e. products of clopen subsets of the components (see
-[buzyakovaClopenBox] for counterexamples).
+In general, a clopen subset in a cartesian product of topological spaces
+cannot be written as a union of "clopen boxes",
+i.e. products of clopen subsets of the components (see [buzyakovaClopenBox] for counterexamples).
 
 However, when one of the factors is compact, a clopen subset can be written as such a union.
-Our argument in `exists_clopen_box` follows the one given in [buzyakovaClopenBox].
+Our argument in `TopologicalSpace.Clopens.exists_prod_subset`
+follows the one given in [buzyakovaClopenBox].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
 and use that to prove that the property of having countably many clopens is preserved by taking
@@ -30,24 +31,7 @@ cartesian products of compact spaces (this is relevant to the theory of light pr
 open Function Set Filter TopologicalSpace
 open scoped Topology
 
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
-lemma isOpen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurry f))
-    {K : Set Y} (hK : IsCompact K) {W : Set Z} (hW : IsOpen W) : IsOpen {x | MapsTo (f x) K W} := by
-  simpa only [mapsTo']
-    using (ContinuousMap.isOpen_gen hK hW).preimage (ContinuousMap.curry ⟨_, hf⟩).continuous
-
-lemma isClosed_setOf_mapsTo {f : X → Y → Z} (hf : ∀ y, Continuous (f · y)) (s : Set Y) {t : Set Z}
-    (ht : IsClosed t) : IsClosed {x | MapsTo (f x) s t} := by
-  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y _ ↦ ht.preimage (hf y)
-
-lemma isClopen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurry f))
-    {K : Set Y} (hK : IsCompact K) {U : Set Z} (hU : IsClopen U) :
-    IsClopen {x | MapsTo (f x) K U} :=
-  ⟨isOpen_setOf_mapsTo_isCompact hf hK hU.isOpen,
-    isClosed_setOf_mapsTo (fun y ↦ hf.comp (Continuous.Prod.mk_left y)) K hU.isClosed⟩
-
-variable [CompactSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [CompactSpace Y]
 
 theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
@@ -56,7 +40,7 @@ theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : 
   have hV : IsCompact V := (W.2.2.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
-  exact ⟨⟨U, isClopen_setOf_mapsTo_isCompact (f := Prod.mk) continuous_id hV W.2⟩,
+  exact ⟨⟨U, continuous_id.isClopen_setOf_mapsTo_curry_isCompact_isClopen hV W.2⟩,
     by simp [MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
@@ -76,8 +60,16 @@ theorem TopologicalSpace.Clopens.exists_finset_eq_sup_prod (W : Clopens (X × Y)
     exact SetLike.le_def.1 (Finset.le_sup hi) hxi
   · exact hUV _ <| hIW _ hx
 
+lemma TopologicalSpace.Clopens.surjective_finset_sup_prod :
+    Surjective fun I : Finset (Clopens X × Clopens Y) ↦ I.sup fun i ↦ i.1 ×ˢ i.2 := fun W ↦
+  let ⟨I, hI⟩ := W.exists_finset_eq_sup_prod; ⟨I, hI.symm⟩
+
 instance TopologicalSpace.Clopens.countable_prod [Countable (Clopens X)]
     [Countable (Clopens Y)] : Countable (Clopens (X × Y)) :=
-  have : Surjective fun I : Finset (Clopens X × Clopens Y) ↦ I.sup fun i ↦ i.1 ×ˢ i.2 := fun W ↦ by
-    simpa only [eq_comm] using W.exists_finset_eq_sup_prod
-  this.countable
+  surjective_finset_sup_prod.countable
+
+instance TopologicalSpace.Clopens.finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
+    Finite (Clopens (X × Y)) := by
+  cases nonempty_fintype (Clopens X)
+  cases nonempty_fintype (Clopens Y)
+  exact .of_surjective _ surjective_finset_sup_prod

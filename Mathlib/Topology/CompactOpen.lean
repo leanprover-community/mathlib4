@@ -91,6 +91,10 @@ protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : 
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
 #align continuous_map.is_open_gen ContinuousMap.isOpen_gen
 
+lemma isOpen_setOf_mapsTo_isCompact_isOpen (f : C(α, C(β, γ))) {K : Set β}
+    (hK : IsCompact K) {W : Set γ} (hW : IsOpen W) : IsOpen {x | MapsTo (f x) K W} := by
+  simpa only [mapsTo'] using (ContinuousMap.isOpen_gen hK hW).preimage f.continuous
+
 section Functorial
 
 variable (g : C(β, γ))
@@ -387,6 +391,27 @@ def curry (f : C(α × β, γ)) : C(α, C(β, γ)) :=
 theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a, b) :=
   rfl
 #align continuous_map.curry_apply ContinuousMap.curry_apply
+
+lemma _root_.Continuous.isOpen_setOf_mapsTo_curry_isCompact_isOpen {f : α × β → γ}
+    (hf : Continuous f) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsOpen W) :
+    IsOpen {x | MapsTo (f.curry x) K W} :=
+  (ContinuousMap.mk f hf).curry.isOpen_setOf_mapsTo_isCompact_isOpen hK hW
+
+lemma _root_.Continuous.isClopen_setOf_mapsTo_curry_isCompact_isClopen {f : α × β → γ}
+    (hf : Continuous f) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsClopen W) :
+    IsClopen {x | MapsTo (f.curry x) K W} :=
+  ⟨hf.isOpen_setOf_mapsTo_curry_isCompact_isOpen hK hW.isOpen,
+    .setOf_mapsTo hW.isClosed fun y _ ↦ hf.comp <| Continuous.Prod.mk_left y⟩
+
+lemma _root_.Continuous.isOpen_setOf_mapsTo_isCompact_isOpen {f : α → β → γ}
+    (hf : Continuous f.uncurry) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsOpen W) :
+    IsOpen {x | MapsTo (f x) K W} :=
+  hf.isOpen_setOf_mapsTo_curry_isCompact_isOpen hK hW
+
+lemma _root_.Continuous.isClopen_setOf_mapsTo_isCompact_isClopen {f : α → β → γ}
+    (hf : Continuous f.uncurry) {K : Set β} (hK : IsCompact K) {W : Set γ} (hW : IsClopen W) :
+    IsClopen {x | MapsTo (f x) K W} :=
+  hf.isClopen_setOf_mapsTo_curry_isCompact_isClopen hK hW
 
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (α × β)] :
