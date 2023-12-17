@@ -304,7 +304,7 @@ lemma pred_bit0 {x : ℕ} (h : x > 0) : pred (bit0 x) = bit true (pred x) := by
 
 /-- The expressions `pred (1 <<< w)` represents the number with the `w` least significant bits as
 `1`, and all other bits `0`.
-It's used as the all-ones bitvector in the implementation of  `Std.BitVec.not` -/
+It's used as the all-ones bitvector in the implementation of `Std.BitVec.not` -/
 lemma testBit_ones (w i : ℕ) : testBit (pred <| 1 <<< w) i = decide (i < w) := by
   induction' w with w ih generalizing i
   · simp only [zero_eq, shiftLeft_zero, Nat.pred_succ, zero_testBit, not_lt_zero', decide_False]
