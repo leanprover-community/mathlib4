@@ -54,12 +54,6 @@ theorem norm_smul_eq (h : SameRay ℝ x y) : ‖x‖ • y = ‖y‖ • x := by
 
 end SameRay
 
-lemma norm_nsmul [NormedSpace ℝ E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  induction' n with n ih
-  · simp
-  · rw [succ_nsmul, succ_nsmul, SameRay.norm_add, ih]
-    exact sameRay_nsmul_right _ _
-
 variable {x y : F}
 
 theorem norm_injOn_ray_left (hx : x ≠ 0) : { y | SameRay ℝ x y }.InjOn norm := by
