@@ -177,8 +177,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
     simp? [ENNReal.toReal_mul] at this says
-      simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, inv_nonneg, ge_iff_le,
-        div_pow] at this
+      simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, div_pow] at this
     simpa [div_eq_mul_inv, zero_le_two] using this
   exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
