@@ -162,7 +162,7 @@ section AdjoinRoot
 
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
-  have := Fact.mk H
+  letI := Fact.mk H
   letI : Algebra K K[n√a] := inferInstance
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
