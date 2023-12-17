@@ -288,7 +288,7 @@ instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScal
 instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
 
-instance hasNpowNat : Pow (CentroidHom α) ℕ :=
+instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
     { (f.toEnd ^ n : AddMonoid.End α) with
       map_mul_left' := fun a b ↦ by
@@ -303,7 +303,7 @@ instance hasNpowNat : Pow (CentroidHom α) ℕ :=
         · simp
           rw [pow_succ]
           exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _) }⟩
-#align centroid_hom.has_npow_nat CentroidHom.hasNpowNat
+#align centroid_hom.has_npow_nat CentroidHom.hasNPowNat
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
