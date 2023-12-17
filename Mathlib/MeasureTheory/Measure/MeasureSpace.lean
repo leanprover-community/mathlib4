@@ -1653,6 +1653,9 @@ theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ
 
 lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := absolutelyContinuous_of_le_smul le_rfl
 
+lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
+  simp [AbsolutelyContinuous, hc]
+
 theorem ae_le_iff_absolutelyContinuous : μ.ae ≤ ν.ae ↔ μ ≪ ν :=
   ⟨fun h s => by
     rw [measure_zero_iff_ae_nmem, measure_zero_iff_ae_nmem]
