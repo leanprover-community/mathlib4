@@ -7,7 +7,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
 # The Pin group and the Spin group
@@ -50,28 +50,6 @@ open CliffordAlgebra MulAction
 
 open scoped Pointwise
 
--- TODO: begin part of #9076 that will be moved to `LinearAlgebra.CliffordAlgebra.Inversion`
-
-/-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`. -/
-def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] : Invertible (Q m) :=
-  letI : Invertible (algebraMap _ (CliffordAlgebra Q) (Q m)) :=
-    (Invertible.mul ‹Invertible (ι Q m)› ‹Invertible (ι Q m)›).copy  _ (ι_sq_scalar _ _).symm
-  letI bar : Invertible (algebraMap _ (ExteriorAlgebra R M) (Q m)) := {
-    invOf := equivExterior Q ⅟(algebraMap _ (CliffordAlgebra Q) (Q m))
-    invOf_mul_self := by
-      dsimp
-      rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul, Algebra.smul_def, mul_invOf_self,
-        changeForm_one]
-    mul_invOf_self := by
-      dsimp
-      rw [← Algebra.smul_def, ← map_smul, Algebra.smul_def, mul_invOf_self, changeForm_one]
-  }
-  (bar.map ExteriorAlgebra.algebraMapInv).copy _ (by simp)
-
-#align invertible_of_invertible_ι invertibleOfInvertibleι
-
--- TODO: end part of #9076 that will be moved to `LinearAlgebra.CliffordAlgebra.Inversion`
-
 /-- `lipschitz` is the subgroup closure of all the invertible elements in the form of `ι Q m`
 where `ι` is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
 def lipschitz (Q : QuadraticForm R M) :=
@@ -88,7 +66,7 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
   · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
     have := x.invertible
     have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι a
+    have : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range]
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
                 ConjAct.ofConjAct_toConjAct, SetLike.mem_coe] at hz
@@ -99,7 +77,7 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
   · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
     have := x.invertible
     have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι a
+    have : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range]
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
       ConjAct.ofConjAct_toConjAct, ConjAct.toConjAct_inv, map_inv, inv_inv] at hz
@@ -145,7 +123,7 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
   · rintro x ⟨a, ha⟩ b
     have := x.invertible
     have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι a
+    have : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range, ← invOf_units x]
     simp_rw [← ha, involute_ι]
     refine'
@@ -155,7 +133,7 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
   · rintro x ⟨a, ha⟩ b
     have := x.invertible
     have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι a
+    have : Invertible (Q a) := invertibleOfInvertibleι Q a
     have := invertibleNeg (ι Q a)
     have := Invertible.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q) (ι Q a)
     rw [LinearMap.mem_range, ← invOf_units x, inv_inv]
