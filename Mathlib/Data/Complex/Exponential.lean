@@ -2008,7 +2008,6 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   · simp
     rwa [Nat.cast_zero] at ht'
   convert pow_le_pow_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
-  · abel
   · rw [← Real.exp_nat_mul]
     congr 1
     field_simp
