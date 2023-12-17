@@ -171,7 +171,8 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
     simp only [Units.val_mul, map_mul, mul_inv_rev, LinearMap.mem_range]
     let ⟨z', hz'⟩ := hz b
     let ⟨y', hy'⟩ := hy z'
-    suffices ∃ c : M, (ι Q) c = involute (Q := Q) ↑y * (involute (Q := Q) ↑z * (ι Q) b * ↑z⁻¹) * ↑y⁻¹ by
+    suffices
+        ∃ c : M, (ι Q) c = involute (Q := Q) ↑y * (involute (Q := Q) ↑z * (ι Q) b * ↑z⁻¹) * ↑y⁻¹ by
       obtain ⟨p, hp⟩ := this
       refine' ⟨p, by simp only [hp, mul_assoc]⟩
     rw [← hz']
