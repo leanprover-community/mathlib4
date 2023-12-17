@@ -259,7 +259,7 @@ def toLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R]
 derivative.-/
 noncomputable def linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
 (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →ₗ[R] M₂ :=
-Finset.sum Finset.univ (fun (i : ι) => (f.toLinearMap x i).comp (LinearMap.proj i))
+  ∑ i : ι, (f.toLinearMap x i).comp (LinearMap.proj i)
 
 @[simp]
 lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
