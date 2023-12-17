@@ -149,39 +149,26 @@ def contDiffPregroupoidBasic : Pregroupoid E := {
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
 }
 
--- this is the key lemma I need to showing that C^n maps define a better pregroupoid
+-- This is the key lemma I need to showing that C^n maps define an `IFTPregroupoid`.
 -- we need to work over ℝ or ℂ, otherwise `toLocalInverse` doesn't apply
 lemma contDiffPregroupoindIsIFT_aux [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E}
     {f' : E ≃L[ℝ] E} (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
     (hinv : InvOn g f s t) (hm : MapsTo g t s) (hn : 1 ≤ n) : ContDiffAt ℝ n g (f x) := by
-  let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
-  set g' := ContDiffAt.localInverse hf hf' hn with eq
   let h := hf.toPartialHomeomorph f hf' hn
-  -- XXX: not true! s, t are subsets --> should replace t by the source of the local homeo
-  have : EqOn g g' h.target := by
-    have hinv' : InvOn g' f h.source h.target := by
-      apply (hf.localInverse_eq_toLocalHomeomorph_symm hf' hn) ▸ h.invOn
-    -- xxx: extract into lemma: if MapsTo g t s, and if g and g' are inverses of f on s, g=g' on s.
-    intro y hy
-    let x := g y
-    have hm' : MapsTo g h.target h.source := by
-      -- show MapsTo g' h.target h.source -- rewrite by EqOn...
-      have : MapsTo g' h.target h.source := by
-        have : g' = h.symm := (hf.localInverse_eq_toLocalHomeomorph_symm hf' hn)
-        rw [this]
-        exact h.symm_mapsTo
-      sorry -- rewrite by EqOn from the previous have
-    have hx : x ∈ h.source := hm' hy
-    -- these should both be routine
-    have : h.target ⊆ t := sorry
-    have hy : y ∈ t := this hy
-    have : h.source ⊆ s := sorry
-    calc g y
-      _ = g (f x) := by rw [hinv.2 hy]
-      _ = x := by rw [hinv.1 (this hx)]
-      _ = g' (f x) := by rw [hinv'.1 hx]
-      _ = g' y := by rw [hinv.2 hy]
-  -- apply fderiv_congr to rewrite g' with g
+  have h2 : ContDiffAt ℝ n h.symm (f x) := hf.to_localInverse (f' := f') hf' hn
+  have hinv : h.symm (f x) = x := by
+    show h.symm (h x) = x
+    apply h.left_inv (hf.mem_toPartialHomeomorph_source hf' hn)
+  let r := h.contDiffAt_symm (hf.image_mem_toPartialHomeomorph_target hf' hn)
+    (hinv.symm ▸ hf') (hinv.symm ▸ hf)
+  -- shrinking s and t (and restricting h), we may assume s = h.source and t = h.target
+  -- then both of these are immediate
+  have h1' : InvOn h.symm h s t := sorry -- is then h.invOn
+  have h2' : InvOn g f s t := sorry -- rewrite h=f in hinv
+  have : EqOn h.symm g t := eqOn_of_leftInvOn_of_rightInvOn h1'.1 h2'.2 hm
+  have : ContDiffAt ℝ n h.symm (f x) := h2
+  -- last step: apply ContDiffAt.congr, seems to be missing; have e.g. fderiv_congr
+  -- slightly different route: add ContDiffOn assumption, then it exists?
   sorry
 
 -- also want a version of the IFT with HasStrictFDerivAt; uses the below under the hood
@@ -203,10 +190,27 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       refine ⟨hx, ?_⟩
       show fderiv ℝ f x ∈ t'
       exact mem_of_eq_of_mem hf'.fderiv hft
-    -- TODO: argue f is a local homeomorphism, then the next three sorries are immediate
-    have : MapsTo f s t := sorry
-    have hm : MapsTo g t s := sorry
-    have scifi : IsOpen (f '' U) := sorry -- need to argue harder: f is a local homeo or so
+
+    let fhom := ContDiffAt.toPartialHomeomorph f (hf.contDiffAt (hs.mem_nhds hx)) hf' hn
+    have : f = fhom := by rw [ContDiffAt.toPartialHomeomorph_coe]
+    have h3 : IsLocalHomeomorphOn f fhom.source :=
+      IsLocalHomeomorphOn.mk f fhom.source (fun x hx ↦ ⟨fhom, hx, fun y hy ↦ by rw [this]⟩)
+    -- now: U ⊆ fhom.source and h3 imply f(U) is open
+    -- this is a missing lemma about local homeomorphisms
+    have scifi : IsOpen (f '' U) := sorry
+    -- shrinking s and t, we may assume s = fhom.source, t = fhom.target
+    -- use filters to formalise this?
+    have shrink1 : s = fhom.source := sorry
+    have shrink2 : t = fhom.target := sorry
+
+    have : MapsTo f s t := by
+      rw [shrink1, shrink2]
+      exact fhom.mapsTo
+    have hm : MapsTo g t s := by
+      rw [shrink1, shrink2]
+      have : EqOn fhom.symm g fhom.target := sorry -- proven in aux lemma above
+      rw [← this.mapsTo_iff (t := fhom.source)]
+      exact fhom.symm_mapsTo
     have hu₁ : f '' U ⊆ t :=
       Subset.trans (image_subset _ (inter_subset_left _ _)) (mapsTo'.mp this)
     refine ⟨f '' U , hu₁, mem_image_of_mem f hxU, scifi, ?_⟩
@@ -222,9 +226,9 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       exact ((hf.contDiffAt hs).differentiableAt hn).hasFDerivAt
     exact hx'y ▸ (contDiffPregroupoindIsIFT_aux (hf.contDiffAt hs) this hinv hm hn)
 
--- FIXME: show that the analytic pregroupoid is also IFT
-
 end IFTBasic
+
+-- FUTURE: show that the analytic pregroupoid is also IFT
 
 /-! General version of the IFT on manifolds. -/
 section IFTFull
