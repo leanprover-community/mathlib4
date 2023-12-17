@@ -101,11 +101,11 @@ theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 
   (mersenne_int_pos hp).ne'
 #align lucas_lehmer.mersenne_int_ne_zero LucasLehmer.mersenne_int_ne_zero
 
-theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
+theorem sMod_nonneg (p : ℕ) (hp : p ≠ 0) (i : ℕ) : 0 ≤ sMod p i := by
   cases i <;> dsimp [sMod]
   · exact sup_eq_right.mp rfl
   · apply Int.emod_nonneg
-    exact mersenne_int_ne_zero p w
+    exact mersenne_int_ne_zero p hp
 #align lucas_lehmer.s_mod_nonneg LucasLehmer.sMod_nonneg
 
 theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [sMod]
@@ -155,7 +155,7 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
       simp only [ge_iff_le, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos,
         cast_pred, cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
-    · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
+    · exact sMod_nonneg _ (by positivity)
     · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
   · intro h
     rw [h]

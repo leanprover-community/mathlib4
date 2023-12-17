@@ -435,10 +435,10 @@ theorem pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
   exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
 #align pow_lt_pow_succ pow_lt_pow_succ
 
-theorem pow_lt_pow₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
+theorem pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih
   exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
-#align pow_lt_pow₀ pow_lt_pow₀
+#align pow_lt_pow₀ pow_lt_pow_right₀
 
 end LinearOrderedCommGroupWithZero
 
