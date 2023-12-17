@@ -476,13 +476,10 @@ theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : �
     Fintype.card_coe] using Fintype.card_eq.2 ⟨rootsExpandPowEquivRoots q
       (f := f.map (algebraMap F (AlgebraicClosure F))) (n := n)⟩
 
-namespace HasSeparableContraction
-
-variable {f}
-
+variable {f} in
 /-- If a polynomial has separable contraction, then its separable degree is equal to its
 separable contraction degree. -/
-theorem natSepDegree_eq
+theorem HasSeparableContraction.natSepDegree_eq
     {q : ℕ} [ExpChar F q] (hf : f.HasSeparableContraction q) :
     f.natSepDegree = hf.degree := by
   have hf' := hf
@@ -491,8 +488,6 @@ theorem natSepDegree_eq
   obtain ⟨h1, m, h2⟩ := h1
   rw [← h2, natSepDegree_expand_eq_natSepDegree]
   exact natSepDegree_eq_natDegree_of_separable g h1
-
-end HasSeparableContraction
 
 /-- The separable degree of an irreducible polynomial divides its degree. -/
 theorem natSepDegree_dvd_natDegree_of_irreducible (h : Irreducible f) :

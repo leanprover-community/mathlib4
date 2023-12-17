@@ -178,8 +178,7 @@ theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
 theorem monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
   simp only [Monic, leadingCoeff_expand hp]
 
-theorem Monic.expand {p : ℕ} {f : R[X]} (hp : 0 < p) (h : f.Monic) :
-    (expand R p f).Monic := (monic_expand_iff hp).2 h
+alias ⟨_, Monic.expand⟩ := monic_expand_iff
 #align polynomial.monic.expand Polynomial.Monic.expand
 
 theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
