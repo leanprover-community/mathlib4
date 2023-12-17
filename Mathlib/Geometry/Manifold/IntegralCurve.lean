@@ -107,7 +107,7 @@ lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
 lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
     IsIntegralCurveOn γ v (s ∪ s') := by
   intros t ht
-  cases' ht with ht ht
+  rcases ht with ht | ht
   · exact h _ ht
   · exact h' _ ht
 
@@ -574,8 +574,7 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [I.Boundaryless]
     (hγ : IsIntegralCurve γ v) (hγ' : IsIntegralCurve γ' v) (h : γ t₀ = γ' t₀) : γ = γ' :=
   isIntegralCurve_eq_of_contMDiff (fun _ => I.isInteriorPoint) hv hγ hγ' h
 
--- todo: flip `t` and `t'`
-lemma exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless] [T2Space M]
+lemma exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a a' : ℝ} (hpos : 0 < a')
     (hle : a' ≤ a) : EqOn (choose (h a')) (choose (h a)) (Ioo (-a') a') := by
@@ -587,7 +586,11 @@ lemma exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless] [T2Space M]
     exact hpos
   · apply Ioo_subset_Ioo <;> linarith
 
-lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless] [T2Space M]
+/-- Auxiliary lemma. Suppose for every `a : ℝ`, there exists an integral curve defined on
+  `Ioo (-a) a`. We choose one for every `a` and call it `γ a`. We define a global curve
+  `γ_ext := fun t ↦ γ (|t| + 1) t`. For every `a : ℝ`, `γ` agrees with `γ a` on `Ioo (-a) a`. This
+  will help us show that `γ` is a global integral curve. -/
+lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
     EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
@@ -605,6 +608,8 @@ lemma integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn [I.Boundaryless] [T2Spa
     · exact not_lt.mp hlt
     · exact ht'
 
+/-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, then there exists
+  a global integral curve. -/
 lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [T2Space M]
     (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) :
@@ -632,6 +637,31 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [I.Boundaryless] [
     exact ⟨γ, h1, h2.isIntegralCurveOn _⟩
   · apply exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv
 
+lemma piecewise_eqOn_symm [I.Boundaryless]
+    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
+    (hγ' : IsIntegralCurveOn γ' v (Ioo a' b'))
+    (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
+    EqOn (piecewise (Ioo a b) γ γ') γ' (Ioo a' b') := by
+  intros t ht
+  by_cases hle : t ≤ a
+  · rw [piecewise, if_neg]
+    rw [mem_Ioo, not_and_or, not_lt]
+    exact Or.inl hle
+  · rw [not_le] at hle
+    by_cases hle' : b ≤ t
+    · rw [piecewise, if_neg]
+      rw [mem_Ioo, not_and_or, not_lt (b := b)]
+      exact Or.inr hle'
+    · rw [not_le] at hle'
+      rw [piecewise, if_pos ⟨hle, hle'⟩]
+      apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
+        (hγ.mono (Ioo_subset_Ioo (le_max_left ..) (min_le_left ..)))
+        (hγ'.mono (Ioo_subset_Ioo (le_max_right ..) (min_le_right ..))) h
+        ⟨max_lt hle ht.1, lt_min hle' ht.2⟩
+      rw [← sup_eq_max, ← inf_eq_min, ← Ioo_inter_Ioo]
+      exact ht₀
+
 /-- The extension of an integral curve by another integral curve is an integral curve.
 
   If two integral curves are defined on overlapping open intervals, and they agree at a point in
@@ -653,94 +683,19 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
   -- * `t = a`: agrees with `γ'` propositionally by uniqueness
   -- * `t = b`: agrees with `γ'` propositionally by uniqueness
   by_cases hmem : t ∈ Ioo a b
-  · -- case `a < t < b`
+  · -- for `a < t < b` the piecewise function is equal to `γ`
     rw [piecewise, if_pos hmem]
     apply (hγ t hmem).congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
-    refine ⟨Ioo a b, Ioo_mem_nhds hmem.1 hmem.2, ?_⟩
+    refine ⟨Ioo a b, isOpen_Ioo.mem_nhds hmem, ?_⟩
     intros t' ht'
     rw [piecewise, if_pos ht']
-  · -- `t ∉ Ioo a b`
+  · rw [mem_union, or_iff_not_imp_left] at ht
+    have hmem' := ht hmem
     rw [piecewise, if_neg hmem]
-    rw [mem_union] at ht
-    have hmem' := Classical.or_iff_not_imp_left.mp ht hmem
     apply (hγ' t hmem').congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
-    rw [mem_Ioo, not_and, not_lt] at hmem
-    by_cases hlt : a < t
-    · by_cases hb : t = b
-      · -- case `t = b`
-        refine ⟨Ioo (max a a') b', Ioo_mem_nhds (max_lt hlt hmem'.1) hmem'.2, ?_⟩
-        have : Ioo (max a a') b ∪ Ico b b' = Ioo (max a a') b' := by
-          apply Ioo_union_Ico_eq_Ioo
-          · rw [max_lt_iff, ← hb]
-            exact ⟨hlt, hmem'.1⟩
-          · rw [← hb]
-            exact le_of_lt hmem'.2
-        rw [← this]
-        apply EqOn.union
-        · have heqon : EqOn γ (piecewise (Ioo a b) γ γ') (Ioo (max a a') b) := by
-            intros t' ht'
-            rw [piecewise, if_pos]
-            refine ⟨(max_lt_iff.mp ht'.1).1, ht'.2⟩
-          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff _ _ hv
-          · apply IsIntegralCurveOn.congr_of_eqOn isOpen_Ioo (γ := γ) _ heqon
-            apply hγ.mono
-            exact Ioo_subset_Ioo (le_max_left _ _) le_rfl
-          · apply hγ'.mono
-            apply Ioo_subset_Ioo (le_max_right _ _)
-            rw [← hb]
-            exact le_of_lt hmem'.2
-          · rw [piecewise, if_pos ht₀.1]
-            exact h
-          · exact ⟨max_lt ht₀.1.1 ht₀.2.1, ht₀.1.2⟩
-          · intros
-            exact ModelWithCorners.isInteriorPoint
-        · intros t' ht'
-          rw [piecewise, if_neg]
-          exact not_mem_Ioo_of_ge ht'.1
-      · -- case `b < t < b'`
-        refine ⟨Ioo b b', Ioo_mem_nhds (lt_of_le_of_ne (hmem hlt) (Ne.symm hb)) hmem'.2, ?_⟩
-        intros t' ht'
-        have : t' ∉ Ioo a b := not_mem_Ioo_of_ge (le_of_lt ht'.1)
-        rw [piecewise, if_neg this]
-    · by_cases ha : t = a
-      · -- case `t = a`
-        refine ⟨Ioo a' (min b b'),
-          Ioo_mem_nhds hmem'.1 (lt_min (ha ▸ lt_trans ht₀.1.1 ht₀.1.2) hmem'.2), ?_⟩
-        have : Ioc a' a ∪ Ioo a (min b b') = Ioo a' (min b b') := by
-          apply Ioc_union_Ioo_eq_Ioo
-          · rw [← ha]
-            exact le_of_lt hmem'.1
-          · rw [lt_min_iff]
-            exact ⟨lt_trans ht₀.1.1 ht₀.1.2, ha ▸ hmem'.2⟩
-        rw [← this]
-        apply EqOn.union
-        · intros t' ht'
-          rw [piecewise, if_neg]
-          exact not_mem_Ioo_of_le ht'.2
-        · have heqon : EqOn γ (piecewise (Ioo a b) γ γ') (Ioo a (min b b')) := by
-            intros t' ht'
-            rw [piecewise, if_pos]
-            exact ⟨ht'.1, (lt_min_iff.mp ht'.2).1⟩
-          apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff _ _ hv
-          · apply IsIntegralCurveOn.congr_of_eqOn isOpen_Ioo (γ := γ) _ heqon
-            apply hγ.mono
-            exact Ioo_subset_Ioo le_rfl (min_le_left _ _)
-          · apply hγ'.mono
-            apply Ioo_subset_Ioo _ (min_le_right _ _)
-            rw [← ha]
-            exact le_of_lt hmem'.1
-          · rw [piecewise, if_pos ht₀.1]
-            exact h
-          · exact ⟨ht₀.1.1, lt_min ht₀.1.2 ht₀.2.2⟩
-          · intros
-            exact ModelWithCorners.isInteriorPoint
-      · -- case `a' < t < a`
-        refine ⟨Ioo a' a, Ioo_mem_nhds hmem'.1 (lt_of_le_of_ne (not_lt.mp hlt) ha), ?_⟩
-        intros t' ht'
-        have : t' ∉ Ioo a b := not_mem_Ioo_of_le (le_of_lt ht'.2)
-        rw [piecewise, if_neg this]
+    refine ⟨Ioo a' b', isOpen_Ioo.mem_nhds hmem', piecewise_eqOn_symm hv hγ hγ' ht₀ h⟩
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
   least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral
