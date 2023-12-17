@@ -348,6 +348,9 @@ structure StronglyConvergesToInDegree (n : s.σ) (X : C) where
 namespace StronglyConvergesToInDegree
 
 variable {E s}
+
+section
+
 variable {n : s.σ} {X : C} (h : E.StronglyConvergesToInDegree s n X)
 
 def filtration : WithBot (s.α n) ⥤ C := h.filtration' ⋙ MonoOver.forget X ⋙ Over.forget X
@@ -589,10 +592,32 @@ lemma isIso_filtrationι_iff (i : WithBot (s.α n)) :
     · intro
       exact h.isIso_filtrationι_of_GE _ _ hij hj
 
+end
+
+section
+
+variable {E E' : SpectralSequence C c r₀}
+  {n : s.σ} {X X' : C} (h : E.StronglyConvergesToInDegree s n X)
+  (h' : E'.StronglyConvergesToInDegree s n X')
+  (f : E ⟶ E')
+
+structure Hom where
+  φ : X ⟶ X'
+  τ : h.filtration ⟶ h'.filtration
+  commι (i : WithBot (s.α n)) :
+    h.filtrationι i ≫ φ = τ.app i ≫ h'.filtrationι i
+  commπ (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+    h.π i pq hpq ≫ Hom.mapPageInfinity f pq =
+      τ.app i ≫ h'.π i pq hpq
+
+-- TODO :
+-- * show IsIso (Hom.mapPageInfinity f ...) → IsIso φ
+-- * show IsIso f.hom r → IsIso f.hom r' if r ≤ r',  and then
+--             also IsIso (Hom.mapPageInfinity f ...)
+end
+
 end StronglyConvergesToInDegree
 
 end SpectralSequence
 
 end CategoryTheory
-
-#lint

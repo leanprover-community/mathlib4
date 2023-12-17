@@ -34,6 +34,12 @@ lemma le_of_hasPage (r : ℤ) [h : E.HasPage r] : r₀ ≤ r := h.le
 lemma hasPage_of_LE (r r' : ℤ) (le : r ≤ r') [E.HasPage r] : E.HasPage r' where
   le := by linarith [E.le_of_hasPage r]
 
+instance (r r' : ℤ) [E.HasPage r] : E.HasPage (max r r') :=
+    E.hasPage_of_LE r _ (le_max_left _ _)
+
+instance (r r' : ℤ) [E.HasPage r'] : E.HasPage (max r r') :=
+    E.hasPage_of_LE r' _ (le_max_right _ _)
+
 instance (r : ℤ) [E.HasPage r] (k : ℕ) : E.HasPage (r + k) :=
   E.hasPage_of_LE r (r + k) (by linarith)
 

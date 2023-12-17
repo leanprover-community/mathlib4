@@ -152,6 +152,18 @@ variable [E.HasEdgeMonoAtFrom pq r]
 
 lemma LE_of_hasEdgeMonoAtFrom : E.rToMin pq ≤ r := by apply HasEdgeMonoAtFrom.le
 
+lemma hasEdgeMonoAtFrom_of_GE (r' : ℤ) (_ : r ≤ r') :
+    E.HasEdgeMonoAtFrom pq r' where
+  le := by linarith [E.LE_of_hasEdgeMonoAtFrom pq r]
+
+instance (r' : ℤ) :
+    E.HasEdgeMonoAtFrom pq (max r r') :=
+  E.hasEdgeMonoAtFrom_of_GE pq r _ (le_max_left _ _)
+
+instance (r' : ℤ) :
+    E.HasEdgeMonoAtFrom pq (max r' r) :=
+  E.hasEdgeMonoAtFrom_of_GE pq r _ (le_max_right _ _)
+
 instance [E.HasPage r] : E.HasEdgeMonoAt pq r where
   zero pq' := E.d_to_eq_zero r pq' pq (E.LE_of_hasEdgeMonoAtFrom pq r)
 
@@ -279,6 +291,18 @@ instance : E.HasEdgeEpiAtFrom pq (E.rMin pq) where
 variable [E.HasEdgeEpiAtFrom pq r]
 
 lemma LE_of_hasEdgeEpiAtFrom : E.rFromMin pq ≤ r := by apply HasEdgeEpiAtFrom.le
+
+lemma hasEdgeEpiAtFrom_of_GE (r' : ℤ) (_ : r ≤ r') :
+    E.HasEdgeEpiAtFrom pq r' where
+  le := by linarith [E.LE_of_hasEdgeEpiAtFrom pq r]
+
+instance (r' : ℤ) :
+    E.HasEdgeEpiAtFrom pq (max r r') :=
+  E.hasEdgeEpiAtFrom_of_GE pq r _ (le_max_left _ _)
+
+instance (r' : ℤ) :
+    E.HasEdgeEpiAtFrom pq (max r' r) :=
+  E.hasEdgeEpiAtFrom_of_GE pq r _ (le_max_right _ _)
 
 instance [E.HasPage r] : E.HasEdgeEpiAt pq r where
   zero pq' := E.d_from_eq_zero r pq pq' (E.LE_of_hasEdgeEpiAtFrom pq r)
@@ -575,6 +599,74 @@ lemma edgeEpiSteps_edgeEpi (r r' : ℤ) (h : r ≤ r') [E.HasPage r] [E.HasPage 
       edgeIsoSteps_inv, edgeMonoSteps_edgeEpiSteps_assoc, edgeMonoSteps_comp_assoc]
 
 end
+
+namespace Hom
+
+variable {E}
+variable {E' : SpectralSequence C c r₀} (f : E ⟶ E')
+
+noncomputable def mapPageInfinity (pq : ι) :
+    E.pageInfinity pq ⟶ E'.pageInfinity pq := by
+  by_cases E.HasPageInfinityAt pq
+  · by_cases E'.HasPageInfinityAt pq
+    · exact (E.pageInfinityIso pq _).hom ≫ (f.hom (max (E.rMin pq) (E'.rMin pq))).f pq ≫
+        (E'.pageInfinityIso pq _).inv
+    · exact 0
+  · exact 0
+
+-- TODO: naturality of edgeMonoStep(s)
+
+@[reassoc]
+lemma edgeMonoStep_naturality (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r')
+    [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r]
+    [E'.HasPage r] [E'.HasPage r'] [E'.HasEdgeMonoAt pq r] :
+    E.edgeMonoStep pq r r' hrr' ≫ (f.hom r).f pq =
+      (f.hom r').f pq ≫ E'.edgeMonoStep pq r r' hrr' := by
+  rw [← cancel_epi (E.iso r r' hrr' pq).hom, iso_hom_comp_edgeMonoStep_assoc,
+    ← cancel_epi ((E.page r).isoHomologyπ _ pq rfl (by simp)).hom,
+    HomologicalComplex.isoHomologyπ_hom, HomologicalComplex.isoHomologyπ_hom_inv_id_assoc,
+    ← Hom.comm_assoc f r r' hrr' pq, iso_hom_comp_edgeMonoStep,
+    HomologicalComplex.homologyπ_naturality_assoc,
+    HomologicalComplex.isoHomologyπ_hom_inv_id_assoc, HomologicalComplex.cyclesMap_i]
+
+@[reassoc]
+lemma edgeMonoSteps_naturality (pq : ι)
+    (r r' : ℤ) (hr : r ≤ r') [E.HasPage r] [E.HasPage r'] [E'.HasPage r] [E'.HasPage r']
+    [E.HasPageInfinityAt pq] [E'.HasPageInfinityAt pq]
+    [E.HasEdgeMonoAtFrom pq r] [E'.HasEdgeMonoAtFrom pq r] :
+    E.edgeMonoSteps pq r r' hr ≫ (f.hom r).f pq =
+      (f.hom r').f pq ≫ E'.edgeMonoSteps pq r r' hr := by
+  obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hr
+  revert r'
+  induction' k with k hk
+  · intro r' hrr' _ _ hr'
+    obtain rfl : r = r' := by simp [hr']
+    simp
+  · intro r' hrr' _ _ hr'
+    simp only [Nat.cast_succ, ← add_assoc] at hr'
+    rw [E.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r (r + k) r'
+      (by linarith) hr'.symm, assoc, hk (r + k) (by linarith) rfl,
+      edgeMonoStep_naturality_assoc,
+      E'.edgeMonoSteps_eq_edgeMonoStep_comp_edgeMonoSteps pq r (r + k) r'
+        (by linarith) hr'.symm]
+
+lemma mapPageInfinity_eq (pq : ι) (r : ℤ)
+    [E.HasPageInfinityAt pq] [E.HasPage r] [E'.HasPageInfinityAt pq] [E'.HasPage r]
+    [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r]
+    [E'.HasEdgeMonoAtFrom pq r] [E'.HasEdgeEpiAtFrom pq r] :
+    mapPageInfinity f pq =
+      (E.pageInfinityIso pq r).hom ≫ (f.hom r).f pq ≫ (E'.pageInfinityIso pq r).inv := by
+  set r' := max (E.rMin pq) (E'.rMin pq)
+  have hr : r' ≤ r := max_le
+    (max_le (E.LE_of_hasEdgeMonoAtFrom pq r) (E.LE_of_hasEdgeEpiAtFrom pq r))
+    (max_le (E'.LE_of_hasEdgeMonoAtFrom pq r) (E'.LE_of_hasEdgeEpiAtFrom pq r))
+  dsimp [mapPageInfinity]
+  rw [dif_pos (by infer_instance), dif_pos (by infer_instance),
+    ← E.pageInfinityIso_hom_edgeEpiSteps pq r' r hr,
+    ← E'.edgeMonoSteps_pageInfinityIso_inv pq r' r hr, assoc,
+    ← edgeMonoSteps_naturality_assoc, edgeEpiSteps_edgeMonoSteps_assoc]
+
+end Hom
 
 end SpectralSequence
 
