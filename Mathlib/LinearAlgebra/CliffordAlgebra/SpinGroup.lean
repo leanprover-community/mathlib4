@@ -29,9 +29,9 @@ The definition of the Lipschitz group `{𝑥 ∈ 𝐶𝑙(𝑉,𝑞) │ 𝑥 �
 • Fulton, W. and Harris, J., 2004. Representation theory. New York: Springer, p.chapter 20.
 • https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
 But they presumably form a group only in finite dimensions. So we define `lipschitz` with closure of
-all the elements in the form of `ι Q m`, and we show this definition is at least as large as the
-other definition (See `mem_lipschitz_conj_act_le` and `mem_lipschitz_involute_le`). The reverse
-statement presumably being true only in finite dimensions.
+all the invertible elements in the form of `ι Q m`, and we show this definition is at least as large
+as the other definition (See `mem_lipschitz_conj_act_le` and `mem_lipschitz_involute_le`).
+The reverse statement presumably being true only in finite dimensions.
 
 ## TODO
 
@@ -72,10 +72,10 @@ def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] [Invertible (2 : R)] 
 
 -- TODO: end part of #9076 that will be moved to `LinearAlgebra.CliffordAlgebra.Inversion`
 
-/-- `lipschitz` is the subgroup closure of all the elements in the form of `ι Q m` where `ι`
-is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
+/-- `lipschitz` is the subgroup closure of all the invertible elements in the form of `ι Q m`
+where `ι` is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
 def lipschitz (Q : QuadraticForm R M) :=
-  Subgroup.closure (Units.val ⁻¹' Set.range (ι Q) : Set (CliffordAlgebra Q)ˣ)
+  Subgroup.closure ((↑) ⁻¹' Set.range (ι Q) : Set (CliffordAlgebra Q)ˣ)
 #align lipschitz lipschitz
 
 set_option synthInstance.maxHeartbeats 25000 in
