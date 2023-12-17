@@ -121,7 +121,7 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
       mul_inv_rev] at ha
     subst hb
     have hb : ↑x * (↑y * (ι Q b) * ↑y⁻¹) * ↑x⁻¹ = m := by
-      simp [← ha, ConjAct.toConjAct_mul, ConjAct.units_smul_def, mul_assoc]
+      simp only [mul_assoc, ← ha, map_mul, ConjAct.ofConjAct_toConjAct, Units.val_mul, mul_inv_rev]
     have hy2 : ↑y * (ι Q) b * ↑y⁻¹ ∈ ConjAct.toConjAct y • LinearMap.range (ι Q) := by
       simp only [HSMul.hSMul, SMul.smul, exists_exists_eq_and, exists_apply_eq_apply,
         Submodule.mem_map, LinearMap.mem_range, DistribMulAction.toLinearMap_apply,
