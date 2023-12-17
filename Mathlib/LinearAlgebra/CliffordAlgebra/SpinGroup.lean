@@ -64,9 +64,9 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
   unfold lipschitz at hx
   apply Subgroup.closure_induction'' hx
   · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
-    have := x.invertible
-    have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι Q a
+    letI := x.invertible
+    letI : Invertible (ι Q a) := by rwa [ha]
+    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range]
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
                 ConjAct.ofConjAct_toConjAct, SetLike.mem_coe] at hz
@@ -75,9 +75,9 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
     rw [ι_mul_ι_mul_invOf_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
   · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
-    have := x.invertible
-    have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι Q a
+    letI := x.invertible
+    letI : Invertible (ι Q a) := by rwa [ha]
+    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range]
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
       ConjAct.ofConjAct_toConjAct, ConjAct.toConjAct_inv, map_inv, inv_inv] at hz
@@ -121,9 +121,9 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
   unfold lipschitz at hx
   apply Subgroup.closure_induction'' hx
   · rintro x ⟨a, ha⟩ b
-    have := x.invertible
-    have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι Q a
+    letI := x.invertible
+    letI : Invertible (ι Q a) := by rwa [ha]
+    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range, ← invOf_units x]
     simp_rw [← ha, involute_ι]
     refine'
@@ -131,11 +131,11 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
         simp only [map_neg, neg_mul, ι_mul_ι_mul_invOf_ι Q a b]⟩
     done
   · rintro x ⟨a, ha⟩ b
-    have := x.invertible
-    have : Invertible (ι Q a) := by rwa [ha]
-    have : Invertible (Q a) := invertibleOfInvertibleι Q a
-    have := invertibleNeg (ι Q a)
-    have := Invertible.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q) (ι Q a)
+    letI := x.invertible
+    letI : Invertible (ι Q a) := by rwa [ha]
+    letI : Invertible (Q a) := invertibleOfInvertibleι Q a
+    letI := invertibleNeg (ι Q a)
+    letI := Invertible.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q) (ι Q a)
     rw [LinearMap.mem_range, ← invOf_units x, inv_inv]
     simp_rw [← ha, map_invOf, involute_ι, invOf_neg]
     refine'
