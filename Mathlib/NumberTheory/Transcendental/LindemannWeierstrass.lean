@@ -287,7 +287,7 @@ instance K'.isSplittingField : IsSplittingField ℚ (K' p) p :=
 set_option linter.uppercaseLean3 false in
 #align aux.K'.is_splitting_field Aux.K'.isSplittingField
 
-abbrev K : Type* :=
+abbrev K : Type _ :=
   p.SplittingField
 set_option linter.uppercaseLean3 false in
 #align aux.K Aux.K
@@ -377,12 +377,12 @@ abbrev K' : IntermediateField ℚ ℂ :=
 set_option linter.uppercaseLean3 false in
 #align K' K'
 
-abbrev K : Type* :=
+abbrev K : Type _ :=
   (Poly s).SplittingField
 set_option linter.uppercaseLean3 false in
 #align K K
 
-abbrev Gal : Type* :=
+abbrev Gal : Type _ :=
   (Poly s).Gal
 set_option linter.uppercaseLean3 false in
 #align Gal Gal
@@ -1030,7 +1030,7 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
     ((fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·),
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum)]
   refine' sum_congr rfl fun c _hc => _
-  have : c.minpoly.aroots ℂ = (c.minpoly.aroots (K s)).map (algebraMap (K s) ℂ) := by
+  have : c.minpoly.aroots ℂ = (c.minpoly.aroots (K (range u v))).map (algebraMap (K (range u v)) ℂ) := by
     change roots _ = _
     rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K (range u v)) ℂ]
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly

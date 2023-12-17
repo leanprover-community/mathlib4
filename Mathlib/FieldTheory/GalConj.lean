@@ -138,11 +138,16 @@ theorem zero_def : (0 : GalConjClasses F E) = mk F 0 :=
   rfl
 #align gal_conj_classes.zero_def GalConjClasses.zero_def
 
+@[elab_as_elim]
+lemma ind {motive : GalConjClasses F E → Prop} (h : ∀ x : E, motive (mk F x))
+    (c : GalConjClasses F E) : motive c :=
+  Quotient.ind h c
+
 variable {F}
 
-noncomputable nonrec def out (c : GalConjClasses F E) : E :=
+noncomputable def out (c : GalConjClasses F E) : E :=
   letI := IsGalConj.setoid F E
-  c.out
+  Quotient.out c
 #align gal_conj_classes.out GalConjClasses.out
 
 @[simp]
@@ -278,42 +283,31 @@ theorem separable_minpoly (c : GalConjClasses F E) : Separable (minpoly c) := by
   rw [← c.out_eq, minpoly_mk]; exact IsSeparable.separable F c.out
 #align gal_conj_classes.minpoly.separable GalConjClasses.separable_minpoly
 
--- Porting note: added
-lemma aux {a b : F[X]} (h : a = b) :
-    HEq
-      ((h ▸ AlgEquiv.refl) : AdjoinRoot a ≃ₐ[F] AdjoinRoot b)
-      (AlgEquiv.refl : AdjoinRoot a ≃ₐ[F] AdjoinRoot a) := by
-  cases h
-  rfl
-
 theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
     c = d := by
-  let fc := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F c.out)
-  let fd := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F d.out)
-  have : _root_.minpoly F c.out = _root_.minpoly F d.out := by
-    rw [minpoly_out, minpoly_out, h]
-  let congr_f : AdjoinRoot (_root_.minpoly F c.out) ≃ₐ[F] AdjoinRoot (_root_.minpoly F d.out) :=
-    this ▸ AlgEquiv.refl
-  have congr_f_apply : ∀ x, HEq (congr_f x) x := by
-    intro x; change HEq (congr_f x) ((AlgEquiv.refl : _ ≃ₐ[F] _) x)
-    dsimp only
-    refine' FunLike.congr_heq _ HEq.rfl _ _
-    · apply aux this
-    all_goals rw [minpoly_out, minpoly_out, h]
-  let f' := fc.symm.trans (congr_f.trans fd)
+  induction' c using GalConjClasses.ind with x
+  induction' d using GalConjClasses.ind with y
+  let fc := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F x)
+  let fd := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F y)
+  let congr_f {px py : F[X]} (h : px = py) : AdjoinRoot px ≃ₐ[F] AdjoinRoot py :=
+    h ▸ AlgEquiv.refl
+  change _root_.minpoly F x = _root_.minpoly F y at h
+  let f' := fc.symm.trans ((congr_f h).trans fd)
   let f := f'.liftNormal E
-  rw [← out_equiv_out]
+  rw [eq]
   refine' ⟨f.symm, _⟩
   dsimp only [AlgEquiv.smul_def]
   rw [AlgEquiv.symm_apply_eq]
-  conv in out c => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F c.out]
-  conv in out d => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F d.out]
+  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F x]
+  conv in y => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F y]
   rw [AlgEquiv.liftNormal_commutes]
   apply congr_arg
   simp_rw [AlgEquiv.trans_apply, ← fd.symm_apply_eq,
     IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]
-  refine' eq_of_heq (HEq.trans _ (congr_f_apply _).symm)
-  rw [minpoly_out, minpoly_out, h]
+  have {px py} (h : px = py) : AdjoinRoot.root py = congr_f h (AdjoinRoot.root px)
+  · subst h; rfl
+  exact this h
+
 #align gal_conj_classes.minpoly.inj GalConjClasses.minpoly_inj
 
 theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _) := fun _ _ =>
