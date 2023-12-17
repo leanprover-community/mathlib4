@@ -226,10 +226,12 @@ theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0)
     stirlingSeq n ^ 4 / stirlingSeq (2 * n) ^ 2 * (n / (2 * n + 1)) = Wallis.W n := by
   have : 4 = 2 * 2 := by rfl
   rw [stirlingSeq, this, pow_mul, stirlingSeq, Wallis.W_eq_factorial_ratio]
-  simp_rw [div_pow, mul_pow]
+  simp_rw [div_pow, mul_pow, ← exp_nsmul]
   rw [sq_sqrt, sq_sqrt]
   any_goals positivity
-  field_simp; ring
+  simp [← exp_nsmul]
+  field_simp
+  ring_nf
 #align stirling.stirling_seq_pow_four_div_stirling_seq_pow_two_eq Stirling.stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq
 
 /-- Suppose the sequence `stirlingSeq` (defined above) has the limit `a ≠ 0`.
