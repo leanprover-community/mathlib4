@@ -508,6 +508,28 @@ instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
 
 end NonUnitalRing
 
+section CommSemiring
+variable [CommSemiring R]
+variable [CommSemiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
+
+instance instCommSemiring : CommSemiring (A ⊗[R] B) :=
+  { toSemiring := inferInstance
+    mul_comm := fun x y => by
+      refine TensorProduct.induction_on x ?_ ?_ ?_
+      · simp
+      · intro a₁ b₁
+        refine TensorProduct.induction_on y ?_ ?_ ?_
+        · simp
+        · intro a₂ b₂
+          simp [mul_comm]
+        · intro a₂ b₂ ha hb
+          rw [mul_add, add_mul, ha, hb]
+      · intro x₁ x₂ h₁ h₂
+        rw [mul_add, add_mul, h₁, h₂] }
+
+end CommSemiring
+
 section Ring
 variable [CommRing R]
 variable [Ring A] [Algebra R A]
