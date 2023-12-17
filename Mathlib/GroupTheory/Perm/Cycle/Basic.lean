@@ -1110,12 +1110,12 @@ theorem cycleOf_mul_of_apply_right_eq_self (h : Commute f g) (x : α) (hx : g x 
   by_cases hxy : (f * g).SameCycle x y
   · obtain ⟨z, rfl⟩ := hxy
     rw [cycleOf_apply_apply_zpow_self]
-    simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx, -zpow_mod_card]
+    simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
   · rw [cycleOf_apply_of_not_sameCycle hxy, cycleOf_apply_of_not_sameCycle]
     contrapose! hxy
     obtain ⟨z, rfl⟩ := hxy
     refine' ⟨z, _⟩
-    simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx, -zpow_mod_card]
+    simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
 #align equiv.perm.cycle_of_mul_of_apply_right_eq_self Equiv.Perm.cycleOf_mul_of_apply_right_eq_self
 
 theorem Disjoint.cycleOf_mul_distrib (h : f.Disjoint g) (x : α) :
