@@ -167,19 +167,16 @@ theorem gradedComm_algebraMap (r : R) :
 
 end gradedComm
 
+open TensorProduct (assoc map) in
 /-- The multiplication operation for tensor products of externally `ι`-graded algebras. -/
 noncomputable irreducible_def gradedMul :
-    letI AB := (DirectSum _ 𝒜) ⊗[R] (DirectSum _ ℬ)
+    letI AB := DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ
     letI : Module R AB := TensorProduct.leftModule
     AB →ₗ[R] AB →ₗ[R] AB := by
   refine TensorProduct.curry ?_
-  refine TensorProduct.map (LinearMap.mul' R (⨁ i, 𝒜 i))  (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ ?_
-  refine (TensorProduct.assoc R _ _ _).symm.toLinearMap
-    ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap
-  refine TensorProduct.map LinearMap.id ?_
-  refine (TensorProduct.assoc R _ _ _).toLinearMap
-    ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
-  refine TensorProduct.map ?_ LinearMap.id
+  refine map (LinearMap.mul' R (⨁ i, 𝒜 i)) (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ ?_
+  refine (assoc R _ _ _).symm.toLinearMap ∘ₗ .lTensor _ ?_ ∘ₗ (assoc R _ _ _).toLinearMap
+  refine (assoc R _ _ _).toLinearMap ∘ₗ .rTensor _ ?_ ∘ₗ (assoc R _ _ _).symm.toLinearMap
   exact (gradedComm _ _ _).toLinearMap
 
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
@@ -188,7 +185,8 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
   dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
-    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul]
+    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
+    LinearMap.lTensor_tmul]
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, zsmul_eq_smul_cast R, zsmul_eq_smul_cast R]
