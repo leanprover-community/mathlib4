@@ -407,6 +407,12 @@ theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoo
   simp only [iff_def, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one]
 #align is_primitive_root.coe_units_iff IsPrimitiveRoot.coe_units_iff
 
+lemma isUnit_unit {ζ : M} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
+    IsPrimitiveRoot (hζ.isUnit hn).unit n := coe_units_iff.mp hζ
+
+lemma isUnit_unit' {ζ : G} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
+    IsPrimitiveRoot (hζ.isUnit hn).unit' n := coe_units_iff.mp hζ
+
 -- Porting note `variable` above already contains `(h : IsPrimitiveRoot ζ k)`
 theorem pow_of_coprime (i : ℕ) (hi : i.Coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : k = 0
@@ -753,6 +759,40 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     _ = Fintype.card (ZMod k) := (ZMod.card k).symm
     _ = Fintype.card (Subgroup.zpowers ζ) := Fintype.card_congr h.zmodEquivZPowers.toEquiv
 #align is_primitive_root.zpowers_eq IsPrimitiveRoot.zpowers_eq
+
+lemma Units.map_injective {M N} [Monoid M] [Monoid N] {f : M →* N} (hf : Function.Injective f) :
+    Function.Injective (Units.map f) := fun _ _ e => Units.ext (hf (congr_arg Units.val e))
+
+lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {ζ : R} {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
+    (rootsOfUnity n R).map (Units.map f) = rootsOfUnity n S := by
+  letI : CommMonoid Sˣ := inferInstance
+  replace hζ := hζ.isUnit_unit n.2
+  rw [← hζ.zpowers_eq,
+    ← (hζ.map_of_injective (Units.map_injective (f := (f : R →* S)) hf)).zpowers_eq,
+    MonoidHom.map_zpowers]
+
+/-- If `R` contains a `n`-th primitive root, and `S/R` is a ring extension,
+then the `n`-th roots of unity in `R` and `S` are isomorphic.
+Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
+noncomputable
+def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
+    (rootsOfUnity n R) ≃* rootsOfUnity n S :=
+  (Subgroup.equivMapOfInjective _ _ (Units.map_injective hf)).trans (MulEquiv.subgroupCongr
+    (((mem_primitiveRoots (k := n) n.2).mp hζ.choose_spec).map_rootsOfUnity hf))
+
+lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_apply
+    {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
+    (rootsOfUnityEquivOfPrimitiveRoots hf hζ η : Sˣ) = f (η : Rˣ) := rfl
+
+lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
+    {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
+    {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
+    f ((rootsOfUnityEquivOfPrimitiveRoots hf hζ).symm η : Rˣ) = (η : Sˣ) := by
+  obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η
+  rw [MulEquiv.symm_apply_apply, rootsOfUnityEquivOfPrimitiveRoots_apply]
 
 -- Porting note: rephrased the next few lemmas to avoid `∃ (Prop)`
 theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
