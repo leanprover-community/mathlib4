@@ -355,10 +355,18 @@ theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
   rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
   apply Cardinal.nat_lt_aleph0
 
-theorem LinearIndependent.finite [Module.Finite R V] {b : Set V}
+theorem LinearIndependent.finite [Module.Finite R V] {ι : Type*} {f : ι → V}
+    (h : LinearIndependent R f) : Finite ι :=
+  Cardinal.lt_aleph0_iff_finite.1 <| FiniteDimensional.lt_aleph0_of_linearIndependent h
+
+theorem LinearIndependent.setFinite [Module.Finite R V] {b : Set V}
     (h : LinearIndependent R fun x : b => (x : V)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp (Module.Finite.lt_aleph0_of_linearIndependent h)
-#align linear_independent.finite LinearIndependent.finite
+#align linear_independent.finite LinearIndependent.setFinite
+
+theorem not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [Module.Finite R V]
+    (v : ι → V) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
+#align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
 
 theorem Module.Finite.not_linearIndependent_of_infinite
     {ι : Type w} [inf : Infinite ι] [Module.Finite R V]
