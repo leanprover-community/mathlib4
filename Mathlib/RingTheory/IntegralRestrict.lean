@@ -9,8 +9,12 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
 
+In this file, we assume `A` is an integrally closed domain; `K` is the fraction ring of `A`;
+`L` is a finite (separable) extension of `K`; `B` is the integral closure of `A` in `L`.
+We call this the AKLB setup.
+
 ## Main definition
-- `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an ALKB setup.
+- `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
 
 ## TODO
 Define the restriction of norms and traces.
@@ -23,7 +27,7 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Fi
     [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
     [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-/-- The restriction `Aut(L/K) → Aut(B/A)` in an ALKB setup.
+/-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
 noncomputable
 def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
@@ -97,7 +101,7 @@ lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
   have := IsIntegralClosure.isLocalization A K L B (Algebra.IsIntegral.of_finite _ _).isAlgebraic
   simp [galRestrictHom, Subalgebra.algebraMap_eq]
 
-/-- The restriction `Aut(L/K) → Aut(B/A)` in an ALKB setup. -/
+/-- The restriction `Aut(L/K) → Aut(B/A)` in an AKLB setup. -/
 noncomputable
 def galRestrict : (L ≃ₐ[K] L) ≃* (B ≃ₐ[A] B) :=
   (AlgEquiv.algHomUnitsEquiv K L).symm.trans
