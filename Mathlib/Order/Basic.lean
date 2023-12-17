@@ -691,18 +691,15 @@ lemma ltByCases_gt (h : y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ :
 lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
     ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
 
-@[simp]
 lemma ltByCases_not_lt (h : ¬ x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : ¬ y < x → x = y := fun h' => (le_antisymm (le_of_not_gt h') (le_of_not_gt h))) :
     ltByCases x y h₁ h₂ h₃ = if h' : y < x then h₃ h' else h₂ (p h') := dif_neg h
 
-@[simp]
 lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : ¬ x < y → x = y := fun h' => (le_antisymm (le_of_not_gt h) (le_of_not_gt h'))) :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₂ (p h') :=
     dite_congr rfl (fun _ => rfl) (fun _ => dif_neg h)
 
-@[simp]
 lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : ¬ x < y → y < x := fun h' => h.lt_or_lt.resolve_left h') :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
@@ -733,36 +730,35 @@ lemma ltByCases_congr (x' y' : α) {h₁ : x < y → P} {h₂ : x = y → P} {h�
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order,
 non-dependently. -/
-def switchThree (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ => q) (fun _ => r)
+abbrev ltTrichotomy (x y : α) (p q r : P) := ltByCases x y (fun _ => p) (fun _ => q) (fun _ => r)
 
 variable {p q r : P}
 
 @[simp]
-lemma switchThree_lt (h : x < y) : switchThree x y p q r = p := ltByCases_lt h
+lemma ltTrichotomy_lt (h : x < y) : ltTrichotomy x y p q r = p := ltByCases_lt h
 
 @[simp]
-lemma switchThree_gt (h : y < x) : switchThree x y p q r = r := ltByCases_gt h
+lemma ltTrichotomy_gt (h : y < x) : ltTrichotomy x y p q r = r := ltByCases_gt h
 
 @[simp]
-lemma switchThree_eq (h : x = y) : switchThree x y p q r = q := ltByCases_eq h
+lemma ltTrichotomy_eq (h : x = y) : ltTrichotomy x y p q r = q := ltByCases_eq h
 
-@[simp]
-lemma switchThree_not_lt (h : ¬ x < y) :
-    switchThree x y p q r = if y < x then r else q := ltByCases_not_lt h
+lemma ltTrichotomy_not_lt (h : ¬ x < y) :
+    ltTrichotomy x y p q r = if y < x then r else q := ltByCases_not_lt h
 
-@[simp]
-lemma switchThree_not_gt (h : ¬ y < x) :
-    switchThree x y p q r = if x < y then p else q := ltByCases_not_gt h
+lemma ltTrichotomy_not_gt (h : ¬ y < x) :
+    ltTrichotomy x y p q r = if x < y then p else q := ltByCases_not_gt h
 
-@[simp]
-lemma switchThree_ne (h : x ≠ y) : switchThree x y p q r = if x < y then p else r := ltByCases_ne h
+lemma ltTrichotomy_ne (h : x ≠ y) :
+    ltTrichotomy x y p q r = if x < y then p else r := ltByCases_ne h
 
-lemma switchThree_comm : switchThree x y p q r = switchThree y x r q p := ltByCases_comm
+lemma ltTrichotomy_comm : ltTrichotomy x y p q r = ltTrichotomy y x r q p := ltByCases_comm
 
-lemma switchThree_congr (x' y' : α) {p' q' r' : P} (ltc : (x < y) ↔ (x' < y'))
+lemma ltTrichotomy_congr (x' y' : α) {p' q' r' : P} (ltc : (x < y) ↔ (x' < y'))
     (gtc : (y < x) ↔ (y' < x')) (hh'₁ : x' < y' → p = p')
     (hh'₂ : x' = y' → q = q') (hh'₃ : y' < x' → r = r') :
-    switchThree x y p q r = switchThree x' y' p' q' r' := ltByCases_congr _ _ ltc gtc hh'₁ hh'₂ hh'₃
+    ltTrichotomy x y p q r = ltTrichotomy x' y' p' q' r' :=
+  ltByCases_congr _ _ ltc gtc hh'₁ hh'₂ hh'₃
 
 end ltByCases
 
