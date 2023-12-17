@@ -1215,12 +1215,11 @@ theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
 two arguments that differ on a finset `s` of `ι` of cardinality `n`. It requires a
 linear order on `ι` in order to choose an order isomorphism between `s` and `Fin n`
 and expresses the result using this order isomorphism.-/
-lemma map_sub_finset [LinearOrder ι]
-(f : MultilinearMap R M₁ M₂) (a b v : (i : ι) → (M₁ i)) {s : Finset ι}
-(hs : Finset.card s = n) :
-f (s.piecewise a v) - f (s.piecewise b v) = Finset.sum Finset.univ (fun (i : Fin n) =>
-f (fun j => if h : j ∈ s then (if (s.orderIsoOfFin hs).symm ⟨j, h⟩ < i then a j
-else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v j)) := by
+lemma map_sub_finset [LinearOrder ι] (f : MultilinearMap R M₁ M₂) (a b v : (i : ι) → (M₁ i))
+    {s : Finset ι} (hs : Finset.card s = n) :
+    f (s.piecewise a v) - f (s.piecewise b v) = Finset.sum Finset.univ (fun (i : Fin n) =>
+    f (fun j => if h : j ∈ s then (if (s.orderIsoOfFin hs).symm ⟨j, h⟩ < i then a j
+    else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v j)) := by
   by_cases hn : n = 0
   · have h : IsEmpty (Fin n) := by rw [← Fintype.card_eq_zero_iff, hn]; exact Fintype.card_fin 0
     have he : Finset.univ (α := Fin n) = ∅ := Finset.univ_eq_empty_iff.mpr h
@@ -1278,7 +1277,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
       · have h' : j ≠ s.orderIsoOfFin hs i := by
           by_contra habs
           rw [habs] at h
-          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem, not_true_eq_false] at h
+          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem,
+            not_true_eq_false] at h
         rw [Function.update_noteq h']
         simp only [h, dite_false]
     rw [Finset.sum_congr (Eq.refl Finset.univ) (fun i _ => by rw [heq i]),
@@ -1290,7 +1290,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
     have hd1 : Disjoint (Finset.erase Finset.univ m₂) {m₂} := by
       simp only [Finset.mem_univ, not_true_eq_false, Finset.disjoint_singleton_right,
         Finset.mem_erase, ne_eq, and_true, not_false_eq_true]
-    have hu1 : Finset.univ (α := Fin n) = Finset.disjUnion (Finset.erase Finset.univ m₂) {m₂} hd1:= by
+    have hu1 : Finset.univ (α := Fin n) = Finset.disjUnion (Finset.erase Finset.univ m₂)
+        {m₂} hd1:= by
       simp only [Finset.mem_univ, not_true_eq_false, Finset.disjUnion_eq_union]
       ext i
       simp only [Finset.mem_univ, not_true_eq_false, Finset.mem_union, Finset.mem_erase, ne_eq,
@@ -1299,7 +1300,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
     have hd2 : Disjoint (Finset.erase Finset.univ m₁) {m₁} := by
       simp only [Finset.mem_univ, not_true_eq_false, Finset.disjoint_singleton_right,
         Finset.mem_erase, ne_eq, and_true, not_false_eq_true]
-    have hu2 : Finset.univ (α := Fin n) = Finset.disjUnion (Finset.erase Finset.univ m₁) {m₁} hd2:= by
+    have hu2 : Finset.univ (α := Fin n) = Finset.disjUnion (Finset.erase Finset.univ m₁)
+        {m₁} hd2:= by
       simp only [Finset.mem_univ, not_true_eq_false, Finset.disjUnion_eq_union]
       ext i
       simp only [Finset.mem_univ, not_true_eq_false, Finset.mem_union, Finset.mem_erase, ne_eq,
@@ -1330,12 +1332,14 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
         have h' : j ≠ s.orderIsoOfFin hs m₂ := by
           by_contra habs
           rw [habs] at h
-          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem, not_true_eq_false] at h
+          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem,
+            not_true_eq_false] at h
         rw [Function.update_noteq h']
         simp only [h, dite_false]
     have h2 : (Function.update (fun j => if h : j ∈ s then
         if (OrderIso.symm (Finset.orderIsoOfFin s hs)) ⟨j, h⟩ ≤ m₁ then a j else b j else v j)
-        (((Finset.orderIsoOfFin s hs) m₁)) (b ↑((Finset.orderIsoOfFin s hs) m₁))) = s.piecewise b v := by
+        (((Finset.orderIsoOfFin s hs) m₁)) (b ↑((Finset.orderIsoOfFin s hs) m₁))) =
+        s.piecewise b v := by
       ext j
       by_cases h : j ∈ s
       · simp only [h, Finset.piecewise_eq_of_mem]
@@ -1354,7 +1358,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
       · have h' : j ≠ s.orderIsoOfFin hs m₁ := by
           by_contra habs
           rw [habs] at h
-          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem, not_true_eq_false] at h
+          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem,
+            not_true_eq_false] at h
         rw [Function.update_noteq h']
         simp only [h, dite_false, not_false_eq_true, Finset.piecewise_eq_of_not_mem]
     rw [h1, h2]
@@ -1370,23 +1375,24 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
       exact hi (Fin.eq_of_val_eq h (j := m₂))
     set I : (i : Fin n) → i ∈ Finset.erase Finset.univ m₁ → Fin n :=
       fun i hi => ⟨i.1.pred, lt_trans (Nat.pred_lt (hmem i hi)) i.2⟩
-    have hI : ∀ (i : Fin n) (hi : i ∈ Finset.erase Finset.univ m₁), I i hi ∈ Finset.erase Finset.univ m₂ := by
+    have hI : ∀ (i : Fin n) (hi : i ∈ Finset.erase Finset.univ m₁),
+        I i hi ∈ Finset.erase Finset.univ m₂ := by
       intro i hi
-      simp only [id_eq, eq_mpr_eq_cast, Finset.mem_univ, not_true_eq_false, Finset.mem_erase, ne_eq,
-        Fin.mk.injEq, and_true]
+      simp only [id_eq, eq_mpr_eq_cast, Finset.mem_univ, not_true_eq_false, Finset.mem_erase,
+        ne_eq, Fin.mk.injEq, and_true]
       by_contra h
       apply_fun Nat.succ at h
       rw [hn, Nat.succ_pred (hmem i hi)] at h
       exact ne_of_lt i.2 h
-    have hIinj : ∀ (i j : Fin n) (hi : i ∈ Finset.erase Finset.univ m₁) (hj : j ∈ Finset.erase Finset.univ m₁),
-      I i hi = I j hj → i = j := by
+    have hIinj : ∀ (i j : Fin n) (hi : i ∈ Finset.erase Finset.univ m₁)
+        (hj : j ∈ Finset.erase Finset.univ m₁), I i hi = I j hj → i = j := by
       intro i j hi hj hij
       simp only [id_eq, eq_mpr_eq_cast, Fin.mk.injEq] at hij
       apply_fun Nat.succ at hij
       rw [Nat.succ_pred (hmem i hi), Nat.succ_pred (hmem j hj)] at hij
       exact Fin.eq_of_val_eq hij
-    have hIsurj : ∀ j ∈ Finset.erase Finset.univ m₂, ∃ (i : Fin n) (hi : i ∈ Finset.erase Finset.univ m₁),
-      j = I i hi := by
+    have hIsurj : ∀ j ∈ Finset.erase Finset.univ m₂, ∃ (i : Fin n)
+        (hi : i ∈ Finset.erase Finset.univ m₁), j = I i hi := by
       intro j hj
       have hj' : Nat.succ j.1 < n := by
         conv => rhs; rw [← hn]
@@ -1413,7 +1419,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
         · have h'' : j ≠ s.orderIsoOfFin hs (I i hi) := by
             by_contra habs
             rw [h'] at habs
-            simp only [Finset.coe_orderIsoOfFin_apply, id_eq, eq_mpr_eq_cast, RelEmbedding.inj] at habs
+            simp only [Finset.coe_orderIsoOfFin_apply, id_eq, eq_mpr_eq_cast,
+              RelEmbedding.inj] at habs
             apply_fun fun x => x.1 at habs
             simp only at habs
             exact Nat.pred_ne_self (hmem i hi) (Eq.symm habs)
@@ -1460,7 +1467,8 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
           intro r
           by_contra habs
           rw [habs] at h
-          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem, not_true_eq_false] at h
+          simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem,
+            not_true_eq_false] at h
         rw [Function.update_noteq (h' i), Function.update_noteq (h' (I i hi))]
         simp only [h, dite_false, id_eq, eq_mpr_eq_cast]
     rw [Finset.sum_bij I hI hIeq hIinj hIsurj
@@ -1471,19 +1479,20 @@ else if (s.orderIsoOfFin hs).symm ⟨j, h⟩ = i then a j - b j else b j) else v
     simp only [Finset.mem_univ, not_true_eq_false, Finset.coe_orderIsoOfFin_apply,
       Finset.sum_erase_eq_sub, id_eq, eq_mpr_eq_cast, add_sub_add_left_eq_sub]
 
-/-- This expresses the difference the difference between the values of a multilinear map
+/-- This expresses the difference between the values of a multilinear map
 at two points "close to `x`" in terms of the "derivative" of the multilinear map at `x`
 and of "second-order" terms.-/
 lemma map_sub_total_vs_linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
     (x h h' : (i : ι) → M₁ i) :
     f (x + h) - f (x + h') - f.linearDeriv x (h - h') = Finset.sum
-    (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp inferInstance))
-    (fun (s : Finset ι) => f (s.piecewise h x) - f (s.piecewise h' x)) := by
+    (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
+    inferInstance)) (fun (s : Finset ι) => f (s.piecewise h x) - f (s.piecewise h' x)) := by
   rw [add_comm x h, add_comm x h', MultilinearMap.map_add_univ, MultilinearMap.map_add_univ,
     linearDeriv_apply, ← Finset.sum_sub_distrib, ← (Finset.sum_compl_add_sum
-    (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp inferInstance))),
-    add_comm, ← add_sub, add_right_eq_self]
-  set S := (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp inferInstance))ᶜ
+    (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
+    inferInstance))), add_comm, ← add_sub, add_right_eq_self]
+  set S := (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
+    inferInstance))ᶜ
   have hS : ∀ (s : Finset ι), s ∈ S ↔ s.card ≤ 1 := by
     intro s
     simp only [Set.Finite.toFinset_setOf, Finset.mem_univ, forall_true_left, not_le,
@@ -1494,7 +1503,8 @@ lemma map_sub_total_vs_linearDeriv [DecidableEq ι] [Fintype ι] (f : Multilinea
     intro s
     rw [Finset.mem_erase, hS, Nat.le_one_iff_eq_zero_or_eq_one, Finset.card_eq_zero]
     aesop
-  rw [← (Finset.sum_erase_add _ _ heS), Finset.piecewise_empty, Finset.piecewise_empty, sub_self, add_zero]
+  rw [← (Finset.sum_erase_add _ _ heS), Finset.piecewise_empty, Finset.piecewise_empty,
+    sub_self, add_zero]
   set I : (s : Finset ι) → (s ∈ S.erase ∅) → ι :=
     fun s hs => by rw [hS' s, Finset.card_eq_one] at hs
                    exact Classical.choose hs
