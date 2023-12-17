@@ -74,6 +74,8 @@ instance : OrderTopology ℝ≥0 :=
 instance : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
+instance : ContinuousStar ℝ≥0 where
+  continuous_star := continuous_id
 section coe
 
 variable {α : Type*}
