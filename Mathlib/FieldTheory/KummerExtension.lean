@@ -162,7 +162,7 @@ section AdjoinRoot
 
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
-  letI := Fact.mk H
+  have := Fact.mk H
   letI : Algebra K K[n√a] := inferInstance
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
@@ -231,8 +231,8 @@ def autAdjoinRootXPowSubCEquiv (hn : 0 < n) :
   invFun := AdjoinRootXPowSubCEquivToRootsOfUnity hζ H hn
   left_inv := by
     intro η
-    letI := Fact.mk H
-    letI : IsDomain K[n√a] := inferInstance
+    have := Fact.mk H
+    have : IsDomain K[n√a] := inferInstance
     letI : Algebra K K[n√a] := inferInstance
     apply (rootsOfUnityEquivOfPrimitiveRoots
       (n := ⟨n, hn⟩) (algebraMap K K[n√a]).injective hζ).injective
@@ -248,7 +248,7 @@ def autAdjoinRootXPowSubCEquiv (hn : 0 < n) :
     · exact mul_div_cancel _ (root_X_pow_sub_C_ne_zero' hn h)
   right_inv := by
     intro e
-    letI := Fact.mk H
+    have := Fact.mk H
     letI : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
@@ -267,7 +267,7 @@ lemma autAdjoinRootXPowSubCEquiv_apply (hn : 0 < n) (η) :
 
 lemma autAdjoinRootXPowSubCEquiv_symm_smul (hn : 0 < n) (σ) :
     ((autAdjoinRootXPowSubCEquiv hζ H hn).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
-  letI := Fact.mk H
+  have := Fact.mk H
   simp only [autAdjoinRootXPowSubCEquiv, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
     MulEquiv.symm_mk, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, AdjoinRootXPowSubCEquivToRootsOfUnity,
     algebraMap_eq, Units.smul_def, Algebra.smul_def, rootsOfUnityEquivOfPrimitiveRoots_symm_apply,
@@ -287,10 +287,10 @@ variable {n} {a}
 variable {L : Type*} [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)]
 
 lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
-    letI := Fact.mk H
+    have := Fact.mk H
     letI : Algebra K K[n√a] := inferInstance
     IsSplittingField K K[n√a] (X ^ n - C a) := by
-  letI := Fact.mk H
+  have := Fact.mk H
   letI : Algebra K K[n√a] := inferInstance
   constructor
   · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
@@ -421,12 +421,12 @@ def autEquivZmod {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
 lemma autEquivZmod_symm_apply {ζ : K} (hζ : IsPrimitiveRoot ζ n)
     (α : L) (hα : α ^ n = algebraMap K L a) (m : ℤ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
-  haveI hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
+  have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   rw [← autEquivRootsOfUnity_smul ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ H L hn _ α hα]
   simp [MulEquiv.subgroupCongr_symm_apply, Subgroup.smul_def, Units.smul_def, autEquivZmod]
 
 lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
-  haveI hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
+  have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   isCyclic_of_surjective _
     (autEquivZmod H _ <| (mem_primitiveRoots hn).mp hζ.choose_spec).symm.surjective
 
