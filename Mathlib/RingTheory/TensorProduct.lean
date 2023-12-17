@@ -513,20 +513,22 @@ variable [CommSemiring R]
 variable [CommSemiring A] [Algebra R A]
 variable [CommSemiring B] [Algebra R B]
 
-instance instCommSemiring : CommSemiring (A ⊗[R] B) :=
-  { toSemiring := inferInstance
-    mul_comm := fun x y => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
+instance instCommSemiring : CommSemiring (A ⊗[R] B) where
+  toSemiring := inferInstance
+  mul_comm x y :=
+    refine TensorProduct.induction_on x ?_ ?_ ?_
+    · simp
+    · intro a₁ b₁
+      refine TensorProduct.induction_on y ?_ ?_ ?_
       · simp
-      · intro a₁ b₁
-        refine TensorProduct.induction_on y ?_ ?_ ?_
-        · simp
-        · intro a₂ b₂
-          simp [mul_comm]
-        · intro a₂ b₂ ha hb
-          rw [mul_add, add_mul, ha, hb]
-      · intro x₁ x₂ h₁ h₂
-        rw [mul_add, add_mul, h₁, h₂] }
+      · intro a₂ b₂
+        simp [mul_comm]
+      · intro a₂ b₂ ha hb
+        -- porting note: was `simp` not `rw`
+        rw [mul_add, add_mul, ha, hb]
+    · intro x₁ x₂ h₁ h₂
+      -- porting note: was `simp` not `rw`
+      rw [mul_add, add_mul, h₁, h₂]
 
 end CommSemiring
 
@@ -556,20 +558,7 @@ variable [CommRing B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
-    mul_comm := fun x y => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a₁ b₁
-        refine TensorProduct.induction_on y ?_ ?_ ?_
-        · simp
-        · intro a₂ b₂
-          simp [mul_comm]
-        · intro a₂ b₂ ha hb
-          -- porting note: was `simp` not `rw`
-          rw [mul_add, add_mul, ha, hb]
-      · intro x₁ x₂ h₁ h₂
-        -- porting note: was `simp` not `rw`
-        rw [mul_add, add_mul, h₁, h₂] }
+    mul_comm := mul_comm }
 
 section RightAlgebra
 
