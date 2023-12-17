@@ -27,6 +27,27 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Fi
     [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
     [IsIntegralClosure B A L] [FiniteDimensional K L]
 
+/-- The lift `End(B/A) → End(L/K)` in an ALKB setup.
+This is inverse to the restriction. See `galRestrictHom`. -/
+noncomputable
+def galLift (σ : B →ₐ[A] B) : L →ₐ[K] L :=
+  haveI := (IsFractionRing.injective A K).isDomain
+  haveI := NoZeroSMulDivisors.trans A K L
+  haveI := IsIntegralClosure.isLocalization A K L B (Algebra.IsIntegral.of_finite _ _).isAlgebraic
+  haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
+      IsUnit (((algebraMap B L).comp σ) (y : B)) := by
+    rintro ⟨_, x, hx, rfl⟩
+    simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
+      isUnit_iff_ne_zero, ne_eq, map_eq_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ _),
+      ← IsScalarTower.algebraMap_apply] using nonZeroDivisors.ne_zero hx
+  haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K L) := by
+    apply IsLocalization.ringHom_ext A⁰
+    ext
+    simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
+      IsScalarTower.algebraMap_apply A B L, IsLocalization.lift_eq,
+      RingHom.coe_coe, AlgHom.commutes]
+  { IsLocalization.lift (S := L) H with commutes' := FunLike.congr_fun H_eq }
+
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
 noncomputable
@@ -43,51 +64,18 @@ def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
     simp only [AlgEquiv.symm_apply_apply, AlgHom.coe_codRestrict, AlgHom.coe_comp,
       AlgHom.coe_restrictScalars', IsScalarTower.coe_toAlgHom', Function.comp_apply,
       AlgHom.mul_apply, IsIntegralClosure.algebraMap_equiv, Subalgebra.algebraMap_eq]
-    dsimp
-  invFun σ :=
-    haveI := (IsFractionRing.injective A K).isDomain
-    haveI := NoZeroSMulDivisors.trans A K L
-    haveI := IsIntegralClosure.isLocalization A K L B (Algebra.IsIntegral.of_finite _ _).isAlgebraic
-    haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
-        IsUnit (((algebraMap B L).comp σ) (y : B)) := by
-      rintro ⟨_, x, hx, rfl⟩
-      simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
-        isUnit_iff_ne_zero, ne_eq, map_eq_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ _),
-        ← IsScalarTower.algebraMap_apply] using nonZeroDivisors.ne_zero hx
-    haveI H_eq : (IsLocalization.lift (S := L) H).comp (algebraMap K L) = (algebraMap K L) := by
-      apply IsLocalization.ringHom_ext A⁰
-      ext
-      simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
-        IsScalarTower.algebraMap_apply A B L, IsLocalization.lift_eq,
-        RingHom.coe_coe, AlgHom.commutes]
-    { IsLocalization.lift (S := L) H with commutes' := FunLike.congr_fun H_eq }
-  left_inv := by
+    rfl
+  invFun := galLift A K L B
+  left_inv σ :=
     have := (IsFractionRing.injective A K).isDomain
     have := IsIntegralClosure.isLocalization A K L B (Algebra.IsIntegral.of_finite _ _).isAlgebraic
-    intro σ
-    apply AlgHom.coe_ringHom_injective
-    apply IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
-    ext x
-    simp? [Subalgebra.algebraMap_eq] says
-      simp only [AlgEquiv.toAlgHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.coe_ringHom_mk,
-        RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_coe, Function.comp_apply,
-        IsLocalization.lift_eq, RingHom.coe_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-        IsIntegralClosure.algebraMap_equiv, Subalgebra.algebraMap_eq, Algebra.id.map_eq_id,
-        RingHomCompTriple.comp_eq, Subalgebra.coe_val, AlgHom.coe_codRestrict,
-        AlgHom.coe_restrictScalars', IsScalarTower.coe_toAlgHom']
-  right_inv := by
+    AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
+      <| RingHom.ext fun x ↦ by simp [Subalgebra.algebraMap_eq, galLift]
+  right_inv σ :=
     have := (IsFractionRing.injective A K).isDomain
     have := IsIntegralClosure.isLocalization A K L B (Algebra.IsIntegral.of_finite _ _).isAlgebraic
-    intro σ
-    ext x
-    apply IsIntegralClosure.algebraMap_injective B A L
-    simp? [Subalgebra.algebraMap_eq] says
-      simp only [AlgEquiv.toAlgHom_eq_coe, RingHom.toMonoidHom_eq_coe, AlgHom.coe_comp,
-        AlgHom.coe_coe, Function.comp_apply, IsIntegralClosure.algebraMap_equiv,
-        Subalgebra.algebraMap_eq, Algebra.id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
-        Subalgebra.coe_val, AlgHom.coe_codRestrict, AlgHom.coe_restrictScalars', AlgHom.coe_mk,
-        RingHom.coe_mk, MonoidHom.coe_coe, IsScalarTower.coe_toAlgHom', IsLocalization.lift_eq,
-        RingHom.coe_comp]
+    AlgHom.ext fun x ↦
+      IsIntegralClosure.algebraMap_injective B A L (by simp [Subalgebra.algebraMap_eq, galLift])
 
 @[simp]
 lemma algebraMap_galRestrictHom_apply (σ : L →ₐ[K] L) (x : B) :
@@ -99,7 +87,7 @@ lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
     (galRestrictHom A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) := by
   have := (IsFractionRing.injective A K).isDomain
   have := IsIntegralClosure.isLocalization A K L B (Algebra.IsIntegral.of_finite _ _).isAlgebraic
-  simp [galRestrictHom, Subalgebra.algebraMap_eq]
+  simp [galRestrictHom, galLift, Subalgebra.algebraMap_eq]
 
 /-- The restriction `Aut(L/K) → Aut(B/A)` in an AKLB setup. -/
 noncomputable
