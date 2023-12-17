@@ -41,7 +41,7 @@ it will appear as a `(currently: true)` note next to the option.
 
 The form `#help option id` will show only options that begin with `id`.
 -/
-syntax withPosition("#help " &"option" (colGt ppSpace Parser.rawIdent)?) : command
+syntax withPosition("#help " colGt &"option" (colGt ppSpace Parser.rawIdent)?) : command
 
 private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
