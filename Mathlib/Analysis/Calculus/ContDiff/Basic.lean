@@ -1516,7 +1516,7 @@ end MulProd
 
 /-! ### Scalar multiplication -/
 
-section Smul
+section SMul
 
 -- The scalar multiplication is smooth.
 theorem contDiff_smul : ContDiff 𝕜 n fun p : 𝕜 × F => p.1 • p.2 :=
@@ -1548,7 +1548,7 @@ theorem ContDiffOn.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDif
   (hf x hx).smul (hg x hx)
 #align cont_diff_on.smul ContDiffOn.smul
 
-end Smul
+end SMul
 
 /-! ### Constant scalar multiplication
 
@@ -1559,7 +1559,7 @@ Porting note: TODO: generalize results in this section.
   lemmas.
 -/
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
 
@@ -1608,7 +1608,7 @@ theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
   refine' iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
 
-end ConstSmul
+end ConstSMul
 
 /-! ### Cartesian product of two functions -/
 

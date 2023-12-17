@@ -335,7 +335,8 @@ theorem uniformEquicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α
 theorem equicontinuousAt_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {x₀ : X'} {k : κ} (hk : @EquicontinuousAt _ _ _ (t k) _ F x₀) :
     @EquicontinuousAt _ _ _ (⨅ k, t k) _ F x₀ := by
-  simp [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢
+  simp? [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢ says
+    simp only [@equicontinuousAt_iff_continuousAt _ _ _ _] at hk ⊢
   unfold ContinuousAt at hk ⊢
   rw [nhds_iInf]
   exact tendsto_iInf' k hk

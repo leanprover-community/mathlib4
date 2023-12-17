@@ -61,7 +61,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
-        simp at hx ⊢
+        simp? at hx ⊢ says simp only [not_le, one_mul] at hx ⊢
         exact le_of_lt hx
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,

@@ -2059,6 +2059,7 @@ import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
@@ -2686,6 +2687,7 @@ import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.ElementaryMaps
+import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.Fraisse
