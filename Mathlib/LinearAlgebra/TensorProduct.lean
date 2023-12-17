@@ -1411,7 +1411,7 @@ lemma exists_rep (z : M ⊗[R] N) :
   dsimp only
   split_ifs with h
   · specialize hm h
-    rw [←smul_tmul']
+    rw [← smul_tmul']
     congr 1
     exact hm.symm
   · exact False.elim (h hi)
