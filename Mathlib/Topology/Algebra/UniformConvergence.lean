@@ -50,6 +50,9 @@ uniform convergence, strong dual
 
 -/
 
+set_option autoImplicit true
+
+
 open Filter
 open scoped Topology Pointwise UniformConvergence
 
@@ -133,28 +136,28 @@ instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[�
 -- Porting note: unfortunately `simp` will no longer use `Pi.one_apply` etc.
 -- on `α →ᵤ β` or `α →ᵤ[𝔖] β`, so we restate some of these here. More may be needed later.
 @[to_additive (attr := simp)]
-lemma UniformFun.one_apply [Monoid β] : (1 : α →ᵤ β) x = 1 := rfl
+lemma UniformFun.one_apply [Monoid β] : (1 : α →ᵤ β) x = 1 := Pi.one_apply x
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.one_apply [Monoid β] : (1 : α →ᵤ[𝔖] β) x = 1 := rfl
+lemma UniformOnFun.one_apply [Monoid β] : (1 : α →ᵤ[𝔖] β) x = 1 := Pi.one_apply x
 
 @[to_additive (attr := simp)]
-lemma UniformFun.mul_apply [Monoid β] {f g} : (f * g : α →ᵤ β) x = f x * g x := rfl
+lemma UniformFun.mul_apply [Monoid β] : (f * g : α →ᵤ β) x = f x * g x := Pi.mul_apply f g x
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.mul_apply [Monoid β] {f g}: (f * g : α →ᵤ[𝔖] β) x = f x * g x := rfl
+lemma UniformOnFun.mul_apply [Monoid β] : (f * g : α →ᵤ[𝔖] β) x = f x * g x := Pi.mul_apply f g x
 
 @[to_additive (attr := simp)]
-lemma UniformFun.inv_apply [Group β] {f} : (f : α →ᵤ β)⁻¹ x = (f x)⁻¹ := rfl
+lemma UniformFun.inv_apply [Group β] : (f : α →ᵤ β)⁻¹ x = (f x)⁻¹ := Pi.inv_apply f x
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.inv_apply [Group β] {f} : (f : α →ᵤ[𝔖] β)⁻¹ x = (f x)⁻¹ := rfl
+lemma UniformOnFun.inv_apply [Group β] : (f : α →ᵤ[𝔖] β)⁻¹ x = (f x)⁻¹ := Pi.inv_apply f x
 
 @[to_additive (attr := simp)]
-lemma UniformFun.div_apply [Group β] {f g} : (f / g : α →ᵤ β) x = f x / g x := rfl
+lemma UniformFun.div_apply [Group β] : (f / g : α →ᵤ β) x = f x / g x := Pi.div_apply f g x
 
 @[to_additive (attr := simp)]
-lemma UniformOnFun.div_apply [Group β] {f g} : (f / g : α →ᵤ[𝔖] β) x = f x / g x := rfl
+lemma UniformOnFun.div_apply [Group β] : (f / g : α →ᵤ[𝔖] β) x = f x / g x := Pi.div_apply f g x
 
 end AlgebraicInstances
 
