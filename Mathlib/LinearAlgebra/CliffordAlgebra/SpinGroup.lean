@@ -253,7 +253,7 @@ theorem hMul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : 
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q := by
   rw [mem_iff] at hx ⊢
   refine' ⟨_, unitary.star_mem hx.2⟩
-  rcases hx with ⟨⟨y, hy₁, hy₂⟩, hx₂, hx₃⟩
+  rcases hx with ⟨⟨y, hy₁, hy₂⟩, _hx₂, hx₃⟩
   simp only [Subgroup.coe_toSubmonoid, SetLike.mem_coe] at hy₁
   simp only [Units.coeHom_apply] at hy₂
   simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
@@ -336,11 +336,11 @@ def toUnits : pinGroup Q →* (CliffordAlgebra Q)ˣ
     where
   toFun x := ⟨x, ↑x⁻¹, coe_hMul_star_self x, coe_star_hMul_self x⟩
   map_one' := Units.ext rfl
-  map_mul' x y := Units.ext rfl
+  map_mul' _x _y := Units.ext rfl
 #align pin_group.to_units pinGroup.toUnits
 
 theorem toUnits_injective : Function.Injective (toUnits : pinGroup Q → (CliffordAlgebra Q)ˣ) :=
-  fun x y h => Subtype.ext <| Units.ext_iff.mp h
+  fun _x _y h => Subtype.ext <| Units.ext_iff.mp h
 #align pin_group.to_units_injective pinGroup.toUnits_injective
 
 end pinGroup
@@ -488,11 +488,11 @@ def toUnits : spinGroup Q →* (CliffordAlgebra Q)ˣ
     where
   toFun x := ⟨x, ↑x⁻¹, coe_hMul_star_self x, coe_star_hMul_self x⟩
   map_one' := Units.ext rfl
-  map_mul' x y := Units.ext rfl
+  map_mul' _x _y := Units.ext rfl
 #align spin_group.to_units spinGroup.toUnits
 
 theorem toUnits_injective : Function.Injective (toUnits : spinGroup Q → (CliffordAlgebra Q)ˣ) :=
-  fun x y h => Subtype.ext <| Units.ext_iff.mp h
+  fun _x _y h => Subtype.ext <| Units.ext_iff.mp h
 #align spin_group.to_units_injective spinGroup.toUnits_injective
 
 end spinGroup
