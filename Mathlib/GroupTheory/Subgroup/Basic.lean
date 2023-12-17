@@ -189,8 +189,10 @@ theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
 
 namespace SubgroupClass
 
--- Here we assume H, K, and L are subgroups, but in fact one of them could
--- be allowed to be a submonoid only.
+-- Here we assume H, K, and L are subgroups, but in fact any one of them
+-- could be allowed to be a subsemigroup.
+-- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
+-- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ 
 @[to_additive]
 theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
   refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (· xH) (· xH)⟩
