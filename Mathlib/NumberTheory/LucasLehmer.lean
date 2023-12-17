@@ -95,7 +95,7 @@ def sMod (p : ℕ) : ℕ → ℤ
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
 theorem mersenne_int_pos {p : ℕ} (hp : p ≠ 0) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp.ne'
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
 
 theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 :=
   (mersenne_int_pos hp).ne'
@@ -155,8 +155,8 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
       simp only [ge_iff_le, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos,
         cast_pred, cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
-    · exact sMod_nonneg _ (by positivity)
-    · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
+    · exact sMod_nonneg _ (by positivity) _
+    · exact sMod_lt _ (by positivity) _
   · intro h
     rw [h]
     simp

@@ -1664,14 +1664,13 @@ theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : Is
 
 theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigOWith c l (f ^ n) (g ^ n))
     (hn : n ≠ 0) (hc : c ≤ c' ^ n) (hc' : 0 ≤ c') : IsBigOWith c' l f g :=
-  IsBigOWith.of_bound <|
-    (h.weaken hc).bound.mono fun x hx =>
-      le_of_pow_le_pow_left n (mul_nonneg hc' <| norm_nonneg _) hn.bot_lt <|
-        calc
-          ‖f x‖ ^ n = ‖f x ^ n‖ := (norm_pow _ _).symm
-          _ ≤ c' ^ n * ‖g x ^ n‖ := hx
-          _ ≤ c' ^ n * ‖g x‖ ^ n := by gcongr; exact norm_pow_le' _ hn.bot_lt
-          _ = (c' * ‖g x‖) ^ n := (mul_pow _ _ _).symm
+  IsBigOWith.of_bound <| (h.weaken hc).bound.mono fun x hx ↦
+    le_of_pow_le_pow_left hn (by positivity) <|
+      calc
+        ‖f x‖ ^ n = ‖f x ^ n‖ := (norm_pow _ _).symm
+        _ ≤ c' ^ n * ‖g x ^ n‖ := hx
+        _ ≤ c' ^ n * ‖g x‖ ^ n := by gcongr; exact norm_pow_le' _ hn.bot_lt
+        _ = (c' * ‖g x‖) ^ n := (mul_pow _ _ _).symm
 #align asymptotics.is_O_with.of_pow Asymptotics.IsBigOWith.of_pow
 
 theorem IsBigO.pow {f : α → R} {g : α → 𝕜} (h : f =O[l] g) (n : ℕ) :

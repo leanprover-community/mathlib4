@@ -378,27 +378,27 @@ namespace padicValNat
 
 variable {x y : ℕ}
 
-theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : 0 < n)
+theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
     (hneven : Even n) :
     padicValNat 2 (x ^ n - y ^ n) + 1 =
       padicValNat 2 (x + y) + padicValNat 2 (x - y) + padicValNat 2 n := by
   simp only [← PartENat.natCast_inj, Nat.cast_add]
   iterate 4 rw [padicValNat_def, PartENat.natCast_get]
   · convert Nat.two_pow_sub_pow hxy hx hneven using 2
-  · exact hn
+  · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
   · linarith
-  · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx (@zero_le' _ y _) hn]
+  · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 #align padic_val_nat.pow_two_sub_pow padicValNat.pow_two_sub_pow
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 
-theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : 0 < n) :
+theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
   rw [← PartENat.natCast_inj, Nat.cast_add]
   iterate 3 rw [padicValNat_def, PartENat.natCast_get]
   · exact multiplicity.Nat.pow_sub_pow hp.out hp1 hxy hx n
-  · exact hn
+  · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
   · exact Nat.sub_pos_of_lt (Nat.pow_lt_pow_left hyx hn)
 #align padic_val_nat.pow_sub_pow padicValNat.pow_sub_pow
