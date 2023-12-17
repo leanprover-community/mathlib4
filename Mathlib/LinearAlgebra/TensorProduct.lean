@@ -1397,7 +1397,8 @@ instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M] [DistribMulAc
 
 open BigOperators in
 lemma exists_rep (z : M ⊗[R] N) :
-    ∃ (ι : Type max u_2 u_3) (ms : ι → M) (ns : ι → N) (s : Finset ι), z = ∑ i in s, ms i ⊗ₜ ns i := by
+    ∃ (ι : Type max u_2 u_3) (ms : ι → M) (ns : ι → N) (s : Finset ι),
+      z = ∑ i in s, ms i ⊗ₜ ns i := by
   classical
   have EQ := span_tmul_eq_top R M N
   have mem1 : z ∈ ⊤ := Submodule.mem_top (R := R)

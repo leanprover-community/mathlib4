@@ -258,7 +258,7 @@ noncomputable def homEquiv :
     (LinearMap.ext fun _ ↦ LinearMap.ext fun z ↦ by
       refine z.induction_on ?_ ?_ ?_ <;> aesop)
 
-@[simps]
+@[simps!]
 def cong (e : A ≃ₗ[R] B) : unitRationalCircle A ≃ₗ[R] unitRationalCircle B :=
   LinearEquiv.ofLinear
     { __ := e.symm.toLinearMap.toAddMonoidHom.toIntLinearMap.characterify (AddCircle (1 : ℚ))
