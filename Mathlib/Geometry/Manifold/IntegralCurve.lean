@@ -275,33 +275,34 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     s, hs, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
-  have h : HasDerivAt f
-    ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
-        (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
-      (v ((extChartAt I x₀).symm (f t))))
-    t := (haux t ht).1
+  let xₜ : M := (extChartAt I x₀).symm (f t) -- `xₜ := γ t`
+  have h : HasDerivAt f (x := t) <| fderivWithin ℝ
+      (extChartAt I x₀ ∘ (extChartAt I xₜ).symm)
+      (range I)
+      (extChartAt I xₜ xₜ)
+      (v xₜ) :=
+    (haux t ht).1
   rw [← tangentCoordChange_def] at h
   have hf3 := mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2
   have hf3' := mem_of_mem_of_subset hf3 interior_subset
   have hft1 := mem_preimage.mp <|
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
-  have hft2 := mem_extChartAt_source I ((extChartAt I x₀).symm (f t))
+  have hft2 := mem_extChartAt_source I xₜ
   -- express the derivative of the integral curve in the local chart
   refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
-  show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
-    (v ((extChartAt I x₀).symm (f t))) t
+  show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
   -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
   -- `HasFDerivAt.comp_hasDerivAt` on `h`
-  rw [← tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
-      (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t))) hft2,
+  rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,
     ← tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
   apply HasFDerivAt.comp_hasDerivAt _ _ h
   apply HasFDerivWithinAt.hasFDerivAt (s := range I) _ <|
     mem_nhds_iff.mpr ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..),
       isOpen_interior, hf3⟩
+  dsimp only [xₜ]
   nth_rw 4 [← (extChartAt I x₀).right_inv hf3']
   exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
 
