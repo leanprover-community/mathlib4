@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Order
-import Mathlib.Tactic.Ring
 
 #align_import algebra.monoid_algebra.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
@@ -76,7 +75,7 @@ theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 :=
 #align add_monoid_algebra.zero_div_of AddMonoidAlgebra.zero_divOf
 
 lemma neg_divOf (x : AddMonoidAlgebra k' G) (g : G) : (-x) /ᵒᶠ g = - (x /ᵒᶠ g) :=
-  Finsupp.ext λ g' ↦ by rw [divOf_apply, Finsupp.neg_apply, Finsupp.neg_apply, divOf_apply]
+  Finsupp.ext fun g' ↦ by rw [divOf_apply, Finsupp.neg_apply, Finsupp.neg_apply, divOf_apply]
 
 @[simp]
 theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
@@ -233,12 +232,11 @@ lemma mul_divOf (x y : k[G]) (g : G) :
     ((x %ᵒᶠ g) * (y %ᵒᶠ g)) /ᵒᶠ g := by
   rw [← congr_arg₂ HMul.hMul (divOf_add_modOf x g) (divOf_add_modOf y g), add_mul, mul_add, mul_add,
     add_divOf, add_divOf, add_divOf, mul_assoc, of'_mul_divOf, ← mul_assoc,
-    ← of'_commute (AddCommute.all _) _,
-    add_assoc, add_assoc, add_assoc]
+    ← of'_commute (.all _) _, add_assoc, add_assoc, add_assoc]
   congr 1
   rw [mul_assoc, of'_mul_divOf]
   congr 1
-  rw [(of'_commute (AddCommute.all _) _).symm.left_comm, of'_mul_divOf]
+  rw [(of'_commute (.all _) _).symm.left_comm, of'_mul_divOf]
 
 lemma mul_modOf (x y : k[G]) (g : G) :
     (x * y) %ᵒᶠ g = ((x %ᵒᶠ g) * (y %ᵒᶠ g)) %ᵒᶠ g := by
