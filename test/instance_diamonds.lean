@@ -252,3 +252,27 @@ example : ZMod.commRing 0 = Int.instCommRingInt :=
   rfl
 
 end ZMod
+
+/-! ## Instances involving structures over `ℝ` and `ℂ`
+
+Given a scalar action on `ℝ`, we have an instance which produces the corresponding scalar action on
+`ℂ`. In the other direction, if there is a scalar action of `ℂ` on some type, we can get a
+corresponding action of `ℝ` on that type via `RestrictScalars`.
+
+Obviously, this has the potential to cause diamonds when we can go in both directions. This shows
+that at least some potential diamonds are avoided. -/
+
+section complexToReal
+
+-- the two ways to get `Algebra ℝ ℂ` are definitionally equal
+example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraComplexInstSemiringComplex := rfl
+
+/- The complexification of an `ℝ`-algebra `A` (i.e., `ℂ ⊗[ℝ] A`) is a `ℂ`-algebra. Viewing this
+as an `ℝ`-algebra by restricting scalars agrees with the existing `ℝ`-algebra structure on the
+tensor product. -/
+open Algebra TensorProduct in
+example {A : Type*} [Ring A] [Algebra ℝ A]:
+    (leftAlgebra : Algebra ℂ (ℂ ⊗[ℝ] A)).complexToReal = leftAlgebra :=
+  rfl
+
+end complexToReal

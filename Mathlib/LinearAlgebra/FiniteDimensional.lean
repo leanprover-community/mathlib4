@@ -299,18 +299,18 @@ theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v 
   apply Cardinal.nat_lt_aleph0
 #align finite_dimensional.lt_aleph_0_of_linear_independent FiniteDimensional.lt_aleph0_of_linearIndependent
 
-theorem _root_.LinearIndependent.finite [FiniteDimensional K V] {b : Set V}
+lemma _root_.LinearIndependent.finite {ι : Type*} [FiniteDimensional K V] {f : ι → V}
+    (h : LinearIndependent K f) : Finite ι :=
+  Cardinal.lt_aleph0_iff_finite.1 <| FiniteDimensional.lt_aleph0_of_linearIndependent h
+
+theorem not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [FiniteDimensional K V]
+    (v : ι → V) : ¬LinearIndependent K v := mt LinearIndependent.finite <| @not_finite _ _
+#align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
+
+theorem _root_.LinearIndependent.setFinite [FiniteDimensional K V] {b : Set V}
     (h : LinearIndependent K fun x : b => (x : V)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp (FiniteDimensional.lt_aleph0_of_linearIndependent h)
-#align linear_independent.finite LinearIndependent.finite
-
-theorem not_linearIndependent_of_infinite {ι : Type w} [inf : Infinite ι] [FiniteDimensional K V]
-    (v : ι → V) : ¬LinearIndependent K v := by
-  intro h_lin_indep
-  have : ¬ℵ₀ ≤ #ι := not_le.mpr (lt_aleph0_of_linearIndependent h_lin_indep)
-  have : ℵ₀ ≤ #ι := infinite_iff.mp inf
-  contradiction
-#align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
+#align linear_independent.finite LinearIndependent.setFinite
 
 /-- A finite dimensional space has positive `finrank` iff it has a nonzero element. -/
 theorem finrank_pos_iff_exists_ne_zero [FiniteDimensional K V] : 0 < finrank K V ↔ ∃ x : V, x ≠ 0 :=
