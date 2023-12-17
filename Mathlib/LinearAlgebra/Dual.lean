@@ -62,9 +62,9 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
     `LinearMap.range_dual_map_eq_dualAnnihilator_ker`.
   * `Submodule.dualQuotEquivDualAnnihilator` is the equivalence
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
-  * `Submodule.quotDualCoannihilatorToDual` is the injective linear map
-    `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W` whose flip is also injective.
-    It is an equivalence if `R` is a field and `W` is finite-dimensional.
+  * `Submodule.quotDualCoannihilatorToDual` is the nondegenerate pairing
+    `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
+    It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualConnihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
@@ -79,6 +79,10 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
     subspaces of `Dual K (Dual K V)`.
+  * `Subspace.orderIsoFiniteCodimDim` is the antitone order isomorphism between
+    finite-codimensional subspaces of `V` and finite-dimensional subspaces of `Dual K V`.
+  * `Subspace.orderIsoFiniteDimensional` is the antitone order isomorphism between
+    subspaces of a finite-dimensional vector space `V` and subspaces of its dual.
   * `Subspace.quotDualEquivAnnihilator W` is the equivalence
     `(Dual K V ⧸ W.dualLift.range) ≃ₗ[K] W.dualAnnihilator`, where `W.dualLift.range` is a copy
     of `Dual K W` inside `Dual K V`.
@@ -1375,6 +1379,14 @@ theorem quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
 theorem flip_quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
     Function.Injective W.quotDualCoannihilatorToDual.flip :=
   fun _ _ he ↦ Subtype.ext <| LinearMap.ext fun m ↦ FunLike.congr_fun he ⟦m⟧
+
+open LinearMap in
+theorem quotDualCoannihilatorToDual_nondegenerate (W : Submodule R (Dual R M)) :
+    W.quotDualCoannihilatorToDual.Nondegenerate := by
+  rw [Nondegenerate, separatingLeft_iff_ker_eq_bot, separatingRight_iff_flip_ker_eq_bot]
+  letI : AddCommGroup W := inferInstance
+  simp_rw [ker_eq_bot]
+  exact ⟨W.quotDualCoannihilatorToDual_injective, W.flip_quotDualCoannihilatorToDual_injective⟩
 
 end Submodule
 
