@@ -779,15 +779,23 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 #align mul_equiv.prod_congr MulEquiv.prodCongr
 #align add_equiv.prod_congr AddEquiv.prodCongr
 
-/-- Multiplying by the trivial monoid doesn't change the structure.-/
-@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
+/-- Multiplying by the trivial monoid doesn't change the structure.
+
+  This is the `MulEquiv` version of `Equiv.uniqueProd`.-/
+@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `AddEquiv` version of `Equiv.uniqueProd`."]
 def uniqueProd [Unique N] : N × M ≃* M :=
   { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
 #align mul_equiv.unique_prod MulEquiv.uniqueProd
 #align add_equiv.unique_prod AddEquiv.uniqueProd
 
-/-- Multiplying by the trivial monoid doesn't change the structure.-/
-@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure."]
+/-- Multiplying by the trivial monoid doesn't change the structure.
+
+  This is the `MulEquiv` version of `Equiv.prodUnique`.-/
+@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `AddEquiv` version of `Equiv.prodUnique`."]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 #align mul_equiv.prod_unique MulEquiv.prodUnique

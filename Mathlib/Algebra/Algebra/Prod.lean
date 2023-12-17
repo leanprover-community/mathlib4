@@ -114,7 +114,7 @@ section Unique
 
 /-- Multiplying by the trivial algebra from the left does not change the structure.
 
-This is the `AlgebraEquiv` version of `AddEquiv.uniqueProd`. -/
+This is the `AlgebraEquiv` version of `LinearEquiv.uniqueProd`. See also `RingEquiv.zeroRingProd`.-/
 def AlgebraEquiv.uniqueProd [Unique B] :
     (B × A) ≃ₐ[R] A := by
   refine AlgEquiv.ofLinearEquiv (AddEquiv.uniqueProd.toLinearEquiv ?_) ?_ ?_ <;>
@@ -122,7 +122,7 @@ def AlgebraEquiv.uniqueProd [Unique B] :
 
 /-- Multiplying by the trivial algebra from the right does not change the structure.
 
-This is the `AlgebraEquiv` version of `AddEquiv.prodUnique`. -/
+This is the `AlgebraEquiv` version of `LinearEquiv.prodUnique`. See also `RingEquiv.prodZeroRing`.-/
 def AlgebraEquiv.prodUnique [Unique B] :
     (A × B) ≃ₐ[R] A := by
   refine AlgEquiv.ofLinearEquiv (AddEquiv.prodUnique.toLinearEquiv ?_) ?_ ?_ <;>
