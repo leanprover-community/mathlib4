@@ -14,9 +14,25 @@ namespace Subtype
 
 variable {α β : Type*} {p : α → Prop} [DecidablePred p]
 
-/-- Extend a function on a subtype of `α` to a function on `α`. -/
+/-- Extend a function on a subtype of `α` to a function on `α`.
+This is similar to `Function.extend`, but differs on two main points: it's computable, and
+the function `g`, that maps elements of `α` which are *not* in the subtype,
+is given access to a proof of non-membership of its argument in this definition.
+ -/
 abbrev extendFun (f : Subtype p → β) (g : (a : α) → ¬p a → β) : α → β :=
   Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) g
+
+theorem extend_eq_extendFun (f : Subtype p → β) (g : α → β) :
+    Function.extend Subtype.val f g = extendFun f (fun a _ => g a) := by
+  funext a
+  simp only [Function.extend, Subtype.exists, exists_prop, exists_eq_right, extendFun,
+    Set.piecewiseMem, Set.mem_setOf_eq]
+  split_ifs with h_pa
+  · congr
+    have : ∃ (a' : Subtype p), a'.val = a :=
+      ⟨⟨a, h_pa⟩, rfl⟩
+    rw [← Subtype.val_inj, Classical.choose_spec this]
+  · rfl
 
 variable {f : Subtype p → β} {g : (a : α) → ¬p a → β}
 
