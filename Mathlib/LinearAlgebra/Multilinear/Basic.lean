@@ -263,8 +263,8 @@ def linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
 
 @[simp]
 lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
-    (x y : (i : ι) → M₁ i) : f.linearDeriv x y
-    = Finset.sum Finset.univ (fun (i : ι) => f (Function.update x i (y i))) := by
+    (x y : (i : ι) → M₁ i) :
+    f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
   unfold linearDeriv
   simp only [LinearMap.coeFn_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
     Function.comp_apply, Function.eval, toLinearMap_apply]
