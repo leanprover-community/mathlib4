@@ -218,7 +218,7 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
   · exact le_trans hp'.right (not_le.mp h).le
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
-theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
+theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLE R n := by
   by_cases s_emp : s.Nonempty
   · rcases exists_degree_le_of_mem_span_of_finite s_fin s_emp with ⟨p', _, hp'max⟩
@@ -230,7 +230,7 @@ theorem span_of_finite_le_degreeLE {s : Set R[X]} (s_fin : s.Finite) :
 /-- The span of every finite set of polynomials is contained in a `degreeLT n` for some `n`. -/
 theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLT R n := by
-  rcases span_of_finite_le_degreeLE s_fin with ⟨n, _⟩
+  rcases span_le_degreeLE_of_finite s_fin with ⟨n, _⟩
   exact ⟨n + 1, by rwa [degreeLT_succ_eq_degreeLE]⟩
 
 /-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
@@ -239,7 +239,7 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
   intro s hs contra
-  rcases span_of_finite_le_degreeLE hs with ⟨n,hn⟩
+  rcases span_le_degreeLE_of_finite hs with ⟨n,hn⟩
   have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
     rw [contra] at hn
     exact hn Submodule.mem_top
