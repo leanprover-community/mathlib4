@@ -27,7 +27,7 @@ The results for internally-graded algebras (via `GradedAlgebra`) are elsewhere, 
 
 * `TensorProduct.gradedComm`: the symmetric braiding operator on the tensor product of
   externally-graded rings.
-* `TensorProduct.gradedMul`: the previously describe multiplication on externally-graded rings, as a
+* `TensorProduct.gradedMul`: the previously-described multiplication on externally-graded rings, as a
   bilinear map.
 
 ## Implementation notes
@@ -71,7 +71,6 @@ section gradedComm
 
 local notation "𝒜ℬ" => (fun i : ι × ι => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
 local notation "ℬ𝒜" => (fun i : ι × ι => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
-
 
 /-- Auxliary construction used to build `TensorProduct.gradedComm`.
 
