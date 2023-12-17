@@ -1726,14 +1726,11 @@ theorem map_concat (f : α → β) (a : α) (l : List α) :
   induction l <;> [rfl; simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
 
-@[simp]
-theorem map_id'' (l : List α) : map (fun x => x) l = l :=
-  map_id _
-#align list.map_id'' List.map_id''
+#align list.map_id'' List.map_id'
 
-theorem map_id' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
+theorem map_id'' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
   simp [show f = id from funext h]
-#align list.map_id' List.map_id'
+#align list.map_id' List.map_id''
 
 theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) : l = nil :=
   eq_nil_of_length_eq_zero <| by rw [← length_map l f, h]; rfl
