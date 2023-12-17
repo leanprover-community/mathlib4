@@ -287,7 +287,7 @@ variable {n} {a}
 variable {L : Type*} [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)]
 
 lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
-    have := Fact.mk H
+    haveI := Fact.mk H
     letI : Algebra K K[n√a] := inferInstance
     IsSplittingField K K[n√a] (X ^ n - C a) := by
   have := Fact.mk H
@@ -312,7 +312,7 @@ def adjoinRootXPowSubCEquiv (α : L) (hα : α ^ n = algebraMap K L a) :
     K[n√a] ≃ₐ[K] L :=
   AlgEquiv.ofBijective (AdjoinRoot.liftHom (X ^ n - C a) α (by simp [hα])) <| by
     haveI := Fact.mk H
-    haveI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
+    letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(AlgHom.toRingHom _).injective, ?_⟩
     rw [← Algebra.range_top_iff_surjective, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
