@@ -136,13 +136,10 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
     rwa [hb] at hx1
 #align mem_lipschitz_conj_act_le mem_lipschitz_conjAct_le
 
--- restoring Lean 3 behavior for * to avoid type annotation
--- discussions at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/near/406758513
-macro_rules | `($x * $y) => `(@HMul.hMul _ _ _ instHMul $x $y) in
 /-- This is another version of `mem_lipschitz_conj_act_le` which uses `involute`.-/
 theorem mem_lipschitz_involute_le [Invertible (2 : R)]
     {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q) (b : M) :
-      involute ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
+      involute (Q := Q) ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
   revert b
   unfold lipschitz at hx
   apply Subgroup.closure_induction'' hx
@@ -174,7 +171,7 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
     simp only [Units.val_mul, map_mul, mul_inv_rev, LinearMap.mem_range]
     let ⟨z', hz'⟩ := hz b
     let ⟨y', hy'⟩ := hy z'
-    suffices ∃ c : M, (ι Q) c = involute ↑y * (involute ↑z * (ι Q) b * ↑z⁻¹) * ↑y⁻¹ by
+    suffices ∃ c : M, (ι Q) c = involute (Q := Q) ↑y * (involute (Q := Q) ↑z * (ι Q) b * ↑z⁻¹) * ↑y⁻¹ by
       obtain ⟨p, hp⟩ := this
       refine' ⟨p, by simp only [hp, mul_assoc]⟩
     rw [← hz']
@@ -235,7 +232,7 @@ theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup
 
 /-- This is another version of `units_mem_conjAct_le` which uses `involute`. -/
 theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
-    [Invertible (2 : R)] (y : M) : involute ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
+    [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   mem_lipschitz_involute_le (units_mem_lipschitz hx) y
 #align pin_group.units_mem_involute_act_le pinGroup.units_mem_involute_act_le
 
@@ -384,7 +381,7 @@ theorem mem_involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : invol
 #align spin_group.mem_involute_eq spinGroup.mem_involute_eq
 
 theorem units_involute_act_eq_conjAct {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q) (y : M) :
-    involute ↑x * ι Q y * ↑x⁻¹ = ConjAct.toConjAct x • (ι Q y) := by
+    involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ = ConjAct.toConjAct x • (ι Q y) := by
   rw [mem_involute_eq hx, @ConjAct.units_smul_def, @ConjAct.ofConjAct_toConjAct]
 #align spin_group.units_involute_act_eq_conj_act spinGroup.units_involute_act_eq_conjAct
 
@@ -397,7 +394,7 @@ theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGrou
 
 /- This is another version of `units_mem_conjAct_le` which uses `involute`.-/
 theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
-    [Invertible (2 : R)] (y : M) : involute ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
+    [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   mem_lipschitz_involute_le (units_mem_lipschitz hx) y
 #align spin_group.units_mem_involute_act_le spinGroup.units_mem_involute_act_le
 
