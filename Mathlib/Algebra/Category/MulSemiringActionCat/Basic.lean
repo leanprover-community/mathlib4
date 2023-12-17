@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Qi Ge. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Qi Ge
+-/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.RepresentationTheory.Action
@@ -5,16 +10,31 @@ import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 
+/-!
+# Group action on rings
+
+This file defines the typeclass of monoid acting on semirings `MulSemiringAction M R`,
+and the corresponding typeclass of invariant subrings.
+
+Note that `Algebra` does not satisfy the axioms of `MulSemiringAction`.
+
+## Implementation notes
+
+There is no separate typeclass for group acting on rings, group acting on fields, etc.
+They are all grouped under `MulSemiringAction`.
+
+## Tags
+
+group action, invariant subring
+
+-/
+
+
 open CategoryTheory
 
 universe v u
 
 variable (M : Type u) [Monoid M]
-
--- How about:
-abbrev MonoidActionOnSemiring
-    (M R : Type*) [Monoid M] [Semiring R] :=
-  M →* R →+* R
 
 structure MulSemiringActionCat where
   carrier : Type v
