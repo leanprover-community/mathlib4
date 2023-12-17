@@ -17,7 +17,7 @@ open Order
 variable {ι α : Type*}
 
 section ConditionallyCompleteLinearOrder
-variable [ConditionallyCompleteLinearOrder α] {s : Set α}
+variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
 
 lemma csSup_mem_of_not_isSuccLimit
     (hne : s.Nonempty) (hbdd : BddAbove s) (hlim : ¬ IsSuccLimit (sSup s)) :
@@ -26,15 +26,19 @@ lemma csSup_mem_of_not_isSuccLimit
   obtain ⟨i, his, hi⟩ := exists_lt_of_lt_csSup hne hy.lt
   exact eq_of_le_of_not_lt (le_csSup hbdd his) (hy.2 hi) ▸ his
 
-lemma exists_of_not_isSuccLimit_ciSup [Nonempty ι]
-    (f : ι → α) (hf : BddAbove (Set.range f)) (hx : ¬ IsSuccLimit (⨆ i, f i)) :
+lemma exists_of_not_isSuccLimit_ciSup
+    (hf : BddAbove (Set.range f)) (hf' : ¬ IsSuccLimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
-  csSup_mem_of_not_isSuccLimit (Set.range_nonempty f) hf hx
+  csSup_mem_of_not_isSuccLimit (Set.range_nonempty f) hf hf'
 
-lemma exists_of_ciSup_eq_of_not_isSuccLimit [Nonempty ι]
-    (f : ι → α) (hf : BddAbove (Set.range f)) (x : α) (hx : ¬ IsSuccLimit x) (h : ⨆ i, f i = x) :
-    ∃ i, f i = x :=
-  h ▸ exists_of_not_isSuccLimit_ciSup f hf (h ▸ hx)
+lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit
+    (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccLimit x) :
+    x ∈ s :=
+  hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
+
+lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit
+    (hf : IsLUB (Set.range f) x) (hx : ¬ IsSuccLimit x) :
+    ∃ i, f i = x := hf.mem_of_nonempty_of_not_isSuccLimit (Set.range_nonempty f) hx
 
 lemma csInf_mem_of_not_isSuccLimit
     (hne : s.Nonempty) (hbdd : BddBelow s) (hlim : ¬ IsPredLimit (sInf s)) :
@@ -43,20 +47,23 @@ lemma csInf_mem_of_not_isSuccLimit
   obtain ⟨i, his, hi⟩ := exists_lt_of_csInf_lt hne hy.lt
   exact eq_of_le_of_not_lt (csInf_le hbdd his) (hy.2 · hi) ▸ his
 
-lemma exists_of_ciInf_eq_of_not_isPredLimit [Nonempty ι]
-    (f : ι → α) (hf : BddBelow (Set.range f)) (x : α) (hx : ¬ IsPredLimit x) (h : ⨅ i, f i = x) :
-    ∃ i, f i = x :=
-  exists_of_ciSup_eq_of_not_isSuccLimit (OrderDual.toDual ∘ f) hf (OrderDual.toDual x) (by simpa) h
-
-lemma exists_eq_ciInf_of_not_isPredLimit [Nonempty ι]
-    (f : ι → α) (hf : BddBelow (Set.range f)) (hx : ¬ IsPredLimit (⨅ i, f i)) :
+lemma exists_eq_ciInf_of_not_isPredLimit
+    (hf : BddBelow (Set.range f)) (hf' : ¬ IsPredLimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
-  exists_of_ciInf_eq_of_not_isPredLimit f hf _ hx rfl
+  csInf_mem_of_not_isSuccLimit (Set.range_nonempty f) hf hf'
+
+lemma IsGLB.mem_of_nonempty_of_not_isPredLimit
+    (hs : IsGLB s x) (hne : s.Nonempty) (hx : ¬ IsPredLimit x) : x ∈ s :=
+  hs.csInf_eq hne ▸ csInf_mem_of_not_isSuccLimit hne hs.bddBelow (hs.csInf_eq hne ▸ hx)
+
+lemma IsGLB.exists_of_nonempty_not_isPredLimit
+    (hf : IsGLB (Set.range f) x) (hx : ¬ IsPredLimit x) :
+    ∃ i, f i = x := hf.mem_of_nonempty_of_not_isPredLimit (Set.range_nonempty f) hx
 
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] {s : Set α}
+variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {s : Set α} {x : α}
 
 /-- See `csSup_mem_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
 lemma csSup_mem_of_not_isSuccLimit'
@@ -66,37 +73,36 @@ lemma csSup_mem_of_not_isSuccLimit'
   · simp [isSuccLimit_bot] at hlim
   · exact csSup_mem_of_not_isSuccLimit hs hbdd hlim
 
-/-- See `exists_of_ciSup_eq_of_not_isSuccLimit` for the
-`ConditionallyCompleteLinearOrder` version. -/
-lemma exists_of_ciSup_eq_of_not_isSuccLimit'
-    (f : ι → α) (hf : BddAbove (Set.range f)) (x : α) (hx : ¬ IsSuccLimit x) (h : ⨆ i, f i = x) :
-    ∃ i, f i = x := by
-  subst h
-  exact csSup_mem_of_not_isSuccLimit' hf hx
-
 /-- See `exists_eq_ciSup_of_not_isSuccLimit` for the
 `ConditionallyCompleteLinearOrder` version. -/
 lemma exists_eq_ciSup_of_not_isSuccLimit'
-    (f : ι → α) (hf : BddAbove (Set.range f)) (hx : ¬ IsSuccLimit (⨆ i, f i)) :
+    (hf : BddAbove (Set.range f)) (hf' : ¬ IsSuccLimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
-  exists_of_ciSup_eq_of_not_isSuccLimit' f hf _ hx rfl
+  csSup_mem_of_not_isSuccLimit' hf hf'
+
+lemma IsLUB.mem_of_not_isSuccLimit (hs : IsLUB s x) (hx : ¬ IsSuccLimit x) :
+    x ∈ s := by
+  obtain (rfl|hs') := s.eq_empty_or_nonempty
+  · simp [show x = ⊥ by simpa using hs, isSuccLimit_bot] at hx
+  · exact hs.mem_of_nonempty_of_not_isSuccLimit hs' hx
+
+lemma IsLUB.exists_of_not_isSuccLimit (hf : IsLUB (Set.range f) x) (hx : ¬ IsSuccLimit x) :
+    ∃ i, f i = x := hf.mem_of_not_isSuccLimit hx
 
 end ConditionallyCompleteLinearOrderBot
 
 section CompleteLinearOrder
-variable [CompleteLinearOrder α] {s : Set α}
+variable [CompleteLinearOrder α] {s : Set α} {f : ι → α} {x : α}
 
 lemma sSup_mem_of_not_isSuccLimit (hlim : ¬ IsSuccLimit (sSup s)) :
-    sSup s ∈ s :=
-  csSup_mem_of_not_isSuccLimit' (OrderTop.bddAbove _) hlim
+    sSup s ∈ s := by
+  obtain ⟨y, hy⟩ := not_forall_not.mp hlim
+  obtain ⟨i, his, hi⟩ := lt_sSup_iff.mp hy.lt
+  exact eq_of_le_of_not_lt (le_sSup his) (hy.2 hi) ▸ his
 
-lemma exists_of_iSup_eq_of_not_isSuccLimit
-    (f : ι → α) (x : α) (hx : ¬ IsSuccLimit x) (h : ⨆ i, f i = x) : ∃ i, f i = x :=
-  exists_of_ciSup_eq_of_not_isSuccLimit' f (OrderTop.bddAbove _) x hx h
-
-lemma exists_eq_iSup_of_not_isSuccLimit
-    (f : ι → α) (hf : ¬ IsSuccLimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
-  exists_of_iSup_eq_of_not_isSuccLimit f _ hf rfl
+lemma exists_of_not_isSuccLimit_iSup (hf : ¬ IsSuccLimit (⨆ i, f i)) :
+    ∃ i, f i = ⨆ i, f i :=
+  sSup_mem_of_not_isSuccLimit hf
 
 lemma sInf_mem_of_not_isSuccLimit (hlim : ¬ IsPredLimit (sInf s)) :
     sInf s ∈ s := by
@@ -104,12 +110,15 @@ lemma sInf_mem_of_not_isSuccLimit (hlim : ¬ IsPredLimit (sInf s)) :
   obtain ⟨i, his, hi⟩ := sInf_lt_iff.mp hy.lt
   exact eq_of_le_of_not_lt (sInf_le his) (hy.2 · hi) ▸ his
 
-lemma exists_of_iInf_eq_of_not_isPredLimit
-    (f : ι → α) (x : α) (hx : ¬ IsPredLimit x) (h : ⨅ i, f i = x) :∃ i, f i = x :=
-  exists_of_iSup_eq_of_not_isSuccLimit (OrderDual.toDual ∘ f) (OrderDual.toDual x) (by simpa) h
+lemma exists_eq_iInf_of_not_isPredLimit (hf : ¬ IsPredLimit (⨅ i, f i)) :
+    ∃ i, f i = ⨅ i, f i :=
+  sInf_mem_of_not_isSuccLimit hf
 
-lemma exists_eq_iInf_of_not_isPredLimit
-    (f : ι → α) (hx : ¬ IsPredLimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
-  exists_of_iInf_eq_of_not_isPredLimit f _ hx rfl
+lemma IsGLB.mem_of_not_isPredLimit (hs : IsGLB s x) (hx : ¬ IsPredLimit x) :
+    x ∈ s :=
+  hs.sInf_eq ▸ sInf_mem_of_not_isSuccLimit (hs.sInf_eq ▸ hx)
+
+lemma IsGLB.exists_of_not_isPredLimit (hf : IsGLB (Set.range f) x) (hx : ¬ IsPredLimit x) :
+    ∃ i, f i = x := hf.mem_of_not_isPredLimit hx
 
 end CompleteLinearOrder
