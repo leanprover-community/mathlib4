@@ -417,7 +417,7 @@ def autEquivZmod {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
         (hζ.isUnit_unit' hn).zmodEquivZPowers.symm))
 
 lemma MulEquiv.subgroupCongr_apply {G} [Group G] {H₁ H₂ : Subgroup G} (e : H₁ = H₂) (x) :
-  (MulEquiv.subgroupCongr e x : G) = x := rfl
+    (MulEquiv.subgroupCongr e x : G) = x := rfl
 
 lemma MulEquiv.subgroupCongr_symm_apply {G} [Group G] {H₁ H₂ : Subgroup G} (e : H₁ = H₂) (x) :
     ((MulEquiv.subgroupCongr e).symm x : G) = x := rfl
