@@ -20,6 +20,9 @@ namespace Caratheodory
 -- theorem toPointedCone_eq_union_toPointedCone_finite_subsets (s : Set E) :
 --     toPointedCone 𝕜 s = ⋃ (t : Finset E) (w : ↑t ⊆ s), toPointedCone 𝕜 ↑t := by sorry
 
+example (t : Finset E) (g : t → 𝕜) :
+  ∑ i : t, g i = ∑ i in t, Function.extend Subtype.val g 0 i := by sorry
+
 theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
     (h : ¬LinearIndependent 𝕜 ((↑) : t → E))
     {x : E} (hx : x ∈ toPointedCone 𝕜 t) :
@@ -48,8 +51,7 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
       obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => g' z / f z) $ ⟨c, by {
         simp only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
           mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and]
-        rwa [Function.Injective.extend_apply Subtype.val_injective]
-      }⟩
+        rwa [Function.Injective.extend_apply Subtype.val_injective] }⟩
       rw [mem_filter] at hd₁
       use d
       constructor
@@ -81,13 +83,14 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
           simp only [Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib]
           rw [combo]
           simp only [Subtype.exists, exists_prop, exists_eq_right, sub_eq_self]
-          have relation' : ∑ i in t, g' i • ↑i = 0 := by sorry
-          rw [← relation']
-          congr
-          -- ext
-          ext i
-          -- calc ∑ i in t, (↑(f d) / g' d * g' i) • x = ∑ i : t, g i • (i : E)  := by sorry
-          sorry
+          simp_rw [mul_smul, ← Finset.smul_sum]
+          convert smul_zero (f d / g' d)
+          rw [← relation]
+          conv_lhs => rw [←Finset.sum_coe_sort]
+          apply Finset.sum_congr rfl ?_
+          rintro _ -
+          rw [Function.Injective.extend_apply]
+          exact Subtype.val_injective
         · have : k d = 0 := by
             rw [Nonneg.mk_eq_zero, div_mul_cancel, sub_self]
             apply ne_of_lt hd₁.2
@@ -99,19 +102,17 @@ variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
 noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ toPointedCone 𝕜 s) : Finset E :=
-  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } <| by sorry
-    -- missing finite union lemma
-    -- simpa only [toPointedCone_eq_union_toPointedCone_finite_subsets s, exists_prop, mem_iUnion] using hx
+  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } <| by exact Submodule.mem_span_finite_of_mem_span hx
 
 theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s := (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).1
 
-#exit
 theorem mem_minCardFinsetOfMemtoPointedCone :
-    x ∈ toPointedCone 𝕜 (minCardFinsetOfMemtoPointedCone hx : Set E) := by
-  sorry
-  --simp_rw [Function.argminOn_mem]
+    x ∈ toPointedCone 𝕜 (minCardFinsetOfMemtoPointedCone hx : Set E) := by sorry
+  -- have := Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).2
   -- (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).2
+  -- simp_rw [Function.argminOn_mem]
 
+#exit
 theorem minCardFinsetOfMemtoPointedCone_nonempty : (minCardFinsetOfMemtoPointedCone hx).Nonempty := by
   simp_rw [← Finset.coe_nonempty]
   -- exact ⟨x, mem_minCardFinsetOfMemtoPointedCone hx⟩
