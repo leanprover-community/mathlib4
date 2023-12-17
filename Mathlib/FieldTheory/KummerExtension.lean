@@ -416,12 +416,6 @@ def autEquivZmod {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
       (hζ.isUnit_unit' hn)).symm).trans (AddEquiv.toMultiplicative'
         (hζ.isUnit_unit' hn).zmodEquivZPowers.symm))
 
-lemma MulEquiv.subgroupCongr_apply {G} [Group G] {H₁ H₂ : Subgroup G} (e : H₁ = H₂) (x) :
-    (MulEquiv.subgroupCongr e x : G) = x := rfl
-
-lemma MulEquiv.subgroupCongr_symm_apply {G} [Group G] {H₁ H₂ : Subgroup G} (e : H₁ = H₂) (x) :
-    ((MulEquiv.subgroupCongr e).symm x : G) = x := rfl
-
 lemma autEquivZmod_symm_apply {ζ : K} (hζ : IsPrimitiveRoot ζ n)
     (α : L) (hα : α ^ n = algebraMap K L a) (m : ℤ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
