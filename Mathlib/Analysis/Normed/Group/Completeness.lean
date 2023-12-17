@@ -16,7 +16,7 @@ series.
 ## Main results
 
 * `NormedAddCommGroup.completeSpace_of_summable_implies_tendsto`: A normed additive group is
-complete if an absolutely convergent series converges in the space.
+complete if any absolutely convergent series converges in the space.
 
 ## References
 
