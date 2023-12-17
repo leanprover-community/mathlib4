@@ -129,7 +129,6 @@ theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
         (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)).flip (lof R _ ℬ 0 b) =
       TensorProduct.mk R _ _ (lof R _ ℬ 0 b) from
     FunLike.congr_fun this a
-  save
   ext i a
   dsimp
   rw [gradedComm_of_tmul_of, zero_mul, uzpow_zero, one_smul]
@@ -140,7 +139,6 @@ theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
     (gradedComm R 𝒜 ℬ).toLinearMap ∘ₗ (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)) (lof R _ 𝒜 0 a) =
       (TensorProduct.mk R _ _).flip (lof R _ 𝒜 0 a) from
     FunLike.congr_fun this b
-  save
   ext i b
   dsimp
   rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
@@ -241,7 +239,6 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, mul_assoc]
-  save
   simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, smul_smul, ← uzpow_add, add_mul, mul_add]
   congr 2
   abel
@@ -257,7 +254,6 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
   simp_rw [Units.smul_def, zsmul_eq_smul_cast R, map_smul, LinearMap.smul_apply]
-  save
   simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
     DirectSum.lof_eq_of, ← DirectSum.of_mul_of, ← DirectSum.lof_eq_of R]
