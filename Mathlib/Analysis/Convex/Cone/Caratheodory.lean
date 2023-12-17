@@ -25,36 +25,74 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
     {x : E} (hx : x ∈ toPointedCone 𝕜 t) :
     ∃ y : (↑t : Set E), x ∈ toPointedCone 𝕜 (↑(t.erase y) : Set E) := by
   replace ⟨f, combo⟩ := mem_span_finset.1 hx
-  simp_rw [toPointedCone, mem_span_finset]
   replace ⟨g, relation, c, hnzero⟩ := Fintype.not_linearIndependent_iff.1 h
-  let g' := Function.extend Subtype.val g 0
-  -- have relation' :  ∑ i : E, g' i • ↑i = 0 := by sorry
-  simp only [mem_span_finset, coe_sort_coe, coe_mem, not_true_eq_false,
-    Subtype.exists, exists_prop]
-  obtain (hneg | hpos) := Ne.lt_or_lt hnzero
-  · let s := @Finset.filter _ (fun z => g' z < 0) (fun _ => LinearOrder.decidableLT _ _) t
-    obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => g' z / f z) $ ⟨c, by {
-      simp only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
-        mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and]
-      rwa [Function.Injective.extend_apply Subtype.val_injective]
-    }⟩
-    use d
-    constructor
-    · aesop
-    · let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
 
-        sorry
+  simp only [toPointedCone, mem_span_finset, mem_span_finset, coe_sort_coe, coe_mem,
+    not_true_eq_false, Subtype.exists, exists_prop]
+
+  by_cases hf : ∃ i₀, i₀ ∈ t ∧ f i₀ = 0
+  · replace ⟨i₀, hi₀t, hf⟩ := hf
+    use i₀, hi₀t, f
+    rwa [sum_erase_eq_sub, hf, zero_smul, sub_zero, combo]
+  · push_neg at hf
+    have hf' : ∀ i ∈ t, 0 < f i := by
+      intro i hi
+      specialize hf i hi
+      exact zero_lt_iff.mpr hf
+    clear hf
+
+    let g' := Function.extend Subtype.val g 0
+
+    obtain (hneg | hpos) := Ne.lt_or_lt hnzero
+    · let s := @Finset.filter _ (fun z => g' z < 0) (fun _ => LinearOrder.decidableLT _ _) t
+      obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => g' z / f z) $ ⟨c, by {
+        simp only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
+          mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and]
+        rwa [Function.Injective.extend_apply Subtype.val_injective]
       }⟩
-      use k
-      rw [sum_erase]
-      · sorry
-      · simp
-        left
-        have := Function.Injective.extend_apply Subtype.val_injective g 0 ⟨d, by aesop⟩
-        simp at this
-        rw [this]
-        sorry
-  · sorry
+      rw [mem_filter] at hd₁
+      use d
+      constructor
+      · aesop
+      · let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
+        -- proof that the image consists of non-negative elements
+        rw [sub_nonneg]
+        by_cases hzt : z ∈ t
+        · by_cases hzs : z ∈ s
+          · specialize hd₂ z hzs
+            rw [mem_filter] at hzs
+            rwa [← div_le_iff_of_neg hzs.2, ← inv_le_inv_of_neg, inv_div, inv_div]
+            · exact div_neg_of_pos_of_neg (hf' d hd₁.1) hd₁.2
+            · exact div_neg_of_pos_of_neg (hf' z hzt) hzs.2
+          · rw [mem_filter] at hzs
+            push_neg at hzs
+            specialize hzs hzt
+            exact le_trans (mul_nonpos_of_nonpos_of_nonneg
+              (div_nonpos_of_nonneg_of_nonpos (zero_le $ f d) $ le_of_lt hd₁.2) hzs) $ zero_le (f z)
+        · have : g' z = 0 := by
+            simp only [Subtype.exists, exists_prop, exists_eq_right, Function.extend_apply']
+            aesop
+          rw [this, mul_zero]
+          exact zero_le (f z) }⟩
+        use k
+        rw [sum_erase]
+        · simp
+          simp_rw [sub_smul]
+          simp only [Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib]
+          rw [combo]
+          simp only [Subtype.exists, exists_prop, exists_eq_right, sub_eq_self]
+          have relation' : ∑ i in t, g' i • ↑i = 0 := by sorry
+          rw [← relation']
+          congr
+          -- ext
+          ext i
+          -- calc ∑ i in t, (↑(f d) / g' d * g' i) • x = ∑ i : t, g i • (i : E)  := by sorry
+          sorry
+        · have : k d = 0 := by
+            rw [Nonneg.mk_eq_zero, div_mul_cancel, sub_self]
+            apply ne_of_lt hd₁.2
+          rw [this, zero_smul]
+    · sorry
 
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 
