@@ -889,7 +889,7 @@ theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
 @[simp]
 theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] {n : ℕ} :
     nthRoots n (0 : R) = Multiset.replicate n 0 := by
-  rw [nthRoots, map_zero, sub_zero, roots_pow, roots_X, Multiset.nsmul_singleton]
+  rw [nthRoots, C.map_zero, sub_zero, roots_pow, roots_X, Multiset.nsmul_singleton]
 
 theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := by
   classical exact
