@@ -47,6 +47,10 @@ lemma isOpen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurr
     {K : Set Y} (hK : IsCompact K) {W : Set Z} (hW : IsOpen W) : IsOpen {x | MapsTo (f x) K W} := by
   simpa using isOpen_setOf_singleton_prod_isCompact_subset hK (hW.preimage hf)
 
+lemma isClosed_setOf_mapsTo {f : X → Y → Z} (hf : ∀ y, Continuous (f · y)) (s : Set Y) {t : Set Z}
+    (ht : IsClosed t) : IsClosed {x | MapsTo (f x) s t} := by
+  simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y _ ↦ ht.preimage (hf y)
+
 variable [CompactSpace Y] (W : Set (X × Y)) (hW : IsClopen W)
 
 theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
@@ -56,18 +60,11 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
   have hp : Continuous (fun (y : Y) ↦ (a, y)) := Continuous.Prod.mk _
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
   refine ⟨U, V, ⟨isOpen_setOf_singleton_prod_isCompact_subset (hW.2.preimage hp).isCompact hW.1, ?_⟩,
-    ⟨hW.1.preimage hp, hW.2.preimage hp⟩, fun ⟨_, _⟩ hw ↦ ?_, h, hUV⟩
+    ⟨hW.1.preimage hp, hW.2.preimage hp⟩, ?_, h, hUV⟩
   -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
   -- definition of `U`. It is the proof of [buzyakovaClopenBox], Lemma 2.
-  · apply isClosed_of_closure_subset
-    intro x hx
-    have hxV : {x} ×ˢ V ⊆ (closure U) ×ˢ V :=  fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx h.1, h.2⟩
-    have hU : (closure U) ×ˢ V ⊆ closure (U ×ˢ V) := fun _ h ↦ by
-      rw [closure_prod_eq]
-      exact ⟨h.1, subset_closure h.2⟩
-    exact subset_trans hxV (subset_trans hU (subset_trans (closure_mono hUV) hW.2.closure_subset))
-  · simp only [Set.prod_mk_mem_set_prod_eq, Set.mem_singleton_iff, Set.mem_setOf_eq] at hw
-    simpa [hw.1] using hw
+  · simpa using isClosed_setOf_mapsTo Continuous.Prod.mk_left V hW.isClosed
+  · simp [subset_def]
 
 variable [CompactSpace X]
 
