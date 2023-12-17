@@ -747,7 +747,6 @@ theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlge
   single_commute Commute.one_left (Commute.all _) f
 #align monoid_algebra.single_one_comm MonoidAlgebra.single_one_comm
 
-
 /-- `Finsupp.single 1` as a `RingHom` -/
 @[simps]
 def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
