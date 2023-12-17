@@ -111,10 +111,10 @@ theorem inf'_id_eq_csInf (s : Finset α) (hs) : s.inf' hs id = sInf s :=
 
 variable [Fintype ι] [Nonempty ι]
 
-lemma sup'_univ_eq_csupr (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
+lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f i := by
   simp [sup'_eq_csSup_image, iSup]
 
-lemma inf'_univ_eq_cinfi (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
+lemma inf'_univ_eq_ciInf (f : ι → α) : univ.inf' univ_nonempty f = ⨅ i, f i := by
   simp [inf'_eq_csInf_image, iInf]
 
 end Finset
