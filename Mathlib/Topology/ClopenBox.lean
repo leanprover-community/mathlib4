@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.CompactOpen
-/-!
+import Mathlib.Topology.Sets.Closeds
 
+/-!
 # Clopen subsets in cartesian products
 
 In general, a clopen subset in a cartesian product of topological spaces cannot be written as a
@@ -26,7 +27,7 @@ cartesian products of compact spaces (this is relevant to the theory of light pr
 
 -/
 
-open Function Set Filter
+open Function Set Filter TopologicalSpace
 open scoped Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -36,75 +37,47 @@ lemma isOpen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurr
   simpa only [mapsTo']
     using (ContinuousMap.isOpen_gen hK hW).preimage (ContinuousMap.curry ⟨_, hf⟩).continuous
 
-theorem isOpen_setOf_singleton_prod_isCompact_subset {K : Set Y} (hK : IsCompact K)
-    {W : Set (X × Y)} (hW : IsOpen W) : IsOpen {x : X | {x} ×ˢ K ⊆ W} := by
-  simpa using isOpen_setOf_mapsTo_isCompact (f := Prod.mk) continuous_id hK hW
-
 lemma isClosed_setOf_mapsTo {f : X → Y → Z} (hf : ∀ y, Continuous (f · y)) (s : Set Y) {t : Set Z}
     (ht : IsClosed t) : IsClosed {x | MapsTo (f x) s t} := by
   simpa only [MapsTo, setOf_forall] using isClosed_biInter fun y _ ↦ ht.preimage (hf y)
 
-variable [CompactSpace Y] (W : Set (X × Y)) (hW : IsClopen W)
+lemma isClopen_setOf_mapsTo_isCompact {f : X → Y → Z} (hf : Continuous (uncurry f))
+    {K : Set Y} (hK : IsCompact K) {U : Set Z} (hU : IsClopen U) :
+    IsClopen {x | MapsTo (f x) K U} :=
+  ⟨isOpen_setOf_mapsTo_isCompact hf hK hU.isOpen,
+    isClosed_setOf_mapsTo (fun y ↦ hf.comp (Continuous.Prod.mk_left y)) K hU.isClosed⟩
 
-theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
-    ∃ (U : Set X) (V : Set Y), IsClopen U ∧ IsClopen V ∧ a ∈ U ∧ b ∈ V ∧ U ×ˢ V ⊆ W := by
-  let V : Set Y := {y | (a, y) ∈ W}
-  let U : Set X := {x | {x} ×ˢ V ⊆ W}
-  have hp : Continuous (fun (y : Y) ↦ (a, y)) := Continuous.Prod.mk _
-  have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
-  refine ⟨U, V, ⟨isOpen_setOf_singleton_prod_isCompact_subset (hW.2.preimage hp).isCompact hW.1, ?_⟩,
-    ⟨hW.1.preimage hp, hW.2.preimage hp⟩, ?_, h, hUV⟩
-  -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
-  -- definition of `U`. It is the proof of [buzyakovaClopenBox], Lemma 2.
-  · simpa using isClosed_setOf_mapsTo Continuous.Prod.mk_left V hW.isClosed
-  · simp [subset_def]
+variable [CompactSpace Y]
+
+theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
+    ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
+  have hp : Continuous (fun y : Y ↦ (a.1, y)) := Continuous.Prod.mk _
+  let V : Set Y := {y | (a.1, y) ∈ W}
+  have hV : IsCompact V := (W.2.2.preimage hp).isCompact
+  let U : Set X := {x | MapsTo (Prod.mk x) V W}
+  have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
+  exact ⟨⟨U, isClopen_setOf_mapsTo_isCompact (f := Prod.mk) continuous_id hV W.2⟩,
+    by simp [MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 
-open Classical in
-theorem exists_finset_clopen_box :
-    ∃ (I : Finset ({s : Set X // IsClopen s} × {t : Set Y // IsClopen t})),
-    W = ⋃ (i ∈ I), i.1.val ×ˢ i.2.val := by
-  have hW' := hW.2.isCompact
-  rw [isCompact_iff_finite_subcover] at hW'
-  specialize hW' (fun (⟨⟨a, b⟩, hab⟩ : W) ↦ (exists_clopen_box W hW a b hab).choose ×ˢ
-    (exists_clopen_box W hW a b hab).choose_spec.choose) ?_ ?_
-  · intro ⟨⟨a, b⟩, hab⟩
-    exact IsOpen.prod (exists_clopen_box W hW a b hab).choose_spec.choose_spec.1.1
-      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.1.1
-  · intro ⟨a, b⟩ hab
-    rw [Set.mem_iUnion]
-    exact ⟨⟨⟨a, b⟩, hab⟩, ⟨(exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.2.1,
-      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.2.2.1⟩⟩
-  obtain ⟨I, hI⟩ := hW'
-  let fI : W → {s : Set X // IsClopen s} × {t : Set Y // IsClopen t} :=
-    fun (⟨⟨a, b⟩, hab⟩ : W) ↦ (⟨(exists_clopen_box W hW a b hab).choose,
-      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.1⟩,
-      ⟨(exists_clopen_box W hW a b hab).choose_spec.choose,
-      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.1⟩)
-  refine ⟨(fI '' I).toFinset, ?_⟩
-  ext x
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · replace h := hI h
-    simp only [Set.mem_iUnion] at h ⊢
-    obtain ⟨i, hi, h⟩ := h
-    refine ⟨fI i, ?_, h⟩
-    rw [Set.mem_toFinset]
-    exact Set.mem_image_of_mem fI hi
-  · simp only [Set.mem_iUnion, Set.mem_toFinset] at h
-    obtain ⟨s, ⟨w, hw⟩, h⟩ := h
-    apply (exists_clopen_box W hW w.val.1 w.val.2 w.prop).choose_spec.choose_spec.2.2.2.2
-    rw [← hw.2] at h
-    exact h
+/-- Every clopen set in a product of two compact spaces
+is a union of finitely many clopen boxes. -/
+theorem TopologicalSpace.Clopens.exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
+    ∃ (I : Finset (Clopens X × Clopens Y)), W = I.sup fun i ↦ i.1 ×ˢ i.2 := by
+  choose! U hxU V hxV hUV using fun x ↦ W.exists_prod_subset (a := x)
+  rcases W.2.2.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
+    (U x ×ˢ V x).2.isOpen.mem_nhds ⟨hxU x hx, hxV x hx⟩) with ⟨I, hIW, hWI⟩
+  classical
+  use I.image fun x ↦ (U x, V x)
+  rw [Finset.sup_image]
+  refine le_antisymm (fun x hx ↦ ?_) (Finset.sup_le fun x hx ↦ ?_)
+  · rcases Set.mem_iUnion₂.1 (hWI hx) with ⟨i, hi, hxi⟩
+    exact SetLike.le_def.1 (Finset.le_sup hi) hxi
+  · exact hUV _ <| hIW _ hx
 
-instance countable_clopens_prod [Countable {s : Set X // IsClopen s}]
-    [Countable {t : Set Y // IsClopen t}] : Countable {w : Set (X × Y) // IsClopen w} := by
-  refine @Function.Surjective.countable
-    (Finset ({s : Set X // IsClopen s} × {t : Set Y // IsClopen t})) _ _
-    (fun I ↦ ⟨⋃ (i ∈ I), i.1.val ×ˢ i.2.val, ?_⟩) ?_
-  · apply Set.Finite.isClopen_biUnion (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
-    intro i _
-    exact IsClopen.prod i.1.2 i.2.2
-  · intro ⟨W, hW⟩
-    simp only [Subtype.mk.injEq]
-    exact ⟨(exists_finset_clopen_box W hW).choose, (exists_finset_clopen_box W hW).choose_spec.symm⟩
+instance TopologicalSpace.Clopens.countable_prod [Countable (Clopens X)]
+    [Countable (Clopens Y)] : Countable (Clopens (X × Y)) :=
+  have : Surjective fun I : Finset (Clopens X × Clopens Y) ↦ I.sup fun i ↦ i.1 ×ˢ i.2 := fun W ↦ by
+    simpa only [eq_comm] using W.exists_finset_eq_sup_prod
+  this.countable
