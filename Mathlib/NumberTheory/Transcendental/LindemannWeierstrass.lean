@@ -273,24 +273,24 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_of_le_left (c'0 r) (hc r hr) _)
 #align exp_polynomial_approx exp_polynomial_approx
 
-namespace Aux
+namespace AuxInstances
 
 variable (p : ℚ[X])
 
 abbrev K' : IntermediateField ℚ ℂ :=
   IntermediateField.adjoin ℚ (p.rootSet ℂ)
 set_option linter.uppercaseLean3 false in
-#align aux.K' Aux.K'
+#align aux.K' AuxInstances.K'
 
 instance K'.isSplittingField : IsSplittingField ℚ (K' p) p :=
   IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits_codomain p)
 set_option linter.uppercaseLean3 false in
-#align aux.K'.is_splitting_field Aux.K'.isSplittingField
+#align aux.K'.is_splitting_field AuxInstances.K'.isSplittingField
 
 abbrev K : Type _ :=
   p.SplittingField
 set_option linter.uppercaseLean3 false in
-#align aux.K Aux.K
+#align aux.K AuxInstances.K
 
 instance : CharZero (K p) :=
   charZero_of_injective_algebraMap (algebraMap ℚ (K p)).injective
@@ -300,12 +300,12 @@ instance : IsGalois ℚ (K p) where
 abbrev Lift : K' p ≃ₐ[ℚ] K p :=
   IsSplittingField.algEquiv (K' p) p
 set_option linter.uppercaseLean3 false in
-#align aux.Lift Aux.Lift
+#align aux.Lift AuxInstances.Lift
 
 instance algebraKℂ : Algebra (K p) ℂ :=
   ((K' p).val.comp (Lift p).symm.toAlgHom).toRingHom.toAlgebra
 set_option linter.uppercaseLean3 false in
-#align aux.algebra_K_ℂ Aux.algebraKℂ
+#align aux.algebra_K_ℂ AuxInstances.algebraKℂ
 
 instance : Algebra ℚ (K p) :=
   inferInstance
@@ -316,14 +316,14 @@ instance : SMul ℚ (K p) :=
 instance cache_ℚ_K_ℂ : IsScalarTower ℚ (K p) ℂ :=
   inferInstance
 set_option linter.uppercaseLean3 false in
-#align aux.cache_ℚ_K_ℂ Aux.cache_ℚ_K_ℂ
+#align aux.cache_ℚ_K_ℂ AuxInstances.cache_ℚ_K_ℂ
 
 instance cache_ℤ_K_ℂ : IsScalarTower ℤ (K p) ℂ :=
   inferInstance
 set_option linter.uppercaseLean3 false in
-#align aux.cache_ℤ_K_ℂ Aux.cache_ℤ_K_ℂ
+#align aux.cache_ℤ_K_ℂ AuxInstances.cache_ℤ_K_ℂ
 
-end Aux
+end AuxInstances
 
 namespace Quot
 
