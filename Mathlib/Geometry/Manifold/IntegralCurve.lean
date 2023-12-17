@@ -676,12 +676,6 @@ lemma isIntegralCurveOn_piecewise [I.Boundaryless]
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     IsIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
   intros t ht
-  -- five cases:
-  -- * `a < t < b`: agrees with `γ` by definition
-  -- * `a' < t < a`: agrees with `γ'` by definition
-  -- * `b < t < b'`: agrees with `γ'` by definition
-  -- * `t = a`: agrees with `γ'` propositionally by uniqueness
-  -- * `t = b`: agrees with `γ'` propositionally by uniqueness
   by_cases hmem : t ∈ Ioo a b
   · -- for `a < t < b` the piecewise function is equal to `γ`
     rw [piecewise, if_pos hmem]
