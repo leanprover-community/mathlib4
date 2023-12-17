@@ -27,66 +27,72 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
 
   -- `relation₁: ∑ i in t, f i • i = x`
   replace ⟨f, relation₁⟩ := mem_span_finset.1 hx
-
-  -- `relation₂: ∑ i : t, g i • ↑i = 0`
-  -- `hnzero: g c ≠ 0`
-  replace ⟨g, relation₂, c, hnzero⟩ := Fintype.not_linearIndependent_iff.1 h
   simp only [toPointedCone, mem_span_finset, mem_span_finset, coe_sort_coe, coe_mem,
     not_true_eq_false, Subtype.exists, exists_prop]
 
   by_cases hf : ∃ i₀, i₀ ∈ t ∧ f i₀ = 0
-  · -- easy case: some `f i₀ = 0`
-    -- in this case, we can erase `i₀`
+  · -- Easy case: some `f i₀ = 0`.
+    -- In this case, we can erase `i₀`.
     replace ⟨i₀, hi₀t, hf⟩ := hf
     use i₀, hi₀t, f
     rwa [sum_erase_eq_sub, hf, zero_smul, sub_zero, relation₁]
   · -- case: `∀ i, f i ≠ 0`
 
+    have _ : ∀ i ∈ t, 0 < f i := by
+      intro i hi
+      push_neg at hf
+      exact zero_lt_iff.mpr (hf i hi)
+
+    -- `relation₂: ∑ i : t, g i • ↑i = 0`
+    -- `hnzero: g c ≠ 0`
+    replace ⟨g, relation₂, c, hnzero⟩ := Fintype.not_linearIndependent_iff.1 h
+
     -- extend `g` to all of `E`
     let g' := Function.extend Subtype.val g 0
 
-    obtain (hneg | hpos) := Ne.lt_or_lt hnzero
-    · -- case: there is a negative coefficient in `relation₂`
+    -- For any `λ`, `∑ i in t, (f i + λ * g i) • i = x`.
+    -- We choose a `λ` that make one of the coefficient `f i + λ * g i` while leaving all the other
+    -- coefficients non-negative. The choice of `λ` depends on the signs of the coeffs `g i`.
 
-      -- look at all the negative coefficients in `relation₂`
+    obtain (hneg | hpos) := Ne.lt_or_lt hnzero
+    · -- Case: there is a negative coefficient `g c` in `relation₂`.
+
+      -- Look at all the negative coefficients in `relation₂`.
       let s := @Finset.filter _ (fun z => g' z < 0) (fun _ => LinearOrder.decidableLT _ _) t
 
-      -- use the coefficient that minimizes `g/f`
-      obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => g' z / f z) $ ⟨c, by {
+      -- Choose `λ = - max (f/g)` where the max is taken over all negative coefficients.
+      obtain ⟨d, hd₁, hd₂⟩ := s.exists_max_image (fun z => f z / g' z) $ ⟨c, by {
         simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
           mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
           Function.Injective.extend_apply Subtype.val_injective] }⟩
       rw [mem_filter] at hd₁
       use d, hd₁.1
 
-      · let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
+      · -- Define new coefficients `k = f + λ g`
+        let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
+
+        -- First we show that all `k i ≥ 0`
         rw [sub_nonneg]
         by_cases hzt : z ∈ t
-        by_cases hzs : z ∈ s
-        · specialize hd₂ z hzs
-          rw [mem_filter] at hzs
-          have hfneg : ∀ i ∈ t, 0 < f i := by
-            intro i hi
-            push_neg at hf
-            exact zero_lt_iff.mpr (hf i hi)
-          rwa [← div_le_iff_of_neg hzs.2, ← inv_le_inv_of_neg, inv_div, inv_div]
-          · exact div_neg_of_pos_of_neg (hfneg d hd₁.1) hd₁.2
-          · exact div_neg_of_pos_of_neg (hfneg z hzt) hzs.2
-        · rw [mem_filter] at hzs
-          push_neg at hzs
-          specialize hzs hzt
-          exact le_trans (mul_nonpos_of_nonpos_of_nonneg
-            (div_nonpos_of_nonneg_of_nonpos (zero_le $ f d) $ le_of_lt hd₁.2) hzs) $ zero_le (f z)
-        · have : g' z = 0 := by
-            simp only [Subtype.exists, exists_prop, exists_eq_right, Function.extend_apply']
-            aesop
+        · by_cases hzs : z ∈ s
+          · specialize hd₂ z hzs
+            rw [mem_filter] at hzs
+            rwa [← div_le_iff_of_neg hzs.2]
+          · rw [mem_filter] at hzs
+            push_neg at hzs
+            specialize hzs hzt
+            exact le_trans (mul_nonpos_of_nonpos_of_nonneg
+              (div_nonpos_of_nonneg_of_nonpos (zero_le $ f d) $ le_of_lt hd₁.2) hzs) $ zero_le (f z)
+        · have : g' z = 0 := by aesop
           rw [this, mul_zero]
           exact zero_le (f z) }⟩
         use k
         rw [sum_erase]
-        · simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
-            Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib, relation₁,
-            Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul, ← Finset.smul_sum]
+        · -- Proof of `∑ x in t, k x • x = x`
+          simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
+            Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib,
+            relation₁, Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul,
+            ← Finset.smul_sum]
           convert smul_zero (f d / g' d)
           rw [← relation₂]
           conv_lhs => rw [←Finset.sum_coe_sort]
@@ -94,11 +100,61 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
           rintro _ -
           rw [Function.Injective.extend_apply]
           exact Subtype.val_injective
-        · have : k d = 0 := by
+        · -- At least one coefficient is 0.
+          have : k d = 0 := by
             rw [Nonneg.mk_eq_zero, div_mul_cancel, sub_self]
-            apply ne_of_lt hd₁.2
+            exact ne_of_lt hd₁.2
           rw [this, zero_smul]
-    · sorry
+    · -- Case: there is a positive coefficient `g c` in `relation₂`.
+
+      -- Look at all the positive coefficients in `relation₂`.
+      let s := @Finset.filter _ (fun z => 0 < g' z) (fun _ => LinearOrder.decidableLT _ _) t
+
+      -- Choose `λ = - min (f/g)` where the min is taken over all positive coefficients.
+      obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => f z / g' z) $ ⟨c, by {
+        simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
+          mem_filter, coe_mem, exists_apply_eq_apply, not_true_eq_false, true_and,
+          Function.Injective.extend_apply Subtype.val_injective] }⟩
+      rw [mem_filter] at hd₁
+      use d, hd₁.1
+
+      · -- Define new coefficients `k = f + λ g`
+        let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
+
+        -- first we show that all `k i ≥ 0`
+        rw [sub_nonneg]
+        by_cases hzt : z ∈ t
+        · by_cases hzs : z ∈ s
+          · specialize hd₂ z hzs
+            rw [mem_filter] at hzs
+            rwa [← le_div_iff hzs.2]
+          · rw [mem_filter] at hzs
+            push_neg at hzs
+            specialize hzs hzt
+            exact le_trans (mul_nonpos_of_nonneg_of_nonpos
+              (div_nonneg (zero_le (f d)) (le_of_lt hd₁.2)) hzs) $ zero_le (f z)
+        · have : g' z = 0 := by aesop
+          rw [this, mul_zero]
+          exact zero_le (f z) }⟩
+        use k
+        rw [sum_erase]
+        · -- Proof of `∑ x in t, k x • x = x`
+          simp only [Subtype.exists, exists_prop, exists_eq_right, Nonneg.mk_smul, sub_smul,
+            Nonneg.coe_smul, Subtype.exists, exists_prop, exists_eq_right, sum_sub_distrib,
+            relation₁, Subtype.exists, exists_prop, exists_eq_right, sub_eq_self, mul_smul,
+            ← Finset.smul_sum]
+          convert smul_zero (f d / g' d)
+          rw [← relation₂]
+          conv_lhs => rw [←Finset.sum_coe_sort]
+          apply Finset.sum_congr rfl ?_
+          rintro _ -
+          rw [Function.Injective.extend_apply]
+          exact Subtype.val_injective
+        · -- At least one coefficient is 0.
+          have : k d = 0 := by
+            rw [Nonneg.mk_eq_zero, div_mul_cancel, sub_self]
+            exact (ne_of_lt hd₁.2).symm
+          rw [this, zero_smul]
 
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 
