@@ -157,45 +157,11 @@ lemma mul_modMonomial (s : σ →₀ ℕ) (x y : MvPolynomial σ R) :
 lemma mul_modMonomial_finsupp_single (i : σ) (x y : MvPolynomial σ R) :
     (x * y) %ᵐᵒⁿᵒᵐⁱᵃˡ (Finsupp.single i 1) =
     (x %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) * (y %ᵐᵒⁿᵒᵐⁱᵃˡ Finsupp.single i 1) := by
-  classical
-  let s := Finsupp.single i 1
-  ext1 t
-  rw [mul_modMonomial, coeff_mul]
-  by_cases H : s ≤ t
-  · rw [coeff_modMonomial_of_le _ H, eq_comm]
-    apply Finset.sum_eq_zero
-    rintro ⟨a, b⟩ h
-    rw [Finset.HasAntidiagonal.mem_antidiagonal] at h
-    by_cases ha : s ≤ a
-    · rw [coeff_modMonomial_of_le _ ha, zero_mul]
-    · rw [coeff_modMonomial_of_not_le _ ha]
-      by_cases hb : s ≤ b
-      · rw [coeff_modMonomial_of_le _ hb, mul_zero]
-      · rw [coeff_modMonomial_of_not_le _ hb]
-        have ineq1 : ∀ (x : σ), a x < s x → x = i
-        · intro x H2
-          by_contra hx
-          simp only [Finsupp.single_apply, if_neg (Ne.symm hx)] at *
-          norm_num at H2
-        have ineq2 : ∀ (x : σ), b x < s x → x = i
-        · intro x H2
-          by_contra hx
-          simp only [Finsupp.single_apply, if_neg (Ne.symm hx)] at *
-          norm_num at H2
-
-        change ¬ ∀ _, _ at ha hb
-        push_neg at ha hb
-        obtain ⟨ii, hii⟩ := ha
-        obtain ⟨jj, hjj⟩ := hb
-        have h1 := (ineq1 _ hii).symm
-        have h2 := (ineq2 _ hjj).symm
-        subst h1 h2
-        simp only [Finsupp.single_eq_same, Nat.lt_one_iff] at hii hjj
-        replace h : a i + b i = t i := FunLike.congr_fun h i
-        rw [hii, hjj, zero_add] at h
-        specialize H i
-        simp only [Finsupp.single_eq_same, ← h, nonpos_iff_eq_zero] at H
-  · rw [coeff_modMonomial_of_not_le _ H, coeff_mul]
+  refine AddMonoidAlgebra.mul_modOf_of_minimal _ _ _ fun a b ha hb h => ?_
+  rw [←le_iff_exists_add, Finsupp.single_le_iff] at ha hb h
+  rw [not_le, Nat.lt_one_iff] at ha hb
+  rw [Finsupp.add_apply, ha, hb, zero_add] at h
+  cases h
 
 @[simp]
 theorem monomial_mul_modMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) :

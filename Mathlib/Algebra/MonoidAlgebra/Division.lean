@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finset.Antidiagonal
 
 #align_import algebra.monoid_algebra.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
@@ -244,6 +245,23 @@ lemma mul_modOf (x y : k[G]) (g : G) :
   simp only [mul_add, add_mul, (of'_commute (AddCommute.all g) _).symm.left_comm] at this
   rw [← this]
   simp_rw [add_modOf, mul_assoc, of'_mul_modOf, zero_add]
+
+/-- `hs` is a more general spelling of `¬(s ≤ a) → ¬(s ≤ b) → ¬(s ≤ a + b)`. -/
+lemma mul_modOf_of_minimal (x y : k[G]) (s : G)
+    (hs : ∀ a b, ¬(∃ d, a = s + d) → ¬(∃ d, b = s + d) → ¬(∃ d, a + b = s + d)) :
+    (x * y) %ᵒᶠ s =
+    (x %ᵒᶠ s) * (y %ᵒᶠ s) := by
+  classical
+  apply Finsupp.ext fun t => ?_
+  rw [mul_modOf, mul_apply]
+  obtain ⟨d, rfl⟩ | h := em (∃ d, t = s + d)
+  · rw [modOf_apply_of_exists_add _ _ _ ⟨d, rfl⟩, eq_comm]
+    refine Finset.sum_eq_zero fun a ha => Finset.sum_eq_zero fun b hb => ?_
+    rw [modOf, Finsupp.support_filter, Finset.mem_filter,] at ha hb
+    rw [modOf_apply_of_not_exists_add _ _ _ ha.2, modOf_apply_of_not_exists_add _ _ _ hb.2]
+    dsimp
+    rw [if_neg fun h => hs _ _ ha.2 hb.2 ⟨_, h⟩]
+  · rw [modOf_apply_of_not_exists_add _ _ _ h, mul_apply]
 
 end
 
