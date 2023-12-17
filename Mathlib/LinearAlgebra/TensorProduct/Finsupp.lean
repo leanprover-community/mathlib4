@@ -395,13 +395,13 @@ theorem lTensor_equiv' (f : N →ₗ[R] P) (x : TensorProductFinsupp R M N) :
   rw [← LinearEquiv.coe_coe, ← LinearMap.comp_apply, ← LinearEquiv.coe_coe,
     ← LinearMap.comp_apply, lTensor_equiv]
 
-variable (M)
-
+variable (M) in
 /-- `lEmbed M h`, where `h` is a proof that the `R`-linear map `f : N → P` is injective,
 is the function on the free abelian group that lifts to `lTensor M f`. -/
 def lEmbed {f : N →ₗ[R] P} (h : Function.Injective f) : (M × N →₀ ℤ) → M × P →₀ ℤ :=
   Finsupp.embDomain ⟨_, Function.Injective.Prod_map Function.injective_id h⟩
 
+variable (M) in
 theorem mk'_lEmbed {f : N →ₗ[R] P} (h : Function.Injective f) (x : M × N →₀ ℤ) :
     QuotientAddGroup.mk' (TensorProductFinsupp.Null R M P) (lEmbed M h x) =
       TensorProductFinsupp.lTensor M f (QuotientAddGroup.mk' _ x) := by
@@ -410,6 +410,7 @@ theorem mk'_lEmbed {f : N →ₗ[R] P} (h : Function.Injective f) (x : M × N �
     ← Finsupp.total_apply, Finsupp.total_embDomain]
   rfl
 
+variable (M) in
 def lEmbed_comap {f : N →ₗ[R] P} (h : Function.Injective f) (x : M × P →₀ ℤ) : M × N →₀ ℤ :=
   Finsupp.comapDomain _ x ((Function.Injective.Prod_map Function.injective_id h).injOn _)
 
@@ -422,8 +423,6 @@ theorem lEmbed_comp {g : P →ₗ[R] Q} {f : M →ₗ[R] P}
     Finsupp.embDomain_eq_mapDomain]
   erw [← Finsupp.mapDomain_comp]
   rfl
-
-variable {M}
 
 variable (N) in
 def rTensor (f : M →ₗ[R] P) :
@@ -457,13 +456,14 @@ theorem rTensor_equiv' (f : M →ₗ[R] P) (x : TensorProductFinsupp R M N) :
   rw [← LinearEquiv.coe_coe, ← LinearMap.comp_apply, ← LinearEquiv.coe_coe,
     ← LinearMap.comp_apply, rTensor_equiv]
 
-variable (N)
 
+variable (N) in
 /-- `rEmbed N h`, where `h` is a proof that the `R`-linear map `f : M → P` is injective,
 is the function on the free abelian group that lifts to `rTensor N f`. -/
 def rEmbed {f : M →ₗ[R] P} (h : Function.Injective f) : (M × N →₀ ℤ) → P × N →₀ ℤ :=
   Finsupp.embDomain ⟨_, Function.Injective.Prod_map h Function.injective_id⟩
 
+variable (N) in
 theorem mk'_rEmbed {f : M →ₗ[R] P} (h : Function.Injective f) (x : M × N →₀ ℤ) :
     QuotientAddGroup.mk' (TensorProductFinsupp.Null R P N) (rEmbed N h x)
       = TensorProductFinsupp.rTensor N f (QuotientAddGroup.mk' _ x) := by
@@ -472,6 +472,7 @@ theorem mk'_rEmbed {f : M →ₗ[R] P} (h : Function.Injective f) (x : M × N �
     ← Finsupp.total_apply, Finsupp.total_embDomain]
   rfl
 
+variable (N) in
 def rEmbed_comap {f : M →ₗ[R] P} (h : Function.Injective f) (x : P × N →₀ ℤ) : M × N →₀ ℤ :=
   Finsupp.comapDomain _ x ((Function.Injective.Prod_map h Function.injective_id).injOn _)
 
@@ -493,7 +494,7 @@ theorem rEmbed_comap_map {ψ : M →ₗ[R] P} (hψ : Function.Injective ψ) (x :
   rw [Finsupp.comapDomain_apply, Finsupp.embDomain_eq_mapDomain, Function.Embedding.coeFn_mk,
     Finsupp.mapDomain_apply (hψ.Prod_map Function.injective_id)]
 
-theorem rEmbed_map_comap {L : Submodule R M} {x : M × N →₀ ℤ}
+theorem rEmbed_map_comap_subtype {L : Submodule R M} {x : M × N →₀ ℤ}
     (hmem : ∀ y, y ∈ x.support → y.fst ∈ L) :
       TensorProductFinsupp.rEmbed N L.injective_subtype
         (TensorProductFinsupp.rEmbed_comap N L.injective_subtype x) = x := by
@@ -505,7 +506,7 @@ theorem rEmbed_map_comap {L : Submodule R M} {x : M × N →₀ ℤ}
   erw [Finsupp.mapDomain_comapDomain _ (L.injective_subtype.Prod_map Function.injective_id) x
     hSurjOn.subset_range]
 
-theorem rEmbed_map_comap' {J K : Submodule R M} (hJK : J ≤ K) {x : K × N →₀ ℤ}
+theorem rEmbed_map_comap_inclusion {J K : Submodule R M} (hJK : J ≤ K) {x : K × N →₀ ℤ}
     (hmem : ∀ y, y ∈ x.support → y.fst.val ∈ J) :
       rEmbed N (J.inclusion_injective hJK)
         (rEmbed_comap N (J.inclusion_injective hJK) x) = x := by
@@ -518,7 +519,15 @@ theorem rEmbed_map_comap' {J K : Submodule R M} (hJK : J ≤ K) {x : K × N →�
   erw [Finsupp.mapDomain_comapDomain _
     ((J.inclusion_injective hJK).Prod_map Function.injective_id) x hSurjOn.subset_range]
 
-variable {N}
+theorem lEmbed_rEmbed {φ : M →ₗ[R] N} {ψ : P →ₗ[R] Q} (hφ : Function.Injective φ)
+   (hψ : Function.Injective ψ) (x : M × P →₀ ℤ) :
+     lEmbed N hψ (rEmbed P hφ x) = rEmbed Q hφ (lEmbed M hψ x) := by
+ unfold lEmbed rEmbed
+ refine Finsupp.ext fun i => ?_
+ rw [Finsupp.embDomain_eq_mapDomain, Finsupp.embDomain_eq_mapDomain,
+   Finsupp.embDomain_eq_mapDomain, Finsupp.embDomain_eq_mapDomain]
+ rw [← Finsupp.mapDomain_comp, ← Finsupp.mapDomain_comp]
+ erw [Prod.map_comp_map]
 
 theorem _root_.Finsupp.lift_comp (S : Type*) [Semiring S] (M : Type*) [AddCommGroup M] [Module S M]
     (N : Type*) [AddCommGroup N] [Module S N] (P : Type*) [AddCommGroup P] [Module S P]

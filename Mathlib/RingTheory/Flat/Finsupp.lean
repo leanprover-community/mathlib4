@@ -34,13 +34,15 @@ def TensorProduct.rid_DirectSum (ι : Type*) [DecidableEq ι] :
 open DirectSum LinearMap in
 /-- Applying the linear equivalence `rid_DirectSum` to a simple element `x ⊗ r` of `N ⊗ Rⁿ`. -/
 theorem TensorProduct.rid_DirectSum_tmul [DecidableEq R] (ι : Type*) [DecidableEq ι]
-    (x : N) (r : ⨁ _ : ι, R) (i : ι) :
-      rid_DirectSum R N ι (x ⊗ₜ[R] r) i = r i • x := by
+    (x : N) (r : ⨁ _ : ι, R) (i : ι) : rid_DirectSum R N ι (x ⊗ₜ[R] r) i = r i • x := by
   -- It suffices to show the equality holds when `r` is a Kronecker delta.
   -- To show this we recast as an equality of linear maps ...
-  have h : r i • x = DFinsupp.mapRange.linearMap (fun _ => flip (lsmul R N) x) r i := by
-    rw [DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_apply, flip_apply, lsmul_apply]
-  rw [h, ← mk_apply, ← LinearEquiv.coe_coe, ← LinearMap.comp_apply]
+  suffices ((rid_DirectSum R N ι : N ⊗[R] (⨁ _ : ι, R) →ₗ[R] (⨁ _ : ι, N)) ∘ₗ
+        mk R N (⨁ _ : ι, R) x) r i =
+      DFinsupp.mapRange.linearMap (fun _ => LinearMap.flip (lsmul R N) x) r i by
+    rewrite [LinearMap.comp_apply, LinearEquiv.coe_coe, mk_apply,
+      DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_apply, flip_apply, lsmul_apply] at this
+    exact this
   congr 2
   -- ... and apply the default extensionality theorems (explicit here for clarity).
   refine DirectSum.linearMap_ext R fun i : ι => LinearMap.ext_ring ?_
@@ -90,8 +92,7 @@ def lid_finite_free [Module.Finite R M] [Module.Free R M] :
 open DirectSum in
 /-- If `M` and `N` are `R`-modules and `f : M → N` a linear map, the tensor product of `f` and the
 identity `Rⁿ → Rⁿ` on a finite product is related by linear equivalences to the
-natural linear map `⨁ⁿ M → ⨁ⁿ N` induced by `f`.
- -/
+natural linear map `⨁ⁿ M → ⨁ⁿ N` induced by `f`. -/
 theorem rTensor_DirectSum_equiv_mapRange [DecidableEq R] (n : ℕ) (f : M →ₗ[R] N) :
     (rid_DirectSum R N (Fin n) : (N ⊗[R] ⨁ _ : Fin n, R) →ₗ[R] ⨁ _, N) ∘ₗ f.rTensor (⨁ _, R) =
       DFinsupp.mapRange.linearMap (fun _ : (Fin n) => f) ∘ₗ
@@ -211,7 +212,7 @@ theorem mem_kernel_witness_left [DecidableEq M] [DecidableEq (M × N →₀ ℤ)
       . right; right; exact ⟨r, m, n, rfl, Finset.mem_insert_of_mem hm⟩
 
 variable {R} {M} {N} {P} in
-open TensorProductFinsupp (lEmbed rEmbed rEmbed_comap rEmbed_map_comap) in
+open TensorProductFinsupp in
 /-- If `M` and `N` are `R`-modules, `M` has a basis `ℰ`, and `x : M × N →₀ ℤ` (representing an
 element of the free abelian group on `M × N`), if `ψ : N → P` is an injective linear map,
 and if the image `y` of `x` in `M × P →₀ ℤ` is in the subgroup `TensorProductFinsupp.Null R M P`,
@@ -233,96 +234,64 @@ theorem lTensor_free_injective_of_injective.aux [DecidableEq M] [DecidableEq P]
     (hψ : Injective ψ) (hy : lEmbed M hψ x ∈ TensorProductFinsupp.Null R M P) :
       ∃ (L : Submodule R M) (_ : Module.Free R L) (_ : L.FG) (w : L × N →₀ ℤ),
         rEmbed N L.injective_subtype w = x ∧ lEmbed L hψ w ∈ TensorProductFinsupp.Null R L P := by
-  -- Since `1 ⊗ ψ` maps `x` to 0, the element `∑(mᵢ, ψ(nᵢ))` in the free abelian group on
-  -- `M × P` is equal to a sum `∑ᵢ∑ⱼ(lᵢⱼ, pᵢⱼ)` of elements in the equivalence class of 0.
+  -- Choose a basis for `M` and a finite subfamily `κ` whose span `L` is large enough
+  -- to express the equation testifying that `y ∈ Null R M N`.
   have ⟨t, hyt, s, hts⟩ := mem_kernel_witness_left hy
   obtain ⟨f, hf⟩ := mem_span_finset.mp hyt
-  -- Choose a basis and take a finite subfamily `κ` whose span `L` contains `s` and each `mᵢ`.
   let ⟨⟨ι, ℰ⟩⟩ := ‹Module.Free R M›
   haveI : DecidableEq ι := Classical.decEq ι
   let κ := (s ∪ (x.support.image Prod.fst)).sup fun m => (ℰ.repr m).support
   let L := span R (ℰ '' κ)
   let ℱ := Basis.span (ℰ.linearIndependent.comp ((↑) : κ → ι) Subtype.val_injective)
   rewrite [Set.range_comp, Subtype.range_val_subtype, Finset.setOf_mem] at ℱ
-  -- `L` is large enough that `∑(mᵢ, nᵢ)` lives in the free abelian group on `L × N`.
-  have hmem₁ (p : M × N) (hp : p ∈ x.support) : p.fst ∈ L :=
-    (Basis.mem_span_image _).mpr <| fun a ha => Finset.mem_sup.mpr
-      ⟨p.fst, Finset.mem_union_right _ <| Finset.mem_image.mpr ⟨p, hp, rfl⟩, ha⟩
-  let w : L × N →₀ ℤ := rEmbed_comap N L.injective_subtype x
-  refine ⟨L, ⟨⟨κ, ℱ⟩⟩, ⟨κ.image ℰ, by rw [Finset.coe_image]⟩, w,
-      by rw [rEmbed_map_comap N hmem₁], ?_⟩
-  have hmemL₁ {m : M} (hm : m ∈ s ∨ m ∈ x.support.image Prod.fst) : m ∈ L := by
+  -- By construction there exists `w : L × N →₀ ℤ` whose image in `M × N →₀ ℤ` is equal to `x`.
+  have hw : rEmbed N _ (rEmbed_comap N _ x) = x :=
+    rEmbed_map_comap_subtype (fun p hp => (Basis.mem_span_image _).mpr <|
+      fun a ha => Finset.mem_sup.mpr ⟨p.fst, Finset.mem_union_right _ <|
+        Finset.mem_image.mpr ⟨p, hp, rfl⟩, ha⟩ : ∀ p : M × N, p ∈ x.support → p.fst ∈ L)
+  -- Furthermore, `L` contains every member of `s`.
+  let stoL {m : M} (hm : m ∈ s) : L := ⟨m, by
     unfold_let L κ
     rewrite [Basis.mem_span_image, Finset.coe_subset]
-    exact fun i hi => Finset.mem_sup.mpr ⟨m, Finset.mem_union.mpr hm, hi⟩
-  -- `L` is large enough that the equation `∑(mᵢ, nᵢ) = ∑ᵢ∑ⱼ(lᵢⱼ, pᵢⱼ)` lives in `L × N →₀ ℤ`.
-  let z : L × P →₀ ℤ := t.attach.sum fun p => f p.val • rEmbed_comap P L.injective_subtype p
-  -- Prove `w` maps to `z`.
-  rewrite [show lEmbed L hψ w = z by
-    -- First show that `y` comaps to `z`.
-    rewrite [← show rEmbed_comap P L.injective_subtype (lEmbed M hψ x) = z by
-      unfold_let z
-      rewrite [← hf]
-      unfold rEmbed_comap
-      ext a
-      rewrite [Finsupp.comapDomain_apply, ← Finset.sum_attach, Finsupp.finset_sum_apply,
-        Finsupp.finset_sum_apply]
-      exact Finset.sum_congr rfl fun p _ => by
-        rw [Finsupp.smul_apply, Finsupp.smul_apply, Finsupp.comapDomain_apply]]
-    -- Show the diagram (with vertical arrows reversed) commutes.
-    unfold_let w
-    rewrite [Finsupp.ext_iff']
-    refine ⟨Finset.ext fun a => ⟨?_, ?_⟩, fun a ha => ?_⟩
-    . unfold lEmbed rEmbed_comap
-      rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map]
-      rintro ⟨p, h, rfl⟩
-      rewrite [Finset.mem_preimage] at h
-      rewrite [Finsupp.comapDomain_support, Finset.mem_preimage, Finsupp.support_embDomain,
-        Finset.mem_map]
-      exact ⟨Prod.map L.subtype id p, h, rfl⟩
-    . unfold lEmbed rEmbed_comap
-      rewrite [Finsupp.comapDomain_support, Finset.mem_preimage, Finsupp.support_embDomain,
-        Finset.mem_map]
-      rintro ⟨p, h₁, h₂⟩
-      rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map]
-      refine ⟨(⟨p.fst, hmem₁ p h₁⟩, p.snd), (by rw [Finset.mem_preimage]; exact h₁), ?_⟩
-      simpa [Prod.ext_iff, Subtype.ext_iff] using h₂
-    . unfold lEmbed rEmbed_comap at ha
-      rewrite [Finsupp.support_embDomain, Finsupp.comapDomain_support, Finset.mem_map] at ha
-      obtain ⟨p, h, rfl⟩ := ha
-      rewrite [Finset.mem_preimage] at h
-      unfold lEmbed rEmbed_comap
-      have : Prod.map L.subtype id ((Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) p) =
-        (Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) (Prod.map L.subtype id p) := rfl
-      rw [Finsupp.comapDomain_apply,
-        show Prod.map L.subtype id
-          ((Function.Embedding.mk _ (Injective.Prod_map injective_id hψ)) p) =
-            (Function.Embedding.mk _ (Injective.Prod_map injective_id hψ))
-               (Prod.map L.subtype id p) from rfl,
-        Finsupp.embDomain_apply, Finsupp.comapDomain_apply, Finsupp.embDomain_apply]]
-  unfold TensorProductFinsupp.Null
+    exact fun i hi => Finset.mem_sup.mpr ⟨m, Finset.mem_union.mpr (.inl hm), hi⟩⟩
+  -- We claim that `L` is "large enough".
+  refine ⟨L, ⟨⟨κ, ℱ⟩⟩, ⟨κ.image ℰ, by rw [Finset.coe_image]⟩, rEmbed_comap N _ x, hw, ?_⟩
+  -- Chase the diagram from `x` to `z` in two different ways.
+  let z := rEmbed_comap P L.injective_subtype (lEmbed M hψ x)
+  have h₁ : lEmbed L hψ (rEmbed_comap N L.injective_subtype x) = z := by
+    rw [← rEmbed_comap_map L.injective_subtype (lEmbed L hψ _), ← lEmbed_rEmbed, hw]
+  -- The relation `hf` in `M × P →₀ ℤ` is reflected in `L × P →₀ ℤ'.
+  have h₂ : z = t.attach.sum fun p => f p.val • rEmbed_comap P L.injective_subtype p := by
+    unfold_let z
+    unfold rEmbed_comap
+    ext a
+    rewrite [← hf, Finsupp.comapDomain_apply, ← Finset.sum_attach,
+      Finsupp.finset_sum_apply, Finsupp.finset_sum_apply]
+    exact Finset.sum_congr rfl fun p _ => by
+      rw [Finsupp.smul_apply, Finsupp.smul_apply, Finsupp.comapDomain_apply]
+  -- Verify that `z` is eligible for membership in `Null R L P`.
+  rewrite [h₁, h₂]
+  unfold TensorProductFinsupp.Null rEmbed_comap
   rewrite [← span_int_eq_addSubgroup_closure, mem_toAddSubgroup]
-  unfold_let z
   apply sum_mem
   rintro p -
   refine zsmul_mem (subset_span ?_) _
-  unfold rEmbed_comap
   obtain (⟨m₁, m₂, n, hp, hm₁, hm₂⟩ | ⟨m, n₁, n₂, hp, hm⟩ | ⟨r, m, n, hp, hm⟩) :=
       hts p.val p.property
   . left
-    refine ⟨⟨m₁, hmemL₁ (.inl hm₁)⟩, ⟨m₂, hmemL₁ (.inl hm₂)⟩, n, Finsupp.ext fun (m', n') => ?_⟩
+    refine ⟨stoL hm₁, stoL hm₂, n, Finsupp.ext fun (m', n') => ?_⟩
     simp? [hp, Finsupp.single_apply,
         Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
         id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
         Finsupp.single_apply, AddSubmonoid.mk_add_mk, Subtype.ext_iff]
   . right; left
-    refine ⟨⟨m, hmemL₁ (.inl hm)⟩, n₁, n₂, Finsupp.ext fun (m', n') => ?_⟩
+    refine ⟨stoL hm, n₁, n₂, Finsupp.ext fun (m', n') => ?_⟩
     simp? [hp, Finsupp.single_apply,
         Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
         id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
         Finsupp.single_apply, Subtype.ext_iff]
   . right; right
-    refine ⟨r, ⟨m, hmemL₁ (.inl hm)⟩, n, Finsupp.ext fun (m', n') => ?_⟩
+    refine ⟨r, stoL hm, n, Finsupp.ext fun (m', n') => ?_⟩
     simp? [hp, Finsupp.single_apply,
         Subtype.ext_iff] says simp only [coeSubtype, hp, Finsupp.comapDomain_apply, Prod_map,
         id_eq, Finsupp.coe_sub, Pi.sub_apply, ne_eq, Prod.mk.injEq, not_and,
@@ -334,33 +303,30 @@ then `ψ.lTensor M`, the tensor product of the identity `M → M` with `ψ`, is 
 theorem lTensor_free_injective_of_injective [DecidableEq R] [DecidableEq M] [DecidableEq P]
     [DecidableEq (M × N →₀ ℤ)] [Module.Free R M]
     (ψ : N →ₗ[R] P) (hψ : Injective ψ) : Injective (ψ.lTensor M) := by
-  -- Assuming `ψ.lTensor F x = 0`, show `x = 0`.
+  -- Assuming `ψ.lTensor M x = 0`, show `x = 0`.
   rewrite [injective_iff_map_eq_zero]
   intro x hx₀
-  -- Choose a representative `x' = ∑(mᵢ, nᵢ)` of `x` in the free abelian group on `M × N`.
+  -- Choose a representative `x'` of `x` in the free abelian group `M × N →₀ ℤ`.
   let x' := Quotient.out' <| (TensorProductFinsupp.Equiv R M N).symm x
-  -- Then the image `y'` of `x'` under the map `(1, ψ)` is in `TensorProductFinsupp.Null R M P`.
-  have hy' : lEmbed M hψ x' ∈ TensorProductFinsupp.Null R M P := by
-    rewrite [← QuotientAddGroup.eq_zero_iff, ← QuotientAddGroup.mk'_apply,
-      ← (TensorProductFinsupp.Equiv R M P).symm.map_zero, ← hx₀,
-      ← (TensorProductFinsupp.Equiv R M N).apply_symm_apply x]
-    unfold_let x'
-    rw [mk'_lEmbed, lTensor_equiv',
-      (TensorProductFinsupp.Equiv R M P).symm_apply_apply, QuotientAddGroup.mk'_apply,
-      QuotientAddGroup.out_eq']
-  -- There is a free, finitely generated submodule `L ≤ M` and an element `w' : L × N →₀ ℤ`
-  -- whose image in `M × P →₀ ℤ` is equal to `x'` and whose image in `L × P →₀ ℤ` belongs to
-  -- `TensorProductFinsupp.Null R L P`.
+  -- Then the image `y'` of `x'` in `M × P →₀ ℤ` is in `TensorProductFinsupp.Null R M P`.
+  have hy' : lEmbed M hψ x' ∈ Null R M P := by
+    have : lEmbed M hψ x' ∈ Null R M P ↔ QuotientAddGroup.mk' (Null R M P) (lEmbed M hψ x') =
+        ((TensorProductFinsupp.Equiv R M P).symm <| ψ.lTensor M <|
+          TensorProductFinsupp.Equiv R M N <| (TensorProductFinsupp.Equiv R M N).symm x) := by
+      rw [LinearEquiv.apply_symm_apply, hx₀, LinearEquiv.map_zero,
+        QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_zero_iff]
+    rw [this, lTensor_equiv', LinearEquiv.symm_apply_apply, mk'_lEmbed,
+      QuotientAddGroup.mk'_apply, QuotientAddGroup.out_eq']
+  -- Apply the auxiliary lemma to reduce to `ψ.lTensor L x = 0` where `L` is finite and free.
   have ⟨L, hfree, hfg, w', hx', hz'⟩ := lTensor_free_injective_of_injective.aux hψ hy'
   haveI : Module.Finite R L := ⟨(fg_top L).mpr hfg⟩
   -- Descend to the quotient and apply `lTensor_finite_free_injective_of_injective`.
-  unfold_let x' at hx'
-  rw [← (TensorProductFinsupp.Equiv R M N).apply_symm_apply x,
-      ← QuotientAddGroup.out_eq' ((LinearEquiv.symm (TensorProductFinsupp.Equiv R M N)) x),
-      ← QuotientAddGroup.mk'_apply, ← hx', mk'_rEmbed, ← rTensor_equiv',
-      ← (L.subtype.rTensor N).map_zero]
+  rewrite [show x = 0 ↔ (L.subtype.rTensor N <| TensorProductFinsupp.Equiv R L N <|
+      QuotientAddGroup.mk' _ w') = L.subtype.rTensor N 0 by
+    rw [(L.subtype.rTensor N).map_zero, rTensor_equiv', ← mk'_rEmbed, hx',
+      QuotientAddGroup.mk'_apply, QuotientAddGroup.out_eq', LinearEquiv.apply_symm_apply]]
   apply congrArg (L.subtype.rTensor N)
-  rw [← LinearMap.map_eq_zero_iff _ (lTensor_finite_free_injective_of_injective R L ψ hψ),
+  rewrite [← LinearMap.map_eq_zero_iff _ (lTensor_finite_free_injective_of_injective R L ψ hψ),
     lTensor_equiv', ← mk'_lEmbed L hψ, LinearEquiv.map_eq_zero_iff, QuotientAddGroup.mk'_apply,
     QuotientAddGroup.eq_zero_iff]
   exact hz'
