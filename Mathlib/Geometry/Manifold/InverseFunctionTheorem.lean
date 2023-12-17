@@ -115,17 +115,22 @@ lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
     intro hx
     refine ⟨f_loc.restrOpen s'' hs'', ?_, eqOn_refl f _, ?_⟩
     · apply mem_groupoid_of_pregroupoid.mpr
-      --have aux : f_loc.source ∩ s' = s' := by simp
+      have aux : f_loc.source ∩ s' = s' := by simp
       rw [f_loc.restrOpen_source]--, aux]
-      -- show property on s' first, then use monotonicity. tomorrow or so!
-      sorry -- TODO: complete the proof!
+      constructor
+      -- show property on s' (copy from below), then use monotonicity!
+      · have : P.property f_loc s' := sorry
+        show P.property f_loc (f_loc.source ∩ s'')
+        apply P.monotonicity (t := s') (f_loc.open_source.inter hs'')
+        rw [← aux]
+        exact inter_subset_inter_right f_loc.source (inter_subset_left _ _)
+        exact this
+      · have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by rw [f_loc.restrOpen_target s' hs', aux]
+        -- complete proof, with the below things!
+        sorry
     · rw [f_loc.restrOpen_source]
       apply (mem_inter hx' hx)
   refine ⟨s'', by apply mem_inter (mem_inter hx' hx); exact hxt', hs'', hG⟩
-
-
-  -- have aux : f_loc.source ∩ s' = s' := by simp
-  -- have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by rw [f_loc.restrOpen_target s' hs', aux]
   -- -- Thus, f and g define a local homeomorphism.
   -- have : P.groupoid.IsLocalStructomorphWithinAt f s' x := by
   --   intro hx
