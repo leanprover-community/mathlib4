@@ -189,7 +189,9 @@ theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
 #align sum.get_left_swap Sum.getLeft?_swap
 #align sum.get_right_swap Sum.getRight?_swap
 
-section LiftRel
+mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
+
+namespace LiftRel
 
 #align sum.lift_rel Sum.LiftRel
 #align sum.lift_rel_inl_inl Sum.liftRel_inl_inl
@@ -202,74 +204,39 @@ section LiftRel
 #align sum.lift_rel.swap Sum.LiftRel.swap
 #align sum.lift_rel_swap_iff Sum.liftRel_swap_iff
 
-mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
-
 variable {r : α → γ → Prop} {s : β → δ → Prop} {x : Sum α β} {y : Sum γ δ}
   {a : α} {b : β} {c : γ} {d : δ}
 
-theorem isLeft_eq_of_liftRel (h : LiftRel r s x y) : x.isLeft = y.isLeft := by
-  cases h <;> rfl
+theorem isLeft_congr (h : LiftRel r s x y) : x.isLeft ↔ y.isLeft := by cases h <;> rfl
 
-theorem isRight_eq_of_liftRel (h : LiftRel r s x y) : x.isRight = y.isRight := by
-  cases h <;> rfl
+theorem isRight_congr (h : LiftRel r s x y) : x.isRight ↔ y.isRight := by cases h <;> rfl
 
-theorem isLeft_eq_of_liftRel_inl_fst (h : LiftRel r s (inl a) y) : y.isLeft :=
-  (isLeft_eq_of_liftRel h).symm
+theorem isLeft_left (h : LiftRel r s x (inl c)) : x.isLeft := by cases h ; rfl
 
-theorem isLeft_eq_of_liftRel_inl_snd (h : LiftRel r s x (inl c)) : x.isLeft :=
-  isLeft_eq_of_liftRel h
+theorem isLeft_right (h : LiftRel r s (inl a) y) : y.isLeft := by cases h ; rfl
 
-theorem isRight_of_liftRel_inr_fst (h : LiftRel r s (inr b) y) : y.isRight :=
-  (isRight_eq_of_liftRel h).symm
+theorem isRight_left (h : LiftRel r s x (inr d)) : x.isRight := by cases h ; rfl
 
-theorem isRight_of_liftRel_inr_snd (h : LiftRel r s x (inr d)) : x.isRight :=
-  isRight_eq_of_liftRel h
+theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h ; rfl
 
-variable {τ κ : Type*} {f : τ → Sum α β} {g : κ → Sum γ δ} {t : τ} {k : κ}
-
-theorem isLeft_apply_of_inl_fst (h : LiftRel r s (inl a) (g k)) : (g k).isLeft :=
-  isLeft_eq_of_liftRel_inl_fst h
-
-theorem isLeft_apply_of_inl_snd (h : LiftRel r s (f t) (inl c)) : (f t).isLeft :=
-  isLeft_eq_of_liftRel_inl_snd h
-
-theorem isRight_apply_of_inr_fst (h : LiftRel r s (inr b) (g k)) : (g k).isRight :=
-  isRight_of_liftRel_inr_fst h
-
-theorem isRight_apply_of_inr_snd (h : LiftRel r s (f t) (inr d)) : (f t).isRight :=
-  isRight_of_liftRel_inr_snd h
-
-theorem isLeft_apply_eq_of_LiftRel_apply (h : LiftRel r s (f t) y) : (f t).isLeft = y.isLeft :=
-  isLeft_eq_of_liftRel h
-
-theorem isRight_apply_eq_of_LiftRel_apply (h : LiftRel r s x (g k)) :
-    (g k).isRight = x.isRight := (isRight_eq_of_liftRel h).symm
-
-theorem liftRel_of_left (h : ∃ a c, r a c ∧ x = inl a ∧ y = inl c) : LiftRel r s x y :=
-  (Sum.liftRel_iff ..).mpr (Or.inl h)
-
-theorem liftRel_of_right (h : ∃ b d, s b d ∧ x = inr b ∧ y = inr d) : LiftRel r s x y :=
-  (Sum.liftRel_iff ..).mpr (Or.inr h)
-
-theorem exists_of_liftRel_left_isLeft (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
+theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
-  rcases (isLeft_iff.mp h₂) with ⟨_, rfl⟩
+  rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
   simp only [liftRel_iff, false_and, and_false, exists_false, or_false] at h₁
   exact h₁
 
-theorem exists_of_liftRel_right_isLeft (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
-    ∃ a c, r a c ∧ x = inl a ∧ y = inl c :=
-  exists_of_liftRel_left_isLeft h₁ (isLeft_eq_of_liftRel h₁ ▸ h₂)
+theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
+    ∃ a c, r a c ∧ x = inl a ∧ y = inl c := exists_of_isLeft_left h₁ ((isLeft_congr h₁).mpr h₂)
 
-theorem exists_of_liftRel_left_isRight (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
+theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
-  rcases (isRight_iff.mp h₂) with ⟨_, rfl⟩
+  rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
   simp only [liftRel_iff, false_and, and_false, exists_false, false_or] at h₁
   exact h₁
 
-theorem exists_of_liftRel_right_isRight (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
+theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
-  exists_of_liftRel_left_isRight h₁ (isRight_eq_of_liftRel h₁ ▸ h₂)
+  exists_of_isRight_left h₁ ((isRight_congr h₁).mpr h₂)
 
 end LiftRel
 
