@@ -331,11 +331,11 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
   Iff.symm AddMonoidHom.ext_iff₂
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
-lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute (a : R) :
+lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
     mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
   FunLike.ext_iff
 
-lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute (b : R) :
+lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
     mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
   FunLike.ext_iff
 
@@ -363,7 +363,7 @@ namespace AddMonoid.End
 
 lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
   AddMonoidHom.ext fun a =>
-    Eq.symm <| (AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute a).2 (.all _)
+    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
 
 end AddMonoid.End
 
