@@ -1220,9 +1220,9 @@ end CycleOf
 ### `cycleFactors`
 -/
 
-
 variable [DecidableEq α]
 
+open scoped List in
 /-- Given a list `l : List α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
 def cycleFactorsAux [Fintype α] :
@@ -1263,7 +1263,7 @@ def cycleFactorsAux [Fintype α] :
                 List.cons_perm_iff_perm_erase.2 ⟨hg, List.Perm.refl _⟩
               have : ∀ h ∈ m.erase g, Disjoint g h :=
                 (List.pairwise_cons.1
-                    ((hgm.pairwise_iff fun a b (h : Disjoint a b) => h.symm).2 hm₃)).1
+                    ((hgm.pairwise_iff @fun a b (h : Disjoint a b) => h.symm).2 hm₃)).1
               by_cases id fun hgy : g y ≠ y =>
                 (disjoint_prod_right _ this y).resolve_right <| by
                   have hsc : SameCycle f⁻¹ x (f y) := by
@@ -1303,13 +1303,14 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       exact key a (mem_inter_of_mem ha hτa)
 #align equiv.perm.mem_list_cycles_iff Equiv.Perm.mem_list_cycles_iff
 
+open scoped List in
 theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List (Perm α)}
     (h₀ : l₁.prod = l₂.prod) (h₁l₁ : ∀ σ : Perm α, σ ∈ l₁ → σ.IsCycle)
     (h₁l₂ : ∀ σ : Perm α, σ ∈ l₂ → σ.IsCycle) (h₂l₁ : l₁.Pairwise Disjoint)
     (h₂l₂ : l₂.Pairwise Disjoint) : l₁ ~ l₂ := by
   classical
     refine'
-      (List.perm_ext (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
+      (List.perm_ext_iff_of_nodup (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
             (nodup_of_pairwise_disjoint_cycles h₁l₂ h₂l₂)).mpr
         fun σ => _
     by_cases hσ : σ.IsCycle
@@ -1348,6 +1349,7 @@ def cycleFactorsFinset : Finset (Perm α) :=
         hl.right.right hl'.right.right)
 #align equiv.perm.cycle_factors_finset Equiv.Perm.cycleFactorsFinset
 
+open scoped List in
 theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} (hn : l.Nodup) :
     σ.cycleFactorsFinset = l.toFinset ↔
       (∀ f : Perm α, f ∈ l → f.IsCycle) ∧ l.Pairwise Disjoint ∧ l.prod = σ := by
@@ -1361,7 +1363,8 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     have hperm : l ~ l' := List.perm_of_nodup_nodup_toFinset_eq hn hn' h.symm
     refine' ⟨_, _, _⟩
     · exact fun _ h => hc' _ (hperm.subset h)
-    · rwa [List.Perm.pairwise_iff Disjoint.symmetric hperm]
+    · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
+      rwa [this]
     · rw [← hp', hperm.symm.prod_eq']
       refine' hd'.imp _
       exact Disjoint.commute
@@ -1717,7 +1720,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   refine'
     isConj_of_support_equiv
       (hσ.zpowersEquivSupport.symm.trans <|
-        (zpowersEquivZpowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
+        (zpowersEquivZPowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
       _
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
@@ -1727,7 +1730,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
       (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
   apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
   -- This used to be a `simp only` before leanprover/lean4#2644
-  erw [zpowersEquivZpowers_apply, zpowersEquivZpowers_apply]
+  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
   dsimp
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [pow_succ, Perm.mul_apply]
