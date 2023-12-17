@@ -78,7 +78,6 @@ def lipschitz (Q : QuadraticForm R M) :=
   Subgroup.closure ((↑) ⁻¹' Set.range (ι Q) : Set (CliffordAlgebra Q)ˣ)
 #align lipschitz lipschitz
 
-set_option synthInstance.maxHeartbeats 25000 in
 /-- If x is in `lipschitz Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
 theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q)
@@ -186,8 +185,6 @@ theorem coe_mem_lipschitz_iff_mem {x : (CliffordAlgebra Q)ˣ} :
   norm_cast
   exact exists_eq_right
 #align coe_mem_lipschitz_iff_mem coe_mem_lipschitz_iff_mem
-
--- instance : Membership (CliffordAlgebra Q) (lipschitz Q) :=
 
 /-- `pinGroup Q` is defined as the infimum of `lipschitz Q` and `unitary (CliffordAlgebra Q)`.
 See `mem_iff`. -/
@@ -307,8 +304,6 @@ instance : Group (pinGroup Q) :=
     inv := star
     mul_left_inv := star_hMul_self }
 
--- set_option trace.Meta.synthInstance true in
-set_option synthInstance.maxHeartbeats 25000 in
 instance : InvolutiveStar (pinGroup Q) :=
   ⟨fun _ => by
     ext; simp only [coe_star, star_star]
@@ -462,7 +457,6 @@ instance : Group (spinGroup Q) :=
     inv := star
     mul_left_inv := star_hMul_self }
 
-set_option synthInstance.maxHeartbeats 25000 in
 instance : InvolutiveStar (spinGroup Q) :=
   ⟨fun _ => by ext; simp only [coe_star, star_star]⟩
 
