@@ -14,37 +14,6 @@ open Polynomial
 
 open scoped Polynomial BigOperators IntermediateField
 
-
-section HEq
-
-universe u₁ u₂ u₃
-
-namespace FunLike
-
-variable {F F' : Sort u₁} {α α' : Sort u₂} {β : α → Sort u₃} {β' : α' → Sort u₃} [i : FunLike F α β]
-  [i' : FunLike F' α' β']
-
-theorem ext_heq {f : F} {f' : F'} (h₁ : F = F') (h₂ : α = α') (h₃ : HEq β β') (h₄ : HEq i i')
-    (h : ∀ x x', HEq x x' → HEq (f x) (f' x')) : HEq f f' := by
-  cases h₁; cases h₂; cases h₃; cases h₄
-  exact heq_of_eq (FunLike.ext f f' fun x => eq_of_heq (h x x HEq.rfl))
-#align fun_like.ext_heq FunLike.ext_heq
-
-theorem congr_heq {f : F} {f' : F'} {x : α} {x' : α'} (h₁ : HEq f f') (h₂ : HEq x x')
-    (h₃ : HEq β β') (h₄ : HEq i i') : HEq (f x) (f' x') := by
-  cases h₁; cases h₂; cases h₃; cases h₄; rfl
-#align fun_like.congr_heq FunLike.congr_heq
-
-end FunLike
-
-universe u
-
-theorem cast_heq' {α β α' : Sort u} (h : α = β) {a : α} {a' : α'} (h' : HEq a a') :
-    HEq (cast h a) a' := by cases h; cases h'; rfl
-#align cast_heq' cast_heq'
-
-end HEq
-
 namespace AlgEquiv
 
 variable {R : Type*} [CommSemiring R] {A₁ A₂ : Type*}
