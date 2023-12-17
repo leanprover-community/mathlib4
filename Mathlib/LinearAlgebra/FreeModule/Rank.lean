@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.Dimension
+import Mathlib.SetTheory.Cardinal.Algebraic
 
 #align_import linear_algebra.free_module.rank from "leanprover-community/mathlib"@"465d4301d8da5945ef1dc1b29fb34c2f2b315ac4"
 
@@ -123,3 +124,28 @@ theorem rank_tensorProduct' (N : Type v) [AddCommGroup N] [Module R N] [Module.F
 #align rank_tensor_product' rank_tensorProduct'
 
 end CommRing
+
+section DivisionRing
+
+variable (K : Type*) [DivisionRing K]
+
+/-- The **Erdős-Kaplansky Theorem**. https://mathoverflow.net/a/168624/3332 -/
+theorem rank_pi_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
+  have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
+    (Finsupp.lcoeFun.rank_le_of_injective <| by exact FunLike.coe_injective)
+  have card_basis := Module.Free.rank_eq_card_chooseBasisIndex
+  refine max_le aleph0_le ?_
+  obtain card_K | card_K := le_or_lt #K ℵ₀
+  · exact card_K.trans aleph0_le
+  by_contra!
+  let b := Module.Free.chooseBasis K (ℕ → K)
+  let L := Subfield.closure (Set.range (fun i : _ × ℕ ↦ b i.1 i.2))
+  have : #L < #K
+  · refine (Subfield.cardinal_mk_closure_le_max _).trans_lt
+      (max_lt_iff.mpr ⟨mk_range_le.trans_lt ?_, card_K⟩)
+    rwa [mk_prod, ← aleph0, lift_uzero, ← card_basis, mul_aleph0_eq aleph0_le]
+  have : ℵ₀ ≤ Module.rank L K
+  · sorry
+
+
+end DivisionRing
