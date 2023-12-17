@@ -51,9 +51,9 @@ functions are an example of how complicated it can get.
 -/
 
 
-universe u v w
+universe ua ub uc pa pb pc w
 
-variable {α : Type u} {β : Type v} {γ : Sort w}
+variable {α : Type ua} {β : Type ub} {γ : Sort uc}
 
 namespace SlimCheck
 
@@ -67,7 +67,7 @@ otherwise.
 We use `Σ` to encode mappings instead of `×` because we
 rely on the association list API defined in `data.list.sigma`.
  -/
-inductive TotalFunction (α : Type u) (β : Type v) : Type max u v
+inductive TotalFunction (α : Type ua) (β : Type ub) : Type max ua ub
   | withDefault : List (Σ _ : α, β) → β → TotalFunction α β
 #align slim_check.total_function SlimCheck.TotalFunction
 #align slim_check.total_function.with_default SlimCheck.TotalFunction.withDefault
@@ -108,7 +108,7 @@ protected def repr [Repr α] [Repr β] : TotalFunction α β → String
   | TotalFunction.withDefault m y => s!"[{(reprAux m)}_ ↦ {repr y}]"
 #align slim_check.total_function.repr SlimCheck.TotalFunction.repr
 
-instance (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) where
+instance (α : Type ua) (β : Type ub) [Repr α] [Repr β] : Repr (TotalFunction α β) where
   reprPrec f _ := TotalFunction.repr f
 
 /-- Create a `finmap` from a list of pairs. -/
@@ -116,10 +116,17 @@ def List.toFinmap' (xs : List (α × β)) : List (Σ _ : α, β) :=
   xs.map Prod.toSigma
 #align slim_check.total_function.list.to_finmap' SlimCheck.TotalFunction.List.toFinmap'
 
-section
+-- monads in four universes needed: one for each of `ℕ`, `α`, `proxy β`, and `α → proxy β`
+variable
+  {m₀ : Type → Type w}
+  {ma : Type ua → Type w}
+  {mb : Type pb → Type w}
+  {mab : Type (max ua pb) → Type w}
+  [Monad m₀] [Monad mb] [Monad ma] [Monad mab]
+  [ULiftable ma mab] [ULiftable mb mab] [ULiftable m₀ mab]
 
-universe ua ub
-variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
+
+section
 
 -- porting note: removed, there is no `sizeof` in the new `Sampleable`
 
@@ -141,13 +148,15 @@ def shrink {α β} [DecidableEq α] [Shrinkable α] [Shrinkable β] :
 #align slim_check.total_function.shrink SlimCheck.TotalFunction.shrink
 
 variable [Repr α]
-
-instance Pi.sampleableExt : SampleableExt (α → β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
+instance Pi.sampleableExt
+  [DecidableEq α] [Repr α]
+  [SampleableExt ma α] [SampleableExt mb β]:
+    SampleableExt mab (α → β) where
+  proxy := TotalFunction α (SampleableExt.proxy mb β)
   interp f := SampleableExt.interp ∘ f.apply
   sample := do
-    let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
-    let ⟨x⟩ ← ULiftable.up.{max u ub} <| (SampleableExt.sample : Gen (SampleableExt.proxy β))
+    let xs ← SampleableExt.sample (α := List (α × β))
+    let ⟨x⟩ ← ULiftable.up.{ua} <| (SampleableExt.sample (α := β) (m := mb))
     pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
       Prod.map SampleableExt.interp id) x
   -- note: no way of shrinking the domain without an inverse to `interp`
@@ -201,10 +210,10 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
       · simp
 #align slim_check.total_function.apply_finsupp SlimCheck.TotalFunction.applyFinsupp
 
-variable [SampleableExt α] [SampleableExt β] [Repr α]
+variable [SampleableExt ma α] [SampleableExt mb β] [Repr α]
 
-instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
+instance Finsupp.sampleableExt : SampleableExt mab (α →₀ β) where
+  proxy := TotalFunction α (SampleableExt.proxy mb β)
   interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
   sample := SampleableExt.sample (α := α → β)
   -- note: no way of shrinking the domain without an inverse to `interp`
@@ -212,8 +221,8 @@ instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
 #align slim_check.total_function.finsupp.sampleable_ext SlimCheck.TotalFunction.Finsupp.sampleableExt
 
 -- TODO: support a non-constant codomain type
-instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
+instance DFinsupp.sampleableExt : SampleableExt mab (Π₀ _ : α, β) where
+  proxy := TotalFunction α (SampleableExt.proxy mb β)
   interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
   sample := SampleableExt.sample (α := α → β)
   -- note: no way of shrinking the domain without an inverse to `interp`
@@ -226,17 +235,17 @@ section SampleableExt
 
 open SampleableExt
 
-instance (priority := 2000) PiPred.sampleableExt [SampleableExt (α → Bool)] :
-    SampleableExt.{u + 1} (α → Prop) where
-  proxy := proxy (α → Bool)
+instance (priority := 2000) PiPred.sampleableExt [SampleableExt ma (α → Bool)] :
+    SampleableExt.{ua} ma (α → Prop) where
+  proxy := proxy ma (α → Bool)
   interp m x := interp m x
   sample := sample
   shrink := SampleableExt.shrink
 #align slim_check.total_function.pi_pred.sampleable_ext SlimCheck.TotalFunction.PiPred.sampleableExt
 
-instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt (α × β → γ)] :
-    SampleableExt.{imax (u + 1) (v + 1) w} (α → β → γ) where
-  proxy := proxy (α × β → γ)
+instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt mab (α × β → γ)] :
+    SampleableExt mab (α → β → γ) where
+  proxy := proxy mab (α × β → γ)
   interp m x y := interp m (x, y)
   sample := sample
   shrink := SampleableExt.shrink
@@ -265,7 +274,7 @@ i.e. `x` to itself, otherwise.
 We use `Σ` to encode mappings instead of `×` because we
 rely on the association list API defined in `data.list.sigma`.
 -/
-inductive InjectiveFunction (α : Type u) : Type u
+inductive InjectiveFunction (α : Type ua) : Type ua
   | mapToSelf (xs : List (Σ _ : α, α)) :
       xs.map Sigma.fst ~ xs.map Sigma.snd → List.Nodup (xs.map Sigma.snd) → InjectiveFunction α
 #align slim_check.injective_function SlimCheck.InjectiveFunction
@@ -290,7 +299,7 @@ protected def repr [Repr α] : InjectiveFunction α → String
   | InjectiveFunction.mapToSelf m _ _ => s! "[{TotalFunction.reprAux m}x ↦ x]"
 #align slim_check.injective_function.repr SlimCheck.InjectiveFunction.repr
 
-instance (α : Type u) [Repr α] : Repr (InjectiveFunction α) where
+instance (α : Type ua) [Repr α] : Repr (InjectiveFunction α) where
   reprPrec f _p := InjectiveFunction.repr f
 
 /-- Interpret a list of pairs as a total function, defaulting to
@@ -314,7 +323,7 @@ open Nat
 
 theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs)
     (h₁ : xs.length = ys.length) (x y : α) (i : ℕ) (h₂ : xs.get? i = some x) :
-    List.applyId.{u} (xs.zip ys) x = y ↔ ys.get? i = some y := by
+    List.applyId.{ua} (xs.zip ys) x = y ↔ ys.get? i = some y := by
   induction xs generalizing ys i
   case nil => cases h₂
   case cons x' xs xs_ih =>
@@ -336,7 +345,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
 #align slim_check.injective_function.list.apply_id_zip_eq SlimCheck.InjectiveFunction.List.applyId_zip_eq
 
 theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys)
-    (x : α) : List.applyId.{u} (xs.zip ys) x ∈ ys ↔ x ∈ xs := by
+    (x : α) : List.applyId.{ua} (xs.zip ys) x ∈ ys ↔ x ∈ xs := by
   simp only [List.applyId]
   cases h₃ : List.dlookup x (List.map Prod.toSigma (xs.zip ys)) with
   | none =>
@@ -370,7 +379,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
 #align slim_check.injective_function.apply_id_mem_iff SlimCheck.InjectiveFunction.applyId_mem_iff
 
 theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
-    x ∉ xs → List.applyId.{u} (xs.zip ys) x = x := by
+    x ∉ xs → List.applyId.{ua} (xs.zip ys) x = x := by
   intro h
   dsimp [List.applyId]
   rw [List.dlookup_eq_none.2]; rfl
@@ -381,7 +390,7 @@ theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
 #align slim_check.injective_function.list.apply_id_eq_self SlimCheck.InjectiveFunction.List.applyId_eq_self
 
 theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys) :
-    Injective.{u + 1, u + 1} (List.applyId (xs.zip ys)) := by
+    Injective (List.applyId (xs.zip ys)) := by
   intro x y h
   by_cases hx : x ∈ xs <;> by_cases hy : y ∈ xs
   · rw [List.mem_iff_get?] at hx hy
@@ -503,7 +512,8 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
   · rwa [← hxs, h₀, h₁] at hperm
 #align slim_check.injective_function.injective SlimCheck.InjectiveFunction.injective
 
-instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
+instance PiInjective.sampleableExt {m₀} [Monad m₀] [LawfulMonad m₀] :
+    SampleableExt m₀ { f : ℤ → ℤ // Function.Injective f } where
   proxy := InjectiveFunction ℤ
   interp f := ⟨apply f, f.injective⟩
   sample := do

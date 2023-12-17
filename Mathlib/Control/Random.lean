@@ -170,4 +170,8 @@ def runRand (cmd : RandT m α) : m α := do
 def runRandWith (seed : Nat) (cmd : RandT m α) : m α := do
   pure $ (← cmd.run (ULift.up $ mkStdGen seed)).1
 
+-- -- TODO: is this a good idea? do not merge
+-- instance [LawfulMonad m] : MonadLift (RandT m) m where
+--   monadLift := runRand
+
 end IO

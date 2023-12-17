@@ -79,6 +79,7 @@ random testing
 
 -/
 
+open Lean
 set_option autoImplicit true
 
 namespace SlimCheck
@@ -149,7 +150,7 @@ instance (priority := low) : PrintableProp p where
 
 /-- `Testable p` uses random examples to try to disprove `p`. -/
 class Testable (p : Prop) where
-  run (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
+  run (cfg : Configuration) (minimize : Bool) : Gen MetaM (TestResult p)
 
 @[nolint unusedArguments]
 def NamedBinder (_n : String) (p : Prop) : Prop := p
@@ -241,7 +242,8 @@ namespace Testable
 
 open TestResult
 
-def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
+def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen MetaM (TestResult p) :=
+  Testable.run
 
 /-- A `dbgTrace` with special formatting -/
 def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
@@ -319,9 +321,9 @@ candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
-    (var : String) (x : SampleableExt.proxy α) (n : Nat) :
-    OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
+partial def minimizeAux [SampleableExt m α] {β : α → Prop} [∀ x, Testable (β x)]
+    (cfg : Configuration) (var : String) (x : SampleableExt.proxy m α) (n : Nat) :
+    OptionT (Gen MetaM) (Σ x, TestResult (β (@SampleableExt.interp m _ _ x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
@@ -341,9 +343,9 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
-def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
-    (var : String) (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) :
-    Gen (Σ x, TestResult (β $ SampleableExt.interp x)) := do
+def minimize [SampleableExt m α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+    (var : String) (x : SampleableExt.proxy m α) (r : TestResult (β $ SampleableExt.interp x)) :
+    Gen MetaM (Σ x, TestResult (β $ @SampleableExt.interp m _ _ x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
      slimTrace s!"Attempting to shrink {var} := {repr x}"
@@ -352,7 +354,7 @@ def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg
 
 /-- Test a universal property by creating a sample of the right type and instantiating the
 bound variable with it. -/
-instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
+instance varTestable [SampleableExt MetaM α] {β : α → Prop} [∀ x, Testable (β x)] :
     Testable (NamedBinder var $ ∀ x : α, β x) where
   run := λ cfg min => do
     let x ← SampleableExt.sample
@@ -457,7 +459,7 @@ section IO
 open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
-def retry (cmd : Rand (TestResult p)) : Nat → Rand (TestResult p)
+def retry (cmd : RandT MetaM (TestResult p)) : Nat → RandT MetaM (TestResult p)
   | 0 => pure $ TestResult.gaveUp 1
   | n+1 => do
     let r ← cmd
@@ -475,7 +477,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-    TestResult p → Nat → Rand (TestResult p)
+  TestResult p → Nat → RandT MetaM (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -489,11 +491,13 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
   | _ => pure $ x
 
 /-- Try to find a counter-example of `p`. -/
-def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) : Rand (TestResult p) :=
+def Testable.runSuite (p : Prop) [Testable p] (cfg : Configuration := {}) :
+    RandT MetaM (TestResult p) :=
   Testable.runSuiteAux p cfg (success $ PSum.inl ()) cfg.numInst
 
-/-- Run a test suite for `p` in `BaseIO` using the global RNG in `stdGenRef`. -/
-def Testable.checkIO (p : Prop) [Testable p] (cfg : Configuration := {}) : BaseIO (TestResult p) :=
+/-- Run a test suite for `p` in `MetaM` using the global RNG in `stdGenRef`. -/
+def Testable.checkMetaM (p : Prop) [Testable p] (cfg : Configuration := {}) :
+    MetaM (TestResult p) :=
   letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   match cfg.randomSeed with
   | none => IO.runRand (Testable.runSuite p cfg)
@@ -550,11 +554,11 @@ end Decorations
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not hold. -/
 def Testable.check (p : Prop) (cfg : Configuration := {})
-    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
-  match ← Testable.checkIO p' cfg with
+    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : MetaM PUnit := do
+  match ← Testable.checkMetaM p' cfg with
   | TestResult.success _ => if !cfg.quiet then IO.println "Success"
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
-  | TestResult.failure _ xs n => throw (IO.userError $ formatFailure "Found problems!" xs n)
+  | TestResult.failure _ xs n => throwError formatFailure "Found problems!" xs n
 
 -- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x)
 --   Configuration.verbose

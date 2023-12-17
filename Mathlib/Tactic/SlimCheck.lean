@@ -200,7 +200,7 @@ set_option trace.Meta.synthInstance true
   --   when_tracing `slim_check.instance   $ do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
-  let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) e
+  let code ← unsafe evalExpr (MetaM PUnit) q(MetaM PUnit) e
   _ ← code
   admitGoal (← getMainGoal)
 
