@@ -24,10 +24,13 @@ This file contains basics about the separable degree of a field extension.
   Usually denoted by $\operatorname{Emb}_F(E)$ in textbooks.
 
   **Remark:** if `E / F` is not algebraic, then this definition makes no mathematical sense,
-  and if it is infinite, then it behaves badly. For example,
-  $\operatorname{Hom}_{\mathbb{Q}\text{-alg}}(\mathbb{Q}(\mu_{p^\infty}),
-  \overline{\mathbb{Q}})\cong\mathbb{Z}_p^\times$ which is uncontable, while
-  $[\mathbb{Q}(\mu_{p^\infty}):\mathbb{Q}]$ is countable.
+  and if it is infinite, then its cardinality doesn't behave as expected (namely, not equal to the
+  field extension degree of `separableClosure F E / F`). For example,
+  $\operatorname{Emb}_{\mathbb{Q}}(\mathbb{Q}(\mu_{p^\infty}))\cong\mathbb{Z}_p^\times$ which is
+  uncontable, while $[\mathbb{Q}(\mu_{p^\infty}):\mathbb{Q}]$ is countable.
+
+  **TODO:** prove or disprove that if `E / F` is algebraic and `Emb F E` is infinite, then
+  `Field.Emb F E` and `2 ^ Module.rank F (separableClosure F E)` have the same cardinality.
 
 - `Field.finSepDegree F E`: the (finite) separable degree $[E:F]_s$ of an algebraic extension
   `E / F` of fields, defined to be the number of `F`-algebra homomorphisms from `E` to the algebraic
