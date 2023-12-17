@@ -168,7 +168,7 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
   let tgt ← g.getType
-  let tgt' := addDecorations tgt
+  let tgt' ← addDecorations tgt
   let cfg := { cfg with
     traceDiscarded := cfg.traceDiscarded || (← isTracingEnabledFor `slim_check.discarded),
     traceSuccesses := cfg.traceSuccesses || (← isTracingEnabledFor `slim_check.success),

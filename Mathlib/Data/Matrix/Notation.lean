@@ -370,7 +370,7 @@ theorem vecMulVec_cons (v : m' → α) (x : α) (w : Fin n → α) :
 
 end VecMulVec
 
-section Smul
+section SMul
 
 variable [NonUnitalNonAssocSemiring α]
 
@@ -386,7 +386,7 @@ theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_mat_cons Matrix.smul_mat_cons
 
-end Smul
+end SMul
 
 section Submatrix
 

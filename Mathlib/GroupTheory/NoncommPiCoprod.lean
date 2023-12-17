@@ -261,11 +261,9 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     use c
     rw [← hc]
     symm
-    rw [← Nat.coprime_iff_gcd_eq_one]
-    apply Nat.coprime_prod_left
-    intro j _
-    apply hcoprime
-    exact j.2
+    rw [← Nat.coprime_iff_gcd_eq_one, Nat.coprime_fintype_prod_left_iff, Subtype.forall]
+    intro j
+    exact hcoprime _ _
 #align monoid_hom.independent_range_of_coprime_order MonoidHom.independent_range_of_coprime_order
 #align add_monoid_hom.independent_range_of_coprime_order AddMonoidHom.independent_range_of_coprime_order
 
