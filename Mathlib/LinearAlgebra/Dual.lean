@@ -1328,7 +1328,7 @@ theorem range_dualMap_mkQ_eq (W : Submodule R M) :
     exists W.dualCopairing ⟨φ, hφ⟩
 #align submodule.range_dual_map_mkq_eq Submodule.range_dualMap_mkQ_eq
 
-/-- Equivalence $(M/W)^* \approx \operatorname{ann}(W)$. That is, there is a one-to-one
+/-- Equivalence $(M/W)^* \cong \operatorname{ann}(W)$. That is, there is a one-to-one
 correspondence between the dual of `M ⧸ W` and those elements of the dual of `M` that
 vanish on `W`.
 
@@ -1364,6 +1364,8 @@ theorem finite_dualAnnihilator_iff {W : Submodule R M} [Free R (M ⧸ W)] :
   (Finite.equiv_iff W.dualQuotEquivDualAnnihilator.symm).trans (finite_dual_iff R)
 
 open LinearMap in
+/-- The pairing between a submodule `W` of a dual module `Dual R M` and the quotient of
+`M` by the coannihilator of `W`, which is always nondegenerate. -/
 def quotDualCoannihilatorToDual (W : Submodule R (Dual R M)) :
     M ⧸ W.dualCoannihilator →ₗ[R] Dual R W :=
   liftQ _ (flip <| Submodule.subtype _) le_rfl
