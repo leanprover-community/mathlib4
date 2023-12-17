@@ -784,6 +784,10 @@ theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots
   rw [smul_eq_C_mul, roots_C_mul _ ha]
 #align polynomial.roots_smul_nonzero Polynomial.roots_smul_nonzero
 
+@[simp]
+lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
+  rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
+
 theorem roots_list_prod (L : List R[X]) :
     (0 : R[X]) ∉ L → L.prod.roots = (L : Multiset R[X]).bind roots :=
   List.recOn L (fun _ => roots_one) fun hd tl ih H => by
@@ -1063,6 +1067,11 @@ theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
   aroots_C 1
 
 @[simp]
+theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
+    (-p).aroots S = p.aroots S :=
+  by rw [aroots, Polynomial.map_neg, roots_neg]
+
+@[simp]
 theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
     (C a * p).aroots S = p.aroots S := by
@@ -1122,6 +1131,15 @@ set_option linter.uppercaseLean3 false in
 theorem rootSet_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).rootSet S = ∅ := by
   rw [← C_0, rootSet_C]
 #align polynomial.root_set_zero Polynomial.rootSet_zero
+
+@[simp]
+theorem rootSet_one (S) [CommRing S] [IsDomain S] [Algebra T S] : (1 : T[X]).rootSet S = ∅ := by
+  rw [← C_1, rootSet_C]
+
+@[simp]
+theorem rootSet_neg (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+    (-p).rootSet S = p.rootSet S := by
+  rw [rootSet, aroots_neg, rootSet]
 
 instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     Fintype (p.rootSet S) :=
