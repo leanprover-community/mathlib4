@@ -121,7 +121,7 @@ notation:100 x " ᵍ⊗ₜ[" R "] " y:100 => tmul R x y
 
 variable (R) in
 /-- An auxiliary construction to move between the graded tensor product of internally-graded objects
-and the tensor product of direct sums.-/
+and the tensor product of direct sums. -/
 noncomputable def auxEquiv : (𝒜 ᵍ⊗[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) :=
   let fA := (decomposeAlgEquiv 𝒜).toLinearEquiv
   let fB := (decomposeAlgEquiv ℬ).toLinearEquiv
