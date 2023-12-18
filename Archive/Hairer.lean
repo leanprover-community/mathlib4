@@ -138,27 +138,6 @@ instance [Finite σ] : Module.Finite R (restrictTotalDegree σ R n) := by
 
 end missing_polynomial
 
-section missing_linear_algebra
-
-open Module Submodule BigOperators
-
-variable {K V V' ι : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K V']
-   {B : V' →ₗ[K] Dual K V} {m : ι → V'}
-
-lemma flip_surj_of_inj (hB : Injective B) [FiniteDimensional K V'] : Surjective B.flip := by
-  rw [← LinearMap.range_eq_top]
-  apply Submodule.eq_top_of_finrank_eq
-  set W : Subspace K _ := LinearMap.range B.flip
-  have := W.finrank_add_finrank_dualCoannihilator_eq
-  rw [Subspace.dual_finrank_eq, ← this, eq_comm, add_right_eq_self, finrank_eq_zero, eq_bot_iff]
-  intro x hx
-  apply hB
-  ext v
-  rw [Submodule.mem_dualCoannihilator] at hx
-  simpa using hx _ (LinearMap.mem_range_self _ v)
-
-end missing_linear_algebra
-
 open Metric Set MeasureTheory Module
 open MvPolynomial hiding support
 open Function hiding eval
@@ -237,6 +216,7 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p := by
   have := (inj_L ι).comp (restrictTotalDegree ι ℝ N).injective_subtype
   rw [← LinearMap.coe_comp] at this
-  obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ := flip_surj_of_inj this ((evalAtₗ 0).comp <| Submodule.subtype _)
+  obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ :=
+    LinearMap.flip_surjective_iff₁.2 this ((evalAtₗ 0).comp <| Submodule.subtype _)
   refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
   exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
