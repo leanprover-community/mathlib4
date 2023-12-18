@@ -27,9 +27,8 @@ type class assumptions to be satisfied without a `CommSemiring` intance already 
 it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x * y = y * x := by
-  -- `0 ≤ y * x`, and hence `y * x` is self-adjoint
-  simpa only [star_mul, star_eq_self_of_nonneg hx, star_eq_self_of_nonneg hy]
-    using star_eq_self_of_nonneg (mul_nonneg hy hx)
+  rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
+    IsSelfAdjoint.of_nonneg hy]
 
 /- This will be implied by the instance below, we only prove it to avoid duplicating the
 argument in the instance below for `mul_le_mul_of_nonneg_right`. -/

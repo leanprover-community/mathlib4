@@ -379,6 +379,7 @@ instance : Zero Cardinal.{u} :=
 instance : Inhabited Cardinal.{u} :=
   ⟨0⟩
 
+@[simp]
 theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
   (Equiv.equivOfIsEmpty α (ULift (Fin 0))).cardinal_eq
 #align cardinal.mk_eq_zero Cardinal.mk_eq_zero

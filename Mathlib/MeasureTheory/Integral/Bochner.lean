@@ -155,7 +155,7 @@ namespace MeasureTheory
 
 variable {α E F 𝕜 : Type*}
 
-section WeightedSmul
+section WeightedSMul
 
 open ContinuousLinearMap
 
@@ -250,7 +250,7 @@ theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weight
   exact mul_nonneg toReal_nonneg hx
 #align measure_theory.weighted_smul_nonneg MeasureTheory.weightedSMul_nonneg
 
-end WeightedSmul
+end WeightedSMul
 
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc

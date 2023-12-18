@@ -1586,7 +1586,7 @@ theorem dualMap_injective_iff {f : V₁ →ₗ[K] V₂} :
   rw [← range_eq_top, ← ker_eq_bot]
   intro h
   apply Submodule.eq_top_of_finrank_eq
-  rw [← finrank_eq_zero] at h
+  rw [← Submodule.finrank_eq_zero] at h
   rw [← add_zero (FiniteDimensional.finrank K <| LinearMap.range f), ← h, ←
     LinearMap.finrank_range_dualMap_eq_finrank_range, LinearMap.finrank_range_add_finrank_ker,
     Subspace.dual_finrank_eq]
