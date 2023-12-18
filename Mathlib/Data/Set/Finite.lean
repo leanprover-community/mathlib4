@@ -286,11 +286,6 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
--- porting note: was `@[simp]`, now `simp` can prove it
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
-  toFinite_toFinset _
-#align set.finite.to_finset_empty Set.Finite.toFinset_empty
-
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -300,6 +295,10 @@ protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
 protected theorem toFinset_eq_empty {h : s.Finite} : h.toFinset = ∅ ↔ s = ∅ :=
   @toFinset_eq_empty _ _ h.fintype
 #align set.finite.to_finset_eq_empty Set.Finite.toFinset_eq_empty
+
+protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ := by
+  simp
+#align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 @[simp]
 protected theorem toFinset_eq_univ [Fintype α] {h : s.Finite} :
@@ -934,6 +933,22 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
 #align set.finite_le_nat Set.finite_le_nat
 
+section MapsTo
+
+variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+
+theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+  refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
+  have : Finite s := finite_coe_iff.mpr hs
+  exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
+
+theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+  refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
+  have : Finite s := finite_coe_iff.mpr hs
+  exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
+
+end MapsTo
+
 section Prod
 
 variable {s : Set α} {t : Set β}
@@ -1221,9 +1236,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-@[simp]
 theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  Eq.trans (by congr; exact Subsingleton.elim _ _) empty_card
+  by simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :

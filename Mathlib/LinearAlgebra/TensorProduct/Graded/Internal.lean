@@ -20,7 +20,7 @@ that satisfies `Module ι (Additive ℤˣ)`).
 ## Main results
 
 * `GradedTensorProduct R 𝒜 ℬ`: for families of submodules of `A` and `B` that form a graded algebra,
-  this is a type alias for `A ᵍ⊗[R] B` with the appropriate multiplication.
+  this is a type alias for `A ⊗[R] B` with the appropriate multiplication.
 * `GradedTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
 * `GradedTensorProduct.liftEquiv`: a universal property for graded tensor products
 
@@ -34,9 +34,17 @@ that satisfies `Module ι (Additive ℤˣ)`).
 * https://math.stackexchange.com/q/202718/1896
 * [*Algebra I*, Bourbaki : Chapter III, §4.7, example (2)][bourbaki1989]
 
+## Implementation notes
+
+We cannot put the multiplication on `A ⊗[R] B` directly as it would conflict with the existing
+multiplication defined without the $(-1)^{\deg a' \deg b}$ term. Furthermore, the ring `A` may not
+have a unique graduation, and so we need the chosen graduation `𝒜` to appear explicitly in the
+type.
+
 ## TODO
 
-Show that the tensor product of graded algebras is itself a graded algebra.
+* Show that the tensor product of graded algebras is itself a graded algebra.
+* Determine if replacing the synonym with a single-field structure improves performance.
 -/
 
 suppress_compilation
@@ -113,7 +121,7 @@ notation:100 x " ᵍ⊗ₜ[" R "] " y:100 => tmul R x y
 
 variable (R) in
 /-- An auxiliary construction to move between the graded tensor product of internally-graded objects
-and the tensor product of direct sums.-/
+and the tensor product of direct sums. -/
 noncomputable def auxEquiv : (𝒜 ᵍ⊗[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) :=
   let fA := (decomposeAlgEquiv 𝒜).toLinearEquiv
   let fB := (decomposeAlgEquiv ℬ).toLinearEquiv
@@ -172,7 +180,6 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
-set_option maxHeartbeats 800000 in
 /-- The characterization of this multiplication on partially homogenous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
@@ -356,8 +363,8 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
       simp_rw [auxEquiv_one, gradedComm_one, auxEquiv_symm_one])
     (fun x y => by
       dsimp
-      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq, ← gradedComm_gradedMul,
-        auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
+      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq,
+        ← gradedComm_gradedMul, auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
 
 @[simp] lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R ℬ 𝒜 (comm 𝒜 ℬ x) = gradedComm R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) :=

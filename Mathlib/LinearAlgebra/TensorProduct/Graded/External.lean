@@ -27,8 +27,8 @@ The results for internally-graded algebras (via `GradedAlgebra`) are elsewhere, 
 
 * `TensorProduct.gradedComm`: the symmetric braiding operator on the tensor product of
   externally-graded rings.
-* `TensorProduct.gradedMul`: the previously describe multiplication on externally-graded rings, as a
-  bilinear map.
+* `TensorProduct.gradedMul`: the previously-described multiplication on externally-graded rings, as
+  a bilinear map.
 
 ## Implementation notes
 
@@ -72,7 +72,6 @@ section gradedComm
 local notation "𝒜ℬ" => (fun i : ι × ι => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
 local notation "ℬ𝒜" => (fun i : ι × ι => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
 
-
 /-- Auxliary construction used to build `TensorProduct.gradedComm`.
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
@@ -108,16 +107,13 @@ def gradedComm :
     (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
 
 /-- The braiding is symmetric. -/
+@[simp]
 theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 := by
-  rw [gradedComm, gradedComm]
-  dsimp
-  rw [LinearEquiv.symm_symm]
+  rw [gradedComm, gradedComm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
   ext
   rfl
 
--- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
-set_option maxHeartbeats 400000 in
-theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j):
+theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
       (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
@@ -133,7 +129,6 @@ theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
         (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)).flip (lof R _ ℬ 0 b) =
       TensorProduct.mk R _ _ (lof R _ ℬ 0 b) from
     FunLike.congr_fun this a
-  save
   ext i a
   dsimp
   rw [gradedComm_of_tmul_of, zero_mul, uzpow_zero, one_smul]
@@ -144,7 +139,6 @@ theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
     (gradedComm R 𝒜 ℬ).toLinearMap ∘ₗ (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)) (lof R _ 𝒜 0 a) =
       (TensorProduct.mk R _ _).flip (lof R _ 𝒜 0 a) from
     FunLike.congr_fun this b
-  save
   ext i b
   dsimp
   rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
@@ -173,30 +167,26 @@ theorem gradedComm_algebraMap (r : R) :
 
 end gradedComm
 
-set_option maxHeartbeats 4000000 in
+open TensorProduct (assoc map) in
 /-- The multiplication operation for tensor products of externally `ι`-graded algebras. -/
 noncomputable irreducible_def gradedMul :
-    letI AB := (DirectSum _ 𝒜) ⊗[R] (DirectSum _ ℬ)
+    letI AB := DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ
     letI : Module R AB := TensorProduct.leftModule
     AB →ₗ[R] AB →ₗ[R] AB := by
   refine TensorProduct.curry ?_
-  refine TensorProduct.map (LinearMap.mul' R (⨁ i, 𝒜 i))  (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ ?_
-  refine (TensorProduct.assoc R _ _ _).symm.toLinearMap
-    ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap
-  refine TensorProduct.map LinearMap.id ?_
-  refine (TensorProduct.assoc R _ _ _).toLinearMap
-    ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
-  refine TensorProduct.map ?_ LinearMap.id
+  refine map (LinearMap.mul' R (⨁ i, 𝒜 i)) (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ ?_
+  refine (assoc R _ _ _).symm.toLinearMap ∘ₗ .lTensor _ ?_ ∘ₗ (assoc R _ _ _).toLinearMap
+  refine (assoc R _ _ _).toLinearMap ∘ₗ .rTensor _ ?_ ∘ₗ (assoc R _ _ _).symm.toLinearMap
   exact (gradedComm _ _ _).toLinearMap
 
-set_option maxHeartbeats 800000 in
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
     (a₁ : ⨁ i, 𝒜 i) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ⨁ i, ℬ i) :
     gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
   dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
-    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul]
+    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,
+    LinearMap.lTensor_tmul]
   rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, zsmul_eq_smul_cast R, zsmul_eq_smul_cast R]
@@ -234,7 +224,6 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by
   simpa only [_root_.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
-set_option maxHeartbeats 400000 in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
@@ -248,12 +237,10 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, mul_assoc]
-  save
   simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, smul_smul, ← uzpow_add, add_mul, mul_add]
   congr 2
   abel
 
-set_option maxHeartbeats 800000 in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by
@@ -265,7 +252,6 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
   simp_rw [Units.smul_def, zsmul_eq_smul_cast R, map_smul, LinearMap.smul_apply]
-  save
   simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
     DirectSum.lof_eq_of, ← DirectSum.of_mul_of, ← DirectSum.lof_eq_of R]

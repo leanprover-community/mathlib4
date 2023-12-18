@@ -290,10 +290,16 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
   image_congr fun x _ => h x
 #align set.image_congr' Set.image_congr'
 
+@[gcongr]
+lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by
+  rintro - ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
+
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) :=
   Subset.antisymm (ball_image_of_ball fun _ ha => mem_image_of_mem _ <| mem_image_of_mem _ ha)
     (ball_image_of_ball <| ball_image_of_ball fun _ ha => mem_image_of_mem _ ha)
 #align set.image_comp Set.image_comp
+
+theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by ext; simp
 
 /-- A variant of `image_comp`, useful for rewriting -/
 theorem image_image (g : β → γ) (f : α → β) (s : Set α) : g '' (f '' s) = (fun x => g (f x)) '' s :=
@@ -391,6 +397,9 @@ theorem mem_compl_image [BooleanAlgebra α] (t : α) (S : Set α) :
   simp [← preimage_compl_eq_image_compl]
 #align set.mem_compl_image Set.mem_compl_image
 
+@[simp]
+theorem image_id_eq : image (id : α → α) = id := by ext; simp
+
 /-- A variant of `image_id` -/
 @[simp]
 theorem image_id' (s : Set α) : (fun x => x) '' s = s := by
@@ -400,6 +409,10 @@ theorem image_id' (s : Set α) : (fun x => x) '' s = s := by
 
 theorem image_id (s : Set α) : id '' s = s := by simp
 #align set.image_id Set.image_id
+
+lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n] := by
+  induction' n with n ih; · simp
+  rw [iterate_succ', iterate_succ',← ih, image_comp_eq]
 
 theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl '' (HasCompl.compl '' S) = S := by
