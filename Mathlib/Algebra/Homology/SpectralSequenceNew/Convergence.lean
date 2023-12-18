@@ -16,11 +16,10 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 namespace SpectralSequence
 
+variable {σ : Type w₂} (α : σ → Type w₃) [∀ n, LinearOrder (α n)]
+
 @[nolint checkUnivs]
 structure ConvergenceStripes where
-  σ : Type w₂
-  α (n : σ) : Type w₃
-  hα (n : σ) : LinearOrder (α n) := by infer_instance
   pred (n : σ) (i : α n) : WithBot (α n)
   pred_lt n (i : α n) : pred n i < WithBot.some i := by aesop
   stripe : ι → σ
@@ -29,18 +28,16 @@ structure ConvergenceStripes where
   discrete (n : σ) (i j : α n) (h₁ : pred n i < WithBot.some j) : i ≤ j
   finite_segment (n : σ) (i j : α n) : Set.Finite (fun (k : α n) => i ≤ k ∧ k ≤ j)
 
-attribute [instance] ConvergenceStripes.hα
+variable {α}
 
-def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) where
-  σ := ℤ
-  α _ := ℤ
+def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ) where
   stripe pq := pq.1 + pq.2
   position n i := ⟨n + 1 - i, i - 1⟩
   pred n i := some (i - 1)
   pred_lt := by
     dsimp [WithBot.some]
     aesop
-  finite_segment n i j := by
+  finite_segment _ i j := by
     rw [Set.finite_def]
     by_cases hij : i ≤ j
     · obtain ⟨d, rfl⟩ := Int.eq_add_ofNat_of_le hij
@@ -57,35 +54,37 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) where
 
 variable {ι}
 
-variable (s : ConvergenceStripes ι)
+variable (s : ConvergenceStripes ι α)
 
 namespace ConvergenceStripes
 
 attribute [simp] stripe_position
 
-lemma stripe_eq (n : s.σ) (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+lemma stripe_eq (n : σ) (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     s.stripe pq = n := by
   rw [← hpq, s.stripe_position]
 
-def segment (n : s.σ) (i j : s.α n) : Set (s.α n) :=
+@[nolint unusedArguments]
+def segment (_ : ConvergenceStripes ι α) (n : σ) (i j : α n) : Set (α n) :=
   fun k => i ≤ k ∧ k ≤ j
 
-noncomputable instance (n : s.σ) (i j : s.α n) : Fintype (s.segment n i j) := by
+noncomputable instance (n : σ) (i j : α n) : Fintype (s.segment n i j) := by
   have h := s.finite_segment n i j
   rw [Set.finite_def] at h
   exact h.some
 
-def segment' (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) : Set (WithBot (s.α n)) :=
+@[nolint unusedArguments]
+def segment' (_ : ConvergenceStripes ι α) (n : σ) (i : α n) (j : WithBot (α n)) : Set (WithBot (α n)) :=
   fun k => WithBot.some i ≤ k ∧ k ≤ j
 
-instance (n : s.σ) (i : s.α n) : Subsingleton (s.segment' n i ⊥) where
+instance (n : σ) (i : α n) : Subsingleton (s.segment' n i ⊥) where
   allEq := by
     rintro ⟨a, ha, ha'⟩ ⟨b, hb, hb'⟩
     simp only [le_bot_iff] at ha' hb'
     subst ha' hb'
     rfl
 
-noncomputable instance (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) :
+noncomputable instance (n : σ) (i : α n) (j : WithBot (α n)) :
     Fintype (s.segment' n i j) := by
   obtain _ | j := j
   · let φ : s.segment' n i ⊥ → Fin 1 := fun _ => 0
@@ -101,14 +100,14 @@ noncomputable instance (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) :
       simp at hx
     · exact ⟨⟨x, WithBot.coe_le_coe.1 hx, WithBot.coe_le_coe.1 hx'⟩, rfl⟩
 
-lemma pred_le (n : s.σ) (i : s.α n) : s.pred n i ≤ WithBot.some i :=
+lemma pred_le (n : σ) (i : α n) : s.pred n i ≤ WithBot.some i :=
   (s.pred_lt n i).le
 
-lemma pred_monotone (n : s.σ) (i j : s.α n) (hij : i ≤ j) :
+lemma pred_monotone (n : σ) (i j : α n) (hij : i ≤ j) :
     s.pred n i ≤ s.pred n j := by
   obtain _ | rfl := hij.lt_or_eq
   · by_contra!
-    by_cases hi : ∃ (k : s.α n), k = s.pred n i
+    by_cases hi : ∃ (k : α n), k = s.pred n i
     · obtain ⟨k, hk⟩ := hi
       have hj := s.discrete n j k (by simpa only [← hk] using this)
       have hk' := s.pred_lt n i
@@ -122,18 +121,18 @@ lemma pred_monotone (n : s.σ) (i j : s.α n) (hij : i ≤ j) :
       simp at this
   · rfl
 
-def pred' (n : s.σ) : WithBot (s.α n) → WithBot (s.α n)
+def pred' (n : σ) : WithBot (α n) → WithBot (α n)
   | ⊥ => ⊥
   | WithBot.some x => s.pred n x
 
 @[simp]
-lemma pred'_bot (n : s.σ) : s.pred' n ⊥ = ⊥ := rfl
+lemma pred'_bot (n : σ) : s.pred' n ⊥ = ⊥ := rfl
 
 @[simp]
-lemma pred'_some (n : s.σ) (i : s.α n) :
+lemma pred'_some (n : σ) (i : α n) :
     s.pred' n (WithBot.some i) = s.pred n i := rfl
 
-lemma pred'_le (n : s.σ) (i : WithBot (s.α n)) :
+lemma pred'_le (n : σ) (i : WithBot (α n)) :
     s.pred' n i ≤ i := by
   cases' i with i
   · erw [pred'_bot]
@@ -141,10 +140,10 @@ lemma pred'_le (n : s.σ) (i : WithBot (s.α n)) :
   · erw [pred'_some]
     exact s.pred_le n i
 
-lemma pred_injective (n : s.σ) (i j : s.α n) (hij : s.pred n i = s.pred n j) :
+lemma pred_injective (n : σ) (i j : α n) (hij : s.pred n i = s.pred n j) :
     i = j := by
   revert i j hij
-  suffices ∀ (i j : s.α n) (_ : s.pred n i = s.pred n j) (_ : i ≤ j), i = j by
+  suffices ∀ (i j : α n) (_ : s.pred n i = s.pred n j) (_ : i ≤ j), i = j by
     intro i j hij
     obtain h | h := le_total i j
     · exact this i j hij h
@@ -152,7 +151,7 @@ lemma pred_injective (n : s.σ) (i j : s.α n) (hij : s.pred n i = s.pred n j) :
   intro i j hij h
   exact le_antisymm h (s.discrete n j i (by simpa only [← hij] using s.pred_lt n i))
 
-lemma pred'_monotone (n : s.σ) (i j : WithBot (s.α n)) (hij : i ≤ j) :
+lemma pred'_monotone (n : σ) (i j : WithBot (α n)) (hij : i ≤ j) :
     s.pred' n i ≤ s.pred' n j := by
   obtain _ | j := j
   · obtain rfl :=le_bot_iff.1 hij
@@ -161,7 +160,7 @@ lemma pred'_monotone (n : s.σ) (i j : WithBot (s.α n)) (hij : i ≤ j) :
     · exact bot_le
     · exact s.pred_monotone _ _ _ (by simpa using hij)
 
-lemma le_pred'_of_lt (n : s.σ) (i j : WithBot (s.α n)) (hi : i < j) :
+lemma le_pred'_of_lt (n : σ) (i j : WithBot (α n)) (hi : i < j) :
     i ≤ s.pred' n j := by
   obtain _ | i := i
   · simp
@@ -172,7 +171,7 @@ lemma le_pred'_of_lt (n : s.σ) (i j : WithBot (s.α n)) (hi : i < j) :
       have := lt_of_le_of_lt (s.discrete n j i this) (WithBot.some_lt_some.1 hi)
       simp at this
 
-lemma lt_iff_le_pred' (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) :
+lemma lt_iff_le_pred' (n : σ) (i : α n) (j : WithBot (α n)) :
     i < j ↔ i ≤ s.pred' n j := by
   constructor
   · apply s.le_pred'_of_lt
@@ -182,23 +181,23 @@ lemma lt_iff_le_pred' (n : s.σ) (i : s.α n) (j : WithBot (s.α n)) :
       simp at h
     · exact lt_of_le_of_lt h (s.pred_lt n j)
 
-def sub' (n : s.σ) : ℕ → WithBot (s.α n) → WithBot (s.α n)
+def sub' (n : σ) : ℕ → WithBot (α n) → WithBot (α n)
   | 0 => id
   | k + 1 => s.pred' n ∘ sub' n k
 
-def sub (n : s.σ) (i : WithBot (s.α n)) (k : ℕ) : WithBot (s.α n) := s.sub' n k i
+def sub (n : σ) (i : WithBot (α n)) (k : ℕ) : WithBot (α n) := s.sub' n k i
 
 @[simp]
-lemma sub_zero (n : s.σ) (i : WithBot (s.α n)) :
+lemma sub_zero (n : σ) (i : WithBot (α n)) :
     s.sub n i 0 = i := rfl
 
-lemma sub_one (n : s.σ) (i : WithBot (s.α n)) :
+lemma sub_one (n : σ) (i : WithBot (α n)) :
     s.sub n i 1 = s.pred' n i := rfl
 
-lemma sub_succ (n : s.σ) (i : WithBot (s.α n)) (k : ℕ) :
+lemma sub_succ (n : σ) (i : WithBot (α n)) (k : ℕ) :
     s.sub n i (k + 1) = s.pred' n (s.sub n i k) := rfl
 
-lemma sub_sub (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ k : ℕ) (h : k₁ + k₂ = k) :
+lemma sub_sub (n : σ) (i : WithBot (α n)) (k₁ k₂ k : ℕ) (h : k₁ + k₂ = k) :
     s.sub n (s.sub n i k₁) k₂ = s.sub n i k := by
   revert k₁ k h
   induction' k₂ with k₂ hk₂
@@ -210,13 +209,13 @@ lemma sub_sub (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ k : ℕ) (h : k₁ + 
     simp only [sub_succ, hk₂ k₁ _ rfl]
 
 @[simp]
-lemma sub_bot (n : s.σ) (k : ℕ) :
+lemma sub_bot (n : σ) (k : ℕ) :
     s.sub n ⊥ k = ⊥ := by
   induction' k with k hk
   · simp
   · simp [hk, sub_succ]
 
-lemma sub_le_self (n : s.σ) (i : WithBot (s.α n)) (k : ℕ) :
+lemma sub_le_self (n : σ) (i : WithBot (α n)) (k : ℕ) :
     s.sub n i k ≤ i := by
   revert i
   induction' k with k hk
@@ -225,19 +224,19 @@ lemma sub_le_self (n : s.σ) (i : WithBot (s.α n)) (k : ℕ) :
     rw [sub_succ]
     exact (s.pred'_le n _).trans (hk _)
 
-lemma sub_antitone (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ : ℕ) (h : k₁ ≤ k₂) :
+lemma sub_antitone (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ) (h : k₁ ≤ k₂) :
     s.sub n i k₂ ≤ s.sub n i k₁ := by
   obtain ⟨k, rfl⟩ := Nat.eq_add_of_le h
   rw [← s.sub_sub n i k₁ k _ rfl]
   apply sub_le_self
 
-lemma sub_succ_lt (n : s.σ) (i : s.α n) (k : ℕ) :
+lemma sub_succ_lt (n : σ) (i : α n) (k : ℕ) :
     s.sub n (WithBot.some i) (k + 1) < WithBot.some i :=
   lt_of_le_of_lt (s.sub_antitone n (WithBot.some i) 1 (k + 1) (by linarith)) (by
     rw [sub_one, pred'_some]
     apply pred_lt)
 
-lemma sub_eq_self_iff (n : s.σ) (i : WithBot (s.α n)) (k : ℕ) :
+lemma sub_eq_self_iff (n : σ) (i : WithBot (α n)) (k : ℕ) :
     s.sub n i k = i ↔ i = ⊥ ∨ k = 0 := by
   constructor
   · intro h
@@ -250,11 +249,11 @@ lemma sub_eq_self_iff (n : s.σ) (i : WithBot (s.α n)) (k : ℕ) :
         simpa only [h, lt_self_iff_false] using s.sub_succ_lt n i k
   · rintro (rfl | rfl) <;> simp
 
-lemma sub_injective (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ : ℕ)
+lemma sub_injective (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ)
     (h : s.sub n i k₁ = s.sub n i k₂) :
     s.sub n i k₁ = ⊥ ∨ k₁ = k₂ := by
   revert i k₁ k₂ h
-  suffices ∀ (i : WithBot (s.α n)) (k₁ k₂ : ℕ) (_ : k₁ ≤ k₂) (_ : s.sub n i k₁ = s.sub n i k₂),
+  suffices ∀ (i : WithBot (α n)) (k₁ k₂ : ℕ) (_ : k₁ ≤ k₂) (_ : s.sub n i k₁ = s.sub n i k₂),
       s.sub n i k₁ = ⊥ ∨ k₁ = k₂ by
     intro i k₁ k₂ hk
     obtain h | h := le_total k₁ k₂
@@ -270,7 +269,7 @@ lemma sub_injective (n : s.σ) (i : WithBot (s.α n)) (k₁ k₂ : ℕ)
   · exact Or.inl h
   · exact Or.inr (by simp)
 
-lemma exists_sub_eq (n : s.σ) (i j : s.α n) (hij : i ≤ j) :
+lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
     ∃ (k : ℕ), s.sub n j k = i := by
   let S : Set ℕ := fun k => (WithBot.some i) ≤ s.sub n (WithBot.some j) k
   have hS : S.Finite := by
@@ -294,7 +293,7 @@ lemma exists_sub_eq (n : s.σ) (i j : s.α n) (hij : i ≤ j) :
   have := hl' (l + 1) this (by simp)
   simp at this
 
-lemma exists_sub_le (n : s.σ) (i : WithBot (s.α n)) (j : s.α n) :
+lemma exists_sub_le (n : σ) (i : WithBot (α n)) (j : α n) :
     ∃ (k : ℕ), s.sub n i k ≤ WithBot.some j := by
   obtain _ | i := i
   · exact ⟨0, by simp⟩
@@ -310,44 +309,44 @@ end ConvergenceStripes
 
 variable (E : SpectralSequence C c r₀)
 
-class CollapsesAt (n : s.σ) (i : s.α n) : Prop where
-  condition : ∀ (k : s.α n) (_ : k ≠ i), IsZero (E.pageInfinity (s.position n k))
+class CollapsesAt (n : σ) (i : α n) : Prop where
+  condition : ∀ (k : α n) (_ : k ≠ i), IsZero (E.pageInfinity (s.position n k))
 
-lemma isZero_of_collapsesAt (n : s.σ) (i : s.α n) [h : E.CollapsesAt s n i]
-    (k : s.α n) (hk : k ≠ i) : IsZero (E.pageInfinity (s.position n k)) :=
+lemma isZero_of_collapsesAt (n : σ) (i : α n) [h : E.CollapsesAt s n i]
+    (k : α n) (hk : k ≠ i) : IsZero (E.pageInfinity (s.position n k)) :=
   h.condition k hk
 
-lemma isZero_of_collapsesAt_of_LT (n : s.σ) (i : s.α n) [h : E.CollapsesAt s n i]
-    (k : s.α n) (hk : k < i) : IsZero (E.pageInfinity (s.position n k)) :=
+lemma isZero_of_collapsesAt_of_LT (n : σ) (i : α n) [h : E.CollapsesAt s n i]
+    (k : α n) (hk : k < i) : IsZero (E.pageInfinity (s.position n k)) :=
   h.condition k (by
     rintro rfl
     simp only [lt_self_iff_false] at hk)
 
-lemma isZero_of_collapsesAt_of_GT (n : s.σ) (i : s.α n) [h : E.CollapsesAt s n i]
-    (k : s.α n) (hk : i < k) : IsZero (E.pageInfinity (s.position n k)) :=
+lemma isZero_of_collapsesAt_of_GT (n : σ) (i : α n) [h : E.CollapsesAt s n i]
+    (k : α n) (hk : i < k) : IsZero (E.pageInfinity (s.position n k)) :=
   h.condition k (by
     rintro rfl
     simp only [lt_self_iff_false] at hk)
 
-structure StronglyConvergesToInDegree (n : s.σ) (X : C) where
+structure StronglyConvergesToInDegree (n : σ) (X : C) where
   hasPageInfinityAt : ∀ (pq : ι) (_ : s.stripe pq = n), E.HasPageInfinityAt pq
-  filtration' : (WithBot (s.α n)) ⥤ MonoOver X
+  filtration' : (WithBot (α n)) ⥤ MonoOver X
   exists_isZero' :
-    ∃ (j : s.α n), IsZero ((filtration' ⋙ MonoOver.forget _ ⋙ Over.forget _).obj (s.pred n j))
-  exists_isIso' : ∃ (j : s.α n), IsIso ((filtration' ⋙ MonoOver.forget _).obj j).hom
-  π' (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+    ∃ (j : α n), IsZero ((filtration' ⋙ MonoOver.forget _ ⋙ Over.forget _).obj (s.pred n j))
+  exists_isIso' : ∃ (j : α n), IsIso ((filtration' ⋙ MonoOver.forget _).obj j).hom
+  π' (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     ((filtration' ⋙ MonoOver.forget _ ⋙ Over.forget _).obj (WithBot.some i)) ⟶ E.pageInfinity pq
-  epi_π' (i : s.α n) (pq : ι) (hpq : s.position n i = pq) : Epi (π' i pq hpq)
-  comp_π' (i : WithBot (s.α n)) (j : s.α n) (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
+  epi_π' (i : α n) (pq : ι) (hpq : s.position n i = pq) : Epi (π' i pq hpq)
+  comp_π' (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
     (filtration' ⋙ MonoOver.forget X ⋙ Over.forget X).map
       (homOfLE (show i ≤ WithBot.some j by
         subst hij
         exact s.pred_le n j)) ≫ π' j pq hpq = 0
-  exact_π' (i : WithBot (s.α n)) (j : s.α n) (hij : s.pred n j = i) (pq : ι)
+  exact_π' (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i) (pq : ι)
     (hpq : s.position n j = pq) :
       (ShortComplex.mk _ _ (comp_π' i j hij pq hpq)).Exact
 
-def StronglyConvergesTo (X : s.σ → C) := ∀ (n : s.σ), E.StronglyConvergesToInDegree s n (X n)
+def StronglyConvergesTo (X : σ → C) := ∀ (n : σ), E.StronglyConvergesToInDegree s n (X n)
 
 namespace StronglyConvergesToInDegree
 
@@ -355,43 +354,43 @@ variable {E s}
 
 section
 
-variable {n : s.σ} {X : C} (h : E.StronglyConvergesToInDegree s n X)
+variable {n : σ} {X : C} (h : E.StronglyConvergesToInDegree s n X)
 
-def filtration : WithBot (s.α n) ⥤ C := h.filtration' ⋙ MonoOver.forget X ⋙ Over.forget X
+def filtration : WithBot (α n) ⥤ C := h.filtration' ⋙ MonoOver.forget X ⋙ Over.forget X
 
-def filtrationι (i : WithBot (s.α n)) : h.filtration.obj i ⟶ X :=
+def filtrationι (i : WithBot (α n)) : h.filtration.obj i ⟶ X :=
   ((h.filtration' ⋙ MonoOver.forget X).obj i).hom
 
-instance (i : WithBot (s.α n)) : Mono (h.filtrationι i) := by
+instance (i : WithBot (α n)) : Mono (h.filtrationι i) := by
   dsimp [filtrationι]
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma filtration_map_ι {i j : WithBot (s.α n)} (f : i ⟶ j) :
+lemma filtration_map_ι {i j : WithBot (α n)} (f : i ⟶ j) :
     h.filtration.map f ≫ h.filtrationι j = h.filtrationι i :=
   Over.w ((h.filtration' ⋙ MonoOver.forget X).map f)
 
-instance {i j : WithBot (s.α n)} (f : i ⟶ j) :
+instance {i j : WithBot (α n)} (f : i ⟶ j) :
     Mono (h.filtration.map f) :=
   mono_of_mono_fac (h.filtration_map_ι f)
 
-lemma exists_isZero : ∃ (j : s.α n), IsZero (h.filtration.obj (s.pred n j)) :=
+lemma exists_isZero : ∃ (j : α n), IsZero (h.filtration.obj (s.pred n j)) :=
   h.exists_isZero'
 
-lemma exists_isIso : ∃ (j : s.α n), IsIso (h.filtrationι j) :=
+lemma exists_isIso : ∃ (j : α n), IsIso (h.filtrationι j) :=
   h.exists_isIso'
 
-def π (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+def π (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     h.filtration.obj i ⟶ E.pageInfinity pq :=
   h.π' i pq hpq
 
-instance (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+instance (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     Epi (h.π i pq hpq) :=
   h.epi_π' i pq hpq
 
 section
 
-variable (i : WithBot (s.α n)) (j : s.α n) (hij : s.pred n j = i)
+variable (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i)
   (pq : ι) (hpq : s.position n j = pq)
 
 lemma comp_π :
@@ -414,15 +413,15 @@ lemma shortExact :
 
 end
 
-lemma isIso_filtration_map_from_pred_iff (i : WithBot (s.α n)) (j : s.α n)
+lemma isIso_filtration_map_from_pred_iff (i : WithBot (α n)) (j : α n)
     (φ : i ⟶ some j) (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
     IsIso (h.filtration.map φ) ↔ IsZero (E.pageInfinity pq) :=
   (h.shortExact i j hij pq hpq).isIso_f_iff
 
 lemma isIso_filtration_map_from_pred'_iff
-    (i j : WithBot (s.α n)) (φ : i ⟶ j) (hij : s.pred' n j = i) :
+    (i j : WithBot (α n)) (φ : i ⟶ j) (hij : s.pred' n j = i) :
     IsIso (h.filtration.map φ) ↔
-      ∀ (k : s.α n) (_ : j = WithBot.some k) (pq : ι) (_ : s.position n k = pq),
+      ∀ (k : α n) (_ : j = WithBot.some k) (pq : ι) (_ : s.position n k = pq),
         IsZero (E.pageInfinity pq) := by
   obtain _ | j := j
   · constructor
@@ -443,7 +442,7 @@ lemma isIso_filtration_map_from_pred'_iff
     · intro H
       exact (h.isIso_filtration_map_from_pred_iff i j φ hij _ rfl).2 (H j rfl _ rfl)
 
-lemma isIso_filtration_map_comp_iff (i j k : WithBot (s.α n)) (f : i ⟶ j) (g : j ⟶ k) :
+lemma isIso_filtration_map_comp_iff (i j k : WithBot (α n)) (f : i ⟶ j) (g : j ⟶ k) :
     IsIso (h.filtration.map (f ≫ g)) ↔
       IsIso (h.filtration.map f) ∧ IsIso (h.filtration.map g) := by
   rw [Functor.map_comp]
@@ -456,8 +455,8 @@ lemma isIso_filtration_map_comp_iff (i j k : WithBot (s.α n)) (f : i ⟶ j) (g 
   · rintro ⟨_, _⟩
     infer_instance
 
-lemma isZero_of_isIso_filtration_map (i j : WithBot (s.α n)) (φ : i ⟶ j)
-    (hφ : IsIso (h.filtration.map φ)) (k : s.α n)
+lemma isZero_of_isIso_filtration_map (i j : WithBot (α n)) (φ : i ⟶ j)
+    (hφ : IsIso (h.filtration.map φ)) (k : α n)
     (h₁ : i ≤ s.pred n k) (h₂ : WithBot.some k ≤ j)
     (pq : ι) (hpq : s.position n k = pq) :
     IsZero (E.pageInfinity pq) := by
@@ -466,9 +465,9 @@ lemma isZero_of_isIso_filtration_map (i j : WithBot (s.α n)) (φ : i ⟶ j)
     h.isIso_filtration_map_from_pred_iff _ k _ rfl pq hpq] at hφ
   exact hφ.2.1
 
-lemma isIso_filtration_map'_iff (i j : WithBot (s.α n)) (φ : j ⟶ i) (k : ℕ) (hk : s.sub n i k = j) :
+lemma isIso_filtration_map'_iff (i j : WithBot (α n)) (φ : j ⟶ i) (k : ℕ) (hk : s.sub n i k = j) :
     IsIso (h.filtration.map φ) ↔
-      ∀ (d : ℕ) (_ : d < k) (j : s.α n) (_ : s.sub n i d = WithBot.some j)
+      ∀ (d : ℕ) (_ : d < k) (j : α n) (_ : s.sub n i d = WithBot.some j)
           (pq : ι) (_ : s.position n j = pq),
         IsZero (E.pageInfinity pq) := by
   subst hk
@@ -500,9 +499,9 @@ lemma isZero_filtration_obj_none : IsZero (h.filtration.obj none) := by
   rw [← cancel_mono (h.filtration.map φ)]
   apply hj.eq_of_tgt
 
-lemma isZero_filtration_obj_iff (i : WithBot (s.α n)) :
+lemma isZero_filtration_obj_iff (i : WithBot (α n)) :
     IsZero (h.filtration.obj i) ↔
-      ∀ (j : s.α n) (_ : WithBot.some j ≤ i) (pq : ι) (_ : s.position n j = pq),
+      ∀ (j : α n) (_ : WithBot.some j ≤ i) (pq : ι) (_ : s.position n j = pq),
         IsZero (E.pageInfinity pq) := by
   constructor
   · intro hi j hj pq hpq
@@ -525,15 +524,15 @@ lemma isZero_filtration_obj_iff (i : WithBot (s.α n)) :
     rw [IsZero.iff_id_eq_zero, ← cancel_mono (h.filtration.map α)]
     apply hj.eq_of_tgt
 
-lemma isZero_filtration_obj_of_LE (i j : WithBot (s.α n)) (hij : i ≤ j)
+lemma isZero_filtration_obj_of_LE (i j : WithBot (α n)) (hij : i ≤ j)
     (hj : IsZero (h.filtration.obj j)) : IsZero (h.filtration.obj i) := by
   rw [isZero_filtration_obj_iff] at hj ⊢
   intro k hk pq hpq
   exact hj k (hk.trans hij) pq hpq
 
-lemma isIso_filtration_map_iff (i j : WithBot (s.α n)) (φ : i ⟶ j) :
+lemma isIso_filtration_map_iff (i j : WithBot (α n)) (φ : i ⟶ j) :
     IsIso (h.filtration.map φ) ↔
-      ∀ (k : s.α n) (_ : i ≤ s.pred n k) (_ : WithBot.some k ≤ j)
+      ∀ (k : α n) (_ : i ≤ s.pred n k) (_ : WithBot.some k ≤ j)
         (pq : ι) (_ : s.position n k = pq), IsZero (E.pageInfinity pq) := by
   constructor
   · apply isZero_of_isIso_filtration_map
@@ -545,7 +544,7 @@ lemma isIso_filtration_map_iff (i j : WithBot (s.α n)) (φ : i ⟶ j) :
       obtain rfl : φ = 𝟙 _ := rfl
       infer_instance
     · revert i φ H
-      suffices ∀ (i : s.α n) (φ : WithBot.some i ⟶ WithBot.some j), (∀ (k : s.α n)
+      suffices ∀ (i : α n) (φ : WithBot.some i ⟶ WithBot.some j), (∀ (k : α n)
           (_ : WithBot.some i ≤ s.pred n k) (_ : k ≤ j) (pq : ι)
           (_ : s.position n k = pq), IsZero (E.pageInfinity pq)) → IsIso (h.filtration.map φ) by
         intro i φ H
@@ -571,20 +570,20 @@ lemma isIso_filtration_map_iff (i j : WithBot (s.α n)) (φ : i ⟶ j) :
         rw [← hl]
         apply s.sub_le_self
 
-lemma isIso_filtrationι_of_GE (i j : WithBot (s.α n)) (hij : i ≤ j)
+lemma isIso_filtrationι_of_GE (i j : WithBot (α n)) (hij : i ≤ j)
     (hi : IsIso (h.filtrationι i)) :
     IsIso (h.filtrationι j) := by
   have := epi_of_epi_fac (h.filtration_map_ι (homOfLE hij))
   apply isIso_of_mono_of_epi
 
-lemma isIso_filtation_map_of_isIso_filtrationι (i j : WithBot (s.α n)) (φ : i ⟶ j)
+lemma isIso_filtation_map_of_isIso_filtrationι (i j : WithBot (α n)) (φ : i ⟶ j)
     (hi : IsIso (h.filtrationι i)) :
     IsIso (h.filtration.map φ) := by
   have := h.isIso_filtrationι_of_GE i j (leOfHom φ) hi
   exact IsIso.of_isIso_fac_right (h.filtration_map_ι φ)
 
-lemma isIso_filtrationι_iff (i : WithBot (s.α n)) :
-    IsIso (h.filtrationι i) ↔ ∀ (j : s.α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
+lemma isIso_filtrationι_iff (i : WithBot (α n)) :
+    IsIso (h.filtrationι i) ↔ ∀ (j : α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
       IsZero (E.pageInfinity pq) := by
   constructor
   · intro hi j hij pq hpq
@@ -602,19 +601,19 @@ lemma isIso_filtrationι_iff (i : WithBot (s.α n)) :
     · intro
       exact h.isIso_filtrationι_of_GE _ _ hij hj
 
-lemma isIso_filtrationι_of_isZero (i : WithBot (s.α n))
-    (hi : ∀ (j : s.α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
+lemma isIso_filtrationι_of_isZero (i : WithBot (α n))
+    (hi : ∀ (j : α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
       IsZero (E.pageInfinity pq)) :
     IsIso (h.filtrationι i) :=
   (h.isIso_filtrationι_iff i).2 hi
 
-lemma isIso_π_iff' (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+lemma isIso_π_iff' (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     IsIso (h.π i pq hpq) ↔ IsZero (h.filtration.obj (s.pred n i)) :=
   (h.shortExact _ i rfl pq hpq).isIso_g_iff
 
-lemma isIso_π_iff (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+lemma isIso_π_iff (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     IsIso (h.π i pq hpq) ↔
-      ∀ (j : s.α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
+      ∀ (j : α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
         IsZero (E.pageInfinity pq) := by
   rw [isIso_π_iff', isZero_filtration_obj_iff]
   constructor
@@ -623,15 +622,15 @@ lemma isIso_π_iff (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
   · intro H j hj pq hpq
     exact H j (by simpa using (s.lt_iff_le_pred' n j i).2 hj) pq hpq
 
-lemma isIso_π_of_isZero (i : s.α n) (pq : ι) (hpq : s.position n i = pq)
-    (hi : ∀ (j : s.α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
+lemma isIso_π_of_isZero (i : α n) (pq : ι) (hpq : s.position n i = pq)
+    (hi : ∀ (j : α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
         IsZero (E.pageInfinity pq)) :
     IsIso (h.π i pq hpq) :=
   (h.isIso_π_iff i pq hpq).2 hi
 
 section
 
-variable (i : WithBot (s.α n)) (hi : IsIso (h.filtrationι i))
+variable (i : WithBot (α n)) (hi : IsIso (h.filtrationι i))
 
 @[simps! hom]
 noncomputable def isoFiltrationι :
@@ -652,7 +651,7 @@ end
 
 section
 
-variable (i : s.α n) (pq : ι) (hpq : s.position n i = pq) (hi : IsIso (h.π i pq hpq))
+variable (i : α n) (pq : ι) (hpq : s.position n i = pq) (hi : IsIso (h.π i pq hpq))
 
 @[simps! hom]
 noncomputable def isoπ :
@@ -673,14 +672,12 @@ end
 
 section
 
-variable (i : s.α n) (pq : ι) (hpq : s.position n i = pq)
-  (hi : ∀ (j : s.α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
-    IsZero (E.pageInfinity pq))
+variable (i : α n) (pq : ι) (hpq : s.position n i = pq)
+  (hi : IsIso (h.filtrationι i))
 
 noncomputable def pageInfinityπ :
     X ⟶ E.pageInfinity pq :=
-  (h.isoFiltrationι i (h.isIso_filtrationι_of_isZero i
-    (fun j hij pq hpq => hi j (by simpa using hij) pq hpq))).inv ≫ h.π i pq hpq
+  (h.isoFiltrationι i hi).inv ≫ h.π i pq hpq
 
 instance : Epi (h.pageInfinityπ i pq hpq hi) := by
   dsimp [pageInfinityπ]
@@ -690,13 +687,12 @@ end
 
 section
 
-variable (i : s.α n) (pq : ι) (hpq : s.position n i = pq)
-  (hi : ∀ (j : s.α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
-        IsZero (E.pageInfinity pq))
+variable (i : α n) (pq : ι) (hpq : s.position n i = pq)
+  (hi : IsIso (h.π i pq hpq))
 
 noncomputable def pageInfinityι :
     E.pageInfinity pq ⟶ X :=
-  (h.isoπ i pq hpq (h.isIso_π_of_isZero i pq hpq hi)).inv ≫ h.filtrationι i
+  (h.isoπ i pq hpq hi).inv ≫ h.filtrationι i
 
 end
 
@@ -705,28 +701,28 @@ end
 section
 
 variable {E E' : SpectralSequence C c r₀}
-  {n : s.σ} {X X' : C} (h : E.StronglyConvergesToInDegree s n X)
+  {n : σ} {X X' : C} (h : E.StronglyConvergesToInDegree s n X)
   (h' : E'.StronglyConvergesToInDegree s n X')
   (f : E ⟶ E')
 
 structure Hom where
   φ : X ⟶ X'
   τ : h.filtration ⟶ h'.filtration
-  commι (i : WithBot (s.α n)) :
+  commι (i : WithBot (α n)) :
     h.filtrationι i ≫ φ = τ.app i ≫ h'.filtrationι i
-  commπ (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+  commπ (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     h.π i pq hpq ≫ Hom.mapPageInfinity f pq =
       τ.app i ≫ h'.π i pq hpq
 
 lemma _root_.CategoryTheory.SpectralSequence.StronglyConvergesToInDegree.exists_isIso_aux :
-    ∃ (k : s.α n), IsIso (h.filtrationι k) ∧ IsIso (h'.filtrationι k) := by
+    ∃ (k : α n), IsIso (h.filtrationι k) ∧ IsIso (h'.filtrationι k) := by
   obtain ⟨k₁, hk₁⟩ := h.exists_isIso
   obtain ⟨k₂, hk₂⟩ := h'.exists_isIso
   exact ⟨max k₁ k₂, ⟨h.isIso_filtrationι_of_GE _ _ (by simp) hk₁,
     h'.isIso_filtrationι_of_GE _ _ (by simp) hk₂⟩⟩
 
 lemma _root_.CategoryTheory.SpectralSequence.StronglyConvergesToInDegree.exists_isZero_aux :
-    ∃ (k : s.α n), IsZero (h.filtration.obj (s.pred n k)) ∧ IsZero (h'.filtration.obj (s.pred n k)) := by
+    ∃ (k : α n), IsZero (h.filtration.obj (s.pred n k)) ∧ IsZero (h'.filtration.obj (s.pred n k)) := by
   obtain ⟨k₁, hk₁⟩ := h.exists_isZero
   obtain ⟨k₂, hk₂⟩ := h'.exists_isZero
   obtain H | H := le_total k₁ k₂
@@ -747,20 +743,20 @@ lemma hom_ext {α₁ α₂ : h.Hom h' f} (h : α₁.τ = α₂.τ) : α₁ = α�
   rw [← cancel_epi (h.filtrationι k), commι₁, commι₂]
 
 @[simps]
-noncomputable def Hom.mapShortComplex (α : h.Hom h' f) (i : WithBot (s.α n)) (j : s.α n)
+noncomputable def Hom.mapShortComplex (β : h.Hom h' f) (i : WithBot (α n)) (j : α n)
     (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
     h.shortComplex i j hij pq hpq ⟶ h'.shortComplex i j hij pq hpq where
-  τ₁ := α.τ.app i
-  τ₂ := α.τ.app (WithBot.some j)
+  τ₁ := β.τ.app i
+  τ₂ := β.τ.app (WithBot.some j)
   τ₃ := Hom.mapPageInfinity f pq
-  comm₁₂ := (α.τ.naturality _).symm
-  comm₂₃ := (α.commπ _ _ _).symm
+  comm₁₂ := (β.τ.naturality _).symm
+  comm₂₃ := (β.commπ _ _ _).symm
 
-lemma Hom.isIso_τ_succ (α : h.Hom h' f) (i : WithBot (s.α n)) (j : s.α n)
+lemma Hom.isIso_τ_succ (β : h.Hom h' f) (i : WithBot (α n)) (j : α n)
     (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq)
-    (hf : IsIso (Hom.mapPageInfinity f pq)) (hα : IsIso (α.τ.app i)) :
-    IsIso (α.τ.app (WithBot.some j)) :=
-  ShortComplex.isIso₂_of_shortExact_of_isIso₁₃' (α.mapShortComplex i j hij pq hpq)
+    (hf : IsIso (Hom.mapPageInfinity f pq)) (hα : IsIso (β.τ.app i)) :
+    IsIso (β.τ.app (WithBot.some j)) :=
+  ShortComplex.isIso₂_of_shortExact_of_isIso₁₃' (β.mapShortComplex i j hij pq hpq)
     (h.shortExact i j hij pq hpq) (h'.shortExact i j hij pq hpq) hα hf
 
 lemma Hom.isIso_φ_of_isIso_τ (α : h.Hom h' f) (hα : IsIso α.τ) :
@@ -774,12 +770,12 @@ instance (α : h.Hom h' f) : IsIso (α.τ.app ⊥) :=
 
 section
 
-variable (α : h.Hom h' f) (hα : ∀ (pq : ι) (_ : s.stripe pq = n), IsIso (Hom.mapPageInfinity f pq))
--- note: the assumption hα could be slightly sharper in the next lemma below
+variable (β : h.Hom h' f) (hβ : ∀ (pq : ι) (_ : s.stripe pq = n), IsIso (Hom.mapPageInfinity f pq))
+-- note: the assumption hβ could be slightly sharper in the next lemma below
 
-lemma Hom.isIso_τ_of_sub (i j : WithBot (s.α n)) (k : ℕ)
-    (hk : s.sub n j k = i) (hi : IsIso (α.τ.app i)) :
-    IsIso (α.τ.app j) := by
+lemma Hom.isIso_τ_of_sub (i j : WithBot (α n)) (k : ℕ)
+    (hk : s.sub n j k = i) (hi : IsIso (β.τ.app i)) :
+    IsIso (β.τ.app j) := by
   revert i j hi
   induction' k with k hk
   · intro i j hij _
@@ -788,21 +784,21 @@ lemma Hom.isIso_τ_of_sub (i j : WithBot (s.α n)) (k : ℕ)
   · intro i j hij _
     rw [Nat.succ_eq_add_one, ← s.sub_sub n j 1 k _ (add_comm _ _)] at hij
     have := hk _ _ hij inferInstance
-    have : ∀ (l : WithBot (s.α n)) (_ : s.sub n j 1 = l)
-      (_ : IsIso (α.τ.app l)), IsIso (α.τ.app j) := fun l hl hl' => by
+    have : ∀ (l : WithBot (α n)) (_ : s.sub n j 1 = l)
+      (_ : IsIso (β.τ.app l)), IsIso (β.τ.app j) := fun l hl hl' => by
         by_cases hj : j = ⊥
         · subst hj
           infer_instance
         · obtain ⟨j, rfl⟩ :=  WithBot.ne_bot_iff_exists.1 hj
-          exact α.isIso_τ_succ l j hl _ rfl (hα _ (by simp)) hl'
+          exact β.isIso_τ_succ l j hl _ rfl (hβ _ (by simp)) hl'
     exact this _ rfl inferInstance
 
 lemma Hom.isIso_τ_of_isIso_mapPageInfinity  :
-    IsIso α.τ := by
-  suffices ∀ j, IsIso (α.τ.app j) from NatIso.isIso_of_isIso_app _
+    IsIso β.τ := by
+  suffices ∀ j, IsIso (β.τ.app j) from NatIso.isIso_of_isIso_app _
   intro j
   obtain _ | j := j
-  · change IsIso (α.τ.app ⊥)
+  · change IsIso (β.τ.app ⊥)
     infer_instance
   · obtain ⟨k, z, z'⟩ := exists_isZero_aux h h'
     obtain ⟨d, hd⟩ := s.exists_sub_le n j k
@@ -811,13 +807,13 @@ lemma Hom.isIso_τ_of_isIso_mapPageInfinity  :
       dsimp
       rw [← s.sub_sub n j d 1 _ rfl, ← s.pred'_some, s.sub_one]
       exact s.pred'_monotone _ _ _ hd
-    have : IsIso (α.τ.app l) := ⟨0, (h.isZero_filtration_obj_of_LE l _ hlk z).eq_of_src _ _,
+    have : IsIso (β.τ.app l) := ⟨0, (h.isZero_filtration_obj_of_LE l _ hlk z).eq_of_src _ _,
       (h'.isZero_filtration_obj_of_LE l _ hlk z').eq_of_src _ _⟩
-    exact α.isIso_τ_of_sub hα l j (d + 1) rfl this
+    exact β.isIso_τ_of_sub hβ l j (d + 1) rfl this
 
 lemma Hom.isIso_φ_of_isIso_mapPageInfinity :
-    IsIso α.φ :=
-  α.isIso_φ_of_isIso_τ (α.isIso_τ_of_isIso_mapPageInfinity hα)
+    IsIso β.φ :=
+  β.isIso_φ_of_isIso_τ (β.isIso_τ_of_isIso_mapPageInfinity hβ)
 
 end
 

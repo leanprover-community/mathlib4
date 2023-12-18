@@ -142,6 +142,12 @@ instance : E.HasEdgeMonoAtFrom pq (E.rToMin pq) where
 instance : E.HasEdgeMonoAtFrom pq (E.rMin pq) where
   le := E.rToMin_LE_rMin pq
 
+lemma HasEdgeMonoAtFrom.mk' [E.HasPage r] (hr : ∀ (k : ℕ), E.HasEdgeMonoAt pq (r + k)) :
+    E.HasEdgeMonoAtFrom pq r where
+  le := E.rToMin_LE _ _ (fun r' hr' => by
+    obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le hr'
+    exact ⟨inferInstance, hr _⟩)
+
 variable [E.HasEdgeMonoAtFrom pq r]
 
 lemma LE_of_hasEdgeMonoAtFrom : E.rToMin pq ≤ r := by apply HasEdgeMonoAtFrom.le
@@ -281,6 +287,12 @@ instance : E.HasEdgeEpiAtFrom pq (E.rFromMin pq) where
 
 instance : E.HasEdgeEpiAtFrom pq (E.rMin pq) where
   le := E.rFromMin_LE_rMin pq
+
+lemma HasEdgeEpiAtFrom.mk' [E.HasPage r] (hr : ∀ (k : ℕ), E.HasEdgeEpiAt pq (r + k)) :
+    E.HasEdgeEpiAtFrom pq r where
+  le := E.rFromMin_LE _ _ (fun r' hr' => by
+    obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le hr'
+    exact ⟨inferInstance, hr _⟩)
 
 variable [E.HasEdgeEpiAtFrom pq r]
 
