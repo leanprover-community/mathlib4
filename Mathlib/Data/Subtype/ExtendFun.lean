@@ -38,8 +38,7 @@ theorem extend_eq_extendFun (f : Subtype p → β) (g : α → β) :
 variable {f : Subtype p → β} {g : (a : α) → ¬p a → β}
 
 lemma extendFun_of_p (a : α) (h : p a) : extendFun f g a = f ⟨a, h⟩ := by
-  have : a ∈ {x | p x} := h
-  simp only [extendFun, Set.piecewiseMem, coe_eta, this, dite_true]
+  simp only [extendFun, Set.piecewiseMem, coe_eta, Set.mem_setOf_eq, h, dite_true]
 
 @[simp] lemma extendFun_val (a : Subtype p) :
     extendFun f g a.val = f a :=
