@@ -331,7 +331,7 @@ lemma X_sub_C_not_isUnit (i : σ) (c : R') [Nontrivial R'] : ¬ IsUnit (X i - C 
     map_one] at r
   exact (one_ne_zero' R' r.symm)
 
-lemma prime_X (i : σ) [IsDomain R'] : Prime (X (R := R') i) := by
+lemma prime_X (i : σ) [IsDomain R'] : Prime (X i : R'[X]) := by
   refine ⟨by convert (X_sub_C_ne_zero i (0 : R')); rw [map_zero, sub_zero],
     by convert (X_sub_C_not_isUnit i (0 : R')); rw [map_zero, sub_zero], ?_⟩
   intro a b h
