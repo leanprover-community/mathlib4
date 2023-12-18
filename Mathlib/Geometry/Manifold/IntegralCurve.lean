@@ -276,12 +276,8 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   intros t ht
   -- collect useful terms in convenient forms
   let xₜ : M := (extChartAt I x₀).symm (f t) -- `xₜ := γ t`
-  have h : HasDerivAt f (x := t) <| fderivWithin ℝ
-      (extChartAt I x₀ ∘ (extChartAt I xₜ).symm)
-      (range I)
-      (extChartAt I xₜ xₜ)
-      (v xₜ) :=
-    (haux t ht).1
+  have h : HasDerivAt f (x := t) <| fderivWithin ℝ (extChartAt I x₀ ∘ (extChartAt I xₜ).symm)
+    (range I) (extChartAt I xₜ xₜ) (v xₜ) := (haux t ht).1
   rw [← tangentCoordChange_def] at h
   have hf3 := mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2
   have hf3' := mem_of_mem_of_subset hf3 interior_subset
