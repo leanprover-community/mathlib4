@@ -260,10 +260,8 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
         generalizing L₁ L₂
       · subst_vars
         cases eq₂
-        cases eq₁
         constructor
       · subst_vars
-        cases eq₂
         cases' p with a b
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)

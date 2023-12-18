@@ -231,13 +231,21 @@ def addBorelInstance (e : Expr) : TacticM Unit := do
 /-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
 replace `i` with `borel e`. -/
 def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
-  let t ← Lean.Elab.Term.exprToSyntax e
+  let te ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
-    have := @BorelSpace.measurable_eq $t _ _ _)
-  liftMetaTactic fun m => return [← subst m i]
+    have := @BorelSpace.measurable_eq $te _ _ _)
+  try
+    liftMetaTactic fun m => return [← subst m i]
+  catch _ =>
+    let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
+    throwError
+      (m!"`‹TopologicalSpace {e}› := {et}" ++ MessageData.ofFormat Format.line ++
+        m!"depends on" ++ MessageData.ofFormat Format.line ++
+        m!"{Expr.fvar i} : MeasurableSpace {e}`" ++ MessageData.ofFormat Format.line ++
+        "so `borelize` isn't avaliable")
   evalTactic <| ← `(tactic|
     refine_lift
-      letI : MeasurableSpace $t := borel $t
+      letI : MeasurableSpace $te := borel $te
       ?_)
 
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
