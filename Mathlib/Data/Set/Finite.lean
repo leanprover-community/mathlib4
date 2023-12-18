@@ -286,11 +286,6 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
--- porting note: was `@[simp]`, now `simp` can prove it
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
-  toFinite_toFinset _
-#align set.finite.to_finset_empty Set.Finite.toFinset_empty
-
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -300,6 +295,10 @@ protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
 protected theorem toFinset_eq_empty {h : s.Finite} : h.toFinset = ∅ ↔ s = ∅ :=
   @toFinset_eq_empty _ _ h.fintype
 #align set.finite.to_finset_eq_empty Set.Finite.toFinset_eq_empty
+
+protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ := by
+  simp
+#align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 @[simp]
 protected theorem toFinset_eq_univ [Fintype α] {h : s.Finite} :
@@ -1237,9 +1236,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-@[simp]
 theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  Eq.trans (by congr; exact Subsingleton.elim _ _) empty_card
+  by simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
