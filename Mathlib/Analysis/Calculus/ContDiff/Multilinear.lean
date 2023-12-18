@@ -94,11 +94,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {ι : Type*} [Fintype ι]
 {E : ι → Type*} {F : Type*} [(i : ι) → NormedAddCommGroup (E i)] [NormedAddCommGroup F]
 [(i : ι) → NormedSpace 𝕜 (E i)] [NormedSpace 𝕜 F] [DecidableEq ι]
 
-lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → E i) (s : Finset ι)
-(f : MultilinearMap 𝕜 E F) :
-    f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
-      fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
-      sorry
 
 def toMultilinearMap_erase (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) :
 MultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j) (((i : ι) → E i) →L[𝕜] F) :=
@@ -282,11 +277,11 @@ lemma deriv_coe (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → (E i))
   intro y
   apply deriv_coe_apply
 
-
+open Finset in
 lemma sub_vs_deriv (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
 ((fun p => f p.1 - f p.2 - (deriv f x) (p.1 - p.2)) ∘ fun x_1 => (x, x) + x_1) =
-    fun h => Finset.sum (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
-    inferInstance)) (fun (s : Finset ι) => f (s.piecewise h.1 x) - f (s.piecewise h.2 x)) := by
+    (fun h => (∑ s in univ.powerset.filter (2 ≤ ·.card),
+    (f (s.piecewise h.1 x) - f (s.piecewise h.2 x)))) := by
   have heq : ((fun p => f p.1 - f p.2 - (deriv f x) (p.1 - p.2)) ∘ fun x_1 => (x, x) + x_1) =
     (fun h => f (x + h.1) - f (x + h.2) - (deriv f x) (h.1 - h.2)) := by
     ext h
@@ -295,7 +290,8 @@ lemma sub_vs_deriv (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i
     rw [sub_add_eq_sub_sub, add_comm, add_sub_assoc, sub_self, add_zero]
   rw [heq]
   ext h
-  rw [deriv_coe_apply]; erw [map_sub_total_vs_linearDeriv]; rfl
+  rw [deriv_coe_apply]; erw [map_add_sub_map_add_sub_linearDeriv]
+  rfl
 
 
 lemma sub_piecewise_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i)

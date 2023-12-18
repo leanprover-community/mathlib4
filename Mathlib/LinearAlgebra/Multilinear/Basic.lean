@@ -1256,61 +1256,26 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
   · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_not_mem _ _ hjs]
 
 
+open Finset in
+lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :
+    f (x + h) = f x + f.linearDeriv x h +
+      ∑ s in univ.powerset.filter (2 ≤ ·.card), f (s.piecewise h x) := by
+  rw [add_comm, map_add_univ, ← Finset.powerset_univ,
+      ← sum_filter_add_sum_filter_not _ (2 ≤ ·.card)]
+  simp_rw [not_le, Nat.lt_succ, le_iff_lt_or_eq (b := 1), Nat.lt_one_iff, filter_or,
+    ← powersetCard_eq_filter, sum_union (univ.pairwise_disjoint_powersetCard zero_ne_one),
+    powersetCard_zero, powersetCard_one, sum_singleton, Finset.piecewise_empty, sum_map,
+    Function.Embedding.coeFn_mk, Finset.piecewise_singleton, linearDeriv_apply, add_comm]
+
+open Finset in
 /-- This expresses the difference between the values of a multilinear map
 at two points "close to `x`" in terms of the "derivative" of the multilinear map at `x`
 and of "second-order" terms.-/
-lemma map_sub_total_vs_linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
-    (x h h' : (i : ι) → M₁ i) :
-    f (x + h) - f (x + h') - f.linearDeriv x (h - h') = Finset.sum
-    (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
-    inferInstance)) (fun (s : Finset ι) => f (s.piecewise h x) - f (s.piecewise h' x)) := by
-  rw [add_comm x h, add_comm x h', MultilinearMap.map_add_univ, MultilinearMap.map_add_univ,
-    linearDeriv_apply, ← Finset.sum_sub_distrib, ← (Finset.sum_compl_add_sum
-    (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
-    inferInstance))), add_comm, ← add_sub, add_right_eq_self]
-  set S := (Set.Finite.toFinset ((Set.finite_coe_iff (s := {s : Finset ι | 2 ≤ s.card})).mp
-    inferInstance))ᶜ
-  have hS : ∀ (s : Finset ι), s ∈ S ↔ s.card ≤ 1 := by
-    intro s
-    simp only [Set.Finite.toFinset_setOf, Finset.mem_univ, forall_true_left, not_le,
-      Finset.compl_filter, not_lt, Finset.mem_filter, true_and]
-    rw [Nat.lt_succ_iff]
-  have heS : ∅ ∈ S := by rw [hS]; simp only [Finset.card_empty, Nat.zero_le]
-  have hS' : ∀ (s : Finset ι), s ∈ S.erase ∅ ↔ s.card = 1 := by
-    intro s
-    rw [Finset.mem_erase, hS, Nat.le_one_iff_eq_zero_or_eq_one, Finset.card_eq_zero]
-    aesop
-  rw [← (Finset.sum_erase_add _ _ heS), Finset.piecewise_empty, Finset.piecewise_empty,
-    sub_self, add_zero]
-  set I : (s : Finset ι) → (s ∈ S.erase ∅) → ι :=
-    fun s hs => by rw [hS' s, Finset.card_eq_one] at hs
-                   exact Classical.choose hs
-  have hI : ∀ (s : Finset ι) (hs : s ∈ S.erase ∅), I s hs ∈ Finset.univ :=
-    fun _ _ => Finset.mem_univ _
-  have heq : ∀ (s : Finset ι) (hs : s ∈ S.erase ∅), f (s.piecewise h x) - f (s.piecewise h' x) =
-      f (Function.update x (I s hs) ((h - h') (I s hs))) := by
-    intro s hs
-    rw [hS', Finset.card_eq_one] at hs
-    conv => lhs
-            rw [Classical.choose_spec hs, Finset.piecewise_singleton,
-              Finset.piecewise_singleton, ← MultilinearMap.map_sub]
-  set J : (i : ι) → (i ∈ Finset.univ) → Finset ι := fun i _ => {i}
-  have hJ : ∀ (i : ι) (hi : i ∈ Finset.univ), J i hi ∈ S.erase ∅ :=
-    fun _ _ => by rw [hS']; exact Finset.card_singleton _
-  have hJI : ∀ (s : Finset ι) (hs : s ∈ S.erase ∅), J (I s hs) (hI s hs) = s := by
-    intro s hs
-    simp only [Set.coe_setOf, Set.mem_setOf_eq]
-    rw [hS', Finset.card_eq_one] at hs
-    exact Eq.symm (Classical.choose_spec hs)
-  have hIJ : ∀ (i : ι) (hi : i ∈ Finset.univ), I (J i hi) (hJ i hi) = i := by
-    intro i hi; apply Eq.symm; rw [← Finset.mem_singleton]
-    have hs := hJ i hi
-    rw [hS', Finset.card_eq_one] at hs
-    change i ∈ {Classical.choose hs}
-    rw [← (Classical.choose_spec hs)]
-    simp only [Finset.mem_singleton]
-  rw [Finset.sum_bij' I hI heq J hJ hJI hIJ (g := fun i => f (Function.update x i ((h - h') i))),
-    sub_self]
+lemma map_add_sub_map_add_sub_linearDeriv [DecidableEq ι] [Fintype ι] (x h h' : (i : ι) → M₁ i) :
+    f (x + h) - f (x + h') - f.linearDeriv x (h - h') =
+    ∑ s in univ.powerset.filter (2 ≤ ·.card), (f (s.piecewise h x) - f (s.piecewise h' x)) := by
+  simp_rw [map_add_eq_map_add_linearDeriv_add, add_assoc, add_sub_add_comm, sub_self, zero_add,
+    ← LinearMap.map_sub, add_sub_cancel', sum_sub_distrib]
 
 end AddCommGroup
 
