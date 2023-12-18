@@ -188,22 +188,6 @@ instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :
     MulAction.IsPretransitive α β :=
   ⟨fun _ _ ↦ ⟨1, Subsingleton.elim _ _⟩⟩
 
-@[simp] lemma roots_neg {R : Type*} [CommRing R] [IsDomain R] (p : R[X]) :
-    roots (-p) = roots p := by
-  rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
-
-@[simp] lemma aroots_neg {T S : Type*} [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
-    (p : T[X]) : aroots (-p) S = aroots p S := by
-  rw [aroots, Polynomial.map_neg, roots_neg]
-
-@[simp] lemma rootSet_neg {T S : Type*} [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
-    (p : T[X]) : rootSet (-p) S = rootSet p S := by
-  rw [rootSet, aroots_neg, ← rootSet]
-
-@[simp] lemma rootSet_one {T S : Type*} [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] :
-    rootSet (1 : T[X]) S = ∅ := by
-  rw [rootSet, aroots_one, Finset.coe_eq_empty]; rfl
-
 open NumberField
 
 def reshom {K : Type*} [Field K] (σ : K →+* K) : 𝓞 K →+* 𝓞 K :=

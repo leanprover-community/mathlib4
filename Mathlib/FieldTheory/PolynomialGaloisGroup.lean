@@ -52,8 +52,7 @@ namespace Polynomial
 variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 
 /-- The Galois group of a polynomial. -/
-abbrev Gal :=
-  p.SplittingField ≃ₐ[F] p.SplittingField
+abbrev Gal := p.SplittingField ≃ₐ[F] p.SplittingField
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020):
 -- deriving Group, Fintype
 #align polynomial.gal Polynomial.Gal
