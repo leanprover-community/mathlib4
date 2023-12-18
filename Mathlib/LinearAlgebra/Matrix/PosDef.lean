@@ -51,9 +51,9 @@ def PosSemidef (M : Matrix n n R) :=
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff_nonneg [DecidableEq n] {d : n → R} :
     PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) := by
-  refine ⟨λ ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), ?_⟩
-  refine λ hd ↦ ⟨isHermitian_diagonal_iff.2 <| fun i ↦ star_eq_self_of_nonneg (hd i), λ x ↦ ?_⟩
-  refine Finset.sum_nonneg fun i _ ↦ ?_
+  refine ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), ?_⟩
+  refine fun hd ↦ ⟨isHermitian_diagonal_iff.2 <| fun i ↦ IsSelfAdjoint.of_nonneg (hd i), ?_⟩
+  refine fun x ↦ Finset.sum_nonneg fun i _ ↦ ?_
   simpa only [mulVec_diagonal, mul_assoc] using conjugate_nonneg (hd i) _
 
 namespace PosSemidef
@@ -252,6 +252,14 @@ lemma posSemidef_iff_eq_transpose_mul_self [DecidableEq n] {A : Matrix n n 𝕜}
   refine ⟨fun hA ↦ ⟨hA.sqrt, ?_⟩, fun ⟨B, hB⟩ ↦ (hB ▸ posSemidef_conjTranspose_mul_self B)⟩
   simp_rw [← PosSemidef.sq_sqrt hA, pow_two]
   rw [hA.posSemidef_sqrt.1]
+
+lemma posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
+    PosSemidef A ↔ ∃ (h : IsHermitian A), ∀ i : n, 0 ≤ h.eigenvalues i := by
+  refine ⟨fun h ↦ ⟨h.1, h.eigenvalues_nonneg⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  simp_rw [h₁.conjTranspose_eigenvectorMatrix.symm ▸ h₁.spectral_theorem']
+  refine (posSemidef_diagonal_iff_nonneg.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
+  rw [IsROrC.le_iff_re_im]
+  simpa using h₂ i
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff [DecidableEq n]
