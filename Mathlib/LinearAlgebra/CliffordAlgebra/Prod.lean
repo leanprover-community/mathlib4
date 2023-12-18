@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
 /-!
 # Clifford algebras of a direct sum of two vector spaces
 
-We show that the clifford algebra of a direct sum is the super tensor product of the clifford
+We show that the clifford algebra of a direct sum is the graded tensor product of the clifford
 algebras, as `CliffordAlgebra.equivProd`.
 
 ## Main definitions:
@@ -29,32 +29,6 @@ variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
 open scoped TensorProduct
 
 namespace CliffordAlgebra
-
-@[simp] theorem ι_inl_mul_ι_inr_add_swap (m₁ : M₁) (m₂ : M₂) :
-    ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂)
-      + ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0) = 0 := by
-  rw [ι_mul_ι_add_swap, QuadraticForm.polar_prod]
-  simp
-
-theorem ι_inl_mul_ι_inr (m₁ : M₁) (m₂ : M₂) :
-    ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂) =
-      -(ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0)) :=
-  eq_neg_of_add_eq_zero_left <| ι_inl_mul_ι_inr_add_swap _ _ _ _
-
-theorem ι_inr_mul_ι_inl (m₂ : M₂) (m₁ : M₁) :
-    ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0) =
-      -(ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂)) :=
-  neg_eq_iff_eq_neg.mp (ι_inl_mul_ι_inr Q₁ Q₂ m₁ m₂).symm
-
-theorem ι_inl_mul_ι_inr_right (x : CliffordAlgebra (Q₁.prod Q₂)) (m₁ : M₁) (m₂ : M₂) :
-    x * ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂) =
-      -(x * ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0)) := by
-  rw [mul_assoc, ι_inl_mul_ι_inr, mul_neg, mul_assoc]
-
-theorem ι_inr_mul_ι_inl_right (x : CliffordAlgebra (Q₁.prod Q₂)) (m₂ : M₂) (m₁ : M₁) :
-    x * ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0) =
-      -(x * ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂)) := by
-  rw [mul_assoc, ι_inr_mul_ι_inl, mul_neg, mul_assoc]
 
 open QuadraticForm.Isometry in
 theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
@@ -94,7 +68,8 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
         | hmul m₂ hm₂ i x₂ _hx₂ ih₂ =>
           obtain ⟨v₂, rfl⟩ := hm₂
           -- this is the second interesting goal
-          rw [map_mul, map_apply_ι, inr_apply, Nat.cast_succ, ← mul_assoc, ι_inl_mul_ι_inr,
+          rw [map_mul, map_apply_ι, inr_apply, Nat.cast_succ, ← mul_assoc,
+            ι_mul_ι_comm_of_isOrtho (.inl_inr _ _),
             neg_mul, mul_assoc, ih₂, mul_smul_comm, ← mul_assoc, ← Units.neg_smul, uzpow_add,
             uzpow_one, mul_neg_one]
       | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
@@ -164,10 +139,6 @@ as an algebra to the graded tensor product of the clifford algebras of each spac
 This is `CliffordAlgebra.toProd` and `CliffordAlgebra.ofProd` as an equivalence. -/
 @[simps!]
 def prodEquiv : CliffordAlgebra (Q₁.prod Q₂) ≃ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂) :=
-  AlgEquiv.ofAlgHom
-    (ofProd Q₁ Q₂)
-    (toProd Q₁ Q₂)
-    (ofProd_comp_toProd _ _)
-    (toProd_comp_ofProd _ _)
+  AlgEquiv.ofAlgHom (ofProd Q₁ Q₂) (toProd Q₁ Q₂) (ofProd_comp_toProd _ _) (toProd_comp_ofProd _ _)
 
 end CliffordAlgebra
