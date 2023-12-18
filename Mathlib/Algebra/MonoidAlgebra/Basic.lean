@@ -998,7 +998,7 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
 @[simp] theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
-`Finsupp.mapRange f` is an algebra homomorphism between their additive monoid algebras. -/
+`Finsupp.mapRange f` is an algebra homomorphism between their monoid algebras. -/
 def mapRangeAlgHom {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
     [Algebra k S] [Monoid G] {F} [AlgHomClass F k R S] (f : F) :
     MonoidAlgebra R G →ₐ[k] MonoidAlgebra S G :=
@@ -1009,12 +1009,11 @@ def mapRangeAlgHom {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semi
 @[simp]
 lemma mapRangeAlgHom_apply {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
     [Algebra k S] [Monoid G] (f : R →ₐ[k] S) :
-      ⇑(mapRangeAlgHom G f) = Finsupp.mapRange.linearMap (R := k) f := by
-  dsimp [mapRange, liftNCAlgHom, liftNCRingHom, liftNC]
+      ⇑(mapRangeAlgHom G f) = Finsupp.mapRange f (map_zero _) := by
   ext x
   induction' x using Finsupp.induction with a b f _ _ ih
   · simp
-  · rw [map_add, ih]
+  · rw [map_add, mapRange_add (map_add _), ih]
     erw [liftAddHom_apply_single]
     simp [single_mul_single]
 
@@ -1028,6 +1027,18 @@ lemma mapRangeAlgHom_comp {k R S T} (G) [CommSemiring k] [Semiring R] [Algebra k
     [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
     mapRangeAlgHom G (g.comp f) = (mapRangeAlgHom G g).comp (mapRangeAlgHom G f) := by
   ext; simp [mapRange_comp]
+
+/-- If `f : R ≃ₐ[k] S` is an algebra equivalence between two `k`-algebras, then
+`Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
+@[simps!]
+def mapRangeAlgEquiv {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [Monoid G] {F} [AlgEquivClass F k R S] (f : F) :
+    MonoidAlgebra R G ≃ₐ[k] MonoidAlgebra S G :=
+  AlgEquiv.ofAlgHom
+    (mapRangeAlgHom G (AlgEquiv.toAlgHom f))
+    (mapRangeAlgHom G (AlgEquiv.symm f).toAlgHom)
+    (by simp [← mapRangeAlgHom_comp])
+    (by simp [← mapRangeAlgHom_comp])
 
 end lift
 
@@ -2180,12 +2191,11 @@ def mapRangeAlgHom {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semi
 @[simp]
 lemma mapRangeAlgHom_apply {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
     [Algebra k S] [AddMonoid G] (f : R →ₐ[k] S) :
-      ⇑(mapRangeAlgHom G f) = Finsupp.mapRange.linearMap (R := k) f := by
-  dsimp [mapRange, liftNCAlgHom, liftNCRingHom, liftNC]
+      ⇑(mapRangeAlgHom G f) = Finsupp.mapRange f (map_zero _) := by
   ext x
   induction' x using Finsupp.induction with a b f _ _ ih
   · simp
-  · rw [map_add, ih]
+  · rw [map_add, mapRange_add (map_add _), ih]
     erw [liftAddHom_apply_single]
     simp [single_mul_single]
 
@@ -2199,6 +2209,17 @@ lemma mapRangeAlgHom_comp {k R S T} (G) [CommSemiring k] [Semiring R] [Algebra k
     [Algebra k S] [Semiring T] [Algebra k T] [AddMonoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
     mapRangeAlgHom G (g.comp f) = (mapRangeAlgHom G g).comp (mapRangeAlgHom G f) := by
   ext; simp [mapRange_comp]
+
+/-- If `f : R ≃ₐ[k] S` is an algebra equivalence between two `k`-algebras, then
+`Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
+@[simps!]
+def mapRangeAlgEquiv {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [AddMonoid G] {F} [AlgEquivClass F k R S] (f : F) : R[G] ≃ₐ[k] S[G] :=
+  AlgEquiv.ofAlgHom
+    (mapRangeAlgHom G (AlgEquiv.toAlgHom f))
+    (mapRangeAlgHom G (AlgEquiv.symm f).toAlgHom)
+    (by simp [← mapRangeAlgHom_comp])
+    (by simp [← mapRangeAlgHom_comp])
 
 end AddMonoidAlgebra
 
