@@ -128,7 +128,7 @@ theorem LinearMap.lift_rank_le_of_injective (f : M →ₗ[R] M') (i : Injective 
   apply ciSup_mono' (Cardinal.bddAbove_range.{v', v} _)
   rintro ⟨s, li⟩
   refine' ⟨⟨f '' s, _⟩, Cardinal.lift_mk_le'.mpr ⟨(Equiv.Set.image f s i).toEmbedding⟩⟩
-  exact (li.map' _ <| LinearMap.ker_eq_bot.mpr i).image
+  exact (li.map' _ <| LinearMap.ker_eq_bot_of_injective i).image
 #align linear_map.lift_rank_le_of_injective LinearMap.lift_rank_le_of_injective
 
 theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) :
@@ -347,8 +347,7 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     rw [k]
     exact mem_top
   -- giving the desire contradiction.
-  refine' b.linearIndependent.not_mem_span_image _ k'
-  exact nm
+  exact b.linearIndependent.not_mem_span_image nm k'
 #align basis_fintype_of_finite_spans basis_finite_of_finite_spansₓ
 
 -- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
@@ -382,18 +381,10 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       rfl
     rw [← e] at p
     exact r' p
-  have inj' : Injective v' := by
-    rintro (_ | k) (_ | k) z
-    · rfl
-    · exfalso
-      exact r' ⟨k, z.symm⟩
-    · exfalso
-      exact r' ⟨k, z⟩
-    · congr
-      exact i.injective z
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
   have i' : LinearIndependent R ((↑) : range v' → M) := by
-    rw [linearIndependent_subtype_range inj', linearIndependent_iff]
+    apply LinearIndependent.to_subtype_range
+    rw [linearIndependent_iff]
     intro l z
     rw [Finsupp.total_option] at z
     simp only [Option.elim'] at z
@@ -418,7 +409,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     · simp only [l₀, Finsupp.coe_zero, Pi.zero_apply]
     · erw [FunLike.congr_fun l₁ a]
       simp only [Finsupp.coe_zero, Pi.zero_apply]
-  dsimp [LinearIndependent.Maximal] at m
+  rw [LinearIndependent.Maximal] at m
   specialize m (range v') i' r
   exact r'' m
 #align union_support_maximal_linear_independent_eq_range_basis union_support_maximal_linearIndependent_eq_range_basis
@@ -709,14 +700,15 @@ then any linearly independent family `v : ι → M`
 contained in the span of some finite `w : Set M`,
 is itself finite.
 -/
-def linearIndependentFintypeOfLeSpanFintype {ι : Type*} (v : ι → M) (i : LinearIndependent R v)
-    (w : Set M) [Fintype w] (s : range v ≤ span R w) : Fintype ι :=
-  fintypeOfFinsetCardLe (Fintype.card w) fun t => by
+lemma LinearIndependent.finite_of_le_span_finite {ι : Type*} (v : ι → M) (i : LinearIndependent R v)
+    (w : Set M) [Finite w] (s : range v ≤ span R w) : Finite ι :=
+  letI := Fintype.ofFinite w
+  Fintype.finite <| fintypeOfFinsetCardLe (Fintype.card w) fun t => by
     let v' := fun x : (t : Set ι) => v x
     have i' : LinearIndependent R v' := i.comp _ Subtype.val_injective
     have s' : range v' ≤ span R w := (range_comp_subset_range _ _).trans s
     simpa using linearIndependent_le_span_aux' v' i' w s'
-#align linear_independent_fintype_of_le_span_fintype linearIndependentFintypeOfLeSpanFintype
+#align linear_independent_fintype_of_le_span_fintype LinearIndependent.finite_of_le_span_finite
 
 /-- If `R` satisfies the strong rank condition,
 then for any linearly independent family `v : ι → M`
@@ -725,7 +717,8 @@ the cardinality of `ι` is bounded by the cardinality of `w`.
 -/
 theorem linearIndependent_le_span' {ι : Type*} (v : ι → M) (i : LinearIndependent R v) (w : Set M)
     [Fintype w] (s : range v ≤ span R w) : #ι ≤ Fintype.card w := by
-  haveI : Fintype ι := linearIndependentFintypeOfLeSpanFintype v i w s
+  haveI : Finite ι := i.finite_of_le_span_finite v w s
+  letI := Fintype.ofFinite ι
   rw [Cardinal.mk_fintype]
   simp only [Cardinal.natCast_le]
   exact linearIndependent_le_span_aux' v i w s
@@ -761,8 +754,8 @@ theorem linearIndependent_le_infinite_basis {ι : Type w} (b : Basis ι R M) [In
   obtain ⟨s, w : Infinite ↑(Φ ⁻¹' {s})⟩ := Cardinal.exists_infinite_fiber Φ h (by infer_instance)
   let v' := fun k : Φ ⁻¹' {s} => v k
   have i' : LinearIndependent R v' := i.comp _ Subtype.val_injective
-  have w' : Fintype (Φ ⁻¹' {s}) := by
-    apply linearIndependentFintypeOfLeSpanFintype v' i' (s.image b)
+  have w' : Finite (Φ ⁻¹' {s}) := by
+    apply i'.finite_of_le_span_finite v' (s.image b)
     rintro m ⟨⟨p, ⟨rfl⟩⟩, rfl⟩
     simp only [SetLike.mem_coe, Subtype.coe_mk, Finset.coe_image]
     apply Basis.mem_span_repr_support
@@ -907,10 +900,11 @@ theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → 
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following
 "inductive step": the property is true for a submodule `N` if it's true for all submodules `N'`
 of `N` with the property that there exists `0 ≠ x ∈ N` such that the sum `N' + Rx` is direct. -/
-def Submodule.inductionOnRank [IsDomain R] [Fintype ι] (b : Basis ι R M)
+def Submodule.inductionOnRank [IsDomain R] [Finite ι] (b : Basis ι R M)
     (P : Submodule R M → Sort*) (ih : ∀ N : Submodule R M,
     (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
     (N : Submodule R M) : P N :=
+  letI := Fintype.ofFinite ι
   Submodule.inductionOnRankAux b P ih (Fintype.card ι) N fun hs hli => by
     simpa using b.card_le_card_of_linearIndependent hli
 #align submodule.induction_on_rank Submodule.inductionOnRank
