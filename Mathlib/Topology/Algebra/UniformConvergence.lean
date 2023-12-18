@@ -159,41 +159,58 @@ instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
 
 instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
 
+@[simp]
+lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
+    toFun (c • f) = c • toFun f :=
+  rfl
+
+@[simp]
+lemma UniformFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
+    ofFun (c • f) = c • ofFun f :=
+  rfl
+
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
+
+@[simp]
+lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[𝔖] β) :
+    toFun 𝔖 (c • f) = c • toFun 𝔖 f :=
+  rfl
+
+@[simp]
+lemma UniformOfFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
+    ofFun 𝔖 (c • f) = c • ofFun 𝔖 f :=
+  rfl
+
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ β) :=
   Pi.isScalarTower
-
-instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
-    SMulCommClass M N (α →ᵤ β) :=
-  Pi.smulCommClass
-
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
-
-instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
-    DistribMulAction M (α →ᵤ β) :=
-  Pi.distribMulAction _
-
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
-  Pi.module _ _ _
-
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
-  Pi.module _ _ _
-
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
 
 instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ[𝔖] β) :=
   Pi.isScalarTower
 
 instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    SMulCommClass M N (α →ᵤ β) :=
+  Pi.smulCommClass
+
+instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ[𝔖] β) :=
   Pi.smulCommClass
+
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
 
 instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
 
 instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+    DistribMulAction M (α →ᵤ β) :=
+  Pi.distribMulAction _
+
+instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ[𝔖] β) :=
   Pi.distribMulAction _
+
+instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
+  Pi.module _ _ _
 
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   Pi.module _ _ _
