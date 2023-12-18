@@ -98,13 +98,13 @@ def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
-def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
-#align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSmul
+def hasSMul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
+#align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSMul
 
 end Pre
 
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
-  Pre.hasZero Pre.hasOne Pre.hasSmul
+  Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
 from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
@@ -164,7 +164,7 @@ def FreeAlgebra :=
 namespace FreeAlgebra
 
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
-  Pre.hasZero Pre.hasOne Pre.hasSmul
+  Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-! Define the basic operations-/
 

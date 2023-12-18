@@ -241,7 +241,7 @@ end SeminormAux
 
 /-! ### Algebraic properties -/
 
-section Smul
+section SMul
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
   [SMulCommClass ℝ 𝕜' F]
@@ -309,7 +309,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
         exact ((c : ℝ) • f).decay' }⟩
 #align schwartz_map.has_zsmul SchwartzMap.instZSMul
 
-end Smul
+end SMul
 
 section Zero
 
