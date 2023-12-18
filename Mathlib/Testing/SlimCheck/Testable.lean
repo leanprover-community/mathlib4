@@ -291,6 +291,14 @@ instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
     let r ← runProp (f Int) cfg min
     pure $ addVarInfo var "ℤ" (· $ Int) r
 
+@[pp_with_univ]
+instance (priority := 100) forallTypesULiftTestable
+    {f : Type u → Prop} [Testable (f (ULift.{u} Int))] :
+    Testable (NamedBinder var $ ∀ x, f x) where
+  run := λ cfg min => do
+    let r ← runProp (f (ULift Int)) cfg min
+    pure $ addVarInfo var "ULift ℤ" (· $ ULift Int) r
+
 /--
 Format the counter-examples found in a test failure.
 -/

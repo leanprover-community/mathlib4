@@ -406,3 +406,19 @@ issue: ULift.up 1 = ULift.up 0 does not hold
     slim_check (config := { randomSeed := some 257 })
   admit
   trivial
+
+
+example (α : Type u) (l : List α) : true := by
+  have : l = l ++ l
+  success_if_fail_with_msg "
+===================
+Found problems!
+α := \"ULift ℤ\"
+l := [0]
+issue: [ULift.up 0] = [ULift.up 0, ULift.up 0] does not hold
+(1 shrinks)
+-------------------
+"
+    slim_check (config := { randomSeed := some 257 })
+  admit
+  trivial
