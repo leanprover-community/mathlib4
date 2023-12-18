@@ -75,7 +75,7 @@ section Field
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
   [TopologicalRing R] [TopologicalAddGroup V] [Module R V] [SeparatingDual R V]
 
--- this could generalize to CommRing R if we were to add a section
+-- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
     Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]

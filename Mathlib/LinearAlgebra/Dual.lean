@@ -1389,7 +1389,7 @@ theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦
   have ⟨f', hf'⟩ := f.exists_leftInverse_of_injective (ker_eq_bot.mpr hf)
-  ⟨φ.comp f', ext fun x ↦ congr_arg φ (FunLike.congr_fun hf' x)⟩
+  ⟨φ.comp f', ext fun x ↦ congr(φ <| $hf' x)⟩
 #align linear_map.dual_map_surjective_of_injective LinearMap.dualMap_surjective_of_injective
 
   -- Porting note: broken dot notation lean4#1910 LinearMap.range
@@ -1505,8 +1505,6 @@ open FiniteDimensional LinearMap
 
 namespace LinearMap
 
-section
-
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     -- Porting note: broken dot notation lean4#1910
@@ -1534,8 +1532,6 @@ theorem dualMap_bijective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Bijective f.dualMap ↔ Function.Bijective f := by
   simp_rw [Function.Bijective, dualMap_surjective_iff, dualMap_injective_iff, and_comm]
 #align linear_map.dual_map_bijective_iff LinearMap.dualMap_bijective_iff
-
-end
 
 variable {B : V₁ →ₗ[K] V₂ →ₗ[K] K}
 
