@@ -417,6 +417,27 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
 
+open TensorProduct LinearMap in
+/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
+under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
+theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
+    [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
+      ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+        x = rTensor M (J.inclusion hle) y := by
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
+      (span_singleton_le_iff_mem _ _).mpr i.property,
+      ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
+  | add x₁ x₂ ihx₁ ihx₂ =>
+    obtain ⟨J₁, hfg₁, hle₁, y₁, rfl⟩ := ihx₁
+    obtain ⟨J₂, hfg₂, hle₂, y₂, rfl⟩ := ihx₂
+    refine ⟨J₁ ⊔ J₂, hfg₁.sup hfg₂, sup_le hle₁ hle₂,
+      rTensor M (J₁.inclusion (le_sup_left : J₁ ≤ J₁ ⊔ J₂)) y₁ +
+        rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
+    rewrite [map_add, ← rTensor_comp_apply, ← rTensor_comp_apply]
+    rfl
+
 end Submodule
 
 namespace Submodule
@@ -506,9 +527,9 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
     refine' fun i _ => Ideal.mul_le_right.trans _
     obtain h | h := le_or_lt n i
-    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow h).trans hn)
+    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
-      refine' (Ideal.pow_le_pow _).trans hm
+      refine' (Ideal.pow_le_pow_right _).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 #align ideal.exists_radical_pow_le_of_fg Ideal.exists_radical_pow_le_of_fg
@@ -649,7 +670,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
   classical
     obtain ⟨s, hs⟩ := h.out
     refine' ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr fun x _ => _⟩⟩
-    apply @TensorProduct.induction_on _ _ _ _ _ _ _ _ _ x
+    apply TensorProduct.induction_on (motive := _) x
     · exact zero_mem _
     · intro x y
       -- Porting note: new TC reminder

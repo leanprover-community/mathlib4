@@ -299,18 +299,18 @@ theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v 
   apply Cardinal.nat_lt_aleph0
 #align finite_dimensional.lt_aleph_0_of_linear_independent FiniteDimensional.lt_aleph0_of_linearIndependent
 
-theorem _root_.LinearIndependent.finite [FiniteDimensional K V] {b : Set V}
+lemma _root_.LinearIndependent.finite {ι : Type*} [FiniteDimensional K V] {f : ι → V}
+    (h : LinearIndependent K f) : Finite ι :=
+  Cardinal.lt_aleph0_iff_finite.1 <| FiniteDimensional.lt_aleph0_of_linearIndependent h
+
+theorem not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [FiniteDimensional K V]
+    (v : ι → V) : ¬LinearIndependent K v := mt LinearIndependent.finite <| @not_finite _ _
+#align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
+
+theorem _root_.LinearIndependent.setFinite [FiniteDimensional K V] {b : Set V}
     (h : LinearIndependent K fun x : b => (x : V)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp (FiniteDimensional.lt_aleph0_of_linearIndependent h)
-#align linear_independent.finite LinearIndependent.finite
-
-theorem not_linearIndependent_of_infinite {ι : Type w} [inf : Infinite ι] [FiniteDimensional K V]
-    (v : ι → V) : ¬LinearIndependent K v := by
-  intro h_lin_indep
-  have : ¬ℵ₀ ≤ #ι := not_le.mpr (lt_aleph0_of_linearIndependent h_lin_indep)
-  have : ℵ₀ ≤ #ι := infinite_iff.mp inf
-  contradiction
-#align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
+#align linear_independent.finite LinearIndependent.setFinite
 
 /-- A finite dimensional space has positive `finrank` iff it has a nonzero element. -/
 theorem finrank_pos_iff_exists_ne_zero [FiniteDimensional K V] : 0 < finrank K V ↔ ∃ x : V, x ≠ 0 :=
@@ -324,10 +324,8 @@ theorem finrank_pos_iff_exists_ne_zero [FiniteDimensional K V] : 0 < finrank K V
 /-- A finite dimensional space has positive `finrank` iff it is nontrivial. -/
 theorem finrank_pos_iff [FiniteDimensional K V] : 0 < finrank K V ↔ Nontrivial V :=
   Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_pos_iff_nontrivial K V _ _ _ _ _)
+    (by rw [← finrank_eq_rank]; norm_cast)
+    (rank_pos_iff_nontrivial (R := K))
 #align finite_dimensional.finrank_pos_iff FiniteDimensional.finrank_pos_iff
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
@@ -339,10 +337,8 @@ theorem finrank_pos [FiniteDimensional K V] [h : Nontrivial V] : 0 < finrank K V
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem finrank_zero_iff [FiniteDimensional K V] : finrank K V = 0 ↔ Subsingleton V :=
   Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_zero_iff K V _ _ _ _ _)
+    (by rw [← finrank_eq_rank]; norm_cast)
+    (rank_zero_iff (R := K))
 #align finite_dimensional.finrank_zero_iff FiniteDimensional.finrank_zero_iff
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
@@ -352,7 +348,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
-    @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
+    LinearIndependent.image_subtype (f := Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
   -- porting note: `letI` now uses `this` so we need to give different names
@@ -762,7 +758,7 @@ theorem finrank_quotient_add_finrank [FiniteDimensional K V] (s : Submodule K V)
     finrank K (V ⧸ s) + finrank K s = finrank K V := by
   have := rank_quotient_add_rank s
   rw [← finrank_eq_rank, ← finrank_eq_rank, ← finrank_eq_rank] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align submodule.finrank_quotient_add_finrank Submodule.finrank_quotient_add_finrank
 
 /-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
@@ -842,6 +838,8 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
+/-- If a submodule is contained in a finite-dimensional
+submodule with the same or smaller dimension, they are equal. -/
 theorem eq_of_le_of_finrank_le {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (hle : S₁ ≤ S₂)
     (hd : finrank K S₂ ≤ finrank K S₁) : S₁ = S₂ := by
   rw [← LinearEquiv.finrank_eq (Submodule.comapSubtypeEquivOfLe hle)] at hd
@@ -849,12 +847,30 @@ theorem eq_of_le_of_finrank_le {S₁ S₂ : Submodule K V} [FiniteDimensional K 
     (eq_top_of_finrank_eq (le_antisymm (comap (Submodule.subtype S₂) S₁).finrank_le hd)))
 #align finite_dimensional.eq_of_le_of_finrank_le FiniteDimensional.eq_of_le_of_finrank_le
 
-/-- If a submodule is less than or equal to a finite-dimensional
+/-- If a submodule is contained in a finite-dimensional
 submodule with the same dimension, they are equal. -/
 theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K S₂] (hle : S₁ ≤ S₂)
     (hd : finrank K S₁ = finrank K S₂) : S₁ = S₂ :=
   eq_of_le_of_finrank_le hle hd.ge
 #align finite_dimensional.eq_of_le_of_finrank_eq FiniteDimensional.eq_of_le_of_finrank_eq
+
+section Subalgebra
+
+variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
+  [hfin : FiniteDimensional K E] (h_le : F ≤ E)
+
+/-- If a subalgebra is contained in a finite-dimensional
+subalgebra with the same or smaller dimension, they are equal. -/
+theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_finrank : finrank K E ≤ finrank K F) : F = E :=
+  haveI : Module.Finite K (Subalgebra.toSubmodule E) := hfin
+  Subalgebra.toSubmodule_injective <| FiniteDimensional.eq_of_le_of_finrank_le h_le h_finrank
+
+/-- If a subalgebra is contained in a finite-dimensional
+subalgebra with the same dimension, they are equal. -/
+theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_finrank : finrank K F = finrank K E) : F = E :=
+  Subalgebra.eq_of_le_of_finrank_le h_le h_finrank.ge
+
+end Subalgebra
 
 variable [FiniteDimensional K V] [FiniteDimensional K V₂]
 

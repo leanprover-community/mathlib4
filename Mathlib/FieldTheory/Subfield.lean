@@ -116,7 +116,7 @@ instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
 
 @[simp]
-theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :=
+theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : ↑(a • x) = a • (x : K) :=
   rfl
 #align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
 
@@ -821,21 +821,13 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   typically not a subfield) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
     {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
-  suffices x ∈ closure (⋃ i, (S i : Set K)) → ∃ i, x ∈ S i by
-    simpa only [closure_iUnion, closure_eq]
-  refine' fun hx => closure_induction hx (fun x => Set.mem_iUnion.mp) _ _ _ _ _
-  · exact hι.elim fun i => ⟨i, (S i).one_mem⟩
-  · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
-    obtain ⟨k, hki, hkj⟩ := hS i j
-    exact ⟨k, (S k).add_mem (hki hi) (hkj hj)⟩
-  · rintro x ⟨i, hi⟩
-    exact ⟨i, (S i).neg_mem hi⟩
-  · rintro x ⟨i, hi⟩
-    exact ⟨i, (S i).inv_mem hi⟩
-  · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
-    obtain ⟨k, hki, hkj⟩ := hS i j
-    exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
+  let s : Subfield K :=
+    { __ := Subring.copy _ _ (Subring.coe_iSup_of_directed hS).symm
+      inv_mem' := fun _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+        Set.mem_iUnion.mpr ⟨i, (S i).inv_mem hi⟩ }
+  have : iSup S = s := le_antisymm
+    (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set K)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
+  exact this ▸ Set.mem_iUnion
 #align subfield.mem_supr_of_directed Subfield.mem_iSup_of_directed
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S) :

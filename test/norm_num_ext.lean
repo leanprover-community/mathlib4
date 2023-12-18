@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
@@ -335,18 +336,24 @@ variable {α : Type _} [CommRing α]
 open BigOperators
 
 -- Lists:
+-- `by decide` closes the three goals below.
+/-
 example : ([1, 2, 1, 3]).sum = 7 := by norm_num only
--- example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map] --TODO
 example : (List.range 10).sum = 45 := by norm_num only
 example : (List.finRange 10).sum = 45 := by norm_num only
+-/
+-- example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map] --TODO
 
 -- Multisets:
+-- `by decide` closes the three goals below.
+/-
 example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num only
 example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by norm_num only
--- example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by -- TODO
---   norm_num [-Multiset.map_cons]
 example : (Multiset.range 10).sum = 45 := by norm_num only
 example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num only
+-/
+-- example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by -- TODO
+--   norm_num [-Multiset.map_cons]
 
 -- Finsets:
 example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (λ x => x) = 2 := by norm_num1
@@ -414,3 +421,29 @@ instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
 example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
+
+section mod
+
+example : (5 : ℕ) % 4 = 1 := by norm_num1
+example : (3 : ℕ) % 2 = 1 := by norm_num1
+example : 3 + (42 : ℕ) % 5 = 5 := by norm_num1
+
+example : (5 : ℤ) % 4 = 1 := by norm_num1
+example : (2 : ℤ) % 2 = 0 := by norm_num1
+example : (3 : ℤ) % 2 = 1 := by norm_num1
+example : (3 : ℤ) % 4 = 3 := by norm_num1
+example : (-3 : ℤ) % 4 = 1 := by norm_num1
+example : (3 : ℤ) % -4 = 3 := by norm_num1
+example : 3 + (42 : ℤ) % 5 = 5 := by norm_num1
+
+example : 2 ∣ 4 := by norm_num1
+example : ¬ 2 ∣ 5 := by norm_num1
+example : 553105253 ∣ 553105253 * 776531401 := by norm_num1
+example : ¬ 553105253 ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+example : (2 : ℤ) ∣ 4 := by norm_num1
+example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
+example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
+example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+end mod

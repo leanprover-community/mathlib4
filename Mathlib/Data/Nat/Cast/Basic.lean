@@ -138,6 +138,7 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
 #align map_nat_cast map_natCast
 
 --Porting note: new theorem
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=

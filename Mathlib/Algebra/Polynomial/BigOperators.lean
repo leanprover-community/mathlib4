@@ -267,9 +267,10 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h <;> simp only [Multiset.mem_map] at *
+  · rw [natDegree_multiset_prod_of_monic] at h
     swap
-    · rintro _ ⟨_, _, rfl⟩
+    · simp only [Multiset.mem_map]
+      rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
     contrapose! h

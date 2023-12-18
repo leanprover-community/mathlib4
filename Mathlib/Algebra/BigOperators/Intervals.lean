@@ -199,8 +199,8 @@ section GaussSum
 /-- Gauss' summation formula -/
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i in range n, i) * 2 = n * (n - 1) :=
   calc
-    (∑ i in range n, i) * 2 = (∑ i in range n, i) + ∑ i in range n, (n - 1 - i) :=
-    by rw [sum_range_reflect (fun i => i) n, mul_two]
+    (∑ i in range n, i) * 2 = (∑ i in range n, i) + ∑ i in range n, (n - 1 - i) := by
+      rw [sum_range_reflect (fun i => i) n, mul_two]
     _ = ∑ i in range n, (i + (n - 1 - i)) := sum_add_distrib.symm
     _ = ∑ i in range n, (n - 1) :=
       sum_congr rfl fun i hi => add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| mem_range.1 hi
@@ -294,7 +294,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
       f (n - 1) • (range n).sum g - f m • (range (m + 1)).sum g +
       Finset.sum (Ico m (n - 1)) (fun i => f i • (range (i + 1)).sum g -
       f (i + 1) • (range (i + 1)).sum g) := by
-    rw [← add_sub, add_comm, ←add_sub, ← sum_sub_distrib]
+    rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
   rw [h₄]
   have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
     intro i

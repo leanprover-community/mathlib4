@@ -385,7 +385,7 @@ open BigOperators
 @[to_additive (attr := simp)]
 theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i in s, f i) = ∏ i in s, (f i : α → β) :=
-  (coeFnMonoidHom : C(α, β) →* _).map_prod f s
+  map_prod coeFnMonoidHom f s
 #align continuous_map.coe_prod ContinuousMap.coe_prod
 #align continuous_map.coe_sum ContinuousMap.coe_sum
 
@@ -864,7 +864,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
         ext x'
         simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
         congr
-        simp
+        simp [eq_iff_true_of_subsingleton]
       rw [h]
       simp only [Subalgebra.algebraMap_mem]⟩
 #align continuous_map.subsingleton_subalgebra ContinuousMap.subsingleton_subalgebra
@@ -1042,10 +1042,10 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [A
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     -- Porting note: in mathlib3 the proof from here was:
-    -- simp_rw [←tsum_apply h, ←tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
+    -- simp_rw [← tsum_apply h, ← tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
     --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
-    --   ←add_assoc]
-    -- However now the second `←tsum_apply` doesn't fire unless we use `erw`.
+    --   ← add_assoc]
+    -- However now the second `← tsum_apply` doesn't fire unless we use `erw`.
     simp_rw [← tsum_apply h]
     erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
     simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
