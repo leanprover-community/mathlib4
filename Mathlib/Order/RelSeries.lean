@@ -17,8 +17,8 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
-variable {α : Type _} (r : Rel α α)
-variable {β : Type _} (s : Rel β β)
+variable {α : Type*} (r : Rel α α)
+variable {β : Type*} (s : Rel β β)
 
 /--
 Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
@@ -163,8 +163,9 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-/-- Start of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a₀`. Since a relation
-series is assumed to be non-empty, this is well defined. -/
+/-- Start of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a₀`.
+
+Since a relation series is assumed to be non-empty, this is well defined. -/
 def head (x : RelSeries r) : α := x 0
 
 /-- End of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its last element is `aₙ`.  Since a
@@ -184,7 +185,7 @@ such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by abel)
-  step := fun i => by
+  step i := by
     obtain (hi|rfl|hi) :=
       lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
     · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
@@ -210,7 +211,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
       exact hi
 
 /--
-For two sets `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
+For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
 `a₀ --r-> a₁ --r-> ... --r-> aₙ ↦ f a₀ --s-> f a₁ --s-> ... --s-> f aₙ`
 -/
@@ -222,9 +223,9 @@ def map (p : RelSeries r)
   step := (hf <| p.step .)
 
 /--
-If `a_0 --r-> a_1 --r-> ... --r-> a_n` is an `r`-series and `a` is such that
-`a_i --r-> a --r-> a_{i + 1}`, then
-`a_0 --r-> a_1 --r-> ... --r-> a_i --r-> a --r-> a_{i + 1} --r-> ... --r-> a_n`
+If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
+`aᵢ -r→ a -r→ a_ᵢ₊₁`, then
+`a₀ -r→ a₁ -r→ ... -r→ a_i -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
 @[simps]
@@ -330,14 +331,14 @@ lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
 
-/-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
+/-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]
 def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
 { toFun := toFun
   step := fun i => strictMono <| lt_add_one i.1 }
 
 /--
-For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
+For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
 can be pushed out to a strict chain of `β` by
 `a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
 -/
