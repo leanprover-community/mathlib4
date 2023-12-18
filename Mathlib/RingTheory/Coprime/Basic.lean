@@ -3,11 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.Tactic.Ring
 
 #align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 

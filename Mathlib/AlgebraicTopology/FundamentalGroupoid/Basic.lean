@@ -114,7 +114,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
 def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
-  (reflTransSymm p.symm).cast rfl <| congr_arg _ Path.symm_symm
+  (reflTransSymm p.symm).cast rfl <| congr_arg _ (Path.symm_symm _)
 #align path.homotopy.refl_symm_trans Path.Homotopy.reflSymmTrans
 
 end
@@ -266,35 +266,77 @@ end Homotopy
 
 end Path
 
-/-- The fundamental groupoid of a space `X` is defined to be a type synonym for `X`, and we
+/-- The fundamental groupoid of a space `X` is defined to be a wrapper around `X`, and we
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
-def FundamentalGroupoid (X : Type u) := X
+@[ext]
+structure FundamentalGroupoid (X : Type u) where
+  /-- View a term of `FundamentalGroupoid X` as a term of `X`.-/
+  as : X
 #align fundamental_groupoid FundamentalGroupoid
 
 namespace FundamentalGroupoid
 
-instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) := h
+/-- The equivalence between `X` and the underlying type of its fundamental groupoid.
+  This is useful for transferring constructions (instances, etc.)
+  from `X` to `πₓ X`. -/
+@[simps]
+def equiv (X : Type*) : FundamentalGroupoid X ≃ X where
+  toFun x := x.as
+  invFun x := .mk x
+  left_inv _ := rfl
+  right_inv _ := rfl
 
-attribute [reducible] FundamentalGroupoid
+@[simp]
+lemma isEmpty_iff (X : Type*) :
+    IsEmpty (FundamentalGroupoid X) ↔ IsEmpty X :=
+  equiv _ |>.isEmpty_congr
+
+instance (X : Type*) [IsEmpty X] :
+    IsEmpty (FundamentalGroupoid X) :=
+  equiv _ |>.isEmpty
+
+@[simp]
+lemma nonempty_iff (X : Type*) :
+    Nonempty (FundamentalGroupoid X) ↔ Nonempty X :=
+  equiv _ |>.nonempty_congr
+
+instance (X : Type*) [Nonempty X] :
+    Nonempty (FundamentalGroupoid X) :=
+  equiv _ |>.nonempty
+
+@[simp]
+lemma subsingleton_iff (X : Type*) :
+    Subsingleton (FundamentalGroupoid X) ↔ Subsingleton X :=
+  equiv _ |>.subsingleton_congr
+
+instance (X : Type*) [Subsingleton X] :
+    Subsingleton (FundamentalGroupoid X) :=
+  equiv _ |>.subsingleton
+
+-- TODO: It seems that `Equiv.nontrivial_congr` doesn't exist.
+-- Once it is added, please add the corresponding lemma and instance.
+
+instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
+  ⟨⟨default⟩⟩
 
 attribute [local instance] Path.Homotopic.setoid
 
 instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
-  Hom x y := Path.Homotopic.Quotient x y
-  id x := ⟦Path.refl x⟧
+  Hom x y := Path.Homotopic.Quotient x.as y.as
+  id x := ⟦Path.refl x.as⟧
   comp {x y z} := Path.Homotopic.Quotient.comp
   id_comp {x y} f :=
     Quotient.inductionOn f fun a =>
-      show ⟦(Path.refl x).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
+      show ⟦(Path.refl x.as).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
   comp_id {x y} f :=
     Quotient.inductionOn f fun a =>
-      show ⟦a.trans (Path.refl y)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
+      show ⟦a.trans (Path.refl y.as)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
   assoc {w x y z} f g h :=
     Quotient.inductionOn₃ f g h fun p q r =>
       show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from
         Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
   inv {x y} p :=
-    Quotient.lift (fun l : Path x y => ⟦l.symm⟧)
+    Quotient.lift (fun l : Path x.as y.as => ⟦l.symm⟧)
       (by
         rintro a b ⟨h⟩
         simp only
@@ -303,24 +345,24 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
       p
   inv_comp {x y} f :=
     Quotient.inductionOn f fun a =>
-      show ⟦a.symm.trans a⟧ = ⟦Path.refl y⟧ from
+      show ⟦a.symm.trans a⟧ = ⟦Path.refl y.as⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
   comp_inv {x y} f :=
     Quotient.inductionOn f fun a =>
-      show ⟦a.trans a.symm⟧ = ⟦Path.refl x⟧ from
+      show ⟦a.trans a.symm⟧ = ⟦Path.refl x.as⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
 
 theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
 #align fundamental_groupoid.comp_eq FundamentalGroupoid.comp_eq
 
-theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ := rfl
+theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as⟧ := rfl
 #align fundamental_groupoid.id_eq_path_refl FundamentalGroupoid.id_eq_path_refl
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
-    { obj := f
+    { obj := fun x => ⟨f x.as⟩
       map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
@@ -356,26 +398,29 @@ theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
 @[reducible]
-def toTop {X : TopCat} (x : πₓ X) : X := x
+def toTop {X : TopCat} (x : πₓ X) : X := x.as
 #align fundamental_groupoid.to_top FundamentalGroupoid.toTop
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
 @[reducible]
-def fromTop {X : TopCat} (x : X) : πₓ X := x
+def fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 #align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
 -- Porting note: Added `(X := X)` to the type.
 @[reducible]
-def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient (X := X) x₀ x₁ := p
+def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+    Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
+  p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
 @[reducible]
-def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) : x₀ ⟶ x₁ := p
+def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
+    FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 
 end FundamentalGroupoid

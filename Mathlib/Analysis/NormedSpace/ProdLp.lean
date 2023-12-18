@@ -36,8 +36,6 @@ This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section
@@ -326,9 +324,7 @@ def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
         (edist f.fst h.fst ^ p.toReal + edist f.snd h.snd ^ p.toReal) ^ (1 / p.toReal) ≤
             ((edist f.fst g.fst + edist g.fst h.fst) ^ p.toReal +
               (edist f.snd g.snd + edist g.snd h.snd) ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans hp)
-          exact add_le_add (ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp))
-            (ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp))
+          gcongr <;> apply edist_triangle
         _ ≤
             (edist f.fst g.fst ^ p.toReal + edist f.snd g.snd ^ p.toReal) ^ (1 / p.toReal) +
               (edist g.fst h.fst ^ p.toReal + edist g.snd h.snd ^ p.toReal) ^ (1 / p.toReal) := by
@@ -382,7 +378,7 @@ def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
           ← PseudoMetricSpace.edist_dist]
         exact le_sup_right
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
-        · simp only [ge_iff_le, le_sup_iff, dist_nonneg]
+        · simp only [ge_iff_le, le_sup_iff, dist_nonneg, or_self]
         · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
     · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ :=
         ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
@@ -406,13 +402,13 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
         edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
           simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (by positivity)
+          gcongr
           simp only [self_le_add_right]
     · calc
         edist x.snd y.snd ≤ (edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
           simp only [← ENNReal.rpow_mul, cancel, ENNReal.rpow_one, le_refl]
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (by positivity)
+          gcongr
           simp only [self_le_add_left]
 
 theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -429,12 +425,8 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
       (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) ≤
           (edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal +
           edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
-        refine ENNReal.rpow_le_rpow (add_le_add ?_ ?_) nonneg
-        · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
-          simp [edist]
-        · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
-          simp [edist]
-      _ = (2 : ℝ≥0) ^ (1 / p.toReal) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
+        gcongr <;> simp [edist]
+      _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
           ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
@@ -512,7 +504,7 @@ variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable [Module 𝕜 α] [Module 𝕜 β]
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
-@[simps! (config := { fullyApplied := false }) apply symm_apply]
+@[simps! (config := .asFn) apply symm_apply]
 protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := prod_continuous_equiv _ _ _
@@ -632,7 +624,8 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   ext
   norm_cast
 
-theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
+theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
+    ‖x‖ = Real.sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
   rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
   norm_cast
 
@@ -675,8 +668,7 @@ theorem nnnorm_equiv_symm_fst (x : α) :
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
-    have hp0 : (p : ℝ) ≠ 0 := by
-      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
+    have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
@@ -686,8 +678,7 @@ theorem nnnorm_equiv_symm_snd (y : β) :
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
-    have hp0 : (p : ℝ) ≠ 0 := by
-      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
+    have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
@@ -746,7 +737,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
 instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
   norm_smul_le c f := by
     rcases p.dichotomy with (rfl | hp)
-    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ from mod_cast NNReal.coe_mono this.le
       simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
       rfl
     · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'

@@ -56,9 +56,6 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-
-open TopologicalSpace (SecondCountableTopology)
-
 open Classical BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
@@ -129,7 +126,7 @@ generalising to `Sort`. -/
 theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
     m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
     ⟨ fun h i => mono_null m (subset_iUnion s i) h,
-      by by_cases i : ι <;> simp [i]; exact (fun h => h (Iff.mpr (Iff.of_eq (eq_true i)) trivial)) ⟩
+      by by_cases i : ι <;> simp [i]⟩
 #align measure_theory.outer_measure.Union_null_iff' MeasureTheory.OuterMeasure.iUnion_null_iff'
 
 theorem biUnion_null_iff (m : OuterMeasure α) {s : Set β} (hs : s.Countable) {t : β → Set α} :
@@ -1019,7 +1016,7 @@ theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : 
   rw [ENNReal.tsum_eq_iSup_nat]
   refine' iSup_le fun n => _
   have := @isCaratheodory_sum _ m _ h hd univ n
-  simp at this; simp [this]
+  simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this, ge_iff_le]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
 #align measure_theory.outer_measure.f_Union MeasureTheory.OuterMeasure.f_iUnion
 

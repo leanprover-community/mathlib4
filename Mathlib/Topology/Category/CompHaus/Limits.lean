@@ -6,6 +6,8 @@ Authors: Adam Topaz
 
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Extensive
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 
@@ -24,7 +26,7 @@ namespace CompHaus
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 section Pullbacks
 
@@ -229,6 +231,16 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
 -- `elementwise` should work here, but doesn't
+
+instance : PreservesFiniteCoproducts compHausToTop := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop
+  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (CompHaus.finiteCoproduct.isColimit _)
+  exact TopCat.sigmaCofanIsColimit _
+
+instance : FinitaryExtensive CompHaus :=
+  finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts
 

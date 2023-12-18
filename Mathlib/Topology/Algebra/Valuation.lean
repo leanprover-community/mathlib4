@@ -49,7 +49,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
         _ < γ₀ * γ₀ := (mul_lt_mul₀ r_in s_in)
-        _ ≤ γ := by exact_mod_cast h
+        _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)

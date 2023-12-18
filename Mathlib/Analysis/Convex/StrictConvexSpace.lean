@@ -232,77 +232,8 @@ theorem not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y�
   sameRay_iff_norm_sub.not.trans <| ne_comm.trans (abs_norm_sub_norm_le _ _).lt_iff_ne.symm
 #align not_same_ray_iff_abs_lt_norm_sub not_sameRay_iff_abs_lt_norm_sub
 
-/-- In a strictly convex space, the triangle inequality turns into an equality if and only if the
-middle point belongs to the segment joining two other points. -/
-theorem dist_add_dist_eq_iff : dist x y + dist y z = dist x z ↔ y ∈ [x -[ℝ] z] := by
-  simp only [mem_segment_iff_sameRay, sameRay_iff_norm_add, dist_eq_norm', sub_add_sub_cancel',
-    eq_comm]
-#align dist_add_dist_eq_iff dist_add_dist_eq_iff
-
 theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x + y)‖ < ‖x‖ ↔ x ≠ y := by
   rw [norm_smul, Real.norm_of_nonneg (one_div_nonneg.2 zero_le_two), ← inv_eq_one_div, ←
     div_eq_inv_mul, div_lt_iff (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
     not_sameRay_iff_norm_add_lt, h]
 #align norm_midpoint_lt_iff norm_midpoint_lt_iff
-
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
-variable {PF : Type u} {PE : Type*} [MetricSpace PF] [MetricSpace PE]
-
-variable [NormedAddTorsor F PF] [NormedAddTorsor E PE]
-
-theorem eq_lineMap_of_dist_eq_mul_of_dist_eq_mul {x y z : PE} (hxy : dist x y = r * dist x z)
-    (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
-  have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by
-    rw [← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right, ← dist_eq_norm_vsub', ←
-      dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right, one_mul]
-  rcases eq_or_ne x z with (rfl | hne)
-  · obtain rfl : y = x := by simpa
-    simp
-  · rw [← dist_ne_zero] at hne
-    rcases this with ⟨a, b, _, hb, _, H⟩
-    rw [smul_zero, zero_add] at H
-    have H' := congr_arg norm H
-    rw [norm_smul, Real.norm_of_nonneg hb, ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy,
-      mul_left_inj' hne] at H'
-    rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]
-#align eq_line_map_of_dist_eq_mul_of_dist_eq_mul eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
-
-theorem eq_midpoint_of_dist_eq_half {x y z : PE} (hx : dist x y = dist x z / 2)
-    (hy : dist y z = dist x z / 2) : y = midpoint ℝ x z := by
-  apply eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
-  · rwa [invOf_eq_inv, ← div_eq_inv_mul]
-  · rwa [invOf_eq_inv, ← one_div, sub_half, one_div, ← div_eq_inv_mul]
-#align eq_midpoint_of_dist_eq_half eq_midpoint_of_dist_eq_half
-
-namespace Isometry
-
-/-- An isometry of `NormedAddTorsor`s for real normed spaces, strictly convex in the case of
-the codomain, is an affine isometry.  Unlike Mazur-Ulam, this does not require the isometry to
-be surjective. -/
-noncomputable def affineIsometryOfStrictConvexSpace {f : PF → PE} (hi : Isometry f) :
-    PF →ᵃⁱ[ℝ] PE :=
-  { AffineMap.ofMapMidpoint f
-      (fun x y => by
-        apply eq_midpoint_of_dist_eq_half
-        · rw [hi.dist_eq, hi.dist_eq]
-          simp only [dist_left_midpoint, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul]
-        · rw [hi.dist_eq, hi.dist_eq]
-          simp only [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
-      hi.continuous with
-    norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
-#align isometry.affine_isometry_of_strict_convex_space Isometry.affineIsometryOfStrictConvexSpace
-
-@[simp]
-theorem coe_affineIsometryOfStrictConvexSpace {f : PF → PE} (hi : Isometry f) :
-    ⇑hi.affineIsometryOfStrictConvexSpace = f :=
-  rfl
-#align isometry.coe_affine_isometry_of_strict_convex_space Isometry.coe_affineIsometryOfStrictConvexSpace
-
-@[simp]
-theorem affineIsometryOfStrictConvexSpace_apply {f : PF → PE} (hi : Isometry f) (p : PF) :
-    hi.affineIsometryOfStrictConvexSpace p = f p :=
-  rfl
-#align isometry.affine_isometry_of_strict_convex_space_apply Isometry.affineIsometryOfStrictConvexSpace_apply
-
-end Isometry

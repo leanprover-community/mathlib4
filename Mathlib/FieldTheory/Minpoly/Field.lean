@@ -43,7 +43,7 @@ theorem degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x
 #align minpoly.degree_le_of_ne_zero minpoly.degree_le_of_ne_zero
 
 theorem ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
-  minpoly.ne_zero <| isIntegral_of_finite _ _
+  minpoly.ne_zero <| .of_finite A _
 #align minpoly.ne_zero_of_finite_field_extension minpoly.ne_zero_of_finite
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
@@ -69,9 +69,7 @@ stronger assumptions on `B`. -/
 theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
-  have hx : IsIntegral A x := by
-    rw [← isAlgebraic_iff_isIntegral]
-    exact ⟨p, hp0, hp⟩
+  have hx : IsIntegral A x := IsAlgebraic.isIntegral ⟨p, hp0, hp⟩
   rw [← dvd_iff_modByMonic_eq_zero (monic hx)]
   by_contra hnz
   have hd := degree_le_of_ne_zero A x hnz

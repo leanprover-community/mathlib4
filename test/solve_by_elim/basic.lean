@@ -7,7 +7,7 @@ import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Logic
 import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.PermuteGoals
+import Std.Tactic.PermuteGoals
 import Mathlib.Tactic.SolveByElim
 import Std.Test.Internal.DummyLabelAttr
 

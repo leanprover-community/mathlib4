@@ -437,7 +437,7 @@ theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w 
 theorem sqLe_add {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     SqLe (x + z) c (y + w) d := by
   have xz := sqLe_add_mixed xy zw
-  simp [SqLe, mul_assoc] at xy zw
+  simp? [SqLe, mul_assoc] at xy zw says simp only [SqLe, mul_assoc] at xy zw
   simp [SqLe, mul_add, mul_comm, mul_left_comm, add_le_add, *]
 #align zsqrtd.sq_le_add Zsqrtd.sqLe_add
 
@@ -1010,7 +1010,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d
   · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
-    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| by exact_mod_cast h⟩
+    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
     exact divides_sq_eq_zero_z ha
   · push_neg at h
     suffices a.re * a.re = 0 by

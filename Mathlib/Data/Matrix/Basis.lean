@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash
+Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
@@ -65,12 +65,12 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   -- Porting note: was `convert`
   refine (Fintype.sum_eq_single i ?_).trans ?_; swap
   · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp
   · intro j' hj'
     -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
@@ -215,6 +215,47 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
 #align matrix.std_basis_matrix.mul_of_ne Matrix.StdBasisMatrix.mul_of_ne
 
 end
+
+section Commute
+
+variable [Fintype n]
+
+theorem row_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
+    (hM : Commute (stdBasisMatrix i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
+  have := ext_iff.mpr hM i k
+  aesop
+
+theorem col_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
+    (hM : Commute (stdBasisMatrix i j 1) M) (hki : k ≠ i) : M k i = 0 := by
+  have := ext_iff.mpr hM k j
+  aesop
+
+theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
+    (hM : Commute (stdBasisMatrix i j 1) M) : M i i = M j j := by
+  have := ext_iff.mpr hM i j
+  aesop
+
+/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
+theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
+    M ∈ Set.range (Matrix.scalar n) := by
+  cases isEmpty_or_nonempty n
+  · exact ⟨0, Subsingleton.elim _ _⟩
+  obtain ⟨i⟩ := ‹Nonempty n›
+  refine ⟨M i i, Matrix.ext fun j k => ?_⟩
+  simp only [scalar_apply]
+  obtain rfl | hkl := Decidable.eq_or_ne j k
+  · rw [diagonal_apply_eq]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rfl
+    · exact diag_eq_of_commute_stdBasisMatrix (hM _ _ hij)
+  · push_neg at hkl
+    rw [diagonal_apply_ne _ hkl]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM k i hkl.symm) hkl]
+    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) hkl.symm]
+
+end Commute
 
 end StdBasisMatrix
 
