@@ -21,7 +21,7 @@ open Finset Finsupp
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
 theorem support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
-    (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image ((· * ·) a) f.support := by
+    (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image (a * ·) f.support := by
   intro x hx
   contrapose hx
   have : ∀ y, a * y = x → f y = 0 := by
@@ -54,7 +54,7 @@ theorem support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G
 
 theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
-    (single x r * f : MonoidAlgebra k G).support = Finset.image ((· * ·) x) f.support := by
+    (single x r * f : MonoidAlgebra k G).support = Finset.image (x * ·) f.support := by
   refine' subset_antisymm (support_single_mul_subset f _ _) fun y hy => _
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
     simpa only [Finset.mem_image, exists_prop] using hy

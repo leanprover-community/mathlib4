@@ -218,7 +218,7 @@ def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      simpa only [map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+      simpa only [map_smulₛₗ] using congr_arg (τ₁₂ r • ·) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
@@ -339,7 +339,7 @@ theorem disjoint_ker {f : F} {p : Submodule R M} :
 #align linear_map.disjoint_ker LinearMap.disjoint_ker
 
 theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
-  simpa [disjoint_iff_inf_le] using @disjoint_ker _ _ _ _ _ _ _ _ _ _ _ _ _ f ⊤
+  simpa [disjoint_iff_inf_le] using disjoint_ker (f := f) (p := ⊤)
 #align linear_map.ker_eq_bot' LinearMap.ker_eq_bot'
 
 theorem ker_eq_bot_of_inverse {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁] {f : M →ₛₗ[τ₁₂] M₂}
@@ -489,7 +489,7 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
 variable (F)
 
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
-  simpa [disjoint_iff_inf_le] using @disjoint_ker' _ _ _ _ _ _ _ _ _ _ _ _ _ f ⊤
+  simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
 #align linear_map_class.ker_eq_bot LinearMapClass.ker_eq_bot
 
 variable {F}

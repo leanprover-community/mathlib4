@@ -305,6 +305,10 @@ theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 
   apply Fermat42.not_minimal hf h2 hp
 #align not_fermat_42 not_fermat_42
 
+/--
+Fermat's Last Theorem for $n=4$: if `a b c : ℕ` are all non-zero
+then `a ^ 4 + b ^ 4 ≠ c ^ 4`.
+-/
 theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by
   rw [fermatLastTheoremFor_iff_int]
   intro a b c ha hb _ heq
@@ -313,8 +317,7 @@ theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by
 #align not_fermat_4 fermatLastTheoremFour
 
 /--
-To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents, and the case of
-exponent 4 proved above.
+To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents.
 -/
 theorem FermatLastTheorem.of_odd_primes
     (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem := by

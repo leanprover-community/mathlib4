@@ -318,7 +318,7 @@ open Meta
 structure LinarithConfig : Type where
   /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
-  discharger : TacticM Unit := do evalTactic (←`(tactic| ring1))
+  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
   -- We can't actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
   -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
@@ -346,7 +346,7 @@ since this is typically needed when using stronger unification.
 def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
     LinarithConfig :=
   if reduce_default then
-    { cfg with transparency := .default, discharger := do evalTactic (←`(tactic| ring1!)) }
+    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
   else cfg
 
 /-!

@@ -112,14 +112,14 @@ theorem subset_upperBounds_mul (s t : Set M) :
 @[to_additive]
 theorem mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : a * b ∈ lowerBounds (s * t) :=
-  @mul_mem_upperBounds_mul Mᵒᵈ _ _ _ _ _ _ _ _ ha hb
+  mul_mem_upperBounds_mul (M := Mᵒᵈ) ha hb
 #align mul_mem_lower_bounds_mul mul_mem_lowerBounds_mul
 #align add_mem_lower_bounds_add add_mem_lowerBounds_add
 
 @[to_additive]
 theorem subset_lowerBounds_mul (s t : Set M) :
     lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
-  @subset_upperBounds_mul Mᵒᵈ _ _ _ _ _ _
+  subset_upperBounds_mul (M := Mᵒᵈ) _ _
 #align subset_lower_bounds_mul subset_lowerBounds_mul
 #align subset_lower_bounds_add subset_lowerBounds_add
 

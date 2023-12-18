@@ -369,9 +369,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
     wellFounded_lt.has_min
       {Z | (Z.map PrimeSpectrum.asIdeal).prod ≤ I ∧ (Z.map PrimeSpectrum.asIdeal).prod ≠ ⊥}
       ⟨Z₀, hZ₀.1, hZ₀.2⟩
-  have hZM : Multiset.prod (Z.map PrimeSpectrum.asIdeal) ≤ M := le_trans hZI hIM
-  have hZ0 : Z ≠ 0 := by rintro rfl; simp [hM.ne_top] at hZM
-  obtain ⟨_, hPZ', hPM⟩ := (hM.isPrime.multiset_prod_le (mt Multiset.map_eq_zero.mp hZ0)).mp hZM
+  obtain ⟨_, hPZ', hPM⟩ := hM.isPrime.multiset_prod_le.mp (hZI.trans hIM)
   -- Then in fact there is a `P ∈ Z` with `P ≤ M`.
   obtain ⟨P, hPZ, rfl⟩ := Multiset.mem_map.mp hPZ'
   classical
@@ -560,7 +558,7 @@ theorem mul_right_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (
 #align fractional_ideal.mul_right_strict_mono FractionalIdeal.mul_right_strictMono
 
 theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
-    StrictMono ((· * ·) I) :=
+    StrictMono (I * ·) :=
   strictMono_of_le_iff_le fun _ _ => (mul_left_le_iff hI).symm
 #align fractional_ideal.mul_left_strict_mono FractionalIdeal.mul_left_strictMono
 
@@ -723,7 +721,7 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
 
 theorem Ideal.strictAnti_pow (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
-    StrictAnti ((· ^ ·) I : ℕ → Ideal A) :=
+    StrictAnti (I ^ · : ℕ → Ideal A) :=
   strictAnti_nat_of_succ_lt fun e =>
     Ideal.dvdNotUnit_iff_lt.mp ⟨pow_ne_zero _ hI0, I, mt isUnit_iff.mp hI1, pow_succ' I e⟩
 #align ideal.strict_anti_pow Ideal.strictAnti_pow

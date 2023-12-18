@@ -355,7 +355,7 @@ set_option linter.uppercaseLean3 false in
 
 open scoped Classical
 
-/-- The main theorem: the class group of an integral closure `S` of `R` in an
+/-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite

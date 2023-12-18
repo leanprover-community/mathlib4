@@ -385,7 +385,7 @@ open BigOperators
 @[to_additive (attr := simp)]
 theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i in s, f i) = ∏ i in s, (f i : α → β) :=
-  (coeFnMonoidHom : C(α, β) →* _).map_prod f s
+  map_prod coeFnMonoidHom f s
 #align continuous_map.coe_prod ContinuousMap.coe_prod
 #align continuous_map.coe_sum ContinuousMap.coe_sum
 
