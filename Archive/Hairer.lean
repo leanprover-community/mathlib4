@@ -33,13 +33,6 @@ variable {E E' F  : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
--- move this
-theorem tsupport_add {X : Type*} [TopologicalSpace X] {α : Type*} [AddMonoid α] {f g : X → α} :
-    (tsupport fun x ↦ f x + g x) ⊆ tsupport f ∪ tsupport g :=
-  closure_minimal
-    ((support_add f g).trans (union_subset_union (subset_tsupport _) (subset_tsupport _)))
-    (isClosed_closure.union isClosed_closure)
-
 variable (𝕜 E F) in
 /-- The set of smooth functions supported in a set `s`, as a submodule of the space of functions. -/
 def SmoothSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
