@@ -21,7 +21,6 @@ import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Order.Extension.Linear
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Algebra.Group.UniqueProds
-import Mathlib.Algebra.MonoidAlgebra.Equiv
 
 /-!
 # The Lindemann-Weierstrass theorem
