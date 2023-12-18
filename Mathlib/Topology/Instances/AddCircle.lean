@@ -125,24 +125,6 @@ abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [Order
   𝕜 ⧸ zmultiples p
 #align add_circle AddCircle
 
--- Porting note: the following section replaces a failing `deriving` statement
-section instances
-
-variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
-
--- instance : AddCommGroup (AddCircle p) :=
---   inferInstance -- As (AddCommGroup (𝕜 ⧸ zmultiples p))
--- instance : TopologicalSpace (AddCircle p) :=
---   inferInstanceAs (TopologicalSpace (𝕜 ⧸ zmultiples p))
--- instance : TopologicalAddGroup (AddCircle p) :=
---   inferInstanceAs (TopologicalAddGroup (𝕜 ⧸ zmultiples p))
--- instance : Inhabited (AddCircle p) :=
---   inferInstanceAs (Inhabited (𝕜 ⧸ zmultiples p))
-
-instance : Coe 𝕜 (AddCircle p) := ⟨QuotientAddGroup.mk⟩
-
-end instances
-
 namespace AddCircle
 
 section LinearOrderedAddCommGroup

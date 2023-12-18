@@ -730,64 +730,84 @@ end IsFundamentalDomain
 section FundamentalDomainMeasure
 
 variable (G) [Group G] [MulAction G α] [MeasurableSpace α] {s : Set α}
-  (μ : Measure α) (hs : NullMeasurableSet s μ)
+  (μ : Measure α)
 
 local notation "α_mod_G" => MulAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
-/-- Given a measurable subset `s` of a `MeasurableSpace` `α`, a group `G` acting on `α`, and a
-measure `μ` on `α`, one can define a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and
-intersecting with `s`. -/
-@[to_additive NullMeasurableSet.addQuotientMeasure "Given a measurable subset `s` of a
-`MeasurableSpace` `α`, an additive group `G` acting on `α`, and a measure `μ` on `α`, one can define
-a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and intersecting with `s`."]
-noncomputable def NullMeasurableSet.quotientMeasure : Measure (Quotient α_mod_G) := by
-  apply Measure.ofMeasurable (fun U _ => μ ((π ⁻¹' U) ∩ s)) (by simp)
-  intro f meas_f disjoint_f
-  let ff : ℕ → Set α := fun n => π ⁻¹' (f n) ∩ s
-  have meas_ff : ∀ n, NullMeasurableSet (ff n) μ :=
-    fun n => (measurableSet_quotient.mp (meas_f n)).nullMeasurableSet.inter hs
-  have disjoint_ff : Pairwise (AEDisjoint μ on fun (n : ℕ) => ff n)
-  · intro x y x_ne_y
-    have := (Disjoint.preimage π (disjoint_f x_ne_y))
-    rw [Function.onFun_apply]
-    have : Disjoint (ff x) (ff y) := by dsimp [Disjoint]; aesop
-    exact this.aedisjoint
-  convert measure_iUnion₀ disjoint_ff meas_ff using 1
-  simp [iUnion_inter]
+-- /-- Given a measurable subset `s` of a `MeasurableSpace` `α`, a group `G` acting on `α`, and a
+-- measure `μ` on `α`, one can define a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and
+-- intersecting with `s`. -/
+-- @[to_additive NullMeasurableSet.addQuotientMeasure "Given a measurable subset `s` of a
+-- `MeasurableSpace` `α`, an additive group `G` acting on `α`, and a measure `μ` on `α`, one can define
+-- a `Measure` on the `Quotient` of `α ⧸ G` by lifting to `α` and intersecting with `s`."]
+-- noncomputable def NullMeasurableSet.quotientMeasure (_ : NullMeasurableSet s μ) :
+--     Measure (Quotient α_mod_G) :=
+--   (μ.restrict s).map π
+-- by
+--   apply Measure.ofMeasurable (fun U _ => μ ((π ⁻¹' U) ∩ s)) (by simp)
+--   intro f meas_f disjoint_f
+--   let ff : ℕ → Set α := fun n => π ⁻¹' (f n) ∩ s
+--   have meas_ff : ∀ n, NullMeasurableSet (ff n) μ :=
+--     fun n => (measurableSet_quotient.mp (meas_f n)).nullMeasurableSet.inter hs
+--   have disjoint_ff : Pairwise (AEDisjoint μ on fun (n : ℕ) => ff n)
+--   · intro x y x_ne_y
+--     have := (Disjoint.preimage π (disjoint_f x_ne_y))
+--     rw [Function.onFun_apply]
+--     have : Disjoint (ff x) (ff y) := by dsimp [Disjoint]; aesop
+--     exact this.aedisjoint
+--   convert measure_iUnion₀ disjoint_ff meas_ff using 1
+--   simp [iUnion_inter]
+
+-- example : (μ.restrict s).map π = hs.quotientMeasure (G := G) := by rfl
+
 
 variable {G}
 
 @[to_additive NullMeasurableSet.addQuotientMeasure_apply]
-lemma NullMeasurableSet.quotientMeasure_apply {U : Set (Quotient α_mod_G)}
-    (meas_U : MeasurableSet U) : hs.quotientMeasure G μ U = μ ((π ⁻¹' U) ∩ s) :=
-  MeasureTheory.Measure.ofMeasurable_apply U meas_U
-
-@[to_additive NullMeasurableSet.addQuotientMeasure_eq_map_restrict]
-lemma NullMeasurableSet.quotientMeasure_eq_map_restrict :
-    hs.quotientMeasure G μ = Measure.map π (μ.restrict s) := by
-  ext U meas_U
+lemma NullMeasurableSet.quotientMeasure_apply (hs : NullMeasurableSet s μ) {U : Set (Quotient α_mod_G)}
+    (meas_U : MeasurableSet U)  : (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
+--  simp only [NullMeasurableSet.quotientMeasure]
   rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
-  exact hs.quotientMeasure_apply μ meas_U
 
-@[to_additive NullMeasurableSet.eq_addQuotientMeasure]
-lemma NullMeasurableSet.eq_quotientMeasure {ν : Measure (Quotient α_mod_G)}
-    (h : ∀ (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U), ν U = μ (π ⁻¹' U ∩ s)) :
-    ν = hs.quotientMeasure G μ := by
-  ext V meas_V
-  rw [h V meas_V, hs.quotientMeasure_apply μ meas_V]
+--  MeasureTheory.Measure.ofMeasurable_apply U meas_U
+variable  (hs : NullMeasurableSet s μ)
+
+-- @[to_additive NullMeasurableSet.addQuotientMeasure_eq_map_restrict]
+-- lemma NullMeasurableSet.quotientMeasure_eq_map_restrict :
+--     hs.quotientMeasure G μ = (μ.restrict s).map π  := rfl
+  --   #exit
+  --   by
+  -- ext U meas_U
+  -- rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
+  --   Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
+  -- exact hs.quotientMeasure_apply μ meas_U
+
+-- @[to_additive NullMeasurableSet.eq_addQuotientMeasure]
+-- lemma NullMeasurableSet.eq_quotientMeasure {ν : Measure (Quotient α_mod_G)}
+--     (h : ∀ (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U), ν U = μ (π ⁻¹' U ∩ s)) :
+--     ν = hs.quotientMeasure G μ := by
+--   ext V meas_V
+--   rw [h V meas_V, hs.quotientMeasure_apply μ meas_V]
 
 @[to_additive IsAddFundamentalDomain.addQuotientMeasure_invariant]
 lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {t : Set α}
     [SMulInvariantMeasure G α μ] [MeasurableSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
     (fund_dom_t : IsFundamentalDomain G t μ) :
-    (fund_dom_s.nullMeasurableSet.quotientMeasure G μ)
-    = fund_dom_t.nullMeasurableSet.quotientMeasure G μ := by
-  apply fund_dom_t.nullMeasurableSet.eq_quotientMeasure
-  intro U meas_U
+    (μ.restrict s).map π = (μ.restrict t).map π := by
+--   ext U meas_U
+
+--   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
+-- #exit
+--     (fund_dom_s.nullMeasurableSet.quotientMeasure G μ)
+--     = fund_dom_t.nullMeasurableSet.quotientMeasure G μ := by
+  --apply fund_dom_t.nullMeasurableSet.eq_quotientMeasure
+  ext U meas_U
+--  intro U meas_U
   rw [fund_dom_s.nullMeasurableSet.quotientMeasure_apply μ meas_U]
+  rw [fund_dom_t.nullMeasurableSet.quotientMeasure_apply μ meas_U]
   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
   -- weird elaboration order reasons why this `exact` can't be folded into the `apply` without
   -- angering `aesop` later?
@@ -920,7 +940,9 @@ an artificial way to generate a measure downstairs such that the pair satisfies 
 lemma IsFundamentalDomain.quotientVolumeEqVolumePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s) :
     @QuotientVolumeEqVolumePreimage G α _ _ _
-      (fund_dom_s.nullMeasurableSet.quotientMeasure G volume) :=
+      ((volume.restrict s).map π)
+        --fund_dom_s.nullMeasurableSet.quotientMeasure G volume)
+        :=
   { projection_respects_measure' := by
       intro t fund_dom_t U meas_U
       rw [fund_dom_s.quotientMeasure_invariant _ fund_dom_t,
@@ -933,8 +955,17 @@ lemma IsFundamentalDomain.quotientVolumeEqVolumePreimage {μ : Measure (Quotient
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s)
     (h : ∀ (U : Set (Quotient α_mod_G)) (_ : MeasurableSet U), μ U = volume (π ⁻¹' U ∩ s)) :
     QuotientVolumeEqVolumePreimage μ := by
-  rw [fund_dom_s.nullMeasurableSet.eq_quotientMeasure volume h (ν := μ)]
+  have : μ = (volume.restrict s).map π := by
+    ext U meas_U
+    rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
+      Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
+    exact h U meas_U
+  --ext U meas_U
+  --fund_dom_t.nullMeasurableSet.quotientMeasure_apply μ meas_U
+  rw [this]
   exact fund_dom_s.quotientVolumeEqVolumePreimage_quotientMeasure
+  -- rw [fund_dom_s.nullMeasurableSet.eq_quotientMeasure volume h (ν := μ)]
+  -- exact fund_dom_s.quotientVolumeEqVolumePreimage_quotientMeasure
 
 /-- Any two measures satisfying `QuotientVolumeEqVolumePreimage` are equal. -/
 @[to_additive]
@@ -953,7 +984,9 @@ lemma QuotientVolumeEqVolumePreimage.unique
 lemma IsFundamentalDomain.eq_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s)
     (μ : Measure (Quotient α_mod_G)) [QuotientVolumeEqVolumePreimage μ] :
-    μ = fund_dom_s.nullMeasurableSet.quotientMeasure G volume  := by
+    μ = (volume.restrict s).map π
+     --fund_dom_s.nullMeasurableSet.quotientMeasure G volume
+     := by
   haveI : HasFundamentalDomain G α := ⟨⟨s, fund_dom_s⟩⟩
   haveI := fund_dom_s.quotientVolumeEqVolumePreimage_quotientMeasure
   apply QuotientVolumeEqVolumePreimage.unique
@@ -968,7 +1001,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
   measurable := measurable_quotient_mk' (s := α_mod_G)
   map_eq := by
     haveI : HasFundamentalDomain G α := ⟨𝓕, h𝓕⟩
-    rw [h𝓕.eq_quotientMeasure (μ := μ), h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
+    rw [h𝓕.eq_quotientMeasure (μ := μ)] --, h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
 
 /-- If a fundamental domain has volume 0, then `QuotientVolumeEqVolumePreimage` holds. -/
 @[to_additive IsAddFundamentalDomain.AddQuotientVolumeEqVolumePreimage_of_volume_zero]
@@ -1016,7 +1049,7 @@ theorem QuotientVolumeEqVolumePreimage.isFiniteMeasure_quotient
     [hasFun : HasFundamentalDomain G α] (h : covolume G α ≠ ⊤) :
     IsFiniteMeasure μ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
-  rw [h𝓕.eq_quotientMeasure μ, h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
+  rw [h𝓕.eq_quotientMeasure μ] --, h𝓕.nullMeasurableSet.quotientMeasure_eq_map_restrict]
   have : Fact (volume 𝓕 < ⊤) := by
     apply Fact.mk
     convert Ne.lt_top h
