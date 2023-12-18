@@ -310,28 +310,7 @@ theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_monomial MvPolynomial.X_dvd_monomial
 
-lemma X_add_C_ne_zero (i : σ) (c : R) [Nontrivial R] : X i + C c ≠ 0 := by
-  classical
-  intro r
-  have := (ext_iff _ _).mp r (Finsupp.single i 1)
-  rw [coeff_add, coeff_X, coeff_zero, coeff_C, if_neg, add_zero] at this
-  · exact one_ne_zero' R  this
-  · intro rid
-    simpa using FunLike.ext_iff.mp rid i
-
-lemma X_sub_C_ne_zero (i : σ) (c : R') [Nontrivial R'] : X i - C c ≠ 0 := by
-  convert X_add_C_ne_zero i (- c) using 1
-  rw [C_neg, sub_eq_add_neg]
-
-lemma X_sub_C_not_isUnit (i : σ) (c : R') [Nontrivial R'] : ¬ IsUnit (X i - C c) := by
-  classical
-  rintro ⟨⟨_, m, hm1, hm2⟩, rfl⟩
-  have r := congr_arg (eval $ Finsupp.single i c) hm1
-  simp only [map_mul, map_sub, eval_X, Finsupp.single_eq_same, eval_C, sub_self, zero_mul,
-    map_one] at r
-  exact (one_ne_zero' R' r.symm)
-
-lemma prime_X (i : σ) [IsDomain R'] : Prime (X i : R'[X]) := by
+lemma prime_X (i : σ) [IsDomain R'] : Prime (X i : MvPolynomial σ R') := by
   refine ⟨by convert (X_sub_C_ne_zero i (0 : R')); rw [map_zero, sub_zero],
     by convert (X_sub_C_not_isUnit i (0 : R')); rw [map_zero, sub_zero], ?_⟩
   intro a b h
