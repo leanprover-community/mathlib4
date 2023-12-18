@@ -9,9 +9,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Do not combine OrderedCancelAddCommMonoid with BoundedOrder
 
 This file shows that combining `OrderedCancelAddCommMonoid` with `BoundedOrder` is not a good idea,
-as it forbids any strict inequalities (`x < y`).
+as such a structure must be trivial (`⊥ = x = ⊤` for all `x`).
 The same applies to any superclasses, e.g. combining `StrictOrderedSemiring` with `CompleteLattice`.
-The crux is that cancellation properties don't like the `⊥` and `⊤` elements.
 -/
 
 example {α : Type*} [OrderedCancelAddCommMonoid α] [BoundedOrder α] [Nontrivial α] : False :=
