@@ -275,7 +275,7 @@ section isOrtho
   simp
 
 theorem ι_mul_ι_comm_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
-    ι Q a * ι Q b =  -(ι Q b * ι Q a) :=
+    ι Q a * ι Q b = -(ι Q b * ι Q a) :=
   eq_neg_of_add_eq_zero_left <| ι_mul_ι_add_swap_of_isOrtho h
 
 theorem mul_ι_mul_ι_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
