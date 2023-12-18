@@ -789,7 +789,7 @@ instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing : Topol
 theorem norm_map_one_of_pow_eq_one [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
     ‖φ x‖ = 1 := by
   rw [← pow_left_inj, ← norm_pow, ← map_pow, h, map_one, norm_one, one_pow]
-  exacts [norm_nonneg _, zero_le_one, k.pos]
+  exacts [norm_nonneg _, zero_le_one, k.ne_zero]
 #align norm_map_one_of_pow_eq_one norm_map_one_of_pow_eq_one
 
 theorem norm_one_of_pow_eq_one {x : α} {k : ℕ+} (h : x ^ (k : ℕ) = 1) : ‖x‖ = 1 :=
