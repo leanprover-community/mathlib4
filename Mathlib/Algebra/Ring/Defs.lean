@@ -175,7 +175,7 @@ variable [NonAssocSemiring α]
 
 -- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
 theorem two_mul (n : α) : 2 * n = n + n :=
-  (congrArg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
+  (congr_arg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
 #align two_mul two_mul
 
 -- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
@@ -186,7 +186,7 @@ theorem bit0_eq_two_mul (n : α) : bit0 n = 2 * n :=
 
 -- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]
 theorem mul_two (n : α) : n * 2 = n + n :=
-  (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
+  (congr_arg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 #align mul_two mul_two
 
 end NonAssocSemiring
