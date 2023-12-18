@@ -39,8 +39,9 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
   -- the strategy; for each variable, induct on powers of `ι`, then on the exponent of each
   -- power.
   induction hm₁ using Submodule.iSup_induction' with
+  | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
+  | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
   | hp i₁' m₁' hm₁ =>
-    clear m₁
     obtain ⟨i₁n, rfl⟩ := i₁'
     dsimp only at *
     induction hm₁ using Submodule.pow_induction_on_left' with
@@ -56,6 +57,8 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
       clear ih₁
       congr 2
       induction hm₂ using Submodule.iSup_induction' with
+      | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
+      | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
       | hp i₂' m₂' hm₂ =>
         clear m₂
         obtain ⟨i₂n, rfl⟩ := i₂'
@@ -69,13 +72,8 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
           obtain ⟨v₂, rfl⟩ := hm₂
           -- this is the second interesting goal
           rw [map_mul, map_apply_ι, inr_apply, Nat.cast_succ, ← mul_assoc,
-            ι_mul_ι_comm_of_isOrtho (.inl_inr _ _),
-            neg_mul, mul_assoc, ih₂, mul_smul_comm, ← mul_assoc, ← Units.neg_smul, uzpow_add,
-            uzpow_one, mul_neg_one]
-      | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
-      | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
-  | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
-  | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
+            ι_mul_ι_comm_of_isOrtho (.inl_inr _ _), neg_mul, mul_assoc, ih₂, mul_smul_comm,
+            ← mul_assoc, ← Units.neg_smul, uzpow_add, uzpow_one, mul_neg_one]
 
 
 /-- The forward direction of `CliffordAlgebra.prodEquiv`. -/
