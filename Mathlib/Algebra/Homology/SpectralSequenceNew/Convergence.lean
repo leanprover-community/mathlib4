@@ -780,9 +780,23 @@ class CollapsesAsSESAt : Prop where
     IsIso (h.filtration.map (homOfLE (by
       simpa only [← hk] using s.le_pred'_of_lt n i j (by simpa using hij)) :
         WithBot.some i ⟶ k))
-  isIso_filtrationι : IsIso (h.filtrationι j)
+  isIso_filtrationι : IsIso (h.filtrationι j) := by infer_instance
 
-variable (i j : α n) [H : h.CollapsesAsSESAt i j]
+variable (i j : α n)
+
+lemma collapsesAsSESAt_of_succ (hij : s.pred n j = i) (pq : ι) (hpq : s.position n i = pq)
+    (hi : IsIso (h.π i pq hpq)) (hj : IsIso (h.filtrationι j)) :
+    h.CollapsesAsSESAt i j where
+  hij := by simpa [hij] using s.pred_lt n j
+  isIso_π pq' hpq' := by
+    obtain rfl : pq' = pq := hpq'.symm.trans hpq
+    exact hi
+  isIso_filtration_map k hk := by
+    obtain rfl : k = i := hk.symm.trans hij
+    erw [Functor.map_id]
+    infer_instance
+
+variable [H : h.CollapsesAsSESAt i j]
 
 lemma lt_of_collapsesAsSESAt : i < j := H.hij
 
