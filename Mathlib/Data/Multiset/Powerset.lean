@@ -252,16 +252,16 @@ theorem powersetCard_zero_right (n : ℕ) : @powersetCard α (n + 1) 0 = 0 :=
   rfl
 #align multiset.powerset_len_zero_right Multiset.powersetCard_zero_right
 
-theorem powersetCard_one (s : Multiset α) : powersetCard 1 s = s.map singleton :=
-  s.induction_on (by rw [powersetCard_zero_right, map_zero]) fun a s ih ↦ by
-    rw [powersetCard_cons, ih, map_cons, powersetCard_zero_left,
-        map_singleton, cons_zero, add_comm, singleton_add]
-
 @[simp]
 theorem powersetCard_cons (n : ℕ) (a : α) (s) :
     powersetCard (n + 1) (a ::ₘ s) = powersetCard (n + 1) s + map (cons a) (powersetCard n s) :=
   Quotient.inductionOn s fun l => by simp [powersetCard_coe']
 #align multiset.powerset_len_cons Multiset.powersetCard_cons
+
+theorem powersetCard_one (s : Multiset α) : powersetCard 1 s = s.map singleton :=
+  s.induction_on (by rw [powersetCard_zero_right, map_zero]) fun a s ih ↦ by
+    rw [powersetCard_cons, ih, map_cons, powersetCard_zero_left,
+        map_singleton, cons_zero, add_comm, singleton_add]
 
 @[simp]
 theorem mem_powersetCard {n : ℕ} {s t : Multiset α} : s ∈ powersetCard n t ↔ s ≤ t ∧ card s = n :=
