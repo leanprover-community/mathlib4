@@ -129,15 +129,15 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
   · by_cases hE : CompleteSpace E
     · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
     · simp [integral, mellin, hE]
-  · simp_rw [mellin]
-    conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
-    refine' set_integral_congr measurableSet_Ioi fun t ht => _
-    dsimp only
-    rw [← mul_smul, ← mul_assoc, inv_mul_cancel (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
-      real_smul]
-    rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
-      cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
-      mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
+  simp_rw [mellin]
+  conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
+  refine' set_integral_congr measurableSet_Ioi fun t ht => _
+  dsimp only
+  rw [← mul_smul, ← mul_assoc, inv_mul_cancel (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
+    real_smul]
+  rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
+    cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
+    mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 #align mellin_comp_rpow mellin_comp_rpow
 
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :

@@ -225,5 +225,5 @@ theorem not_IntegrableOn_Ici_inv {a : ℝ} :
 
 /-- The function `fun x ↦ x⁻¹` is not integrable on any interval `(a, +∞)`. -/
 theorem not_IntegrableOn_Ioi_inv {a : ℝ} :
-    ¬ IntegrableOn (fun x => x⁻¹) (Ioi a) := by
+    ¬ IntegrableOn (·⁻¹) (Ioi a) := by
   simpa only [IntegrableOn, restrict_Ioi_eq_restrict_Ici] using not_IntegrableOn_Ici_inv
