@@ -23,7 +23,7 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 ## Main results
 
 * `Matrix.posSemidef_iff_eq_transpose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
-  semidefinite iff it has the form `Bᴴ B` for some `B`.
+  semidefinite iff it has the form `Bᴴ * B` for some `B`.
 * `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
 -/
@@ -42,8 +42,8 @@ open scoped Matrix
 ## Positive semidefinite matrices
 -/
 
-/-- A matrix `M : Matrix n n R` is positive semidefinite if it is hermitian
-   and `xᴴ M x` is nonnegative for all `x`. -/
+/-- A matrix `M : Matrix n n R` is positive semidefinite if it is Hermitian and `xᴴ * M * x` is
+nonnegative for all `x`. -/
 def PosSemidef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M.mulVec x)
 #align matrix.pos_semidef Matrix.PosSemidef
@@ -51,17 +51,10 @@ def PosSemidef (M : Matrix n n R) :=
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff_nonneg [DecidableEq n] {d : n → R} :
     PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) := by
-  constructor
-  · intro ⟨_, hP⟩ i
-    simpa using hP (Pi.single i 1)
-  · intro hd
-    constructor
-    · rw [IsHermitian, conjTranspose, diagonal_transpose, diagonal_map (star_zero R)]
-      exact congr_arg _ (funext fun i ↦ star_eq_self_of_nonneg (hd i))
-    · intro x
-      rw [dotProduct]
-      refine Finset.sum_nonneg fun i _ ↦ ?_
-      simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (hd i) _
+  refine ⟨λ ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), ?_⟩
+  refine λ hd ↦ ⟨isHermitian_diagonal_iff.2 <| fun i ↦ star_eq_self_of_nonneg (hd i), λ x ↦ ?_⟩
+  refine Finset.sum_nonneg fun i _ ↦ ?_
+  simpa only [mulVec_diagonal, mul_assoc] using conjugate_nonneg (hd i) _
 
 namespace PosSemidef
 
@@ -88,8 +81,8 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
 theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     (M.submatrix e e).PosSemidef := by
   classical
-  rw [(by simp : M = 1 * M * 1), submatrix_mul (e₂ := id) (he₂ := Function.bijective_id),
-    submatrix_mul (e₂ := id) (he₂ := Function.bijective_id), submatrix_id_id]
+  rw [(by simp : M = 1 * M * 1), submatrix_mul (he₂ := Function.bijective_id),
+    submatrix_mul (he₂ := Function.bijective_id), submatrix_id_id]
   simpa only [conjTranspose_submatrix, conjTranspose_one] using
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
