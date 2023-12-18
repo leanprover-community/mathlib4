@@ -6,21 +6,15 @@ Authors: Martin Dvorak
 import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
-# OrderedCancelAddCommMonoid + BoundedOrder = bad idea
+# Do not combine OrderedCancelAddCommMonoid with BoundedOrder
 
 This file shows that combining `OrderedCancelAddCommMonoid` with `BoundedOrder` is not a good idea,
 as it forbids any strict inequalities (`x < y`).
-The same applies to any superclasses, e.g. combining
-`StrictOrderedSemiring` with `CompleteLattice`.
+The same applies to any superclasses, e.g. combining `StrictOrderedSemiring` with `CompleteLattice`.
 The crux is that cancellation properties don't like the `⊥` and `⊤` elements.
 -/
 
-example {α : Type*} [OrderedCancelAddCommMonoid α] [BoundedOrder α] (x y : α) (hxy : x < y) :
-    False :=
-  have blebpx : ⊥ ≤ ⊥ + x := bot_le
-  have bpxlbpy : ⊥ + x < ⊥ + y := add_lt_add_left hxy ⊥
-  have blbpy : ⊥ < ⊥ + y := blebpx.trans_lt bpxlbpy
-  have zly : 0 < y := pos_of_lt_add_right blbpy
-  have tpylet : ⊤ + y ≤ ⊤ := le_top
-  have tpyltpy : ⊤ + y < ⊤ + y := lt_add_of_le_of_pos tpylet zly
-  tpyltpy.false
+example {α : Type*} [OrderedCancelAddCommMonoid α] [BoundedOrder α] [Nontrivial α] : False :=
+  have top_pos := pos_of_lt_add_right (bot_le.trans_lt (add_lt_add_left bot_lt_top (⊥ : α)))
+  have top_add_top_lt_self := lt_add_of_le_of_pos (@le_top _ _ _ (⊤ + ⊤)) top_pos
+  top_add_top_lt_self.false
