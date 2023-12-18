@@ -6,6 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Topology.Order
 
 #align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -195,4 +196,10 @@ instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 #align zmod.inhabited ZMod.inhabited
 
+/-- Making `ZMod` a discrete topological space. -/
+instance {d : ℕ} : TopologicalSpace (ZMod d) := ⊥
+attribute [local instance] ZMod.instTopologicalSpaceZMod
+
+instance {d : ℕ} : DiscreteTopology (ZMod d) := { eq_bot := rfl }
+attribute [local instance] ZMod.instDiscreteTopologyZModInstTopologicalSpaceZMod
 end ZMod
