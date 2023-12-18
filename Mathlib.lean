@@ -2059,6 +2059,7 @@ import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
