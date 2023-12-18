@@ -36,7 +36,7 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
     replace ⟨i₀, hi₀t, hf⟩ := hf
     use i₀, hi₀t, f
     rwa [sum_erase_eq_sub, hf, zero_smul, sub_zero, relation₁]
-  · -- case: `∀ i, f i ≠ 0`
+  · -- Case: `∀ i, f i ≠ 0`
 
     have _ : ∀ i ∈ t, 0 < f i := by
       intro i hi
@@ -80,9 +80,9 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             rwa [← div_le_iff_of_neg hzs.2]
           · rw [mem_filter] at hzs
             push_neg at hzs
-            specialize hzs hzt
             exact le_trans (mul_nonpos_of_nonpos_of_nonneg
-              (div_nonpos_of_nonneg_of_nonpos (zero_le $ f d) $ le_of_lt hd₁.2) hzs) $ zero_le (f z)
+              (div_nonpos_of_nonneg_of_nonpos (zero_le $ f d)
+                $ le_of_lt hd₁.2) (hzs hzt)) $ zero_le (f z)
         · have : g' z = 0 := by aesop
           rw [this, mul_zero]
           exact zero_le (f z) }⟩
@@ -121,7 +121,7 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
       · -- Define new coefficients `k = f + λ g`
         let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
 
-        -- first we show that all `k i ≥ 0`
+        -- First we show that all `k i ≥ 0`
         rw [sub_nonneg]
         by_cases hzt : z ∈ t
         · by_cases hzs : z ∈ s
@@ -130,9 +130,8 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             rwa [← le_div_iff hzs.2]
           · rw [mem_filter] at hzs
             push_neg at hzs
-            specialize hzs hzt
             exact le_trans (mul_nonpos_of_nonneg_of_nonpos
-              (div_nonneg (zero_le (f d)) (le_of_lt hd₁.2)) hzs) $ zero_le (f z)
+              (div_nonneg (zero_le (f d)) (le_of_lt hd₁.2)) (hzs hzt)) $ zero_le (f z)
         · have : g' z = 0 := by aesop
           rw [this, mul_zero]
           exact zero_le (f z) }⟩
@@ -165,23 +164,22 @@ noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ toPointedCone 𝕜
 
 theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s := (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).1
 
+-- TODO: Get help for this one
 theorem mem_minCardFinsetOfMemtoPointedCone :
-    x ∈ toPointedCone 𝕜 (minCardFinsetOfMemtoPointedCone hx : Set E) := by sorry
-  -- have := Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).2
-  -- (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).2
-  -- simp_rw [Function.argminOn_mem]
+    x ∈ toPointedCone 𝕜 (minCardFinsetOfMemtoPointedCone hx : Set E) := by
+  sorry
 
-#exit
+-- TODO: Should be an easy fix
 theorem minCardFinsetOfMemtoPointedCone_nonempty : (minCardFinsetOfMemtoPointedCone hx).Nonempty := by
   simp_rw [← Finset.coe_nonempty]
-  -- exact ⟨x, mem_minCardFinsetOfMemtoPointedCone hx⟩
+  exact ⟨x, sorry⟩ --mem_minCardFinsetOfMemtoPointedCone hx⟩
 
 theorem minCardFinsetOfMemtoPointedCone_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ toPointedCone 𝕜 (t : Set E)) : (minCardFinsetOfMemtoPointedCone hx).card ≤ t.card :=
   Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
 
 theorem affineIndependent_minCardFinsetOfMemtoPointedCone :
-    AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemtoPointedCone hx → E) := by
+    LinearIndependent 𝕜 ((↑) : minCardFinsetOfMemtoPointedCone hx → E) := by
   let k := (minCardFinsetOfMemtoPointedCone hx).card - 1
   have hk : (minCardFinsetOfMemtoPointedCone hx).card = k + 1 :=
     (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemtoPointedCone_nonempty hx))).symm
@@ -190,20 +188,22 @@ theorem affineIndependent_minCardFinsetOfMemtoPointedCone :
   obtain ⟨p, hp⟩ := mem_toPointedCone_erase h (mem_minCardFinsetOfMemtoPointedCone hx)
   have contra := minCardFinsetOfMemtoPointedCone_card_le_card hx (Set.Subset.trans
     (Finset.erase_subset (p : E) (minCardFinsetOfMemtoPointedCone hx))
-    (minCardFinsetOfMemtoPointedCone_subseteq hx)) hp
+    (minCardFinsetOftoPointedCone_subseteq hx)) hp
   rw [← not_lt] at contra
   apply contra
   erw [card_erase_of_mem p.2, hk]
   exact lt_add_one _
-#align caratheodory.affine_independent_min_card_finset_of_mem_convex_hull Caratheodory.affineIndependent_minCardFinsetOfMemtoPointedCone
 
 end Caratheodory
 
 variable {s : Set E}
 
+-- TODO: Figure out direct sums of PointedCones
+
+#exit
 /-- **Carathéodory's convexity theorem** -/
 theorem toPointedCone_eq_union : toPointedCone 𝕜 s =
-    ⋃ (t : Finset E) (hss : ↑t ⊆ s) (hai : AffineIndependent 𝕜 ((↑) : t → E)), toPointedCone 𝕜 ↑t := by
+    ⋃ (t : Finset E) (hss : ↑t ⊆ s) (hai : LinearIndependent 𝕜 ((↑) : t → E)), toPointedCone 𝕜 ↑t := by
   apply Set.Subset.antisymm
   · intro x hx
     simp only [exists_prop, Set.mem_iUnion]
@@ -213,7 +213,6 @@ theorem toPointedCone_eq_union : toPointedCone 𝕜 s =
       Caratheodory.mem_minCardFinsetOfMemtoPointedCone hx⟩
   · iterate 3 convert Set.iUnion_subset _; intro
     exact toPointedCone_mono ‹_›
-#align convex_hull_eq_union toPointedCone_eq_union
 
 /-- A more explicit version of `toPointedCone_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCone 𝕜 s) :
@@ -240,4 +239,3 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCon
     · intro e _ hwe contra
       apply hwe
       rw [contra, zero_smul]
-#align eq_pos_convex_span_of_mem_convex_hull eq_pos_convex_span_of_mem_toPointedCone
