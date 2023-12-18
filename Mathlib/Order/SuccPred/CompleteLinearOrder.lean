@@ -44,8 +44,7 @@ lemma exists_eq_ciInf_of_not_isPredLimit
   csInf_mem_of_not_isPredLimit (Set.range_nonempty f) hf hf'
 
 lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit
-    (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccLimit x) :
-    x ∈ s :=
+    (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccLimit x) : x ∈ s :=
   hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
 
 lemma IsGLB.mem_of_nonempty_of_not_isPredLimit
