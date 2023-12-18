@@ -502,7 +502,7 @@ local notation "L" => AddMonoid.End.mulLeft
 lemma NonUnitalNonAssocCommSemiring.mem_center_iff (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
   rw [NonUnitalNonAssocSemiring.mem_center_iff, CentroidHom.centroid_eq_centralizer_mulLeftRight,
-    Subsemiring.mem_centralizer_iff, AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
+    Subsemiring.mem_centralizer_iff, AddMonoid.End.mulRight_eq_mulLeft, Set.union_self]
   aesop
 
 end NonUnitalNonAssocCommSemiring
