@@ -870,6 +870,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
@@ -1290,6 +1291,7 @@ import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Opposite
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
@@ -2058,6 +2060,7 @@ import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
@@ -2185,6 +2188,7 @@ import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Nilpotent
+import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.Order.Min
 import Mathlib.GroupTheory.OrderOfElement
@@ -2353,6 +2357,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 import Mathlib.LinearAlgebra.CliffordAlgebra.EvenEquiv
 import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
@@ -2473,6 +2478,8 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 import Mathlib.LinearAlgebra.TensorPower
 import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Graded.External
+import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Prod
@@ -2683,6 +2690,7 @@ import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Definability
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.ElementaryMaps
+import Mathlib.ModelTheory.ElementarySubstructures
 import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.Fraisse
@@ -3014,6 +3022,7 @@ import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.DedekindDomain.Different
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing

@@ -132,7 +132,7 @@ instance : BoundedRandom m Int where
       Int.le_add_of_nonneg_left (Int.ofNat_zero_le z),
       Int.add_le_of_le_sub_right $ Int.le_trans
         (Int.ofNat_le.mpr h2)
-        (le_of_eq $ Int.ofNat_natAbs_eq_of_nonneg _ $ Int.sub_nonneg_of_le h)⟩
+        (le_of_eq $ Int.natAbs_of_nonneg $ Int.sub_nonneg_of_le h)⟩
 
 instance {n : Nat} : BoundedRandom m (Fin n) where
   randomR lo hi h _ := do

@@ -120,7 +120,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
-  simp at hfg
+  simp? at hfg says simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.leftToMax j₁ j₂) (IsFiltered.rightToMax j₁ j₂)
       (IsFiltered.rightToMax j₃ j₂) (IsFiltered.leftToMax j₃ j₂) f g
@@ -145,7 +145,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
-  simp at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
