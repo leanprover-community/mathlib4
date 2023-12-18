@@ -87,7 +87,7 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
-protected lemma zero [DecidableEq n] : PosSemidef (0 : Matrix n n R) :=
+protected lemma zero : PosSemidef (0 : Matrix n n R) :=
   ⟨isHermitian_zero, by simp⟩
 
 protected lemma one [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
