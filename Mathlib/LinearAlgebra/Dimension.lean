@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Module.Torsion
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
@@ -78,7 +79,7 @@ noncomputable section
 
 universe u v v' v'' u₁' w w'
 
-variable {K : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
+variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
@@ -102,8 +103,6 @@ this is the same as the dimension of the space (i.e. the cardinality of any basi
 
 In particular this agrees with the usual notion of the dimension of a vector space.
 
-The definition is marked as protected to avoid conflicts with `_root_.rank`,
-the rank of a linear map.
 -/
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
@@ -113,7 +112,7 @@ end
 
 section
 
-variable {R : Type u} [Ring R]
+variable [Ring R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
@@ -470,7 +469,7 @@ variable {R : Type u} {M : Type v}
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-@[simp]
+@[nontriviality, simp]
 theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   haveI := Module.subsingleton R M
   have : Nonempty { s : Set M // LinearIndependent R ((↑) : s → M) } :=
@@ -512,7 +511,35 @@ theorem rank_zero_iff_forall_zero : Module.rank R M = 0 ↔ ∀ x : M, x = 0 := 
     rw [← rank_top, this, rank_bot]
 #align rank_zero_iff_forall_zero rank_zero_iff_forall_zero
 
-/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
+/-- See `rank_zero_iff` for a stronger version with `NoZeroSMulDivisor R M`. -/
+lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+  nontriviality R
+  constructor
+  · contrapose!
+    rintro ⟨x, hx⟩
+    rw [← Cardinal.one_le_iff_ne_zero]
+    have : LinearIndependent R (fun _ : Unit ↦ x)
+    · exact linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
+        hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
+    simpa using cardinal_lift_le_rank_of_linearIndependent this
+  · intro h
+    rw [← le_zero_iff, Module.rank_def]
+    apply ciSup_le'
+    intro ⟨s, hs⟩
+    rw [nonpos_iff_eq_zero, Cardinal.mk_eq_zero_iff, ← not_nonempty_iff]
+    rintro ⟨i : s⟩
+    obtain ⟨a, ha, ha'⟩ := h i
+    apply ha
+    simpa using FunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+
+lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] :
+    Module.rank R M = 0 ↔ Module.IsTorsion R M := by
+  rw [Module.IsTorsion, rank_eq_zero_iff]
+  simp [mem_nonZeroDivisors_iff_ne_zero]
+
+/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
+Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
 theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=
   rank_zero_iff_forall_zero.trans (subsingleton_iff_forall_eq 0).symm
 #align rank_zero_iff rank_zero_iff
@@ -1073,9 +1100,9 @@ end Free
 
 section DivisionRing
 
-variable [DivisionRing K]
+variable [DivisionRing K] [Ring R] [StrongRankCondition R]
 
-variable [AddCommGroup V] [Module K V]
+variable [AddCommGroup V] [Module K V] [Module R V]
 
 variable [AddCommGroup V'] [Module K V']
 
@@ -1088,19 +1115,25 @@ theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V <
 #align basis.finite_of_vector_space_index_of_rank_lt_aleph_0 Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0
 
 -- TODO how far can we generalise this?
--- When `s` is finite, we could prove this for any ring satisfying the strong rank condition
--- using `linearIndependent_le_span'`
 theorem rank_span_le (s : Set V) : Module.rank K (span K s) ≤ #s := by
   obtain ⟨b, hb, hsab, hlib⟩ := exists_linearIndependent K s
   convert Cardinal.mk_le_mk_of_subset hb
   rw [← hsab, rank_span_set hlib]
 #align rank_span_le rank_span_le
 
-theorem rank_span_of_finset (s : Finset V) : Module.rank K (span K (↑s : Set V)) < ℵ₀ :=
-  calc
-    Module.rank K (span K (↑s : Set V)) ≤ #(↑s : Set V) := rank_span_le (s : Set V)
-    _ = s.card := by rw [Finset.coe_sort_coe, Cardinal.mk_coe_finset]
-    _ < ℵ₀ := Cardinal.nat_lt_aleph0 _
+theorem rank_span_le_of_finite {s : Set V} (hs : s.Finite) : Module.rank R (span R s) ≤ #s := by
+  rw [Module.rank_def]
+  apply ciSup_le'
+  rintro ⟨t, ht⟩
+  letI := hs.fintype
+  simpa [Cardinal.mk_image_eq Subtype.val_injective] using linearIndependent_le_span' _
+    (ht.map (f := Submodule.subtype _) (by simp)).image s (fun x ↦ by aesop)
+
+theorem rank_span_finset_le (s : Finset V) : Module.rank R (span R (s : Set V)) ≤ s.card := by
+  simpa using rank_span_le_of_finite s.finite_toSet
+
+theorem rank_span_of_finset (s : Finset V) : Module.rank R (span R (s : Set V)) < ℵ₀ :=
+  (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
 #align rank_span_of_finset rank_span_of_finset
 
 theorem rank_quotient_add_rank (p : Submodule K V) :

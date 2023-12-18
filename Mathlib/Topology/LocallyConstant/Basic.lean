@@ -3,9 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Tactic.FinCases
+import Mathlib.Topology.ContinuousFunction.Basic
 
 #align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 

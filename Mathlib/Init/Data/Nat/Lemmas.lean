@@ -63,7 +63,7 @@ namespace Nat
 
 #align nat.one_mul Nat.one_mul
 
-#align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
+#align nat.succ_add_eq_succ_add Nat.succ_add_eq_add_succ
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl

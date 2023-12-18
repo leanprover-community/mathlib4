@@ -354,7 +354,7 @@ theorem NeBot.of_mul_right : (f * g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_add_right Filter.NeBot.of_add_right
 
 @[to_additive (attr := simp)]
-theorem pure_mul : pure a * g = g.map ((· * ·) a) :=
+theorem pure_mul : pure a * g = g.map (a * ·) :=
   map₂_pure_left
 #align filter.pure_mul Filter.pure_mul
 #align filter.pure_add Filter.pure_add
@@ -495,7 +495,7 @@ theorem NeBot.of_div_right : (f / g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_sub_right Filter.NeBot.of_sub_right
 
 @[to_additive (attr := simp)]
-theorem pure_div : pure a / g = g.map ((· / ·) a) :=
+theorem pure_div : pure a / g = g.map (a / ·) :=
   map₂_pure_left
 #align filter.pure_div Filter.pure_div
 #align filter.pure_sub Filter.pure_sub
@@ -941,7 +941,7 @@ end GroupWithZero
 /-! ### Scalar addition/multiplication of filters -/
 
 
-section Smul
+section SMul
 
 variable [SMul α β] {f f₁ f₂ : Filter α} {g g₁ g₂ h : Filter β} {s : Set α} {t : Set β} {a : α}
   {b : β}
@@ -1019,7 +1019,7 @@ theorem NeBot.of_smul_right : (f • g).NeBot → g.NeBot :=
 #align filter.ne_bot.of_vadd_right Filter.NeBot.of_vadd_right
 
 @[to_additive (attr := simp)]
-theorem pure_smul : (pure a : Filter α) • g = g.map ((· • ·) a) :=
+theorem pure_smul : (pure a : Filter α) • g = g.map (a • ·) :=
   map₂_pure_left
 #align filter.pure_smul Filter.pure_smul
 #align filter.pure_vadd Filter.pure_vadd
@@ -1066,7 +1066,7 @@ instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (·
 #align filter.covariant_smul Filter.covariant_smul
 #align filter.covariant_vadd Filter.covariant_vadd
 
-end Smul
+end SMul
 
 /-! ### Scalar subtraction of filters -/
 
@@ -1130,7 +1130,7 @@ theorem NeBot.of_vsub_right : (f -ᵥ g : Filter α).NeBot → g.NeBot :=
 #align filter.ne_bot.of_vsub_right Filter.NeBot.of_vsub_right
 
 @[simp]
-theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map ((· -ᵥ ·) a) :=
+theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map (a -ᵥ ·) :=
   map₂_pure_left
 #align filter.pure_vsub Filter.pure_vsub
 
@@ -1166,28 +1166,27 @@ end Vsub
 /-! ### Translation/scaling of filters -/
 
 
-section Smul
+section SMul
 
 variable [SMul α β] {f f₁ f₂ : Filter β} {s : Set β} {a : α}
 
 /-- `a • f` is the map of `f` under `a •` in locale `Pointwise`. -/
 @[to_additive "`a +ᵥ f` is the map of `f` under `a +ᵥ` in locale `Pointwise`."]
 protected def instSMulFilter : SMul α (Filter β) :=
-  ⟨fun a => map ((· • ·) a)⟩
+  ⟨fun a => map (a • ·)⟩
 #align filter.has_smul_filter Filter.instSMulFilter
 #align filter.has_vadd_filter Filter.instVAddFilter
 
 scoped[Pointwise] attribute [instance] Filter.instSMulFilter Filter.instVAddFilter
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (fun b => a • b) f = a • f :=
+protected theorem map_smul : map (fun b => a • b) f = a • f :=
   rfl
 #align filter.map_smul Filter.map_smul
 #align filter.map_vadd Filter.map_vadd
 
 @[to_additive]
-theorem mem_smul_filter : s ∈ a • f ↔ (· • ·) a ⁻¹' s ∈ f :=
-  Iff.rfl
+theorem mem_smul_filter : s ∈ a • f ↔ (a • ·) ⁻¹' s ∈ f := Iff.rfl
 #align filter.mem_smul_filter Filter.mem_smul_filter
 #align filter.mem_vadd_filter Filter.mem_vadd_filter
 
@@ -1238,7 +1237,7 @@ instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· �
 #align filter.covariant_smul_filter Filter.covariant_smul_filter
 #align filter.covariant_vadd_filter Filter.covariant_vadd_filter
 
-end Smul
+end SMul
 
 open Pointwise
 
@@ -1274,7 +1273,7 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Filter γ) :=
-  ⟨fun a b f => by simp only [← map_smul, map_map, smul_assoc]; rfl⟩
+  ⟨fun a b f => by simp only [← Filter.map_smul, map_map, smul_assoc]; rfl⟩
 #align filter.is_scalar_tower Filter.isScalarTower
 #align filter.vadd_assoc_class Filter.vaddAssocClass
 
@@ -1316,8 +1315,8 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive "An additive action of an additive monoid on a type `β` gives an additive action on
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← map_smul, map_map, Function.comp, ← mul_smul]
-  one_smul f := by simp only [← map_smul, one_smul, map_id']
+  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp, ← mul_smul]
+  one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 #align filter.mul_action_filter Filter.mulActionFilter
 #align filter.add_action_filter Filter.addActionFilter
 
@@ -1329,7 +1328,7 @@ multiplicative action on `Filter β`. -/
 protected def distribMulActionFilter [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Filter β) where
   smul_add _ _ _ := map_map₂_distrib <| smul_add _
-  smul_zero _ := (map_pure _ _).trans <| by dsimp only; rw [smul_zero, pure_zero]
+  smul_zero _ := (map_pure _ _).trans <| by rw [smul_zero, pure_zero]
 #align filter.distrib_mul_action_filter Filter.distribMulActionFilter
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -1368,7 +1367,6 @@ theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
   refine' fun s hs => mem_smul_filter.2 _
   convert @univ_mem _ g
   refine' eq_univ_iff_forall.2 fun a => _
-  dsimp only
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 

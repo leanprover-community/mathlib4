@@ -51,8 +51,9 @@ theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p)
   suffices Tendsto (fun x => x * (b * x ^ (p - 1) + -1)) atTop atTop by
     refine Tendsto.congr' ?_ this
     refine eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ)) (fun x hx => ?_)
-    rw [rpow_sub_one (ne_of_gt hx)]
-    field_simp [(by exact ne_of_gt hx : x ≠ 0)]
+    rw [mem_Ioi] at hx
+    rw [rpow_sub_one hx.ne']
+    field_simp [hx.ne']
     ring
   apply Tendsto.atTop_mul_atTop tendsto_id
   refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
@@ -79,9 +80,8 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
 theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
   obtain hp | hp := le_iff_lt_or_eq.mp hp
-  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x :=
-        fun x => (by exact continuousAt_neg : ContinuousAt (fun x => -x) x).exp
-    rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
+  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.exp
+    rw [← Ioc_union_Ioi_eq_Ioi zero_le_one, integrableOn_union]
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
       refine IntegrableOn.mul_continuousOn ?_ ?_ isCompact_Icc
