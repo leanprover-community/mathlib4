@@ -294,8 +294,3 @@ elab_rules : tactic
 end ReduceModChar
 
 end Tactic
-
-lemma yes : (11 : ZMod 987654319) ^ 987654318 = 1 := by
-  reduce_mod_char
-
-#print yes

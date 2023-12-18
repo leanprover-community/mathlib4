@@ -29,6 +29,11 @@ example : (X ^ 2 - 3 : (ZMod 4)[X]) = X ^ 2 + 1 := by reduce_mod_char
 -- Cleaning up `1 * X` and `X + 0`:
 example : (5 * X ^ 2 - 3 * X + 4 : (ZMod 4)[X]) = X ^ 2 + X := by reduce_mod_char
 
+-- Exponentiation:
+example : (11 : ZMod 987654319) ^ 987654318 = 1 := by reduce_mod_char
+example : (-126432 : ZMod 1235412223) ^ 12355342321 = 1001528716 := by reduce_mod_char
+example : (((((5 : ZMod 1235412223) ^ 5) ^ 5) ^ 5) ^ 5) ^ 5 = 806432269 := by reduce_mod_char
+
 -- Rewriting hypotheses:
 example (a : ZMod 7) (h : a + 7 = 2) : a = 2 := by
   reduce_mod_char at h
