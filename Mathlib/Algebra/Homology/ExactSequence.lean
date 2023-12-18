@@ -237,6 +237,32 @@ lemma exact_of_δ₀ {S : ComposableArrows C (n + 2)}
   rw [exact_iff_δ₀]
   constructor <;> assumption
 
+lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
+    S.Exact ↔ S.δlast.Exact ∧ (mk₂ (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).Exact := by
+  constructor
+  · intro h
+    constructor
+    · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero i))
+        (fun i hi => h.exact i)
+    · rw [exact₂_iff]; swap
+      · rw [isComplex₂_iff]
+        exact h.toIsComplex.zero n
+      exact h.exact n (by linarith)
+  · rintro ⟨h, h'⟩
+    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
+    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by linarith)
+      · exact h.toIsComplex.zero i
+      · exact h'.toIsComplex.zero 0
+    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by linarith)
+      · exact h.exact i
+      · exact h'.exact 0
+
+lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
+    (h₁ : S.δlast.Exact) (h₂ : (mk₂ (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).Exact) :
+    S.Exact := by
+  rw [exact_iff_δlast]
+  constructor <;> assumption
+
 end ComposableArrows
 
 end CategoryTheory

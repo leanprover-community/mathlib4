@@ -729,6 +729,7 @@ lemma pageInfinityι_π :
 
 end
 
+@[reassoc]
 lemma pageInfinityι_π_eq_zero (i j : α n) (hij : i < j) (pqi pqj : ι)
     (hpqi : s.position n i = pqi) (hpqj : s.position n j = pqj)
     (hi : IsIso (h.π i pqi hpqi)) (hj : IsIso (h.filtrationι j)) :

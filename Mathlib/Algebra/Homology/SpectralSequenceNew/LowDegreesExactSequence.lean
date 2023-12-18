@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
-import Mathlib.Algebra.Homology.ExactSequence
+import Mathlib.Algebra.Homology.ConnectShortExact
 import Mathlib.Tactic.FinCases
 
 namespace HomologicalComplex
@@ -38,7 +38,7 @@ end ComplexShape
 
 namespace CategoryTheory
 
-open Category ZeroObject
+open Category Limits ZeroObject
 
 variable (C : Type*) [Category C] [Abelian C]
 
@@ -190,9 +190,6 @@ instance : IsIso ((hE 1).filtrationι 1) := by
 instance : (hE 1).CollapsesAsSESAt 0 1 :=
   (hE 1).collapsesAsSESAt_of_succ 0 1 rfl ⟨1, 0⟩ rfl inferInstance inferInstance
 
-noncomputable example : X 1 ⟶ E.pageInfinity ⟨0, 1⟩ :=
-  (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance
-
 noncomputable def ιE₂OneZero : (E.page 2).X ⟨1, 0⟩ ⟶ X 1 :=
   (E.pageInfinityIso ⟨1, 0⟩ 2).inv ≫ (hE 1).pageInfinityι 0 ⟨1, 0⟩ rfl inferInstance
 
@@ -207,9 +204,30 @@ instance : Epi (πE₃ZeroOne hE) := by
   dsimp [πE₃ZeroOne]
   apply epi_comp
 
-noncomputable def toE₂OneZero :
+lemma ιE₂OneZero_πE₃ZeroOne : ιE₂OneZero hE ≫ πE₃ZeroOne hE = 0 := by
+  dsimp [ιE₂OneZero, πE₃ZeroOne]
+  simp
+  rw [(hE 1).pageInfinityι_π_eq_zero_assoc 0 1 (by apply @zero_lt_one ℕ), zero_comp]
+
+lemma ιE₂OneZero_πE₃ZeroOne_exact :
+    (ShortComplex.mk _ _ (ιE₂OneZero_πE₃ZeroOne hE)).Exact := by
+  refine' ShortComplex.exact_of_iso _
+    (((hE 1).shortExact_of_collapses 0 1 ⟨1, 0⟩ ⟨0, 1⟩ rfl rfl).exact)
+  refine' ShortComplex.isoMk (E.pageInfinityIso ⟨1, 0⟩ 2) (Iso.refl _)
+    (E.pageInfinityIso ⟨0, 1⟩ 3) _ _
+  · simp [ιE₂OneZero]
+  · simp [πE₃ZeroOne]
+
+noncomputable def toE₂ZeroOne :
     X 1 ⟶ (E.page 2).X ⟨0, 1⟩ :=
   (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance ≫ E.edgeMono ⟨0, 1⟩ 2
+
+/-@[reassoc (attr := simp)]
+lemma πE₃ZeroOne_edgeMonoStep :
+    πE₃ZeroOne hE ≫ edgeMonoStep (0, 1) 2 3 rfl = toE₂ZeroOne hE := by
+  dsimp [πE₃ZeroOne, toE₂ZeroOne]
+  simp
+  sorry-/
 
 noncomputable def ιE₃TwoZero : (E.page 3).X ⟨2, 0⟩ ⟶ X 2 :=
   (E.pageInfinityIso ⟨2, 0⟩ 3).inv ≫ (hE 2).pageInfinityι 0 ⟨2, 0⟩ rfl inferInstance
@@ -225,6 +243,11 @@ noncomputable def fromE₂TwoZero : (E.page 2).X ⟨2, 0⟩ ⟶ X 2 :=
 lemma edgeEpiStep_ιE₃TwoZero :
     E.edgeEpiStep ⟨2, 0⟩ 2 3 rfl ≫ ιE₃TwoZero hE = fromE₂TwoZero hE := by
   simp [fromE₂TwoZero, ιE₃TwoZero]
+
+@[reassoc (attr := simp)]
+lemma d₂_fromE₂TwoZero :
+    (E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩ ≫ fromE₂TwoZero hE = 0 := by
+  rw [← edgeEpiStep_ιE₃TwoZero, E.d_comp_edgeEpiStep_assoc, zero_comp]
 
 variable (E)
 
@@ -277,12 +300,30 @@ variable {E}
 open LowDegreesExactSequence in
 @[simp]
 noncomputable def lowDegreesComposableArrows : ComposableArrows C 4 :=
-  ComposableArrows.mk₄ (ιE₂OneZero hE) (toE₂OneZero hE)
+  ComposableArrows.mk₄ (ιE₂OneZero hE) (toE₂ZeroOne hE)
     ((E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩) (fromE₂TwoZero hE)
 
 instance : Mono ((lowDegreesComposableArrows hE).map' 0 1) := by
   dsimp
   infer_instance
+
+/-open LowDegreesExactSequence in
+lemma lowDegreesComposableArrows_exact :
+    (lowDegreesComposableArrows hE).Exact := by
+  apply ComposableArrows.exact_of_δlast
+  · refine ComposableArrows.exact_of_iso ?_
+      (ShortComplex.connect_exact _ _ (ιE₂OneZero_πE₃ZeroOne_exact hE)
+        ((d₂Sequence_exact E).exact 0) (Iso.refl _) (toE₂ZeroOne hE) (by simp)
+        (by infer_instance) (by infer_instance))
+    exact ComposableArrows.isoMk₃ (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by simp) (by simp) (by simp)
+  · refine' ComposableArrows.exact₂_mk _ (by simp) _
+    let φ : ShortComplex.mk _ _ ((d₂Sequence_exact E).toIsComplex.zero 1) ⟶
+        ShortComplex.mk _ _ (d₂_fromE₂TwoZero hE) :=
+      { τ₁ := 𝟙 _
+        τ₂ := 𝟙 _
+        τ₃ := ιE₃TwoZero hE }
+    exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1 ((d₂Sequence_exact E).exact 1)-/
 
 end CohomologicalSpectralSequenceNat
 
