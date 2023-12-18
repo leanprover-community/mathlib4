@@ -347,6 +347,8 @@ structure StronglyConvergesToInDegree (n : s.σ) (X : C) where
     (hpq : s.position n j = pq) :
       (ShortComplex.mk _ _ (comp_π' i j hij pq hpq)).Exact
 
+def StronglyConvergesTo (X : s.σ → C) := ∀ (n : s.σ), E.StronglyConvergesToInDegree s n (X n)
+
 namespace StronglyConvergesToInDegree
 
 variable {E s}
@@ -600,6 +602,104 @@ lemma isIso_filtrationι_iff (i : WithBot (s.α n)) :
     · intro
       exact h.isIso_filtrationι_of_GE _ _ hij hj
 
+lemma isIso_filtrationι_of_isZero (i : WithBot (s.α n))
+    (hi : ∀ (j : s.α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
+      IsZero (E.pageInfinity pq)) :
+    IsIso (h.filtrationι i) :=
+  (h.isIso_filtrationι_iff i).2 hi
+
+lemma isIso_π_iff' (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+    IsIso (h.π i pq hpq) ↔ IsZero (h.filtration.obj (s.pred n i)) :=
+  (h.shortExact _ i rfl pq hpq).isIso_g_iff
+
+lemma isIso_π_iff (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
+    IsIso (h.π i pq hpq) ↔
+      ∀ (j : s.α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
+        IsZero (E.pageInfinity pq) := by
+  rw [isIso_π_iff', isZero_filtration_obj_iff]
+  constructor
+  · intro H j hj pq hpq
+    exact H j (s.le_pred'_of_lt n j i (by simpa using hj)) pq hpq
+  · intro H j hj pq hpq
+    exact H j (by simpa using (s.lt_iff_le_pred' n j i).2 hj) pq hpq
+
+lemma isIso_π_of_isZero (i : s.α n) (pq : ι) (hpq : s.position n i = pq)
+    (hi : ∀ (j : s.α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
+        IsZero (E.pageInfinity pq)) :
+    IsIso (h.π i pq hpq) :=
+  (h.isIso_π_iff i pq hpq).2 hi
+
+section
+
+variable (i : WithBot (s.α n)) (hi : IsIso (h.filtrationι i))
+
+@[simps! hom]
+noncomputable def isoFiltrationι :
+    (h.filtration.obj i) ≅ X :=
+  asIso (h.filtrationι i)
+
+@[reassoc (attr := simp)]
+lemma isoFiltrationι_hom_inv_id :
+    h.filtrationι i ≫ (h.isoFiltrationι i hi).inv = 𝟙 _ :=
+  (h.isoFiltrationι i hi).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoFiltrationι_inv_hom_id :
+    (h.isoFiltrationι i hi).inv ≫ h.filtrationι i = 𝟙 _ :=
+  (h.isoFiltrationι i hi).inv_hom_id
+
+end
+
+section
+
+variable (i : s.α n) (pq : ι) (hpq : s.position n i = pq) (hi : IsIso (h.π i pq hpq))
+
+@[simps! hom]
+noncomputable def isoπ :
+    (h.filtration.obj i) ≅ E.pageInfinity pq :=
+  asIso (h.π i pq hpq)
+
+@[reassoc (attr := simp)]
+lemma isoπ_hom_inv_id :
+    h.π i pq hpq ≫ (h.isoπ i pq hpq hi).inv = 𝟙 _ :=
+  (h.isoπ i pq hpq hi).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoπ_inv_hom_id :
+    (h.isoπ i pq hpq hi).inv ≫ h.π i pq hpq = 𝟙 _ :=
+  (h.isoπ i pq hpq hi).inv_hom_id
+
+end
+
+section
+
+variable (i : s.α n) (pq : ι) (hpq : s.position n i = pq)
+  (hi : ∀ (j : s.α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
+    IsZero (E.pageInfinity pq))
+
+noncomputable def pageInfinityπ :
+    X ⟶ E.pageInfinity pq :=
+  (h.isoFiltrationι i (h.isIso_filtrationι_of_isZero i
+    (fun j hij pq hpq => hi j (by simpa using hij) pq hpq))).inv ≫ h.π i pq hpq
+
+instance : Epi (h.pageInfinityπ i pq hpq hi) := by
+  dsimp [pageInfinityπ]
+  apply epi_comp
+
+end
+
+section
+
+variable (i : s.α n) (pq : ι) (hpq : s.position n i = pq)
+  (hi : ∀ (j : s.α n) (_ : j < i) (pq : ι) (_ : s.position n j = pq),
+        IsZero (E.pageInfinity pq))
+
+noncomputable def pageInfinityι :
+    E.pageInfinity pq ⟶ X :=
+  (h.isoπ i pq hpq (h.isIso_π_of_isZero i pq hpq hi)).inv ≫ h.filtrationι i
+
+end
+
 end
 
 section
@@ -680,7 +780,6 @@ variable (α : h.Hom h' f) (hα : ∀ (pq : ι) (_ : s.stripe pq = n), IsIso (Ho
 lemma Hom.isIso_τ_of_sub (i j : WithBot (s.α n)) (k : ℕ)
     (hk : s.sub n j k = i) (hi : IsIso (α.τ.app i)) :
     IsIso (α.τ.app j) := by
-  have := hα
   revert i j hi
   induction' k with k hk
   · intro i j hij _
@@ -725,6 +824,7 @@ end
 end
 
 end StronglyConvergesToInDegree
+
 
 end SpectralSequence
 
