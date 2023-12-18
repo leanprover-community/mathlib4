@@ -997,6 +997,12 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
 
 @[simp] theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
+@[simps]
+def domCongrAut : MulAut G →* MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A G where
+  toFun := MonoidAlgebra.domCongr k A
+  map_one' := by ext; exact Finsupp.ext fun _ => rfl
+  map_mul' _ _ := by ext; exact Finsupp.ext fun _ => rfl
+
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra homomorphism between their monoid algebras. -/
 def mapRangeAlgHom {k R S} (G) [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
@@ -2179,6 +2185,12 @@ theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomain
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
 @[simp] theorem domCongr_symm (e : G ≃+ H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
+
+@[simps]
+def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
+  toFun := AddMonoidAlgebra.domCongr k A
+  map_one' := by ext; exact Finsupp.ext fun _ => rfl
+  map_mul' _ _ := by ext; exact Finsupp.ext fun _ => rfl
 
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra homomorphism between their additive monoid algebras. -/
