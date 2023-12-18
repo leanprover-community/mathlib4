@@ -1255,6 +1255,15 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
     · rw [if_neg hij, if_neg hij.symm]
   · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_not_mem _ _ hjs]
 
+-- remove when #9137 is merged
+open Finset in
+theorem _root_.Finset.powersetCard_one {α} [DecidableEq α] {s : Finset α} :
+    s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ := by
+  ext t
+  rw [mem_powersetCard, card_eq_one, mem_map, ← exists_and_left, exists_congr]
+  intro a
+  rw [eq_comm, ← s.singleton_subset_iff, and_congr_left_eq]; rfl
+  rintro rfl; rfl
 
 open Finset in
 lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :

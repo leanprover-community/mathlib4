@@ -16,7 +16,7 @@ derivative `f.deriv` at `x` as the continuous linear map sending `y` to the sum 
 `i` in `ι` of the value of `f` at the vector sending `j` in `ι` to `x j` for
 `j ≠ i` and to `y j` for `j=i`. This is the continuous version of `f.linearDeriv`.
 
-We show that this is indeed the strong derivative of `f`.
+We show that this is indeed the strict derivative of `f`.
 
 We then show that `f.deriv`, as a map of `x`, is the sum over `i` in `ι` of
 of continuous multilinear map with variables indexed by `{j : ι | j ≠ i}`
@@ -27,8 +27,11 @@ that `f` is indeed infinitely differentiable.
 
 ## Main results
 
-Let `f` be a continuous multilinear map in finitely many variables.
-*
+Let `f : ((i : ι) → E i) → F` be a continuous multilinear map in finitely many variables.
+* `f.deriv x` is the derivative of `f` at `x`.
+* `f.hasStrictFDerivAt x` proves that `f.deriv x` is the strict derivative of
+`f` at `x`.
+* `f.contDiff` says that `f` is infinitely differentiable.
 
 ## Implementation notes
 
@@ -39,7 +42,6 @@ only defined when all `E i` are the same type), we first restrict to the case wh
 `E i` are equal to the same type when generalizing to different universes, and in a
 last step we deduce the result that we want.
 -/
-
 
 
 namespace ContinuousLinearMap
@@ -94,10 +96,18 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {ι : Type*} [Fintype ι]
 {E : ι → Type*} {F : Type*} [(i : ι) → NormedAddCommGroup (E i)] [NormedAddCommGroup F]
 [(i : ι) → NormedSpace 𝕜 (E i)] [NormedSpace 𝕜 F] [DecidableEq ι]
 
-
+/-- Another auxiliary construction: given a continuous multilinear map `f` on
+`(i : ι) → E` with values in `F` and a fixed `i`, it makes a continuous multilinear map on
+`(j : Finset.erase i) → E j` with values in `((j : ι) → E j) →L[𝕜] F` whose value at
+`x` is the continuous linear map sending `y` to `f` evaluated at the vector
+`fun (j : ι) => if j = i then y j else x j`.
+We start by constructing the underlying multilinear map, then bound its operator norm by
+that of `f` and deduce the continuous multilinear version.
+This will be used to express the derivative of `f` in terms of continuous multilinear maps
+indexed by smaller types.-/
 def toMultilinearMap_erase (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) :
-MultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j) (((i : ι) → E i) →L[𝕜] F) :=
-{
+    MultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j)
+    (((i : ι) → E i) →L[𝕜] F) where
   toFun := fun x => ContinuousLinearMap.comp (σ₁₂ := RingHom.id 𝕜) (f.toContinuousLinearMap
     (ContinuousLinearMap.embed_erase 𝕜 E i x) i) (ContinuousLinearMap.proj i)
   map_add' := by
@@ -106,7 +116,8 @@ MultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j) (((i : �
     ext y
     simp only at a b
     simp only [coe_comp', Function.comp_apply, proj_apply, ContinuousLinearMap.add_apply]
-    have heq : ∀ (c : E j), (toContinuousLinearMap f ((embed_erase 𝕜 E i) (Function.update x ⟨j, hj⟩ c)) i) (y i) =
+    have heq : ∀ (c : E j), (toContinuousLinearMap f ((embed_erase 𝕜 E i)
+        (Function.update x ⟨j, hj⟩ c)) i) (y i) =
      f (Function.update (fun k => if k ≠ i then embed_erase 𝕜 E i x k else y k) j c) := by
        intro c
        unfold toContinuousLinearMap
@@ -166,12 +177,13 @@ MultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j) (((i : �
            simp only [h, ne_eq, not_false_eq_true,  embed_erase_apply_noteq, ite_false]
     rw [heq a, heq (c • a)]
     simp only [ne_eq, ite_not, map_smul]
-}
 
-lemma toMultilinearMap_erase_apply (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) (x : (j : (Finset.univ (α := ι).erase i)) → E j)
-(y : (i : ι) → E i) :
-f.toMultilinearMap_erase i x y = f (fun j => if h : j = i then y j else x ⟨j, by simp only [Finset.mem_univ,
-  not_true_eq_false, Finset.mem_erase, ne_eq, h, not_false_eq_true, and_self]⟩) := by
+
+lemma toMultilinearMap_erase_apply (i : ι) (f : ContinuousMultilinearMap 𝕜 E F)
+    (x : (j : (Finset.univ (α := ι).erase i)) → E j) (y : (i : ι) → E i) :
+    f.toMultilinearMap_erase i x y = f (fun j => if h : j = i then y j else x
+    ⟨j, by simp only [Finset.mem_univ, not_true_eq_false, Finset.mem_erase, ne_eq, h,
+    not_false_eq_true, and_self]⟩) := by
   unfold toMultilinearMap_erase toContinuousLinearMap
   simp only [MultilinearMap.coe_mk, coe_comp', coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom,
     Function.comp_apply, proj_apply, MultilinearMap.toLinearMap_apply, coe_coe, ne_eq]
@@ -184,19 +196,23 @@ f.toMultilinearMap_erase i x y = f (fun j => if h : j = i then y j else x ⟨j, 
     simp only [ne_eq, h, not_false_eq_true,  embed_erase_apply_noteq, dite_false]
 
 
-lemma toMultilinearMap_erase_norm_le (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) (x : (j : (Finset.univ (α := ι).erase i)) → E j) :
-‖f.toMultilinearMap_erase i x‖ ≤ ‖f‖ * Finset.prod Finset.univ (fun j => ‖x j‖) := by
+lemma toMultilinearMap_erase_norm_le (i : ι) (f : ContinuousMultilinearMap 𝕜 E F)
+    (x : (j : (Finset.univ (α := ι).erase i)) → E j) :
+    ‖f.toMultilinearMap_erase i x‖ ≤ ‖f‖ * Finset.prod Finset.univ (fun j => ‖x j‖) := by
   rw [ContinuousLinearMap.op_norm_le_iff]
   . intro y
     rw [toMultilinearMap_erase_apply]
     refine le_trans (ContinuousMultilinearMap.le_op_norm f _) ?_
     rw [mul_assoc]
     refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
-    rw [←(Finset.prod_erase_mul Finset.univ _ (Finset.mem_univ i))]
+    rw [← (Finset.prod_erase_mul Finset.univ _ (Finset.mem_univ i))]
     simp only [Finset.mem_univ, not_true_eq_false, ne_eq, dite_true]
-    refine mul_le_mul ?_ (norm_le_pi_norm y i) (norm_nonneg _) (Finset.prod_nonneg (fun _ _ => norm_nonneg _))
-    set I : (j : ι) → (j ∈ (Finset.univ (α := ι).erase i)) → (Finset.univ (α := ι).erase i) := fun j hj => ⟨j, hj⟩
-    have hI : ∀ (j : ι) (hj : j ∈ (Finset.univ (α := ι).erase i)), I j hj ∈ Finset.univ := fun _ _ => Finset.mem_univ _
+    refine mul_le_mul ?_ (norm_le_pi_norm y i) (norm_nonneg _)
+      (Finset.prod_nonneg (fun _ _ => norm_nonneg _))
+    set I : (j : ι) → (j ∈ (Finset.univ (α := ι).erase i)) → (Finset.univ (α := ι).erase i) :=
+      fun j hj => ⟨j, hj⟩
+    have hI : ∀ (j : ι) (hj : j ∈ (Finset.univ (α := ι).erase i)), I j hj ∈ Finset.univ :=
+      fun _ _ => Finset.mem_univ _
     have heq : ∀ (j : ι) (hj : j ∈ (Finset.univ (α := ι).erase i)),
       (fun k ↦ ‖if hk : k = i then y k else x ⟨k, by simp only [Finset.mem_univ,
         not_true_eq_false, Finset.mem_erase, ne_eq, hk, not_false_eq_true, and_self]⟩‖) j =
@@ -205,7 +221,8 @@ lemma toMultilinearMap_erase_norm_le (i : ι) (f : ContinuousMultilinearMap 𝕜
       simp only [Finset.mem_univ, not_true_eq_false, Finset.mem_erase, ne_eq, and_true] at hj
       simp only [hj, ne_eq, dite_false]
     set J : (k : (Finset.univ (α := ι).erase i)) → (k ∈ Finset.univ) → ι := fun k _ => k.1
-    have hJ : ∀ (k : (Finset.univ (α := ι).erase i)) (hk : k ∈ Finset.univ), J k hk ∈ (Finset.univ (α := ι).erase i) :=
+    have hJ : ∀ (k : (Finset.univ (α := ι).erase i)) (hk : k ∈ Finset.univ),
+        J k hk ∈ (Finset.univ (α := ι).erase i) :=
       fun k _ =>  k.2
     have hJI : ∀ (j : ι) (hj : j ∈ (Finset.univ (α := ι).erase i)), J (I j hj) (hI j hj) = j :=
       fun _ _ => by simp only [Finset.univ_eq_attach]
@@ -216,23 +233,26 @@ lemma toMultilinearMap_erase_norm_le (i : ι) (f : ContinuousMultilinearMap 𝕜
 
 
 noncomputable def toContinuousMultilinearMap_erase (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) :
-ContinuousMultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j) (((i : ι) → E i) →L[𝕜] F) :=
+    ContinuousMultilinearMap 𝕜 (fun (j : (Finset.univ (α := ι).erase i)) => E j)
+    (((i : ι) → E i) →L[𝕜] F) :=
 MultilinearMap.mkContinuous (f.toMultilinearMap_erase i) ‖f‖ (f.toMultilinearMap_erase_norm_le i)
 
 lemma toContinuousMultilinearMap_coe (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) :
-(f.toContinuousMultilinearMap_erase i).toFun =
-(fun x => ContinuousLinearMap.comp (toContinuousLinearMap f x i) (ContinuousLinearMap.proj i))
-∘ (fun x => embed_erase 𝕜 E i x) := by
+    (f.toContinuousMultilinearMap_erase i).toFun = (fun x => ContinuousLinearMap.comp
+    (toContinuousLinearMap f x i) (ContinuousLinearMap.proj i)) ∘
+    (fun x => embed_erase 𝕜 E i x) := by
   ext x
   unfold toContinuousMultilinearMap_erase toMultilinearMap_erase toContinuousLinearMap
   simp only [MultilinearMap.toFun_eq_coe, coe_coe, MultilinearMap.coe_mkContinuous,
     MultilinearMap.coe_mk, coe_comp', coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom,
     Function.comp_apply, proj_apply, MultilinearMap.toLinearMap_apply]
 
+/-- Rewrite the composition of `f.toContinuousMultilinearMap_erase` with the projection
+from `(i : ι) → E i`, in a way that will make the comparison with `f.deriv` easier.-/
 lemma toContinuousMultilinearMap_coe' (i : ι) (f : ContinuousMultilinearMap 𝕜 E F) :
-(fun x => ContinuousLinearMap.comp (toContinuousLinearMap f x i) (ContinuousLinearMap.proj i)) =
-(f.toContinuousMultilinearMap_erase i).toFun ∘
-(ContinuousLinearMap.pi (fun j => ContinuousLinearMap.proj (R := 𝕜) j.1)) := by
+    (fun x => ContinuousLinearMap.comp (toContinuousLinearMap f x i) (ContinuousLinearMap.proj i))
+    = (f.toContinuousMultilinearMap_erase i).toFun ∘ (ContinuousLinearMap.pi
+    (fun j => ContinuousLinearMap.proj (R := 𝕜) j.1)) := by
   ext x y
   unfold toContinuousMultilinearMap_erase toMultilinearMap_erase toContinuousLinearMap
   simp only [coe_comp', coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Function.comp_apply,
@@ -245,41 +265,44 @@ lemma toContinuousMultilinearMap_coe' (i : ι) (f : ContinuousMultilinearMap �
   . rw [Function.update_noteq h, Function.update_noteq h,  embed_erase_apply_noteq _ _ _ _ h]
 
 
-
+/-- The derivative of `f` at `x`, as a continuous linear map.-/
 noncomputable def deriv (f : ContinuousMultilinearMap 𝕜 E F)
-(x : (i : ι) → E i) : ((i : ι) → E i) →L[𝕜] F :=
-Finset.sum Finset.univ (fun (i : ι) => (f.toContinuousLinearMap x i).comp (ContinuousLinearMap.proj i))
+    (x : (i : ι) → E i) : ((i : ι) → E i) →L[𝕜] F :=
+  ∑ i : ι, (f.toContinuousLinearMap x i).comp (ContinuousLinearMap.proj i)
 
 @[simp]
-lemma deriv_def (f : ContinuousMultilinearMap 𝕜 E F)
-(x : (i : ι) → E i) :
-f.deriv x = Finset.sum Finset.univ (fun (i : ι) => (f.toContinuousLinearMap x i).comp (ContinuousLinearMap.proj i)) := rfl
+lemma deriv_def (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
+    f.deriv x = ∑ i : ι, (f.toContinuousLinearMap x i).comp (ContinuousLinearMap.proj i) := rfl
 
 @[simp]
-lemma deriv_apply (f : ContinuousMultilinearMap 𝕜 E F)
-(x y : (i : ι) → E i) :
-  f.deriv x y = Finset.sum Finset.univ (fun (i : ι) => f (Function.update x i (y i))) := by
+lemma deriv_apply (f : ContinuousMultilinearMap 𝕜 E F) (x y : (i : ι) → E i) :
+    f.deriv x y = ∑ i : ι, f (Function.update x i (y i)) := by
   unfold deriv toContinuousLinearMap
   simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
     ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply,
     Function.comp_apply, ContinuousLinearMap.proj_apply, MultilinearMap.toLinearMap_apply, coe_coe]
 
 @[simp]
-lemma deriv_coe_apply (f : ContinuousMultilinearMap 𝕜 E F) (x y: (i : ι) → (E i)):
-f.deriv x y = f.toMultilinearMap.linearDeriv x y := by
+lemma deriv_coe_apply (f : ContinuousMultilinearMap 𝕜 E F) (x y: (i : ι) → (E i)) :
+    f.deriv x y = f.toMultilinearMap.linearDeriv x y := by
   simp only [deriv_apply, MultilinearMap.linearDeriv_apply, coe_coe]
 
-
+/-- Comparison with the previously defined `f.linearDeriv`, which is the derivative
+as a linear map.-/
 @[simp]
-lemma deriv_coe (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → (E i)):
-(f.deriv x).toLinearMap = f.toMultilinearMap.linearDeriv x := by
+lemma deriv_coe (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → (E i)) :
+    (f.deriv x).toLinearMap = f.toMultilinearMap.linearDeriv x := by
   apply LinearMap.ext
   intro y
   apply deriv_coe_apply
 
 open Finset in
+/-- This expresses the difference between the values of a continuous multilinear map
+`f` at two points `x + h₁` and `x+ h₂` in terms of the derivative of `f` at `x`
+and of (second-order) terms of the form `f (s.piecewise h₁ x) - f (s.piecewise h₂ x)`,
+with `s` a finset of `ι` of cardinality at least `2`.-/
 lemma sub_vs_deriv (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
-((fun p => f p.1 - f p.2 - (deriv f x) (p.1 - p.2)) ∘ fun x_1 => (x, x) + x_1) =
+    ((fun p => f p.1 - f p.2 - (deriv f x) (p.1 - p.2)) ∘ fun x_1 => (x, x) + x_1) =
     (fun h => (∑ s in univ.powerset.filter (2 ≤ ·.card),
     (f (s.piecewise h.1 x) - f (s.piecewise h.2 x)))) := by
   have heq : ((fun p => f p.1 - f p.2 - (deriv f x) (p.1 - p.2)) ∘ fun x_1 => (x, x) + x_1) =
@@ -293,12 +316,12 @@ lemma sub_vs_deriv (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i
   rw [deriv_coe_apply]; erw [map_add_sub_map_add_sub_linearDeriv]
   rfl
 
-
+/-- Bound on the difference between the values of `f` at two points that only
+differ on a finset `s`.-/
 lemma sub_piecewise_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i)
-(h : (((i : ι) → (E i)) × ((i : ι) → E i)))
-{s : Finset ι} (hs : 2 ≤ s.card) :
-‖f (s.piecewise h.1 x) - f (s.piecewise h.2 x)‖ ≤ s.card • (‖f‖ *
-‖x‖ ^ sᶜ.card * ‖h‖ ^ (s.card - 1) * ‖h.1 - h.2‖) := by
+    (h : (((i : ι) → (E i)) × ((i : ι) → E i))) {s : Finset ι} (hs : 2 ≤ s.card) :
+    ‖f (s.piecewise h.1 x) - f (s.piecewise h.2 x)‖ ≤ s.card • (‖f‖ *
+    ‖x‖ ^ sᶜ.card * ‖h‖ ^ (s.card - 1) * ‖h.1 - h.2‖) := by
   letI : LinearOrder ι := WellFounded.wellOrderExtension emptyWf.wf
   set n := s.card
   convert (congr_arg norm (f.toMultilinearMap.map_piecewise_sub_map_piecewise
@@ -311,8 +334,8 @@ lemma sub_piecewise_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) 
   refine le_trans (ContinuousMultilinearMap.le_op_norm f _) ?_
   rw [mul_assoc, mul_assoc]
   refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
-  rw [ ←(Finset.prod_compl_mul_prod s)]
-  rw [←(Finset.mul_prod_erase s _ hi)]
+  rw [ ← (Finset.prod_compl_mul_prod s)]
+  rw [← (Finset.mul_prod_erase s _ hi)]
   simp only [hi, dite_true]
   conv => lhs
           congr
@@ -355,15 +378,18 @@ lemma sub_piecewise_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) 
       exact le_trans (norm_le_pi_norm _ _) (norm_snd_le h)
 
 
-
+/-- Asymptotic of the difference between the values of `f` at two points that only
+differ on a finset `s`: if the cardinality of `s` is at leasst `2`, then the difference
+`f (s.piecewise h₁ x) - f (s.piecewise h₂ x)` is a little o of `h₁-h₂` as `(h₁,h₂)`
+tends to `0`.-/
 lemma sub_piecewise_littleO (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i)
-{s : Finset ι} (hs : 2 ≤ s.card) :
-(fun (h : (((i : ι) → (E i)) × ((i : ι) → E i))) =>
-f (s.piecewise h.1 x) - f (s.piecewise h.2 x)) =o[nhds 0] (fun p => p.1 - p.2) := by
+    {s : Finset ι} (hs : 2 ≤ s.card) :
+    (fun (h : (((i : ι) → (E i)) × ((i : ι) → E i))) =>
+    f (s.piecewise h.1 x) - f (s.piecewise h.2 x)) =o[nhds 0] (fun p => p.1 - p.2) := by
   rw [Asymptotics.isLittleO_iff]
   intro C hC
   have hspos : 0 < s.card - 1  := by
-    rw [←Nat.pred_eq_sub_one, Nat.lt_pred_iff, ←Nat.succ_le_iff]
+    rw [← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← Nat.succ_le_iff]
     exact hs
   have h0 : 0 ≤ s.card * ‖f‖ * ‖x‖ ^ sᶜ.card :=
     mul_nonneg (mul_nonneg (Nat.cast_nonneg _) (norm_nonneg _)) (pow_nonneg (norm_nonneg _) _)
@@ -372,19 +398,19 @@ f (s.piecewise h.1 x) - f (s.piecewise h.2 x)) =o[nhds 0] (fun p => p.1 - p.2) :
   have h1 : 0 < C / (s.card * ‖f‖ * ‖x‖ ^ sᶜ.card + 1) := div_pos hC h0'
   apply Filter.Eventually.mp
     (eventually_nhds_norm_smul_sub_lt (1 : 𝕜) (0 : (((i : ι) → (E i)) × ((i : ι) → E i)))
-      (ε := Real.rpow (C / (s.card * ‖f‖ * ‖x‖ ^ (sᶜ.card) + 1)) ((Nat.cast (R := ℝ) (s.card - 1))⁻¹))
-      (Real.rpow_pos_of_pos h1 _))
+      (ε := Real.rpow (C / (s.card * ‖f‖ * ‖x‖ ^ (sᶜ.card) + 1))
+      ((Nat.cast (R := ℝ) (s.card - 1))⁻¹)) (Real.rpow_pos_of_pos h1 _))
   apply Filter.eventually_of_forall
   intro h
   rw [one_smul, sub_zero]
   intro hbound
   refine le_trans (sub_piecewise_bound f x h hs) ?_
   simp only [ge_iff_le, nsmul_eq_mul]
-  rw [←mul_assoc]
+  rw [← mul_assoc]
   refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg (h.1 - h.2))
   have h2 := pow_le_pow_of_le_left (norm_nonneg h) (le_of_lt hbound) (s.card - 1)
   erw [Real.rpow_nat_inv_pow_nat (le_of_lt h1) (Ne.symm (ne_of_lt hspos))] at h2
-  rw [←mul_assoc, ←mul_assoc]
+  rw [← mul_assoc, ← mul_assoc]
   refine le_trans (mul_le_mul_of_nonneg_left h2 h0) ?_
   rw [mul_div, _root_.div_le_iff h0']
   linarith
@@ -394,11 +420,12 @@ f (s.piecewise h.1 x) - f (s.piecewise h.2 x)) =o[nhds 0] (fun p => p.1 - p.2) :
 
 variable {u : Set ((i : ι) → E i)}
 
+/-- Proof that `f.deriv x` is the strict derivative of `f` at `x`, and some consequences.-/
 theorem hasStrictFDerivAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) → E i) :
     HasStrictFDerivAt f (f.deriv x) x := by
   letI : LinearOrder ι := WellFounded.wellOrderExtension emptyWf.wf
   simp only [HasStrictFDerivAt]
-  simp only [←map_add_left_nhds_zero (x, x), isLittleO_map]
+  simp only [← map_add_left_nhds_zero (x, x), isLittleO_map]
   have heq : ((fun p => p.1 - p.2) ∘ fun p => (x, x) + p) = fun p => p.1 - p.2 := by
     apply funext
     intro p
@@ -406,7 +433,7 @@ theorem hasStrictFDerivAt (f : ContinuousMultilinearMap 𝕜 E F) (x : (i : ι) 
   rw [sub_vs_deriv, heq]
   apply Asymptotics.IsLittleO.sum
   intro s hs
-  simp only [Finite.toFinset_setOf, Finset.mem_univ, forall_true_left, not_le, Finset.mem_filter,
+  simp only [Finset.powerset_univ, Finset.mem_univ, forall_true_left, not_le, Finset.mem_filter,
     true_and] at hs
   apply sub_piecewise_littleO f x hs
 
@@ -445,12 +472,14 @@ theorem differentiableOn (f : ContinuousMultilinearMap 𝕜 E F) :
 
 universe u
 
-theorem contDiff_aux {r : ℕ} : ∀ (ι' : Type u) (hι : Fintype ι')
-(E' : ι' → Type u) (F' : Type u)
-(hE1 : (i : ι') → NormedAddCommGroup (E' i)) (hF1 : NormedAddCommGroup F') (hE2 : (i : ι') → NormedSpace 𝕜 (E' i))
-(hF2 : NormedSpace 𝕜 F')
-(n : ℕ∞) (f : ContinuousMultilinearMap 𝕜 E' F'),
-(Fintype.card ι' = r) → (DecidableEq ι') → ContDiff 𝕜 n f := by
+/-- Proof by induction on `Fintype.card ι` that a continuous mutlilinear map indexed by
+a fintype `ι` is infinitely differentiable. For technical reasons, we force `ι` and all
+vector spaces to be in the same universe at this point.-/
+theorem contDiff_aux {r : ℕ} : ∀ (ι' : Type u) (hι : Fintype ι') (E' : ι' → Type u) (F' : Type u)
+    (hE1 : (i : ι') → NormedAddCommGroup (E' i)) (hF1 : NormedAddCommGroup F')
+    (hE2 : (i : ι') → NormedSpace 𝕜 (E' i)) (hF2 : NormedSpace 𝕜 F') (n : ℕ∞)
+    (f : ContinuousMultilinearMap 𝕜 E' F'),
+    (Fintype.card ι' = r) → (DecidableEq ι') → ContDiff 𝕜 n f := by
   induction' r with r IH
   . intro ι' hι E' F' hE1 hF1 hE2 hF2 n f hr hdec
     letI := hι
@@ -485,7 +514,7 @@ theorem contDiff_aux {r : ℕ} : ∀ (ι' : Type u) (hι : Fintype ι')
     have hcard : Fintype.card (Finset.univ (α := ι').erase i) = r := by
       simp only [Finset.mem_univ, not_true_eq_false, Finset.mem_erase, ne_eq, and_true,
         Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, ge_iff_le]
-      rw [hr, ←Nat.pred_eq_sub_one, Nat.pred_succ]
+      rw [hr, ← Nat.pred_eq_sub_one, Nat.pred_succ]
     exact IH (Finset.univ (α := ι').erase i) inferInstance
       (fun (i : (Finset.univ (α := ι').erase i)) => E' i) (((i : ι') → (E' i)) →L[𝕜] F')
       (fun (i : (Finset.univ (α := ι').erase i)) => hE1 i) inferInstance
@@ -494,6 +523,9 @@ theorem contDiff_aux {r : ℕ} : ∀ (ι' : Type u) (hι : Fintype ι')
 
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
+/-- Now we get rid of the same-universe constraints in the previous result, but for
+another technical reason, we assume that `f` is a continuous mutlilinear map
+on `(i : ι) → G` with `G` a fixed space (independent on `i`).-/
 theorem contDiff_aux' {n : ℕ∞} (f : ContinuousMultilinearMap 𝕜 (fun (_ : ι) => G) F) :
 ContDiff 𝕜 n f := by
   let r := Fintype.card ι
@@ -506,8 +538,9 @@ ContDiff 𝕜 n f := by
   set g := isoF.symm.toContinuousLinearMap.compContinuousMultilinearMap
     ((f.domDomCongr isoι.symm).compContinuousLinearMap (fun _ => isoG.toContinuousLinearMap))
   have hfg : f = isoF.toContinuousLinearMap ∘ g ∘ (ContinuousLinearMap.pi
-    (fun i => ContinuousLinearMap.comp isoG.symm.toContinuousLinearMap (ContinuousLinearMap.proj (isoι i))) :
-    ((i : ι) → G) →L[𝕜] (i : ιu) → Gu) := by
+      (fun i => ContinuousLinearMap.comp isoG.symm.toContinuousLinearMap
+      (ContinuousLinearMap.proj (isoι i))) :
+      ((i : ι) → G) →L[𝕜] (i : ιu) → Gu) := by
     ext v
     simp only [ContinuousLinearEquiv.coe_coe, compContinuousMultilinearMap_coe, coe_pi', coe_comp',
       Function.comp_apply, proj_apply, compContinuousLinearMap_apply,
@@ -516,12 +549,16 @@ ContDiff 𝕜 n f := by
     ext j
     rw [Equiv.apply_symm_apply]
   rw [hfg]
-  refine ContDiff.comp (ContinuousLinearMap.contDiff _) (ContDiff.comp ?_ (ContinuousLinearMap.contDiff _))
+  refine ContDiff.comp (ContinuousLinearMap.contDiff _)
+    (ContDiff.comp ?_ (ContinuousLinearMap.contDiff _))
   exact contDiff_aux (𝕜 := 𝕜) (r := r) ιu inferInstance (fun _ => Gu) Fu (fun _ => inferInstance)
-    inferInstance (fun _ => inferInstance) inferInstance n g (by simp only [Fintype.card_ulift]) inferInstance
+    inferInstance (fun _ => inferInstance) inferInstance n g (by simp only [Fintype.card_ulift])
+    inferInstance
 
-theorem contDiff {n : ℕ∞} (f : ContinuousMultilinearMap 𝕜 E F) :
-ContDiff 𝕜 n f := by
+/-- We finally get the infinite differentiability of a continuous multilinear map on
+`(i : ι) → E i` (for `ι` finite), by reducing to the case where all `E i` are equal to
+the type `(i : ι) → E i`.-/
+theorem contDiff {n : ℕ∞} (f : ContinuousMultilinearMap 𝕜 E F) : ContDiff 𝕜 n f := by
   set G := (i : ι) → E i
   set g : ContinuousMultilinearMap 𝕜 (fun (_ : ι) => G) F := f.compContinuousLinearMap
     (fun i => ContinuousLinearMap.proj i)
