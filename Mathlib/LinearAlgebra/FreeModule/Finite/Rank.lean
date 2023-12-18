@@ -327,24 +327,23 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 #align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
-theorem cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem LinearIndependent.cardinal_mk_le_finrank [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
   rw [← lift_le.{max v w}]
-  simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using
-    cardinal_lift_le_rank_of_linearIndependent h
+  simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
 
-theorem fintype_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem LinearIndependent.fintype_card_le_finrank [Module.Finite R V]
     {ι : Type*} [Fintype ι] {b : ι → V} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R V := by
-  simpa using cardinal_mk_le_finrank_of_linearIndependent h
+  simpa using h.cardinal_mk_le_finrank
 #align finite_dimensional.fintype_card_le_finrank_of_linear_independent FiniteDimensional.fintype_card_le_finrank_of_linearIndependent
 
-theorem finset_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem LinearIndependent.finset_card_le_finrank [Module.Finite R V]
     {b : Finset V} (h : LinearIndependent R (fun x => x : b → V)) :
     b.card ≤ finrank R V := by
   rw [← Fintype.card_coe]
-  exact fintype_card_le_finrank_of_linearIndependent h
+  exact h.fintype_card_le_finrank
 #align finite_dimensional.finset_card_le_finrank_of_linear_independent FiniteDimensional.finset_card_le_finrank_of_linearIndependent
 
 end FiniteDimensional
@@ -353,7 +352,7 @@ theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
     [Module.Finite R V] {v : ι → V} (h : LinearIndependent R v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
-  apply cardinal_lift_le_rank_of_linearIndependent h
+  apply h.cardinal_lift_le_rank
   rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
   apply Cardinal.nat_lt_aleph0
 
