@@ -26,37 +26,37 @@ lemma csSup_mem_of_not_isSuccLimit
   obtain ⟨i, his, hi⟩ := exists_lt_of_lt_csSup hne hy.lt
   exact eq_of_le_of_not_lt (le_csSup hbdd his) (hy.2 hi) ▸ his
 
-lemma exists_of_not_isSuccLimit_ciSup
-    (hf : BddAbove (Set.range f)) (hf' : ¬ IsSuccLimit (⨆ i, f i)) :
-    ∃ i, f i = ⨆ i, f i :=
-  csSup_mem_of_not_isSuccLimit (Set.range_nonempty f) hf hf'
-
-lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit
-    (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccLimit x) :
-    x ∈ s :=
-  hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
-
-lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit
-    (hf : IsLUB (Set.range f) x) (hx : ¬ IsSuccLimit x) :
-    ∃ i, f i = x := hf.mem_of_nonempty_of_not_isSuccLimit (Set.range_nonempty f) hx
-
-lemma csInf_mem_of_not_isSuccLimit
+lemma csInf_mem_of_not_isPredLimit
     (hne : s.Nonempty) (hbdd : BddBelow s) (hlim : ¬ IsPredLimit (sInf s)) :
     sInf s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim
   obtain ⟨i, his, hi⟩ := exists_lt_of_csInf_lt hne hy.lt
   exact eq_of_le_of_not_lt (csInf_le hbdd his) (hy.2 · hi) ▸ his
 
+lemma exists_eq_ciSup_of_not_isSuccLimit
+    (hf : BddAbove (Set.range f)) (hf' : ¬ IsSuccLimit (⨆ i, f i)) :
+    ∃ i, f i = ⨆ i, f i :=
+  csSup_mem_of_not_isSuccLimit (Set.range_nonempty f) hf hf'
+
 lemma exists_eq_ciInf_of_not_isPredLimit
     (hf : BddBelow (Set.range f)) (hf' : ¬ IsPredLimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
-  csInf_mem_of_not_isSuccLimit (Set.range_nonempty f) hf hf'
+  csInf_mem_of_not_isPredLimit (Set.range_nonempty f) hf hf'
+
+lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit
+    (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccLimit x) :
+    x ∈ s :=
+  hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
 
 lemma IsGLB.mem_of_nonempty_of_not_isPredLimit
     (hs : IsGLB s x) (hne : s.Nonempty) (hx : ¬ IsPredLimit x) : x ∈ s :=
-  hs.csInf_eq hne ▸ csInf_mem_of_not_isSuccLimit hne hs.bddBelow (hs.csInf_eq hne ▸ hx)
+  hs.csInf_eq hne ▸ csInf_mem_of_not_isPredLimit hne hs.bddBelow (hs.csInf_eq hne ▸ hx)
 
-lemma IsGLB.exists_of_nonempty_not_isPredLimit
+lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit
+    (hf : IsLUB (Set.range f) x) (hx : ¬ IsSuccLimit x) :
+    ∃ i, f i = x := hf.mem_of_nonempty_of_not_isSuccLimit (Set.range_nonempty f) hx
+
+lemma IsGLB.exists_of_nonempty_of_not_isPredLimit
     (hf : IsGLB (Set.range f) x) (hx : ¬ IsPredLimit x) :
     ∃ i, f i = x := hf.mem_of_nonempty_of_not_isPredLimit (Set.range_nonempty f) hx
 
@@ -100,23 +100,23 @@ lemma sSup_mem_of_not_isSuccLimit (hlim : ¬ IsSuccLimit (sSup s)) :
   obtain ⟨i, his, hi⟩ := lt_sSup_iff.mp hy.lt
   exact eq_of_le_of_not_lt (le_sSup his) (hy.2 hi) ▸ his
 
-lemma exists_of_not_isSuccLimit_iSup (hf : ¬ IsSuccLimit (⨆ i, f i)) :
-    ∃ i, f i = ⨆ i, f i :=
-  sSup_mem_of_not_isSuccLimit hf
-
-lemma sInf_mem_of_not_isSuccLimit (hlim : ¬ IsPredLimit (sInf s)) :
+lemma sInf_mem_of_not_isPredLimit (hlim : ¬ IsPredLimit (sInf s)) :
     sInf s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim
   obtain ⟨i, his, hi⟩ := sInf_lt_iff.mp hy.lt
   exact eq_of_le_of_not_lt (sInf_le his) (hy.2 · hi) ▸ his
 
+lemma exists_eq_iSup_of_not_isSuccLimit (hf : ¬ IsSuccLimit (⨆ i, f i)) :
+    ∃ i, f i = ⨆ i, f i :=
+  sSup_mem_of_not_isSuccLimit hf
+
 lemma exists_eq_iInf_of_not_isPredLimit (hf : ¬ IsPredLimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
-  sInf_mem_of_not_isSuccLimit hf
+  sInf_mem_of_not_isPredLimit hf
 
 lemma IsGLB.mem_of_not_isPredLimit (hs : IsGLB s x) (hx : ¬ IsPredLimit x) :
     x ∈ s :=
-  hs.sInf_eq ▸ sInf_mem_of_not_isSuccLimit (hs.sInf_eq ▸ hx)
+  hs.sInf_eq ▸ sInf_mem_of_not_isPredLimit (hs.sInf_eq ▸ hx)
 
 lemma IsGLB.exists_of_not_isPredLimit (hf : IsGLB (Set.range f) x) (hx : ¬ IsPredLimit x) :
     ∃ i, f i = x := hf.mem_of_not_isPredLimit hx
