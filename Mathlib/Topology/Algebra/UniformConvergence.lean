@@ -177,7 +177,7 @@ lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[�
   rfl
 
 @[simp]
-lemma UniformOfFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
+lemma UniformOnFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
     ofFun 𝔖 (c • f) = c • ofFun 𝔖 f :=
   rfl
 
