@@ -121,33 +121,33 @@ partial def findCancelFactor (e : Expr) : ℕ × BinTree.Leafless ℕ :=
     let (v1, t1) := findCancelFactor e1
     let (v2, t2) := findCancelFactor e2
     let lcm := v1.lcm v2
-    (lcm, .node lcm t1 t2)
+    (lcm, .branch lcm t1 t2)
   | (``HMul.hMul, #[_, _, _, _, e1, e2]) =>
     let (v1, t1) := findCancelFactor e1
     let (v2, t2) := findCancelFactor e2
     let pd := v1 * v2
-    (pd, .node pd t1 t2)
+    (pd, .branch pd t1 t2)
   | (``HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
     -- If e2 is a rational, then it's a natural number due to the simp lemmas in `deriveThms`.
     match e2.nat? with
     | some q =>
       let (v1, t1) := findCancelFactor e1
       let n := v1 * q
-      (n, .node n t1 <| .node q .nil .nil)
-    | none => (1, .node 1 .nil .nil)
+      (n, .branch n t1 <| .branch q .nil .nil)
+    | none => (1, .branch 1 .nil .nil)
   | (``Neg.neg, #[_, _, e]) => findCancelFactor e
   | (``HPow.hPow, #[_, ℕ, _, _, e1, e2]) =>
     match e2.nat? with
     | some k =>
       let (v1, t1) := findCancelFactor e1
       let n := v1 ^ k
-      (n, .node n t1 <| .node k .nil .nil)
-    | none => (1, .node 1 .nil .nil)
+      (n, .branch n t1 <| .branch k .nil .nil)
+    | none => (1, .branch 1 .nil .nil)
   | (``Inv.inv, #[_, _, e]) =>
     match e.nat? with
-    | some q => (q, .node q .nil <| .node q .nil .nil)
-    | none => (1, .node 1 .nil .nil)
-  | _ => (1, .node 1 .nil .nil)
+    | some q => (q, .branch q .nil <| .branch q .nil .nil)
+    | none => (1, .branch 1 .nil .nil)
+  | _ => (1, .branch 1 .nil .nil)
 
 def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
   try
@@ -165,15 +165,15 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
-  | .node _ lhs rhs, ~q($e1 + $e2) => do
+  | .branch _ lhs rhs, ~q($e1 + $e2) => do
     let v1 ← mkProdPrf α sα v lhs e1
     let v2 ← mkProdPrf α sα v rhs e2
     mkAppM ``CancelDenoms.add_subst #[v1, v2]
-  | .node _ lhs rhs, ~q($e1 - $e2) => do
+  | .branch _ lhs rhs, ~q($e1 - $e2) => do
     let v1 ← mkProdPrf α sα v lhs e1
     let v2 ← mkProdPrf α sα v rhs e2
     mkAppM ``CancelDenoms.sub_subst #[v1, v2]
-  | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
+  | .branch _ lhs@(.branch ln _ _) rhs, ~q($e1 * $e2) => do
     trace[CancelDenoms] "recursing into mul"
     let v1 ← mkProdPrf α sα ln lhs e1
     let v2 ← mkProdPrf α sα (v / ln) rhs e2
@@ -183,7 +183,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
     let ntp : Q(Prop) := q($ln' * $vln' = $v')
     let npf ← synthesizeUsingNormNum ntp
     mkAppM ``CancelDenoms.mul_subst #[v1, v2, npf]
-  | .node _ lhs (.node rn _ _), ~q($e1 / $e2) => do
+  | .branch _ lhs (.branch rn _ _), ~q($e1 / $e2) => do
     -- Invariant: e2 is equal to the natural number rn
     let v1 ← mkProdPrf α sα (v / rn) lhs e1
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
@@ -197,7 +197,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
   | t, ~q(-$e) => do
     let v ← mkProdPrf α sα v t e
     mkAppM ``CancelDenoms.neg_subst #[v]
-  | .node _ lhs@(.node k1 _ _) (.node k2 .nil .nil), ~q($e1 ^ $e2) => do
+  | .branch _ lhs@(.branch k1 _ _) (.branch k2 .nil .nil), ~q($e1 ^ $e2) => do
     let v1 ← mkProdPrf α sα k1 lhs e1
     have l := v / (k1 ^ k2)
     have k1' := (← mkOfNat α amwo <| mkRawNatLit k1).1
@@ -206,7 +206,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTr
     let ntp : Q(Prop) := q($l' * $k1' ^ $e2 = $v')
     let npf ← synthesizeUsingNormNum ntp
     mkAppM ``CancelDenoms.pow_subst #[v1, npf]
-  | .node _ .nil (.node rn _ _), ~q($e ⁻¹) => do
+  | .branch _ .nil (.branch rn _ _), ~q($e ⁻¹) => do
     have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
     have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
