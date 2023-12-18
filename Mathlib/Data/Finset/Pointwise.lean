@@ -1447,7 +1447,7 @@ theorem image_vsub_product : image₂ (· -ᵥ ·) s t = s -ᵥ t :=
   rfl
 #align finset.image_vsub_product Finset.image_vsub_product
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b -ᵥ c = a :=
+theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b ∈ s, ∃ c ∈ t, b -ᵥ c = a :=
   mem_image₂
 #align finset.mem_vsub Finset.mem_vsub
 
