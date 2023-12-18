@@ -97,7 +97,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
 /-- The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. -/
 lemma integrableOn_Ioo_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrable_Ioo_of_le ht.le]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrableOn_Ioo_of_le ht.le]
     using intervalIntegrable_rpow' h (a := 0) (b := t)⟩
   contrapose! h
   intro H
@@ -111,7 +111,7 @@ lemma integrableOn_Ioo_rpow_iff {s t : ℝ} (ht : 0 < t) :
     rwa [← Real.rpow_neg_one x, Real.rpow_le_rpow_left_iff_of_base_lt_one hx.1]
     exact lt_of_lt_of_le hx.2 (min_le_left _ _)
   have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := by
-    rwa [intervalIntegrable_iff_integrable_Ioo_of_le I.le]
+    rwa [intervalIntegrable_iff_integrableOn_Ioo_of_le I.le]
   simp [intervalIntegrable_inv_iff, I.ne] at this
 
 /-- See `intervalIntegrable_cpow'` for a version with a weaker hypothesis on `r`, but assuming the
@@ -138,13 +138,13 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   rcases le_or_lt 0 c with (hc | hc)
   · -- case `0 ≤ c`: integrand is identically 1
     have : IntervalIntegrable (fun _ => 1 : ℝ → ℝ) μ 0 c := intervalIntegrable_const
-    rw [intervalIntegrable_iff_integrable_Ioc_of_le hc] at this ⊢
+    rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc] at this ⊢
     refine' IntegrableOn.congr_fun this (fun x hx => _) measurableSet_Ioc
     dsimp only
     rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
-    rw [intervalIntegrable_iff_integrable_Ioc_of_le hc.le]
+    rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
     have : Ioc c 0 = Ioo c 0 ∪ {(0 : ℝ)} := by
       rw [← Ioo_union_Icc_eq_Ioc hc (le_refl 0), ← Icc_def]
       simp_rw [← le_antisymm_iff, setOf_eq_eq_singleton']
@@ -201,7 +201,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
 /-- The complex power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s.re`. -/
 theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s.re := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrable_Ioo_of_le ht.le]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrableOn_Ioo_of_le ht.le]
     using intervalIntegrable_cpow' h (a := 0) (b := t)⟩
   have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioo 0 t) := by
     apply (integrableOn_congr_fun _ measurableSet_Ioo).1 h.norm

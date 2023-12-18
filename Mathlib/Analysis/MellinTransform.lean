@@ -252,7 +252,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
       refine' (Integrable.hasFiniteIntegral _).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
-        intervalIntegrable_iff_integrable_Ioc_of_le hε.le]
+        intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
       exact intervalIntegral.intervalIntegrable_rpow' (by linarith)
     · refine' (ae_restrict_iff' measurableSet_Ioo).mpr (eventually_of_forall fun t ht => _)
       rw [mul_comm, norm_mul]
@@ -473,7 +473,7 @@ theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
   simp_rw [HasMellin, mellin, MellinConvergent, ← indicator_smul, IntegrableOn,
     integrable_indicator_iff aux3, smul_eq_mul, integral_indicator aux3, mul_one, IntegrableOn,
     Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self]
-  rw [← IntegrableOn, ← intervalIntegrable_iff_integrable_Ioc_of_le zero_le_one]
+  rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   refine' ⟨intervalIntegral.intervalIntegrable_cpow' aux1, _⟩
   rw [← intervalIntegral.integral_of_le zero_le_one, integral_cpow (Or.inl aux1), sub_add_cancel,
     ofReal_zero, ofReal_one, one_cpow, zero_cpow aux2, sub_zero]

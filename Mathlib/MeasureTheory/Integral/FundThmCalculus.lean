@@ -1098,10 +1098,10 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       _ ≤ (∫ w in a..t, (G' w).toReal) + ∫ w in t..x, (G' w).toReal := (add_le_add ht.1 hx)
       _ = ∫ w in a..x, (G' w).toReal := by
         apply integral_add_adjacent_intervals
-        · rw [intervalIntegrable_iff_integrable_Ioc_of_le ht.2.1]
+        · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le ht.2.1]
           exact IntegrableOn.mono_set G'int
             (Ioc_subset_Icc_self.trans (Icc_subset_Icc le_rfl ht.2.2.le))
-        · rw [intervalIntegrable_iff_integrable_Ioc_of_le h'x.1.le]
+        · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x.1.le]
           apply IntegrableOn.mono_set G'int
           exact Ioc_subset_Icc_self.trans (Icc_subset_Icc ht.2.1 (h'x.2.trans (min_le_right _ _)))
   -- now that we know that `s` contains `[a, b]`, we get the desired result by applying this to `b`.
@@ -1178,7 +1178,7 @@ theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
     (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
-    (g.integrable_comp ((intervalIntegrable_iff_integrable_Icc_of_le hab).1 f'int))
+    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab).1 f'int))
 #align interval_integral.integral_eq_sub_of_has_deriv_right_of_le intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is continuous on `[a, b]` and
