@@ -218,13 +218,20 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 #align finset.card_powerset_len Finset.card_powersetCard
 
 @[simp]
-theorem powersetCard_zero (s : Finset α) : Finset.powersetCard 0 s = {∅} := by
+theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
   refine'
     ⟨fun h => h.2, fun h => by
       rw [h]
       exact ⟨empty_subset s, rfl⟩⟩
 #align finset.powerset_len_zero Finset.powersetCard_zero
+
+theorem powersetCard_one (s : Finset α) :
+    s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ := by
+  ext; rw [mem_powersetCard, card_eq_one, mem_map, ← exists_and_left, exists_congr]
+  intro a
+  rw [eq_comm, ← s.singleton_subset_iff]
+  apply and_congr_left; rintro rfl; rfl
 
 @[simp]
 theorem powersetCard_empty (n : ℕ) {s : Finset α} (h : s.card < n) : powersetCard n s = ∅ :=
