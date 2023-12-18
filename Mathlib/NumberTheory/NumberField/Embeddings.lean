@@ -120,12 +120,11 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
 theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
     ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
-    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ ((· ^ ·) x : ℕ → K) Set.infinite_univ
+    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
       (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   · wlog hlt : b < a
     · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
     refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
-    dsimp at h -- Porting note: added dsimp
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
     refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
@@ -198,7 +197,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
     (hφ.embedding x : ℂ) = φ x := by
-  ext
+  apply Complex.ext
   · rfl
   · rw [ofReal_im, eq_comm, ← Complex.conj_eq_iff_im]
     exact RingHom.congr_fun hφ x

@@ -865,7 +865,7 @@ theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (aleph o
 #align cardinal.principal_add_aleph Cardinal.principal_add_aleph
 
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=
-  ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_fun (congr_arg (· + ·) h) γ⟩
+  ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_arg (· + γ) h⟩
 #align cardinal.add_right_inj_of_lt_aleph_0 Cardinal.add_right_inj_of_lt_aleph0
 
 @[simp]

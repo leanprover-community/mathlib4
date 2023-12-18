@@ -95,7 +95,7 @@ theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν
 -- workaround for the known eta-reduction issue with `@[gcongr]`
 @[gcongr] theorem lintegral_mono_fn' ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) (h2 : μ ≤ ν) :
     lintegral μ f ≤ lintegral ν g :=
-lintegral_mono' h2 hfg
+  lintegral_mono' h2 hfg
 
 theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
@@ -104,7 +104,7 @@ theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a,
 -- workaround for the known eta-reduction issue with `@[gcongr]`
 @[gcongr] theorem lintegral_mono_fn ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
     lintegral μ f ≤ lintegral μ g :=
-lintegral_mono hfg
+  lintegral_mono hfg
 
 theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
@@ -341,7 +341,7 @@ theorem lintegral_nnnorm_eq_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
   lintegral_nnnorm_eq_of_ae_nonneg (Filter.eventually_of_forall h_nonneg)
 #align measure_theory.lintegral_nnnorm_eq_of_nonneg MeasureTheory.lintegral_nnnorm_eq_of_nonneg
 
-/-- Monotone convergence theorem -- sometimes called Beppo-Levi convergence.
+/-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
 theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n)) (h_mono : Monotone f) :
     ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
@@ -720,7 +720,8 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     rw [mul_comm]
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
-  simp [(mul_assoc _ _ _).symm, rinv'] at this
+  simp? [(mul_assoc _ _ _).symm, rinv'] at this says
+    simp only [(mul_assoc _ _ _).symm, rinv', one_mul] at this
   simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
 #align measure_theory.lintegral_const_mul' MeasureTheory.lintegral_const_mul'
 
@@ -1431,13 +1432,6 @@ theorem set_lintegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f
     restrict_restrict hs, inter_eq_right.2 (Subtype.coe_image_subset _ _)]
 
 section DiracAndCount
-
-instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type*} :
-    @MeasurableSingletonClass α (⊤ : MeasurableSpace α) :=
-  @MeasurableSingletonClass.mk α (⊤ : MeasurableSpace α) <|
-    fun _ => MeasurableSpace.measurableSet_top
-#align measurable_space.top.measurable_singleton_class MeasurableSpace.Top.measurableSingletonClass
-
 variable [MeasurableSpace α]
 
 theorem lintegral_dirac' (a : α) {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂dirac a = f a :=

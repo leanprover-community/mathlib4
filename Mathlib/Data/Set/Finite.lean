@@ -286,11 +286,6 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
--- porting note: was `@[simp]`, now `simp` can prove it
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
-  toFinite_toFinset _
-#align set.finite.to_finset_empty Set.Finite.toFinset_empty
-
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
     h.toFinset = Finset.univ := by
   simp
@@ -300,6 +295,10 @@ protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
 protected theorem toFinset_eq_empty {h : s.Finite} : h.toFinset = ∅ ↔ s = ∅ :=
   @toFinset_eq_empty _ _ h.fintype
 #align set.finite.to_finset_eq_empty Set.Finite.toFinset_eq_empty
+
+protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ := by
+  simp
+#align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 @[simp]
 protected theorem toFinset_eq_univ [Fintype α] {h : s.Finite} :
@@ -934,6 +933,22 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
   toFinite _
 #align set.finite_le_nat Set.finite_le_nat
 
+section MapsTo
+
+variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+
+theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+  refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
+  have : Finite s := finite_coe_iff.mpr hs
+  exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
+
+theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+  refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
+  have : Finite s := finite_coe_iff.mpr hs
+  exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
+
+end MapsTo
+
 section Prod
 
 variable {s : Set α} {t : Set β}
@@ -964,7 +979,7 @@ protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
   refine' ⟨fun h => _, _⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
-    by_contra'
+    by_contra!
     exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
   · rintro (h | h)
     · exact h.1.prod_left h.2
@@ -1221,9 +1236,8 @@ theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 #align set.empty_card Set.empty_card
 
-@[simp]
 theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 :=
-  Eq.trans (by congr; exact Subsingleton.elim _ _) empty_card
+  by simp
 #align set.empty_card' Set.empty_card'
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
@@ -1312,7 +1326,7 @@ alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
 
 lemma Infinite.exists_not_mem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
-  by_contra' h; exact hs $ ht.subset h
+  by_contra! h; exact hs $ ht.subset h
 
 lemma Infinite.exists_not_mem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_not_mem_finite t.finite_toSet
@@ -1322,7 +1336,7 @@ section Infinite
 variable [Infinite α]
 
 lemma Finite.exists_not_mem (hs : s.Finite) : ∃ a, a ∉ s := by
-  by_contra' h; exact infinite_univ (hs.subset fun a _ ↦ h _)
+  by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
 
 lemma _root_.Finset.exists_not_mem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_not_mem
 

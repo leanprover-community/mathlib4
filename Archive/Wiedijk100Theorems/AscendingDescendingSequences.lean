@@ -136,7 +136,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- Finished both goals!
   -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
   -- Suppose all the labels are small.
-  by_contra' q
+  by_contra! q
   -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
   let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
   -- which we prove here.

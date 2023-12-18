@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Nat.PartENat
@@ -378,6 +379,7 @@ instance : Zero Cardinal.{u} :=
 instance : Inhabited Cardinal.{u} :=
   ⟨0⟩
 
+@[simp]
 theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
   (Equiv.equivOfIsEmpty α (ULift (Fin 0))).cardinal_eq
 #align cardinal.mk_eq_zero Cardinal.mk_eq_zero
@@ -1449,7 +1451,7 @@ theorem isLimit_aleph0 : IsLimit ℵ₀ :=
 #align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
 
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra' h'
+  by_contra! h'
   rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
   · exact h.ne_zero.irrefl
   · rw [nat_succ] at h
@@ -1757,8 +1759,10 @@ theorem toNat_cast (n : ℕ) : Cardinal.toNat n = n := by
   exact (Classical.choose_spec (lt_aleph0.1 (nat_lt_aleph0 n))).symm
 #align cardinal.to_nat_cast Cardinal.toNat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : Cardinal.toNat (OfNat.ofNat n) = OfNat.ofNat n :=
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toNat_cast n
 
 /-- `toNat` has a right-inverse: coercion. -/

@@ -60,7 +60,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `LinearMap.range_dual_map_eq_dualAnnihilator_ker_of_subtype_range_surjective` says that
     `f.dual_map.range = f.ker.dualAnnihilator`; this is specialized to vector spaces in
     `LinearMap.range_dual_map_eq_dualAnnihilator_ker`.
-  * `Submodule.dual_quot_equiv_dualAnnihilator` is the equivalence
+  * `Submodule.dualQuotEquivDualAnnihilator` is the equivalence
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualConnihilator_eq` says that the double dual annihilator,
@@ -1031,6 +1031,7 @@ theorem dualCoannihilator_top (W : Subspace K V) :
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 #align subspace.dual_coannihilator_top Subspace.dualCoannihilator_top
 
+@[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine' le_antisymm _ (le_dualAnnihilator_dualCoannihilator _)

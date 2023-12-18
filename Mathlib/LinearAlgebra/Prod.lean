@@ -172,6 +172,14 @@ theorem ker_fst : ker (fst R M M₂) = range (inr R M M₂) :=
   Eq.symm <| range_inr R M M₂
 #align linear_map.ker_fst LinearMap.ker_fst
 
+@[simp] theorem fst_comp_inl : fst R M M₂ ∘ₗ inl R M M₂ = id := rfl
+
+@[simp] theorem snd_comp_inl : snd R M M₂ ∘ₗ inl R M M₂ = 0 := rfl
+
+@[simp] theorem fst_comp_inr : fst R M M₂ ∘ₗ inr R M M₂ = 0 := rfl
+
+@[simp] theorem snd_comp_inr : snd R M M₂ ∘ₗ inr R M M₂ = id := rfl
+
 end
 
 @[simp]

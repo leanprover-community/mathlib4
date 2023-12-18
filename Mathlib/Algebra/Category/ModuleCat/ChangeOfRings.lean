@@ -203,6 +203,16 @@ abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
 end
 
+instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+    IsEquivalence (ModuleCat.restrictScalars e.toRingHom) where
+  inverse := ModuleCat.restrictScalars e.symm
+  unitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
+    { __ := AddEquiv.refl M
+      map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }
+  counitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
+    { __ := AddEquiv.refl M
+      map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r) }
+
 open TensorProduct
 
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)

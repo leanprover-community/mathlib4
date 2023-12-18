@@ -492,7 +492,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
     simp only [one_mul, LinearMap.coe_mk]
-    refine' le_of_pow_le_pow 2 (norm_nonneg _) (by norm_num) _
+    refine' le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) _
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 #align orthogonal_projection orthogonalProjection
@@ -1251,7 +1251,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     -- factorization into reflections for `φ`.
     refine' ⟨x::l, Nat.succ_le_succ hl, _⟩
     rw [List.map_cons, List.prod_cons]
-    have := congr_arg ((· * ·) ρ) hφl
+    have := congr_arg (ρ * ·) hφl
     dsimp only at this
     rwa [← mul_assoc, reflection_mul_reflection, one_mul] at this
 #align linear_isometry_equiv.reflections_generate_dim_aux LinearIsometryEquiv.reflections_generate_dim_aux
