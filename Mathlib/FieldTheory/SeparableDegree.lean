@@ -134,17 +134,6 @@ variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
 
 variable (K : Type w) [Field K] [Algebra F K]
 
-section AdhocTwo
-
-theorem Polynomial.Separable.isIntegral {A B : Type*} [CommRing A] [Ring B] [Algebra A B]
-    {x : B} (h : (minpoly A x).Separable) : IsIntegral A x := by
-  cases subsingleton_or_nontrivial A
-  · haveI := Module.subsingleton A B
-    exact ⟨1, monic_one, Subsingleton.elim _ _⟩
-  · exact of_not_not fun h' ↦ not_separable_zero (minpoly.eq_zero h' ▸ h)
-
-end AdhocTwo
-
 namespace Field
 
 /-- `Field.Emb F E` is the type of `F`-algebra homomorphisms from `E` to the algebraic closure
