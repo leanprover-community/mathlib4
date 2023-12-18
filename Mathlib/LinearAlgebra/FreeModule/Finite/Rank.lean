@@ -291,17 +291,18 @@ noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique �
   exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
 #align basis.unique Basis.unique
 
+namespace FiniteDimensional
 variable (R V)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R V)`. -/
-noncomputable def FiniteDimensional.finBasis [Module.Finite R V] :
+noncomputable def finBasis [Module.Finite R V] :
     Basis (Fin (finrank R V)) R V :=
   (Free.chooseBasis R V).reindex (Fintype.equivFinOfCardEq
     (finrank_eq_card_chooseBasisIndex R V).symm)
 #align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Finite R V]
+noncomputable def finBasisOfFinrankEq [Module.Finite R V]
     {n : ℕ} (hn : finrank R V = n) :
     Basis (Fin n) R V :=
   (finBasis R V).reindex (Fin.castIso hn).toEquiv
@@ -310,7 +311,7 @@ noncomputable def FiniteDimensional.finBasisOfFinrankEq [Module.Finite R V]
 variable {R V}
 
 /-- A free module with rank 1 has a basis with one element. -/
-noncomputable def FiniteDimensional.basisUnique (ι : Type*) [Unique ι]
+noncomputable def basisUnique (ι : Type*) [Unique ι]
     (h : finrank R V = 1) :
     Basis ι R V :=
   haveI : Module.Finite R V :=
@@ -319,7 +320,7 @@ noncomputable def FiniteDimensional.basisUnique (ι : Type*) [Unique ι]
 #align finite_dimensional.basis_unique FiniteDimensional.basisUnique
 
 @[simp]
-theorem FiniteDimensional.basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
+theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     {h : finrank R V = 1} {v : V} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
@@ -327,25 +328,27 @@ theorem FiniteDimensional.basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 #align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
-theorem FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using
     cardinal_lift_le_rank_of_linearIndependent h
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
 
-theorem FiniteDimensional.fintype_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem fintype_card_le_finrank_of_linearIndependent [Module.Finite R V]
     {ι : Type*} [Fintype ι] {b : ι → V} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R V := by
-  simpa using FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent h
+  simpa using cardinal_mk_le_finrank_of_linearIndependent h
 #align finite_dimensional.fintype_card_le_finrank_of_linear_independent FiniteDimensional.fintype_card_le_finrank_of_linearIndependent
 
-theorem FiniteDimensional.finset_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem finset_card_le_finrank_of_linearIndependent [Module.Finite R V]
     {b : Finset V} (h : LinearIndependent R (fun x => x : b → V)) :
     b.card ≤ finrank R V := by
   rw [← Fintype.card_coe]
-  exact FiniteDimensional.fintype_card_le_finrank_of_linearIndependent h
+  exact fintype_card_le_finrank_of_linearIndependent h
 #align finite_dimensional.finset_card_le_finrank_of_linear_independent FiniteDimensional.finset_card_le_finrank_of_linearIndependent
+
+end FiniteDimensional
 
 theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
     [Module.Finite R V] {v : ι → V} (h : LinearIndependent R v) : #ι < ℵ₀ := by
@@ -482,6 +485,7 @@ open Finset
 /-- If a finset has cardinality larger than the rank of a module,
 then there is a nontrivial linear relation amongst its elements.
 -/
+-- TODO: golf this
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card
     [Module.Finite R V] {t : Finset V}
     (h : finrank R V < t.card) : ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
@@ -523,6 +527,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card
 then there is a nontrivial linear relation amongst its elements,
 such that the coefficients of the relation sum to zero.
 -/
+-- TODO: golf this
 theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card [Module.Finite R V]
     {t : Finset V} (h : finrank R V + 1 < t.card) :
     ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
