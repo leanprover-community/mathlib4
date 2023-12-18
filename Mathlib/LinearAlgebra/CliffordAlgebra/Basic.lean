@@ -284,7 +284,7 @@ theorem mul_ι_mul_ι_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrth
 
 theorem ι_mul_ι_mul_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
     ι Q a * (ι Q b * x) = -(ι Q b * (ι Q a * x)) := by
-  rw [←mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
+  rw [← mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
 
 end isOrtho
 
