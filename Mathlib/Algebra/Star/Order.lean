@@ -205,9 +205,7 @@ lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
 lemma star_lt_star_iff {x y : R} : star x < star y ↔ x < y := by
   by_cases h : x = y
   · simp [h]
-  · have := star_le_star_iff (x := x) (y := y)
-    rw [le_iff_lt_or_eq, le_iff_lt_or_eq, star_inj] at this
-    simp_all
+  · simpa [le_iff_lt_or_eq, h] using star_le_star_iff (x := x) (y := y)
 
 lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_le_star_iff, star_star]
 
