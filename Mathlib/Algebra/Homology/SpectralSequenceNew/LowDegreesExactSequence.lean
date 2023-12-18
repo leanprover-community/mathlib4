@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
+import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.Tactic.FinCases
 
 namespace ComplexShape
@@ -125,6 +126,13 @@ instance (n : ℕ) : E.HasEdgeEpiAtFrom ⟨n, 1⟩ 3 :=
     dsimp
     linarith)
 
+instance : E.HasEdgeMonoAtFrom ⟨1, 0⟩ 2 :=
+  HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
+    apply E.hasEdgeMonoAt
+    dsimp
+    linarith)
+
+
 variable {E}
 
 instance : (hE 0).CollapsesAt 0 where
@@ -144,10 +152,46 @@ instance : IsIso ((hE 1).filtrationι (WithBot.some 1)) :=
     change 1 < j at hj'
     linarith)
 
+instance : IsIso ((hE 1).π 0 (1, 0) rfl) := by
+  apply (hE 1).isIso_π_of_isZero
+  aesop
+
+instance : IsIso ((hE 1).filtrationι 1) := by
+  apply (hE 1).isIso_filtrationι_of_isZero
+  intro j hj
+  fin_cases j <;> aesop
+
+instance : (hE 1).CollapsesAsSESAt 0 1 :=
+  (hE 1).collapsesAsSESAt_of_succ 0 1 rfl ⟨1, 0⟩ rfl inferInstance inferInstance
+
 noncomputable example : X 1 ⟶ E.pageInfinity ⟨0, 1⟩ :=
   (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance
 
+noncomputable def ιE₂OneZero : (E.page 2).X ⟨1, 0⟩ ⟶ X 1 :=
+  (E.pageInfinityIso ⟨1, 0⟩ 2).inv ≫ (hE 1).pageInfinityι 0 ⟨1, 0⟩ rfl inferInstance
+
+instance : Mono (ιE₂OneZero hE) := by
+  dsimp [ιE₂OneZero]
+  infer_instance
+
+noncomputable def πE₃ZeroOne : X 1 ⟶ (E.page 3).X ⟨0, 1⟩ :=
+  (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance ≫ (E.pageInfinityIso ⟨0, 1⟩ 3).hom
+
+instance : Epi (πE₃ZeroOne hE) := by
+  dsimp [πE₃ZeroOne]
+  apply epi_comp
+
+noncomputable def toE₂OneZero :
+    X 1 ⟶ (E.page 2).X ⟨0, 1⟩ :=
+  (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance ≫ E.edgeMono ⟨0, 1⟩ 2
+
+--#check E.edgeMonoStep ⟨0, 1⟩ 2 3 rfl
+
 end LowDegreesExactSequence
+
+--open LowDegreesExactSequence in
+--noncomputable def lowDegreesComposableArrows : ComposableArrows C 1 :=
+--  ComposableArrows.mk₁ (ιE₂OneZero hE)
 
 end CohomologicalSpectralSequenceNat
 
