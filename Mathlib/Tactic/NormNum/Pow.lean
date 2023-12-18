@@ -308,7 +308,7 @@ def evalPowMod : NormNumExt where eval {u α} e := do
       q(isNat_powMod (f := $f) (g := $g) (.refl $f) (.refl $g) $pa $pb $pm $r)
   core
 
-set_option trace.Tactic.norm_num true
+-- set_option trace.Tactic.norm_num true
 
-lemma yeah : 11 ^ 987654318 % 987654319 = 1 := by
-  norm_num
+-- lemma yeah : 11 ^ 987654318 % 987654319 = 1 := by
+--   norm_num
