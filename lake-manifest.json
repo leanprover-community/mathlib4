@@ -4,7 +4,7 @@
  [{"url": "https://github.com/negiizhao/std4",
    "type": "git",
    "subDir": null,
-   "rev": "7738c3a2d8f6a6e3bae6d1e8a983054843dd5a0a",
+   "rev": "661debc2e08d5cdf8c13199aa114886578835718",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "bitwise",

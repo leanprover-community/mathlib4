@@ -46,7 +46,7 @@ set_option linter.deprecated false
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
-#align nat.bodd_add_div2 Nat.bodd_add_div2
+#align nat.bodd_add_div2 Nat.div2_add_boddₓ
 #align nat.div2_val Nat.div2_val
 #align nat.bit Nat.bit
 
