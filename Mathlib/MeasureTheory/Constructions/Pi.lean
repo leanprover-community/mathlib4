@@ -422,17 +422,16 @@ theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
 #align measure_theory.measure.pi_of_empty MeasureTheory.Measure.pi_of_empty
 
 @[simp]
-theorem pi_empty_univ {α : Type*} {β : α → Type*} [IsEmpty α] {m : ∀ α, MeasurableSpace (β α)}
-    (μ : ∀ a : α, Measure (β a)) : Measure.pi μ (Set.univ) = 1 := by
-    rw [pi_of_empty, measure_univ]
+theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
+    {m : ∀ α, MeasurableSpace (β α)} (μ : ∀ a : α, Measure (β a)) :
+    Measure.pi μ (Set.univ) = 1 := by
+  rw [pi_of_empty, measure_univ]
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   -- WLOG, `s` is measurable
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
-  suffices : Measure.pi μ (eval i ⁻¹' t) = 0
-  exact measure_mono_null (preimage_mono hst) this
-  clear! s
+  suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
   -- Now rewrite it as `Set.pi`, and apply `pi_pi`
   rw [← univ_pi_update_univ, pi_pi]
   apply Finset.prod_eq_zero (Finset.mem_univ i)
