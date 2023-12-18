@@ -1,11 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
 
-lemma Int.eq_add_ofNat_of_le {i j : ℤ} (hij : i ≤ j) :
-    ∃ (d : ℕ), j = i + d := by
-  have h : 0 ≤ j - i := by linarith
-  obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le h
-  exact ⟨d, by linarith⟩
-
 lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
     (hm₀ : ∀ (x : ℤ) (_ : x ∈ S), m₀ ≤ x) :
     ∃ (m : ℤ) (_ : m ∈ S), ∀ (x : ℤ) (_ : x ∈ S), m ≤ x := by
@@ -665,6 +659,18 @@ lemma mapPageInfinity_eq (pq : ι) (r : ℤ)
     ← E.pageInfinityIso_hom_edgeEpiSteps pq r' r hr,
     ← E'.edgeMonoSteps_pageInfinityIso_inv pq r' r hr, assoc,
     ← edgeMonoSteps_naturality_assoc, edgeEpiSteps_edgeMonoSteps_assoc]
+
+lemma isIso_mapPageInfinity_of_isIso_hom (r : ℤ) (pq : ι) [E.HasPage r] [E'.HasPage r]
+    (hf : IsIso (f.hom r)) [E.HasPageInfinityAt pq] [E'.HasPageInfinityAt pq] :
+    IsIso (mapPageInfinity f pq) := by
+  let r' := max r (max (E.rMin pq) (E'.rMin pq))
+  rw [mapPageInfinity_eq f pq r']
+  have := isIso_hom_of_GE f r r' (le_max_left _ _) hf
+  have : IsIso ((f.hom r').f pq) := by
+    -- this should already be an instance
+    change IsIso ((HomologicalComplex.eval C _ pq).map (f.hom r'))
+    infer_instance
+  infer_instance
 
 end Hom
 

@@ -2,6 +2,12 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Tactic.Linarith
 
+lemma Int.eq_add_ofNat_of_le {i j : ℤ} (hij : i ≤ j) :
+    ∃ (d : ℕ), j = i + d := by
+  have h : 0 ≤ j - i := by linarith
+  obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le h
+  exact ⟨d, by linarith⟩
+
 namespace CategoryTheory
 
 open Category Limits
@@ -33,6 +39,9 @@ lemma le_of_hasPage (r : ℤ) [h : E.HasPage r] : r₀ ≤ r := h.le
 
 lemma hasPage_of_LE (r r' : ℤ) (le : r ≤ r') [E.HasPage r] : E.HasPage r' where
   le := by linarith [E.le_of_hasPage r]
+
+instance (r : ℤ) [E.HasPage r] : E.HasPage (r + 1) :=
+  E.hasPage_of_LE r _ (by linarith)
 
 instance (r r' : ℤ) [E.HasPage r] : E.HasPage (max r r') :=
     E.hasPage_of_LE r _ (le_max_left _ _)
@@ -99,7 +108,7 @@ lemma id_hom (r : ℕ) [E.HasPage r] :
 
 variable {E E''}
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma comp_hom (f : E ⟶ E') (g : E' ⟶ E'') (r : ℕ) [E.HasPage r] [E'.HasPage r] [E''.HasPage r] :
     (f ≫ g).hom r = f.hom r ≫ g.hom r := rfl
 
@@ -256,6 +265,33 @@ def hasEdgeMonoSet (pq : ι) : Set ℤ  :=
 
 def hasEdgeEpiSet (pq : ι) : Set ℤ :=
   fun r => ∀ (r' : ℤ) (_ : r ≤ r'), ∃ (_ : E.HasPage r'), E.HasEdgeEpiAt pq r'
+
+section
+
+lemma isIso_hom_succ (f : E ⟶ E') (r : ℤ) [E.HasPage r] [E'.HasPage r]
+    (hf : IsIso (f.hom r)) : IsIso (f.hom (r + 1)) := by
+  have : ∀ (pq : ι), IsIso ((f.hom (r + 1)).f pq) := fun pq => by
+    have : IsIso (HomologicalComplex.homologyMap (Hom.hom f r) pq) := by
+      -- this should already be an instance
+      change IsIso ((HomologicalComplex.homologyFunctor _ _ pq).map (Hom.hom f r))
+      infer_instance
+    exact IsIso.of_isIso_fac_left (Hom.comm f r _ rfl pq).symm
+  apply HomologicalComplex.Hom.isIso_of_components
+
+lemma isIso_hom_of_GE (f : E ⟶ E') (r r' : ℤ) (hrr' : r ≤ r')
+    [E.HasPage r] [E'.HasPage r] [E.HasPage r'] [E'.HasPage r']
+    (hf : IsIso (f.hom r)) : IsIso (f.hom r') := by
+  obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hrr'
+  revert r' hrr'
+  induction' k with k hk
+  · intro r' _ _ _ hr'
+    obtain rfl : r = r' := by simp [hr']
+    exact hf
+  · intro r' hrr' _ _ hr'
+    obtain rfl : r' = (r + k) + 1 := by simp only [hr', Nat.cast_succ, add_assoc]
+    exact isIso_hom_succ f (r + k) (hk (r + k) (by linarith) (by rfl))
+
+end
 
 end SpectralSequence
 

@@ -61,6 +61,8 @@ variable (s : ConvergenceStripes ι)
 
 namespace ConvergenceStripes
 
+attribute [simp] stripe_position
+
 lemma stripe_eq (n : s.σ) (i : s.α n) (pq : ι) (hpq : s.position n i = pq) :
     s.stripe pq = n := by
   rw [← hpq, s.stripe_position]
@@ -521,6 +523,12 @@ lemma isZero_filtration_obj_iff (i : WithBot (s.α n)) :
     rw [IsZero.iff_id_eq_zero, ← cancel_mono (h.filtration.map α)]
     apply hj.eq_of_tgt
 
+lemma isZero_filtration_obj_of_LE (i j : WithBot (s.α n)) (hij : i ≤ j)
+    (hj : IsZero (h.filtration.obj j)) : IsZero (h.filtration.obj i) := by
+  rw [isZero_filtration_obj_iff] at hj ⊢
+  intro k hk pq hpq
+  exact hj k (hk.trans hij) pq hpq
+
 lemma isIso_filtration_map_iff (i j : WithBot (s.α n)) (φ : i ⟶ j) :
     IsIso (h.filtration.map φ) ↔
       ∀ (k : s.α n) (_ : i ≤ s.pred n k) (_ : WithBot.some k ≤ j)
@@ -610,10 +618,110 @@ structure Hom where
     h.π i pq hpq ≫ Hom.mapPageInfinity f pq =
       τ.app i ≫ h'.π i pq hpq
 
--- TODO :
--- * show IsIso (Hom.mapPageInfinity f ...) → IsIso φ
--- * show IsIso f.hom r → IsIso f.hom r' if r ≤ r',  and then
---             also IsIso (Hom.mapPageInfinity f ...)
+lemma _root_.CategoryTheory.SpectralSequence.StronglyConvergesToInDegree.exists_isIso_aux :
+    ∃ (k : s.α n), IsIso (h.filtrationι k) ∧ IsIso (h'.filtrationι k) := by
+  obtain ⟨k₁, hk₁⟩ := h.exists_isIso
+  obtain ⟨k₂, hk₂⟩ := h'.exists_isIso
+  exact ⟨max k₁ k₂, ⟨h.isIso_filtrationι_of_GE _ _ (by simp) hk₁,
+    h'.isIso_filtrationι_of_GE _ _ (by simp) hk₂⟩⟩
+
+lemma _root_.CategoryTheory.SpectralSequence.StronglyConvergesToInDegree.exists_isZero_aux :
+    ∃ (k : s.α n), IsZero (h.filtration.obj (s.pred n k)) ∧ IsZero (h'.filtration.obj (s.pred n k)) := by
+  obtain ⟨k₁, hk₁⟩ := h.exists_isZero
+  obtain ⟨k₂, hk₂⟩ := h'.exists_isZero
+  obtain H | H := le_total k₁ k₂
+  · exact ⟨k₁, hk₁, h'.isZero_filtration_obj_of_LE (s.pred n k₁) (s.pred n k₂)
+      (s.pred_monotone _ _ _ H) hk₂⟩
+  · exact ⟨k₂, h.isZero_filtration_obj_of_LE (s.pred n k₂) (s.pred n k₁)
+      (s.pred_monotone _ _ _ H) hk₁, hk₂⟩
+
+variable {h h' f}
+
+lemma hom_ext {α₁ α₂ : h.Hom h' f} (h : α₁.τ = α₂.τ) : α₁ = α₂ := by
+  obtain ⟨φ₁, τ, commι₁, commπ₁⟩ := α₁
+  obtain ⟨φ₂, τ₂, commι₂, commπ₂⟩ := α₂
+  subst h
+  dsimp at commι₂ commπ₂
+  simp only [Hom.mk.injEq, and_true]
+  obtain ⟨k, _, _⟩ := exists_isIso_aux h h'
+  rw [← cancel_epi (h.filtrationι k), commι₁, commι₂]
+
+@[simps]
+noncomputable def Hom.mapShortComplex (α : h.Hom h' f) (i : WithBot (s.α n)) (j : s.α n)
+    (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq) :
+    h.shortComplex i j hij pq hpq ⟶ h'.shortComplex i j hij pq hpq where
+  τ₁ := α.τ.app i
+  τ₂ := α.τ.app (WithBot.some j)
+  τ₃ := Hom.mapPageInfinity f pq
+  comm₁₂ := (α.τ.naturality _).symm
+  comm₂₃ := (α.commπ _ _ _).symm
+
+lemma Hom.isIso_τ_succ (α : h.Hom h' f) (i : WithBot (s.α n)) (j : s.α n)
+    (hij : s.pred n j = i) (pq : ι) (hpq : s.position n j = pq)
+    (hf : IsIso (Hom.mapPageInfinity f pq)) (hα : IsIso (α.τ.app i)) :
+    IsIso (α.τ.app (WithBot.some j)) :=
+  ShortComplex.isIso₂_of_shortExact_of_isIso₁₃' (α.mapShortComplex i j hij pq hpq)
+    (h.shortExact i j hij pq hpq) (h'.shortExact i j hij pq hpq) hα hf
+
+lemma Hom.isIso_φ_of_isIso_τ (α : h.Hom h' f) (hα : IsIso α.τ) :
+    IsIso α.φ := by
+  obtain ⟨k, _, _⟩ := exists_isIso_aux h h'
+  exact IsIso.of_isIso_fac_left (α.commι k)
+
+instance (α : h.Hom h' f) : IsIso (α.τ.app ⊥) :=
+  ⟨0, h.isZero_filtration_obj_none.eq_of_src _ _,
+    h'.isZero_filtration_obj_none.eq_of_src _ _⟩
+
+section
+
+variable (α : h.Hom h' f) (hα : ∀ (pq : ι) (_ : s.stripe pq = n), IsIso (Hom.mapPageInfinity f pq))
+-- note: the assumption hα could be slightly sharper in the next lemma below
+
+lemma Hom.isIso_τ_of_sub (i j : WithBot (s.α n)) (k : ℕ)
+    (hk : s.sub n j k = i) (hi : IsIso (α.τ.app i)) :
+    IsIso (α.τ.app j) := by
+  have := hα
+  revert i j hi
+  induction' k with k hk
+  · intro i j hij _
+    obtain rfl : j = i := by simpa using hij
+    infer_instance
+  · intro i j hij _
+    rw [Nat.succ_eq_add_one, ← s.sub_sub n j 1 k _ (add_comm _ _)] at hij
+    have := hk _ _ hij inferInstance
+    have : ∀ (l : WithBot (s.α n)) (_ : s.sub n j 1 = l)
+      (_ : IsIso (α.τ.app l)), IsIso (α.τ.app j) := fun l hl hl' => by
+        by_cases hj : j = ⊥
+        · subst hj
+          infer_instance
+        · obtain ⟨j, rfl⟩ :=  WithBot.ne_bot_iff_exists.1 hj
+          exact α.isIso_τ_succ l j hl _ rfl (hα _ (by simp)) hl'
+    exact this _ rfl inferInstance
+
+lemma Hom.isIso_τ_of_isIso_mapPageInfinity  :
+    IsIso α.τ := by
+  suffices ∀ j, IsIso (α.τ.app j) from NatIso.isIso_of_isIso_app _
+  intro j
+  obtain _ | j := j
+  · change IsIso (α.τ.app ⊥)
+    infer_instance
+  · obtain ⟨k, z, z'⟩ := exists_isZero_aux h h'
+    obtain ⟨d, hd⟩ := s.exists_sub_le n j k
+    let l := (s.sub n j (d + 1))
+    have hlk : l ≤ s.pred n k := by
+      dsimp
+      rw [← s.sub_sub n j d 1 _ rfl, ← s.pred'_some, s.sub_one]
+      exact s.pred'_monotone _ _ _ hd
+    have : IsIso (α.τ.app l) := ⟨0, (h.isZero_filtration_obj_of_LE l _ hlk z).eq_of_src _ _,
+      (h'.isZero_filtration_obj_of_LE l _ hlk z').eq_of_src _ _⟩
+    exact α.isIso_τ_of_sub hα l j (d + 1) rfl this
+
+lemma Hom.isIso_φ_of_isIso_mapPageInfinity :
+    IsIso α.φ :=
+  α.isIso_φ_of_isIso_τ (α.isIso_τ_of_isIso_mapPageInfinity hα)
+
+end
+
 end
 
 end StronglyConvergesToInDegree
