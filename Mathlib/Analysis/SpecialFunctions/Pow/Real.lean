@@ -616,6 +616,10 @@ theorem rpow_lt_one_iff (hx : 0 ≤ x) :
   · simp [rpow_lt_one_iff_of_pos hx, hx.ne.symm]
 #align real.rpow_lt_one_iff Real.rpow_lt_one_iff
 
+theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
+    x ^ y < 1 ↔ x < 1 := by
+  rw [← Real.rpow_lt_rpow_iff hx zero_le_one hy, Real.one_rpow]
+
 theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ x < 1 ∧ y < 0 := by
   rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx, log_neg_iff hx]
 #align real.one_lt_rpow_iff_of_pos Real.one_lt_rpow_iff_of_pos

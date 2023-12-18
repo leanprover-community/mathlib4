@@ -32,10 +32,6 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
   (← g.define h (← t.getDM (inferType v)) v).intro1P
 
-/-- Short-hand for applying a constant to the goal. -/
-def applyConst (mvar : MVarId) (c : Name) (cfg : ApplyConfig := {}) : MetaM (List MVarId) := do
-  mvar.apply (← mkConstWithFreshMVarLevels c) cfg
-
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
@@ -129,13 +125,6 @@ def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
 end Lean.MVarId
 
 namespace Lean.Meta
-
-/-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
-def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
-  let mut hs := #[]
-  for d in ← getLCtx do
-    if !d.isImplementationDetail then hs := hs.push d.toExpr
-  return hs
 
 /-- Count how many local hypotheses appear in an expression. -/
 def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
