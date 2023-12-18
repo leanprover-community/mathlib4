@@ -432,7 +432,7 @@ lemma prod_primeFactors_invOn_squarefree :
 
 theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.factors.toFinset, p = n := by
-  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id'', Nat.prod_factors hn.ne_zero]
+  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id', Nat.prod_factors hn.ne_zero]
 
 end Nat
 
