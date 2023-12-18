@@ -170,6 +170,10 @@ instance [E.HasPage r] : E.HasEdgeMonoAt pq r where
 instance (k : ℕ) : E.HasEdgeMonoAtFrom pq (r + k) where
   le := by linarith [E.LE_of_hasEdgeMonoAtFrom pq r]
 
+instance [E.HasEdgeMonoAtFrom pq 2] : E.HasEdgeMonoAtFrom pq 3 := by
+  change E.HasEdgeMonoAtFrom pq (2 + (1 : ℕ))
+  infer_instance
+
 noncomputable def edgeMonoSteps' (k : ℕ) [E.HasPage r] :
     (E.page (r + k)).X pq ⟶ (E.page r).X pq := by
   induction' k with k hk
@@ -315,6 +319,11 @@ instance [E.HasPage r] : E.HasEdgeEpiAt pq r where
 
 instance (k : ℕ) : E.HasEdgeEpiAtFrom pq (r + k) where
   le := by linarith [E.LE_of_hasEdgeEpiAtFrom pq r]
+
+instance [E.HasEdgeEpiAtFrom pq 2] : E.HasEdgeEpiAtFrom pq 3 := by
+  change E.HasEdgeEpiAtFrom pq (2 + (1 : ℕ))
+  infer_instance
+
 
 noncomputable def edgeEpiSteps' (k : ℕ) [E.HasPage r] :
     (E.page r).X pq ⟶ (E.page (r + k)).X pq := by

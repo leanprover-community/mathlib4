@@ -9,7 +9,7 @@ lemma Nat.eq_add_of_le {i j : ℕ} (hij : i ≤ j) :
 
 namespace CategoryTheory
 
-open Limits
+open Category Limits Preadditive
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
   (ι : Type w₁) {c : ℤ → ComplexShape ι} {r₀ : ℤ}
@@ -54,9 +54,9 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
 
 variable {ι}
 
-variable (s : ConvergenceStripes ι α)
-
 namespace ConvergenceStripes
+
+variable (s : ConvergenceStripes ι α)
 
 attribute [simp] stripe_position
 
@@ -307,26 +307,7 @@ lemma exists_sub_le (n : σ) (i : WithBot (α n)) (j : α n) :
 
 end ConvergenceStripes
 
-variable (E : SpectralSequence C c r₀)
-
-class CollapsesAt (n : σ) (i : α n) : Prop where
-  condition : ∀ (k : α n) (_ : k ≠ i), IsZero (E.pageInfinity (s.position n k))
-
-lemma isZero_of_collapsesAt (n : σ) (i : α n) [h : E.CollapsesAt s n i]
-    (k : α n) (hk : k ≠ i) : IsZero (E.pageInfinity (s.position n k)) :=
-  h.condition k hk
-
-lemma isZero_of_collapsesAt_of_LT (n : σ) (i : α n) [h : E.CollapsesAt s n i]
-    (k : α n) (hk : k < i) : IsZero (E.pageInfinity (s.position n k)) :=
-  h.condition k (by
-    rintro rfl
-    simp only [lt_self_iff_false] at hk)
-
-lemma isZero_of_collapsesAt_of_GT (n : σ) (i : α n) [h : E.CollapsesAt s n i]
-    (k : α n) (hk : i < k) : IsZero (E.pageInfinity (s.position n k)) :=
-  h.condition k (by
-    rintro rfl
-    simp only [lt_self_iff_false] at hk)
+variable (E : SpectralSequence C c r₀) (s : ConvergenceStripes ι α)
 
 structure StronglyConvergesToInDegree (n : σ) (X : C) where
   hasPageInfinityAt : ∀ (pq : ι) (_ : s.stripe pq = n), E.HasPageInfinityAt pq
@@ -366,13 +347,13 @@ instance (i : WithBot (α n)) : Mono (h.filtrationι i) := by
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma filtration_map_ι {i j : WithBot (α n)} (f : i ⟶ j) :
+lemma filtration_map_ι (i j : WithBot (α n)) (f : i ⟶ j) :
     h.filtration.map f ≫ h.filtrationι j = h.filtrationι i :=
   Over.w ((h.filtration' ⋙ MonoOver.forget X).map f)
 
 instance {i j : WithBot (α n)} (f : i ⟶ j) :
     Mono (h.filtration.map f) :=
-  mono_of_mono_fac (h.filtration_map_ι f)
+  mono_of_mono_fac (h.filtration_map_ι i j f)
 
 lemma exists_isZero : ∃ (j : α n), IsZero (h.filtration.obj (s.pred n j)) :=
   h.exists_isZero'
@@ -388,12 +369,18 @@ instance (i : α n) (pq : ι) (hpq : s.position n i = pq) :
     Epi (h.π i pq hpq) :=
   h.epi_π' i pq hpq
 
+lemma comp_π (i : WithBot (α n)) (j : α n) (hij : i < j) (pq : ι) (hpq : s.position n j = pq) :
+    h.filtration.map (homOfLE hij.le) ≫ h.π j pq hpq = 0 := by
+  erw [show homOfLE hij.le = homOfLE (s.le_pred'_of_lt n _ _ hij) ≫
+    homOfLE (s.pred_le n j) by rfl, h.filtration.map_comp, assoc,
+    h.comp_π' _ j rfl pq hpq, comp_zero]
+
 section
 
 variable (i : WithBot (α n)) (j : α n) (hij : s.pred n j = i)
   (pq : ι) (hpq : s.position n j = pq)
 
-lemma comp_π :
+lemma comp_π'' :
     h.filtration.map (homOfLE (show i ≤ some j by subst hij; exact s.pred_le n j)) ≫
       h.π j pq hpq = 0 :=
   h.comp_π' i j hij pq hpq
@@ -401,7 +388,7 @@ lemma comp_π :
 @[simps]
 noncomputable def shortComplex :
     ShortComplex C :=
-  ShortComplex.mk _ _ (h.comp_π i j hij pq hpq)
+  ShortComplex.mk _ _ (h.comp_π'' i j hij pq hpq)
 
 instance : Mono (h.shortComplex i j hij pq hpq).f := by dsimp; infer_instance
 
@@ -573,14 +560,14 @@ lemma isIso_filtration_map_iff (i j : WithBot (α n)) (φ : i ⟶ j) :
 lemma isIso_filtrationι_of_GE (i j : WithBot (α n)) (hij : i ≤ j)
     (hi : IsIso (h.filtrationι i)) :
     IsIso (h.filtrationι j) := by
-  have := epi_of_epi_fac (h.filtration_map_ι (homOfLE hij))
+  have := epi_of_epi_fac (h.filtration_map_ι _ _ (homOfLE hij))
   apply isIso_of_mono_of_epi
 
 lemma isIso_filtation_map_of_isIso_filtrationι (i j : WithBot (α n)) (φ : i ⟶ j)
     (hi : IsIso (h.filtrationι i)) :
     IsIso (h.filtration.map φ) := by
   have := h.isIso_filtrationι_of_GE i j (leOfHom φ) hi
-  exact IsIso.of_isIso_fac_right (h.filtration_map_ι φ)
+  exact IsIso.of_isIso_fac_right (h.filtration_map_ι _ _ φ)
 
 lemma isIso_filtrationι_iff (i : WithBot (α n)) :
     IsIso (h.filtrationι i) ↔ ∀ (j : α n) (_ : i < j) (pq : ι) (_ : s.position n j = pq),
@@ -593,7 +580,7 @@ lemma isIso_filtrationι_iff (i : WithBot (α n)) :
   · obtain ⟨j, hj⟩ := h.exists_isIso
     obtain hij | hij := le_total i (WithBot.some j)
     · intro hi
-      rw [← h.filtration_map_ι (homOfLE hij)]
+      rw [← h.filtration_map_ι _ _ (homOfLE hij)]
       have := (h.isIso_filtration_map_iff i j (homOfLE hij)).2 (by
         intro k hk _ pq hpq
         exact hi k (lt_of_le_of_lt hk (s.pred_lt n k)) pq hpq)
@@ -651,6 +638,26 @@ end
 
 section
 
+variable (i j : WithBot (α n)) (φ : i ⟶ j) (hij : IsIso (h.filtration.map φ))
+
+@[simps! hom]
+noncomputable def isoFiltrationMap : h.filtration.obj i ≅ h.filtration.obj j :=
+  asIso (h.filtration.map φ)
+
+@[reassoc (attr := simp)]
+lemma isoFiltrationMap_hom_inv_id :
+    h.filtration.map φ ≫ (h.isoFiltrationMap i j φ hij).inv = 𝟙 _ :=
+  (h.isoFiltrationMap i j φ hij).hom_inv_id
+@[reassoc (attr := simp)]
+
+lemma isoFiltrationMap_inv_hom_id :
+    (h.isoFiltrationMap i j φ hij).inv ≫ h.filtration.map φ = 𝟙 _ :=
+  (h.isoFiltrationMap i j φ hij).inv_hom_id
+
+end
+
+section
+
 variable (i : α n) (pq : ι) (hpq : s.position n i = pq) (hi : IsIso (h.π i pq hpq))
 
 @[simps! hom]
@@ -683,6 +690,11 @@ instance : Epi (h.pageInfinityπ i pq hpq hi) := by
   dsimp [pageInfinityπ]
   apply epi_comp
 
+@[reassoc (attr := simp)]
+lemma filtrationι_pageInfinityπ :
+    h.filtrationι i ≫ h.pageInfinityπ i pq hpq hi = h.π i pq hpq := by
+  simp [pageInfinityπ]
+
 end
 
 section
@@ -693,6 +705,134 @@ variable (i : α n) (pq : ι) (hpq : s.position n i = pq)
 noncomputable def pageInfinityι :
     E.pageInfinity pq ⟶ X :=
   (h.isoπ i pq hpq hi).inv ≫ h.filtrationι i
+
+instance : Mono (h.pageInfinityι i pq hpq hi) := by
+  dsimp [pageInfinityι]
+  infer_instance
+
+@[reassoc (attr := simp)]
+lemma π_pageInfinityι :
+    h.π i pq hpq ≫ h.pageInfinityι i pq hpq hi = h.filtrationι i := by
+  simp [pageInfinityι]
+
+variable (hi' : IsIso (h.filtrationι i))
+
+@[reassoc (attr := simp)]
+lemma pageInfinityπ_ι  :
+    h.pageInfinityπ i pq hpq hi' ≫ h.pageInfinityι i pq hpq hi = 𝟙 _ := by
+  simp [pageInfinityι, pageInfinityπ]
+
+@[reassoc (attr := simp)]
+lemma pageInfinityι_π :
+    h.pageInfinityι i pq hpq hi ≫ h.pageInfinityπ i pq hpq hi' = 𝟙 _ := by
+  simp [pageInfinityι, pageInfinityπ]
+
+end
+
+lemma pageInfinityι_π_eq_zero (i j : α n) (hij : i < j) (pqi pqj : ι)
+    (hpqi : s.position n i = pqi) (hpqj : s.position n j = pqj)
+    (hi : IsIso (h.π i pqi hpqi)) (hj : IsIso (h.filtrationι j)) :
+    h.pageInfinityι i pqi hpqi hi ≫ h.pageInfinityπ j pqj hpqj hj = 0 := by
+  dsimp [pageInfinityι, pageInfinityπ]
+  simp only [assoc, IsIso.comp_left_eq_zero,
+    ← h.filtration_map_ι i j (homOfLE (by simpa using hij.le)),
+    isoFiltrationι_hom_inv_id_assoc,
+    h.comp_π i j (by simpa using hij)]
+
+section
+
+class CollapsesAt (h : E.StronglyConvergesToInDegree s n X) (i : α n) : Prop where
+  condition (k : α n) (_ : k ≠ i) : IsZero (E.pageInfinity (s.position n k))
+
+lemma isZero_of_collapsesAt (i : α n) [H : h.CollapsesAt i] (k : α n) (hk : k ≠ i)
+    (pq : ι) (hpq : s.position n k = pq) :
+    IsZero (E.pageInfinity pq) := by
+  subst hpq
+  exact H.condition k hk
+
+variable (i : α n) [h.CollapsesAt i]
+
+instance : IsIso (h.filtrationι i) :=
+  h.isIso_filtrationι_of_isZero i (fun j hij pq hpq =>
+    h.isZero_of_collapsesAt i j (by rintro rfl; simp at hij) pq hpq)
+
+variable (pq : ι) (hpq : s.position n i = pq)
+
+instance : IsIso (h.π i pq hpq) :=
+  h.isIso_π_of_isZero _ _ _ (fun j hij pq hpq =>
+    h.isZero_of_collapsesAt i j (by rintro rfl; simp at hij) pq hpq)
+
+@[simps!]
+noncomputable def isoOfCollapsesAt : X ≅ E.pageInfinity pq where
+  hom := h.pageInfinityπ i pq hpq inferInstance
+  inv := h.pageInfinityι i pq hpq inferInstance
+
+end
+
+section
+
+variable (i j : α n)
+
+class CollapsesAsSESAt : Prop where
+  hij : i < j
+  isIso_π (pq : ι) (hpq : s.position n i = pq) : IsIso (h.π i pq hpq)
+  isIso_filtration_map (k : WithBot (α n)) (hk : s.pred n j = k) :
+    IsIso (h.filtration.map (homOfLE (by
+      simpa only [← hk] using s.le_pred'_of_lt n i j (by simpa using hij)) :
+        WithBot.some i ⟶ k))
+  isIso_filtrationι : IsIso (h.filtrationι j)
+
+variable (i j : α n) [H : h.CollapsesAsSESAt i j]
+
+lemma lt_of_collapsesAsSESAt : i < j := H.hij
+
+lemma isIso_π_of_collapsesAsSESAt (pq : ι) (hpq : s.position n i = pq) :
+    IsIso (h.π i pq hpq) :=
+  H.isIso_π pq hpq
+
+lemma isIso_filtrationι_of_collapsesAsSESAt :
+    IsIso (h.filtrationι j) :=
+  H.isIso_filtrationι
+
+lemma isIso_filtration_map (k : WithBot (α n)) (hk : s.pred n j = k) :
+    IsIso (h.filtration.map (homOfLE (by
+      simpa only [← hk] using s.le_pred'_of_lt n i j
+          (by simpa using h.lt_of_collapsesAsSESAt i j)) :
+        WithBot.some i ⟶ k)) := H.isIso_filtration_map k hk
+
+variable (pqi pqj : ι) (hpqi : s.position n i = pqi) (hpqj : s.position n j = pqj)
+
+@[simps]
+noncomputable def shortComplexOfCollapses : ShortComplex C :=
+  ShortComplex.mk _ _ (h.pageInfinityι_π_eq_zero i j
+    (h.lt_of_collapsesAsSESAt i j) pqi pqj hpqi hpqj
+    (h.isIso_π_of_collapsesAsSESAt i j pqi hpqi) (h.isIso_filtrationι_of_collapsesAsSESAt i j))
+
+instance : Mono (h.shortComplexOfCollapses i j pqi pqj hpqi hpqj).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (h.shortComplexOfCollapses i j pqi pqj hpqi hpqj).g := by
+  dsimp
+  infer_instance
+
+noncomputable def shortComplexOfCollapsesIso
+    (k : WithBot (α n)) (hk : s.pred n j = k) :
+    h.shortComplex k j hk pqj hpqj ≅ h.shortComplexOfCollapses i j pqi pqj hpqi hpqj :=
+  ShortComplex.isoMk ((h.isoFiltrationMap i k _ (h.isIso_filtration_map i j k hk)).symm ≪≫
+    h.isoπ i pqi hpqi (h.isIso_π_of_collapsesAsSESAt i j pqi hpqi))
+      (h.isoFiltrationι j (h.isIso_filtrationι_of_collapsesAsSESAt i j)) (Iso.refl _) (by
+        dsimp
+        rw [← cancel_epi (h.isoFiltrationMap i k _ (h.isIso_filtration_map i j k hk)).hom,
+          isoFiltrationMap_hom, assoc, isoFiltrationMap_hom_inv_id_assoc,
+          ← Functor.map_comp_assoc, homOfLE_comp]
+        erw [h.filtration_map_ι, π_pageInfinityι]) (by simp)
+
+lemma shortExact_of_collapses :
+    (h.shortComplexOfCollapses i j pqi pqj hpqi hpqj).ShortExact :=
+  ShortComplex.shortExact_of_iso
+    (h.shortComplexOfCollapsesIso i j pqi pqj hpqi hpqj _ rfl)
+    (by apply h.shortExact)
 
 end
 

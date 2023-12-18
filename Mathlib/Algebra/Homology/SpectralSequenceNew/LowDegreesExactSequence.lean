@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
+import Mathlib.Tactic.FinCases
 
 namespace ComplexShape
 
@@ -106,23 +107,34 @@ instance (pq : ℕ × ℕ) : E.HasPageInfinityAt pq where
 
 def d₂ := (E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩
 
-instance : E.HasEdgeMonoAtFrom ⟨0, 1⟩ 2 :=
+instance (n : ℕ) : E.HasEdgeMonoAtFrom ⟨0, n⟩ 2 :=
   HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
     apply E.hasEdgeMonoAt
     dsimp
     linarith)
 
-instance : E.HasEdgeMonoAtFrom ⟨0, 1⟩ 3 := by
-  change E.HasEdgeMonoAtFrom ⟨0, 1⟩ (2 + (1 : ℕ))
-  infer_instance
+instance (n : ℕ) : E.HasEdgeEpiAtFrom ⟨n, 0⟩ 2 :=
+  HasEdgeEpiAtFrom.mk' _ _ _ (fun k => by
+    apply E.hasEdgeEpiAt
+    dsimp
+    linarith)
 
-instance : E.HasEdgeEpiAtFrom ⟨0, 1⟩ 3 :=
+instance (n : ℕ) : E.HasEdgeEpiAtFrom ⟨n, 1⟩ 3 :=
   HasEdgeEpiAtFrom.mk' _ _ _ (fun k => by
     apply E.hasEdgeEpiAt
     dsimp
     linarith)
 
 variable {E}
+
+instance : (hE 0).CollapsesAt 0 where
+  condition := by
+    intro k hk
+    fin_cases k
+    simp at hk
+
+noncomputable def iso₀ : X 0 ≅ (E.page 2).X ⟨0, 0⟩ :=
+  (hE 0).isoOfCollapsesAt 0 ⟨0, 0⟩ rfl ≪≫ E.pageInfinityIso ⟨0,0⟩ 2
 
 instance : IsIso ((hE 1).filtrationι (WithBot.some 1)) :=
   (hE _).isIso_filtrationι_of_isZero _ (by
@@ -133,7 +145,7 @@ instance : IsIso ((hE 1).filtrationι (WithBot.some 1)) :=
     linarith)
 
 noncomputable example : X 1 ⟶ E.pageInfinity ⟨0, 1⟩ :=
-  (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl (by infer_instance)
+  (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance
 
 end LowDegreesExactSequence
 
