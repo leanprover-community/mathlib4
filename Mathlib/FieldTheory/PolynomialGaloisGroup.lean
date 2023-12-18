@@ -64,6 +64,8 @@ instance instGroup : Group (Gal p) :=
   inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
 instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
+instance instAlgEquivClass : AlgEquivClass (Gal p) F p.SplittingField p.SplittingField :=
+  inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) _ _ _)
 
 instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField :=
   -- Porting note: was AlgEquiv.hasCoeToFun

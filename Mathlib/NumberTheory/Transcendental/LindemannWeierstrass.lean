@@ -64,8 +64,8 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   have h :
     exp (s.arg • I) * p.sumIderiv.eval (x • exp (s.arg • I)) -
         (derivative (R := ℂ) (sumIderiv p)).eval (x • exp (s.arg • I)) * exp (s.arg • I) =
-      p.eval (x • exp (s.arg • I)) * exp (s.arg • I) := by
-    conv_lhs =>
+      p.eval (x • exp (s.arg • I)) * exp (s.arg • I)
+  · conv_lhs =>
       congr
       rw [sumIderiv_eq_self_add, sumIderiv_derivative]
     rw [mul_comm, eval_add, add_mul, add_sub_cancel]
@@ -178,22 +178,19 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
           ∀ {r : ℂ}, r ∈ p.aroots ℂ →
             Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! := by
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
-  have :
-    ∀ s : ℂ,
-      ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s),
-        Complex.abs ((p' q).eval (x • exp (s.arg • I))) ≤ c ^ q := by
-    intro s; dsimp only
+  have : ∀ s : ℂ, ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc 0 (Complex.abs s),
+      Complex.abs ((p' q).eval (x • exp (s.arg • I))) ≤ c ^ q
+  · intro s; dsimp only
     simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, map_mul,
       Complex.abs_pow, real_smul, map_mul, abs_exp_ofReal_mul_I, abs_ofReal, mul_one, ←
       eval₂_eq_eval_map, ← aeval_def]
-    have :
-      Bornology.IsBounded
-        ((fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
-          Set.Ioc 0 (abs s)) := by
-      have h :
-        (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
+    have : Bornology.IsBounded
+        ((fun x : ℝ => max |x| 1 * Complex.abs (aeval (x * exp (s.arg * I)) p)) ''
+          Set.Ioc 0 (abs s))
+    · have h :
+        (fun x : ℝ => max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p)) ''
             Set.Ioc 0 (abs s) ⊆
-          (fun (x : ℝ) => max |x| 1 * (Complex.abs (aeval (↑x * exp (↑s.arg * I)) p))) ''
+          (fun x : ℝ => max |x| 1 * Complex.abs (aeval (↑x * exp (↑s.arg * I)) p)) ''
               Set.Icc 0 (abs s) :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
       refine' (IsCompact.image isCompact_Icc _).isBounded.subset h
@@ -215,8 +212,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
-  have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
-    intro x hx; dsimp only
+  have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c
+  · intro x hx; dsimp only
     split_ifs with h
     · apply Finset.le_max'; rw [Multiset.mem_toFinset]
       refine' Multiset.mem_map_of_mem _ hx
@@ -253,8 +250,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         (X ^ (q - 1) *
           (C (map (algebraMap ℤ ℂ) p).leadingCoeff *
               (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
-            q) := by
-    rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
+            q)
+  · rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
       Multiset.prod_map_erase (f := fun a =>  X - C a) hr]
     have : Multiset.card (p.aroots ℂ) = (p.map (algebraMap ℤ ℂ)).natDegree :=
       splits_iff_card_roots.mp (IsAlgClosed.splits _)
@@ -423,6 +420,7 @@ instance : AddCommMonoid (⊥ : IntermediateField ℚ (K s)) :=
 instance : Algebra ℚ (⊥ : IntermediateField ℚ (K s)) :=
   IntermediateField.algebra _
 
+@[simps!]
 def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : IntermediateField ℚ (K s)) (K s)
     where
   toFun x :=
@@ -465,22 +463,22 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
     split_ifs <;> rfl
 #align rat_coeff_equiv.aux RatCoeffEquiv.aux
 
+@[simps! apply]
 def ratCoeffEquiv : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra ℚ (K s) :=
   (RatCoeffEquiv.aux s).trans
-    (AddMonoidAlgebra.algEquivCongrLeft (IntermediateField.botEquiv ℚ (K s)))
+    (AddMonoidAlgebra.mapRangeAlgEquiv (K s) (IntermediateField.botEquiv ℚ (K s)))
 #align rat_coeff_equiv ratCoeffEquiv
 
 theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
     ratCoeffEquiv s x i =
-      (IntermediateField.botEquiv ℚ (K s)) ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩ :=
-  rfl
+      (IntermediateField.botEquiv ℚ (K s)) ⟨(x : AddMonoidAlgebra (K s) (K s)) i, x.2 i⟩ := by
+  rw [ratCoeffEquiv_apply]; rfl
+
 #align rat_coeff_equiv_apply_apply ratCoeffEquiv_apply_apply
 
 theorem support_ratCoeffEquiv (x : ratCoeff s) :
     (ratCoeffEquiv s x).support = (x : AddMonoidAlgebra (K s) (K s)).support := by
-  dsimp [ratCoeffEquiv, RatCoeffEquiv.aux]
-  rw [Finsupp.support_mapRange_of_injective]
-  exact AlgEquiv.injective _
+  simp [Finsupp.support_mapRange_of_injective _ _ (AlgEquiv.injective _)]
 #align support_rat_coeff_equiv support_ratCoeffEquiv
 
 section
@@ -793,35 +791,35 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
   let V := ∏ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x
-  have hV : V ∈ mapDomainFixed s ℚ := by
-    intro f; dsimp only
+  have hV : V ∈ mapDomainFixed s ℚ
+  · intro f; dsimp only
     rw [map_prod]; simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact
       (Group.mulLeft_bijective f).prod_comp fun g =>
         AddMonoidAlgebra.domCongrAut ℚ _ g.toAddEquiv x
-  have V0 : V ≠ 0 := by
-    dsimp only; rw [prod_ne_zero_iff]; intro f _hf
+  have V0 : V ≠ 0
+  · dsimp only; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have V_ker : V ∈ RingHom.ker (Eval s ℚ) := by
-    dsimp only
+  have V_ker : V ∈ (Eval s ℚ).ker
+  · dsimp only
     rw [← mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ 1)]
     erw [map_one]
     rw [AlgEquiv.one_apply]
     exact Ideal.mul_mem_right _ _ x_ker
   set V' := toConjAlgEquiv s ℚ ⟨V, hV⟩ with V'_def
-  have V'0 : V' ≠ 0 := by
-    dsimp only; rw [AddEquivClass.map_ne_zero_iff]
+  have V'0 : V' ≠ 0
+  · dsimp only; rw [AddEquivClass.map_ne_zero_iff]
     exact fun h => absurd (Subtype.mk.inj h) V0
   obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr V'0
   set V'' := V' * Finsupp.single (-i) (1 : ℚ) with V''_def
-  have V''0 : V'' ≠ 0 := by
-    have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
+  have V''0 : V'' ≠ 0
+  · have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
     rw [V''_def]
     refine' mul_ne_zero V'0 fun h => _
     rw [Finsupp.single_eq_zero] at h
     exact one_ne_zero h
-  have hV'' : V'' 0 ≠ 0 := by
-    rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
+  have hV'' : V'' 0 ≠ 0
+  · rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
       Finsupp.add_apply]
     convert_to
       ((Finsupp.single i (V' i) * Finsupp.single (-i) 1 : GalConjClasses ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
@@ -837,8 +835,8 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     · rwa [Finsupp.mem_support_iff] at hi
     · exact one_ne_zero
   have zero_mem : (0 : GalConjClasses ℚ (K s)) ∈ V''.support := by rwa [Finsupp.mem_support_iff]
-  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0 := by
-    dsimp only
+  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0
+  · dsimp only
     rw [map_mul, Subalgebra.coe_mul, map_mul, AlgEquiv.symm_apply_apply, Subtype.coe_mk]
     rw [RingHom.mem_ker] at V_ker
     rw [V_ker, MulZeroClass.zero_mul]
@@ -856,25 +854,25 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (GalConjClasses ℚ (K s))) (_hq :
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
-  let U := ∏ f : Gal s, AddMonoidAlgebra.algAutCongrLeft f x
-  have hU : ∀ f : Gal s, AddMonoidAlgebra.algAutCongrLeft f U = U := by
-    intro f; dsimp only
+  let U := ∏ f : Gal s, AddMonoidAlgebra.mapRangeAlgEquiv (K s) f x
+  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgEquiv (K s) f U = U
+  · intro f; dsimp only
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact (Group.mulLeft_bijective f).prod_comp fun g => AddMonoidAlgebra.algAutCongrLeft g x
-  have U0 : U ≠ 0 := by
-    dsimp only; rw [prod_ne_zero_iff]; intro f _hf
+  have U0 : U ≠ 0
+  · dsimp only; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have U_ker : U ∈ RingHom.ker (Eval s (K s)) := by
-    suffices
+  have U_ker : U ∈ RingHom.ker (Eval s (K s))
+  · suffices
       (fun f : Gal s => (AddMonoidAlgebra.algAutCongrLeft f) x) 1 *
           ∏ f : Gal s in univ.erase 1, (AddMonoidAlgebra.algAutCongrLeft f) x ∈
-        RingHom.ker (Eval s (K s)) by
+            RingHom.ker (Eval s (K s)) by
       convert this
       exact (mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ _)).symm
     dsimp only
     rw [AddMonoidAlgebra.algAutCongrLeft_apply_one]; exact Ideal.mul_mem_right _ _ x_ker
-  have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s)) := by
-    intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
+  have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s))
+  · intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
     replace hU : (AddMonoidAlgebra.algAutCongrLeft f) U i = U i; · rw [hU f]
     rwa [AddMonoidAlgebra.algAutCongrLeft_apply, AddMonoidAlgebra.algEquivCongrLeft_apply,
@@ -884,12 +882,12 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
     have := ((@IsGalois.tfae ℚ _ (K s) _ _ _).out 0 1).mp (by infer_instance)
     rwa [this] at U_mem
   let U' := ratCoeffEquiv s ⟨U, U_mem⟩
-  have U'0 : U' ≠ 0 := by
-    dsimp only
+  have U'0 : U' ≠ 0
+  · dsimp only
     rw [AddEquivClass.map_ne_zero_iff, ZeroMemClass.zero_def]
     exact fun h => absurd (Subtype.mk.inj h) U0
-  have U'_ker : U' ∈ RingHom.ker (Eval s ℚ) := by
-    dsimp only
+  have U'_ker : U' ∈ RingHom.ker (Eval s ℚ)
+  · dsimp only
     rw [RingHom.mem_ker, ← Eval_ratCoeff]
     rwa [RingHom.mem_ker] at U_ker
   exact linear_independent_exp_aux2 s U' U'0 U'_ker
@@ -912,22 +910,22 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K (range u v)) ℂ x) : ℂ) =
         0 := by
   let s := range u v
-  have hs : ∀ x ∈ s, IsIntegral ℚ x := by
-    intro x hx
+  have hs : ∀ x ∈ s, IsIntegral ℚ x
+  · intro x hx
     cases' mem_union.mp hx with hxu hxv
     · obtain ⟨i, _, rfl⟩ := mem_image.mp hxu
       exact hu i
     · obtain ⟨i, _, rfl⟩ := mem_image.mp hxv
       exact hv i
-  have u_mem : ∀ i, u i ∈ K' s := by
-    intro i
+  have u_mem : ∀ i, u i ∈ K' s
+  · intro i
     apply IntermediateField.subset_adjoin
     rw [mem_rootSet, map_prod, prod_eq_zero_iff]
     exact
       ⟨poly_ne_zero s hs, u i, mem_union_left _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
         minpoly.aeval _ _⟩
-  have v_mem : ∀ i, v i ∈ K' s := by
-    intro i
+  have v_mem : ∀ i, v i ∈ K' s
+  · intro i
     apply IntermediateField.subset_adjoin
     rw [mem_rootSet, map_prod, prod_eq_zero_iff]
     exact
@@ -952,12 +950,12 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     intro x _
     rw [dif_pos, u'_inj.right_inv_of_invOfMemRange]; · rfl
     exact mem_image_of_mem _ (mem_univ _)
-  have f0 : f ≠ 0 := by
-    rw [Ne.def, Function.funext_iff] at v0; push_neg at v0
+  have f0 : f ≠ 0
+  · rw [Ne.def, Function.funext_iff] at v0; push_neg at v0
     cases' v0 with i hi
     rw [Pi.zero_apply] at hi
-    have h : f (u' i) ≠ 0 := by
-      rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
+    have h : f (u' i) ≠ 0
+    · rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
         AddEquivClass.map_eq_zero_iff, ← ZeroMemClass.coe_eq_zero]
       exact mem_image_of_mem _ (mem_univ _)
     intro f0
@@ -976,17 +974,17 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
         0 := by
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux_rat u hu u_inj v hv v0 h
   let N := w.den * ∏ c in q, (w' c).den
-  have wN0 : (w * N).num ≠ 0 := by
-    refine' Rat.num_ne_zero_of_ne_zero (mul_ne_zero w0 _); dsimp only
+  have wN0 : (w * N).num ≠ 0
+  · refine' Rat.num_ne_zero_of_ne_zero (mul_ne_zero w0 _); dsimp only
     rw [Nat.cast_ne_zero, mul_ne_zero_iff, prod_ne_zero_iff]
     exact ⟨Rat.den_nz _, fun c _hc => Rat.den_nz _⟩
   use (w * N).num, wN0, q, hq, fun c => (w' c * N).num
-  have hw : ((w * N).num : ℚ) = w * N := by
-    dsimp only
+  have hw : ((w * N).num : ℚ) = w * N
+  · dsimp only
     rw [← Rat.den_eq_one_iff, Nat.cast_mul, ← mul_assoc, Rat.mul_den_eq_num]
     norm_cast
-  have hw' : ∀ c ∈ q, ((w' c * N).num : ℚ) = w' c * N := by
-    intro c hc; dsimp only
+  have hw' : ∀ c ∈ q, ((w' c * N).num : ℚ) = w' c * N
+  · intro c hc; dsimp only
     rw [← Rat.den_eq_one_iff, ← mul_prod_erase _ _ hc, mul_left_comm, Nat.cast_mul, ← mul_assoc,
       Rat.mul_den_eq_num]
     norm_cast
@@ -1028,8 +1026,8 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
     ((fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·),
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum)]
   refine' sum_congr rfl fun c _hc => _
-  have : c.minpoly.aroots ℂ = (c.minpoly.aroots (K (range u v))).map (algebraMap (K (range u v)) ℂ) := by
-    change roots _ = _
+  have : c.minpoly.aroots ℂ = (c.minpoly.aroots (K (range u v))).map (algebraMap (K (range u v)) ℂ)
+  · change roots _ = _
     rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K (range u v)) ℂ]
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
   rw [this, c.aroots_minpoly_eq_orbit_val, Multiset.map_map, sum_eq_multiset_sum]; rfl
@@ -1088,8 +1086,8 @@ theorem linear_independent_exp_exists_prime_nat' (n : ℕ) (c : ℕ) :
     exact Nat.factorial_pos _
   have m1 : 1 ≤ m := one_le_two.trans m2
   have one_le_m_sub_one : 1 ≤ m - 1 := by rwa [Nat.le_sub_iff_add_le m1]
-  have : m - 1 - 1 < p - 1 := by
-    rw [tsub_lt_tsub_iff_right one_le_m_sub_one]
+  have : m - 1 - 1 < p - 1
+  · rw [tsub_lt_tsub_iff_right one_le_m_sub_one]
     exact tsub_le_self.trans_lt hmp
   refine' lt_of_lt_of_le _ (Nat.factorial_mul_pow_sub_le_factorial this)
   have : (m - 1 - 1).succ = m - 1 := by rwa [Nat.succ_eq_add_one, tsub_add_cancel_of_le]
@@ -1118,8 +1116,8 @@ theorem linear_independent_exp_exists_prime (n : ℕ) (a : ℝ) (c : ℝ) :
   simp_rw [@div_lt_one ℝ _ _ _ (Nat.cast_pos.mpr (Nat.factorial_pos _))]
   obtain ⟨p, hp, prime_p, h⟩ := linear_independent_exp_exists_prime_nat n ⌈|a|⌉.natAbs ⌈|c|⌉.natAbs
   use p, hp, prime_p
-  have : a * c ^ p ≤ ⌈|a|⌉ * (⌈|c|⌉ : ℝ) ^ p := by
-    refine' (le_abs_self _).trans _
+  have : a * c ^ p ≤ ⌈|a|⌉ * (⌈|c|⌉ : ℝ) ^ p
+  · refine' (le_abs_self _).trans _
     rw [_root_.abs_mul, _root_.abs_pow]
     refine'
       mul_le_mul (Int.le_ceil _) (pow_le_pow_of_le_left (abs_nonneg _) (Int.le_ceil _) _)
@@ -1140,18 +1138,17 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
   have :
     (fun x : S => k ^ e • aeval x q) =
       (fun x => aeval x (∑ i in range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
-        fun x => p.leadingCoeff • x := by
-    funext x; rw [Function.comp_apply]
+        fun x => p.leadingCoeff • x
+  · funext x; rw [Function.comp_apply]
     simp_rw [map_sum, aeval_eq_sum_range' (Nat.lt_add_one_iff.mpr he), aeval_monomial, smul_sum]
     refine' sum_congr rfl fun i hi => _
     rw [← Algebra.smul_def, smul_pow, smul_smul, smul_smul, mul_comm (_ * _) (_ ^ _), ← mul_assoc,
       ← mul_assoc, ← mul_pow, ← pow_add,
       add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
   rw [this, ← Multiset.map_map _ fun x => p.leadingCoeff • x]
-  have :
-      Multiset.card ((p.aroots S).map fun x => p.leadingCoeff • x) =
-        Fintype.card (Fin (Multiset.card (p.aroots S))) := by
-    rw [Multiset.card_map, Fintype.card_fin]
+  have : Multiset.card ((p.aroots S).map fun x => p.leadingCoeff • x) =
+      Fintype.card (Fin (Multiset.card (p.aroots S)))
+  · rw [Multiset.card_map, Fintype.card_fin]
   rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ this,
     ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset]
   exact ⟨_, rfl⟩
@@ -1165,21 +1162,20 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
     (h : ∑ i, v i * exp (u i) = 0) : v = 0 := by
   by_contra! v0
   obtain ⟨w, w0, m, p, p0, w', h⟩ := linear_independent_exp_aux u hu u_inj v hv v0 h
-  have m0 : m ≠ 0 := by
-    rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
+  have m0 : m ≠ 0
+  · rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
     exact w0 h
   haveI I : Nonempty (Fin m) := Fin.pos_iff_nonempty.mp (Nat.pos_of_ne_zero m0)
   let P := ∏ i : Fin m, p i
   let K := SplittingField (P.map (algebraMap ℤ ℚ))
   have p0' : ∀ j, p j ≠ 0 := by intro j h; specialize p0 j; rw [h, eval_zero] at p0; exact p0 rfl
-  have P0 : P.eval 0 ≠ 0 := by
-    dsimp only; rw [eval_prod, prod_ne_zero_iff]; exact fun j _hj => p0 j
+  have P0 : P.eval 0 ≠ 0 := by dsimp only; rw [eval_prod, prod_ne_zero_iff]; exact fun j _hj => p0 j
   have P0' : P ≠ 0 := by intro h; rw [h, eval_zero] at P0; exact P0 rfl
   have P0'' : P.map (algebraMap ℤ K) ≠ 0 := by
     rwa [Polynomial.map_ne_zero_iff (algebraMap ℤ K).injective_int]
 
-  have splits_p : ∀ j, ((p j).map (algebraMap ℤ K)).Splits (RingHom.id K) := by
-    intro j
+  have splits_p : ∀ j, ((p j).map (algebraMap ℤ K)).Splits (RingHom.id K)
+  · intro j
     refine' splits_of_splits_of_dvd _ P0'' _ _
     · rw [IsScalarTower.algebraMap_eq ℤ ℚ K, ← Polynomial.map_map, splits_map_iff, RingHom.id_comp]
       exact IsSplittingField.splits _ _
@@ -1189,8 +1185,8 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
   have sum_aroots_K_eq_sum_aroots_ℂ :
     ∀ (j) (f : ℂ → ℂ),
       (((p j).aroots K).map fun x => f (algebraMap K ℂ x)).sum =
-        (((p j).aroots ℂ).map f).sum := by
-    intro j f
+        (((p j).aroots ℂ).map f).sum
+  · intro j f
     have : (p j).aroots ℂ = ((p j).aroots K).map (algebraMap K ℂ) := by
       -- Porting note: `simp_rw [aroots_def]` very slow
       rw [aroots_def, aroots_def, IsScalarTower.algebraMap_eq ℤ K ℂ, ← Polynomial.map_map,
@@ -1349,15 +1345,14 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
     rw [← mul_sum, mul_left_comm, ← sum_smul, nsmul_eq_mul, mul_comm (‖k‖ ^ t), mul_assoc,
       mul_comm (_ / _ : ℝ), pow_mul, mul_div (_ ^ _ : ℝ), ← mul_pow, ← mul_assoc, mul_div]
   replace H := H.trans_lt hq
-  have :
-    ∑ j, w' j • (((p j).aroots K).map fun x : K => k ^ (P.natDegree * q) • aeval x gp).sum =
-      algebraMap ℤ K (∑ j, w' j • sz j) :=
-    by rw [map_sum]; congr; funext j; rw [map_zsmul, hsz]
+  have : ∑ j, w' j • (((p j).aroots K).map fun x : K => k ^ (P.natDegree * q) • aeval x gp).sum =
+      algebraMap ℤ K (∑ j, w' j • sz j)
+  · rw [map_sum]; congr; funext j; rw [map_zsmul, hsz]
   rw [this] at H
   have :
     ‖algebraMap K ℂ (↑(k ^ (P.natDegree * q) * n * w) + ↑q * algebraMap ℤ K (∑ j, w' j • sz j))‖ =
-      ‖algebraMap ℤ ℂ (k ^ (P.natDegree * q) * n * w + q * ∑ j, w' j • sz j)‖ := by
-    simp_rw [IsScalarTower.algebraMap_apply ℤ K ℂ, algebraMap_int_eq, Int.coe_castRingHom]
+      ‖algebraMap ℤ ℂ (k ^ (P.natDegree * q) * n * w + q * ∑ j, w' j • sz j)‖
+  · simp_rw [IsScalarTower.algebraMap_apply ℤ K ℂ, algebraMap_int_eq, Int.coe_castRingHom]
     norm_cast
   rw [nsmul_eq_mul, this, algebraMap_int_eq, Int.coe_castRingHom, norm_int, ← Int.cast_abs,
     ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at H
@@ -1392,13 +1387,10 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by
   intro h
   have is_integral_a : IsIntegral ℚ a :=
-    isAlgebraic_iff_isIntegral.mp
-      (ha.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
+    isAlgebraic_iff_isIntegral.mp (ha.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
   have is_integral_expa : IsIntegral ℚ (exp a) :=
-    isAlgebraic_iff_isIntegral.mp
-      (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
-  have :=
-    linear_independent_exp (fun i : Prop => if i then a else 0) ?_ ?_
+    isAlgebraic_iff_isIntegral.mp (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
+  have := linear_independent_exp (fun i : Prop => if i then a else 0) ?_ ?_
       (fun i : Prop => if i then 1 else -exp a) ?_ ?_
   · simpa [ite_eq_iff] using congr_fun this True
   · intro i; dsimp only; split_ifs
@@ -1420,8 +1412,7 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
       (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
   have is_integral_pi : IsIntegral ℚ (algebraMap ℝ ℂ Real.pi) :=
     (isIntegral_algebraMap_iff (algebraMap ℝ ℂ).injective).mpr is_integral_pi'
-  have :=
-    linear_independent_exp (fun i : Prop => if i then Real.pi * I else 0) ?_ ?_
+  have := linear_independent_exp (fun i : Prop => if i then Real.pi * I else 0) ?_ ?_
       (fun _ : Prop => 1) ?_ ?_
   · simpa only [Pi.zero_apply, one_ne_zero] using congr_fun this False
   · intro i; dsimp only; split_ifs
