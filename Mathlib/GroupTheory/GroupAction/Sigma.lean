@@ -45,7 +45,8 @@ theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
 #align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
-instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
+instance instIsScalarTowerOfSMul [SMul M N] [∀ i, IsScalarTower M N (α i)] :
+    IsScalarTower M N (Σi, α i) :=
   ⟨fun a b x => by
     cases x
     rw [smul_mk, smul_mk, smul_mk, smul_assoc]⟩
