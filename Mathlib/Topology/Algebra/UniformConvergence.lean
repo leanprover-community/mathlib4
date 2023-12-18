@@ -55,7 +55,7 @@ open scoped Topology Pointwise UniformConvergence
 
 section AlgebraicInstances
 
-variable {α β ι R : Type*} {𝔖 : Set <| Set α}
+variable {α β ι R : Type*} {𝔖 : Set <| Set α} {x : α}
 
 @[to_additive] instance [One β] : One (α →ᵤ β) := Pi.instOne
 
@@ -157,8 +157,43 @@ instance [CommGroup β] : CommGroup (α →ᵤ β) :=
 instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
   Pi.commGroup
 
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
+
+instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
+    IsScalarTower M N (α →ᵤ β) :=
+  Pi.isScalarTower
+
+instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    SMulCommClass M N (α →ᵤ β) :=
+  Pi.smulCommClass
+
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
+
+instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+    DistribMulAction M (α →ᵤ β) :=
+  Pi.distribMulAction _
+
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
   Pi.module _ _ _
+
+instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
+  Pi.module _ _ _
+
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
+
+instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
+    IsScalarTower M N (α →ᵤ[𝔖] β) :=
+  Pi.isScalarTower
+
+instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+    SMulCommClass M N (α →ᵤ[𝔖] β) :=
+  Pi.smulCommClass
+
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
+
+instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+    DistribMulAction M (α →ᵤ[𝔖] β) :=
+  Pi.distribMulAction _
 
 instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   Pi.module _ _ _
