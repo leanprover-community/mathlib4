@@ -286,10 +286,12 @@ Print (at most) 10 samples of a given type to stdout for debugging.
 -/
 -- Porting note: if `Control.ULiftable` is ported, make use of that here, as in mathlib3,
 -- to enable sampling from higher types.
-def printSamples {t : Type u} [Repr t] (g : Gen t) : IO PUnit := do
-  let xs : List Std.Format ← IO.runRand $ ULiftable.down <| (show Rand (ULift.{u} _) from do
-    let xs : List t ← (List.range 10).mapM (ReaderT.run g ∘ ULift.up)
-    pure ⟨xs.map repr⟩)
+def printSamples {t : Type u} [Repr t] (g : Gen t) : IO PUnit :=
+  letI : MonadLift Id IO := ⟨fun f => pure <| Id.run f⟩; do
+  let xs : List Std.Format ← IO.runRand <|
+    show RandT Id (List Std.Format) from ULiftable.down <| do
+      let xs : List t ← (List.range 10).mapM (ReaderT.run g ∘ ULift.up)
+      pure <| ULift.up (xs.map repr)
   for x in xs do
     IO.println s!"{x}"
 

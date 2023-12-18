@@ -403,3 +403,6 @@ f := 1
 issue: ULift.up 1 = ULift.up 0 does not hold
 (0 shrinks)
 -------------------"
+    slim_check (config := { randomSeed := some 257 })
+  admit
+  trivial
