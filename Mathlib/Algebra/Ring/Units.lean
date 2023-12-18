@@ -94,7 +94,6 @@ protected theorem map_neg {F : Type*} [Ring β] [RingHomClass F α β] (f : F) (
     map (f : α →* β) (-u) = -map (f : α →* β) u :=
   ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_coe, map_neg])
 
-@[simp]
 protected theorem map_neg_one {F : Type*} [Ring β] [RingHomClass F α β] (f : F) :
     map (f : α →* β) (-1) = -1 :=
   by simp only [Units.map_neg, map_one]
