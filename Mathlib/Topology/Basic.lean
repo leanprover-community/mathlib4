@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Algebra.Support
+import Mathlib.Algebra.Function.Support
 import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Tactic.Continuity
 
 #align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"

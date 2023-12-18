@@ -254,9 +254,9 @@ lemma Module.rank_lt_alpeh0_iff :
   exact ⟨fun h ↦ Finite.of_basis (Free.chooseBasis R V),
     fun I ↦ Finite.of_fintype (Free.ChooseBasisIndex R V)⟩
 
-theorem FiniteDimensional.finrank_of_not_finite [Module.Free R V]
+theorem FiniteDimensional.finrank_of_not_finite
     (h : ¬Module.Finite R V) :
-    FiniteDimensional.finrank R V = 0 :=
+    finrank R V = 0 :=
   dif_neg (rank_lt_alpeh0_iff.not.mpr h)
 
 theorem Module.finite_of_finrank_pos (h : 0 < finrank R V) :
@@ -272,8 +272,7 @@ theorem Module.finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W]
     [Module R W] [Module.Free R W] {n : ℕ} (hn : n ≠ 0)
     (hVW : Module.rank R V = n • Module.rank R W) :
     Module.Finite R V ↔ Module.Finite R W := by
-  simp only [← rank_lt_alpeh0_iff, hVW,
-    Cardinal.nsmul_lt_aleph0_iff_of_ne_zero hn]
+  simp only [← rank_lt_alpeh0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
 
 /-- If a free module is of finite rank, then the cardinality of any basis is equal to its
 `finrank`. -/
@@ -283,7 +282,7 @@ theorem Module.mk_finrank_eq_card_basis [Module.Finite R V]
   rw [Cardinal.mk_fintype, finrank_eq_card_basis h]
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
-noncomputable def _root_.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
+noncomputable def Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have A : Cardinal.mk ι = ↑(FiniteDimensional.finrank R R) :=
     (Module.mk_finrank_eq_card_basis b).symm
   -- porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
@@ -358,18 +357,18 @@ theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
   rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
   apply Cardinal.nat_lt_aleph0
 
-theorem LinearIndependent.finite [Module.Finite R V] {b : Set V}
+theorem LinearIndependent.finite [Module.Finite R V] {ι : Type*} {f : ι → V}
+    (h : LinearIndependent R f) : Finite ι :=
+  Cardinal.lt_aleph0_iff_finite.1 <| Module.Finite.lt_aleph0_of_linearIndependent h
+
+theorem LinearIndependent.setFinite [Module.Finite R V] {b : Set V}
     (h : LinearIndependent R fun x : b => (x : V)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp (Module.Finite.lt_aleph0_of_linearIndependent h)
-#align linear_independent.finite LinearIndependent.finite
+#align linear_independent.finite LinearIndependent.setFinite
 
-theorem Module.Finite.not_linearIndependent_of_infinite
-    {ι : Type w} [inf : Infinite ι] [Module.Finite R V]
-    (v : ι → V) : ¬LinearIndependent R v := by
-  intro h_lin_indep
-  have : ¬ℵ₀ ≤ #ι := not_le.mpr (Module.Finite.lt_aleph0_of_linearIndependent h_lin_indep)
-  have : ℵ₀ ≤ #ι := infinite_iff.mp inf
-  contradiction
+theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [Module.Finite R V]
+    (v : ι → V) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
+#align finite_dimensional.not_linear_independent_of_infinite Module.Finite.not_linearIndependent_of_infinite
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
 theorem FiniteDimensional.finrank_pos_iff_exists_ne_zero
