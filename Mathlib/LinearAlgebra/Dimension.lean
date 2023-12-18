@@ -1130,7 +1130,7 @@ theorem rank_span_le_of_finite {s : Set V} (hs : s.Finite) : Module.rank R (span
 theorem rank_span_finset_le (s : Finset V) : Module.rank R (span R (s : Set V)) ≤ s.card := by
   simpa using rank_span_le_of_finite s.finite_toSet
 
-theorem rank_span_of_finset (s : Finset V) : Module.rank R (span R (↑s : Set V)) < ℵ₀ :=
+theorem rank_span_of_finset (s : Finset V) : Module.rank R (span R (s : Set V)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
 #align rank_span_of_finset rank_span_of_finset
 
