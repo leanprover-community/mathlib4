@@ -192,14 +192,10 @@ lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
   intro x y h
   rw [StarOrderedRing.le_iff] at h ⊢
   obtain ⟨d, hd, rfl⟩ := h
-  refine ⟨star d, ?_, star_add _ _⟩
-  induction hd using AddSubmonoid.closure_induction' with
-  | Hs y hy =>
-    obtain ⟨z, rfl⟩ := Set.mem_range.mpr hy
-    rw [star_mul, star_star]
-    exact AddSubmonoid.subset_closure ⟨z, rfl⟩
-  | H1 => rw [star_zero _]; exact zero_mem _
-  | Hmul z _ w _ hz hw => rw [star_add]; exact add_mem hz hw
+  refine ⟨starAddEquiv d, ?_, star_add _ _⟩
+  refine AddMonoidHom.mclosure_preimage_le _ _ <| AddSubmonoid.closure_mono ?_ hd
+  rintro - ⟨s, rfl⟩
+  exact ⟨s, by simp⟩
 
 @[simp]
 lemma star_lt_star_iff {x y : R} : star x < star y ↔ x < y := by
@@ -228,17 +224,13 @@ lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
   simpa using star_lt_star_iff (x := x) (y := 0)
 
 lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
-  unfold IsSelfAdjoint at *
   rw [StarOrderedRing.le_iff] at h
   obtain ⟨d, hd, rfl⟩ := h
-  rw [star_add, hx]
-  induction hd using AddSubmonoid.closure_induction' generalizing x with
-  | Hs _ h => obtain ⟨x, rfl⟩ := h; simp
-  | H1 => simp
-  | Hmul a _ b _ ha hb =>
-    replace ha : star a = a := by simpa using ha (star_zero _)
-    replace hb : star b = b := by simpa using hb (star_zero _)
-    simp only [star_add, ha, hb]
+  rw [IsSelfAdjoint, star_add, hx.star_eq]
+  congr
+  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
+  rintro - ⟨s, rfl⟩
+  simp
 
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
