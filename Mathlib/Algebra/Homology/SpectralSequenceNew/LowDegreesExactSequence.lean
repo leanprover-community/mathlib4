@@ -1,6 +1,23 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
-import Mathlib.CategoryTheory.ComposableArrows
+import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Tactic.FinCases
+
+namespace HomologicalComplex
+
+open CategoryTheory Limits
+
+variable {C ι : Type*} [Category C] [HasZeroMorphisms C] {c : ComplexShape ι}
+  (K : HomologicalComplex C c)
+
+lemma shape_from (i j : ι) (hj : ∀ (k : ι), ¬ c.Rel k j) :
+    K.d i j = 0 :=
+  K.shape i j (hj i)
+
+lemma shape_to (i j : ι) (hi : ∀ (k : ι), ¬ c.Rel i k) :
+    K.d i j = 0 :=
+  K.shape i j (hi j)
+
+end HomologicalComplex
 
 namespace ComplexShape
 
@@ -102,9 +119,9 @@ instance (pq : ℕ × ℕ) : E.HasPageInfinityAt pq where
   nonempty_hasEdgeEpiSet := ⟨pq.2 + 2, fun r hr =>
     have := E.hasPage_of_LE 2 r (by linarith)
     ⟨this, E.hasEdgeEpiAt _ _ (by linarith)⟩⟩
-  nonempty_hasEdgeMonoSet := ⟨pq.1 + 2, fun r hr => by
+  nonempty_hasEdgeMonoSet := ⟨pq.1 + 2, fun r hr =>
     have := E.hasPage_of_LE 2 r (by linarith)
-    exact ⟨this, E.hasEdgeMonoAt _ _ (by linarith)⟩⟩
+    ⟨this, E.hasEdgeMonoAt _ _ (by linarith)⟩⟩
 
 def d₂ := (E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩
 
@@ -126,12 +143,17 @@ instance (n : ℕ) : E.HasEdgeEpiAtFrom ⟨n, 1⟩ 3 :=
     dsimp
     linarith)
 
-instance : E.HasEdgeMonoAtFrom ⟨1, 0⟩ 2 :=
+instance (n : ℕ) : E.HasEdgeMonoAtFrom ⟨1, n⟩ 2 :=
   HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
     apply E.hasEdgeMonoAt
     dsimp
     linarith)
 
+instance (n : ℕ) : E.HasEdgeMonoAtFrom ⟨2, n⟩ 3 :=
+  HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
+    apply E.hasEdgeMonoAt
+    dsimp
+    linarith)
 
 variable {E}
 
@@ -154,6 +176,10 @@ instance : IsIso ((hE 1).filtrationι (WithBot.some 1)) :=
 
 instance : IsIso ((hE 1).π 0 (1, 0) rfl) := by
   apply (hE 1).isIso_π_of_isZero
+  aesop
+
+instance : IsIso ((hE 2).π 0 (2, 0) rfl) := by
+  apply (hE 2).isIso_π_of_isZero
   aesop
 
 instance : IsIso ((hE 1).filtrationι 1) := by
@@ -185,13 +211,78 @@ noncomputable def toE₂OneZero :
     X 1 ⟶ (E.page 2).X ⟨0, 1⟩ :=
   (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance ≫ E.edgeMono ⟨0, 1⟩ 2
 
---#check E.edgeMonoStep ⟨0, 1⟩ 2 3 rfl
+noncomputable def ιE₃TwoZero : (E.page 3).X ⟨2, 0⟩ ⟶ X 2 :=
+  (E.pageInfinityIso ⟨2, 0⟩ 3).inv ≫ (hE 2).pageInfinityι 0 ⟨2, 0⟩ rfl inferInstance
+
+instance : Mono (ιE₃TwoZero hE) := by
+  dsimp [ιE₃TwoZero]
+  infer_instance
+
+noncomputable def fromE₂TwoZero : (E.page 2).X ⟨2, 0⟩ ⟶ X 2 :=
+  E.edgeEpi ⟨2, 0⟩ 2 ≫ (hE 2).pageInfinityι 0 ⟨2, 0⟩ rfl inferInstance
+
+@[reassoc (attr := simp)]
+lemma edgeEpiStep_ιE₃TwoZero :
+    E.edgeEpiStep ⟨2, 0⟩ 2 3 rfl ≫ ιE₃TwoZero hE = fromE₂TwoZero hE := by
+  simp [fromE₂TwoZero, ιE₃TwoZero]
+
+variable (E)
+
+@[simp]
+noncomputable def d₂Sequence : ComposableArrows C 3 :=
+  ComposableArrows.mk₃ (E.edgeMonoStep ⟨0, 1⟩ 2 3 rfl) ((E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩)
+    (E.edgeEpiStep ⟨2, 0⟩ 2 3 rfl)
+
+instance : Mono ((d₂Sequence E).map' 0 1) := by
+  dsimp
+  infer_instance
+
+instance : Epi ((d₂Sequence E).map' 2 3) := by
+  dsimp
+  infer_instance
+
+lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
+  apply ComposableArrows.exact_of_δ₀
+  · apply ComposableArrows.exact₂_mk _ (by simp)
+    let S := ShortComplex.mk _ _ ((E.page 2).iCycles_d ⟨0, 1⟩ ⟨2, 0⟩)
+    have hS : S.Exact := by
+      apply ShortComplex.exact_of_f_is_kernel
+      exact (E.page 2).cyclesIsKernel ⟨0, 1⟩ ⟨2, 0⟩
+        (ComplexShape.next_eq' _ (by simp; linarith))
+    refine ShortComplex.exact_of_iso ?_ hS
+    exact ShortComplex.isoMk ((E.page 2).isoHomologyπ _ ⟨0, 1⟩ rfl (by
+        apply (E.page 2).shape_from
+        rintro ⟨p, q⟩ hpq
+        simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_zero, Nat.cast_one] at hpq
+        linarith) ≪≫ (E.iso 2 3 rfl) ⟨0, 1⟩) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+  · apply ComposableArrows.exact₂_mk _ (by simp)
+    let S := ShortComplex.mk _ _ ((E.page 2).d_pOpcycles ⟨0, 1⟩ ⟨2, 0⟩)
+    have hS : S.Exact := by
+      apply ShortComplex.exact_of_g_is_cokernel
+      exact (E.page 2).opcyclesIsCokernel ⟨0, 1⟩ ⟨2, 0⟩
+        (ComplexShape.prev_eq' _ (by simp; linarith))
+    refine ShortComplex.exact_of_iso (Iso.symm ?_) hS
+    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
+      (((E.iso 2 3 rfl) ⟨2, 0⟩).symm ≪≫ (E.page 2).isoHomologyι ⟨2, 0⟩ _ rfl (by
+        apply (E.page 2).shape_to
+        rintro ⟨p, q⟩ hpq
+        simp only [ComplexShape.spectralSequenceNat_rel_iff, Nat.cast_ofNat,
+          Nat.cast_zero, zero_add] at hpq
+        linarith)) (by simp) (by simp)
 
 end LowDegreesExactSequence
 
---open LowDegreesExactSequence in
---noncomputable def lowDegreesComposableArrows : ComposableArrows C 1 :=
---  ComposableArrows.mk₁ (ιE₂OneZero hE)
+variable {E}
+
+open LowDegreesExactSequence in
+@[simp]
+noncomputable def lowDegreesComposableArrows : ComposableArrows C 4 :=
+  ComposableArrows.mk₄ (ιE₂OneZero hE) (toE₂OneZero hE)
+    ((E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩) (fromE₂TwoZero hE)
+
+instance : Mono ((lowDegreesComposableArrows hE).map' 0 1) := by
+  dsimp
+  infer_instance
 
 end CohomologicalSpectralSequenceNat
 
