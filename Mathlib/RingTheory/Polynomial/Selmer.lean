@@ -204,6 +204,15 @@ instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :
     rootSet (1 : T[X]) S = ∅ := by
   rw [rootSet, aroots_one, Finset.coe_eq_empty]; rfl
 
+open NumberField
+
+def reshom {K : Type*} [Field K] (σ : K →+* K) : 𝓞 K →+* 𝓞 K :=
+  σ.restrict (𝓞 K) (𝓞 K) (fun _ ↦ map_isIntegral_int σ)
+
+def res {K : Type*} [Field K] (σ : K ≃+* K) : 𝓞 K ≃+* 𝓞 K :=
+  RingEquiv.ofHomInv (reshom σ) (reshom σ.symm)
+    (by ext x; exact σ.symm_apply_apply x) (by ext x; exact σ.apply_symm_apply x)
+
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   let f : ℚ[X] := X ^ n - X - 1
@@ -213,6 +222,31 @@ theorem X_pow_sub_X_sub_one_gal :
     · have : IsEmpty (rootSet f ℂ) := by simp
       infer_instance
     exact galAction_isPretransitive (X_pow_sub_X_sub_one_irreducible_rat hn)
+  let K := f.SplittingField
+  let R := 𝓞 K
+  let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal), {σ | ∀ x : R, res σ x - x ∈ q}
+  let S : Set f.Gal := S0 \ {1}
+  have hS0 : Subgroup.closure S0 = ⊤
+  · sorry
+  have hS1 : Subgroup.closure S = ⊤
+  · have h : Subgroup.closure (S0 ∩ {1}) = ⊥
+    · rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
+      exact Subgroup.closure_mono (Set.inter_subset_right S0 {1})
+    rw [← hS0, ← Set.diff_union_inter S0 {1}, Subgroup.closure_union, h, sup_bot_eq]
+  have hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ)
+  · rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩
+    rw [Set.mem_iUnion] at hσ
+    obtain ⟨q, hσ⟩ := hσ
+    rw [Set.mem_iUnion] at hσ
+    obtain ⟨hq, hσ : ∀ x : R, res σ x - x ∈ q⟩ := hσ
+    let F := R ⧸ q
+    have : Field F := Ideal.Quotient.field q
+    -- finite field, might not need to consider the characteristic
+    -- reduce to action on roots in R
+    sorry
+  exact ⟨Gal.galActionHom_injective f ℂ, keylemma' S hS2 hS1⟩
+
+  -- have : ∀ p : Nat.Primes, ∀ q : factors (map (algebraMap ℤ R) p)
   -- roots lie in the ring of integers OK
   -- if q is a prime idea of OK, then there is a ring homomorphism to the finite field OK/q
   -- the whole Galois group acts on OK
@@ -231,18 +265,6 @@ theorem X_pow_sub_X_sub_one_gal :
   -- we need to know that if a subfield is fixed by ..., then it's ⊥
   -- key facts from algebraic number theory: p divides discriminant implies ramified
   -- ramified means there exists σ(x) = x (mod p)
-
-
-  let S : Set f.Gal := ⋃ (p : Nat.Primes), sorry -- tricky
-  -- ramification theory
-  have hS1 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ) := sorry
-  have hS2 : Subgroup.closure S = ⊤
-  · -- if not, then the fixed field is a field extension of positive degree
-    -- it has large discriminant
-    -- it has a ramified prime
-    -- contradicting inertia subgroup stuff
-    sorry
-  refine' ⟨Gal.galActionHom_injective f ℂ, keylemma' S hS1 hS2⟩
 
 #check NumberField.discr_gt_one
 
