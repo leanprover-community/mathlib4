@@ -12,7 +12,7 @@ import Mathlib.Order.Filter.CountableInter
 
 We define the following properties for sets in a topological space:
 
-* `IsLindelof`: a set such that each open cover has a countable subcover. This is defined in mathlib
+* `IsLindelof`: a set such that each open cover has a countable subcover. This is defined in Mathlib
   using filters.
 * `LindelofSpace`: typeclass stating that the whole space is a Lindëlof set.
 * `NonLindelofSpace`: a space that is not a Lindëlof space.
@@ -32,8 +32,8 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Lindelof
 
-/-- A set `s` is Lindelöf if every open cover has a countable subcover. This is implemented in Mathlib
-  by showing that for every nontrivial filter `f` with the countable intersection
+/-- A set `s` is Lindelöf if every open cover has a countable subcover. This is implemented in
+  Mathlib by showing that for every nontrivial filter `f` with the countable intersection
   property that contains `s`, there exists `a ∈ s` such that every set of `f`
   meets every neighborhood of `a`. The equivalence of these two still needs to be proven in Mathlib
   (Work in progress). -/
@@ -50,19 +50,19 @@ class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a non-Lindelöf space, `Set.univ` is not a Lindelöf set. -/
   nonLindelof_univ : ¬IsLindelof (univ : Set X)
 
-/-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection property
- if it belongs to each filter `𝓝 x ⊓ f`, `x ∈ s`. -/
-theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableInterFilter f] (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) :
-    sᶜ ∈ f := by
+/-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
+  property if it belongs to each filter `𝓝 x ⊓ f`, `x ∈ s`. -/
+theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableInterFilter f]
+  (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
   simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   apply @hs
   apply inf_le_right
 
-/-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection property
-  if each `x ∈ s` has a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
-theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter X} [CountableInterFilter f]
-    (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
+/-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
+  property if each `x ∈ s` has a neighborhood `t` within `s` such that `tᶜ` belongs to `f`. -/
+theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter X}
+  [CountableInterFilter f] (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
   refine' hs.compl_mem_sets fun x hx => _
   rcases hf x hx with ⟨t, ht, hst⟩
   replace ht := mem_inf_principal.1 ht
@@ -74,7 +74,8 @@ theorem IsLindelof.compl_mem_sets_of_nhdsWithin (hs : IsLindelof s) {f : Filter 
   of a Lindelöf set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
 theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop} (he : p ∅)
-    (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s) (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃ s ∈ S, s))
+    (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
+    (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃ s ∈ S, s))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
   let f : Filter X :=
     { sets := { t | p tᶜ }
@@ -150,5 +151,5 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
   exact this.neBot
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
-theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f) : IsLindelof (f '' s) :=
-  hs.image_of_continuousOn hf.continuousOn
+theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f)
+  : IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
