@@ -135,6 +135,16 @@ info: Try this: rw [h p]
 example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
   rw?
 
+-- Use `solve_by_elim` to discharge side conditions.
+/--
+info: Try this: rw [h (f p)]
+-- "no goals"
+-/
+#guard_msgs in
+example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
+  rw?
+
+
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
 /--
 info: Try this: rw [← h₁ p]

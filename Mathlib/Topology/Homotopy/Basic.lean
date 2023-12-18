@@ -581,7 +581,7 @@ end HomotopicWith
 A `HomotopyRel f₀ f₁ S` is a homotopy between `f₀` and `f₁` which is fixed on the points in `S`.
 -/
 abbrev HomotopyRel (f₀ f₁ : C(X, Y)) (S : Set X) :=
-  HomotopyWith f₀ f₁ fun f => ∀ x ∈ S, f x = f₀ x ∧ f x = f₁ x
+  HomotopyWith f₀ f₁ fun f ↦ ∀ x ∈ S, f x = f₀ x
 #align continuous_map.homotopy_rel ContinuousMap.HomotopyRel
 
 namespace HomotopyRel
@@ -591,11 +591,11 @@ section
 variable {f₀ f₁ : C(X, Y)} {S : Set X}
 
 theorem eq_fst (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₀ x :=
-  (F.prop t x hx).1
+  F.prop t x hx
 #align continuous_map.homotopy_rel.eq_fst ContinuousMap.HomotopyRel.eq_fst
 
-theorem eq_snd (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₁ x :=
-  (F.prop t x hx).2
+theorem eq_snd (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₁ x := by
+  rw [F.eq_fst t hx, ← F.eq_fst 1 hx, F.apply_one]
 #align continuous_map.homotopy_rel.eq_snd ContinuousMap.HomotopyRel.eq_snd
 
 theorem fst_eq_snd (F : HomotopyRel f₀ f₁ S) {x : X} (hx : x ∈ S) : f₀ x = f₁ x :=
@@ -612,7 +612,7 @@ filled in.
 -/
 @[simps!]
 def refl (f : C(X, Y)) (S : Set X) : HomotopyRel f f S :=
-  HomotopyWith.refl f fun _ _ => ⟨rfl, rfl⟩
+  HomotopyWith.refl f fun _ _ ↦ rfl
 #align continuous_map.homotopy_rel.refl ContinuousMap.HomotopyRel.refl
 
 /--
@@ -621,7 +621,7 @@ Given a `HomotopyRel f₀ f₁ S`, we can define a `HomotopyRel f₁ f₀ S` by 
 @[simps!]
 def symm (F : HomotopyRel f₀ f₁ S) : HomotopyRel f₁ f₀ S where
   toHomotopy := F.toHomotopy.symm
-  prop' := fun _ _ hx => ⟨F.eq_snd _ hx, F.eq_fst _ hx⟩
+  prop' := fun _ _ hx ↦ F.eq_snd _ hx
 #align continuous_map.homotopy_rel.symm ContinuousMap.HomotopyRel.symm
 
 @[simp]
@@ -632,14 +632,13 @@ theorem symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=
 /-- Given `HomotopyRel f₀ f₁ S` and `HomotopyRel f₁ f₂ S`, we can define a `HomotopyRel f₀ f₂ S`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
-def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : HomotopyRel f₀ f₂ S :=
-  { Homotopy.trans F.toHomotopy G.toHomotopy with
-    prop' := fun t x hx => by
-      simp only [Homotopy.trans]
-      change (⟨fun _ => ite ((t : ℝ) ≤ _) _ _, _⟩ : C(X, Y)) _ = _ ∧ _ = _
-      split_ifs
-      · simp [(HomotopyWith.extendProp F (2 * t) x hx).1, F.fst_eq_snd hx, G.fst_eq_snd hx]
-      · simp [(HomotopyWith.extendProp G (2 * t - 1) x hx).1, F.fst_eq_snd hx, G.fst_eq_snd hx] }
+def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : HomotopyRel f₀ f₂ S where
+  toHomotopy := F.toHomotopy.trans G.toHomotopy
+  prop' t x hx := by
+    simp only [Homotopy.trans]
+    split_ifs
+    · simp [HomotopyWith.extendProp F (2 * t) x hx, F.fst_eq_snd hx, G.fst_eq_snd hx]
+    · simp [HomotopyWith.extendProp G (2 * t - 1) x hx, F.fst_eq_snd hx, G.fst_eq_snd hx]
 #align continuous_map.homotopy_rel.trans ContinuousMap.HomotopyRel.trans
 
 theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) (x : I × X) :
@@ -664,6 +663,12 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
   toHomotopy := Homotopy.cast F.toHomotopy h₀ h₁
   prop' t x hx := by simpa only [← h₀, ← h₁] using F.prop t x hx
 #align continuous_map.homotopy_rel.cast ContinuousMap.HomotopyRel.cast
+
+/-- Post-compose a homotopy relative to a set by a continuous function. -/
+@[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
+    (g.comp f₀).HomotopyRel (g.comp f₁) S where
+  toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
+  prop' t x hx := congr_arg g (F.prop t x hx)
 
 end HomotopyRel
 

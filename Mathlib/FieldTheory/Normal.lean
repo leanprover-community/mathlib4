@@ -343,9 +343,9 @@ theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [N
 -- Porting note: this was `IsScalarTower F E E := by infer_instance`.
   letI : Algebra E E := Algebra.id E
   let g := f.restrictNormal' E
-  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E), ←
-    IntermediateField.AlgHom.map_fieldRange, IntermediateField.AlgEquiv.fieldRange_eq_top g,
-      ← IntermediateField.AlgHom.fieldRange_eq_map, IntermediateField.fieldRange_val]
+  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E),
+    ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,
+    IntermediateField.fieldRange_val]
 #align alg_hom.field_range_of_normal AlgHom.fieldRange_of_normal
 
 /-- Restrict algebra isomorphism to a normal subfield -/

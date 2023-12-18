@@ -9,6 +9,7 @@ import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
+import Mathlib.Control.Basic
 
 /-!
 # Linarith preprocessing
@@ -75,10 +76,10 @@ If `prf` is a proof of `¬ e`, where `e` is a comparison,
 `flipNegatedComparison prf e` flips the comparison in `e` and returns a proof.
 For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns a proof of `a ≥ b`.
 -/
-def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM Expr :=
+def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
   match e.getAppFnArgs with
-  | (``LE.le, #[_, _, _, _]) => mkAppM ``lt_of_not_ge #[prf]
-  | (``LT.lt, #[_, _, _, _]) => mkAppM ``le_of_not_gt #[prf]
+  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``lt_of_not_ge #[prf]
+  | (``LT.lt, #[_, _, _, _]) => try? <| mkAppM ``le_of_not_gt #[prf]
   | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
 
 /--
@@ -91,9 +92,12 @@ def removeNegations : Preprocessor where
     let t : Q(Prop) ← whnfR (← inferType h)
     match t with
     | ~q(¬ $p) =>
-      trace[linarith] "removing negation in {h}"
-      return [← flipNegatedComparison h (← whnfR p)]
-    | _        => return [h]
+      match ← flipNegatedComparison h (← whnfR p) with
+      | some h' =>
+        trace[linarith] "removing negation in {h}"
+        return [h']
+      | _ => return [h]
+    | _ => return [h]
 
 end removeNegations
 
@@ -242,34 +246,35 @@ section compWithZero
 `rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
-partial def rearrangeComparison (e : Expr) : MetaM Expr := do
+partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
   aux e (← instantiateMVars (← inferType e))
 where
   /-- Implementation of `rearrangeComparison`, after type inference. -/
-  aux (proof e : Expr) : MetaM Expr :=
+  aux (proof e : Expr) : MetaM (Option Expr) :=
+    let isZero (e : Expr) := e.getAppFnArgs matches (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
     match e.getAppFnArgs with
-    | (``LE.le, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-      | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
-      | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | _, _                                          => mkAppM ``sub_nonpos_of_le #[proof]
-    | (``LT.lt, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-      | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
-      | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``neg_neg_of_pos #[proof]
-      | _, _                                          => mkAppM ``sub_neg_of_lt #[proof]
-    | (``Eq, #[_, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-      | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
-      | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``Eq.symm #[proof]
-      | _, _                                          => mkAppM ``sub_eq_zero_of_eq #[proof]
-    | (``GT.gt, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-      | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => mkAppM ``neg_neg_of_pos #[proof]
-      | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``lt_zero_of_zero_gt #[proof]
-      | _, _                                          => mkAppM ``sub_neg_of_lt #[proof]
-    | (``GE.ge, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
-      | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | (``OfNat.ofNat, #[_, .lit (.natVal 0), _]), _ => mkAppM ``le_zero_of_zero_ge #[proof]
-      | _, _                                          => mkAppM ``sub_nonpos_of_le #[proof]
+    | (``LE.le, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => return proof
+      | true, _ => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
+      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
+    | (``LT.lt, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => return proof
+      | true, _ => try? <| mkAppM ``neg_neg_of_pos #[proof]
+      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
+    | (``Eq, #[_, a, b]) => match isZero a, isZero b with
+      | _, true => return proof
+      | true, _ => try? <| mkAppM ``Eq.symm #[proof]
+      | _, _    => try? <| mkAppM ``sub_eq_zero_of_eq #[proof]
+    | (``GT.gt, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => try? <| mkAppM ``neg_neg_of_pos #[proof]
+      | true, _ => try? <| mkAppM ``lt_zero_of_zero_gt #[proof]
+      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
+    | (``GE.ge, #[_, _, a, b]) => match isZero a, isZero b with
+      | _, true => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
+      | true, _ => try? <| mkAppM ``le_zero_of_zero_ge #[proof]
+      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
     | (``Not, #[a]) => do
-      let nproof ← flipNegatedComparison proof a
+      let some nproof ← flipNegatedComparison proof a | return none
       aux nproof (← inferType nproof)
     | a => throwError "couldn't rearrange comparison {a}"
 
@@ -279,13 +284,7 @@ and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 def compWithZero : Preprocessor where
   name := "make comparisons with zero"
-  transform e := try
-    pure [← rearrangeComparison e]
-  catch e =>
-    if ← e.isFailedToSynthesize then
-      pure []
-    else
-      throw e
+  transform e := return (← rearrangeComparison e).toList
 
 end compWithZero
 

@@ -99,7 +99,8 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       _ = ENNReal.ofReal (∫ x in Ioc (-r : ℝ) r, (f - Neg.neg ∘ f) x) :=
         (volume_regionBetween_eq_integral h.neg h measurableSet_Ioc fun x _ =>
           neg_le_self (sqrt_nonneg _))
-      _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by simp [two_mul, integral_of_le]
+      _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by
+        rw [integral_of_le] <;> simp [two_mul, neg_le_self]
       _ = NNReal.pi * r ^ 2 := by rw_mod_cast [this, ← ENNReal.coe_nnreal_eq]
   have hle := NNReal.coe_nonneg r
   obtain heq | hlt := hle.eq_or_lt; · simp [← heq]

@@ -128,7 +128,7 @@ theorem set_lintegral_condKernelReal_prod {s : Set α} (hs : MeasurableSet s) {t
       prod_iUnion, measure_iUnion]
     · simp_rw [hf_eq]
     · intro i j hij
-      rw [Function.onFun, disjoint_prod]
+      rw [Function.onFun, Set.disjoint_prod]
       exact Or.inr (hf_disj hij)
     · exact fun i => MeasurableSet.prod hs (hf_meas i)
 #align probability_theory.set_lintegral_cond_kernel_real_prod ProbabilityTheory.set_lintegral_condKernelReal_prod

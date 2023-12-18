@@ -207,9 +207,3 @@ protected theorem IsOpen.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     LocallyCompactSpace s :=
   hs.openEmbedding_subtype_val.locallyCompactSpace
 #align is_open.locally_compact_space IsOpen.locallyCompactSpace
-
-nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
-  rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩
-  exact le_nhds_lim ⟨x, h⟩
-set_option linter.uppercaseLean3 false in
-#align ultrafilter.le_nhds_Lim Ultrafilter.le_nhds_lim

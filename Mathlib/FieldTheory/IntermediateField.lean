@@ -403,19 +403,25 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
 
 /-- If `f : L →+* L'` fixes `K`, `S.map f` is the intermediate field between `L'` and `K`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
-def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' :=
-  {
-    S.toSubalgebra.map
-      f with
-    inv_mem' := by
-      rintro _ ⟨x, hx, rfl⟩
-      exact ⟨x⁻¹, S.inv_mem hx, map_inv₀ f x⟩ }
+def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' where
+  __ := S.toSubalgebra.map f
+  inv_mem' := by
+    rintro _ ⟨x, hx, rfl⟩
+    exact ⟨x⁻¹, S.inv_mem hx, map_inv₀ f x⟩
 #align intermediate_field.map IntermediateField.map
 
 @[simp]
 theorem coe_map (f : L →ₐ[K] L') : (S.map f : Set L') = f '' S :=
   rfl
 #align intermediate_field.coe_map IntermediateField.coe_map
+
+@[simp]
+theorem toSubalgebra_map (f : L →ₐ[K] L') : (S.map f).toSubalgebra = S.toSubalgebra.map f :=
+  rfl
+
+@[simp]
+theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfield.map f :=
+  rfl
 
 theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
     [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
@@ -567,8 +573,9 @@ theorem coe_inclusion {E F : IntermediateField K L} (hEF : E ≤ F) (e : E) :
 
 variable {S}
 
-theorem toSubalgebra_injective {S S' : IntermediateField K L}
-    (h : S.toSubalgebra = S'.toSubalgebra) : S = S' := by
+theorem toSubalgebra_injective :
+    Function.Injective (IntermediateField.toSubalgebra : IntermediateField K L → _) := by
+  intro S S' h
   ext
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective

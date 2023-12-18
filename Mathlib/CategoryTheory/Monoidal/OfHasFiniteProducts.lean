@@ -46,13 +46,17 @@ section
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
+  letI : MonoidalCategoryStruct C := {
+    tensorObj := fun X Y ↦ X ⨯ Y
+    whiskerLeft := fun X _ _ g ↦ Limits.prod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f Y ↦ Limits.prod.map f (𝟙 _)
+    tensorHom := fun f g ↦ Limits.prod.map f g
+    tensorUnit := ⊤_ C
+    associator := prod.associator
+    leftUnitor := fun P ↦ prod.leftUnitor P
+    rightUnitor := fun P ↦ prod.rightUnitor P
+  }
   .ofTensorHom
-    (tensorUnit' := ⊤_ C)
-    (tensorObj := fun X Y ↦ X ⨯ Y)
-    (tensorHom := fun f g ↦ Limits.prod.map f g)
-    (associator := prod.associator)
-    (leftUnitor := fun P ↦ prod.leftUnitor P)
-    (rightUnitor := fun P ↦ prod.rightUnitor P)
     (pentagon := prod.pentagon)
     (triangle := prod.triangle)
     (associator_naturality := @prod.associator_naturality _ _ _)
@@ -138,13 +142,17 @@ section
 
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
+  letI : MonoidalCategoryStruct C := {
+    tensorObj := fun X Y ↦ X ⨿ Y
+    whiskerLeft := fun X _ _ g ↦ Limits.coprod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f Y ↦ Limits.coprod.map f (𝟙 _)
+    tensorHom := fun f g ↦ Limits.coprod.map f g
+    tensorUnit := ⊥_ C
+    associator := coprod.associator
+    leftUnitor := fun P ↦ coprod.leftUnitor P
+    rightUnitor := fun P ↦ coprod.rightUnitor P
+  }
   .ofTensorHom
-    (tensorUnit' := ⊥_ C)
-    (tensorObj := fun X Y ↦ X ⨿ Y)
-    (tensorHom := fun f g ↦ Limits.coprod.map f g)
-    (associator := coprod.associator)
-    (leftUnitor := coprod.leftUnitor)
-    (rightUnitor := coprod.rightUnitor)
     (pentagon := coprod.pentagon)
     (triangle := coprod.triangle)
     (associator_naturality := @coprod.associator_naturality _ _ _)

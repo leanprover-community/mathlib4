@@ -144,34 +144,34 @@ variable (V c)
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
 
 /-- The `i`-th homology, as a functor from the homotopy category. -/
-def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
-  CategoryTheory.Quotient.lift _ (_root_.homologyFunctor V c i) fun _ _ _ _ ⟨h⟩ =>
-    homology_map_eq_of_homotopy h i
-#align homotopy_category.homology_functor HomotopyCategory.homologyFunctor
+def homology'Functor (i : ι) : HomotopyCategory V c ⥤ V :=
+  CategoryTheory.Quotient.lift _ (_root_.homology'Functor V c i) fun _ _ _ _ ⟨h⟩ =>
+    homology'_map_eq_of_homotopy h i
+#align homotopy_category.homology_functor HomotopyCategory.homology'Functor
 
 /-- The homology functor on the homotopy category is just the usual homology functor. -/
-def homologyFactors (i : ι) :
-    quotient V c ⋙ homologyFunctor V c i ≅ _root_.homologyFunctor V c i :=
+def homology'Factors (i : ι) :
+    quotient V c ⋙ homology'Functor V c i ≅ _root_.homology'Functor V c i :=
   CategoryTheory.Quotient.lift.isLift _ _ _
-#align homotopy_category.homology_factors HomotopyCategory.homologyFactors
+#align homotopy_category.homology_factors HomotopyCategory.homology'Factors
 
 @[simp]
-theorem homologyFactors_hom_app (i : ι) (C : HomologicalComplex V c) :
-    (homologyFactors V c i).hom.app C = 𝟙 _ :=
+theorem homology'Factors_hom_app (i : ι) (C : HomologicalComplex V c) :
+    (homology'Factors V c i).hom.app C = 𝟙 _ :=
   rfl
-#align homotopy_category.homology_factors_hom_app HomotopyCategory.homologyFactors_hom_app
+#align homotopy_category.homology_factors_hom_app HomotopyCategory.homology'Factors_hom_app
 
 @[simp]
-theorem homologyFactors_inv_app (i : ι) (C : HomologicalComplex V c) :
-    (homologyFactors V c i).inv.app C = 𝟙 _ :=
+theorem homology'Factors_inv_app (i : ι) (C : HomologicalComplex V c) :
+    (homology'Factors V c i).inv.app C = 𝟙 _ :=
   rfl
-#align homotopy_category.homology_factors_inv_app HomotopyCategory.homologyFactors_inv_app
+#align homotopy_category.homology_factors_inv_app HomotopyCategory.homology'Factors_inv_app
 
-theorem homologyFunctor_map_factors (i : ι) {C D : HomologicalComplex V c} (f : C ⟶ D) :
-    (_root_.homologyFunctor V c i).map f =
-      ((homologyFunctor V c i).map ((quotient V c).map f) : _) :=
-  (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homologyFunctor V c i) _ f).symm
-#align homotopy_category.homology_functor_map_factors HomotopyCategory.homologyFunctor_map_factors
+theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f : C ⟶ D) :
+    (_root_.homology'Functor V c i).map f =
+      ((homology'Functor V c i).map ((quotient V c).map f) : _) :=
+  (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
+#align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
 
 end HomotopyCategory
 

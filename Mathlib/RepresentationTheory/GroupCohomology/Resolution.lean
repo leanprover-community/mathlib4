@@ -675,16 +675,16 @@ theorem εToSingle₀_comp_eq :
   exact (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 #align group_cohomology.resolution.ε_to_single₀_comp_eq groupCohomology.resolution.εToSingle₀_comp_eq
 
-theorem quasiIsoOfForget₂εToSingle₀ :
-    QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
-  have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso _
+theorem quasiIso'OfForget₂εToSingle₀ :
+    QuasiIso' (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
+  have h : QuasiIso' (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso' _
   rw [← εToSingle₀_comp_eq k G] at h
   haveI := h
-  exact quasiIso_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
-#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIsoOfForget₂εToSingle₀
+  exact quasiIso'_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
+#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso'OfForget₂εToSingle₀
 
-instance : QuasiIso (εToSingle₀ k G) :=
-  (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso _ (quasiIsoOfForget₂εToSingle₀ k G)
+instance : QuasiIso' (εToSingle₀ k G) :=
+  (forget₂ _ (ModuleCat.{u} k)).quasiIso'_of_map_quasiIso' _ (quasiIso'OfForget₂εToSingle₀ k G)
 
 end Exactness
 
@@ -710,7 +710,7 @@ standard resolution of `k` called `groupCohomology.resolution k G`. -/
 def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (groupCohomology.resolution k G)).homology
+              (groupCohomology.resolution k G)).homology'
           n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
      (groupCohomology.projectiveResolution k G)).unop.symm
 set_option linter.uppercaseLean3 false in

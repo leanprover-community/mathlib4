@@ -55,8 +55,7 @@ open scoped BigOperators TensorProduct
 section notation_weight_space_of
 
 /-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
-local notation3 (prettyPrint := false) "𝕎("M"," χ"," x")" =>
-  (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
+local notation3 "𝕎("M", " χ", " x")" => (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)

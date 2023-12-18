@@ -757,6 +757,33 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   exact h p _ (Nat.prime_of_mem_factors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers Nat.ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
+theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} :
+    f (x.lcm y) * f (x.gcd y) = f x * f y := by
+  by_cases hx : x = 0
+  · simp only [hx, f.map_zero, zero_mul, lcm_zero_left, gcd_zero_left]
+  by_cases hy : y = 0
+  · simp only [hy, f.map_zero, mul_zero, lcm_zero_right, gcd_zero_right, zero_mul]
+  have hgcd_ne_zero : x.gcd y ≠ 0 := gcd_ne_zero_left hx
+  have hlcm_ne_zero : x.lcm y ≠ 0 := lcm_ne_zero hx hy
+  have hfi_zero : ∀ {i},  f (i ^ 0) = 1
+  · intro i; rw [pow_zero, hf.1]
+  iterate 4 rw [hf.multiplicative_factorization f (by assumption),
+    Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
+      (s := (x.factorization.support ⊔ y.factorization.support))]
+  · rw [←Finset.prod_mul_distrib, ←Finset.prod_mul_distrib]
+    apply Finset.prod_congr rfl
+    intro p _
+    rcases Nat.le_or_le (x.factorization p) (y.factorization p) with h | h <;>
+      simp only [factorization_lcm hx hy, ge_iff_le, Finsupp.sup_apply, h, sup_of_le_right,
+        sup_of_le_left, inf_of_le_right, Nat.factorization_gcd hx hy, Finsupp.inf_apply,
+        inf_of_le_left, mul_comm]
+  · apply Finset.subset_union_right
+  · apply Finset.subset_union_left
+  · rw [factorization_gcd hx hy, Finsupp.support_inf, Finset.sup_eq_union]
+    apply Finset.inter_subset_union
+  · rw [factorization_lcm hx hy, Finsupp.support_sup, Finset.sup_eq_union]
+
 end IsMultiplicative
 
 section SpecialFunctions

@@ -12,10 +12,12 @@ notation "ℝ" => Real
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+example (x y : ℕ+) : x + y = y + x := by ring
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
 example {α} [CommSemiring α] (x y : α) : (x + y)^2 = x^2 + 2 • x * y + y^2 := by ring
 
 example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
+example (x y : ℕ+) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
 example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring

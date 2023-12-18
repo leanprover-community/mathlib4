@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
@@ -119,7 +120,6 @@ import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
@@ -137,6 +137,7 @@ import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT

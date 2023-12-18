@@ -73,10 +73,7 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp [add_succ, IH]
-    cases bodd m <;> cases bodd n <;> rfl
+  induction n <;> simp_all [add_succ]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]

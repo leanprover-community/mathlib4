@@ -40,9 +40,9 @@ def goldenConj :=
   (1 - Real.sqrt 5) / 2
 #align golden_conj goldenConj
 
-@[inherit_doc goldenRatio] scoped[Real] notation "φ" => goldenRatio
-@[inherit_doc goldenConj] scoped[Real] notation "ψ" => goldenConj
-open Real
+@[inherit_doc goldenRatio] scoped[goldenRatio] notation "φ" => goldenRatio
+@[inherit_doc goldenConj] scoped[goldenRatio] notation "ψ" => goldenConj
+open Real goldenRatio
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_gold : φ⁻¹ = -ψ := by

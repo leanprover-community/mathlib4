@@ -743,15 +743,12 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
 `subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
-def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e.toAlgHom :=
+def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
     commutes' := fun r => by
       ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
       exact e.commutes _ }
 #align alg_equiv.subalgebra_map AlgEquiv.subalgebraMap
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AlgEquiv.subalgebraMap_apply_coe AlgEquiv.subalgebraMap_symm_apply_coe
 
 end AlgEquiv
 

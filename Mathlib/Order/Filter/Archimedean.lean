@@ -34,14 +34,14 @@ theorem tendsto_nat_cast_atTop_iff [StrictOrderedSemiring R] [Archimedean R] {f 
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
 #align tendsto_coe_nat_at_top_iff tendsto_nat_cast_atTop_iff
 
-theorem tendsto_nat_cast_atTop_atTop [StrictOrderedSemiring R] [Archimedean R] :
+theorem tendsto_nat_cast_atTop_atTop [OrderedSemiring R] [Archimedean R] :
     Tendsto ((↑) : ℕ → R) atTop atTop :=
-  tendsto_nat_cast_atTop_iff.2 tendsto_id
+  Nat.mono_cast.tendsto_atTop_atTop exists_nat_ge
 #align tendsto_coe_nat_at_top_at_top tendsto_nat_cast_atTop_atTop
 
-theorem Filter.Eventually.nat_cast_atTop [StrictOrderedSemiring R] [Archimedean R] {p : R → Prop}
-    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℕ) in atTop, p n := by
-  rw [←Nat.comap_cast_atTop (R := R)]; exact h.comap _
+theorem Filter.Eventually.nat_cast_atTop [OrderedSemiring R] [Archimedean R] {p : R → Prop}
+    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℕ) in atTop, p n :=
+  tendsto_nat_cast_atTop_atTop.eventually h
 
 @[simp] theorem Int.comap_cast_atTop [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atTop = atTop :=
@@ -113,15 +113,9 @@ theorem Filter.Eventually.rat_cast_atBot [LinearOrderedField R] [Archimedean R] 
   rw [←Rat.comap_cast_atBot (R := R)]; exact h.comap _
 
 -- porting note: new lemma
-theorem atTop_hasAntitoneBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
-    (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n where
-  antitone := fun _ _ h => Ici_subset_Ici.2 (Nat.mono_cast h)
-  mem_iff' _t := ⟨fun ht => iInf_sets_induct ht ⟨0, trivial, subset_univ _⟩
-      fun {x _ _} h₁ ⟨n, _, hn⟩ =>
-        let ⟨m, hm⟩ := exists_nat_ge x
-        ⟨max m n, trivial, fun _y hy => ⟨h₁ (hm.trans ((Nat.cast_le.2 (le_max_left _ _)).trans hy)),
-          hn <| (Nat.cast_le.2 (le_max_right _ _)).trans hy⟩⟩,
-    fun ⟨_n, _, hn⟩ => mem_of_superset (Ici_mem_atTop _) hn⟩
+theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
+    (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
+  hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_nat_cast_atTop_atTop
 
 theorem atTop_hasCountableBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasCountableBasis (fun _ : ℕ => True) fun n => Ici n :=

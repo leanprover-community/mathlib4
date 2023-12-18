@@ -395,6 +395,8 @@ theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
 
 variable {p q}
 
+open scoped IntermediateField
+
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
 theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.SplittingField :=

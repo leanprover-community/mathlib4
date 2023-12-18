@@ -57,7 +57,7 @@ example (p : Nat × String) : True := by
 /--
 info: Try this: have : List.Disjoint M L := List.disjoint_symm w
 ---
-info: Try this: have : ¬a ∈ M := foo L M w m
+info: Try this: have : a ∉ M := foo L M w m
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by

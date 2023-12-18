@@ -37,14 +37,11 @@ variable (X : Scheme)
 
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.1.base).obj U`,
   the preimage of an open set `U` under `f`. -/
-notation3:90 f:91 "⁻¹ᵁ " U:90 => Prefunctor.obj
-  (Functor.toPrefunctor <| Opens.map (PresheafedSpace.Hom.base (LocallyRingedSpace.Hom.val f))) U
+notation3:90 f:91 "⁻¹ᵁ " U:90 => (Opens.map (f : LocallyRingedSpace.Hom _ _).val.base).obj U
 
 /-- `X ∣_ᵤ U` is notation for `X.restrict U.openEmbedding`, the restriction of `X` to an open set
   `U` of `X`. -/
-notation3:60 X:60 " ∣_ᵤ " U:61 => (Scheme.restrict X (Opens.openEmbedding U))
-
-attribute [nolint docBlame] «term_⁻¹ᵁ_».delab «term_∣_ᵤ_».delab
+notation3:60 X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (U : Opens X).openEmbedding
 
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
