@@ -202,7 +202,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp at e
+  simp? at e says simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C
   · simp only [H, if_true] at e
     change (fun b => g b) ∈ C
@@ -252,7 +252,8 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
         Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
         (by
           intro a x hx y hy
-          simp at hx hy
+          simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
+            and_true, exists_const] at hx hy
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]

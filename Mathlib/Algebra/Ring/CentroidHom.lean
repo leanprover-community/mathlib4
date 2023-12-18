@@ -3,10 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Module.Hom
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.RingTheory.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -289,7 +288,7 @@ instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScal
 instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
 
-instance hasNpowNat : Pow (CentroidHom α) ℕ :=
+instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
     { (f.toEnd ^ n : AddMonoid.End α) with
       map_mul_left' := fun a b ↦ by
@@ -304,7 +303,7 @@ instance hasNpowNat : Pow (CentroidHom α) ℕ :=
         · simp
           rw [pow_succ]
           exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _) }⟩
-#align centroid_hom.has_npow_nat CentroidHom.hasNpowNat
+#align centroid_hom.has_npow_nat CentroidHom.hasNPowNat
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
@@ -435,6 +434,18 @@ instance : Module R (CentroidHom α) :=
 
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
+
+lemma centroid_eq_centralizer_mulLeftRight :
+    RingHom.rangeS (toEndRingHom α) = Subsemiring.centralizer (Set.range L ∪ Set.range R) := by
+  ext T
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨f, rfl⟩ S (⟨a, rfl⟩ | ⟨b, rfl⟩)
+    · exact AddMonoidHom.ext fun b ↦ (map_mul_left f a b).symm
+    · exact AddMonoidHom.ext fun a ↦ (map_mul_right f a b).symm
+  · rw [Subsemiring.mem_centralizer_iff] at h
+    refine ⟨⟨T, fun a b ↦ ?_, fun a b ↦ ?_⟩, rfl⟩
+    · exact congr($(h (L a) (.inl ⟨a, rfl⟩)) b).symm
+    · exact congr($(h (R b) (.inr ⟨b, rfl⟩)) a).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where

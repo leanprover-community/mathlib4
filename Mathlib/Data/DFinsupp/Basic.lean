@@ -109,6 +109,8 @@ theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
   FunLike.ext_iff
 #align dfinsupp.ext_iff DFinsupp.ext_iff
 
+lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := FunLike.ne_iff
+
 @[deprecated FunLike.coe_injective]
 theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
   FunLike.coe_injective
@@ -120,14 +122,10 @@ instance : Zero (Π₀ i, β i) :=
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
 
-@[simp]
-theorem coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f :=
-  rfl
+@[simp, norm_cast] lemma coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f := rfl
 #align dfinsupp.coe_mk' DFinsupp.coe_mk'
 
-@[simp]
-theorem coe_zero : ⇑(0 : Π₀ i, β i) = 0 :=
-  rfl
+@[simp, norm_cast] lemma coe_zero : ⇑(0 : Π₀ i, β i) = 0 := rfl
 #align dfinsupp.coe_zero DFinsupp.coe_zero
 
 theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
@@ -239,7 +237,7 @@ theorem add_apply [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) (i : 
   rfl
 #align dfinsupp.add_apply DFinsupp.add_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ + g₂) = g₁ + g₂ :=
   rfl
 #align dfinsupp.coe_add DFinsupp.coe_add
@@ -261,14 +259,14 @@ instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => nsmul_zero _⟩
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => nsmul_zero _⟩
 #align dfinsupp.has_nat_scalar DFinsupp.hasNatScalar
 
 theorem nsmul_apply [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.nsmul_apply DFinsupp.nsmul_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_nsmul [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_nsmul DFinsupp.coe_nsmul
@@ -293,7 +291,7 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
     ⇑(∑ a in s, g a) = ∑ a in s, ⇑(g a) :=
   map_sum coeFnAddMonoidHom g s
@@ -312,9 +310,7 @@ theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i
   rfl
 #align dfinsupp.neg_apply DFinsupp.neg_apply
 
-@[simp]
-theorem coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g :=
-  rfl
+@[simp, norm_cast] lemma coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g := rfl
 #align dfinsupp.coe_neg DFinsupp.coe_neg
 
 instance [∀ i, AddGroup (β i)] : Sub (Π₀ i, β i) :=
@@ -324,7 +320,7 @@ theorem sub_apply [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) 
   rfl
 #align dfinsupp.sub_apply DFinsupp.sub_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ - g₂) = g₁ - g₂ :=
   rfl
 #align dfinsupp.coe_sub DFinsupp.coe_sub
@@ -332,14 +328,14 @@ theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ 
 /-- Note the general `SMul` instance doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [∀ i, AddGroup (β i)] : SMul ℤ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => zsmul_zero _⟩
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => zsmul_zero _⟩
 #align dfinsupp.has_int_scalar DFinsupp.hasIntScalar
 
 theorem zsmul_apply [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.zsmul_apply DFinsupp.zsmul_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_zsmul DFinsupp.coe_zsmul
@@ -355,14 +351,14 @@ instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
 instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (· • ·) c) fun _ => smul_zero _⟩
+  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _⟩
 
 theorem smul_apply [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
     (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.smul_apply DFinsupp.smul_apply
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
     (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
@@ -807,7 +803,7 @@ theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = 
 #align dfinsupp.filter_ne_eq_erase DFinsupp.filter_ne_eq_erase
 
 @[simp]
-theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter ((· ≠ ·) i) = f.erase i := by
+theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter (i ≠ ·) = f.erase i := by
   rw [← filter_ne_eq_erase f i]
   congr with j
   exact ne_comm
@@ -850,9 +846,7 @@ def update : Π₀ i, β i :=
 
 variable (j : ι)
 
-@[simp]
-theorem coe_update : (f.update i b : ∀ i : ι, β i) = Function.update f i b :=
-  rfl
+@[simp, norm_cast] lemma coe_update : (f.update i b : ∀ i : ι, β i) = Function.update f i b := rfl
 #align dfinsupp.coe_update DFinsupp.coe_update
 
 @[simp]
@@ -1893,6 +1887,16 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
 #align dfinsupp.prod_eq_prod_fintype DFinsupp.prod_eq_prod_fintype
 #align dfinsupp.sum_eq_sum_fintype DFinsupp.sum_eq_sum_fintype
 
+section CommMonoidWithZero
+variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
+  [Π i, DecidableEq (β i)] {f : Π₀ i, β i} {g : Π i, β i → γ}
+
+@[simp]
+lemma prod_eq_zero_iff : f.prod g = 0 ↔ ∃ i ∈ f.support, g i (f i) = 0 := Finset.prod_eq_zero_iff
+lemma prod_ne_zero_iff : f.prod g ≠ 0 ↔ ∀ i ∈ f.support, g i (f i) ≠ 0 := Finset.prod_ne_zero_iff
+
+end CommMonoidWithZero
+
 /--
 When summing over an `AddMonoidHom`, the decidability assumption is not needed, and the result is
 also an `AddMonoidHom`.
@@ -2281,14 +2285,14 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 #align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
 #align add_monoid_hom.map_dfinsupp_sum map_dfinsupp_sumₓ
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 #align monoid_hom.coe_dfinsupp_prod MonoidHom.coe_dfinsupp_prod
 #align add_monoid_hom.coe_dfinsupp_sum AddMonoidHom.coe_dfinsupp_sum
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem dfinsupp_prod_apply [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
@@ -2318,13 +2322,13 @@ theorem map_dfinsupp_sumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZe
   FunLike.congr_fun (comp_liftAddHom h g) f
 #align add_monoid_hom.map_dfinsupp_sum_add_hom AddMonoidHom.map_dfinsupp_sumAddHom
 
-@[simp]
 theorem dfinsupp_sumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
     (sumAddHom g f) r = sumAddHom (fun i => (eval r).comp (g i)) f :=
   map_dfinsupp_sumAddHom (eval r) f g
 #align add_monoid_hom.dfinsupp_sum_add_hom_apply AddMonoidHom.dfinsupp_sumAddHom_apply
 
+@[simp, norm_cast]
 theorem coe_dfinsupp_sumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) :
     ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
