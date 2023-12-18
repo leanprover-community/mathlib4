@@ -329,26 +329,28 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
 
 end FiniteDimensional
 
-theorem LinearIndependent.cardinal_mk_le_finrank [Module.Finite R V]
+namespace LinearIndependent
+
+theorem cardinal_mk_le_finrank [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
 #align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent LinearIndependent.cardinal_mk_le_finrank
 
-theorem LinearIndependent.fintype_card_le_finrank [Module.Finite R V]
+theorem fintype_card_le_finrank [Module.Finite R V]
     {ι : Type*} [Fintype ι] {b : ι → V} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R V := by
   simpa using h.cardinal_mk_le_finrank
 #align finite_dimensional.fintype_card_le_finrank_of_linear_independent LinearIndependent.fintype_card_le_finrank
 
-theorem LinearIndependent.finset_card_le_finrank [Module.Finite R V]
+theorem finset_card_le_finrank [Module.Finite R V]
     {b : Finset V} (h : LinearIndependent R (fun x => x : b → V)) :
     b.card ≤ finrank R V := by
   rw [← Fintype.card_coe]
   exact h.fintype_card_le_finrank
 #align finite_dimensional.finset_card_le_finrank_of_linear_independent LinearIndependent.finset_card_le_finrank
 
-theorem LinearIndependent.lt_aleph0_of_finite {ι : Type w}
+theorem lt_aleph0_of_finite {ι : Type w}
     [Module.Finite R V] {v : ι → V} (h : LinearIndependent R v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
@@ -356,14 +358,16 @@ theorem LinearIndependent.lt_aleph0_of_finite {ι : Type w}
   rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
   apply Cardinal.nat_lt_aleph0
 
-theorem LinearIndependent.finite [Module.Finite R V] {ι : Type*} {f : ι → V}
+theorem finite [Module.Finite R V] {ι : Type*} {f : ι → V}
     (h : LinearIndependent R f) : Finite ι :=
   Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
 
-theorem LinearIndependent.setFinite [Module.Finite R V] {b : Set V}
+theorem setFinite [Module.Finite R V] {b : Set V}
     (h : LinearIndependent R fun x : b => (x : V)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
 #align linear_independent.finite LinearIndependent.setFinite
+
+end LinearIndependent
 
 theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [Module.Finite R V]
     (v : ι → V) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
