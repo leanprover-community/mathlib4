@@ -65,7 +65,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
     {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h : μ F * 2 ^ finrank ℝ E < μ s) :
-    ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s := by
+    ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
       mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top two_ne_top),
@@ -94,12 +94,12 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     {L : AddSubgroup E} [Countable L] [DiscreteTopology L] (fund : IsAddFundamentalDomain L F μ)
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s)
     (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
-    ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s := by
+    ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_mes : μ s ≠ 0 := by
-    by_contra hμ
-    suffices μ F = 0 by exact fund.measure_ne_zero (NeZero.ne μ) this
+    intro hμ
+    suffices μ F = 0 from fund.measure_ne_zero (NeZero.ne μ) this
     rw [hμ, le_zero_iff, mul_eq_zero] at h
-    exact h.resolve_right <| (pow_eq_zero_iff finrank_pos).not.mpr two_ne_zero
+    exact h.resolve_right <| (pow_ne_zero_iff finrank_pos).mpr two_ne_zero
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
   let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
   let K : ConvexBody E := ⟨s, h_conv, h_cpt, h_nemp⟩

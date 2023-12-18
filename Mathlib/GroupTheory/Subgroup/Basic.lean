@@ -177,21 +177,29 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
 
 @[to_additive]
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
-  -- Porting note: whut? why do we need this?
-  haveI : SubmonoidClass S G := SubgroupClass.toSubmonoidClass
   ⟨fun hba => by simpa using mul_mem hba (inv_mem h), fun hb => mul_mem hb h⟩
 #align mul_mem_cancel_right mul_mem_cancel_right
 #align add_mem_cancel_right add_mem_cancel_right
 
 @[to_additive]
 theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
-  -- Porting note: whut? why do we need this?
-  have : SubmonoidClass S G := SubgroupClass.toSubmonoidClass
   ⟨fun hab => by simpa using mul_mem (inv_mem h) hab, mul_mem h⟩
 #align mul_mem_cancel_left mul_mem_cancel_left
 #align add_mem_cancel_left add_mem_cancel_left
 
 namespace SubgroupClass
+
+-- Here we assume H, K, and L are subgroups, but in fact any one of them
+-- could be allowed to be a subsemigroup.
+-- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
+-- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
+@[to_additive]
+theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
+  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (· xH) (· xH)⟩
+  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
+  exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
+    ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
+    (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
@@ -941,7 +949,7 @@ theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x �
 @[to_additive]
 theorem exists_ne_one_of_nontrivial (H : Subgroup G) [Nontrivial H] :
     ∃ x ∈ H, x ≠ 1 := by
-  rwa [←Subgroup.nontrivial_iff_exists_ne_one]
+  rwa [← Subgroup.nontrivial_iff_exists_ne_one]
 
 @[to_additive]
 theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := by
@@ -966,7 +974,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 
 @[to_additive]
 lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
-  rw [←nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
+  rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
   simp only [ne_eq, Subtype.exists, mk_eq_one_iff, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
@@ -2317,7 +2325,7 @@ variable {H}
 
 /-- The `centralizer` of `H` is the subgroup of `g : G` commuting with every `h : H`. -/
 @[to_additive
-      "The `centralizer` of `H` is the additive subgroup of `g : G` commuting with\nevery `h : H`."]
+      "The `centralizer` of `H` is the additive subgroup of `g : G` commuting with every `h : H`."]
 def centralizer (s : Set G) : Subgroup G :=
   { Submonoid.centralizer s with
     carrier := Set.centralizer s
@@ -3717,7 +3725,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
 #align subgroup.commute_of_normal_of_disjoint Subgroup.commute_of_normal_of_disjoint
-#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.commute_of_normal_of_disjoint
+#align add_subgroup.commute_of_normal_of_disjoint AddSubgroup.addCommute_of_normal_of_disjoint
 
 end SubgroupNormal
 

@@ -176,7 +176,9 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (ENNReal.mul_le_mul_right (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
-    simp [ENNReal.toReal_mul] at this
+    simp? [ENNReal.toReal_mul] at this says
+      simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, inv_nonneg, ge_iff_le,
+        div_pow] at this
     simpa [div_eq_mul_inv, zero_le_two] using this
   exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
@@ -210,7 +212,7 @@ theorem exists_goodδ :
     subsequence, to obtain a `1`-separated set in the ball of radius `2` with cardinality
     `N = multiplicity E + 1`. To formalize this, we work with functions `Fin N → E`.
      -/
-  by_contra' h
+  by_contra! h
   set N := multiplicity E + 1 with hN
   have :
     ∀ δ : ℝ, 0 < δ → ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧

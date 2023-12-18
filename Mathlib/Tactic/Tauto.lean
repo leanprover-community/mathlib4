@@ -169,7 +169,7 @@ def tautoCore : TacticM Unit := do
       distribNot <;>
       liftMetaTactic (casesMatching casesMatcher (recursive := true) (throwOnNoMatch := false)) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
-      (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
+      (do _ ← tryTactic (evalTactic (← `(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       liftMetaTactic (constructorMatching · coreConstructorMatcher
         (recursive := true) (throwOnNoMatch := false)) <;>

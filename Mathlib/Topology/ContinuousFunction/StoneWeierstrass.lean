@@ -380,7 +380,7 @@ variable [CompactSpace X]
 
 set_option synthInstance.maxHeartbeats 30000 in
 /-- The Stone-Weierstrass approximation theorem, `IsROrC` version, that a star subalgebra `A` of
-`C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if itseparates
+`C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if it separates
 points. -/
 theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     (A : StarSubalgebra 𝕜 C(X, 𝕜)) (hA : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by

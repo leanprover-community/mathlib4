@@ -566,7 +566,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   ⟨f '' c, hfc.image f, by
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
-    simp [subset_def] at hct
+    simp? [subset_def] at hct says
+      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
     intro x hx; simp
     exact hct x hx⟩
 #align totally_bounded.image TotallyBounded.image
@@ -799,7 +800,7 @@ theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopolo
     (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
   choose ht_mem hto hts using hto
   refine' ⟨⟨⋃ x ∈ s, range fun k => ball x (t k), hsc.biUnion fun x _ => countable_range _, _⟩⟩
-  refine' (isTopologicalBasis_of_open_of_nhds _ _).eq_generateFrom
+  refine' (isTopologicalBasis_of_isOpen_of_nhds _ _).eq_generateFrom
   · simp only [mem_iUnion₂, mem_range]
     rintro _ ⟨x, _, k, rfl⟩
     exact isOpen_ball x (hto k)

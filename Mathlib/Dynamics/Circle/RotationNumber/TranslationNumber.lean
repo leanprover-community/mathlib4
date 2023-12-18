@@ -927,10 +927,10 @@ theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz 
 such that `f x = x + τ f`. -/
 theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + τ f := by
   obtain ⟨a, ha⟩ : ∃ x, f x ≤ x + τ f := by
-    by_contra' H
+    by_contra! H
     exact lt_irrefl _ (f.lt_translationNumber_of_forall_add_lt hf H)
   obtain ⟨b, hb⟩ : ∃ x, x + τ f ≤ f x := by
-    by_contra' H
+    by_contra! H
     exact lt_irrefl _ (f.translationNumber_lt_of_forall_lt_add hf H)
   exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
 #align circle_deg1_lift.exists_eq_add_translation_number CircleDeg1Lift.exists_eq_add_translationNumber

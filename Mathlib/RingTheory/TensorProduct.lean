@@ -179,7 +179,7 @@ instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
 theorem natCast_def' (n : ℕ) : (n : A ⊗[R] B) = (1 : A) ⊗ₜ (n : B) := by
-  rw [natCast_def, ←nsmul_one, smul_tmul, nsmul_one]
+  rw [natCast_def, ← nsmul_one, smul_tmul, nsmul_one]
 
 end AddCommMonoidWithOne
 
@@ -448,7 +448,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   ext a b
   have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
   dsimp at *
-  rwa [←f.map_mul, ←g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
+  rwa [← f.map_mul, ← g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext <| fun _ => H _ _) (AlgHom.ext <| fun _ => H _ _)
@@ -519,7 +519,7 @@ instance instRing : Ring (A ⊗[R] B) where
   __ := instNonAssocRing
 
 theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
-  rw [intCast_def, ←zsmul_one, smul_tmul, zsmul_one]
+  rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl

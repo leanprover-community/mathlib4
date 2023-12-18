@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Data.Nat.Prime
 
 #align_import algebra.char_p.exp_char from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -111,3 +112,84 @@ end NoZeroDivisors
 end Nontrivial
 
 end Semiring
+
+theorem ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by
+  obtain ⟨p, h⟩ := CharP.exists R
+  by_cases hp : p = 0
+  · exact ⟨1, by rw [hp] at h; haveI := CharP.charP_to_charZero R; exact .zero⟩
+  exact ⟨p, haveI := NeZero.mk hp; .prime (CharP.char_is_prime_of_pos R p).out⟩
+
+/-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+theorem expChar_of_injective_ringHom {R A : Type*}
+    [Semiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
+    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
+  cases' hR with _ _ hprime _
+  · haveI := charZero_of_injective_ringHom h; exact .zero
+  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+
+/-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+theorem expChar_of_injective_algebraMap {R A : Type*}
+    [CommSemiring R] [Semiring A] [Algebra R A] (h : Function.Injective (algebraMap R A))
+    (q : ℕ) [ExpChar R q] : ExpChar A q := expChar_of_injective_ringHom h q
+
+theorem add_pow_expChar_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) (h : Commute x y) : (x + y) ^ q = x ^ q + y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char_of_commute R x y h
+
+theorem add_pow_expChar_pow_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) (h : Commute x y) : (x + y) ^ q ^ n = x ^ q ^ n + y ^ q ^ n := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char_pow_of_commute R x y h
+
+theorem sub_pow_expChar_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) (h : Commute x y) : (x - y) ^ q = x ^ q - y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char_of_commute R x y h
+
+theorem sub_pow_expChar_pow_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) (h : Commute x y) : (x - y) ^ q ^ n = x ^ q ^ n - y ^ q ^ n := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char_pow_of_commute R x y h
+
+theorem add_pow_expChar [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) : (x + y) ^ q = x ^ q + y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char R x y
+
+theorem add_pow_expChar_pow [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) : (x + y) ^ q ^ n = x ^ q ^ n + y ^ q ^ n := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char_pow R x y
+
+theorem sub_pow_expChar [CommRing R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) : (x - y) ^ q = x ^ q - y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char R x y
+
+theorem sub_pow_expChar_pow [CommRing R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) : (x - y) ^ q ^ n = x ^ q ^ n - y ^ q ^ n := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char_pow R x y
+
+theorem ExpChar.neg_one_pow_expChar [Ring R] (q : ℕ) [hR : ExpChar R q] :
+    (-1 : R) ^ q = -1 := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact CharP.neg_one_pow_char R q
+
+theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] :
+    (-1 : R) ^ q ^ n = -1 := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n

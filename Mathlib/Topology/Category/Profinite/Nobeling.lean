@@ -677,8 +677,8 @@ theorem fin_comap_jointlySurjective
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap (ProjRestrict C (· ∈ s)) := by
-  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
-    (spanCone hC.isCompact) _
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
+    (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
 
@@ -1814,7 +1814,7 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
     by_contra hn
-    obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
+    obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
     dsimp (config := { unfoldPartialApp := true }) [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]

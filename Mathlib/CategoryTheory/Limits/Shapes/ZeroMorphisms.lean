@@ -111,7 +111,7 @@ theorem ext (I J : HasZeroMorphisms C) : I = J := by
     apply I.zero_comp X (J.zero Y Y).zero
   have that : (I.zero X Y).zero ≫ (J.zero Y Y).zero = (J.zero X Y).zero := by
     apply J.comp_zero (I.zero X Y).zero Y
-  rw[←this,←that]
+  rw[← this, ← that]
 #align category_theory.limits.has_zero_morphisms.ext CategoryTheory.Limits.HasZeroMorphisms.ext
 
 instance : Subsingleton (HasZeroMorphisms C) :=
@@ -467,7 +467,7 @@ def isoOfIsIsomorphicZero {X : C} (P : IsIsomorphic X 0) : X ≅ 0 where
   inv := 0
   hom_inv_id := by
     cases' P with P
-    rw [←P.hom_inv_id,←Category.id_comp P.inv]
+    rw [← P.hom_inv_id, ← Category.id_comp P.inv]
     apply Eq.symm
     simp only [id_comp, Iso.hom_inv_id, comp_zero]
     apply (idZeroEquivIsoZero X).invFun P

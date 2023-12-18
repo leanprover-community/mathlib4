@@ -410,7 +410,7 @@ lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p in s, 
   rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finset_prod_iff _)]
   refine' ⟨_, fun hp ↦ ⟨hs _ hp, _, hp, dvd_rfl⟩⟩
   rintro ⟨hp, q, hq, hpq⟩
-  rwa [←((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]
+  rwa [← ((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]
 
 lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
     primeFactors (m / m.gcd n) = primeFactors m \ primeFactors n := by
@@ -432,7 +432,7 @@ lemma prod_primeFactors_invOn_squarefree :
 
 theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.factors.toFinset, p = n := by
-  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id'', Nat.prod_factors hn.ne_zero]
+  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id', Nat.prod_factors hn.ne_zero]
 
 end Nat
 
