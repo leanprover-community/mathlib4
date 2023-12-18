@@ -74,7 +74,7 @@ private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) : 0 < m :=
-  Nat.div_pos ((Nat.mul_le_mul_left _ <| Nat.pow_le_pow_of_le_left (by norm_num) _).trans hPα) <|
+  Nat.div_pos ((Nat.mul_le_mul_left _ <| Nat.pow_le_pow_left (by norm_num) _).trans hPα) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the

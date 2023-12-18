@@ -146,7 +146,7 @@ instance : Free ℤ (𝓞 K) :=
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
-  IsIntegralClosure.isLocalization ℤ ℚ K (𝓞 K)
+  IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)
 
 /-- A ℤ-basis of the ring of integers of `K`. -/
 noncomputable def basis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℤ (𝓞 K) :=

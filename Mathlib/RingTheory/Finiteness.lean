@@ -527,9 +527,9 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
     refine' fun i _ => Ideal.mul_le_right.trans _
     obtain h | h := le_or_lt n i
-    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow h).trans hn)
+    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
-      refine' (Ideal.pow_le_pow _).trans hm
+      refine' (Ideal.pow_le_pow_right _).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 #align ideal.exists_radical_pow_le_of_fg Ideal.exists_radical_pow_le_of_fg
@@ -587,6 +587,11 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
+    [SMul R A] [IsScalarTower R A M] [Finite R M]
+    (N : Submodule A M) : Finite R (M ⧸ N) :=
+  Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
 instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=

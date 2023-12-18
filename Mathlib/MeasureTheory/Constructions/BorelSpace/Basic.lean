@@ -1334,7 +1334,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
   rcases isEmpty_or_nonempty α with hα|hα
-  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ Iff.mp toFinset_eq_empty rfl
+  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ eq_empty_of_isEmpty _
     simp [this]
   have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
     intro i c
