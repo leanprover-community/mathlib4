@@ -505,7 +505,7 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
-extension, because the minimal polynomial of a non-integral element is 0, which is not
+extension, because the minimal polynomial of a non-integral element is `0`, which is not
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
@@ -521,11 +521,17 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x := fun x ↦ by
+variable {F} in
+/-- If the minimal polynomial of `x : K` over `F` is separable, then `x` is integral over `F`,
+because the minimal polynomial of a non-integral element is `0`, which is not separable. -/
+theorem Polynomial.Separable.isIntegral {x : K} (h : (minpoly F x).Separable) : IsIntegral F x := by
   cases subsingleton_or_nontrivial F
   · haveI := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
-  · exact of_not_not fun h ↦ not_separable_zero (minpoly.eq_zero h ▸ IsSeparable.separable F x)
+  · exact of_not_not fun h' ↦ not_separable_zero (minpoly.eq_zero h' ▸ h)
+
+theorem IsSeparable.isIntegral [IsSeparable F K] :
+    ∀ x : K, IsIntegral F x := fun x ↦ (IsSeparable.separable F x).isIntegral
 #align is_separable.is_integral IsSeparable.isIntegral
 
 variable {F}
