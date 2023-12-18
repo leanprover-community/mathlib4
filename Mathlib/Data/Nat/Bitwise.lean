@@ -188,9 +188,7 @@ theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
 /-- The ith bit is the ith element of `n.bits`. -/
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
   induction' i with i ih generalizing n
-  · simp only [testBit, zero_eq, shiftRight_zero, and_one_is_mod, mod_two_of_bodd,
-      bodd_eq_bits_head, List.getI_zero_eq_headI]
-    cases List.headI (bits n) <;> rfl
+  · simp [testBit, bodd_eq_bits_head, List.getI_zero_eq_headI]
   conv_lhs => rw [← bit_decomp n]
   rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
@@ -249,20 +247,19 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n)]
-  simp
+  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
 #align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
 
 theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
   rw [testBit, shiftRight_eq_div_pow]
   cases' hm.lt_or_lt with hm hm
-  · rw [Nat.div_eq_of_lt]
-    · simp
-    · exact pow_lt_pow_right one_lt_two hm
+  · rw [Nat.div_eq_of_lt, bodd_zero]
+    exact pow_lt_pow_right one_lt_two hm
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
-    simp [pow_succ, and_one_is_mod, mul_mod_left]
+    simp only [pow_succ, bodd_mul, Bool.and_eq_false_eq_eq_false_or_eq_false]
+    exact Or.inr rfl
 #align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
 
 theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
@@ -304,7 +301,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
 #align nat.land_comm Nat.land_comm
 
 theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
-  bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
+  bitwise_comm Bool.xor_comm n m
 #align nat.lxor_comm Nat.xor_comm
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
