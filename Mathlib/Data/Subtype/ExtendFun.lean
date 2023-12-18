@@ -47,5 +47,4 @@ lemma extendFun_of_p (a : α) (h : p a) : extendFun f g a = f ⟨a, h⟩ := by
 @[simp] lemma extendFun_comp_val : extendFun f g ∘ Subtype.val = f := by
   funext a; rw [Function.comp_apply, extendFun_val]
 
-
 end Subtype
