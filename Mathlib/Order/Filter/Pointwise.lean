@@ -954,7 +954,7 @@ end GroupWithZero
 /-! ### Scalar addition/multiplication of filters -/
 
 
-section Smul
+section SMul
 
 variable [SMul α β] {f f₁ f₂ : Filter α} {g g₁ g₂ h : Filter β} {s : Set α} {t : Set β} {a : α}
   {b : β}
@@ -1084,7 +1084,7 @@ instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (·
 #align filter.covariant_smul Filter.covariant_smul
 #align filter.covariant_vadd Filter.covariant_vadd
 
-end Smul
+end SMul
 
 /-! ### Scalar subtraction of filters -/
 
@@ -1188,7 +1188,7 @@ end Vsub
 /-! ### Translation/scaling of filters -/
 
 
-section Smul
+section SMul
 
 variable [SMul α β] {f f₁ f₂ : Filter β} {s : Set β} {a : α}
 
@@ -1264,7 +1264,7 @@ instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· �
 #align filter.covariant_smul_filter Filter.covariant_smul_filter
 #align filter.covariant_vadd_filter Filter.covariant_vadd_filter
 
-end Smul
+end SMul
 
 open Pointwise
 
