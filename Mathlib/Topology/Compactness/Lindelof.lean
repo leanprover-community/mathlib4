@@ -152,4 +152,4 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f):
-  IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
+    IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
