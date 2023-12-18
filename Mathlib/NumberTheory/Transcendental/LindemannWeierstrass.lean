@@ -173,11 +173,10 @@ theorem Int.coe_castRingHom' {α} [NonAssocRing α] : ⇑(castRingHom α) = Int.
 
 theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     ∃ c,
-      ∀ q > (eval 0 p).natAbs,
-        ∀ (prime_q : Nat.Prime q),
-          ∃ (n : ℤ) (hn : n % q ≠ 0) (gp : ℤ[X]) (gp_le : gp.natDegree ≤ q * p.natDegree - 1),
-            ∀ {r : ℂ}, r ∈ p.aroots ℂ →
-              Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! := by
+      ∀ q > (eval 0 p).natAbs, q.Prime →
+        ∃ (n : ℤ) (_ : n % q ≠ 0) (gp : ℤ[X]) (_ : gp.natDegree ≤ q * p.natDegree - 1),
+          ∀ {r : ℂ}, r ∈ p.aroots ℂ →
+            Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! := by
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
   have :
     ∀ s : ℂ,
