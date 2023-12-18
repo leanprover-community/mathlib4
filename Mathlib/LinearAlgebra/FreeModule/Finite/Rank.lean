@@ -327,28 +327,28 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 #align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
+end FiniteDimensional
+
 theorem LinearIndependent.cardinal_mk_le_finrank [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
-#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
+#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent LinearIndependent.cardinal_mk_le_finrank
 
 theorem LinearIndependent.fintype_card_le_finrank [Module.Finite R V]
     {ι : Type*} [Fintype ι] {b : ι → V} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R V := by
   simpa using h.cardinal_mk_le_finrank
-#align finite_dimensional.fintype_card_le_finrank_of_linear_independent FiniteDimensional.fintype_card_le_finrank_of_linearIndependent
+#align finite_dimensional.fintype_card_le_finrank_of_linear_independent LinearIndependent.fintype_card_le_finrank
 
 theorem LinearIndependent.finset_card_le_finrank [Module.Finite R V]
     {b : Finset V} (h : LinearIndependent R (fun x => x : b → V)) :
     b.card ≤ finrank R V := by
   rw [← Fintype.card_coe]
   exact h.fintype_card_le_finrank
-#align finite_dimensional.finset_card_le_finrank_of_linear_independent FiniteDimensional.finset_card_le_finrank_of_linearIndependent
+#align finite_dimensional.finset_card_le_finrank_of_linear_independent LinearIndependent.finset_card_le_finrank
 
-end FiniteDimensional
-
-theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
+theorem LinearIndependent.lt_aleph0_of_finite {ι : Type w}
     [Module.Finite R V] {v : ι → V} (h : LinearIndependent R v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
@@ -358,11 +358,11 @@ theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
 
 theorem LinearIndependent.finite [Module.Finite R V] {ι : Type*} {f : ι → V}
     (h : LinearIndependent R f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 <| Module.Finite.lt_aleph0_of_linearIndependent h
+  Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
 
 theorem LinearIndependent.setFinite [Module.Finite R V] {b : Set V}
     (h : LinearIndependent R fun x : b => (x : V)) : b.Finite :=
-  Cardinal.lt_aleph0_iff_set_finite.mp (Module.Finite.lt_aleph0_of_linearIndependent h)
+  Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
 #align linear_independent.finite LinearIndependent.setFinite
 
 theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [Module.Finite R V]
@@ -488,7 +488,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card
     [Module.Finite R V] {t : Finset V}
     (h : finrank R V < t.card) : ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   classical
-  have := mt FiniteDimensional.finset_card_le_finrank_of_linearIndependent (by simpa using h)
+  have := mt LinearIndependent.finset_card_le_finrank (by simpa using h)
   rw [_root_.not_linearIndependent_iff] at this
   obtain ⟨s, g, sum, z, zm, nonzero⟩ := this
   -- Now we have to extend `g` to all of `t`, then to all of `V`.
