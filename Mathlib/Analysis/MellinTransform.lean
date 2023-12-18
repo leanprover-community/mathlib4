@@ -150,7 +150,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     rw [Ne.def, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
   rw [set_integral_congr measurableSet_Ioi this, integral_smul,
-    integral_comp_mul_left_Ioi (fun u ↦ ↑u ^ (s - 1) • f u) _ ha,
+    integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
     mul_zero, ← Complex.coe_smul, ← mul_smul, sub_eq_add_neg,
     cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, abs_of_pos (inv_pos.mpr ha), ofReal_inv,
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
@@ -226,8 +226,8 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
       have ht' : 0 < t := he'.trans ht
       rw [norm_mul, rpow_add ht', ← norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le (-a)), mul_assoc,
         mul_comm _ d, norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le _)]
-      exact mul_le_mul_of_nonneg_left (he t ((le_max_left e 1).trans_lt ht).le)
-        (rpow_pos_of_pos ht' _).le
+      gcongr
+      exact he t ((le_max_left e 1).trans_lt ht).le
     refine' (HasFiniteIntegral.mul_const _ _).mono' this
     exact (integrableOn_Ioi_rpow_of_lt (by linarith) he').hasFiniteIntegral
 set_option linter.uppercaseLean3 false in
@@ -239,7 +239,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     (hfc : AEStronglyMeasurable f <| volume.restrict (Ioi 0))
     (hf :  f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioc 0 c) := by
-  obtain ⟨d, hd, hd'⟩ := hf.exists_pos
+  obtain ⟨d, _, hd'⟩ := hf.exists_pos
   simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
   obtain ⟨ε, hε, hε'⟩ := hd'
   refine' ⟨ε, hε, integrableOn_Ioc_iff_integrableOn_Ioo.mpr ⟨_, _⟩⟩
@@ -257,11 +257,11 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
       specialize hε' _ ht.1
       · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
         exact ht.2
-      · refine' (mul_le_mul_of_nonneg_right hε' (norm_nonneg _)).trans _
+      · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
+          _ = d * t ^ (s - b - 1) := ?_
         simp_rw [norm_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt ht.1) _), mul_assoc]
-        refine' mul_le_mul_of_nonneg_left (le_of_eq _) hd.le
         rw [← rpow_add ht.1]
-        congr 1
+        congr 2
         abel
 set_option linter.uppercaseLean3 false in
 #align mellin_convergent_zero_of_is_O mellin_convergent_zero_of_isBigO
@@ -369,7 +369,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
     refine' (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => _
     simp_rw [norm_smul, norm_mul, Complex.norm_eq_abs (log _), Complex.abs_ofReal,
       mul_assoc]
-    refine' mul_le_mul_of_nonneg_right _ (mul_nonneg (abs_nonneg _) (norm_nonneg _))
+    gcongr
     rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_lt 1 t with h | h
     · refine' le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h _)
@@ -386,7 +386,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       rwa [sub_re, sub_le_iff_le_add, ← sub_le_iff_le_add'] at hz'
   have h5 : IntegrableOn bound (Ioi 0) := by
     simp_rw [add_mul, mul_assoc]
-    suffices ∀ {j : ℝ} (hj : b < j) (hj' : j < a),
+    suffices ∀ {j : ℝ}, b < j → j < a →
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
       refine' Integrable.add (this _ _) (this _ _)
       all_goals linarith

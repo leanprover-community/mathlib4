@@ -21,8 +21,6 @@ open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
 
 open Filter Finset Set
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 section CpowLimits
 
 /-!
@@ -397,7 +395,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       tauto
     have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ :=
       continuous_ofReal.continuousAt.prod_map continuousAt_id
-    exact @ContinuousAt.comp (ℝ × ℂ) (ℂ × ℂ) ℂ _ _ _ _ (fun p => ⟨↑p.1, p.2⟩) ⟨0, y⟩ A B
+    exact ContinuousAt.comp (α := ℝ × ℂ) (f := fun p => ⟨↑p.1, p.2⟩) (x := ⟨0, y⟩) A B
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
@@ -412,7 +410,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
 
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
-  @ContinuousAt.comp _ _ _ _ _ _ _ _ x (continuousAt_ofReal_cpow x y h)
+  ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
     (continuous_id.prod_mk continuous_const).continuousAt
 #align complex.continuous_at_of_real_cpow_const Complex.continuousAt_ofReal_cpow_const
 
@@ -489,10 +487,10 @@ namespace ENNReal
 theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞) {y : ℝ≥0∞} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
   lift x to ℝ≥0 using hx
-  by_cases y = ∞
+  by_cases h : y = ∞
   · exact eventually_of_forall fun n => h.symm ▸ le_top
   · lift y to ℝ≥0 using h
-    have := NNReal.eventually_pow_one_div_le x (by exact_mod_cast hy : 1 < y)
+    have := NNReal.eventually_pow_one_div_le x (mod_cast hy : 1 < y)
     refine' this.congr (eventually_of_forall fun n => _)
     rw [coe_rpow_of_nonneg x (by positivity : 0 ≤ (1 / n : ℝ)), coe_le_coe]
 #align ennreal.eventually_pow_one_div_le ENNReal.eventually_pow_one_div_le

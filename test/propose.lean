@@ -11,9 +11,9 @@ set_option autoImplicit true
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
 /--
-info: Try this: have : List.Disjoint M L := List.disjoint_symm w
----
 info: Try this: have : List.Disjoint K M := List.disjoint_of_subset_left m w
+---
+info: Try this: have : List.Disjoint M L := List.disjoint_symm w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -69,15 +69,15 @@ example (K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
 /--
 info: Try this: have : IsUnit p := isUnit_of_dvd_one h
 ---
-info: Try this: have : p ≠ 1 := ne_one hp
----
-info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
----
-info: Try this: have : p ≠ 0 := ne_zero hp
+info: Try this: have : ¬IsUnit p := not_unit hp
 ---
 info: Try this: have : ¬p ∣ 1 := not_dvd_one hp
 ---
-info: Try this: have : ¬IsUnit p := not_unit hp
+info: Try this: have : p ≠ 0 := ne_zero hp
+---
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
+---
+info: Try this: have : p ≠ 1 := ne_one hp
 -/
 #guard_msgs in
 -- From Mathlib.Algebra.Associated:

@@ -95,7 +95,7 @@ def sMod (p : ℕ) : ℕ → ℤ
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
 theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| by exact_mod_cast Nat.one_lt_two_pow p hp
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
 
 theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
   (mersenne_int_pos w).ne'
@@ -151,7 +151,9 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
+    simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
+      simp only [ge_iff_le, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos,
+        cast_pred, cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
     · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
     · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
@@ -160,7 +162,7 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     simp
 #align lucas_lehmer.residue_eq_zero_iff_s_mod_eq_zero LucasLehmer.residue_eq_zero_iff_sMod_eq_zero
 
-/-- A Mersenne number `2^p-1` is prime if and only if
+/-- **Lucas-Lehmer Test**: a Mersenne number `2^p-1` is prime if and only if
 the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=
@@ -282,10 +284,12 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.nat_coe_snd
 
+-- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : X q).snd = 0 :=
   rfl
@@ -420,7 +424,10 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
-  simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
+  simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
+    simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right,
+      ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos, cast_pred, cast_pow,
+      cast_ofNat] at h
   cases' h with k h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
@@ -435,7 +442,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   rw [mul_comm _ (k : X (q (p' + 2)))] at h
   replace h := eq_sub_of_add_eq h
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
-  exact_mod_cast h
+  exact mod_cast h
 #align lucas_lehmer.ω_pow_formula LucasLehmer.ω_pow_formula
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
@@ -484,7 +491,7 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     have ω_pow := orderOf_dvd_iff_pow_eq_one.1 o
     replace ω_pow :=
       congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) ω_pow
-    simp at ω_pow
+    simp? at ω_pow says simp only [map_pow, Units.coeHom_apply, ωUnit_coe, map_one] at ω_pow
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩

@@ -34,9 +34,9 @@ theorem tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop :=
 theorem summable_of_absolute_convergence_real {f : ℕ → ℝ} :
     (∃ r, Tendsto (fun n ↦ ∑ i in range n, |f i|) atTop (𝓝 r)) → Summable f
   | ⟨r, hr⟩ => by
-    refine' summable_of_summable_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg _ _).2 _⟩
-    exact fun i ↦ norm_nonneg _
-    simpa only using hr
+    refine .of_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg ?_ _).2 ?_⟩
+    · exact fun i ↦ norm_nonneg _
+    · simpa only using hr
 #align summable_of_absolute_convergence_real summable_of_absolute_convergence_real
 
 /-! ### Powers -/
@@ -233,7 +233,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
     Tendsto (fun n ↦ (n : ℝ) ^ k * r ^ n : ℕ → ℝ) atTop (𝓝 0) := by
   by_cases h0 : r = 0
   · exact tendsto_const_nhds.congr'
-      (mem_atTop_sets.2 ⟨1, fun n hn ↦ by simp [zero_lt_one.trans_le hn, h0]⟩)
+      (mem_atTop_sets.2 ⟨1, fun n hn ↦ by simp [zero_lt_one.trans_le hn |>.ne', h0]⟩)
   have hr' : 1 < |r|⁻¹ := one_lt_inv (abs_pos.2 h0) hr
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
@@ -335,7 +335,7 @@ theorem summable_norm_pow_mul_geometric_of_norm_lt_1 {R : Type*} [NormedRing R] 
 
 theorem summable_pow_mul_geometric_of_norm_lt_1 {R : Type*} [NormedRing R] [CompleteSpace R]
     (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) :=
-  summable_of_summable_norm <| summable_norm_pow_mul_geometric_of_norm_lt_1 _ hr
+  .of_norm <| summable_norm_pow_mul_geometric_of_norm_lt_1 _ hr
 #align summable_pow_mul_geometric_of_norm_lt_1 summable_pow_mul_geometric_of_norm_lt_1
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
@@ -455,11 +455,9 @@ open NormedSpace
 /-- A geometric series in a complete normed ring is summable.
 Proved above (same name, different namespace) for not-necessarily-complete normed fields. -/
 theorem NormedRing.summable_geometric_of_norm_lt_1 (x : R) (h : ‖x‖ < 1) :
-    Summable fun n : ℕ ↦ x ^ n := by
+    Summable fun n : ℕ ↦ x ^ n :=
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_1 (norm_nonneg _) h
-  refine' summable_of_norm_bounded_eventually _ h1 _
-  rw [Nat.cofinite_eq_atTop]
-  exact eventually_norm_pow_le x
+  h1.of_norm_bounded_eventually_nat _ (eventually_norm_pow_le x)
 #align normed_ring.summable_geometric_of_norm_lt_1 NormedRing.summable_geometric_of_norm_lt_1
 
 /-- Bound for the sum of a geometric series in a normed ring. This formula does not assume that the
@@ -498,7 +496,6 @@ end NormedRingGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
 
-
 theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
@@ -506,18 +503,17 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
-    refine' summable_of_norm_bounded (fun n ↦ ‖f N‖ * r ^ n)
-      (Summable.mul_left _ <| summable_geometric_of_lt_1 hr₀ hr₁) fun n ↦ _
+    refine .of_norm_bounded (fun n ↦ ‖f N‖ * r ^ n)
+      (Summable.mul_left _ <| summable_geometric_of_lt_1 hr₀ hr₁) fun n ↦ ?_
     simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
     refine' le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ _
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · push_neg at hr₀
-    refine' summable_of_norm_bounded_eventually 0 summable_zero _
-    rw [Nat.cofinite_eq_atTop]
+    refine' .of_norm_bounded_eventually_nat 0 summable_zero _
     filter_upwards [h] with _ hn
-    by_contra' h
+    by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
 #align summable_of_ratio_norm_eventually_le summable_of_ratio_norm_eventually_le
 

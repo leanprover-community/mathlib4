@@ -46,6 +46,9 @@ class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
 #align category_theory.projective CategoryTheory.Projective
 
+lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
+  factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
+
 section
 
 /-- A projective presentation of an object `X` consists of an epimorphism `f : P ⟶ X`
@@ -80,7 +83,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
   (Projective.factors f e).choose
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
@@ -90,8 +93,8 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 : C) where
-  factors f e _ := ⟨0, by ext⟩
+instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
+  (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
 end

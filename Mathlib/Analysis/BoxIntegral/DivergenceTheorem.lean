@@ -132,14 +132,12 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       -- with `c * (I.upper i - I.lower i)`
       refine' norm_integral_le_of_le_const (fun y hy => (this y hy).trans _) volume
       rw [mul_assoc (2 * ε)]
-      exact mul_le_mul_of_nonneg_left (I.diam_Icc_le_of_distortion_le i hc)
-        (mul_nonneg zero_le_two h0.le)
+      gcongr
+      exact I.diam_Icc_le_of_distortion_le i hc
     _ = 2 * ε * c * ∏ j, (I.upper j - I.lower j) := by
       rw [← Measure.toBoxAdditive_apply, Box.volume_apply, ← I.volume_face_mul i]
       ac_rfl
 #align box_integral.norm_volume_sub_integral_face_upper_sub_lower_smul_le BoxIntegral.norm_volume_sub_integral_face_upper_sub_lower_smul_le
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
@@ -241,7 +239,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
         _ ≤ dist J.upper J.lower := (dist_le_pi_dist J.upper J.lower (i.succAbove j))
         _ ≤ dist J.upper x + dist J.lower x := (dist_triangle_right _ _ _)
         _ ≤ δ + δ := (add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc))
-        _ ≤ 1 / 2 + 1 / 2 := (add_le_add hδ12 hδ12)
+        _ ≤ 1 / 2 + 1 / 2 := by gcongr
         _ = 1 := add_halves 1
   · intro c x hx ε ε0
     /- At a point `x ∉ s`, we unfold the definition of Fréchet differentiability, then use

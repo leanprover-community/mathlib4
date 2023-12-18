@@ -28,8 +28,9 @@ theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f 
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (hs.to_set.image f)]
 #align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
 
-theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = sSup s :=
-  by rw [hs.sup'_eq_cSup_image, Set.image_id]
+theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) :
+    s.sup' hs id = sSup s := by
+  rw [hs.sup'_eq_cSup_image, Set.image_id]
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
 end ConditionallyCompleteLattice

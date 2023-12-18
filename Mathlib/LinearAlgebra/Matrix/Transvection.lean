@@ -484,7 +484,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         rintro rfl
         cases i
         tauto
-      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq]
+      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
+        not_false_eq_true]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]

@@ -290,12 +290,12 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
 #align finset.card_compl Finset.card_compl
 
 @[simp]
-theorem card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
     s.card + sᶜ.card = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
 @[simp]
-theorem card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
     sᶜ.card + s.card = Fintype.card α := by
   rw [add_comm, card_add_card_compl]
 
@@ -761,11 +761,20 @@ noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card 
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
 #align finset.equiv_fin_of_card_eq Finset.equivFinOfCardEq
 
+theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
+  Fin.equiv_iff_eq.1 ⟨s.equivFin.symm.trans i⟩
+
+theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
+    s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
+
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
 that `s.card = t.card`.-/
-noncomputable def Finset.equivOfCardEq {s t : Finset α} (h : s.card = t.card) : s ≃ t :=
-  Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
+noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
+    s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
+
+theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
+  (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=
@@ -1100,28 +1109,19 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
--- Porting note: new theorem, to work around missing `wlog`
-private theorem natEmbeddingAux_injective_aux (α : Type*) [Infinite α] (m n : ℕ)
-  (h : Infinite.natEmbeddingAux α m = Infinite.natEmbeddingAux α n) (hmn : m < n) : m = n := by
-  letI := Classical.decEq α
-  exfalso
-  refine'
-    (Classical.choose_spec
-        (exists_not_mem_finset
-          ((Multiset.range n).pmap (fun m (_hm : m < n) => natEmbeddingAux α m) fun _ =>
-              Multiset.mem_range.1).toFinset))
-      _
-  refine' Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, _⟩)
-  rw [h, natEmbeddingAux]
-
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
   letI := Classical.decEq α
-  rcases lt_trichotomy m n with hmn | rfl | hnm
-  · apply natEmbeddingAux_injective_aux α m n h hmn
-  · rfl
-  · apply (natEmbeddingAux_injective_aux α n m h.symm hnm).symm
+  wlog hmlen : m ≤ n generalizing m n
+  · exact (this h.symm $ le_of_not_le hmlen).symm
+  by_contra hmn
+  have hmn : m < n := lt_of_le_of_ne hmlen hmn
+  refine (Classical.choose_spec (exists_not_mem_finset
+    ((Multiset.range n).pmap (λ m (_ : m < n) => natEmbeddingAux α m)
+      (fun _ => Multiset.mem_range.1)).toFinset)) ?_
+  refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
+  rw [h, natEmbeddingAux]
 
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
@@ -1190,7 +1190,7 @@ See also: `Finite.exists_ne_map_eq_of_infinite`
 theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     ∃ y : β, Infinite (f ⁻¹' {y}) := by
   classical
-    by_contra' hf
+    by_contra! hf
     cases nonempty_fintype β
     haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
@@ -1304,7 +1304,7 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
 -- unsafe def positivity_finset_card : expr → tactic strictness
 --   | q(Finset.card $(s)) => do
 --     let p
---       ←-- TODO: Partial decision procedure for `Finset.nonempty`
+--       ← -- TODO: Partial decision procedure for `Finset.nonempty`
 --             to_expr
 --             ``(Finset.Nonempty $(s)) >>=
 --           find_assumption

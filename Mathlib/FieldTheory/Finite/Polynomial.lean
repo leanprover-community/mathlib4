@@ -3,11 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
@@ -95,7 +93,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
   refine' le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq _)
-  simp_rw [← Multiset.coe_countAddMonoidHom, (Multiset.countAddMonoidHom n).map_sum,
+  simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   refine' Finset.sum_eq_single n _ _

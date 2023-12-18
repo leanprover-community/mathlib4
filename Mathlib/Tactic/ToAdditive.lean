@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
-import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
@@ -462,7 +461,7 @@ def expand (e : Expr) : MetaM Expr := do
       trace[to_additive_detail] "expanded {e} to {e'}"
       return .continue e'
   if e != e₂ then
-    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
+    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -733,7 +732,10 @@ def nameDict : String → List String
   | "prehaar"     => ["add", "Prehaar"]
   | "unit"        => ["add", "Unit"]
   | "units"       => ["add", "Units"]
+  | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "commute"     => ["add", "Commute"]
+  | "semiconj"    => ["add", "Semiconj"]
   | x             => [x]
 
 /--
@@ -808,6 +810,10 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Semiconj" :: s
+                                      => "function" :: "_" :: "semiconj" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Commute" :: s
+                                      => "function" :: "_" :: "commute" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
@@ -951,7 +957,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     let env ← getEnv
     match getAttributeImpl env attr.name with
     | Except.error errMsg => throwError errMsg
-    | Except.ok attrImpl  =>
+    | Except.ok attrImpl =>
       let runAttr := do
         attrImpl.add src attr.stx attr.kind
         attrImpl.add tgt attr.stx attr.kind

@@ -61,14 +61,20 @@ theorem isBounded_image_fst_and_snd {s : Set (α × β)} :
   compl_mem_coprod.symm
 #align bornology.is_bounded_image_fst_and_snd Bornology.isBounded_image_fst_and_snd
 
+lemma IsBounded.image_fst {s : Set (α × β)} (hs : IsBounded s) : IsBounded (Prod.fst '' s) :=
+  (isBounded_image_fst_and_snd.2 hs).1
+
+lemma IsBounded.image_snd {s : Set (α × β)} (hs : IsBounded s) : IsBounded (Prod.snd '' s) :=
+  (isBounded_image_fst_and_snd.2 hs).2
+
 variable {s : Set α} {t : Set β} {S : ∀ i, Set (π i)}
 
 theorem IsBounded.fst_of_prod (h : IsBounded (s ×ˢ t)) (ht : t.Nonempty) : IsBounded s :=
-  fst_image_prod s ht ▸ (isBounded_image_fst_and_snd.2 h).1
+  fst_image_prod s ht ▸ h.image_fst
 #align bornology.is_bounded.fst_of_prod Bornology.IsBounded.fst_of_prod
 
 theorem IsBounded.snd_of_prod (h : IsBounded (s ×ˢ t)) (hs : s.Nonempty) : IsBounded t :=
-  snd_image_prod hs t ▸ (isBounded_image_fst_and_snd.2 h).2
+  snd_image_prod hs t ▸ h.image_snd
 #align bornology.is_bounded.snd_of_prod Bornology.IsBounded.snd_of_prod
 
 theorem IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ t) :=
@@ -89,7 +95,7 @@ theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBoun
 
 theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
-  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
+  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans and_self_iff
 #align bornology.is_bounded_prod_self Bornology.isBounded_prod_self
 
 /-!
@@ -105,6 +111,10 @@ theorem forall_isBounded_image_eval_iff {s : Set (∀ i, π i)} :
     (∀ i, IsBounded (eval i '' s)) ↔ IsBounded s :=
   compl_mem_coprodᵢ.symm
 #align bornology.forall_is_bounded_image_eval_iff Bornology.forall_isBounded_image_eval_iff
+
+lemma IsBounded.image_eval {s : Set (∀ i, π i)} (hs : IsBounded s) (i : ι) :
+    IsBounded (eval i '' s) :=
+  forall_isBounded_image_eval_iff.2 hs i
 
 theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
   forall_isBounded_image_eval_iff.1 fun i => (h i).subset eval_image_univ_pi_subset

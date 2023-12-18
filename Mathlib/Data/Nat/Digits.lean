@@ -357,6 +357,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     · cases hm rfl
     rename ℕ => m
     simp only [digits_one, List.getLast_replicate_succ m 1]
+    exact Nat.one_ne_zero
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn
@@ -437,7 +438,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   rw [← ofDigits_digits_append_digits]
   refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
-  · by_cases digits b m = []
+  · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
     · exact (List.getLast_append' _ _ h) ▸
@@ -463,7 +464,7 @@ theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p 
   · simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
-theorem sum_le_ofDigits (L : List ℕ) (h: 1 ≤ p) : L.sum ≤ ofDigits p L :=
+theorem sum_le_ofDigits (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=
   (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
@@ -555,7 +556,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
         have w₂' := fun (h : tl ≠ []) ↦ (List.getLast_cons h) ▸ h_ne_zero
         have ih := ih (w₂' h') w₁'
         simp only [self_div_pow_eq_ofDigits_drop _ _ h, digits_ofDigits p h tl w₁' w₂',
-          succ_eq_one_add] at ih
+          ← Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'
@@ -569,7 +570,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
   · simp [ofDigits_one]
   · simp [lt_one_iff.mp h]
     cases L
-    · simp
+    · rfl
     · simp [ofDigits]
 
 theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
@@ -592,7 +593,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · simp
+  · rfl
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
@@ -689,7 +690,7 @@ theorem ofDigits_neg_one :
 
 theorem modEq_eleven_digits_sum (n : ℕ) :
     n ≡ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum [ZMOD 11] := by
-  have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; norm_num) n
+  have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; rfl) n
   rwa [ofDigits_neg_one] at t
 #align nat.modeq_eleven_digits_sum Nat.modEq_eleven_digits_sum
 

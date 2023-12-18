@@ -38,8 +38,6 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped BigOperators Classical SzemerediRegularity.Positivity
 
 variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
@@ -116,8 +114,8 @@ theorem offDiag_pairs_le_increment_energy :
   refine' div_le_div_of_le_of_nonneg (α := ℚ) _ (sq_nonneg _)
   rw [← sum_biUnion]
   · exact sum_le_sum_of_subset_of_nonneg distinct_pairs_increment fun i _ _ => sq_nonneg _
-  simp only [Set.PairwiseDisjoint, Function.onFun, disjoint_left, inf_eq_inter, mem_inter,
-    mem_product]
+  simp (config := { unfoldPartialApp := true }) only [Set.PairwiseDisjoint, Function.onFun,
+    disjoint_left, inf_eq_inter, mem_inter, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1
@@ -181,7 +179,7 @@ theorem uniform_add_nonuniform_eq_offDiag_pairs [Nonempty α] (hε₁ : ε ≤ 1
   rw [Nat.cast_sub (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos, mul_sub_right_distrib,
     Nat.cast_one, one_mul, le_sub_comm, ← mul_sub_left_distrib, ←
     div_le_iff (show (0 : ℝ) < 1 / 3 - 1 / 25 - 1 / 4 by norm_num)]
-  exact le_trans (show _ ≤ (7 : ℝ) by norm_num) (by exact_mod_cast hP₇)
+  exact le_trans (show _ ≤ (7 : ℝ) by norm_num) (mod_cast hP₇)
 #align szemeredi_regularity.uniform_add_nonuniform_eq_off_diag_pairs SzemerediRegularity.uniform_add_nonuniform_eq_offDiag_pairs
 
 /-- The increment partition has energy greater than the original one by a known fixed amount. -/
@@ -192,7 +190,7 @@ theorem energy_increment [Nonempty α] (hP : P.IsEquipartition) (hP₇ : 7 ≤ P
   rw [coe_energy]
   have h := uniform_add_nonuniform_eq_offDiag_pairs (hP := hP) hε₁ hP₇ hPα hε.le hPG
   rw [add_div, mul_div_cancel_left] at h
-  exact h.trans (by exact_mod_cast offDiag_pairs_le_increment_energy)
+  exact h.trans (mod_cast offDiag_pairs_le_increment_energy)
   positivity
 #align szemeredi_regularity.energy_increment SzemerediRegularity.energy_increment
 

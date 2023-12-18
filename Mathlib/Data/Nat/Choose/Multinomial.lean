@@ -23,7 +23,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 ## Main results
 
-- `Finest.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
+- `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
 -/
 
@@ -126,9 +126,9 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false]
+    h, Ne.def, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
-  rw [add_succ, choose_succ_succ, succ_add_eq_succ_add]
+  rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
 #align nat.binomial_succ_succ Nat.binomial_succ_succ
 
@@ -179,7 +179,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
-    by_cases a ∈ f.support
+    by_cases h : a ∈ f.support
     · rw [← Finset.insert_erase h, Nat.multinomial_insert _ f (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
@@ -203,7 +203,7 @@ def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
 #align multiset.multinomial Multiset.multinomial
 
 theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
-    m.multinomial = m.card.choose (m.count a) * (m.filter ((· ≠ ·) a)).multinomial := by
+    m.multinomial = m.card.choose (m.count a) * (m.filter (a ≠ ·)).multinomial := by
   dsimp only [multinomial]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
@@ -243,7 +243,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       swap
         -- Porting note : Lean cannot infer this instance by itself
       · have : Zero (Sym α 0) := Sym.instZeroSym
-        exact ⟨0, by simp⟩
+        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
@@ -258,7 +258,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
     rw [m.1.1.multinomial_filter_ne a]
-    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not ((· = ·) a), Multiset.map_add]
+    conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]

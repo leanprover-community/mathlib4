@@ -711,10 +711,10 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
           split_ifs with h
           · obtain ⟨rfl, rfl⟩ := h
             simp
-          · simp at h
+          · simp only [Sigma.mk.inj_iff, not_and] at h
             by_cases w : j = j'
             · cases w
-              simp at h
+              simp only [heq_eq_eq, forall_true_left] at h
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
@@ -1101,6 +1101,7 @@ section
 
 variable {C} [Unique J] (f : J → C)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]
 def limitBiconeOfUnique : LimitBicone f where
@@ -1403,8 +1404,7 @@ This is not an instance as typically in concrete categories there will be
 an alternative construction with nicer definitional properties.
 -/
 theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBinaryBiproducts C :=
-  {
-    has_binary_biproduct := fun P Q =>
+  { has_binary_biproduct := fun P Q =>
       HasBinaryBiproduct.mk
         { bicone := (biproduct.bicone (pairFunction P Q)).toBinaryBicone
           isBilimit := (Bicone.toBinaryBiconeIsBilimit _).symm (biproduct.isBilimit _) } }
@@ -2029,7 +2029,7 @@ theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braidi
 
 /-- The associator isomorphism which associates a binary biproduct. -/
 @[simps]
-def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
+def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
   hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
   inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
 

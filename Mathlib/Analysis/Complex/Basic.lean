@@ -234,6 +234,9 @@ def equivRealProdClm : ℂ ≃L[ℝ] ℝ × ℝ :=
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
 #align complex.equiv_real_prod_clm Complex.equivRealProdClm
 
+theorem equivRealProdClm_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdClm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+
 instance : ProperSpace ℂ :=
   (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdClm.toHomeomorph).properSpace
 

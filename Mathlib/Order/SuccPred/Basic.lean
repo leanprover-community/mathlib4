@@ -1418,7 +1418,7 @@ theorem LE.le.exists_pred_iterate (h : a ≤ b) : ∃ n, pred^[n] b = a :=
 #align has_le.le.exists_pred_iterate LE.le.exists_pred_iterate
 
 theorem exists_pred_iterate_iff_le : (∃ n, pred^[n] b = a) ↔ a ≤ b :=
-  @exists_succ_iterate_iff_le αᵒᵈ _ _ _ _ _
+  exists_succ_iterate_iff_le (α := αᵒᵈ)
 #align exists_pred_iterate_iff_le exists_pred_iterate_iff_le
 
 /-- Induction principle on a type with a `PredOrder` for all elements below a given element `m`. -/

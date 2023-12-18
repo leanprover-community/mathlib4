@@ -90,7 +90,7 @@ theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by
-  by_contra' H
+  by_contra! H
   rw [lt_min_iff] at H
   refine apply_firstDiff_ne h ?_
   calc
@@ -154,7 +154,7 @@ theorem mem_cylinder_iff_le_firstDiff {x y : ∀ n, E n} (hne : x ≠ y) (i : �
     x ∈ cylinder y i ↔ i ≤ firstDiff x y := by
   constructor
   · intro h
-    by_contra'
+    by_contra!
     exact apply_firstDiff_ne hne (h _ this)
   · intro hi j hj
     exact apply_eq_of_lt_firstDiff (hj.trans_le hi)
@@ -308,7 +308,6 @@ protected theorem dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + d
 protected theorem eq_of_dist_eq_zero (x y : ∀ n, E n) (hxy : dist x y = 0) : x = y := by
   rcases eq_or_ne x y with (rfl | h); · rfl
   simp [dist_eq_of_ne h] at hxy
-  exact (two_ne_zero (pow_eq_zero hxy)).elim
 #align pi_nat.eq_of_dist_eq_zero PiNat.eq_of_dist_eq_zero
 
 theorem mem_cylinder_iff_dist_le {x y : ∀ n, E n} {n : ℕ} :
@@ -318,7 +317,7 @@ theorem mem_cylinder_iff_dist_le {x y : ∀ n, E n} {n : ℕ} :
   suffices (∀ i : ℕ, i < n → y i = x i) ↔ n ≤ firstDiff y x by simpa [dist_eq_of_ne hne]
   constructor
   · intro hy
-    by_contra' H
+    by_contra! H
     exact apply_firstDiff_ne hne (hy _ H)
   · intro h i hi
     exact apply_eq_of_lt_firstDiff (hi.trans_le h)
@@ -364,7 +363,7 @@ theorem isOpen_cylinder (x : ∀ n, E n) (n : ℕ) : IsOpen (cylinder x n) := by
 
 theorem isTopologicalBasis_cylinders :
     IsTopologicalBasis { s : Set (∀ n, E n) | ∃ (x : ∀ n, E n) (n : ℕ), s = cylinder x n } := by
-  apply isTopologicalBasis_of_open_of_nhds
+  apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u ⟨x, n, rfl⟩
     apply isOpen_cylinder
   · intro x u hx u_open
@@ -745,7 +744,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have dist' : dist x y = dist x.1 y.1 := rfl
     let n := firstDiff x.1 y.1 - 1
     have diff_pos : 0 < firstDiff x.1 y.1 := by
-      by_contra' h
+      by_contra! h
       apply apply_firstDiff_ne hne'
       rw [le_zero_iff.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
@@ -832,7 +831,7 @@ theorem dist_eq_tsum (x y : ∀ i, F i) :
 
 theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine summable_of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
+  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
     summable_geometric_two_encode
   exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
 #align pi_countable.dist_summable PiCountable.dist_summable

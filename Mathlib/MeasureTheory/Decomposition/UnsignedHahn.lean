@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
 
 #align_import measure_theory.decomposition.unsigned_hahn from "leanprover-community/mathlib"@"0f1becb755b3d008b242c622e248a70556ad19e6"
 

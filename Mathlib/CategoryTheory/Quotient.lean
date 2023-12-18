@@ -121,7 +121,7 @@ noncomputable instance fullFunctor : Full (functor r) where
     dsimp [functor]
     simp
 
-instance : EssSurj (functor r) where
+instance essSurj_functor : EssSurj (functor r) where
   mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext
