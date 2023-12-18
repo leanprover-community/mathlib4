@@ -120,8 +120,7 @@ theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι →
 theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
 
-attribute [-instance] Fintype.ofIsEmpty in
-lemma volume_euclideanSpace_eq_dirac (ι : Type*) {_ : Fintype ι} [IsEmpty ι] :
+lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
   ext s hs
   have Z := EuclideanSpace.volume_preserving_measurableEquiv ι
