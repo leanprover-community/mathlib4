@@ -139,8 +139,8 @@ theorem Polynomial.leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
   simp only [leadingCoeff, natDegree_expand, coeff_expand hp, dvd_mul_left, ite_true,
     Nat.mul_div_cancel _ hp]
 
-theorem Polynomial.monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
-  simp only [Monic, leadingCoeff_expand hp]
+theorem Polynomial.monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) :
+    (expand R p f).Monic ↔ f.Monic := by simp only [Monic, leadingCoeff_expand hp]
 
 theorem Polynomial.Separable.isIntegral {A B : Type*} [CommRing A] [Ring B] [Algebra A B]
     {x : B} (h : (minpoly A x).Separable) : IsIntegral A x := by
