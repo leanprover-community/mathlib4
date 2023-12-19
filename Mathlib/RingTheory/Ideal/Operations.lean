@@ -1108,6 +1108,10 @@ theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P :
   simp_rw [hp.multiset_prod_le, Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
 
+theorem IsPrime.list_prod_le (l : List (Ideal R)) {P : Ideal R} (hp : IsPrime P) :
+    l.prod ≤ P ↔ ∃ i ∈ l, i ≤ P := by
+  simp only [← Multiset.coe_prod, hp.multiset_prod_le, Multiset.mem_coe]
+
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   hp.multiset_prod_map_le f
