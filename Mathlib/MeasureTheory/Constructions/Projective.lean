@@ -46,33 +46,6 @@ namespace IsProjectiveMeasureFamily
 
 variable {I J : Finset ι}
 
-lemma congr_cylinder_of_subset [Nonempty (∀ i, α i)] (hP : IsProjectiveMeasureFamily P)
-    {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hT : MeasurableSet T)
-    (h_eq : cylinder I S = cylinder J T) (hJI : J ⊆ I) :
-    P I S = P J T := by
-  have : S = (fun f : ∀ i : I, α i ↦ fun j : J ↦ f ⟨j, hJI j.prop⟩) ⁻¹' T :=
-    eq_of_cylinder_eq_of_subset h_eq hJI
-  rw [hP I J hJI, Measure.map_apply _ hT, this]
-  exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
-
-lemma congr_cylinder [Nonempty (∀ i, α i)] (hP : IsProjectiveMeasureFamily P)
-    {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hS : MeasurableSet S) (hT : MeasurableSet T)
-    (h_eq : cylinder I S = cylinder J T) :
-    P I S = P J T := by
-  classical
-  let U := (fun f : ∀ i : (I ∪ J : Finset ι), α i
-        ↦ fun j : I ↦ f ⟨j, Finset.mem_union_left J j.prop⟩) ⁻¹' S ∩
-      (fun f ↦ fun j : J ↦ f ⟨j, Finset.mem_union_right I j.prop⟩) ⁻¹' T
-  suffices : P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T
-  exact this.1.symm.trans this.2
-  constructor
-  · have h_eq_union : cylinder I S = cylinder (I ∪ J) U := by
-      rw [← inter_cylinder, h_eq, inter_self]
-    exact hP.congr_cylinder_of_subset hS h_eq_union.symm (Finset.subset_union_left _ _)
-  · have h_eq_union : cylinder J T = cylinder (I ∪ J) U := by
-      rw [← inter_cylinder, h_eq, inter_self]
-    exact hP.congr_cylinder_of_subset hT h_eq_union.symm (Finset.subset_union_right _ _)
-
 /-- Auxiliary lemma for `measure_univ_eq`. -/
 lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ I) :
     P I univ = P J univ := by
@@ -89,6 +62,45 @@ lemma measure_univ_eq (hP : IsProjectiveMeasureFamily P) (I J : Finset ι) :
   classical
   rw [← hP.measure_univ_eq_of_subset (Finset.subset_union_left I J),
     ← hP.measure_univ_eq_of_subset (Finset.subset_union_right I J)]
+
+lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
+    {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hT : MeasurableSet T)
+    (h_eq : cylinder I S = cylinder J T) (hJI : J ⊆ I) :
+    P I S = P J T := by
+  cases isEmpty_or_nonempty (∀ i, α i) with
+  | inl h =>
+    suffices ∀ I, P I univ = 0 by
+      simp only [Measure.measure_univ_eq_zero] at this
+      simp [this]
+    intro I
+    simp only [isEmpty_pi] at h
+    obtain ⟨i, hi_empty⟩ := h
+    rw [measure_univ_eq hP I {i}]
+    have : (univ : Set ((j : {x // x ∈ ({i} : Finset ι)}) → α j)) = ∅ := by simp [hi_empty]
+    simp [this]
+  | inr h =>
+    have : S = (fun f : ∀ i : I, α i ↦ fun j : J ↦ f ⟨j, hJI j.prop⟩) ⁻¹' T :=
+      eq_of_cylinder_eq_of_subset h_eq hJI
+    rw [hP I J hJI, Measure.map_apply _ hT, this]
+    exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+
+lemma congr_cylinder (hP : IsProjectiveMeasureFamily P)
+    {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hS : MeasurableSet S) (hT : MeasurableSet T)
+    (h_eq : cylinder I S = cylinder J T) :
+    P I S = P J T := by
+  classical
+  let U := (fun f : ∀ i : (I ∪ J : Finset ι), α i
+        ↦ fun j : I ↦ f ⟨j, Finset.mem_union_left J j.prop⟩) ⁻¹' S ∩
+      (fun f ↦ fun j : J ↦ f ⟨j, Finset.mem_union_right I j.prop⟩) ⁻¹' T
+  suffices : P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T
+  exact this.1.symm.trans this.2
+  constructor
+  · have h_eq_union : cylinder I S = cylinder (I ∪ J) U := by
+      rw [← inter_cylinder, h_eq, inter_self]
+    exact hP.congr_cylinder_of_subset hS h_eq_union.symm (Finset.subset_union_left _ _)
+  · have h_eq_union : cylinder J T = cylinder (I ∪ J) U := by
+      rw [← inter_cylinder, h_eq, inter_self]
+    exact hP.congr_cylinder_of_subset hT h_eq_union.symm (Finset.subset_union_right _ _)
 
 end IsProjectiveMeasureFamily
 
@@ -112,27 +124,24 @@ lemma measure_univ_eq (hμ : IsProjectiveLimit μ P) (I : Finset ι) :
     μ univ = P I univ := by
   rw [← cylinder_univ I, hμ.measure_cylinder _ MeasurableSet.univ]
 
-lemma isFiniteMeasure [hι : Nonempty ι] [∀ i, IsFiniteMeasure (P i)]
-    (hμ : IsProjectiveLimit μ P) :
+lemma isFiniteMeasure [∀ i, IsFiniteMeasure (P i)] (hμ : IsProjectiveLimit μ P) :
     IsFiniteMeasure μ := by
   constructor
-  rw [hμ.measure_univ_eq ({hι.some} : Finset ι)]
+  rw [hμ.measure_univ_eq (∅ : Finset ι)]
   exact measure_lt_top _ _
 
-lemma isProbabilityMeasure [hι : Nonempty ι] [∀ i, IsProbabilityMeasure (P i)]
-    (hμ : IsProjectiveLimit μ P) :
+lemma isProbabilityMeasure [∀ i, IsProbabilityMeasure (P i)] (hμ : IsProjectiveLimit μ P) :
     IsProbabilityMeasure μ := by
   constructor
-  rw [hμ.measure_univ_eq ({hι.some} : Finset ι)]
+  rw [hμ.measure_univ_eq (∅ : Finset ι)]
   exact measure_univ
 
-lemma measure_univ_unique [hι : Nonempty ι]
-    (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
+lemma measure_univ_unique (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
     μ univ = ν univ := by
-  rw [hμ.measure_univ_eq ({hι.some} : Finset ι), hν.measure_univ_eq ({hι.some} : Finset ι)]
+  rw [hμ.measure_univ_eq (∅ : Finset ι), hν.measure_univ_eq (∅ : Finset ι)]
 
 /-- The projective limit of a family of finite measures is unique. -/
-theorem unique [Nonempty ι] [∀ i, IsFiniteMeasure (P i)]
+theorem unique [∀ i, IsFiniteMeasure (P i)]
     (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
     μ = ν := by
   haveI : IsFiniteMeasure μ := hμ.isFiniteMeasure
