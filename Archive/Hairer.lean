@@ -129,7 +129,7 @@ lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
 variable [Fintype ι]
 theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
-    Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x :=
+    Integrable fun (x : EuclideanSpace ℝ ι) ↦ eval x p * f x :=
   (p.continuous_eval.mul (SmoothSupportedOn.contDiff f).continuous).integrable_of_hasCompactSupport
     (hasCompactSupport f).mul_left
 
@@ -137,31 +137,13 @@ variable (ι)
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
 def L : MvPolynomial ι ℝ →ₗ[ℝ]
-    Module.Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) where
-  toFun p :=
-    { toFun := fun f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x
-      map_add' := fun f g ↦ by
-        rw [← integral_add]
-        · simp only [← smul_add]; rfl
-        all_goals apply SmoothSupportedOn.integrable_eval_mul
-      map_smul' := fun r f ↦ by
-        rw [← integral_smul]
-        dsimp only [id_eq, RingHom.id_apply]
-        simp only [smul_comm r]
-        rfl }
-  map_add' p₁ p₂ := by
-    ext f
-    dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
-      RingHom.id_apply, LinearMap.coe_mk, LinearMap.add_apply]
-    rw [← integral_add]
-    · simp only [← add_smul, eval_add]
-    all_goals apply SmoothSupportedOn.integrable_eval_mul
-  map_smul' r p := by
-    ext f
-    dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
-      RingHom.id_apply, LinearMap.coe_mk, LinearMap.smul_apply]
-    rw [← integral_smul]
-    simp [mul_assoc]
+    Module.Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :=
+  have int := SmoothSupportedOn.integrable_eval_mul (ι := ι)
+  .mk₂ ℝ (fun p f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x)
+    (fun p₁ p₂ f ↦ by simp [add_mul, integral_add (int p₁ f) (int p₂ f)])
+    (fun r p f ↦ by simp [mul_assoc, integral_mul_left])
+    (fun p f₁ f₂ ↦ by simp_rw [smul_eq_mul, ← integral_add (int p _) (int p _), ← mul_add]; rfl)
+    fun r p f ↦ by simp_rw [← integral_smul, smul_comm r]; rfl
 
 lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
