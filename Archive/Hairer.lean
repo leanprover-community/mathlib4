@@ -122,10 +122,6 @@ instance [Finite σ] : Module.Finite R (restrictTotalDegree σ R n) := by
 
 end missing_polynomial
 
-open Metric Set MeasureTheory Module
-open MvPolynomial hiding support
-open Function hiding eval
-
 variable {ι : Type*} [Fintype ι]
 lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
     Continuous fun x ↦ (eval x) p := by
@@ -142,7 +138,7 @@ variable (ι)
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
 def L : MvPolynomial ι ℝ →ₗ[ℝ]
-    Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) where
+    Module.Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) where
   toFun p :=
     { toFun := fun f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x
       map_add' := fun f g ↦ by
