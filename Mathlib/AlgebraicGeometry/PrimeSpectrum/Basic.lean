@@ -933,7 +933,7 @@ variable (R) in
 Zero loci of prime ideals are closed irreducible sets in the Zariski topology and any closed
 irreducible set is a zero locus of some prime ideal.
 -/
-protected def pointsEquivIrreducibleClosedSets :
+protected def pointsEquivIrreducibleCloseds :
     PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducible s ∧ IsClosed s}ᵒᵈ where
     __ := irreducibleSetEquivPoints (α := PrimeSpectrum R) |>.toEquiv |>.symm |>.trans
       OrderDual.toDual
@@ -951,7 +951,7 @@ irreducible component is a zero locus of some minimal prime ideal.
 -/
 protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ :=
-  let e := PrimeSpectrum.pointsEquivIrreducibleClosedSets R
+  let e := PrimeSpectrum.pointsEquivIrreducibleCloseds R
   { toFun := fun p ↦
       let s := e ⟨p.1, p.2.1.1⟩
       OrderDual.toDual ⟨s.1, ⟨s.2.1, fun t (ht : IsIrreducible t) (le : closure _ ⊆ t) ↦
