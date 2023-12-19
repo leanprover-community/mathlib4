@@ -629,4 +629,59 @@ theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
 
 end tsum
 
+section slitPlane
+
+/-!
+### Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
+-/
+
+/-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
+def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
+
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := by
+  ext
+  simp [mem_slitPlane_iff]
+
+lemma mem_slitPlane_of_pos {x : ℝ} (hx : 0 < x) : ↑x ∈ slitPlane := by
+  simp [mem_slitPlane_iff, hx]
+
+open scoped ComplexOrder in
+lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
+  mem_slitPlane_iff.trans not_le_zero_iff.symm
+
+lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 := by
+  rintro rfl
+  open scoped ComplexOrder in
+    exact mem_slitPlane_iff_not_le_zero.mp hz (le_refl 0)
+
+/-- The slit plane is star-shaped with respect to the point `1`. -/
+-- TODO: add variant using `StarConvex` at a suitable place
+lemma slitPlane_star_shaped {z : ℂ} (hz : 1 + z ∈ slitPlane) {t : ℝ} (ht : t ∈ Set.Icc 0 1) :
+    1 + t * z ∈ slitPlane := by
+  rw [Set.mem_Icc] at ht
+  simp only [slitPlane, Set.mem_setOf_eq, add_re, one_re, add_im, one_im, zero_add, mul_re,
+    ofReal_re, ofReal_im, zero_mul, sub_zero, mul_im, add_zero, mul_eq_zero] at hz ⊢
+  by_contra! H
+  simp only [mul_eq_zero] at H hz
+  have ht₀ : t ≠ 0
+  · rintro rfl
+    simp only [zero_mul, add_zero, true_or, and_true] at H
+    norm_num at H
+  simp only [ht₀, false_or] at H
+  replace hz := hz.neg_resolve_right H.2
+  replace H := H.1
+  have H' := mul_pos (ht.1.eq_or_lt.resolve_left ht₀.symm) hz
+  nlinarith
+
+/-- The slit plane contains the open unit ball of radius `1` around `1`. -/
+lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane := by
+  simp only [slitPlane, Set.mem_setOf_eq, add_re, one_re, add_im, one_im, zero_add]
+  simp only [norm_eq_abs] at hz
+  by_contra! H
+  linarith only [H.1, neg_lt_of_abs_lt <| (abs_re_le_abs z).trans_lt hz]
+
+end slitPlane
+
 end Complex
