@@ -2243,9 +2243,9 @@ def mapRangeAlgEquiv {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semi
     (by simp [← mapRangeAlgHom_comp])
 
 @[simps]
-def mapRangeAlgAut {k R} (G) [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
+def mapRangeAlgAut {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
     (R ≃ₐ[k] R) →* R[G] ≃ₐ[k] R[G] where
-  toFun f := mapRangeAlgEquiv G f
+  toFun f := mapRangeAlgEquiv f
   map_one' := by ext; exact Finsupp.ext fun a => by simp
   map_mul' x y := by ext; exact Finsupp.ext fun a => by simp
 
