@@ -131,7 +131,7 @@ section diffFinset₀
 variable {I : Finset (Set α)}
 
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
-finite set of sets in `C` such that `s \ ⋃₀ I = ⋃₀ (hC.diffFinset₀ hs I hI)`.
+finite set of sets in `C` whose union is `s \ ⋃₀ I`.
 See `IsSetSemiring.diffFinset₀` for a definition that gives such a set. -/
 lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ∃ (J : Finset (Set α)) (_h_ss : ↑J ⊆ C) (_h_dis : PairwiseDisjoint (J : Set (Set α)) id),
