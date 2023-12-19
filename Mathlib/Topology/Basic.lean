@@ -709,6 +709,11 @@ theorem closure_diff_interior (s : Set α) : closure s \ interior s = frontier s
   rfl
 #align closure_diff_interior closure_diff_interior
 
+/-- Interior and frontier are disjoint. -/
+lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
+  rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
+    ← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
+
 @[simp]
 theorem closure_diff_frontier (s : Set α) : closure s \ frontier s = interior s := by
   rw [frontier, diff_diff_right_self, inter_eq_self_of_subset_right interior_subset_closure]
