@@ -6,9 +6,8 @@ Junyan Xu
 -/
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.Data.MvPolynomial.Funext
 
 /-!
@@ -95,14 +94,6 @@ lemma restrictTotalDegree_eq_span {n : ℕ} :
     · rw [Subsingleton.elim ((fun c ↦ monomial c 1) c) 0, totalDegree_zero]; apply zero_le
     · rw [totalDegree_monomial _ one_ne_zero]; exact hc
 
-/- what we actually want -/
-lemma analyticOn_eval {R σ : Type*} [Fintype σ] [IsROrC R] (P : MvPolynomial σ R) :
-    AnalyticOn R (fun x ↦ eval (EuclideanSpace.equiv σ R x) P) univ := fun x _ ↦ by
-  apply P.induction_on (fun r ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_ -- refine doesn't work
-  · simp_rw [eval_C]; exact analyticAt_const
-  · simp_rw [eval_add]; exact hp.add hq
-  · simp_rw [eval_mul, eval_X]; exact hp.mul ((ContinuousLinearMap.proj (R := R) i).analyticAt x)
-
 lemma finite_stuff' [Finite σ] (N : ℕ) : {s : Multiset σ | Multiset.card s ≤ N}.Finite := by
   classical
   have := Fintype.ofFinite σ
@@ -177,21 +168,20 @@ def L : MvPolynomial ι ℝ →ₗ[ℝ]
     dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
       RingHom.id_apply, LinearMap.coe_mk, LinearMap.smul_apply]
     rw [← integral_smul]
-    simp only [← evalₗ_apply, SMulHomClass.map_smul, ← smul_assoc]
-    rfl
+    simp [mul_assoc]
 
 lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
   suffices H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 by
     simp_rw [MvPolynomial.funext_iff, map_zero]
-    refine fun x ↦ (analyticOn_eval p).eqOn_zero_of_preconnected_of_eventuallyEq_zero
-      ?_ (z₀ := 0) trivial ?_ trivial
+    have h := AnalyticOn.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
+    refine fun x ↦ h.eqOn_zero_of_preconnected_of_eventuallyEq_zero ?_ (z₀ := 0) trivial ?_ trivial
     · rw [← preconnectedSpace_iff_univ]; infer_instance
     · refine Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_
       rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
       apply Measure.eqOn_of_ae_eq H
-      · exact (analyticOn_eval p).continuous.continuousOn
+      · exact h.continuous.continuousOn
       · exact continuousOn_const
       · rw [isOpen_ball.interior_eq]; apply subset_closure
   have h2p : LocallyIntegrableOn (fun x : EuclideanSpace ℝ ι ↦ eval x p) (ball 0 1) :=
