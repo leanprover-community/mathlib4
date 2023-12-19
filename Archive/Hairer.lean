@@ -133,13 +133,11 @@ lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
 
 theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
-    Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x := by
-  simp only [smul_eq_mul]
-  apply Continuous.integrable_of_hasCompactSupport
-  · apply Continuous.mul
-    · apply p.continuous_eval
-    · apply ContDiff.continuous <| SmoothSupportedOn.contDiff _
-  exact (hasCompactSupport f).mul_left
+    Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x :=
+  (p.continuous_eval.mul (SmoothSupportedOn.contDiff f).continuous).integrable_of_hasCompactSupport
+    (hasCompactSupport f).mul_left
+
+variable (ι)
 
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
@@ -156,42 +154,36 @@ def L : MvPolynomial ι ℝ →ₗ[ℝ]
         dsimp only [id_eq, RingHom.id_apply]
         simp only [smul_comm r]
         rfl }
-  map_add' := fun p₁ p₂ ↦ by
+  map_add' p₁ p₂ := by
     ext f
     dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
       RingHom.id_apply, LinearMap.coe_mk, LinearMap.add_apply]
     rw [← integral_add]
     · simp only [← add_smul, eval_add]
     all_goals apply SmoothSupportedOn.integrable_eval_mul
-  map_smul' := fun r p ↦ by
+  map_smul' r p := by
     ext f
     dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
       RingHom.id_apply, LinearMap.coe_mk, LinearMap.smul_apply]
     rw [← integral_smul]
     simp [mul_assoc]
 
-lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
-  rw [injective_iff_map_eq_zero]
-  intro p hp
-  suffices H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 by
+lemma inj_L : Injective (L ι) :=
+  (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
+    have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=
+      isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero
+        (by exact continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
+        fun g hg _h2g g_supp ↦ by
+          simpa [mul_comm (g _), L] using congr($hp ⟨g, g_supp.trans ball_subset_closedBall, hg⟩)
     simp_rw [MvPolynomial.funext_iff, map_zero]
-    have h := AnalyticOn.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
-    refine fun x ↦ h.eqOn_zero_of_preconnected_of_eventuallyEq_zero ?_ (z₀ := 0) trivial ?_ trivial
-    · rw [← preconnectedSpace_iff_univ]; infer_instance
-    · refine Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_
-      rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
-      apply Measure.eqOn_of_ae_eq H
-      · exact h.continuous.continuousOn
-      · exact continuousOn_const
-      · rw [isOpen_ball.interior_eq]; apply subset_closure
-  have h2p : LocallyIntegrableOn (fun x : EuclideanSpace ℝ ι ↦ eval x p) (ball 0 1) :=
-    continuous_eval p |>.locallyIntegrable |>.locallyIntegrableOn _
-  apply isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero h2p
-  intro g hg _h2g g_supp
-  let ϕ : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
-    ⟨g, g_supp.trans ball_subset_closedBall, hg⟩
-  apply_fun (· ϕ) at hp
-  simpa [mul_comm (g _), L] using hp
+    refine fun x ↦ AnalyticOn.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
+      |>.eqOn_zero_of_preconnected_of_eventuallyEq_zero
+      (preconnectedSpace_iff_univ.mp inferInstance) (z₀ := 0) trivial
+      (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_) trivial
+    rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
+    apply Measure.eqOn_of_ae_eq H p.continuous_eval.continuousOn continuousOn_const
+    rw [isOpen_ball.interior_eq]
+    apply subset_closure
 
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
