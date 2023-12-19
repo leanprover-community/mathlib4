@@ -164,7 +164,7 @@ theorem inter_extremePoints_subset_extremePoints_of_subset (hBA : B ⊆ A) :
 
 theorem IsExtreme.extremePoints_subset_extremePoints (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 ⊆ A.extremePoints 𝕜 :=
-  fun _ ↦ by simpa only [←isExtreme_singleton] using hAB.trans
+  fun _ ↦ by simpa only [← isExtreme_singleton] using hAB.trans
 #align is_extreme.extreme_points_subset_extreme_points IsExtreme.extremePoints_subset_extremePoints
 
 theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
@@ -273,7 +273,7 @@ theorem Convex.mem_extremePoints_iff_convex_diff (hA : Convex 𝕜 A) :
   rintro ⟨hxA, hAx⟩
   refine' mem_extremePoints_iff_forall_segment.2 ⟨hxA, fun x₁ hx₁ x₂ hx₂ hx ↦ _⟩
   rw [convex_iff_segment_subset] at hAx
-  by_contra' h
+  by_contra! h
   exact (hAx ⟨hx₁, fun hx₁ ↦ h.1 (mem_singleton_iff.2 hx₁)⟩
       ⟨hx₂, fun hx₂ ↦ h.2 (mem_singleton_iff.2 hx₂)⟩ hx).2 rfl
 #align convex.mem_extreme_points_iff_convex_diff Convex.mem_extremePoints_iff_convex_diff

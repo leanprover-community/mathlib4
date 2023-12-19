@@ -716,7 +716,7 @@ theorem div_mul_div_comm {l : ℕ} (hmn : n ∣ m) (hkl : l ∣ k) :
   rcases l.eq_zero_or_pos with rfl | hl
   · simp
   rw [Nat.mul_div_cancel_left _ hn, Nat.mul_div_cancel_left _ hl, mul_assoc n, Nat.mul_left_comm x,
-    ←mul_assoc n, Nat.mul_div_cancel_left _ (Nat.mul_pos hn hl)]
+    ← mul_assoc n, Nat.mul_div_cancel_left _ (Nat.mul_pos hn hl)]
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 protected theorem div_pow {a b c : ℕ} (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
@@ -725,7 +725,7 @@ protected theorem div_pow {a b c : ℕ} (h : a ∣ b) : (b / a) ^ c = b ^ c / a 
   rcases a.eq_zero_or_pos with rfl | ha
   · simp [Nat.zero_pow hc]
   refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
-  rw [←Nat.mul_pow, Nat.mul_div_cancel_left' h]
+  rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
 /-! ### `mod`, `dvd` -/
 
@@ -740,6 +740,10 @@ theorem mod_eq_iff_lt {a b : ℕ} (h : b ≠ 0) : a % b = a ↔ a < b := by
 theorem mod_succ_eq_iff_lt {a b : ℕ} : a % b.succ = a ↔ a < b.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
 #align nat.mod_succ_eq_iff_lt Nat.mod_succ_eq_iff_lt
+
+@[simp]
+theorem mod_succ (n : ℕ) : n % n.succ = n :=
+  Nat.mod_eq_of_lt (Nat.lt_succ_self _)
 
 -- Porting note `Nat.div_add_mod` is now in core.
 
@@ -778,11 +782,14 @@ protected theorem mul_dvd_mul_iff_right {a b c : ℕ} (hc : 0 < c) : a * c ∣ b
   exists_congr fun d => by rw [Nat.mul_right_comm, mul_left_inj' hc.ne']
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
+@[simp] -- TODO: move to Std4
+theorem dvd_one {a : ℕ} : a ∣ 1 ↔ a = 1 :=
+  ⟨eq_one_of_dvd_one, fun h ↦ h.symm ▸ Nat.dvd_refl _⟩
+#align nat.dvd_one Nat.dvd_one
+
 @[simp]
 theorem mod_mod_of_dvd (n : Nat) {m k : Nat} (h : m ∣ k) : n % k % m = n % m := by
-  conv =>
-  rhs
-  rw [← mod_add_div n k]
+  conv_rhs => rw [← mod_add_div n k]
   rcases h with ⟨t, rfl⟩
   rw [mul_assoc, add_mul_mod_self_left]
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
@@ -811,7 +818,7 @@ theorem mul_dvd_of_dvd_div {a b c : ℕ} (hab : c ∣ b) (h : a ∣ b / c) : c *
   let ⟨d, hd⟩ := h1
   have h3 : b = a * d * c := Nat.eq_mul_of_div_eq_left hab hd
   -- Porting note: was `cc`
-  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ←mul_assoc] at h3⟩
+  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ← mul_assoc] at h3⟩
 #align nat.mul_dvd_of_dvd_div Nat.mul_dvd_of_dvd_div
 
 theorem eq_of_dvd_of_div_eq_one {a b : ℕ} (w : a ∣ b) (h : b / a = 1) : a = b := by

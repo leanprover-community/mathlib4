@@ -48,7 +48,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
         -- simp_rw [← Units.coeHom_apply, ← (Units.coeHom (ZMod p)).map_prod,
         --   prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
         simp_rw [← Units.coeHom_apply]
-        rw [← (Units.coeHom (ZMod p)).map_prod]
+        rw [← map_prod (Units.coeHom (ZMod p))]
         simp_rw [prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
   have hp : 0 < p := (Fact.out (p := p.Prime)).pos
   symm

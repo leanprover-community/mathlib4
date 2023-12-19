@@ -41,7 +41,7 @@ theorem isClopen_iff_frontier_eq_empty : IsClopen s ↔ frontier s = ∅ := by
     (h.trans interior_subset).antisymm subset_closure⟩
 #align is_clopen_iff_frontier_eq_empty isClopen_iff_frontier_eq_empty
 
-alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
+@[simp] alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
 #align is_clopen.frontier_eq IsClopen.frontier_eq
 
 theorem IsClopen.union (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∪ t) :=
@@ -52,10 +52,10 @@ theorem IsClopen.inter (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ t) 
   ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 #align is_clopen.inter IsClopen.inter
 
-@[simp] theorem isClopen_empty : IsClopen (∅ : Set X) := ⟨isOpen_empty, isClosed_empty⟩
+theorem isClopen_empty : IsClopen (∅ : Set X) := ⟨isOpen_empty, isClosed_empty⟩
 #align is_clopen_empty isClopen_empty
 
-@[simp] theorem isClopen_univ : IsClopen (univ : Set X) := ⟨isOpen_univ, isClosed_univ⟩
+theorem isClopen_univ : IsClopen (univ : Set X) := ⟨isOpen_univ, isClosed_univ⟩
 #align is_clopen_univ isClopen_univ
 
 theorem IsClopen.compl (hs : IsClopen s) : IsClopen sᶜ :=
@@ -112,7 +112,7 @@ theorem IsClopen.preimage {s : Set Y} (h : IsClopen s) {f : X → Y} (hf : Conti
 
 theorem ContinuousOn.preimage_isClopen_of_isClopen {f : X → Y} {s : Set X} {t : Set Y}
     (hf : ContinuousOn f s) (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ f ⁻¹' t) :=
-  ⟨ContinuousOn.preimage_open_of_open hf hs.1 ht.1,
+  ⟨ContinuousOn.isOpen_inter_preimage hf hs.1 ht.1,
     ContinuousOn.preimage_isClosed_of_isClosed hf hs.2 ht.2⟩
 #align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_isClopen_of_isClopen
 

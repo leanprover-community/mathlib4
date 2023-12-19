@@ -57,7 +57,8 @@ variable (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F)
 theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
   { has_limit := fun f => by
       have := NatIso.naturality_1 i f
-      simp at this
+      simp? at this says
+        simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
       rw [← this]
       haveI : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
       apply Limits.hasKernel_iso_comp }
@@ -68,7 +69,8 @@ theorem hasCokernels : HasCokernels C :=
   { has_colimit := fun f => by
       have : PreservesColimits G := adj.leftAdjointPreservesColimits
       have := NatIso.naturality_1 i f
-      simp at this
+      simp? at this says
+        simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
       rw [← this]
       haveI : HasCokernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasCokernel_comp_iso _ _
       apply Limits.hasCokernel_epi_comp }

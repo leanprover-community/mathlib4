@@ -21,7 +21,7 @@ We introduce the following typeclasses for measures:
 -/
 
 open scoped ENNReal NNReal Topology
-open Set MeasureTheory Measure Filter MeasurableSpace ENNReal
+open Set MeasureTheory Measure Filter Function MeasurableSpace ENNReal
 
 variable {α β δ ι : Type*}
 
@@ -218,6 +218,9 @@ export MeasureTheory.IsProbabilityMeasure (measure_univ)
 
 attribute [simp] IsProbabilityMeasure.measure_univ
 
+lemma isProbabilityMeasure_iff : IsProbabilityMeasure μ ↔ μ univ = 1 :=
+  ⟨fun _ ↦ measure_univ, IsProbabilityMeasure.mk⟩
+
 instance (priority := 100) IsProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsProbabilityMeasure μ] : IsFiniteMeasure μ :=
   ⟨by simp only [measure_univ, ENNReal.one_lt_top]⟩
@@ -275,6 +278,26 @@ theorem prob_compl_eq_zero_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) 
 theorem prob_compl_eq_one_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) :
     μ sᶜ = 1 ↔ μ s = 0 := by rw [← prob_compl_eq_zero_iff hs.compl, compl_compl]
 #align measure_theory.prob_compl_eq_one_iff MeasureTheory.prob_compl_eq_one_iff
+
+variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+
+lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ μ.ae ↔ μ s = 1 :=
+  mem_ae_iff.trans $ prob_compl_eq_zero_iff hs
+
+lemma ae_iff_prob_eq_one (hp : Measurable p) : (∀ᵐ a ∂μ, p a) ↔ μ {a | p a} = 1 :=
+  mem_ae_iff_prob_eq_one hp.setOf
+
+lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈ range f)
+    (hf'' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) :
+    IsProbabilityMeasure (μ.comap f) where
+  measure_univ := by
+    rw [comap_apply _ hf hf'' _ MeasurableSet.univ,
+      ← mem_ae_iff_prob_eq_one (hf'' _ MeasurableSet.univ)]
+    simpa
+
+protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
+    (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
+  isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
 end IsProbabilityMeasure
 
@@ -990,7 +1013,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
   · rw [h_univ_empty, @measure_empty α ⊥]
     exact ENNReal.zero_ne_top.lt_top
   obtain ⟨i, hsi⟩ : ∃ i, s i = Set.univ := by
-    by_contra' h_not_univ
+    by_contra! h_not_univ
     have h_empty : ∀ i, s i = ∅ := by simpa [h_not_univ] using hs_meas
     simp only [h_empty, iUnion_empty] at hs_univ
     exact h_univ_empty hs_univ.symm
@@ -1113,7 +1136,7 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
     (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } := by
-  refine' TopologicalSpace.isTopologicalBasis_of_open_of_nhds (fun s hs => hs.1) _
+  refine' TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) _
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
   refine' ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt _ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
