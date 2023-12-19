@@ -502,11 +502,11 @@ variable (R) in
 lemma prime_spectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   let Spec := {I : Ideal R | I.IsPrime}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
-    (range <| (Finset.inf · (fun x ↦ x.1) : Finset Spec → Ideal R)) ⟨⊤, ⟨∅, by simp⟩⟩
+    (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
   refine ⟨⟨s, fun p ↦ ?_⟩⟩
-  obtain ⟨q, ⟨hq1, hq2⟩⟩ : ∃ q ∈ s, q ≤ p
+  obtain ⟨q, hq1, hq2⟩ : ∃ q ∈ s, q ≤ p
   · classical
-    specialize H (p ⊓ s.inf fun x ↦ x.1) ⟨insert p s, by simp⟩
+    specialize H p ⟨{p}, by simp⟩
     simpa only [mem_setOf_eq, coe_setOf, ge_iff_le, Finset.le_inf_iff, Subtype.coe_le_coe,
       Subtype.forall, inf_lt_right, not_not, Ideal.IsPrime.inf_le' (hp := p.2)] using H
   rwa [← Subtype.ext_iff.mpr <| @isMaximal_of_isPrime (p := q.1) _ _ q.2 |>.eq_of_le p.2.1 hq2]
