@@ -739,7 +739,7 @@ local notation "π" => @Quotient.mk _ α_mod_G
 variable {G}
 
 @[to_additive NullMeasurableSet.addQuotientMeasure_apply]
-lemma NullMeasurableSet.quotientMeasure_apply (_ : NullMeasurableSet s μ)
+lemma NullMeasurableSet.quotientMeasure_apply (hs : NullMeasurableSet s μ)
     {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U)  :
     (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
   rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
