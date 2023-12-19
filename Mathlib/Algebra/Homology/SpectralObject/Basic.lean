@@ -15,11 +15,11 @@ open ComposableArrows
 structure SpectralObject where
   H (n : ℤ) : ComposableArrows ι 1 ⥤ C
   δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) : functorδ ι 0 ⋙ H n₀ ⟶ functorδ ι 2 ⋙ H n₁
-  exact₁' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
+  exact₁ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
     (mk₂ ((δ n₀ n₁ h).app D) ((H n₁).map (D.mapδ 1 2 (by dsimp; linarith)))).Exact
-  exact₂' (n : ℤ) (D : ComposableArrows ι 2) :
+  exact₂ (n : ℤ) (D : ComposableArrows ι 2) :
     (mk₂ ((H n).map (D.mapδ 1 2 (by dsimp; linarith))) ((H n).map (D.mapδ 0 1 (by simp)))).Exact
-  exact₃' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
+  exact₃ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
     (mk₂ ((H n₀).map (D.mapδ 0 1 (by simp))) ((δ n₀ n₁ h).app D)).Exact
 
 namespace SpectralObject
@@ -29,45 +29,7 @@ variable (X : SpectralObject C ι)
 
 section
 
-variable (n n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (D : ComposableArrows ι 2)
-
-@[reassoc]
-lemma zero₁ :
-    (X.δ n₀ n₁ hn₁).app D ≫ (X.H n₁).map (D.mapδ 1 2 (by dsimp; linarith)) = 0 :=
-  (X.exact₁' n₀ n₁ hn₁ D).zero 0
-
-@[reassoc]
-lemma zero₂ :
-    (X.H n).map (D.mapδ 1 2 (by dsimp; linarith)) ≫
-      (X.H n).map (D.mapδ 0 1 (by dsimp; linarith)) = 0 :=
-  (X.exact₂' n D).zero 0
-
-@[reassoc]
-lemma zero₃ :
-    (X.H n₀).map (D.mapδ 0 1 (by dsimp; linarith)) ≫ (X.δ n₀ n₁ hn₁).app D = 0 :=
-  (X.exact₃' n₀ n₁ hn₁ D).zero 0
-
-@[simps]
-def sc₁ : ShortComplex C := ShortComplex.mk _ _ (X.zero₁ n₀ n₁ hn₁ D)
-
-@[simps]
-def sc₂ : ShortComplex C := ShortComplex.mk _ _ (X.zero₂ n D)
-
-@[simps]
-def sc₃ : ShortComplex C := ShortComplex.mk _ _ (X.zero₃ n₀ n₁ hn₁ D)
-
-lemma sc₁_exact : (X.sc₁ n₀ n₁ hn₁ D).Exact :=
-  (X.exact₁' n₀ n₁ hn₁ D).exact 0
-
-lemma sc₂_exact : (X.sc₂ n D).Exact :=
-  (X.exact₂' n D).exact 0
-
-lemma sc₃_exact : (X.sc₃ n₀ n₁ hn₁ D).Exact :=
-  (X.exact₃' n₀ n₁ hn₁ D).exact 0
-
-end
-
-section
+-- better define first δ'', and then δ'
 
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   (f g : ComposableArrows ι 1) (e : f.obj 1 ≅ g.obj 0)
@@ -76,6 +38,48 @@ def δ' : (X.H n₀).obj g ⟶ (X.H n₁).obj f :=
   (X.H n₀).map (Iso.inv (by exact isoMk₁ e (Iso.refl _) (by simp; rfl))) ≫
     (X.δ n₀ n₁ hn₁).app (mk₂ (f.map' 0 1) (e.hom ≫ g.map' 0 1)) ≫
     (X.H n₁).map (Iso.hom (isoMk₁ (Iso.refl _) (Iso.refl _) (by simp; rfl)))
+
+abbrev δ'' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
+    (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
+  X.δ' n₀ n₁ hn₁ _ _ (Iso.refl _)
+
+lemma δ''_eq {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (D : ComposableArrows ι 2)
+    (e₀ : D.obj 0 ≅ i) (e₁ : D.obj 1 ≅ j) (e₂ : D.obj 2 ≅ k)
+    (α : D.δ 2 ⟶ mk₁ f) (β : mk₁ g ⟶ D.δ 0)
+    (hα₀ : α.app 0 = e₀.hom) (hα₁ : α.app 1 = e₁.hom)
+    (hβ₀ : β.app 0 = e₁.inv) (hβ₁ : β.app 1 = e₂.inv) :
+    X.δ'' n₀ n₁ hn₁ f g =
+      (X.H n₀).map β ≫ (X.δ n₀ n₁ hn₁).app D ≫ (X.H n₁).map α := by
+  dsimp only [δ'', δ']
+  let e : D ≅ mk₂ f (𝟙 _ ≫ g) := isoMk₂ e₀ e₁ e₂
+    (by simpa only [← hα₀, ← hα₁] using naturality' α 0 1) (by
+      erw [← cancel_mono e₂.inv, ← cancel_epi e₁.inv, assoc, assoc, e₂.hom_inv_id, comp_id,
+        e₁.inv_hom_id_assoc, ← hβ₀, ← hβ₁, ← naturality' β 0 1, id_comp]
+      rfl)
+  have h := (X.δ n₀ n₁ hn₁).naturality e.hom
+  rw [← cancel_mono ((functorδ ι 2 ⋙ X.H n₁).map e.inv), assoc, assoc,
+    ← Functor.map_comp, e.hom_inv_id, Functor.map_id, comp_id] at h
+  rw [← h, assoc, assoc]
+  dsimp
+  rw [← Functor.map_comp, ← Functor.map_comp_assoc]
+  congr 1
+  · congr 1
+    apply hom_ext₁
+    · change 𝟙 j = β.app 0 ≫ e₁.hom
+      rw [hβ₀, e₁.inv_hom_id]
+    · change 𝟙 k = β.app 1 ≫ e₂.hom
+      rw [hβ₁, e₂.inv_hom_id]
+  · congr 2
+    apply hom_ext₁
+    · change 𝟙 i = e₀.inv ≫ α.app 0
+      rw [hα₀, e₀.inv_hom_id]
+    · change 𝟙 j = e₁.inv ≫ α.app 1
+      rw [hα₁, e₁.inv_hom_id]
+
+example : ℕ := 42
+
+
+section
 
 variable (f' g' : ComposableArrows ι 1) (e' : f'.obj 1 ≅ g'.obj 0)
   (φf : f ⟶ f') (φg : g ⟶ g') (comm : φf.app 1 ≫ e'.hom = e.hom ≫ φg.app 0)
@@ -107,13 +111,76 @@ lemma δ'_naturality :
 
 end
 
+lemma δ''_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
+    {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
+    (α : i ⟶ i') (β : j ⟶ j') (γ : k ⟶ k')
+    (h₁ : f ≫ β = α ≫ f') (h₂ : g ≫ γ = β ≫ g'):
+    (X.H n₀).map (by exact homMk₁ β γ h₂) ≫ X.δ'' n₀ n₁ hn₁ f' g' =
+      X.δ'' n₀ n₁ hn₁ f g ≫ (X.H n₁).map (by exact homMk₁ α β h₁) := by
+  apply δ'_naturality
+  simp
+  rfl
+
+end
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (D : ComposableArrows ι 2)
+  (f g fg : ComposableArrows ι 1) (e : f.obj 1 ≅ g.obj 0)
+  (e₀ : D.δ 0 ≅ g) (e₁ : D.δ 1 ≅ fg) (e₂ : D.δ 2 ≅ f)
+  (h₁ : e₂.inv.app 1 ≫ e₀.hom.app 0 = e.hom)
+  (h₂ : fg.map' 0 1 = e₁.inv.app 0 ≫ e₂.hom.app 0 ≫ f.map' 0 1 ≫ e.hom ≫ g.map' 0 1 ≫ e₀.inv.app 1 ≫ e₁.hom.app 1)
+
+/-lemma δ'_eq : X.δ' n₀ n₁ hn₁ f g e =
+    (X.H n₀).map e₀.inv ≫ (X.δ n₀ n₁ hn₁).app D ≫ (X.H n₁).map e₂.hom := by
+  have := h₁
+  sorry-/
+
+end
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (D : ComposableArrows ι 2)
+  (f g fg : ComposableArrows ι 1) (e : f.obj 1 ≅ g.obj 0) (φ : f ⟶ fg)
+  (e₀ : D.δ 0 ≅ g) (e₁ : D.δ 1 ≅ fg) (e₂ : D.δ 2 ≅ f)
+  (h₁ : e₂.inv.app 1 ≫ e₀.hom.app 0 = e.hom)
+  (h₂ : e₂.inv.app 0 ≫ e₁.hom.app 0 = φ.app 0)
+
+/-lemma iso₁' :
+    mk₂ ((X.δ n₀ n₁ hn₁).app D) ((X.H n₁).map (D.mapδ 1 2 (by dsimp; linarith))) ≅
+      mk₂ (X.δ' n₀ n₁ hn₁ f g e) ((X.H n₁).map φ) :=
+  isoMk₂ ((X.H n₀).mapIso e₀) ((X.H n₁).mapIso e₂) ((X.H n₁).mapIso e₁) (by
+    dsimp
+    rw [X.δ'_eq n₀ n₁ hn₁ D f g fg e φ e₀ e₁ e₂ h₁ h₂, ← Functor.map_comp_assoc,
+      e₀.hom_inv_id, Functor.map_id, id_comp]) (by
+    dsimp
+    rw [← Functor.map_comp, ← Functor.map_comp]
+    congr 1
+    sorry)
+
+lemma zero₁' : X.δ' n₀ n₁ hn₁ f g e ≫ (X.H n₁).map φ = 0 :=
+  (exact_of_iso (X.iso₁' n₀ n₁ hn₁ D f g fg e φ e₀ e₁ e₂ h₁) (X.exact₁ n₀ n₁ hn₁ D)).zero 0
+
+@[simps]
+def sc₁' : ShortComplex C :=
+  ShortComplex.mk _ _ (X.zero₁' n₀ n₁ hn₁ D f g fg e φ e₀ e₁ e₂ h₁)
+
+lemma exact₁' : (X.sc₁' n₀ n₁ hn₁ D f g fg e φ e₀ e₁ e₂ h₁).Exact :=
+  (exact_of_iso (X.iso₁' n₀ n₁ hn₁ D f g fg e φ e₀ e₁ e₂ h₁) (X.exact₁ n₀ n₁ hn₁ D)).exact 0-/
+
+end
+
 section
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   (f g h : ComposableArrows ι 1) (e : f.obj 1 ≅ g.obj 0) (e' : g.obj 1 ≅ h.obj 0)
 
 --@[reassoc (attr := simp)]
---lemma δδ : X.δ' n₀ n₁ hn₁ g h e' ≫ X.δ' n₁ n₂ hn₂ f g e = 0 := sorry
+--lemma δ'δ' : X.δ' n₀ n₁ hn₁ g h e' ≫ X.δ' n₁ n₂ hn₂ f g e = 0 := sorry
+
+--lemma δ''δ'' {i j k l : ι} (f : i ⟶ j) (g : j ⟶ k) (h : k ⟶ l) :
+--    X.δ'' n₀ n₁ hn₁ g h ≫ X.δ'' n₁ n₂ hn₂ f g = 0 := by
+--  apply δ'δ'
 
 end
 
