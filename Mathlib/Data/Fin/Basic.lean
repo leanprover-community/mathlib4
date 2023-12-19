@@ -1723,7 +1723,6 @@ theorem predAbove?_ne_ne_none {p i : Fin (n + 1)} (h : i ≠ p) :
 theorem predAbove?_eq_none_iff_eq {p i : Fin (n + 1)} :
     predAbove? p i = none ↔ i = p := ⟨(predAbove?_ne_ne_none).mtr, predAbove?_eq_none⟩
 
-@[simp]
 theorem predAbove?_ne_none_iff_ne {p i : Fin (n + 1)} :
     predAbove? p i ≠ none ↔ i ≠ p := predAbove?_eq_none_iff_eq.not
 
@@ -1795,7 +1794,6 @@ theorem predAbove?_succAbove {p : Fin (n + 1)} {i : Fin n} :
   · simp_rw [succAbove_below _ _ h, predAbove?_below h]
   · simp_rw [succAbove_above _ _ h, predAbove?_above' h]
 
-@[simp]
 theorem succAbove_predAbove? {p i : Fin (n + 1)} (h : i ≠ p) :
     p.succAbove <$> (p.predAbove? i) = some i := by
   simp_rw [Option.map_eq_some]
@@ -1877,13 +1875,13 @@ theorem predAbove?_succ_left_lt_of_lt_castSucc {i : Fin (n + 1)} {p : Fin n}
   exact hpi
 
 theorem predAbove?_succ_left_lt_predAbove?_castSucc_left {p : Fin n} (ha : a ≤ castSucc p)
-  (hb : succ p < b) : predAbove? (succ p) a < predAbove? (castSucc p) b := sorry
+    (hb : succ p < b) : predAbove? (succ p) a < predAbove? (castSucc p) b := sorry
 
 theorem predAbove?_castSucc_left_lt_predAbove?_succ_left {p : Fin n} (ha : succ p < a)
     (hb : b ≤ castSucc p) : predAbove? (castSucc p) b < predAbove? (succ p) a := sorry
 
 theorem predAbove?_eqsdf {p : Fin n} (ha : a < succ p) (hb : castSucc p < b)
-  (h : predAbove? (castSucc p) b = predAbove? (succ p) a) : a = castSucc p ∧ b = succ p := sorry
+    (h : predAbove? (castSucc p) b = predAbove? (succ p) a) : a = castSucc p ∧ b = succ p := sorry
 
 theorem predAbove?_leftInverse {p : Fin (n + 1)} :
     Function.LeftInverse (p.predAbove?) (Option.elim' p (p.succAbove)) := by
@@ -1912,8 +1910,8 @@ theorem predAbove?_eq_or_lt_iff_le {p q r : Fin (n + 1)} (hq : q ≠ p) (hr : r 
   rw [predAbove?_lt_iff_lt hq hr, predAbove?_injective.eq_iff, le_iff_eq_or_lt]
 
 theorem predAbove?_succAbove_eq_or_lt_of_le {p : Fin n} {a b : Fin (n + 1)} (hab : a ≤ b) :
-  predAbove? (succAbove a p) a = predAbove? (succAbove b p) b ∨
-  predAbove? (succAbove a p) a < predAbove? (succAbove b p) b := by
+    predAbove? (succAbove a p) a = predAbove? (succAbove b p) b ∨
+    predAbove? (succAbove a p) a < predAbove? (succAbove b p) b := by
   rcases (succAbove_ne a p).lt_or_lt with (ha | ha) <;>
   rcases (succAbove_ne b p).lt_or_lt with (hb | hb)
   · rw [succAbove_lt_iff] at ha hb
@@ -1943,7 +1941,7 @@ def predAbove?_get (p i : Fin (n + 1)) (h : i ≠ p) : Fin n :=
   (predAbove? p i).get (predAbove?_ne_isSome h)
 
 lemma predAbove?_get_def {p i : Fin (n + 1)} {h : i ≠ p} :
-  predAbove?_get p i h = (predAbove? p i).get (predAbove?_ne_isSome h) := rfl
+    predAbove?_get p i h = (predAbove? p i).get (predAbove?_ne_isSome h) := rfl
 
 lemma predAbove?_get_congr_of_ne_ne {p q i j: Fin (n + 1)} (hi : i ≠ p) (hj : j ≠ q) :
     predAbove?_get p i hi = predAbove?_get q j hj ↔ predAbove? p i = predAbove? q j := by
@@ -2020,7 +2018,7 @@ def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
   (i.succAbove p).predAbove?_get i (succAbove_ne _ _).symm
 
 lemma predAbove_def {p : Fin n} {i : Fin (n + 1)} :
-  predAbove p i = (i.succAbove p).predAbove?_get i (succAbove_ne _ _).symm := rfl
+    predAbove p i = (i.succAbove p).predAbove?_get i (succAbove_ne _ _).symm := rfl
 
 @[simp]
 lemma succAbove_of_succAbove_predAbove {p : Fin (n + 1)} {i : Fin n} :
@@ -2037,7 +2035,6 @@ lemma predAbove_predAbove? {p q : Fin (n + 1)} (hpq : q ≠ p) :
     (p.predAbove?_get q hpq).predAbove p = q.predAbove?_get p hpq.symm := by
   simp_rw [predAbove_def, succAbove_predAbove?_get hpq]
 
-@[simp]
 lemma predAbove_predAbove_predAbove {p q : Fin (n + 1)} (hpq : q ≠ p) :
     predAbove (predAbove (p.predAbove?_get q hpq) p) q = p.predAbove?_get q hpq := by
   rw [predAbove_predAbove? hpq, predAbove_predAbove? hpq.symm]
@@ -2130,7 +2127,7 @@ theorem predAbove_below (p : Fin (n + 1)) (i : Fin (n + 2)) (h : i ≤ castSucc 
   rw [predAbove_def, predAbove?_get_below_eq ((lt_succAbove_iff _ _).mpr h)]
 #align fin.pred_above_below Fin.predAbove_below
 
-theorem predAbove_above [NeZero n] (p : Fin n) (i : Fin (n + 1)) (h : castSucc p < i) :
+theorem predAbove_above (p : Fin n) (i : Fin (n + 1)) (h : castSucc p < i) :
     p.predAbove i = i.pred ((zero_le <| castSucc p).trans_lt h).ne.symm := by
   rw [predAbove_def, predAbove?_get_above_eq ((succAbove_lt_iff _ _).mpr h)]
 #align fin.pred_above_above Fin.predAbove_above
@@ -2200,7 +2197,7 @@ end CastPred
 /-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
 then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
-theorem castSucc_succAbove_predAbove [NeZero n] {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
+theorem castSucc_succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
     p.castSucc.succAbove (p.predAbove i) = i := by
   rw [predAbove_def, succAbove_eq_iff_eq_predAbove? h, some_predAbove?_get_eq_predAbove?]
   rcases h.lt_or_lt with (h | h)
@@ -2215,7 +2212,7 @@ theorem castSucc_succAbove_predAbove [NeZero n] {p : Fin n} {i : Fin (n + 1)} (h
 /-- Sending `Fin n` into `Fin (n + 1)` with a gap at `p`
 then back to `Fin n` by subtracting one from anything above `p` is the identity. -/
 @[simp]
-theorem predAbove_succAbove [NeZero n] (p : Fin n) (i : Fin n) :
+theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
     p.predAbove ((castSucc p).succAbove i) = i := by
   rw [predAbove_def, predAbove?_get_eq_iff_predAbove?_eq_some,
     predAbove?_eq_iff_eq_succAbove (succAbove_ne _ _).symm]
@@ -2249,7 +2246,7 @@ theorem pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (
 
 /-- `succ` commutes with `predAbove`. -/
 @[simp]
-theorem succ_predAbove_succ {n : ℕ} [NeZero n] (a : Fin n) (b : Fin (n + 1)) :
+theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
   simp_rw [predAbove_def, predAbove?_get_eq_iff_predAbove?_eq_some,
     predAbove?_eq_iff_eq_succAbove (succAbove_ne _ _).symm,
@@ -2344,3 +2341,4 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
 #align fin.reflect Fin.toExprₓ
 
 end Fin
+#lint
