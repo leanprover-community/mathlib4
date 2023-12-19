@@ -729,7 +729,7 @@ end IsFundamentalDomain
 
 section FundamentalDomainMeasure
 
-variable (G) [Group G] [MulAction G α] [MeasurableSpace α] {s : Set α}
+variable (G) [Group G] [MulAction G α] [MeasurableSpace α]
   (μ : Measure α)
 
 local notation "α_mod_G" => MulAction.orbitRel G α
@@ -738,23 +738,21 @@ local notation "π" => @Quotient.mk _ α_mod_G
 
 variable {G}
 
-@[to_additive NullMeasurableSet.addQuotientMeasure_apply]
-lemma NullMeasurableSet.quotientMeasure_apply (hs : NullMeasurableSet s μ)
+@[to_additive addQuotientMeasure_apply]
+lemma quotientMeasure_apply (s : Set α)
     {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U)  :
     (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
   rw [Measure.map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
 
-variable  (hs : NullMeasurableSet s μ)
-
 @[to_additive IsAddFundamentalDomain.addQuotientMeasure_invariant]
-lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {t : Set α}
+lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s t : Set α}
     [SMulInvariantMeasure G α μ] [MeasurableSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
-  rw [fund_dom_s.nullMeasurableSet.quotientMeasure_apply μ meas_U]
-  rw [fund_dom_t.nullMeasurableSet.quotientMeasure_apply μ meas_U]
+  rw [quotientMeasure_apply μ s meas_U]
+  rw [quotientMeasure_apply μ t meas_U]
   apply MeasureTheory.IsFundamentalDomain.measure_set_eq fund_dom_s fund_dom_t
   · exact measurableSet_quotient.mp meas_U
   · intro g
@@ -887,7 +885,7 @@ lemma IsFundamentalDomain.quotientVolumeEqVolumePreimage_quotientMeasure
   { projection_respects_measure' := by
       intro t fund_dom_t U meas_U
       rw [fund_dom_s.quotientMeasure_invariant _ fund_dom_t,
-        fund_dom_t.nullMeasurableSet.quotientMeasure_apply volume meas_U] }
+        quotientMeasure_apply volume t meas_U] }
 
 /-- One can prove `QuotientVolumeEqVolumePreimage` by checking behavior with respect to a single
 fundamental domain. -/
@@ -1000,7 +998,7 @@ theorem QuotientVolumeEqVolumePreimage.covolume_ne_top
     covolume G α ≠ ⊤ := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.has_fundamental_domain_characterization
   have H : μ univ ≠ ⊤ := measure_ne_top μ univ
-  rw [h𝓕.eq_quotientMeasure μ, h𝓕.nullMeasurableSet.quotientMeasure_apply _ MeasurableSet.univ]
+  rw [h𝓕.eq_quotientMeasure μ, quotientMeasure_apply _ 𝓕 MeasurableSet.univ]
     at H
   simpa [h𝓕.covolume_eq_volume] using H
 
