@@ -2313,7 +2313,7 @@ end VSub
 section MulAction
 variable [Group α] [MulAction α β]
 
-@[to_additive]
+@[to_additive (attr := simp]
 lemma card_smul_set (a : α) (s : Set β) : Nat.card ↥(a • s) = Nat.card s :=
   Nat.card_image_of_injective (MulAction.injective a) _
 
@@ -2336,12 +2336,17 @@ lemma card_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
 
 end IsCancelMul
 
-section Group
-variable [Group α] {s t : Set α}
+section InvolutiveInv
+variable [InvolutiveInv α] {s t : Set α}
 
 @[to_additive (attr := simp)]
 lemma card_inv (s : Set α) : Nat.card ↥(s⁻¹) = Nat.card s := by
   rw [← image_inv, Nat.card_image_of_injective inv_injective]
+
+end InvolutiveInv
+
+section Group
+variable [Group α] {s t : Set α}
 
 @[to_additive]
 lemma card_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
