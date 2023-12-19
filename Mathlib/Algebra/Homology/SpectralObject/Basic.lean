@@ -1,255 +1,154 @@
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.ArrowSeven
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.MorphismProperty
-
-open CategoryTheory Category Limits Preadditive
+import Mathlib.Algebra.Homology.SpectralObject.Misc
 
 namespace CategoryTheory
 
-/-section
-
-variable {ι : Type _} [Preorder ι]
-
-@[simps!]
-def Arrow.mkOfLE (a b : ι) (hab : a ≤ b := by linarith) : Arrow ι := Arrow.mk (homOfLE hab)
-
-variable (ι)
-
-@[simps]
-noncomputable def Arrow.ιOfOrderBot [OrderBot ι] : ι ⥤ Arrow ι where
-  obj i := Arrow.mkOfLE ⊥ i bot_le
-  map {i j} φ :=
-    { left := 𝟙 _
-      right := φ }
-
-end-/
-
-/-section
-
-variable {C : Type _} [Category C] [Abelian C]
-
-noncomputable def Over.abelianImageFunctor (X : C) : Over X ⥤ MonoOver X where
-  obj f := MonoOver.mk' (Abelian.image.ι f.hom)
-  map φ := MonoOver.homMk (Abelian.image.lift _ (Abelian.image.ι _)
-    (by rw [← cancel_epi (Abelian.factorThruImage _),
-        Abelian.image.fac_assoc, comp_zero, ← Over.w φ, assoc,
-        cokernel.condition, comp_zero])) (by simp)
-  map_id X := by
-    apply CostructuredArrow.hom_ext
-    dsimp
-    rw [← cancel_mono (Abelian.image.ι _), Abelian.image.lift_ι]
-    erw [id_comp]
-  map_comp φ ψ := by
-    apply CostructuredArrow.hom_ext
-    change _ = _ ≫ _ ≫ _
-    dsimp [MonoOver.mk', MonoOver.homMk, Over.homMk,
-      CostructuredArrow.homMk, CommaMorphism.mk]
-    rw [← cancel_mono (Abelian.image.ι _)]
-    simp only [equalizer_as_kernel, Abelian.image.lift_ι, comp_id,
-      assoc, limit.lift_π, Fork.ofι_pt, Fork.ofι_π_app]
-
-end-/
-
-/-namespace Arrow
-
-lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
-    IsIso f ↔ IsIso f.left ∧ IsIso f.right := by
-  constructor
-  · intro hf
-    constructor
-    · change IsIso ((Comma.fst _ _).map f)
-      infer_instance
-    · change IsIso ((Comma.snd _ _).map f)
-      infer_instance
-  · rintro ⟨hf₁, hf₂⟩
-    refine' ⟨CommaMorphism.mk (inv f.left) (inv f.right) _, _, _⟩
-    · dsimp
-      simp only [← cancel_epi f.left, Arrow.w_assoc f,
-        IsIso.hom_inv_id_assoc, IsIso.hom_inv_id, comp_id]
-    · aesop_cat
-    · aesop_cat
-
-end Arrow-/
-
-namespace Limits
-
-variable {C ι ι' J : Type _} [Category C] [Category ι] [Category ι'] [Category J]
-  (F : ι' ⥤ ι)
-
--- this should be moved to `Limits.FunctorCategory`
-noncomputable instance [HasFiniteLimits C] (i : ι) :
-  PreservesFiniteLimits ((evaluation ι C).obj i) := ⟨fun _ => inferInstance⟩
-
-noncomputable instance [HasFiniteColimits C] (i : ι) :
-  PreservesFiniteColimits ((evaluation ι C).obj i) := ⟨fun _ => inferInstance⟩
-
-instance [HasZeroMorphisms C] :
-    ((whiskeringLeft ι' ι C).obj F).PreservesZeroMorphisms where
-
-noncomputable instance [HasLimitsOfShape J C] :
-    PreservesLimitsOfShape J ((whiskeringLeft ι' ι C).obj F) :=
-    ⟨fun {_} => ⟨fun hc => evaluationJointlyReflectsLimits _
-      (fun i => isLimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩
-
-noncomputable instance [HasColimitsOfShape J C] :
-    PreservesColimitsOfShape J ((whiskeringLeft ι' ι C).obj F) :=
-    ⟨fun {_} => ⟨fun hc => evaluationJointlyReflectsColimits _
-      (fun i => isColimitOfPreserves ((evaluation ι C).obj (F.obj i)) hc)⟩⟩
-
-noncomputable instance [HasFiniteLimits C] :
-    PreservesFiniteLimits ((whiskeringLeft ι' ι C).obj F) :=
-  ⟨fun _ => by infer_instance⟩
-
-noncomputable instance [HasFiniteColimits C] :
-    PreservesFiniteColimits ((whiskeringLeft ι' ι C).obj F) :=
-  ⟨fun _ => by infer_instance⟩
-
-instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] :
-    Epi (whiskerLeft F τ) := ((whiskeringLeft ι' ι C).obj F).map_epi τ
-
-instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] :
-  Mono (whiskerLeft F τ) := ((whiskeringLeft ι' ι C).obj F).map_mono τ
-
-instance [HasFiniteColimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Epi τ] (i : ι) :
-    Epi (τ.app i) :=
-  ((evaluation ι C).obj i).map_epi τ
-
-instance [HasFiniteLimits C] {X Y : ι ⥤ C} (τ : X ⟶ Y) [Mono τ] (i : ι) :
-    Mono (τ.app i) :=
-  ((evaluation ι C).obj i).map_mono τ
-
-end Limits
-
-namespace ShortComplex
-
-variable {C ι : Type _} [Category C] [Category ι] [Abelian C]
-variable (S : ShortComplex (ι ⥤ C))
-
-noncomputable def evaluationHomologyIso (a : ι) :
-    (S.map ((evaluation _ _).obj a)).homology ≅ S.homology.obj a :=
-  S.mapHomologyIso ((evaluation _ _).obj a)
-
-lemma homology_map {a b : ι} (φ : a ⟶ b) :
-    S.homology.map φ =
-  (S.evaluationHomologyIso a).inv ≫ homologyMap (S.mapNatTrans ((evaluation _ _).map φ)) ≫
-    (S.evaluationHomologyIso b).hom :=
-  NatTrans.app_homology ((evaluation _ _).map φ) S
-
-noncomputable def homologyMapMapNatTransEvaluationMapArrowIso {a b : ι} (φ : a ⟶ b) :
-  Arrow.mk (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) ≅
-    Arrow.mk (S.homology.map φ) := by
-  refine' Arrow.isoMk (S.evaluationHomologyIso a) (S.evaluationHomologyIso b) _
-  dsimp
-  rw [homology_map, Iso.hom_inv_id_assoc]
-
-lemma mono_homology_map_iff {a b : ι} (φ : a ⟶ b) :
-    Mono (S.homology.map φ) ↔ Mono (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
-  (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff
-    (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
-
-lemma epi_homology_map_iff {a b : ι} (φ : a ⟶ b) :
-    Epi (S.homology.map φ) ↔ Epi (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
-  (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
-    (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
-
-lemma isIso_homology_map_iff {a b : ι} (φ : a ⟶ b) :
-    IsIso (S.homology.map φ) ↔ IsIso (homologyMap (S.mapNatTrans ((evaluation _ _).map φ))) :=
-  (MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
-    (S.homologyMapMapNatTransEvaluationMapArrowIso φ).symm
-
-end ShortComplex
-
-end CategoryTheory
-
-namespace Monotone
-
-@[simps]
-def natTrans {X Y : Type*} [Preorder X] [Preorder Y] {f g : X → Y} (hf : Monotone f)
-    (hg : Monotone g) (h : ∀ x, f x ≤ g x) :
-    Monotone.functor hf ⟶ Monotone.functor hg where
-  app x := homOfLE (h x)
-
-end Monotone
-namespace SimplexCategory
-
-@[simps!]
-def natTransToCatMapOfLE {Δ Δ' : SimplexCategory} (f g : Δ ⟶ Δ')
-    (h : ∀ x, f.toOrderHom x ≤ g.toOrderHom x) :
-    SimplexCategory.toCat.map f ⟶ SimplexCategory.toCat.map g :=
-  Monotone.natTrans f.toOrderHom.monotone g.toOrderHom.monotone h
-
-end SimplexCategory
-
-namespace CategoryTheory
-
-namespace ComposableArrows
-
-variable (C : Type*) [Category C]
-
-@[simps!]
-def whiskerLeftNatTrans {n m : ℕ} {Φ Ψ : Fin (n + 1) ⥤ Fin (m + 1)} (α : Φ ⟶ Ψ) :
-    (whiskerLeftFunctor Φ : ComposableArrows C _ ⥤ _) ⟶ whiskerLeftFunctor Ψ where
-  app S := ((whiskeringLeft (Fin (n + 1)) (Fin (m + 1)) C).map α).app S
-
-def functorδ {n : ℕ} (i : Fin (n + 2)) :
-    ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
-  whiskerLeftFunctor (SimplexCategory.toCat.map (SimplexCategory.δ i))
-
-variable {C}
-
-abbrev δ {n : ℕ} (S : ComposableArrows C (n + 1)) (i : Fin (n + 2)) :
-    ComposableArrows C n :=
-  (functorδ C i).obj S
-
-variable (C)
-
-def natTransδ {n : ℕ} (i j : Fin (n + 2)) (hij : i.1 ≤ j.1) :
-    functorδ C j ⟶ functorδ C i :=
-  whiskerLeftNatTrans C (SimplexCategory.natTransToCatMapOfLE _ _ (by
-    intro x
-    dsimp [SimplexCategory.δ, Fin.succAbove, Fin.succ,
-      Fin.castSucc, Fin.castAdd, Fin.castLE]
-    split_ifs <;> simp only [Fin.le_iff_val_le_val] <;> linarith))
-
-variable {C}
-
-abbrev mapδ {n : ℕ} (S : ComposableArrows C (n + 1)) (i j : Fin (n + 2)) (hij : i.1 ≤ j.1) :
-    S.δ j ⟶ S.δ i :=
-  (natTransδ C i j hij).app S
-
-end ComposableArrows
-
-end CategoryTheory
-
-namespace CategoryTheory
+open Category
 
 namespace Abelian
 
 section
 
-variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
+variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
 
-lemma exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
-    S.Exact ↔ ∀ (i : ι), (S.map ((evaluation ι C).obj i)).Exact := by
-  simp only [ShortComplex.exact_iff_isZero_homology,
-    fun i => Iso.isZero_iff (S.mapHomologyIso ((evaluation ι C).obj i)),
-    evaluation_obj_obj, Functor.isZero_iff]
+open ComposableArrows
 
-variable (C ι)
-
-open ComposableArrows in
 structure SpectralObject where
   H (n : ℤ) : ComposableArrows ι 1 ⥤ C
   δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) : functorδ ι 0 ⋙ H n₀ ⟶ functorδ ι 2 ⋙ H n₁
-  exact₁ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
+  exact₁' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
     (mk₂ ((δ n₀ n₁ h).app D) ((H n₁).map (D.mapδ 1 2 (by dsimp; linarith)))).Exact
-  exact₂ (n : ℤ) (D : ComposableArrows ι 2) :
+  exact₂' (n : ℤ) (D : ComposableArrows ι 2) :
     (mk₂ ((H n).map (D.mapδ 1 2 (by dsimp; linarith))) ((H n).map (D.mapδ 0 1 (by simp)))).Exact
-  exact₃ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
-    (mk₂ ((H n₀).map (D.mapδ 0 1 (by simp))) ((δ n₀ n₁ h).app D) ).Exact
+  exact₃' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (D : ComposableArrows ι 2) :
+    (mk₂ ((H n₀).map (D.mapδ 0 1 (by simp))) ((δ n₀ n₁ h).app D)).Exact
+
+namespace SpectralObject
+
+variable {C ι}
+variable (X : SpectralObject C ι)
+
+section
+
+variable (n n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (D : ComposableArrows ι 2)
+
+@[reassoc]
+lemma zero₁ :
+    (X.δ n₀ n₁ hn₁).app D ≫ (X.H n₁).map (D.mapδ 1 2 (by dsimp; linarith)) = 0 :=
+  (X.exact₁' n₀ n₁ hn₁ D).zero 0
+
+@[reassoc]
+lemma zero₂ :
+    (X.H n).map (D.mapδ 1 2 (by dsimp; linarith)) ≫
+      (X.H n).map (D.mapδ 0 1 (by dsimp; linarith)) = 0 :=
+  (X.exact₂' n D).zero 0
+
+@[reassoc]
+lemma zero₃ :
+    (X.H n₀).map (D.mapδ 0 1 (by dsimp; linarith)) ≫ (X.δ n₀ n₁ hn₁).app D = 0 :=
+  (X.exact₃' n₀ n₁ hn₁ D).zero 0
+
+@[simps]
+def sc₁ : ShortComplex C := ShortComplex.mk _ _ (X.zero₁ n₀ n₁ hn₁ D)
+
+@[simps]
+def sc₂ : ShortComplex C := ShortComplex.mk _ _ (X.zero₂ n D)
+
+@[simps]
+def sc₃ : ShortComplex C := ShortComplex.mk _ _ (X.zero₃ n₀ n₁ hn₁ D)
+
+lemma sc₁_exact : (X.sc₁ n₀ n₁ hn₁ D).Exact :=
+  (X.exact₁' n₀ n₁ hn₁ D).exact 0
+
+lemma sc₂_exact : (X.sc₂ n D).Exact :=
+  (X.exact₂' n D).exact 0
+
+lemma sc₃_exact : (X.sc₃ n₀ n₁ hn₁ D).Exact :=
+  (X.exact₃' n₀ n₁ hn₁ D).exact 0
+
+end
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+  (f g : ComposableArrows ι 1) (e : f.obj 1 ≅ g.obj 0)
+
+def δ' : (X.H n₀).obj g ⟶ (X.H n₁).obj f :=
+  (X.H n₀).map (Iso.inv (by exact isoMk₁ e (Iso.refl _) (by simp; rfl))) ≫
+    (X.δ n₀ n₁ hn₁).app (mk₂ (f.map' 0 1) (e.hom ≫ g.map' 0 1)) ≫
+    (X.H n₁).map (Iso.hom (isoMk₁ (Iso.refl _) (Iso.refl _) (by simp; rfl)))
+
+variable (f' g' : ComposableArrows ι 1) (e' : f'.obj 1 ≅ g'.obj 0)
+  (φf : f ⟶ f') (φg : g ⟶ g') (comm : φf.app 1 ≫ e'.hom = e.hom ≫ φg.app 0)
+
+lemma δ'_naturality :
+    (X.H n₀).map φg ≫ X.δ' n₀ n₁ hn₁ f' g' e' =
+      X.δ' n₀ n₁ hn₁ f g e ≫ (X.H n₁).map φf := by
+  let φ : mk₂ (f.map' 0 1) (e.hom ≫ g.map' 0 1) ⟶
+      mk₂ (f'.map' 0 1) (e'.hom ≫ g'.map' 0 1) :=
+    homMk₂ (φf.app 0) (φf.app 1) (φg.app 1) (by simp) (by simp [reassoc_of% comm])
+  have hφ := (X.H n₀).map (show g ⟶ _ from homMk₁ (by exact e.inv) (by exact 𝟙 _)
+      (by change g.map' 0 1 ≫ 𝟙 _ = e.inv ≫ e.hom ≫ g.map' 0 1; simp)) ≫=
+    (X.δ n₀ n₁ hn₁).naturality φ =≫
+      (X.H n₁).map (show _ ⟶ f' from homMk₁ (𝟙 _) (𝟙 _) (by simp; rfl))
+  dsimp only [δ', Functor.comp] at hφ ⊢
+  convert hφ using 1
+  · rw [assoc, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+    congr 2
+    apply hom_ext₁
+    · dsimp
+      rw [← cancel_epi e.hom, ← reassoc_of% comm, e'.hom_inv_id, e.hom_inv_id_assoc]
+      apply comp_id
+    · dsimp
+      simp only [id_comp]
+      apply comp_id
+  · rw [assoc, assoc, assoc, ← Functor.map_comp, ← Functor.map_comp ]
+    congr 3
+    apply hom_ext₁ <;> simp <;> rfl
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  (f g h : ComposableArrows ι 1) (e : f.obj 1 ≅ g.obj 0) (e' : g.obj 1 ≅ h.obj 0)
+
+--@[reassoc (attr := simp)]
+--lemma δδ : X.δ' n₀ n₁ hn₁ g h e' ≫ X.δ' n₁ n₂ hn₂ f g e = 0 := sorry
+
+end
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+variable (i j k n : ℕ) (hij : i ≤ j := by linarith)
+  (hjk : j ≤ k := by linarith) (hk : k ≤ n := by linarith)
+
+@[simps]
+noncomputable def δFunctorArrows :
+    functorArrows ι j k n ⋙ X.H n₀ ⟶ functorArrows ι i j n ⋙ X.H n₁ where
+  app D := X.δ' n₀ n₁ hn₁ _ _ (Iso.refl _)
+  naturality D₁ D₂ ψ := by
+    apply X.δ'_naturality
+    simp
+    rfl
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+
+/-noncomputable def shortComplexE : ShortComplex (ComposableArrows ι 3 ⥤ C) where
+  X₁ := functorArrows ι 2 3 3 ⋙ X.H n₀
+  X₂ := functorArrows ι 1 2 3 ⋙ X.H n₁
+  X₃ := functorArrows ι 0 1 3 ⋙ X.H n₂
+  f := X.δFunctorArrows n₀ n₁ hn₁ 1 2 3 3
+  g := X.δFunctorArrows n₁ n₂ hn₂ 0 1 2 3
+  zero := by aesop_cat-/
+
+end
+
+end SpectralObject
 
 end
 
