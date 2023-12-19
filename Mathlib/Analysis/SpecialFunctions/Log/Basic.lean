@@ -150,8 +150,7 @@ lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
   (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
 
 @[gcongr]
-theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
-  intro h
+theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 #align real.log_lt_log Real.log_lt_log
 
