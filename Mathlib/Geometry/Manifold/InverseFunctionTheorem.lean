@@ -6,9 +6,32 @@ Authors: Michael Rothgang
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Topology.IsLocalHomeomorph
 
 /-! # The inverse function theorem for manifolds
-TODO: complete docstring
+
+In this file, we prove the inverse function theorem for functions between differentiable manifolds.
+This theorem holds in different versions, for instance for `C^r` (for `r≥1`) and analytic maps.
+Hence, we prove a general version first --- and will deduce the C^r and analytic cases from this.
+
+The conclusion of the abstract inverse function theorem is that `f` is a local structomorphism.
+The hypotheses are stated as a condition on the pregroupoid of the given atlas.
+
+## Main definitions
+* An **IFTPregroupoid** is a pregroupoid which is monotone and stable under local inverses
+(in a precise sense). These are the setting for the abstract inverse function theorem.
+
+## Main results
+* The groupoid induced by an `IFTPregroupoid` is closed under restriction.
+* `xxx`: the conceptual version of the inverse function theorem.
+
+## TODO
+- show that `contDiffPregroupoid` and `analyticPregroupoid` are `IFTPregroupoid`s
+- deduce the standard phrasing of the inverse function theorem,
+  in terms of (an analogue of) `HasStrictFDerivAt`
+
+## Tags
+inverse function theorem, manifold, groupoid
 -/
 
 open Function Manifold Set TopologicalSpace Topology
