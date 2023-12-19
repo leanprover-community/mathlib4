@@ -657,6 +657,7 @@ theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R V] (h : Modul
   exact Subsingleton.elim _ _
 #align bot_eq_top_of_rank_eq_zero Submodule.bot_eq_top_of_rank_eq_zero
 
+/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
 theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R V] {S : Submodule R V} :
     Module.rank R S = 0 ↔ S = ⊥ :=
