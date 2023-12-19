@@ -12,9 +12,13 @@ import Mathlib.Algebra.Order.SMul
 
 In this file we provide lemmas about `OrderedSMul` that hold once a module structure is present.
 
+## TODO
+
+Generalise lemmas to the framework from `Mathlib.Algebra.Order.Module.Defs`.
+
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_module
+* https://en.wikipedia.org/wiki/Ordered_vector_space
 
 ## Tags
 

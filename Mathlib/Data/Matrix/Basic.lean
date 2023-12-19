@@ -1703,6 +1703,11 @@ def mulVec.addMonoidHomLeft [Fintype n] (v : n → α) : Matrix m n α →+ m �
     apply add_dotProduct
 #align matrix.mul_vec.add_monoid_hom_left Matrix.mulVec.addMonoidHomLeft
 
+/-- The `i`th row of the multiplication is the same as the `vecMul` with the `i`th row of `A`. -/
+theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) (i : m) :
+    (A * B) i = vecMul (A i) B :=
+  rfl
+
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     mulVec (diagonal v) w x = v x * w x :=
   diagonal_dotProduct v w x

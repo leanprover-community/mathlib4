@@ -31,9 +31,13 @@ In this file we define
 * To get ordered modules and ordered vector spaces, it suffices to replace the
   `OrderedAddCommMonoid` and the `OrderedSemiring` as desired.
 
+## TODO
+
+Delete the lemmas that have been generalised by `PosSMulMono` and friends.
+
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_module
+* https://en.wikipedia.org/wiki/Ordered_vector_space
 
 ## Tags
 
@@ -66,10 +70,10 @@ section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
-instance : PosSMulStrictMono R M where
+instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
-instance : PosSMulReflectLT R M :=
+instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
   PosSMulReflectLT.of_pos $ fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
 @[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b := smul_lt_smul_of_pos_left

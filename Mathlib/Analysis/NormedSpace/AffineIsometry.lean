@@ -722,7 +722,7 @@ def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
 variable {𝕜}
 
 @[simp]
-theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (p -ᵥ ·) :=
   rfl
 #align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVSub
 
@@ -745,7 +745,7 @@ def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
 variable {𝕜 P}
 
 @[simp]
-theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
+theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
   rfl
 #align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVAdd
 
