@@ -436,7 +436,98 @@ instance Module.Finite.span_singleton (x : V) : Module.Finite R (R ∙ x) :=
 instance Module.Finite.span_finset (s : Finset V) : Module.Finite R (span R (s : Set V)) :=
   ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
 
-variable {K R}
+variable {K R M}
+variable [AddCommGroup M] [Module R M] [Module.Finite R M]
+
+lemma LinearIndependent.finset_toSet (s : Finset M) : LinearIndependent R ((↑) : (↑s : Set M) → M) ↔
+    LinearIndependent R ((↑) : s → M) := Iff.rfl
+
+lemma FiniteDimensional.finrank_add_finrank_quotient_le (N : Submodule R M) :
+    finrank R N + finrank R (M ⧸ N) ≤ finrank R M := by
+  clear ‹StrongRankCondition R›
+  classical
+  obtain ⟨s, hs, hs'⟩ := exists_finset_card_eq_finrank_and_linearIndependent R N
+  obtain ⟨t, ht, ht'⟩ := exists_finset_card_eq_finrank_and_linearIndependent R (M ⧸ N)
+  obtain ⟨f, hf⟩ := N.mkQ_surjective.hasRightInverse
+  have H : Disjoint (Submodule.span R (Subtype.val '' (s : Set N))) (Submodule.span R (f '' t))
+  · apply Disjoint.mono_left (Submodule.span_le.mpr Set.image_val_subset)
+    rw [disjoint_iff, eq_bot_iff, ← @Subtype.range_val (M ⧸ N) t, ← Set.range_comp,
+      ← Finsupp.range_total]
+    rintro _ ⟨h, l, rfl⟩
+    rw [SetLike.mem_coe, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
+      Finsupp.apply_total, ← Function.comp.assoc, show N.mkQ ∘ f = id from funext hf] at h
+    rw [linearIndependent_iff.mp ht' l h, _root_.map_zero]
+    exact zero_mem _
+  rw [← hs, ← ht, ← t.card_image_of_injective hf.injective,
+    ← s.card_image_of_injective Subtype.val_injective, ← Finset.card_union_eq]
+  apply FiniteDimensional.finset_card_le_finrank_of_linearIndependent
+  · rw [← LinearIndependent.finset_toSet, Finset.coe_union, Finset.coe_image, Finset.coe_image]
+    refine LinearIndependent.union ?_ ?_ H
+    · rw [← linearIndependent_image (Subtype.val_injective.injOn _)]
+      exact hs'.map' N.subtype N.ker_subtype
+    · rw [← linearIndependent_image (hf.injective.injOn _)]
+      apply LinearIndependent.of_comp N.mkQ
+      convert ht'
+      exact funext fun x => hf _
+  · rw [← Finset.disjoint_coe, Finset.coe_image, Finset.coe_image, Set.disjoint_iff]
+    intro x ⟨h₁, h₂⟩
+    obtain rfl : x = 0 :=
+      (disjoint_iff.mp H).le ⟨Submodule.subset_span h₁, Submodule.subset_span h₂⟩
+    simp only [Set.mem_image, Finset.mem_coe, ZeroMemClass.coe_eq_zero, exists_eq_right] at h₁
+    exact hs'.ne_zero ⟨0, h₁⟩ (by simp only)
+
+lemma FiniteDimensional.finrank_quotient_of_le_torsion {R} [CommRing R] [Module R M]
+    [StrongRankCondition R] [Module.Finite R M]
+    {N : Submodule R M} (hN : N ≤ Submodule.torsion R M) :
+    finrank R (M ⧸ N) = finrank R M := by
+  classical
+  apply N.finrank_quotient_le.antisymm
+  obtain ⟨s, hs, hs'⟩ := exists_finset_card_eq_finrank_and_linearIndependent R M
+  rw [← hs]
+  have Hs : Set.InjOn N.mkQ ↑s
+  · intros i hi j hj e
+    by_contra h
+    have h' : (⟨i, hi⟩ : s) ≠ ⟨j, hj⟩ := by exact Subtype.ne_of_val_ne h
+    rw [← sub_eq_zero, ← map_sub, N.mkQ_apply, Submodule.Quotient.mk_eq_zero] at e
+    obtain ⟨⟨r, hr⟩, e⟩ := hN e
+    simp only [Submonoid.mk_smul, smul_sub] at e
+    have := _root_.linearIndependent_iff.mp hs'
+      (Finsupp.single ⟨i, hi⟩ r - Finsupp.single ⟨j, hj⟩ r)
+      (by simp only [map_sub, Finsupp.total_single, e])
+    have := FunLike.congr_fun this ⟨j, hj⟩
+    simp only [Finsupp.coe_sub, Pi.sub_apply, Finsupp.single_eq_same, ne_eq, Subtype.mk.injEq,
+      Finsupp.coe_zero, Pi.zero_apply, Finsupp.single_eq_of_ne h', zero_sub, neg_eq_zero] at this
+    exact nonZeroDivisors.ne_zero hr this
+  rw [← Finset.card_image_iff.mpr Hs]
+  apply FiniteDimensional.finset_card_le_finrank_of_linearIndependent
+  rw [← LinearIndependent.finset_toSet, Finset.coe_image, ← linearIndependent_image Hs]
+  show LinearIndependent R (N.mkQ ∘ Subtype.val)
+  rw [_root_.linearIndependent_iff]
+  intro l hl
+  rw [← Finsupp.apply_total, N.mkQ_apply, Submodule.Quotient.mk_eq_zero] at hl
+  obtain ⟨⟨r, hr⟩, e⟩ := hN hl
+  simp only [Submonoid.smul_def, ← LinearMap.map_smul] at e
+  ext i
+  exact hr _ ((mul_comm _ _).trans (FunLike.congr_fun (linearIndependent_iff.mp hs' _ e) i))
+
+lemma FiniteDimensional.finrank_map_of_le_torsion {R} [CommRing R] [Module R M]
+    [StrongRankCondition R] [Module.Finite R M] {M'} [AddCommGroup M'] [Module R M']
+    (N : Submodule R M) (l : M →ₗ[R] M') [Module.Finite R N]
+    (hN : N ⊓ LinearMap.ker l ≤ Submodule.torsion R M) : finrank R (N.map l) = finrank R N := by
+  conv_lhs => rw [← N.range_subtype, ← LinearMap.range_comp,
+    ← (LinearMap.quotKerEquivRange (l.comp N.subtype)).finrank_eq]
+  apply FiniteDimensional.finrank_quotient_of_le_torsion
+  rintro x hx
+  obtain ⟨a, ha⟩ := hN ⟨x.prop, hx⟩
+  exact ⟨a, Subtype.val_injective ha⟩
+
+lemma FiniteDimensional.finrank_of_surjective_of_le_torsion {R} [CommRing R] [Module R M]
+    [StrongRankCondition R] [Module.Finite R M] {M'} [AddCommGroup M'] [Module R M']
+    (l : M →ₗ[R] M') (hl : Function.Surjective l)
+    (hl' : LinearMap.ker l ≤ Submodule.torsion R M) : finrank R M' = finrank R M := by
+  have := FiniteDimensional.finrank_map_of_le_torsion ⊤ l (inf_le_right.trans hl')
+  rw [← LinearMap.range_eq_map l, LinearMap.range_eq_top.mpr hl] at this
+  simpa only [finrank_top] using this
 
 theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux [Module.Finite R V]
     [NoZeroSMulDivisors R V]
@@ -643,12 +734,6 @@ theorem FiniteDimensional.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R V =
   rw [h, zero_toNat]
 #align finrank_eq_zero_of_rank_eq_zero FiniteDimensional.finrank_eq_zero_of_rank_eq_zero
 
-variable (R V)
-
-instance Module.finite_bot : Module.Finite R (⊥ : Submodule R V) := inferInstance
-
-variable {R V}
-
 theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R V] (h : Module.rank R V = 0) :
     (⊥ : Submodule R V) = ⊤ := by
   rw [rank_zero_iff] at h
@@ -697,7 +782,7 @@ work well with typeclass search. -/
 instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R V)
     [∀ i, Module.Finite R (S i)] : Module.Finite R (s.sup S : Submodule R V) := by
   refine'
-    @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.finite_bot R V)
+    @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.Finite.bot R V)
       _ fun i _ => by infer_instance
   · intro S₁ hS₁ S₂ hS₂
     exact Submodule.finite_sup S₁ S₂

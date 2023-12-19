@@ -644,6 +644,16 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
 
 instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
+theorem iff_FG {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans (fg_top _)
+
+variable (R M)
+
+instance bot : Module.Finite R (⊥ : Submodule R M) := iff_FG.mpr fg_bot
+
+instance top [Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_FG.mpr out
+
+variable {R M}
+
 section Algebra
 
 theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A]

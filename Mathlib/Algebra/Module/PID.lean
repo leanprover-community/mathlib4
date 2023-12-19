@@ -280,3 +280,67 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
 #align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum
 
 end Module
+
+instance [IsDomain R] : NoZeroSMulDivisors R (M ⧸ Submodule.torsion R M) := by
+  constructor
+  intros c x hcx
+  rw [or_iff_not_imp_left]
+  intro hc
+  obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
+  rw [← LinearMap.map_smul, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at hcx
+  obtain ⟨n, hn⟩ := hcx
+  simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, Submonoid.mk_smul, exists_prop]
+  refine ⟨n * ⟨c, mem_nonZeroDivisors_of_ne_zero hc⟩, ?_⟩
+  simpa [Submonoid.smul_def, smul_smul] using hn
+
+instance [IsDomain R] [IsPrincipalIdealRing R] : Module.Free R (M ⧸ Submodule.torsion R M) :=
+  Module.free_of_finite_type_torsion_free'
+
+lemma FiniteDimensional.finrank_add_finrank_quotient [IsDomain R] [IsPrincipalIdealRing R]
+    (N : Submodule R M) :
+    finrank R N + finrank R (M ⧸ N) = finrank R M := by
+  have : IsNoetherian R M := isNoetherian_of_isNoetherianRing_of_finite R M
+  have := FiniteDimensional.finrank_add_finrank_quotient_of_free (N.map (Submodule.torsion R M).mkQ)
+  rw [FiniteDimensional.finrank_quotient_of_le_torsion _ le_rfl,
+    FiniteDimensional.finrank_map_of_le_torsion] at this
+  convert this using 2
+  symm
+  fapply FiniteDimensional.finrank_of_surjective_of_le_torsion
+  · refine Submodule.liftQ N ((Submodule.mkQ _).comp (Submodule.mkQ _)) ?_
+    rw [LinearMap.ker_comp, ← Submodule.map_le_iff_le_comap, Submodule.ker_mkQ]
+  · rw [← LinearMap.range_eq_top, Submodule.range_liftQ, LinearMap.range_eq_top]
+    exact (Submodule.mkQ_surjective _).comp (Submodule.mkQ_surjective _)
+  · rw [Submodule.ker_liftQ, Submodule.map_le_iff_le_comap, LinearMap.ker_comp,
+      Submodule.ker_mkQ, Submodule.comap_map_eq, Submodule.ker_mkQ]
+    apply sup_le (N.le_comap_mkQ _)
+    rintro x ⟨r, hrx⟩
+    exact ⟨r, by rw [← LinearMap.map_smul_of_tower, hrx, map_zero]⟩
+  · rw [Submodule.ker_mkQ]
+    exact inf_le_right
+
+lemma FiniteDimensional.finrank_quotient [IsDomain R] [IsPrincipalIdealRing R]
+    (N : Submodule R M) :
+    finrank R (M ⧸ N) = finrank R M - finrank R N := by
+  rw [← FiniteDimensional.finrank_add_finrank_quotient N, add_tsub_cancel_left]
+
+lemma FiniteDimensional.finrank_quotient' [IsDomain R] [IsPrincipalIdealRing R]
+    {S} [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+    (N : Submodule S M) :
+    finrank R (M ⧸ N) = finrank R M - finrank R N :=
+  FiniteDimensional.finrank_quotient (N.restrictScalars R)
+
+lemma FiniteDimensional.exists_of_finrank_lt [IsDomain R] [IsPrincipalIdealRing R]
+    (N : Submodule R M) (h : finrank R N < finrank R M) :
+    ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
+  obtain ⟨s, hs, hs'⟩ :=
+    FiniteDimensional.exists_finset_card_eq_finrank_and_linearIndependent R (M ⧸ N)
+  obtain ⟨v, hv⟩ : s.Nonempty
+  · rwa [Finset.nonempty_iff_ne_empty, ne_eq, ← Finset.card_eq_zero, hs,
+      FiniteDimensional.finrank_quotient, tsub_eq_zero_iff_le, not_le]
+  obtain ⟨v, rfl⟩ := N.mkQ_surjective v
+  use v
+  intro r hr
+  have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)
+  rw [Finsupp.total_single, Finsupp.single_eq_zero, ← LinearMap.map_smul,
+    Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at this
+  exact mt this hr

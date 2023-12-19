@@ -108,6 +108,9 @@ protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
 #align module.rank Module.rank
 
+instance : Nonempty { s : Set V // LinearIndependent K ((↑) : s → V) } :=
+  ⟨⟨∅, linearIndependent_iff.mpr (fun l _ ↦ Subsingleton.elim l 0)⟩⟩
+
 end
 
 section
