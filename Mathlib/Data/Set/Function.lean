@@ -429,7 +429,7 @@ theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
 #align set.maps_to_empty Set.mapsTo_empty
 
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
-theorem MapsTo.map_nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
+theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
   (hs.image f).mono (mapsTo'.mp h)
 
 theorem MapsTo.image_subset (h : MapsTo f s t) : f '' s ⊆ t :=
