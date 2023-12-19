@@ -2313,7 +2313,7 @@ end VSub
 section MulAction
 variable [Group α] [MulAction α β]
 
-@[to_additive (attr := simp]
+@[to_additive (attr := simp)]
 lemma card_smul_set (a : α) (s : Set β) : Nat.card ↥(a • s) = Nat.card s :=
   Nat.card_image_of_injective (MulAction.injective a) _
 
