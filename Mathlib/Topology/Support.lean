@@ -102,6 +102,13 @@ theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α]
   closure_mono <| support_smul_subset_left f g
 #align tsupport_smul_subset_left tsupport_smul_subset_left
 
+@[to_additive]
+theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
+    (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
+  closure_minimal
+    ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
+    (isClosed_closure.union isClosed_closure)
+
 section
 
 variable [TopologicalSpace α] [TopologicalSpace α']
