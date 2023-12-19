@@ -43,34 +43,30 @@ open Set
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
+namespace ModelWithCorners
 /-- `p ∈ M` is an interior point of a manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
-def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
+def IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
 
 /-- `p ∈ M` is a boundary point of a manifold `M` iff its image in the extended chart
 lies on the boundary of the model space. -/
-def ModelWithCorners.IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range I)
+def IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range I)
 
-namespace SmoothManifoldWithCorners
--- TODO: can I enable dot notation as in, say, `M.interior I`?
-
-variable (I M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
 protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 
-lemma _root_.ModelWithCorners.isInteriorPoint_iff {x : M} :
+lemma isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
   ⟨fun h ↦ (chartAt H x).mem_interior_extend_target _ (mem_chart_target H x) h,
     fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
 
-variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
 protected def boundary : Set M := { x : M | I.IsBoundaryPoint x }
 
-lemma _root_.ModelWithCorners.isBoundaryPoint_iff {x : M} :
+lemma isBoundaryPoint_iff {x : M} :
     I.IsBoundaryPoint x ↔ extChartAt I x x ∈ frontier (range I) := Iff.rfl
 
 /-- Every point is either an interior or a boundary point. -/
@@ -82,13 +78,11 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
     exact ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
-lemma interior_union_boundary_eq_univ : (SmoothManifoldWithCorners.interior I M) ∪
-    (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) :=
+lemma interior_union_boundary_eq_univ : (I.interior M) ∪ (I.boundary M) = (univ : Set M) :=
   le_antisymm (fun _ _ ↦ trivial) (fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x)
 
 /-- The interior and boundary of a manifold `M` are disjoint. -/
-lemma disjoint_interior_boundary :
-    Disjoint (SmoothManifoldWithCorners.interior I M) (SmoothManifoldWithCorners.boundary I M) := by
+lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
   by_contra h
   -- Choose some x in the intersection of interior and boundary.
   choose x hx using nmem_singleton_empty.mp h
@@ -98,12 +92,10 @@ lemma disjoint_interior_boundary :
   exact ⟨h1, h2⟩
 
 /-- The boundary is the complement of the interior. -/
-lemma boundary_eq_complement_interior :
-    SmoothManifoldWithCorners.boundary I M = (SmoothManifoldWithCorners.interior I M)ᶜ :=
+lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ :=
   (compl_unique interior_boundary_disjoint univ_eq_interior_union_boundary).symm
-end SmoothManifoldWithCorners
 
-lemma range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
+lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ nhds (extChartAt I x x) := by
   rw [mem_nhds_iff]
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
@@ -112,7 +104,7 @@ section boundaryless
 variable [I.Boundaryless]
 
 /-- If `I` is boundaryless, every point of `M` is an interior point. -/
-lemma ModelWithCorners.isInteriorPoint {x : M} : I.IsInteriorPoint x := by
+lemma isInteriorPoint {x : M} : I.IsInteriorPoint x := by
   let r := ((chartAt H x).isOpen_extend_target I).interior_eq
   have : extChartAt I x = (chartAt H x).extend I := rfl
   rw [← this] at r
@@ -120,14 +112,13 @@ lemma ModelWithCorners.isInteriorPoint {x : M} : I.IsInteriorPoint x := by
   exact PartialEquiv.map_source _ (mem_extChartAt_source _ _)
 
 /-- If `I` is boundaryless, `M` has full interior. -/
-lemma ModelWithCorners.interior_eq_univ : SmoothManifoldWithCorners.interior I M = univ := by
+lemma interior_eq_univ : I.interior M = univ := by
   ext
   refine ⟨fun _ ↦ trivial, fun _ ↦ I.isInteriorPoint⟩
 
 /-- If `I` is boundaryless, `M` has empty boundary. -/
-lemma ModelWithCorners.Boundaryless.boundary_eq_empty :
-    SmoothManifoldWithCorners.boundary I M = ∅ := by
-  rw [SmoothManifoldWithCorners.boundary_eq_complement_interior, I.interior_eq_univ,
-    compl_empty_iff]
+lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
+  rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
 end boundaryless
+end ModelWithCorners
