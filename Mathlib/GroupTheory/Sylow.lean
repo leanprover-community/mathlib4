@@ -662,7 +662,7 @@ lemma exists_subgroup_card_pow_prime_of_le_card {m p : ℕ} (hp : p.Prime) (h : 
   simp_rw [Nat.card_eq_fintype_card] at hn hm ⊢
   refine exists_subgroup_card_pow_prime _ ?_
   rw [hn] at hm ⊢
-  exact pow_dvd_pow _ $ (pow_le_pow_iff hp.one_lt).1 hm
+  exact pow_dvd_pow _ $ (pow_le_pow_iff_right hp.one_lt).1 hm
 
 lemma exists_subgroup_le_card_pow_prime_of_le_card {m p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
     {H : Subgroup G} (hm : p ^ m ≤ Nat.card H) : ∃ H' ≤ H, Nat.card H' = p ^ m := by
