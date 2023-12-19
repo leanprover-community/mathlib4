@@ -498,7 +498,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     simp
     -- This used to be the end of the proof before leanprover/lean4#2644
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
-    simp
+    simp? says simp only [coe_sum, Finset.sum_apply]
     congr!
   simpa only [HasSum, A] using (hF K).of_norm
 #align continuous_map.summable_of_locally_summable_norm ContinuousMap.summable_of_locally_summable_norm

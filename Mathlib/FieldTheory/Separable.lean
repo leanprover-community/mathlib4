@@ -130,6 +130,19 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
       Polynomial.map_one]⟩
 #align polynomial.separable.map Polynomial.Separable.map
 
+theorem Separable.eval₂_derivative_ne_zero [Nontrivial S] (f : R →+* S) {p : R[X]}
+    (h : p.Separable) {x : S} (hx : p.eval₂ f x = 0) :
+    (derivative p).eval₂ f x ≠ 0 := by
+  intro hx'
+  obtain ⟨a, b, e⟩ := h
+  apply_fun Polynomial.eval₂ f x at e
+  simp only [eval₂_add, eval₂_mul, hx, mul_zero, hx', add_zero, eval₂_one, zero_ne_one] at e
+
+theorem Separable.aeval_derivative_ne_zero [Nontrivial S] [Algebra R S] {p : R[X]}
+    (h : p.Separable) {x : S} (hx : aeval x p = 0) :
+    aeval x (derivative p) ≠ 0 :=
+  h.eval₂_derivative_ne_zero (algebraMap R S) hx
+
 variable (p q : ℕ)
 
 theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q * q ∣ p) :
@@ -492,7 +505,7 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
-extension, because the minimal polynomial of a non-integral element is 0, which is not
+extension, because the minimal polynomial of a non-integral element is `0`, which is not
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
@@ -508,11 +521,17 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x := fun x ↦ by
+variable {F} in
+/-- If the minimal polynomial of `x : K` over `F` is separable, then `x` is integral over `F`,
+because the minimal polynomial of a non-integral element is `0`, which is not separable. -/
+theorem Polynomial.Separable.isIntegral {x : K} (h : (minpoly F x).Separable) : IsIntegral F x := by
   cases subsingleton_or_nontrivial F
   · haveI := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
-  · exact of_not_not fun h ↦ not_separable_zero (minpoly.eq_zero h ▸ IsSeparable.separable F x)
+  · exact of_not_not fun h' ↦ not_separable_zero (minpoly.eq_zero h' ▸ h)
+
+theorem IsSeparable.isIntegral [IsSeparable F K] :
+    ∀ x : K, IsIntegral F x := fun x ↦ (IsSeparable.separable F x).isIntegral
 #align is_separable.is_integral IsSeparable.isIntegral
 
 variable {F}
