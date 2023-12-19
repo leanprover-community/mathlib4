@@ -28,6 +28,7 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
   a bijective local diffeomorphism is a diffeomorphism.
 
 ## TODO
+* a local diffeomorphisms is a local homeomorphism
 * an injective local diffeomorphism is a diffeomorphism to its image
 * each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
 * if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
@@ -51,7 +52,7 @@ local diffeomorphism, manifold
 
 -/
 
-open Manifold Set  TopologicalSpace
+open Manifold Set TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -184,6 +185,8 @@ def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) : PartialDiffeo
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _x ↦ ⟨Φ.toPartialDiffeomorph, by trivial, eqOn_refl Φ _⟩
 
+-- TODO: golf this using IsLocalHomeomorph.isOpenMap,
+-- after showing that local diffeosmorphisms are local homeomorphisms
 /-- A local diffeomorphism has open range. -/
 lemma LocalDiffeomorph.isOpen_range {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
     IsOpen (range f) := by
