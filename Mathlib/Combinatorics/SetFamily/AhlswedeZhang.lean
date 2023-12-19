@@ -85,12 +85,11 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   simp
   simp_rw [mul_div, mul_comm, ← mul_div]
   rw [← mul_sum, ← mul_inv_cancel (cast_ne_zero.mpr card_ne_zero : (card α : ℚ) ≠ 0), ← mul_add,
-    add_comm _ ((card α)⁻¹ : ℚ), ←
-    @sum_insert _ _ _ _ (fun x : ℕ ↦ (x⁻¹ : ℚ)) _ _ not_mem_range_self, ← range_succ]
-  have : ∀ x ∈ range (card α + 1),
-      ((card α).choose x / ((card α - x) * (card α).choose x) : ℚ) = (card α - x : ℚ)⁻¹
-  · intros n hn
-    rw [div_mul_left]
+    add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) not_mem_range_self,
+    ← range_succ]
+  have (n) (hn : n ∈ range (card α + 1)) :
+      ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹
+  · rw [div_mul_left]
     · simp
     · exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
@@ -382,8 +381,8 @@ variable [Nonempty α]
   · rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
     split_ifs <;> simp [card_univ]
-  simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq, ←
-    eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
+  simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,
+    ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
   rw [sum_congr rfl fun t _ ↦ this t, sum_ite, sum_const_zero, add_zero, filter_subset_univ,
     sum_powerset, ← binomial_sum_eq ((card_lt_iff_ne_univ _).2 hs), eq_comm]
   refine' sum_congr rfl fun n _ ↦ _
@@ -395,8 +394,8 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
     infSum 𝒜ᶜˢ + supSum 𝒜 = card α * ∑ k in range (card α), (k : ℚ)⁻¹ + 1 := by
   unfold infSum supSum
   rw [← @map_univ_of_surjective (Finset α) _ _ _ ⟨compl, compl_injective⟩ compl_surjective, sum_map]
-  simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup, ←
-    sum_add_distrib, card_compl, cast_sub (card_le_univ _), choose_symm (card_le_univ _),
+  simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup,
+    ← sum_add_distrib, card_compl, cast_sub (card_le_univ _), choose_symm (card_le_univ _),
     div_add_div_same, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
 
 lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
