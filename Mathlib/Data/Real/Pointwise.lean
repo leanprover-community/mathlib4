@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Wieser
 -/
 import Mathlib.Algebra.Order.Module
-import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.Archimedean
 
 #align_import data.real.pointwise from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 

@@ -58,7 +58,7 @@ theorem _root_.Inducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X �
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
-    [h : PseudoMetrizableSpace X] : TopologicalSpace.FirstCountableTopology X := by
+    [h : PseudoMetrizableSpace X] : FirstCountableTopology X := by
   rcases h with ⟨_, hm⟩
   rw [← hm]
   exact @UniformSpace.firstCountableTopology X PseudoMetricSpace.toUniformSpace

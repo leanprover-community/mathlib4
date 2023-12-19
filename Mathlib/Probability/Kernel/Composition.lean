@@ -405,8 +405,9 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
       ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) _ _ (F n)
   · intro c s hs
     classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
-    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-      SimpleFunc.coe_zero, Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
+    simp (config := { unfoldPartialApp := true }) only [SimpleFunc.const_zero,
+      SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
+      Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
     rw [compProd_apply κ η _ hs, ← lintegral_const_mul c _]
     swap
     · exact (measurable_kernel_prod_mk_left ((measurable_fst.snd.prod_mk measurable_snd) hs)).comp
@@ -617,6 +618,12 @@ instance IsSFiniteKernel.map (κ : kernel α β) [IsSFiniteKernel κ] (hf : Meas
   ⟨⟨fun n => kernel.map (seq κ n) f hf, inferInstance, (sum_map_seq κ hf).symm⟩⟩
 #align probability_theory.kernel.is_s_finite_kernel.map ProbabilityTheory.kernel.IsSFiniteKernel.map
 
+@[simp]
+lemma map_const (μ : Measure α) {f : α → β} (hf : Measurable f) :
+    map (const γ μ) f hf = const γ (μ.map f) := by
+  ext x s hs
+  rw [map_apply' _ _ _ hs, const_apply, const_apply, Measure.map_apply hf hs]
+
 /-- Pullback of a kernel, such that for each set s `comap κ g hg c s = κ (g c) s`.
 We include measurability in the assumptions instead of using junk values
 to make sure that typeclass inference can infer that the `comap` of a Markov kernel
@@ -675,6 +682,8 @@ open scoped ProbabilityTheory
 
 section FstSnd
 
+variable {δ : Type*} {mδ : MeasurableSpace δ}
+
 /-- Define a `kernel (γ × α) β` from a `kernel α β` by taking the comap of the projection. -/
 def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : kernel α β) : kernel (γ × α) β :=
   comap κ Prod.snd measurable_snd
@@ -682,6 +691,7 @@ def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : kernel α β) : kernel (�
 
 variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
+@[simp]
 theorem prodMkLeft_apply (κ : kernel α β) (ca : γ × α) : prodMkLeft γ κ ca = κ ca.snd :=
   rfl
 #align probability_theory.kernel.prod_mk_left_apply ProbabilityTheory.kernel.prodMkLeft_apply
@@ -691,21 +701,25 @@ theorem prodMkLeft_apply' (κ : kernel α β) (ca : γ × α) (s : Set β) :
   rfl
 #align probability_theory.kernel.prod_mk_left_apply' ProbabilityTheory.kernel.prodMkLeft_apply'
 
+@[simp]
+lemma prodMkLeft_zero : kernel.prodMkLeft α (0 : kernel β γ) = 0 := by
+  ext x s _; simp [kernel.prodMkLeft_apply']
+
 theorem lintegral_prodMkLeft (κ : kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd :=
   rfl
 #align probability_theory.kernel.lintegral_prod_mk_left ProbabilityTheory.kernel.lintegral_prodMkLeft
 
 instance IsMarkovKernel.prodMkLeft (κ : kernel α β) [IsMarkovKernel κ] :
-    IsMarkovKernel (prodMkLeft γ κ) := by rw [prodMkLeft]; infer_instance
+    IsMarkovKernel (prodMkLeft γ κ) := by rw [kernel.prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.prod_mk_left ProbabilityTheory.kernel.IsMarkovKernel.prodMkLeft
 
 instance IsFiniteKernel.prodMkLeft (κ : kernel α β) [IsFiniteKernel κ] :
-    IsFiniteKernel (prodMkLeft γ κ) := by rw [prodMkLeft]; infer_instance
+    IsFiniteKernel (prodMkLeft γ κ) := by rw [kernel.prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.prod_mk_left ProbabilityTheory.kernel.IsFiniteKernel.prodMkLeft
 
 instance IsSFiniteKernel.prodMkLeft (κ : kernel α β) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (prodMkLeft γ κ) := by rw [prodMkLeft]; infer_instance
+    IsSFiniteKernel (prodMkLeft γ κ) := by rw [kernel.prodMkLeft]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.prod_mk_left ProbabilityTheory.kernel.IsSFiniteKernel.prodMkLeft
 
 /-- Define a `kernel (β × α) γ` from a `kernel (α × β) γ` by taking the comap of `Prod.swap`. -/
@@ -713,30 +727,29 @@ def swapLeft (κ : kernel (α × β) γ) : kernel (β × α) γ :=
   comap κ Prod.swap measurable_swap
 #align probability_theory.kernel.swap_left ProbabilityTheory.kernel.swapLeft
 
-theorem swapLeft_apply (κ : kernel (α × β) γ) (a : β × α) : swapLeft κ a = κ a.swap :=
-  rfl
+@[simp]
+theorem swapLeft_apply (κ : kernel (α × β) γ) (a : β × α) : swapLeft κ a = κ a.swap := rfl
 #align probability_theory.kernel.swap_left_apply ProbabilityTheory.kernel.swapLeft_apply
 
 theorem swapLeft_apply' (κ : kernel (α × β) γ) (a : β × α) (s : Set γ) :
-    swapLeft κ a s = κ a.swap s :=
-  rfl
+    swapLeft κ a s = κ a.swap s := rfl
 #align probability_theory.kernel.swap_left_apply' ProbabilityTheory.kernel.swapLeft_apply'
 
 theorem lintegral_swapLeft (κ : kernel (α × β) γ) (a : β × α) (g : γ → ℝ≥0∞) :
     ∫⁻ c, g c ∂swapLeft κ a = ∫⁻ c, g c ∂κ a.swap := by
-  rw [swapLeft, lintegral_comap _ measurable_swap a]
+  rw [swapLeft_apply]
 #align probability_theory.kernel.lintegral_swap_left ProbabilityTheory.kernel.lintegral_swapLeft
 
 instance IsMarkovKernel.swapLeft (κ : kernel (α × β) γ) [IsMarkovKernel κ] :
-    IsMarkovKernel (swapLeft κ) := by rw [swapLeft]; infer_instance
+    IsMarkovKernel (swapLeft κ) := by rw [kernel.swapLeft]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.swap_left ProbabilityTheory.kernel.IsMarkovKernel.swapLeft
 
 instance IsFiniteKernel.swapLeft (κ : kernel (α × β) γ) [IsFiniteKernel κ] :
-    IsFiniteKernel (swapLeft κ) := by rw [swapLeft]; infer_instance
+    IsFiniteKernel (swapLeft κ) := by rw [kernel.swapLeft]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.swap_left ProbabilityTheory.kernel.IsFiniteKernel.swapLeft
 
 instance IsSFiniteKernel.swapLeft (κ : kernel (α × β) γ) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (swapLeft κ) := by rw [swapLeft]; infer_instance
+    IsSFiniteKernel (swapLeft κ) := by rw [kernel.swapLeft]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.swap_left ProbabilityTheory.kernel.IsSFiniteKernel.swapLeft
 
 /-- Define a `kernel α (γ × β)` from a `kernel α (β × γ)` by taking the map of `Prod.swap`. -/
@@ -759,15 +772,15 @@ theorem lintegral_swapRight (κ : kernel α (β × γ)) (a : α) {g : γ × β �
 #align probability_theory.kernel.lintegral_swap_right ProbabilityTheory.kernel.lintegral_swapRight
 
 instance IsMarkovKernel.swapRight (κ : kernel α (β × γ)) [IsMarkovKernel κ] :
-    IsMarkovKernel (swapRight κ) := by rw [swapRight]; infer_instance
+    IsMarkovKernel (swapRight κ) := by rw [kernel.swapRight]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.swap_right ProbabilityTheory.kernel.IsMarkovKernel.swapRight
 
 instance IsFiniteKernel.swapRight (κ : kernel α (β × γ)) [IsFiniteKernel κ] :
-    IsFiniteKernel (swapRight κ) := by rw [swapRight]; infer_instance
+    IsFiniteKernel (swapRight κ) := by rw [kernel.swapRight]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.swap_right ProbabilityTheory.kernel.IsFiniteKernel.swapRight
 
 instance IsSFiniteKernel.swapRight (κ : kernel α (β × γ)) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (swapRight κ) := by rw [swapRight]; infer_instance
+    IsSFiniteKernel (swapRight κ) := by rw [kernel.swapRight]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.swap_right ProbabilityTheory.kernel.IsSFiniteKernel.swapRight
 
 /-- Define a `kernel α β` from a `kernel α (β × γ)` by taking the map of the first projection. -/
@@ -783,22 +796,47 @@ theorem fst_apply' (κ : kernel α (β × γ)) (a : α) {s : Set β} (hs : Measu
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
 #align probability_theory.kernel.fst_apply' ProbabilityTheory.kernel.fst_apply'
 
+@[simp]
+lemma fst_zero : fst (0 : kernel α (β × γ)) = 0 := by simp [fst]
+
 theorem lintegral_fst (κ : kernel α (β × γ)) (a : α) {g : β → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ c, g c ∂fst κ a = ∫⁻ bc : β × γ, g bc.fst ∂κ a := by
   rw [fst, lintegral_map _ measurable_fst a hg]
 #align probability_theory.kernel.lintegral_fst ProbabilityTheory.kernel.lintegral_fst
 
 instance IsMarkovKernel.fst (κ : kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (fst κ) := by
-  rw [fst]; infer_instance
+  rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.fst ProbabilityTheory.kernel.IsMarkovKernel.fst
 
 instance IsFiniteKernel.fst (κ : kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (fst κ) := by
-  rw [fst]; infer_instance
+  rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.fst ProbabilityTheory.kernel.IsFiniteKernel.fst
 
 instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (fst κ) :=
-  by rw [fst]; infer_instance
+  by rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.fst ProbabilityTheory.kernel.IsSFiniteKernel.fst
+
+lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
+    (hf : Measurable f) (hg : Measurable g) :
+    fst (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ f hf := by
+  ext x s hs
+  rw [fst_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
+  · rfl
+  · exact measurable_fst hs
+
+@[simp]
+lemma fst_compProd (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
+    fst (κ ⊗ₖ η) = κ := by
+  ext x s hs
+  rw [fst_apply' _ _ hs, compProd_apply]
+  swap; · exact measurable_fst hs
+  simp only [Set.mem_setOf_eq]
+  classical
+  have : ∀ b : β, η (x, b) {_c | b ∈ s} = s.indicator (fun _ ↦ 1) b := by
+    intro b
+    by_cases hb : b ∈ s <;> simp [hb]
+  simp_rw [this]
+  rw [lintegral_indicator_const hs, one_mul]
 
 /-- Define a `kernel α γ` from a `kernel α (β × γ)` by taking the map of the second projection. -/
 noncomputable def snd (κ : kernel α (β × γ)) : kernel α γ :=
@@ -813,22 +851,47 @@ theorem snd_apply' (κ : kernel α (β × γ)) (a : α) {s : Set γ} (hs : Measu
     snd κ a s = κ a {p | p.2 ∈ s} := by rw [snd_apply, Measure.map_apply measurable_snd hs]; rfl
 #align probability_theory.kernel.snd_apply' ProbabilityTheory.kernel.snd_apply'
 
+@[simp]
+lemma snd_zero : snd (0 : kernel α (β × γ)) = 0 := by simp [snd]
+
 theorem lintegral_snd (κ : kernel α (β × γ)) (a : α) {g : γ → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ c, g c ∂snd κ a = ∫⁻ bc : β × γ, g bc.snd ∂κ a := by
   rw [snd, lintegral_map _ measurable_snd a hg]
 #align probability_theory.kernel.lintegral_snd ProbabilityTheory.kernel.lintegral_snd
 
 instance IsMarkovKernel.snd (κ : kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (snd κ) := by
-  rw [snd]; infer_instance
+  rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.snd ProbabilityTheory.kernel.IsMarkovKernel.snd
 
 instance IsFiniteKernel.snd (κ : kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (snd κ) := by
-  rw [snd]; infer_instance
+  rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.snd ProbabilityTheory.kernel.IsFiniteKernel.snd
 
 instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (snd κ) :=
-  by rw [snd]; infer_instance
+  by rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.snd ProbabilityTheory.kernel.IsSFiniteKernel.snd
+
+lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
+    (hf : Measurable f) (hg : Measurable g) :
+    snd (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ g hg := by
+  ext x s hs
+  rw [snd_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
+  · rfl
+  · exact measurable_snd hs
+
+@[simp]
+lemma fst_swapRight (κ : kernel α (β × γ)) : fst (swapRight κ) = snd κ := by
+  ext a s hs
+  rw [fst_apply' _ _ hs, swapRight_apply', snd_apply' _ _ hs]
+  · rfl
+  · exact measurable_fst hs
+
+@[simp]
+lemma snd_swapRight (κ : kernel α (β × γ)) : snd (swapRight κ) = fst κ := by
+  ext a s hs
+  rw [snd_apply' _ _ hs, swapRight_apply', fst_apply' _ _ hs]
+  · rfl
+  · exact measurable_snd hs
 
 end FstSnd
 
@@ -932,15 +995,15 @@ theorem lintegral_prod (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α 
 #align probability_theory.kernel.lintegral_prod ProbabilityTheory.kernel.lintegral_prod
 
 instance IsMarkovKernel.prod (κ : kernel α β) [IsMarkovKernel κ] (η : kernel α γ)
-    [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [prod]; infer_instance
+    [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [kernel.prod]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.prod ProbabilityTheory.kernel.IsMarkovKernel.prod
 
 instance IsFiniteKernel.prod (κ : kernel α β) [IsFiniteKernel κ] (η : kernel α γ)
-    [IsFiniteKernel η] : IsFiniteKernel (κ ×ₖ η) := by rw [prod]; infer_instance
+    [IsFiniteKernel η] : IsFiniteKernel (κ ×ₖ η) := by rw [kernel.prod]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.prod ProbabilityTheory.kernel.IsFiniteKernel.prod
 
 instance IsSFiniteKernel.prod (κ : kernel α β) (η : kernel α γ) :
-    IsSFiniteKernel (κ ×ₖ η) := by rw [prod]; infer_instance
+    IsSFiniteKernel (κ ×ₖ η) := by rw [kernel.prod]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.prod ProbabilityTheory.kernel.IsSFiniteKernel.prod
 
 end Prod

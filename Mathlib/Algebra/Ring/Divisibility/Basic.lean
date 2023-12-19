@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.ring.divisibility from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -19,6 +19,11 @@ imports. Further results about divisibility in rings may be found in
 
 
 variable {α β : Type*}
+
+theorem map_dvd_iff [Semigroup α] [Semigroup β] {F : Type*} [MulEquivClass F α β] (f : F) {a b} :
+    f a ∣ f b ↔ a ∣ b :=
+  let f := MulEquivClass.toMulEquiv f
+  ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
 
 section DistribSemigroup
 

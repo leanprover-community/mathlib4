@@ -339,8 +339,8 @@ theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
 theorem inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
     x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
-  rw [←inter_eq_self_of_subset_right hy, inter_minimals_preimage_inter_eq_of_rel_iff_rel_on hf,
-    preimage_inter, ←inter_assoc, inter_eq_self_of_subset_left (subset_preimage_image f x)]
+  rw [← inter_eq_self_of_subset_right hy, inter_minimals_preimage_inter_eq_of_rel_iff_rel_on hf,
+    preimage_inter, ← inter_assoc, inter_eq_self_of_subset_left (subset_preimage_image f x)]
 
 theorem RelEmbedding.inter_preimage_minimals_eq (f : r ↪r s) (x : Set α) (y : Set β) :
     x ∩ f⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) :=

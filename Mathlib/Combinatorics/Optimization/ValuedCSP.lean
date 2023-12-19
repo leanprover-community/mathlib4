@@ -76,8 +76,8 @@ lemma univ_val_map_2x2 {α β : Type*} {f : (Fin 2 → α) → β} {a b c d : α
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
 `Real`, `NNReal`, `EReal`, `ENNReal`, and tuples made of any of those types. -/
-@[reducible, nolint unusedArguments]
-def ValuedCsp (D C : Type*) [OrderedAddCommMonoid C] :=
+@[nolint unusedArguments]
+abbrev ValuedCsp (D C : Type*) [OrderedAddCommMonoid C] :=
   Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
 variable {D C : Type*} [OrderedAddCommMonoid C]
@@ -99,7 +99,7 @@ def ValuedCsp.Term.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
   t.f (x ∘ t.app)
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCsp.Instance (Γ : ValuedCsp D C) (ι : Type*) : Type _ :=
+abbrev ValuedCsp.Instance (Γ : ValuedCsp D C) (ι : Type*) : Type _ :=
   Multiset (Γ.Term ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/

@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
-import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
@@ -733,7 +732,10 @@ def nameDict : String → List String
   | "prehaar"     => ["add", "Prehaar"]
   | "unit"        => ["add", "Unit"]
   | "units"       => ["add", "Units"]
+  | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "commute"     => ["add", "Commute"]
+  | "semiconj"    => ["add", "Semiconj"]
   | x             => [x]
 
 /--
@@ -808,6 +810,10 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Semiconj" :: s
+                                      => "function" :: "_" :: "semiconj" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Commute" :: s
+                                      => "function" :: "_" :: "commute" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 

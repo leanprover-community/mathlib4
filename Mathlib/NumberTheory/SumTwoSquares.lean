@@ -109,7 +109,7 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
   refine' ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => _⟩
   induction' n using induction_on_primes with p n hpp ih
   · exact False.elim (hn.ne_zero rfl)
-  · exact ⟨0, by simp only [Fin.zero_mul, neg_eq_zero, Fin.one_eq_zero_iff]⟩
+  · exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
   · haveI : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by
       by_contra hc
@@ -231,7 +231,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     refine' ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => _⟩
     refine' Nat.odd_iff_not_even.mp _ (H hqp hq4)
     have hqb' : padicValNat q b = 1 :=
-      b.factorization_def hqp ▸ le_antisymm (Nat.Squarefree.factorization_le_one _ hb)
+      b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)
         ((hqp.dvd_iff_one_le_factorization hb₀.ne').mp hqb)
     haveI hqi : Fact q.Prime := ⟨hqp⟩
     simp_rw [← hab, padicValNat.mul (pow_ne_zero 2 ha₀.ne') hb₀.ne', hqb',

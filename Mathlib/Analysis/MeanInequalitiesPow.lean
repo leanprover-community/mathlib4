@@ -51,8 +51,6 @@ open Classical BigOperators NNReal ENNReal
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {ι : Type u} (s : Finset ι)
 
 namespace Real
@@ -66,7 +64,7 @@ theorem pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
 theorem pow_arith_mean_le_arith_mean_pow_of_even (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) {n : ℕ} (hn : Even n) :
     (∑ i in s, w i * z i) ^ n ≤ ∑ i in s, w i * z i ^ n :=
-  hn.convexOn_pow.map_sum_le hw hw' fun _ _ => trivial
+  hn.convexOn_pow.map_sum_le hw hw' fun _ _ => Set.mem_univ _
 #align real.pow_arith_mean_le_arith_mean_pow_of_even Real.pow_arith_mean_le_arith_mean_pow_of_even
 
 /-- Specific case of Jensen's inequality for sums of powers -/
@@ -118,10 +116,10 @@ namespace NNReal
 /-- Weighted generalized mean inequality, version sums over finite sets, with `ℝ≥0`-valued
 functions and natural exponent. -/
 theorem pow_arith_mean_le_arith_mean_pow (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) (n : ℕ) :
-    (∑ i in s, w i * z i) ^ n ≤ ∑ i in s, w i * z i ^ n := by
-  exact_mod_cast
+    (∑ i in s, w i * z i) ^ n ≤ ∑ i in s, w i * z i ^ n :=
+  mod_cast
     Real.pow_arith_mean_le_arith_mean_pow s _ _ (fun i _ => (w i).coe_nonneg)
-      (by exact_mod_cast hw') (fun i _ => (z i).coe_nonneg) n
+      (mod_cast hw') (fun i _ => (z i).coe_nonneg) n
 #align nnreal.pow_arith_mean_le_arith_mean_pow NNReal.pow_arith_mean_le_arith_mean_pow
 
 theorem pow_sum_div_card_le_sum_pow (f : ι → ℝ≥0) (n : ℕ) :
@@ -133,10 +131,10 @@ theorem pow_sum_div_card_le_sum_pow (f : ι → ℝ≥0) (n : ℕ) :
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
 functions and real exponents. -/
 theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) {p : ℝ}
-    (hp : 1 ≤ p) : (∑ i in s, w i * z i) ^ p ≤ ∑ i in s, w i * z i ^ p := by
-  exact_mod_cast
+    (hp : 1 ≤ p) : (∑ i in s, w i * z i) ^ p ≤ ∑ i in s, w i * z i ^ p :=
+  mod_cast
     Real.rpow_arith_mean_le_arith_mean_rpow s _ _ (fun i _ => (w i).coe_nonneg)
-      (by exact_mod_cast hw') (fun i _ => (z i).coe_nonneg) hp
+      (mod_cast hw') (fun i _ => (z i).coe_nonneg) hp
 #align nnreal.rpow_arith_mean_le_arith_mean_rpow NNReal.rpow_arith_mean_le_arith_mean_rpow
 
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0` and real exponents. -/
@@ -164,9 +162,9 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
 functions and real exponents. -/
 theorem arith_mean_le_rpow_mean (w z : ι → ℝ≥0) (hw' : ∑ i in s, w i = 1) {p : ℝ} (hp : 1 ≤ p) :
-    ∑ i in s, w i * z i ≤ (∑ i in s, w i * z i ^ p) ^ (1 / p) := by
-  exact_mod_cast
-    Real.arith_mean_le_rpow_mean s _ _ (fun i _ => (w i).coe_nonneg) (by exact_mod_cast hw')
+    ∑ i in s, w i * z i ≤ (∑ i in s, w i * z i ^ p) ^ (1 / p) :=
+  mod_cast
+    Real.arith_mean_le_rpow_mean s _ _ (fun i _ => (w i).coe_nonneg) (mod_cast hw')
       (fun i _ => (z i).coe_nonneg) hp
 #align nnreal.arith_mean_le_rpow_mean NNReal.arith_mean_le_rpow_mean
 

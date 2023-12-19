@@ -106,6 +106,10 @@ instance : EquivLike (α ≃ β) α β where
 instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
+@[simp, norm_cast]
+lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
+    ((e : α ≃ β) : α → β) = e := rfl
+
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
@@ -330,6 +334,9 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 @[simp] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := by cases e; rfl
 #align equiv.symm_symm Equiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 #align equiv.trans_refl Equiv.trans_refl
 
@@ -484,14 +491,14 @@ def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniq
 #align equiv.prop_equiv_punit Equiv.propEquivPUnit
 
 /-- `ULift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
   ⟨ULift.down, ULift.up, ULift.up_down, ULift.down_up.{v, u}⟩
 #align equiv.ulift Equiv.ulift
 #align equiv.ulift_apply Equiv.ulift_apply
 
 /-- `PLift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 protected def plift : PLift α ≃ α := ⟨PLift.down, PLift.up, PLift.up_down, PLift.down_up⟩
 #align equiv.plift Equiv.plift
 #align equiv.plift_apply Equiv.plift_apply
@@ -614,20 +621,17 @@ def arrowPUnitEquivPUnit (α : Sort*) : (α → PUnit.{v}) ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ _ => .unit, fun _ => rfl, fun _ => rfl⟩
 #align equiv.arrow_punit_equiv_punit Equiv.arrowPUnitEquivPUnit
 
-/-- If `α` is `Subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β i`
-is equivalent to `β a`. -/
-@[simps] def piSubsingleton (β : α → Sort*) [Subsingleton α] (a : α) : (∀ a', β a') ≃ β a where
-  toFun := eval a
-  invFun x b := cast (congr_arg β <| Subsingleton.elim a b) x
-  left_inv _ := funext fun b => by rw [Subsingleton.elim b a]; rfl
-  right_inv _ := rfl
-#align equiv.Pi_subsingleton_apply Equiv.piSubsingleton_apply
-#align equiv.Pi_subsingleton_symm_apply Equiv.piSubsingleton_symm_apply
-#align equiv.Pi_subsingleton Equiv.piSubsingleton
+/-- The equivalence `(∀ i, β i) ≃ β ⋆` when the domain of `β` only contains `⋆` -/
+@[simps (config := .asFn)]
+def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default where
+  toFun f := f default
+  invFun := uniqueElim
+  left_inv f := by ext i; cases Unique.eq_default i; rfl
+  right_inv x := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps! (config := { fullyApplied := false }) apply]
-def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ default
+@[simps! (config := .asFn) apply]
+def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piUnique _
 #align equiv.fun_unique Equiv.funUnique
 #align equiv.fun_unique_apply Equiv.funUnique_apply
 

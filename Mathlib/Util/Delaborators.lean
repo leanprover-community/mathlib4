@@ -149,7 +149,8 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
       if x == y then `(∃ $x:ident ⊃ $z, $body) else pure stx
     | _ => pure stx
   match stx with
-  | `(∃ $group:bracketedExplicitBinders, ∃ $groups*, $body) => `(∃ $group $groups*, $body)
+  | `(∃ $group:bracketedExplicitBinders, ∃ $[$groups:bracketedExplicitBinders]*, $body) =>
+    `(∃ $group $groups*, $body)
   | `(∃ $b:binderIdent, ∃ $[$bs:binderIdent]*, $body) => `(∃ $b:binderIdent $[$bs]*, $body)
   | _ => pure stx
 end existential

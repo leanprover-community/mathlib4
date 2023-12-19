@@ -78,7 +78,7 @@ variable (hp : p ≠ 2)
 theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   rw [FiniteField.isSquare_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
+  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
@@ -89,7 +89,7 @@ theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7
 theorem exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
   rw [FiniteField.isSquare_neg_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
+  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
@@ -139,9 +139,9 @@ theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
     legendreSym q p = (-1) ^ (p / 2 * (q / 2)) * legendreSym p q := by
   cases' eq_or_ne p q with h h
   · subst p
-    rw [(eq_zero_iff q q).mpr (by exact_mod_cast nat_cast_self q), mul_zero]
+    rw [(eq_zero_iff q q).mpr (mod_cast nat_cast_self q), mul_zero]
   · have qr := congr_arg (· * legendreSym p q) (quadratic_reciprocity hp hq h)
-    have : ((q : ℤ) : ZMod p) ≠ 0 := by exact_mod_cast prime_ne_zero p q h
+    have : ((q : ℤ) : ZMod p) ≠ 0 := mod_cast prime_ne_zero p q h
     simpa only [mul_assoc, ← pow_two, sq_one p this, mul_one] using qr
 #align legendre_sym.quadratic_reciprocity' legendreSym.quadratic_reciprocity'
 

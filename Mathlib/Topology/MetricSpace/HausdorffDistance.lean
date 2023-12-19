@@ -162,8 +162,9 @@ theorem mem_iff_infEdist_zero_of_closed (h : IsClosed s) : x ∈ s ↔ infEdist 
 
 /-- The infimum edistance of a point to a set is positive if and only if the point is not in the
 closure of the set. -/
-theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} : 0 < infEdist x E ↔ x ∉ closure E :=
-  by rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
+theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} :
+    0 < infEdist x E ↔ x ∉ closure E := by
+  rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 #align emetric.inf_edist_pos_iff_not_mem_closure EMetric.infEdist_pos_iff_not_mem_closure
 
 theorem infEdist_closure_pos_iff_not_mem_closure {x : α} {E : Set α} :
@@ -223,7 +224,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
   show Monotone F
   · intro m n hmn x hx
     simp only [mem_Ici, mem_preimage] at hx ⊢
-    apply le_trans (pow_le_pow_of_le_one' a_lt_one.le hmn) hx
+    apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
 theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :

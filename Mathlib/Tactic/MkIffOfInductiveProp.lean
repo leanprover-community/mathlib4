@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
+import Std.Tactic.LeftRight
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.LeftRight
 
 /-!
 # mk_iff_of_inductive_prop
@@ -35,12 +35,14 @@ Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
   | 0, 0             => pure goal
-  | 0, (_ + 1)       => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `left 0 2 goal
-                                | throwError "expected only one new goal"
-                           pure new_goal
-  | (m + 1), (n + 1) => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `right 1 2 goal
-                                | throwError "expected only one new goal"
-                           select m n new_goal
+  | 0, (_ + 1)       => do
+    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `left 0 (some 2) goal
+      | throwError "expected only one new goal"
+    pure new_goal
+  | (m + 1), (n + 1) => do
+    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `right 1 (some 2) goal
+      | throwError "expected only one new goal"
+    select m n new_goal
   | _, _             => failure
 
 /-- `compactRelation bs as_ps`: Produce a relation of the form:
@@ -76,7 +78,7 @@ args.foldrM (λarg i:Expr => do
     let l := (← inferType t).sortLevel!
     if arg.occurs i || l != Level.zero
       then pure (mkApp2 (mkConst `Exists [l] : Expr) t
-        (updateLambdaBinderInfoD! <| ←mkLambdaFVars #[arg] i))
+        (updateLambdaBinderInfoD! <| ← mkLambdaFVars #[arg] i))
       else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
@@ -142,8 +144,8 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
      let eqs ← eqs.mapM (λ⟨idx, inst⟩ => do
           let ty ← idx.fvarId!.getType
           let instTy ← inferType inst
-          let u := (←inferType ty).sortLevel!
-          if ←isDefEq ty instTy
+          let u := (← inferType ty).sortLevel!
+          if ← isDefEq ty instTy
           then pure (mkApp3 (mkConst `Eq [u]) ty idx inst)
           else pure (mkApp4 (mkConst `HEq [u]) ty idx instTy inst))
      let (n, r) ← match bs.filterMap id, eqs with
@@ -151,7 +153,7 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
            pure (some 0, (mkConst `True))
      | bs', [] => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
-          let l := (←inferType t).sortLevel!
+          let l := (← inferType t).sortLevel!
           if l == Level.zero then do
             let r ← mkExistsList (List.init bs') t
             pure (none, subst r)
@@ -170,15 +172,15 @@ def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
 match n with
 | 0   => do
   let (subgoals',_) ← Term.TermElabM.run $ Tactic.run mvar do
-    Tactic.evalTactic (←`(tactic| constructor))
+    Tactic.evalTactic (← `(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
 | n + 1 => do
   let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
-    Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+    Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
   let (subgoals',_) ← Term.TermElabM.run $ Tactic.run sg1 do
-    Tactic.evalTactic (←`(tactic| constructor))
+    Tactic.evalTactic (← `(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   splitThenConstructor sg2 n
 
@@ -275,7 +277,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
                                    ) mv3
            pure (mv4, fvars)
         mvar'.withContext do
-          let fvarIds := (←getLCtx).getFVarIds.toList
+          let fvarIds := (← getLCtx).getFVarIds.toList
           let gs := fvarIds.take gs.length
           let hs := (fvarIds.reverse.take n).reverse
           let m := gs.map some ++ listBoolMerge bs hs
@@ -309,7 +311,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     let fvars' := fvars.toList
     let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
     let (shape, rhss) := shape_rhss.unzip
-    pure (←mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)),
+    pure (← mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)),
           shape)
 
   let mvar ← mkFreshExprMVar (some thmTy)

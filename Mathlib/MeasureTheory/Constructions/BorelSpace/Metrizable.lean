@@ -5,13 +5,13 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.IndicatorConstPointwise
 
 #align_import measure_theory.constructions.borel_space.metrizable from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/
-
 
 open Filter MeasureTheory TopologicalSpace
 
@@ -67,7 +67,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
-  apply measurable_of_is_closed'
+  apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
     suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
@@ -182,19 +182,20 @@ variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set 
 /-- If the indicator functions of measurable sets `Aᵢ` converge to the indicator function of
 a set `A` along a nontrivial countably generated filter, then `A` is also measurable. -/
 lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
+    (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     MeasurableSet A := by
   simp_rw [← measurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
-  exact measurable_of_tendsto_ennreal' L As_mble h_lim
+  exact measurable_of_tendsto_ennreal' L As_mble
+    ((tendsto_indicator_const_iff_forall_eventually L (1 : ℝ≥0∞)).mpr h_lim)
 
 /-- If the indicator functions of a.e.-measurable sets `Aᵢ` converge a.e. to the indicator function
 of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
 lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (As_mble : ∀ i, NullMeasurableSet (As i) μ)
-    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
-      L (𝓝 (A.indicator 1 x))) :
+    (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     NullMeasurableSet A μ := by
   simp_rw [← aemeasurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
-  exact aemeasurable_of_tendsto_metrizable_ae L As_mble h_lim
+  apply aemeasurable_of_tendsto_metrizable_ae L As_mble
+  simpa [tendsto_indicator_const_apply_iff_eventually] using h_lim
 
 end TendstoIndicator

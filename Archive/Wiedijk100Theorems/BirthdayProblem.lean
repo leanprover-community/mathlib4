@@ -29,7 +29,13 @@ local notation "‖" x "‖" => Fintype.card x
 /-- **Birthday Problem**: set cardinality interpretation. -/
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
-  simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
+  -- This used to be
+  -- `simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]`
+  -- but after leanprover/lean4#2790 that triggers a max recursion depth exception.
+  -- As a workaround, we make some of the reduction steps more explicit.
+  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+  decide
 #align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
@@ -72,12 +78,14 @@ theorem birthday_measure :
   generalize_proofs hfin
   have : |hfin.toFinset| = 42200819302092359872395663074908957253749760700776448000000 := by
     trans ‖Fin 23 ↪ Fin 365‖
-    · simp_rw [← Fintype.card_coe, Set.Finite.coeSort_toFinset, Set.coe_setOf]
-      exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
-    · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
+    · rw [← Fintype.card_coe]
+      apply Fintype.card_congr
+      rw [Set.Finite.coeSort_toFinset, Set.coe_setOf]
+      exact Equiv.subtypeInjectiveEquivEmbedding _ _
+    · rw [Fintype.card_embedding_eq, Fintype.card_fin, Fintype.card_fin]
+      rfl
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left; (iterate 2 right; norm_num); (iterate 2 left; norm_num)
-  norm_cast
+  rotate_left; (iterate 2 right; norm_num); decide; (iterate 2 left; norm_num)
   simp only [Fintype.card_pi]
   norm_num
 #align theorems_100.birthday_measure Theorems100.birthday_measure

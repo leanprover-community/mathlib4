@@ -3,7 +3,7 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Norm
@@ -136,7 +136,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
-  (Int.quotientZmultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
+  (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
     QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
       v.valuationOfNeZero

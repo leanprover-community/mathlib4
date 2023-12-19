@@ -247,7 +247,7 @@ theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
 theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) := by
   refine' fun p => ⟨p.toFun 0, Finsupp.ext fun a => _⟩
-  simp only [C_apply, ←single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
+  simp only [C_apply, ← single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
     single_eq_same]
   rfl
 #align mv_polynomial.C_surjective MvPolynomial.C_surjective
@@ -373,7 +373,7 @@ theorem sum_C {A : Type*} [AddCommMonoid A] {b : (σ →₀ ℕ) → R → A} (w
 
 theorem monomial_sum_one {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) :
     (monomial (∑ i in s, f i) 1 : MvPolynomial σ R) = ∏ i in s, monomial (f i) 1 :=
-  (monomialOneHom R σ).map_prod (fun i => Multiplicative.ofAdd (f i)) s
+  map_prod (monomialOneHom R σ) (fun i => Multiplicative.ofAdd (f i)) s
 #align mv_polynomial.monomial_sum_one MvPolynomial.monomial_sum_one
 
 theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (a : R) :
@@ -533,7 +533,7 @@ theorem finsupp_support_eq_support (p : MvPolynomial σ R) : Finsupp.support p =
 
 theorem support_monomial [h : Decidable (a = 0)] :
     (monomial s a).support = if a = 0 then ∅ else {s} := by
-  rw [←Subsingleton.elim (Classical.decEq R a 0) h]
+  rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
   -- porting note: the proof in Lean 3 wasn't fundamentally better and needed `by convert rfl`
   -- the issue is the different decidability instances in the `ite` expressions
@@ -642,7 +642,7 @@ def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
     coeff m (∑ x in s, f x) = ∑ x in s, coeff m (f x) :=
-  (@coeffAddMonoidHom R σ _ _).map_sum _ s
+  map_sum (@coeffAddMonoidHom R σ _ _) _ s
 #align mv_polynomial.coeff_sum MvPolynomial.coeff_sum
 
 theorem monic_monomial_eq (m) :
@@ -670,7 +670,7 @@ theorem coeff_one [DecidableEq σ] (m) : coeff m (1 : MvPolynomial σ R) = if 0 
   coeff_C m 1
 #align mv_polynomial.coeff_one MvPolynomial.coeff_one
 
--- porting note: `simp` can prove this
+@[simp]
 theorem coeff_zero_C (a) : coeff 0 (C a : MvPolynomial σ R) = a :=
   single_eq_same
 #align mv_polynomial.coeff_zero_C MvPolynomial.coeff_zero_C
@@ -1702,7 +1702,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     · subst h
       rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
       exact zero_mem _
-    · rwa [if_neg h, zero_add] at this
+    · rwa [zero_add] at this
 #align mv_polynomial.eval₂_mem MvPolynomial.eval₂_mem
 
 theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p.coeff i ∈ s) {v : σ → S}

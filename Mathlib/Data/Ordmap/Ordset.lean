@@ -408,7 +408,7 @@ theorem Sized.dual_iff {t : Ordnode α} : Sized (.dual t) ↔ Sized t :=
 
 theorem Sized.rotateL {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (rotateL l x r) := by
   cases r; · exact hl.node' hr
-  rw [rotateL]; split_ifs
+  rw [Ordnode.rotateL]; split_ifs
   · exact hl.node3L hr.2.1 hr.2.2
   · exact hl.node4L hr.2.1 hr.2.2
 #align ordnode.sized.rotate_l Ordnode.Sized.rotateL
@@ -1247,7 +1247,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by intros; linarith
   have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
-  rw [rotateL]; split_ifs with h
+  rw [Ordnode.rotateL]; split_ifs with h
   · have rr0 : size rr > 0 :=
       (mul_lt_mul_left (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
     suffices BalancedSz (size l) (size rl) ∧ BalancedSz (size l + size rl + 1) (size rr) by
@@ -1774,7 +1774,8 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
 #align ordset.mem.decidable Ordset.mem.decidable
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
-  simp [Membership.mem, mem] at h_mem
+  simp? [Membership.mem, mem] at h_mem says
+    simp only [Membership.mem, mem, Bool.decide_coe] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 #align ordset.pos_size_of_mem Ordset.pos_size_of_mem
 

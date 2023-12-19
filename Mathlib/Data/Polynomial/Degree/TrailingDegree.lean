@@ -48,7 +48,7 @@ def trailingDegree (p : R[X]) : ℕ∞ :=
 #align polynomial.trailing_degree Polynomial.trailingDegree
 
 theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < trailingDegree q :=
-  InvImage.wf trailingDegree (WithTop.wellFounded_lt Nat.lt_wfRel.2)
+  InvImage.wf trailingDegree wellFounded_lt
 #align polynomial.trailing_degree_lt_wf Polynomial.trailingDegree_lt_wf
 
 /-- `natTrailingDegree p` forces `trailingDegree p` to `ℕ`, by defining
@@ -177,7 +177,7 @@ theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n := by
   -- Porting note: Needed to account for different coercion behaviour & add the lemma below
   have : Nat.cast n = WithTop.some n := rfl
-  exact mt fun h => by rw [natTrailingDegree, h, this, ←WithTop.some_eq_coe, Option.getD_some]
+  exact mt fun h => by rw [natTrailingDegree, h, this, ← WithTop.some_eq_coe, Option.getD_some]
 #align polynomial.trailing_degree_ne_of_nat_trailing_degree_ne Polynomial.trailingDegree_ne_of_natTrailingDegree_ne
 
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}

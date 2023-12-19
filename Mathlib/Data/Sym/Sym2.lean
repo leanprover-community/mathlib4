@@ -416,6 +416,7 @@ theorem map_id' : (map fun x : α => x) = id :=
 
 /-! ### Diagonal -/
 
+variable {e : Sym2 α} {f : α → β}
 
 /-- A type `α` is naturally included in the diagonal of `α × α`, and this function gives the image
 of this diagonal in `Sym2 α`.
@@ -442,6 +443,11 @@ theorem mk''_isDiag_iff {x y : α} : IsDiag ⟦(x, y)⟧ ↔ x = y :=
 theorem isDiag_iff_proj_eq (z : α × α) : IsDiag ⟦z⟧ ↔ z.1 = z.2 :=
   Prod.recOn z fun _ _ => mk''_isDiag_iff
 #align sym2.is_diag_iff_proj_eq Sym2.isDiag_iff_proj_eq
+
+protected lemma IsDiag.map : e.IsDiag → (e.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) e
+
+lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
+  Sym2.ind (fun _ _ ↦ hf.eq_iff) e
 
 @[simp]
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
@@ -509,6 +515,9 @@ theorem fromRel_top : fromRel (fun (x y : α) z => z : Symmetric ⊤) = Set.univ
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 #align sym2.from_rel_top Sym2.fromRel_top
 
+theorem fromRel_ne : fromRel (fun (x y : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+  ext z; exact z.ind (by simp)
+
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
   { mp := by intro h; apply Sym2.ind; aesop
@@ -562,7 +571,7 @@ private def fromVector : Vector α 2 → α × α
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     [a₁, b₁].Perm [a₂, b₂] ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ a₁ = b₂ ∧ b₁ = a₂ :=
   { mp := by
-      simp only [←Multiset.coe_eq_coe, ←Multiset.cons_coe, Multiset.coe_nil, Multiset.cons_zero,
+      simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.coe_nil, Multiset.cons_zero,
         Multiset.cons_eq_cons, Multiset.singleton_inj, ne_eq, Multiset.singleton_eq_cons_iff,
         exists_eq_right_right, and_true]
       tauto

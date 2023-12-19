@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 #align_import analysis.calculus.bump_function_inner from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"

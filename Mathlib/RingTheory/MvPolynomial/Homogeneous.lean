@@ -204,7 +204,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
 
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
-  rw [totalDegree]
+  rw [MvPolynomial.totalDegree]
   apply le_antisymm
   · apply Finset.sup_le
     intro d hd

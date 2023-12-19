@@ -169,6 +169,18 @@ theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
   rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set (inter_subset_left _ _)
 #align measure_theory.integrable_on.restrict MeasureTheory.IntegrableOn.restrict
 
+theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
+    IntegrableOn f (s ∩ t) μ := by
+  have := h.mono_set (inter_subset_left s t)
+  rwa [IntegrableOn, μ.restrict_restrict_of_subset (inter_subset_right s t)] at this
+
+lemma Integrable.piecewise [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
+    Integrable (s.piecewise f g) μ := by
+  rw [IntegrableOn] at hf hg
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
+  exact Memℒp.piecewise hs hf hg
+
 theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
   h.mono_set <| subset_union_left _ _
 #align measure_theory.integrable_on.left_of_union MeasureTheory.IntegrableOn.left_of_union
@@ -233,12 +245,18 @@ theorem integrableOn_add_measure :
 
 theorem _root_.MeasurableEmbedding.integrableOn_map_iff [MeasurableSpace β] {e : α → β}
     (he : MeasurableEmbedding e) {f : β → E} {μ : Measure α} {s : Set β} :
-    IntegrableOn f s (Measure.map e μ) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
-  simp only [IntegrableOn, he.restrict_map, he.integrable_map_iff]
+    IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
+  simp_rw [IntegrableOn, he.restrict_map, he.integrable_map_iff]
 #align measurable_embedding.integrable_on_map_iff MeasurableEmbedding.integrableOn_map_iff
 
+theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} {s : Set β} (hs : s ⊆ range e) :
+    IntegrableOn f s μ ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) (μ.comap e) := by
+  simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
+    Measure.restrict_restrict_of_subset hs]
+
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
-    {s : Set β} : IntegrableOn f s (Measure.map e μ) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
+    {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
   simp only [IntegrableOn, e.restrict_map, integrable_map_equiv e]
 #align measure_theory.integrable_on_map_equiv MeasureTheory.integrableOn_map_equiv
 
@@ -390,6 +408,22 @@ def IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α := by vol
 
 variable {l l' : Filter α}
 
+theorem _root_.MeasurableEmbedding.integrableAtFilter_map_iff [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} :
+    IntegrableAtFilter f (l.map e) (μ.map e) ↔ IntegrableAtFilter (f ∘ e) l μ := by
+  simp_rw [IntegrableAtFilter, he.integrableOn_map_iff]
+  constructor <;> rintro ⟨s, hs⟩
+  · exact ⟨_, hs⟩
+  · exact ⟨e '' s, by rwa [mem_map, he.injective.preimage_image]⟩
+
+theorem _root_.MeasurableEmbedding.integrableAtFilter_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    IntegrableAtFilter f (l.map e) μ ↔ IntegrableAtFilter (f ∘ e) l (μ.comap e) := by
+  simp_rw [← he.integrableAtFilter_map_iff, IntegrableAtFilter, he.map_comap]
+  constructor <;> rintro ⟨s, hs, int⟩
+  · exact ⟨s, hs, int.mono_measure <| μ.restrict_le_self⟩
+  · exact ⟨_, inter_mem hs range_mem_map, int.inter_of_restrict⟩
+
 theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
     IntegrableAtFilter f l μ :=
   ⟨univ, Filter.univ_mem, integrableOn_univ.2 h⟩
@@ -423,7 +457,7 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     [BoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
-  refine ⟨s, sl, hs.smul c⟩
+  exact ⟨s, sl, hs.smul c⟩
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
