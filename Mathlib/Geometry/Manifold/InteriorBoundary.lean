@@ -44,7 +44,7 @@ open Set
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M (contDiffGroupoid 0 I)]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- `p ∈ M` is an interior point of a manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
@@ -82,13 +82,13 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
     exact ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
-lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
+lemma interior_union_boundary_eq_univ : (SmoothManifoldWithCorners.interior I M) ∪
     (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) :=
   le_antisymm (fun _ _ ↦ trivial) (fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x)
 
 /-- The interior and boundary of a manifold `M` are disjoint. -/
-lemma interior_boundary_disjoint :
-    (SmoothManifoldWithCorners.interior I M) ∩ (SmoothManifoldWithCorners.boundary I M) = ∅ := by
+lemma disjoint_interior_boundary :
+    Disjoint (SmoothManifoldWithCorners.interior I M) (SmoothManifoldWithCorners.boundary I M) := by
   by_contra h
   -- Choose some x in the intersection of interior and boundary.
   choose x hx using nmem_singleton_empty.mp h
