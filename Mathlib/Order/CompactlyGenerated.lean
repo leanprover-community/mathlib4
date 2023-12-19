@@ -263,7 +263,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
 
 open List in
 theorem wellFounded_characterisations : List.TFAE
-    [WellFounded (( · > · ) : α → α → Prop),
+    [WellFounded ((· > ·) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
   tfae_have 1 → 2
   · exact WellFounded.isSupFiniteCompact α

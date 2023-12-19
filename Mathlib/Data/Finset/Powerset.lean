@@ -218,13 +218,23 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 #align finset.card_powerset_len Finset.card_powersetCard
 
 @[simp]
-theorem powersetCard_zero (s : Finset α) : Finset.powersetCard 0 s = {∅} := by
+theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
   refine'
     ⟨fun h => h.2, fun h => by
       rw [h]
       exact ⟨empty_subset s, rfl⟩⟩
 #align finset.powerset_len_zero Finset.powersetCard_zero
+
+@[simp]
+theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
+    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
+  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
+#align finset.map_val_val_powerset_len Finset.map_val_val_powersetCard
+
+theorem powersetCard_one (s : Finset α) :
+    s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ :=
+  eq_of_veq <| Multiset.map_injective val_injective <| by simp [Multiset.powersetCard_one]
 
 @[simp]
 theorem powersetCard_empty (n : ℕ) {s : Finset α} (h : s.card < n) : powersetCard n s = ∅ :=
@@ -323,12 +333,6 @@ theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (s.card + i) = ∅ :=
   Finset.powersetCard_empty _ (lt_add_of_pos_right (Finset.card s) hi)
 #align finset.powerset_len_card_add Finset.powersetCard_card_add
-
-@[simp]
-theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
-    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
-  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
-#align finset.map_val_val_powerset_len Finset.map_val_val_powersetCard
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=

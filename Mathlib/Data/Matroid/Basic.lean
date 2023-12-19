@@ -123,8 +123,6 @@ There are a few design decisions worth discussing.
   with minimal fuss (using default values).
   The tactic works fairly well, but has room for improvement.
   Even though the carrier set is written `M.E`,
-  we mirror common informal practice by referring explicitly to the `ground` set
-  rather than the notation `E` in lemma names.
 
   A related decision is to not have matroids themselves be a typeclass.
   This would make things be notationally simpler
@@ -133,6 +131,20 @@ There are a few design decisions worth discussing.
   In fact, in regular written mathematics,
   it is normal to explicitly indicate which matroid something is happening in,
   so our notation mirrors common practice.
+
+### Notation
+  We use a couple of nonstandard conventions in theorem names that are related to the above.
+  First, we mirror common informal practice by referring explicitly to the `ground` set rather
+  than the notation `E`. (Writing `ground` everywhere in a proof term would be unwieldy, and
+  writing `E` in theorem names would be unnatural to read.)
+
+  Second, because we are typically interested in subsets of the ground set `M.E`,
+  using `Set.compl` is inconvenient, since `Xᶜ ⊆ M.E` is typically false for `X ⊆ M.E`.
+  On the other hand (especially when duals arise), it is common to complement
+  a set `X ⊆ M.E` *within* the ground set, giving `M.E \ X`.
+  For this reason, we use the term `compl` in theorem names to refer to taking a set difference
+  with respect to the ground set, rather than a complement within a type. The lemma
+  `compl_base_dual` is one of the many examples of this.
 
 ## References
 

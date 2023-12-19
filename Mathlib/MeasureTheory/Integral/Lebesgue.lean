@@ -720,7 +720,8 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     rw [mul_comm]
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
-  simp [(mul_assoc _ _ _).symm, rinv'] at this
+  simp? [(mul_assoc _ _ _).symm, rinv'] at this says
+    simp only [(mul_assoc _ _ _).symm, rinv', one_mul] at this
   simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
 #align measure_theory.lintegral_const_mul' MeasureTheory.lintegral_const_mul'
 
@@ -1431,13 +1432,6 @@ theorem set_lintegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f
     restrict_restrict hs, inter_eq_right.2 (Subtype.coe_image_subset _ _)]
 
 section DiracAndCount
-
-instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type*} :
-    @MeasurableSingletonClass α (⊤ : MeasurableSpace α) :=
-  @MeasurableSingletonClass.mk α (⊤ : MeasurableSpace α) <|
-    fun _ => MeasurableSpace.measurableSet_top
-#align measurable_space.top.measurable_singleton_class MeasurableSpace.Top.measurableSingletonClass
-
 variable [MeasurableSpace α]
 
 theorem lintegral_dirac' (a : α) {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂dirac a = f a :=

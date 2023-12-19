@@ -848,13 +848,19 @@ theorem finrank_eq_one_iff : finrank F K = 1 ↔ K = ⊥ := by
     bot_toSubalgebra]
 #align intermediate_field.finrank_eq_one_iff IntermediateField.finrank_eq_one_iff
 
-@[simp]
+@[simp] protected
 theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [rank_eq_one_iff]
 #align intermediate_field.rank_bot IntermediateField.rank_bot
 
-@[simp]
+@[simp] protected
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
+
+@[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
+  Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
+
+@[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+  rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
@@ -1295,6 +1301,25 @@ theorem exists_algHom_of_splits_of_aeval : ∃ φ : E →ₐ[F] K, φ x = y :=
 end AlgHomMkAdjoinSplits
 
 end IntermediateField
+
+section Algebra.IsAlgebraic
+
+/-- Let `K/F` be an algebraic extension of fields and `L` a field in which all the minimal
+polynomial over `F` of elements of `K` splits. Then, for `x ∈ K`, the images of `x` by the
+`F`-algebra morphisms from `K` to `L` are exactly the roots in `L` of the minimal polynomial
+of `x` over `F`. -/
+theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*} (L : Type*)
+    [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
+    (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
+    (hK : Algebra.IsAlgebraic F K) (x : K) :
+    (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
+  ext a
+  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
+  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
+    (fun x ↦ ⟨hK.isIntegral x, hA x⟩) ha⟩
+  rw [← hψ, Polynomial.aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
+
+end Algebra.IsAlgebraic
 
 section PowerBasis
 
