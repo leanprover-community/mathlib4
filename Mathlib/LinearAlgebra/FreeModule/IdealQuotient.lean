@@ -116,7 +116,7 @@ variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R
 noncomputable def quotientEquivDirectSum :
     (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
   haveI := Fintype.ofFinite ι
-  -- porting note: manual construction of `CompatibleSmul` typeclass no longer needed
+  -- porting note: manual construction of `CompatibleSMul` typeclass no longer needed
   exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
 #align ideal.quotient_equiv_direct_sum Ideal.quotientEquivDirectSum
