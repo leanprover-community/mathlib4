@@ -40,10 +40,6 @@ powers are considered.
 
 variable {M : Type*}
 
-section PNatPowAssoc
-
-variable [Mul M] [Pow M ℕ+]
-
 /-- A `Prop`-valued mixin for power-associative multiplication in the non-unital setting. -/
 class PNatPowAssoc (M : Type*) [Mul M] [Pow M ℕ+] : Prop where
   /-- Multiplication is power-associative. -/
@@ -51,15 +47,38 @@ class PNatPowAssoc (M : Type*) [Mul M] [Pow M ℕ+] : Prop where
   /-- Exponent one is identity. -/
   protected ppow_one : ∀ (x : M), x ^ (1 : ℕ+) = x
 
-theorem ppow_add [PNatPowAssoc M] (k n : ℕ+) (x : M) : x ^ (k + n) = x ^ k * x ^ n :=
+section Mul
+
+variable [Mul M] [Pow M ℕ+] [PNatPowAssoc M]
+
+theorem ppow_add (k n : ℕ+) (x : M) : x ^ (k + n) = x ^ k * x ^ n :=
   PNatPowAssoc.ppow_add k n x
 
 @[simp]
-theorem ppow_one [PNatPowAssoc M] (x : M) : x ^ (1 : ℕ+) = x :=
+theorem ppow_one (x : M) : x ^ (1 : ℕ+) = x :=
   PNatPowAssoc.ppow_one x
 
-instance Pi.instPNatPowAssoc {I : Type*} {f : I → Type*} [∀ i, Mul <| f i] [∀ i, Pow (f i) ℕ+]
-    [∀ i, PNatPowAssoc <| f i] : PNatPowAssoc (∀ i, f i) where
+theorem ppow_mul_assoc (k m n : ℕ+) (x : M) :
+    (x ^ k * x ^ m) * x ^ n = x ^ k * (x ^ m * x ^ n) := by
+  simp only [← ppow_add, add_assoc]
+
+theorem ppow_mul_comm (m n : ℕ+) (x : M) :
+    x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
+
+theorem ppow_mul (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
+  refine PNat.recOn n ?_ ?_
+  rw [ppow_one, mul_one]
+  intro k hk
+  rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
+
+theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
+  rw [mul_comm]
+  exact ppow_mul x n m
+
+end Mul
+
+instance Pi.instPNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, Mul <| α i] [∀ i, Pow (α i) ℕ+]
+    [∀ i, PNatPowAssoc <| α i] : PNatPowAssoc (∀ i, α i) where
     ppow_add _ _ _ := by ext; simp [ppow_add]
     ppow_one _ := by ext; simp
 
@@ -67,21 +86,6 @@ instance {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M] [Mul N] [Pow N ℕ+] 
     PNatPowAssoc (M × N) where
   ppow_add _ _ _ := by ext <;> simp [ppow_add]
   ppow_one _ := by ext <;> simp
-
-theorem ppow_mul_assoc [PNatPowAssoc M] (k m n : ℕ+) (x : M) :
-    (x ^ k * x ^ m) * x ^ n = x ^ k * (x ^ m * x ^ n) := by
-  simp only [← ppow_add, add_assoc]
-
-theorem ppow_mul_comm [PNatPowAssoc M] (m n : ℕ+) (x : M) :
-    x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
-
-theorem ppow_mul [PNatPowAssoc M] (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
-  refine PNat.recOn n ?_ ?_
-  rw [ppow_one, mul_one]
-  intro k hk
-  rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
-
-end PNatPowAssoc
 
 theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) :
     x ^ n = x ^ (n : ℕ) := by
