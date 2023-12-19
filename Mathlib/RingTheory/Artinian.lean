@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.RingTheory.Nakayama
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Tactic.RSuffices
+import Mathlib.Algebra.BigOperators.Fin
 
 #align_import ring_theory.artinian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -500,6 +501,7 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
 
 open BigOperators
 
+variable (R) in
 lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
   by_contra rid
   let f := Set.finite_or_infinite _ |>.resolve_left rid |>.natEmbedding
@@ -513,9 +515,38 @@ lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
   conv_rhs at H => rw [Finset.prod_range_succ]
   replace H := H.symm ▸
     Ideal.mul_le_left (R := R) (I := ∏ i in Finset.range N.succ, f i) (J := f N.succ)
-  obtain ⟨k, hk1, hk2⟩ := (f N.succ).2.isPrime.prod_le (by aesop) |>.mp H
+  obtain ⟨k, hk1, hk2⟩ := (f N.succ).2.isPrime.prod_le |>.mp H
   rw [f.injective <| Subtype.ext <| (f k).2.eq_of_le (f N.succ).2.isPrime.1 hk2] at hk1
   simp only [Finset.mem_range, lt_self_iff_false] at hk1
+
+variable (R) in
+/--
+collection of all maximal ideals in artinian ring
+-/
+noncomputable def maximalSpectrum : Finset (Ideal R) :=
+  (maximal_ideals_finite R).toFinset
+
+lemma mem_maximalSpectrum (I : Ideal R) :
+    I.IsMaximal ↔ I ∈ maximalSpectrum R := by
+  simp only [maximalSpectrum, Finite.mem_toFinset, mem_setOf_eq]
+
+lemma maximalSpectrum_card_pos [Nontrivial R] : 0 < (maximalSpectrum R).card := by
+  rw [Finset.card_pos]
+  obtain ⟨J, hJ⟩ := Ideal.exists_maximal R
+  exact ⟨J, mem_maximalSpectrum _ |>.mp hJ⟩
+
+lemma jacobson_bot_eq_inf : (maximalSpectrum R).inf id = Ideal.jacobson ⊥ := by
+  classical
+  delta Ideal.jacobson
+  simp only [bot_le, true_and]
+  refine le_antisymm ?_ ?_
+  · rw [le_sInf_iff]
+    intro J (hJ : J.IsMaximal)
+    apply Finset.inf_le
+    rwa [← mem_maximalSpectrum]
+  · rw [sInf_le_iff]
+    intro J (hJ : ∀_, _)
+    refine Finset.le_inf fun K hK ↦ hJ _ <| by simpa [mem_maximalSpectrum]
 
 
 end IsArtinianRing
