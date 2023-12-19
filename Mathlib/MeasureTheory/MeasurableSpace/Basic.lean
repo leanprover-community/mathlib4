@@ -1557,6 +1557,10 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
     exact measurable_id
 #align measurable_equiv.cast MeasurableEquiv.cast
 
+/-- Measurable equivalence between `ULift α` and `α`. -/
+def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
+  ⟨Equiv.ulift, measurable_down, measurable_up⟩
+
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro
