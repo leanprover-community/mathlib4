@@ -494,6 +494,19 @@ instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 
+/-- A point-free means of proving membership in the center, for a non-associative ring.
+
+This can be helpful when working with types that have ext lemmas for `R →+ R`. -/
+lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
+    a ∈ Set.center R ↔
+      AddMonoidHom.mulLeft a = .mulRight a ∧
+      AddMonoidHom.compr₂ .mul (.mulLeft a) = .comp .mul (.mulLeft a) ∧
+      AddMonoidHom.comp .mul (.mulRight a) = .compl₂ .mul (.mulLeft a) ∧
+      AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
+  rw [Set.mem_center_iff, isMulCentral_iff]
+  simp_rw [FunLike.ext_iff]
+  rfl
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring

@@ -70,7 +70,7 @@ variable
   `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
   outside of `s` is irrelevant and considered junk.  -/
 def IsIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : Set ℝ) :=
-  ∀ (t : ℝ), t ∈ s → HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
+  ∀ t ∈ s, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
 /-- If `v : M → TM` is a vector field on `M`, and `t₀ : ℝ`, `IsIntegralCurveAt γ v t₀` means
   `γ : ℝ → M` is a local integral curve of `v` in an open interval of `t₀`. That is, there exists
@@ -105,11 +105,7 @@ lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
     IsIntegralCurveOn γ v s' := fun t ht ↦ h t (mem_of_mem_of_subset ht hs)
 
 lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
-    IsIntegralCurveOn γ v (s ∪ s') := by
-  intros t ht
-  rcases ht with ht | ht
-  · exact h _ ht
-  · exact h' _ ht
+    IsIntegralCurveOn γ v (s ∪ s') := fun _ ↦ fun | .inl ht => h _ ht | .inr ht => h' _ ht
 
 lemma isIntegralCurveAt_iff :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
@@ -303,7 +299,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
   obtain ⟨f, hf1, hf2⟩ := exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
-    (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
+    (hv.contDiffAt (range_mem_nhds_isInteriorPoint I hx)).snd
   simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf2
   -- use continuity of `f` so that `f t` remains inside `interior (extChartAt I x₀).target`
   have ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
@@ -320,33 +316,30 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     s, hs, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
-  have h : HasDerivAt f
-    ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
-        (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
-      (v ((extChartAt I x₀).symm (f t))))
-    t := (haux t ht).1
+  let xₜ : M := (extChartAt I x₀).symm (f t) -- `xₜ := γ t`
+  have h : HasDerivAt f (x := t) <| fderivWithin ℝ (extChartAt I x₀ ∘ (extChartAt I xₜ).symm)
+    (range I) (extChartAt I xₜ xₜ) (v xₜ) := (haux t ht).1
   rw [← tangentCoordChange_def] at h
   have hf3 := mem_preimage.mp <| mem_of_mem_nhds (haux t ht).2
   have hf3' := mem_of_mem_of_subset hf3 interior_subset
   have hft1 := mem_preimage.mp <|
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
-  have hft2 := mem_extChartAt_source I ((extChartAt I x₀).symm (f t))
+  have hft2 := mem_extChartAt_source I xₜ
   -- express the derivative of the integral curve in the local chart
   refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
-  show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
-    (v ((extChartAt I x₀).symm (f t))) t
+  show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
   -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
   -- `HasFDerivAt.comp_hasDerivAt` on `h`
-  rw [← tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
-      (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t))) hft2,
+  rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,
     ← tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
   apply HasFDerivAt.comp_hasDerivAt _ _ h
   apply HasFDerivWithinAt.hasFDerivAt (s := range I) _ <|
     mem_nhds_iff.mpr ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..),
       isOpen_interior, hf3⟩
+  dsimp only [xₜ]
   nth_rw 4 [← (extChartAt I x₀).right_inv hf3']
   exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
 

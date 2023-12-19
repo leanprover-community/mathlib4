@@ -861,7 +861,7 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
-    simp at h
+    simp? at h says simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
     simp [h]
 #align list.cons_head'_tail List.cons_head?_tail
 
@@ -1313,7 +1313,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   · by_cases h₁ : l = []
     · subst h₁
       rw [get_singleton]
-      simp [lt_succ_iff] at h
+      simp only [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at h
       subst h
       simp
     have h₂ := h
@@ -1726,14 +1726,11 @@ theorem map_concat (f : α → β) (a : α) (l : List α) :
   induction l <;> [rfl; simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
 
-@[simp]
-theorem map_id'' (l : List α) : map (fun x => x) l = l :=
-  map_id _
-#align list.map_id'' List.map_id''
+#align list.map_id'' List.map_id'
 
-theorem map_id' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
+theorem map_id'' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
   simp [show f = id from funext h]
-#align list.map_id' List.map_id'
+#align list.map_id' List.map_id''
 
 theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) : l = nil :=
   eq_nil_of_length_eq_zero <| by rw [← length_map l f, h]; rfl
@@ -2943,7 +2940,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     specialize ih _ _
     · intro l hl
       apply hx l
-      simp at hl ⊢
+      simp only [mem_cons] at hl ⊢
       exact Or.inr hl
     · exact List.noConfusion
     have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
@@ -4074,7 +4071,7 @@ theorem map₂Left_eq_zipWith :
   | a :: as, [], h => by
     simp at h
   | a :: as, b :: bs, h => by
-    simp [Nat.succ_le_succ_iff] at h
+    simp only [length_cons, succ_le_succ_iff] at h
     simp [h, map₂Left_eq_zipWith]
 #align list.map₂_left_eq_map₂ List.map₂Left_eq_zipWith
 
