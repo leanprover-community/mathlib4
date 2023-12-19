@@ -47,14 +47,15 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 namespace ModelWithCorners
-/-- `p ∈ M` is an interior point of a manifold `M` iff
-for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
+/-- `p ∈ M` is an interior point of a manifold `M` iff its image in the extended chart
+lies in the interior of the model space. -/
 def IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
 
 /-- `p ∈ M` is a boundary point of a manifold `M` iff its image in the extended chart
 lies on the boundary of the model space. -/
 def IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range I)
 
+variable (M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
 protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 
@@ -63,11 +64,12 @@ lemma isInteriorPoint_iff {x : M} :
   ⟨fun h ↦ (chartAt H x).mem_interior_extend_target _ (mem_chart_target H x) h,
     fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
 
+variable (M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
 protected def boundary : Set M := { x : M | I.IsBoundaryPoint x }
 
-lemma isBoundaryPoint_iff {x : M} :
-    I.IsBoundaryPoint x ↔ extChartAt I x x ∈ frontier (range I) := Iff.rfl
+lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈ frontier (range I) :=
+  Iff.rfl
 
 /-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
@@ -79,21 +81,22 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma interior_union_boundary_eq_univ : (I.interior M) ∪ (I.boundary M) = (univ : Set M) :=
-  le_antisymm (fun _ _ ↦ trivial) (fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x)
+  le_antisymm (fun _ _ ↦ trivial) (fun x _ ↦ I.isInteriorPoint_or_isBoundaryPoint x)
 
 /-- The interior and boundary of a manifold `M` are disjoint. -/
 lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
   by_contra h
   -- Choose some x in the intersection of interior and boundary.
-  choose x hx using nmem_singleton_empty.mp h
+  choose x hx using not_disjoint_iff.mp h
   rcases hx with ⟨h1, h2⟩
   show (extChartAt I x) x ∈ (∅ : Set E)
-  rw [← interior_frontier_disjoint]
+  rw [← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I))]
   exact ⟨h1, h2⟩
 
 /-- The boundary is the complement of the interior. -/
-lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ :=
-  (compl_unique interior_boundary_disjoint univ_eq_interior_union_boundary).symm
+lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ := by
+  apply (compl_unique ?_ I.interior_union_boundary_eq_univ).symm
+  exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
 
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
     range I ∈ nhds (extChartAt I x x) := by
