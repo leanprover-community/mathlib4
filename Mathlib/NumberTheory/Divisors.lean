@@ -333,7 +333,7 @@ theorem Prime.properDivisors {p : ℕ} (pp : p.Prime) : properDivisors p = {1} :
 #align nat.prime.proper_divisors Nat.Prime.properDivisors
 
 theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
-    divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), pow_right_injective pp.two_le⟩ := by
+    divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
   simp [Nat.lt_succ, eq_comm]
@@ -438,15 +438,15 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
   intro a
   constructor <;> intro h
   · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [pow_lt_pow_iff pp.one_lt] at h_right
+    rw [pow_lt_pow_iff_right pp.one_lt] at h_right
     exact ⟨h_right, by rfl⟩
   · rcases h with ⟨h_left, rfl⟩
-    rw [pow_lt_pow_iff pp.one_lt]
+    rw [pow_lt_pow_iff_right pp.one_lt]
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
-    properDivisors (p ^ k) = (Finset.range k).map ⟨HPow.hPow p, pow_right_injective pp.two_le⟩ := by
+    properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   simp only [mem_properDivisors, Nat.isUnit_iff, mem_map, mem_range, Function.Embedding.coeFn_mk,
     pow_eq]

@@ -175,7 +175,7 @@ theorem sublists_cons (a : α) (l : List α) :
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
   rw [sublists_append, sublists_singleton, bind_eq_bind, cons_bind, cons_bind, nil_bind,
-     map_id' append_nil, append_nil]
+     map_id'' append_nil, append_nil]
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
@@ -189,7 +189,7 @@ theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists
 #align list.sublists_eq_sublists' List.sublists_eq_sublists'
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse, Function.comp]
+  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp]
 #align list.sublists'_reverse List.sublists'_reverse
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
@@ -273,6 +273,10 @@ theorem sublistsLen_succ_cons {α : Type*} (n) (a : α) (l) :
   rw [sublistsLen, sublistsLenAux, sublistsLenAux_eq, sublistsLenAux_eq, map_id,
       append_nil]; rfl
 #align list.sublists_len_succ_cons List.sublistsLen_succ_cons
+
+theorem sublistsLen_one {α : Type*} (l : List α) : sublistsLen 1 l = l.reverse.map ([·]) :=
+  l.rec (by rw [sublistsLen_succ_nil, reverse_nil, map_nil]) fun a s ih ↦ by
+    rw [sublistsLen_succ_cons, ih, reverse_cons, map_append, sublistsLen_zero]; rfl
 
 @[simp]
 theorem length_sublistsLen {α : Type*} :
