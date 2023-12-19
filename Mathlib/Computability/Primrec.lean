@@ -948,7 +948,7 @@ instance sum : Primcodable (Sum α β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp only [decodeSum, Nat.boddDiv2_eq]
+          simp only [decodeSum]
           cases Nat.bodd n <;> simp [decodeSum]
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩

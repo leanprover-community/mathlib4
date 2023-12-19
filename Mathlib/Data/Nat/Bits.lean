@@ -32,7 +32,7 @@ universe u
 
 variable {n : ℕ}
 
-/-! ### `boddDiv2_eq` and `bodd` -/
+/-! ### `div2` and `bodd` -/
 
 
 @[simp]
