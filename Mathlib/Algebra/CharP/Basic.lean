@@ -145,11 +145,29 @@ theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b 
   rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
 #align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
 
-theorem CharP.natCast_eq_natCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℕ} :
-    (a : R) = b ↔ a ≡ b [MOD p] := by
-  rw [← Int.cast_ofNat, ← Int.cast_ofNat b]
-  exact (CharP.intCast_eq_intCast _ _).trans Int.coe_nat_modEq_iff
+theorem CharP.natCast_eq_natCast' [AddMonoidWithOne R] (p : ℕ) [CharP R p] {a b : ℕ}
+    (h : a ≡ b [MOD p]) : (a : R) = b := by
+  wlog hle : a ≤ b
+  · exact (this R p h.symm (le_of_not_le hle)).symm
+  rw [Nat.modEq_iff_dvd' hle] at h
+  rw [← Nat.sub_add_cancel hle, Nat.cast_add, (CharP.cast_eq_zero_iff R p _).mpr h, zero_add]
+
+theorem CharP.natCast_eq_natCast [AddMonoidWithOne R] [IsRightCancelAdd R] (p : ℕ) [CharP R p]
+    {a b : ℕ} : (a : R) = b ↔ a ≡ b [MOD p] := by
+  wlog hle : a ≤ b
+  · rw [eq_comm, this R p (le_of_not_le hle), Nat.ModEq.comm]
+  rw [Nat.modEq_iff_dvd' hle, ← CharP.cast_eq_zero_iff R p (b - a),
+    ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
+    Nat.sub_add_cancel hle, eq_comm]
 #align char_p.nat_cast_eq_nat_cast CharP.natCast_eq_natCast
+
+theorem CharP.intCast_eq_intCast_mod [AddGroupWithOne R] (p : ℕ) [CharP R p] {a : ℤ} :
+    (a : R) = a % (p : ℤ) :=
+  (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
+
+theorem CharP.natCast_eq_natCast_mod [AddMonoidWithOne R] (p : ℕ) [CharP R p] {a : ℕ} :
+    (a : R) = a % p :=
+  CharP.natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
 
 theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP R q) : p = q :=
   Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R p q).1 (CharP.cast_eq_zero _ _))
@@ -307,18 +325,20 @@ theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1
   linarith
 #align char_p.neg_one_ne_one CharP.neg_one_ne_one
 
-theorem CharP.neg_one_pow_char [CommRing R] (p : ℕ) [CharP R p] [Fact p.Prime] :
+theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
-  rw [← add_pow_char, add_left_neg, zero_pow (Fact.out (p := Nat.Prime p)).pos]
+  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), add_left_neg,
+    zero_pow (Fact.out (p := Nat.Prime p)).pos]
 #align char_p.neg_one_pow_char CharP.neg_one_pow_char
 
-theorem CharP.neg_one_pow_char_pow [CommRing R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
+theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p ^ n = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
-  rw [← add_pow_char_pow, add_left_neg, zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
+  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), add_left_neg,
+    zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
 #align char_p.neg_one_pow_char_pow CharP.neg_one_pow_char_pow
 
 theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]

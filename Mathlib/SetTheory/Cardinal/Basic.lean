@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Nat.PartENat
@@ -378,6 +379,7 @@ instance : Zero Cardinal.{u} :=
 instance : Inhabited Cardinal.{u} :=
   ⟨0⟩
 
+@[simp]
 theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
   (Equiv.equivOfIsEmpty α (ULift (Fin 0))).cardinal_eq
 #align cardinal.mk_eq_zero Cardinal.mk_eq_zero

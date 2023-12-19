@@ -51,7 +51,9 @@ lemma card_eq_card_toFinset (s : Set α) [Fintype s] : Nat.card s = s.toFinset.c
 lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = hs.toFinset.card := by
   simp only [← Nat.card_eq_finsetCard, hs.mem_toFinset]
 
-lemma card_eq_zero_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
+@[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
+#align nat.card_of_is_empty Nat.card_of_isEmpty
+
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 #align nat.card_eq_zero_of_infinite Nat.card_eq_zero_of_infinite
 
@@ -157,9 +159,6 @@ theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} =
 theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
   toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 #align nat.card_eq_two_iff' Nat.card_eq_two_iff'
-
-theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp
-#align nat.card_of_is_empty Nat.card_of_isEmpty
 
 @[simp]
 theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by

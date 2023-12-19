@@ -103,9 +103,7 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
 
 /-- The marginal distribution is independent of the variables in `s`. -/
 theorem lmarginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
-    -- TODO: change back from `∀ i, i ∉ s →` to `∀ i ∉ s,` after bumping past
-    -- https://github.com/leanprover/std4/pull/427
-    (h : ∀ i, i ∉ s → x i = y i) :
+    (h : ∀ i ∉ s, x i = y i) :
     (∫⋯∫⁻_s, f ∂μ) x = (∫⋯∫⁻_s, f ∂μ) y := by
   dsimp [lmarginal, updateFinset_def]; rcongr; exact h _ ‹_›
 

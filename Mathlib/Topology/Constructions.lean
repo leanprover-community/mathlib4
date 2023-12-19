@@ -1650,6 +1650,16 @@ end Sigma
 
 section ULift
 
+theorem ULift.isOpen_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
+  unfold ULift.topologicalSpace
+  erw [← Equiv.ulift.coinduced_symm]
+  rfl
+
+theorem ULift.isClosed_iff [TopologicalSpace α] {s : Set (ULift.{v} α)} :
+    IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
+  rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
+
 @[continuity]
 theorem continuous_uLift_down [TopologicalSpace α] : Continuous (ULift.down : ULift.{v, u} α → α) :=
   continuous_induced_dom
