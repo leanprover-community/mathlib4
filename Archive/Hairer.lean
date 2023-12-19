@@ -27,9 +27,8 @@ open Function hiding eval
 
 section normed
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E E' F  : Type*}
+variable {E F  : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F) in
@@ -62,7 +61,7 @@ lemma contDiff (f : SmoothSupportedOn 𝕜 E F n s) :
     ContDiff 𝕜 n f := f.2.2
 
 theorem continuous (f : SmoothSupportedOn 𝕜 E F n s) : Continuous f :=
-  ContDiff.continuous <| SmoothSupportedOn.contDiff _
+  (SmoothSupportedOn.contDiff _).continuous
 
 lemma hasCompactSupport [ProperSpace E] (f : SmoothSupportedOn 𝕜 E F n (closedBall 0 1)) :
     HasCompactSupport f :=
@@ -122,11 +121,12 @@ instance [Finite σ] : Module.Finite R (restrictTotalDegree σ R n) := by
 
 end missing_polynomial
 
-variable {ι : Type*} [Fintype ι]
+variable {ι : Type*}
 lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
     Continuous fun x ↦ (eval x) p := by
   continuity
 
+variable [Fintype ι]
 theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x :=
@@ -134,7 +134,6 @@ theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
     (hasCompactSupport f).mul_left
 
 variable (ι)
-
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
 def L : MvPolynomial ι ℝ →ₗ[ℝ]
@@ -189,5 +188,4 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
   rw [← LinearMap.coe_comp] at this
   obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ :=
     LinearMap.flip_surjective_iff₁.2 this ((aeval 0).toLinearMap.comp <| Submodule.subtype _)
-  refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
-  exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
+  exact ⟨φ, supφ, difφ, fun P hP ↦ congr($hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩)⟩
