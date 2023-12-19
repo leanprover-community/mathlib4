@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between smooth manifolds
@@ -23,12 +24,12 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 
 ## Main results
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, and `IsLocalDiffeomorphAt` implies the next.
+* `LocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism
 * `LocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
 * `Diffeomorph.of_bijective_isLocalDiffeomorph`:
   a bijective local diffeomorphism is a diffeomorphism.
 
 ## TODO
-* a local diffeomorphisms is a local homeomorphism
 * an injective local diffeomorphism is a diffeomorphism to its image
 * each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
 * if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
@@ -185,37 +186,34 @@ def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) : PartialDiffeo
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _x ↦ ⟨Φ.toPartialDiffeomorph, by trivial, eqOn_refl Φ _⟩
 
--- TODO: golf this using IsLocalHomeomorph.isOpenMap,
--- after showing that local diffeosmorphisms are local homeomorphisms
+variable {I J}
+
+/-- A local diffeomorphism is a local homeomorphism. -/
+theorem LocalDiffeomorph.isLocalHomeomorph (hf : IsLocalDiffeomorph I J n f) :
+    IsLocalHomeomorph f := by
+  apply IsLocalHomeomorph.mk
+  intro x
+  choose U hyp using hf x
+  exact ⟨U.toPartialHomeomorph, hyp⟩
+
+/-- A local diffeomorphism is an open map. -/
+lemma LocalDiffeomorph.isOpenMap (hf : IsLocalDiffeomorph I J n f) : IsOpenMap f :=
+  (LocalDiffeomorph.isLocalHomeomorph hf).isOpenMap
+
 /-- A local diffeomorphism has open range. -/
-lemma LocalDiffeomorph.isOpen_range {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
-    IsOpen (range f) := by
-  apply isOpen_iff_forall_mem_open.mpr
-  intro y hy
-
-  -- Given `y = f x ∈ range f`, we need to find `V ⊆ N` open containing `y`.
-  rw [mem_range] at hy
-  rcases hy with ⟨x, hxy⟩
-
-  -- As f is a local diffeo at x, on some open set `U' ∋ x` it agrees with a diffeo `Φ : U' → V'`.
-  choose Φ hyp using hf x
-  rcases hyp with ⟨hxU, heq⟩
-  -- Then `V:=Φ.target` has the desired properties.
-  refine ⟨Φ.target, ?_, Φ.open_target, ?_⟩
-  · rw [← PartialEquiv.image_source_eq_target, ← heq.image_eq]
-    exact image_subset_range f Φ.source
-  · rw [← hxy, heq hxU]
-    exact Φ.map_source' hxU
+lemma LocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen (range f) :=
+  (LocalDiffeomorph.isOpenMap hf).isOpen_range
 
 /-- The image of a local diffeomorphism is open. -/
-def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Opens N :=
-  ⟨range f, isOpen_range I J hf⟩
+def LocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
+  ⟨range f, isOpen_range hf⟩
 
-lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
-    (LocalDiffeomorph.image I J hf).1 = range f := rfl
+lemma LocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) :
+    (LocalDiffeomorph.image hf).1 = range f := rfl
 
+-- TODO: this result holds more generally for (local) structomorphisms
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph {f : M → N}
+noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
     (hf' : Function.Bijective f) (hf : IsLocalDiffeomorph I J n f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
