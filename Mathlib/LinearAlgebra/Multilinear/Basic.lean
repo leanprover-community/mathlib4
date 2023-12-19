@@ -254,9 +254,148 @@ def toLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R]
 #align multilinear_map.to_linear_map MultilinearMap.toLinearMap
 #align multilinear_map.to_linear_map_to_add_hom_apply MultilinearMap.toLinearMap_apply
 
+/-! The goal of this part is, for `f` a multilinear map in finitely many variables indexed by `ι`,
+to develop `f(x + y)` as a finite formal multilinear series in `y`. The nth term of this formal multilinear
+series will be a sum over finsets `s` of `ι` of cardinality `n` of a multilinear map indexed by `s`,
+evaluated at `fun (_ : s) => y`. So we start by introducing the individual terms indexed by finsets of
+`ι`; actually, for the definition, we can consider any sets of `ι` and we don't need to take `ι` finite.-/
+
+def toMultilinearMap_set [DecidableEq ι] (f : MultilinearMap R M N) (x : (i : ι) → M i)
+(s : Set ι) [(i : ι) → Decidable (i ∈ s)] :
+MultilinearMap R (fun (_ : s) => (i : ι) → M i) N where
+toFun z := f (fun i => if h : i ∈ s then z ⟨i, h⟩ i else x i)
+map_add' z i a b := by
+  have heq : ∀ (c : (i : ι) → M i),
+      (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ j else x j) =
+      Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ j else x j) i (c i.1) := by
+    intro c; ext j
+    by_cases h : j ∈ s
+    . simp only [h, ne_eq, dite_true]
+      by_cases h' : ⟨j, h⟩ = i
+      . rw [h', Function.update_same]
+        have h'' : j = i.1 := by apply_fun (fun k => k.1) at h'; simp only at h'; exact h'
+        rw [h'', Function.update_same]
+      . have h'' : j ≠ i.1 := by
+          rw [← SetCoe.ext_iff] at h'
+          exact h'
+        rw [Function.update_noteq h', Function.update_noteq h'']
+        simp only [h, dite_true]
+    . have h' : j ≠ i.1 := by
+        by_contra habs
+        rw [habs] at h
+        simp only [Subtype.coe_prop, not_true_eq_false] at h
+      rw [Function.update_noteq h']
+      simp only [h, ne_eq, dite_false]
+  simp only
+  rw [heq a, heq b, heq (a + b)]
+  simp only [Pi.add_apply, MultilinearMap.map_add]
+map_smul' z i c a := by
+-- This is copy-pasted code from the proof of map_add'. If I try to make it an outside lemma, rw refuses to
+-- take it for some reason.
+  have heq : ∀ (c : (i : ι) → M i),
+      (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ j else x j) =
+      Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ j else x j) i (c i.1) := by
+    intro c; ext j
+    by_cases h : j ∈ s
+    . simp only [h, ne_eq, dite_true]
+      by_cases h' : ⟨j, h⟩ = i
+      . rw [h', Function.update_same]
+        have h'' : j = i.1 := by apply_fun (fun k => k.1) at h'; simp only at h'; exact h'
+        rw [h'', Function.update_same]
+      . have h'' : j ≠ i.1 := by
+          rw [← SetCoe.ext_iff] at h'
+          exact h'
+        rw [Function.update_noteq h', Function.update_noteq h'']
+        simp only [h, dite_true]
+    . have h' : j ≠ i.1 := by
+        by_contra habs
+        rw [habs] at h
+        simp only [Subtype.coe_prop, not_true_eq_false] at h
+      rw [Function.update_noteq h']
+      simp only [h, ne_eq, dite_false]
+  simp only
+  rw [heq a, heq]
+  simp only [Pi.smul_apply, MultilinearMap.map_smul]
+
+@[simp]
+lemma toMultilinearMap_set_apply [DecidableEq ι] (f : MultilinearMap R M N)
+(x : (i : ι) → M i) (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
+(z : (_ : s) → ((i : ι) → M i)) :
+f.toMultilinearMap_set x s z = f (fun i => if h : i ∈ s then z ⟨i, h⟩ i else x i) := by
+  unfold toMultilinearMap_set
+  rfl
+
+lemma toMultilinearMap_set_apply_diag [DecidableEq ι] (f : MultilinearMap R M N)
+(x : (i : ι) → M i) (s : Set ι) [(i : ι) → Decidable (i ∈ s)] (y : (i : ι) → M i) :
+f.toMultilinearMap_set x s (fun (_ : s) => y) = f (s.piecewise y x) := by
+  unfold toMultilinearMap_set
+  simp only [coe_mk, dite_eq_ite]
+  congr
+
+/-- This is the nth term of the formal multilinear series corresponding to the multilinear map `f`.
+We need a linear order on ι to identify all finsets of `ι` of cardinality `n` to `Fin n`.-/
+def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+    (f : MultilinearMap R M N) (x : (i : ι) → M i) (n : ℕ) :
+    MultilinearMap R (fun (_ : Fin n) => (i : ι) → M i) N :=
+  (∑ s : {s : Finset ι | s.card = n},
+  (f.toMultilinearMap_set x s.1.toSet).domDomCongr (s.1.orderIsoOfFin s.2).symm.toEquiv)
+
+@[simp]
+lemma toFormalMultilinearSeries_fixedDegree_apply_diag [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+    (f : MultilinearMap R M N) (x y : (i : ι) → M i) (n : ℕ) :
+    f.toFormalMultilinearSeries_fixedDegree x n (fun _ => y) = (∑ s : {s : Finset ι | s.card = n},
+    f (s.1.piecewise y x)) := by
+  unfold toFormalMultilinearSeries_fixedDegree
+  simp only [Set.coe_setOf, Set.mem_setOf_eq, coe_sum, Finset.sum_apply, domDomCongr_apply]
+  apply Finset.sum_congr rfl
+  intro s _
+  erw [f.toMultilinearMap_set_apply_diag x s.1 y]
+
+/-- The nth term of the formal multilinear series of `f` vanishes if `n` is bigger than `Fintype.vard ι`
+(because there are no finsets of `ι` of cardinality `n`).-/
+lemma toFormalMultilinearSeriest_fixedDegree_zero [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+    (f : MultilinearMap R M N) (x : (i : ι) → M i) {n : ℕ} (hn : (Fintype.card ι).succ ≤ n) :
+    f.toFormalMultilinearSeries_fixedDegree x n = 0 := by
+    unfold toFormalMultilinearSeries_fixedDegree
+    have he : IsEmpty {s : Finset ι | s.card = n} := by
+      by_contra hne
+      simp only [Set.coe_setOf, isEmpty_subtype, not_forall, not_not] at hne
+      have h : (Fintype.card ι).succ < (Fintype.card ι).succ :=
+        calc
+          (Fintype.card ι).succ ≤ n := hn
+          _ = (Classical.choose hne).card := Eq.symm (Classical.choose_spec hne)
+          _ ≤ Fintype.card ι := Finset.card_le_univ _
+          _ < (Fintype.card ι).succ := Nat.lt_succ_self _
+      exact lt_irrefl _ h
+    rw [Finset.univ_eq_empty_iff.mpr he, Finset.sum_empty]
+
+/-- Expression of `f(x + y)` using the formal multilinear series of `f` at `x`, as a finite sum.-/
+lemma hasFiniteFPowerSeries [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+    (f : MultilinearMap R M N) (x y : (i : ι) → M i) :
+    f (x + y) = ∑ n : Finset.range (Fintype.card ι).succ,
+    f.toFormalMultilinearSeries_fixedDegree x n (fun (_ : Fin n) => y) := by
+  rw [add_comm, map_add_univ, ← (Finset.sum_fiberwise_of_maps_to (g := fun s => s.card)
+    (t := Finset.range (Fintype.card ι).succ))]
+  simp only [Finset.mem_univ, forall_true_left, Finset.univ_filter_card_eq, gt_iff_lt]
+  rw [Finset.sum_coe_sort _ (fun n => f.toFormalMultilinearSeries_fixedDegree x n (fun _ => y))]
+  apply Finset.sum_congr rfl
+  . intro n hn
+    simp only [Finset.mem_range] at hn
+    rw [toFormalMultilinearSeries_fixedDegree_apply_diag]
+    simp only [gt_iff_lt, Set.coe_setOf, Set.mem_setOf_eq]
+    rw [Finset.sum_subtype (f := fun (s : Finset ι) => f (s.piecewise y x))]
+    exact fun s => by simp only [Finset.mem_powersetCard_univ]
+  . intro s _
+    simp only [Finset.mem_range]
+    rw [Nat.lt_succ]
+    exact Finset.card_le_univ _
+
+
+
 /-- This introduces the "derivative" of a multilinear map, as a linear map from
 `(i : ι) → M₁` to `M₂`. For continuous multilinear maps, this will indeed be the
-derivative.-/
+derivative. This is equal to the degree one part of the formal multilinear series defined by
+`f`, but we don't need a linear order on `ι` to define it.-/
 def linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
     (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →ₗ[R] M₂ :=
   ∑ i : ι, (f.toLinearMap x i).comp (LinearMap.proj i)
@@ -268,6 +407,36 @@ lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁
   unfold linearDeriv
   simp only [LinearMap.coeFn_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
     Function.comp_apply, Function.eval, toLinearMap_apply]
+
+/-- The equality between the derivarive of `f` and the degree one part of its formal
+multilinear series.-/
+lemma linearDerive_eq_toFormalMultilinearSeries_degreeOne
+    [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+    (f : MultilinearMap R M N) (x : (i : ι) → M i) :
+    MultilinearMap.ofSubsingleton (ι := Fin 1) R ((i : ι) → M i) N (⟨0, Nat.zero_lt_one⟩ : Fin 1)
+    (f.linearDeriv x) = f.toFormalMultilinearSeries_fixedDegree x 1 := by
+  ext y
+  have heq : y = fun _ => y 0 := by ext i; rw [Subsingleton.elim i]
+  rw [heq]
+  simp only [Fin.zero_eta, ofSubsingleton_apply_apply, linearDeriv_apply,
+    toFormalMultilinearSeries_fixedDegree_apply_diag, Set.coe_setOf, Set.mem_setOf_eq]
+  set I : (i : ι) → i ∈ Finset.univ → {s : Finset ι // s.card = 1} :=
+    fun i _ => ⟨{i}, Finset.card_singleton _⟩
+  have hI : ∀ (i : ι) (hi : i ∈ Finset.univ), I i hi ∈ Finset.univ := fun _ _ => Finset.mem_univ _
+  have heq : ∀ (i : ι) (hi : i ∈ Finset.univ),
+      f (Function.update x i (y 0 i)) = f ((I i hi).1.piecewise (y 0) x) :=
+    fun _ _ => by rw [Finset.piecewise_singleton]
+  have hinj : ∀ (i j : ι) (hi : i ∈ Finset.univ) (hj : j ∈ Finset.univ), I i hi = I j hj → i = j :=
+    fun _ _ _ _ => by simp only [Subtype.mk.injEq, Finset.singleton_inj, imp_self]
+  have hsurj : ∀ s ∈ Finset.univ (α := {s : Finset ι // s.card = 1}), ∃ (i : ι) (hi : i ∈ Finset.univ),
+      s = I i hi := by
+    intro ⟨s, hs⟩ _
+    rw [Finset.card_eq_one] at hs
+    existsi Classical.choose hs
+    existsi Finset.mem_univ _
+    simp only [Subtype.mk.injEq]
+    exact Classical.choose_spec hs
+  rw [Finset.sum_bij I hI heq hinj hsurj (g := fun s => f (s.1.piecewise (y 0) x))]
 
 /-- The cartesian product of two multilinear maps, as a multilinear map. -/
 @[simps]
@@ -1255,15 +1424,6 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
     · rw [if_neg hij, if_neg hij.symm]
   · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_not_mem _ _ hjs]
 
--- remove when #9137 is merged
-open Finset in
-theorem _root_.Finset.powersetCard_one {α} [DecidableEq α] {s : Finset α} :
-    s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ := by
-  ext t
-  rw [mem_powersetCard, card_eq_one, mem_map, ← exists_and_left, exists_congr]
-  intro a
-  rw [eq_comm, ← s.singleton_subset_iff, and_congr_left_eq]; rfl
-  rintro rfl; rfl
 
 open Finset in
 lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :
