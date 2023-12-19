@@ -123,10 +123,9 @@ theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (�
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
   ext s hs
-  have Z := EuclideanSpace.volume_preserving_measurableEquiv ι
-  rw [← (Z.symm).measure_preimage hs, volume_pi_eq_dirac 0]
-  simp only [MeasurableEquiv.measurableSet_preimage, hs, Measure.dirac_apply', Set.indicator,
+  simp only [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).measure_preimage hs,
+    volume_pi_eq_dirac 0, MeasurableEquiv.measurableSet_preimage, hs, dirac_apply', indicator,
     mem_preimage, Pi.one_apply]
-  congr
+  rfl
 
 end PiLp
