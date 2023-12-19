@@ -800,7 +800,7 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
   have V0 : V ≠ 0
   · dsimp only; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have V_ker : V ∈ (Eval s ℚ).ker
+  have V_ker : V ∈ RingHom.ker (Eval s ℚ)
   · dsimp only
     rw [← mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ 1)]
     erw [map_one]
@@ -854,8 +854,8 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (GalConjClasses ℚ (K s))) (_hq :
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
-  let U := ∏ f : Gal s, AddMonoidAlgebra.mapRangeAlgEquiv (K s) f x
-  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgEquiv (K s) f U = U
+  let U := ∏ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut (K s) f x
+  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut (K s) f U = U
   · intro f; dsimp only
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact (Group.mulLeft_bijective f).prod_comp fun g => AddMonoidAlgebra.algAutCongrLeft g x
@@ -864,8 +864,8 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
     rwa [AddEquivClass.map_ne_zero_iff]
   have U_ker : U ∈ RingHom.ker (Eval s (K s))
   · suffices
-      (fun f : Gal s => (AddMonoidAlgebra.algAutCongrLeft f) x) 1 *
-          ∏ f : Gal s in univ.erase 1, (AddMonoidAlgebra.algAutCongrLeft f) x ∈
+      (fun f : Gal s => AddMonoidAlgebra.mapRangeAlgAut (K s) f x) 1 *
+          ∏ f : Gal s in univ.erase 1, AddMonoidAlgebra.mapRangeAlgAut (K s) x ∈
             RingHom.ker (Eval s (K s)) by
       convert this
       exact (mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ _)).symm
