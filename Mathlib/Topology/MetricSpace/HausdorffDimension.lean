@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.MeasureTheory.Measure.Hausdorff
 
 #align_import topology.metric_space.hausdorff_dimension from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
@@ -519,7 +519,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     exact fun x _ y _ => Subsingleton.elim x y
   · rw [← ENNReal.coe_nat]
     have : μH[Fintype.card ι] (Metric.ball x r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
-      rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr, rpow_nat_cast]
+      rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr]
     refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_nat_cast, this]
     · simp [pow_pos (mul_pos (zero_lt_two' ℝ) hr)]
     · exact ENNReal.ofReal_ne_top

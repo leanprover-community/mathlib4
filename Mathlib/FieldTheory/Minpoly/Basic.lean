@@ -86,11 +86,9 @@ variable (A x)
 @[simp]
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
-  split_ifs with hx -- Porting note: `split_ifs` doesn't remove the `if`s
-  · rw [dif_pos hx]
-    exact (degree_lt_wf.min_mem _ hx).2
-  · rw [dif_neg hx]
-    exact aeval_zero _
+  split_ifs with hx
+  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
 /-- A minimal polynomial is not `1`. -/
@@ -169,7 +167,8 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
   cases' le_or_lt (minpoly A x).degree 0 with h h
-  · rwa [(monic ⟨1, monic_one, by simp⟩ : (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
+  · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
+           (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
   · exact (this.not_lt h).elim
 #align minpoly.subsingleton minpoly.subsingleton
 
@@ -245,7 +244,7 @@ variable [IsDomain A] [IsDomain B]
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
-  by_contra' h
+  by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   cases' heval with heval heval

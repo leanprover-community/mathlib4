@@ -55,14 +55,14 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
 
 #align list.length_zip List.length_zip
 
-theorem all₂_zipWith {f : α → β → γ} {p : γ → Prop} :
+theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
     ∀ {l₁ : List α} {l₂ : List β} (_h : length l₁ = length l₂),
-      All₂ p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂
+      Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
     simp only [length_cons, succ_inj'] at h
-    simp [all₂_zipWith h]
-#align list.all₂_zip_with List.all₂_zipWith
+    simp [forall_zipWith h]
+#align list.all₂_zip_with List.forall_zipWith
 
 theorem lt_length_left_of_zipWith {f : α → β → γ} {i : ℕ} {l : List α} {l' : List β}
     (h : i < (zipWith f l l').length) : i < l.length := by
@@ -129,7 +129,7 @@ theorem map_fst_zip :
     ∀ (l₁ : List α) (l₂ : List β), l₁.length ≤ l₂.length → map Prod.fst (zip l₁ l₂) = l₁
   | [], bs, _ => rfl
   | _ :: as, _ :: bs, h => by
-    simp [succ_le_succ_iff] at h
+    simp? [succ_le_succ_iff] at h says simp only [length_cons, succ_le_succ_iff] at h
     change _ :: map Prod.fst (zip as bs) = _ :: as
     rw [map_fst_zip as bs h]
   | a :: as, [], h => by simp at h
@@ -142,7 +142,7 @@ theorem map_snd_zip :
     rfl
   | [], b :: bs, h => by simp at h
   | a :: as, b :: bs, h => by
-    simp [succ_le_succ_iff] at h
+    simp? [succ_le_succ_iff] at h says simp only [length_cons, succ_le_succ_iff] at h
     change _ :: map Prod.snd (zip as bs) = _ :: bs
     rw [map_snd_zip as bs h]
 #align list.map_snd_zip List.map_snd_zip

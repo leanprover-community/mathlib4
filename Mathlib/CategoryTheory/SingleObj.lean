@@ -231,7 +231,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_full MonCat.toCatFull
 
 instance toCat_faithful : Faithful toCat where
-  map_injective h := by simpa [toCat] using h
+  map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_faithful MonCat.toCat_faithful
 

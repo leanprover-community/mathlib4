@@ -39,8 +39,6 @@ set_option autoImplicit true
 /- Eq -/
 
 alias proof_irrel := proofIrrel
-alias congr_fun := congrFun
-alias congr_arg := congrArg
 
 @[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
@@ -84,6 +82,9 @@ theorem eq_rec_compose {α β φ : Sort u} :
     ∀ (p₁ : β = φ) (p₂ : α = β) (a : α),
       (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
   | rfl, rfl, _ => rfl
+
+theorem heq_prop {P Q : Prop} (p : P) (q : Q) : HEq p q :=
+  Subsingleton.helim (propext <| iff_of_true p q) _ _
 
 /- and -/
 
@@ -152,7 +153,6 @@ theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
 #align false_and false_and_iff
 #align not_and_self not_and_self_iff
 #align and_not_self and_not_self_iff
-theorem and_self_iff : p ∧ p ↔ p := iff_of_eq (and_self _)
 #align and_self and_self_iff
 
 #align or.imp Or.impₓ -- reorder implicits
@@ -187,7 +187,6 @@ theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
 #align false_or false_or_iff
 theorem or_false_iff : p ∨ False ↔ p := iff_of_eq (or_false _)
 #align or_false or_false_iff
-theorem or_self_iff : p ∨ p ↔ p := iff_of_eq (or_self _)
 #align or_self or_self_iff
 
 theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 ↦ not_or.2 ⟨h1, h2⟩
@@ -357,11 +356,11 @@ theorem rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h�
 theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
 
 theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
-  by have := if_pos hc ▸ h; exact this
+  (if_pos hc ▸ h :)
 #align implies_of_if_pos imp_of_if_pos
 
 theorem imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) (hnc : ¬c) : e :=
-  by have := if_neg hnc ▸ h; exact this
+  (if_neg hnc ▸ h :)
 #align implies_of_if_neg imp_of_if_neg
 
 theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]

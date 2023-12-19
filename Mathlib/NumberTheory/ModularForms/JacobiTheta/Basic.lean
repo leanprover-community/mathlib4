@@ -26,8 +26,6 @@ open Complex Real Asymptotics Filter
 
 open scoped Real BigOperators UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- Jacobi's theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (z : ℂ) : ℂ :=
   ∑' n : ℤ, cexp (π * I * (n : ℂ) ^ 2 * z)
@@ -39,13 +37,13 @@ theorem norm_exp_mul_sq_le {z : ℂ} (hz : 0 < z.im) (n : ℤ) :
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hz)
   refine' (le_of_eq _).trans (_ : y ^ n ^ 2 ≤ _)
   · rw [Complex.norm_eq_abs, Complex.abs_exp]
-    have : (↑π * I * (n : ℂ) ^ 2 * z).re = -π * z.im * (n : ℝ) ^ 2 := by
-      rw [(by push_cast; ring : ↑π * I * (n : ℂ) ^ 2 * z = ↑(π * (n : ℝ) ^ 2) * (z * I)),
+    have : (π * I * n ^ 2 * z : ℂ).re = -π * z.im * (n : ℝ) ^ 2 := by
+      rw [(by push_cast; ring : (π * I * n ^ 2 * z : ℂ) = (π * n ^ 2 : ℝ) * (z * I)),
         ofReal_mul_re, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
     rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_ofNat]
-  · have : n ^ 2 = ↑(n.natAbs ^ 2) := by rw [Nat.cast_pow, Int.natAbs_sq]
+  · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_ofNat]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 #align norm_exp_mul_sq_le norm_exp_mul_sq_le
@@ -57,7 +55,8 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hR)
   refine' ⟨fun n => y ^ n.natAbs, summable_int_of_summable_nat _ _, fun hτ n => _⟩; pick_goal 3
   · refine' (norm_exp_mul_sq_le (hR.trans_le hτ) n).trans _
-    refine' pow_le_pow_of_le_left (exp_pos _).le (Real.exp_le_exp.mpr _) _
+    dsimp
+    gcongr rexp ?_ ^ _
     rwa [mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos)]
   all_goals
     simpa only [Int.natAbs_neg, Int.natAbs_ofNat] using
@@ -67,18 +66,18 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
 theorem summable_exp_mul_sq {z : ℂ} (hz : 0 < z.im) :
     Summable fun n : ℤ => cexp (π * I * (n : ℂ) ^ 2 * z) :=
   let ⟨_, h, h'⟩ := exists_summable_bound_exp_mul_sq hz
-  summable_norm_iff.mp (summable_of_nonneg_of_le (fun _ => norm_nonneg _) (h' <| le_refl _) h)
+  .of_norm_bounded _ h (h' <| le_refl _)
 #align summable_exp_mul_sq summable_exp_mul_sq
 
 theorem jacobiTheta_two_add (z : ℂ) : jacobiTheta (2 + z) = jacobiTheta z := by
   refine' tsum_congr fun n => _
-  suffices cexp (↑π * I * (n : ℂ) ^ 2 * 2) = 1 by rw [mul_add, Complex.exp_add, this, one_mul]
-  rw [(by push_cast; ring : ↑π * I * ↑n ^ 2 * 2 = ↑(n ^ 2) * (2 * π * I)), Complex.exp_int_mul,
+  suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, one_mul]
+  rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)), Complex.exp_int_mul,
     Complex.exp_two_pi_mul_I, one_zpow]
 #align jacobi_theta_two_add jacobiTheta_two_add
 
-theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta ↑(ModularGroup.T ^ 2 • τ) = jacobiTheta τ := by
-  suffices ↑(ModularGroup.T ^ 2 • τ) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
+theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • τ :) = jacobiTheta τ := by
+  suffices (ModularGroup.T ^ 2 • τ :) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
   have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := rfl
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
   norm_cast
@@ -140,8 +139,7 @@ theorem norm_jacobiTheta_sub_one_le {z : ℂ} (hz : 0 < im z) :
       ‖jacobiTheta z - 1‖ = ↑2 * ‖∑' n : ℕ, cexp (π * I * ((n : ℂ) + 1) ^ 2 * z)‖ := by
         rw [sub_eq_iff_eq_add'.mpr (jacobiTheta_eq_tsum_nat hz), norm_mul, Complex.norm_eq_abs,
           Complex.abs_two]
-      _ ≤ 2 * (rexp (-π * z.im) / (1 - rexp (-π * z.im))) := by
-        rwa [mul_le_mul_left (zero_lt_two' ℝ)]
+      _ ≤ 2 * (rexp (-π * z.im) / (1 - rexp (-π * z.im))) := by gcongr
       _ = 2 / (1 - rexp (-π * z.im)) * rexp (-π * z.im) := by rw [div_mul_comm, mul_comm]
   have : ∀ n : ℕ, ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * z)‖ ≤ rexp (-π * z.im) ^ (n + 1) := by
     intro n
@@ -152,9 +150,8 @@ theorem norm_jacobiTheta_sub_one_le {z : ℂ} (hz : 0 < im z) :
     exact hasSum_geometric_of_lt_1 (exp_pos (-π * z.im)).le
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hz)
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * z)‖ :=
-    summable_of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
-  exact
-    (norm_tsum_le_tsum_norm aux).trans ((tsum_mono aux s.summable this).trans (le_of_eq s.tsum_eq))
+    .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
+  exact (norm_tsum_le_tsum_norm aux).trans ((tsum_mono aux s.summable this).trans_eq s.tsum_eq)
 #align norm_jacobi_theta_sub_one_le norm_jacobiTheta_sub_one_le
 
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/

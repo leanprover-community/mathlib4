@@ -60,7 +60,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `LinearMap.range_dual_map_eq_dualAnnihilator_ker_of_subtype_range_surjective` says that
     `f.dual_map.range = f.ker.dualAnnihilator`; this is specialized to vector spaces in
     `LinearMap.range_dual_map_eq_dualAnnihilator_ker`.
-  * `Submodule.dual_quot_equiv_dualAnnihilator` is the equivalence
+  * `Submodule.dualQuotEquivDualAnnihilator` is the equivalence
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualConnihilator_eq` says that the double dual annihilator,
@@ -563,6 +563,28 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
   rfl
 #align module.forall_dual_apply_eq_zero_iff Module.forall_dual_apply_eq_zero_iff
 
+@[simp]
+theorem subsingleton_dual_iff :
+    Subsingleton (Dual K V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ⟨fun v w ↦ ?_⟩, fun h ↦ ⟨fun f g ↦ ?_⟩⟩
+  · rw [← sub_eq_zero, ← forall_dual_apply_eq_zero_iff K (v - w)]
+    intros f
+    simp [Subsingleton.elim f 0]
+  · ext v
+    simp [Subsingleton.elim v 0]
+
+instance instSubsingletonDual [Subsingleton V] : Subsingleton (Dual K V) :=
+  (subsingleton_dual_iff K).mp inferInstance
+
+@[simp]
+theorem nontrivial_dual_iff :
+    Nontrivial (Dual K V) ↔ Nontrivial V := by
+  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
+    subsingleton_dual_iff]
+
+instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
+  (nontrivial_dual_iff K).mpr inferInstance
+
 end
 
 theorem dual_rank_eq [Module.Finite K V] :
@@ -659,7 +681,7 @@ lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
       exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
+    exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
 instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
   equiv <| MulOpposite.opLinearEquiv _
@@ -670,6 +692,27 @@ instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
 end IsReflexive
 
 end Module
+
+namespace Submodule
+
+open Module
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+
+theorem exists_dual_map_eq_bot_of_nmem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
+    ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
+  suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
+    obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
+  rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
+    ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
+
+theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
+    ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
+  obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
+  obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
+  exact ⟨f, by aesop, hf'⟩
+
+end Submodule
 
 section DualBases
 
@@ -988,6 +1031,7 @@ theorem dualCoannihilator_top (W : Subspace K V) :
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 #align subspace.dual_coannihilator_top Subspace.dualCoannihilator_top
 
+@[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
   refine' le_antisymm _ (le_dualAnnihilator_dualCoannihilator _)
@@ -1526,7 +1570,7 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
   let equiv := (Subspace.quotEquivAnnihilator <| LinearMap.range f)
   have eq := LinearEquiv.finrank_eq (R := K) (M := (V₂ ⧸ range f))
     (M₂ := { x // x ∈ Submodule.dualAnnihilator (range f) }) equiv
-  rw [eq, ←ker_dualMap_eq_dualAnnihilator_range] at that
+  rw [eq, ← ker_dualMap_eq_dualAnnihilator_range] at that
   -- Porting note: cannot convert at `this`?
   conv_rhs at that => rw [← Subspace.dual_finrank_eq]
   refine' add_left_injective (finrank K <| LinearMap.ker f.dualMap) _

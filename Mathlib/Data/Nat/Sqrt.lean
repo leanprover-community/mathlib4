@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
@@ -46,8 +47,8 @@ To turn this into a lean proof we need to manipulate, use properties of natural 
 -/
 private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
-  | 0 => simp [IsSqrt]
-  | 1 => simp [IsSqrt]
+  | 0 => simp [IsSqrt, sqrt]
+  | 1 => simp [IsSqrt, sqrt]
   | n + 2 =>
     have h : ¬ (n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
@@ -175,6 +176,11 @@ theorem exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :
 theorem exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
   simpa only [pow_two] using exists_mul_self x
 #align nat.exists_mul_self' Nat.exists_mul_self'
+
+/-- `IsSquare` can be decided on `ℕ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℕ → Prop) :=
+  fun m => decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
+    simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
 
 theorem sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
   lt_succ_iff.mpr (sqrt_le _)

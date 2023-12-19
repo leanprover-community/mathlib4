@@ -180,6 +180,17 @@ theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f
     mp_mem hs (mem_of_superset h fun _ => Iff.mpr)⟩
 #align filter.congr_sets Filter.congr_sets
 
+/-- Override `sets` field of a filter to provide better definitional equality. -/
+protected def copy (f : Filter α) (S : Set (Set α)) (hmem : ∀ s, s ∈ S ↔ s ∈ f) : Filter α where
+  sets := S
+  univ_sets := (hmem _).2 univ_mem
+  sets_of_superset h hsub := (hmem _).2 <| mem_of_superset ((hmem _).1 h) hsub
+  inter_sets h₁ h₂ := (hmem _).2 <| inter_mem ((hmem _).1 h₁) ((hmem _).1 h₂)
+
+lemma copy_eq {S} (hmem : ∀ s, s ∈ S ↔ s ∈ f) : f.copy S hmem = f := Filter.ext hmem
+
+@[simp] lemma mem_copy {S hmem} : s ∈ f.copy S hmem ↔ s ∈ S := Iff.rfl
+
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
@@ -380,8 +391,8 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
-  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
+  le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) <|
+    le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
@@ -846,7 +857,7 @@ theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by
   rw [iInf_eq_iInf_finset, iInf_sets_eq]
-  exact directed_of_sup fun _ _ => biInf_mono
+  exact directed_of_isDirected_le fun _ _ => biInf_mono
 #align filter.infi_sets_eq_finite Filter.iInf_sets_eq_finite
 
 theorem iInf_sets_eq_finite' (f : ι → Filter α) :
@@ -1056,7 +1067,7 @@ theorem iInf_principal {ι : Type w} [Finite ι] (f : ι → Set α) : ⨅ i, �
 theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
   lift s to Finset ι using hs
-  exact_mod_cast iInf_principal_finset s f
+  exact mod_cast iInf_principal_finset s f
 #align filter.infi_principal_finite Filter.iInf_principal_finite
 
 end Lattice
@@ -1164,9 +1175,8 @@ theorem eventually_congr {f : Filter α} {p q : α → Prop} (h : ∀ᶠ x in f,
 #align filter.eventually_congr Filter.eventually_congr
 
 @[simp]
-theorem eventually_all {ι : Type*} [Finite ι] {l} {p : ι → α → Prop} :
+theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  cases nonempty_fintype ι
   simpa only [Filter.Eventually, setOf_forall] using iInter_mem
 #align filter.eventually_all Filter.eventually_all
 
@@ -1203,10 +1213,9 @@ theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop}
   simp only [@or_comm _ q, eventually_or_distrib_left]
 #align filter.eventually_or_distrib_right Filter.eventually_or_distrib_right
 
-@[simp]
 theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
-    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x := by
-  simp only [imp_iff_not_or, eventually_or_distrib_left]
+    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x :=
+  eventually_all
 #align filter.eventually_imp_distrib_left Filter.eventually_imp_distrib_left
 
 @[simp]
@@ -1310,6 +1319,12 @@ theorem Eventually.exists {p : α → Prop} {f : Filter α} [NeBot f] (hp : ∀�
   hp.frequently.exists
 #align filter.eventually.exists Filter.Eventually.exists
 
+lemma frequently_iff_neBot {p : α → Prop} : (∃ᶠ x in l, p x) ↔ NeBot (l ⊓ 𝓟 {x | p x}) := by
+  rw [neBot_iff, Ne.def, inf_principal_eq_bot]; rfl
+
+lemma frequently_mem_iff_neBot {s : Set α} : (∃ᶠ x in l, x ∈ s) ↔ NeBot (l ⊓ 𝓟 s) :=
+  frequently_iff_neBot
+
 theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filter α} :
     (∃ᶠ x in f, p x) ↔ ∀ {q : α → Prop}, (∀ᶠ x in f, q x) → ∃ x, p x ∧ q x :=
   ⟨fun hp q hq => (hp.and_eventually hq).exists, fun H hp => by
@@ -1318,7 +1333,7 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
-  simp only [frequently_iff_forall_eventually_exists_and, exists_prop, @and_comm (P _)]
+  simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _)]
   rfl
 #align filter.frequently_iff Filter.frequently_iff
 
@@ -1334,7 +1349,7 @@ theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x
 
 @[simp]
 theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ NeBot f := by
-  simp [Filter.Frequently, -not_eventually, eventually_false_iff_eq_bot, neBot_iff]
+  simp [frequently_iff_neBot]
 #align filter.frequently_true_iff_ne_bot Filter.frequently_true_iff_neBot
 
 @[simp]
@@ -1360,21 +1375,19 @@ theorem frequently_or_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} 
     (∃ᶠ x in f, p x ∨ q) ↔ (∃ᶠ x in f, p x) ∨ q := by simp
 #align filter.frequently_or_distrib_right Filter.frequently_or_distrib_right
 
-@[simp]
 theorem frequently_imp_distrib {f : Filter α} {p q : α → Prop} :
     (∃ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) → ∃ᶠ x in f, q x := by
-  simp [imp_iff_not_or, not_eventually, frequently_or_distrib]
+  simp [imp_iff_not_or]
 #align filter.frequently_imp_distrib Filter.frequently_imp_distrib
 
 theorem frequently_imp_distrib_left {f : Filter α} [NeBot f] {p : Prop} {q : α → Prop} :
-    (∃ᶠ x in f, p → q x) ↔ p → ∃ᶠ x in f, q x := by simp
+    (∃ᶠ x in f, p → q x) ↔ p → ∃ᶠ x in f, q x := by simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_left Filter.frequently_imp_distrib_left
 
 theorem frequently_imp_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} {q : Prop} :
-    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp
+    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_right Filter.frequently_imp_distrib_right
 
-@[simp]
 theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∀ᶠ x in f, p x → q) ↔ (∃ᶠ x in f, p x) → q := by
   simp only [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
@@ -1490,7 +1503,7 @@ theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
   eventually_of_forall fun _ => rfl
 #align filter.eventually_eq.refl Filter.EventuallyEq.refl
 
-theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f :=
+protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f :=
   EventuallyEq.refl l f
 #align filter.eventually_eq.rfl Filter.EventuallyEq.rfl
 
@@ -1942,8 +1955,8 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
 lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
-    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
-by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
+  simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
 #align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
 @[simp]
@@ -2600,6 +2613,10 @@ theorem map_inf' {f g : Filter α} {m : α → β} {t : Set α} (htf : t ∈ f) 
   simp only [map_map, ← map_inf Subtype.coe_injective, map_inf h]
 #align filter.map_inf' Filter.map_inf'
 
+lemma disjoint_of_map {α β : Type*} {F G : Filter α} {f : α → β}
+    (h : Disjoint (map f F) (map f G)) : Disjoint F G :=
+  disjoint_iff.mpr <| map_eq_bot_iff.mp <| le_bot_iff.mp <| trans map_inf_le (disjoint_iff.mp h)
+
 theorem disjoint_map {m : α → β} (hm : Injective m) {f₁ f₂ : Filter α} :
     Disjoint (map m f₁) (map m f₂) ↔ Disjoint f₁ f₂ := by
   simp only [disjoint_iff, ← map_inf hm, map_eq_bot_iff]
@@ -2922,7 +2939,7 @@ gi_principal_ker.gc.u_iInf
 gi_principal_ker.gc.u_sInf
 @[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
 
-@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [←principal_singleton, ker_principal]
+@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [← principal_singleton, ker_principal]
 
 @[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
   ext a

@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
-#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
+#align_import number_theory.legendre_symbol.gauss_eisenstein_lemmas from "leanprover-community/mathlib"@"8818fdefc78642a7e6afcd20be5c184f3c7d9699"
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -18,8 +18,6 @@ The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 open Finset Nat
 
 open scoped BigOperators Nat
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 section GaussEisenstein
 
@@ -69,7 +67,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
   calc
     (a ^ (p / 2) * (p / 2)! : ZMod p) = ∏ x in Ico 1 (p / 2).succ, a * x := by
       rw [prod_mul_distrib, ← prod_natCast, prod_Ico_id_eq_factorial, prod_const, card_Ico,
-        succ_sub_one]; simp
+        Nat.add_one_sub_one]; simp
     _ = ∏ x in Ico 1 (p / 2).succ, ↑((a * x : ZMod p).val) := by simp
     _ = ∏ x in Ico 1 (p / 2).succ, (if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) *
         (a * x : ZMod p).valMinAbs.natAbs :=
@@ -83,7 +81,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
           (∏ x in Ico 1 (p / 2).succ, if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) =
           ∏ x in (Ico 1 (p / 2).succ).filter fun x : ℕ => ¬(a * x : ZMod p).val ≤ p / 2, -1 :=
         prod_bij_ne_one (fun x _ _ => x)
-          (fun x => by split_ifs <;> simp_all (config := { contextual := true }))
+          (fun x => by split_ifs <;> (dsimp; simp_all))
           (fun _ _ _ _ _ _ => id) (fun b h _ => ⟨b, by simp_all [-not_le]⟩)
           (by intros; split_ifs at * <;> simp_all)
       rw [prod_mul_distrib, this, prod_const]
@@ -95,14 +93,14 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
 
 theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
-    (-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :=
+    ((-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :) :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
     rw [Ne.def, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
     exact Nat.div_lt_self hp.1.pos (by decide))).1 <| by
       simpa using gauss_lemma_aux₁ p hap
 #align zmod.gauss_lemma_aux ZMod.gauss_lemma_aux
 
-/-- Gauss' lemma. The Legendre symbol can be computed by considering the number of naturals less
+/-- **Gauss' lemma**. The Legendre symbol can be computed by considering the number of naturals less
   than `p/2` such that `(a * x) % p > p / 2`. -/
 theorem gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = (-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
@@ -241,6 +239,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
   simp only [card_Ico, tsub_zero, succ_sub_succ_eq_sub]
 #align zmod.sum_mul_div_add_sum_mul_div_eq_mul ZMod.sum_mul_div_add_sum_mul_div_eq_mul
 
+/-- **Eisenstein's lemma** -/
 theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 : a % 2 = 1)
     (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = (-1) ^ ∑ x in Ico 1 (p / 2).succ, x * a / p := by
   haveI hp' : Fact (p % 2 = 1) := ⟨Nat.Prime.mod_two_eq_one_iff_ne_two.mpr hp⟩

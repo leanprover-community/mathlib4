@@ -776,7 +776,7 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 #align primrec.list_find_index₁ Primrec.list_findIdx₁
 
 theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
-  list_findIdx₁ .beq l
+  list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
 theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
@@ -837,7 +837,7 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
-    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]; rfl
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=
@@ -948,7 +948,7 @@ instance sum : Primcodable (Sum α β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp only [decodeSum, Nat.boddDiv2_eq]
+          simp only [decodeSum]
           cases Nat.bodd n <;> simp [decodeSum]
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
@@ -1134,7 +1134,7 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
 #align primrec.list_find_index Primrec.list_findIdx
 
 theorem list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
-  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ (fst.comp fst).to₂ snd.to₂
+  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
 #align primrec.list_index_of Primrec.list_indexOfₓ
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)

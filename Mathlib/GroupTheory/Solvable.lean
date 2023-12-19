@@ -127,7 +127,7 @@ theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :
 #align is_solvable_of_top_eq_bot isSolvable_of_top_eq_bot
 
 instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolvable G :=
-  isSolvable_of_top_eq_bot G (by simp)
+  isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 #align is_solvable_of_subsingleton isSolvable_of_subsingleton
 
 variable {G}

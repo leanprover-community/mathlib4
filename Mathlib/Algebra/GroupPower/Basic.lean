@@ -246,6 +246,10 @@ theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
 
 end Monoid
 
+lemma eq_zero_or_one_of_sq_eq_self [CancelMonoidWithZero M] {x : M} (hx : x ^ 2 = x) :
+    x = 0 ∨ x = 1 :=
+  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
+
 /-!
 ### Commutative (additive) monoid
 -/
@@ -443,25 +447,6 @@ end Group
 theorem pow_dvd_pow [Monoid R] (a : R) {m n : ℕ} (h : m ≤ n) : a ^ m ∣ a ^ n :=
   ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
 #align pow_dvd_pow pow_dvd_pow
-
-theorem ofAdd_nsmul [AddMonoid A] (x : A) (n : ℕ) :
-    Multiplicative.ofAdd (n • x) = Multiplicative.ofAdd x ^ n :=
-  rfl
-#align of_add_nsmul ofAdd_nsmul
-
-theorem ofAdd_zsmul [SubNegMonoid A] (x : A) (n : ℤ) :
-    Multiplicative.ofAdd (n • x) = Multiplicative.ofAdd x ^ n :=
-  rfl
-#align of_add_zsmul ofAdd_zsmul
-
-theorem ofMul_pow [Monoid A] (x : A) (n : ℕ) : Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
-  rfl
-#align of_mul_pow ofMul_pow
-
-theorem ofMul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
-    Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
-  rfl
-#align of_mul_zpow ofMul_zpow
 
 @[to_additive (attr := simp)]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :

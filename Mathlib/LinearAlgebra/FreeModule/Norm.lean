@@ -67,7 +67,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   -- irreducible so that they don't expose `Quotient.lift` accidentally.
   refine PowerBasis.finiteDimensional ?_
   refine AdjoinRoot.powerBasis ?_
-  refine I.smithCoeffs_ne_zero b hI i
+  exact I.smithCoeffs_ne_zero b hI i
 
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
