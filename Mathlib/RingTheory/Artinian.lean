@@ -506,9 +506,9 @@ lemma prime_spectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   refine ⟨⟨s, fun p ↦ ?_⟩⟩
   obtain ⟨q, hq1, hq2⟩ : ∃ q ∈ s, q ≤ p
   · classical
-    specialize H p ⟨{p}, by simp⟩
     simpa only [mem_setOf_eq, coe_setOf, ge_iff_le, Finset.le_inf_iff, Subtype.coe_le_coe,
-      Subtype.forall, inf_lt_right, not_not, Ideal.IsPrime.inf_le' (hp := p.2)] using H
+      Subtype.forall, inf_lt_right, not_not, Ideal.IsPrime.inf_le' (hp := p.2)]
+      using H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩
   rwa [← Subtype.ext_iff.mpr <| @isMaximal_of_isPrime (p := q.1) _ _ q.2 |>.eq_of_le p.2.1 hq2]
 
 variable (R) in
