@@ -17,6 +17,11 @@ variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] 
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
+
+def DirectSum.PointedCone (ι : Type u) [DecidableEq ι] (β : ι → PointedCone 𝕜 E) :
+    PointedCone 𝕜 E  :=
+  LinearMap.range $ DirectSum.coeLinearMap β
+
 namespace Caratheodory
 
 /-- If `x` is in the cone of some finset `t` whose elements are not linearly-independent,
@@ -200,29 +205,35 @@ variable {s : Set E}
 
 -- TODO: Figure out direct sums of PointedCones
 
-#exit
 /-- **Carathéodory's convexity theorem** -/
-theorem toPointedCone_eq_union : toPointedCone 𝕜 s =
-    ⋃ (t : Finset E) (hss : ↑t ⊆ s) (hai : LinearIndependent 𝕜 ((↑) : t → E)), toPointedCone 𝕜 ↑t := by
+
+theorem toPointedCone_eq_union : (toPointedCone 𝕜 s : Set E) =
+    ⋃ (t : Finset E) (_ : ↑t ⊆ s) (_ : LinearIndependent 𝕜 ((↑) : t → E)),
+      (SetLike.coe $ toPointedCone 𝕜 t)
+    := by
   apply Set.Subset.antisymm
   · intro x hx
     simp only [exists_prop, Set.mem_iUnion]
     exact ⟨Caratheodory.minCardFinsetOfMemtoPointedCone hx,
-      Caratheodory.minCardFinsetOfMemtoPointedCone_subseteq hx,
+      Caratheodory.minCardFinsetOftoPointedCone_subseteq hx,
       Caratheodory.affineIndependent_minCardFinsetOfMemtoPointedCone hx,
       Caratheodory.mem_minCardFinsetOfMemtoPointedCone hx⟩
   · iterate 3 convert Set.iUnion_subset _; intro
-    exact toPointedCone_mono ‹_›
+    exact Submodule.span_mono ‹_›
 
 /-- A more explicit version of `toPointedCone_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCone 𝕜 s) :
     ∃ (ι : Sort (u + 1)) (_ : Fintype ι),
-      ∃ (z : ι → E) (w : ι → 𝕜) (_ : Set.range z ⊆ s) (_ : AffineIndependent 𝕜 z)
-        (_ : ∀ i, 0 < w i), ∑ i, w i = 1 ∧ ∑ i, w i • z i = x := by
-  rw [toPointedCone_eq_union] at hx
+      ∃ (z : ι → E) (w : ι → 𝕜) (_ : Set.range z ⊆ s) (_ : LinearIndependent 𝕜 z)
+        (_ : ∀ i, 0 < w i), ∑ i, w i • z i = x := by
+  rw [← SetLike.mem_coe, toPointedCone_eq_union] at hx
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
-  simp only [t.toPointedCone_eq, exists_prop, Set.mem_setOf_eq] at ht₃
+  simp_rw [toPointedCone, SetLike.mem_coe, mem_span_finset] at ht₃
+  simp
+  sorry
+  #exit
+  simp only [toPointedCone_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := t.filter fun i => w i ≠ 0
   refine' ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), _, _, _, _, _⟩
