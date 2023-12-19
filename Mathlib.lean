@@ -2926,6 +2926,7 @@ import Mathlib.Order.RelSeries
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
