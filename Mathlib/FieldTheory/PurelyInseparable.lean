@@ -82,14 +82,14 @@ variable (F E K)
 equal to `F`. -/
 theorem separableClosure.eq_bot_of_isPurelyInseparable [IsPurelyInseparable F E] :
     separableClosure F E = ⊥ :=
-  bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x ((mem_separableClosure_iff F E).1 h).2
+  bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x ((mem_separableClosure_iff F E).1 h)
 
 /-- If `E / F` is an algebraic extension, then the (relative) separable closure of `E / F` is
 equal to `F` if and only if `E / F` is purely inseparable. -/
 theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
     separableClosure F E = ⊥ ↔ IsPurelyInseparable F E :=
   ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ have hx := (halg x).isIntegral; ⟨hx, fun hs ↦ by
-    simpa only [h] using (mem_separableClosure_iff F E).2 ⟨hx, hs⟩⟩,
+    simpa only [h] using (mem_separableClosure_iff F E).2 hs⟩,
       fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
 instance isPurelyInseparable_self : IsPurelyInseparable F F :=
@@ -192,8 +192,8 @@ theorem isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C (q : ℕ) [hF : ExpChar F
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ (n : ℕ) (y : F), minpoly F x = X ^ (q ^ n) - C y := by
   refine ⟨fun h x ↦ ?_, fun h ↦ (isPurelyInseparable_iff_natSepDegree_eq_one F E).2 fun x ↦ ?_⟩
   · have halg := h.isIntegral' x
-    exact natSepDegree_eq_one_iff_of_monic_irreducible _ q (minpoly.monic halg)
-      (minpoly.irreducible halg) |>.1 <| (isPurelyInseparable_iff_natSepDegree_eq_one F E).1 h x
+    exact ((minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic q (minpoly.monic halg)).1 <|
+      (isPurelyInseparable_iff_natSepDegree_eq_one F E).1 h x
   obtain ⟨n, y, h⟩ := h x
   replace h : minpoly F x = expand F (q ^ n) (X - C y) := by rwa [map_sub, expand_X, expand_C]
   apply_fun natSepDegree at h
@@ -271,9 +271,8 @@ separable closure of `E / F`. -/
 theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
     IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
   set L := separableClosure F E
-  replace halg := (halg.tower_top L x).isIntegral
-  refine ⟨halg, fun h ↦ ?_⟩
-  haveI := (isSeparable_adjoin_simple_iff_separable L E).2 ⟨halg, h⟩
+  refine ⟨(halg.tower_top L x).isIntegral, fun h ↦ ?_⟩
+  haveI := (isSeparable_adjoin_simple_iff_separable L E).2 h
   letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
   letI : Module L L⟮x⟯ := Algebra.toModule
   letI : SMul L L⟮x⟯ := Algebra.toSMul
@@ -286,7 +285,7 @@ theorem separableClosure.isPurelyInseparable (halg : Algebra.IsAlgebraic F E) :
 if `E` is purely inseparable over it. -/
 theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
-  obtain ⟨y, rfl⟩ := h.inseparable' _ <| ((mem_separableClosure_iff F E).1 hx).2.map
+  obtain ⟨y, rfl⟩ := h.inseparable' _ <| ((mem_separableClosure_iff F E).1 hx).map
     (f := algebraMap F L) |>.of_dvd (minpoly.dvd_map_of_isScalarTower F L x)
   exact y.2
 
