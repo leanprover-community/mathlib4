@@ -608,6 +608,26 @@ lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r') [E.HasPage r] [E.HasPag
     rw [← cancel_mono (E.edgeIsoSteps pq r r' h).hom, assoc, assoc, assoc,
       edgeIsoSteps_hom, edgeMonoSteps_edgeEpiSteps, comp_id, edgeEpiSteps_comp]
 
+-- priority less than that of pageInfinityIso_hom_edgeMonoSteps
+@[reassoc (attr := simp 900)]
+lemma pageInfinityIso_hom_edgeMonoSteps' (r r' : ℤ) (h : r ≤ r') [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeMonoAtFrom pq r'] [E.HasEdgeEpiAtFrom pq r'] :
+    (E.pageInfinityIso pq r').hom ≫ E.edgeMonoSteps pq r r' h = E.edgeMono pq r := by
+  rw [← E.edgeMono_edgeMonoSteps pq r r' h]
+  congr 1
+  dsimp [edgeMono]
+  split_ifs with h'
+  · rw [← E.pageInfinityIso_hom_edgeMonoSteps pq _ _ h']
+    dsimp [pageInfinityIso]
+    rw [edgeEpiSteps_eq_id, comp_id]
+  · rfl
+
+@[reassoc (attr := simp 900)]
+lemma pageInfinityIso_hom_edgeMonoStep' (r r' : ℤ) (h : r + 1 = r') [E.HasPage r] [E.HasPage r']
+    [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeMonoAtFrom pq r'] [E.HasEdgeEpiAtFrom pq r'] :
+    (E.pageInfinityIso pq r').hom ≫ E.edgeMonoStep pq r r' h = E.edgeMono pq r := by
+  rw [← E.edgeMonoSteps_eq_edgeMonoStep, pageInfinityIso_hom_edgeMonoSteps']
+
 noncomputable def edgeEpi (r : ℤ) [E.HasPage r] [E.HasEdgeEpiAtFrom pq r] :
     (E.page r).X pq ⟶ E.pageInfinity pq :=
   if h : r ≤ E.rMin pq
@@ -682,7 +702,7 @@ noncomputable def mapPageInfinity (pq : ι) :
     · exact 0
   · exact 0
 
--- TODO: naturality of edgeMonoStep(s)
+-- TODO: naturality of edgeEpiStep(s)
 
 @[reassoc]
 lemma edgeMonoStep_naturality (pq : ι) (r r' : ℤ) (hrr' : r + 1 = r')

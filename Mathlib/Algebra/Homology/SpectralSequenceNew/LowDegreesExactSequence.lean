@@ -222,12 +222,10 @@ noncomputable def toE₂ZeroOne :
     X 1 ⟶ (E.page 2).X ⟨0, 1⟩ :=
   (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance ≫ E.edgeMono ⟨0, 1⟩ 2
 
-/-@[reassoc (attr := simp)]
+@[reassoc (attr := simp)]
 lemma πE₃ZeroOne_edgeMonoStep :
     πE₃ZeroOne hE ≫ edgeMonoStep (0, 1) 2 3 rfl = toE₂ZeroOne hE := by
-  dsimp [πE₃ZeroOne, toE₂ZeroOne]
-  simp
-  sorry-/
+  simp [πE₃ZeroOne, toE₂ZeroOne]
 
 noncomputable def ιE₃TwoZero : (E.page 3).X ⟨2, 0⟩ ⟶ X 2 :=
   (E.pageInfinityIso ⟨2, 0⟩ 3).inv ≫ (hE 2).pageInfinityι 0 ⟨2, 0⟩ rfl inferInstance
@@ -307,7 +305,7 @@ instance : Mono ((lowDegreesComposableArrows hE).map' 0 1) := by
   dsimp
   infer_instance
 
-/-open LowDegreesExactSequence in
+open LowDegreesExactSequence in
 lemma lowDegreesComposableArrows_exact :
     (lowDegreesComposableArrows hE).Exact := by
   apply ComposableArrows.exact_of_δlast
@@ -323,7 +321,7 @@ lemma lowDegreesComposableArrows_exact :
       { τ₁ := 𝟙 _
         τ₂ := 𝟙 _
         τ₃ := ιE₃TwoZero hE }
-    exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1 ((d₂Sequence_exact E).exact 1)-/
+    exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1 ((d₂Sequence_exact E).exact 1)
 
 end CohomologicalSpectralSequenceNat
 
