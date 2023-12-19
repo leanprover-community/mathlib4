@@ -159,7 +159,7 @@ def ofNatCode : ℕ → Code
     | false, true  => comp (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true , false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true , true  => rfind' (ofNatCode m)
-decreasing_by simp_wf; simp [*]
+decreasing_by simp_wf; simp [hm, _m1, _m2]
 #align nat.partrec.code.of_nat_code Nat.Partrec.Code.ofNatCode
 
 /-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode`-/
