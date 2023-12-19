@@ -548,5 +548,13 @@ lemma jacobson_bot_eq_inf : (maximalSpectrum R).inf id = Ideal.jacobson ⊥ := b
     intro J (hJ : ∀_, _)
     refine Finset.le_inf fun K hK ↦ hJ _ <| by simpa [mem_maximalSpectrum]
 
+lemma jacobson_bot_eq_prod : (maximalSpectrum R).prod id = Ideal.jacobson ⊥ := by
+  rw [← jacobson_bot_eq_inf, Ideal.prod_eq_inf_of_pairwise_coprime]
+  intro I hI J hJ hIJ
+  simp only [Finset.mem_coe, ← mem_maximalSpectrum] at hI hJ
+  contrapose! hIJ
+  conv_lhs => rw [hI.eq_of_le hIJ le_sup_left]
+  conv_rhs => rw [hJ.eq_of_le hIJ le_sup_right]
+
 
 end IsArtinianRing
