@@ -156,23 +156,24 @@ theorem MeasureTheory.Measure.IsAddLeftInvariant.addQuotientVolumeEqVolumePreima
     (neTopV : μ V ≠ ⊤) : AddQuotientVolumeEqVolumePreimage μ := by
   apply fund_dom_s.addQuotientVolumeEqVolumePreimage
   intro U meas_U
-  let μ' : Measure (G ⧸ Γ) := fund_dom_s.nullMeasurableSet.addQuotientMeasure
-    Γ.op volume
+  have meas_π : Measurable (QuotientAddGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
+  let μ' : Measure (G ⧸ Γ) := (volume.restrict s).map π
   haveI has_fund : HasAddFundamentalDomain Γ.op G := ⟨⟨s, fund_dom_s⟩⟩
   have : AddQuotientVolumeEqVolumePreimage μ' :=
     fund_dom_s.addQuotientVolumeEqVolumePreimage_addQuotientMeasure
   have : μ'.IsAddLeftInvariant :=
     MeasureTheory.AddQuotientVolumeEqVolumePreimage.addInvariantMeasure_quotient
   suffices : μ = μ'
-  · rw [this, NullMeasurableSet.addQuotientMeasure_apply]
-    exact meas_U
+  · rw [this, Measure.map_apply meas_π meas_U, Measure.restrict_apply]; rfl
+    exact measurableSet_quotient.mp meas_U
   · rw [measure_eq_sub_vadd μ' μ meas_V neZeroV neTopV, hV]
     symm
     convert one_smul ENNReal μ
-    rw [fund_dom_s.nullMeasurableSet.addQuotientMeasure_apply _ meas_V]
-    convert ENNReal.div_self ..
-    · exact trans hV.symm neZeroV
-    · exact trans hV.symm neTopV
+    rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
+    · convert ENNReal.div_self ..
+      · exact trans hV.symm neZeroV
+      · exact trans hV.symm neTopV
+    exact measurableSet_quotient.mp meas_V
 
 end additive
 
@@ -219,23 +220,24 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientVolumeEqVolumePreimage_
     (neTopV : μ V ≠ ⊤) : QuotientVolumeEqVolumePreimage μ := by
   apply fund_dom_s.quotientVolumeEqVolumePreimage
   intro U meas_U
-  let μ' : Measure (G ⧸ Γ) := fund_dom_s.nullMeasurableSet.quotientMeasure
-    Γ.op volume
+  have meas_π : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
+  let μ' : Measure (G ⧸ Γ) := (volume.restrict s).map π
   haveI has_fund : HasFundamentalDomain Γ.op G := ⟨⟨s, fund_dom_s⟩⟩
   have : QuotientVolumeEqVolumePreimage μ' :=
     fund_dom_s.quotientVolumeEqVolumePreimage_quotientMeasure
   have : μ'.IsMulLeftInvariant :=
     MeasureTheory.QuotientVolumeEqVolumePreimage.mulInvariantMeasure_quotient
   suffices : μ = μ'
-  · rw [this, NullMeasurableSet.quotientMeasure_apply]
-    exact meas_U
+  · rw [this, Measure.map_apply meas_π meas_U, Measure.restrict_apply]; rfl
+    exact measurableSet_quotient.mp meas_U
   · rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
     symm
     convert one_smul ENNReal μ
-    rw [fund_dom_s.nullMeasurableSet.quotientMeasure_apply _ meas_V]
-    convert ENNReal.div_self ..
-    · exact trans hV.symm neZeroV
-    · exact trans hV.symm neTopV
+    rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
+    · convert ENNReal.div_self ..
+      · exact trans hV.symm neZeroV
+      · exact trans hV.symm neTopV
+    exact measurableSet_quotient.mp meas_V
 
 attribute [to_additive existing
   MeasureTheory.Measure.IsAddLeftInvariant.addQuotientVolumeEqVolumePreimage_of_set]
@@ -375,6 +377,13 @@ end haarMeasure
 end normal
 
 section
+
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
+  [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
+
+variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
+
+variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
 
 local notation "μ_𝓕" => Measure.map (@QuotientGroup.mk G _ Γ) (μ.restrict 𝓕)
 
