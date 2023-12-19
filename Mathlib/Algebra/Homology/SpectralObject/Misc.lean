@@ -223,35 +223,24 @@ abbrev mapδ {n : ℕ} (S : ComposableArrows C (n + 1)) (i j : Fin (n + 2)) (hij
 
 variable (C)
 
+@[simps]
 noncomputable def functorArrows (i j n : ℕ) (hij : i ≤ j := by linarith)
       (hj : j ≤ n := by linarith) :
-    ComposableArrows C n ⥤ ComposableArrows C 1 :=
-  whiskerLeftFunctor (mk₁ (homOfLE hij : (⟨i, by linarith⟩ : Fin (n + 1)) ⟶ ⟨j, by linarith⟩))
+    ComposableArrows C n ⥤ ComposableArrows C 1 where
+  obj S := mk₁ (S.map' i j)
+  map {S S'} φ := homMk₁ (φ.app _) (φ.app _) (φ.naturality _)
+  map_comp φ φ' := hom_ext₁ rfl rfl
 
-section
-
-variable {C}
-variable (S : ComposableArrows C 1)
-
-def isoToMk₁ : S ≅ mk₁ (S.map' 0 1) :=
-  isoMk₁ (Iso.refl _) (Iso.refl _) (by simp)
-
-@[simp]
-lemma isoToMk₁_hom_app_zero : S.isoToMk₁.hom.app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma isoToMk₁_hom_app_one : S.isoToMk₁.hom.app 1 = 𝟙 _ := rfl
-
-@[simp]
-lemma isoToMk₁_inv_app_zero : S.isoToMk₁.inv.app 0 = 𝟙 _ := rfl
-
-@[simp]
-lemma isoToMk₁_inv_app_one : S.isoToMk₁.inv.app 1 = 𝟙 _ := rfl
-
-end
+@[simps]
+noncomputable def mapFunctorArrows (i j i' j' n : ℕ)
+    (hij : i ≤ j := by linarith) (hj : j ≤ n := by linarith)
+    (hij' : i' ≤ j' := by linarith) (hj' : j' ≤ n := by linarith)
+    (hi : i ≤ i' := by linarith) (hj' : j ≤ j' := by linarith) :
+    functorArrows C i j n ⟶ functorArrows C i' j' n where
+  app S := homMk₁ (S.map' i i') (S.map' j j')
+    (by dsimp; simp only [← Functor.map_comp, homOfLE_comp])
 
 end ComposableArrows
-
 
 variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 
