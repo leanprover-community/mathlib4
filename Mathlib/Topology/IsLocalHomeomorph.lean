@@ -16,8 +16,8 @@ This file defines local homeomorphisms.
 ## Main definitions
 
 For a function `f : X → Y ` between topological spaces, we say
-* `IsLocalHomeomorphOn f s` if `f` is a local homeomorphism on `s`: for each `x : X`,
-  the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
+* `IsLocalHomeomorphOn f s` if `f` is a local homeomorphism around each point of `s`: for each
+  `x : X`, the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
   between `U` and an open subset of `Y`.
 * `IsLocalHomeomorph f`: `f` is a local homeomorphism, i.e. it's a local homeomorphism on `univ`.
 
