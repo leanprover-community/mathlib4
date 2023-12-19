@@ -27,8 +27,7 @@ The hypotheses are stated as a condition on the pregroupoid of the given atlas.
 
 ## TODO
 - show that `contDiffPregroupoid` and `analyticPregroupoid` are `IFTPregroupoid`s
-- deduce the standard phrasing of the inverse function theorem,
-  in terms of (an analogue of) `HasStrictFDerivAt`
+- deduce the standard phrasing of the inverse function theorem
 
 ## Tags
 inverse function theorem, manifold, groupoid
@@ -37,35 +36,32 @@ inverse function theorem, manifold, groupoid
 open Function Manifold Set TopologicalSpace Topology
 
 -- Let M and N be manifolds over (E,H) and (E',H'), respectively.
--- We don't assume smoothness, but allow any structure groupoid (which contains C¹ maps).
-variable {E E' H H' M N : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E'] [NormedSpace ℝ E']
+-- We don't assume smoothness, but allow any structure groupoid.
+variable {E E' H H' M N : Type*} {𝕂 : Type*} [NontriviallyNormedField 𝕂]
+  [NormedAddCommGroup E] [NormedSpace 𝕂 E] [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
   [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
    [TopologicalSpace N] [ChartedSpace H N]
-  -- TODO: relax these conditions!!
-  (I : ModelWithCorners ℝ E H) [SmoothManifoldWithCorners I M]
-  (J : ModelWithCorners ℝ E' H) [SmoothManifoldWithCorners J N]
+  (I : ModelWithCorners 𝕂 E H) (J : ModelWithCorners 𝕂 E' H)
 
 /-! Re-phrasing the implicit function theorem over normed spaces in categorical language,
   using (pre-)groupoids and local structomorphisms.
   This unifies e.g. the smooth and analytic categories. -/
 section IFTBasic
-variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
--- XXX: generalise to any field 𝕜 which is ℝ or ℂ
+variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
 
-/-- A pregroupoid which satisfies the necessary conditions for the implicit function theorem.
+variable (𝕂) in
+/-- A pregroupoid which satisfies the necessary conditions for the inverse function theorem.
 Over the real or complex numbers, this includes the `C^n` and analytic pre-groupoids.
 There's a design choice when defining this: one can either
-  - assume that `P` contains only continuously differentiable functions on `s` or
-  - assume in the IFT hypothesis that `f` is continuously differentiable on some open set `s ∋ x`.
+  - assume that `P` contains only continuously differentiable functions on `s`
+  (excluding e.g. the category PDiff of piece-wise differentiable functions), or
+  - assume in the IFT hypothesis that `f` is cont. differentiable on some open set `s ∋ x`.
+  With this definition, even the trivial and the continuous pregroupoid (over ℝ or ℂ) is an
+  IFT groupoid, as the inverse `g` needs to satisfy fewer conditions.
 
-The first definition is more restrictive, excluding e.g. the category PDiff;
-on the other hand, with the latter definition, even the trivial and the continuous pregroupoid
-(over ℝ or ℂ) is an IFT groupoid, as the inverse `g` needs to satisfy fewer conditions.
-
-We have chosen the latter, for slightly greater generality. In practice, one would only apply the
-IFT in contexts where the differentiability follows anyway. -/
-structure IFTPregroupoid (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] extends Pregroupoid E
+We have chosen the latter, for slightly greater generality.In practice, one would only apply the
+inverse function theorem in contexts where the differentiability follows anyway. -/
+structure IFTPregroupoid (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕂 E] extends Pregroupoid E
 where
   /-- Our property is **monotone** on open sets: if `s` is open and `s ⊆ t`, then
     `f ∈ P` on `t` implies `f ∈ P` on `s`. -/
@@ -74,25 +70,25 @@ where
     a local inverse `g` of `f` at `f x` also lies in `P` on some open neighbourhood `t` of `f x`.
     It is sufficient to consider the case of `s` open.
     We assume the existence of `g`; this holds automatically over ℝ or ℂ. -/
-  inverse : ∀ {f g s t x}, ∀ {f' : E ≃L[ℝ] E}, IsOpen s → x ∈ s → property f s →
+  inverse : ∀ {f g s t x}, ∀ {f' : E ≃L[𝕂] E}, IsOpen s → x ∈ s → property f s →
   -- We need t' to be open to deduce that `f` is a local structomorphism:
   -- that definition requires a partial homeomorphism in the (pre-)groupoid,
   -- which our setting only yields around x; that source is *open*.
-    HasFDerivAt (𝕜 := ℝ) f f' x → InvOn g f s t → ∃ t' ⊆ t, f x ∈ t' ∧ IsOpen t' ∧ property g t'
+    HasStrictFDerivAt (𝕜 := 𝕂) f f' x → InvOn g f s t → ∃ t' ⊆ t, f x ∈ t' ∧ IsOpen t' ∧ property g t'
 
 /-- The groupoid associated to an IFT pre-groupoid. -/
-def IFTPregroupoid.groupoid (P : IFTPregroupoid E) : StructureGroupoid E :=
+def IFTPregroupoid.groupoid (P : IFTPregroupoid 𝕂 E) : StructureGroupoid E :=
   (P.toPregroupoid).groupoid
 
 @[simp]
-lemma IFTPregroupoid.groupoid_coe {P : IFTPregroupoid E} : P.groupoid = P.toPregroupoid.groupoid :=
+lemma IFTPregroupoid.groupoid_coe {P : IFTPregroupoid 𝕂 E} : P.groupoid = P.toPregroupoid.groupoid :=
   rfl
 
 /-- If `P` is an `IFTPregroupoid`, its induced groupoid is `ClosedUnderRestriction`. -/
 -- FUTURE: this proof only uses monotonicity, hence could be generalised to
 -- "a monotone pregroupoid induces a groupoid closed under restriction".
 -- Is it worth refactoring existing proofs of ClosedUnderRestriction this way?
-lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid E) :
+lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid 𝕂 E) :
     ClosedUnderRestriction (P.groupoid) := by
   refine { closedUnderRestriction := ?_ }
   intro e he s hs
@@ -110,14 +106,13 @@ lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid E) :
   Then `f` is a local structomorphism at `x` (within some open set `s' ∋ x`).
   For `P=contDiffPregroupoid n`, this recovers the standard statement. -/
 lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
-    (hf : ContDiffOn ℝ n f s) {f' : E ≃L[ℝ] E} (hf' : HasFDerivAt (𝕜 := ℝ) f f' x) (hs : IsOpen s)
-    (hx : x ∈ s) (hn : 1 ≤ n) {P : IFTPregroupoid E} (hfP : P.property f s) :
+    (hf : ContDiffOn 𝕂 n f s) {f' : E ≃L[𝕂] E} (hf' : HasStrictFDerivAt (𝕜 := 𝕂) f f' x) (hs : IsOpen s)
+    (hx : x ∈ s) (hn : 1 ≤ n) {P : IFTPregroupoid 𝕂 E} (hfP : P.property f s) :
     ∃ s', x ∈ s' ∧ IsOpen s' ∧ P.groupoid.IsLocalStructomorphWithinAt f s' x := by
   set G := P.groupoid
   -- Apply the local lemma to find a local inverse `g` of `f` at `f x`.
-  let diff := hf.contDiffAt (hs.mem_nhds hx)
-  let f_loc := diff.toPartialHomeomorph f hf' hn
-  have hx' : x ∈ f_loc.source := diff.mem_toPartialHomeomorph_source  hf' hn
+  let f_loc := hf'.toPartialHomeomorph
+  have hx' : x ∈ f_loc.source := hf'.mem_toPartialHomeomorph_source
 
   -- Two sets in play here: `f` is `P` on `s`; we get a local inverse `f_loc` on `f_loc.source`.
   -- Our IFT groupoid property applies on the intersection, hence we need monotonity of `P`.
@@ -165,12 +160,16 @@ lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
 
 /-- The pregroupoid of `C^n` functions on `E`. -/
 def contDiffPregroupoidBasic : Pregroupoid E := {
-  property := fun f s ↦ ContDiffOn ℝ n f s
+  property := fun f s ↦ ContDiffOn 𝕂 n f s
   comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
   id_mem := contDiffOn_id
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
 }
+
+-- xxx: generalise this argument to ℂ also
+variable [NormedSpace ℝ E] [NormedSpace ℝ E']
+  (I : ModelWithCorners ℝ E H) (J : ModelWithCorners ℝ E' H)
 
 -- This is the key lemma I need to showing that C^n maps define an `IFTPregroupoid`.
 -- we need to work over ℝ or ℂ, otherwise `toLocalInverse` doesn't apply
@@ -194,12 +193,10 @@ lemma contDiffPregroupoindIsIFT_aux [CompleteSpace E] {f g : E → E} {s t : Set
   -- slightly different route: add ContDiffOn assumption, then it exists?
   sorry
 
--- also want a version of the IFT with HasStrictFDerivAt; uses the below under the hood
-
 /-- If `E` is complete and `n ≥ 1`, the pregroupoid of `C^n` functions
   is an IFT pregroupoid.
   The proof relies on the mean value theorem, which is why ℝ or ℂ is required. -/
-def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroupoid E where
+def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroupoid ℝ E where
   toPregroupoid := contDiffPregroupoidBasic (n := n)
   monotonicity := fun {f} _ _ _ hst hf ↦ hf.mono hst
   inverse := by
@@ -212,9 +209,9 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     have hxU : x ∈ U := by
       refine ⟨hx, ?_⟩
       show fderiv ℝ f x ∈ t'
-      exact mem_of_eq_of_mem hf'.fderiv hft
+      exact mem_of_eq_of_mem hf'.hasFDerivAt.fderiv hft
 
-    let fhom := ContDiffAt.toPartialHomeomorph f (hf.contDiffAt (hs.mem_nhds hx)) hf' hn
+    let fhom := ContDiffAt.toPartialHomeomorph f (hf.contDiffAt (hs.mem_nhds hx)) hf'.hasFDerivAt hn
     have : f = fhom := by rw [ContDiffAt.toPartialHomeomorph_coe]
     have h3 : IsLocalHomeomorphOn f fhom.source :=
       IsLocalHomeomorphOn.mk f fhom.source (fun x hx ↦ ⟨fhom, hx, fun y hy ↦ by rw [this]⟩)
