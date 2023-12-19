@@ -66,15 +66,14 @@ section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
 diffeomorphism `s → t` between open subsets of `M` and `N`, respectively.
 This is an auxiliary definition and should not be used outside of this file. -/
--- TODO: rename `LocalHomeomorph` to `PartialHomeomorph` to match this name.
-structure PartialDiffeomorph extends LocalEquiv M N where
+structure PartialDiffeomorph extends PartialEquiv M N where
   open_source : IsOpen source
   open_target : IsOpen target
   contMDiffOn_toFun : ContMDiffOn I J n toFun source
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
 /-- Coercion of a `PartialDiffeomorph` to function.
-Note that a `PartialDiffeomorph` is not `FunLike` (like `LocalHomeomorph`),
+Note that a `PartialDiffeomorph` is not `FunLike` (like `PartialHomeomorph`),
 as `toFun` doesn't determine `invFun` outside of `target`. -/
 instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun⟩
@@ -84,19 +83,19 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n) (hn : 1 ≤ n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
-def toLocalHomeomorph : LocalHomeomorph M N :=
+def toPartialHomeomorph : PartialHomeomorph M N :=
   {
-    toLocalEquiv := Φ.toLocalEquiv
+    toPartialEquiv := Φ.toPartialEquiv
     open_source := Φ.open_source
     open_target := Φ.open_target
-    continuous_toFun := Φ.contMDiffOn_toFun.continuousOn
-    continuous_invFun := Φ.contMDiffOn_invFun.continuousOn
+    continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
+    continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
   }
 
 /-- The inverse of a local diffeomorphism. -/
 protected def symm : PartialDiffeomorph J I N M n :=
   {
-    toLocalEquiv := Φ.toLocalEquiv.symm
+    toPartialEquiv := Φ.toPartialEquiv.symm
     open_source := Φ.open_target
     open_target := Φ.open_source
     contMDiffOn_toFun := Φ.contMDiffOn_invFun
@@ -122,7 +121,7 @@ protected theorem mdifferentiableAt_symm {x : M} (hx : x ∈ Φ.source) :
     MDifferentiableAt J I Φ.symm (Φ x) :=
   (Φ.symm).mdifferentiableAt hn (Φ.map_source hx)
 
-/- We could add lots of additional API (following `Diffeomorph` and `LocalHomeomorph*), such as
+/- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
 As this declaration is meant for internal use only, we keep it simple. -/
@@ -174,7 +173,7 @@ lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomo
 /-- A diffeomorphism is a partial diffeomorphism. -/
 def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) : PartialDiffeomorph I J M N n :=
   {
-    toLocalEquiv := h.toHomeomorph.toLocalEquiv
+    toPartialEquiv := h.toHomeomorph.toPartialEquiv
     open_source := isOpen_univ
     open_target := isOpen_univ
     contMDiffOn_toFun := fun x _ ↦ h.contMDiff_toFun x
@@ -200,7 +199,7 @@ lemma LocalDiffeomorph.isOpen_range {f : M → N} (hf : IsLocalDiffeomorph I J n
   rcases hyp with ⟨hxU, heq⟩
   -- Then `V:=Φ.target` has the desired properties.
   refine ⟨Φ.target, ?_, Φ.open_target, ?_⟩
-  · rw [← LocalEquiv.image_source_eq_target, ← heq.image_eq]
+  · rw [← PartialEquiv.image_source_eq_target, ← heq.image_eq]
     exact image_subset_range f Φ.source
   · rw [← hxy, heq hxU]
     exact Φ.map_source' hxU
@@ -224,8 +223,8 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph {f : M → N}
   -- have : ∀ x y, EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
   have aux : ∀ x, EqOn g (Φ x).symm (Φ x).target :=
     fun x ↦ eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
-      (LeftInvOn.congr_left ((Φ x).toLocalHomeomorph).rightInvOn
-        ((Φ x).toLocalHomeomorph).symm_mapsTo (hyp x).2.symm)
+      (LeftInvOn.congr_left ((Φ x).toPartialHomeomorph).rightInvOn
+        ((Φ x).toPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
       (fun _y hy ↦(Φ x).map_target hy)
   exact {
     toFun := f
