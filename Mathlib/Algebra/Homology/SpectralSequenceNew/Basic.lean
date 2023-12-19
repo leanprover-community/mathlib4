@@ -295,9 +295,9 @@ end
 
 end SpectralSequence
 
-abbrev CohomologicalSpectralSequence' :=
+abbrev CohomologicalSpectralSequence :=
   SpectralSequence C (fun r => ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ))
 
-abbrev E₂CohomologicalSpectralSequence' := CohomologicalSpectralSequence' C 2
+abbrev E₂CohomologicalSpectralSequence := CohomologicalSpectralSequence C 2
 
 end CategoryTheory
