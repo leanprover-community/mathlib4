@@ -466,7 +466,7 @@ def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : Intermedi
 @[simps! apply]
 def ratCoeffEquiv : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra ℚ (K s) :=
   (RatCoeffEquiv.aux s).trans
-    (AddMonoidAlgebra.mapRangeAlgEquiv (K s) (IntermediateField.botEquiv ℚ (K s)))
+    (AddMonoidAlgebra.mapRangeAlgEquiv (IntermediateField.botEquiv ℚ (K s)))
 #align rat_coeff_equiv ratCoeffEquiv
 
 theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
@@ -531,7 +531,7 @@ open GalConjClasses
 
 def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := by
   refine' (mapDomainFixedEquivSubtype s F).trans _
-  letI f'
+  let f'
       (f : { f : AddMonoidAlgebra F (K s) // MulAction.orbitRel (Gal s) (K s) ≤ Setoid.ker ↑f }) :=
     @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
   refine'
@@ -854,28 +854,28 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
     ∃ (w : ℚ) (_w0 : w ≠ 0) (q : Finset (GalConjClasses ℚ (K s))) (_hq :
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
-  let U := ∏ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut (K s) f x
-  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut (K s) f U = U
+  let U := ∏ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut f x
+  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut f U = U
   · intro f; dsimp only
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
-    exact (Group.mulLeft_bijective f).prod_comp fun g => AddMonoidAlgebra.algAutCongrLeft g x
+    exact (Group.mulLeft_bijective f).prod_comp fun g => AddMonoidAlgebra.mapRangeAlgAut g x
   have U0 : U ≠ 0
   · dsimp only; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
   have U_ker : U ∈ RingHom.ker (Eval s (K s))
   · suffices
-      (fun f : Gal s => AddMonoidAlgebra.mapRangeAlgAut (K s) f x) 1 *
-          ∏ f : Gal s in univ.erase 1, AddMonoidAlgebra.mapRangeAlgAut (K s) x ∈
+      (fun f : Gal s => AddMonoidAlgebra.mapRangeAlgAut f x) 1 *
+          ∏ f : Gal s in univ.erase 1, AddMonoidAlgebra.mapRangeAlgAut f x ∈
             RingHom.ker (Eval s (K s)) by
       convert this
       exact (mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ _)).symm
     dsimp only
-    rw [AddMonoidAlgebra.algAutCongrLeft_apply_one]; exact Ideal.mul_mem_right _ _ x_ker
+    rw [map_one]; exact Ideal.mul_mem_right _ _ x_ker
   have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s))
   · intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
-    replace hU : (AddMonoidAlgebra.algAutCongrLeft f) U i = U i; · rw [hU f]
-    rwa [AddMonoidAlgebra.algAutCongrLeft_apply, AddMonoidAlgebra.algEquivCongrLeft_apply,
+    replace hU : AddMonoidAlgebra.mapRangeAlgAut f U i = U i; · rw [hU f]
+    rwa [AddMonoidAlgebra.mapRangeAlgAut_apply, AddMonoidAlgebra.mapRangeAlgEquiv_apply,
       Finsupp.mapRange_apply] at hU
   replace U_mem : U ∈ ratCoeff s
   · intro i; specialize U_mem i
