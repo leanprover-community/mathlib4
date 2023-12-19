@@ -94,6 +94,8 @@ lemma gc_floorDiv_smul (ha : 0 < a) : GaloisConnection (a • · : β → β) (�
 lemma floorDiv_zero (b : β) : b ⌊/⌋ (0 : α) = 0 := by simp
 @[simp] lemma zero_floorDiv (a : α) : (0 : β) ⌊/⌋ a = 0 := FloorDiv.zero_floorDiv _
 
+lemma smul_floorDiv_le (ha : 0 < a) : a • (b ⌊/⌋ a) ≤ b := (le_floorDiv_iff_smul_le ha).1 le_rfl
+
 end FloorDiv
 
 section CeilDiv
@@ -109,8 +111,21 @@ lemma ceilDiv_le_iff_le_smul (ha : 0 < a) : b ⌈/⌉ a ≤ c ↔ b ≤ a • c 
 lemma ceilDiv_zero (b : β) : b ⌈/⌉ (0 : α) = 0 := by simp
 @[simp] lemma zero_ceilDiv (a : α) : (0 : β) ⌈/⌉ a = 0 := CeilDiv.zero_ceilDiv _
 
+lemma le_smul_ceilDiv (ha : 0 < a) : b ≤ a • (b ⌈/⌉ a) := (ceilDiv_le_iff_le_smul ha).1 le_rfl
+
 end CeilDiv
 end OrderedAddCommMonoid
+
+section LinearOrderedAddCommMonoid
+variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b c : β}
+
+lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
+  obtain ha | ha := le_or_lt a 0
+  · simp [ha]
+  · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans $ le_smul_ceilDiv ha) ha
+
+end LinearOrderedAddCommMonoid
 
 section OrderedSemiring
 variable [OrderedSemiring α] [OrderedAddCommMonoid β] [MulActionWithZero α β]
