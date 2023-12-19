@@ -33,6 +33,8 @@ variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : T
 
 section Monoid
 
+#align nsmul_one nsmul_one
+
 variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
 
 instance invertiblePow (m : M) [Invertible m] (n : ℕ) :
