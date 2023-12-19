@@ -12,12 +12,12 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 /-!
 # The Pin group and the Spin group
 
-In this file we define `lipschitz`, `pinGroup` and `spinGroup` and show they form a group.
+In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show they form a group.
 
 ## Main definitions
 
-* `lipschitz`: the Lipschitz group with a quadratic form.
-* `pinGroup`: the Pin group defined as the infimum of `lipschitz` and `unitary`.
+* `lipschitzGroup`: the Lipschitz group with a quadratic form.
+* `pinGroup`: the Pin group defined as the infimum of `lipschitzGroup` and `unitary`.
 * `spinGroup`: the Spin group defined as the infimum of `pinGroup` and `CliffordAlgebra.even`.
 
 ## Implementation Notes
@@ -28,10 +28,11 @@ https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/1
 The definition of the Lipschitz group `{𝑥 ∈ 𝐶𝑙(𝑉,𝑞) │ 𝑥 𝑖𝑠 𝑖𝑛𝑣𝑒𝑟𝑡𝑖𝑏𝑙𝑒 𝑎𝑛𝑑 𝑥𝑣𝑥⁻¹∈ 𝑉}` is given by:
 • Fulton, W. and Harris, J., 2004. Representation theory. New York: Springer, p.chapter 20.
 • https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
-But they presumably form a group only in finite dimensions. So we define `lipschitz` with closure of
-all the invertible elements in the form of `ι Q m`, and we show this definition is at least as large
-as the other definition (See `mem_lipschitz_conj_act_le` and `mem_lipschitz_involute_le`).
-The reverse statement presumably being true only in finite dimensions.
+But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
+closure of all the invertible elements in the form of `ι Q m`, and we show this definition is
+at least as large as the other definition (See `lipschitzGroup.mem_conjAct_le` and
+`lipschitzGroup.mem_involute_le`). The reverse statement presumably being true only in finite
+dimensions.
 
 ## TODO
 
@@ -50,18 +51,20 @@ open CliffordAlgebra MulAction
 
 open scoped Pointwise
 
-/-- `lipschitz` is the subgroup closure of all the invertible elements in the form of `ι Q m`
+/-- `lipschitzGroup` is the subgroup closure of all the invertible elements in the form of `ι Q m`
 where `ι` is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
-def lipschitz (Q : QuadraticForm R M) :=
+def lipschitzGroup (Q : QuadraticForm R M) :=
   Subgroup.closure ((↑) ⁻¹' Set.range (ι Q) : Set (CliffordAlgebra Q)ˣ)
-#align lipschitz lipschitz
+#align lipschitz lipschitzGroup
 
-/-- If x is in `lipschitz Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
-statement presumably being true only in finite dimensions.-/
-theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q)
+namespace lipschitzGroup
+
+/-- If x is in `lipschitzGroup Q`, then `(ι Q).range` is closed under twisted conjugation.
+The reverse statement presumably being true only in finite dimensions.-/
+theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     [Invertible (2 : R)] :
     ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) := by
-  unfold lipschitz at hx
+  unfold lipschitzGroup at hx
   apply Subgroup.closure_induction'' hx
   · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
     letI := x.invertible
@@ -111,14 +114,14 @@ theorem mem_lipschitz_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschi
       exact hy1
     specialize hx1 hx2
     rwa [hb] at hx1
-#align mem_lipschitz_conj_act_le mem_lipschitz_conjAct_le
+#align mem_lipschitz_conj_act_le lipschitzGroup.mem_conjAct_le
 
-/-- This is another version of `mem_lipschitz_conj_act_le` which uses `involute`.-/
-theorem mem_lipschitz_involute_le [Invertible (2 : R)]
-    {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitz Q) (b : M) :
+/-- This is another version of `lipschitzGroup.mem_conj_act_le` which uses `involute`.-/
+theorem mem_involute_le [Invertible (2 : R)]
+    {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q) (b : M) :
       involute (Q := Q) ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
   revert b
-  unfold lipschitz at hx
+  unfold lipschitzGroup at hx
   apply Subgroup.closure_induction'' hx
   · rintro x ⟨a, ha⟩ b
     letI := x.invertible
@@ -155,35 +158,38 @@ theorem mem_lipschitz_involute_le [Invertible (2 : R)]
     rw [← hz']
     use y'
     done
-#align mem_lipschitz_involute_le mem_lipschitz_involute_le
+#align mem_lipschitz_involute_le lipschitzGroup.mem_involute_le
 
-theorem coe_mem_lipschitz_iff_mem {x : (CliffordAlgebra Q)ˣ} :
-    ↑x ∈ (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔ x ∈ lipschitz Q := by
+theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :
+    ↑x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔
+    x ∈ lipschitzGroup Q := by
   simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
   norm_cast
   exact exists_eq_right
-#align coe_mem_lipschitz_iff_mem coe_mem_lipschitz_iff_mem
+#align coe_mem_lipschitz_iff_mem lipschitzGroup.coe_mem_iff_mem
 
-/-- `pinGroup Q` is defined as the infimum of `lipschitz Q` and `unitary (CliffordAlgebra Q)`.
+end lipschitzGroup
+
+/-- `pinGroup Q` is defined as the infimum of `lipschitzGroup Q` and `unitary (CliffordAlgebra Q)`.
 See `mem_iff`. -/
 def pinGroup (Q : QuadraticForm R M) : Submonoid (CliffordAlgebra Q) :=
-  (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ⊓ unitary _
+  (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ⊓ unitary _
 #align pin_group pinGroup
 
 namespace pinGroup
 
-/-- An element is in `pinGroup Q` if and only if it is in `lipschitz Q` and `unitary`. -/
+/-- An element is in `pinGroup Q` if and only if it is in `lipschitzGroup Q` and `unitary`. -/
 theorem mem_iff {x : CliffordAlgebra Q} :
     x ∈ pinGroup Q ↔
-      x ∈ (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ∧
+      x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ∧
         x ∈ unitary (CliffordAlgebra Q) :=
   Iff.rfl
 #align pin_group.mem_iff pinGroup.mem_iff
 
-theorem mem_lipschitz {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) :
-    x ∈ (lipschitz Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) :=
+theorem mem_lipschitzGroup {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) :
+    x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) :=
   hx.1
-#align pin_group.mem_lipschitz pinGroup.mem_lipschitz
+#align pin_group.mem_lipschitz pinGroup.mem_lipschitzGroup
 
 theorem mem_unitary {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) :
     x ∈ unitary (CliffordAlgebra Q) :=
@@ -191,25 +197,26 @@ theorem mem_unitary {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) :
 #align pin_group.mem_unitary pinGroup.mem_unitary
 
 theorem units_mem_iff {x : (CliffordAlgebra Q)ˣ} :
-    ↑x ∈ pinGroup Q ↔ x ∈ lipschitz Q ∧ ↑x ∈ unitary (CliffordAlgebra Q) := by
-  rw [mem_iff, coe_mem_lipschitz_iff_mem]
+    ↑x ∈ pinGroup Q ↔ x ∈ lipschitzGroup Q ∧ ↑x ∈ unitary (CliffordAlgebra Q) := by
+  rw [mem_iff, lipschitzGroup.coe_mem_iff_mem]
 #align pin_group.units_mem_iff pinGroup.units_mem_iff
 
-theorem units_mem_lipschitz {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q) : x ∈ lipschitz Q :=
+theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q) :
+    x ∈ lipschitzGroup Q :=
   (units_mem_iff.1 hx).1
-#align pin_group.units_mem_lipschitz pinGroup.units_mem_lipschitz
+#align pin_group.units_mem_lipschitz pinGroup.units_mem_lipschitzGroup
 
 /-- If x is in `pinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
 statement presumably being true only in finite dimensions.-/
 theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) :=
-  mem_lipschitz_conjAct_le (units_mem_lipschitz hx)
+  lipschitzGroup.mem_conjAct_le (units_mem_lipschitzGroup hx)
 #align pin_group.units_mem_conj_act_le pinGroup.units_mem_conjAct_le
 
 /-- This is another version of `units_mem_conjAct_le` which uses `involute`. -/
 theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
-  mem_lipschitz_involute_le (units_mem_lipschitz hx) y
+  lipschitzGroup.mem_involute_le (units_mem_lipschitzGroup hx) y
 #align pin_group.units_mem_involute_act_le pinGroup.units_mem_involute_act_le
 
 @[simp]
@@ -345,9 +352,10 @@ theorem mem_even {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : x ∈ even Q
   hx.2
 #align spin_group.mem_even spinGroup.mem_even
 
-theorem units_mem_lipschitz {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q) : x ∈ lipschitz Q :=
-  pinGroup.units_mem_lipschitz (mem_pin hx)
-#align spin_group.units_mem_lipschitz spinGroup.units_mem_lipschitz
+theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q) :
+    x ∈ lipschitzGroup Q :=
+  pinGroup.units_mem_lipschitzGroup (mem_pin hx)
+#align spin_group.units_mem_lipschitzGroup spinGroup.units_mem_lipschitzGroup
 
 /-- If x is in `spinGroup Q`, then `involute x` is equal to x.-/
 theorem mem_involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
@@ -363,13 +371,13 @@ theorem units_involute_act_eq_conjAct {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈
 statement presumably being true only in finite dimensions.-/
 theorem units_mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) :=
-  mem_lipschitz_conjAct_le (units_mem_lipschitz hx)
+  lipschitzGroup.mem_conjAct_le (units_mem_lipschitzGroup hx)
 #align spin_group.units_mem_conj_act_le spinGroup.units_mem_conjAct_le
 
 /- This is another version of `units_mem_conjAct_le` which uses `involute`.-/
 theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
-  mem_lipschitz_involute_le (units_mem_lipschitz hx) y
+  lipschitzGroup.mem_involute_le (units_mem_lipschitzGroup hx) y
 #align spin_group.units_mem_involute_act_le spinGroup.units_mem_involute_act_le
 
 @[simp]
