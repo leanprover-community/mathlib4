@@ -231,24 +231,6 @@ theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image�
   image₂_congr fun a _ b _ => h a b
 #align finset.image₂_congr' Finset.image₂_congr'
 
-theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
-    ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
-  apply @Finset.induction_on' γ _ _ u
-  · use ∅; use ∅; simp only [coe_empty];
-    exact ⟨Set.empty_subset _, Set.empty_subset _, empty_subset _⟩
-  rintro a u ha _ _ ⟨s', t', hs, hs', h⟩
-  obtain ⟨x, y, hx, hy, ha⟩ := hu ha
-  haveI := Classical.decEq α
-  haveI := Classical.decEq β
-  refine' ⟨insert x s', insert y t', _⟩
-  simp_rw [coe_insert, Set.insert_subset_iff]
-  exact
-    ⟨⟨hx, hs⟩, ⟨hy, hs'⟩,
-      insert_subset_iff.2
-        ⟨mem_image₂.2 ⟨x, y, mem_insert_self _ _, mem_insert_self _ _, ha⟩,
-          h.trans <| image₂_subset (subset_insert _ _) <| subset_insert _ _⟩⟩
-#align finset.subset_image₂ Finset.subset_image₂
-
 variable (s t)
 
 theorem card_image₂_singleton_left (hf : Injective (f a)) : (image₂ f {a} t).card = t.card := by
@@ -546,6 +528,17 @@ theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
     (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
     s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
 #align finset.card_dvd_card_image₂_left Finset.card_dvd_card_image₂_left
+
+theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
+    ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
+  rw [← Set.image_prod, subset_image_iff] at hu
+  rcases hu with ⟨u, hu, rfl⟩
+  classical
+  use u.image Prod.fst, u.image Prod.snd
+  simp only [coe_image, Set.image_subset_iff, image₂_image_left, image₂_image_right,
+    image_subset_iff]
+  exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
+#align finset.subset_image₂ Finset.subset_image₂
 
 variable [DecidableEq α] [DecidableEq β]
 

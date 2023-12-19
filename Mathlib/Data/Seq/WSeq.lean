@@ -829,7 +829,7 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
     Terminates (head s) :=
   (head_terminates_iff _).2 <| by
     rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
-    simp [tail] at h
+    simp? [tail] at h says simp only [tail, destruct_flatten] at h
     rcases exists_of_mem_bind h with ⟨s', h1, _⟩
     unfold Functor.map at h1
     exact
@@ -882,7 +882,7 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
     cases e : Computation.get (get? s (n + 1))
     · assumption
     have := Computation.mem_of_get_eq _ e
-    simp [get?] at this h
+    simp? [get?] at this h says simp only [get?] at this h
     cases' head_some_of_head_tail_some this with a' h'
     have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
     contradiction⟩
@@ -1442,7 +1442,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
       simp at this; try cases this; try contradiction
     substs b' ss
-    simp at m ⊢
+    simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
     cases' o with e IH
     · simp [e]
     cases' m with e m
@@ -1460,7 +1460,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       · rcases ex with ⟨s', sS, as⟩
         exact ⟨s', Or.inr sS, as⟩
     · apply Or.inr
-      simp at m
+      simp? at m says simp only [join_think, nil_append, mem_think] at m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
     · simp at m IH ⊢
@@ -1603,7 +1603,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
       simp only [destruct_join]
       exact ⟨none, mem_bind mT (ret_mem _), by rw [eq_of_pure_mem rs2.mem]; trivial⟩
     | some (s, S'), some (t, T'), ⟨st, ST'⟩, _, rs2, mT => by
-      simp [destruct_append] at rs2
+      simp? [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
       exact
         let ⟨k1, rs3, ek⟩ := of_results_think rs2
         let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
@@ -1623,7 +1623,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply mem_bind mt
             exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
-          simp at rs5
+          simp?  at rs5  says simp only [destruct_append.aux] at rs5
           refine' ⟨some (b, append t' (join T')), _, _⟩
           · simp (config := { unfoldPartialApp := true }) [destruct_join]
             apply mem_bind mT
