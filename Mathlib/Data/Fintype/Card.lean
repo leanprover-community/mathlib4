@@ -222,10 +222,10 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_ofSubsingleton _
 #align fintype.card_unique Fintype.card_unique
 
-/-- Note: this lemma is specifically about `Fintype.of_is_empty`. For a statement about
-arbitrary `Fintype` instances, use `Fintype.card_eq_zero_iff`. -/
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
+arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
 @[simp]
-theorem card_of_isEmpty [IsEmpty α] : Fintype.card α = 0 :=
+theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 #align fintype.card_of_is_empty Fintype.card_of_isEmpty
 
@@ -356,12 +356,10 @@ theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
   Fintype.card_unique
 #align fintype.card_subtype_eq' Fintype.card_subtype_eq'
 
-@[simp]
 theorem Fintype.card_empty : Fintype.card Empty = 0 :=
   rfl
 #align fintype.card_empty Fintype.card_empty
 
-@[simp]
 theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
   rfl
 #align fintype.card_pempty Fintype.card_pempty
@@ -534,7 +532,7 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   rw [card, Finset.card_eq_zero, univ_eq_empty_iff]
 #align fintype.card_eq_zero_iff Fintype.card_eq_zero_iff
 
-theorem card_eq_zero [IsEmpty α] : card α = 0 :=
+@[simp] theorem card_eq_zero [IsEmpty α] : card α = 0 :=
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
@@ -1109,28 +1107,19 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
--- Porting note: new theorem, to work around missing `wlog`
-private theorem natEmbeddingAux_injective_aux (α : Type*) [Infinite α] (m n : ℕ)
-  (h : Infinite.natEmbeddingAux α m = Infinite.natEmbeddingAux α n) (hmn : m < n) : m = n := by
-  letI := Classical.decEq α
-  exfalso
-  refine'
-    (Classical.choose_spec
-        (exists_not_mem_finset
-          ((Multiset.range n).pmap (fun m (_hm : m < n) => natEmbeddingAux α m) fun _ =>
-              Multiset.mem_range.1).toFinset))
-      _
-  refine' Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, _⟩)
-  rw [h, natEmbeddingAux]
-
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
   letI := Classical.decEq α
-  rcases lt_trichotomy m n with hmn | rfl | hnm
-  · apply natEmbeddingAux_injective_aux α m n h hmn
-  · rfl
-  · apply (natEmbeddingAux_injective_aux α n m h.symm hnm).symm
+  wlog hmlen : m ≤ n generalizing m n
+  · exact (this h.symm $ le_of_not_le hmlen).symm
+  by_contra hmn
+  have hmn : m < n := lt_of_le_of_ne hmlen hmn
+  refine (Classical.choose_spec (exists_not_mem_finset
+    ((Multiset.range n).pmap (λ m (_ : m < n) => natEmbeddingAux α m)
+      (fun _ => Multiset.mem_range.1)).toFinset)) ?_
+  refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
+  rw [h, natEmbeddingAux]
 
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
@@ -1199,7 +1188,7 @@ See also: `Finite.exists_ne_map_eq_of_infinite`
 theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     ∃ y : β, Infinite (f ⁻¹' {y}) := by
   classical
-    by_contra' hf
+    by_contra! hf
     cases nonempty_fintype β
     haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
@@ -1236,7 +1225,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id'', List.map_id]
+    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id', List.map_id]
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
@@ -1313,7 +1302,7 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
 -- unsafe def positivity_finset_card : expr → tactic strictness
 --   | q(Finset.card $(s)) => do
 --     let p
---       ←-- TODO: Partial decision procedure for `Finset.nonempty`
+--       ← -- TODO: Partial decision procedure for `Finset.nonempty`
 --             to_expr
 --             ``(Finset.Nonempty $(s)) >>=
 --           find_assumption

@@ -479,7 +479,7 @@ def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
 partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array Nat)
     (args : Array Expr) : MetaM (Expr × Array Nat) := do
   let env ← getEnv
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+  let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do

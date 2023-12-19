@@ -121,7 +121,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
-      rw [←coe_comp, D.w]
+      rw [← coe_comp, D.w]
       rfl
 #align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 

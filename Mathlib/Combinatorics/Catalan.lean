@@ -98,7 +98,8 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
       mod_cast Nat.succ_mul_centralBinom_succ (n - i)
   simp only [gosperCatalan]
   push_cast
-  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ←(Nat.add_sub_assoc h 1), add_comm]]
+  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ← (Nat.add_sub_assoc h 1),
+    add_comm]]
   rw [h₁, h₂, h₃, h₄]
   field_simp
   ring

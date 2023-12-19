@@ -83,7 +83,7 @@ theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ)
   intro g
 /- Then the equality follows from the hypothesis `hf` (that `f` is a 1-cocycle). -/
   simp_rw [Units.ext_iff, this, Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe,
-    map_sum, map_mul, Finset.mul_sum, ←mul_assoc, mul_comm (f _ : L), ←hf, mul_comm (f _ : L)]
+    map_sum, map_mul, Finset.mul_sum, ← mul_assoc, mul_comm (f _ : L), ← hf, mul_comm (f _ : L)]
   exact Fintype.sum_bijective (fun i => g * i) (Group.mulLeft_bijective g) _ _ (fun i => rfl)
 
 end

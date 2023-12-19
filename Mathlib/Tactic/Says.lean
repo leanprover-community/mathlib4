@@ -125,6 +125,7 @@ elab_rules : tactic
         let r' := (← Lean.PrettyPrinter.ppTactic ⟨Syntax.stripPos r⟩).pretty
         if stx' != r' then
           throwError m!"Tactic `{tac}` produced `{stx'}`,\nbut was expecting it to produce `{r'}`!"
+            ++ m!"\n\nYou can reproduce this error locally using `set_option says.verify true`."
     | none =>
     addSuggestion tk (← `(tactic| $tac says $stx)) (origSpan? := (← `(tactic| $tac says)))
   | some result, false =>

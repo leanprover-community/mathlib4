@@ -9,8 +9,9 @@ import Mathlib.Algebra.Homology.HomotopyCategory
 #align_import category_theory.abelian.injective_resolution from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
-# Main result
+# Abelian categories with enough injectives have injective resolutions
 
+## Main results
 When the underlying category is abelian:
 * `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
   `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a chain map

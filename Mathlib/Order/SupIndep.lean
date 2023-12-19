@@ -422,7 +422,7 @@ theorem independent_ne_bot_iff_independent :
 
 theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
   rintro i _ j (hj : t j ≠ ⊥) h
-  by_contra' contra
+  by_contra! contra
   apply hj
   suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this

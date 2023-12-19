@@ -154,8 +154,8 @@ theorem realize_formula_cast {β : Type*} (φ : L.Formula β) (x : β → ∀ a,
   exact congr rfl (Subsingleton.elim _ _)
 #align first_order.language.ultraproduct.realize_formula_cast FirstOrder.Language.Ultraproduct.realize_formula_cast
 
-/-- Łoś's Theorem : A sentence is true in an ultraproduct if and only if the set of structures it is
-  true in is in the ultrafilter. -/
+/-- **Łoś's Theorem**: A sentence is true in an ultraproduct if and only if the set of structures
+it is true in is in the ultrafilter. -/
 theorem sentence_realize (φ : L.Sentence) :
     (u : Filter α).Product M ⊨ φ ↔ ∀ᶠ a : α in u, M a ⊨ φ := by
   simp_rw [Sentence.Realize]
