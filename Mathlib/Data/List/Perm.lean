@@ -361,7 +361,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
   induction s generalizing l₁
   case slnil => cases h₂
   case cons r₁ r₂ b s' ih =>
-    simp at h₂
+    simp? at h₂ says simp only [Bool.not_eq_true, mem_cons] at h₂
     cases' h₂ with e m
     · subst b
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
@@ -670,7 +670,8 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp [Nat.factorial, Nat.add_succ, mul_comm] at IH1
+  simp? [Nat.factorial, Nat.add_succ, mul_comm] at IH1 says
+    simp only [factorial, add_eq, add_zero, mul_comm] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, mul_comm (_ + 1),

@@ -258,6 +258,10 @@ theorem powersetCard_cons (n : ℕ) (a : α) (s) :
   Quotient.inductionOn s fun l => by simp [powersetCard_coe']
 #align multiset.powerset_len_cons Multiset.powersetCard_cons
 
+theorem powersetCard_one (s : Multiset α) : powersetCard 1 s = s.map singleton :=
+  Quotient.inductionOn s fun l ↦ by
+    simp [powersetCard_coe, sublistsLen_one, map_reverse, Function.comp]
+
 @[simp]
 theorem mem_powersetCard {n : ℕ} {s t : Multiset α} : s ∈ powersetCard n t ↔ s ≤ t ∧ card s = n :=
   Quotient.inductionOn t fun l => by simp [powersetCard_coe']
