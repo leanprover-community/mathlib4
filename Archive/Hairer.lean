@@ -95,13 +95,6 @@ lemma restrictTotalDegree_eq_span {n : ℕ} :
     · rw [Subsingleton.elim ((fun c ↦ monomial c 1) c) 0, totalDegree_zero]; apply zero_le
     · rw [totalDegree_monomial _ one_ne_zero]; exact hc
 
-/- Can be obtained by combining `LinearMap.proj` and `MvPolynomial.evalₗ`. -/
-/-- The evaluation of a multivariate polynomial at a point, as a linear map. -/
-def evalAtₗ {R σ : Type*} [CommSemiring R] (x : σ → R) : MvPolynomial σ R →ₗ[R] R where
-  toFun P := eval x P
-  map_add' := by simp
-  map_smul' := by simp
-
 /- what we actually want -/
 lemma analyticOn_eval {R σ : Type*} [Fintype σ] [IsROrC R] (P : MvPolynomial σ R) :
     AnalyticOn R (fun x ↦ eval (EuclideanSpace.equiv σ R x) P) univ := fun x _ ↦ by
@@ -217,6 +210,6 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
   have := (inj_L ι).comp (restrictTotalDegree ι ℝ N).injective_subtype
   rw [← LinearMap.coe_comp] at this
   obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ :=
-    LinearMap.flip_surjective_iff₁.2 this ((evalAtₗ 0).comp <| Submodule.subtype _)
+    LinearMap.flip_surjective_iff₁.2 this ((aeval 0).toLinearMap.comp <| Submodule.subtype _)
   refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
   exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
