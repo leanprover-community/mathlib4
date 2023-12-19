@@ -1213,6 +1213,10 @@ theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
 #align polynomial.monomial_neg Polynomial.monomial_neg
 
+theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
+ rw [sub_eq_add_neg, monomial_add, monomial_neg]
+ rfl
+
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
@@ -1230,10 +1234,6 @@ theorem C_neg : C (-a) = -C a :=
 theorem C_sub : C (a - b) = C a - C b :=
   RingHom.map_sub C a b
 #align polynomial.C_sub Polynomial.C_sub
-
-theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
- iterate 3 rw [← C_mul_X_pow_eq_monomial]
- rw [C_sub, sub_mul]
 
 end Ring
 

@@ -112,27 +112,31 @@ theorem eraseLead_support_card_lt (h : f ≠ 0) : (eraseLead f).support.card < f
   exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_nonzero h)
 #align polynomial.erase_lead_support_card_lt Polynomial.eraseLead_support_card_lt
 
-theorem eraseLead_card_support {c : ℕ} (fc : f.support.card = c) :
-    f.eraseLead.support.card = c - 1 := by
-  by_cases f0 : f = 0
-  · rw [← fc, f0, eraseLead_zero, support_zero, card_empty]
-  · rw [eraseLead_support, card_erase_of_mem (natDegree_mem_support_of_nonzero f0), fc]
-#align polynomial.erase_lead_card_support Polynomial.eraseLead_card_support
+theorem card_support_eraseLead_add_one (h : f ≠ 0) :
+    f.eraseLead.support.card + 1 = f.support.card := by
+  set c := f.support.card with hc
+  cases h₁ : c
+  case zero =>
+    by_contra
+    exact h (card_support_eq_zero.mp h₁)
+  case succ =>
+    rw [eraseLead_support, card_erase_of_mem (natDegree_mem_support_of_nonzero h), ← hc, h₁]
+    rfl
+
+@[simp]
+theorem eraseLead_card_support_one : f.eraseLead.support.card = f.support.card - 1 := by
+  by_cases hf : f = 0
+  · rw [hf, eraseLead_zero, support_zero, card_empty]
+  · rw [← card_support_eraseLead_add_one hf, add_tsub_cancel_right]
 
 theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
-    f.eraseLead.support.card = c :=
-  eraseLead_card_support fc
+    f.eraseLead.support.card = c := by
+  rw [eraseLead_card_support_one, fc, add_tsub_cancel_right]
 #align polynomial.erase_lead_card_support' Polynomial.eraseLead_card_support'
-
-theorem eraseLead_card_support_one (h : f ≠ 0) : f.eraseLead.support.card + 1 = f.support.card := by
-    set c := f.support.card with hc
-    cases h₁ : c
-    case zero => by_contra; exact h (card_support_eq_zero.mp h₁);
-    case succ => exact Nat.succ_inj'.mpr (eraseLead_card_support' (hc ▸ h₁))
 
 theorem card_support_eq_one_of_eraseLead_zero (h₀ : f ≠ 0) (h₁ : f.eraseLead = 0) :
     f.support.card = 1 :=
-  (card_support_eq_zero.mpr h₁ ▸ eraseLead_card_support_one h₀).symm
+  (card_support_eq_zero.mpr h₁ ▸ card_support_eraseLead_add_one h₀).symm
 
 theorem card_support_lt_one_of_eraseLead_zero (h : f.eraseLead = 0) : f.support.card ≤ 1 := by
   by_cases hpz : f = 0
@@ -229,8 +233,8 @@ theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDeg
   · simp only [h, natDegree_zero, zero_le]
 #align polynomial.erase_lead_nat_degree_le Polynomial.eraseLead_natDegree_le
 
-theorem eraseLead_natDegree_of_nextCoeff (h : f.nextCoeff ≠ 0) :
-    f.natDegree = f.eraseLead.natDegree + 1 := by
+theorem natDegree_eraseLead_add_one_of_nextCoeff_ne_zero (h : f.nextCoeff ≠ 0) :
+    f.eraseLead.natDegree + 1 = f.natDegree := by
   have hpos := natDegree_pos_of_nextCoeff_ne_zero h
   suffices f.natDegree - 1 ≤ f.eraseLead.natDegree by
     have := (add_le_add_iff_right 1).mpr this
@@ -247,8 +251,8 @@ theorem eraseLead_natDegree_of_nextCoeff (h : f.nextCoeff ≠ 0) :
   rw [nextCoeff, if_neg (natDegree_pos_of_nextCoeff_ne_zero h).ne.symm, this] at h
   apply le_natDegree_of_ne_zero h
 
-theorem eraseLead_natDegree_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
-    f.eraseLead.natDegree ≤ f.natDegree - 2  := by
+theorem natDegree_eraseLead_le_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
+    f.eraseLead.natDegree ≤ f.natDegree - 2 := by
   by_cases hepz : f.eraseLead = 0; case pos => simp_all
   have hdp : f.natDegree ≠ 0 := (natDegree_pos_of_eraseLead_ne_zero hepz).ne.symm
   suffices f.natDegree - 1 ≠ f.eraseLead.natDegree by
@@ -265,7 +269,7 @@ theorem eraseLead_natDegree_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
   simp only [nextCoeff, hdp, ite_false] at h
   exact hepz (leadingCoeff_eq_zero.mp (h ▸ h₃))
 
-theorem natDegree_ge_2_of_nextCoeff_eraseLead (h₁ : f.eraseLead ≠ 0) (h₂ : f.nextCoeff = 0) :
+theorem two_le_natDegree_of_nextCoeff_eraseLead (h₁ : f.eraseLead ≠ 0) (h₂ : f.nextCoeff = 0) :
     2 ≤ f.natDegree := by
   rcases lt_trichotomy f.natDegree 1 with h₃ | h₃ | h₃
   · by_contra
@@ -282,17 +286,18 @@ theorem natDegree_ge_2_of_nextCoeff_eraseLead (h₁ : f.eraseLead ≠ 0) (h₂ :
   · exact h₃
 
 theorem leadingCoeff_eraseLead_eq_nextCoeff (h : f.nextCoeff ≠ 0) :
-    f.nextCoeff = f.eraseLead.leadingCoeff := by
-  have hd : f.natDegree = f.eraseLead.natDegree + 1 := eraseLead_natDegree_of_nextCoeff h
+    f.eraseLead.leadingCoeff = f.nextCoeff := by
+  have hd : f.eraseLead.natDegree + 1 = f.natDegree:=
+    natDegree_eraseLead_add_one_of_nextCoeff_ne_zero h
   rw [leadingCoeff, nextCoeff]
   simp only [coeff_natDegree, if_neg (natDegree_pos_of_nextCoeff_ne_zero h).ne]
-  rw [leadingCoeff, eraseLead_natDegree_of_nextCoeff h]
-  apply Eq.symm
+  rw [leadingCoeff, ← natDegree_eraseLead_add_one_of_nextCoeff_ne_zero h]
   apply Polynomial.eraseLead_coeff_of_ne
   linarith
 
-theorem eraseLead_ne_zero_of_nextCoeff_ne_zero (h : f.nextCoeff ≠ 0) : f.eraseLead ≠ 0 :=
-  leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h ▸ h)
+theorem nextCoeff_eq_zero_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.nextCoeff = 0 := by
+  by_contra h₂
+  exact leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h₂ ▸ h₂) h
 
 end EraseLead
 
@@ -316,7 +321,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
     cases c
     · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
       · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
-        rw [← card_support_eq_zero, eraseLead_card_support f0]
+        rw [← card_support_eq_zero, eraseLead_card_support' f0]
       · rw [leadingCoeff_ne_zero, Ne.def, ← card_support_eq_zero, f0]
         exact zero_ne_one.symm
     refine' P_C_add f.eraseLead _ _ _ _ _
@@ -326,7 +331,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
         rintro rfl
         simp at f0
     · exact (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree).trans df
-    · exact hc _ (eraseLead_natDegree_le_aux.trans df) (eraseLead_card_support f0)
+    · exact hc _ (eraseLead_natDegree_le_aux.trans df) (eraseLead_card_support' f0)
     · refine' P_C_mul_pow _ _ _ df
       rw [Ne.def, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
       exact Nat.succ_ne_zero _

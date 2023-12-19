@@ -3,11 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Data.Polynomial.Basic
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.Regular.Pow
-import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Data.Polynomial.Basic
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
