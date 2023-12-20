@@ -4,28 +4,30 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
-# Local diffeomorphisms between smooth manifolds
+# Local diffeomorphisms between manifolds
 
 In this file, we define `C^n` local diffeomorphisms between manifolds.
 
 A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s`
-and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism from `s` and `t`.
-`f` is called a **local diffeomorphism** iff it is a local diffeomorphism at every `x ∈ M`.
+and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism
+between `s` and `t`. `f` is called a **local diffeomorphism on s** iff it is a local diffeomorphism
+at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on `univ`.
 
 ## Main definitions
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
+* `IsLocalDiffeomorphOn I J n f s`: `f` is a `C^n` local diffeomorphism on `s`
 * `IsLocalDiffeomorph I J n f`: `f` is a `C^n` local diffeomorphism
 
 ## Main results
-* Each of `Diffeomorph`, `IsLocalDiffeomorph`, and `IsLocalDiffeomorphAt` implies the next condition.
-* `LocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism
-* `LocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
+* Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
+  implies the next condition.
+* `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism,
+  similarly for local diffeomorphism on `s`
+* `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
 * `Diffeomorph.of_bijective_isLocalDiffeomorph`:
   a bijective local diffeomorphism is a diffeomorphism.
 
@@ -85,48 +87,44 @@ as `toFun` doesn't determine `invFun` outside of `target`. -/
 instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun⟩
 
+/-- A diffeomorphism is a partial diffeomorphism. -/
+def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) :
+    PartialDiffeomorph I J M N n where
+  toPartialEquiv := h.toHomeomorph.toPartialEquiv
+  open_source := isOpen_univ
+  open_target := isOpen_univ
+  contMDiffOn_toFun x _ := h.contMDiff_toFun x
+  contMDiffOn_invFun _ _ := h.symm.contMDiffWithinAt
+
 -- Add the very basic API we need.
 namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n) (hn : 1 ≤ n)
+variable {I J M N n}
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
-def toPartialHomeomorph : PartialHomeomorph M N :=
-  {
-    toPartialEquiv := Φ.toPartialEquiv
-    open_source := Φ.open_source
-    open_target := Φ.open_target
-    continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
-    continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
-  }
+def toPartialHomeomorph : PartialHomeomorph M N where
+  toPartialEquiv := Φ.toPartialEquiv
+  open_source := Φ.open_source
+  open_target := Φ.open_target
+  continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
+  continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
 
 /-- The inverse of a local diffeomorphism. -/
-protected def symm : PartialDiffeomorph J I N M n :=
-  {
-    toPartialEquiv := Φ.toPartialEquiv.symm
-    open_source := Φ.open_target
-    open_target := Φ.open_source
-    contMDiffOn_toFun := Φ.contMDiffOn_invFun
-    contMDiffOn_invFun := Φ.contMDiffOn_toFun
-  }
+protected def symm : PartialDiffeomorph J I N M n where
+  toPartialEquiv := Φ.toPartialEquiv.symm
+  open_source := Φ.open_target
+  open_target := Φ.open_source
+  contMDiffOn_toFun := Φ.contMDiffOn_invFun
+  contMDiffOn_invFun := Φ.contMDiffOn_toFun
 
 protected theorem contMDiffOn : ContMDiffOn I J n Φ Φ.source :=
   Φ.contMDiffOn_toFun
 
-protected theorem contMDiffOn_symm : ContMDiffOn J I n Φ.symm Φ.target :=
-  Φ.contMDiffOn_invFun
-
 protected theorem mdifferentiableOn : MDifferentiableOn I J Φ Φ.source :=
   (Φ.contMDiffOn).mdifferentiableOn hn
 
-protected theorem mdifferentiableOn_symm : MDifferentiableOn J I Φ.symm Φ.target :=
-  (Φ.symm).mdifferentiableOn hn
-
 protected theorem mdifferentiableAt {x : M} (hx : x ∈ Φ.source) : MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
-
-protected theorem mdifferentiableAt_symm {x : M} (hx : x ∈ Φ.source) :
-    MDifferentiableAt J I Φ.symm (Φ x) :=
-  (Φ.symm).mdifferentiableAt hn (Φ.map_source hx)
 
 /- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
 * further continuity and differentiability lemmas
@@ -142,81 +140,105 @@ variable {M N}
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
+/-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
+  at each `x : s`. -/
+def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
+  ∀ x : s, IsLocalDiffeomorphAt I J n f x
+
 /-- `f : M → N` is a **`C^n` local diffeomorphism** iff it is a local diffeomorphism
 at each `x ∈ M`. -/
 def IsLocalDiffeomorph (f : M → N) : Prop :=
   ∀ x : M, IsLocalDiffeomorphAt I J n f x
 
+lemma isLocalDiffeomorphOn_iff {f : M → N} (s : Set M) :
+    IsLocalDiffeomorphOn I J n f s ↔ ∀ x : s, IsLocalDiffeomorphAt I J n f x := by rfl
+
 lemma isLocalDiffeomorph_iff {f : M → N} :
     IsLocalDiffeomorph I J n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J n f x := by rfl
 
-variable {n}
+theorem isLocalDiffeomorph_iff_isLocalDiffeomorphOn_univ {f : M → N} :
+    IsLocalDiffeomorph I J n f ↔ IsLocalDiffeomorphOn I J n f Set.univ :=
+  ⟨fun hf x ↦ hf x, fun hf x ↦ hf ⟨x, trivial⟩⟩
+
+lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
+    {f : M → N} (s : Set M) (hf : IsLocalDiffeomorph I J n f) :
+    IsLocalDiffeomorphOn I J n f s := fun x ↦ hf x
 
 /-! # Basic properties of local diffeomorphisms -/
 section Basic
-variable {f : M → N} {x : M}
+variable {f : M → N} {s : Set M} {x : M}
+variable {I J n}
 
 /-- A `C^n` local diffeomorphism at `x` is `C^n` differentiable at `x`. -/
-lemma contMDiffAt_of_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
+lemma IsLocalDiffeomorphAt.contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
     ContMDiffAt I J n f x := by
   choose Φ hx heq using hf
   -- In fact, even `ContMDiffOn I J n f Φ.source`.
   exact ((Φ.contMDiffOn_toFun).congr heq).contMDiffAt (Φ.open_source.mem_nhds hx)
 
 /-- A local diffeomorphism at `x` is differentiable at `x`. -/
-lemma mdifferentiableAt_of_isLocalDiffeomorphAt (hn : 1 ≤ n) (hf : IsLocalDiffeomorphAt I J n f x) :
+lemma IsLocalDiffeomorphAt.mdifferentiableAt (hn : 1 ≤ n) (hf : IsLocalDiffeomorphAt I J n f x) :
     MDifferentiableAt I J f x :=
-  (contMDiffAt_of_isLocalDiffeomorphAt I J hf).mdifferentiableAt hn
+  hf.contMDiffAt.mdifferentiableAt hn
+
+/-- A `C^n` local diffeomorphism on `s` is `C^n` on `s`. -/
+lemma IsLocalDiffeomorphOn.contMDiffOn (hf : IsLocalDiffeomorphOn I J n f s) :
+    ContMDiffOn I J n f s :=
+  fun x hx ↦ (hf ⟨x, hx⟩).contMDiffAt.contMDiffWithinAt
+
+/-- A local diffeomorphism on `s` is differentiable on `s`. -/
+lemma IsLocalDiffeomorphOn.mdifferentiableOn (hn : 1 ≤ n) (hf : IsLocalDiffeomorphOn I J n f s) :
+    MDifferentiableOn I J f s :=
+  hf.contMDiffOn.mdifferentiableOn hn
 
 /-- A `C^n` local diffeomorphism is `C^n`. -/
-lemma contMDiff_of_isLocalDiffeomorph (hf : IsLocalDiffeomorph I J n f) : ContMDiff I J n f :=
-  fun x ↦ contMDiffAt_of_isLocalDiffeomorphAt I J (hf x)
+lemma IsLocalDiffeomorph.contMDiff (hf : IsLocalDiffeomorph I J n f) : ContMDiff I J n f :=
+  fun x ↦ (hf x).contMDiffAt
 
 /-- A `C^n` local diffeomorphism is differentiable. -/
-lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomorph I J n f) :
+lemma IsLocalDiffeomorph.mdifferentiable (hn : 1 ≤ n) (hf : IsLocalDiffeomorph I J n f) :
     MDifferentiable I J f :=
-  fun x ↦ mdifferentiableAt_of_isLocalDiffeomorphAt I J hn (hf x)
-
-/-- A diffeomorphism is a partial diffeomorphism. -/
-def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) : PartialDiffeomorph I J M N n :=
-  {
-    toPartialEquiv := h.toHomeomorph.toPartialEquiv
-    open_source := isOpen_univ
-    open_target := isOpen_univ
-    contMDiffOn_toFun := fun x _ ↦ h.contMDiff_toFun x
-    contMDiffOn_invFun := fun _ _ ↦ h.symm.contMDiffWithinAt
-  }
+  fun x ↦ (hf x).mdifferentiableAt hn
 
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _x ↦ ⟨Φ.toPartialDiffeomorph, by trivial, eqOn_refl Φ _⟩
 
-variable {I J}
+-- FUTURE: if useful, also add "a `PartialDiffeomorph` is a local diffeomorphism on its source"
 
-/-- A local diffeomorphism is a local homeomorphism. -/
-theorem LocalDiffeomorph.isLocalHomeomorph (hf : IsLocalDiffeomorph I J n f) :
-    IsLocalHomeomorph f := by
-  apply IsLocalHomeomorph.mk
-  intro x
-  choose U hyp using hf x
+/-- A local diffeomorphism on `s` is a local homeomorphism on `s`. -/
+theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeomorphOn I J n f s) :
+    IsLocalHomeomorphOn f s := by
+  apply IsLocalHomeomorphOn.mk
+  intro x hx
+  choose U hyp using hf ⟨x, hx⟩
   exact ⟨U.toPartialHomeomorph, hyp⟩
 
+/-- A local diffeomorphism is a local homeomorphism. -/
+theorem IsLocalDiffeomorph.isLocalHomeomorph (hf : IsLocalDiffeomorph I J n f) :
+    IsLocalHomeomorph f := by
+  rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ]
+  rw [isLocalDiffeomorph_iff_isLocalDiffeomorphOn_univ] at hf
+  exact hf.isLocalHomeomorphOn
+
 /-- A local diffeomorphism is an open map. -/
-lemma LocalDiffeomorph.isOpenMap (hf : IsLocalDiffeomorph I J n f) : IsOpenMap f :=
-  (LocalDiffeomorph.isLocalHomeomorph hf).isOpenMap
+lemma IsLocalDiffeomorph.isOpenMap (hf : IsLocalDiffeomorph I J n f) : IsOpenMap f :=
+  (hf.isLocalHomeomorph).isOpenMap
 
 /-- A local diffeomorphism has open range. -/
-lemma LocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen (range f) :=
-  (LocalDiffeomorph.isOpenMap hf).isOpen_range
+lemma IsLocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen (range f) :=
+  (hf.isOpenMap).isOpen_range
 
 /-- The image of a local diffeomorphism is open. -/
-def LocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
-  ⟨range f, isOpen_range hf⟩
+def IsLocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
+  ⟨range f, hf.isOpen_range⟩
 
-lemma LocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) :
-    (LocalDiffeomorph.image hf).1 = range f := rfl
+lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) :
+    hf.image.1 = range f := rfl
 
 -- TODO: this result holds more generally for (local) structomorphisms
+-- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
+
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
 noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
     (hf' : Function.Bijective f) (hf : IsLocalDiffeomorph I J n f) : Diffeomorph I J M N n := by
@@ -226,25 +248,24 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
   -- they're both inverses to g. In fact, the latter suffices for our proof.
-  -- have : ∀ x y, EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
-  have aux : ∀ x, EqOn g (Φ x).symm (Φ x).target :=
-    fun x ↦ eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
+  -- have (x y) : EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
+  have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
+    eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
       (LeftInvOn.congr_left ((Φ x).toPartialHomeomorph).rightInvOn
         ((Φ x).toPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
-      (fun _y hy ↦(Φ x).map_target hy)
+      (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f
     invFun := g
     left_inv := hgInverse.1
     right_inv := hgInverse.2
-    contMDiff_toFun := contMDiff_of_isLocalDiffeomorph I J hf
+    contMDiff_toFun := hf.contMDiff
     contMDiff_invFun := by
       intro y
       let x := g y
       obtain ⟨hx, hfx⟩ := hyp x
-      apply ((PartialDiffeomorph.contMDiffOn J I N M n (Φ x).symm).congr (aux x)).contMDiffAt
-      apply (((Φ x).open_target).mem_nhds ?_)
-      have : y = (Φ x) x := (Eq.congr (hgInverse.2 y) (hfx hx)).mp rfl
+      apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
+      have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx
   }
 
