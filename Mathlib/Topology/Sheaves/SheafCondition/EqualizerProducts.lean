@@ -542,4 +542,16 @@ set_option linter.uppercaseLean3 false in
 
 end Presheaf
 
+open Presheaf in
+lemma Sheaf.sectionsOnDisjointSets [HasZeroMorphisms C] (F : Sheaf.{v', v, u} C X)
+    {ι : Type v'} (U : ι → Opens X) (hU : ∀ i j, U i ⊓ U j = ⊥) :
+    Nonempty <| F.presheaf.obj (op <| iSup U) ≅ ∏ fun i : ι ↦ F.presheaf.obj (op <| U i) := by
+  refine (F.presheaf.isSheaf_iff_isSheafEqualizerProducts |>.mp F.2 U).map
+    fun (H : IsLimit <| Fork.ofι _ _) ↦ @CategoryTheory.asIso (f := _) <|
+      Limits.isIso_limit_cone_parallelPair_of_eq ?_ H
+  delta SheafConditionEqualizerProducts.leftRes SheafConditionEqualizerProducts.rightRes
+  congr; ext
+  exact (F.isTerminalOfEqEmpty (hU _ _)).hom_ext _ _
+
+
 end TopCat
