@@ -503,16 +503,14 @@ lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
 
 variable (R) in
 lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  let Spec := {I : Ideal R | I.IsPrime}
+  set Spec := {I : Ideal R | I.IsPrime}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
     (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
   refine ⟨⟨s, fun p ↦ ?_⟩⟩
-  obtain ⟨q, hq1, hq2⟩ : ∃ q ∈ s, q ≤ p
-  · classical
-    simpa only [mem_setOf_eq, coe_setOf, ge_iff_le, Finset.le_inf_iff, Subtype.coe_le_coe,
-      Subtype.forall, inf_lt_right, not_not, Ideal.IsPrime.inf_le' (hp := p.2)]
-      using H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩
-  rwa [← Subtype.ext_iff.mpr <| @isMaximal_of_isPrime (p := q.1) _ _ q.2 |>.eq_of_le p.2.1 hq2]
+  classical
+  obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
+    inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
+  rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
 
 variable (R) in
 /--
