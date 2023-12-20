@@ -457,11 +457,13 @@ instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike
   ConcreteCategory.funLike
 
-instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] : NDFunLike (X ⟶ CommRingCat.of Y) X Y :=
+instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
+    NDFunLike (X ⟶ CommRingCat.of Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike
   ConcreteCategory.funLike
 
-instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] : NDFunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
+instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
+    NDFunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike
   ConcreteCategory.funLike
 
