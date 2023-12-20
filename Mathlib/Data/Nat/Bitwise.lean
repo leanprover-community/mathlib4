@@ -281,7 +281,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   cases' hm.lt_or_lt with hm hm
   · rw [Nat.div_eq_of_lt]
     · simp
-    · exact Nat.pow_lt_pow_of_lt_right one_lt_two hm
+    · exact pow_lt_pow_right one_lt_two hm
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
@@ -490,6 +490,6 @@ lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
   · rw [add_comm]; apply shiftLeft_lt hy
-  · apply lt_of_lt_of_le hx <| pow_le_pow (le_succ _) (le_add_right _ _)
+  · apply lt_of_lt_of_le hx <| pow_le_pow_right (le_succ _) (le_add_right _ _)
 
 end Nat

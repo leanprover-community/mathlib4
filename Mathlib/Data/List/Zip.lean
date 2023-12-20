@@ -129,7 +129,7 @@ theorem map_fst_zip :
     ∀ (l₁ : List α) (l₂ : List β), l₁.length ≤ l₂.length → map Prod.fst (zip l₁ l₂) = l₁
   | [], bs, _ => rfl
   | _ :: as, _ :: bs, h => by
-    simp [succ_le_succ_iff] at h
+    simp? [succ_le_succ_iff] at h says simp only [length_cons, succ_le_succ_iff] at h
     change _ :: map Prod.fst (zip as bs) = _ :: as
     rw [map_fst_zip as bs h]
   | a :: as, [], h => by simp at h
@@ -142,7 +142,7 @@ theorem map_snd_zip :
     rfl
   | [], b :: bs, h => by simp at h
   | a :: as, b :: bs, h => by
-    simp [succ_le_succ_iff] at h
+    simp? [succ_le_succ_iff] at h says simp only [length_cons, succ_le_succ_iff] at h
     change _ :: map Prod.snd (zip as bs) = _ :: bs
     rw [map_snd_zip as bs h]
 #align list.map_snd_zip List.map_snd_zip

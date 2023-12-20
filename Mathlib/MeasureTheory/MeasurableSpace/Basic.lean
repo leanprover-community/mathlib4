@@ -449,6 +449,22 @@ theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 #align measurable_unit measurable_unit
 
+section ULift
+variable [MeasurableSpace α]
+
+instance _root_.ULift.instMeasurableSpace : MeasurableSpace (ULift α) :=
+  ‹MeasurableSpace α›.map ULift.up
+
+lemma measurable_down : Measurable (ULift.down : ULift α → α) := fun _ ↦ id
+lemma measurable_up : Measurable (ULift.up : α → ULift α) := fun _ ↦ id
+
+@[simp] lemma measurableSet_preimage_down {s : Set α} :
+    MeasurableSet (ULift.down ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+@[simp] lemma measurableSet_preimage_up {s : Set (ULift α)} :
+    MeasurableSet (ULift.up ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+
+end ULift
+
 section Nat
 
 variable [MeasurableSpace α]
@@ -1541,6 +1557,10 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
     exact measurable_id
 #align measurable_equiv.cast MeasurableEquiv.cast
 
+/-- Measurable equivalence between `ULift α` and `α`. -/
+def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
+  ⟨Equiv.ulift, measurable_down, measurable_up⟩
+
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro
@@ -1730,16 +1750,16 @@ def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
 /-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
 @[simps! (config := .asFn)]
-def piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
+def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
-  toEquiv := .piFinSuccAboveEquiv α i
+  toEquiv := .piFinSuccAbove α i
   measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp only [piFinSuccAboveEquiv_symm_apply, Fin.insertNth_apply_same, measurable_fst],
-      fun j => by simpa only [piFinSuccAboveEquiv_symm_apply, Fin.insertNth_apply_succAbove]
+    ⟨by simp only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_same, measurable_fst],
+      fun j => by simpa only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_succAbove]
         using (measurable_pi_apply _).comp measurable_snd⟩
-#align measurable_equiv.pi_fin_succ_above_equiv MeasurableEquiv.piFinSuccAboveEquiv
+#align measurable_equiv.pi_fin_succ_above_equiv MeasurableEquiv.piFinSuccAbove
 
 variable (π)
 

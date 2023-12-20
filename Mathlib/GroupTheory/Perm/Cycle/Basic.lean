@@ -1720,7 +1720,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   refine'
     isConj_of_support_equiv
       (hσ.zpowersEquivSupport.symm.trans <|
-        (zpowersEquivZpowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
+        (zpowersEquivZPowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
       _
   intro x hx
   simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
@@ -1730,7 +1730,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
       (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
   apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
   -- This used to be a `simp only` before leanprover/lean4#2644
-  erw [zpowersEquivZpowers_apply, zpowersEquivZpowers_apply]
+  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
   dsimp
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [pow_succ, Perm.mul_apply]

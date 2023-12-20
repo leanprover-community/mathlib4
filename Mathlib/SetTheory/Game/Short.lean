@@ -169,8 +169,10 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
 #align pgame.short_birthday SetTheory.PGame.short_birthday
 
 /-- This leads to infinite loops if made into an instance. -/
-def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL xR) :=
-  Short.mk isEmptyElim isEmptyElim
+def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL xR) := by
+  have : Fintype l := Fintype.ofIsEmpty
+  have : Fintype r := Fintype.ofIsEmpty
+  exact Short.mk isEmptyElim isEmptyElim
 #align pgame.short.of_is_empty SetTheory.PGame.Short.ofIsEmpty
 
 instance short0 : Short 0 :=

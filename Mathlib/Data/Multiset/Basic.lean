@@ -2154,6 +2154,16 @@ lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
   simp [(· ∘ ·), map_filter, hf.eq_iff]
 #align multiset.map_filter' Multiset.map_filter'
 
+lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
+    card (s.filter P) ≤ n ↔ ∀ s' ≤ s, n < card s' → ∃ a ∈ s', ¬ P a := by
+  fconstructor
+  · intro H s' hs' s'_card
+    by_contra! rid
+    have card := card_le_of_le (monotone_filter_left P hs') |>.trans H
+    exact s'_card.not_le (filter_eq_self.mpr rid ▸ card)
+  · contrapose!
+    exact fun H ↦ ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
+
 /-! ### Simultaneously filter and map elements of a multiset -/
 
 
@@ -2650,7 +2660,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
   Quotient.inductionOn s <| fun l => by
     simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count]
-    rw [List.filter_eq' l b, coe_replicate]
+    rw [List.filter_eq l b, coe_replicate]
 #align multiset.filter_eq' Multiset.filter_eq'
 
 theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (count b s) b := by
