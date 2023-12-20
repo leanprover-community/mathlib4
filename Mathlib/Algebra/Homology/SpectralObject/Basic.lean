@@ -135,6 +135,20 @@ def sc₃ : ShortComplex C :=
 lemma exact₃ : (X.sc₃ n₀ n₁ hn₁ f g fg h).Exact :=
   (exact_of_iso (X.iso₃ n₀ n₁ hn₁ f g fg h).symm (X.exact₃' n₀ n₁ hn₁ (mk₂ f g))).exact 0
 
+def composableArrows₅ : ComposableArrows C 5 :=
+  mk₅ ((X.H n₀).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg))
+    ((X.H n₀).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g))
+    (X.δ n₀ n₁ hn₁ f g)
+    ((X.H n₁).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg))
+    ((X.H n₁).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g))
+
+lemma composableArrows₅_exact :
+    (X.composableArrows₅ n₀ n₁ hn₁ f g fg h).Exact :=
+  exact_of_δ₀ (X.exact₂ n₀ f g fg h).exact_toComposableArrows
+     (exact_of_δ₀ (X.exact₃ n₀ n₁ hn₁ f g fg h).exact_toComposableArrows
+        (exact_of_δ₀ (X.exact₁ n₀ n₁ hn₁ f g fg h).exact_toComposableArrows
+          (X.exact₂ n₁ f g fg h).exact_toComposableArrows))
+
 end
 
 end
