@@ -334,7 +334,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     have bf := bodd_bit b n
     have n0 := div2_bit b n
     rw [h] at bf n0
-    simp at bf n0
+    simp only [bodd_zero, div2_zero] at bf n0
     subst bf n0
     rw [binaryRec_zero]
     intros
