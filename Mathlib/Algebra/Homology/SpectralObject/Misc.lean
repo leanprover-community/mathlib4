@@ -258,4 +258,36 @@ lemma ShortComplex.exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
     fun i => Iso.isZero_iff (S.mapHomologyIso ((evaluation ι C).obj i)),
     evaluation_obj_obj, Functor.isZero_iff]
 
+lemma ComposableArrows.isComplex_iff_isComplex_evaluation
+    {n : ℕ} (S : ComposableArrows (ι ⥤ C) n) :
+    S.IsComplex ↔ ∀ (i : ι), (S.apply ((evaluation ι C).obj i)).IsComplex := by
+  constructor
+  · intro hS i
+    constructor
+    intro k hk
+    exact ((evaluation ι C).obj i).congr_map (hS.zero k)
+  · intro hS
+    constructor
+    intro k hk
+    ext i
+    exact (hS i).zero k
+
+lemma ComposableArrows.exact_iff_exact_evaluation
+    {n : ℕ} (S : ComposableArrows (ι ⥤ C) n) :
+    S.Exact ↔ ∀ (i : ι), (S.apply ((evaluation ι C).obj i)).Exact := by
+  constructor
+  · intro hS i
+    exact
+      { toIsComplex := S.isComplex_iff_isComplex_evaluation.1 hS.toIsComplex i
+        exact := fun k hk =>
+          (hS.sc k).exact_iff_exact_evaluation.1 (hS.exact k) i }
+  · intro hS
+    exact
+      { toIsComplex := S.isComplex_iff_isComplex_evaluation.2
+          (fun i => (hS i).toIsComplex)
+        exact := fun k hk => by
+          rw [ShortComplex.exact_iff_exact_evaluation]
+          intro i
+          exact (hS i).exact k }
+
 end CategoryTheory

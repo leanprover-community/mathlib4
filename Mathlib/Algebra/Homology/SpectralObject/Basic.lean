@@ -174,8 +174,10 @@ noncomputable def composableArrows₅ :
     (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₁))
     (whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₁))
 
-lemma composableArrows₅_apply_exact (D : ComposableArrows ι 2) :
-    ((X.composableArrows₅ n₀ n₁ hn₁).apply ((evaluation _ _).obj D)).Exact := by
+lemma composableArrows₅_exact :
+    (X.composableArrows₅ n₀ n₁ hn₁).Exact := by
+  rw [exact_iff_exact_evaluation]
+  intro D
   obtain ⟨i, j, k, f, g, rfl⟩ := mk₂_surjective D
   exact exact_of_δ₀ (X.exact₂ n₀ f g _ rfl).exact_toComposableArrows
      (exact_of_δ₀ (X.exact₃ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
@@ -188,6 +190,35 @@ lemma composableArrows₅_apply_exact (D : ComposableArrows ι 2) :
               rw [id_comp, comp_id]
               rfl)))
 
+@[reassoc (attr := simp)]
+lemma zero₁'' :
+    (X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2) ≫
+    (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₁)) = 0 :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).zero 2
+
+@[reassoc (attr := simp)]
+lemma zero₂'' :
+    whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₀) ≫
+    whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₀) = 0 :=
+  (X.composableArrows₅_exact n₀ _ rfl).zero 0
+
+@[reassoc (attr := simp)]
+lemma zero₃'' :
+    whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₀) ≫
+      (X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2) = 0 :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).zero 1
+
+lemma exact₁'' :
+    (ShortComplex.mk _ _ (X.zero₁'' n₀ n₁ hn₁)).Exact :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).exact 2
+
+lemma exact₂'' :
+    (ShortComplex.mk _ _ (X.zero₂'' n₀)).Exact :=
+  (X.composableArrows₅_exact n₀ _ rfl).exact 0
+
+lemma exact₃'' :
+    (ShortComplex.mk _ _ (X.zero₃'' n₀ n₁ hn₁)).Exact :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).exact 1
 
 end
 
