@@ -102,7 +102,7 @@ lemma globalSectionsEquivProd : Nonempty <|
     · aesop_cat
     · aesop_cat
 
-lemma equivProdLocalization : Nonempty <|
+lemma equivProdLocalization' : Nonempty <|
     R ≃+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal) := by
   refine globalSectionsEquivProd R |>.map fun e ↦
     RingEquiv.ofHomInv (?_ : R →+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal))
@@ -124,5 +124,12 @@ lemma equivProdLocalization : Nonempty <|
     erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply,
       (StructureSheaf.globalSectionsIso R).inv_hom_id_assoc, e.inv_hom_id_assoc, Iso.inv_hom_id]
     rfl
+
+/--
+If $R$ is an artinian ring, then $R \cong \prod_{\mathfrak{p}}R_{\mathfrak{p}}$
+-/
+noncomputable def equivProdLocalization :
+    R ≃+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal) :=
+  Classical.choice equivProdLocalization'
 
 end IsArtinianRing
