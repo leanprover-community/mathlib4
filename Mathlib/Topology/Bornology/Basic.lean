@@ -385,7 +385,7 @@ instance [UnboundedSpace α] : NeBot (cobounded α) := cobounded_neBot_iff.2 ‹
 instance (priority := 100) [NeBot (cobounded α)] : UnboundedSpace α :=
   cobounded_neBot_iff.1 ‹_›
 
-instance (priority := 100) [h : UnboundedSpace α] : Infinite α :=
+instance (priority := 50) [h : UnboundedSpace α] : Infinite α :=
   ⟨mt (fun _ ↦ (toFinite _).isBounded) h.1⟩
 
 @[simp]

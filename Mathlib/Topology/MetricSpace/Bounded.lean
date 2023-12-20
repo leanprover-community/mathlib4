@@ -309,10 +309,10 @@ lemma noncompactSpace_iff_unboundedSpace [ProperSpace α] :
     NoncompactSpace α ↔ UnboundedSpace α := by
   rw [← not_compactSpace_iff, ← not_boundedSpace_iff, compactSpace_iff_boundedSpace]
 
-instance (priority := 100) [ProperSpace α] [BoundedSpace α] : CompactSpace α :=
+instance (priority := 50) [BoundedSpace α] [ProperSpace α] : CompactSpace α :=
   compactSpace_iff_boundedSpace.2 ‹_›
 
-instance (priority := 100) [ProperSpace α] [NoncompactSpace α] : UnboundedSpace α :=
+instance (priority := 50) [ProperSpace α] [NoncompactSpace α] : UnboundedSpace α :=
   noncompactSpace_iff_unboundedSpace.1 ‹_›
 
 section ConditionallyCompleteLinearOrder
