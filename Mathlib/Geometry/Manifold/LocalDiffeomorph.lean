@@ -157,14 +157,14 @@ theorem isLocalDiffeomorph_iff_isLocalDiffeomorphOn_univ {f : M → N} :
     IsLocalDiffeomorph I J n f ↔ IsLocalDiffeomorphOn I J n f Set.univ :=
   ⟨fun hf x ↦ hf x, fun hf x ↦ hf ⟨x, trivial⟩⟩
 
-lemma IsLocalDiffeomorph.isLocalDiffeomorphOn {f : M → N} (s : Set M)
-    (hf : IsLocalDiffeomorph I J n f) : IsLocalDiffeomorphOn I J n f s := fun x ↦ hf x
-
-variable {n}
+lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
+    {f : M → N} (s : Set M) (hf : IsLocalDiffeomorph I J n f) :
+    IsLocalDiffeomorphOn I J n f s := fun x ↦ hf x
 
 /-! # Basic properties of local diffeomorphisms -/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
+variable {I J n}
 
 /-- A `C^n` local diffeomorphism at `x` is `C^n` differentiable at `x`. -/
 lemma IsLocalDiffeomorphAt.contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -176,34 +176,32 @@ lemma IsLocalDiffeomorphAt.contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
 /-- A local diffeomorphism at `x` is differentiable at `x`. -/
 lemma IsLocalDiffeomorphAt.mdifferentiableAt (hn : 1 ≤ n) (hf : IsLocalDiffeomorphAt I J n f x) :
     MDifferentiableAt I J f x :=
-  (hf.contMDiffAt I J).mdifferentiableAt hn
+  hf.contMDiffAt.mdifferentiableAt hn
 
 /-- A `C^n` local diffeomorphism on `s` is `C^n` on `s`. -/
 lemma IsLocalDiffeomorphOn.contMDiffOn (hf : IsLocalDiffeomorphOn I J n f s) :
     ContMDiffOn I J n f s :=
-  fun x hx ↦ ((hf ⟨x, hx⟩).contMDiffAt I J).contMDiffWithinAt
+  fun x hx ↦ (hf ⟨x, hx⟩).contMDiffAt.contMDiffWithinAt
 
 /-- A local diffeomorphism on `s` is differentiable on `s`. -/
 lemma IsLocalDiffeomorphOn.mdifferentiableOn (hn : 1 ≤ n) (hf : IsLocalDiffeomorphOn I J n f s) :
     MDifferentiableOn I J f s :=
-  (hf.contMDiffOn I J).mdifferentiableOn hn
+  hf.contMDiffOn.mdifferentiableOn hn
 
 /-- A `C^n` local diffeomorphism is `C^n`. -/
 lemma IsLocalDiffeomorph.contMDiff (hf : IsLocalDiffeomorph I J n f) : ContMDiff I J n f :=
-  fun x ↦ (hf x).contMDiffAt I J
+  fun x ↦ (hf x).contMDiffAt
 
 /-- A `C^n` local diffeomorphism is differentiable. -/
 lemma IsLocalDiffeomorph.mdifferentiable (hn : 1 ≤ n) (hf : IsLocalDiffeomorph I J n f) :
     MDifferentiable I J f :=
-  fun x ↦ (hf x).mdifferentiableAt I J hn
+  fun x ↦ (hf x).mdifferentiableAt hn
 
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _x ↦ ⟨Φ.toPartialDiffeomorph, by trivial, eqOn_refl Φ _⟩
 
 -- FUTURE: if useful, also add "a `PartialDiffeomorph` is a local diffeomorphism on its source"
-
-variable {I J}
 
 /-- A local diffeomorphism on `s` is a local homeomorphism on `s`. -/
 theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeomorphOn I J n f s) :
@@ -258,7 +256,7 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
     invFun := g
     left_inv := hgInverse.1
     right_inv := hgInverse.2
-    contMDiff_toFun := hf.contMDiff I J
+    contMDiff_toFun := hf.contMDiff
     contMDiff_invFun := by
       intro y
       let x := g y
