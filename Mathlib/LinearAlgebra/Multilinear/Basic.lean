@@ -780,15 +780,15 @@ lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (
     Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ else x j) i c := by
   ext j
   by_cases h : j = i.1
-  . rw [h, Function.update_same]
+  · rw [h, Function.update_same]
     simp only [Subtype.coe_prop, Function.update_same, dite_eq_ite, ite_true]
-  . rw [Function.update_noteq h]
+  · rw [Function.update_noteq h]
     by_cases h' : j ∈ s
-    . simp only [h', ne_eq, dite_true]
+    · simp only [h', ne_eq, dite_true]
       have h'' : ¬ ⟨j, h'⟩ = i :=
         fun he => by apply_fun (fun x => x.1) at he; exact h he
       rw [Function.update_noteq h'']
-    . simp only [h', ne_eq, dite_false]
+    · simp only [h', ne_eq, dite_false]
 
 /-- Given a multilinear map `f` on `(i : ι) → M i`, an element `x` of `(i : ι) → M i` and s
 set `s` of `ι`, construct a multilinear map on `s → ((i : ι) → Mi)` whose value at `z`
