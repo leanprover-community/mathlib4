@@ -72,7 +72,7 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
     · exact (continuous_const.sub continuous_ofReal).continuousAt
     · exact continuousAt_const
     · norm_cast
-      exact mem_slitPlane_of_pos <| by linarith only [hx.2]
+      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 #align complex.beta_integral_convergent_left Complex.betaIntegral_convergent_left
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/

@@ -579,7 +579,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact continuous_const
     · intro a
       norm_cast
-      exact mem_slitPlane_of_pos <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
+      exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 #align integral_mul_cpow_one_add_sq integral_mul_cpow_one_add_sq
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :

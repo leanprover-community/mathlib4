@@ -221,7 +221,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     · convert HasDerivAt.cpow_const ?_ ?_ using 1
       · rw [add_sub_cancel, mul_comm]; exact (mul_one _).symm
       · exact hasDerivAt_id (x : ℂ)
-      · exact mem_slitPlane_of_pos hx
+      · simp [hx]
   · -- harder case : `x < 0`
     have : ∀ᶠ y : ℝ in nhds x,
         (y : ℂ) ^ (r + 1) / (r + 1) = (-y : ℂ) ^ (r + 1) * exp (π * I * (r + 1)) / (r + 1) := by
@@ -247,7 +247,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     convert HasDerivAt.cpow_const ?_ ?_ using 1
     · rw [add_sub_cancel, add_sub_cancel]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
-    · exact mem_slitPlane_of_pos <| neg_pos.mpr hx
+    · simp [hx]
 #align has_deriv_at_of_real_cpow hasDerivAt_ofReal_cpow
 
 end deriv

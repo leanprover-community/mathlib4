@@ -101,7 +101,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     apply ContinuousAt.continuousOn
     intro x hx
     have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x :=
-      continuousAt_cpow_const <| mem_slitPlane_of_pos hx
+      continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx
     exact ContinuousAt.comp this continuous_ofReal.continuousAt
   · rw [← hasFiniteIntegral_norm_iff]
     refine' HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 _
@@ -189,7 +189,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     apply ContinuousAt.continuousOn
     intro x hx
     refine' (_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
-    exact continuousAt_cpow_const <| mem_slitPlane_of_pos hx.1
+    exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_eq_abs, map_mul]
   refine' (((Real.GammaIntegral_convergent hs).mono_set
@@ -212,7 +212,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
     have d2 : HasDerivAt (fun y : ℝ => (y : ℂ) ^ s) (s * x ^ (s - 1)) x := by
       have t := @HasDerivAt.cpow_const _ _ _ s (hasDerivAt_id ↑x) ?_
       · simpa only [mul_one] using t.comp_ofReal
-      · exact mem_slitPlane_of_pos hx.1
+      · exact ofReal_mem_slitPlane.2 hx.1
     simpa only [ofReal_neg, neg_mul] using d1.ofReal_comp.mul d2
   have cont := (continuous_ofReal.comp continuous_neg.exp).mul (continuous_ofReal_cpow_const hs)
   have der_ible :=
