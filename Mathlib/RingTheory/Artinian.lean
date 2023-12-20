@@ -499,7 +499,7 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
     <| Field.toIsField <| FractionRing (R ⧸ p)
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
-⟨fun h ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
+  ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
 variable (R) in
 lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
