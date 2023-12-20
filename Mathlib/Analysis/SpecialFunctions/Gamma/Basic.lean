@@ -75,7 +75,7 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
     refine' IntegrableOn.continuousOn_mul continuousOn_id.neg.exp _ isCompact_Icc
-    refine' (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp _
+    refine' (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp _
     exact intervalIntegrable_rpow' (by linarith)
   · refine' integrable_of_isBigO_exp_neg one_half_pos _ (Gamma_integrand_isLittleO _).isBigO
     refine' continuousOn_id.neg.exp.mul (continuousOn_id.rpow_const _)
@@ -169,7 +169,7 @@ theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
 
 private theorem Gamma_integrand_interval_integrable (s : ℂ) {X : ℝ} (hs : 0 < s.re) (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) volume 0 X := by
-  rw [intervalIntegrable_iff_integrable_Ioc_of_le hX]
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hX]
   exact IntegrableOn.mono_set (GammaIntegral_convergent hs) Ioc_subset_Ioi_self
 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
@@ -182,7 +182,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     IntervalIntegrable (fun x : ℝ => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) volume 0 Y := by
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * ((-x).exp * x ^ (s - 1)) : ℝ → ℂ) := by ext1; ring
-  rw [this, intervalIntegrable_iff_integrable_Ioc_of_le hY]
+  rw [this, intervalIntegrable_iff_integrableOn_Ioc_of_le hY]
   constructor
   · refine' (continuousOn_const.mul _).aestronglyMeasurable measurableSet_Ioc
     apply (continuous_ofReal.comp continuous_neg.exp).continuousOn.mul
@@ -306,7 +306,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 
 /-- The `Γ` function (of a complex variable `s`). -/
 -- @[pp_nodot] -- Porting note: removed
-def Gamma (s : ℂ) : ℂ :=
+irreducible_def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 #align complex.Gamma Complex.Gamma
 
@@ -377,7 +377,8 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 #align complex.Gamma_neg_nat_eq_zero Complex.Gamma_neg_nat_eq_zero
 
 theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
-  suffices : ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s); exact this _ _
+  suffices ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s) by
+    simp [Gamma, this]
   intro n
   induction' n with n IH
   · rw [GammaAux]; exact GammaIntegral_conj

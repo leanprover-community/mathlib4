@@ -821,6 +821,13 @@ theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDiff
 
 /-! ### Congruence lemmas for derivatives on manifolds -/
 
+theorem HasMFDerivAt.congr_mfderiv (h : HasMFDerivAt I I' f x f') (h' : f' = f₁') :
+    HasMFDerivAt I I' f x f₁' :=
+  h' ▸ h
+
+theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivWithinAt I I' f s x f') (h' : f' = f₁') :
+    HasMFDerivWithinAt I I' f s x f₁' :=
+  h' ▸ h
 
 theorem HasMFDerivWithinAt.congr_of_eventuallyEq (h : HasMFDerivWithinAt I I' f s x f')
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasMFDerivWithinAt I I' f₁ s x f' := by

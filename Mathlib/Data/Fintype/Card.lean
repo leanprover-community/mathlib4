@@ -222,10 +222,10 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_ofSubsingleton _
 #align fintype.card_unique Fintype.card_unique
 
-/-- Note: this lemma is specifically about `Fintype.of_is_empty`. For a statement about
-arbitrary `Fintype` instances, use `Fintype.card_eq_zero_iff`. -/
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
+arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
 @[simp]
-theorem card_of_isEmpty [IsEmpty α] : Fintype.card α = 0 :=
+theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 #align fintype.card_of_is_empty Fintype.card_of_isEmpty
 
@@ -356,12 +356,10 @@ theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
   Fintype.card_unique
 #align fintype.card_subtype_eq' Fintype.card_subtype_eq'
 
-@[simp]
 theorem Fintype.card_empty : Fintype.card Empty = 0 :=
   rfl
 #align fintype.card_empty Fintype.card_empty
 
-@[simp]
 theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
   rfl
 #align fintype.card_pempty Fintype.card_pempty
@@ -534,7 +532,7 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   rw [card, Finset.card_eq_zero, univ_eq_empty_iff]
 #align fintype.card_eq_zero_iff Fintype.card_eq_zero_iff
 
-theorem card_eq_zero [IsEmpty α] : card α = 0 :=
+@[simp] theorem card_eq_zero [IsEmpty α] : card α = 0 :=
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
@@ -1227,7 +1225,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp only [Fin.valEmbedding_apply, List.pmap_eq_map, List.map_id'', List.map_id]
+    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id', List.map_id]
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
