@@ -773,7 +773,7 @@ multilinear map indexed by `s`, evaluated at `fun (_ : s) => y`; we use a linear
 `ι` to identify all such `s` to `Fin n`. We also give a more direct definition of the term
 of degree `1` in `f.linearDeriv`, which doesn't require a linear order on `ι`, and prove the
 equivalence of the two definitions.-/
-
+/-
 lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
     [DecidableEq s] (x : (i : ι) → M₁ i) (z : (i : s) → M₁ i) (i : s)
     (c : M₁ i) : (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ else x j) =
@@ -788,12 +788,28 @@ lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (
       have h'' : ¬ ⟨j, h'⟩ = i :=
         fun he => by apply_fun (fun x => x.1) at he; exact h he
       rw [Function.update_noteq h'']
+    · simp only [h', ne_eq, dite_false]-/
+
+lemma domDomRestrict_aux [DecidableEq ι] (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
+    [DecidableEq s] (x : (i : s.compl)→ M₁ i) (z : (i : s) → M₁ i) (i : s)
+    (c : M₁ i) : (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ else x ⟨j, h⟩) =
+    Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ else x ⟨j, h⟩) i c := by
+  ext j
+  by_cases h : j = i.1
+  · rw [h, Function.update_same]
+    simp only [Subtype.coe_prop, update_same, dite_true]
+  · rw [Function.update_noteq h]
+    by_cases h' : j ∈ s
+    · simp only [h', ne_eq, dite_true]
+      have h'' : ¬ ⟨j, h'⟩ = i :=
+        fun he => by apply_fun (fun x => x.1) at he; exact h he
+      rw [Function.update_noteq h'']
     · simp only [h', ne_eq, dite_false]
 
 /-- Given a multilinear map `f` on `(i : ι) → M i`, an element `x` of `(i : ι) → M i` and s
 set `s` of `ι`, construct a multilinear map on `s → ((i : ι) → Mi)` whose value at `z`
 is `f` evaluated at the vector with `i`th coordinate `z i` if `i ∈ s` and `x i` otherwise.-/
-def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i)
+/-def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i)
     (s : Set ι) [(i : ι) → Decidable (i ∈ s)] :
     MultilinearMap R (fun (i : s) => M₁ i) M₂ where
   toFun z := f (fun i ↦ if h : i ∈ s then z ⟨i, h⟩ else x i)
@@ -804,21 +820,47 @@ def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (x : (i : �
   map_smul' z i c a := by
     simp only
     repeat (rw [domDomRestrict_aux])
+    simp only [Pi.smul_apply, MultilinearMap.map_smul]-/
+
+def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂)
+    (s : Set ι) [(i : ι) → Decidable (i ∈ s)] (x : (i : s.compl) → M₁ i) :
+    MultilinearMap R (fun (i : s) => M₁ i) M₂ where
+  toFun z := f (fun i ↦ if h : i ∈ s then z ⟨i, h⟩ else x ⟨i, h⟩)
+  map_add' z i a b := by
+    simp only
+    repeat (rw [domDomRestrict_aux])
+    simp only [Pi.add_apply, MultilinearMap.map_add]
+  map_smul' z i c a := by
+    simp only
+    repeat (rw [domDomRestrict_aux])
     simp only [Pi.smul_apply, MultilinearMap.map_smul]
 
-@[simp]
+/-@[simp]
 lemma domDomRestrict_apply [DecidableEq ι] (f : MultilinearMap R M₁ M₂)
     (x : (i : ι) → M₁ i) (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
     (z : (i : s) → M₁ i) :
-    f.domDomRestrict x s z = f (fun i => if h : i ∈ s then z ⟨i, h⟩ else x i) := rfl
+    f.domDomRestrict x s z = f (fun i => if h : i ∈ s then z ⟨i, h⟩ else x i) := rfl-/
+
+@[simp]
+lemma domDomRestrict_apply [DecidableEq ι] (f : MultilinearMap R M₁ M₂)
+    (s : Set ι) [(i : ι) → Decidable (i ∈ s)]
+    (x : (i : s.compl) → M₁ i) (z : (i : s) → M₁ i) :
+    f.domDomRestrict s x z = f (fun i => if h : i ∈ s then z ⟨i, h⟩ else x ⟨i, h⟩) := rfl
 
 /-- This is the nth term of the formal multilinear series corresponding to the multilinear map `f`.
 We need a linear order on ι to identify all finsets of `ι` of cardinality `n` to `Fin n`.-/
-def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+/-def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) (n : ℕ) :
     MultilinearMap R (fun (_ : Fin n) => (i : ι) → M₁ i) M₂ :=
   ∑ s : {s : Finset ι | s.card = n},
    ((f.domDomRestrict x s).compLinearMap (fun (i : s.1) => LinearMap.proj
+  i (φ := M₁))).domDomCongr (s.1.orderIsoOfFin s.2).symm.toEquiv-/
+
+def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+    (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) (n : ℕ) :
+    MultilinearMap R (fun (_ : Fin n) => (i : ι) → M₁ i) M₂ :=
+  ∑ s : {s : Finset ι | s.card = n},
+   ((f.domDomRestrict s (fun i => x i.1)).compLinearMap (fun (i : s.1) => LinearMap.proj
   i (φ := M₁))).domDomCongr (s.1.orderIsoOfFin s.2).symm.toEquiv
 
 @[simp]
