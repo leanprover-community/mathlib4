@@ -1373,7 +1373,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
     intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
 
 /-- This calculates the differences between the values of a multilinear map at
-two arguments that differ on a finset `s` of `ι` of cardinality `n`. It requires a
+two arguments that differ on a finset `s` of `ι`. It requires a
 linear order on `ι` in order to express the result.-/
 lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M₁ i) (s : Finset ι) :
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
