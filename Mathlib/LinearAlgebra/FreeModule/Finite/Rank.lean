@@ -626,8 +626,8 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R V] {n : ℕ} (h : Module.ran
     Module.Finite R V := by
   nontriviality R
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := V)
-  have := mk_lt_aleph0_iff.mp <| cardinal_le_rank_of_linearIndependent
-    b.linearIndependent |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
+  have := mk_lt_aleph0_iff.mp <|
+    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
   exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_zero [NoZeroSMulDivisors R V]
