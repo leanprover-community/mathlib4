@@ -471,16 +471,13 @@ theorem one_fst : (1 : GradedMonoid A).fst = 0 :=
 theorem one_snd : (1 : GradedMonoid A).snd = 1 :=
   rfl
 
-instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne fun k => ModularForm Γ k
-    where
+instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne (ModularForm Γ) where
   one := 1
 
-instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul fun k => ModularForm Γ k
-    where
+instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
 
-instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing fun k => ModularForm Γ k
-    where
+instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
   mul f g := f.mul g
   one := 1
   one_mul f := by
