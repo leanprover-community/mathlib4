@@ -172,8 +172,10 @@ theorem locally_integrable_zetaKernel₂ : LocallyIntegrableOn zetaKernel₂ (Io
 #align locally_integrable_zeta_kernel₂ locally_integrable_zetaKernel₂
 
 /-- Functional equation for `zetaKernel₂`. -/
-theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
+theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 ≤ t) :
     zetaKernel₂ (1 / t) = sqrt t * zetaKernel₂ t := by
+  rcases ht.eq_or_lt with rfl|h't
+  · simp [zetaKernel₂, zetaKernel₁]
   have aux : ∀ {u : ℝ} (_ : 1 < u), zetaKernel₂ (1 / u) = sqrt u * zetaKernel₂ u := by
     intro u hu
     simp_rw [zetaKernel₂, Pi.add_apply]
@@ -195,9 +197,9 @@ theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
   rcases lt_trichotomy 1 t with (h | h | h)
   · exact aux h
   · simp only [← h, div_self, Ne.def, one_ne_zero, not_false_iff, sqrt_one, ofReal_one, one_mul]
-  · have := aux (show 1 < 1 / t by rwa [lt_one_div (zero_lt_one' ℝ) ht, div_one])
+  · have := aux (show 1 < 1 / t by rwa [lt_one_div (zero_lt_one' ℝ) h't, div_one])
     rw [one_div_one_div] at this
-    rw [this, ← mul_assoc, ← ofReal_mul, ← sqrt_mul ht.le, mul_one_div_cancel ht.ne', sqrt_one,
+    rw [this, ← mul_assoc, ← ofReal_mul, ← sqrt_mul ht, mul_one_div_cancel h't.ne', sqrt_one,
       ofReal_one, one_mul]
 #align zeta_kernel₂_one_div zetaKernel₂_one_div
 
@@ -240,7 +242,7 @@ theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => ex
   simp_rw [← one_div] at h1
   have h2 : zetaKernel₂ ∘ Div.div 1 =ᶠ[𝓝[>] 0] fun t => sqrt t * zetaKernel₂ t :=
     eventually_of_mem self_mem_nhdsWithin fun t ht => by
-      dsimp only; rw [← zetaKernel₂_one_div ht]; rfl
+      dsimp only; rw [← zetaKernel₂_one_div (le_of_lt ht)]; rfl
   have h3 := h1.congr' h2 (EventuallyEq.refl _ _)
   have h4 := h3.mul (isBigO_refl (fun t : ℝ => 1 / (sqrt t : ℂ)) (𝓝[>] 0)).norm_right
   refine h4.congr' ?_ ?_
@@ -641,12 +643,12 @@ theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
 `Λ₀(1 - s) = Λ₀ s`. -/
 theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
     riemannCompletedZeta₀ (1 - s) = riemannCompletedZeta₀ s := by
-  have := mellin_comp_rpow zetaKernel₂ (s / 2 - 1 / 2) neg_one_lt_zero.ne
+  have := mellin_comp_rpow zetaKernel₂ (s / 2 - 1 / 2) (-1)
   simp_rw [rpow_neg_one, ← one_div, abs_neg, abs_one, div_one, one_smul, ofReal_neg, ofReal_one,
     div_neg, div_one, neg_sub] at this
   conv_lhs => rw [riemannCompletedZeta₀, sub_div, ← this]
   refine set_integral_congr measurableSet_Ioi fun t ht => ?_
-  simp_rw [zetaKernel₂_one_div ht, smul_eq_mul, ← mul_assoc, sqrt_eq_rpow,
+  simp_rw [zetaKernel₂_one_div (le_of_lt ht), smul_eq_mul, ← mul_assoc, sqrt_eq_rpow,
     ofReal_cpow (le_of_lt ht), ← cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht)]
   congr 2
   push_cast
