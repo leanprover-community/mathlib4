@@ -236,6 +236,10 @@ theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
     exact arg_ofReal_of_nonneg h
 #align complex.arg_eq_zero_iff Complex.arg_eq_zero_iff
 
+open ComplexOrder in
+lemma arg_eq_zero_iff_zero_le {z : ℂ} : arg z = 0 ↔ 0 ≤ z := by
+  rw [arg_eq_zero_iff, eq_comm]; rfl
+
 theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
   by_cases h₀ : z = 0; simp [h₀, lt_irrefl, Real.pi_ne_zero.symm]
   constructor
@@ -247,6 +251,9 @@ theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
     rw [← arg_neg_one, ← arg_real_mul (-1) (neg_pos.2 h)]
     simp [← ofReal_def]
 #align complex.arg_eq_pi_iff Complex.arg_eq_pi_iff
+
+open ComplexOrder in
+lemma arg_eq_pi_iff_lt_zero {z : ℂ} : arg z = π ↔ z < 0 := arg_eq_pi_iff
 
 theorem arg_lt_pi_iff {z : ℂ} : arg z < π ↔ 0 ≤ z.re ∨ z.im ≠ 0 := by
   rw [(arg_le_pi z).lt_iff_ne, not_iff_comm, not_or, not_le, Classical.not_not, arg_eq_pi_iff]
@@ -523,18 +530,11 @@ alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
 
 section slitPlane
 
+open ComplexOrder in
 /-- An alternative description of the slit plane as consisting of nonzero complex numbers
 whose argument is not π. -/
-lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ Real.pi ∧ z ≠ 0 := by
-  simp only [mem_slitPlane_iff, ne_eq, arg_eq_pi_iff, not_and]
-  refine ⟨fun H ↦ ⟨fun h ↦ H.resolve_left fun h' ↦ lt_irrefl 0 <| h'.trans h, fun h ↦ ?_⟩,
-          fun H ↦ ?_⟩
-  · simp only [h, zero_re, lt_self_iff_false, zero_im, not_true_eq_false, or_self] at H
-  · by_contra! h
-    simp only [h.2, not_true_eq_false] at H
-    have h₁ : z = 0 ↔ z.re = 0 ∧ z.im = 0 := ext_iff
-    have h₂ : z.re ≤ 0 ↔ z.re = 0 ∨ z.re < 0 := le_iff_eq_or_lt
-    tauto
+lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ π ∧ z ≠ 0 := by
+  simp only [mem_slitPlane_iff_not_le_zero, le_iff_lt_or_eq, ne_eq, arg_eq_pi_iff_lt_zero, not_or]
 
 lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
   (mem_slitPlane_iff_arg.mp hz).1
