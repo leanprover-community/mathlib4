@@ -61,7 +61,10 @@ structure ClosureOperator [Preorder α] extends α →o α where
   le_closure' : ∀ x, x ≤ toFun x
   /-- Closures are idempotent -/
   idempotent' : ∀ x, toFun (toFun x) = toFun x
-  /-- Predicate for an element to be closed. -/
+  /-- Predicate for an element to be closed.
+  
+  By default, this is defined as `c.IsClosed x := (c x = x)` (see `isClosed_iff`).
+  We allow an override to fix definitional equalities. -/
   IsClosed (x : α) : Prop := toFun x = x
   isClosed_iff {x : α} : IsClosed x ↔ toFun x = x := by aesop
 #align closure_operator ClosureOperator
