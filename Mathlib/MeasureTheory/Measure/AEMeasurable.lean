@@ -51,11 +51,6 @@ lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
 
 namespace AEMeasurable
 
-protected theorem nullMeasurable (h : AEMeasurable f μ) : NullMeasurable f μ :=
-  let ⟨_g, hgm, hg⟩ := h
-  hgm.nullMeasurable.congr hg.symm
-#align ae_measurable.null_measurable AEMeasurable.nullMeasurable
-
 lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :=
   ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
 

@@ -12,6 +12,10 @@ import Mathlib.Algebra.Order.SMul
 
 In this file we provide lemmas about `OrderedSMul` that hold once a module structure is present.
 
+## TODO
+
+Generalise lemmas to the framework from `Mathlib.Algebra.Order.Module.Defs`.
+
 ## References
 
 * https://en.wikipedia.org/wiki/Ordered_vector_space
@@ -65,12 +69,6 @@ theorem lt_of_smul_lt_smul_of_nonpos (h : c • a < c • b) (hc : c ≤ 0) : b 
   exact lt_of_smul_lt_smul_of_nonneg h (neg_nonneg_of_nonpos hc)
 #align lt_of_smul_lt_smul_of_nonpos lt_of_smul_lt_smul_of_nonpos
 
-lemma smul_le_smul_of_nonneg_right (h : c ≤ d) (hb : 0 ≤ b) : c • b ≤ d • b := by
-  rw [← sub_nonneg, ← sub_smul]; exact smul_nonneg (sub_nonneg.2 h) hb
-
-lemma smul_le_smul (hcd : c ≤ d) (hab : a ≤ b) (hc : 0 ≤ c) (hb : 0 ≤ b) : c • a ≤ d • b :=
-  (smul_le_smul_of_nonneg_left hab hc).trans $ smul_le_smul_of_nonneg_right hcd hb
-
 theorem smul_lt_smul_iff_of_neg (hc : c < 0) : c • a < c • b ↔ b < a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_lt_neg_iff]
   exact smul_lt_smul_iff_of_pos (neg_pos_of_neg hc)
@@ -86,23 +84,16 @@ theorem smul_pos_iff_of_neg (hc : c < 0) : 0 < c • a ↔ a < 0 := by
   exact smul_neg_iff_of_pos (neg_pos_of_neg hc)
 #align smul_pos_iff_of_neg smul_pos_iff_of_neg
 
-theorem smul_nonpos_of_nonpos_of_nonneg (hc : c ≤ 0) (ha : 0 ≤ a) : c • a ≤ 0 :=
-  calc
-    c • a ≤ c • (0 : M) := smul_le_smul_of_nonpos ha hc
-    _ = 0 := smul_zero c
 #align smul_nonpos_of_nonpos_of_nonneg smul_nonpos_of_nonpos_of_nonneg
 
 theorem smul_nonneg_of_nonpos_of_nonpos (hc : c ≤ 0) (ha : a ≤ 0) : 0 ≤ c • a :=
-  @smul_nonpos_of_nonpos_of_nonneg k Mᵒᵈ _ _ _ _ _ _ hc ha
+  smul_nonpos_of_nonpos_of_nonneg (β := Mᵒᵈ) hc ha
 #align smul_nonneg_of_nonpos_of_nonpos smul_nonneg_of_nonpos_of_nonpos
 
 alias ⟨_, smul_pos_of_neg_of_neg⟩ := smul_pos_iff_of_neg
 #align smul_pos_of_neg_of_neg smul_pos_of_neg_of_neg
 
-alias ⟨_, smul_neg_of_pos_of_neg⟩ := smul_neg_iff_of_pos
 #align smul_neg_of_pos_of_neg smul_neg_of_pos_of_neg
-
-alias ⟨_, smul_neg_of_neg_of_pos⟩ := smul_neg_iff_of_neg
 #align smul_neg_of_neg_of_pos smul_neg_of_neg_of_pos
 
 theorem antitone_smul_left (hc : c ≤ 0) : Antitone (SMul.smul c : M → M) := fun _ _ h =>

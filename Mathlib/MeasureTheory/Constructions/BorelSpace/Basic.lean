@@ -1107,6 +1107,19 @@ instance Prod.borelSpace [SecondCountableTopologyEither α β] :
   ⟨le_antisymm prod_le_borel_prod OpensMeasurableSpace.borel_le⟩
 #align prod.borel_space Prod.borelSpace
 
+/-- Given a measurable embedding to a Borel space which is also a topological embedding, then the
+source space is also a Borel space. -/
+lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [TopologicalSpace α]
+    [MeasurableSpace β] [TopologicalSpace β] [hβ : BorelSpace β] {e : α → β}
+    (h'e : MeasurableEmbedding e) (h''e : Inducing e) :
+    BorelSpace α := by
+  constructor
+  have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
+  rw [← this, ← borel_comap, h''e.induced]
+
+instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
+  MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
+
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
@@ -1334,7 +1347,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
   rcases isEmpty_or_nonempty α with hα|hα
-  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ Iff.mp toFinset_eq_empty rfl
+  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ eq_empty_of_isEmpty _
     simp [this]
   have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
     intro i c
