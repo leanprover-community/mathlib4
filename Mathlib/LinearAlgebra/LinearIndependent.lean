@@ -301,9 +301,8 @@ theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
   refine hv.map_of_injective_injective i' j (fun s h ↦ ?_) hj fun s x ↦ ?_
   · apply_fun i at h
-    rwa [hi', _root_.map_zero] at h
-  have h := hc (i' s) x
-  rwa [hi'] at h
+    rwa [hi', i.map_zero] at h
+  rw [hc (i' s) x, hi']
 
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/

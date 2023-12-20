@@ -563,17 +563,10 @@ theorem lift_rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
     (hi : ∀ s, i s = 0 → s = 0) (hj : Injective j)
     (hc : ∀ (s : R') (x : M), j (i s • x) = s • j x) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
-  cases subsingleton_or_nontrivial R'
-  · nontriviality R
-    haveI := Module.subsingleton R' M'
-    haveI := hj.subsingleton
-    have : Module.rank R M = 0 := rank_eq_zero_iff.2 fun _ ↦ ⟨1, one_ne_zero, Subsingleton.elim _ _⟩
-    simp only [rank_subsingleton, this, lift_zero, lift_one, zero_le]
-  rw [Module.rank_def R M]
-  refine lift_iSup_le (bddAbove_range.{v, v} _) fun S ↦ ?_
-  obtain ⟨_, h⟩ := S
-  exact cardinal_lift_le_rank_of_linearIndependent (h.map_of_injective_injective i j hi
-    (fun x ↦ by rw [← _root_.map_zero (f := j)]; exact hj (a₁ := x) (a₂ := 0)) hc)
+  simp_rw [Module.rank, lift_iSup (bddAbove_range.{v', v'} _), lift_iSup (bddAbove_range.{v, v} _)]
+  exact ciSup_mono' (bddAbove_range.{v', v} _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+    (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
+      lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
 /-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
 `j : M →+ M'` is an injective group homomorphism, such that the scalar multiplications on `M` and
@@ -583,11 +576,10 @@ theorem lift_rank_le_of_surjective_injective (i : ZeroHom R R') (j : M →+ M')
     (hi : Surjective i) (hj : Injective j) (hc : ∀ (s : R) (x : M), j (s • x) = i s • j x) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
-  refine lift_rank_le_of_injective_injective i' j (fun s h ↦ ?_) hj fun s x ↦ ?_
+  refine lift_rank_le_of_injective_injective i' j (fun _ h ↦ ?_) hj fun s x ↦ ?_
   · apply_fun i at h
-    rwa [hi', _root_.map_zero] at h
-  have h := hc (i' s) x
-  rwa [hi'] at h
+    rwa [hi', i.map_zero] at h
+  rw [hc (i' s) x, hi']
 
 /-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a bijective map which maps zero to zero,
 `j : M ≃+ M'` is a group isomorphism, such that the scalar multiplications on `M` and `M'` are
@@ -595,15 +587,10 @@ compatible, then the rank of `M / R` is equal to the rank of `M' / R'`.
 As a special case, taking `R = R'` it is `LinearEquiv.lift_rank_eq`. -/
 theorem lift_rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
     (hi : Bijective i) (hc : ∀ (s : R) (x : M), j (s • x) = i s • j x) :
-    lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') := by
-  refine le_antisymm (lift_rank_le_of_surjective_injective i j hi.surjective j.injective hc) ?_
-  obtain ⟨i', h1, h2⟩ := Function.bijective_iff_has_inverse.1 hi
-  let I' : ZeroHom R' R := ⟨i', by apply_fun i using hi.injective; rw [h2, _root_.map_zero]⟩
-  refine lift_rank_le_of_surjective_injective I' j.symm h1.surjective j.symm.injective fun s x ↦ ?_
-  apply_fun j using j.injective
-  simp only [AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply, hc]
-  change _ = i (i' s) • x
-  rw [h2]
+    lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
+  (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
+    lift_rank_le_of_injective_injective i j.symm (fun _ _ ↦ hi.1 <| by rwa [i.map_zero])
+      j.symm.injective fun s x ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
 
 variable {M' : Type v} [Ring R'] [AddCommGroup M'] [Module R' M']
 
@@ -641,12 +628,11 @@ theorem lift_rank_le_of_injective_injective
     (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
     (hc : (j.comp (algebraMap R S)).comp i = algebraMap R' S') :
     lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
-  refine _root_.lift_rank_le_of_injective_injective i j (fun s ↦ ?_) hj fun s x ↦ ?_
-  · rw [← _root_.map_zero (f := i)]
-    exact hi (a₁ := s) (a₂ := 0)
-  have := FunLike.congr_fun hc s
+  refine _root_.lift_rank_le_of_injective_injective i j
+    (fun _ _ ↦ hi <| by rwa [i.map_zero]) hj fun s x ↦ ?_
+  have := congr($hc s)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+  simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
 `j : S →+* S'` is an injective ring homorphism, such that `R → R' → S'` and `R → S → S'` commute,
@@ -656,7 +642,7 @@ theorem lift_rank_le_of_surjective_injective
     (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
     lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun s x ↦ ?_
-  have := FunLike.congr_fun hc s
+  have := congr($hc s)
   simp only [RingHom.coe_comp, comp_apply] at this
   simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
 
@@ -667,7 +653,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
     (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
     lift.{v'} (Module.rank R S) = lift.{v} (Module.rank R' S') := by
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun s x ↦ ?_
-  have := FunLike.congr_fun hc s
+  have := congr($hc s)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
   simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
 
