@@ -147,8 +147,8 @@ end UnifIntegrable
 
 /-- Uniform integrability is preserved by restriction of functions to a set. -/
 theorem UnifIntegrable.indicator {f : ι → α → β} {p : ℝ≥0∞} {μ : Measure α}
-  (hui : UnifIntegrable f p μ) (E : Set α)
-    : UnifIntegrable (fun i => E.indicator (f i)) p μ := by
+    (hui : UnifIntegrable f p μ) (E : Set α) :
+    UnifIntegrable (fun i => E.indicator (f i)) p μ := by
   intro ε hε; obtain ⟨δ, hδ_pos, hε⟩ := hui hε
   use δ, hδ_pos; intro i s hs hμs
   dsimp only -- cosmetic eta reduction (but for some reason `eta_reduce` does nothing)
@@ -156,12 +156,11 @@ theorem UnifIntegrable.indicator {f : ι → α → β} {p : ℝ≥0∞} {μ : M
     ENNReal.ofReal ε ≥ _ := (hε i s hs hμs)
     _ ≥ _ := (snorm_indicator_le _)
     _ = _ := by rw [indicator_indicator, inter_comm, ← indicator_indicator]
-  -- alternative: rw [indicator_indicator, inter_comm, ← indicator_indicator]; exact (hδ i s hs hμs).trans' (snorm_indicator_le (s.indicator (f i)))
 
 /-- Uniform integrability is preserved by restriction of measure to measurable set. -/
 theorem unifIntegrable_restrict {f : ι → α → β} {p : ℝ≥0∞} {μ : Measure α} {E : Set α}
-  (hui : UnifIntegrable f p μ) (hE : MeasurableSet E)
-    : UnifIntegrable (fun i => f i) p (μ.restrict E) := by
+    (hui : UnifIntegrable f p μ) (hE : MeasurableSet E) :
+    UnifIntegrable (fun i => f i) p (μ.restrict E) := by
   intro ε hε; obtain ⟨δ, hδ_pos, hε⟩ := hui hε
   use δ, hδ_pos; intro i s hs hμs
   have hμEs : μ (E ∩ s) ≤ _ := by calc
@@ -172,7 +171,8 @@ theorem unifIntegrable_restrict {f : ι → α → β} {p : ℝ≥0∞} {μ : Me
   eta_reduce -- cosmetic, goal is met without it
   calc
     _ = _ := (snorm_indicator_eq_snorm_restrict hE).symm
-    _ = _ := by conv => { lhs; rw [indicator_indicator, ← E.inter_self, inter_assoc, ← indicator_indicator] }
+    _ = _ := by conv => { lhs; rw [indicator_indicator, ← E.inter_self, inter_assoc,
+                                   ← indicator_indicator] }
     _ = _ := snorm_indicator_eq_snorm_restrict hE
     _ ≤ _ := by exact (snorm_mono_measure _ μ.restrict_le_self)
     _ ≤ ENNReal.ofReal ε := hEε

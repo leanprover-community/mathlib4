@@ -54,7 +54,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
     Tendsto (fun M : ℕ => { x | f x < 1 / (↑M + 1) }.indicator f x) atTop (𝓝 0) := by
   by_cases hfx : f x ≠ 0
-  . refine' tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (1 / f x).toReal) fun n hn => _
+  · refine' tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (1 / f x).toReal) fun n hn => _
     rw [Set.indicator_of_not_mem]
     simp only [not_lt, Set.mem_setOf_eq, one_div, inv_le_iff_inv_le]
     simp only [one_div, ge_iff_le, Nat.ceil_le] at hn
@@ -64,7 +64,7 @@ theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
       _ ≤ _ := ENNReal.ofReal_le_ofReal hn
       _ = _ := by norm_cast
       ↑n ≤ ↑n + 1 := by norm_num
-  . refine' tendsto_atTop_of_eventually_const (i₀ := 0) fun n _ => _
+  · refine' tendsto_atTop_of_eventually_const (i₀ := 0) fun n _ => _
     simp only [ne_eq, not_not] at hfx
     simp only [mem_setOf_eq, not_lt, indicator_apply_eq_zero]
     intro; assumption
