@@ -757,6 +757,17 @@ theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·)
 theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
 theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
 
+instance DecidableRel.compl (r : α → α → Prop) [i : DecidableRel r] : DecidableRel rᶜ :=
+  fun a b =>
+    Decidable.casesOn (motive := fun _ ↦ _ → Decidable _) (i a b)
+      (fun h _ ↦ isTrue h)
+      (fun h _ ↦ isFalse (not_not_intro h)) rfl
+
+instance NEq.compl : IsEquiv α (·≠·)ᶜ := by
+  have cnot : Notᶜ = id := funext fun _ ↦ propext not_not
+  simp_rw [Pi.compl_def, ne_eq, ← Pi.compl_apply, cnot]
+  exact eq_isEquiv α
+
 /-! ### Order instances on the function space -/
 
 

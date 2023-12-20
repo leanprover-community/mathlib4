@@ -659,10 +659,11 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
           | _, _, Sublist.cons₂ t _, h => absurd rfl h⟩
 
 /--If the first element of two lists are different, then a sublist relation can be reduced. -/
-theorem sublist_cons_neq [DecidableEq α] {a b} (h₁ : a ≠ b) (h₂ : a::l₁ <+ b::l₂) :
+theorem sublist_cons_neq {a b} (h₁ : a ≠ b) (h₂ : a::l₁ <+ b::l₂) :
     a::l₁ <+ l₂ := by
-  have := isSublist_iff_sublist.mpr h₂
-  rwa [isSublist, if_neg h₁, isSublist_iff_sublist] at this
+  cases h₂
+  next h₄ => assumption
+  next h₄ => exact (h₁ rfl).rec
 
 /-! ### indexOf -/
 
