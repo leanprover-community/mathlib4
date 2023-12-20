@@ -245,12 +245,12 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
   -- they're both inverses to g. In fact, the latter suffices for our proof.
-  -- have : ∀ x y, EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
+  -- have (x y) : EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
   have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
     eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
       (LeftInvOn.congr_left ((Φ x).toPartialHomeomorph).rightInvOn
         ((Φ x).toPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
-      (fun _y hy ↦(Φ x).map_target hy)
+      (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f
     invFun := g
@@ -261,9 +261,8 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
       intro y
       let x := g y
       obtain ⟨hx, hfx⟩ := hyp x
-      apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt
-      apply (((Φ x).open_target).mem_nhds ?_)
-      have : y = (Φ x) x := (Eq.congr (hgInverse.2 y) (hfx hx)).mp rfl
+      apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
+      have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx
   }
 
