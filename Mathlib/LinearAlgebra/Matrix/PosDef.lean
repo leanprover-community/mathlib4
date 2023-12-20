@@ -87,6 +87,13 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 #align matrix.pos_semidef.submatrix Matrix.PosSemidef.submatrix
 
+theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
+  refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
+  convert hM.2 (star x) using 1
+  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+
+theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
+
 protected lemma zero : PosSemidef (0 : Matrix n n R) :=
   ⟨isHermitian_zero, by simp⟩
 
@@ -103,15 +110,23 @@ protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : 
     rw [pow_succ', pow_succ]
     simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
+protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
+  by_cases h : IsUnit M.det
+  · have := (conjTranspose_mul_mul_same hM M⁻¹).conjTranspose
+    rwa [mul_nonsing_inv_cancel_right _ _ h, conjTranspose_conjTranspose] at this
+  · rw [nonsing_inv_apply_not_isUnit _ h]
+    exact .zero
+
+protected lemma zpow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (z : ℤ) :
+    (M ^ z).PosSemidef := by
+  obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
+  · simpa using hM.pow n
+  · simpa using (hM.pow n).inv
+
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
-
-theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
-  refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
-  convert hM.2 (star x) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 
 section sqrt
 

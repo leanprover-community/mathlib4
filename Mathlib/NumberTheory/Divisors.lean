@@ -288,8 +288,9 @@ theorem map_div_left_divisors :
     n.divisors.map ⟨fun d => (n / d, d), fun p₁ p₂ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
+  ext
   rw [map_swap_divisorsAntidiagonal, ← map_div_right_divisors, Finset.map_map]
-  rfl
+  simp
 #align nat.map_div_left_divisors Nat.map_div_left_divisors
 
 theorem sum_divisors_eq_sum_properDivisors_add_self :
@@ -344,7 +345,7 @@ theorem divisors_injective : Function.Injective divisors :=
 
 @[simp]
 theorem divisors_inj {a b : ℕ} : a.divisors = b.divisors ↔ a = b :=
-  ⟨fun x => divisors_injective x, congrArg divisors⟩
+  divisors_injective.eq_iff
 
 theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆ n.properDivisors) :
     ((∑ x in s, x) = ∑ x in n.properDivisors, x) → s = n.properDivisors := by
