@@ -558,11 +558,13 @@ lemma npowRec_mul [One M] [Mul M]
   | zero => simp [Nat.mul_zero, npowRec]
   | succ m ih => rw [Nat.mul_succ, Nat.add_comm, npowRec_add one_mul mul_assoc, npowRec, ih]
 
-@[to_additive]
-def npowBinRecAux [Mul M] (n : ℕ) : M → M → M :=
+/-- Auxiliary function for `nsmulBinRec`. -/
+@[to_additive "Auxiliary function for `npowBinRec`."]
+abbrev npowBinRecAux [Mul M] (n : ℕ) : M → M → M :=
   n.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (x * y) y) (x * x)
 
-@[to_additive]
+/-- `npow` implemented using binary recursion. Friendlier to compute than `npowRec`. -/
+@[to_additive "`nsmul` implemented using binary recursion. Friendlier to compute than `npowRec`."]
 def npowBinRec [One M] [Mul M] (n : ℕ) : M → M :=
   npowBinRecAux n 1
 
@@ -900,7 +902,8 @@ def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
 
 attribute [to_additive existing] zpowRec
 
-@[to_additive]
+/-- `zpow` implemented using binary recursion. Friendlier to compute than `zpowRec`. -/
+@[to_additive "`zsmul` implemented using binary recursion. Friendlier to compute than `zsmulRec`."]
 def zpowBinRec {M : Type*} [One M] [Mul M] [Inv M] (a : ℤ) (x : M) : M :=
   match a with
   | Int.ofNat n => npowBinRec n x
