@@ -106,6 +106,17 @@ lemma IsExact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarit
   subst hij hjk
   exact hS.exact i hk
 
+abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarith)
+    (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i j k
+
+/-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
+when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
+abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i (i + 1) (i + 2)
+
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
 def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)

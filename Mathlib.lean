@@ -246,6 +246,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.ExactSequence
+import Mathlib.Algebra.Homology.ExactSequenceFour
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Factorizations.CM5a
 import Mathlib.Algebra.Homology.Factorizations.CM5b
@@ -312,11 +313,13 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.SpectralObject.Basic
 import Mathlib.Algebra.Homology.SpectralObject.Misc
+import Mathlib.Algebra.Homology.SpectralObject.ShortComplex
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.Construction
 import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
 import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
+import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible.Basic
