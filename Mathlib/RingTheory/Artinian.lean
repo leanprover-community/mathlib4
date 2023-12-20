@@ -519,6 +519,11 @@ lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
   rw [f.injective <| Subtype.ext <| (f k).2.eq_of_le (f N.succ).2.isPrime.1 hk2] at hk1
   simp only [Finset.mem_range, lt_self_iff_false] at hk1
 
+lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
+  convert maximal_ideals_finite R using 1
+  ext I
+  exact ⟨fun h ↦ @isMaximal_of_isPrime (p := I) _ _ h, fun h ↦ h.isPrime⟩
+
 variable (R) in
 /--
 collection of all maximal ideals in artinian ring

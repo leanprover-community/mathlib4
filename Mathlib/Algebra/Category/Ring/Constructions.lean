@@ -215,6 +215,52 @@ set_option linter.uppercaseLean3 false in
 
 end Product
 
+section Pi
+
+variable {ι : Type u} (f : ι → CommRingCat.{u})
+
+/--
+The categorical pi object and usual pi object
+-/
+@[simps!]
+def piFan : Fan f :=
+  Fan.mk (CommRingCat.of ((i : ι) → f i)) fun i ↦
+    { toFun := fun g ↦ g i
+      map_one' := by aesop
+      map_mul' := by aesop
+      map_zero' := by aesop
+      map_add' := by aesop }
+
+/--
+The categorical pi object and usual pi object
+-/
+def piFanIsLimit : IsLimit (piFan f) where
+  lift s :=
+  { toFun := fun x i ↦ s.π.app ⟨i⟩ x
+    map_one' := by aesop
+    map_mul' := by aesop
+    map_zero' := by aesop
+    map_add' := by aesop }
+  fac := by aesop
+  uniq s g h := FunLike.ext _ _ fun x ↦ funext fun i ↦ FunLike.congr_fun (h ⟨i⟩) x
+
+/--
+The categorical pi object and usual pi object
+-/
+def piIsoPi : ∏ f ≅ CommRingCat.of ((i : ι) → f i) :=
+  limit.isoLimitCone ⟨_, piFanIsLimit f⟩
+
+
+/--
+The categorical pi object and usual pi object
+-/
+def piEquivPi : (∏ f : CommRingCat) ≃+* ((i : ι) → f i) :=
+  RingEquiv.ofHomInv (piIsoPi f).hom (piIsoPi f).inv
+    (piIsoPi f).3 (piIsoPi f).4
+
+
+end Pi
+
 section Equalizer
 
 variable {A B : CommRingCat.{u}} (f g : A ⟶ B)
