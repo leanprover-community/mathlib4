@@ -498,8 +498,11 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
       localization_surjective (nonZeroDivisors (R ⧸ p)) (FractionRing (R ⧸ p))⟩).isField _
     <| Field.toIsField <| FractionRing (R ⧸ p)
 
+lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
+⟨fun h ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
+
 variable (R) in
-lemma prime_spectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
+lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   let Spec := {I : Ideal R | I.IsPrime}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
     (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
@@ -516,8 +519,8 @@ variable (R) in
 [Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
 -/
 lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
-  convert prime_spectrum_finite R using 3
-  exact ⟨Ideal.IsMaximal.isPrime, fun h => isMaximal_of_isPrime _⟩
+  simp_rw [← isPrime_iff_isMaximal]
+  apply primeSpectrum_finite R
 
 
 end IsArtinianRing
