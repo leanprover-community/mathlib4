@@ -398,12 +398,16 @@ theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
 #align basis.to_dual_equiv_apply Basis.toDualEquiv_apply
 
 -- Not sure whether this is true for free modules over a commutative ring
-/-- A vector space over a field is isomorphic to its dual if and only if it is finite-dimensional.-/
-theorem linearEquiv_dual_iff_finiteDimensional
-    {K V : Type*} [Field K] [AddCommGroup V] [Module K V] :
+/-- A vector space over a field is isomorphic to its dual if and only if it is finite-dimensional:
+  a consequence of the Erdős-Kaplansky theorem. -/
+theorem linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Module K V] :
     Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
-  sorry -- rw [← Module.rank_lt_alpeh0_iff]
-  -- refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
+  rw [FiniteDimensional, ← Module.rank_lt_alpeh0_iff]
+  by_contra!
+  apply (lift_rank_lt_rank_dual this).ne
+  have := e.lift_rank_eq
+  rwa [lift_umax.{uV,uK}, lift_id'.{uV,uK}] at this
 
 /-- Maps a basis for `V` to a basis for the dual space. -/
 def dualBasis : Basis ι R (Dual R M) :=

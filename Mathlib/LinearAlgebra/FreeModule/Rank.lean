@@ -142,7 +142,7 @@ section DivisionRing
 
 variable (K : Type u) [DivisionRing K]
 
-/-- Preliminary lemma for the Erdős-Kaplansky Theorem from https://mathoverflow.net/a/168624 -/
+/-- Key lemma towards the Erdős-Kaplansky theorem from https://mathoverflow.net/a/168624 -/
 theorem rank_pi_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
     (Finsupp.lcoeFun.rank_le_of_injective <| by exact FunLike.coe_injective)
