@@ -1407,7 +1407,7 @@ lemma Basis.mem_center_iff {A}
           ∧ (b i * z) * b j = b i * (z * b j)
           ∧ (b i * b j) * z = b i * (b j * z) := by
   constructor
-  · intro h;
+  · intro h
     constructor
     · intro i
       apply (h.1 (b i)).symm
