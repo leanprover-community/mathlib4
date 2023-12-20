@@ -275,6 +275,22 @@ theorem LinearIndependent.map' (hv : LinearIndependent R v) (f : M →ₗ[R] M')
   hv.map <| by simp [hf_inj]
 #align linear_independent.map' LinearIndependent.map'
 
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
+`j : M →+ M'` is an injective monoid map, such that the scalar multiplications on `M` and `M'` are
+compatible, then `j` sends linearly independent families of vectors to linearly independent
+families of vectors. As a special case, taking `R = R'` it is `LinearIndependent.map'`. -/
+theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
+    [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
+    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : Injective j)
+    (hc : ∀ (s : R) (x : M), j (s • x) = i s • j x) : LinearIndependent R' (j ∘ v) := by
+  obtain ⟨i', hi'⟩ := hi.hasRightInverse
+  rw [linearIndependent_iff'] at hv ⊢
+  intro S r' H s hs
+  have h1 (s : ι) : r' s • (j ∘ v) s = j (i' (r' s) • v s) := by rw [hc, hi', comp_apply]
+  simp_rw [h1, ← map_sum, ← map_zero (f := j)] at H
+  replace H := congr_arg i <| hv _ _ (hj H) s hs
+  rwa [hi', _root_.map_zero] at H
+
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/
 theorem LinearIndependent.of_comp (f : M →ₗ[R] M') (hfv : LinearIndependent R (f ∘ v)) :
