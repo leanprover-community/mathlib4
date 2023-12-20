@@ -31,38 +31,39 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 
 open Function
 
-variable {R : Type*}
+/-- A mixin for multi-binomial coefficients. -/
+class IsBinomialRing (R : Type*) [Semiring R] where
+  /-- Multiplication by positive integers is injective -/
+  nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
+  /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
+  multichoose : R → ℕ → R
+  /-- `ascPochhammer R n` evaluated at any `r` is divisible by n! (witnessed by multichoose) -/
+  factorial_nsmul_multichoose (r : R) (n : ℕ) :
+    n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n)
 
 section Binomial
 
-/-- A `Prop`-valued mixin for multi-binomial coefficients. -/
-class Binomial (R : Type*) [Semiring R] : Prop where
-  /-- Multiplication by positive integers is injective -/
-  nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
-  /-- `ascFactorial r n` is divisible by n! -/
-  factorial_nsmul_multichoose (r : R) (n : ℕ) : ∃ (s : R),
-    n.factorial • s = Polynomial.eval r (ascPochhammer R n)
-
 namespace Ring
 
-theorem nsmul_right_injective [Semiring R] [Binomial R] (n : ℕ) (h : n ≠ 0) :
-    Injective (n • · : R → R) := Binomial.nsmul_right_injective n h
+variable {R : Type*} [Semiring R] [IsBinomialRing R]
+
+theorem nsmul_right_injective (n : ℕ) (h : n ≠ 0) :
+    Injective (n • · : R → R) := IsBinomialRing.nsmul_right_injective n h
 
 /-- This is a generalization of the combinatorial multichoose function, given by choosing with
 replacement. -/
-noncomputable def multichoose [Semiring R] [Binomial R] (r : R) (n : ℕ) : R :=
-  Exists.choose (Binomial.factorial_nsmul_multichoose r n)
+def multichoose (r : R) (n : ℕ) : R := IsBinomialRing.multichoose r n
 
-theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer [Semiring R] [Binomial R] (r : R)
-    (n : ℕ) : n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
-  Exists.choose_spec (Binomial.factorial_nsmul_multichoose r n)
+theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer (r : R) (n : ℕ) :
+    n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
+  IsBinomialRing.factorial_nsmul_multichoose r n
 
-instance naturals_binomial : Binomial ℕ := by
-  refine Binomial.mk ?nsmul_right_injective ?factorial_nsmul_multichoose
+instance naturals_binomial : IsBinomialRing ℕ := by
+  refine IsBinomialRing.mk ?nsmul_right_injective ?multichoose ?factorial_nsmul_multichoose
   intro n hn r s hrs
   exact Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
-  intro n k
-  use Nat.multichoose n k
+  use Nat.multichoose
+  intro r n
   rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
     ascPochhammer_nat_eq_descFactorial]
 
