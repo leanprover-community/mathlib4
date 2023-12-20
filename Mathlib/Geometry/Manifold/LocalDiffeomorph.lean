@@ -89,6 +89,15 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n) (hn : 1 ≤ n)
 variable {I J M N n}
 
+/-- A diffeomorphism is a partial diffeomorphism. -/
+def _root_.Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) :
+    PartialDiffeomorph I J M N n where
+  toPartialEquiv := h.toHomeomorph.toPartialEquiv
+  open_source := isOpen_univ
+  open_target := isOpen_univ
+  contMDiffOn_toFun x _ := h.contMDiff_toFun x
+  contMDiffOn_invFun _ _ := h.symm.contMDiffWithinAt
+
 /-- A partial diffeomorphism is also a local homeomorphism. -/
 def toPartialHomeomorph : PartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
@@ -188,15 +197,6 @@ lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomo
     MDifferentiable I J f :=
   fun x ↦ mdifferentiableAt_of_isLocalDiffeomorphAt I J hn (hf x)
 
-/-- A diffeomorphism is a partial diffeomorphism. -/
-def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) :
-    PartialDiffeomorph I J M N n where
-  toPartialEquiv := h.toHomeomorph.toPartialEquiv
-  open_source := isOpen_univ
-  open_target := isOpen_univ
-  contMDiffOn_toFun := fun x _ ↦ h.contMDiff_toFun x
-  contMDiffOn_invFun := fun _ _ ↦ h.symm.contMDiffWithinAt
-
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _x ↦ ⟨Φ.toPartialDiffeomorph, by trivial, eqOn_refl Φ _⟩
@@ -248,8 +248,8 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
   -- they're both inverses to g. In fact, the latter suffices for our proof.
   -- have : ∀ x y, EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
-  have aux : ∀ x, EqOn g (Φ x).symm (Φ x).target :=
-    fun x ↦ eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
+  have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
+    eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
       (LeftInvOn.congr_left ((Φ x).toPartialHomeomorph).rightInvOn
         ((Φ x).toPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
       (fun _y hy ↦(Φ x).map_target hy)
