@@ -135,6 +135,8 @@ instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :
 -- porting note: syntactic tautology because of the way coercions work in Lean 4
 #noalign measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
 
+@[simp, norm_cast] lemma coe_mk (μ : Measure Ω) (hμ) : toMeasure ⟨μ, hμ⟩ = μ := rfl
+
 @[simp]
 theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) :=
   rfl
