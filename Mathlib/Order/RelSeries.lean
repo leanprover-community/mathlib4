@@ -163,12 +163,12 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-/-- Start of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its head is `a₀`.
+/-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
 Since a relation series is assumed to be non-empty, this is well defined. -/
 def head (x : RelSeries r) : α := x 0
 
-/-- End of a series, i.e. for `a₀ -r-> a₁ -r-> ... -r-> aₙ`, its last element is `aₙ`.  Since a
+/-- End of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its last element is `aₙ`.  Since a
 relation series is assumed to be non-empty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
@@ -347,7 +347,7 @@ def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
 
 /--
-For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
+For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
 strict series of `β` can be pulled back to a strict chain of `α` by
 `b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
 preimage of `f⁻¹ {bᵢ}`.
