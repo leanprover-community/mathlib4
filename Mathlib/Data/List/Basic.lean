@@ -954,7 +954,7 @@ def reverseRecOn {C : List α → Sort*} (l : List α) (H0 : C [])
     let ih := reverseRecOn (reverse tail) H0 H1
     rw [reverse_cons]
     exact H1 _ _ ih
-termination_by _ l _ _ => l.length
+termination_by l.length
 #align list.reverse_rec_on List.reverseRecOn
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
