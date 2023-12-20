@@ -3,6 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.Algebra.DirectSum.Ring
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
@@ -12,7 +13,8 @@ import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 /-!
 # Modular forms
 
-This file defines modular forms and proves some basic properties about them.
+This file defines modular forms and proves some basic properties about them. Including constructing
+the graded ring of modular forms.
 
 We begin by defining modular forms and cusp forms as extension of `SlashInvariantForm`s then we
 define the space of modular forms, cusp forms and prove that the product of two modular forms is a
@@ -397,3 +399,145 @@ instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).boundedAtFilter
 
 end CuspForm
+
+namespace ModularForm
+
+section GradedRing
+
+variable (Γ : Subgroup SL(2, ℤ)) (k : ℤ)
+
+--cast for modular forms, which is useful for removing `heq`'s.
+def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
+    where
+  toFun := (f : ℍ → ℂ)
+  slash_action_eq' := by intro A; have := f.slash_action_eq' A; convert this; exact h.symm
+  holo' := f.holo'
+  bdd_at_infty' := by intro A; convert f.bdd_at_infty' A <;> exact h.symm
+
+#align modular_form.mcast ModularForm.mcast
+
+theorem type_eq {a b : ℤ} (Γ : Subgroup SL(2, ℤ)) (h : a = b) : ModularForm Γ a = ModularForm Γ b := by
+  induction h
+  rfl
+
+theorem cast_eq_mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) :
+    cast (type_eq Γ h) f = mcast h f := by
+  induction h
+  ext1
+  rfl
+
+theorem hEq_one_mul (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
+    HEq ((1 : ModularForm Γ 0).mul f) f := by
+  apply heq_of_cast_eq (type_eq Γ (zero_add k).symm).symm
+  funext
+  rw [cast_eq_mcast, mcast]
+  simp [one_coe_eq_one, one_mul]
+  ext1
+  rfl
+  simp only [zero_add]
+
+theorem hEq_mul_one (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
+    HEq (f.mul (1 : ModularForm Γ 0)) f :=
+  by
+  apply heq_of_cast_eq (type_eq Γ (add_zero k).symm).symm
+  funext
+  rw [cast_eq_mcast, mcast]
+  simp only [mul_coe, one_coe_eq_one, mul_one]
+  ext1
+  rfl
+  simp only [add_zero]
+
+theorem hEq_mul_assoc {a b c : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b)
+    (h : ModularForm Γ c) : HEq ((f.mul g).mul h) (f.mul (g.mul h)) := by
+  apply heq_of_cast_eq (type_eq Γ (add_assoc a b c))
+  rw [cast_eq_mcast, mcast]
+  ext1
+  simp only [mul_coe, Pi.mul_apply, ← mul_assoc]
+  rfl
+  apply add_assoc
+
+theorem hEq_mul_comm (a b : ℤ) (f : ModularForm Γ a) (g : ModularForm Γ b) :
+    HEq (f.mul g) (g.mul f) := by
+  apply heq_of_cast_eq (type_eq Γ (add_comm a b))
+  rw [cast_eq_mcast, mcast]
+  ext1
+  simp only [mul_coe, Pi.mul_apply, mul_comm]
+  rfl
+  apply add_comm
+
+
+variable (ι : Type _) (A : ι → Type _)
+variable [Zero ι]
+variable [GradedMonoid.GOne A]
+
+@[simp]
+theorem one_fst : (1 : GradedMonoid A).fst = 0 :=
+  rfl
+@[simp]
+theorem one_snd : (1 : GradedMonoid A).snd = 1 :=
+  rfl
+
+
+instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne fun k => ModularForm Γ k
+    where
+  one := 1
+
+instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul fun k => ModularForm Γ k
+    where
+  mul f g := f.mul g
+
+theorem GradedMonoid.mk_snd  {A : ι → Type _} (i : ι) (a : A i) :
+  (GradedMonoid.mk i a).snd = a := rfl
+
+instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing fun k => ModularForm Γ k
+    where
+  mul f g := f.mul g
+  one := 1
+  one_mul := by
+    intro f
+    rw [GradedMonoid.GOne.toOne, GradedMonoid.GMul.toMul]
+    apply Sigma.ext
+    · simp only [(· * ·), one_fst, zero_add]
+    · simp only [(· * ·), one_fst, one_snd, Submodule.coe_mk, one_mul, hEq_one_mul]
+  mul_one := by
+    intro f
+    rw [GradedMonoid.GOne.toOne, GradedMonoid.GMul.toMul]
+    apply Sigma.ext
+    · simp only [(· * ·), one_fst, add_zero]
+    · simp only [(· * ·), one_fst, one_snd, Submodule.coe_mk, mul_one, hEq_mul_one]
+  mul_assoc := by
+    intro f g h
+    rw [GradedMonoid.GMul.toMul]
+    apply Sigma.ext
+    · apply add_assoc
+    · simp only [(· * ·), Submodule.coe_mk, hEq_mul_assoc]
+  mul_zero := by intro i j f; ext1; simp
+  zero_mul := by intro i j f; ext1; simp
+  mul_add := by
+    intro i j f g h
+    ext1
+    simp only [Pi.mul_apply, mul_add, mul_coe, add_apply]
+  add_mul := by
+    intro i j f g h
+    ext1
+    simp only [add_mul, mul_coe, Pi.mul_apply, add_apply]
+  mul_comm := by
+    intro f g
+    rw [GradedMonoid.GMul.toMul]
+    apply Sigma.ext
+    · apply add_comm
+    · apply hEq_mul_comm
+  gnpow_zero' := by
+    intro f
+    apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_zero]
+  gnpow_succ' := by
+    intro n f
+    rw [GradedMonoid.GMul.toMul]
+    apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_succ]
+  natCast n := n • (1 : ModularForm Γ 0)
+  natCast_zero := by simp
+  natCast_succ := by intro n; simp only [add_smul, one_nsmul, add_right_inj]
+  intCast n := n • (1 : ModularForm Γ 0)
+  intCast_ofNat := by simp
+  intCast_negSucc_ofNat := by intro; simp only [Int.negSucc_coe]; apply _root_.neg_smul
+#align modular_form.graded_mod_ring ModularForm.gradedModRing
