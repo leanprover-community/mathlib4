@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
-import Mathlib.Algebra.Homology.SpectralSequenceNew.SpectralObject
+import Mathlib.Algebra.Homology.SpectralObject.Basic
 import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
 
 open CategoryTheory Category Limits
