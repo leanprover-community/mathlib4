@@ -806,7 +806,7 @@ lemma riemannCompletedZeta_residue_one :
   refine ((Tendsto.sub ?_ ?_).mono_left nhdsWithin_le_nhds).add ?_
   · rw [(by simp : 𝓝 (0 : ℂ) = 𝓝 ((1 - 1) * riemannCompletedZeta₀ 1))]
     apply ((continuous_sub_right _).mul differentiable_completed_zeta₀.continuous).tendsto
-  · rw [(by simp : 𝓝 (0 : ℂ) = 𝓝 ((1 - 1)  * (1 / 1)))]
+  · rw [(by simp : 𝓝 (0 : ℂ) = 𝓝 ((1 - 1) * (1 / 1)))]
     exact (((continuous_sub_right _).continuousAt).mul <|
       continuousAt_const.div continuousAt_id one_ne_zero)
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
@@ -817,7 +817,7 @@ lemma riemannCompletedZeta_residue_one :
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   suffices : Tendsto (fun s => (s - 1) *
       (π ^ (s / 2) * riemannCompletedZeta s / Gamma (s / 2))) (𝓝[≠] 1) (𝓝 1)
-  · refine this.congr' <| (eventually_ne_nhdsWithin (one_ne_zero' ℂ)).mp (eventually_of_forall ?_)
+  · refine this.congr' <| (eventually_ne_nhdsWithin one_ne_zero).mp (eventually_of_forall ?_)
     intro x hx
     simp [riemannZeta_def, Function.update_noteq hx]
   have h0 : Tendsto (fun s ↦ π ^ (s / 2) : ℂ → ℂ) (𝓝[≠] 1) (𝓝 (π ^ (1 / 2 : ℂ)))
