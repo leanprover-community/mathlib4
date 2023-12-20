@@ -807,8 +807,8 @@ def toMultilinearMap_set [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (x : 
     rw [heq a, heq b, heq (a + b)]
     simp only [Pi.add_apply, MultilinearMap.map_add]
   map_smul' z i c a := by
--- This is copy-pasted code from the proof of map_add'. If I try to make it an outside lemma, rw refuses to
--- take it for some reason.
+-- This is copy-pasted code from the proof of map_add'. If I try to make it an outside lemma,
+-- rw refuses to take it for some reason.
     have heq : ∀ (c : (i : ι) → M₁ i),
         (fun j ↦ if h : j ∈ s then Function.update z i c ⟨j, h⟩ j else x j) =
         Function.update (fun j => if h : j ∈ s then z ⟨j, h⟩ j else x j) i (c i.1) := by
@@ -943,8 +943,8 @@ lemma linearDerive_eq_toFormalMultilinearSeries_degreeOne
     fun _ _ => by rw [Finset.piecewise_singleton]
   have hinj : ∀ (i j : ι) (hi : i ∈ Finset.univ) (hj : j ∈ Finset.univ), I i hi = I j hj → i = j :=
     fun _ _ _ _ => by simp only [Subtype.mk.injEq, Finset.singleton_inj, imp_self]
-  have hsurj : ∀ s ∈ Finset.univ (α := {s : Finset ι // s.card = 1}), ∃ (i : ι) (hi : i ∈ Finset.univ),
-      s = I i hi := by
+  have hsurj : ∀ s ∈ Finset.univ (α := {s : Finset ι // s.card = 1}),
+      ∃ (i : ι) (hi : i ∈ Finset.univ), s = I i hi := by
     intro ⟨s, hs⟩ _
     rw [Finset.card_eq_one] at hs
     existsi Classical.choose hs
