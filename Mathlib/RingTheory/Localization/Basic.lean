@@ -843,7 +843,8 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
 #align is_localization.is_localization_of_base_ring_equiv IsLocalization.isLocalization_of_base_ringEquiv
 
 theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
-    IsLocalization M S ↔ haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra;
+    IsLocalization M S ↔
+      haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
       IsLocalization (M.map h.toMonoidHom) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine' ⟨fun _ => isLocalization_of_base_ringEquiv M S h, _⟩
