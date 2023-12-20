@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Finite
 ## Main definitions
 
 * `Filter` : filters on a set;
-* `Filter.principal` : specific filters;
+* `Filter.principal` : filter of all sets containing a given set;
 * `Filter.map`, `Filter.comap` : operations on filters;
 * `Filter.Tendsto` : limit with respect to filters;
 * `Filter.Eventually` : `f.eventually p` means `{x | p x} ∈ f`;
