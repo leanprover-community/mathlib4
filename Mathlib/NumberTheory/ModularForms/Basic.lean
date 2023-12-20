@@ -404,7 +404,7 @@ namespace ModularForm
 
 section GradedRing
 
---cast for modular forms, which is useful for removing `heq`'s.
+/--cast for modular forms, which is useful for removing `heq`'s.-/
 def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
     where
   toFun := (f : ℍ → ℂ)
@@ -434,8 +434,7 @@ theorem hEq_one_mul (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) 
   simp only [zero_add]
 
 theorem hEq_mul_one (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
-    HEq (f.mul (1 : ModularForm Γ 0)) f :=
-  by
+    HEq (f.mul (1 : ModularForm Γ 0)) f := by
   apply heq_of_cast_eq (type_eq Γ (add_zero k).symm).symm
   funext
   rw [cast_eq_mcast, mcast]
