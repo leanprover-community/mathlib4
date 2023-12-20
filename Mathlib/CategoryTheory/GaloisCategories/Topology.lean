@@ -242,7 +242,7 @@ lemma lift_transitive_subobjects (X : C) (Y : FintypeCat.{u}) (i : Y ⟶ F.obj X
       = (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map j' z :=
     hz.symm
   obtain ⟨u', hu'⟩ :=
-    @connected_component_unique.{u+1, u, u, u}
+    @connected_component_unique
     (Action FintypeCat (MonCat.of (Aut F))) _
     (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat)
     _ _ X' Y' Z'
@@ -255,7 +255,7 @@ lemma lift_transitive_subobjects (X : C) (Y : FintypeCat.{u}) (i : Y ⟶ F.obj X
   exact hc
   exact hm
   have h2 : i' = u'.hom ≫ (H F).map f := by
-    apply @evaluationInjectiveOfConnected.{_, _, _, w} _ _
+    apply @evaluationInjectiveOfConnected _ _
       (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat) _ _ Y' X' _ y
     show (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map i' y
       = (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat).map (u'.hom ≫ (H F).map f) y
@@ -283,26 +283,19 @@ lemma lift_subobjects (X : C) (Y : FintypeCat.{u}) (i : Y ⟶ F.obj X)
     : ∃ (Z : C) (f : Z ⟶ X) (u : F.obj Z ≅ Y),
     Mono f ∧ u.hom ≫ i = F.map f := by
   let Y' : Action FintypeCat.{u} (MonCat.of (Aut F)) := Action.ofMulAction (Aut F) Y
-  obtain ⟨ι, hf, f, t, hc⟩ := hasDecompConnectedComponents'.{u, _, _, u}
+  obtain ⟨ι, hf, f, t, hc⟩ := hasDecompConnectedComponents'
     (forget₂ _ FintypeCat.{u}) Y'
   let f' (i : ι) : FintypeCat.{u} := (f i).V
   have (i : ι) : MulAction (Aut F) (f' i) := sorry
   have (i : ι) : MulAction.IsPretransitive (Aut F) (f' i) := sorry
   have (i : ι) : Nonempty (f' i) := sorry
   have : Fintype ι := Fintype.ofFinite ι
-  have inst0 : HasCoproduct.{_, _, _} f := sorry
-  have inst1 : HasCoproduct fun j => (f j).V := sorry
-  have inst2 : PreservesColimit.{_, _, _, u} (Discrete.functor f)
-    (forget₂ (Action FintypeCat.{u} (MonCat.of (Aut F))) FintypeCat.{u}) := sorry
-  let is1 : (∐ f).V ≅ ∐ f' :=
-    @PreservesCoproduct.iso.{0, u, u, u+1, u+1}
-    _ _ _ _
-    (forget₂ _ FintypeCat.{u}) _ f inst0 inst1 inst2
+  let is1 : (∐ f).V ≅ ∐ f' := PreservesCoproduct.iso (forget₂ _ FintypeCat) f
   let i' (j : ι) : f' j ⟶ F.obj X := Sigma.ι f' j ≫ is1.inv ≫ (forget₂ _ FintypeCat).map t.hom ≫ i
   have (i : ι) : Mono (i' i) := sorry
   have h' (i : ι) : ∀ (σ : Aut F) (y : f' i), (i' i) (σ • y) = σ • (i' i) y := sorry
   have (i : ι) : ∃ (Z : C) (f : Z ⟶ X) (u : (f' i) ≅ F.obj Z), ConnectedObject Z ∧ Mono f ∧ i' i = u.hom ≫ F.map f :=
-    lift_transitive_subobjects.{u, v, u, u} F X (f' i) (i' i) (h' i)
+    lift_transitive_subobjects F X (f' i) (i' i) (h' i)
   choose gZ gf gu h3 h4 h5 using this
   use ∐ gZ
   use Sigma.desc gf

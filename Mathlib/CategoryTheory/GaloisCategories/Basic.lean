@@ -4,7 +4,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.RepresentationTheory.Action
+import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Category.Preorder
@@ -26,7 +26,8 @@ class PreGaloisCategory (C : Type u) [Category.{v, u} C] : Prop where
   hasPullbacks : HasPullbacks C
   -- (G2)
   hasFiniteCoproducts : HasFiniteCoproducts C
-  hasQuotientsByFiniteGroups (G : Type w) [Group G] [Finite G] : HasColimitsOfShape C (SingleObj G ⥤ C)
+  hasQuotientsByFiniteGroups (G : Type v) [Group G] [Finite G] :
+    HasColimitsOfShape (SingleObj G) C
   -- (G3)
   epiMonoFactorisation {X Z : C} (f : X ⟶ Z) : ∃ (Y : C) (p : X ⟶ Y) (i : Y ⟶ Z),
     Epi p ∧ Mono i ∧ p ≫ i = f
@@ -44,7 +45,7 @@ class FibreFunctor {C : Type u} [Category.{v, u} C] [PreGaloisCategory C] (F : C
   preservesEpis : Functor.PreservesEpimorphisms F
   preservesQuotientsByFiniteGroups (G : Type w) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F
- -- (G6)
+  -- (G6)
   reflectsIsos : ReflectsIsomorphisms F
 
 class ConnectedObject {C : Type u} [Category.{v, u} C] (X : C) : Prop where
@@ -129,7 +130,6 @@ instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   have : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) :=
     fst_iso_of_mono_eq (F.map f)
   let ϕ : F.obj (pullback f f) ≅ pullback (F.map f) (F.map f) := PreservesPullback.iso F f f
-
   have : ϕ.hom ≫ pullback.fst = F.map pullback.fst := PreservesPullback.iso_hom_fst F f f
   have : IsIso (F.map (pullback.fst : pullback f f ⟶ X)) := by
     rw [←this]

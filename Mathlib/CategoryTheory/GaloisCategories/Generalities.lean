@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.Data.Finite.Card
-import Mathlib.RepresentationTheory.Action
 
 universe u v w v₁ u₁ u₂ w₂
 
@@ -468,17 +467,3 @@ example (X Y : Type u) (x : X) (y : Y) :
     @prod.fst (Type u) _ X Y _ ((Types.binaryProductIso X Y).inv (x, y)) = x := by
   rw [←Types.binaryProductIso_hom_comp_fst]
   simp only [types_comp_apply, inv_hom_id_apply]
-
-section Action
-
-variable (V : Type (u + 1)) [LargeCategory V] (G : MonCat.{u})
-
-instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
-  out _ _ _ :=
-    Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
-
-instance [HasFiniteCoproducts V] : HasFiniteCoproducts (Action V G) where
-  out _ :=
-    Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
-
-end Action
