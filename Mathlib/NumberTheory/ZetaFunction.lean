@@ -797,3 +797,39 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     rw [inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ pi_pos.ne'),
       inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ two_ne_zero), one_mul, one_mul]
 #align riemann_zeta_neg_nat_eq_bernoulli riemannZeta_neg_nat_eq_bernoulli
+
+/-- The residue of `Λ(s)` at `s = 1` is equal to 1. -/
+lemma riemannCompletedZeta_residue_one :
+    Tendsto (fun s ↦ (s - 1) * riemannCompletedZeta s) (𝓝[≠] 1) (𝓝 1) := by
+  unfold riemannCompletedZeta
+  simp_rw [mul_add, mul_sub, (by simp : 𝓝 (1 : ℂ) = 𝓝 (0 - 0 + 1))]
+  refine ((Tendsto.sub ?_ ?_).mono_left nhdsWithin_le_nhds).add ?_
+  · rw [(by simp : 𝓝 (0 : ℂ) = 𝓝 ((1 - 1) * riemannCompletedZeta₀ 1))]
+    apply ((continuous_sub_right _).mul differentiable_completed_zeta₀.continuous).tendsto
+  · rw [(by simp : 𝓝 (0 : ℂ) = 𝓝 ((1 - 1)  * (1 / 1)))]
+    exact (((continuous_sub_right _).continuousAt).mul <|
+      continuousAt_const.div continuousAt_id one_ne_zero)
+  · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
+    refine eventually_nhdsWithin_of_forall (fun s hs ↦ ?_)
+    simpa using (div_self <| sub_ne_zero_of_ne <| Set.mem_compl_singleton_iff.mpr hs).symm
+
+/-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
+lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
+  suffices : Tendsto (fun s => (s - 1) *
+      (π ^ (s / 2) * riemannCompletedZeta s / Gamma (s / 2))) (𝓝[≠] 1) (𝓝 1)
+  · refine this.congr' <| (eventually_ne_nhdsWithin (one_ne_zero' ℂ)).mp (eventually_of_forall ?_)
+    intro x hx
+    simp [riemannZeta_def, Function.update_noteq hx]
+  have h0 : Tendsto (fun s ↦ π ^ (s / 2) : ℂ → ℂ) (𝓝[≠] 1) (𝓝 (π ^ (1 / 2 : ℂ)))
+  · refine ((continuousAt_id.div_const _).const_cpow ?_).tendsto.mono_left nhdsWithin_le_nhds
+    exact Or.inl <| ofReal_ne_zero.mpr pi_ne_zero
+  have h1 : Tendsto (fun s : ℂ ↦ 1 / Gamma (s / 2)) (𝓝[≠] 1) (𝓝 (1 / π ^ (1 / 2 : ℂ)))
+  · rw [← Complex.Gamma_one_half_eq]
+    refine (Continuous.tendsto ?_ _).mono_left nhdsWithin_le_nhds
+    simpa using differentiable_one_div_Gamma.continuous.comp (continuous_id.div_const _)
+  convert (riemannCompletedZeta_residue_one.mul h0).mul h1 using 2 with s
+  · ring
+  · rw [one_mul, mul_one_div, div_self]
+    rw [(by simp : (1 / 2 : ℂ) = ↑(1 / 2 : ℝ)), ← ofReal_cpow pi_pos.le, Ne.def, ofReal_eq_zero,
+      rpow_eq_zero_iff_of_nonneg pi_pos.le, not_and_or]
+    exact Or.inl pi_ne_zero
