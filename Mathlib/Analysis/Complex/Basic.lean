@@ -635,52 +635,48 @@ section slitPlane
 ### Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
 -/
 
+open scoped ComplexOrder
+
 /-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
 
-lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := by
-  ext
-  simp [mem_slitPlane_iff]
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
 
-lemma mem_slitPlane_of_pos {x : ℝ} (hx : 0 < x) : ↑x ∈ slitPlane := by
-  simp [mem_slitPlane_iff, hx]
+@[simp]
+lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
 
-open scoped ComplexOrder in
+@[simp] lemma one_mem_slitPlane : 1 ∈ slitPlane := ofReal_mem_slitPlane.2 one_pos
+
+@[simp]
+lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+
+@[simp]
+lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
+  simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
+
+@[simp]
+lemma ofNat_mem_slitPlane (n : ℕ) [h : n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+  nat_cast_mem_slitPlane.2 h.ne_zero
+
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
   mem_slitPlane_iff.trans not_le_zero_iff.symm
 
-lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 := by
-  rintro rfl
-  open scoped ComplexOrder in
-    exact mem_slitPlane_iff_not_le_zero.mp hz (le_refl 0)
+protected lemma compl_Iic_zero : (Set.Iic 0)ᶜ = slitPlane := Set.ext fun _ ↦
+  mem_slitPlane_iff_not_le_zero.symm
 
-/-- The slit plane is star-shaped with respect to the point `1`. -/
--- TODO: add variant using `StarConvex` at a suitable place
-lemma slitPlane_star_shaped {z : ℂ} (hz : 1 + z ∈ slitPlane) {t : ℝ} (ht : t ∈ Set.Icc 0 1) :
-    1 + t * z ∈ slitPlane := by
-  rw [Set.mem_Icc] at ht
-  simp only [slitPlane, Set.mem_setOf_eq, add_re, one_re, add_im, one_im, zero_add, mul_re,
-    ofReal_re, ofReal_im, zero_mul, sub_zero, mul_im, add_zero, mul_eq_zero] at hz ⊢
-  by_contra! H
-  simp only [mul_eq_zero] at H hz
-  have ht₀ : t ≠ 0
-  · rintro rfl
-    simp only [zero_mul, add_zero, true_or, and_true] at H
-    norm_num at H
-  simp only [ht₀, false_or] at H
-  replace hz := hz.neg_resolve_right H.2
-  replace H := H.1
-  have H' := mul_pos (ht.1.eq_or_lt.resolve_left ht₀.symm) hz
-  nlinarith
+lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
+  ne_of_mem_of_not_mem hz zero_not_mem_slitPlane
 
-/-- The slit plane contains the open unit ball of radius `1` around `1`. -/
-lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane := by
-  simp only [slitPlane, Set.mem_setOf_eq, add_re, one_re, add_im, one_im, zero_add]
-  simp only [norm_eq_abs] at hz
-  by_contra! H
-  linarith only [H.1, neg_lt_of_abs_lt <| (abs_re_le_abs z).trans_lt hz]
+/-- The slit plane includes the open unit ball of radius `1` around `1`. -/
+lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|
+  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_abs _).trans_lt hz
+  by linarith
+
+/-- The slit plane includes the open unit ball of radius `1` around `1`. -/
+lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=
+  ball_one_subset_slitPlane <| by simpa
 
 end slitPlane
 
