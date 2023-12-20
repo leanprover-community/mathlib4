@@ -830,7 +830,7 @@ tuple `(f i)_i` for `i ∈ T`. -/
 theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun m f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
-  -- We introduce π-systems, build from the π-system of boxes which generates `MeasurableSpace.pi`.
+  -- We introduce π-systems, built from the π-system of boxes which generates `MeasurableSpace.pi`.
   let πSβ := Set.pi (Set.univ : Set S) ''
     Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | MeasurableSet[m i] s }
   let πS := { s : Set Ω | ∃ t ∈ πSβ, (fun a (i : S) => f i a) ⁻¹' t = s }
