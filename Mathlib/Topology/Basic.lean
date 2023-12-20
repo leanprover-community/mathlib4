@@ -1326,6 +1326,9 @@ theorem mem_closure_iff_nhdsWithin_neBot {s : Set α} {x : α} : x ∈ closure s
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
 
+lemma not_mem_closure_iff_nhdsWithin_eq_bot {s : Set α} {x : α} : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
+  rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
+
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/
 theorem dense_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Set α) := by

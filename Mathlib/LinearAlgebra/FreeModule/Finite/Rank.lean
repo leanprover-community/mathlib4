@@ -615,21 +615,22 @@ end DivisionRing
 
 section ZeroRank
 
-variable [Ring R] [StrongRankCondition R] [AddCommGroup V] [Module R V]
-
-attribute [local instance] nontrivial_of_invariantBasisNumber
+variable [Ring R] [AddCommGroup V] [Module R V]
 
 open FiniteDimensional
 
 theorem Module.finite_of_rank_eq_nat [Module.Free R V] {n : ℕ} (h : Module.rank R V = n) :
     Module.Finite R V := by
-  have := Cardinal.mk_lt_aleph0_iff.mp
-    (((Free.rank_eq_card_chooseBasisIndex R V).symm.trans h).trans_lt (nat_lt_aleph0 n))
-  exact Module.Finite.of_basis (Free.chooseBasis R V)
+  nontriviality R
+  obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := V)
+  have := mk_lt_aleph0_iff.mp <| cardinal_le_rank_of_linearIndependent
+    b.linearIndependent |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
+  exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_zero [NoZeroSMulDivisors R V]
     (h : Module.rank R V = 0) :
     Module.Finite R V := by
+  nontriviality R
   rw [rank_zero_iff] at h
   infer_instance
 
@@ -651,12 +652,14 @@ variable {R V}
 
 theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R V] (h : Module.rank R V = 0) :
     (⊥ : Submodule R V) = ⊤ := by
+  nontriviality R
   rw [rank_zero_iff] at h
   exact Subsingleton.elim _ _
 #align bot_eq_top_of_rank_eq_zero Submodule.bot_eq_top_of_rank_eq_zero
 
+/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
-theorem Submodule.rank_eq_zero [NoZeroSMulDivisors R V] {S : Submodule R V} :
+theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R V] {S : Submodule R V} :
     Module.rank R S = 0 ↔ S = ⊥ :=
   ⟨fun h =>
     (Submodule.eq_bot_iff _).2 fun x hx =>
@@ -667,7 +670,8 @@ theorem Submodule.rank_eq_zero [NoZeroSMulDivisors R V] {S : Submodule R V} :
 #align rank_eq_zero Submodule.rank_eq_zero
 
 @[simp]
-theorem Submodule.finrank_eq_zero [NoZeroSMulDivisors R V] {S : Submodule R V} [Module.Finite R S] :
+theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R V]
+    {S : Submodule R V} [Module.Finite R S] :
     finrank R S = 0 ↔ S = ⊥ := by
   rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
 #align finrank_eq_zero Submodule.finrank_eq_zero
@@ -678,7 +682,7 @@ namespace Submodule
 
 open IsNoetherian FiniteDimensional
 
-variable [AddCommGroup V] [Ring R] [StrongRankCondition R] [Module R V]
+variable [Ring R] [AddCommGroup V] [Module R V]
 
 theorem fg_iff_finite (s : Submodule R V) : s.FG ↔ Module.Finite R s :=
   (finite_def.trans (fg_top s)).symm
@@ -714,7 +718,7 @@ end Submodule
 
 section
 
-variable [Ring R] [StrongRankCondition R] [AddCommGroup V] [Module R V]
+variable [Ring R] [AddCommGroup V] [Module R V]
 
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=
