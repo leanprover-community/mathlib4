@@ -252,15 +252,13 @@ theorem fast_fib_aux_bit_tt (n : ℕ) :
 #align nat.fast_fib_aux_bit_tt Nat.fast_fib_aux_bit_tt
 
 theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
-  apply Nat.binaryRec _ (fun b n' ih => _) n
-  · simp [fastFibAux]
-  · intro b
-    intro n'
-    intro ih
+  induction n using Nat.binaryRec with
+  | z => simp [fastFibAux]
+  | f b n' ih =>
     cases b <;>
           simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
             congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
-          simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
+          simp [bit_false, bit_true, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
