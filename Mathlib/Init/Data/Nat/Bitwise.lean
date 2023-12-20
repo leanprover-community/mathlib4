@@ -333,7 +333,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     have bf := bodd_bit b n
     have n0 := div2_bit b n
     rw [h] at bf n0
-    simp only [bodd_zero, div2_zero] at bf n0
+    simp at bf n0
     subst bf n0
     rw [binaryRec_zero]
     intros
@@ -341,9 +341,8 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     rfl
   case neg h' =>
     simp only [dif_neg h]
-    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
-      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
-    revert e
+    generalize_proofs h
+    revert h
     rw [bodd_bit, div2_bit]
     intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq
