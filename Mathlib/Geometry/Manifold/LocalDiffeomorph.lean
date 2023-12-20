@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
-# Local diffeomorphisms between smooth manifolds
+# Local diffeomorphisms between manifolds
 
 In this file, we define `C^n` local diffeomorphisms between manifolds.
 
