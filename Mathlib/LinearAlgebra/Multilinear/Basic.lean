@@ -1345,7 +1345,6 @@ theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
   rw [sub_eq_add_neg, sub_eq_add_neg, MultilinearMap.map_add, map_neg]
 #align multilinear_map.map_sub MultilinearMap.map_sub
 
-
 lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i)  :
     f (update x i v) = f x - f (update x i (x i - v)) := by
   rw [map_sub, update_eq_self, sub_sub_cancel]
@@ -1373,7 +1372,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
     intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
 
 /-- This calculates the differences between the values of a multilinear map at
-two arguments that differ on a finset `s` of `ι` of cardinality `n`. It requires a
+two arguments that differ on a finset `s` of `ι`. It requires a
 linear order on `ι` in order to express the result.-/
 lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M₁ i) (s : Finset ι) :
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
