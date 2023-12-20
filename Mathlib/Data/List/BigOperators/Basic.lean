@@ -348,7 +348,7 @@ theorem prod_lt_prod_of_ne_nil [Preorder M] [CovariantClass M M (· * ·) (· < 
 theorem prod_le_pow_card [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
     [CovariantClass M M (· * ·) (· ≤ ·)] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
-      simpa only [map_id'', map_const', prod_replicate] using prod_le_prod' h
+      simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 #align list.prod_le_pow_card List.prod_le_pow_card
 #align list.sum_le_card_nsmul List.sum_le_card_nsmul
 

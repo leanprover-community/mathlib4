@@ -123,15 +123,13 @@ set_option linter.deprecated false in
 #align bit0_pos bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
-class LinearOrderedAddCommMonoid (α : Type*) extends LinearOrder α, OrderedAddCommMonoid α
+class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α
 #align linear_ordered_add_comm_monoid LinearOrderedAddCommMonoid
 
 /-- A linearly ordered commutative monoid. -/
 @[to_additive]
-class LinearOrderedCommMonoid (α : Type*) extends LinearOrder α, OrderedCommMonoid α
+class LinearOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, LinearOrder α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
-
-attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 /-- A linearly ordered cancellative additive commutative monoid is an additive commutative monoid
 with a decidable linear order in which addition is cancellative and monotone. -/
