@@ -72,7 +72,8 @@ theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
 
 section UnifTight
 
-/- This follows closely the `UnifIntegrable` section from `MeasureTheory.Functions.UniformIntegrable`.-/
+/- This follows closely the `UnifIntegrable` section
+   from `MeasureTheory.Functions.UniformIntegrable`.-/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
@@ -92,9 +93,12 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ) (hp : 1 �
   obtain ⟨s₁, hms₁, hμs₁, hfε₁⟩ := hf hε2
   obtain ⟨s₂, hms₂, hμs₂, hgε₂⟩ := hg hε2
   have hms := hms₁.union hms₂
-  refine' ⟨s₁ ∪ s₂, hms, (measure_union_le (μ := μ) s₁ s₂).trans_lt (ENNReal.add_lt_top.mpr ⟨hμs₁,hμs₂⟩), fun i => _⟩
+  refine' ⟨s₁ ∪ s₂, hms,
+    (measure_union_le (μ := μ) s₁ s₂).trans_lt (ENNReal.add_lt_top.mpr ⟨hμs₁,hμs₂⟩),
+    fun i => _⟩
   simp_rw [Pi.add_apply, Set.indicator_add']
-  refine' (snorm_add_le ((hf_meas i).indicator hms.compl) ((hg_meas i).indicator hms.compl) hp).trans _
+  refine' (snorm_add_le ((hf_meas i).indicator hms.compl)
+    ((hg_meas i).indicator hms.compl) hp).trans _
   have hε_halves : ENNReal.ofReal ε = ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
     rw [← ENNReal.ofReal_add hε2.le hε2.le, add_halves]
   rw [compl_union]
@@ -174,7 +178,8 @@ theorem lintegral_indicator_compl_le
     Set.mem_Icc] at hM
   -- the target estimate is now in hM
   have hM := hM M le_rfl
-  -- let s be the complement of the integration domain in hM, prove its measurability and finite measure
+  -- let s be the complement of the integration domain in hM,
+  -- prove its measurability and finite measure
   have : { x | f x < 1 / (↑M + 1) } = { x | 1 / (↑M + 1) ≤ f x }ᶜ := by
     apply Set.ext; intro x
     simp only [mem_compl_iff, mem_setOf_eq, not_le]
@@ -200,7 +205,7 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   have hp_pos := zero_lt_one.trans_le hp_one
   have hp_nz := hp_pos.ne.symm
   have hrp_pos : 0 < p.toReal := ENNReal.toReal_pos hp_nz hp_top
-  have hεp : 0 < ε ^ p.toReal := by simp only [Real.rpow_pos_of_pos, hε] --exact Real.rpow_pos_of_pos hε p.toReal
+  have hεp : 0 < ε ^ p.toReal := by simp only [Real.rpow_pos_of_pos, hε]
   -- decode Memℒp into a.e. strong measurability and finite snorm
   obtain ⟨haesmf, hsnf⟩ := hf
   -- transform snorm to lintegral
@@ -372,8 +377,10 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
   -- use uniform integrability to get control on the limit over E
   have hgE' := Memℒp.restrict E hg'
   have huiE := unifIntegrable_restrict hui hmE
-  have hfgE : (∀ᵐ x ∂(μ.restrict E), Tendsto (fun n => f n x) atTop (𝓝 (g x))) := ae_restrict_of_ae hfg
-  -- `tendsto_Lp_of_tendsto_ae_of_meas` needs to synthesize an argument `[IsFiniteMeasure (μ.restrict E)]`.
+  have hfgE : (∀ᵐ x ∂(μ.restrict E), Tendsto (fun n => f n x) atTop (𝓝 (g x))) :=
+    ae_restrict_of_ae hfg
+  -- `tendsto_Lp_of_tendsto_ae_of_meas` needs to
+  -- synthesize an argument `[IsFiniteMeasure (μ.restrict E)]`.
   -- It is enough to have in the context a term of `Fact (μ E < ∞)`, which is our `ffmE` below,
   -- which is automatically fed into `Restrict.isFiniteInstance`.
   have ffmE : Fact _ := { out := hfmE }
@@ -405,7 +412,8 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
     _ ≤ _ := snorm_indicator_le _
     _ ≤ _ := hfε n
     _ = ε / 3 := ENNReal.ofReal_toReal hε''
-  have hmfngEc : AEStronglyMeasurable _ μ := (((hf n).sub hg).indicator hmE.compl).aestronglyMeasurable
+  have hmfngEc : AEStronglyMeasurable _ μ :=
+    (((hf n).sub hg).indicator hmE.compl).aestronglyMeasurable
   have hfngEcε := calc
     snorm (Eᶜ.indicator (f n - g)) p μ
       = _ := by rw [(Eᶜ.indicator_sub' _ _)]
@@ -424,8 +432,8 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
 /- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`. Alternative name: `ae_tendsto_ae_congr`? -/
 theorem tendsto_ae_congr_ae {f f' : ℕ → α → β} {g g' : α → β}
     (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
-    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x)))
-    : ∀ᵐ x ∂μ, Tendsto (fun n => f' n x) atTop (𝓝 (g' x)) := by
+    (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
+    ∀ᵐ x ∂μ, Tendsto (fun n => f' n x) atTop (𝓝 (g' x)) := by
   have hff'' := eventually_countable_forall.mpr hff'
   filter_upwards [hff'', hgg', hfg] with x hff'x hgg'x hfgx
   apply Tendsto.congr hff'x
@@ -477,10 +485,10 @@ theorem tendsto_Lp_notFinite_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞
     A sequence of functions `f` converges to `g` in Lp
     if and only if it is uniformly integrable, uniformly tight and to `g` in measure. -/
 -- XXX: logically, this should be renamed to `tendstoInMeasure_iff_tendsto_Lp`, while
---      the current version of that could be renamed to `tendstoInMeasure_iff_tendsto_Lp_of_isFinite`.
+--  the current version of that could be renamed to `tendstoInMeasure_iff_tendsto_Lp_of_isFinite`.
 theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    (hf : ∀ n, Memℒp (f n) p μ) (hg : Memℒp g p μ)
-    : TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
+    (hf : ∀ n, Memℒp (f n) p μ) (hg : Memℒp g p μ) :
+    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
       ↔ Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) :=
   ⟨fun h => tendsto_Lp_notFinite_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1,
     fun h =>
