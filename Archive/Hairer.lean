@@ -26,10 +26,8 @@ open MvPolynomial hiding support
 open Function hiding eval
 
 section normed
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E F  : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F) in
 /-- The set of smooth functions supported in a set `s`, as a submodule of the space of functions. -/
@@ -72,54 +70,18 @@ end SmoothSupportedOn
 end normed
 open SmoothSupportedOn
 
-section missing_polynomial
-open MvPolynomial Submodule
-
-variable {R σ : Type*} [CommSemiring R] (n : ℕ)
-
-lemma restrictTotalDegree_eq_span {n : ℕ} :
-    restrictTotalDegree σ R n =
-    span R ((fun c : σ →₀ ℕ ↦ monomial c (1 : R)) '' {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ n}) := by
-  ext P; constructor <;> intro h
-  · rw [← P.support_sum_monomial_coeff]
-    refine sum_mem fun c hc ↦ ?_
-    rw [← mul_one (coeff c P), ← smul_eq_mul, ← smul_monomial]
-    rw [mem_restrictTotalDegree] at h
-    exact smul_mem _ _ (subset_span <| mem_image_of_mem _ <| (le_totalDegree hc).trans h)
-  · refine span_le.mpr ?_ h
-    rintro x ⟨c, hc, rfl⟩
-    rw [SetLike.mem_coe, mem_restrictTotalDegree]
-    cases subsingleton_or_nontrivial R
-    · rw [Subsingleton.elim ((fun c ↦ monomial c 1) c) 0, totalDegree_zero]; apply zero_le
-    · rw [totalDegree_monomial _ one_ne_zero]; exact hc
-
-lemma finite_stuff' [Finite σ] (N : ℕ) : {s : Multiset σ | Multiset.card s ≤ N}.Finite := by
-  classical
-  have := Fintype.ofFinite σ
-  let S := N • (Finset.univ.val : Multiset σ)
-  apply Finset.finite_toSet (Multiset.toFinset (Multiset.powerset S)) |>.subset
-  intro s hs
-  rw [Set.mem_setOf] at hs
-  rw [Finset.mem_coe, Multiset.mem_toFinset, Multiset.mem_powerset, Multiset.le_iff_count]
-  intro x
-  simp only [S, Multiset.count_nsmul, Multiset.count_univ, mul_one]
-  exact le_trans (s.count_le_card x) hs
-
-lemma finite_stuff [Finite σ] (N : ℕ) : {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N}.Finite := by
-  classical
-  change {s : σ →₀ ℕ | s.sum (fun _ => id) ≤ N}.Finite
-  simp only [← Finsupp.card_toMultiset]
-  refine Set.Finite.of_finite_image ?_ (Multiset.toFinsupp.symm.injective.injOn _)
-  convert finite_stuff' (σ := σ) N
-  ext x
-  rw [← AddEquiv.coe_toEquiv, Set.mem_image_equiv]
-  simp
-
-instance [Finite σ] : Module.Finite R (restrictTotalDegree σ R n) := by
-  rw [Module.finite_def, fg_top, restrictTotalDegree_eq_span]
-  exact Submodule.fg_span ((finite_stuff _).image _)
-
-end missing_polynomial
+instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
+    Module.Finite R (restrictTotalDegree σ R N) :=
+  have : Finite {n : σ →₀ ℕ | ∀ i, n i ≤ N} := by
+    erw [Finsupp.equivFunOnFinite.subtypeEquivOfSubtype'.finite_iff, Set.finite_coe_iff]
+    convert Set.Finite.pi fun _ : σ ↦ Set.finite_le_nat N using 1
+    ext; rw [mem_univ_pi]; rfl
+  have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
+    rw [Set.finite_coe_iff] at this ⊢
+    exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim
+      (fun h ↦ h.trans_le N.zero_le) fun h ↦
+        (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
+  Module.Finite.of_basis (basisRestrictSupport R _)
 
 variable {ι : Type*}
 lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
