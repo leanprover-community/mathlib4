@@ -1648,129 +1648,112 @@ theorem HasFiniteFPowerSeriesOnBall.add (hf : HasFiniteFPowerSeriesOnBall f pf x
     hasSum := fun hy => (hf.hasSum hy).add (hg.hasSum hy) }
 
 
-#exit
-
-theorem HasFPowerSeriesAt.add (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSeriesAt g pg x) :
-    HasFPowerSeriesAt (f + g) (pf + pg) x := by
+theorem HasFiniteFPowerSeriesAt.add (hf : HasFiniteFPowerSeriesAt f pf x n)
+    (hg : HasFiniteFPowerSeriesAt g pg x m) :
+    HasFiniteFPowerSeriesAt (f + g) (pf + pg) x (max n m) := by
   rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
   exact ⟨r, hr.1.add hr.2⟩
-#align has_fpower_series_at.add HasFPowerSeriesAt.add
 
-theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
-  let ⟨_, hpf⟩ := hf
-  (hpf.congr hg).analyticAt
+theorem PolynomialAt.congr (hf : PolynomialAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : PolynomialAt 𝕜 g x :=
+  let ⟨_, _, hpf⟩ := hf
+  (hpf.congr hg).polynomialAt
 
-theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 g x :=
+theorem polynomialAt_congr (h : f =ᶠ[𝓝 x] g) : PolynomialAt 𝕜 f x ↔ PolynomialAt 𝕜 g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
-theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
-  let ⟨_, hpf⟩ := hf
-  let ⟨_, hqf⟩ := hg
-  (hpf.add hqf).analyticAt
-#align analytic_at.add AnalyticAt.add
+theorem PolynomialAt.add (hf : PolynomialAt 𝕜 f x) (hg : PolynomialAt 𝕜 g x) :
+    PolynomialAt 𝕜 (f + g) x :=
+  let ⟨_, _, hpf⟩ := hf
+  let ⟨_, _, hqf⟩ := hg
+  (hpf.add hqf).polynomialAt
 
-theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
-    HasFPowerSeriesOnBall (-f) (-pf) x r :=
+theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
+    HasFiniteFPowerSeriesOnBall (-f) (-pf) x n r :=
   { r_le := by
       rw [pf.radius_neg]
       exact hf.r_le
     r_pos := hf.r_pos
+    finite := fun m hm => by rw [Pi.neg_apply, hf.finite m hm, neg_zero]
     hasSum := fun hy => (hf.hasSum hy).neg }
-#align has_fpower_series_on_ball.neg HasFPowerSeriesOnBall.neg
 
-theorem HasFPowerSeriesAt.neg (hf : HasFPowerSeriesAt f pf x) : HasFPowerSeriesAt (-f) (-pf) x :=
+theorem HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
+    HasFiniteFPowerSeriesAt (-f) (-pf) x n :=
   let ⟨_, hrf⟩ := hf
-  hrf.neg.hasFPowerSeriesAt
-#align has_fpower_series_at.neg HasFPowerSeriesAt.neg
+  hrf.neg.hasFiniteFPowerSeriesAt
 
-theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
-  let ⟨_, hpf⟩ := hf
-  hpf.neg.analyticAt
-#align analytic_at.neg AnalyticAt.neg
+theorem PolynomialAt.neg (hf : PolynomialAt 𝕜 f x) : PolynomialAt 𝕜 (-f) x :=
+  let ⟨_, _, hpf⟩ := hf
+  hpf.neg.polynomialAt
 
-theorem HasFPowerSeriesOnBall.sub (hf : HasFPowerSeriesOnBall f pf x r)
-    (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f - g) (pf - pg) x r := by
+theorem HasFiniteFPowerSeriesOnBall.sub (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
+    (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
+    HasFiniteFPowerSeriesOnBall (f - g) (pf - pg) x (max n m) r := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
-#align has_fpower_series_on_ball.sub HasFPowerSeriesOnBall.sub
 
-theorem HasFPowerSeriesAt.sub (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSeriesAt g pg x) :
-    HasFPowerSeriesAt (f - g) (pf - pg) x := by
+theorem HasFiniteFPowerSeriesAt.sub (hf : HasFiniteFPowerSeriesAt f pf x n)
+    (hg : HasFiniteFPowerSeriesAt g pg x m) :
+    HasFiniteFPowerSeriesAt (f - g) (pf - pg) x (max n m) := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
-#align has_fpower_series_at.sub HasFPowerSeriesAt.sub
 
-theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (f - g) x := by
+theorem PolynomialAt.sub (hf : PolynomialAt 𝕜 f x) (hg : PolynomialAt 𝕜 g x) :
+    PolynomialAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
-#align analytic_at.sub AnalyticAt.sub
 
-theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
+theorem PolynomialOn.mono {s t : Set E} (hf : PolynomialOn 𝕜 f t) (hst : s ⊆ t) :
+    PolynomialOn 𝕜 f s :=
   fun z hz => hf z (hst hz)
-#align analytic_on.mono AnalyticOn.mono
 
-theorem AnalyticOn.congr' {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
-    AnalyticOn 𝕜 g s :=
+theorem PolynomialOn.congr' {s : Set E} (hf : PolynomialOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
+    PolynomialOn 𝕜 g s :=
   fun z hz => (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
 
-theorem analyticOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
+theorem polynomialOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) :
+    PolynomialOn 𝕜 f s ↔ PolynomialOn 𝕜 g s :=
   ⟨fun hf => hf.congr' h, fun hg => hg.congr' h.symm⟩
 
-theorem AnalyticOn.congr {s : Set E} (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn f g) :
-    AnalyticOn 𝕜 g s :=
+theorem PolynomialOn.congr {s : Set E} (hs : IsOpen s) (hf : PolynomialOn 𝕜 f s)
+    (hg : s.EqOn f g) : PolynomialOn 𝕜 g s :=
   hf.congr' $ mem_nhdsSet_iff_forall.mpr
     (fun _ hz => eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
 
-theorem analyticOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
-    AnalyticOn 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
+theorem polynomialOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) :
+    PolynomialOn 𝕜 f s ↔ PolynomialOn 𝕜 g s :=
+  ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
-theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (f + g) s :=
+theorem PolynomialOn.add {s : Set E} (hf : PolynomialOn 𝕜 f s) (hg : PolynomialOn 𝕜 g s) :
+    PolynomialOn 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
-#align analytic_on.add AnalyticOn.add
 
-theorem AnalyticOn.sub {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (f - g) s :=
+theorem PolynomialOn.sub {s : Set E} (hf : PolynomialOn 𝕜 f s) (hg : PolynomialOn 𝕜 g s) :
+    PolynomialOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
-#align analytic_on.sub AnalyticOn.sub
 
-theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r) (v : Fin 0 → E) :
-    pf 0 v = f x := by
-  have v_eq : v = fun i => 0 := Subsingleton.elim _ _
-  have zero_mem : (0 : E) ∈ EMetric.ball (0 : E) r := by simp [hf.r_pos]
-  have : ∀ i, i ≠ 0 → (pf i fun j => 0) = 0 := by
-    intro i hi
-    have : 0 < i := pos_iff_ne_zero.2 hi
-    exact ContinuousMultilinearMap.map_coord_zero _ (⟨0, this⟩ : Fin i) rfl
-  have A := (hf.hasSum zero_mem).unique (hasSum_single _ this)
-  simpa [v_eq] using A.symm
-#align has_fpower_series_on_ball.coeff_zero HasFPowerSeriesOnBall.coeff_zero
 
-theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 → E) :
-    pf 0 v = f x :=
-  let ⟨_, hrf⟩ := hf
-  hrf.coeff_zero v
-#align has_fpower_series_at.coeff_zero HasFPowerSeriesAt.coeff_zero
-
-/-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
-power series `g ∘ p` on the same ball. -/
-theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
-    (h : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r :=
+/-- If a function `f` has a finite power series `p` on a ball and `g` is continuous linear,
+then `g ∘ f` has the finite power series `g ∘ p` on the same ball. -/
+theorem ContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall (g : F →L[𝕜] G)
+    (h : HasFiniteFPowerSeriesOnBall f p x n r) :
+    HasFiniteFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x n r :=
   { r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
     r_pos := h.r_pos
+    finite := fun m hm => by rw [compFormalMultilinearSeries_apply, h.finite m hm]
+                             ext x
+                             simp only [compContinuousMultilinearMap_coe, Function.comp_apply,
+                               ContinuousMultilinearMap.zero_apply, map_zero]
     hasSum := fun hy => by
       simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
         ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
         g.hasSum (h.hasSum hy) }
-#align continuous_linear_map.comp_has_fpower_series_on_ball ContinuousLinearMap.comp_hasFPowerSeriesOnBall
 
-/-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
-on `s`. -/
-theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOn 𝕜 f s) :
-    AnalyticOn 𝕜 (g ∘ f) s := by
+/-- If a function `f` is polynomial on a set `s` and `g` is continuous linear, then `g ∘ f` is
+polynomial on `s`. -/
+theorem ContinuousLinearMap.comp_polynomialOn {s : Set E} (g : F →L[𝕜] G)
+    (h : PolynomialOn 𝕜 f s) : PolynomialOn 𝕜 (g ∘ f) s := by
   rintro x hx
-  rcases h x hx with ⟨p, r, hp⟩
-  exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
-#align continuous_linear_map.comp_analytic_on ContinuousLinearMap.comp_analyticOn
+  rcases h x hx with ⟨p, n, r, hp⟩
+  exact ⟨g.compFormalMultilinearSeries p, n, r, g.comp_hasFiniteFPowerSeriesOnBall hp⟩
+
+#exit
 
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
 sums of this power series on strict subdisks of the disk of convergence.
