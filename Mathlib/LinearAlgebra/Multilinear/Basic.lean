@@ -777,6 +777,9 @@ equivalence of the two definitions.
 We start by introducing the individual terms indexed by finsets of `ι`; actually, for the
 definition, we can consider any set of `ι` and we don't need to take `ι` finite.-/
 
+/-- Given a multilinear map `f` on `(i : ι) → M i`, an element `x` of `(i : ι) → M i` and s
+set `s` of `ι`, construct a multilinear map on `s → ((i : ι) → Mi)` whose value at `z`
+is `f` evaluated at the vector with `i`th coordinate `(z i) i` if `i ∈ s` and `x i` otherwise.-/
 def toMultilinearMap_set [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i)
     (s : Set ι) [(i : ι) → Decidable (i ∈ s)] :
     MultilinearMap R (fun (_ : s) => (i : ι) → M₁ i) M₂ where
