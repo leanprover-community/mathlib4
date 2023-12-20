@@ -2182,25 +2182,25 @@ instance _root_.MeasureTheory.AEStronglyMeasurable.instCoeAEStronglyMeasurable_t
 
 attribute [coe] aefinStronglyMeasurable_of_aemeasurable
 instance _root_.AEMeasurable.instCoeAEMeasurable_toAEFinStronglyMeasurable
-  [SigmaFinite μ]
-  [SeminormedAddCommGroup β]
-  [SecondCountableTopology β]
-  [BorelSpace β]
-  : CoeOut (AEMeasurable f μ) (AEFinStronglyMeasurable f μ) where
+    [SigmaFinite μ]
+    [SeminormedAddCommGroup β]
+    [SecondCountableTopology β]
+    [BorelSpace β] :
+    CoeOut (AEMeasurable f μ) (AEFinStronglyMeasurable f μ) where
   coe h := aefinStronglyMeasurable_of_aemeasurable μ h
 
 attribute [coe] Measurable.aemeasurable
-instance _root_.Measurable.instCoeMeasurable_toAEMeasurable
-  : Coe (Measurable f) (AEMeasurable f μ) where
+instance _root_.Measurable.instCoeMeasurable_toAEMeasurable :
+    Coe (Measurable f) (AEMeasurable f μ) where
   coe h := h.aemeasurable
 
 attribute [coe] AEMeasurable.aestronglyMeasurable
 instance _root_.Measurable.instCoeAEMeasurable_toAEStronglyMeasurable
-  [TopologicalSpace β]
-  [TopologicalSpace.PseudoMetrizableSpace β]
-  [SecondCountableTopology β]
-  [OpensMeasurableSpace β]
-  : CoeOut (AEMeasurable f μ) (AEStronglyMeasurable f μ) where
+    [TopologicalSpace β]
+    [TopologicalSpace.PseudoMetrizableSpace β]
+    [SecondCountableTopology β]
+    [OpensMeasurableSpace β] :
+    CoeOut (AEMeasurable f μ) (AEStronglyMeasurable f μ) where
   coe h := h.aestronglyMeasurable
 
 
