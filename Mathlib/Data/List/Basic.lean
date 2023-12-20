@@ -1077,10 +1077,6 @@ section IndexOf
 
 variable [DecidableEq α]
 
--- Porting note: simp can prove this
--- @[simp]
-theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
-  rfl
 #align list.index_of_nil List.indexOf_nil
 
 /-
@@ -1111,18 +1107,16 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
--- rfl
-theorem indexOf_cons (a b : α) (l : List α) :
-    indexOf a (b :: l) = if b = a then 0 else succ (indexOf a l) := by
-  simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons, indexOf_cons, eq_comm]; split_ifs with h
-  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h
-  · simp only [h, false_or_iff]
+  simp only [length, mem_cons, indexOf_cons, eq_comm]
+  rw [cond_eq_if]
+  split_ifs with h <;> simp at h
+  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+  · simp only [Ne.symm h, false_or_iff]
     rw [← ih]
     exact succ_inj'
 #align list.index_of_eq_length List.indexOf_eq_length
@@ -1134,7 +1128,7 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
-  simp only [length, indexOf_cons]
+  simp only [length, indexOf_cons, cond_eq_if, beq_iff_eq]
   by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
@@ -1340,7 +1334,7 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
   | b :: l, h => by
     by_cases h' : b = a <;>
-      simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l]
+    simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l, cond_eq_if, beq_iff_eq]
 
 @[simp, deprecated indexOf_get]
 theorem indexOf_nthLe [DecidableEq α] {a : α} : ∀ {l : List α} (h), nthLe l (indexOf a l) h = a :=
