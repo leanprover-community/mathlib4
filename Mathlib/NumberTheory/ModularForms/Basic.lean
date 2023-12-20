@@ -483,36 +483,30 @@ instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing fun k =>
     where
   mul f g := f.mul g
   one := 1
-  one_mul := by
-    intro f
+  one_mul f := by
     rw [GradedMonoid.GOne.toOne, GradedMonoid.GMul.toMul]
     apply Sigma.ext
     · simp only [(· * ·), one_fst, zero_add]
     · simp only [(· * ·), one_fst, one_snd, Submodule.coe_mk, one_mul, hEq_one_mul]
-  mul_one := by
-    intro f
+  mul_one f := by
     rw [GradedMonoid.GOne.toOne, GradedMonoid.GMul.toMul]
     apply Sigma.ext
     · simp only [(· * ·), one_fst, add_zero]
     · simp only [(· * ·), one_fst, one_snd, Submodule.coe_mk, mul_one, hEq_mul_one]
-  mul_assoc := by
-    intro f g h
+  mul_assoc f g h := by
     rw [GradedMonoid.GMul.toMul]
     apply Sigma.ext
     · apply add_assoc
     · simp only [(· * ·), Submodule.coe_mk, hEq_mul_assoc]
-  mul_zero := by intro i j f; ext1; simp
-  zero_mul := by intro i j f; ext1; simp
-  mul_add := by
-    intro i j f g h
+  mul_zero {i j} f := by ext1; simp
+  zero_mul {i j} f := by ext1; simp
+  mul_add {i j} f g h := by
     ext1
     simp only [Pi.mul_apply, mul_add, mul_coe, add_apply]
-  add_mul := by
-    intro i j f g h
+  add_mul {i j} f g h := by
     ext1
     simp only [add_mul, mul_coe, Pi.mul_apply, add_apply]
-  mul_comm := by
-    intro f g
+  mul_comm f g := by
     rw [GradedMonoid.GMul.toMul]
     apply Sigma.ext
     · apply add_comm
@@ -526,7 +520,7 @@ instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing fun k =>
     apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_succ]
   natCast n := n • (1 : ModularForm Γ 0)
   natCast_zero := by simp only [zero_smul]
-  natCast_succ := by intro n; simp only [add_smul, one_nsmul, add_right_inj]
+  natCast_succ n := by simp only [add_smul, one_nsmul, add_right_inj]
   intCast n := n • (1 : ModularForm Γ 0)
   intCast_ofNat := by simp only [coe_nat_zsmul, forall_const]
-  intCast_negSucc_ofNat := by intro; simp only [Int.negSucc_coe]; apply _root_.neg_smul
+  intCast_negSucc_ofNat n := by simp only [Int.negSucc_coe]; apply _root_.neg_smul
