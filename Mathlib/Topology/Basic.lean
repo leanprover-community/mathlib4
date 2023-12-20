@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Algebra.Support
+import Mathlib.Algebra.Function.Support
 import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Tactic.Continuity
 
 #align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
@@ -708,6 +708,11 @@ def frontier (s : Set α) : Set α :=
 theorem closure_diff_interior (s : Set α) : closure s \ interior s = frontier s :=
   rfl
 #align closure_diff_interior closure_diff_interior
+
+/-- Interior and frontier are disjoint. -/
+lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
+  rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
+    ← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
 
 @[simp]
 theorem closure_diff_frontier (s : Set α) : closure s \ frontier s = interior s := by

@@ -242,7 +242,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
 
 end NormedField
 
-section Smul
+section SMul
 
 theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
@@ -281,7 +281,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     _ = c * ‖v x‖ := by ring
 #align asymptotics.is_equivalent.smul Asymptotics.IsEquivalent.smul
 
-end Smul
+end SMul
 
 section mul_inv
 
