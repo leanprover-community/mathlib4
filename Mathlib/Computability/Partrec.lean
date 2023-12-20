@@ -225,7 +225,7 @@ theorem ppred : Partrec fun n => ppred n :=
           simp [show 0 ≠ m.succ by intro h; injection h] at h
     · refine' eq_some_iff.2 _
       simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
-        Bool.false_eq_decide_iff, true_and]
+        false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred
