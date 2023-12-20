@@ -190,7 +190,7 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
   have hr₀' : 0 ≤ w.im * Real.sinh r := mul_nonneg w.im_pos.le (sinh_nonneg_iff.2 hr₀)
   have hzw₀ : 0 < 2 * z.im * w.im := mul_pos (mul_pos two_pos z.im_pos) w.im_pos
   simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀, ←
-    (@strictMonoOn_pow ℝ _ _ two_pos).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
+    (pow_left_strictMonoOn two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 #align upper_half_plane.cmp_dist_eq_cmp_dist_coe_center UpperHalfPlane.cmp_dist_eq_cmp_dist_coe_center
 

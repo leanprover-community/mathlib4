@@ -476,7 +476,7 @@ instance [T2Space β] : T2Space (α →ᵤ β) :=
 protected theorem tendsto_iff_tendstoUniformly {F : ι → α →ᵤ β} {f : α →ᵤ β} :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (toFun ∘ F) (toFun f) p := by
   rw [(UniformFun.hasBasis_nhds α β f).tendsto_right_iff, TendstoUniformly]
-  rfl
+  simp only [mem_setOf, UniformFun.gen]
 #align uniform_fun.tendsto_iff_tendsto_uniformly UniformFun.tendsto_iff_tendstoUniformly
 
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
