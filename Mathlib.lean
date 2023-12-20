@@ -311,9 +311,6 @@ import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.Algebra.Homology.SpectralObject.Basic
-import Mathlib.Algebra.Homology.SpectralObject.Misc
-import Mathlib.Algebra.Homology.SpectralObject.ShortComplex
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.Construction
 import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
