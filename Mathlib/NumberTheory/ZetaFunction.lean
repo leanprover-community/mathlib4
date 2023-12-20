@@ -829,5 +829,5 @@ lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (�
     simpa using differentiable_one_div_Gamma.continuous.comp (continuous_id.div_const _)
   convert (riemannCompletedZeta_residue_one.mul h0).mul h1 using 2 with s
   · ring
-  · haveI := fun h ↦ ofReal_ne_zero.mpr pi_ne_zero ((cpow_eq_zero_iff _ (1 / 2)).mp h).1
+  · have := fun h ↦ ofReal_ne_zero.mpr pi_ne_zero ((cpow_eq_zero_iff _ (1 / 2)).mp h).1
     field_simp
