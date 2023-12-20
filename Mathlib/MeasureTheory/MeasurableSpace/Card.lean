@@ -48,7 +48,7 @@ def generateMeasurableRec (s : Set (Set α)) : (ω₁ : Type u) → Set (Set α)
   | i =>
     let S := ⋃ j : Iio i, generateMeasurableRec s (j.1)
     s ∪ {∅} ∪ compl '' S ∪ Set.range fun f : ℕ → S => ⋃ n, (f n).1
-  termination_by generateMeasurableRec s i => i
+  termination_by i => i
   decreasing_by exact j.2
 #align measurable_space.generate_measurable_rec MeasurableSpace.generateMeasurableRec
 

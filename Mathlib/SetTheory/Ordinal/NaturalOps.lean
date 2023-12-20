@@ -587,7 +587,7 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   -- for the termination checker.
   · simpa only [nmul_one c] using H c hc
   · simpa only [nmul_one c] using hc.trans_le ha
-termination_by a => a
+termination_by a
 #align ordinal.nmul_one Ordinal.nmul_one
 
 @[simp]

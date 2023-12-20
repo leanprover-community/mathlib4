@@ -511,7 +511,7 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
               simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩
-termination_by finite_mul_aux _ _ n m => n+m
+termination_by n m => n + m
 #align multiplicity.finite_mul_aux multiplicity.finite_mul_aux
 
 theorem finite_mul {p a b : α} (hp : Prime p) : Finite p a → Finite p b → Finite p (a * b) :=

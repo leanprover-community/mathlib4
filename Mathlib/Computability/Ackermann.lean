@@ -213,7 +213,7 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
-  termination_by x y => (x, y)
+  termination_by _ m n => (m, n)
 
 theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n

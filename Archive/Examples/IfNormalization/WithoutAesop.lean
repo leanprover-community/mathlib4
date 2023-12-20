@@ -116,7 +116,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
     | some b =>
       have ⟨e', he'⟩ := normalize' l (.ite (lit b) t e)
       ⟨e', by simp_all⟩
-  termination_by normalize' e => e.normSize'
+  termination_by e' => e'.normSize'
 
 example : IfNormalization :=
   ⟨fun e => (normalize' ∅ e).1,
