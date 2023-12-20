@@ -12,15 +12,6 @@ namespace SpectralObject
 
 variable (X : SpectralObject C ι)
 
-@[simps]
-def δFunctorArrows (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (i j k n : ℕ)
-    (hij : i ≤ j := by linarith) (hjk : j ≤ k := by linarith) (hk : k ≤ n := by linarith) :
-    functorArrows ι j k n ⋙ X.H n₀ ⟶ functorArrows ι i j n ⋙ X.H n₁ where
-  app S := X.δ n₀ n₁ hn₁ _ _
-  naturality {S S'} φ := by
-    apply X.δ_naturality
-    rfl
-
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
 
 @[simps]

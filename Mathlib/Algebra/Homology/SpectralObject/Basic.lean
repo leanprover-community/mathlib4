@@ -135,20 +135,6 @@ def sc₃ : ShortComplex C :=
 lemma exact₃ : (X.sc₃ n₀ n₁ hn₁ f g fg h).Exact :=
   (exact_of_iso (X.iso₃ n₀ n₁ hn₁ f g fg h).symm (X.exact₃' n₀ n₁ hn₁ (mk₂ f g))).exact 0
 
-def composableArrows₅ : ComposableArrows C 5 :=
-  mk₅ ((X.H n₀).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg))
-    ((X.H n₀).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g))
-    (X.δ n₀ n₁ hn₁ f g)
-    ((X.H n₁).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg))
-    ((X.H n₁).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g))
-
-lemma composableArrows₅_exact :
-    (X.composableArrows₅ n₀ n₁ hn₁ f g fg h).Exact :=
-  exact_of_δ₀ (X.exact₂ n₀ f g fg h).exact_toComposableArrows
-     (exact_of_δ₀ (X.exact₃ n₀ n₁ hn₁ f g fg h).exact_toComposableArrows
-        (exact_of_δ₀ (X.exact₁ n₀ n₁ hn₁ f g fg h).exact_toComposableArrows
-          (X.exact₂ n₁ f g fg h).exact_toComposableArrows))
-
 end
 
 end
@@ -163,6 +149,45 @@ lemma δ_δ : X.δ n₀ n₁ hn₁ g h ≫ X.δ n₁ n₂ hn₂ f g = 0 := by
   have eq := X.δ_naturality n₁ n₂ hn₂ f g f (g ≫ h) (𝟙 _) (homMk₁ (𝟙 _) h (by simp)) rfl
   rw [Functor.map_id, comp_id] at eq
   rw [← eq, X.zero₁_assoc n₀ n₁ hn₁ g h _ rfl, zero_comp]
+
+end
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+
+@[simps]
+def δFunctorArrows (i j k n : ℕ)
+    (hij : i ≤ j := by linarith) (hjk : j ≤ k := by linarith) (hk : k ≤ n := by linarith) :
+    functorArrows ι j k n ⋙ X.H n₀ ⟶ functorArrows ι i j n ⋙ X.H n₁ where
+  app S := X.δ n₀ n₁ hn₁ _ _
+  naturality {S S'} φ := by
+    apply X.δ_naturality
+    rfl
+
+@[simp]
+noncomputable def composableArrows₅ :
+    ComposableArrows (ComposableArrows ι 2 ⥤ C) 5 :=
+  mk₅ (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₀))
+    (whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₀))
+    (X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2)
+    (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₁))
+    (whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₁))
+
+lemma composableArrows₅_apply_exact (D : ComposableArrows ι 2) :
+    ((X.composableArrows₅ n₀ n₁ hn₁).apply ((evaluation _ _).obj D)).Exact := by
+  obtain ⟨i, j, k, f, g, rfl⟩ := mk₂_surjective D
+  exact exact_of_δ₀ (X.exact₂ n₀ f g _ rfl).exact_toComposableArrows
+     (exact_of_δ₀ (X.exact₃ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
+        (exact_of_δ₀ (X.exact₁ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
+          (by
+            refine' exact_of_iso _ (X.exact₂ n₁ f g _ rfl).exact_toComposableArrows
+            refine' ComposableArrows.isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _
+            all_goals
+              dsimp
+              rw [id_comp, comp_id]
+              rfl)))
+
 
 end
 

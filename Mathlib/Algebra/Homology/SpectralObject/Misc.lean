@@ -233,18 +233,26 @@ noncomputable def functorArrows (i j n : ℕ) (hij : i ≤ j := by linarith)
 
 @[simps]
 noncomputable def mapFunctorArrows (i j i' j' n : ℕ)
-    (hij : i ≤ j := by linarith) (hj : j ≤ n := by linarith)
-    (hij' : i' ≤ j' := by linarith) (hj' : j' ≤ n := by linarith)
-    (hi : i ≤ i' := by linarith) (hj' : j ≤ j' := by linarith) :
+    (hij : i ≤ j := by linarith) (_ : j ≤ n := by linarith)
+    (hij' : i' ≤ j' := by linarith) (_ : j' ≤ n := by linarith)
+    (hi : i ≤ i' := by linarith) (_ : j ≤ j' := by linarith) :
     functorArrows C i j n ⟶ functorArrows C i' j' n where
   app S := homMk₁ (S.map' i i') (S.map' j j')
     (by dsimp; simp only [← Functor.map_comp, homOfLE_comp])
+
+example : ℕ := 42
+
+variable {C}
+variable {D : Type*} [Category D] {n : ℕ} (S : ComposableArrows C n) (F : C ⥤ D)
+
+@[simps!]
+def apply : ComposableArrows D n := S ⋙ F
 
 end ComposableArrows
 
 variable {C ι : Type _} [Category C] [Abelian C] [Category ι]
 
-lemma exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
+lemma ShortComplex.exact_iff_exact_evaluation (S : ShortComplex (ι ⥤ C)) :
     S.Exact ↔ ∀ (i : ι), (S.map ((evaluation ι C).obj i)).Exact := by
   simp only [ShortComplex.exact_iff_isZero_homology,
     fun i => Iso.isZero_iff (S.mapHomologyIso ((evaluation ι C).obj i)),
