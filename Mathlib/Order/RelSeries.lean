@@ -177,9 +177,9 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
 /--
-If `a_0 --r-> a_1 --r-> ... --r-> a_n` and `b_0 --r-> b_1 --r-> ... --r-> b_m` are two strict series
-such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
-`a_0 --r-> a_1 --r-> ... --r-> a_n --r-> b_0 --r-> b_1 --r-> ... --r-> b_m`.
+If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
+such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
+`a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
 @[simps]
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
@@ -213,7 +213,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
-`a₀ --r-> a₁ --r-> ... --r-> aₙ ↦ f a₀ --s-> f a₁ --s-> ... --s-> f aₙ`
+`a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
 @[simps]
 def map (p : RelSeries r)
