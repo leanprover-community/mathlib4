@@ -83,10 +83,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Subspace.dualQuotDistrib W` is an equivalence
     `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
-
-## TODO
-
-Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
 noncomputable section
@@ -409,6 +405,14 @@ def toDualEquiv : M ≃ₗ[R] Dual R M :=
 theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
   rfl
 #align basis.to_dual_equiv_apply Basis.toDualEquiv_apply
+
+-- Not sure whether this is true for free modules over a commutative ring
+/-- A vector space over a field is isomorphic to its dual if and only if it is finite-dimensional.-/
+theorem linearEquiv_dual_iff_finiteDimensional
+    {K V : Type*} [Field K] [AddCommGroup V] [Module K V] :
+    Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
+  sorry -- rw [← Module.rank_lt_alpeh0_iff]
+  -- refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ?_⟩
 
 /-- Maps a basis for `V` to a basis for the dual space. -/
 def dualBasis : Basis ι R (Dual R M) :=
