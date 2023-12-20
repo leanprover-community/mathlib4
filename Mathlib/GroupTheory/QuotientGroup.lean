@@ -596,7 +596,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩;
       rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
-      rcases hy with ⟨h, n, hh, hn, rfl⟩
+      rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
         (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))

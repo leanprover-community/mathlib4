@@ -94,7 +94,7 @@ theorem starConvex_iff_pointwise_add_subset :
   refine'
     ⟨_, fun h y hy a b ha hb hab =>
       h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton _) ⟨_, hy, rfl⟩)⟩
-  rintro hA a b ha hb hab w ⟨au, bv, ⟨u, rfl : u = x, rfl⟩, ⟨v, hv, rfl⟩, rfl⟩
+  rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 #align star_convex_iff_pointwise_add_subset starConvex_iff_pointwise_add_subset
 
@@ -201,10 +201,9 @@ theorem starConvex_singleton (x : E) : StarConvex 𝕜 x {x} := by
 #align star_convex_singleton starConvex_singleton
 
 theorem StarConvex.linear_image (hs : StarConvex 𝕜 x s) (f : E →ₗ[𝕜] F) :
-    StarConvex 𝕜 (f x) (s.image f) := by
-  intro y hy a b ha hb hab
-  obtain ⟨y', hy', rfl⟩ := hy
-  exact ⟨a • x + b • y', hs hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+    StarConvex 𝕜 (f x) (f '' s) := by
+  rintro _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align star_convex.linear_image StarConvex.linear_image
 
 theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
@@ -213,7 +212,7 @@ theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf 
 #align star_convex.is_linear_image StarConvex.is_linear_image
 
 theorem StarConvex.linear_preimage {s : Set F} (f : E →ₗ[𝕜] F) (hs : StarConvex 𝕜 (f x) s) :
-    StarConvex 𝕜 x (s.preimage f) := by
+    StarConvex 𝕜 x (f ⁻¹' s) := by
   intro y hy a b ha hb hab
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hy ha hb hab

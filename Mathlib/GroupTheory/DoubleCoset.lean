@@ -36,12 +36,11 @@ namespace Doset
 
 /-- The double coset as an element of `Set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=
-  s * {a} * t
+  Set.image2 (· * a * ·) s t
 #align doset Doset.doset
 
-theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y :=
-  ⟨fun ⟨_, y, ⟨x, _, hx, rfl, rfl⟩, hy, h⟩ => ⟨x, hx, y, hy, h.symm⟩, fun ⟨x, hx, y, hy, h⟩ =>
-    ⟨x * a, y, ⟨x, a, hx, rfl, rfl⟩, hy, h.symm⟩⟩
+theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, x * a * y = b :=
+  Set.mem_image2
 #align doset.mem_doset Doset.mem_doset
 
 theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
