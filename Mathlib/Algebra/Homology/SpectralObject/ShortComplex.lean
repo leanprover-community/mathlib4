@@ -1,10 +1,11 @@
 import Mathlib.Algebra.Homology.SpectralObject.Basic
+import Mathlib.Algebra.Homology.ExactSequenceFour
 
 namespace CategoryTheory
 
 variable {C ι : Type*} [Category C] [Category ι] [Abelian C]
 
-open ComposableArrows Limits
+open Category ComposableArrows Limits
 
 namespace Abelian
 
@@ -55,6 +56,7 @@ noncomputable def EObjIso (D : ComposableArrows ι 3) :
   ((X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).mapHomologyIso ((evaluation _ _).obj D)).symm
 
 noncomputable def cycles : ComposableArrows ι 2 ⥤ C := kernel (X.δ' n₀ n₁ hn₁)
+
 noncomputable def opcycles : ComposableArrows ι 2 ⥤ C := cokernel (X.δ' n₀ n₁ hn₁)
 
 noncomputable def iCycles :
@@ -64,6 +66,94 @@ noncomputable def iCycles :
 noncomputable def pOpcycles :
     functorArrows ι 0 1 2 ⋙ X.H n₁ ⟶ X.opcycles n₀ n₁ hn₁ :=
   cokernel.π _
+
+instance : Mono (X.iCycles n₀ n₁ hn₁) := by
+  dsimp [iCycles]
+  infer_instance
+
+instance : Epi (X.pOpcycles n₀ n₁ hn₁) := by
+  dsimp [pOpcycles]
+  infer_instance
+
+@[reassoc (attr := simp)]
+lemma iCycles_δ : X.iCycles n₀ n₁ hn₁ ≫ X.δ' n₀ n₁ hn₁ = 0 := by
+  simp [iCycles]
+
+@[reassoc (attr := simp)]
+lemma δ_pOpcycles : X.δ' n₀ n₁ hn₁ ≫ X.pOpcycles n₀ n₁ hn₁ = 0 := by
+  simp [pOpcycles]
+
+@[simps, pp_dot]
+noncomputable def kernelSequenceCycles :
+    ShortComplex (ComposableArrows ι 2 ⥤ C) :=
+  ShortComplex.mk _ _ (X.iCycles_δ n₀ n₁ hn₁)
+
+@[simps, pp_dot]
+noncomputable def cokernelSequenceOpcycles :
+    ShortComplex (ComposableArrows ι 2 ⥤ C) :=
+  ShortComplex.mk _ _ (X.δ_pOpcycles n₀ n₁ hn₁)
+
+instance : Mono (X.kernelSequenceCycles n₀ n₁ hn₁).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁).g := by
+  dsimp
+  infer_instance
+
+lemma kernelSequenceCycles_exact :
+    (X.kernelSequenceCycles n₀ n₁ hn₁).Exact :=
+  ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
+
+lemma cokernelSequenceOpcycles_exact :
+    (X.cokernelSequenceOpcycles n₀ n₁ hn₁).Exact :=
+  ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
+
+noncomputable def cokernelIsoCycles :
+    cokernel (X.Hδ₂Toδ₁ n₀) ≅ X.cycles n₀ n₁ hn₁ :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).cokerIsoKer 0
+
+@[reassoc (attr := simp)]
+lemma cokernelIsoCycles_hom_fac :
+    cokernel.π _ ≫ (X.cokernelIsoCycles n₀ n₁ hn₁).hom ≫
+      X.iCycles n₀ n₁ hn₁ = X.Hδ₁Toδ₀ n₀ :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).cokerIsoKer_hom_fac 0
+
+noncomputable def opcyclesIsoKernel :
+    X.opcycles n₀ n₁ hn₁ ≅ kernel (X.Hδ₁Toδ₀ n₁) :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).cokerIsoKer 2
+
+@[reassoc (attr := simp)]
+lemma opcyclesIsoKernel_hom_fac :
+    X.pOpcycles n₀ n₁ hn₁ ≫ (X.opcyclesIsoKernel n₀ n₁ hn₁).hom ≫
+      kernel.ι _ = X.Hδ₂Toδ₁ n₁ :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁).cokerIsoKer_hom_fac 2
+
+noncomputable def toCycles : functorArrows ι 0 2 2 ⋙ X.H n₀ ⟶ X.cycles n₀ n₁ hn₁ :=
+  kernel.lift _ (X.Hδ₁Toδ₀ n₀) (by simp)
+
+@[reassoc (attr := simp)]
+lemma toCycles_i :
+    X.toCycles n₀ n₁ hn₁ ≫ X.iCycles n₀ n₁ hn₁ = X.Hδ₁Toδ₀ n₀ := by
+  apply kernel.lift_ι
+
+noncomputable def fromOpcycles :
+    X.opcycles n₀ n₁ hn₁ ⟶ functorArrows ι 0 2 2 ⋙ X.H n₁ :=
+  cokernel.desc _ (X.Hδ₂Toδ₁ n₁) (by simp)
+
+@[reassoc (attr := simp)]
+lemma p_fromOpcycles :
+    X.pOpcycles n₀ n₁ hn₁ ≫ X.fromOpcycles n₀ n₁ hn₁ = X.Hδ₂Toδ₁ n₁ := by
+  apply cokernel.π_desc
+
+@[reassoc (attr := simp)]
+lemma Hδ₂Toδ₁_toCycles : X.Hδ₂Toδ₁ n₀ ≫ X.toCycles n₀ n₁ hn₁ = 0 := by
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁), assoc, toCycles_i,
+    zero₂'', zero_comp]
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_Hδ₁Toδ₀ : X.fromOpcycles n₀ n₁ hn₁ ≫ X.Hδ₁Toδ₀ n₁ = 0 := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁), p_fromOpcycles_assoc, zero₂'', comp_zero]
 
 end SpectralObject
 

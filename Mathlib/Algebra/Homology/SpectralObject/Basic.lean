@@ -31,6 +31,17 @@ variable (X : SpectralObject C ι)
 
 section
 
+variable (n₀ : ℤ)
+
+noncomputable def Hδ₂Toδ₁ := whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (H X n₀)
+
+noncomputable def Hδ₁Toδ₀ := whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (H X n₀)
+
+end
+
+
+section
+
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
 def δ : (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
@@ -165,14 +176,17 @@ def δFunctorArrows (i j k n : ℕ)
     apply X.δ_naturality
     rfl
 
+lemma δ'_eq_δFunctorArrows :
+    X.δ' n₀ n₁ hn₁ = X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2 := by
+  ext D
+  obtain ⟨i, j, k, f, g, rfl⟩ := mk₂_surjective D
+  rfl
+
 @[simp]
 noncomputable def composableArrows₅ :
     ComposableArrows (ComposableArrows ι 2 ⥤ C) 5 :=
-  mk₅ (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₀))
-    (whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₀))
-    (X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2)
-    (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₁))
-    (whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₁))
+  mk₅ (X.Hδ₂Toδ₁ n₀) (X.Hδ₁Toδ₀ n₀) (X.δ' n₀ n₁ hn₁ )
+    (X.Hδ₂Toδ₁ n₁) (X.Hδ₁Toδ₀ n₁)
 
 lemma composableArrows₅_exact :
     (X.composableArrows₅ n₀ n₁ hn₁).Exact := by
@@ -192,20 +206,17 @@ lemma composableArrows₅_exact :
 
 @[reassoc (attr := simp)]
 lemma zero₁'' :
-    (X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2) ≫
-    (whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₁)) = 0 :=
+    X.δ' n₀ n₁ hn₁ ≫ X.Hδ₂Toδ₁ n₁ = 0 :=
   (X.composableArrows₅_exact n₀ n₁ hn₁).zero 2
 
 @[reassoc (attr := simp)]
 lemma zero₂'' :
-    whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (X.H n₀) ≫
-    whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₀) = 0 :=
+    X.Hδ₂Toδ₁ n₀ ≫ X.Hδ₁Toδ₀ n₀ = 0 :=
   (X.composableArrows₅_exact n₀ _ rfl).zero 0
 
 @[reassoc (attr := simp)]
 lemma zero₃'' :
-    whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (X.H n₀) ≫
-      (X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2) = 0 :=
+    X.Hδ₁Toδ₀ n₀ ≫ X.δ' n₀ n₁ hn₁ = 0 :=
   (X.composableArrows₅_exact n₀ n₁ hn₁).zero 1
 
 lemma exact₁'' :
