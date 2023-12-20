@@ -819,7 +819,7 @@ We use a linear order on ι to identify all finsets of `ι` of cardinality `n` t
 def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) (n : ℕ) :
     MultilinearMap R (fun (_ : Fin n) => (i : ι) → M₁ i) M₂ :=
-  ∑ s : univ.powerset.filter (·.card = n),--{s : Finset ι | s.card = n},
+  ∑ s : univ.powerset.filter (·.card = n),
    ((f.domDomRestrict s.1.toSet (fun i => x i.1)).compLinearMap (fun (i : s.1) => LinearMap.proj
   i (φ := M₁))).domDomCongr (s.1.orderIsoOfFin (mem_filter.mp s.2).2).symm.toEquiv
 
