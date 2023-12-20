@@ -1516,7 +1516,7 @@ end MulProd
 
 /-! ### Scalar multiplication -/
 
-section Smul
+section SMul
 
 -- The scalar multiplication is smooth.
 theorem contDiff_smul : ContDiff 𝕜 n fun p : 𝕜 × F => p.1 • p.2 :=
@@ -1548,7 +1548,7 @@ theorem ContDiffOn.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDif
   (hf x hx).smul (hg x hx)
 #align cont_diff_on.smul ContDiffOn.smul
 
-end Smul
+end SMul
 
 /-! ### Constant scalar multiplication
 
@@ -1559,7 +1559,7 @@ Porting note: TODO: generalize results in this section.
   lemmas.
 -/
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
 
@@ -1608,7 +1608,7 @@ theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
   refine' iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
 
-end ConstSmul
+end ConstSMul
 
 /-! ### Cartesian product of two functions -/
 
@@ -1810,7 +1810,7 @@ then `f.symm` is `n` times continuously differentiable at the point `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E F)
+theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomorph E F)
     {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
     (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
     ContDiffAt 𝕜 n f.symm a := by
@@ -1855,7 +1855,7 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
   · refine' contDiffAt_top.mpr _
     intro n
     exact Itop n (contDiffAt_top.mp hf n)
-#align local_homeomorph.cont_diff_at_symm LocalHomeomorph.contDiffAt_symm
+#align local_homeomorph.cont_diff_at_symm PartialHomeomorph.contDiffAt_symm
 
 /-- If `f` is an `n` times continuously differentiable homeomorphism,
 and if the derivative of `f` at each point is a continuous linear equivalence,
@@ -1867,7 +1867,7 @@ theorem Homeomorph.contDiff_symm [CompleteSpace E] (f : E ≃ₜ F) {f₀' : E �
     (hf₀' : ∀ a, HasFDerivAt f (f₀' a : E →L[𝕜] F) a) (hf : ContDiff 𝕜 n (f : E → F)) :
     ContDiff 𝕜 n (f.symm : F → E) :=
   contDiff_iff_contDiffAt.2 fun x =>
-    f.toLocalHomeomorph.contDiffAt_symm (mem_univ x) (hf₀' _) hf.contDiffAt
+    f.toPartialHomeomorph.contDiffAt_symm (mem_univ x) (hf₀' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm Homeomorph.contDiff_symm
 
 /-- Let `f` be a local homeomorphism of a nontrivially normed field, let `a` be a point in its
@@ -1876,11 +1876,11 @@ target. if `f` is `n` times continuously differentiable at `f.symm a`, and if th
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem LocalHomeomorph.contDiffAt_symm_deriv [CompleteSpace 𝕜] (f : LocalHomeomorph 𝕜 𝕜)
+theorem PartialHomeomorph.contDiffAt_symm_deriv [CompleteSpace 𝕜] (f : PartialHomeomorph 𝕜 𝕜)
     {f₀' a : 𝕜} (h₀ : f₀' ≠ 0) (ha : a ∈ f.target) (hf₀' : HasDerivAt f f₀' (f.symm a))
     (hf : ContDiffAt 𝕜 n f (f.symm a)) : ContDiffAt 𝕜 n f.symm a :=
   f.contDiffAt_symm ha (hf₀'.hasFDerivAt_equiv h₀) hf
-#align local_homeomorph.cont_diff_at_symm_deriv LocalHomeomorph.contDiffAt_symm_deriv
+#align local_homeomorph.cont_diff_at_symm_deriv PartialHomeomorph.contDiffAt_symm_deriv
 
 /-- Let `f` be an `n` times continuously differentiable homeomorphism of a nontrivially normed
 field.  Suppose that the derivative of `f` is never equal to zero. Then `f.symm` is `n` times
@@ -1892,10 +1892,10 @@ theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ �
     (h₀ : ∀ x, f' x ≠ 0) (hf' : ∀ x, HasDerivAt f (f' x) x) (hf : ContDiff 𝕜 n (f : 𝕜 → 𝕜)) :
     ContDiff 𝕜 n (f.symm : 𝕜 → 𝕜) :=
   contDiff_iff_contDiffAt.2 fun x =>
-    f.toLocalHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
+    f.toPartialHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm_deriv Homeomorph.contDiff_symm_deriv
 
-namespace LocalHomeomorph
+namespace PartialHomeomorph
 
 variable (𝕜)
 
@@ -1906,7 +1906,7 @@ such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
 Note that `n` is a natural number, not `∞`,
 because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
 @[simps! apply symm_apply source target]
-def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
+def restrContDiff (f : PartialHomeomorph E F) (n : ℕ) : PartialHomeomorph E F :=
   haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
       {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
     simp [hx, and_comm]
@@ -1914,13 +1914,13 @@ def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
     inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
     f.continuousAt hxs hxf'.eventually
 
-lemma contDiffOn_restrContDiff_source (f : LocalHomeomorph E F) (n : ℕ) :
+lemma contDiffOn_restrContDiff_source (f : PartialHomeomorph E F) (n : ℕ) :
     ContDiffOn 𝕜 n f (f.restrContDiff 𝕜 n).source := fun _x hx ↦ hx.2.1.contDiffWithinAt
 
-lemma contDiffOn_restrContDiff_target (f : LocalHomeomorph E F) (n : ℕ) :
+lemma contDiffOn_restrContDiff_target (f : PartialHomeomorph E F) (n : ℕ) :
     ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n).target := fun _x hx ↦ hx.2.1.contDiffWithinAt
 
-end LocalHomeomorph
+end PartialHomeomorph
 
 end FunctionInverse
 

@@ -687,7 +687,7 @@ end OfNatCoe
 
 @[simp]
 theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
-  rw [← Nat.cast_one, nat_cast_eq_zero, Nat.dvd_one_iff]
+  rw [← Nat.cast_one, nat_cast_eq_zero, Nat.dvd_one]
 #align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 @[simp]
