@@ -1124,7 +1124,7 @@ def moveRightSymm :
 @[refl]
 def refl (x : PGame) : x ≡r x :=
   ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
-termination_by => x
+termination_by x
 #align pgame.relabelling.refl SetTheory.PGame.Relabelling.refl
 
 instance (x : PGame) : Inhabited (x ≡r x) :=
@@ -1140,7 +1140,7 @@ theorem le {x y : PGame} (r : x ≡r y) : x ≤ y :=
   le_def.2
     ⟨fun i => Or.inl ⟨_, (r.moveLeft i).le⟩, fun j =>
       Or.inr ⟨_, (r.moveRightSymm j).le⟩⟩
-termination_by => x
+termination_by x
 #align pgame.relabelling.le SetTheory.PGame.Relabelling.le
 
 theorem ge {x y : PGame} (r : x ≡r y) : y ≤ x :=

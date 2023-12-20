@@ -580,7 +580,7 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b 
   | a, 0 => Ha0 a
   | 0, b => H0b b
   | Nat.succ a, Nat.succ b => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
-termination_by pincerRecursion Ha0 Hab H n m => n + m
+termination_by n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
 
 -- Porting note:

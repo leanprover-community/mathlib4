@@ -296,7 +296,7 @@ theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   · congr <;> ext (d hd) <;> apply nadd_assoc
   · exact fun _ _ h => nadd_le_nadd_left h a
   · exact fun _ _ h => nadd_le_nadd_right h c
-termination_by => (a, b, c)
+termination_by (a, b, c)
 -- Porting note: above lines replaces
 -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc

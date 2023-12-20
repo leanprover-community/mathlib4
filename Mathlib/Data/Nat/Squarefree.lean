@@ -202,7 +202,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
   · specialize IH (n / k) (div_dvd_of_dvd dk) dkk
     exact minSqFacProp_div _ (pk dk) dk (mt (Nat.dvd_div_iff dk).2 dkk) IH
   · exact IH n (dvd_refl _) dk
-termination_by => n.sqrt + 2 - k
+termination_by n.sqrt + 2 - k
 #align nat.min_sq_fac_aux_has_prop Nat.minSqFacAux_has_prop
 
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
