@@ -138,7 +138,7 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
     exact ⟨_, ht, _, hx, by rwa [mem_preimage]⟩
   · intro h _ hu _ hn
     rcases h _ hn hu with ⟨_, ht, _, hx, hϕtx⟩
-    exact ⟨_, hϕtx, _, _, ht, hx, rfl⟩
+    exact ⟨_, hϕtx, _, ht, _, hx, rfl⟩
 #align mem_omega_limit_iff_frequently mem_omegaLimit_iff_frequently
 
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
@@ -391,7 +391,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)
-  rcases l₃ with ⟨ϕra, ho, ⟨_, _, hr, ha, hϕra⟩⟩
+  rcases l₃ with ⟨ϕra, ho, ⟨_, hr, _, ha, hϕra⟩⟩
   exact ⟨_, hr, ϕra, ⟨_, ha, hϕra⟩, ho₁ ho⟩
 #align flow.omega_limit_omega_limit Flow.omegaLimit_omegaLimit
 
