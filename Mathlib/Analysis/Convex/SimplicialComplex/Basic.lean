@@ -79,8 +79,8 @@ def space (K : SimplicialComplex 𝕜 E) : Set E :=
 #align geometry.simplicial_complex.space Geometry.SimplicialComplex.space
 
 -- Porting note: Expanded `∃ s ∈ K.faces` to get the type to match more closely with Lean 3
-theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull 𝕜 (s : Set E) :=
-  mem_iUnion₂
+theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull 𝕜 (s : Set E) := by
+  simp [space]
 #align geometry.simplicial_complex.mem_space_iff Geometry.SimplicialComplex.mem_space_iff
 
 -- Porting note: Original proof was `:= subset_biUnion_of_mem hs`
