@@ -74,7 +74,7 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
     · simp [hm, Real.zero_rpow (_root_.ne_of_gt (lt_trans Real.zero_lt_one hz))]
     simp only [map_div₀, Complex.norm_eq_abs]
     apply div_le_div hm (h _) (Real.rpow_pos_of_pos (Nat.cast_pos.2 n.succ_pos) _) (le_of_eq _)
-    rw [Complex.abs_cpow_real, Complex.abs_cast_nat]
+    rw [Complex.abs_cpow_real, Complex.abs_natCast]
 #align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real Nat.ArithmeticFunction.LSeriesSummable_of_bounded_of_one_lt_real
 
 theorem LSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ} (h : w.re = z.re) :

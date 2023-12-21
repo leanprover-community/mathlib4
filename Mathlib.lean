@@ -1208,6 +1208,7 @@ import Mathlib.CategoryTheory.Sites.Closed
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
+import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
@@ -1347,6 +1348,7 @@ import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic

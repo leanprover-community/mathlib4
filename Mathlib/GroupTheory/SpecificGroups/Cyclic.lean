@@ -605,6 +605,10 @@ theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) where
   exists_generator := ⟨1, fun n ↦ ⟨n, by simp⟩⟩
 
+instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+  AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
+    ⟨by infer_instance, by simpa using (Fact.out : p.Prime)⟩
+
 @[simp]
 protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := by
   cases n
