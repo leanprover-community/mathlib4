@@ -15,6 +15,9 @@ instance : Finite (PrimeSpectrum R) := @Finite.of_equiv _ {I : Ideal R | I.IsPri
   (Set.finite_coe_iff.mpr IsArtinianRing.primeSpectrum_finite)
   ⟨fun x ↦ ⟨x.1, x.2⟩, fun x ↦ ⟨x.1, x.2⟩, fun _ ↦ by aesop, fun _ ↦ by aesop⟩
 
+noncomputable instance : Fintype (PrimeSpectrum R) :=
+  Classical.choice <| finite_iff_nonempty_fintype (PrimeSpectrum R) |>.mp inferInstance
+
 instance : T1Space (PrimeSpectrum R) where
   t1 p := PrimeSpectrum.isClosed_singleton_iff_isMaximal _ |>.mpr (isMaximal_of_isPrime p.asIdeal)
 
@@ -131,5 +134,15 @@ If $R$ is an artinian ring, then $R \cong \prod_{\mathfrak{p}}R_{\mathfrak{p}}$
 noncomputable def equivProdLocalization :
     R ≃+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal) :=
   Classical.choice equivProdLocalization'
+
+
+section local_ring
+
+instance isNotherianRing_of_local [LocalRing R] : IsNoetherianRing R := sorry
+
+end local_ring
+
+instance : IsNoetherian R R :=
+  @isNoetherianRing_of_ringEquiv (f := equivProdLocalization.symm) <| IsNoetherianRing.Pi _
 
 end IsArtinianRing
