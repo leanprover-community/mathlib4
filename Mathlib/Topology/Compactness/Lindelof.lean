@@ -192,7 +192,6 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
       intro is
       have h := (hr i is).2
       intro x hx
-      have := h hx
       exact mem_biUnion is (h hx)
   have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, r.Countable ∧ (t ⊆ ⋃ i ∈ r, U i) := by
     intro x hx
