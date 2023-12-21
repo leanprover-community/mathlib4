@@ -935,11 +935,9 @@ irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
     PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducible s ∧ IsClosed s}ᵒᵈ where
-    __ := irreducibleSetEquivPoints (α := PrimeSpectrum R) |>.toEquiv |>.symm |>.trans
-      OrderDual.toDual
-    map_rel_iff' {p q} := show closure {q} ≤ closure {p} ↔ p ≤ q by
-      simp [closure_singleton, Set.le_eq_subset, zeroLocus_subset_zeroLocus_iff,
-        q.IsPrime.radical]
+  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
+  map_rel_iff' {p q} := show closure {q} ≤ closure {p} ↔ p ≤ q by
+    simp [closure_singleton, Set.le_eq_subset, zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical]
 
 end PrimeSpectrum
 
