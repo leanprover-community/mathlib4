@@ -32,161 +32,191 @@ an `R`-lineara map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l
 
 -/
 
-open CategoryTheory
-
 universe uR uM uN uD
 variable (R : Type uR) [CommRing R]
-variable (M : Type uM) [AddCommGroup M] [Module R M]
-variable (N : Type uN) [AddCommGroup N] [Module R N]
-variable (D : Type uD) [AddCommGroup D] [Module R D]
+-- variable (M : Type uM) [AddCommGroup M] [Module R M]
+-- variable (N : Type uN) [AddCommGroup N] [Module R N]
+-- variable (D : Type uD) [AddCommGroup D] [Module R D]
 
--- we really want to consider only injective modules
-/--
-If `M` is an `R`-module, its `D`-character module is defined to be the `Hom_R(M, D)`
--/
-def CharacterModule := M →ₗ[R] D
+-- -- we really want to consider only injective modules
+-- /--
+-- If `M` is an `R`-module, its `D`-character module is defined to be the `Hom_R(M, D)`
+-- -/
+-- def CharacterModule := M →ₗ[R] D
 
-instance : FunLike (CharacterModule R M D) M (fun _ ↦ D) :=
-  inferInstanceAs <| FunLike (M →ₗ[R] D) M _
+-- instance : FunLike (CharacterModule R M D) M (fun _ ↦ D) :=
+--   inferInstanceAs <| FunLike (M →ₗ[R] D) M _
 
-instance : AddCommGroup (CharacterModule R M D) :=
-  inferInstanceAs <| AddCommGroup <| M →ₗ[R] D
+-- instance : AddCommGroup (CharacterModule R M D) :=
+--   inferInstanceAs <| AddCommGroup <| M →ₗ[R] D
 
-instance : Module R (CharacterModule R M D) :=
-  LinearMap.module
+-- instance : Module R (CharacterModule R M D) :=
+--   LinearMap.module
 
-instance : LinearMapClass (CharacterModule R M D) R M D :=
-  inferInstanceAs <| LinearMapClass (M →ₗ[R] D) R M D
+-- instance : LinearMapClass (CharacterModule R M D) R M D :=
+--   inferInstanceAs <| LinearMapClass (M →ₗ[R] D) R M D
 
-@[simp] lemma CharacterModule.smul_apply (f : CharacterModule R M D) (r : R) (m : M) :
-    (r • f) m = f (r • m) := by
-  rw [LinearMap.smul_apply, f.map_smul]
+-- @[simp] lemma CharacterModule.smul_apply (f : CharacterModule R M D) (r : R) (m : M) :
+--     (r • f) m = f (r • m) := by
+--   rw [LinearMap.smul_apply, f.map_smul]
 
-variable {R M N}
+-- variable {R M N}
 
-/--
-For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N` to `CharacterModule M`
--/
-@[simps]
-def LinearMap.characterify
-    (L : M →ₗ[R] N)  :
-    CharacterModule R N D →ₗ[R] CharacterModule R M D where
-  toFun f := f ∘ₗ L
-  map_add' _ _ := LinearMap.ext fun m ↦ by aesop
-  map_smul' r c := LinearMap.ext fun m ↦ by
-    simp only [coe_comp, coe_restrictScalars, Function.comp_apply, RingHom.id_apply]
-    rw [CharacterModule.smul_apply, CharacterModule.smul_apply, LinearMap.comp_apply, c.map_smul,
-      L.map_smul, c.map_smul]
+-- /--
+-- For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N` to `CharacterModule M`
+-- -/
+-- @[simps]
+-- def LinearMap.characterify
+--     (L : M →ₗ[R] N)  :
+--     CharacterModule R N D →ₗ[R] CharacterModule R M D where
+--   toFun f := f ∘ₗ L
+--   map_add' _ _ := LinearMap.ext fun m ↦ by aesop
+--   map_smul' r c := LinearMap.ext fun m ↦ by
+--     simp only [coe_comp, coe_restrictScalars, Function.comp_apply, RingHom.id_apply]
+--     rw [CharacterModule.smul_apply, CharacterModule.smul_apply, LinearMap.comp_apply, c.map_smul,
+--       L.map_smul, c.map_smul]
 
-lemma LinearMap.characterify_surjective_of_injective
-    [UnivLE.{uR, uD}] [injective_dual : Module.Injective R D]
-    {L : M →ₗ[R] N}
-    (inj : Function.Injective L) :
-    Function.Surjective <| LinearMap.characterify D L :=
-  Module.Baer.iff_injective.mpr injective_dual |>.extension_property L inj
+-- lemma LinearMap.characterify_surjective_of_injective
+--     [UnivLE.{uR, uD}] [injective_dual : Module.Injective R D]
+--     {L : M →ₗ[R] N}
+--     (inj : Function.Injective L) :
+--     Function.Surjective <| LinearMap.characterify D L :=
+--   Module.Baer.iff_injective.mpr injective_dual |>.extension_property L inj
 
-variable (R)
+-- variable (R)
 
-/--
-If `R` is a commutative ring, `M ↦ CharacterModule M` and `L ↦ (· ∘ L)` defines a contravariant
-endofunctor on `R`-modules.
--/
-@[simps!]
-def CharacterModuleFunctor :
-    (ModuleCat R)ᵒᵖ ⥤ ModuleCat R where
-  obj M := ModuleCat.of R <| CharacterModule R M.unop D
-  map L := LinearMap.characterify D L.unop
-  map_id {_} := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
-  map_comp _ _ := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
+-- /--
+-- If `R` is a commutative ring, `M ↦ CharacterModule M` and `L ↦ (· ∘ L)` defines a contravariant
+-- endofunctor on `R`-modules.
+-- -/
+-- @[simps!]
+-- def CharacterModuleFunctor :
+--     (ModuleCat R)ᵒᵖ ⥤ ModuleCat R where
+--   obj M := ModuleCat.of R <| CharacterModule R M.unop D
+--   map L := LinearMap.characterify D L.unop
+--   map_id {_} := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
+--   map_comp _ _ := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
 
-namespace CharacterModuleFunctor
+-- namespace CharacterModuleFunctor
 
-lemma map_surjective_of_injective_unop [UnivLE.{uR, uD}] [Module.Injective R D]
-    {M N : (ModuleCat R)ᵒᵖ} {L : M ⟶ N} (hL : Function.Injective L.unop) :
-    Function.Surjective <| (CharacterModuleFunctor R D).map L :=
-  LinearMap.characterify_surjective_of_injective D hL
+-- lemma map_surjective_of_injective_unop [UnivLE.{uR, uD}] [Module.Injective R D]
+--     {M N : (ModuleCat R)ᵒᵖ} {L : M ⟶ N} (hL : Function.Injective L.unop) :
+--     Function.Surjective <| (CharacterModuleFunctor R D).map L :=
+--   LinearMap.characterify_surjective_of_injective D hL
 
-end CharacterModuleFunctor
+-- end CharacterModuleFunctor
 
-namespace CharacterModule
+-- namespace CharacterModule
 
-/--
-Equivalent modules have equivalent character modules
--/
-@[simps!]
-def cong (e : M ≃ₗ[R] N) :
-    CharacterModule R M D ≃ₗ[R] CharacterModule R N D := by
-  refine LinearEquiv.ofLinear
-    (e.symm.toLinearMap.characterify D) (e.toLinearMap.characterify D) ?_ ?_ <;>
-  refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;> aesop
+-- /--
+-- Equivalent modules have equivalent character modules
+-- -/
+-- @[simps!]
+-- def cong (e : M ≃ₗ[R] N) :
+--     CharacterModule R M D ≃ₗ[R] CharacterModule R N D := by
+--   refine LinearEquiv.ofLinear
+--     (e.symm.toLinearMap.characterify D) (e.toLinearMap.characterify D) ?_ ?_ <;>
+--   refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;> aesop
 
-end CharacterModule
-
-
-namespace CharacterModule
-
-open TensorProduct
-
-variable (M N)
-
-/--
-for a linear map `f : N → CharacterModule M`, i.e. `f : N → M → D`, we can uncurry it into
-`(N ⊗ M) → D`, i.e. a character in `CharacterModule (N ⊗[R] M)`.
--/
-@[simps!]
-noncomputable def uncurry :
-    (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) →ₗ[R]
-    CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D :=
-  TensorProduct.uncurry _ _ _ _
-
--- !FIXME Simply `TensorProduct.curry` doesn't work because of universe levels
-/--
-for a character in `CharacterModule (N ⊗[R] M)` i.e. `N ⊗ M → ℚ/ℤ`, we can curry it into
-`N → M → ℚ/ℤ`, i.e. a linear map `N → CharacterModule M`
--/
-@[simps!]
-noncomputable def curry :
-    CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D →ₗ[R]
-    N →ₗ[R] CharacterModule.{uR, uM, uD} R M D :=
-  { toFun := fun c ↦ TensorProduct.curry (R := R) (M := N) (N := M) (P := D) c,
-    map_add' := map_add _
-    map_smul' := map_smul _ }
+-- end CharacterModule
 
 
-/--
-`CharacterModule.uncurry` and `CharacterModule.curry` defines a bijection between linear map
-`Hom(N, CharacterModule M)` and `CharacterModule(N ⊗ M)`
--/
-@[simps!]
-noncomputable def homEquiv :
-    (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) ≃ₗ[R]
-    CharacterModule.{uR, max uM uN, uD} R (N ⊗[R] M) D :=
-LinearEquiv.ofLinear
-  (uncurry.{uR, uM, uN, uD} R M N D)
-  (curry.{uR, uM, uN, uD} R M N D)
-  (LinearMap.ext fun _ ↦ TensorProduct.ext <| by aesop)
-  (LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop)
+-- namespace CharacterModule
 
-section addCommGroup
+-- open TensorProduct
 
-universe uA
+-- variable (M N)
+
+-- /--
+-- for a linear map `f : N → CharacterModule M`, i.e. `f : N → M → D`, we can uncurry it into
+-- `(N ⊗ M) → D`, i.e. a character in `CharacterModule (N ⊗[R] M)`.
+-- -/
+-- @[simps!]
+-- noncomputable def uncurry :
+--     (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) →ₗ[R]
+--     CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D :=
+--   TensorProduct.uncurry _ _ _ _
+
+-- -- !FIXME Simply `TensorProduct.curry` doesn't work because of universe levels
+-- /--
+-- for a character in `CharacterModule (N ⊗[R] M)` i.e. `N ⊗ M → ℚ/ℤ`, we can curry it into
+-- `N → M → ℚ/ℤ`, i.e. a linear map `N → CharacterModule M`
+-- -/
+-- @[simps!]
+-- noncomputable def curry :
+--     CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D →ₗ[R]
+--     N →ₗ[R] CharacterModule.{uR, uM, uD} R M D :=
+--   { toFun := fun c ↦ TensorProduct.curry (R := R) (M := N) (N := M) (P := D) c,
+--     map_add' := map_add _
+--     map_smul' := map_smul _ }
+
+
+-- /--
+-- `CharacterModule.uncurry` and `CharacterModule.curry` defines a bijection between linear map
+-- `Hom(N, CharacterModule M)` and `CharacterModule(N ⊗ M)`
+-- -/
+-- @[simps!]
+-- noncomputable def homEquiv :
+--     (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) ≃ₗ[R]
+--     CharacterModule.{uR, max uM uN, uD} R (N ⊗[R] M) D :=
+-- LinearEquiv.ofLinear
+--   (uncurry.{uR, uM, uN, uD} R M N D)
+--   (curry.{uR, uM, uN, uD} R M N D)
+--   (LinearMap.ext fun _ ↦ TensorProduct.ext <| by aesop)
+--   (LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop)
+
+universe uA uB
 variable (A : Type uA) [AddCommGroup A]
+variable (B : Type uB) [AddCommGroup B]
 
 /--
 the character module of abelian group `A` in unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`
 -/
-abbrev unitRationalCircle : Type uA :=
-  CharacterModule ℤ A (AddCircle (1 : ℚ))
+def CharacterModule : Type uA :=
+  A →ₗ[ℤ] (AddCircle (1 : ℚ))
 
-namespace unitRationalCircle
+namespace CharacterModule
+
+instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) :=
+  inferInstanceAs (LinearMapClass (A →ₗ[ℤ] AddCircle (1 : ℚ)) ℤ A _)
+
+instance : AddCommGroup (CharacterModule A) :=
+  inferInstanceAs (AddCommGroup (A →ₗ[ℤ] _))
+
+section module
+
+variable [Module R A]  [Module R B]
+
+instance : Module R (CharacterModule A) where
+  smul r l :=
+    { toFun := fun x => l (r • x)
+      map_add' := fun x y => by dsimp; rw [smul_add, map_add]
+      map_smul' := fun s x => by dsimp; rw [← smul_comm, l.map_smul] }
+  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [one_smul]
+  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [mul_smul, smul_comm]
+  smul_zero r := rfl
+  smul_add r l₁ l₂ := LinearMap.ext fun x => show (l₁ + _) _ = _ by
+    rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
+  add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
+    rw [add_smul, map_add]
+  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [zero_smul, map_zero]
+
+variable {A B} in
+def rcomp (f : A →ₗ[R] B) : CharacterModule B →ₗ[R] CharacterModule A :=
+LinearMap.lrcomp ℤ
+-- where
+--   toFun L := L ∘ₗ f
+--   map_add' := _
+--   map_smul' := _
+
+end module
 /--
 `ℤ⋆`, the character module of `ℤ` in rational circle
 -/
-protected abbrev int : Type :=
-  CharacterModule.unitRationalCircle ℤ
+protected abbrev int : Type := CharacterModule ℤ
 
 /-- Given `n : ℕ`, the map `m ↦ m / n`. -/
-protected abbrev int.divByNat (n : ℕ) : CharacterModule.unitRationalCircle ℤ :=
+protected abbrev int.divByNat (n : ℕ) : CharacterModule.int  :=
   LinearMap.toSpanSingleton ℤ _ (QuotientAddGroup.mk (n : ℚ)⁻¹)
 
 protected lemma int.divByNat_self (n : ℕ) :
@@ -216,17 +246,17 @@ For an abelian group `M` and an element `a ∈ M`, there is a character `c : ℤ
 `m • a ↦ m / n` where `n` is the smallest natural number such that `na = 0` and when such `n` does
 not exist, `c` is defined by `m • a ↦ m / 2`
 -/
-noncomputable def ofSpanSingleton (a : A) : unitRationalCircle (ℤ ∙ a) :=
-  let l' :  unitRationalCircle (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) :=
+noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
+  let l' :  CharacterModule (ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)}) :=
     Submodule.liftQSpanSingleton _
-      (unitRationalCircle.int.divByNat <| if addOrderOf a = 0 then 2 else addOrderOf a) <| by
-        simp only [unitRationalCircle.int.divByNat, Nat.cast_ite, Nat.cast_ofNat,
+      (CharacterModule.int.divByNat <| if addOrderOf a = 0 then 2 else addOrderOf a) <| by
+        simp only [CharacterModule.int.divByNat, Nat.cast_ite, Nat.cast_ofNat,
           LinearMap.toSpanSingleton_apply, coe_nat_zsmul, Nat.isUnit_iff,
           AddMonoid.addOrderOf_eq_one_iff]
         by_cases h : addOrderOf a = 0
         · rw [h, zero_smul]
         · rw [if_neg h]
-          apply unitRationalCircle.int.divByNat_self
+          apply CharacterModule.int.divByNat_self
   (equivZModSpanAddOrderOf a).characterify (R := ℤ) (D := AddCircle (1 : ℚ)) l'
 
 lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
@@ -257,9 +287,5 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
   erw [LinearMap.comp_apply, FunLike.congr_fun (Injective.comp_factorThru L ι)
     ⟨a, Submodule.mem_span_singleton_self _⟩] at rid
   exact ne_zero <| unitRationalCircle.eq_zero_of_ofSpanSingleton_apply_self a rid
-
-end unitRationalCircle
-
-end addCommGroup
 
 end CharacterModule

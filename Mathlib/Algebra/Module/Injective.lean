@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
@@ -544,3 +545,26 @@ lemma Module.Injective.extension_property
   rw [H]
 
 end lifting_property
+
+section
+
+variable {R : Type u} {M N P : Type*} [CommRing R]
+variable [AddCommGroup M]  [AddCommGroup N] [AddCommGroup P]
+variable [Module R M] [Module R N]  [Module R P]
+
+lemma LinearMap.lrcomp_surjective_of_injective
+    (f : M →ₗ[R] N) (hf : Function.Injective f) (baer : Module.Baer R P)  :
+    Function.Surjective <| LinearMap.lrcomp R M N P f :=
+  baer.extension_property f hf
+
+instance ModuleCat.rightHomFunctorPreservesEpi
+    (M : ModuleCat.{v, u} R) [UnivLE.{u, v}] [CategoryTheory.Injective M] :
+    (ModuleCat.rightHomFunctor R M).PreservesEpimorphisms where
+  preserves {N₁ N₂} L hL := by
+    rw [ModuleCat.epi_iff_surjective]
+    let inj : Function.Injective L.unop := ModuleCat.mono_iff_injective _ |>.mp inferInstance
+    refine L.unop.lrcomp_surjective_of_injective inj ?_
+    rw [Module.Baer.iff_injective, Module.injective_iff_injective_object]
+    assumption
+
+end
