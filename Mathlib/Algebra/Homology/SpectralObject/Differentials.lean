@@ -5,7 +5,7 @@ namespace CategoryTheory
 
 variable {C ι : Type*} [Category C] [Category ι] [Abelian C]
 
-open Category ComposableArrows Limits
+open Category ComposableArrows Limits Preadditive
 
 namespace Abelian
 
@@ -121,6 +121,15 @@ lemma δToCycles_iCycles :
     X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.iCycles n₁ n₂ hn₂ f₁ f₂ =
       X.δ n₀ n₁ hn₁ f₂ f₃ := by
   simp only [δToCycles, liftCycles_i]
+
+@[reassoc (attr := simp)]
+lemma δ_toCycles :
+    X.δ n₀ n₁ hn₁ f₁₂ f₃ ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ =
+      X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃  := by
+  rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ f₁ f₂), assoc,
+    toCycles_i, δToCycles_iCycles,
+    ← X.δ_naturality n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂) (𝟙 _) rfl,
+    Functor.map_id, id_comp]
 
 noncomputable def δFromOpcycles : X.opcycles n₀ n₁ hn₁ f₂ f₃ ⟶ (X.H n₂).obj (mk₁ f₁) :=
   X.descOpcycles n₀ n₁ hn₁ f₂ f₃ (X.δ n₁ n₂ hn₂ f₁ f₂) (by simp)
@@ -281,25 +290,6 @@ instance : Mono (X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f
   dsimp
   infer_instance
 
-@[reassoc (attr := simp)]
-lemma δ_toCycles_cyclesIso_inv :
-    X.δ n₀ n₁ hn₁ f₁₂ f₃ ≫
-      X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫
-        (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv =
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).toCycles := by
-  rw [← cancel_mono (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles,
-    assoc, assoc, cyclesIso_inv_i, toCycles_i, ShortComplex.toCycles_i,
-    shortComplexE_f,
-    ← X.δ_naturality n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂) (𝟙 _) rfl,
-    Functor.map_id, id_comp]
-
-@[reassoc (attr := simp)]
-lemma δ_toCycles_πE :
-    X.δ n₀ n₁ hn₁ f₁₂ f₃ ≫
-      X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫
-        (X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) = 0 := by
-  simp only [πE, δ_toCycles_cyclesIso_inv_assoc, ShortComplex.toCycles_comp_homologyπ]
-
 @[simps]
 noncomputable def cokernelSequenceE : ShortComplex C where
   X₁ := (X.H n₁).obj (mk₁ f₁) ⊞ (X.H n₀).obj (mk₁ f₃)
@@ -313,8 +303,21 @@ instance : Epi (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f�
   dsimp
   apply epi_comp
 
-/-lemma cokernelSequenceE_exact :
-    (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := sorry
+lemma cokernelSequenceE_exact :
+    (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  dsimp at x₂ hx₂
+  obtain ⟨A₁, π₁, _, y₁, hy₁⟩ :=
+    (X.cokernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
+      (x₂ ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂) (by simpa using hx₂)
+  dsimp at y₁ hy₁
+  let z := π₁ ≫ x₂ - y₁ ≫ X.δ n₀ n₁ hn₁ f₁₂ f₃
+  obtain ⟨A₂, π₂, _, x₁, hx₁⟩ := (X.exact₂ n₁ f₁ f₂ f₁₂ h₁₂).exact_up_to_refinements z (by
+      have : z ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ = 0 := by simp [hy₁]
+      simpa only [zero_comp, assoc, toCycles_i] using this =≫ X.iCycles n₁ n₂ hn₂ f₁ f₂)
+  dsimp at x₁ hx₁
+  exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, biprod.lift x₁ (π₂ ≫ y₁), by simp [← hx₁]⟩
 
 section
 
@@ -338,7 +341,7 @@ lemma toCycles_πE_descE :
   rw [← assoc]
   apply (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g_desc
 
-end-/
+end
 
 end
 
