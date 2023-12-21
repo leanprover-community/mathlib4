@@ -220,6 +220,11 @@ theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 #align cardinal.lift_id' Cardinal.lift_id'
 
+/-- A cardinal lifted to a lower or equal universe equals itself. -/
+@[simp, nolint simpNF]
+theorem lift_id'' (a : Cardinal.{max v u}) : lift.{u} a = a :=
+  inductionOn a fun _ => mk_congr Equiv.ulift
+
 /-- A cardinal lifted to the same universe equals itself. -/
 @[simp]
 theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
@@ -2182,15 +2187,37 @@ theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injec
   lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 #align cardinal.mk_range_eq_lift Cardinal.mk_range_eq_lift
 
+theorem mk_image_eq_of_injOn {α β : Type u} (f : α → β) (s : Set α) (h : InjOn f s) :
+    #(f '' s) = #s :=
+  mk_congr (Equiv.Set.imageOfInjOn f s h).symm
+#align cardinal.mk_image_eq_of_inj_on Cardinal.mk_image_eq_of_injOn
+
+theorem mk_image_eq_of_injOn_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α)
+    (h : InjOn f s) : lift.{u} #(f '' s) = lift.{v} #s :=
+  lift_mk_eq.{v, u, 0}.mpr ⟨(Equiv.Set.imageOfInjOn f s h).symm⟩
+#align cardinal.mk_image_eq_of_inj_on_lift Cardinal.mk_image_eq_of_injOn_lift
+
 theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injective f) : #(f '' s) = #s :=
-  mk_congr (Equiv.Set.image f s hf).symm
+  mk_image_eq_of_injOn _ _ <| hf.injOn _
 #align cardinal.mk_image_eq Cardinal.mk_image_eq
+
+theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α) (h : Injective f) :
+    lift.{u} #(f '' s) = lift.{v} #s :=
+  mk_image_eq_of_injOn_lift _ _ <| h.injOn _
+#align cardinal.mk_image_eq_lift Cardinal.mk_image_eq_lift
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
     #(⋃ i, f i) ≤ #(Σi, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 #align cardinal.mk_Union_le_sum_mk Cardinal.mk_iUnion_le_sum_mk
+
+theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α} :
+    lift.{v} #(⋃ i, f i) ≤ sum fun i => #(f i) :=
+  calc
+    lift.{v} #(⋃ i, f i) ≤ #(Σi, f i) :=
+      mk_le_of_surjective <| ULift.up_surjective.comp (Set.sigmaToiUnion_surjective f)
+    _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     (h : ∀ i j, i ≠ j → Disjoint (f i) (f j)) : #(⋃ i, f i) = sum fun i => #(f i) :=
@@ -2199,9 +2226,22 @@ theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     _ = sum fun i => #(f i) := mk_sigma _
 #align cardinal.mk_Union_eq_sum_mk Cardinal.mk_iUnion_eq_sum_mk
 
+theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
+    (h : ∀ i j, i ≠ j → Disjoint (f i) (f j)) :
+    lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
+  calc
+    lift.{v} #(⋃ i, f i) = #(Σi, f i) :=
+      mk_congr <| .trans Equiv.ulift (Set.unionEqSigmaOfDisjoint h)
+    _ = sum fun i => #(f i) := mk_sigma _
+
 theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #ι * ⨆ i, #(f i) :=
   mk_iUnion_le_sum_mk.trans (sum_le_iSup _)
 #align cardinal.mk_Union_le Cardinal.mk_iUnion_le
+
+theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
+    lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
+  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_iSup_lift _)
+  rw [←lift_sum, lift_id''.{v,u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]
@@ -2213,6 +2253,11 @@ theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le
 #align cardinal.mk_bUnion_le Cardinal.mk_biUnion_le
+
+theorem mk_biUnion_le_lift {α : Type u} {ι : Type v} (A : ι → Set α) (s : Set ι) :
+    lift.{v}  #(⋃ x ∈ s, A x) ≤ lift.{u} #s* ⨆ x : s, lift.{v} #(A x.1) := by
+  rw [biUnion_eq_iUnion]
+  apply mk_iUnion_le_lift
 
 theorem finset_card_lt_aleph0 (s : Finset α) : #(↑s : Set α) < ℵ₀ :=
   lt_aleph0_of_finite _
@@ -2303,20 +2348,6 @@ theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     ← countable_union]
 #align cardinal.mk_union_le_aleph_0 Cardinal.mk_union_le_aleph0
 
-theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α) (h : Injective f) :
-    lift.{u} #(f '' s) = lift.{v} #s :=
-  lift_mk_eq.{v, u, 0}.mpr ⟨(Equiv.Set.image f s h).symm⟩
-#align cardinal.mk_image_eq_lift Cardinal.mk_image_eq_lift
-
-theorem mk_image_eq_of_injOn_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α)
-    (h : InjOn f s) : lift.{u} #(f '' s) = lift.{v} #s :=
-  lift_mk_eq.{v, u, 0}.mpr ⟨(Equiv.Set.imageOfInjOn f s h).symm⟩
-#align cardinal.mk_image_eq_of_inj_on_lift Cardinal.mk_image_eq_of_injOn_lift
-
-theorem mk_image_eq_of_injOn {α β : Type u} (f : α → β) (s : Set α) (h : InjOn f s) :
-    #(f '' s) = #s :=
-  mk_congr (Equiv.Set.imageOfInjOn f s h).symm
-#align cardinal.mk_image_eq_of_inj_on Cardinal.mk_image_eq_of_injOn
 
 theorem mk_subtype_of_equiv {α β : Type u} (p : β → Prop) (e : α ≃ β) :
     #{ a : α // p (e a) } = #{ b : β // p b } :=
