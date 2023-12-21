@@ -1501,6 +1501,11 @@ theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
 #align add_subgroup.map_equiv_eq_comap_symm AddSubgroup.map_equiv_eq_comap_symm
 
 @[to_additive]
+theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
+    K.map f = K.comap (G := N) f.symm :=
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+
+@[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* G) (K : Subgroup G) :
     K.comap f.toMonoidHom = K.map f.symm.toMonoidHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
@@ -3497,6 +3502,25 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
   Subgroup.normal_comap _
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
+
+theorem Subgroup.normalClosure_map_equiv_eq_normalClosure_comap {s : Set G} (f : G ≃* N) :
+    (Subgroup.normalClosure s).map f = Subgroup.normalClosure (f '' s) := by
+  have : Subgroup.Normal (G := N) (Subgroup.map f (Subgroup.normalClosure s)) := by
+    rw [Subgroup.map_equiv_eq_comap_symm']
+    simp [Subgroup.Normal.comap]
+  apply le_antisymm
+  · rw [Subgroup.map_le_iff_le_comap]
+    apply Subgroup.normalClosure_le_normal
+    intro r hr
+    simp only [Subgroup.coe_comap, MonoidHom.coe_coe, Set.mem_preimage, SetLike.mem_coe]
+    apply Subgroup.subset_normalClosure
+    simp only [Set.mem_image]
+    refine ⟨r, hr, rfl⟩
+  · apply Subgroup.normalClosure_le_normal
+    simp only [Subgroup.coe_map, MonoidHom.coe_coe, Set.image_subset_iff]
+    intro r hr
+    simp only [Set.mem_preimage, Set.mem_image, SetLike.mem_coe]
+    exact ⟨r, Subgroup.subset_normalClosure hr, rfl⟩
 
 namespace MonoidHom
 
