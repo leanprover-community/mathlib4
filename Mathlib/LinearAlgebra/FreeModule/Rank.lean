@@ -171,18 +171,15 @@ theorem rank_pi_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   rw [Finsupp.total_apply, Finsupp.sum] at rep_e
   set c := bK.repr (bL ∘ e)
   set s := c.support
-  set N := s.card + 1
-  let f (i : Fin N) (j : s) : L :=
-    ⟨bK j i, Subfield.subset_closure ⟨(j, i), rfl⟩⟩
+  let f i (j : s) : L := ⟨bK j i, Subfield.subset_closure ⟨(j, i), rfl⟩⟩
   have : ¬LinearIndependent Lᵐᵒᵖ f := fun h ↦ by
     have := cardinal_lift_le_rank_of_linearIndependent' h
     rw [lift_uzero, (LinearEquiv.piCongrRight fun _ ↦ MulOpposite.opLinearEquiv Lᵐᵒᵖ).rank_eq,
-        rank_fun', Fintype.card_coe, mk_fin, lift_natCast, natCast_le] at this
-    exact (Nat.lt_succ_self _).not_le this
-  obtain ⟨g, eq0, i, hi⟩ := Fintype.not_linearIndependent_iff.mp this
-  refine hi <| Fintype.linearIndependent_iff.mp (bL.linearIndependent.comp _ <|
-    e.injective.comp Fin.val_injective) g (?_ : ∑ i : Fin N, g i • (bL ∘ e) i = 0) i
-  clear_value c s N
+        rank_fun'] at this
+    exact (nat_lt_aleph0 _).not_le this
+  obtain ⟨t, g, eq0, i, hi, hgi⟩ := not_linearIndependent_iff.mp this
+  refine hgi (linearIndependent_iff'.mp (bL.linearIndependent.comp e e.injective) t g ?_ i hi)
+  clear_value c s
   simp_rw [← rep_e, Finset.sum_apply, Pi.smul_apply, Finset.smul_sum]
   rw [Finset.sum_comm]
   refine Finset.sum_eq_zero fun i hi ↦ ?_
