@@ -44,15 +44,13 @@ theorem IsNatPowModT.bit0 :
     IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a (nat_lit 2 * b) m (Nat.mod (Nat.mul c c) m) :=
   ⟨fun h1 => by simpa [two_mul, pow_add, ← h1] using Nat.mul_mod _ _ _⟩
 
-theorem natPow_zero_natMod_zero : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 0) = 1 := rfl
-theorem natPow_zero_natMod_one : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 1) = 0 := rfl
-theorem natPow_zero_natMod_succ_succ : Nat.mod (Nat.pow a (nat_lit 0)) (Nat.succ (Nat.succ m)) = 1 := by
+theorem natPow_zero_natMod_zero : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 0) = nat_lit 1 := rfl
+theorem natPow_zero_natMod_one : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 1) = nat_lit 0 := rfl
+theorem natPow_zero_natMod_succ_succ : Nat.mod (Nat.pow a (nat_lit 0)) (Nat.succ (Nat.succ m)) = nat_lit 1 := by
   rw [natPow_zero]
   apply Nat.mod_eq_of_lt
   exact Nat.one_lt_succ_succ _
-theorem zero_natPow_natMod : Nat.mod (Nat.pow (nat_lit 0) (Nat.succ b)) m = nat_lit 0 := by
-  rw [zero_natPow]
-  exact Nat.zero_mod _
+theorem natPow_one_natMod : Nat.mod (Nat.pow a (nat_lit 1)) m = Nat.mod a m := by rw [natPow_one]
 
 theorem IsNatPowModT.bit1 :
     IsNatPowModT (Nat.mod (Nat.pow a b) m = c) a (nat_lit 2 * b + 1) m
@@ -66,23 +64,23 @@ theorem IsNatPowModT.bit1 :
 partial def evalNatPowMod (a b m : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.mod (Nat.pow $a $b) $m = $c) :=
   if b.natLit! = 0 then
     haveI : $b =Q 0 := ⟨⟩
-    if m.natLit! = 0 then
+    if m.natLit! = 0 then -- a ^ 0 % 0 = 1
       haveI : $m =Q 0 := ⟨⟩
       ⟨q(nat_lit 1), q(natPow_zero_natMod_zero)⟩
     else
       have m' : Q(ℕ) := mkRawNatLit (m.natLit! - 1)
-      if m'.natLit! = 0 then
+      if m'.natLit! = 0 then -- a ^ 0 % 1 = 0
         haveI : $m =Q 1 := ⟨⟩
         ⟨q(nat_lit 0), q(natPow_zero_natMod_one)⟩
-      else
+      else -- a ^ 0 % m = 1
         have m'' : Q(ℕ) := mkRawNatLit (m'.natLit! - 1)
         haveI : $m =Q Nat.succ (Nat.succ $m'') := ⟨⟩
         ⟨q(nat_lit 1), q(natPow_zero_natMod_succ_succ)⟩
-  else if a.natLit! = 0 then
-    haveI : $a =Q 0 := ⟨⟩
-    have b' : Q(ℕ) := mkRawNatLit (b.natLit! - 1)
-    haveI : $b =Q Nat.succ $b' := ⟨⟩
-    ⟨q(nat_lit 0), q(zero_natPow_natMod)⟩
+  else if b.natLit! = 1 then -- a ^ 1 % m = a % m
+    have c : Q(ℕ) := mkRawNatLit (a.natLit! % m.natLit!)
+    haveI : $b =Q 1 := ⟨⟩
+    haveI : $c =Q Nat.mod $a $m := ⟨⟩
+    ⟨c, q(natPow_one_natMod)⟩
   else
     have c₀ : Q(ℕ) := mkRawNatLit (a.natLit! % m.natLit!)
     haveI : $c₀ =Q Nat.mod $a $m := ⟨⟩

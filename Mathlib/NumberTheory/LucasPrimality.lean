@@ -528,17 +528,53 @@ elab "pratt" : tactic => do
   let u := q(Nat.Prime_of_isNat $pn $cert)
   closeMainGoal u
 
-set_option trace.profiler true
+-- set_option trace.profiler true
 -- set_option profiler true
 
-example : Nat.Prime 2425967623052370772757633156976982469681 := by
-  pratt
+example : Nat.Prime 5915587277 := by pratt
+example : Nat.Prime 1500450271 := by pratt
+example : Nat.Prime 3267000013 := by pratt
+example : Nat.Prime 5754853343 := by pratt
+example : Nat.Prime 4093082899 := by pratt
+example : Nat.Prime 9576890767 := by pratt
+example : Nat.Prime 3628273133 := by pratt
+example : Nat.Prime 2860486313 := by pratt
+example : Nat.Prime 5463458053 := by pratt
+example : Nat.Prime 3367900313 := by pratt
 
--- set_option pp.explicit true
+example : Nat.Prime 48112959837082048697 := by pratt
+example : Nat.Prime 54673257461630679457 := by pratt
+example : Nat.Prime 29497513910652490397 := by pratt
+example : Nat.Prime 40206835204840513073 := by pratt
+example : Nat.Prime 12764787846358441471 := by pratt
+example : Nat.Prime 71755440315342536873 := by pratt
+example : Nat.Prime 45095080578985454453 := by pratt
+example : Nat.Prime 27542476619900900873 := by pratt
+example : Nat.Prime 66405897020462343733 := by pratt
+example : Nat.Prime 36413321723440003717 := by pratt
 
--- #print yeah
---
--- #print axioms yeah
+example : Nat.Prime 671998030559713968361666935769 := by pratt
+example : Nat.Prime 282174488599599500573849980909 := by pratt
+example : Nat.Prime 521419622856657689423872613771 := by pratt
+example : Nat.Prime 362736035870515331128527330659 := by pratt
+example : Nat.Prime 115756986668303657898962467957 := by pratt
+example : Nat.Prime 590872612825179551336102196593 := by pratt
+example : Nat.Prime 564819669946735512444543556507 := by pratt
+example : Nat.Prime 513821217024129243948411056803 := by pratt
+example : Nat.Prime 416064700201658306196320137931 := by pratt
+example : Nat.Prime 280829369862134719390036617067 := by pratt
 
--- #eval computePrattCertificate  671998030559713968361666935769
--- #eval factor' (48112959837082048697 - 1)
+example : Nat.Prime 2425967623052370772757633156976982469681 := by pratt
+example : Nat.Prime 6075380529345458860144577398704761614649 := by pratt
+example : Nat.Prime 3615415881585117908550243505309785526231 := by pratt
+example : Nat.Prime 4384165182867240584805930970951575013697 := by pratt
+example : Nat.Prime 5570373270183181665098052481109678989411 := by pratt
+example : Nat.Prime 1451730470513778492236629598992166035067 := by pratt
+
+-- Slow
+-- example : Nat.Prime 5992830235524142758386850633773258681119 := by pratt
+-- example : Nat.Prime 5991810554633396517767024967580894321153 := by pratt
+
+-- Extremely slow, may never finish
+-- example : Nat.Prime 4146162919458530168953357282201621124057 := by pratt
+-- example : Nat.Prime 6847944682037444681162770672798288913849 := by pratt

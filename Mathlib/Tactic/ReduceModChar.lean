@@ -74,7 +74,6 @@ mutual
       (instRing : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
     let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
     let .isNat sα na pa ← normIntNumeral' n n' pn a instRing instCharP | failure
-
     let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
     guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩

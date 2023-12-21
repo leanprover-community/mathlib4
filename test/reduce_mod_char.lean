@@ -33,6 +33,16 @@ example : (5 * X ^ 2 - 3 * X + 4 : (ZMod 4)[X]) = X ^ 2 + X := by reduce_mod_cha
 example : (11 : ZMod 987654319) ^ 987654318 = 1 := by reduce_mod_char
 example : (-126432 : ZMod 1235412223) ^ 12355342321 = 1001528716 := by reduce_mod_char
 example : (((((5 : ZMod 1235412223) ^ 5) ^ 5) ^ 5) ^ 5) ^ 5 = 806432269 := by reduce_mod_char
+example : (2 : ZMod 75) ^ 0 = 1 := by reduce_mod_char
+example : (0 : ZMod 34523432) ^ 0 = 1 := by reduce_mod_char
+example : (0 : ZMod 56) ^ 90000000000000000 = 0 := by reduce_mod_char
+example : (1 : ZMod 119) ^ 433440000000000000000000 = 1 := by reduce_mod_char
+example : (75 : ZMod 111) ^ 1 = 75 := by reduce_mod_char
+example : (23 : ZMod 19) ^ 1 = 4 := by reduce_mod_char
+example : (1923423451 : ZMod 2) ^ 81000000000000000000 = 1 := by reduce_mod_char
+example : (19 : ZMod 1) ^ 810000000000000000000 = 0 := by reduce_mod_char
+example : (23423432049230423 : ZMod 0) ^ 0 = 1 := by reduce_mod_char
+example : (23423432049230423 : ZMod 1) ^ 0 = 0 := by reduce_mod_char
 
 -- Rewriting hypotheses:
 example (a : ZMod 7) (h : a + 7 = 2) : a = 2 := by
