@@ -36,7 +36,7 @@ open Classical BigOperators ENNReal
 
 open Classical Set Filter
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace MeasureTheory
 
@@ -60,7 +60,7 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
       MeasurableSpace.comap_le_iff_le_map.2 <| by rw [MeasurableSpace.map_comp]; exact h s hs
 #align measure_theory.measure.measurable_of_measurable_coe MeasureTheory.Measure.measurable_of_measurable_coe
 
-instance instMeasurableAdd₂ {α : Type _} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
+instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
   refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
   refine' Measurable.add _ _

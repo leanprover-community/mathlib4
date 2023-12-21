@@ -26,7 +26,7 @@ open Classical
 
 open Set
 
-variable {α : Type _} (s : Set α)
+variable {α : Type*} (s : Set α)
 
 section SupSet
 

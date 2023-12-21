@@ -29,8 +29,8 @@ open Set Function Filter Topology
 
 namespace AbsoluteValue
 
-variable {𝕜 : Type _} [LinearOrderedField 𝕜]
-variable {R : Type _} [CommRing R] (abv : AbsoluteValue R 𝕜)
+variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {R : Type*} [CommRing R] (abv : AbsoluteValue R 𝕜)
 
 /-- The uniform structure coming from an absolute value. -/
 def uniformSpace : UniformSpace R :=

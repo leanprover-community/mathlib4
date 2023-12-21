@@ -20,7 +20,7 @@ open Set
 
 open BigOperators
 
-variable {ι : Sort _} {𝕜 E : Type _}
+variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
 

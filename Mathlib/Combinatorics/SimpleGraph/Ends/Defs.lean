@@ -88,7 +88,7 @@ namespace ComponentCompl
 /-- A `ComponentCompl` specialization of `Quot.lift`, where soundness has to be proved only
 for adjacent vertices.
 -/
-protected def lift {β : Sort _} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
+protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
     (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K) (_ : G.Adj v w), f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
     induction' p with _ u v w a q ih

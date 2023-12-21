@@ -17,7 +17,7 @@ elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (
 -/
 
 
-variable {R ι : Type _}
+variable {R ι : Type*}
 
 namespace CharTwo
 

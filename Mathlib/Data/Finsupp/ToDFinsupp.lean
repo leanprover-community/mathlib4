@@ -60,7 +60,7 @@ these arguments are also present on the `noncomputable` equivs.
 -/
 
 
-variable {ι : Type _} {R : Type _} {M : Type _}
+variable {ι : Type*} {R : Type*} {M : Type*}
 
 /-! ### Basic definitions and lemmas -/
 
@@ -274,7 +274,7 @@ noncomputable section Sigma
 /-! ### Stronger versions of `Finsupp.split` -/
 --noncomputable section
 
-variable {η : ι → Type _} {N : Type _} [Semiring R]
+variable {η : ι → Type*} {N : Type*} [Semiring R]
 
 open Finsupp
 

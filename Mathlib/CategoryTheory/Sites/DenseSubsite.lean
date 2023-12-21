@@ -46,7 +46,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C] {D : Type _} [Category D] {E : Type _} [Category E]
+variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
@@ -103,7 +103,7 @@ namespace CoverDense
 
 variable {K}
 
-variable {A : Type _} [Category A] {G : C ⥤ D} (H : CoverDense K G)
+variable {A : Type*} [Category A] {G : C ⥤ D} (H : CoverDense K G)
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
 theorem ext (H : CoverDense K G) (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}

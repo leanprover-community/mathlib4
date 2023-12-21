@@ -28,7 +28,7 @@ Jordan algebras arising this way are said to be special.
 
 A real Jordan algebra `A` can be introduced by
 ```lean
-variables {A : Type _} [NonUnitalNonAssocRing A] [Module ℝ A] [SMulCommClass ℝ A A]
+variables {A : Type*} [NonUnitalNonAssocRing A] [Module ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [IsCommJordan A]
 ```
 
@@ -74,7 +74,7 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 -/
 
 
-variable (A : Type _)
+variable (A : Type*)
 
 /-- A (non-commutative) Jordan multiplication. -/
 class IsJordan [Mul A] : Prop where

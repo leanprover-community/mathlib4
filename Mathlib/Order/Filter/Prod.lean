@@ -42,7 +42,7 @@ open Filter
 
 namespace Filter
 
-variable {α β γ δ : Type _} {ι : Sort _}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 section Prod
 
@@ -146,7 +146,7 @@ theorem Tendsto.prod_mk {f : Filter α} {g : Filter β} {h : Filter γ} {m₁ : 
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 #align filter.tendsto.prod_mk Filter.Tendsto.prod_mk
 
-theorem tendsto_prod_swap {α1 α2 : Type _} {a1 : Filter α1} {a2 : Filter α2} :
+theorem tendsto_prod_swap {α1 α2 : Type*} {a1 : Filter α1} {a2 : Filter α2} :
     Tendsto (Prod.swap : α1 × α2 → α2 × α1) (a1 ×ˢ a2) (a2 ×ˢ a1) :=
   tendsto_snd.prod_mk tendsto_fst
 #align filter.tendsto_prod_swap Filter.tendsto_prod_swap
@@ -343,7 +343,7 @@ theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : 
     ((tendsto_map.comp tendsto_fst).prod_mk (tendsto_map.comp tendsto_snd))
 #align filter.prod_map_map_eq Filter.prod_map_map_eq
 
-theorem prod_map_map_eq' {α₁ : Type _} {α₂ : Type _} {β₁ : Type _} {β₂ : Type _} (f : α₁ → α₂)
+theorem prod_map_map_eq' {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*} (f : α₁ → α₂)
     (g : β₁ → β₂) (F : Filter α₁) (G : Filter β₁) :
     map f F ×ˢ map g G = map (Prod.map f g) (F ×ˢ G) :=
   prod_map_map_eq
@@ -361,7 +361,7 @@ theorem le_prod_map_fst_snd {f : Filter (α × β)} : f ≤ map Prod.fst f ×ˢ 
   le_inf le_comap_map le_comap_map
 #align filter.le_prod_map_fst_snd Filter.le_prod_map_fst_snd
 
-theorem Tendsto.prod_map {δ : Type _} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
+theorem Tendsto.prod_map {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a ×ˢ b) (c ×ˢ d) := by
   erw [Tendsto, ← prod_map_map_eq]
@@ -539,7 +539,7 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
 function. Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this
 provides an example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict.
 -/
-theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
+theorem map_const_principal_coprod_map_id_principal {α β ι : Type*} (a : α) (b : β) (i : ι) :
     (map (fun _ => b) (𝓟 {a})).coprod (map id (𝓟 {i})) =
       𝓟 ((({b} : Set β) ×ˢ univ) ∪ (univ ×ˢ ({i} : Set ι))) := by
   simp only [map_principal, Filter.coprod, comap_principal, sup_principal, image_singleton,
@@ -551,7 +551,7 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type _} (a : α)
 the identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
 in the lemma `map_prod_map_coprod_le` can be strict. -/
-theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type _} (a : α) (b : β) (i : ι) :
+theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type*} (a : α) (b : β) (i : ι) :
     map (Prod.map (fun _ : α => b) id) ((𝓟 {a}).coprod (𝓟 {i})) =
       𝓟 (({b} : Set β) ×ˢ (univ : Set ι)) := by
   rw [principal_coprod_principal, map_principal]
@@ -565,7 +565,7 @@ theorem map_prod_map_const_id_principal_coprod_principal {α β ι : Type _} (a 
     simpa using h₁.symm
 #align filter.map_prod_map_const_id_principal_coprod_principal Filter.map_prod_map_const_id_principal_coprod_principal
 
-theorem Tendsto.prod_map_coprod {δ : Type _} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
+theorem Tendsto.prod_map_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a.coprod b) (c.coprod d) :=
   map_prod_map_coprod_le.trans (coprod_mono hf hg)

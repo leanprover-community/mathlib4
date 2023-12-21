@@ -23,7 +23,7 @@ open Pointwise
 
 open Set
 
-variable {K ι : Type _} {R : ι → Type _}
+variable {K ι : Type*} {R : ι → Type*}
 
 @[to_additive]
 theorem smul_pi_subset [∀ i, SMul K (R i)] (r : K) (s : Set ι) (t : ∀ i, Set (R i)) :

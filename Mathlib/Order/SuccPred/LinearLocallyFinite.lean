@@ -56,7 +56,7 @@ About `toZ`:
 
 open Order
 
-variable {ι : Type _} [LinearOrder ι]
+variable {ι : Type*} [LinearOrder ι]
 
 namespace LinearLocallyFiniteOrder
 

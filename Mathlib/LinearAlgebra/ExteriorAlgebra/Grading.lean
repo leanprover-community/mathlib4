@@ -20,7 +20,7 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 
 namespace ExteriorAlgebra
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (R M)
 
@@ -45,7 +45,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
-instance (α : Type _) [MulZeroClass α] : Zero α := MulZeroClass.toZero
+instance (α : Type*) [MulZeroClass α] : Zero α := MulZeroClass.toZero
 
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]

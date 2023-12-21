@@ -41,7 +41,7 @@ Partition
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Multiset
 

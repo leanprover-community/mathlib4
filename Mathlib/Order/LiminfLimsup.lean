@@ -39,7 +39,7 @@ In complete lattices, however, it coincides with the `Inf Sup` definition.
 
 open Filter Set Function
 
-variable {α β γ ι : Type _}
+variable {α β γ ι : Type*}
 
 namespace Filter
 
@@ -541,7 +541,7 @@ theorem limsInf_le_limsInf {f g : Filter α}
 set_option linter.uppercaseLean3 false in
 #align filter.Liminf_le_Liminf Filter.limsInf_le_limsInf
 
-theorem limsup_le_limsup {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
+theorem limsup_le_limsup {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : u ≤ᶠ[f] v)
     (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (hv : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
@@ -549,7 +549,7 @@ theorem limsup_le_limsup {α : Type _} [ConditionallyCompleteLattice β] {f : Fi
   limsSup_le_limsSup hu hv fun _ => h.trans
 #align filter.limsup_le_limsup Filter.limsup_le_limsup
 
-theorem liminf_le_liminf {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
+theorem liminf_le_liminf {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a ≤ v a)
     (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
     (hv : f.IsCoboundedUnder (· ≥ ·) v := by isBoundedDefault) :
@@ -599,7 +599,7 @@ theorem limsInf_principal {s : Set α} (h : BddBelow s) (hs : s.Nonempty) : lims
 set_option linter.uppercaseLean3 false in
 #align filter.Liminf_principal Filter.limsInf_principal
 
-theorem limsup_congr {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
+theorem limsup_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a = v a) : limsup u f = limsup v f := by
   rw [limsup_eq]
   congr with b
@@ -622,17 +622,17 @@ theorem bliminf_congr {f : Filter β} {u v : β → α} {p : β → Prop} (h : �
   blimsup_congr (α := αᵒᵈ) h
 #align filter.bliminf_congr Filter.bliminf_congr
 
-theorem liminf_congr {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
+theorem liminf_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a = v a) : liminf u f = liminf v f :=
   limsup_congr (β := βᵒᵈ) h
 #align filter.liminf_congr Filter.liminf_congr
 
-theorem limsup_const {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
+theorem limsup_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
     (b : β) : limsup (fun _ => b) f = b := by
   simpa only [limsup_eq, eventually_const] using csInf_Ici
 #align filter.limsup_const Filter.limsup_const
 
-theorem liminf_const {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
+theorem liminf_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
     (b : β) : liminf (fun _ => b) f = b :=
   limsup_const (β := βᵒᵈ) b
 #align filter.liminf_const Filter.liminf_const
@@ -813,7 +813,7 @@ theorem bliminf_eq_iSup_biInf_of_nat {p : ℕ → Prop} {u : ℕ → α} :
   @blimsup_eq_iInf_biSup_of_nat αᵒᵈ _ p u
 #align filter.bliminf_eq_supr_binfi_of_nat Filter.bliminf_eq_iSup_biInf_of_nat
 
-theorem limsup_eq_sInf_sSup {ι R : Type _} (F : Filter ι) [CompleteLattice R] (a : ι → R) :
+theorem limsup_eq_sInf_sSup {ι R : Type*} (F : Filter ι) [CompleteLattice R] (a : ι → R) :
     limsup a F = sInf ((fun I => sSup (a '' I)) '' F.sets) := by
   refine' le_antisymm _ _
   · rw [limsup_eq]
@@ -829,7 +829,7 @@ theorem limsup_eq_sInf_sSup {ι R : Type _} (F : Filter ι) [CompleteLattice R] 
 set_option linter.uppercaseLean3 false in
 #align filter.limsup_eq_Inf_Sup Filter.limsup_eq_sInf_sSup
 
-theorem liminf_eq_sSup_sInf {ι R : Type _} (F : Filter ι) [CompleteLattice R] (a : ι → R) :
+theorem liminf_eq_sSup_sInf {ι R : Type*} (F : Filter ι) [CompleteLattice R] (a : ι → R) :
     liminf a F = sSup ((fun I => sInf (a '' I)) '' F.sets) :=
   @Filter.limsup_eq_sInf_sSup ι (OrderDual R) _ _ a
 set_option linter.uppercaseLean3 false in

@@ -26,7 +26,7 @@ open Set
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/
 @[irreducible]
-def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : k) 1 := by
+def orderIsoIooNegOneOne (k : Type*) [LinearOrderedField k] : k ≃o Ioo (-1 : k) 1 := by
   refine' StrictMono.orderIsoOfRightInverse _ _ (fun x ↦ x / (1 - |↑x|)) _
   · refine' codRestrict (fun x ↦ x / (1 + |x|)) _ fun x ↦ abs_lt.1 _
     have H : 0 < 1 + |x| := (abs_nonneg x).trans_lt (lt_one_add _)

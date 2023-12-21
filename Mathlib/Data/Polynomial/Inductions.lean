@@ -95,9 +95,9 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.degree_div_X_lt Polynomial.degree_divX_lt
 
-/-- An induction principle for polynomials, valued in Sort _ instead of Prop. -/
+/-- An induction principle for polynomials, valued in Sort* instead of Prop. -/
 @[elab_as_elim]
-noncomputable def recOnHorner {M : R[X] → Sort _} (p : R[X]) (M0 : M 0)
+noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
     (MX : ∀ p, p ≠ 0 → M p → M (p * X)) : M p :=
   if hp : p = 0 then hp ▸ M0

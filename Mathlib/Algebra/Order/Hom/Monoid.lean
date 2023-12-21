@@ -56,7 +56,7 @@ ordered monoid, ordered group, monoid with zero
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 section AddMonoid
 
@@ -66,10 +66,10 @@ structure.
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
-you should parametrize over `(F : Type _) [OrderAddMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderAddMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderAddMonoidHomClass`. -/
-structure OrderAddMonoidHom (α β : Type _) [Preorder α] [Preorder β] [AddZeroClass α]
+structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZeroClass α]
   [AddZeroClass β] extends α →+ β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone' : Monotone toFun
@@ -83,7 +83,7 @@ section
 /-- `OrderAddMonoidHomClass F α β` states that `F` is a type of ordered monoid homomorphisms.
 
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
-class OrderAddMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class OrderAddMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
   [AddZeroClass α] [AddZeroClass β] extends AddMonoidHomClass F α β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
@@ -101,11 +101,11 @@ section Monoid
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
-you should parametrize over `(F : Type _) [OrderMonoidHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderMonoidHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidHomClass`. -/
 @[to_additive]
-structure OrderMonoidHom (α β : Type _) [Preorder α] [Preorder β] [MulOneClass α]
+structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClass α]
   [MulOneClass β] extends α →* β where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone' : Monotone toFun
@@ -120,7 +120,7 @@ section
 
 You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
-class OrderMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class OrderMonoidHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
   [MulOneClass α] [MulOneClass β] extends MonoidHomClass F α β where
   /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
@@ -165,10 +165,10 @@ the `MonoidWithZero` structure.
 `OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
-you should parametrize over `(F : Type _) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderMonoidWithZeroHomClass`. -/
-structure OrderMonoidWithZeroHom (α β : Type _) [Preorder α] [Preorder β] [MulZeroOneClass α]
+structure OrderMonoidWithZeroHom (α β : Type*) [Preorder α] [Preorder β] [MulZeroOneClass α]
   [MulZeroOneClass β] extends α →*₀ β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone' : Monotone toFun
@@ -183,7 +183,7 @@ section
 ordered monoid with zero homomorphisms.
 
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
-class OrderMonoidWithZeroHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class OrderMonoidWithZeroHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
   [MulZeroOneClass α] [MulZeroOneClass β] extends MonoidWithZeroHomClass F α β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f

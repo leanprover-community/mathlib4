@@ -60,9 +60,9 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
-variable (X : Type _) [NormedAddCommGroup X]
+variable (X : Type*) [NormedAddCommGroup X]
 
-variable {M : Type _} [Ring M] [Module M X]
+variable {M : Type*} [Ring M] [Module M X]
 
 --porting note: Mathlib3 uses names with uppercase 'L' for L-projections
 set_option linter.uppercaseLean3 false

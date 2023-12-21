@@ -288,7 +288,7 @@ end
 
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconnected spaces is extremally disconnected. -/
-instance instExtremallyDisconnected {π : ι → Type _} [∀ i, TopologicalSpace (π i)]
+instance instExtremallyDisconnected {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [h₀ : ∀ i, ExtremallyDisconnected (π i)] : ExtremallyDisconnected (Σ i, π i) := by
   constructor
   intro s hs

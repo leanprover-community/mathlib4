@@ -358,7 +358,7 @@ theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).Nod
 
 /-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
 @[elab_as_elim]
-def insertRec {C : AList β → Sort _} (H0 : C ∅)
+def insertRec {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     ∀ l : AList β, C l
   | ⟨[], _⟩ => H0
@@ -372,14 +372,14 @@ def insertRec {C : AList β → Sort _} (H0 : C ∅)
 example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
 
 @[simp]
-theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_empty {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     @insertRec α β _ C H0 IH ∅ = H0 := by
   change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
   rw [insertRec]
 #align alist.insert_rec_empty AList.insertRec_empty
 
-theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
@@ -393,7 +393,7 @@ theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
   apply cast_heq
 #align alist.insert_rec_insert AList.insertRec_insert
 
-theorem insertRec_insert_mk {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {a : α} (b : β a)
     {l : AList β} (h : a ∉ l) :
     @insertRec α β _ C H0 IH (l.insert a b) = IH a b l h (@insertRec α β _ C H0 IH l) :=

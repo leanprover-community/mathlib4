@@ -24,7 +24,7 @@ cardinality of the class group of its ring of integers
 
 namespace NumberField
 
-variable (K : Type _) [Field K] [NumberField K]
+variable (K : Type*) [Field K] [NumberField K]
 
 namespace RingOfIntegers
 

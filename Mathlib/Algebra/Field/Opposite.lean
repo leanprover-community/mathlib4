@@ -15,7 +15,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 
 namespace MulOpposite
 
-variable (α : Type _)
+variable (α : Type*)
 
 @[to_additive]
 instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=

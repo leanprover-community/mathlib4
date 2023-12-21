@@ -36,7 +36,7 @@ open BoundedContinuousFunction
 
 namespace ContinuousMap
 
-variable {α β E : Type _} [TopologicalSpace α] [CompactSpace α] [MetricSpace β]
+variable {α β E : Type*} [TopologicalSpace α] [CompactSpace α] [MetricSpace β]
   [NormedAddCommGroup E]
 
 section
@@ -245,7 +245,7 @@ theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 #align continuous_map.norm_eq_supr_norm ContinuousMap.norm_eq_iSup_norm
 
-theorem norm_restrict_mono_set {X : Type _} [TopologicalSpace X] (f : C(X, E))
+theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
   (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
 #align continuous_map.norm_restrict_mono_set ContinuousMap.norm_restrict_mono_set
@@ -254,7 +254,7 @@ end
 
 section
 
-variable {R : Type _} [NormedRing R]
+variable {R : Type*} [NormedRing R]
 
 instance : NormedRing C(α, R) :=
   { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRingContinuousMap with
@@ -264,7 +264,7 @@ end
 
 section
 
-variable {𝕜 : Type _} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
 instance normedSpace : NormedSpace 𝕜 C(α, E) where
   norm_smul_le c f := (norm_smul_le c (mkOfCompact f) : _)
@@ -334,7 +334,7 @@ end
 
 section
 
-variable {𝕜 : Type _} {γ : Type _} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -347,7 +347,7 @@ namespace ContinuousMap
 
 section UniformContinuity
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 variable [MetricSpace α] [CompactSpace α] [MetricSpace β]
 
@@ -384,7 +384,7 @@ end ContinuousMap
 
 section CompLeft
 
-variable (X : Type _) {𝕜 β γ : Type _} [TopologicalSpace X] [CompactSpace X]
+variable (X : Type*) {𝕜 β γ : Type*} [TopologicalSpace X] [CompactSpace X]
   [NontriviallyNormedField 𝕜]
 
 variable [NormedAddCommGroup β] [NormedSpace 𝕜 β] [NormedAddCommGroup γ] [NormedSpace 𝕜 γ]
@@ -436,7 +436,7 @@ section CompRight
 
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
 -/
-def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [CompactSpace X]
+def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
     [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y)) : C(C(Y, T), C(X, T)) where
   toFun g := g.comp f
   continuous_toFun := by
@@ -448,7 +448,7 @@ def compRightContinuousMap {X Y : Type _} (T : Type _) [TopologicalSpace X] [Com
 #align continuous_map.comp_right_continuous_map ContinuousMap.compRightContinuousMap
 
 @[simp]
-theorem compRightContinuousMap_apply {X Y : Type _} (T : Type _) [TopologicalSpace X]
+theorem compRightContinuousMap_apply {X Y : Type*} (T : Type*) [TopologicalSpace X]
     [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y))
     (g : C(Y, T)) : (compRightContinuousMap T f) g = g.comp f :=
   rfl
@@ -456,7 +456,7 @@ theorem compRightContinuousMap_apply {X Y : Type _} (T : Type _) [TopologicalSpa
 
 /-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
 -/
-def compRightHomeomorph {X Y : Type _} (T : Type _) [TopologicalSpace X] [CompactSpace X]
+def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
     [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : X ≃ₜ Y) : C(Y, T) ≃ₜ C(X, T) where
   toFun := compRightContinuousMap T f.toContinuousMap
   invFun := compRightContinuousMap T f.symm.toContinuousMap
@@ -464,7 +464,7 @@ def compRightHomeomorph {X Y : Type _} (T : Type _) [TopologicalSpace X] [Compac
   right_inv g := ext fun _ => congr_arg g (f.symm_apply_apply _)
 #align continuous_map.comp_right_homeomorph ContinuousMap.compRightHomeomorph
 
-theorem compRightAlgHom_continuous {X Y : Type _} (R A : Type _) [TopologicalSpace X]
+theorem compRightAlgHom_continuous {X Y : Type*} (R A : Type*) [TopologicalSpace X]
     [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [CommSemiring R] [Semiring A]
     [MetricSpace A] [TopologicalSemiring A] [Algebra R A] (f : C(X, Y)) :
     Continuous (compRightAlgHom R A f) :=
@@ -484,11 +484,11 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 
 open TopologicalSpace
 
-variable {X : Type _} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
+variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
 
-variable {E : Type _} [NormedAddCommGroup E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
-theorem summable_of_locally_summable_norm {ι : Type _} {F : ι → C(X, E)}
+theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   refine' (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => _
   lift K to Compacts X using hK
@@ -512,7 +512,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 
 section NormedSpace
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 variable [TopologicalSpace α] [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
@@ -530,7 +530,7 @@ end NormedSpace
 
 section CstarRing
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 

@@ -32,7 +32,7 @@ also unify with `Nat.ModEq`.
 
 namespace AddCommGroup
 
-variable {α : Type _}
+variable {α : Type*}
 
 section AddCommGroup
 

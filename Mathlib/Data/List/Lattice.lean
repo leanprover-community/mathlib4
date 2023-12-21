@@ -33,7 +33,7 @@ open Nat
 
 namespace List
 
-variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
+variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 /-! ### `Disjoint` -/
 
@@ -92,12 +92,10 @@ theorem sublist_suffix_of_union : ∀ l₁ l₂ : List α, ∃ t, t <+ l₁ ∧ 
     let ⟨t, s, e⟩ := sublist_suffix_of_union l₁ l₂
     if h : a ∈ l₁ ∪ l₂ then
       ⟨t, sublist_cons_of_sublist _ s, by
-        simp only [instUnionList] at h
-        simp only [e, instUnionList, cons_union, insert_of_mem h]⟩
+        simp only [e, cons_union, insert_of_mem h]⟩
     else
       ⟨a :: t, s.cons_cons _, by
-        simp only [instUnionList] at h
-        simp only [cons_append, instUnionList, cons_union, e, insert_of_not_mem h]⟩
+        simp only [cons_append, cons_union, e, insert_of_not_mem h]⟩
 #align list.sublist_suffix_of_union List.sublist_suffix_of_union
 
 theorem suffix_union_right (l₁ l₂ : List α) : l₂ <:+ l₁ ∪ l₂ :=
@@ -135,12 +133,12 @@ theorem inter_nil (l : List α) : [] ∩ l = [] :=
 
 @[simp]
 theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
-  simp only [instInterList, List.inter, filter_cons_of_pos, h]
+  simp only [Inter.inter, List.inter, filter_cons_of_pos, h]
 #align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
 theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
-  simp only [instInterList, List.inter, filter_cons_of_neg, h]
+  simp only [Inter.inter, List.inter, filter_cons_of_neg, h]
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=

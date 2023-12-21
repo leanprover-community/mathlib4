@@ -53,9 +53,9 @@ open TopologicalSpace Filter Set Bundle Function
 
 open scoped Topology Classical Bundle
 
-variable {ι : Type _} {B : Type _} {F : Type _} {E : B → Type _}
+variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
 
-variable (F) {Z : Type _} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
+variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
 below as `Trivialization F proj`) if the total space has not been given a topology, but we
@@ -536,7 +536,7 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 #align trivialization.continuous_at_proj Trivialization.continuousAt_proj
 
 /-- Composition of a `Trivialization` and a `Homeomorph`. -/
-protected def compHomeomorph {Z' : Type _} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
+protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
   toLocalHomeomorph := h.toLocalHomeomorph.trans e.toLocalHomeomorph
   baseSet := e.baseSet
@@ -550,7 +550,7 @@ protected def compHomeomorph {Z' : Type _} [TopologicalSpace Z'] (h : Z' ≃ₜ 
 
 /-- Read off the continuity of a function `f : Z → X` at `z : Z` by transferring via a
 trivialization of `Z` containing `z`. -/
-theorem continuousAt_of_comp_right {X : Type _} [TopologicalSpace X] {f : Z → X} {z : Z}
+theorem continuousAt_of_comp_right {X : Type*} [TopologicalSpace X] {f : Z → X} {z : Z}
     (e : Trivialization F proj) (he : proj z ∈ e.baseSet)
     (hf : ContinuousAt (f ∘ e.toLocalEquiv.symm) (e z)) : ContinuousAt f z := by
   have hez : z ∈ e.toLocalEquiv.symm.target := by
@@ -562,7 +562,7 @@ theorem continuousAt_of_comp_right {X : Type _} [TopologicalSpace X] {f : Z → 
 
 /-- Read off the continuity of a function `f : X → Z` at `x : X` by transferring via a
 trivialization of `Z` containing `f x`. -/
-theorem continuousAt_of_comp_left {X : Type _} [TopologicalSpace X] {f : X → Z} {x : X}
+theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z} {x : X}
     (e : Trivialization F proj) (hf_proj : ContinuousAt (proj ∘ f) x) (he : proj (f x) ∈ e.baseSet)
     (hf : ContinuousAt (e ∘ f) x) : ContinuousAt f x := by
   rw [e.continuousAt_iff_continuousAt_comp_left]
@@ -661,7 +661,7 @@ end Zero
 /-- If `e` is a `Trivialization` of `proj : Z → B` with fiber `F` and `h` is a homeomorphism
 `F ≃ₜ F'`, then `e.trans_fiber_homeomorph h` is the trivialization of `proj` with the fiber `F'`
 that sends `p : Z` to `((e p).1, h (e p).2)`. -/
-def transFiberHomeomorph {F' : Type _} [TopologicalSpace F'] (e : Trivialization F proj)
+def transFiberHomeomorph {F' : Type*} [TopologicalSpace F'] (e : Trivialization F proj)
     (h : F ≃ₜ F') : Trivialization F' proj where
   toLocalHomeomorph := e.toLocalHomeomorph.transHomeomorph <| (Homeomorph.refl _).prodCongr h
   baseSet := e.baseSet
@@ -672,7 +672,7 @@ def transFiberHomeomorph {F' : Type _} [TopologicalSpace F'] (e : Trivialization
 #align trivialization.trans_fiber_homeomorph Trivialization.transFiberHomeomorph
 
 @[simp]
-theorem transFiberHomeomorph_apply {F' : Type _} [TopologicalSpace F'] (e : Trivialization F proj)
+theorem transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivialization F proj)
     (h : F ≃ₜ F') (x : Z) : e.transFiberHomeomorph h x = ((e x).1, h (e x).2) :=
   rfl
 #align trivialization.trans_fiber_homeomorph_apply Trivialization.transFiberHomeomorph_apply
@@ -741,7 +741,7 @@ theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h
   rfl
 #align trivialization.coord_change_homeomorph_coe Trivialization.coordChangeHomeomorph_coe
 
-variable {B' : Type _} [TopologicalSpace B']
+variable {B' : Type*} [TopologicalSpace B']
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
     e.toLocalHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]

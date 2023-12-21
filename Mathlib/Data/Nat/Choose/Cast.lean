@@ -18,7 +18,7 @@ of characteristic `0`.
 
 open Nat
 
-variable (K : Type _) [DivisionRing K] [CharZero K]
+variable (K : Type*) [DivisionRing K] [CharZero K]
 
 namespace Nat
 

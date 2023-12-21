@@ -75,7 +75,7 @@ graded ring, filtered ring, direct sum, add_submonoid
 -/
 
 
-variable {ι : Type _} [DecidableEq ι]
+variable {ι : Type*} [DecidableEq ι]
 
 namespace DirectSum
 
@@ -86,7 +86,7 @@ open DirectSum
 
 section Defs
 
-variable (A : ι → Type _)
+variable (A : ι → Type*)
 
 /-- A graded version of `NonUnitalNonAssocSemiring`. -/
 class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] extends
@@ -106,7 +106,7 @@ end Defs
 
 section Defs
 
-variable (A : ι → Type _)
+variable (A : ι → Type*)
 
 /-- A graded version of `Semiring`. -/
 class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNonAssocSemiring A,
@@ -143,13 +143,13 @@ class GCommRing [AddCommMonoid ι] [∀ i, AddCommGroup (A i)] extends GRing A, 
 
 end Defs
 
-theorem of_eq_of_gradedMonoid_eq {A : ι → Type _} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
+theorem of_eq_of_gradedMonoid_eq {A : ι → Type*} [∀ i : ι, AddCommMonoid (A i)] {i j : ι} {a : A i}
     {b : A j} (h : GradedMonoid.mk i a = GradedMonoid.mk j b) :
     DirectSum.of A i a = DirectSum.of A j b :=
   DFinsupp.single_eq_of_sigma_eq h
 #align direct_sum.of_eq_of_graded_monoid_eq DirectSum.of_eq_of_gradedMonoid_eq
 
-variable (A : ι → Type _)
+variable (A : ι → Type*)
 
 /-! ### Instances for `⨁ i, A i` -/
 
@@ -575,7 +575,7 @@ end GradeZero
 
 section ToSemiring
 
-variable {R : Type _} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
+variable {R : Type*} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
 
 variable {A}
 
@@ -676,7 +676,7 @@ section Uniform
 variable (ι)
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
-instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type _} [AddMonoid ι]
+instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type*} [AddMonoid ι]
     [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R :=
   { -- Porting note: removed Mul.gMul ι with and we seem ok
     mul_zero := mul_zero
@@ -686,7 +686,7 @@ instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type
 #align non_unital_non_assoc_semiring.direct_sum_gnon_unital_non_assoc_semiring NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
-instance Semiring.directSumGSemiring {R : Type _} [AddMonoid ι] [Semiring R] :
+instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
     DirectSum.GSemiring fun _ : ι => R :=
   { NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι,
     Monoid.gMonoid ι with
@@ -698,13 +698,13 @@ instance Semiring.directSumGSemiring {R : Type _} [AddMonoid ι] [Semiring R] :
 open DirectSum
 
 -- To check `Mul.gmul_mul` matches
-example {R : Type _} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
+example {R : Type*} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
     (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure.
 -/
-instance CommSemiring.directSumGCommSemiring {R : Type _} [AddCommMonoid ι] [CommSemiring R] :
+instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [CommSemiring R] :
     DirectSum.GCommSemiring fun _ : ι => R :=
   { CommMonoid.gCommMonoid ι, Semiring.directSumGSemiring ι with }
 #align comm_semiring.direct_sum_gcomm_semiring CommSemiring.directSumGCommSemiring

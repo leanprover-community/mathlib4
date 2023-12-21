@@ -22,7 +22,7 @@ namespace MvQPF
 
 open MvFunctor
 
-variable {n m : ℕ} (F : TypeVec.{u} n → Type _) [fF : MvFunctor F] [q : MvQPF F]
+variable {n m : ℕ} (F : TypeVec.{u} n → Type*) [fF : MvFunctor F] [q : MvQPF F]
   (G : Fin2 n → TypeVec.{u} m → Type u) [fG : ∀ i, MvFunctor <| G i] [q' : ∀ i, MvQPF <| G i]
 
 /-- Composition of an `n`-ary functor with `n` `m`-ary

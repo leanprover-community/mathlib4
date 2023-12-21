@@ -32,16 +32,16 @@ open ContinuousMap
 open scoped ContinuousMap
 
 /-- A simply connected space is one whose fundamental groupoid is equivalent to `Discrete Unit` -/
-class SimplyConnectedSpace (X : Type _) [TopologicalSpace X] : Prop where
+class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 #align simply_connected_space SimplyConnectedSpace
 
-theorem simply_connected_def (X : Type _) [TopologicalSpace X] :
+theorem simply_connected_def (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔ Nonempty (FundamentalGroupoid X ≌ Discrete Unit) :=
   ⟨fun h => @SimplyConnectedSpace.equiv_unit X _ h, fun h => ⟨h⟩⟩
 #align simply_connected_def simply_connected_def
 
-theorem simply_connected_iff_unique_homotopic (X : Type _) [TopologicalSpace X] :
+theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
   rw [simply_connected_def, equiv_punit_iff_unique]; rfl
@@ -49,7 +49,7 @@ theorem simply_connected_iff_unique_homotopic (X : Type _) [TopologicalSpace X] 
 
 namespace SimplyConnectedSpace
 
-variable {X : Type _} [TopologicalSpace X] [SimplyConnectedSpace X]
+variable {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X]
 
 instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
@@ -81,7 +81,7 @@ attribute [local instance] Path.Homotopic.setoid
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/
-theorem simply_connected_iff_paths_homotopic {Y : Type _} [TopologicalSpace Y] :
+theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
   ⟨by intro; constructor <;> infer_instance, fun h => by
@@ -90,7 +90,7 @@ theorem simply_connected_iff_paths_homotopic {Y : Type _} [TopologicalSpace Y] :
 #align simply_connected_iff_paths_homotopic simply_connected_iff_paths_homotopic
 
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
-theorem simply_connected_iff_paths_homotopic' {Y : Type _} [TopologicalSpace Y] :
+theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic (Y := Y)

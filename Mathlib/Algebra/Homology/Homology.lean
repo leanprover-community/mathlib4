@@ -27,7 +27,7 @@ universe v u
 
 open CategoryTheory CategoryTheory.Limits
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 

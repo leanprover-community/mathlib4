@@ -141,7 +141,7 @@ directly will unfold `EReal` to `Option` which is undesirable.
 
 When working in term mode, note that pattern matching can be used directly. -/
 @[elab_as_elim]
-protected def rec {C : EReal → Sort _} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
+protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
   | (a : ℝ) => h_real a

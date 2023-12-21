@@ -32,19 +32,19 @@ def BoolRingCat :=
 
 namespace BoolRingCat
 
-instance : CoeSort BoolRingCat (Type _) :=
+instance : CoeSort BoolRingCat (Type*) :=
   Bundled.coeSort
 
 instance (X : BoolRingCat) : BooleanRing X :=
   X.str
 
 /-- Construct a bundled `BoolRingCat` from a `BooleanRing`. -/
-def of (α : Type _) [BooleanRing α] : BoolRingCat :=
+def of (α : Type*) [BooleanRing α] : BoolRingCat :=
   Bundled.of α
 #align BoolRing.of BoolRingCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [BooleanRing α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl
 #align BoolRing.coe_of BoolRingCat.coe_of
 

@@ -84,7 +84,7 @@ theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Sort _) [CommRing R] [Ad
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp_single _ _ _ _ _ _ _ _ _).symm
 #align finsupp_tensor_finsupp_symm_single finsuppTensorFinsupp_symm_single
 
-variable (S : Type _) [CommRing S] (α β : Type _)
+variable (S : Type*) [CommRing S] (α β : Type*)
 
 /-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/
 def finsuppTensorFinsupp' : (α →₀ S) ⊗[S] (β →₀ S) ≃ₗ[S] α × β →₀ S :=

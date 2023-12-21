@@ -25,7 +25,7 @@ open scoped Topology
 
 open Set
 
-variable {E : Type _} [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup E] [T2Space E]
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup E] [T2Space E]
   [Module ℝ E] [ContinuousSMul ℝ E] [FiniteDimensional ℝ E]
 
 noncomputable section
@@ -125,7 +125,7 @@ theorem ball_mem_nhds {x : E} {r : ℝ} (hr : 0 < r) : ball x r ∈ 𝓝 x :=
 
 end Euclidean
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type _} [NormedAddCommGroup G]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [NormedAddCommGroup G]
   [NormedSpace ℝ G] [FiniteDimensional ℝ G] {f g : F → G} {n : ℕ∞}
 
 theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (h : ∀ x, f x ≠ g x) :

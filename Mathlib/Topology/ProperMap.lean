@@ -155,7 +155,7 @@ lemma IsProperMap.prod_map {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap 
     exact ⟨hx, hz⟩
 
 /-- Any product of proper maps is proper. -/
-lemma IsProperMap.pi_map {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsProperMap (f i)) :
     IsProperMap (fun (x : ∀ i, X i) i ↦ f i (x i)) := by
   simp_rw [isProperMap_iff_ultrafilter] at h ⊢

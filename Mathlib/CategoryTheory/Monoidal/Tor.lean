@@ -32,7 +32,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C] [MonoidalCategory C] [Preadditive C] [MonoidalPreadditive C]
+variable {C : Type*} [Category C] [MonoidalCategory C] [Preadditive C] [MonoidalPreadditive C]
   [HasZeroObject C] [HasEqualizers C] [HasCokernels C] [HasImages C] [HasImageMaps C]
   [HasProjectiveResolutions C]
 

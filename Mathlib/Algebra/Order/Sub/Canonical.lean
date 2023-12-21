@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Sub.Defs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section ExistsAddOfLE
 

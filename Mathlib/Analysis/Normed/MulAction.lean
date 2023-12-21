@@ -19,7 +19,7 @@ deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section SeminormedAddGroup
 

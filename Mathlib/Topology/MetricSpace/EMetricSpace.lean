@@ -34,7 +34,7 @@ open Set Filter Classical Uniformity Topology BigOperators NNReal ENNReal
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X : Type _}
+variable {α : Type u} {β : Type v} {X : Type*}
 
 /-- Characterizing uniformities associated to a (generalized) distance function `D`
 in terms of the elements of the uniformity. -/
@@ -45,7 +45,7 @@ theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α
 #align uniformity_dist_of_mem_uniformity uniformity_dist_of_mem_uniformity
 
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
-class EDist (α : Type _) where
+class EDist (α : Type*) where
   edist : α → α → ℝ≥0∞
 #align has_edist EDist
 
@@ -190,7 +190,7 @@ accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `
 
 For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 `uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`. -/
-protected theorem EMetric.mk_uniformity_basis {β : Type _} {p : β → Prop} {f : β → ℝ≥0∞}
+protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
   refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
@@ -205,7 +205,7 @@ protected theorem EMetric.mk_uniformity_basis {β : Type _} {p : β → Prop} {f
 accumulating to zero, then closed `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
 For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_le'`. -/
-protected theorem EMetric.mk_uniformity_basis_le {β : Type _} {p : β → Prop} {f : β → ℝ≥0∞}
+protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
   refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
@@ -272,7 +272,7 @@ theorem edist_mem_uniformity {ε : ℝ≥0∞} (ε0 : 0 < ε) : { p : α × α |
 
 namespace EMetric
 
-instance (priority := 900) : IsCountablyGenerated (𝓤 α) :=
+instance (priority := 900) instIsCountablyGeneratedUniformity : IsCountablyGenerated (𝓤 α) :=
   isCountablyGenerated_of_seq ⟨_, uniformity_basis_edist_inv_nat.eq_iInf⟩
 
 -- porting note: changed explicit/implicit
@@ -341,7 +341,7 @@ theorem complete_of_cauchySeq_tendsto :
 #align emetric.complete_of_cauchy_seq_tendsto EMetric.complete_of_cauchySeq_tendsto
 
 /-- Expressing locally uniform convergence on a set using `edist`. -/
-theorem tendstoLocallyUniformlyOn_iff {ι : Type _} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
+theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
     {p : Filter ι} {s : Set β} :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
@@ -352,7 +352,7 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type _} [TopologicalSpace β] {F : �
 #align emetric.tendsto_locally_uniformly_on_iff EMetric.tendstoLocallyUniformlyOn_iff
 
 /-- Expressing uniform convergence on a set using `edist`. -/
-theorem tendstoUniformlyOn_iff {ι : Type _} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
+theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, edist (f x) (F n x) < ε := by
   refine' ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
@@ -360,7 +360,7 @@ theorem tendstoUniformlyOn_iff {ι : Type _} {F : ι → β → α} {f : β → 
 #align emetric.tendsto_uniformly_on_iff EMetric.tendstoUniformlyOn_iff
 
 /-- Expressing locally uniform convergence using `edist`. -/
-theorem tendstoLocallyUniformly_iff {ι : Type _} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
+theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
     {p : Filter ι} :
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
@@ -369,7 +369,7 @@ theorem tendstoLocallyUniformly_iff {ι : Type _} [TopologicalSpace β] {F : ι 
 #align emetric.tendsto_locally_uniformly_iff EMetric.tendstoLocallyUniformly_iff
 
 /-- Expressing uniform convergence using `edist`. -/
-theorem tendstoUniformly_iff {ι : Type _} {F : ι → β → α} {f : β → α} {p : Filter ι} :
+theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} :
     TendstoUniformly F f p ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x, edist (f x) (F n x) < ε := by
   simp only [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff, mem_univ, forall_const]
 #align emetric.tendsto_uniformly_iff EMetric.tendstoUniformly_iff
@@ -406,7 +406,7 @@ def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace �
 #align pseudo_emetric_space.induced PseudoEMetricSpace.induced
 
 /-- Pseudoemetric space instance on subsets of pseudoemetric spaces -/
-instance {α : Type _} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
+instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
@@ -418,7 +418,7 @@ namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
 @[to_additive "Pseudoemetric space instance on the additive opposite of a pseudoemetric space."]
-instance {α : Type _} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
+instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
   PseudoEMetricSpace.induced unop ‹_›
 
 @[to_additive]
@@ -470,7 +470,7 @@ section Pi
 
 open Finset
 
-variable {π : β → Type _} [Fintype β]
+variable {π : β → Type*} [Fintype β]
 
 -- porting note: reordered instances
 instance [∀ b, EDist (π b)] : EDist (∀ b, π b) where
@@ -918,7 +918,7 @@ theorem diam_singleton : diam ({x} : Set α) = 0 :=
   diam_subsingleton subsingleton_singleton
 #align emetric.diam_singleton EMetric.diam_singleton
 
-theorem diam_iUnion_mem_option {ι : Type _} (o : Option ι) (s : ι → Set α) :
+theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) :
     diam (⋃ i ∈ o, s i) = ⨆ i ∈ o, diam (s i) := by cases o <;> simp
 #align emetric.diam_Union_mem_option EMetric.diam_iUnion_mem_option
 
@@ -982,7 +982,7 @@ theorem diam_ball {r : ℝ≥0∞} : diam (ball x r) ≤ 2 * r :=
   le_trans (diam_mono ball_subset_closedBall) diam_closedBall
 #align emetric.diam_ball EMetric.diam_ball
 
-theorem diam_pi_le_of_le {π : β → Type _} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
+theorem diam_pi_le_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
   refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
   rw [mem_univ_pi] at hx hy
@@ -1044,7 +1044,7 @@ theorem EMetric.uniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 @[reducible] -- porting note: made `reducible`; todo: make it an instance?
-def EMetricSpace.ofT0PseudoEMetricSpace (α : Type _) [PseudoEMetricSpace α] [T0Space α] :
+def EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with
     eq_of_edist_eq_zero := fun h => (EMetric.inseparable_iff.2 h).eq }
@@ -1075,15 +1075,15 @@ def EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m 
 #align emetric_space.induced EMetricSpace.induced
 
 /-- EMetric space instance on subsets of emetric spaces -/
-instance {α : Type _} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=
+instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=
   EMetricSpace.induced Subtype.val Subtype.coe_injective ‹_›
 
 /-- EMetric space instance on the multiplicative opposite of an emetric space. -/
 @[to_additive "EMetric space instance on the additive opposite of an emetric space."]
-instance {α : Type _} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ :=
+instance {α : Type*} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ :=
   EMetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
-instance {α : Type _} [EMetricSpace α] : EMetricSpace (ULift α) :=
+instance {α : Type*} [EMetricSpace α] : EMetricSpace (ULift α) :=
   EMetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 /-- The product of two emetric spaces, with the max distance, is an extended
@@ -1102,7 +1102,7 @@ section Pi
 
 open Finset
 
-variable {π : β → Type _} [Fintype β]
+variable {π : β → Type*} [Fintype β]
 
 /-- The product of a finite number of emetric spaces, with the max distance, is still
 an emetric space.

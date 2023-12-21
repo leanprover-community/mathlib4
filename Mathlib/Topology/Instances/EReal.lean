@@ -33,7 +33,7 @@ noncomputable section
 open Classical Set Filter Metric TopologicalSpace Topology
 open scoped ENNReal NNReal BigOperators Filter
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 namespace EReal
 
@@ -60,7 +60,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ → EReal) :=
 #align ereal.open_embedding_coe EReal.openEmbedding_coe
 
 @[norm_cast]
-theorem tendsto_coe {α : Type _} {f : Filter α} {m : α → ℝ} {a : ℝ} :
+theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   embedding_coe.tendsto_nhds_iff.symm
 #align ereal.tendsto_coe EReal.tendsto_coe
@@ -111,7 +111,7 @@ theorem closedEmbedding_coe_ennreal : ClosedEmbedding ((↑) : ℝ≥0∞ → ER
   ⟨embedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
 
 @[norm_cast]
-theorem tendsto_coe_ennreal {α : Type _} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
+theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   embedding_coe_ennreal.tendsto_nhds_iff.symm
 #align ereal.tendsto_coe_ennreal EReal.tendsto_coe_ennreal
@@ -143,7 +143,7 @@ theorem mem_nhds_top_iff {s : Set EReal} : s ∈ 𝓝 (⊤ : EReal) ↔ ∃ y : 
   nhds_top_basis.mem_iff.trans <| by simp only [true_and]
 #align ereal.mem_nhds_top_iff EReal.mem_nhds_top_iff
 
-theorem tendsto_nhds_top_iff_real {α : Type _} {m : α → EReal} {f : Filter α} :
+theorem tendsto_nhds_top_iff_real {α : Type*} {m : α → EReal} {f : Filter α} :
     Tendsto m f (𝓝 ⊤) ↔ ∀ x : ℝ, ∀ᶠ a in f, ↑x < m a :=
   nhds_top_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Ioi]
 #align ereal.tendsto_nhds_top_iff_real EReal.tendsto_nhds_top_iff_real
@@ -165,7 +165,7 @@ theorem mem_nhds_bot_iff {s : Set EReal} : s ∈ 𝓝 (⊥ : EReal) ↔ ∃ y : 
   nhds_bot_basis.mem_iff.trans <| by simp only [true_and]
 #align ereal.mem_nhds_bot_iff EReal.mem_nhds_bot_iff
 
-theorem tendsto_nhds_bot_iff_real {α : Type _} {m : α → EReal} {f : Filter α} :
+theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α} :
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
   nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
 #align ereal.tendsto_nhds_bot_iff_real EReal.tendsto_nhds_bot_iff_real

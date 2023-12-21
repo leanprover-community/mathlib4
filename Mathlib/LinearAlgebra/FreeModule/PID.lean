@@ -57,7 +57,7 @@ section Ring
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 
-variable {ι : Type _} (b : Basis ι R M)
+variable {ι : Type*} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
 
@@ -90,9 +90,9 @@ end Ring
 
 section IsDomain
 
-variable {ι : Type _} {R : Type _} [CommRing R] [IsDomain R]
+variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M] {b : ι → M}
+variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal Set Submodule
 
@@ -110,9 +110,9 @@ section PrincipalIdealDomain
 
 open Submodule.IsPrincipal Set Submodule
 
-variable {ι : Type _} {R : Type _} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M] {b : ι → M}
+variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal
 
@@ -160,7 +160,7 @@ For `basis_of_pid` we only need the first half and can fix `M = ⊤`,
 for `smith_normal_form` we need the full statement,
 but must also feed in a basis for `M` using `basis_of_pid` to keep the induction going.
 -/
-theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Module R O]
+theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Module R O]
     (M N : Submodule R O) (b'M : Basis ι R M) (N_bot : N ≠ ⊥) (N_le_M : N ≤ M) :
     ∃ y ∈ M,
       ∃ (a : R) (_ : a • y ∈ N),
@@ -294,7 +294,7 @@ see `Submodule.basisOfPid`.
 
 See also the stronger version `Submodule.smithNormalForm`.
 -/
-theorem Submodule.nonempty_basis_of_pid {ι : Type _} [Finite ι] (b : Basis ι R M)
+theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
   haveI := Classical.decEq M
   cases nonempty_fintype ι
@@ -317,12 +317,12 @@ if `R` is a principal ideal domain.
 
 See also the stronger version `Submodule.smithNormalForm`.
 -/
-noncomputable def Submodule.basisOfPid {ι : Type _} [Finite ι] (b : Basis ι R M)
+noncomputable def Submodule.basisOfPid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : Σn : ℕ, Basis (Fin n) R N :=
   ⟨_, (N.nonempty_basis_of_pid b).choose_spec.some⟩
 #align submodule.basis_of_pid Submodule.basisOfPid
 
-theorem Submodule.basisOfPid_bot {ι : Type _} [Finite ι] (b : Basis ι R M) :
+theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
     Submodule.basisOfPid b ⊥ = ⟨0, Basis.empty _⟩ := by
   obtain ⟨n, b'⟩ := Submodule.basisOfPid b ⊥
   let e : Fin n ≃ Fin 0 := b'.indexEquiv (Basis.empty _ : Basis (Fin 0) R (⊥ : Submodule R M))
@@ -335,7 +335,7 @@ if `R` is a principal ideal domain.
 
 See also the stronger version `Submodule.smithNormalFormOfLE`.
 -/
-noncomputable def Submodule.basisOfPidOfLE {ι : Type _} [Finite ι] {N O : Submodule R M}
+noncomputable def Submodule.basisOfPidOfLE {ι : Type*} [Finite ι] {N O : Submodule R M}
     (hNO : N ≤ O) (b : Basis ι R O) : Σn : ℕ, Basis (Fin n) R N :=
   let ⟨n, bN'⟩ := Submodule.basisOfPid b (N.comap O.subtype)
   ⟨n, bN'.map (Submodule.comapSubtypeEquivOfLe hNO)⟩
@@ -343,7 +343,7 @@ noncomputable def Submodule.basisOfPidOfLE {ι : Type _} [Finite ι] {N O : Subm
 
 /-- A submodule inside the span of a linear independent family is a free `R`-module of finite rank,
 if `R` is a principal ideal domain. -/
-noncomputable def Submodule.basisOfPidOfLESpan {ι : Type _} [Finite ι] {b : ι → M}
+noncomputable def Submodule.basisOfPidOfLESpan {ι : Type*} [Finite ι] {b : ι → M}
     (hb : LinearIndependent R b) {N : Submodule R M} (le : N ≤ Submodule.span R (Set.range b)) :
     Σn : ℕ, Basis (Fin n) R N :=
   Submodule.basisOfPidOfLE le (Basis.span hb)
@@ -425,7 +425,7 @@ section SmithNormal
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
 -- Porting note: @[nolint has_nonempty_instance]
-structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type _) (n : ℕ) where
+structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The basis of M. -/
   bM : Basis ι R M
   /-- The basis of N. -/
@@ -514,7 +514,7 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
 
 section Ideal
 
-variable {S : Type _} [CommRing S] [IsDomain S] [Algebra R S]
+variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
@@ -631,7 +631,7 @@ end PrincipalIdealDomain
 
 /-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
 independent over a subring `R` of `K`. -/
-theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type _} [CommSemiring R] [Semiring S]
+theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemiring R] [Semiring S]
     [AddCommMonoid M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
     (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
     LinearIndependent R v :=

@@ -51,7 +51,7 @@ quotient monoid, isomorphism theorems
 -/
 
 
-variable (M : Type _) {N : Type _} {P : Type _}
+variable (M : Type*) {N : Type*} {P : Type*}
 
 open Function Setoid
 
@@ -241,7 +241,7 @@ protected def prod (c : Con M) (d : Con N) : Con (M × N) :=
 
 /-- The product of an indexed collection of congruence relations. -/
 @[to_additive "The product of an indexed collection of additive congruence relations."]
-def pi {ι : Type _} {f : ι → Type _} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
+def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
   { @piSetoid _ _ fun i => (C i).toSetoid with
     mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
 #align con.pi Con.pi
@@ -284,7 +284,7 @@ instance (priority := 500) [∀ a b, Decidable (c a b)] : DecidableEq c.Quotient
   inferInstanceAs (DecidableEq (Quotient c.toSetoid))
 
 @[to_additive (attr := simp)]
-theorem quot_mk_eq_coe {M : Type _} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=
+theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=
   rfl
 #align con.quot_mk_eq_coe Con.quot_mk_eq_coe
 #align add_con.quot_mk_eq_coe AddCon.quot_mk_eq_coe
@@ -313,7 +313,7 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 
 /-- A version of `Quotient.hrecOn₂'` for quotients by `Con`. -/
 @[to_additive "A version of `Quotient.hrecOn₂'` for quotients by `AddCon`."]
-protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort _}
+protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
     (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) : φ a b :=
   Quotient.hrecOn₂' a b f h
@@ -321,7 +321,7 @@ protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quoti
 #align add_con.hrec_on₂ AddCon.hrecOn₂
 
 @[to_additive (attr := simp)]
-theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort _} (a : M)
+theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
     (b : N) (f : ∀ (x : M) (y : N), φ x y)
     (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) :
     Con.hrecOn₂ (↑a) (↑b) f h = f a b :=
@@ -1140,7 +1140,7 @@ section Monoids
 
 /-- Multiplicative congruence relations preserve natural powers. -/
 @[to_additive "Additive congruence relations preserve natural scaling."]
-protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
+protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul h (Con.pow c n h)
@@ -1157,24 +1157,24 @@ instance [MulOneClass M] (c : Con M) : One c.Quotient where
   -- one := ((1 : M) : c.Quotient)
 
 @[to_additive]
-theorem smul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
+theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
     {w x : M} (h : c w x) : c (a • w) (a • x) := by
   simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
 #align con.smul Con.smul
 #align add_con.vadd AddCon.vadd
 
-instance _root_.AddCon.Quotient.nsmul {M : Type _} [AddMonoid M] (c : AddCon M) : SMul ℕ c.Quotient
+instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) : SMul ℕ c.Quotient
     where smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
 @[to_additive existing AddCon.Quotient.nsmul]
-instance {M : Type _} [Monoid M] (c : Con M) : Pow c.Quotient ℕ
+instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ
     where pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`."]
-instance semigroup {M : Type _} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
+instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
   Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.semigroup Con.semigroup
 #align add_con.add_semigroup AddCon.addSemigroup
@@ -1182,7 +1182,7 @@ instance semigroup {M : Type _} [Semigroup M] (c : Con M) : Semigroup c.Quotient
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
-instance commSemigroup {M : Type _} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
+instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
   Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
@@ -1190,7 +1190,7 @@ instance commSemigroup {M : Type _} [CommSemigroup M] (c : Con M) : CommSemigrou
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
-instance monoid {M : Type _} [Monoid M] (c : Con M) : Monoid c.Quotient :=
+instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
   Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) fun _ _ => rfl
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
@@ -1198,7 +1198,7 @@ instance monoid {M : Type _} [Monoid M] (c : Con M) : Monoid c.Quotient :=
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
-instance commMonoid {M : Type _} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
+instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
   Function.Surjective.commMonoid _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) fun _ _ =>
     rfl
 #align con.comm_monoid Con.commMonoid
@@ -1252,7 +1252,7 @@ instance hasDiv : Div c.Quotient :=
 
 /-- The integer scaling induced on the quotient by a congruence relation on a type with a
     subtraction. -/
-instance _root_.AddCon.Quotient.zsmul {M : Type _} [AddGroup M] (c : AddCon M) :
+instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
     SMul ℤ c.Quotient :=
   ⟨fun z => (Quotient.map' ((· • ·) z)) fun _ _ => c.zsmul z⟩
 #align add_con.quotient.has_zsmul AddCon.Quotient.zsmul
@@ -1278,7 +1278,7 @@ end Groups
 
 section Units
 
-variable {α : Type _} [Monoid M] {c : Con M}
+variable {α : Type*} [Monoid M] {c : Con M}
 
 /-- In order to define a function `(Con.Quotient c)ˣ → α` on the units of `Con.Quotient c`,
 where `c : Con M` is a multiplicative congruence on a monoid, it suffices to define a function `f`
@@ -1333,21 +1333,21 @@ end Units
 section Actions
 
 @[to_additive]
-instance instSMul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
+instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) :
     SMul α c.Quotient where
   smul a := (Quotient.map' ((· • ·) a)) fun _ _ => c.smul a
 #align con.has_smul Con.instSMul
 #align add_con.has_vadd AddCon.instVAdd
 
 @[to_additive]
-theorem coe_smul {α M : Type _} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
+theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
     (a : α) (x : M) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
 #align con.coe_smul Con.coe_smul
 #align add_con.coe_vadd AddCon.coe_vadd
 
 @[to_additive]
-instance mulAction {α M : Type _} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
+instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
     (c : Con M) : MulAction α c.Quotient
     where
   smul := (· • ·)
@@ -1356,7 +1356,7 @@ instance mulAction {α M : Type _} [Monoid α] [MulOneClass M] [MulAction α M] 
 #align con.mul_action Con.mulAction
 #align add_con.add_action AddCon.addAction
 
-instance mulDistribMulAction {α M : Type _} [Monoid α] [Monoid M] [MulDistribMulAction α M]
+instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
   { c.mulAction with
     smul := (· • ·)

@@ -40,7 +40,7 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
 
 end Rat
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 section IsUnit
 

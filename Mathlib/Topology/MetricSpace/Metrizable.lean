@@ -29,23 +29,23 @@ open BoundedContinuousFunction Filter Topology
 
 namespace TopologicalSpace
 
-variable {ι X Y : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
+variable {ι X Y : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
   [∀ i, TopologicalSpace (π i)]
 
 /-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
 compatible with the topology. To endow such a space with a compatible distance, use
 `letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X`. -/
-class PseudoMetrizableSpace (X : Type _) [t : TopologicalSpace X] : Prop where
+class PseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_pseudo_metric : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t
 #align topological_space.pseudo_metrizable_space TopologicalSpace.PseudoMetrizableSpace
 
-instance (priority := 100) _root_.PseudoMetricSpace.toPseudoMetrizableSpace {X : Type _}
+instance (priority := 100) _root_.PseudoMetricSpace.toPseudoMetrizableSpace {X : Type*}
     [m : PseudoMetricSpace X] : PseudoMetrizableSpace X :=
   ⟨⟨m, rfl⟩⟩
 #align pseudo_metric_space.to_pseudo_metrizable_space PseudoMetricSpace.toPseudoMetrizableSpace
 
 /-- Construct on a metrizable space a metric compatible with the topology. -/
-noncomputable def pseudoMetrizableSpacePseudoMetric (X : Type _) [TopologicalSpace X]
+noncomputable def pseudoMetrizableSpacePseudoMetric (X : Type*) [TopologicalSpace X]
     [h : PseudoMetrizableSpace X] : PseudoMetricSpace X :=
   h.exists_pseudo_metric.choose.replaceTopology h.exists_pseudo_metric.choose_spec.symm
 #align topological_space.pseudo_metrizable_space_pseudo_metric TopologicalSpace.pseudoMetrizableSpacePseudoMetric
@@ -71,7 +71,7 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
   rcases h with ⟨_, hm⟩
   rw [← hm]
   exact @UniformSpace.firstCountableTopology X PseudoMetricSpace.toUniformSpace
-    EMetric.instIsCountablyGeneratedProdUniformityToUniformSpace
+    EMetric.instIsCountablyGeneratedUniformity
 #align topological_space.pseudo_metrizable_space.first_countable_topology TopologicalSpace.PseudoMetrizableSpace.firstCountableTopology
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
@@ -89,11 +89,11 @@ instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To endow such a space with a compatible distance, use
 `letI : MetricSpace X := TopologicalSpace.metrizableSpaceMetric X`. -/
-class MetrizableSpace (X : Type _) [t : TopologicalSpace X] : Prop where
+class MetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_metric : ∃ m : MetricSpace X, m.toUniformSpace.toTopologicalSpace = t
 #align topological_space.metrizable_space TopologicalSpace.MetrizableSpace
 
-instance (priority := 100) _root_.MetricSpace.toMetrizableSpace {X : Type _} [m : MetricSpace X] :
+instance (priority := 100) _root_.MetricSpace.toMetrizableSpace {X : Type*} [m : MetricSpace X] :
     MetrizableSpace X :=
   ⟨⟨m, rfl⟩⟩
 #align metric_space.to_metrizable_space MetricSpace.toMetrizableSpace
@@ -105,7 +105,7 @@ instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : Metrizab
 #align topological_space.metrizable_space.to_pseudo_metrizable_space TopologicalSpace.MetrizableSpace.toPseudoMetrizableSpace
 
 /-- Construct on a metrizable space a metric compatible with the topology. -/
-noncomputable def metrizableSpaceMetric (X : Type _) [TopologicalSpace X] [h : MetrizableSpace X] :
+noncomputable def metrizableSpaceMetric (X : Type*) [TopologicalSpace X] [h : MetrizableSpace X] :
     MetricSpace X :=
   h.exists_metric.choose.replaceTopology h.exists_metric.choose_spec.symm
 #align topological_space.metrizable_space_metric TopologicalSpace.metrizableSpaceMetric

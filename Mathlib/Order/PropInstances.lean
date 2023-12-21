@@ -67,7 +67,7 @@ theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
 
 namespace Pi
 
-variable {ι : Type _} {α' : ι → Type _} [∀ i, PartialOrder (α' i)]
+variable {ι : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
 
 theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by

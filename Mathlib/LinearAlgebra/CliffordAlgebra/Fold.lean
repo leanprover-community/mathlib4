@@ -33,7 +33,7 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 
 universe u1 u2 u3
 
-variable {R M N : Type _}
+variable {R M N : Type*}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 

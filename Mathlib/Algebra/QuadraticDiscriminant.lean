@@ -39,7 +39,7 @@ open Filter
 
 section Ring
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- Discriminant of a quadratic -/
 def discrim [Ring R] (a b c : R) : R :=
@@ -80,7 +80,7 @@ end Ring
 
 section Field
 
-variable {K : Type _} [Field K] [NeZero (2 : K)] {a b c x : K}
+variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c x : K}
 
 /-- Roots of a quadratic equation. -/
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
@@ -112,7 +112,7 @@ end Field
 
 section LinearOrderedField
 
-variable {K : Type _} [LinearOrderedField K] {a b c : K}
+variable {K : Type*} [LinearOrderedField K] {a b c : K}
 
 /-- If a polynomial of degree 2 is always nonnegative, then its discriminant is nonpositive -/
 theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a b c ≤ 0 := by

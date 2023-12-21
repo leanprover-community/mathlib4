@@ -90,7 +90,7 @@ theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
 
 /-- The identity map as a partial equivalence. -/
 @[refl]
-protected def refl (α : Type _) : α ≃. α where
+protected def refl (α : Type*) : α ≃. α where
   toFun := some
   invFun := some
   inv _ _ := eq_comm
@@ -287,7 +287,7 @@ theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
 #align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_isSome
 
-instance : Bot (α ≃. β) :=
+instance instBotPEquiv : Bot (α ≃. β) :=
   ⟨{  toFun := fun _ => none
       invFun := fun _ => none
       inv := by simp }⟩
@@ -411,7 +411,7 @@ end Single
 
 section Order
 
-instance : PartialOrder (α ≃. β) where
+instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
   le_trans f g h fg gh a b := gh a b ∘ fg a b
@@ -465,7 +465,7 @@ end PEquiv
 
 namespace Equiv
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- Turns an `Equiv` into a `PEquiv` of the whole type. -/
 def toPEquiv (f : α ≃ β) : α ≃. β where

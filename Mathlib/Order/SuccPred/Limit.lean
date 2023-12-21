@@ -22,7 +22,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Order
 
@@ -117,7 +117,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort _}
+variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
   h b (Covby.succ_eq hba)
@@ -331,7 +331,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort _}
+variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
 
 theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun b hba =>
   h b (Covby.pred_eq hba)

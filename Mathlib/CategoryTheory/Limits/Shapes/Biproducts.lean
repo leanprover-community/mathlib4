@@ -630,7 +630,7 @@ lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃
     · rintro rfl
       simp at h
 
-instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
+instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_biproduct := Nonempty.intro
@@ -656,7 +656,7 @@ instance (f : ι → Type _) (g : (i : ι) → (f i) → C)
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/
 @[simps]
-def biproductBiproductIso (f : ι → Type _) (g : (i : ι) → (f i) → C)
+def biproductBiproductIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x

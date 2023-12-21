@@ -22,7 +22,7 @@ noncomputable section
 
 open Finset Function
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 

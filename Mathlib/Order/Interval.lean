@@ -25,7 +25,7 @@ interval arithmetic.
 
 open Function OrderDual Set
 
-variable {α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-- The nonempty closed intervals in an order.
 
@@ -36,7 +36,7 @@ elements between these endpoints, use the coercion `NonemptyInterval α → Set 
 -- `(x.toProd.fst = y.toProd.fst) → (x.toProd.snd = y.toProd.snd) → x = y`.
 -- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
 -- `getStructureFieldsFlattened` instead of `getStructureFields`.
-structure NonemptyInterval (α : Type _) [LE α] extends Prod α α where
+structure NonemptyInterval (α : Type*) [LE α] extends Prod α α where
   /-- The starting point of an interval is smaller than the endpoint. -/
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
@@ -317,7 +317,7 @@ We represent intervals either as `⊥` or a nonempty interval given by its endpo
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
 @[reducible] -- Porting note: added reducible, it seems to help with coercions
-def Interval (α : Type _) [LE α] :=
+def Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
 
@@ -359,7 +359,7 @@ theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s
 #align interval.exists Interval.exists
 
 instance [IsEmpty α] : Unique (Interval α) :=
-  Option.instUniqueOption
+  inferInstanceAs <| Unique (Option _)
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=

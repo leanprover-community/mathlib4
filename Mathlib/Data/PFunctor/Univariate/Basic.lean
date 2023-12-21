@@ -42,12 +42,12 @@ instance : Inhabited PFunctor :=
 variable (P : PFunctor) {α β : Type u}
 
 /-- Applying `P` to an object of `Type` -/
-def Obj (α : Type _) :=
+def Obj (α : Type*) :=
   Σx : P.A, P.B x → α
 #align pfunctor.obj PFunctor.Obj
 
 /-- Applying `P` to a morphism of `Type` -/
-def map {α β : Type _} (f : α → β) : P.Obj α → P.Obj β :=
+def map {α β : Type*} (f : α → β) : P.Obj α → P.Obj β :=
   fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
 #align pfunctor.map PFunctor.map
 
@@ -62,7 +62,7 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
 
-protected theorem id_map {α : Type _} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
+protected theorem id_map {α : Type*} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
 protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :

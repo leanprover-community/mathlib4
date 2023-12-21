@@ -233,7 +233,7 @@ instance : CompleteSpace ℍ :=
 
 section infinite_sum
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp, norm_cast]
 theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=

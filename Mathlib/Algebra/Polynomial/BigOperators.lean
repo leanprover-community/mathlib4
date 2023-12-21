@@ -43,7 +43,7 @@ variable (s : Finset ι)
 
 section Semiring
 
-variable {S : Type _} [Semiring S]
+variable {S : Type*} [Semiring S]
 
 theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _

@@ -27,7 +27,7 @@ section
 
 open DirectSum
 
-variable {ι : Type _} (A : ι → Type _) (M : ι → Type _)
+variable {ι : Type*} (A : ι → Type*) (M : ι → Type*)
 
 namespace DirectSum
 
@@ -160,7 +160,7 @@ end
 
 open DirectSum BigOperators
 
-variable {ι R A M σ σ' : Type _}
+variable {ι R A M σ σ' : Type*}
 
 variable [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
 

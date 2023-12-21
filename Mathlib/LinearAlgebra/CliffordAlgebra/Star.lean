@@ -25,9 +25,9 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 variable {Q : QuadraticForm R M}
 

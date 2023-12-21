@@ -54,7 +54,7 @@ namespace Polynomial
 
 open Polynomial
 
-variable {R S : Type _} [CommRing R] [CommRing S] (k : ℕ) (a : R)
+variable {R S : Type*} [CommRing R] [CommRing S] (k : ℕ) (a : R)
 
 /-- `dickson` is the `n`-th (generalised) Dickson polynomial of the `k`-th kind associated to the
 element `a ∈ R`. -/

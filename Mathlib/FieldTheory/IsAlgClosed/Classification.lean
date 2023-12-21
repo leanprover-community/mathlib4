@@ -87,15 +87,15 @@ section Classification
 
 noncomputable section
 
-variable {R L K : Type _} [CommRing R]
+variable {R L K : Type*} [CommRing R]
 
 variable [Field K] [Algebra R K]
 
 variable [Field L] [Algebra R L]
 
-variable {ι : Type _} (v : ι → K)
+variable {ι : Type*} (v : ι → K)
 
-variable {κ : Type _} (w : κ → L)
+variable {κ : Type*} (w : κ → L)
 
 variable (hv : AlgebraicIndependent R v)
 

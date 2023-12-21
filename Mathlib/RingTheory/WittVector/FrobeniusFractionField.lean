@@ -62,7 +62,7 @@ whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 section CommRing
 
-variable {k : Type _} [CommRing k] [CharP k p]
+variable {k : Type*} [CommRing k] [CharP k p]
 
 open Polynomial
 
@@ -99,7 +99,7 @@ end CommRing
 
 section IsAlgClosed
 
-variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ∃ b : k, (succNthDefiningPoly p n a₁ a₂ bs).IsRoot b :=
@@ -143,7 +143,7 @@ end RecursionMain
 
 namespace RecursionBase
 
-variable {k : Type _} [Field k] [IsAlgClosed k]
+variable {k : Type*} [Field k] [IsAlgClosed k]
 
 theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
   IsAlgClosed.exists_pow_nat_eq _ <|
@@ -194,7 +194,7 @@ section FrobeniusRotation
 
 section IsAlgClosed
 
-variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 /-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
 -/

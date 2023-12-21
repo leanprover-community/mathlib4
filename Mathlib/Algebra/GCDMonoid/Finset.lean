@@ -29,7 +29,7 @@ finset, gcd
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Finset
 

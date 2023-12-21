@@ -29,11 +29,11 @@ namespace HomologicalComplex
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-variable {ι : Type _} {c : ComplexShape ι}
+variable {ι : Type*} {c : ComplexShape ι}
 
 /-- A complex of functors gives a functor to complexes. -/
 @[simps obj map]
-def asFunctor {T : Type _} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
+def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
     T ⥤ HomologicalComplex V c where
   obj t :=
     { X := fun i => (C.X i).obj t
@@ -62,7 +62,7 @@ def asFunctor {T : Type _} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
 -- TODO in fact, this is an equivalence of categories.
 /-- The functorial version of `HomologicalComplex.asFunctor`. -/
 @[simps]
-def complexOfFunctorsToFunctorToComplex {T : Type _} [Category T] :
+def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
     HomologicalComplex (T ⥤ V) c ⥤ T ⥤ HomologicalComplex V c where
   obj C := C.asFunctor
   map f :=

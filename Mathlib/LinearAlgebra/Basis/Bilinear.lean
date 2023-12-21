@@ -15,11 +15,11 @@ import Mathlib.LinearAlgebra.BilinearMap
 
 namespace LinearMap
 
-variable {ι₁ ι₂ : Type _}
+variable {ι₁ ι₂ : Type*}
 
-variable {R R₂ S S₂ M N P : Type _}
+variable {R R₂ S S₂ M N P : Type*}
 
-variable {Mₗ Nₗ Pₗ : Type _}
+variable {Mₗ Nₗ Pₗ : Type*}
 
 variable [CommSemiring R] [CommSemiring S] [CommSemiring R₂] [CommSemiring S₂]
 

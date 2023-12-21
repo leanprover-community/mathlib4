@@ -33,7 +33,7 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 -/
 
 
-variable {α : Type _} (p : α → Bool) (l : List α) (n : ℕ)
+variable {α : Type*} (p : α → Bool) (l : List α) (n : ℕ)
 
 namespace List
 

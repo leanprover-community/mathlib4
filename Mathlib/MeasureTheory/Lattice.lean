@@ -34,7 +34,7 @@ open MeasureTheory
 
 /-- We say that a type has `MeasurableSup` if `(c ⊔ ·)` and `(· ⊔ c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· ⊔ ·)` see `MeasurableSup₂`. -/
-class MeasurableSup (M : Type _) [MeasurableSpace M] [Sup M] : Prop where
+class MeasurableSup (M : Type*) [MeasurableSpace M] [Sup M] : Prop where
   measurable_const_sup : ∀ c : M, Measurable (c ⊔ ·)
   measurable_sup_const : ∀ c : M, Measurable (· ⊔ c)
 #align has_measurable_sup MeasurableSup
@@ -43,7 +43,7 @@ class MeasurableSup (M : Type _) [MeasurableSpace M] [Sup M] : Prop where
 
 /-- We say that a type has `MeasurableSup₂` if `uncurry (· ⊔ ·)` is a measurable functions.
 For a typeclass assuming measurability of `(c ⊔ ·)` and `(· ⊔ c)` see `MeasurableSup`. -/
-class MeasurableSup₂ (M : Type _) [MeasurableSpace M] [Sup M] : Prop where
+class MeasurableSup₂ (M : Type*) [MeasurableSpace M] [Sup M] : Prop where
   measurable_sup : Measurable fun p : M × M => p.1 ⊔ p.2
 #align has_measurable_sup₂ MeasurableSup₂
 #align has_measurable_sup₂.measurable_sup MeasurableSup₂.measurable_sup
@@ -54,7 +54,7 @@ export MeasurableSup (measurable_const_sup measurable_sup_const)
 
 /-- We say that a type has `MeasurableInf` if `(c ⊓ ·)` and `(· ⊓ c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· ⊓ ·)` see `MeasurableInf₂`. -/
-class MeasurableInf (M : Type _) [MeasurableSpace M] [Inf M] : Prop where
+class MeasurableInf (M : Type*) [MeasurableSpace M] [Inf M] : Prop where
   measurable_const_inf : ∀ c : M, Measurable (c ⊓ ·)
   measurable_inf_const : ∀ c : M, Measurable (· ⊓ c)
 #align has_measurable_inf MeasurableInf
@@ -63,7 +63,7 @@ class MeasurableInf (M : Type _) [MeasurableSpace M] [Inf M] : Prop where
 
 /-- We say that a type has `MeasurableInf₂` if `uncurry (· ⊓ ·)` is a measurable functions.
 For a typeclass assuming measurability of `(c ⊓ ·)` and `(· ⊓ c)` see `MeasurableInf`. -/
-class MeasurableInf₂ (M : Type _) [MeasurableSpace M] [Inf M] : Prop where
+class MeasurableInf₂ (M : Type*) [MeasurableSpace M] [Inf M] : Prop where
   measurable_inf : Measurable fun p : M × M => p.1 ⊓ p.2
 #align has_measurable_inf₂ MeasurableInf₂
 #align has_measurable_inf₂.measurable_inf MeasurableInf₂.measurable_inf
@@ -72,7 +72,7 @@ export MeasurableInf₂ (measurable_inf)
 
 export MeasurableInf (measurable_const_inf measurable_inf_const)
 
-variable {M : Type _} [MeasurableSpace M]
+variable {M : Type*} [MeasurableSpace M]
 
 section OrderDual
 
@@ -98,7 +98,7 @@ instance (priority := 100) OrderDual.instMeasurableInf₂ [Sup M] [MeasurableSup
 
 end OrderDual
 
-variable {α : Type _} {m : MeasurableSpace α} {μ : Measure α} {f g : α → M}
+variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} {f g : α → M}
 
 section Sup
 
@@ -236,10 +236,10 @@ section SemilatticeSup
 
 open Finset
 
-variable {δ : Type _} [MeasurableSpace δ] [SemilatticeSup α] [MeasurableSup₂ α]
+variable {δ : Type*} [MeasurableSpace δ] [SemilatticeSup α] [MeasurableSup₂ α]
 
 @[measurability]
-theorem Finset.measurable_sup' {ι : Type _} {s : Finset ι} (hs : s.Nonempty) {f : ι → δ → α}
+theorem Finset.measurable_sup' {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f : ι → δ → α}
     (hf : ∀ n ∈ s, Measurable (f n)) : Measurable (s.sup' hs f) :=
   Finset.sup'_induction hs _ (fun _f hf _g hg => hf.sup hg) fun n hn => hf n hn
 #align finset.measurable_sup' Finset.measurable_sup'

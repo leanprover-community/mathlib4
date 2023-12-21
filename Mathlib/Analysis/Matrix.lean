@@ -52,7 +52,7 @@ open scoped BigOperators NNReal Matrix
 
 namespace Matrix
 
-variable {R l m n α β : Type _} [Fintype l] [Fintype m] [Fintype n]
+variable {R l m n α β : Type*} [Fintype l] [Fintype m] [Fintype n]
 
 /-! ### The elementwise supremum norm -/
 

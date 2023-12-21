@@ -49,7 +49,7 @@ universe v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {D : Type _} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 
 -- Importing `CategoryTheory.Abelian.Projective` and assuming
 -- `[Abelian C] [EnoughProjectives C] [Abelian D]` suffices to acquire all the following:

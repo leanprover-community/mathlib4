@@ -49,7 +49,7 @@ The following is local notation in this file:
 -/
 
 
-variable (α : Type _)
+variable (α : Type*)
 
 -- mathport name: «exprα≥0»
 /- Notations for nonnegative and positive elements

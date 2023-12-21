@@ -50,7 +50,7 @@ open TensorProduct
 
 section Semiring
 
-variable {R A B M N : Type _} [CommSemiring R]
+variable {R A B M N : Type*} [CommSemiring R]
 
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
@@ -109,7 +109,7 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type _} [CommRing R]
+variable {R A B M N : Type*} [CommRing R]
 
 variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
@@ -269,7 +269,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_mul' := by simp
 #align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
-variable {S : Type _}
+variable {S : Type*}
 
 -- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
 instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
@@ -362,7 +362,7 @@ theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b =
   rfl
 #align algebra.tensor_product.include_right_apply Algebra.TensorProduct.includeRight_apply
 
-theorem includeLeftRingHom_comp_algebraMap {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
+theorem includeLeftRingHom_comp_algebraMap {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] :
     (includeLeftRingHom.comp (algebraMap R S) : R →+* S ⊗[R] T) =
       includeRight.toRingHom.comp (algebraMap R T) := by
@@ -763,7 +763,7 @@ end Monoidal
 
 section
 
-variable {R A B S : Type _} [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
+variable {R A B S : Type*} [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
 
 variable [Algebra R A] [Algebra R B] [Algebra R S]
 
@@ -839,7 +839,7 @@ end
 
 section
 
-variable {R A A' B S : Type _}
+variable {R A A' B S : Type*}
 
 variable [CommSemiring R] [CommSemiring A] [Semiring A'] [Semiring B] [CommSemiring S]
 
@@ -923,7 +923,7 @@ end Algebra
 
 namespace Module
 
-variable {R S A M N : Type _} [CommSemiring R] [CommSemiring S] [Semiring A]
+variable {R S A M N : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
 
 variable [AddCommMonoid M] [AddCommMonoid N]
 
@@ -951,7 +951,7 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
-theorem Subalgebra.finiteDimensional_sup {K L : Type _} [Field K] [CommRing L] [Algebra K L]
+theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
@@ -960,7 +960,7 @@ theorem Subalgebra.finiteDimensional_sup {K L : Type _} [Field K] [CommRing L] [
 
 namespace TensorProduct.Algebra
 
-variable {R A B M : Type _}
+variable {R A B M : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 

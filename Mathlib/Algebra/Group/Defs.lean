@@ -66,18 +66,18 @@ attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
 attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type _) (P : Type _) where
+class VAdd (G : Type*) (P : Type _) where
   vadd : G → P → P
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
-class VSub (G : outParam (Type _)) (P : Type _) where
+class VSub (G : outParam (Type*)) (P : Type*) where
   vsub : P → P → G
 #align has_vsub VSub
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
-class SMul (M : Type _) (α : Type _) where
+class SMul (M : Type*) (α : Type _) where
   smul : M → α → α
 #align has_smul SMul
 
@@ -99,7 +99,7 @@ attribute [to_additive existing (reorder := 1 2)] instHPow
 
 universe u
 
-variable {G : Type _}
+variable {G : Type*}
 
 /-- Class of types that have an inversion operation. -/
 @[to_additive, notation_class]
@@ -613,11 +613,11 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
 #align monoid.has_pow Monoid.Pow
 
-instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.SMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.SMul
 
@@ -625,7 +625,7 @@ attribute [to_additive existing SMul] Monoid.Pow
 
 section
 
-variable {M : Type _} [Monoid M]
+variable {M : Type*} [Monoid M]
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
@@ -764,14 +764,14 @@ end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
 Use instead `a ^ n`, which has better definitional behavior. -/
-def zpowRec {M : Type _} [One M] [Mul M] [Inv M] : ℤ → M → M
+def zpowRec {M : Type*} [One M] [Mul M] [Inv M] : ℤ → M → M
   | Int.ofNat n, a => npowRec n a
   | Int.negSucc n, a => (npowRec n.succ a)⁻¹
 #align zpow_rec zpowRec
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
+def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmulRec n a
   | Int.negSucc n, a => -nsmulRec n.succ a
 #align zsmul_rec zsmulRec
@@ -781,14 +781,14 @@ attribute [to_additive existing] zpowRec
 section InvolutiveInv
 
 /-- Auxiliary typeclass for types with an involutive `Neg`. -/
-class InvolutiveNeg (A : Type _) extends Neg A where
+class InvolutiveNeg (A : Type*) extends Neg A where
   neg_neg : ∀ x : A, - -x = x
 
 #align has_involutive_neg InvolutiveNeg
 
 /-- Auxiliary typeclass for types with an involutive `Inv`. -/
 @[to_additive]
-class InvolutiveInv (G : Type _) extends Inv G where
+class InvolutiveInv (G : Type*) extends Inv G where
   inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
 #align has_involutive_inv InvolutiveInv
@@ -985,23 +985,23 @@ end DivInvMonoid
 section InvOneClass
 
 /-- Typeclass for expressing that `-0 = 0`. -/
-class NegZeroClass (G : Type _) extends Zero G, Neg G where
+class NegZeroClass (G : Type*) extends Zero G, Neg G where
   neg_zero : -(0 : G) = 0
 #align neg_zero_class NegZeroClass
 
 /-- A `SubNegMonoid` where `-0 = 0`. -/
-class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
+class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 #align sub_neg_zero_monoid SubNegZeroMonoid
 
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
 @[to_additive]
-class InvOneClass (G : Type _) extends One G, Inv G where
+class InvOneClass (G : Type*) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 #align inv_one_class InvOneClass
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
-class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
+class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 #align div_inv_one_monoid DivInvOneMonoid
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
@@ -1170,7 +1170,7 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
 end Group
 
 @[to_additive]
-theorem Group.toDivInvMonoid_injective {G : Type _} :
+theorem Group.toDivInvMonoid_injective {G : Type*} :
     Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 #align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
 #align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective

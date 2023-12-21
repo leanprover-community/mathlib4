@@ -16,9 +16,9 @@ at position `(i, j)`, and zeroes elsewhere.
 -/
 
 
-variable {l m n : Type _}
+variable {l m n : Type*}
 
-variable {R α : Type _}
+variable {R α : Type*}
 
 namespace Matrix
 

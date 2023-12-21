@@ -39,7 +39,7 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
 -/
 
 
-variable {n : ℕ+} (K : Type _) [Field K] {L : Type _} {μ : L}
+variable {n : ℕ+} (K : Type*) [Field K] {L : Type*} {μ : L}
 
 open Polynomial IsCyclotomicExtension
 

@@ -28,7 +28,7 @@ the derived series of a group.
 
 open Subgroup
 
-variable {G G' : Type _} [Group G] [Group G'] {f : G →* G'}
+variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
 section derivedSeries
 
@@ -113,11 +113,11 @@ theorem isSolvable_def : IsSolvable G ↔ ∃ n : ℕ, derivedSeries G n = ⊥ :
   ⟨fun h => h.solvable, fun h => ⟨h⟩⟩
 #align is_solvable_def isSolvable_def
 
-instance (priority := 100) CommGroup.isSolvable {G : Type _} [CommGroup G] : IsSolvable G :=
+instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 #align comm_group.is_solvable CommGroup.isSolvable
 
-theorem isSolvable_of_comm {G : Type _} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
+theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
   letI hG' : CommGroup G := { hG with mul_comm := h }
   cases hG
@@ -134,7 +134,7 @@ instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolva
 
 variable {G}
 
-theorem solvable_of_ker_le_range {G' G'' : Type _} [Group G'] [Group G''] (f : G' →* G)
+theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
     (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
@@ -165,7 +165,7 @@ instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G
   solvable_of_surjective (QuotientGroup.mk'_surjective H)
 #align solvable_quotient_of_solvable solvable_quotient_of_solvable
 
-instance solvable_prod {G' : Type _} [Group G'] [IsSolvable G] [IsSolvable G'] :
+instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩
@@ -222,7 +222,7 @@ theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
     exact commutator_mem_commutator ih ((derivedSeries_normal _ _).conj_mem _ ih _)
 #align equiv.perm.fin_5_not_solvable Equiv.Perm.fin_5_not_solvable
 
-theorem Equiv.Perm.not_solvable (X : Type _) (hX : 5 ≤ Cardinal.mk X) :
+theorem Equiv.Perm.not_solvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :
     ¬IsSolvable (Equiv.Perm X) := by
   intro h
   have key : Nonempty (Fin 5 ↪ X) := by

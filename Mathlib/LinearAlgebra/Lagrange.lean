@@ -33,7 +33,7 @@ section PolynomialDetermination
 
 namespace Polynomial
 
-variable {R : Type _} [CommRing R] [IsDomain R] {f g : R[X]}
+variable {R : Type*} [CommRing R] [IsDomain R] {f g : R[X]}
 
 section Finset
 
@@ -73,7 +73,7 @@ section Indexed
 
 open Finset
 
-variable {ι : Type _} {v : ι → R} (s : Finset ι)
+variable {ι : Type*} {v : ι → R} (s : Finset ι)
 
 theorem eq_zero_of_degree_lt_of_eval_index_eq_zero (hvs : Set.InjOn v s)
     (degree_f_lt : f.degree < s.card) (eval_f : ∀ i ∈ s, f.eval (v i) = 0) : f = 0 := by
@@ -113,7 +113,7 @@ namespace Lagrange
 
 open Polynomial
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 section BasisDivisor
 
@@ -179,7 +179,7 @@ section Basis
 
 open Finset
 
-variable {ι : Type _} [DecidableEq ι] {s : Finset ι} {v : ι → F} {i j : ι}
+variable {ι : Type*} [DecidableEq ι] {s : Finset ι} {v : ι → F} {i j : ι}
 
 /-- Lagrange basis polynomials indexed by `s : Finset ι`, defined at nodes `v i` for a
 map `v : ι → F`. For `i, j ∈ s`, `basis s v i` evaluates to 0 at `v j` for `i ≠ j`. When
@@ -283,7 +283,7 @@ section Interpolate
 
 open Finset
 
-variable {ι : Type _} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
+variable {ι : Type*} [DecidableEq ι] {s t : Finset ι} {i j : ι} {v : ι → F} (r r' : ι → F)
 
 /-- Lagrange interpolation: given a finset `s : Finset ι`, a nodal map `v : ι → F` injective on
 `s` and a value function `r : ι → F`, `interpolate s v r` is the unique
@@ -471,7 +471,7 @@ section Nodal
 
 open Finset Polynomial
 
-variable {ι : Type _} {s : Finset ι} {v : ι → F} {i : ι} (r : ι → F) {x : F}
+variable {ι : Type*} {s : Finset ι} {v : ι → F} {i : ι} (r : ι → F) {x : F}
 
 /-- `nodal s v` is the unique monic polynomial whose roots are the nodes defined by `v` and `s`.
 

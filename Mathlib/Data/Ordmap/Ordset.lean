@@ -68,7 +68,7 @@ ordered map, ordered set, data structure, verified programming
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Ordnode
 
@@ -1678,7 +1678,7 @@ end Ordnode
 maintain that the tree is balanced and correctly stores subtree sizes at each level. The
 correctness property of the tree is baked into the type, so all operations on this type are correct
 by construction. -/
-def Ordset (α : Type _) [Preorder α] :=
+def Ordset (α : Type*) [Preorder α] :=
   { t : Ordnode α // t.Valid }
 #align ordset Ordset
 

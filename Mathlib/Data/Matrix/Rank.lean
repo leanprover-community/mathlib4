@@ -38,7 +38,7 @@ namespace Matrix
 
 open FiniteDimensional
 
-variable {l m n o R : Type _} [m_fin : Fintype m] [Fintype n] [Fintype o]
+variable {l m n o R : Type*} [m_fin : Fintype m] [Fintype n] [Fintype o]
 
 section CommRing
 
@@ -144,7 +144,7 @@ theorem rank_submatrix [Fintype m] (A : Matrix m m R) (e₁ e₂ : n ≃ m) :
   simpa only [reindex_apply] using rank_reindex e₁.symm e₂.symm A
 #align matrix.rank_submatrix Matrix.rank_submatrix
 
-theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type _} [AddCommGroup M₁]
+theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddCommGroup M₁]
     [AddCommGroup M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R) (v₁ : Basis m R M₁)
     (v₂ : Basis n R M₂) : A.rank = finrank R (LinearMap.range (toLin v₂ v₁ A)) := by
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)

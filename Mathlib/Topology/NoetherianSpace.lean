@@ -41,7 +41,7 @@ of a noetherian scheme (e.g., the spectrum of a noetherian ring) is noetherian.
 -/
 
 
-variable (α β : Type _) [TopologicalSpace α] [TopologicalSpace β]
+variable (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
@@ -147,7 +147,7 @@ theorem noetherian_univ_iff : NoetherianSpace (Set.univ : Set α) ↔ Noetherian
   noetherianSpace_iff_of_homeomorph (Homeomorph.Set.univ α)
 #align topological_space.noetherian_univ_iff TopologicalSpace.noetherian_univ_iff
 
-theorem NoetherianSpace.iUnion {ι : Type _} (f : ι → Set α) [Finite ι]
+theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
     [hf : ∀ i, NoetherianSpace (f i)] : NoetherianSpace (⋃ i, f i) := by
   simp_rw [noetherianSpace_set_iff] at hf ⊢
   intro t ht

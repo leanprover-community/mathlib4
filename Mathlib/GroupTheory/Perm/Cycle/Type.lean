@@ -37,7 +37,7 @@ namespace Equiv.Perm
 
 open Equiv List Multiset
 
-variable {α : Type _} [Fintype α]
+variable {α : Type*} [Fintype α]
 
 section CycleType
 
@@ -270,7 +270,7 @@ theorem isConj_iff_cycleType_eq {σ τ : Perm α} : IsConj σ τ ↔ σ.cycleTyp
 #align equiv.perm.is_conj_iff_cycle_type_eq Equiv.Perm.isConj_iff_cycleType_eq
 
 @[simp]
-theorem cycleType_extendDomain {β : Type _} [Fintype β] [DecidableEq β] {p : β → Prop}
+theorem cycleType_extendDomain {β : Type*} [Fintype β] [DecidableEq β] {p : β → Prop}
     [DecidablePred p] (f : α ≃ Subtype p) {g : Perm α} :
     cycleType (g.extendDomain f) = cycleType g := by
   induction g using cycle_induction_on with
@@ -364,7 +364,7 @@ theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
 
 section Cauchy
 
-variable (G : Type _) [Group G] (n : ℕ)
+variable (G : Type*) [Group G] (n : ℕ)
 
 /-- The type of vectors with terms from `G`, length `n`, and product equal to `1:G`. -/
 def vectorsProdEqOne : Set (Vector G n) :=
@@ -452,7 +452,7 @@ end VectorsProdEqOne
 
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
-theorem _root_.exists_prime_orderOf_dvd_card {G : Type _} [Group G] [Fintype G] (p : ℕ)
+theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, orderOf x = p := by
   have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_lt hp.out.one_lt)
   have Scard :=
@@ -485,7 +485,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type _} [Group G] [Fintype G] 
 
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
-theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type _} [AddGroup G] [Fintype G] (p : ℕ)
+theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
   @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
 #align exists_prime_add_order_of_dvd_card exists_prime_addOrderOf_dvd_card

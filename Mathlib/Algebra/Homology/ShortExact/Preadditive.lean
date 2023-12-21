@@ -28,7 +28,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Preadditive
 
-variable {𝒜 : Type _} [Category 𝒜]
+variable {𝒜 : Type*} [Category 𝒜]
 
 namespace CategoryTheory
 
@@ -142,7 +142,7 @@ theorem Split.shortExact (h : Split f g) : ShortExact f g :=
 
 end
 
-theorem Split.map {𝒜 ℬ : Type _} [Category 𝒜] [Preadditive 𝒜] [Category ℬ] [Preadditive ℬ]
+theorem Split.map {𝒜 ℬ : Type*} [Category 𝒜] [Preadditive 𝒜] [Category ℬ] [Preadditive ℬ]
     (F : 𝒜 ⥤ ℬ) [Functor.Additive F] {A B C : 𝒜} {f : A ⟶ B} {g : B ⟶ C} (h : Split f g) :
     Split (F.map f) (F.map g) := by
   obtain ⟨φ, χ, h1, h2, h3, h4, h5⟩ := h

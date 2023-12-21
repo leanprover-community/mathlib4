@@ -31,7 +31,7 @@ bundled homs, but means we don't have to repeat statements for different types o
 -/
 
 
-variable {ι R M σ : Type _}
+variable {ι R M σ : Type*}
 
 open DirectSum BigOperators
 

@@ -44,7 +44,7 @@ noncomputable section
 
 universe v u
 
-variable (C : Type u) (A : Type _) [Category.{v} C]
+variable (C : Type u) (A : Type*) [Category.{v} C]
 
 attribute [local instance] endofunctorMonoidalCategory
 
@@ -56,7 +56,7 @@ variable (A C) [AddMonoid A]
 
 /-- A category has a shift indexed by an additive monoid `A`
 if there is a monoidal functor from `A` to `C ⥤ C`. -/
-class HasShift (C : Type u) (A : Type _) [Category.{v} C] [AddMonoid A] where
+class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   /-- a shift is a monoidal functor from `A` to `C ⥤ C` -/
   shift : MonoidalFunctor (Discrete A) (C ⥤ C)
 #align category_theory.has_shift CategoryTheory.HasShift
@@ -657,7 +657,7 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
 
 end AddCommMonoid
 
-variable {D : Type _} [Category D] [AddMonoid A] [HasShift D A]
+variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
 
 variable (F : C ⥤ D) [Full F] [Faithful F]
 

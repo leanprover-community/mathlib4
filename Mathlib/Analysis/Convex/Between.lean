@@ -25,7 +25,7 @@ This file defines notions of a point in an affine space being between two given 
 -/
 
 
-variable (R : Type _) {V V' P P' : Type _}
+variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap
 
@@ -339,8 +339,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
   refine' ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, _⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  have : z -ᵥ x ≠ 0 := by simpa using hxz.symm
-  simp [smul_ne_zero, this, sub_eq_zero, ht.1.ne.symm, ht.2.ne]
+  simp [smul_ne_zero, sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
 #align sbtw_iff_mem_image_Ioo_and_ne sbtw_iff_mem_image_Ioo_and_ne
 
 variable (R)
@@ -522,7 +521,7 @@ theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : 
 #align sbtw.trans_wbtw_right_ne Sbtw.trans_wbtw_right_ne
 
 theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
-    {ι : Type _} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
+    {ι : Type*} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
     (hw : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1) (hw₂ : ∑ i in s, w₂ i = 1)
     (h : s.affineCombination R p w ∈
       line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])

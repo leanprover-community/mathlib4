@@ -20,7 +20,7 @@ open NNReal ENNReal
 
 namespace IsROrC
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 @[measurability]
 theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
@@ -36,7 +36,7 @@ end IsROrC
 
 section IsROrCComposition
 
-variable {α 𝕜 : Type _} [IsROrC 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
+variable {α 𝕜 : Type*} [IsROrC 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
 theorem Measurable.re (hf : Measurable f) : Measurable fun x => IsROrC.re (f x) :=
@@ -62,7 +62,7 @@ end IsROrCComposition
 
 section
 
-variable {α 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
+variable {α 𝕜 : Type*} [IsROrC 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
 theorem IsROrC.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=

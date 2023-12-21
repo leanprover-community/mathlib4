@@ -25,7 +25,7 @@ open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
 
-variable (F : Type _) (X Y : outParam (Type _)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+variable (F : Type*) (X Y : outParam (Type*)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/
@@ -39,7 +39,7 @@ end Class
 
 /-- Type of equivalences `X ≃ Y` such that `∀ x y, edist (f x) (f y) = r * edist x y` for some
 `r : ℝ≥0`, `r ≠ 0`. -/
-structure DilationEquiv (X Y : Type _) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
 
 infixl:25 " ≃ᵈ " => DilationEquiv
@@ -48,7 +48,7 @@ namespace DilationEquiv
 
 section PseudoEMetricSpace
 
-variable {X Y Z : Type _} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
+variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
 instance : DilationEquivClass (X ≃ᵈ Y) X Y where
   coe f := f.1
@@ -87,7 +87,7 @@ initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_app
 
 /-- Identity map as a `DilationEquiv`. -/
 @[simps! (config := .asFn) apply]
-def refl (X : Type _) [PseudoEMetricSpace X] : X ≃ᵈ X where
+def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 

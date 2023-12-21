@@ -21,22 +21,22 @@ open Function Set
 
 open Pointwise
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 -- Porting note: mathlib3 uses `deriving Inhabited, PartialOrder, OrderBot`
 /-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
   multiplication `*` as "multiplication". -/
-def SetSemiring (α : Type _) : Type _ :=
+def SetSemiring (α : Type*) : Type _ :=
   Set α
 #align set_semiring SetSemiring
 
-noncomputable instance (α : Type _) : Inhabited (SetSemiring α) :=
+noncomputable instance (α : Type*) : Inhabited (SetSemiring α) :=
   (inferInstance : Inhabited (Set _))
 
-instance (α : Type _) : PartialOrder (SetSemiring α) :=
+instance (α : Type*) : PartialOrder (SetSemiring α) :=
   (inferInstance : PartialOrder (Set _))
 
-instance (α : Type _) : OrderBot (SetSemiring α) :=
+instance (α : Type*) : OrderBot (SetSemiring α) :=
   (inferInstance : OrderBot (Set _))
 
 /-- The identity function `Set α → SetSemiring α`. -/

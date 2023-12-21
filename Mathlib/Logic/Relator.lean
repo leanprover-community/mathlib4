@@ -114,7 +114,7 @@ lemma bi_total_eq {α : Type u₁} : Relator.BiTotal (@Eq α) :=
   { left := λ a => ⟨a, rfl⟩, right := λ a => ⟨a, rfl⟩ }
 #align relator.bi_total_eq Relator.bi_total_eq
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 variable {r : α → β → Prop} {p : β → γ → Prop} {q : γ → δ → Prop}
 
 lemma LeftUnique.flip (h : LeftUnique r) : RightUnique (flip r) :=

@@ -33,7 +33,7 @@ theorem Rat.denseRange_cast {𝕜} [LinearOrderedField 𝕜] [TopologicalSpace �
 
 namespace AddSubgroup
 
-variable {G : Type _} [LinearOrderedAddCommGroup G] [TopologicalSpace G] [OrderTopology G]
+variable {G : Type*} [LinearOrderedAddCommGroup G] [TopologicalSpace G] [OrderTopology G]
   [Archimedean G]
 
 /-- An additive subgroup of an archimedean linear ordered additive commutative group with order

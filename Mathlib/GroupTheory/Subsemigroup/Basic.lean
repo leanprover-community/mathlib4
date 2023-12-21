@@ -51,7 +51,7 @@ subsemigroup, subsemigroups
 
 
 -- Only needed for notation
-variable {M : Type _} {N : Type _} {A : Type _}
+variable {M : Type*} {N : Type*} {A : Type*}
 
 section NonAssoc
 

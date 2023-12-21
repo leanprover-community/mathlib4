@@ -44,7 +44,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators
 
 namespace MeasureTheory
 
-variable {Ω E ι : Type _} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure Ω}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f g : ι → Ω → E} {ℱ : Filtration ι m0}
 
 /-- A family of functions `f : ι → Ω → E` is a martingale with respect to a filtration `ℱ` if `f`
@@ -344,7 +344,7 @@ theorem sub_martingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
 
 section
 
-variable {F : Type _} [NormedLatticeAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [NormedLatticeAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   [OrderedSMul ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
@@ -370,7 +370,7 @@ namespace Submartingale
 
 section
 
-variable {F : Type _} [NormedLatticeAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [NormedLatticeAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   [OrderedSMul ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :

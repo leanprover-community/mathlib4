@@ -23,7 +23,7 @@ This file defines the space of continuous homomorphisms between two topological 
 
 open Pointwise Function
 
-variable (F A B C D E : Type _) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
+variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
   [TopologicalSpace E] [TopologicalGroup E]
 
@@ -33,7 +33,7 @@ When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHo
 you should parametrize over `(F : Type*) [ContinuousAddMonoidHomClass F A B] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
-structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
+structure ContinuousAddMonoidHom (A B : Type*) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B where
   /-- Proof of continuity of the Hom. -/
   continuous_toFun : @Continuous A B _ _ toFun
@@ -58,7 +58,7 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
-class ContinuousAddMonoidHomClass (A B : outParam (Type _)) [AddMonoid A] [AddMonoid B]
+class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
   [TopologicalSpace A] [TopologicalSpace B] extends AddMonoidHomClass F A B where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
@@ -70,7 +70,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
 -- porting note : Changed A B to outParam to help synthesizing order
 @[to_additive]
-class ContinuousMonoidHomClass (A B : outParam (Type _)) [Monoid A] [Monoid B]
+class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] extends MonoidHomClass F A B where
   /-- Proof of the continuity of the map. -/
   map_continuous (f : F) : Continuous f
@@ -344,7 +344,7 @@ instance : TopologicalGroup (ContinuousMonoidHom A E) :=
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
 
 @[to_additive]
-theorem continuous_of_continuous_uncurry {A : Type _} [TopologicalSpace A]
+theorem continuous_of_continuous_uncurry {A : Type*} [TopologicalSpace A]
     (f : A → ContinuousMonoidHom B C) (h : Continuous (Function.uncurry fun x y => f x y)) :
     Continuous f :=
   (inducing_toContinuousMap _ _).continuous_iff.mpr
@@ -394,7 +394,7 @@ variable (A) {E}
 
 /-- `ContinuousMonoidHom f _` is a functor. -/
 @[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
-def compRight {B : Type _} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B]
+def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g

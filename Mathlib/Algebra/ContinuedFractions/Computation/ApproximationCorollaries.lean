@@ -42,7 +42,7 @@ convergence, fractions
 -/
 
 
-variable {K : Type _} (v : K) [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)
 

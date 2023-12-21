@@ -38,7 +38,7 @@ namespace Language
 
 open Structure
 
-variable (L : Language) (M : Type _) (N : Type _) {P : Type _} {Q : Type _}
+variable (L : Language) (M : Type*) (N : Type*) {P : Type*} {Q : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
@@ -82,7 +82,7 @@ instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type _} {n : ℕ} (φ : L.BoundedFormula α n)
+theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
     rw [← BoundedFormula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
@@ -102,7 +102,7 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type _} {n : ℕ} (φ : L.B
 #align first_order.language.elementary_embedding.map_bounded_formula FirstOrder.Language.ElementaryEmbedding.map_boundedFormula
 
 @[simp]
-theorem map_formula (f : M ↪ₑ[L] N) {α : Type _} (φ : L.Formula α) (x : α → M) :
+theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
     φ.Realize (f ∘ x) ↔ φ.Realize x := by
   rw [Formula.Realize, Formula.Realize, ← f.map_boundedFormula, Unique.eq_default (f ∘ default)]
 #align first_order.language.elementary_embedding.map_formula FirstOrder.Language.ElementaryEmbedding.map_formula
@@ -254,7 +254,7 @@ abbrev elementaryDiagram : L[[M]].Theory :=
 /-- The canonical elementary embedding of an `L`-structure into any model of its elementary diagram
 -/
 @[simps]
-def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type _) [L.Structure N] [L[[M]].Structure N]
+def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L[[M]].Structure N]
     [(lhomWithConstants L M).IsExpansionOn N] [N ⊨ L.elementaryDiagram M] : M ↪ₑ[L] N :=
   ⟨((↑) : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x => by
     refine'
@@ -346,7 +346,7 @@ theorem coe_toElementaryEmbedding (f : M ≃[L] N) :
 end Equiv
 
 @[simp]
-theorem realize_term_substructure {α : Type _} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
+theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
     t.realize ((↑) ∘ v) = (↑(t.realize v) : M) :=
   S.subtype.realize_term t
 #align first_order.language.realize_term_substructure FirstOrder.Language.realize_term_substructure
@@ -354,7 +354,7 @@ theorem realize_term_substructure {α : Type _} {S : L.Substructure M} (v : α �
 namespace Substructure
 
 @[simp]
-theorem realize_boundedFormula_top {α : Type _} {n : ℕ} {φ : L.BoundedFormula α n}
+theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
     φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
   rw [← Substructure.topEquiv.realize_boundedFormula φ]
@@ -362,7 +362,7 @@ theorem realize_boundedFormula_top {α : Type _} {n : ℕ} {φ : L.BoundedFormul
 #align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
 
 @[simp]
-theorem realize_formula_top {α : Type _} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
+theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
     φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
   rw [← Substructure.topEquiv.realize_formula φ]
   simp

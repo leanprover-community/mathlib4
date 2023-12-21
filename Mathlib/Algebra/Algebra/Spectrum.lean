@@ -388,7 +388,7 @@ namespace AlgHom
 
 section CommSemiring
 
-variable {F R A B : Type _} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 variable [AlgHomClass F R A B]
 
@@ -409,7 +409,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type _} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 variable [AlgHomClass F R A R]
 
@@ -430,7 +430,7 @@ end CommRing
 end AlgHom
 
 @[simp]
-theorem AlgEquiv.spectrum_eq {F R A B : Type _} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
+theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
     [Algebra R B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by

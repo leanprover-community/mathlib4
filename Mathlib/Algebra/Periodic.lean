@@ -35,7 +35,7 @@ period, periodic, periodicity, antiperiodic
 -/
 
 
-variable {α β γ : Type _} {f g : α → β} {c c₁ c₂ x : α}
+variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
 open Set BigOperators
 
@@ -93,7 +93,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 #align multiset.periodic_sum Multiset.periodic_sum
 
 @[to_additive]
-theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type _} {f : ι → α → β}
+theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
     (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i in s, f i) c :=
   s.prod_to_list f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
 #align finset.periodic_prod Finset.periodic_prod

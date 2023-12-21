@@ -278,7 +278,7 @@ end
 
 section
 
-variable {R : Type _} [CommRing R] [IsDomain R] {K : Type _}
+variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
 
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
@@ -392,7 +392,7 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
 
 end
 
-theorem _root_.Function.Surjective.valuationRing {R S : Type _} [CommRing R] [IsDomain R]
+theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
     [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
   ⟨fun a b => by

@@ -33,7 +33,7 @@ the main constructions deal with continuous group morphisms.
 
 noncomputable section
 
-variable {M R α β : Type _}
+variable {M R α β : Type*}
 
 section Group
 
@@ -288,7 +288,7 @@ theorem AddMonoidHom.completion_zero :
     simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 #align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
 
-theorem AddMonoidHom.completion_add {γ : Type _} [AddCommGroup γ] [UniformSpace γ]
+theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
     [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
     AddMonoidHom.completion (f + g) (hf.add hg) =
     AddMonoidHom.completion f hf + AddMonoidHom.completion g hg := by

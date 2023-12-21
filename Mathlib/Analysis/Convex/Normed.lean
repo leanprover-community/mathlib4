@@ -26,7 +26,7 @@ We prove the following facts:
 -/
 
 
-variable {ι : Type _} {E : Type _}
+variable {ι : Type*} {E : Type*}
 
 open Metric Set
 

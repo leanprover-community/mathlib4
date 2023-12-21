@@ -298,7 +298,7 @@ end Quotient
 
 See also `Submodule.quotEquivOfEq` and `Ideal.quotientEquivAlgOfEq`.
 -/
-def quotEquivOfEq {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
+def quotEquivOfEq {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ I ≃+* R ⧸ J :=
   { Submodule.quotEquivOfEq I J h with
     map_mul' := by
       rintro ⟨x⟩ ⟨y⟩
@@ -306,13 +306,13 @@ def quotEquivOfEq {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) : R ⧸ 
 #align ideal.quot_equiv_of_eq Ideal.quotEquivOfEq
 
 @[simp]
-theorem quotEquivOfEq_mk {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) (x : R) :
+theorem quotEquivOfEq_mk {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) (x : R) :
     quotEquivOfEq h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
 #align ideal.quot_equiv_of_eq_mk Ideal.quotEquivOfEq_mk
 
 @[simp]
-theorem quotEquivOfEq_symm {R : Type _} [CommRing R] {I J : Ideal R} (h : I = J) :
+theorem quotEquivOfEq_symm {R : Type*} [CommRing R] {I J : Ideal R} (h : I = J) :
     (Ideal.quotEquivOfEq h).symm = Ideal.quotEquivOfEq h.symm := by ext; rfl
 #align ideal.quot_equiv_of_eq_symm Ideal.quotEquivOfEq_symm
 
@@ -375,7 +375,7 @@ noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → 
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/
-theorem map_pi {ι : Type _} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
+theorem map_pi {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
     (f : (ι → R) →ₗ[R] ι' → R) (i : ι') : f x i ∈ I := by
   classical
     cases nonempty_fintype ι

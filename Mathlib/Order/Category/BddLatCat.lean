@@ -33,7 +33,7 @@ structure BddLatCat where
 
 namespace BddLatCat
 
-instance : CoeSort BddLatCat (Type _) :=
+instance : CoeSort BddLatCat (Type*) :=
   ⟨fun X => X.toLat⟩
 
 instance (X : BddLatCat) : Lattice X :=
@@ -42,13 +42,13 @@ instance (X : BddLatCat) : Lattice X :=
 attribute [instance] BddLatCat.isBoundedOrder
 
 /-- Construct a bundled `BddLatCat` from `Lattice` + `BoundedOrder`. -/
-def of (α : Type _) [Lattice α] [BoundedOrder α] : BddLatCat :=
+def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLatCat :=
   -- porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{α := α}⟩
 #align BddLat.of BddLatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddLat.coe_of BddLatCat.coe_of
 

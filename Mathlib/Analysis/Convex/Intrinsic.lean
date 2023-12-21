@@ -50,7 +50,7 @@ open AffineSubspace Set
 
 open scoped Pointwise
 
-variable {𝕜 V W Q P : Type _}
+variable {𝕜 V W Q P : Type*}
 
 section AddTorsor
 
@@ -330,7 +330,7 @@ theorem closure_diff_intrinsicFrontier (s : Set P) :
 
 end NormedAddTorsor
 
-private theorem aux {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
+private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, nonempty_image_iff]
 

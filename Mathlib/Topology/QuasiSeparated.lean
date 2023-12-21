@@ -32,7 +32,7 @@ of compact open subsets are still compact.
 
 open TopologicalSpace
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
 /-- A subset `s` of a topological space is quasi-separated if the intersections of any pairs of
 compact open subsets of `s` are still compact.
@@ -46,19 +46,19 @@ def IsQuasiSeparated (s : Set α) : Prop :=
 subsets are still compact. -/
 -- Porting note: mk_iff currently generates `QuasiSeparatedSpace_iff`. Undesirable capitalization?
 @[mk_iff]
-class QuasiSeparatedSpace (α : Type _) [TopologicalSpace α] : Prop where
+class QuasiSeparatedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- The intersection of two open compact subsets of a quasi-separated space is compact.-/
   inter_isCompact :
     ∀ U V : Set α, IsOpen U → IsCompact U → IsOpen V → IsCompact V → IsCompact (U ∩ V)
 #align quasi_separated_space QuasiSeparatedSpace
 
-theorem isQuasiSeparated_univ_iff {α : Type _} [TopologicalSpace α] :
+theorem isQuasiSeparated_univ_iff {α : Type*} [TopologicalSpace α] :
     IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α := by
   rw [QuasiSeparatedSpace_iff]
   simp [IsQuasiSeparated]
 #align is_quasi_separated_univ_iff isQuasiSeparated_univ_iff
 
-theorem isQuasiSeparated_univ {α : Type _} [TopologicalSpace α] [QuasiSeparatedSpace α] :
+theorem isQuasiSeparated_univ {α : Type*} [TopologicalSpace α] [QuasiSeparatedSpace α] :
     IsQuasiSeparated (Set.univ : Set α) :=
   isQuasiSeparated_univ_iff.mpr inferInstance
 #align is_quasi_separated_univ isQuasiSeparated_univ

@@ -89,7 +89,7 @@ def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
 variable [Group α]
 
 @[to_additive MonoidAddHom.map_add_cyclic]
-theorem MonoidHom.map_cyclic {G : Type _} [Group G] [h : IsCyclic G] (σ : G →* G) :
+theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →* G) :
     ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
   obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
   obtain ⟨m, hm⟩ := hG (σ h)
@@ -416,7 +416,7 @@ theorem IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ}
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
 #align is_cyclic.card_order_of_eq_totient IsCyclic.card_orderOf_eq_totient
 
-theorem IsAddCyclic.card_orderOf_eq_totient {α : Type _} [AddGroup α] [IsAddCyclic α]
+theorem IsAddCyclic.card_orderOf_eq_totient {α : Type*} [AddGroup α] [IsAddCyclic α]
     [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
     (univ.filter fun a : α => addOrderOf a = d).card = totient d := by
   obtain ⟨g, hg⟩ := id ‹IsAddCyclic α›
@@ -451,7 +451,7 @@ section QuotientCenter
 
 open Subgroup
 
-variable {G : Type _} {H : Type _} [Group G] [Group H]
+variable {G : Type*} {H : Type*} [Group G] [Group H]
 
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroup_of_cycle_center_quotient` for the `CommGroup` instance. -/

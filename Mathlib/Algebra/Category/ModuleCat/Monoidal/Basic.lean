@@ -100,8 +100,8 @@ We give them some help by expressing the lemmas first non-categorically, then us
 
 open TensorProduct (assoc map)
 
-private theorem associator_naturality_aux {X₁ X₂ X₃ : Type _} [AddCommMonoid X₁] [AddCommMonoid X₂]
-    [AddCommMonoid X₃] [Module R X₁] [Module R X₂] [Module R X₃] {Y₁ Y₂ Y₃ : Type _}
+private theorem associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂]
+    [AddCommMonoid X₃] [Module R X₁] [Module R X₂] [Module R X₃] {Y₁ Y₂ Y₃ : Type*}
     [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃] [Module R Y₁] [Module R Y₂]
     [Module R Y₃] (f₁ : X₁ →ₗ[R] Y₁) (f₂ : X₂ →ₗ[R] Y₂) (f₃ : X₃ →ₗ[R] Y₃) :
     ↑(assoc R Y₁ Y₂ Y₃) ∘ₗ map (map f₁ f₂) f₃ = map f₁ (map f₂ f₃) ∘ₗ ↑(assoc R X₁ X₂ X₃) := by
@@ -113,7 +113,7 @@ private theorem associator_naturality_aux {X₁ X₂ X₃ : Type _} [AddCommMono
 
 variable (R)
 
-private theorem pentagon_aux (W X Y Z : Type _) [AddCommMonoid W] [AddCommMonoid X]
+private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid X]
     [AddCommMonoid Y] [AddCommMonoid Z] [Module R W] [Module R X] [Module R Y] [Module R Z] :
     ((map (1 : W →ₗ[R] W) (assoc R X Y Z).toLinearMap).comp
             (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp

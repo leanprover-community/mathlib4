@@ -46,10 +46,10 @@ In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`
 -/
 
 
-variable {X : Type _}
+variable {X : Type*}
 
 /-- The OnePoint extension of an arbitrary topological space `X` -/
-def OnePoint (X : Type _) :=
+def OnePoint (X : Type*) :=
   Option X
 #align alexandroff OnePoint
 
@@ -104,7 +104,7 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
 @[elab_as_elim]
-protected def rec {C : OnePoint X → Sort _} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
+protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
   | ∞ => h₁
   | (x : X) => h₂ x
@@ -354,12 +354,12 @@ theorem ultrafilter_le_nhds_infty {f : Ultrafilter (OnePoint X)} :
     Ultrafilter.compl_mem_iff_not_mem]
 #align alexandroff.ultrafilter_le_nhds_infty OnePoint.ultrafilter_le_nhds_infty
 
-theorem tendsto_nhds_infty' {α : Type _} {f : OnePoint X → α} {l : Filter α} :
+theorem tendsto_nhds_infty' {α : Type*} {f : OnePoint X → α} {l : Filter α} :
     Tendsto f (𝓝 ∞) l ↔ Tendsto f (pure ∞) l ∧ Tendsto (f ∘ (↑)) (coclosedCompact X) l := by
   simp [nhds_infty_eq, and_comm]
 #align alexandroff.tendsto_nhds_infty' OnePoint.tendsto_nhds_infty'
 
-theorem tendsto_nhds_infty {α : Type _} {f : OnePoint X → α} {l : Filter α} :
+theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} :
     Tendsto f (𝓝 ∞) l ↔
       ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
@@ -367,18 +367,18 @@ theorem tendsto_nhds_infty {α : Type _} {f : OnePoint X → α} {l : Filter α}
       and_assoc, exists_prop]
 #align alexandroff.tendsto_nhds_infty OnePoint.tendsto_nhds_infty
 
-theorem continuousAt_infty' {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} :
+theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔ Tendsto (f ∘ (↑)) (coclosedCompact X) (𝓝 (f ∞)) :=
   tendsto_nhds_infty'.trans <| and_iff_right (tendsto_pure_nhds _ _)
 #align alexandroff.continuous_at_infty' OnePoint.continuousAt_infty'
 
-theorem continuousAt_infty {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} :
+theorem continuousAt_infty {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔
       ∀ s ∈ 𝓝 (f ∞), ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   continuousAt_infty'.trans <| by simp only [hasBasis_coclosedCompact.tendsto_left_iff, and_assoc]
 #align alexandroff.continuous_at_infty OnePoint.continuousAt_infty
 
-theorem continuousAt_coe {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} {x : X} :
+theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} {x : X} :
     ContinuousAt f x ↔ ContinuousAt (f ∘ (↑)) x := by
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe OnePoint.continuousAt_coe

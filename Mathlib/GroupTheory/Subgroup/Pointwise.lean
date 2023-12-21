@@ -31,7 +31,7 @@ open Set
 
 open Pointwise
 
-variable {α G A S : Type _}
+variable {α G A S : Type*}
 
 @[to_additive (attr := simp)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
@@ -110,7 +110,7 @@ then it holds for all elements of the supremum of `S`. -/
 @[to_additive (attr := elab_as_elim) " An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `S`. "]
-theorem iSup_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
+theorem iSup_induction {ι : Sort*} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
     (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
   refine' closure_induction'' hx (fun x hx => _) (fun x hx => _) h1 hmul
@@ -123,7 +123,7 @@ theorem iSup_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x
 
 /-- A dependent version of `Subgroup.iSup_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.iSup_induction`. "]
-theorem iSup_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_iSup_of_mem i hx)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
@@ -380,7 +380,7 @@ theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (
   rfl
 #align subgroup.singleton_mul_subgroup Subgroup.singleton_mul_subgroup
 
-theorem Normal.conjAct {G : Type _} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
+theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
     g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
     fun _ => map_le_iff_le_comap.2 fun _ h => hH.conj_mem _ h _

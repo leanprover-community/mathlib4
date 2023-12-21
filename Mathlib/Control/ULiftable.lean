@@ -37,7 +37,7 @@ universe polymorphism functor
 
 universe u₀ u₁ v₀ v₁ v₂ w w₀ w₁
 
-variable {s : Type u₀} {s' : Type u₁} {r r' w w' : Type _}
+variable {s : Type u₀} {s' : Type u₁} {r r' w w' : Type*}
 
 /-- Given a universe polymorphic type family `M.{u} : Type u₁ → Type
 u₂`, this class convert between instantiations, from

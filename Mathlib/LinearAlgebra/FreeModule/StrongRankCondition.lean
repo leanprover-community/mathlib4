@@ -33,7 +33,7 @@ vector `(0,...,0,1)` gives `a₀`, contradiction.
 -/
 
 
-variable (R : Type _) [CommRing R] [Nontrivial R]
+variable (R : Type*) [CommRing R] [Nontrivial R]
 
 open Polynomial Function Fin LinearMap
 

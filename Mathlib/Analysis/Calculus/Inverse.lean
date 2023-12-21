@@ -64,15 +64,15 @@ open scoped Topology Classical NNReal
 
 noncomputable section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {ε : ℝ}
 
@@ -467,8 +467,8 @@ def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
 
 /-- In a real vector space, a function `f` that approximates a linear equivalence on a subset `s`
 can be extended to a homeomorphism of the whole space. -/
-theorem exists_homeomorph_extension {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {s : Set E}
+theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {s : Set E}
     {f : E → F} {f' : E ≃L[ℝ] F} {c : ℝ≥0} (hf : ApproximatesLinearOn f (f' : E →L[ℝ] F) s c)
     (hc : Subsingleton E ∨ lipschitzExtensionConstant F * c < ‖(f'.symm : F →L[ℝ] E)‖₊⁻¹) :
     ∃ g : E ≃ₜ F, EqOn f g s := by
@@ -734,11 +734,11 @@ theorem open_map_of_strict_deriv [CompleteSpace 𝕜] {f f' : 𝕜 → 𝕜}
 
 namespace ContDiffAt
 
-variable {𝕂 : Type _} [IsROrC 𝕂]
+variable {𝕂 : Type*} [IsROrC 𝕂]
 
-variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
 
-variable {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
+variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
 
 variable [CompleteSpace E'] (f : E' → F') {f' : E' ≃L[𝕂] F'} {a : E'}
 

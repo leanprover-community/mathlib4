@@ -24,7 +24,7 @@ several basic results on it.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Nat Part
 
@@ -582,7 +582,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
     cases' not_and_or.1 h with h h <;> simp [eq_top_iff_not_finite.2 h]
 #align multiplicity.mul multiplicity.mul
 
-theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
+theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -625,7 +625,7 @@ end CancelCommMonoidWithZero
 
 section Valuation
 
-variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
+variable {R : Type*} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 /-- `multiplicity` of a prime in an integral domain as an additive valuation to `PartENat`. -/
 noncomputable def addValuation (hp : Prime p) : AddValuation R PartENat :=

@@ -21,7 +21,7 @@ presheaves.
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 -- Porting note: we used to have:
 -- local attribute [tidy] tactic.auto_cases_opens
@@ -64,7 +64,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) (Type _) where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
 
 -- porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -501,7 +501,7 @@ variable {C}
 
 namespace CategoryTheory
 
-variable {D : Type _} [Category D]
+variable {D : Type*} [Category D]
 
 attribute [local simp] Presheaf.pushforwardObj
 

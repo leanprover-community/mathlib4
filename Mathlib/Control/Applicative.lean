@@ -108,7 +108,7 @@ theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$>
 #align functor.comp.pure_seq_eq_map Functor.Comp.pure_seq_eq_map
 
 -- TODO: the first two results were handled by `control_laws_tac` in mathlib3
-instance : LawfulApplicative (Comp F G) where
+instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
   seqLeft_eq := by intros; rfl
   seqRight_eq := by intros; rfl
   pure_seq := @Comp.pure_seq_eq_map F G _ _ _ _
@@ -120,13 +120,13 @@ instance : LawfulApplicative (Comp F G) where
 
 theorem applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
     @instApplicativeComp Id F _ _ = AF :=
-  @Applicative.ext F _ _ (@instLawfulApplicativeCompInstApplicativeComp Id F _ _ _ _) _
+  @Applicative.ext F _ _ (@instLawfulApplicativeComp Id F _ _ _ _) _
     (fun _ => rfl) (fun _ _ => rfl)
 #align functor.comp.applicative_id_comp Functor.Comp.applicative_id_comp
 
 theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
     @Comp.instApplicativeComp F Id _ _ = AF :=
-  @Applicative.ext F _ _ (@Comp.instLawfulApplicativeCompInstApplicativeComp F Id _ _ _ _) _
+  @Applicative.ext F _ _ (@Comp.instLawfulApplicativeComp F Id _ _ _ _) _
     (fun _ => rfl) (fun f x => show id <$> f <*> x = f <*> x by rw [id_map])
 #align functor.comp.applicative_comp_id Functor.Comp.applicative_comp_id
 
@@ -134,7 +134,7 @@ open CommApplicative
 
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) := by
-  refine' { @instLawfulApplicativeCompInstApplicativeComp f g _ _ _ _ with .. }
+  refine' { @instLawfulApplicativeComp f g _ _ _ _ with .. }
   intros
   simp! [map, Seq.seq, functor_norm]
   rw [commutative_map]

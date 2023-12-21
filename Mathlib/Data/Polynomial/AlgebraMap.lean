@@ -27,7 +27,7 @@ namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B' : Type _} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B' : Type*} {a b : R} {n : ℕ}
 
 variable [CommSemiring A'] [Semiring B']
 
@@ -115,7 +115,7 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
       simp [coeff_C]⟩⟩
 
 @[simp]
-theorem algHom_eval₂_algebraMap {R A B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
+theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
@@ -123,7 +123,7 @@ theorem algHom_eval₂_algebraMap {R A B : Type _} [CommSemiring R] [Semiring A]
 #align polynomial.alg_hom_eval₂_algebra_map Polynomial.algHom_eval₂_algebraMap
 
 @[simp]
-theorem eval₂_algebraMap_X {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
+theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
     (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   simp only [eval₂_eq_sum, sum_def]
@@ -134,13 +134,13 @@ set_option linter.uppercaseLean3 false in
 
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
 @[simp]
-theorem ringHom_eval₂_cast_int_ringHom {R S : Type _} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
+theorem ringHom_eval₂_cast_int_ringHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
     (r : R) : f (eval₂ (Int.castRingHom R) r p) = eval₂ (Int.castRingHom S) (f r) p :=
   algHom_eval₂_algebraMap p f.toIntAlgHom r
 #align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_cast_int_ringHom
 
 @[simp]
-theorem eval₂_int_castRingHom_X {R : Type _} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
+theorem eval₂_int_castRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
 set_option linter.uppercaseLean3 false in
@@ -154,7 +154,7 @@ variable [CommSemiring R] {p q : R[X]}
 
 variable [Semiring A] [Algebra R A]
 
-variable {B : Type _} [Semiring B] [Algebra R B]
+variable {B : Type*} [Semiring B] [Algebra R B]
 
 variable (x : A)
 
@@ -251,7 +251,7 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
 #align polynomial.aeval_mul Polynomial.aeval_mul
 
-theorem aeval_comp {A : Type _} [CommSemiring A] [Algebra R A] (x : A) :
+theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp (algebraMap R A)
 #align polynomial.aeval_comp Polynomial.aeval_comp
@@ -275,7 +275,7 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 #align polynomial.eval_unique Polynomial.eval_unique
 
-theorem aeval_algHom_apply {F : Type _} [AlgHomClass F R A B] (f : F) (x : A) (p : R[X]) :
+theorem aeval_algHom_apply {F : Type*} [AlgHomClass F R A B] (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) := by
   refine' Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => _)
     (by simp [AlgHomClass.commutes])
@@ -303,13 +303,13 @@ theorem coe_aeval_eq_evalRingHom (x : R) :
 #align polynomial.coe_aeval_eq_eval_ring_hom Polynomial.coe_aeval_eq_evalRingHom
 
 @[simp]
-theorem aeval_fn_apply {X : Type _} (g : R[X]) (f : X → R) (x : X) :
+theorem aeval_fn_apply {X : Type*} (g : R[X]) (f : X → R) (x : X) :
     ((aeval f) g) x = aeval (f x) g :=
   (aeval_algHom_apply (Pi.evalAlgHom R (fun _ => R) x) f g).symm
 #align polynomial.aeval_fn_apply Polynomial.aeval_fn_apply
 
 @[norm_cast]
-theorem aeval_subalgebra_coe (g : R[X]) {A : Type _} [Semiring A] [Algebra R A] (s : Subalgebra R A)
+theorem aeval_subalgebra_coe (g : R[X]) {A : Type*} [Semiring A] [Algebra R A] (s : Subalgebra R A)
     (f : s) : (aeval f g : A) = aeval (f : A) g :=
   (aeval_algHom_apply s.val f g).symm
 #align polynomial.aeval_subalgebra_coe Polynomial.aeval_subalgebra_coe
@@ -322,7 +322,7 @@ theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeva
   simp [aeval_def]
 #align polynomial.coeff_zero_eq_aeval_zero' Polynomial.coeff_zero_eq_aeval_zero'
 
-theorem map_aeval_eq_aeval_map {S T U : Type _} [CommSemiring S] [CommSemiring T] [Semiring U]
+theorem map_aeval_eq_aeval_map {S T U : Type*} [CommSemiring S] [CommSemiring T] [Semiring U]
     [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
@@ -507,7 +507,7 @@ set_option linter.uppercaseLean3 false in
 
 end Ring
 
-theorem aeval_endomorphism {M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
+theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
   exact (LinearMap.applyₗ v).map_sum

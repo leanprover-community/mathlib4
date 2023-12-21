@@ -245,11 +245,11 @@ theorem Subsingleton.countable {s : Set α} (hs : s.Subsingleton) : s.Countable 
   hs.finite.countable
 #align set.subsingleton.countable Set.Subsingleton.countable
 
-theorem countable_isTop (α : Type _) [PartialOrder α] : { x : α | IsTop x }.Countable :=
+theorem countable_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Countable :=
   (finite_isTop α).countable
 #align set.countable_is_top Set.countable_isTop
 
-theorem countable_isBot (α : Type _) [PartialOrder α] : { x : α | IsBot x }.Countable :=
+theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Countable :=
   (finite_isBot α).countable
 #align set.countable_is_bot Set.countable_isBot
 
@@ -264,13 +264,13 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   exact mem_range_self _
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 
-theorem countable_univ_pi {π : α → Type _} [Finite α] {s : ∀ a, Set (π a)}
+theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
   haveI := fun a => (hs a).to_subtype
   (Countable.of_equiv _ (Equiv.Set.univPi s).symm).to_set
 #align set.countable_univ_pi Set.countable_univ_pi
 
-theorem countable_pi {π : α → Type _} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
+theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
     { f : ∀ a, π a | ∀ a, f a ∈ s a }.Countable := by
   simpa only [← mem_univ_pi] using countable_univ_pi hs
 #align set.countable_pi Set.countable_pi

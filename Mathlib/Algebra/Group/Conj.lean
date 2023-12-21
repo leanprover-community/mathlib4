@@ -49,7 +49,7 @@ theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
 #align is_conj.trans IsConj.trans
 
 @[simp]
-theorem isConj_iff_eq {α : Type _} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
+theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
     exact hc, fun h => by rw [h]⟩
@@ -144,7 +144,7 @@ namespace IsConj
 /- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
-protected def setoid (α : Type _) [Monoid α] : Setoid α where
+protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
 #align is_conj.setoid IsConj.setoid
@@ -154,7 +154,7 @@ end IsConj
 attribute [local instance] IsConj.setoid
 
 /-- The quotient type of conjugacy classes of a group. -/
-def ConjClasses (α : Type _) [Monoid α] : Type _ :=
+def ConjClasses (α : Type*) [Monoid α] : Type _ :=
   Quotient (IsConj.setoid α)
 #align conj_classes ConjClasses
 
@@ -165,7 +165,7 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
-protected def mk {α : Type _} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
+protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
 #align conj_classes.mk ConjClasses.mk
 
 instance : Inhabited (ConjClasses α) := ⟨⟦1⟧⟩

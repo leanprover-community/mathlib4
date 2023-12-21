@@ -44,7 +44,7 @@ Upgrade `Equiv.sigma_congr_left`, `Equiv.sigma_congr`, `Equiv.sigma_assoc`,
 
 namespace Sigma
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 /-! ### Disjoint sum of orders on `Sigma` -/
 

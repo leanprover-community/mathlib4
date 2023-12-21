@@ -38,7 +38,7 @@ likely to be very useful.
 -/
 
 
-variable {k G : Type _} [Semiring k]
+variable {k G : Type*} [Semiring k]
 
 namespace AddMonoidAlgebra
 

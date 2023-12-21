@@ -35,19 +35,19 @@ set_option linter.uppercaseLean3 false
 
 namespace LatCat
 
-instance : CoeSort LatCat (Type _) :=
+instance : CoeSort LatCat (Type*) :=
   Bundled.coeSort
 
 instance (X : LatCat) : Lattice X :=
   X.str
 
 /-- Construct a bundled `LatCat` from a `Lattice`. -/
-def of (α : Type _) [Lattice α] : LatCat :=
+def of (α : Type*) [Lattice α] : LatCat :=
   Bundled.of α
 #align Lat.of LatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [Lattice α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
   rfl
 #align Lat.coe_of LatCat.coe_of
 

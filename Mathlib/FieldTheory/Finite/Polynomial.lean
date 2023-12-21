@@ -18,7 +18,7 @@ import Mathlib.FieldTheory.Finite.Basic
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 /-- A polynomial over the integers is divisible by `n : ℕ`
 if and only if it is zero over `ZMod n`. -/
@@ -56,7 +56,7 @@ open scoped BigOperators Classical
 
 open Set LinearMap Submodule
 
-variable {K : Type _} {σ : Type _}
+variable {K : Type*} {σ : Type*}
 
 section Indicator
 

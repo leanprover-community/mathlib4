@@ -53,7 +53,7 @@ kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
 
 
-variable (R : Type _) {S : Type _} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 

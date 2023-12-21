@@ -27,19 +27,19 @@ def CompleteLatCat :=
 
 namespace CompleteLatCat
 
-instance : CoeSort CompleteLatCat (Type _) :=
+instance : CoeSort CompleteLatCat (Type*) :=
   Bundled.coeSort
 
 instance (X : CompleteLatCat) : CompleteLattice X :=
   X.str
 
 /-- Construct a bundled `CompleteLatCat` from a `CompleteLattice`. -/
-def of (α : Type _) [CompleteLattice α] : CompleteLatCat :=
+def of (α : Type*) [CompleteLattice α] : CompleteLatCat :=
   Bundled.of α
 #align CompleteLat.of CompleteLatCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [CompleteLattice α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
   rfl
 #align CompleteLat.coe_of CompleteLatCat.coe_of
 

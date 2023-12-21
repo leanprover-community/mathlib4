@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable (C D : Type _) [Category C] [Category D]
+variable (C D : Type*) [Category C] [Category D]
 
 /-- A short complex in a category `C` with zero morphisms is the datum
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that

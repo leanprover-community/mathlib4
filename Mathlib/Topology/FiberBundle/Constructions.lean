@@ -39,7 +39,7 @@ namespace Bundle
 
 namespace Trivial
 
-variable (B : Type _) (F : Type _)
+variable (B : Type*) (F : Type*)
 
 -- Porting note: Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
@@ -99,11 +99,11 @@ end Bundle
 
 section Prod
 
-variable {B : Type _}
+variable {B : Type*}
 
 section Defs
 
-variable (F₁ : Type _) (E₁ : B → Type _) (F₂ : Type _) (E₂ : B → Type _)
+variable (F₁ : Type*) (E₁ : B → Type*) (F₂ : Type*) (E₂ : B → Type*)
 
 variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
@@ -127,8 +127,8 @@ end Defs
 
 open FiberBundle
 
-variable [TopologicalSpace B] (F₁ : Type _) [TopologicalSpace F₁] (E₁ : B → Type _)
-  [TopologicalSpace (TotalSpace F₁ E₁)] (F₂ : Type _) [TopologicalSpace F₂] (E₂ : B → Type _)
+variable [TopologicalSpace B] (F₁ : Type*) [TopologicalSpace F₁] (E₁ : B → Type*)
+  [TopologicalSpace (TotalSpace F₁ E₁)] (F₂ : Type*) [TopologicalSpace F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
 namespace Trivialization

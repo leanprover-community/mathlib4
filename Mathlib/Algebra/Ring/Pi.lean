@@ -142,15 +142,15 @@ def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring
 
 /-- `Function.const` as a `NonUnitalRingHom`. -/
 @[simps]
-def Pi.constNonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring β] : β →ₙ+* α → β :=
+def Pi.constNonUnitalRingHom (α β : Type*) [NonUnitalNonAssocSemiring β] : β →ₙ+* α → β :=
   { Pi.nonUnitalRingHom fun _ => NonUnitalRingHom.id β with toFun := Function.const _ }
 #align pi.const_non_unital_ring_hom Pi.constNonUnitalRingHom
 
 /-- Non-unital ring homomorphism between the function spaces `I → α` and `I → β`, induced by a
 non-unital ring homomorphism `f` between `α` and `β`. -/
 @[simps]
-protected def NonUnitalRingHom.compLeft {α β : Type _} [NonUnitalNonAssocSemiring α]
-    [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type _) : (I → α) →ₙ+* I → β :=
+protected def NonUnitalRingHom.compLeft {α β : Type*} [NonUnitalNonAssocSemiring α]
+    [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type*) : (I → α) →ₙ+* I → β :=
   { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
 #align non_unital_ring_hom.comp_left NonUnitalRingHom.compLeft
 
@@ -172,7 +172,7 @@ def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : 
 
 /-- `Function.const` as a `RingHom`. -/
 @[simps]
-def Pi.constRingHom (α β : Type _) [NonAssocSemiring β] : β →+* α → β :=
+def Pi.constRingHom (α β : Type*) [NonAssocSemiring β] : β →+* α → β :=
   { Pi.ringHom fun _ => RingHom.id β with toFun := Function.const _ }
 #align pi.const_ring_hom Pi.constRingHom
 #align pi.const_ring_hom_apply Pi.constRingHom_apply
@@ -180,8 +180,8 @@ def Pi.constRingHom (α β : Type _) [NonAssocSemiring β] : β →+* α → β 
 /-- Ring homomorphism between the function spaces `I → α` and `I → β`, induced by a ring
 homomorphism `f` between `α` and `β`. -/
 @[simps]
-protected def RingHom.compLeft {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β]
-    (f : α →+* β) (I : Type _) : (I → α) →+* I → β :=
+protected def RingHom.compLeft {α β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) (I : Type*) : (I → α) →+* I → β :=
   { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
 #align ring_hom.comp_left RingHom.compLeft
 #align ring_hom.comp_left_apply RingHom.compLeft_apply

@@ -31,7 +31,7 @@ open Finset Finsupp Function
 
 open BigOperators Classical Pointwise
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 

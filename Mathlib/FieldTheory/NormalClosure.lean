@@ -18,7 +18,7 @@ contains the image of every `F`-algebra embedding `K →ₐ[F] L`.
 
 open BigOperators IntermediateField IsScalarTower Polynomial
 
-variable (F K L : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L] [Algebra K L]
+variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L] [Algebra K L]
   [IsScalarTower F K L]
 
 /-- The normal closure of `K` in `L`. -/

@@ -18,7 +18,7 @@ beyond those needed for the basic definition.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section DivisionRing
 

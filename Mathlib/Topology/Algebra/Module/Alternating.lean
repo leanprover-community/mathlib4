@@ -32,7 +32,7 @@ open scoped BigOperators
   `f (update m i (x + y)) = f (update m i x) + f (update m i y)`;
 - alternating : `f v = 0` whenever `v` has two equal coordinates.
 -/
-structure ContinuousAlternatingMap (R M N ι : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
+structure ContinuousAlternatingMap (R M N ι : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
     ContinuousMultilinearMap R (fun _ : ι => M) N, AlternatingMap R M N ι where
 
@@ -48,7 +48,7 @@ namespace ContinuousAlternatingMap
 
 section Semiring
 
-variable {R M M' N N' ι : Type _} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+variable {R M M' N N' ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
   [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N] [Module R N]
   [TopologicalSpace N] [AddCommMonoid N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
   (f g : M [Λ^ι]→L[R] N)
@@ -156,7 +156,7 @@ theorem toAlternatingMap_zero : (0 : M [Λ^ι]→L[R] N).toAlternatingMap = 0 :=
 
 section SMul
 
-variable {R' R'' A : Type _} [Monoid R'] [Monoid R''] [Semiring A] [Module A M] [Module A N]
+variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [Module A M] [Module A N]
   [DistribMulAction R' N] [ContinuousConstSMul R' N] [SMulCommClass A R' N] [DistribMulAction R'' N]
   [ContinuousConstSMul R'' N] [SMulCommClass A R'' N]
 
@@ -226,7 +226,7 @@ def applyAddHom (v : ι → M) : M [Λ^ι]→L[R] N →+ N :=
   ⟨⟨fun f => f v, rfl⟩, fun _ _ => rfl⟩
 
 @[simp]
-theorem sum_apply {α : Type _} (f : α → M [Λ^ι]→L[R] N) (m : ι → M) {s : Finset α} :
+theorem sum_apply {α : Type*} (f : α → M [Λ^ι]→L[R] N) (m : ι → M) {s : Finset α} :
     (∑ a in s, f a) m = ∑ a in s, f a m :=
   (applyAddHom m).map_sum f s
 
@@ -251,18 +251,18 @@ def prod (f : M [Λ^ι]→L[R] N) (g : M [Λ^ι]→L[R] N') : M [Λ^ι]→L[R] (
 
 /-- Combine a family of continuous alternating maps with the same domain and codomains `M' i` into a
 continuous alternating map taking values in the space of functions `Π i, M' i`. -/
-def pi {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
+def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
     [∀ i, Module R (M' i)] (f : ∀ i, M [Λ^ι]→L[R] M' i) : M [Λ^ι]→L[R] ∀ i, M' i :=
   ⟨ContinuousMultilinearMap.pi fun i => (f i).1,
     (AlternatingMap.pi fun i => (f i).toAlternatingMap).map_eq_zero_of_eq⟩
 
 @[simp]
-theorem coe_pi {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
+theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, M [Λ^ι]→L[R] M' i) :
     ⇑(pi f) = fun m j => f j m :=
   rfl
 
-theorem pi_apply {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
+theorem pi_apply {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, M [Λ^ι]→L[R] M' i) (m : ι → M)
     (j : ι') : pi f m j = f j m :=
   rfl
@@ -352,7 +352,7 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr (e : M ≃L[R] M'
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
-def piEquiv {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [∀ i, TopologicalSpace (N i)]
+def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, TopologicalSpace (N i)]
     [∀ i, Module R (N i)] : (∀ i, M [Λ^ι]→L[R] N i) ≃ M [Λ^ι]→L[R] ∀ i, N i where
   toFun := pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] N i).compContinuousAlternatingMap f
@@ -401,7 +401,7 @@ section ApplySum
 
 open Fintype Finset
 
-variable {α : ι → Type _} [Fintype ι] [DecidableEq ι] (g' : ∀ i, α i → M) (A : ∀ i, Finset (α i))
+variable {α : ι → Type*} [Fintype ι] [DecidableEq ι] (g' : ∀ i, α i → M) (A : ∀ i, Finset (α i))
 
 /-- If `f` is continuous alternating, then `f (Σ_{j₁ ∈ A₁} g₁ j₁, ..., Σ_{jₙ ∈ Aₙ} gₙ jₙ)` is the
 sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions with `r 1 ∈ A₁`, ...,
@@ -423,7 +423,7 @@ end ApplySum
 section RestrictScalar
 
 variable (R)
-variable {A : Type _} [Semiring A] [SMul R A] [Module A M] [Module A N] [IsScalarTower R A M]
+variable {A : Type*} [Semiring A] [SMul R A] [Module A M] [Module A N] [IsScalarTower R A M]
   [IsScalarTower R A N]
 
 /-- Reinterpret a continuous `A`-alternating map as a continuous `R`-alternating map, if `A` is an
@@ -441,7 +441,7 @@ end Semiring
 
 section Ring
 
-variable {R M M' N N' ι : Type _} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
+variable {R M M' N N' ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
   [AddCommGroup M'] [Module R M'] [TopologicalSpace M'] [AddCommGroup N] [Module R N]
   [TopologicalSpace N] [AddCommGroup N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
   (f g : M [Λ^ι]→L[R] N)
@@ -483,7 +483,7 @@ end Ring
 
 section CommSemiring
 
-variable {R M M' N N' ι : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M M' N N' ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [TopologicalSpace M] [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N]
   [Module R N] [TopologicalSpace N] [AddCommMonoid N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
   (f g : M [Λ^ι]→L[R] N)
@@ -502,7 +502,7 @@ end CommSemiring
 
 section DistribMulAction
 
-variable {R A M N ι : Type _} [Monoid R] [Semiring A] [AddCommMonoid M] [AddCommMonoid N]
+variable {R A M N ι : Type*} [Monoid R] [Semiring A] [AddCommMonoid M] [AddCommMonoid N]
   [TopologicalSpace M] [TopologicalSpace N] [Module A M] [Module A N] [DistribMulAction R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
@@ -514,7 +514,7 @@ end DistribMulAction
 
 section Module
 
-variable {R A M N ι : Type _} [Semiring R] [Semiring A] [AddCommMonoid M] [AddCommMonoid N]
+variable {R A M N ι : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [AddCommMonoid N]
   [TopologicalSpace M] [TopologicalSpace N] [ContinuousAdd N] [Module A M] [Module A N] [Module R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
@@ -535,7 +535,7 @@ def toContinuousMultilinearMapLinear :
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]
-def piLinearEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
+def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
     (∀ i, M [Λ^ι]→L[A] M' i) ≃ₗ[R] M [Λ^ι]→L[A] ∀ i, M' i :=
@@ -547,7 +547,7 @@ end Module
 
 section SmulRight
 
-variable {R A M N ι : Type _} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+variable {R A M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
   (f : M [Λ^ι]→L[R] R) (z : N)
 
@@ -561,7 +561,7 @@ end SmulRight
 
 section Semiring
 
-variable {R M M' N N' ι : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M M' N N' ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [TopologicalSpace M] [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N]
   [Module R N] [TopologicalSpace N] [ContinuousAdd N] [ContinuousConstSMul R N] [AddCommMonoid N']
   [Module R N'] [TopologicalSpace N'] [ContinuousAdd N'] [ContinuousConstSMul R N']
@@ -587,7 +587,7 @@ end ContinuousAlternatingMap
 
 namespace ContinuousMultilinearMap
 
-variable {R M N ι : Type _} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
   [AddCommGroup N] [Module R N] [TopologicalSpace N] [TopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] (f g : ContinuousMultilinearMap R (fun _ : ι => M) N)
 

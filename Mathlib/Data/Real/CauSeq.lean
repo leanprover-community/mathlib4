@@ -71,7 +71,7 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
     lt_of_le_of_lt (abv_add abv _ _) this
 #align rat_mul_continuous_lemma rat_mul_continuous_lemma
 
-theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
+theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
     {ε K : α} (ε0 : 0 < ε) (K0 : 0 < K) :
     ∃ δ > 0, ∀ {a b : β}, K ≤ abv a → K ≤ abv b → abv (a - b) < δ → abv (a⁻¹ - b⁻¹) < ε := by
   refine' ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, fun {a b} ha hb h => _⟩
@@ -88,7 +88,7 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
 end
 
 /-- A sequence is Cauchy if the distance between its entries tends to zero. -/
-def IsCauSeq {α : Type _} [LinearOrderedField α] {β : Type _} [Ring β] (abv : β → α) (f : ℕ → β) :
+def IsCauSeq {α : Type*} [LinearOrderedField α] {β : Type*} [Ring β] (abv : β → α) (f : ℕ → β) :
     Prop :=
   ∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j - f i) < ε
 #align is_cau_seq IsCauSeq
@@ -125,7 +125,7 @@ end IsCauSeq
 
 /-- `CauSeq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
 function `abv`. -/
-def CauSeq {α : Type _} [LinearOrderedField α] (β : Type _) [Ring β] (abv : β → α) : Type _ :=
+def CauSeq {α : Type*} [LinearOrderedField α] (β : Type*) [Ring β] (abv : β → α) : Type _ :=
   { f : ℕ → β // IsCauSeq abv f }
 #align cau_seq CauSeq
 
@@ -403,7 +403,7 @@ instance ring : Ring (CauSeq β abv) :=
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
 
-instance {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
+instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
     mul_comm := fun a b => ext $ fun n => by simp [mul_left_comm, mul_comm] }
 

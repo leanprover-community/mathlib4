@@ -29,7 +29,7 @@ This file defines intersecting families and proves their basic properties.
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Set
 

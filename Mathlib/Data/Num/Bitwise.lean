@@ -340,7 +340,7 @@ open SNum
 
 /-- A dependent induction principle for `NzsNum`, with base cases
       `0 : SNum` and `(-1) : SNum`. -/
-def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
+def drec' {C : SNum → Sort*} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
   | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
   | bit b p => s b p (drec' z s p)
@@ -366,7 +366,7 @@ def tail : SNum → SNum
 #align snum.tail SNum.tail
 
 /-- A dependent induction principle for `SNum` which avoids relying on `NzsNum`. -/
-def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) : ∀ p, C p
+def drec' {C : SNum → Sort*} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) : ∀ p, C p
   | zero b => z b
   | nz p => p.drec' z s
 #align snum.drec' SNum.drec'

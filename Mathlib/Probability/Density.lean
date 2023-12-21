@@ -59,7 +59,7 @@ noncomputable section
 
 namespace MeasureTheory
 
-variable {Ω E : Type _} [MeasurableSpace E]
+variable {Ω E : Type*} [MeasurableSpace E]
 
 /-- A random variable `X : Ω → E` is said to `HasPDF` with respect to the measure `ℙ` on `Ω` and
 `μ` on `E` if there exists a measurable function `f` such that the push-forward measure of `ℙ`
@@ -237,7 +237,7 @@ theorem hasPDF_iff_of_measurable {X : Ω → E} (hX : Measurable X) :
 
 section
 
-variable {F : Type _} [MeasurableSpace F] {ν : Measure F}
+variable {F : Type*} [MeasurableSpace F] {ν : Measure F}
 
 /-- A random variable that `HasPDF` transformed under a `QuasiMeasurePreserving`
 map also `HasPDF` if `(map g (map X ℙ)).HaveLebesgueDecomposition μ`.

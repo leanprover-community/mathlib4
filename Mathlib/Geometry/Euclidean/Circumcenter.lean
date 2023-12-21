@@ -40,7 +40,7 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineSubspace
@@ -187,7 +187,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
 in the affine subspace they span. -/
-theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type _} [hne : Nonempty ι] [Finite ι]
+theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonempty ι] [Finite ι]
     {p : ι → P} (ha : AffineIndependent ℝ p) :
     ∃! cs : Sphere P, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ (cs : Set P) := by
   cases nonempty_fintype ι
@@ -245,7 +245,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The circumsphere of a simplex. -/
@@ -534,7 +534,7 @@ def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex 
 #align affine.simplex.point_index_embedding Affine.Simplex.pointIndexEmbedding
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
-theorem sum_pointsWithCircumcenter {α : Type _} [AddCommMonoid α] {n : ℕ}
+theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
     (f : PointsWithCircumcenterIndex n → α) :
     ∑ i, f i = (∑ i : Fin (n + 1), f (point_index i)) + f circumcenter_index := by
   have h : univ = insert circumcenter_index (univ.map (pointIndexEmbedding n)) := by
@@ -723,7 +723,7 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Given a nonempty affine subspace, whose direction is complete,

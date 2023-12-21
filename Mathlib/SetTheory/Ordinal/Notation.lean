@@ -1334,7 +1334,7 @@ def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
   inductive definition, which can't actually be defined this
   way due to conflicting dependencies. -/
 @[elab_as_elim]
-def recOn {C : NONote → Sort _} (o : NONote) (H0 : C 0)
+def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
   cases' o with o h; induction' o with e n a IHe IHa
   · exact H0

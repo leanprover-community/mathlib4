@@ -36,7 +36,7 @@ namespace GeneralizedContinuedFraction
 /- ./././Mathport/Syntax/Translate/Command.lean:230:11: unsupported: unusual advanced open style -/
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type _} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} [LinearOrderedField K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided

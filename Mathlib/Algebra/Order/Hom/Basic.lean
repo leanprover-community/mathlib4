@@ -71,19 +71,19 @@ There are two workarounds:
 
 open Function
 
-variable {ι F α β γ δ : Type _}
+variable {ι F α β γ δ : Type*}
 
 /-! ### Basics -/
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
-class NonnegHomClass (F : Type _) (α β : outParam (Type _)) [Zero β] [LE β] extends
+class NonnegHomClass (F : Type*) (α β : outParam (Type*)) [Zero β] [LE β] extends
   FunLike F α fun _ => β where
   /-- the image of any element is non negative. -/
   map_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonnegHomClass
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
-class SubadditiveHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [Add β] [LE β] extends
+class SubadditiveHomClass (F : Type*) (α β : outParam (Type*)) [Add α] [Add β] [LE β] extends
   FunLike F α fun _ => β where
   /-- the image of a sum is less or equal than the sum of the images. -/
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
@@ -91,7 +91,7 @@ class SubadditiveHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [Add
 
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubadditiveHomClass]
-class SubmultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Mul β] [LE β]
+class SubmultiplicativeHomClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Mul β] [LE β]
   extends FunLike F α fun _ => β where
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
@@ -99,14 +99,14 @@ class SubmultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [Mul α
 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive SubadditiveHomClass]
-class MulLEAddHomClass (F : Type _) (α β : outParam (Type _)) [Mul α] [Add β] [LE β]
+class MulLEAddHomClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Add β] [LE β]
   extends FunLike F α fun _ => β where
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 #align mul_le_add_hom_class MulLEAddHomClass
 
 /-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
-class NonarchimedeanHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [LinearOrder β]
+class NonarchimedeanHomClass (F : Type*) (α β : outParam (Type*)) [Add α] [LinearOrder β]
   extends FunLike F α fun _ => β where
   /-- the image of a sum is less or equal than the maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
@@ -173,7 +173,7 @@ end Mathlib.Meta.Positivity
 group `α`.
 
 You should extend this class when you extend `AddGroupSeminorm`. -/
-class AddGroupSeminormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
+class AddGroupSeminormClass (F : Type*) (α β : outParam <| Type*) [AddGroup α]
   [OrderedAddCommMonoid β] extends SubadditiveHomClass F α β where
   /-- The image of zero is zero. -/
   map_zero (f : F) : f 0 = 0
@@ -185,7 +185,7 @@ class AddGroupSeminormClass (F : Type _) (α β : outParam <| Type _) [AddGroup 
 
 You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive]
-class GroupSeminormClass (F : Type _) (α β : outParam <| Type _) [Group α]
+class GroupSeminormClass (F : Type*) (α β : outParam <| Type*) [Group α]
   [OrderedAddCommMonoid β] extends MulLEAddHomClass F α β where
   /-- The image of one is zero. -/
   map_one_eq_zero (f : F) : f 1 = 0
@@ -197,7 +197,7 @@ class GroupSeminormClass (F : Type _) (α β : outParam <| Type _) [Group α]
 `α`.
 
 You should extend this class when you extend `AddGroupNorm`. -/
-class AddGroupNormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
+class AddGroupNormClass (F : Type*) (α β : outParam <| Type*) [AddGroup α]
   [OrderedAddCommMonoid β] extends AddGroupSeminormClass F α β where
   /-- The argument is zero if its image under the map is zero. -/
   eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
@@ -207,7 +207,7 @@ class AddGroupNormClass (F : Type _) (α β : outParam <| Type _) [AddGroup α]
 
 You should extend this class when you extend `GroupNorm`. -/
 @[to_additive]
-class GroupNormClass (F : Type _) (α β : outParam <| Type _) [Group α]
+class GroupNormClass (F : Type*) (α β : outParam <| Type*) [Group α]
   [OrderedAddCommMonoid β] extends GroupSeminormClass F α β where
   /-- The argument is one if its image under the map is zero. -/
   eq_one_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 1
@@ -315,14 +315,14 @@ theorem map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β] [GroupNormC
 /-- `RingSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the ring `α`.
 
 You should extend this class when you extend `RingSeminorm`. -/
-class RingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssocRing α]
+class RingSeminormClass (F : Type*) (α β : outParam <| Type*) [NonUnitalNonAssocRing α]
   [OrderedSemiring β] extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β
 #align ring_seminorm_class RingSeminormClass
 
 /-- `RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
 
 You should extend this class when you extend `RingNorm`. -/
-class RingNormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssocRing α]
+class RingNormClass (F : Type*) (α β : outParam <| Type*) [NonUnitalNonAssocRing α]
   [OrderedSemiring β] extends RingSeminormClass F α β, AddGroupNormClass F α β
 #align ring_norm_class RingNormClass
 
@@ -330,7 +330,7 @@ class RingNormClass (F : Type _) (α β : outParam <| Type _) [NonUnitalNonAssoc
 on the ring `α`.
 
 You should extend this class when you extend `MulRingSeminorm`. -/
-class MulRingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRing α]
+class MulRingSeminormClass (F : Type*) (α β : outParam <| Type*) [NonAssocRing α]
   [OrderedSemiring β] extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β
 #align mul_ring_seminorm_class MulRingSeminormClass
 
@@ -338,7 +338,7 @@ class MulRingSeminormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRi
 ring `α`.
 
 You should extend this class when you extend `MulRingNorm`. -/
-class MulRingNormClass (F : Type _) (α β : outParam <| Type _) [NonAssocRing α]
+class MulRingNormClass (F : Type*) (α β : outParam <| Type*) [NonAssocRing α]
   [OrderedSemiring β] extends MulRingSeminormClass F α β, AddGroupNormClass F α β
 #align mul_ring_norm_class MulRingNormClass
 

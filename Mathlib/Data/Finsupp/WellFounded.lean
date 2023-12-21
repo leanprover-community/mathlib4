@@ -25,7 +25,7 @@ All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 -/
 
 
-variable {α N : Type _}
+variable {α N : Type*}
 
 namespace Finsupp
 

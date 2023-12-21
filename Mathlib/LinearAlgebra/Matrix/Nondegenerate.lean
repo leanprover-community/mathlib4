@@ -22,7 +22,7 @@ import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 namespace Matrix
 
-variable {m R A : Type _} [Fintype m] [CommRing R]
+variable {m R A : Type*} [Fintype m] [CommRing R]
 
 /-- A matrix `M` is nondegenerate if for all `v ≠ 0`, there is a `w ≠ 0` with `w ⬝ M ⬝ v ≠ 0`. -/
 def Nondegenerate (M : Matrix m m R) :=

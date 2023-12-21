@@ -54,7 +54,7 @@ Heyting
 
 open Function OrderDual
 
-variable {ι α β : Type _} {π : ι → Type _}
+variable {ι α β : Type*} {π : ι → Type*}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
 def symmDiff [Sup α] [SDiff α] (a b : α) : α :=

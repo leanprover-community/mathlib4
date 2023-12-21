@@ -336,7 +336,7 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
   hasIntegral_zero.integral_eq
 #align box_integral.integral_zero BoxIntegral.integral_zero
 
-theorem HasIntegral.sum {α : Type _} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
+theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i in s, f i x) vol (∑ i in s, g i) := by
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]

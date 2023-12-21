@@ -13,15 +13,15 @@ import Mathlib.Algebra.Order.Monoid.Prod
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Prod
 
-variable {G H : Type _}
+variable {G H : Type*}
 
 @[to_additive]
 instance [OrderedCommGroup G] [OrderedCommGroup H] : OrderedCommGroup (G × H) :=
-  { Prod.instCommGroupProd, Prod.instPartialOrderProd G H, Prod.instOrderedCancelCommMonoidProd
+  { Prod.instCommGroup, Prod.instPartialOrder G H, Prod.instOrderedCancelCommMonoid
     with }
 
 end Prod

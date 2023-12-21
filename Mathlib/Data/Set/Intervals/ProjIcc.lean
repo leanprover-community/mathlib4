@@ -30,7 +30,7 @@ We also prove some trivial properties of these maps.
 -/
 
 
-variable {α β : Type _} [LinearOrder α]
+variable {α β : Type*} [LinearOrder α]
 
 open Function
 

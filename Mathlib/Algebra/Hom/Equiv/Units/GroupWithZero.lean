@@ -13,7 +13,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 -/
 
 
-variable {G : Type _}
+variable {G : Type*}
 
 namespace Equiv
 

@@ -28,7 +28,7 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 open Set Filter Function Topology
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by

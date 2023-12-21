@@ -23,7 +23,7 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
@@ -36,20 +36,20 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pointed
 
-instance : CoeSort Pointed (Type _) :=
+instance : CoeSort Pointed (Type*) :=
   ⟨X⟩
 
 -- porting note: protected attribute does not work
 --attribute [protected] Pointed.X
 
 /-- Turns a point into a pointed type. -/
-def of {X : Type _} (point : X) : Pointed :=
+def of {X : Type*} (point : X) : Pointed :=
   ⟨X, point⟩
 set_option linter.uppercaseLean3 false in
 #align Pointed.of Pointed.of
 
 @[simp]
-theorem coe_of {X : Type _} (point : X) : ↥(of point) = X :=
+theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Pointed.coe_of Pointed.coe_of

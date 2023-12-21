@@ -16,7 +16,7 @@ This file defines the lexicographic order on `Finsupp`.
 -/
 
 
-variable {α N : Type _}
+variable {α N : Type*}
 
 namespace Finsupp
 

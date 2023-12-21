@@ -20,7 +20,7 @@ namespace Mathlib.Tactic.ComputeDegree
 
 section leaf_lemmas
 
-variable {R : Type _}
+variable {R : Type*}
 
 section semiring
 variable [Semiring R]

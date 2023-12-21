@@ -73,7 +73,7 @@ build the general theory. We do not define it here.
 
 noncomputable section
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 open Topology Classical BigOperators NNReal Filter ENNReal
 

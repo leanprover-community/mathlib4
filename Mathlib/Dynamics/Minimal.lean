@@ -29,7 +29,7 @@ open Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/
-class AddAction.IsMinimal (M α : Type _) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
+class AddAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
 #align add_action.is_minimal AddAction.IsMinimal
@@ -37,14 +37,14 @@ class AddAction.IsMinimal (M α : Type _) [AddMonoid M] [TopologicalSpace α] [A
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
-class MulAction.IsMinimal (M α : Type _) [Monoid M] [TopologicalSpace α] [MulAction M α] :
+class MulAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
 #align mul_action.is_minimal MulAction.IsMinimal
 
 open MulAction Set
 
-variable (M G : Type _) {α : Type _} [Monoid M] [Group G] [TopologicalSpace α] [MulAction M α]
+variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [MulAction M α]
   [MulAction G α]
 
 @[to_additive]

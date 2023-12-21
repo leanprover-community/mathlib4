@@ -18,7 +18,7 @@ Notably, we show that the sum of bounded sets remain bounded.
 
 open Metric Set Pointwise Topology
 
-variable {E : Type _}
+variable {E : Type*}
 
 section SeminormedGroup
 

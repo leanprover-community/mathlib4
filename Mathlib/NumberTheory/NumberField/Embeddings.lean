@@ -42,9 +42,9 @@ section Fintype
 
 open FiniteDimensional
 
-variable (K : Type _) [Field K] [NumberField K]
+variable (K : Type*) [Field K] [NumberField K]
 
-variable (A : Type _) [Field A] [CharZero A]
+variable (A : Type*) [Field A] [CharZero A]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
@@ -67,7 +67,7 @@ section Roots
 
 open Set Polynomial
 
-variable (K A : Type _) [Field K] [NumberField K] [Field A] [Algebra ℚ A] [IsAlgClosed A] (x : K)
+variable (K A : Type*) [Field K] [NumberField K] [Field A] [Algebra ℚ A] [IsAlgClosed A] (x : K)
 
 /-- Let `A` be an algebraically closed field and let `x ∈ K`, with `K` a number field.
 The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` of
@@ -85,9 +85,9 @@ section Bounded
 
 open FiniteDimensional Polynomial Set
 
-variable {K : Type _} [Field K] [NumberField K]
+variable {K : Type*} [Field K] [NumberField K]
 
-variable {A : Type _} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
+variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
 theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
     ‖(minpoly ℚ x).coeff i‖ ≤ max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2) := by
@@ -140,7 +140,7 @@ end NumberField.Embeddings
 
 section Place
 
-variable {K : Type _} [Field K] {A : Type _} [NormedDivisionRing A] [Nontrivial A] (φ : K →+* A)
+variable {K : Type*} [Field K] {A : Type*} [NormedDivisionRing A] [Nontrivial A] (φ : K →+* A)
 
 /-- An embedding into a normed division ring defines a place of `K` -/
 def NumberField.place : AbsoluteValue K ℝ :=
@@ -159,7 +159,7 @@ open Complex NumberField
 
 open scoped ComplexConjugate
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 @[reducible]
@@ -212,13 +212,13 @@ section InfinitePlace
 
 open NumberField
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 /-- An infinite place of a number field `K` is a place associated to a complex embedding. -/
 def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 #align number_field.infinite_place NumberField.InfinitePlace
 
-instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyElemRange _
+instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
@@ -231,7 +231,7 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type _} [Field K] : FunLike (InfinitePlace K) K (fun _ => ℝ) :=
+instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K (fun _ => ℝ) :=
 { coe := fun w x => w.1 x
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 

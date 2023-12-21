@@ -89,7 +89,7 @@ def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
-def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [ExtremallyDisconnected X] : Stonean :=
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 

@@ -27,7 +27,7 @@ defines the limit value of an eventually-constant sequence.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace RelEmbedding
 

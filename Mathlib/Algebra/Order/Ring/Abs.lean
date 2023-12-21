@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Group.Abs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section LinearOrderedRing
 

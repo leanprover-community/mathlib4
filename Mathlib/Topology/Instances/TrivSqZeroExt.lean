@@ -27,7 +27,7 @@ one value.
 -/
 
 
-variable {α S R M : Type _}
+variable {α S R M : Type*}
 
 -- mathport name: exprtsze
 local notation "tsze" => TrivSqZeroExt

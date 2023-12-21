@@ -18,7 +18,7 @@ non-zero element.
 
 -/
 
-variable {K : Type _} [DivisionRing K] [TopologicalSpace K]
+variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 
 /-- Left-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
@@ -43,7 +43,7 @@ class TopologicalDivisionRing extends TopologicalRing K, HasContinuousInv₀ K :
 
 section Subfield
 
-variable {α : Type _} [Field α] [TopologicalSpace α] [TopologicalDivisionRing α]
+variable {α : Type*} [Field α] [TopologicalSpace α] [TopologicalDivisionRing α]
 
 /-- The (topological-space) closure of a subfield of a topological field is
 itself a subfield. -/
@@ -84,7 +84,7 @@ happens to be a field is enough.
 -/
 
 
-variable {𝕜 : Type _} [Field 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
 
 /--
 The map `fun x => a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself,
@@ -104,7 +104,7 @@ end affineHomeomorph
 
 section LocalExtr
 
-variable {α β : Type _} [TopologicalSpace α] [LinearOrderedSemifield β] {a : α}
+variable {α β : Type*} [TopologicalSpace α] [LinearOrderedSemifield β] {a : α}
 
 open Topology
 
@@ -121,7 +121,7 @@ section Preconnected
 
 open Set
 
-variable {α 𝕜 : Type _} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α] [TopologicalSpace 𝕜]
+variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α] [TopologicalSpace 𝕜]
   [T1Space 𝕜]
 
 /-- If `f` is a function `α → 𝕜` which is continuous on a preconnected set `S`, and

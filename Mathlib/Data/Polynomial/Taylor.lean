@@ -29,7 +29,7 @@ namespace Polynomial
 
 open Polynomial
 
-variable {R : Type _} [Semiring R] (r : R) (f : R[X])
+variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 
 /-- The Taylor expansion of a polynomial `f` at `r`. -/
 def taylor (r : R) : R[X] →ₗ[R] R[X] where

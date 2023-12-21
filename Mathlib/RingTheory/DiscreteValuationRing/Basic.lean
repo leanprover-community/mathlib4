@@ -73,7 +73,7 @@ variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type _} [CommRing R] [LocalRing R] [IsDomain R]
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing R] [IsDomain R]
     (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
@@ -156,7 +156,7 @@ end DiscreteValuationRing
 
 namespace DiscreteValuationRing
 
-variable (R : Type _)
+variable (R : Type*)
 
 /-- Alternative characterisation of discrete valuation rings. -/
 def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
@@ -478,7 +478,7 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
 
 end
 
-instance (R : Type _) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
+instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R

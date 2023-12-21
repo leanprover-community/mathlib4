@@ -248,7 +248,7 @@ end AbelianizationCongr
 
 /-- An Abelian group is equivalent to its own abelianization. -/
 @[simps]
-def Abelianization.equivOfComm {H : Type _} [CommGroup H] : H ≃* Abelianization H :=
+def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization H :=
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)

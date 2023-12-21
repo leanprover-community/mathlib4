@@ -203,7 +203,7 @@ instance : WellFoundedRelation ℕ+ :=
   measure (fun (a : ℕ+) => (a : ℕ))
 
 /-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort _} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
+def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by _ => n.1
 #align pnat.strong_induction_on PNat.strongInductionOn

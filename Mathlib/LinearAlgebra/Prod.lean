@@ -38,13 +38,13 @@ universe u v w x y z u' v' w' y'
 
 variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
 variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
-variable {M₅ M₆ : Type _}
+variable {M₅ M₆ : Type*}
 
 section Prod
 
 namespace LinearMap
 
-variable (S : Type _) [Semiring R] [Semiring S]
+variable (S : Type*) [Semiring R] [Semiring S]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
 variable [AddCommMonoid M₅] [AddCommMonoid M₆]
 variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
@@ -392,9 +392,9 @@ variable {R M M₂ M₃ M₄}
 
 section map_mul
 
-variable {A : Type _} [NonUnitalNonAssocSemiring A] [Module R A]
+variable {A : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
 
-variable {B : Type _} [NonUnitalNonAssocSemiring B] [Module R B]
+variable {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
 
 theorem inl_map_mul (a₁ a₂ : A) :
     LinearMap.inl R A B (a₁ * a₂) = LinearMap.inl R A B a₁ * LinearMap.inl R A B a₂ :=
@@ -504,14 +504,14 @@ theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 #align linear_map.range_prod_le LinearMap.range_prod_le
 
-theorem ker_prod_ker_le_ker_coprod {M₂ : Type _} [AddCommGroup M₂] [Module R M₂] {M₃ : Type _}
+theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
     (ker f).prod (ker g) ≤ ker (f.coprod g) := by
   rintro ⟨y, z⟩
   simp (config := { contextual := true })
 #align linear_map.ker_prod_ker_le_ker_coprod LinearMap.ker_prod_ker_le_ker_coprod
 
-theorem ker_coprod_of_disjoint_range {M₂ : Type _} [AddCommGroup M₂] [Module R M₂] {M₃ : Type _}
+theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃)
     (hd : Disjoint (range f) (range g)) : ker (f.coprod g) = (ker f).prod (ker g) := by
   apply le_antisymm _ (ker_prod_ker_le_ker_coprod f g)
@@ -736,7 +736,7 @@ namespace LinearEquiv
 
 /-- Product of modules is commutative up to linear isomorphism. -/
 @[simps apply]
-def prodComm (R M N : Type _) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
     [Module R N] : (M × N) ≃ₗ[R] N × M :=
   { AddEquiv.prodComm with
     toFun := Prod.swap
@@ -909,7 +909,7 @@ noncomputable section Tunnel
 -- which requires cancellation.)
 variable [Ring R]
 
-variable {N : Type _} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open Function
 

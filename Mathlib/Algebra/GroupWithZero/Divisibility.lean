@@ -17,7 +17,7 @@ Lemmas about divisibility in groups and monoids with zero.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section SemigroupWithZero
 

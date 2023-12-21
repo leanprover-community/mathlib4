@@ -42,7 +42,7 @@ open Matrix
 
 open Matrix
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by

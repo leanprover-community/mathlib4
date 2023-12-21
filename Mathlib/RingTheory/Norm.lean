@@ -43,11 +43,11 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 universe u v w
 
-variable {R S T : Type _} [CommRing R] [Ring S]
+variable {R S T : Type*} [CommRing R] [Ring S]
 
 variable [Algebra R S]
 
-variable {K L F : Type _} [Field K] [Field L] [Field F]
+variable {K L F : Type*} [Field K] [Field L] [Field F]
 
 variable [Algebra K L] [Algebra K F]
 
@@ -108,7 +108,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
 (If `L` is not finite-dimensional over `K`, then `norm = 1 = x ^ 0 = x ^ (finrank L K)`.)
 -/
 @[simp]
-protected theorem norm_algebraMap {L : Type _} [Ring L] [Algebra K L] (x : K) :
+protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
     norm K (algebraMap K L x) = x ^ finrank K L := by
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
   · rw [norm_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
@@ -248,7 +248,7 @@ section EqProdEmbeddings
 
 open IntermediateField IntermediateField.AdjoinSimple Polynomial
 
-variable (F) (E : Type _) [Field E] [Algebra K E]
+variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :

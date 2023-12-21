@@ -21,7 +21,7 @@ open Set
 
 /-- **Zorn's lemma**: A partial order is coatomic if every nonempty chain `c`, `⊤ ∉ c`, has an upper
 bound not equal to `⊤`. -/
-theorem IsCoatomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderTop α]
+theorem IsCoatomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderTop α]
     (h :
       ∀ c : Set α,
         IsChain (· ≤ ·) c → c.Nonempty → ⊤ ∉ c → ∃ (x : _) (_ : x ≠ ⊤), x ∈ upperBounds c) :
@@ -38,7 +38,7 @@ theorem IsCoatomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderTop 
 
 /-- **Zorn's lemma**: A partial order is atomic if every nonempty chain `c`, `⊥ ∉ c`, has a lower
 bound not equal to `⊥`. -/
-theorem IsAtomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderBot α]
+theorem IsAtomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderBot α]
     (h :
       ∀ c : Set α,
         IsChain (· ≤ ·) c → c.Nonempty → ⊥ ∉ c → ∃ (x : _) (_ : x ≠ ⊥), x ∈ lowerBounds c) :

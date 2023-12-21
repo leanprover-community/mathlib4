@@ -35,7 +35,7 @@ open Classical
 
 namespace SimpleGraph
 
-variable {α 𝕜 : Type _} [Fintype α] [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
+variable {α 𝕜 : Type*} [Fintype α] [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
   {s : Finset α}
 
 /-- A simple graph is *`ε`-triangle-free far* if one must remove at least `ε * (card α)^2` edges to

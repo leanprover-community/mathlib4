@@ -23,7 +23,7 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 -/
 
 
-variable {M : Type _}
+variable {M : Type*}
 
 namespace Set
 

@@ -67,7 +67,7 @@ namespace Matrix
 
 open Matrix
 
-variable (n p : Type _) (R : Type u₂) {𝕜 : Type _} [Field 𝕜]
+variable (n p : Type*) (R : Type u₂) {𝕜 : Type*} [Field 𝕜]
 
 variable [DecidableEq n] [DecidableEq p]
 

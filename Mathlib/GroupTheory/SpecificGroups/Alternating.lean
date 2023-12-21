@@ -43,7 +43,7 @@ alternating group permutation
 
 open Equiv Equiv.Perm Subgroup Fintype
 
-variable (α : Type _) [Fintype α] [DecidableEq α]
+variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/

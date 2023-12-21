@@ -26,7 +26,7 @@ When possible, instead of parametrizing results over `(f : C(α, β))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
-structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+structure ContinuousMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
   /-- The function `α → β` -/
   protected toFun : α → β
   /-- Proposition that `toFun` is continuous -/
@@ -41,7 +41,7 @@ section
 /-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class ContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
@@ -55,7 +55,7 @@ attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
-variable {F α β : Type _} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
 
 theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
   (map_continuous f).continuousAt
@@ -77,7 +77,7 @@ end ContinuousMapClass
 
 namespace ContinuousMap
 
-variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
 instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
@@ -105,7 +105,7 @@ def Simps.apply (f : C(α, β)) : α → β := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp] -- Porting note: removed `norm_cast` attribute
-protected theorem coe_coe {F : Type _} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
+protected theorem coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
 
@@ -286,7 +286,7 @@ instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
 
 section Prod
 
-variable {α₁ α₂ β₁ β₂ : Type _} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
+variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
@@ -325,13 +325,13 @@ end Prod
 
 /-- `Sigma.mk i` as a bundled continuous map. -/
 @[simps apply]
-def sigmaMk {ι : Type _} {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] (i : ι) :
+def sigmaMk {ι : Type*} {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] (i : ι) :
     C(Y i, Σ i, Y i) where
   toFun := Sigma.mk i
 
 section Pi
 
-variable {I A : Type _} {X Y : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
+variable {I A : Type*} {X Y : I → Type*} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
   [∀ i, TopologicalSpace (Y i)]
 
 /-- Abbreviation for product of continuous maps, which is continuous -/
@@ -397,7 +397,7 @@ end Restrict
 
 section Gluing
 
-variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
+variable {ι : Type*} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
   (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
 
@@ -465,7 +465,7 @@ end ContinuousMap
 
 namespace Homeomorph
 
-variable {α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 

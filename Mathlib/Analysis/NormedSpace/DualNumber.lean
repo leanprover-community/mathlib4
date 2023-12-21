@@ -24,7 +24,7 @@ namespace DualNumber
 
 open TrivSqZeroExt
 
-variable (𝕜 : Type _) {R : Type _}
+variable (𝕜 : Type*) {R : Type*}
 
 variable [IsROrC 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
 

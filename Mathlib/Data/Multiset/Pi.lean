@@ -16,20 +16,20 @@ namespace Multiset
 
 section Pi
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function
 
-/-- Given `δ : α → Type _`, `Pi.empty δ` is the trivial dependent function out of the empty
+/-- Given `δ : α → Type*`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
-def Pi.empty (δ : α → Sort _) : ∀ a ∈ (0 : Multiset α), δ a :=
+def Pi.empty (δ : α → Sort*) : ∀ a ∈ (0 : Multiset α), δ a :=
   fun.
 #align multiset.pi.empty Multiset.Pi.empty
 
 universe u v
 variable [DecidableEq α] {β : α → Type u} {δ : α → Sort v}
 
-/-- Given `δ : α → Type _`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
+/-- Given `δ : α → Type*`, a multiset `m` and a term `a`, as well as a term `b : δ a` and a
 function `f` such that `f a' : δ a'` for all `a'` in `m`, `Pi.cons m a b f` is a function `g` such
 that `g a'' : δ a''` for all `a''` in `a ::ₘ m`. -/
 def Pi.cons (m : Multiset α) (a : α) (b : δ a) (f : ∀ a ∈ m, δ a) : ∀ a' ∈ a ::ₘ m, δ a' :=

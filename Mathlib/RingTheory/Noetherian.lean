@@ -73,7 +73,7 @@ attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
 
 section
 
-variable {R : Type _} {M : Type _} {P : Type _}
+variable {R : Type*} {M : Type*} {P : Type*}
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P]
 
@@ -154,7 +154,7 @@ end
 
 namespace Module
 
-variable {R M N : Type _}
+variable {R M N : Type*}
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
@@ -176,7 +176,7 @@ end Module
 
 section
 
-variable {R : Type _} {M : Type _} {P : Type _}
+variable {R : Type*} {M : Type*} {P : Type*}
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup P]
 
@@ -203,7 +203,7 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 #align is_noetherian_prod isNoetherian_prod
 
-instance isNoetherian_pi {R ι : Type _} {M : ι → Type _}
+instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
     [Ring R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [Finite ι]
     [∀ i, IsNoetherian R (M i)] : IsNoetherian R (∀ i, M i) := by
   cases nonempty_fintype ι
@@ -279,7 +279,7 @@ instance isNoetherian_pi {R ι : Type _} {M : ι → Type _}
 /-- A version of `isNoetherian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isNoetherian_pi' {R ι M : Type _} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+instance isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsNoetherian R M] : IsNoetherian R (ι → M) :=
   isNoetherian_pi
 #align is_noetherian_pi' isNoetherian_pi'
@@ -292,7 +292,7 @@ section
 
 universe w
 
-variable {R M P : Type _} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
   [Module R N] [AddCommMonoid P] [Module R P]
 
 theorem isNoetherian_iff_wellFounded :
@@ -364,7 +364,7 @@ section
 
 universe w
 
-variable {R M P : Type _} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable {R M P : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
   [Module R N] [AddCommGroup P] [Module R P]
 
 theorem finite_of_linearIndependent [Nontrivial R] [IsNoetherian R M] {s : Set M}
@@ -491,7 +491,7 @@ theorem isNoetherianRing_iff {R} [Semiring R] : IsNoetherianRing R ↔ IsNoether
 #align is_noetherian_ring_iff isNoetherianRing_iff
 
 /-- A ring is Noetherian if and only if all its ideals are finitely-generated. -/
-theorem isNoetherianRing_iff_ideal_fg (R : Type _) [Semiring R] :
+theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
     IsNoetherianRing R ↔ ∀ I : Ideal R, I.FG :=
   isNoetherianRing_iff.trans isNoetherian_def
 #align is_noetherian_ring_iff_ideal_fg isNoetherianRing_iff_ideal_fg
@@ -594,7 +594,7 @@ theorem isNoetherianRing_of_ringEquiv (R) [Ring R] {S} [Ring S] (f : R ≃+* S) 
   isNoetherianRing_of_surjective R S f.toRingHom f.toEquiv.surjective
 #align is_noetherian_ring_of_ring_equiv isNoetherianRing_of_ringEquiv
 
-theorem IsNoetherianRing.isNilpotent_nilradical (R : Type _) [CommRing R] [IsNoetherianRing R] :
+theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoetherianRing R] :
     IsNilpotent (nilradical R) := by
   obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
   exact ⟨n, eq_bot_iff.mpr hn⟩

@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Subring.Pointwise
 
 section Ring
 
-variable (M R : Type _) [Monoid M] [Ring R] [MulSemiringAction M R]
+variable (M R : Type*) [Monoid M] [Ring R] [MulSemiringAction M R]
 
 variable (S : Subring R)
 
@@ -41,9 +41,9 @@ end Ring
 
 section
 
-variable (M : Type _) [Monoid M]
+variable (M : Type*) [Monoid M]
 
-variable {R' : Type _} [Ring R'] [MulSemiringAction M R']
+variable {R' : Type*} [Ring R'] [MulSemiringAction M R']
 
 variable (U : Subring R') [IsInvariantSubring M U]
 

@@ -25,7 +25,7 @@ open CategoryTheory.Limits
 
 universe v u
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
 
@@ -67,7 +67,7 @@ namespace HomotopyEquiv
 
 section
 
-variable {W : Type _} [Category W] [Preadditive W] [HasCokernels W] [HasImages W] [HasEqualizers W]
+variable {W : Type*} [Category W] [Preadditive W] [HasCokernels W] [HasImages W] [HasEqualizers W]
   [HasZeroObject W] [HasImageMaps W]
 
 /-- A homotopy equivalence is a quasi-isomorphism. -/
@@ -95,7 +95,7 @@ namespace HomologicalComplex.Hom
 
 section ToSingle₀
 
-variable {W : Type _} [Category W] [Abelian W]
+variable {W : Type*} [Category W] [Abelian W]
 
 section
 
@@ -204,7 +204,7 @@ end ToSingle₀
 
 end HomologicalComplex.Hom
 
-variable {A : Type _} [Category A] [Abelian A] {B : Type _} [Category B] [Abelian B] (F : A ⥤ B)
+variable {A : Type*} [Category A] [Abelian A] {B : Type*} [Category B] [Abelian B] (F : A ⥤ B)
   [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F] [Faithful F]
 
 theorem CategoryTheory.Functor.quasiIso_of_map_quasiIso {C D : HomologicalComplex A c} (f : C ⟶ D)

@@ -49,7 +49,7 @@ class QuotientAction : Prop where
 #align mul_action.quotient_action MulAction.QuotientAction
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
-class _root_.AddAction.QuotientAction {α : Type _} (β : Type _) [AddGroup α] [AddMonoid β]
+class _root_.AddAction.QuotientAction {α : Type*} (β : Type _) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
@@ -353,7 +353,7 @@ end MulAction
 
 namespace Subgroup
 
-variable {G : Type _} [Group G] (H : Subgroup G)
+variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
@@ -407,7 +407,7 @@ section conjClasses
 
 open Fintype
 
-theorem card_comm_eq_card_conjClasses_mul_card (G : Type _) [Group G] :
+theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
     Nat.card { p : G × G // _root_.Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
   classical
   rcases fintypeOrInfinite G; swap

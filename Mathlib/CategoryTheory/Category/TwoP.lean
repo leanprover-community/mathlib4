@@ -24,7 +24,7 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 set_option linter.uppercaseLean3 false
 
@@ -36,16 +36,16 @@ structure TwoP : Type (u + 1) where
 
 namespace TwoP
 
-instance : CoeSort TwoP (Type _) :=
+instance : CoeSort TwoP (Type*) :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
-def of {X : Type _} (toTwoPointing : TwoPointing X) : TwoP :=
+def of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
   ⟨X, toTwoPointing⟩
 #align Twop.of TwoP.of
 
 @[simp]
-theorem coe_of {X : Type _} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
+theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
   rfl
 #align Twop.coe_of TwoP.coe_of
 

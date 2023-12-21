@@ -33,7 +33,7 @@ We have three ways to construct terms of `ℙ K V`:
 -/
 
 
-variable (K V : Type _) [DivisionRing K] [AddCommGroup V] [Module K V]
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
@@ -187,7 +187,7 @@ theorem mk''_submodule (v : ℙ K V) : mk'' v.submodule v.finrank_submodule = v 
 
 section Map
 
-variable {L W : Type _} [DivisionRing L] [AddCommGroup W] [Module L W]
+variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W]
 
 /-- An injective semilinear map of vector spaces induces a map on projective spaces. -/
 def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : ℙ K V → ℙ L W :=
@@ -221,7 +221,7 @@ theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injec
 #align projectivization.map_id Projectivization.map_id
 
 -- porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
-theorem map_comp {F U : Type _} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
+theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
     {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
     (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
     map (g.comp f) (hg.comp hf) = map g hg ∘ map f hf := by

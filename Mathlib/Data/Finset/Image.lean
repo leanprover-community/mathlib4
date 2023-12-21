@@ -29,7 +29,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Multiset
 

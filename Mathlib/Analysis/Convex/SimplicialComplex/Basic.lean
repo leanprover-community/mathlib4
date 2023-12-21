@@ -45,7 +45,7 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
-variable (𝕜 E : Type _) {ι : Type _} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜 E : Type*) {ι : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Geometry
 

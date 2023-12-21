@@ -28,7 +28,7 @@ coincide.
 -/
 
 
-variable {R S : Type _} (M : Type _) {a b : R} {s : S}
+variable {R S : Type*} (M : Type*) {a b : R} {s : S}
 
 /-- An `M`-regular element is an element `c` such that multiplication on the left by `c` is an
 injective map `M → M`. -/
@@ -229,7 +229,7 @@ end IsSMulRegular
 
 section Group
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-- An element of a group acting on a Type is regular. This relies on the availability
 of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/

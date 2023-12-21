@@ -67,10 +67,10 @@ Structures tagged with the `variable_alias` attribute can serve as aliases for a
 of typeclasses. For example, given
 ```lean
 @[variable_alias]
-structure VectorSpace (k V : Type _) [Field k] [AddCommGroup V] [Module k V]
+structure VectorSpace (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 ```
 then `variable? [VectorSpace k V]` is
-equivalent to `variable {k V : Type _} [Field k] [AddCommGroup V] [Module k V]`, assuming
+equivalent to `variable {k V : Type*} [Field k] [AddCommGroup V] [Module k V]`, assuming
 that there are no pre-existing instances on `k` and `V`.
 Note that this is not a simple replacement: it only adds instances not inferrable
 from others in the current scope.
@@ -88,7 +88,7 @@ fields, and additional typeclasses are recorded as *arguments* to the structure.
 Example:
 ```
 @[variable_alias]
-structure VectorSpace (k V : Type _)
+structure VectorSpace (k V : Type*)
   [Field k] [AddCommGroup V] [Module k V]
 ```
 Then `variable? [VectorSpace k V]` ensures that these three typeclasses are present in

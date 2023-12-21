@@ -20,7 +20,7 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 -/
 
 
-variable {R A B C : Type _}
+variable {R A B C : Type*}
 
 variable [CommSemiring R]
 
@@ -33,7 +33,7 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) :=
-  { Prod.module,
+  { Prod.instModule,
     RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by
       rintro r ⟨a, b⟩

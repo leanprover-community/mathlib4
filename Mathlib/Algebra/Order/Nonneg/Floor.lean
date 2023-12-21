@@ -23,7 +23,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 namespace Nonneg
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance archimedean [OrderedAddCommMonoid α] [Archimedean α] : Archimedean { x : α // 0 ≤ x } :=
   ⟨fun x y hy =>

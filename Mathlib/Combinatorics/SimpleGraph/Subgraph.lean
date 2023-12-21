@@ -65,7 +65,7 @@ structure Subgraph {V : Type u} (G : SimpleGraph V) where
   symm : Symmetric Adj := by aesop_graph -- Porting note: Originally `by obviously`
 #align simple_graph.subgraph SimpleGraph.Subgraph
 
-variable {ι : Sort _} {V : Type u} {W : Type v}
+variable {ι : Sort*} {V : Type u} {W : Type v}
 
 /-- The one-vertex subgraph. -/
 @[simps]

@@ -42,7 +42,7 @@ numerics, number theory, approximations, fractions
 -/
 
 -- Fix a carrier `α`.
-variable (α : Type _)
+variable (α : Type*)
 
 /-!### Definitions-/
 
@@ -69,14 +69,14 @@ instance [Repr α] : Repr (Pair α) :=
   ⟨fun p _ ↦ "(a : " ++ repr p.a ++ ", b : " ++ repr p.b ++ ")"⟩
 
 /-- Maps a function `f` on both components of a given pair. -/
-def map {β : Type _} (f : α → β) (gp : Pair α) : Pair β :=
+def map {β : Type*} (f : α → β) (gp : Pair α) : Pair β :=
   ⟨f gp.a, f gp.b⟩
 #align generalized_continued_fraction.pair.map GeneralizedContinuedFraction.Pair.map
 
 section coe
 
 -- Fix another type `β` which we will convert to.
-variable {β : Type _} [Coe α β]
+variable {β : Type*} [Coe α β]
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between numerator-denominator pairs happens componentwise. -/
@@ -163,7 +163,7 @@ section coe
 /-! Interlude: define some expected coercions. -/
 
 -- Fix another type `β` which we will convert to.
-variable {β : Type _} [Coe α β]
+variable {β : Type*} [Coe α β]
 
 -- Porting note: Added to put `@[coe]` attr on it.
 /-- The coercion between `GeneralizedContinuedFraction` happens on the head term
@@ -317,7 +317,7 @@ For (r)cfs, these computations are equivalent as shown in
 -/
 
 -- Fix a division ring for the computations.
-variable {K : Type _} [DivisionRing K]
+variable {K : Type*} [DivisionRing K]
 
 /-!
 We start with the definition of the recurrence relation. Given a gcf `g`, for all `n ≥ 1`, we define

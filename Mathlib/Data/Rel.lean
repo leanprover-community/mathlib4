@@ -32,10 +32,10 @@ Relations are also known as set-valued functions, or partial multifunctions.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
-def Rel (α β : Type _) :=
+def Rel (α β : Type*) :=
   α → β → Prop -- deriving CompleteLattice, Inhabited
 #align rel Rel
 

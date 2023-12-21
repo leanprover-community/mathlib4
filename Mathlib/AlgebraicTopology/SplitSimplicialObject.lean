@@ -42,7 +42,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 namespace SimplicialObject
 

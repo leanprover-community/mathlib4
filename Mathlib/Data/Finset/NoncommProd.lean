@@ -33,7 +33,7 @@ elements is commutative and using the `Finset.prod` versions of lemmas to prove 
 version.
 -/
 
-variable {F ι α β γ : Type _} (f : α → β → β) (op : α → α → α)
+variable {F ι α β γ : Type*} (f : α → β → β) (op : α → α → α)
 
 namespace Multiset
 
@@ -202,7 +202,7 @@ theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈
 #align multiset.noncomm_sum_eq_card_nsmul Multiset.noncommSum_eq_card_nsmul
 
 @[to_additive]
-theorem noncommProd_eq_prod {α : Type _} [CommMonoid α] (s : Multiset α) :
+theorem noncommProd_eq_prod {α : Type*} [CommMonoid α] (s : Multiset α) :
     (noncommProd s fun _ _ _ _ _ => Commute.all _ _) = prod s := by
   induction s using Quotient.inductionOn
   simp
@@ -343,7 +343,7 @@ theorem noncommProd_commute (s : Finset α) (f : α → β) (comm) (y : β)
 #align finset.noncomm_sum_add_commute Finset.noncommSum_addCommute
 
 @[to_additive]
-theorem noncommProd_eq_prod {β : Type _} [CommMonoid β] (s : Finset α) (f : α → β) :
+theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α → β) :
     (noncommProd s f fun _ _ _ _ _ => Commute.all _ _) = s.prod f := by
   classical
     induction' s using Finset.induction_on with a s ha IH
@@ -410,7 +410,7 @@ theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) 
 
 section FinitePi
 
-variable {M : ι → Type _} [∀ i, Monoid (M i)]
+variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
 @[to_additive]
 theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :

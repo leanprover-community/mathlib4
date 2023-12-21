@@ -21,7 +21,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 -/
 
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 namespace Multiset
 
@@ -206,7 +206,7 @@ theorem count_bind [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {
   count_sum
 #align multiset.count_bind Multiset.count_bind
 
-theorem le_bind {α β : Type _} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
+theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
     f x ≤ S.bind f := by
   classical
     rw [le_iff_count]
@@ -300,7 +300,7 @@ end Product
 
 section Sigma
 
-variable {σ : α → Type _} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
+variable {σ : α → Type*} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
 
 /-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/

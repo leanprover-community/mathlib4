@@ -28,7 +28,7 @@ open Equiv Finset
 
 namespace Equiv.Perm
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Disjoint
 
@@ -536,7 +536,7 @@ theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwi
 
 section ExtendDomain
 
-variable {β : Type _} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
+variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
 
 @[simp]
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :

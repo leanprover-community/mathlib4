@@ -35,7 +35,7 @@ open Pointwise
 
 namespace Submodule
 
-variable {ι : Sort uι} {R M N P : Type _}
+variable {ι : Sort uι} {R M N P : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 

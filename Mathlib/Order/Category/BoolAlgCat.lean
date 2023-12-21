@@ -28,19 +28,19 @@ def BoolAlgCat :=
 
 namespace BoolAlgCat
 
-instance : CoeSort BoolAlgCat (Type _) :=
+instance : CoeSort BoolAlgCat (Type*) :=
   Bundled.coeSort
 
 instance instBooleanAlgebra (X : BoolAlgCat) : BooleanAlgebra X :=
   X.str
 
 /-- Construct a bundled `BoolAlgCat` from a `BooleanAlgebra`. -/
-def of (α : Type _) [BooleanAlgebra α] : BoolAlgCat :=
+def of (α : Type*) [BooleanAlgebra α] : BoolAlgCat :=
   Bundled.of α
 #align BoolAlg.of BoolAlgCat.of
 
 @[simp]
-theorem coe_of (α : Type _) [BooleanAlgebra α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
   rfl
 #align BoolAlg.coe_of BoolAlgCat.coe_of
 

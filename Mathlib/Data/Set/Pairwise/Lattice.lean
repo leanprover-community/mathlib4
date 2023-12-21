@@ -17,7 +17,7 @@ In this file we prove many facts about `Pairwise` and the set lattice.
 
 open Function Set Order
 
-variable {α β γ ι ι' : Type _} {κ : Sort _} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {κ : Sort*} {r p q : α → α → Prop}
 section Pairwise
 
 variable {f g : ι → α} {s t u : Set α} {a b : α}

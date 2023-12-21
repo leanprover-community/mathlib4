@@ -50,7 +50,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 -/
 
 
-variable {R : Type _} [LinearOrderedSemifield R] [FloorSemiring R]
+variable {R : Type*} [LinearOrderedSemifield R] [FloorSemiring R]
 
 namespace Int
 

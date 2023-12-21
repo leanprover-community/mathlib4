@@ -21,7 +21,7 @@ of quadratic forms.
 
 namespace Matrix
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {m n : Type _} [Fintype m] [Fintype n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {m n : Type*} [Fintype m] [Fintype n]
 
 open scoped Matrix
 
@@ -137,7 +137,7 @@ end Matrix
 
 namespace QuadraticForm
 
-variable {n : Type _} [Fintype n]
+variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
@@ -156,7 +156,7 @@ end QuadraticForm
 
 namespace Matrix
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {n : Type _} [Fintype n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 @[reducible]

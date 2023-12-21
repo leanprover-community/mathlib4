@@ -60,7 +60,7 @@ noncomputable section
 
 open ENNReal MeasureTheory MeasurableSpace
 
-variable {Ω : Type _} {m : MeasurableSpace Ω} (μ : Measure Ω) {s t : Set Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} (μ : Measure Ω) {s t : Set Ω}
 
 namespace ProbabilityTheory
 

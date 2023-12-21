@@ -31,7 +31,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 open Classical Set
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### Chains -/
 
@@ -290,7 +290,7 @@ end Chain
 /-! ### Flags -/
 
 /-- The type of flags, aka maximal chains, of an order. -/
-abbrev Flag (α : Type _) [LE α] := BundledSet α (IsMaxChain (· ≤ ·))
+abbrev Flag (α : Type*) [LE α] := BundledSet α (IsMaxChain (· ≤ ·))
 #align flag Flag
 
 namespace BundledSet

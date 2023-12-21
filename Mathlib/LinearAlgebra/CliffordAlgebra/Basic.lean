@@ -44,9 +44,9 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 variable (Q : QuadraticForm R M)
 
@@ -84,7 +84,7 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
-  RingQuot.instAlgebraRingQuotInstSemiring _
+  RingQuot.instAlgebraRingQuot _
 
 -- verify there are no diamonds
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
@@ -98,13 +98,13 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
     SMulCommClass R S (CliffordAlgebra Q) :=
-  RingQuot.instSMulCommClassRingQuotInstSMulRingQuotInstSMulRingQuot _
+  RingQuot.instSMulCommClassRingQuot _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=
-  RingQuot.instIsScalarTowerRingQuotInstSMulRingQuotInstSMulRingQuot _
+  RingQuot.instIsScalarTowerRingQuot _
 
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
@@ -119,7 +119,7 @@ theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
   rfl
 #align clifford_algebra.ι_sq_scalar CliffordAlgebra.ι_sq_scalar
 
-variable {Q} {A : Type _} [Semiring A] [Algebra R A]
+variable {Q} {A : Type*} [Semiring A] [Algebra R A]
 
 @[simp]
 theorem comp_ι_sq_scalar (g : CliffordAlgebra Q →ₐ[R] A) (m : M) :
@@ -188,7 +188,7 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
-theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
+theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
   intro h
   apply (lift Q).symm.injective
@@ -261,7 +261,7 @@ theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebra
 
 section Map
 
-variable {M₁ M₂ M₃ : Type _}
+variable {M₁ M₂ M₃ : Type*}
 
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
 

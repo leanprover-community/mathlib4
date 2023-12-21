@@ -37,7 +37,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 
 noncomputable section
 
-variable (R A : Type _)
+variable (R A : Type*)
 
 variable [CommSemiring R]
 

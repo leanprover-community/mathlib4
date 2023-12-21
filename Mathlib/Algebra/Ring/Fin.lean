@@ -23,7 +23,7 @@ This file collects some basic results involving rings and the `Fin` type
 
 /-- The product over `Fin 2` of some rings is just the cartesian product of these rings. -/
 @[simps]
-def RingEquiv.piFinTwo (R : Fin 2 → Type _) [∀ i, Semiring (R i)] :
+def RingEquiv.piFinTwo (R : Fin 2 → Type*) [∀ i, Semiring (R i)] :
     (∀ i : Fin 2, R i) ≃+* R 0 × R 1 :=
   { piFinTwoEquiv R with
     toFun := piFinTwoEquiv R
