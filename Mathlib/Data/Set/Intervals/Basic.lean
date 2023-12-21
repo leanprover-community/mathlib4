@@ -1372,7 +1372,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 #align set.Icc_union_Ici' Set.Icc_union_Ici'
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
-  cases' le_or_lt a b with hab hab <;> simp [hab] at h
+  rcases le_or_lt a b with hab | hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
   · cases' h with h h
     · simp [*]
@@ -1490,7 +1490,7 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 #align set.Iic_union_Icc' Set.Iic_union_Icc'
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
-  cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
+  rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
   · cases' h with h h
     · have hdb : d ≤ b := hcd.le.trans h
@@ -1694,7 +1694,7 @@ Otherwise for `b < a = d < c` the l.h.s. is `∅` and the r.h.s. is `{a}`.
 -/
 theorem Icc_union_Icc (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
-  cases' le_or_lt a b with hab hab <;> cases' le_or_lt c d with hcd hcd <;>
+  rcases le_or_lt a b with hab | hab <;> rcases le_or_lt c d with hcd | hcd <;>
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, min_eq_left_of_lt,
       min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt, hab, hcd] at h₁ h₂
   · exact Icc_union_Icc' h₂.le h₁.le

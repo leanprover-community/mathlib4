@@ -160,7 +160,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   refine'
     le_antisymm (iInf_le_of_le a <| iInf₂_le b Subset.rfl)
       (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 _)
-  cases' le_or_lt b a with ab ab
+  rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
   cases' (Ioc_subset_Ioc_iff ab).1 h with h₁ h₂

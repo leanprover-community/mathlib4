@@ -205,7 +205,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
       rw [derivFamily_zero]
       exact nfpFamily_le_fp (fun i => (H i).monotone) (Ordinal.zero_le _) ha
     · intro h₁
-      cases' le_or_lt a (derivFamily.{u, v} f o) with h h
+      rcases le_or_lt a (derivFamily.{u, v} f o) with h | h
       · exact IH h
       refine' ⟨succ o, le_antisymm _ h₁⟩
       rw [derivFamily_succ]

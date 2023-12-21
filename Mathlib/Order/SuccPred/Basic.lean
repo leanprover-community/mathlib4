@@ -1512,7 +1512,7 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
-    cases' le_or_lt b (pred b) with hb hb
+    rcases le_or_lt b (pred b) with hb | hb
     · cases (min_of_le_pred hb).not_lt hab
     dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)

@@ -200,7 +200,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   have : ∃i, x ∈ s i := by exists i
   rcases Nat.findX this with ⟨j, hj, hlt⟩
   clear hx i
-  cases' le_or_lt j n with hjn hnj
+  rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by rw [add_assoc, tsub_add_cancel_of_le hnj.nat_succ_le]
   refine' Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)

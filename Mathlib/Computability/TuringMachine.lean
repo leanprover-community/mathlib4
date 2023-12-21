@@ -284,7 +284,7 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   cases' lt_or_le n _ with h h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
-  cases' le_or_lt _ n with h₂ h₂
+  rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
   rw [List.getI_eq_get _ h₂, List.get_append_right' h, List.get_replicate]
 #align turing.list_blank.nth Turing.ListBlank.nth

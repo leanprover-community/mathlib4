@@ -100,10 +100,10 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
 #align int.zpow_log_le_self Int.zpow_log_le_self
 
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
-  cases' le_or_lt r 0 with hr hr
+  rcases le_or_lt r 0 with hr | hr
   · rw [log_of_right_le_zero _ hr, zero_add, zpow_one]
     exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
-  cases' le_or_lt 1 r with hr1 hr1
+  rcases le_or_lt 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1]
     rw [Int.ofNat_add_one_out, zpow_ofNat, ← Nat.cast_pow]
     apply Nat.lt_of_floor_lt
@@ -141,7 +141,7 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z 
 
 @[mono]
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   rcases le_total r₁ 1 with h₁ | h₁ <;> rcases le_total r₂ 1 with h₂ | h₂
   · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Int.ofNat_le]
@@ -200,7 +200,7 @@ theorem clog_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : clog b r = -Nat.
 theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 := by
   rw [clog, if_neg (hr.trans_lt zero_lt_one).not_le, neg_eq_zero, Int.coe_nat_eq_zero,
     Nat.log_eq_zero_iff]
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · exact Or.inr hb
   · refine' Or.inl (lt_of_le_of_lt _ hb)
     exact Nat.floor_le_one_of_le_one ((inv_nonpos.2 hr).trans zero_le_one)
@@ -239,7 +239,7 @@ theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := b
 #align int.clog_of_left_le_one Int.clog_of_left_le_one
 
 theorem self_le_zpow_clog {b : ℕ} (hb : 1 < b) (r : R) : r ≤ (b : R) ^ clog b r := by
-  cases' le_or_lt r 0 with hr hr
+  rcases le_or_lt r 0 with hr | hr
   · rw [clog_of_right_le_zero _ hr, zpow_zero]
     exact hr.trans zero_le_one
   rw [← neg_log_inv_eq_clog, zpow_neg, le_inv hr (zpow_pos_of_pos _ _)]

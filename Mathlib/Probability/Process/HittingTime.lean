@@ -69,7 +69,7 @@ theorem hitting_of_lt {m : ι} (h : m < n) : hitting u s n m ω = m := by
 #align measure_theory.hitting_of_lt MeasureTheory.hitting_of_lt
 
 theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
-  cases' le_or_lt n m with h_le h_lt
+  rcases le_or_lt n m with h_le | h_lt
   · simp only [hitting]
     split_ifs with h
     · obtain ⟨j, hj₁, hj₂⟩ := h
@@ -229,7 +229,7 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [IsWellOrde
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
   intro i
-  cases' le_or_lt n' i with hi hi
+  rcases le_or_lt n' i with hi | hi
   · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x => (hitting_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hitting u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by

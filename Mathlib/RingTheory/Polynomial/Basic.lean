@@ -979,7 +979,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         intro p hp
         generalize hn : p.natDegree = k
         induction' k using Nat.strong_induction_on with k ih generalizing p
-        cases' le_or_lt k N with h h
+        rcases le_or_lt k N with h | h
         · subst k
           refine' hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩

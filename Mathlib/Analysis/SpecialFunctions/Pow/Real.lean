@@ -166,7 +166,7 @@ theorem abs_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : |x ^ y| = |x| ^ y
 #align real.abs_rpow_of_nonneg Real.abs_rpow_of_nonneg
 
 theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
-  cases' le_or_lt 0 x with hx hx
+  rcases le_or_lt 0 x with hx | hx
   · rw [abs_rpow_of_nonneg hx]
   · rw [abs_of_neg hx, rpow_def_of_neg hx, rpow_def_of_pos (neg_pos.2 hx), log_neg_eq_log, abs_mul,
       abs_of_pos (exp_pos _)]

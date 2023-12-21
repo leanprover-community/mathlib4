@@ -346,7 +346,7 @@ theorem log_pos {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) : 0 
 theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   rcases eq_or_ne o 0 with (rfl | ho)
   · exact log_zero_right b
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rcases le_one_iff.1 hb with (rfl | rfl)
     · exact log_zero_left o
     · exact log_one_left o

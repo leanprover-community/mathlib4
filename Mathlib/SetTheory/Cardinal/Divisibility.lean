@@ -134,7 +134,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
 #align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
-  cases' le_or_lt ℵ₀ a with h h
+  rcases le_or_lt ℵ₀ a with h | h
   · simp [h]
   lift a to ℕ using id h
   simp [not_le.mpr h]

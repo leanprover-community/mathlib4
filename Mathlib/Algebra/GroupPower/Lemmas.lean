@@ -744,7 +744,7 @@ theorem pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
 theorem strictMono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := by
   intro a b hab
   rcases le_total a 0 with ha | ha
-  · cases' le_or_lt b 0 with hb hb
+  · rcases le_or_lt b 0 with hb | hb
     · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
       exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
     · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)
