@@ -1788,8 +1788,6 @@ protected theorem FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite
     r_pos := zero_lt_top
     finite := hn
     hasSum := by intro y _
-                 have := hasSum_sum_of_ne_finset_zero (f := fun m => p m (fun _ => y))
-                   (s := Finset.range n)
                  rw [FormalMultilinearSeries.sum, tsum_eq_sum (s := Finset.range n), zero_add]
                  refine hasSum_sum_of_ne_finset_zero (f := fun m => p m (fun _ => y))
                    (s := Finset.range n) ?_
