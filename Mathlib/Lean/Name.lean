@@ -48,10 +48,3 @@ def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name))
       | none => return names.insert m #[n]
     else
       return names
-
-/-- Returns the very first part of a name: for `Mathlib.Data.Set.Basic` it returns `Mathlib`. -/
-def getModule (name : Name) (s := "") : Name :=
-  match name with
-    | .anonymous => s
-    | .num _ _ => panic s!"panic in `getModule`: did not expect numerical name: {name}."
-    | .str pre s => getModule pre s
