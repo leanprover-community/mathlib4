@@ -66,11 +66,11 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
   let t₂' := s₂.piecewise t₂ (fun i ↦ univ)
   have h1 : ∀ i ∈ (s₁ : Set ι), t₁ i = t₁' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
-  have h1' : ∀ (i) (_ : i ∉ (s₁ : Set ι)), t₁' i = univ :=
+  have h1' : ∀ i ∉ (s₁ : Set ι), t₁' i = univ :=
     fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
   have h2 : ∀ i ∈ (s₂ : Set ι), t₂ i = t₂' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
-  have h2' : ∀ (i) (_ : i ∉ (s₂ : Set ι)), t₂' i = univ :=
+  have h2' : ∀ i ∉ (s₂ : Set ι), t₂' i = univ :=
     fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
   rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, ← union_pi_inter h1' h2']
   refine ⟨s₁ ∪ s₂, fun i ↦ t₁' i ∩ t₂' i, ?_, ?_⟩
@@ -270,7 +270,7 @@ variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
 
 @[simp]
 theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
-    t ∈ measurableCylinders α ↔ ∃ (s S : _) (_ : MeasurableSet S), t = cylinder s S := by
+    t ∈ measurableCylinders α ↔ ∃ s S, MeasurableSet S ∧ t = cylinder s S := by
   simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
 
 /-- A finset `s` such that `t = cylinder s S`. `S` is given by `measurableCylinders.set`. -/
