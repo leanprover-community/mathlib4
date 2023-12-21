@@ -285,8 +285,8 @@ theorem nodup_roots_iff_of_splits (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
 
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
 defined to be the number of distinct roots of it over its splitting field.
-This is similar to `Polynomial.natDegree` but not `Polynomial.degree`, namely, the separable
-degree of `0` is `0`, but not negative infinity. -/
+This is similar to `Polynomial.natDegree` but not to `Polynomial.degree`, namely, the separable
+degree of `0` is `0`, not negative infinity. -/
 def natSepDegree : ℕ := (f.aroots f.SplittingField).toFinset.card
 
 /-- The separable degree of a polynomial is smaller than its degree. -/
@@ -296,7 +296,7 @@ theorem natSepDegree_le_natDegree : f.natSepDegree ≤ f.natDegree := by
   exact (f.aroots f.SplittingField).toFinset_card_le.trans this
 
 @[simp]
-theorem natSepDegree_X_sub_C {x : F} : (X - C x).natSepDegree = 1 := by
+theorem natSepDegree_X_sub_C (x : F) : (X - C x).natSepDegree = 1 := by
   simp only [natSepDegree, aroots_X_sub_C, Multiset.toFinset_singleton, Finset.card_singleton]
 
 @[simp]
@@ -308,7 +308,7 @@ theorem natSepDegree_eq_zero (h : f.natDegree = 0) : f.natSepDegree = 0 := by
   linarith only [natSepDegree_le_natDegree f, h]
 
 @[simp]
-theorem natSepDegree_C {x : F} : (C x).natSepDegree = 0 := natSepDegree_eq_zero _ (natDegree_C _)
+theorem natSepDegree_C (x : F) : (C x).natSepDegree = 0 := natSepDegree_eq_zero _ (natDegree_C _)
 
 @[simp]
 theorem natSepDegree_zero : (0 : F[X]).natSepDegree = 0 := by
@@ -422,7 +422,7 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
       roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
   exact Multiset.card_le_of_le this
 
-/-- If `f` is a polynomial over a perfect ring `R` of characteristic `p`, then there is a bijection
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is a bijection
 from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 In fact it's given by `x ↦ x ^ p`, but we don't give a proof here. -/
 def rootsExpandEquivRoots
@@ -453,7 +453,7 @@ def rootsExpandEquivRoots
   · simp only [RingEquiv.toRingHom_eq_coe, frobeniusEquiv_apply,
       frobenius_apply_frobeniusEquiv_symm]
 
-/-- If `f` is a polynomial over a perfect ring `R` of characteristic `p`, then there is a bijection
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is a bijection
 from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
 In fact it's given by `x ↦ x ^ (p ^ n)`, but we don't give a proof here. -/
 def rootsExpandPowEquivRoots
@@ -477,8 +477,7 @@ theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : �
       (f := f.map (algebraMap F (AlgebraicClosure F))) (n := n)⟩
 
 variable {f} in
-/-- If a polynomial has separable contraction, then its separable degree is equal to its
-separable contraction degree. -/
+/-- If a polynomial has separable contraction, then its separable degree is equal to the degree of the given separable contraction. -/
 theorem HasSeparableContraction.natSepDegree_eq
     {q : ℕ} [ExpChar F q] (hf : f.HasSeparableContraction q) :
     f.natSepDegree = hf.degree := by
@@ -502,7 +501,7 @@ section Irreducible
 variable {f}
 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
-separable degree one if and only if it is of form `Polynomial.expand F (q ^ n) (X - C y)`
+separable degree one if and only if it is of the form `Polynomial.expand F (q ^ n) (X - C y)`
 for some `n : ℕ` and `y : F`. -/
 theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔
@@ -523,7 +522,7 @@ theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar 
   rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
-separable degree one if and only if it is of form `X ^ (q ^ n) - C y`
+separable degree one if and only if it is of the form `X ^ (q ^ n) - C y`
 for some `n : ℕ` and `y : F`. -/
 theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F), f = X ^ (q ^ n) - C y := by
@@ -537,7 +536,7 @@ namespace IntermediateField
 
 /-- The (finite) separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
 minimal polynomial of `α` over `F`. -/
-theorem finSepDegree_adjoin_simple_eq_natSepDegree (α : E) (halg : IsAlgebraic F α) :
+theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = (minpoly F α).natSepDegree := by
   have : finSepDegree F F⟮α⟯ = _ := Nat.card_congr
     (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral)
@@ -545,7 +544,7 @@ theorem finSepDegree_adjoin_simple_eq_natSepDegree (α : E) (halg : IsAlgebraic 
   exact Eq.trans (by simp only [Multiset.mem_toFinset]) (Fintype.card_coe _)
 
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
--- Marked as `private` because it is an unconditional special case of `finSepDegree_dvd_finrank`.
+-- Marked as `private` because it is a special case of `finSepDegree_dvd_finrank`.
 private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
     finSepDegree F F⟮α⟯ ∣ finrank F F⟮α⟯ := by
   by_cases halg : IsAlgebraic F α
