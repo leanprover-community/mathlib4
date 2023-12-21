@@ -499,30 +499,28 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
       localization_surjective (nonZeroDivisors (R ⧸ p)) (FractionRing (R ⧸ p))⟩).isField _
     <| Field.toIsField <| FractionRing (R ⧸ p)
 
-open BigOperators
+lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
+  ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
 variable (R) in
-lemma maximal_ideals_finite : (setOf <| Ideal.IsMaximal (α := R)).Finite := by
-  by_contra rid
-  let f := Set.finite_or_infinite _ |>.resolve_left rid |>.natEmbedding
-  let g : ℕ →o (Ideal R)ᵒᵈ :=
-  { toFun := fun n ↦ OrderDual.toDual <| ∏ i in Finset.range n.succ, f i
-    monotone' := monotone_nat_of_le_succ fun n ↦ OrderDual.toDual_le_toDual.mpr <| by -- fun m n h ↦ OrderDual.toDual_le_toDual.mpr <| by
-      rw [Finset.prod_range_succ]
-      apply Ideal.mul_le_right }
-  obtain ⟨N, hN⟩ := monotone_stabilizes_iff_artinian (R := R) (M := R) |>.mpr inferInstance g
-  have H := OrderDual.toDual_inj |>.mp <| hN (N + 1) (N.le_add_right 1)
-  conv_rhs at H => rw [Finset.prod_range_succ]
-  replace H := H.symm ▸
-    Ideal.mul_le_left (R := R) (I := ∏ i in Finset.range N.succ, f i) (J := f N.succ)
-  obtain ⟨k, hk1, hk2⟩ := (f N.succ).2.isPrime.prod_le |>.mp H
-  rw [f.injective <| Subtype.ext <| (f k).2.eq_of_le (f N.succ).2.isPrime.1 hk2] at hk1
-  simp only [Finset.mem_range, lt_self_iff_false] at hk1
-
 lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  convert maximal_ideals_finite R using 1
-  ext I
-  exact ⟨fun h ↦ @isMaximal_of_isPrime (p := I) _ _ h, fun h ↦ h.isPrime⟩
+  set Spec := {I : Ideal R | I.IsPrime}
+  obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
+    (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
+  refine ⟨⟨s, fun p ↦ ?_⟩⟩
+  classical
+  obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
+    inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
+  rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
+
+variable (R) in
+/--
+[Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
+-/
+lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
+  simp_rw [← isPrime_iff_isMaximal]
+  apply primeSpectrum_finite R
+
 
 variable (R) in
 /--
