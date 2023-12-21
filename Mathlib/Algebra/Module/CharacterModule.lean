@@ -34,55 +34,9 @@ an `R`-lineara map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l
 
 open CategoryTheory
 
-universe uR uM uN uD
+universe uR uA uB
+
 variable (R : Type uR) [CommRing R]
-
-
--- namespace CharacterModule
-
--- open TensorProduct
-
--- variable (M N)
-
--- /--
--- for a linear map `f : N → CharacterModule M`, i.e. `f : N → M → D`, we can uncurry it into
--- `(N ⊗ M) → D`, i.e. a character in `CharacterModule (N ⊗[R] M)`.
--- -/
--- @[simps!]
--- noncomputable def uncurry :
---     (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) →ₗ[R]
---     CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D :=
---   TensorProduct.uncurry _ _ _ _
-
--- -- !FIXME Simply `TensorProduct.curry` doesn't work because of universe levels
--- /--
--- for a character in `CharacterModule (N ⊗[R] M)` i.e. `N ⊗ M → ℚ/ℤ`, we can curry it into
--- `N → M → ℚ/ℤ`, i.e. a linear map `N → CharacterModule M`
--- -/
--- @[simps!]
--- noncomputable def curry :
---     CharacterModule.{uR, max uN uM, uD} R (N ⊗[R] M) D →ₗ[R]
---     N →ₗ[R] CharacterModule.{uR, uM, uD} R M D :=
---   { toFun := fun c ↦ TensorProduct.curry (R := R) (M := N) (N := M) (P := D) c,
---     map_add' := map_add _
---     map_smul' := map_smul _ }
-
-
--- /--
--- `CharacterModule.uncurry` and `CharacterModule.curry` defines a bijection between linear map
--- `Hom(N, CharacterModule M)` and `CharacterModule(N ⊗ M)`
--- -/
--- @[simps!]
--- noncomputable def homEquiv :
---     (N →ₗ[R] CharacterModule.{uR, uM, uD} R M D) ≃ₗ[R]
---     CharacterModule.{uR, max uM uN, uD} R (N ⊗[R] M) D :=
--- LinearEquiv.ofLinear
---   (uncurry.{uR, uM, uN, uD} R M N D)
---   (curry.{uR, uM, uN, uD} R M N D)
---   (LinearMap.ext fun _ ↦ TensorProduct.ext <| by aesop)
---   (LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by aesop)
-
-universe uA uB
 variable (A : Type uA) [AddCommGroup A]
 variable (B : Type uB) [AddCommGroup B]
 
