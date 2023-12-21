@@ -449,6 +449,22 @@ theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 #align measurable_unit measurable_unit
 
+section ULift
+variable [MeasurableSpace α]
+
+instance _root_.ULift.instMeasurableSpace : MeasurableSpace (ULift α) :=
+  ‹MeasurableSpace α›.map ULift.up
+
+lemma measurable_down : Measurable (ULift.down : ULift α → α) := fun _ ↦ id
+lemma measurable_up : Measurable (ULift.up : α → ULift α) := fun _ ↦ id
+
+@[simp] lemma measurableSet_preimage_down {s : Set α} :
+    MeasurableSet (ULift.down ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+@[simp] lemma measurableSet_preimage_up {s : Set (ULift α)} :
+    MeasurableSet (ULift.up ⁻¹' s) ↔ MeasurableSet s := Iff.rfl
+
+end ULift
+
 section Nat
 
 variable [MeasurableSpace α]
@@ -1540,6 +1556,10 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
     subst hi
     exact measurable_id
 #align measurable_equiv.cast MeasurableEquiv.cast
+
+/-- Measurable equivalence between `ULift α` and `α`. -/
+def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
+  ⟨Equiv.ulift, measurable_down, measurable_up⟩
 
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=

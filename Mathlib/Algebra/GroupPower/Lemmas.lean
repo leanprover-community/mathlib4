@@ -326,12 +326,12 @@ theorem one_lt_zpow' (ha : 1 < a) {k : ℤ} (hk : (0 : ℤ) < k) : 1 < a ^ k := 
 #align zsmul_pos zsmul_pos
 
 @[to_additive zsmul_strictMono_left]
-theorem zpow_strictMono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
+theorem zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| sub_pos_of_lt h) _
     _ = a ^ n := by rw [← zpow_add]; simp
-#align zpow_strict_mono_right zpow_strictMono_right
+#align zpow_strict_mono_right zpow_right_strictMono
 #align zsmul_strict_mono_left zsmul_strictMono_left
 
 @[to_additive zsmul_mono_left]
@@ -351,19 +351,19 @@ theorem zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
 
 @[to_additive]
 theorem zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
-  zpow_strictMono_right ha h
+  zpow_right_strictMono ha h
 #align zpow_lt_zpow zpow_lt_zpow
 #align zsmul_lt_zsmul zsmul_lt_zsmul
 
 @[to_additive]
 theorem zpow_le_zpow_iff (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  (zpow_strictMono_right ha).le_iff_le
+  (zpow_right_strictMono ha).le_iff_le
 #align zpow_le_zpow_iff zpow_le_zpow_iff
 #align zsmul_le_zsmul_iff zsmul_le_zsmul_iff
 
 @[to_additive]
 theorem zpow_lt_zpow_iff (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  (zpow_strictMono_right ha).lt_iff_lt
+  (zpow_right_strictMono ha).lt_iff_lt
 #align zpow_lt_zpow_iff zpow_lt_zpow_iff
 #align zsmul_lt_zsmul_iff zsmul_lt_zsmul_iff
 
@@ -746,9 +746,9 @@ theorem strictMono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := by
   cases' le_total a 0 with ha ha
   · cases' le_or_lt b 0 with hb hb
     · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
-      exact pow_lt_pow_of_lt_left (neg_lt_neg hab) (neg_nonneg.2 hb) (bit1_pos (zero_le n))
+      exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
     · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)
-  · exact pow_lt_pow_of_lt_left hab ha (bit1_pos (zero_le n))
+  · exact pow_lt_pow_left hab ha n.bit1_ne_zero
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end bit1
