@@ -13,6 +13,7 @@ import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Order.OrderIsoNat
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Ideal.Pi
 
 #align_import ring_theory.noetherian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -630,3 +631,13 @@ theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoet
   obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
   exact ⟨n, eq_bot_iff.mpr hn⟩
 #align is_noetherian_ring.is_nilpotent_nilradical IsNoetherianRing.isNilpotent_nilradical
+
+lemma IsNoetherianRing.Pi {ι : Type*} [Fintype ι] (f : ι → Type*)
+    [(i : ι) → CommRing (f i)] [noetherian : (i : ι) → IsNoetherianRing (f i)] :
+    IsNoetherianRing ((i : ι) → f i) := by
+  classical
+  simp_rw [isNoetherianRing_iff_ideal_fg] at noetherian ⊢
+  intro I
+  apply Ideal.Pi_fg_of_unPi_fg
+  intro i
+  exact noetherian i _
