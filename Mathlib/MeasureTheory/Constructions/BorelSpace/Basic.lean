@@ -385,7 +385,7 @@ theorem measurable_of_isClosed {f : δ → γ} (hf : ∀ s, IsClosed s → Measu
 theorem measurable_of_isClosed' {f : δ → γ}
     (hf : ∀ s, IsClosed s → s.Nonempty → s ≠ univ → MeasurableSet (f ⁻¹' s)) : Measurable f := by
   apply measurable_of_isClosed; intro s hs
-  cases' eq_empty_or_nonempty s with h1 h1
+  rcases eq_empty_or_nonempty s with h1 | h1
   · simp [h1]
   by_cases h2 : s = univ
   · simp [h2]

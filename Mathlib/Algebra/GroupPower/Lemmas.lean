@@ -449,7 +449,7 @@ section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup α] {a b : α}
 
 theorem abs_nsmul (n : ℕ) (a : α) : |n • a| = n • |a| := by
-  cases' le_total a 0 with hneg hpos
+  rcases le_total a 0 with hneg | hpos
   · rw [abs_of_nonpos hneg, ← abs_neg, ← neg_nsmul, abs_of_nonneg]
     exact nsmul_nonneg (neg_nonneg.mpr hneg) n
   · rw [abs_of_nonneg hpos, abs_of_nonneg]
@@ -743,8 +743,8 @@ theorem pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
 
 theorem strictMono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := by
   intro a b hab
-  cases' le_total a 0 with ha ha
-  · cases' le_or_lt b 0 with hb hb
+  rcases le_total a 0 with ha | ha
+  · rcases le_or_lt b 0 with hb | hb
     · rw [← neg_lt_neg_iff, ← neg_pow_bit1, ← neg_pow_bit1]
       exact pow_lt_pow_left (neg_lt_neg hab) (neg_nonneg.2 hb) n.bit1_ne_zero
     · exact (pow_bit1_nonpos_iff.2 ha).trans_lt (pow_bit1_pos_iff.2 hb)

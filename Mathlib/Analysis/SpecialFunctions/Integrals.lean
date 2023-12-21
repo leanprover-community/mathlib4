@@ -412,7 +412,7 @@ theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n +
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
 Picard-Lindelöf/Cauchy-Lipschitz theorem. -/
 theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n + 1) / (n + 1) := by
-  cases' le_or_lt a b with hab hab
+  rcases le_or_lt a b with hab | hab
   · calc
       ∫ x in Ι a b, |x - a| ^ n = ∫ x in a..b, |x - a| ^ n := by
         rw [uIoc_of_le hab, ← integral_of_le hab]
