@@ -882,7 +882,7 @@ eq_of_nhds_eq_nhds ( λ x => by
   simp)
 
 lemma DiscreteTopology_induced {X Y : Type*} [tY : TopologicalSpace Y] [DiscreteTopology Y] {f :
-  X → Y} (hf : Function.Injective f) : @DiscreteTopology X (TopologicalSpace.induced f tY) := by
+    X → Y} (hf : Function.Injective f) : @DiscreteTopology X (TopologicalSpace.induced f tY) := by
   apply @DiscreteTopology.mk _ (TopologicalSpace.induced f tY) _
   rw [@DiscreteTopology.eq_bot Y _ _, induced_bot hf]
 
