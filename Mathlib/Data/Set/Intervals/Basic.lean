@@ -1271,7 +1271,7 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
 #align set.Ioo_union_Ioi' Set.Ioo_union_Ioi'
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
-  cases' le_total a b with hab hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp [hab] at h
   · exact Ioo_union_Ioi' h
   · rw [min_comm]
     simp [*, min_eq_left_of_lt]
@@ -1305,7 +1305,7 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
 #align set.Ico_union_Ici' Set.Ico_union_Ici'
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
-  cases' le_total a b with hab hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp [hab] at h
   · exact Ico_union_Ici' h
   · simp [*]
 #align set.Ico_union_Ici Set.Ico_union_Ici
@@ -1329,7 +1329,7 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
 #align set.Ioc_union_Ioi' Set.Ioc_union_Ioi'
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
-  cases' le_total a b with hab hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp [hab] at h
   · exact Ioc_union_Ioi' h
   · simp [*]
 #align set.Ioc_union_Ioi Set.Ioc_union_Ioi
@@ -1413,7 +1413,7 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
 #align set.Iio_union_Ico' Set.Iio_union_Ico'
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
-  cases' le_total c d with hcd hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
   · exact Iio_union_Ico' h
   · simp [*]
 #align set.Iio_union_Ico Set.Iio_union_Ico
@@ -1438,7 +1438,7 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
 #align set.Iic_union_Ioc' Set.Iic_union_Ioc'
 
 theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
-  cases' le_total c d with hcd hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
   · exact Iic_union_Ioc' h
   · rw [max_comm]
     simp [*, max_eq_right_of_lt h]
@@ -1464,7 +1464,7 @@ theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
 #align set.Iio_union_Ioo' Set.Iio_union_Ioo'
 
 theorem Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
-  cases' le_total c d with hcd hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
   · exact Iio_union_Ioo' h
   · rw [max_comm]
     simp [*, max_eq_right_of_lt h]
@@ -1547,7 +1547,7 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
 
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
-  cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;> simp [hab, hcd] at h₁ h₂
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [hab, hcd] at h₁ h₂
   · exact Ico_union_Ico' h₂ h₁
   all_goals simp [*]
 #align set.Ico_union_Ico Set.Ico_union_Ico
@@ -1635,7 +1635,7 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
 
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
-  cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;> simp [hab, hcd] at h₁ h₂
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [hab, hcd] at h₁ h₂
   · exact Ioc_union_Ioc' h₂ h₁
   all_goals simp [*]
 #align set.Ioc_union_Ioc Set.Ioc_union_Ioc
@@ -1726,7 +1726,7 @@ theorem Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo
 
 theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by
-  cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;>
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;>
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, hab, hcd] at h₁ h₂
   · exact Ioo_union_Ioo' h₂ h₁
   all_goals

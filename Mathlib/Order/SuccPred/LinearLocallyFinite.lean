@@ -149,7 +149,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
       obtain ⟨n, m, hnm_ne, hfnm⟩ : ∃ n m, n ≠ m ∧ f n = f m
       exact Finite.exists_ne_map_eq_of_infinite f
       have hnm_eq : succ^[n] i = succ^[m] i := by simpa only [Subtype.mk_eq_mk] using hfnm
-      cases' le_total n m with h_le h_le
+      rcases le_total n m with h_le | h_le
       · exact ⟨n, m, lt_of_le_of_ne h_le hnm_ne, hnm_eq⟩
       · exact ⟨m, n, lt_of_le_of_ne h_le hnm_ne.symm, hnm_eq.symm⟩
     have h_max : IsMax (succ^[n] i) := isMax_iterate_succ_of_eq_of_ne h_eq hnm.ne

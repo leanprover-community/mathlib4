@@ -79,7 +79,7 @@ theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
 #align int.log_nat_cast Int.log_natCast
 
 theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : log b r = 0 := by
-  cases' le_total 1 r with h h
+  rcases le_total 1 r with h | h
   · rw [log_of_one_le_right _ h, Nat.log_of_left_le_one hb, Int.ofNat_zero]
   · rw [log_of_right_le_one _ h, Nat.clog_of_left_le_one hb, Int.ofNat_zero, neg_zero]
 #align int.log_of_left_le_one Int.log_of_left_le_one
@@ -91,7 +91,7 @@ theorem log_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : log b r = 0 := b
 #align int.log_of_right_le_zero Int.log_of_right_le_zero
 
 theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^ log b r ≤ r := by
-  cases' le_total 1 r with hr1 hr1
+  rcases le_total 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1]
     rw [zpow_ofNat, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
@@ -143,7 +143,7 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z 
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
   cases' le_or_lt b 1 with hb hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
-  cases' le_total r₁ 1 with h₁ h₁ <;> cases' le_total r₂ 1 with h₂ h₂
+  rcases le_total r₁ 1 with h₁ | h₁ <;> rcases le_total r₂ 1 with h₂ | h₂
   · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Int.ofNat_le]
     exact Nat.clog_mono_right _ (Nat.ceil_mono <| inv_le_inv_of_le h₀ h)
   · rw [log_of_right_le_one _ h₁, log_of_one_le_right _ h₂]

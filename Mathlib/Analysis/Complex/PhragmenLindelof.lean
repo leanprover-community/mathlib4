@@ -689,7 +689,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
   have hle : ∀ C', (∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C') →
       ∀ z : ℂ, 0 ≤ z.re → ‖f z‖ ≤ max C C' := fun C' hC' z hz ↦ by
     rcases hexp with ⟨c, hc, B, hO⟩
-    cases' le_total z.im 0 with h h
+    rcases le_total z.im 0 with h | h
     · refine quadrant_IV (hd.mono fun _ => And.left) ⟨c, hc, B, ?_⟩
           (fun x hx => (hC' x hx).trans <| le_max_right _ _)
           (fun x _ => (him x).trans (le_max_left _ _)) hz h

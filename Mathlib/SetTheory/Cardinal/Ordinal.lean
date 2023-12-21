@@ -258,7 +258,7 @@ theorem aleph_le {o₁ o₂ : Ordinal} : aleph o₁ ≤ aleph o₂ ↔ o₁ ≤ 
 
 @[simp]
 theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = aleph (max o₁ o₂) := by
-  cases' le_total (aleph o₁) (aleph o₂) with h h
+  rcases le_total (aleph o₁) (aleph o₂) with h | h
   · rw [max_eq_right h, max_eq_right (aleph_le.1 h)]
   · rw [max_eq_left h, max_eq_left (aleph_le.1 h)]
 #align cardinal.max_aleph_eq Cardinal.max_aleph_eq

@@ -124,12 +124,12 @@ theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := max_eq_bot
 
 theorem add_eq_max_iff : m + n = max m n ↔ m = 0 ∨ n = 0 := by
   rw [← min_eq_zero_iff]
-  cases' le_total m n with H H <;> simp [H]
+  rcases le_total m n with H | H <;> simp [H]
 #align nat.add_eq_max_iff Nat.add_eq_max_iff
 
 theorem add_eq_min_iff : m + n = min m n ↔ m = 0 ∧ n = 0 := by
   rw [← max_eq_zero_iff]
-  cases' le_total m n with H H <;> simp [H]
+  rcases le_total m n with H | H <;> simp [H]
 #align nat.add_eq_min_iff Nat.add_eq_min_iff
 
 theorem one_le_of_lt (h : n < m) : 1 ≤ m :=

@@ -146,7 +146,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
   · rintro ⟨t, ht, rfl⟩ i
     specialize ht i
     simp_rw [smul_eq_mul, Pi.mul_apply]
-    cases' le_total (a i) 0 with hai hai
+    rcases le_total (a i) 0 with hai | hai
     · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai]
       exact ⟨le_mul_of_le_one_left hai ht.2, mul_nonpos_of_nonneg_of_nonpos ht.1 hai⟩
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
@@ -154,7 +154,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
   · intro h
     refine' ⟨fun i => x i / a i, fun i => _, funext fun i => _⟩
     · specialize h i
-      cases' le_total (a i) 0 with hai hai
+      rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
         exact ⟨div_nonneg_of_nonpos h.2 hai, div_le_one_of_ge h.1 hai⟩
       · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai] at h

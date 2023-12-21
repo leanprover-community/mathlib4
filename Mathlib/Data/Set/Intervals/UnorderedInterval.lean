@@ -248,8 +248,8 @@ lemma uIcc_subset_uIcc_iff_le :
 /-- A sort of triangle inequality. -/
 lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x => by
   simp only [mem_uIcc, mem_union]
-  cases' le_total a c with h1 h1 <;>
-  cases' le_total x b with h2 h2 <;>
+  rcases le_total a c with h1 | h1 <;>
+  rcases le_total x b with h2 | h2 <;>
   tauto
 #align set.uIcc_subset_uIcc_union_uIcc Set.uIcc_subset_uIcc_union_uIcc
 
