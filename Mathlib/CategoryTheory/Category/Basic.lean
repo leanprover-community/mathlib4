@@ -117,6 +117,7 @@ use in auto-params.
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (options := { introsTransparency? := some .default, terminal := true })
+            (simp_options := { decide := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--

@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Mathlib.Data.KVMap
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
-import Mathlib.Lean.Linter
 import Std.Data.List.Count
 import Mathlib.Lean.Expr.Basic
 

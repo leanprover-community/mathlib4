@@ -171,6 +171,10 @@ theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s
 #align sym.mem_mk Sym.mem_mk
 
 @[simp]
+theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
+  Multiset.not_mem_zero a
+
+@[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
   Multiset.mem_cons
 #align sym.mem_cons Sym.mem_cons
@@ -297,6 +301,16 @@ theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
 theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
+
+theorem exists_cons_of_mem {s : Sym α (n + 1)} {a : α} (h : a ∈ s) : ∃ t, s = a ::ₛ t := by
+  obtain ⟨m, h⟩ := Multiset.exists_cons_of_mem h
+  have : Multiset.card m = n := by
+    apply_fun Multiset.card at h
+    rw [s.2, Multiset.card_cons, add_left_inj] at h
+    exact h.symm
+  use ⟨m, this⟩
+  apply Subtype.ext
+  exact h
 
 theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s

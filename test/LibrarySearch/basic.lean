@@ -3,6 +3,7 @@ import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
@@ -16,7 +17,7 @@ set_option autoImplicit true
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying the way that `apply?` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 
 -- We need to set this here, as the lakefile does not enable this during testing.
@@ -221,3 +222,11 @@ lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
 -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/exact.3F.20recent.20regression.3F/near/387691588
 lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
   exact? says exact dvd_of_mul_left_dvd h
+
+-- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Exact.3F.20fails.20on.20le_antisymm/near/388993167
+example {x y : ℝ} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
+  exact? says exact le_antisymm hxy hyx
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
+example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
+  exact? says exact mt h h'

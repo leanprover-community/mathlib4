@@ -3,7 +3,7 @@ Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
 -/
-import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
+import Mathlib.LinearAlgebra.Projectivization.Basic
 
 #align_import linear_algebra.projective_space.independence from "leanprover-community/mathlib"@"1e82f5ec4645f6a92bb9e02fce51e44e3bc3e1fe"
 
@@ -30,6 +30,7 @@ ambient vector space. Similarly for the definition of dependence.
 - Define projective linear subspaces.
 -/
 
+open scoped LinearAlgebra.Projectivization
 
 variable {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
 

@@ -197,6 +197,33 @@ theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 #align setoid.sUnion_classes Setoid.sUnion_classes
 
+/-- The equivalence between the quotient by an equivalence relation and its
+type of equivalence classes. -/
+noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
+  let f (a : α) : Setoid.classes r := ⟨{ x | Setoid.r x a }, Setoid.mem_classes r a⟩
+  have f_respects_relation (a b : α) (a_rel_b : Setoid.r a b) : f a = f b := by
+    rw [Subtype.mk.injEq]
+    exact Setoid.eq_of_mem_classes (Setoid.mem_classes r a) (Setoid.symm a_rel_b)
+        (Setoid.mem_classes r b) (Setoid.refl b)
+  apply Equiv.ofBijective (Quot.lift f f_respects_relation)
+  constructor
+  · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
+    induction' q_a using Quotient.ind with a
+    induction' q_b using Quotient.ind with b
+    simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
+    apply Quotient.sound
+    show a ∈ { x | Setoid.r x b }
+    rw [←h_eq]
+    exact Setoid.refl a
+  · rw [Quot.surjective_lift]
+    intro ⟨c, a, hc⟩
+    exact ⟨a, Subtype.ext hc.symm⟩
+
+@[simp]
+lemma quotientEquivClasses_mk_eq (r : Setoid α) (a : α) :
+    (quotientEquivClasses r (Quotient.mk r a) : Set α) = { x | r.Rel x a } :=
+  (@Subtype.ext_iff_val _ _ _ ⟨{ x | r.Rel x a }, Setoid.mem_classes r a⟩).mp rfl
+
 section Partition
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:

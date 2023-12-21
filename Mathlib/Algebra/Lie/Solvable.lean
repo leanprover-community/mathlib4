@@ -254,7 +254,7 @@ theorem solvable_iff_equiv_solvable (e : L' ≃ₗ⁅R⁆ L) : IsSolvable R L' �
 
 theorem le_solvable_ideal_solvable {I J : LieIdeal R L} (h₁ : I ≤ J) (_ : IsSolvable R J) :
     IsSolvable R I :=
-  (LieIdeal.homOfLe_injective h₁).lieAlgebra_isSolvable
+  (LieIdeal.inclusion_injective h₁).lieAlgebra_isSolvable
 #align lie_algebra.le_solvable_ideal_solvable LieAlgebra.le_solvable_ideal_solvable
 
 variable (R L)

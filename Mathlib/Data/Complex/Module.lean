@@ -50,6 +50,9 @@ open ComplexConjugate
 
 variable {R : Type*} {S : Type*}
 
+-- Test that the `SMul ℚ ℂ` instance is correct.
+example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
 instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 

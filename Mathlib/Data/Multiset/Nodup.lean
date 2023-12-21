@@ -82,13 +82,16 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
     simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
-    apply List.nodup_iff_count_le_one
+    exact List.nodup_iff_count_le_one
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
+
+theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=
+  Quot.induction_on s fun _l => by simpa using List.nodup_iff_count_eq_one
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) (h : a ∈ s) :
     count a s = 1 :=
-  le_antisymm (nodup_iff_count_le_one.1 d a) (count_pos.2 h)
+  nodup_iff_count_eq_one.mp d a h
 #align multiset.count_eq_one_of_mem Multiset.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) :
@@ -136,6 +139,14 @@ theorem Nodup.map_on {f : α → β} :
 theorem Nodup.map {f : α → β} {s : Multiset α} (hf : Injective f) : Nodup s → Nodup (map f s) :=
   Nodup.map_on fun _ _ _ _ h => hf h
 #align multiset.nodup.map Multiset.Nodup.map
+
+theorem nodup_map_iff_of_inj_on {f : α → β} (d : ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y) :
+    Nodup (map f s) ↔ Nodup s :=
+  ⟨Nodup.of_map _, fun h => h.map_on d⟩
+
+theorem nodup_map_iff_of_injective {f : α → β} (d : Function.Injective f) :
+    Nodup (map f s) ↔ Nodup s :=
+  ⟨Nodup.of_map _, fun h => h.map d⟩
 
 theorem inj_on_of_nodup_map {f : α → β} {s : Multiset α} :
     Nodup (map f s) → ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=

@@ -101,7 +101,7 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
 
 @[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
-    b • (a : α ⧸ H) = (b • a : α ⧸ H) :=
+    b • (a : α ⧸ H) = (↑(b • a) : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe

@@ -116,7 +116,7 @@ instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
 
 @[simp]
-theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :=
+theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : ↑(a • x) = a • (x : K) :=
   rfl
 #align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
 

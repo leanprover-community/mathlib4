@@ -501,7 +501,6 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
     dsimp only
     -- porting note: Lean 3 could get away with far fewer hints for inputs in the line below
     have := DirectedSystem.map_map (fun i j h => f' i j h) (hj p hps) hjk
-    dsimp only at this
     rw [this]
   · rintro x y ihx ihy
     rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, (f' j k hjk).map_add, ihx, ihy,
@@ -529,7 +528,6 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           restriction_of, dif_pos, lift_of, lift_of]
         dsimp only
         have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
-        dsimp only at this
         rw [this]
         exact sub_self _
         exacts [Or.inr rfl, Or.inl rfl]
@@ -539,8 +537,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         -- porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
-        erw [lift_of, dif_pos rfl, RingHom.map_one, RingHom.map_one, lift_of,
-          RingHom.map_one, sub_self]
+        erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
     · refine'
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)

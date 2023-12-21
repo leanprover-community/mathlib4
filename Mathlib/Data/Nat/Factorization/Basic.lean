@@ -112,11 +112,11 @@ theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun
 #align nat.factorization_inj Nat.factorization_inj
 
 @[simp]
-theorem factorization_zero : factorization 0 = 0 := by simp [factorization]
+theorem factorization_zero : factorization 0 = 0 := by decide
 #align nat.factorization_zero Nat.factorization_zero
 
 @[simp]
-theorem factorization_one : factorization 1 = 0 := by simp [factorization]
+theorem factorization_one : factorization 1 = 0 := by decide
 #align nat.factorization_one Nat.factorization_one
 
 #noalign nat.support_factorization
@@ -429,7 +429,8 @@ theorem factorization_prime_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0)
     (∀ p : ℕ, p.Prime → d.factorization p ≤ n.factorization p) ↔ d ∣ n := by
   rw [← factorization_le_iff_dvd hd hn]
   refine' ⟨fun h p => (em p.Prime).elim (h p) fun hp => _, fun h p _ => h p⟩
-  simp_rw [factorization_eq_zero_of_non_prime _ hp, le_refl]
+  simp_rw [factorization_eq_zero_of_non_prime _ hp]
+  rfl
 #align nat.factorization_prime_le_iff_dvd Nat.factorization_prime_le_iff_dvd
 
 theorem pow_succ_factorization_not_dvd {n p : ℕ} (hn : n ≠ 0) (hp : p.Prime) :

@@ -510,7 +510,7 @@ theorem exists_multiset_roots [DecidableEq R] :
         calc
           (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by
             congr
-            exact_mod_cast Multiset.card_cons _ _
+            exact mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
               exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
@@ -1300,7 +1300,7 @@ theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f 
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   by_cases hp0 : p = 0
   · simp only [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
-      rootMultiplicity_zero]
+      rootMultiplicity_zero, le_refl]
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
 

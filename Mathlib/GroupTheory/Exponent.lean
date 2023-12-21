@@ -256,7 +256,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
       rw [h, zero_dvd_iff] at this
       exact htpos.ne' this
     refine' exponent_dvd_of_forall_pow_eq_one _ _ fun g => _
-    rw [pow_eq_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
+    rw [←pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
     apply Finset.dvd_prod_of_mem
     rw [← Finset.mem_coe, ht]
     exact Set.mem_range_self g
@@ -393,7 +393,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   replace hf := nat_card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
   refine' hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => _)
-  rw [← order_eq_card_zpowers']
+  rw [Nat.card_zpowers]
   exact Monoid.order_dvd_exponent (g : G)
 #align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
 #align card_dvd_exponent_nsmul_rank card_dvd_exponent_nsmul_rank

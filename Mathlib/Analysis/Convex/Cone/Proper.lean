@@ -75,7 +75,7 @@ cone programs and proving duality theorems. -/
 structure ProperCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [SMul 𝕜 E] extends ConvexCone 𝕜 E where
   nonempty' : (carrier : Set E).Nonempty
-  is_closed' : IsClosed (carrier : Set E)
+  isClosed' : IsClosed (carrier : Set E)
 #align proper_cone ProperCone
 
 namespace ProperCone
@@ -86,14 +86,16 @@ variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [SMul 𝕜 E]
 
+attribute [coe] toConvexCone
+
 instance : Coe (ProperCone 𝕜 E) (ConvexCone 𝕜 E) :=
-  ⟨fun K => K.1⟩
+  ⟨toConvexCone⟩
 
 -- Porting note: now a syntactic tautology
 -- @[simp]
 -- theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
 --   rfl
--- #align proper_cone.to_convex_cone_eq_coe ProperCone.toConvexCone_eq_coe
+#noalign proper_cone.to_convex_cone_eq_coe
 
 theorem ext' : Function.Injective ((↑) : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
   cases S; cases T; congr
@@ -119,7 +121,7 @@ protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
 #align proper_cone.nonempty ProperCone.nonempty
 
 protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
-  K.is_closed'
+  K.isClosed'
 #align proper_cone.is_closed ProperCone.isClosed
 
 end SMul
@@ -135,7 +137,7 @@ module. -/
 def positive : ProperCone 𝕜 E where
   toConvexCone := ConvexCone.positive 𝕜 E
   nonempty' := ⟨0, ConvexCone.pointed_positive _ _⟩
-  is_closed' := isClosed_Ici
+  isClosed' := isClosed_Ici
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
@@ -156,7 +158,7 @@ variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 
 instance : Zero (ProperCone 𝕜 E) :=
   ⟨{  toConvexCone := 0
       nonempty' := ⟨0, rfl⟩
-      is_closed' := isClosed_singleton }⟩
+      isClosed' := isClosed_singleton }⟩
 
 instance : Inhabited (ProperCone 𝕜 E) :=
   ⟨0⟩
@@ -166,7 +168,7 @@ theorem mem_zero (x : E) : x ∈ (0 : ProperCone 𝕜 E) ↔ x = 0 :=
   Iff.rfl
 #align proper_cone.mem_zero ProperCone.mem_zero
 
-@[simp] -- Porting note: removed `norm_cast` (new-style structures)
+@[simp, norm_cast]
 theorem coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
   rfl
 #align proper_cone.coe_zero ProperCone.coe_zero
@@ -194,10 +196,10 @@ noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone �
   toConvexCone := ConvexCone.closure (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K)
   nonempty' :=
     ⟨0, subset_closure <| SetLike.mem_coe.2 <| ConvexCone.mem_map.2 ⟨0, K.pointed, map_zero _⟩⟩
-  is_closed' := isClosed_closure
+  isClosed' := isClosed_closure
 #align proper_cone.map ProperCone.map
 
-@[simp] -- Porting note: removed `norm_cast` (new-style structures)
+@[simp, norm_cast]
 theorem coe_map (f : E →L[ℝ] F) (K : ProperCone ℝ E) :
     ↑(K.map f) = (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
   rfl
@@ -218,10 +220,10 @@ theorem map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K
 def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
   toConvexCone := (K : Set E).innerDualCone
   nonempty' := ⟨0, pointed_innerDualCone _⟩
-  is_closed' := isClosed_innerDualCone _
+  isClosed' := isClosed_innerDualCone _
 #align proper_cone.dual ProperCone.dual
 
-@[simp] -- Porting note: removed `norm_cast` (new-style structures)
+@[simp, norm_cast]
 theorem coe_dual (K : ProperCone ℝ E) : ↑(dual K) = (K : Set E).innerDualCone :=
   rfl
 #align proper_cone.coe_dual ProperCone.coe_dual
@@ -232,14 +234,13 @@ theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, 
 #align proper_cone.mem_dual ProperCone.mem_dual
 
 /-- The preimage of a proper cone under a continuous `ℝ`-linear map is a proper cone. -/
-noncomputable def comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : ProperCone ℝ E
-    where
+noncomputable def comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : ProperCone ℝ E where
   toConvexCone := ConvexCone.comap (f : E →ₗ[ℝ] F) S
   nonempty' :=
     ⟨0, by
       simp only [ConvexCone.comap, mem_preimage, map_zero, SetLike.mem_coe, mem_coe]
       apply ProperCone.pointed⟩
-  is_closed' := by
+  isClosed' := by
     simp only [ConvexCone.comap, ContinuousLinearMap.coe_coe]
     apply IsClosed.preimage f.2 S.isClosed
 #align proper_cone.comap ProperCone.comap
@@ -292,8 +293,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
         ConvexCone.mem_closure, mem_closure_iff_seq_limit]
       -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
       rintro ⟨seq, hmem, htends⟩ y hinner
-      suffices h : ∀ n, 0 ≤ ⟪y, seq n⟫_ℝ;
-      exact
+      suffices h : ∀ n, 0 ≤ ⟪y, seq n⟫_ℝ from
         ge_of_tendsto'
           (Continuous.seqContinuous (Continuous.inner (@continuous_const _ _ _ _ y) continuous_id)
             htends)

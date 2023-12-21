@@ -2683,9 +2683,7 @@ for more discussion.
 theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.map p).count True = card (s.filter p) := by
   simp only [count_eq_card_filter_eq, map_filter, card_map, Function.comp.left_id,
-    eq_true_eq_id, Function.comp]
-  congr; funext _
-  simp only [eq_iff_iff, true_iff]
+    eq_true_eq_id, Function.comp_apply]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_True_eq_filter_card
 
 /-! ### Lift a relation to `Multiset`s -/

@@ -97,9 +97,9 @@ as a product of monomials in the supports of `f` and `g` is a product. -/
 theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (h : UniqueAdd f.support g.support a0 b0) :
     (f * g) (a0 + b0) = f a0 * g b0 :=
-MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
+  MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
 instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
-MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
+  MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
 
 end AddMonoidAlgebra

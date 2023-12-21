@@ -34,8 +34,6 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace ProbabilityTheory
 
 section GaussianPdf
@@ -199,14 +197,13 @@ instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
   measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
 
-lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) {s : Set ℝ} (hs : MeasurableSet s) :
+lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
     gaussianReal μ v s = ∫⁻ x in s, gaussianPdf μ v x := by
-  rw [gaussianReal_of_var_ne_zero _ hv, withDensity_apply _ hs]
+  rw [gaussianReal_of_var_ne_zero _ hv, withDensity_apply' _ s]
 
-lemma gaussianReal_apply_eq_integral (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
-    {s : Set ℝ} (hs : MeasurableSet s) :
+lemma gaussianReal_apply_eq_integral (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
     gaussianReal μ v s = ENNReal.ofReal (∫ x in s, gaussianPdfReal μ v x) := by
-  rw [gaussianReal_apply _ hv hs, ofReal_integral_eq_lintegral_ofReal]
+  rw [gaussianReal_apply _ hv s, ofReal_integral_eq_lintegral_ofReal]
   · rfl
   · exact (integrable_gaussianPdfReal _ _).restrict
   · exact ae_of_all _ (gaussianPdfReal_nonneg _ _)
@@ -266,7 +263,7 @@ lemma gaussianReal_map_add_const (y : ℝ) :
   ext s' hs'
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
   simp only [abs_neg, abs_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, one_mul, ne_eq]
-  rw [gaussianReal_apply_eq_integral _ hv hs']
+  rw [gaussianReal_apply_eq_integral _ hv s']
   simp [gaussianPdfReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
 
 /-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
@@ -286,7 +283,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     rw [Measure.map_const]
     simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
     convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false]
+    simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false, not_false_eq_true]
     rfl
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
@@ -296,7 +293,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   ext s' hs'
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
   simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
-  rw [gaussianReal_apply_eq_integral _ _ hs']
+  rw [gaussianReal_apply_eq_integral _ _ s']
   swap
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_eq]

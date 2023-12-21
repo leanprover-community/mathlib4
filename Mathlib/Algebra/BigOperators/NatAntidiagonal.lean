@@ -23,8 +23,9 @@ namespace Finset
 namespace Nat
 
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :
-    (∏ p in antidiagonal (n + 1), f p) = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) :=
-  by rw [antidiagonal_succ, prod_cons, prod_map]; rfl
+    (∏ p in antidiagonal (n + 1), f p)
+      = f (0, n + 1) * ∏ p in antidiagonal n, f (p.1 + 1, p.2) := by
+  rw [antidiagonal_succ, prod_cons, prod_map]; rfl
 #align finset.nat.prod_antidiagonal_succ Finset.Nat.prod_antidiagonal_succ
 
 theorem sum_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → N} :

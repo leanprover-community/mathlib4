@@ -151,17 +151,10 @@ attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCo
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    Top α where
-  /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is larger than any other element.-/
-  protected le_top : ∀ x : α, x ≤ ⊤
+    OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedAddCommMonoidWithTop.toOrderTop (α : Type*)
-    [h : LinearOrderedAddCommMonoidWithTop α] : OrderTop α :=
-  { h with }
 #align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
 section LinearOrderedAddCommMonoidWithTop

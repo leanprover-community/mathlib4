@@ -82,17 +82,18 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
-  simp only [bit, bit1, bit0, Bool.cond_eq_ite]
+  simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite]
   have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h3 x :     (x + x) / 2 = x := by rw [← two_mul, mul_comm]; apply mul_div_left _ zero_lt_two
-  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
-  cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs <;> simp_all
+  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]; rfl
+  cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
+    <;> simp_all (config := {decide := true})
 #align nat.bitwise_bit Nat.bitwise_bit
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
-  simp [bit, bit0, bit1, Bool.cond_eq_ite, ←mul_two]
+  simp (config := { unfoldPartialApp := true }) [bit, bit0, bit1, Bool.cond_eq_ite, ←mul_two]
   split_ifs <;> simp [Nat.add_mod]
 
 @[simp]
@@ -304,6 +305,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
     rw [(rfl : succ 0 = 1)]
     simp only [ge_iff_le, tsub_le_iff_right, pow_succ, bodd_mul,
       Bool.and_eq_false_eq_eq_false_or_eq_false, or_true]
+    exact Or.inr rfl
 #align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
 
 theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
@@ -349,8 +351,7 @@ theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
 #align nat.lxor_comm Nat.xor_comm
 
 @[simp]
-theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by
- simp only [HXor.hXor, Xor.xor, xor, bitwise_zero_left, ite_true]
+theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by simp [HXor.hXor, Xor.xor, xor]
 #align nat.zero_lxor Nat.zero_xor
 
 @[simp]
@@ -359,22 +360,22 @@ theorem xor_zero (n : ℕ) : n ^^^ 0 = n := by simp [HXor.hXor, Xor.xor, xor]
 
 @[simp]
 theorem zero_land (n : ℕ) : 0 &&& n = 0 := by
-  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_left, ite_false];
+  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_left, ite_false, Bool.and_true];
 #align nat.zero_land Nat.zero_land
 
 @[simp]
 theorem land_zero (n : ℕ) : n &&& 0 = 0 := by
-  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_right, ite_false]
+  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_right, ite_false, Bool.and_false]
 #align nat.land_zero Nat.land_zero
 
 @[simp]
 theorem zero_lor (n : ℕ) : 0 ||| n = n := by
-  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_left, ite_true]
+  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_left, ite_true, Bool.or_true]
 #align nat.zero_lor Nat.zero_lor
 
 @[simp]
 theorem lor_zero (n : ℕ) : n ||| 0 = n := by
-  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_right, ite_true]
+  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_right, ite_true, Bool.or_false]
 #align nat.lor_zero Nat.lor_zero
 
 

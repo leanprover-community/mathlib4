@@ -585,8 +585,8 @@ theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [Topological
 
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
-    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' :=
-  by simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
+    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' := by
+  simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 #align continuous_at_update_of_ne continuousAt_update_of_ne
 
 theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
@@ -1335,13 +1335,12 @@ section SeparatedFinset
 
 theorem finset_disjoint_finset_opens_of_t2 [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
-  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| by
-    exact_mod_cast h
+  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 #align finset_disjoint_finset_opens_of_t2 finset_disjoint_finset_opens_of_t2
 
 theorem point_disjoint_finset_opens_of_t2 [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
-    SeparatedNhds ({x} : Set X) s := by
-  exact_mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
+    SeparatedNhds ({x} : Set X) s :=
+  mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 point_disjoint_finset_opens_of_t2
 
 end SeparatedFinset

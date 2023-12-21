@@ -68,8 +68,6 @@ noncomputable section
 ## Definition of the Riemann zeta function and related functions
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=
   ∑' n : ℕ, rexp (-π * t * ((n : ℝ) + 1) ^ 2)
@@ -116,7 +114,7 @@ theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
 theorem summable_exp_neg_pi_mul_nat_sq {t : ℝ} (ht : 0 < t) :
     Summable fun n : ℕ => rexp (-π * t * ((n : ℝ) + 1) ^ 2) := by
   have : 0 < (↑t * I).im := by rwa [ofReal_mul_im, I_im, mul_one]
-  convert summable_norm_iff.mpr (hasSum_nat_jacobiTheta this).summable using 1
+  convert (hasSum_nat_jacobiTheta this).summable.norm using 1
   ext1 n
   rw [Complex.norm_eq_abs, Complex.abs_exp]
   rw [show ↑π * I * ((n : ℂ) + 1) ^ 2 * (↑t * I) = ((π * t * ((n : ℝ) + 1) ^ 2) : ℝ) * I ^ 2 by
@@ -493,7 +491,7 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
   conv_rhs =>
     congr
     rw [← smul_eq_mul, ← mellin_comp_mul_left _ _ pi_pos]
-  have : 1 / ((n : ℂ) + 1) ^ (2 * s) = (((n : ℝ) + 1) ^ (2 : ℝ) : ℂ) ^ (-s) := by
+  have : 1 / ((n : ℂ) + 1) ^ (2 * s) = (((n + 1) ^ (2 : ℝ) : ℝ) : ℂ) ^ (-s) := by
     rw [(by norm_num : (n : ℂ) + 1 = ↑((n : ℝ) + 1)), (by norm_num : 2 * s = ↑(2 : ℝ) * s),
       cpow_mul_ofReal_nonneg, one_div, cpow_neg]
     rw [← Nat.cast_succ]
@@ -539,7 +537,7 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
     (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => h_sum0 ht)
   have h_sum : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), Summable fun n : ℕ => bd n t := by
     refine (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => ?_)
-    simpa only [fun n => h_norm n ht] using summable_norm_iff.mpr (h_sum0 ht).summable
+    simpa only [fun n => h_norm n ht] using (h_sum0 ht).summable.norm
   have h_int : Integrable (fun t : ℝ => ∑' n : ℕ, bd n t) (volume.restrict (Ioi 0)) := by
     refine IntegrableOn.congr_fun
         (mellinConvergent_of_isBigO_rpow_exp pi_pos locally_integrable_zetaKernel₁
@@ -585,7 +583,7 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
   rw [tsum_eq_zero_add]
   · simp_rw [Nat.cast_zero, zero_cpow hs', div_zero, zero_add,
       zeta_eq_tsum_one_div_nat_add_one_cpow hs, Nat.cast_add, Nat.cast_one]
-  · rw [← summable_norm_iff]
+  · refine .of_norm ?_
     simp_rw [norm_div, norm_one, Complex.norm_eq_abs, ← ofReal_nat_cast,
       abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg _) (zero_lt_one.trans hs).ne',
       summable_one_div_nat_rpow]

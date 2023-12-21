@@ -89,11 +89,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     simp only [mem_map, mem_Icc, mem_Ioc, Fin.zero_le, true_and_iff, Equiv.subLeft_apply,
       Function.Embedding.coeFn_mk, exists_prop, RelEmbedding.coe_toEmbedding] at hx ⊢
     rcases hx with ⟨i, ⟨hi, rfl⟩⟩
-    have h1 : a i + a (Fin.last m - k) ≤ n := by
-      -- Porting note: Original proof was `by linarith only [h, a.monotone hi]`
-      have := a.monotone hi
-      simp only at this ⊢
-      linarith only [h, this]
+    have h1 : a i + a (Fin.last m - k) ≤ n := by linarith only [h, a.monotone hi]
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1
     rw [← mem_coe, ← range_orderEmbOfFin A hm, Set.mem_range] at h2
     cases' h2 with j hj

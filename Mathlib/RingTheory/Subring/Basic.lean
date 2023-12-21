@@ -796,7 +796,7 @@ theorem center_toSubsemiring : (center R).toSubsemiring = Subsemiring.center R :
 variable {R}
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 #align subring.mem_center_iff Subring.mem_center_iff
 
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>

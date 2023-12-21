@@ -500,7 +500,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
     simp
     congr!
-  simpa only [HasSum, A] using summable_of_summable_norm (hF K)
+  simpa only [HasSum, A] using (hF K).of_norm
 #align continuous_map.summable_of_locally_summable_norm ContinuousMap.summable_of_locally_summable_norm
 
 end LocalNormalConvergence

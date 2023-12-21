@@ -496,15 +496,15 @@ theorem same_gf [Field α] (m : ℕ) :
   calc
     (∏ i in range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *
           ∏ i in range (m + 1), (1 - X ^ (m + 1 + i + 1)) =
-        π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * (1 - X ^ (m + 1 + m + 1))) :=
-      by rw [prod_range_succ _ m, ← hπ₁, prod_range_succ _ m, ← hπ₀]
+        π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * (1 - X ^ (m + 1 + m + 1))) := by
+      rw [prod_range_succ _ m, ← hπ₁, prod_range_succ _ m, ← hπ₀]
     _ = π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * ((1 + X ^ (m + 1)) * (1 - X ^ (m + 1)))) := by
       rw [← sq_sub_sq, one_pow, add_assoc _ m 1, ← two_mul (m + 1), pow_mul']
     _ = π₀ * (1 - X ^ (m + 1)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by ring
     _ =
         (∏ i in range (m + 1), (1 - X ^ (m + 1 + i))) * (1 - X ^ (2 * m + 1))⁻¹ *
-          (π₁ * (1 + X ^ (m + 1))) :=
-      by rw [prod_range_succ', add_zero, hπ₀]; simp_rw [← add_assoc]
+          (π₁ * (1 + X ^ (m + 1))) := by
+      rw [prod_range_succ', add_zero, hπ₀]; simp_rw [← add_assoc]
     _ = π₂ * (1 - X ^ (m + 1 + m)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by
       rw [add_right_comm, hπ₂, ← prod_range_succ]; simp_rw [add_right_comm]
     _ = π₂ * (1 - X ^ (2 * m + 1)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by
@@ -521,14 +521,14 @@ theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   rw [← same_gf, coeff_mul_prod_one_sub_of_lt_order]
   rintro i -
   rw [order_X_pow]
-  exact_mod_cast Nat.lt_succ_of_le (le_add_right h)
+  exact mod_cast Nat.lt_succ_of_le (le_add_right h)
 #align theorems_100.same_coeffs Theorems100.same_coeffs
 
 theorem partition_theorem (n : ℕ) :
     (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
-  suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card by
-    exact_mod_cast this
+  suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card from
+    mod_cast this
   rw [distinctGF_prop n (n + 1) (by linarith)]
   rw [oddGF_prop n (n + 1) (by linarith)]
   apply same_coeffs (n + 1) n n.le_succ

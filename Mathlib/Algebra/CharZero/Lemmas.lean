@@ -108,7 +108,7 @@ theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
 
 theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 ∨ a = b := by
   rw [← sub_eq_zero, ← mul_sub, mul_eq_zero, sub_eq_zero] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align nat_mul_inj nat_mul_inj
 
 theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n ≠ 0) : a = b := by
@@ -121,7 +121,7 @@ theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
   simp only [(two_mul a).symm, (two_mul b).symm] at h
   refine' nat_mul_inj' _ two_ne_zero
-  exact_mod_cast h
+  exact mod_cast h
 #align bit0_injective bit0_injective
 
 theorem bit1_injective : Function.Injective (bit1 : R → R) := fun a b h => by

@@ -42,8 +42,6 @@ nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite plac
 number field, infinite places
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
@@ -343,10 +341,10 @@ def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
 theorem det_matrixToStdBasis :
     (matrixToStdBasis K).det = (2⁻¹ * I) ^ NrComplexPlaces K :=
   calc
-  _ = ∏ k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
+  _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
       rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, Finset.prod_const_one, one_mul,
           det_reindex_self, det_blockDiagonal]
-  _ = ∏ k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
+  _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
       field_simp; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by

@@ -269,7 +269,7 @@ Analysis:
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
-    absolutely convergent series in Banach spaces: 'summable_of_summable_norm'
+    absolutely convergent series in Banach spaces: 'Summable.of_norm'
     Hahn-Banach theorem: 'exists_extension_norm_eq'
     dual of a normed space: 'NormedSpace.Dual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'

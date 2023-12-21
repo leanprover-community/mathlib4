@@ -11,6 +11,7 @@ import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 #align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
@@ -715,27 +716,48 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 #align subsemiring.eq_top_iff' Subsemiring.eq_top_iff'
 
-section Center
+section NonAssocSemiring
 
-/-- The center of a semiring `R` is the set of elements that commute with everything in `R` -/
-def center (R) [Semiring R] : Subsemiring R :=
-  { Submonoid.center R with
-    carrier := Set.center R
-    zero_mem' := Set.zero_mem_center R
-    add_mem' := Set.add_mem_center }
+variable (R) [NonAssocSemiring R]
+
+/-- The center of a non-associative semiring `R` is the set of elements that commute and associate
+with everything in `R` -/
+def center : Subsemiring R :=
+  { NonUnitalSubsemiring.center R with
+    one_mem' := Set.one_mem_center R }
 #align subsemiring.center Subsemiring.center
 
-theorem coe_center (R) [Semiring R] : ↑(center R) = Set.center R :=
+theorem coe_center : ↑(center R) = Set.center R :=
   rfl
 #align subsemiring.coe_center Subsemiring.coe_center
 
 @[simp]
-theorem center_toSubmonoid (R) [Semiring R] : (center R).toSubmonoid = Submonoid.center R :=
+theorem center_toSubmonoid : (center R).toSubmonoid = Submonoid.center R :=
   rfl
 #align subsemiring.center_to_submonoid Subsemiring.center_toSubmonoid
 
+/-- The center is commutative and associative.
+
+This is not an instance as it forms a non-defeq diamond with
+`NonUnitalSubringClass.tNonUnitalring ` in the `npow` field. -/
+abbrev center.commSemiring' : CommSemiring (center R) :=
+  { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
+
+end NonAssocSemiring
+
+section Semiring
+
+/-- The center is commutative. -/
+instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) :=
+  { Submonoid.center.commMonoid, (center R).toSemiring with }
+
+-- no instance diamond, unlike the primed version
+example {R} [Semiring R] :
+    center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) :=
+  rfl
+
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 #align subsemiring.mem_center_iff Subsemiring.mem_center_iff
 
 instance decidableMemCenter {R} [Semiring R] [DecidableEq R] [Fintype R] :
@@ -747,11 +769,8 @@ theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 #align subsemiring.center_eq_top Subsemiring.center_eq_top
 
-/-- The center is commutative. -/
-instance commSemiring {R} [Semiring R] : CommSemiring (center R) :=
-  { Submonoid.center.commMonoid, (center R).toSemiring with }
 
-end Center
+end Semiring
 
 section Centralizer
 

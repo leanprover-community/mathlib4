@@ -248,8 +248,9 @@ theorem nhds_ne_subtype_neBot_iff {S : Set α} {x : S} :
   rw [neBot_iff, neBot_iff, not_iff_not, nhds_ne_subtype_eq_bot_iff]
 #align nhds_ne_subtype_ne_bot_iff nhds_ne_subtype_neBot_iff
 
-theorem discreteTopology_subtype_iff {S : Set α} : DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ :=
-  by simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
+theorem discreteTopology_subtype_iff {S : Set α} :
+    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
+  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
 #align discrete_topology_subtype_iff discreteTopology_subtype_iff
 
 end Topα
@@ -533,8 +534,8 @@ theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
 #align mem_nhds_prod_iff mem_nhds_prod_iff
 
 theorem mem_nhdsWithin_prod_iff {a : α} {b : β} {s : Set (α × β)} {ta : Set α} {tb : Set β} :
-    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s :=
-  by rw [nhdsWithin_prod_eq, mem_prod_iff]
+    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s := by
+  rw [nhdsWithin_prod_eq, mem_prod_iff]
 
 -- porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιa ιb : Type*} {pa : ιa → Prop} {pb : ιb → Prop}
@@ -762,13 +763,15 @@ theorem frontier_prod_eq (s : Set α) (t : Set β) :
 #align frontier_prod_eq frontier_prod_eq
 
 @[simp]
-theorem frontier_prod_univ_eq (s : Set α) : frontier (s ×ˢ (univ : Set β)) = frontier s ×ˢ univ :=
-  by simp [frontier_prod_eq]
+theorem frontier_prod_univ_eq (s : Set α) :
+    frontier (s ×ˢ (univ : Set β)) = frontier s ×ˢ univ := by
+  simp [frontier_prod_eq]
 #align frontier_prod_univ_eq frontier_prod_univ_eq
 
 @[simp]
-theorem frontier_univ_prod_eq (s : Set β) : frontier ((univ : Set α) ×ˢ s) = univ ×ˢ frontier s :=
-  by simp [frontier_prod_eq]
+theorem frontier_univ_prod_eq (s : Set β) :
+    frontier ((univ : Set α) ×ˢ s) = univ ×ˢ frontier s := by
+  simp [frontier_prod_eq]
 #align frontier_univ_prod_eq frontier_univ_prod_eq
 
 theorem map_mem_closure₂ {f : α → β → γ} {a : α} {b : β} {s : Set α} {t : Set β} {u : Set γ}
@@ -799,7 +802,7 @@ theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → β} {g : κ �
 
 theorem Inducing.prod_map {f : α → β} {g : γ → δ} (hf : Inducing f) (hg : Inducing g) :
     Inducing (Prod.map f g) :=
-  inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map, nhds_prod_eq, hf.nhds_eq_comap,
+  inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
 
@@ -1280,7 +1283,8 @@ lemma Pi.continuous_restrict (S : Set ι) :
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
-  simp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι), Set.restrict]
+  simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
+    Set.restrict]
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter β} {f : β → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : β → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :
@@ -1438,8 +1442,8 @@ theorem pi_eq_generateFrom :
       generateFrom
         { g | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
-  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } :=
-    by simp only [generateFrom_setOf_isOpen]
+  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } := by
+    simp only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 #align pi_eq_generate_from pi_eq_generateFrom
 
@@ -1676,14 +1680,12 @@ variable [TopologicalSpace α] {β : Set α} {γ : Set β}
 
 theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
   rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
-  convert IsOpen.inter hβ hδ
-  ext
-  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+  rw [Subtype.image_preimage_coe]
+  exact IsOpen.inter hδ hβ
 
 theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
   rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
-  convert IsClosed.inter hβ hδ
-  ext
-  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+  rw [Subtype.image_preimage_coe]
+  convert IsClosed.inter hδ hβ
 
 end Monad

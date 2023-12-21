@@ -28,8 +28,6 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical Polynomial IntermediateField
 
 open Polynomial IntermediateField
@@ -286,16 +284,15 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   revert α
   apply solvableByRad.induction
   · exact fun _ => isIntegral_algebraMap
-  · exact fun _ _ => isIntegral_add
-  · exact fun _ => isIntegral_neg
-  · exact fun _ _ => isIntegral_mul
+  · exact fun _ _ => IsIntegral.add
+  · exact fun _ => IsIntegral.neg
+  · exact fun _ _ => IsIntegral.mul
   · intro α hα
     exact Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
-      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from
-        isAlgebraic_iff_isIntegral.mpr hα)
+      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from hα.isAlgebraic)
   · intro α n hn hα
-    obtain ⟨p, h1, h2⟩ := isAlgebraic_iff_isIntegral.mpr hα
-    refine' isAlgebraic_iff_isIntegral.mp ⟨p.comp (X ^ n),
+    obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
+    refine' IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
       ⟨fun h => h1 (leadingCoeff_eq_zero.mp _), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
     rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
     rwa [natDegree_X_pow]

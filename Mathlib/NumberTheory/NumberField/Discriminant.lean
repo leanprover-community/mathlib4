@@ -20,8 +20,6 @@ number field, discriminant
 -- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
 -- this file
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace NumberField
 
 open Classical NumberField Matrix NumberField.InfinitePlace
@@ -75,8 +73,8 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           ← coe_discr, map_intCast, ← Complex.nnnorm_int]
   ext : 2
   dsimp only
-  rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp, Equiv.symm_symm,
-    latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
+  rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
+    Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 

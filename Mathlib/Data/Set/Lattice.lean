@@ -56,7 +56,7 @@ In lemma names,
 set_option autoImplicit true
 
 
-open Function Tactic Set
+open Function Set
 
 universe u
 

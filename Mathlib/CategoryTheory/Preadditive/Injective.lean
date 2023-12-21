@@ -88,7 +88,7 @@ section
 
 open ZeroObject
 
-instance zero_injective [HasZeroObject C] [HasZeroMorphisms C] : Injective (0 : C) :=
+instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
   (isZero_zero C).injective
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 

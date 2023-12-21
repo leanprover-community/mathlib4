@@ -25,6 +25,7 @@ open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab
+open Std.Tactic
 
 namespace Mathlib.Tactic.Find
 

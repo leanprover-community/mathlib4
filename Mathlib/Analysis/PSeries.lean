@@ -27,9 +27,6 @@ test once we need it.
 p-series, Cauchy condensation test
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Filter
 
 open BigOperators ENNReal NNReal Topology
@@ -77,8 +74,11 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     exacts [add_le_add ihn this,
       (add_le_add_right n.one_le_two_pow _ : 1 + 1 ≤ 2 ^ n + 1),
       add_le_add_right (Nat.pow_le_pow_of_le_right zero_lt_two n.le_succ) _]
-  have : ∀ k ∈ Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f (2 ^ (n + 1)) ≤ f k := fun k hk =>
-    hf (n.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
+  have : ∀ k ∈ Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f (2 ^ (n + 1)) ≤ f k := by
+    -- Note(kmill): was `fun k hk => ...` but `mem_Ico.mp hk` was elaborating with some
+    -- delayed assignment metavariables that weren't resolved in time. `intro` fixes this.
+    intro k hk
+    exact hf (n.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
       (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, two_mul]
@@ -313,7 +313,7 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     positivity
 #align sum_Ioc_inv_sq_le_sub sum_Ioc_inv_sq_le_sub
 
-theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, ((i : α) ^ 2)⁻¹) ≤ 2 / (k + 1) :=
+theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
   calc
     (∑ i in Ioo k n, ((i : α) ^ 2)⁻¹) ≤ ∑ i in Ioc k (max (k + 1) n), ((i : α) ^ 2)⁻¹ := by
       apply sum_le_sum_of_subset_of_nonneg

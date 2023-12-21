@@ -895,8 +895,9 @@ theorem ofSet_trans {s : Set α} (hs : IsOpen s) : (ofSet s hs).trans e = e.rest
   LocalHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) <| by simp [hs.interior_eq, inter_comm]
 #align local_homeomorph.of_set_trans LocalHomeomorph.ofSet_trans
 
-theorem ofSet_trans' {s : Set α} (hs : IsOpen s) : (ofSet s hs).trans e = e.restr (e.source ∩ s) :=
-  by rw [ofSet_trans, restr_source_inter]
+theorem ofSet_trans' {s : Set α} (hs : IsOpen s) :
+    (ofSet s hs).trans e = e.restr (e.source ∩ s) := by
+  rw [ofSet_trans, restr_source_inter]
 #align local_homeomorph.of_set_trans' LocalHomeomorph.ofSet_trans'
 
 @[simp, mfld_simps]

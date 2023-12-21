@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.Cases
 import Mathlib.Algebra.NeZero
 

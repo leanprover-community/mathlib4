@@ -83,7 +83,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
-    · simp
+    · decide
     · simp [eq_comm]
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons]

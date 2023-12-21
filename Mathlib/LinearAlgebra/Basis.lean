@@ -259,8 +259,9 @@ theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
   ⟨b.coord i m, by simp⟩
 #align basis.dvd_coord_smul Basis.dvd_coord_smul
 
-theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) : b.coord i (b.repr.symm f) = f i :=
-  by simp only [repr_symm_apply, coord_apply, repr_total]
+theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) :
+    b.coord i (b.repr.symm f) = f i := by
+  simp only [repr_symm_apply, coord_apply, repr_total]
 #align basis.coord_repr_symm Basis.coord_repr_symm
 
 end Coord
@@ -1323,7 +1324,7 @@ theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) :
     (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
-      Fin.cons ⟨y, yO⟩ (Submodule.ofLe hNO ∘ b) :=
+      Fin.cons ⟨y, yO⟩ (Submodule.inclusion hNO ∘ b) :=
   coe_mkFinCons _ _ _ _
 #align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLE
 
@@ -1397,14 +1398,47 @@ end Induction
 with the basis elements. -/
 lemma Basis.mem_center_iff {A}
     [Semiring R] [NonUnitalNonAssocSemiring A]
-    [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-    (b : Basis ι R A) {x : A} :
-    x ∈ Set.center A ↔ ∀ i, Commute (b i) x := by
+    [Module R A] [SMulCommClass R A A] [SMulCommClass R R A] [IsScalarTower R A A]
+    (b : Basis ι R A) {z : A} :
+    z ∈ Set.center A ↔
+      (∀ i, Commute (b i) z) ∧ ∀ i j,
+        z * (b i * b j) = (z * b i) * b j
+          ∧ (b i * z) * b j = b i * (z * b j)
+          ∧ (b i * b j) * z = b i * (b j * z) := by
   constructor
-  · intro h i; apply h
-  · intro h y
-    rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
-    simp_rw [mul_smul_comm, smul_mul_assoc, (h _).eq]
+  · intro h;
+    constructor
+    · intro i
+      apply (h.1 (b i)).symm
+    · intros
+      exact ⟨h.2 _ _, ⟨h.3 _ _, h.4 _ _⟩⟩
+  · intro h
+    rw [center, mem_setOf_eq]
+    constructor
+    case comm =>
+      intro y
+      rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
+      simp_rw [mul_smul_comm, smul_mul_assoc, (h.1 _).eq]
+    case left_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
+        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
+        (@SMulCommClass.smul_comm R R A)]
+      rw [Finset.sum_comm]
+    case mid_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      simp_rw [smul_mul_assoc, Finset.sum_mul, mul_smul_comm, smul_mul_assoc, (h.2 _ _).2.1]
+    case right_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul]
+      simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
+        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
+        (h.2 _ _).2.2]
 
 section RestrictScalars
 

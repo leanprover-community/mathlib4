@@ -254,6 +254,18 @@ abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P)
   colimit.desc _ (Cofan.mk P p)
 #align category_theory.limits.sigma.desc CategoryTheory.Limits.Sigma.desc
 
+/-- A version of `Cocones.ext` for `Cofan`s. -/
+@[simps!]
+def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
+    (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by aesop_cat) : c₁ ≅ c₂ :=
+  Cocones.ext e (fun ⟨j⟩ => w j)
+
+/-- A cofan `c` on `f` such that the induced map `∐ f ⟶ c.pt` is an iso, is a coproduct. -/
+def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f)
+    [hc : IsIso (Sigma.desc c.inj)] : IsColimit c :=
+  IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
+    (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
+
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
 -/
