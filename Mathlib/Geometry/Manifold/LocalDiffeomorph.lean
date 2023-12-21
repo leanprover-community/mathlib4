@@ -351,7 +351,7 @@ noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
     map_smul' := by intros; simp
   }
 
--- FIXME: for some reason, "rfl" fails.
+-- FIXME: for some reason, "rfl" fails. FIXME: hn should be after hf!
 lemma IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) :
     hf.mfderiv_toContinuousLinearEquiv hn = mfderiv I J f x := by
@@ -359,21 +359,21 @@ lemma IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe
 
 /-- Each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence. -/
 noncomputable def Diffeomorph.mfderiv_toContinuousLinearEquiv
-    (hn : 1 ≤ n) (Φ : M ≃ₘ^n⟮I, J⟯ N) (x : M) :
+    (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) (x : M) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (Φ x)) :=
   (Φ.isLocalDiffeomorph x).mfderiv_toContinuousLinearEquiv hn
 
--- TODO: make `by rfl` work
+-- TODO: make `by rfl` work. FIXME: hn should be after hf!
 lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) :
     (Φ.mfderiv_toContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := by sorry
 
-variable (x) in
+variable (x) in -- FIXME: hn should be after hf!
 /-- If `f` is a `C^n` local diffeomorphism (`n ≥ 1`), each differential is a linear equivalence. -/
 noncomputable def IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J n f) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
   (hf x).mfderiv_toContinuousLinearEquiv hn
 
-variable (x) in
+variable (x) in -- FIXME: hn should be after hf!
 lemma IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorph I J n f):
     hf.mfderiv_toContinuousLinearEquiv x hn = mfderiv I J f x := by
   let r := (hf x).mfderiv_toContinuousLinearEquiv_coe hn
