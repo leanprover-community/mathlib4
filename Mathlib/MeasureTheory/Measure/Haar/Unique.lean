@@ -297,8 +297,7 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top
     apply le_antisymm
     · exact (measure_mono (inter_subset_right _ _)).trans (measure_toMeasurable s).le
     · exact measure_mono st
-  simp only [← mu'_t, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, ← mu_t,
-    nnreal_smul_coe_apply]
+  simp only [← mu'_t, Measure.coe_smul, Pi.smul_apply, ← mu_t, nnreal_smul_coe_apply]
   apply B
   · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
   · exact mu_t.le.trans_lt hs
@@ -386,7 +385,7 @@ lemma isMulLeftInvariant_eq_of_isProbabilityMeasure
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] : μ' = μ := by
   rcases isMulLeftInvariant_eq_smul_of_regular μ' μ with ⟨c, hc⟩
   have : ((c : ℝ≥0∞) • μ) univ = μ' univ := by rw [hc]; rfl
-  simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
+  simp only [Measure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
     mul_one, ENNReal.coe_eq_one] at this
   simp [hc, this]
 

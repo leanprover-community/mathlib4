@@ -485,13 +485,10 @@ def completion {_ : MeasurableSpace α} (μ : Measure α) :
   toOuterMeasure := μ.toOuterMeasure
   m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
   trimmed := by
-    refine' le_antisymm (fun s => _)
-      (@OuterMeasure.le_trim (NullMeasurableSpace α μ) _ _)
-    rw [@OuterMeasure.trim_eq_iInf (NullMeasurableSpace α μ) _];
-    have : ∀ s, μ.toOuterMeasure s = μ s := by simp only [forall_const]
-    rw [this, measure_eq_iInf]
-    apply iInf₂_mono
-    exact fun t _ht => iInf_mono' fun h => ⟨MeasurableSet.nullMeasurableSet h, le_rfl⟩
+    refine' le_antisymm (fun s => _) (@OuterMeasure.le_trim _ (_) _)
+    rw [OuterMeasure.trim_eq_iInf]
+    refine' (iInf₂_mono _).trans_eq (@measure_eq_iInf _ (_) _ _).symm
+    exact fun _ _ ↦ iInf_mono' (fun h ↦ ⟨h.nullMeasurableSet, le_rfl⟩)
 #align measure_theory.measure.completion MeasureTheory.Measure.completion
 
 instance completion.isComplete {_m : MeasurableSpace α} (μ : Measure α) : μ.completion.IsComplete :=

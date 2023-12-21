@@ -120,20 +120,24 @@ instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
 -- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.ProbabilityMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
-def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
+abbrev toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
 
 /-- A probability measure can be interpreted as a measure. -/
 instance : Coe (ProbabilityMeasure Ω) (MeasureTheory.Measure Ω) where
   coe := toMeasure
 
-instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
-  ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
-
 instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
   μ.prop
 
--- porting note: syntactic tautology because of the way coercions work in Lean 4
-#noalign measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
+instance instFunLike : FunLike (ProbabilityMeasure Ω) (Set Ω) (fun _ => ℝ≥0) where
+  coe μ s := ((μ : Measure Ω) s).toNNReal
+  coe_injective' μ₁ μ₂ h := by
+    cases μ₁; cases μ₂; congr; ext s
+    apply (ENNReal.toNNReal_eq_toNNReal_iff' _ _).mp (congr_fun h s) <;> exact measure_ne_top _ _
+
+lemma coeFn_eq_toNNReal_coeFn_toMeasure (ν : ProbabilityMeasure Ω) :
+    (ν : Set Ω → ℝ≥0) = fun s ↦ ((ν : Measure Ω) s).toNNReal := rfl
+#align measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure MeasureTheory.ProbabilityMeasure.coeFn_eq_toNNReal_coeFn_toMeasure
 
 @[simp, norm_cast] lemma coe_mk (μ : Measure Ω) (hμ) : toMeasure ⟨μ, hμ⟩ = μ := rfl
 
@@ -146,7 +150,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
   Subtype.coe_injective
 #align measure_theory.probability_measure.coe_injective MeasureTheory.ProbabilityMeasure.toMeasure_injective
 
--- porting note: removed `@[simp]` because `simp` can prove it
+@[simp]
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 #align measure_theory.probability_measure.coe_fn_univ MeasureTheory.ProbabilityMeasure.coeFn_univ
@@ -349,29 +353,25 @@ total mass. -/
 def normalize : ProbabilityMeasure Ω :=
   if zero : μ.mass = 0 then ⟨Measure.dirac ‹Nonempty Ω›.some, Measure.dirac.isProbabilityMeasure⟩
   else
-    { val := ↑(μ.mass⁻¹ • μ)
+    { val := μ.mass⁻¹ • (μ : Measure Ω)
       property := by
         refine' ⟨_⟩
-        -- porting note: paying the price that this isn't `simp` lemma now.
-        rw [FiniteMeasure.toMeasure_smul]
-        simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-          Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
-        rw [← Ne.def, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
-        exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
+        simp only [mass, Measure.coe_nnreal_smul_apply,
+                    ← ennreal_coeFn_eq_coeFn_toMeasure μ univ]
+        norm_cast
+        exact inv_mul_cancel zero }
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
 
 @[simp]
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
   · simp only [zero_mass, coeFn_zero, Pi.zero_apply, zero_mul]
-    rfl
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
-  simp only [normalize, dif_neg mass_nonzero]
-  change μ s = mass μ * ((mass μ)⁻¹ • μ) s
-  -- porting note: this `change` is a hack, but I had trouble coming up with something better
-  simp only [toMeasure_smul, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-    Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.toNNReal_mul, ENNReal.toNNReal_coe,
-    mul_inv_cancel_left₀ mass_nonzero]
+  simp only [normalize, dif_neg mass_nonzero, ENNReal.toNNReal_mul, Subtype.coe_mk,
+    ProbabilityMeasure.coeFn_eq_toNNReal_coeFn_toMeasure, ENNReal.toNNReal_coe,
+    MeasureTheory.Measure.coe_nnreal_smul_apply, mul_inv_cancel_left₀ mass_nonzero,
+    FiniteMeasure.coeFn_eq_toNNReal_coeFn_toMeasure]
+
 #align measure_theory.finite_measure.self_eq_mass_mul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_mul_normalize
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
@@ -408,8 +408,8 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
   apply ProbabilityMeasure.eq_of_forall_apply_eq
   intro s _s_mble
   rw [μ.toFiniteMeasure.normalize_eq_of_nonzero μ.toFiniteMeasure_nonzero s]
-  simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul]
-  congr
+  simp only [ProbabilityMeasure.mass_toFiniteMeasure, inv_one, one_mul,
+             ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 #align probability_measure.to_finite_measure_normalize_eq_self ProbabilityMeasure.toFiniteMeasure_normalize_eq_self
 
 /-- Averaging with respect to a finite measure is the same as integrating against

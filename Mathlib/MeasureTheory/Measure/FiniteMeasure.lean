@@ -125,7 +125,7 @@ def _root_.MeasureTheory.FiniteMeasure (Ω : Type*) [MeasurableSpace Ω] : Type 
 -- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.FiniteMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
-def toMeasure : FiniteMeasure Ω → Measure Ω := Subtype.val
+abbrev toMeasure : FiniteMeasure Ω → Measure Ω := Subtype.val
 
 /-- A finite measure can be interpreted as a measure. -/
 instance instCoe : Coe (FiniteMeasure Ω) (MeasureTheory.Measure Ω) where
@@ -135,11 +135,15 @@ instance isFiniteMeasure (μ : FiniteMeasure Ω) : IsFiniteMeasure (μ : Measure
   μ.prop
 #align measure_theory.finite_measure.is_finite_measure MeasureTheory.FiniteMeasure.isFiniteMeasure
 
-instance instCoeFun : CoeFun (FiniteMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
-  ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
+instance instFunLike : FunLike (FiniteMeasure Ω) (Set Ω) (fun _ => ℝ≥0) where
+  coe μ s := ((μ : Measure Ω) s).toNNReal
+  coe_injective' μ₁ μ₂ h := by
+    cases μ₁; cases μ₂; congr; ext s
+    apply (ENNReal.toNNReal_eq_toNNReal_iff' _ _).mp (congr_fun h s) <;> exact measure_ne_top _ _
 
--- porting note: now a syntactic tautology because of the way coercions work in Lean 4
-#noalign measure_theory.finite_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
+lemma coeFn_eq_toNNReal_coeFn_toMeasure (ν : FiniteMeasure Ω) :
+    (ν : Set Ω → ℝ≥0) = fun s ↦ ((ν : Measure Ω) s).toNNReal := rfl
+#align measure_theory.finite_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure MeasureTheory.FiniteMeasure.coeFn_eq_toNNReal_coeFn_toMeasure
 
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : FiniteMeasure Ω) (s : Set Ω) :
@@ -222,23 +226,20 @@ variable {R : Type*} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
 instance instSMul : SMul R (FiniteMeasure Ω) where
   smul (c : R) μ := ⟨c • (μ : Measure Ω), MeasureTheory.isFiniteMeasureSMulOfNNRealTower⟩
 
--- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
-@[norm_cast]
-theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 :=
+@[simp, norm_cast]
+theorem coe_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 :=
   rfl
-#align measure_theory.finite_measure.coe_zero MeasureTheory.FiniteMeasure.toMeasure_zero
+#align measure_theory.finite_measure.coe_zero MeasureTheory.FiniteMeasure.coe_zero
 
--- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
-@[norm_cast]
-theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) :=
+@[simp, norm_cast]
+theorem coe_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) :=
   rfl
-#align measure_theory.finite_measure.coe_add MeasureTheory.FiniteMeasure.toMeasure_add
+#align measure_theory.finite_measure.coe_add MeasureTheory.FiniteMeasure.coe_add
 
--- porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
-@[norm_cast]
-theorem toMeasure_smul (c : R) (μ : FiniteMeasure Ω) : ↑(c • μ) = c • (μ : Measure Ω) :=
+@[simp, norm_cast]
+theorem coe_smul (c : R) (μ : FiniteMeasure Ω) : ↑(c • μ) = c • (μ : Measure Ω) :=
   rfl
-#align measure_theory.finite_measure.coe_smul MeasureTheory.FiniteMeasure.toMeasure_smul
+#align measure_theory.finite_measure.coe_smul MeasureTheory.FiniteMeasure.coe_smul
 
 @[simp, norm_cast]
 theorem coeFn_zero : (⇑(0 : FiniteMeasure Ω) : Set Ω → ℝ≥0) = (0 : Set Ω → ℝ≥0) := by
@@ -247,40 +248,33 @@ theorem coeFn_zero : (⇑(0 : FiniteMeasure Ω) : Set Ω → ℝ≥0) = (0 : Set
 
 @[simp, norm_cast]
 theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥0) = (⇑μ + ⇑ν : Set Ω → ℝ≥0) := by
-  funext
-  simp only [Pi.add_apply, ← ENNReal.coe_eq_coe, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
-    ENNReal.coe_add]
-  norm_cast
+  funext; simp [← ENNReal.coe_eq_coe]
 #align measure_theory.finite_measure.coe_fn_add MeasureTheory.FiniteMeasure.coeFn_add
 
 @[simp, norm_cast]
 theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) :
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
-  funext
-  simp only [Pi.smul_apply, ← ENNReal.coe_eq_coe, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
-    ENNReal.coe_smul]
-  norm_cast
+  funext; simp [← ENNReal.coe_eq_coe, ENNReal.coe_smul]
 #align measure_theory.finite_measure.coe_fn_smul MeasureTheory.FiniteMeasure.coeFn_smul
 
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
-  toMeasure_injective.addCommMonoid (↑) toMeasure_zero toMeasure_add fun _ _ => toMeasure_smul _ _
+  toMeasure_injective.addCommMonoid (↑) coe_zero coe_add fun _ _ => coe_smul _ _
 
 /-- Coercion is an `AddMonoidHom`. -/
 @[simps]
 def toMeasureAddMonoidHom : FiniteMeasure Ω →+ Measure Ω where
   toFun := (↑)
-  map_zero' := toMeasure_zero
-  map_add' := toMeasure_add
+  map_zero' := coe_zero
+  map_add' := coe_add
 #align measure_theory.finite_measure.coe_add_monoid_hom MeasureTheory.FiniteMeasure.toMeasureAddMonoidHom
 
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
-  Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
+  Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective coe_smul
 
 -- porting note: `@[simp]` breaks the LHS of `coeFn_smul`
 theorem coeFn_smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
     (c • μ) s = c • μ s := by
   rw [coeFn_smul, Pi.smul_apply]
-  -- porting note: why doesn't `simp only` work in place of `rw` here?
 #align measure_theory.finite_measure.coe_fn_smul_apply MeasureTheory.FiniteMeasure.coeFn_smul_apply
 
 /-- Restrict a finite measure μ to a set A. -/
@@ -366,7 +360,7 @@ theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass
 
 @[simp]
 theorem zero_testAgainstNN_apply (f : Ω →ᵇ ℝ≥0) : (0 : FiniteMeasure Ω).testAgainstNN f = 0 := by
-  simp only [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.zero_toNNReal]
+  simp only [testAgainstNN, coe_zero, lintegral_zero_measure, ENNReal.zero_toNNReal]
 #align measure_theory.finite_measure.zero.test_against_nn_apply MeasureTheory.FiniteMeasure.zero_testAgainstNN_apply
 
 theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
@@ -377,7 +371,7 @@ theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
 @[simp]
 theorem smul_testAgainstNN_apply (c : ℝ≥0) (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
     (c • μ).testAgainstNN f = c • μ.testAgainstNN f := by
-  simp only [testAgainstNN, toMeasure_smul, smul_eq_mul, ← ENNReal.smul_toNNReal, ENNReal.smul_def,
+  simp only [testAgainstNN, coe_smul, smul_eq_mul, ← ENNReal.smul_toNNReal, ENNReal.smul_def,
     lintegral_smul_measure]
 #align measure_theory.finite_measure.smul_test_against_nn_apply MeasureTheory.FiniteMeasure.smul_testAgainstNN_apply
 
@@ -768,12 +762,12 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
   ext s s_mble
-  simp only [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add, Measure.add_apply]
+  simp only [map_apply' _ f_mble.aemeasurable s_mble, coe_add, Measure.add_apply]
 
 @[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by
   ext s _
-  simp [toMeasure_smul]
+  simp [coe_smul]
 
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :

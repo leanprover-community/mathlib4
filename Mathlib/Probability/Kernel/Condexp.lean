@@ -100,7 +100,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel [Normed
     [CompleteSpace F] (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
   simp_rw [condexpKernel_apply_eq_condDistrib]
-  exact AEStronglyMeasurable.integral_condDistrib
+  apply AEStronglyMeasurable.integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf.comp_snd_map_prod_id inf_le_right)
 #align measure_theory.ae_strongly_measurable.integral_condexp_kernel MeasureTheory.AEStronglyMeasurable.integral_condexpKernel
@@ -125,7 +125,7 @@ variable [NormedAddCommGroup F] {f : Ω → F}
 theorem _root_.MeasureTheory.Integrable.condexpKernel_ae (hf_int : Integrable f μ) :
     ∀ᵐ ω ∂μ, Integrable f (condexpKernel μ m ω) := by
   rw [condexpKernel]
-  exact Integrable.condDistrib_ae
+  apply Integrable.condDistrib_ae
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
 #align measure_theory.integrable.condexp_kernel_ae MeasureTheory.Integrable.condexpKernel_ae
@@ -133,7 +133,7 @@ theorem _root_.MeasureTheory.Integrable.condexpKernel_ae (hf_int : Integrable f 
 theorem _root_.MeasureTheory.Integrable.integral_norm_condexpKernel (hf_int : Integrable f μ) :
     Integrable (fun ω => ∫ y, ‖f y‖ ∂condexpKernel μ m ω) μ := by
   rw [condexpKernel]
-  exact Integrable.integral_norm_condDistrib
+  apply Integrable.integral_norm_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
 #align measure_theory.integrable.integral_norm_condexp_kernel MeasureTheory.Integrable.integral_norm_condexpKernel
@@ -142,7 +142,7 @@ theorem _root_.MeasureTheory.Integrable.norm_integral_condexpKernel [NormedSpace
     [CompleteSpace F] (hf_int : Integrable f μ) :
     Integrable (fun ω => ‖∫ y, f y ∂condexpKernel μ m ω‖) μ := by
   rw [condexpKernel]
-  exact Integrable.norm_integral_condDistrib
+  apply Integrable.norm_integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
 #align measure_theory.integrable.norm_integral_condexp_kernel MeasureTheory.Integrable.norm_integral_condexpKernel
@@ -151,7 +151,7 @@ theorem _root_.MeasureTheory.Integrable.integral_condexpKernel [NormedSpace ℝ 
     (hf_int : Integrable f μ) :
     Integrable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
   rw [condexpKernel]
-  exact Integrable.integral_condDistrib
+  apply Integrable.integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
 #align measure_theory.integrable.integral_condexp_kernel MeasureTheory.Integrable.integral_condexpKernel

@@ -78,13 +78,15 @@ section Basic
 
 variable {α β R R' : Type*} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
 
-instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) where
+instance instFunLike : FunLike (OuterMeasure α) (Set α) (fun _ => ℝ≥0∞) where
   coe m := m.measureOf
-#align measure_theory.outer_measure.has_coe_to_fun MeasureTheory.OuterMeasure.instCoeFun
+  coe_injective' m₁ m₂ h := by cases m₁; cases m₂; congr
+#align measure_theory.outer_measure.has_coe_to_fun MeasureTheory.OuterMeasure.instFunLike
 
-attribute [coe] measureOf
-
-#noalign measure_theory.outer_measure.measureOf_eq_coe
+@[simp]
+theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m :=
+  rfl
+#align measure_theory.outer_measure.measure_of_eq_coe MeasureTheory.OuterMeasure.measureOf_eq_coe
 
 @[simp]
 theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
@@ -227,13 +229,9 @@ theorem union_null (m : OuterMeasure α) {s₁ s₂ : Set α} (h₁ : m s₁ = 0
     m (s₁ ∪ s₂) = 0 := by simpa [h₁, h₂] using m.union s₁ s₂
 #align measure_theory.outer_measure.union_null MeasureTheory.OuterMeasure.union_null
 
-theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) => μ s :=
-  fun μ₁ μ₂ h => by cases μ₁; cases μ₂; congr
-#align measure_theory.outer_measure.coe_fn_injective MeasureTheory.OuterMeasure.coe_fn_injective
-
 @[ext]
 theorem ext {μ₁ μ₂ : OuterMeasure α} (h : ∀ s, μ₁ s = μ₂ s) : μ₁ = μ₂ :=
-  coe_fn_injective <| funext h
+  FunLike.ext _ _ h
 #align measure_theory.outer_measure.ext MeasureTheory.OuterMeasure.ext
 
 /-- A version of `MeasureTheory.OuterMeasure.ext` that assumes `μ₁ s = μ₂ s` on all *nonempty*
@@ -326,11 +324,11 @@ end SMul
 
 instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     MulAction R (OuterMeasure α) :=
-  Injective.mulAction _ coe_fn_injective coe_smul
+  Injective.mulAction _ FunLike.coe_injective coe_smul
 #align measure_theory.outer_measure.mul_action MeasureTheory.OuterMeasure.instMulAction
 
 instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=
-  Injective.addCommMonoid (show OuterMeasure α → Set α → ℝ≥0∞ from _) coe_fn_injective rfl
+  Injective.addCommMonoid (show OuterMeasure α → Set α → ℝ≥0∞ from _) FunLike.coe_injective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 #align measure_theory.outer_measure.add_comm_monoid MeasureTheory.OuterMeasure.addCommMonoid
 
@@ -344,12 +342,12 @@ def coeFnAddMonoidHom : OuterMeasure α →+ Set α → ℝ≥0∞ where
 
 instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     DistribMulAction R (OuterMeasure α) :=
-  Injective.distribMulAction coeFnAddMonoidHom coe_fn_injective coe_smul
+  Injective.distribMulAction coeFnAddMonoidHom FunLike.coe_injective coe_smul
 #align measure_theory.outer_measure.distrib_mul_action MeasureTheory.OuterMeasure.instDistribMulAction
 
 instance instModule [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     Module R (OuterMeasure α) :=
-  Injective.module R coeFnAddMonoidHom coe_fn_injective coe_smul
+  Injective.module R coeFnAddMonoidHom FunLike.coe_injective coe_smul
 #align measure_theory.outer_measure.module MeasureTheory.OuterMeasure.instModule
 
 instance instBot : Bot (OuterMeasure α) :=
@@ -440,8 +438,8 @@ def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure �
       empty := m.empty
       mono := fun {s t} h => m.mono (preimage_mono h)
       iUnion_nat := fun s => by simp; apply m.iUnion_nat fun i => f ⁻¹' s i }
-  map_add' m₁ m₂ := coe_fn_injective rfl
-  map_smul' c m := coe_fn_injective rfl
+  map_add' m₁ m₂ := FunLike.coe_injective rfl
+  map_smul' c m := FunLike.coe_injective rfl
 #align measure_theory.outer_measure.map MeasureTheory.OuterMeasure.map
 
 @[simp]

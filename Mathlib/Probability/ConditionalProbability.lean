@@ -126,8 +126,8 @@ theorem cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t)
   have hcs' : μ s ≠ 0 :=
     (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hci).ne'
   ext u
-  simp [*, hms.inter hmt, cond_apply, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, mul_comm, ←
-    mul_assoc, ENNReal.mul_inv_cancel]
+  simp [*, hms.inter hmt, cond_apply, ← Set.inter_assoc, ENNReal.mul_inv, ← mul_assoc,
+    mul_comm _ (μ s)⁻¹, ENNReal.inv_mul_cancel]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'
 
 /-- Conditioning first on `s` and then on `t` results in the same measure as conditioning

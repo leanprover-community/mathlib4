@@ -84,11 +84,10 @@ For measurable sets this returns the measure assigned by the `measureOf` field i
 But we can extend this to _all_ sets, but using the outer measure. This gives us monotonicity and
 subadditivity for all sets.
 -/
-instance Measure.instCoeFun [MeasurableSpace α] : CoeFun (Measure α) fun _ => Set α → ℝ≥0∞ :=
-  ⟨fun m => m.toOuterMeasure⟩
-#align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instCoeFun
-
-attribute [coe] Measure.toOuterMeasure
+instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) (fun _ => ℝ≥0∞) where
+  coe m := m.toOuterMeasure
+  coe_injective' m₁ m₂ h := by cases m₁; cases m₂; congr; exact FunLike.coe_injective h
+#align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instFunLike
 
 section
 
@@ -146,15 +145,20 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 end Measure
 
-#noalign measure_theory.coe_to_outer_measure
+@[simp]
+theorem coe_toOuterMeasure : (μ.toOuterMeasure : Set α → ℝ≥0∞) = μ :=
+  rfl
+#align measure_theory.coe_to_outer_measure MeasureTheory.coe_toOuterMeasure
 
-#noalign measure_theory.to_outer_measure_apply
+theorem toOuterMeasure_apply (s : Set α) : μ.toOuterMeasure s = μ s :=
+  rfl
+#align measure_theory.to_outer_measure_apply MeasureTheory.toOuterMeasure_apply
 
-theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]
+theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]; rfl
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
 
 theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), μ t := by
-  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]
+  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]; rfl
 #align measure_theory.measure_eq_infi MeasureTheory.measure_eq_iInf
 
 /-- A variant of `measure_eq_iInf` which has a single `iInf`. This is useful when applying a
@@ -181,7 +185,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
     exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem measure_empty : μ ∅ = 0 :=
   μ.empty
 #align measure_theory.measure_empty MeasureTheory.measure_empty

@@ -582,9 +582,8 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   apply integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure (f := f) f_nn
   intro G G_open
   specialize h_opens G G_open
-  simp only at h_opens
-  have aux : ENNReal.ofNNReal (liminf (fun i ↦ ENNReal.toNNReal ((μs i : Measure Ω) G)) atTop) =
-          liminf (ENNReal.ofNNReal ∘ fun i ↦ (ENNReal.toNNReal ((μs i : Measure Ω) G))) atTop := by
+  have aux : ENNReal.ofNNReal (liminf (fun i ↦ μs i G) atTop) =
+          liminf (ENNReal.ofNNReal ∘ fun i ↦ μs i G) atTop := by
     refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
     · apply ENNReal.continuous_coe.continuousAt
     · use 1
@@ -594,9 +593,9 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
       simp only [zero_le, eventually_map, eventually_atTop, ge_iff_le, implies_true, forall_const,
         exists_const]
   have obs := ENNReal.coe_mono h_opens
-  simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert obs
-  simp only [Function.comp_apply, ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+  simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
 end le_liminf_open_implies_convergence
 
