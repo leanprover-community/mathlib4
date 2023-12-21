@@ -317,7 +317,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     rintro x ⟨h, -⟩
     exact h
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
-    cases' (Nat.succ_le_of_lt hn).eq_or_lt with h' h'
+    rcases (Nat.succ_le_of_lt hn).eq_or_lt with h' | h'
     · simp [h']
     · intro x hx
       simp only [mem_biUnion, exists_prop, id.def]

@@ -664,7 +664,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   -- Porting note: added
   clear hax
   induction' ax using Nat.strong_induction_on with x ih generalizing a
-  cases' hay.eq_or_lt with hy hy
+  rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine' ⟨0, _⟩
     simp only [pow_zero]

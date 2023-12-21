@@ -249,7 +249,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     intro H
     rw [nodup_iff_nthLe_inj] at h
     specialize h _ _ _ _ H
-    cases' (Nat.succ_le_of_lt hn).eq_or_lt with hn' hn'
+    rcases (Nat.succ_le_of_lt hn).eq_or_lt with hn' | hn'
     · simp only [← hn', Nat.mod_self] at h
       refine' not_exists.mpr h' _
       rw [← length_eq_one]
@@ -382,7 +382,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   cases hn : l.length
   · exact absurd k.zero_le (hk.trans_le hn.le).not_le
   · rw [hn] at hk
-    cases' (Nat.le_of_lt_succ hk).eq_or_lt with hk' hk'
+    rcases (Nat.le_of_lt_succ hk).eq_or_lt with hk' | hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]
     · simpa [Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), Nat.succ_lt_succ_iff] using
         k.zero_le.trans_lt hk'

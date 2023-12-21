@@ -331,7 +331,7 @@ theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E
     exact Or.inl this
   by_cases hfi : Integrable f μ; swap
   · simp [average_eq, integral_undef hfi, hC0, ENNReal.toReal_pos_iff]
-  cases' (le_top : μ univ ≤ ∞).eq_or_lt with hμt hμt; · simp [average_eq, hμt, hC0]
+  rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt; · simp [average_eq, hμt, hC0]
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
   replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C; · simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
