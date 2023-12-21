@@ -422,8 +422,8 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
       roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
   exact Multiset.card_le_of_le this
 
-/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is a bijection
-from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
+a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 In fact it's given by `x ↦ x ^ p`, but we don't give a proof here. -/
 def rootsExpandEquivRoots
     (R : Type u) [CommRing R] [IsDomain R]
@@ -453,8 +453,8 @@ def rootsExpandEquivRoots
   · simp only [RingEquiv.toRingHom_eq_coe, frobeniusEquiv_apply,
       frobenius_apply_frobeniusEquiv_symm]
 
-/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is a bijection
-from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
+a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
 In fact it's given by `x ↦ x ^ (p ^ n)`, but we don't give a proof here. -/
 def rootsExpandPowEquivRoots
     (R : Type u) [CommRing R] [IsDomain R]
@@ -477,7 +477,8 @@ theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : �
       (f := f.map (algebraMap F (AlgebraicClosure F))) (n := n)⟩
 
 variable {f} in
-/-- If a polynomial has separable contraction, then its separable degree is equal to the degree of the given separable contraction. -/
+/-- If a polynomial has separable contraction, then its separable degree is equal to the degree of
+the given separable contraction. -/
 theorem HasSeparableContraction.natSepDegree_eq
     {q : ℕ} [ExpChar F q] (hf : f.HasSeparableContraction q) :
     f.natSepDegree = hf.degree := by
