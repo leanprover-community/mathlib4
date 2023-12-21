@@ -352,7 +352,7 @@ theorem mul_neg_of_pos_of_neg [PosMulStrictMono α] (ha : 0 < a) (hb : b < 0) : 
 @[simp]
 theorem zero_lt_mul_left [PosMulStrictMono α] [PosMulReflectLT α] (h : 0 < c) :
     0 < c * b ↔ 0 < b := by
-  rw [←mul_zero c, mul_lt_mul_left h]
+  rw [← mul_zero c, mul_lt_mul_left h]
   simp
 #align zero_lt_mul_left zero_lt_mul_left
 
@@ -368,7 +368,7 @@ theorem mul_neg_of_neg_of_pos [MulPosStrictMono α] (ha : a < 0) (hb : 0 < b) : 
 @[simp]
 theorem zero_lt_mul_right [MulPosStrictMono α] [MulPosReflectLT α] (h : 0 < c) :
     0 < b * c ↔ 0 < b := by
-  rw [←zero_mul c, mul_lt_mul_right h]
+  rw [← zero_mul c, mul_lt_mul_right h]
   simp
 #align zero_lt_mul_right zero_lt_mul_right
 
@@ -452,7 +452,7 @@ theorem posMulMono_iff_covariant_pos :
   ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
-      · simp [←ha]
+      · simp [← ha]
       · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 #align pos_mul_mono_iff_covariant_pos posMulMono_iff_covariant_pos
 
@@ -461,7 +461,7 @@ theorem mulPosMono_iff_covariant_pos :
   ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
-      · simp [←ha]
+      · simp [← ha]
       · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 #align mul_pos_mono_iff_covariant_pos mulPosMono_iff_covariant_pos
 
@@ -470,7 +470,7 @@ theorem posMulReflectLT_iff_contravariant_pos :
   ⟨@PosMulReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
-      · simp [←ha] at h
+      · simp [← ha] at h
       · exact @ContravariantClass.elim α>0 α (fun x y => x * y) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 #align pos_mul_reflect_lt_iff_contravariant_pos posMulReflectLT_iff_contravariant_pos
 
@@ -479,7 +479,7 @@ theorem mulPosReflectLT_iff_contravariant_pos :
   ⟨@MulPosReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
-      · simp [←ha] at h
+      · simp [← ha] at h
       · exact @ContravariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 #align mul_pos_reflect_lt_iff_contravariant_pos mulPosReflectLT_iff_contravariant_pos
 

@@ -152,7 +152,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
     Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
-        simp_rw [Con.rel_eq_coe, Con.ker_rel]
+        simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩)
         · change FreeMonoid.lift _ (FreeMonoid.of _) = FreeMonoid.lift _ 1
           simp only [MonoidHom.map_one, FreeMonoid.lift_eval_of]

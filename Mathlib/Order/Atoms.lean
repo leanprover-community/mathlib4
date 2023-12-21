@@ -494,7 +494,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
     have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq, iInf_const]
     rw [← this]; clear this
     simp_rw [iInf_iSup_eq, iSup_le_iff]; intro g
-    by_cases (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥; case pos => simp [h]
+    by_cases h : (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥; case pos => simp [h]
     refine le_sSup ⟨⟨h, fun c hc => ?_⟩, le_trans (by rfl) (le_iSup _ g)⟩; clear h
     have := lt_of_lt_of_le hc (le_trans (iInf_le _ c) inf_le_right)
     revert this
@@ -977,7 +977,7 @@ namespace «Prop»
   simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
 
 instance : IsSimpleOrder Prop where
-  eq_bot_or_eq_top p := by by_cases p <;> simp [h] <;> tauto
+  eq_bot_or_eq_top p := by by_cases h : p <;> simp [h] <;> tauto
 
 end «Prop»
 
@@ -1014,7 +1014,7 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
       intro j hj
       have := h (Function.update ⊥ j (f j))
       simp only [lt_def, le_def, ge_iff_le, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
-      simpa using this (fun k => by by_cases k = j; { subst h; simp }; simp [h]) i
+      simpa using this (fun k => by by_cases h : k = j; { subst h; simp }; simp [h]) i
         (by rwa [Function.update_noteq (Ne.symm hj), bot_apply, bot_lt_iff_ne_bot]) j
 
 theorem isAtom_single [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] {a : π i}

@@ -436,6 +436,12 @@ theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
     (m : R) • mk' S r m = algebraMap R S r := by
   rw [smul_mk', mk'_mul_cancel_left]
 
+@[simps]
+instance invertible_mk'_one (s : M) : Invertible (IsLocalization.mk' S (1 : R) s) where
+  invOf := algebraMap R S s
+  invOf_mul_self := by simp
+  mul_invOf_self := by simp
+
 section
 
 variable (M)
@@ -747,6 +753,34 @@ theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = 
 #align is_localization.alg_equiv_symm_mk' IsLocalization.algEquiv_symm_mk'
 
 end AlgEquiv
+
+section at_units
+
+lemma at_units {R : Type*} [CommSemiring R] (S : Submonoid R)
+    (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
+  map_units' y := hS y.prop
+  surj' := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
+  exists_of_eq := fun {x y} (e : x = y) ↦ ⟨1, e ▸ rfl⟩
+
+variable (R M)
+
+/-- The localization at a module of units is isomorphic to the ring. -/
+noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
+  refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
+  · intro x y hxy
+    obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
+    obtain ⟨u, hu⟩ := H c.prop
+    rwa [← hu, Units.mul_right_inj] at eq
+  · intro y
+    obtain ⟨⟨x, s⟩, eq⟩ := IsLocalization.surj M y
+    obtain ⟨u, hu⟩ := H s.prop
+    use x * u.inv
+    dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
+    rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]
+    simp
+#align is_localization.at_units IsLocalization.atUnits
+
+end at_units
 
 end IsLocalization
 

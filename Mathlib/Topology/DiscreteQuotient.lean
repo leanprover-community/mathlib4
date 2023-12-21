@@ -82,10 +82,10 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
 /-- Construct a discrete quotient from a clopen set. -/
-def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
+def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
-#align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
+#align discrete_quotient.of_clopen DiscreteQuotient.ofIsClopen
 
 theorem refl : ∀ x, S.Rel x x := S.refl'
 #align discrete_quotient.refl DiscreteQuotient.refl
@@ -362,10 +362,10 @@ end Map
 
 theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
     {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
-  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
+  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_isClopen,
     mem_iInter]
   rintro ⟨U, hU1, hU2⟩
-  exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
+  exact (Quotient.exact' (h (ofIsClopen hU1))).mpr hU2
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
 theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :

@@ -210,8 +210,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   -- but not that `j` is uniquely defined (which is needed to keep the induction going).
   obtain ⟨j, hj⟩ : ∃ j, ∀ i : Fin n,
       t' i = j → (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε := by
-    by_contra hg
-    push_neg at hg
+    by_contra! hg
     obtain ⟨j₀, j₁, j_ne, approx⟩ := exists_approx_polynomial hb hε
       (Fin.cons (A 0) fun j => A (Fin.succ (Classical.choose (hg j))))
     revert j_ne approx

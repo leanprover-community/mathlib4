@@ -100,12 +100,12 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ �
 
 See also `Finset.mem_shadow_iff_exists_mem_card_add_one`. -/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
-  simp_rw [mem_shadow_iff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_erase, eq_comm]
+  simp_rw [mem_shadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase, eq_comm]
 
 /-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
 `𝒜`. -/
 lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a, a ∉ t ∧ insert a t ∈ 𝒜 := by
-  simp_rw [mem_shadow_iff_exists_sdiff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  simp_rw [mem_shadow_iff_exists_sdiff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
   aesop
 #align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
@@ -163,7 +163,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
     (∂^[k] 𝒜 : Set (Finset α)).Sized (r - k) := by
   simp_rw [Set.Sized, mem_coe, mem_shadow_iterate_iff_exists_sdiff]
   rintro t ⟨s, hs, hts, rfl⟩
-  rw [card_sdiff hts, ←h𝒜 hs, Nat.sub_sub_self (card_le_of_subset hts)]
+  rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_of_subset hts)]
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
@@ -222,12 +222,12 @@ theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ �
 
 See also `Finset.mem_upShadow_iff_exists_mem_card_add_one`. -/
 lemma mem_upShadow_iff_exists_sdiff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ (t \ s).card = 1 := by
-  simp_rw [mem_upShadow_iff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  simp_rw [mem_upShadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
 
 /-- `t` is in the upper shadow of `𝒜` iff we can remove an element from it so that the resulting
 finset is in `𝒜`. -/
 lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ erase t a ∈ 𝒜 := by
-  simp_rw [mem_upShadow_iff_exists_sdiff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_erase]
+  simp_rw [mem_upShadow_iff_exists_sdiff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase]
   aesop
 #align finset.mem_up_shadow_iff_erase_mem Finset.mem_upShadow_iff_erase_mem
 
@@ -247,7 +247,7 @@ lemma mem_upShadow_iterate_iff_exists_card :
   induction' k with k ih generalizing t
   · simp
   simp only [mem_upShadow_iff_erase_mem, ih, Function.iterate_succ_apply', card_eq_succ,
-    subset_erase, erase_sdiff_comm, ←sdiff_insert]
+    subset_erase, erase_sdiff_comm, ← sdiff_insert]
   constructor
   · rintro ⟨a, hat, u, rfl, ⟨hut, hau⟩, htu⟩
     exact ⟨_, ⟨_, _, hau, rfl, rfl⟩, insert_subset hat hut, htu⟩
@@ -324,14 +324,14 @@ theorem mem_upShadow_iff_exists_mem_card_add :
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
-  simp [←compl_involutive.eq_iff]
+  simp [← compl_involutive.eq_iff]
 #align finset.up_shadow_image_compl Finset.shadow_compls
 
 @[simp] lemma upShadow_compls : ∂⁺ 𝒜ᶜˢ = (∂ 𝒜)ᶜˢ := by
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
-  simp [←compl_involutive.eq_iff]
+  simp [← compl_involutive.eq_iff]
 #align finset.shadow_image_compl Finset.upShadow_compls
 
 end UpShadow

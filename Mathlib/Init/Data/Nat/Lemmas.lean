@@ -416,7 +416,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_one Nat.sub_one
 
-#align nat.succ_sub_one Nat.succ_sub_one
+#align nat.succ_sub_one Nat.add_one_sub_one
 
 #align nat.succ_pred_eq_of_pos Nat.succ_pred_eq_of_pos
 

@@ -71,6 +71,10 @@ theorem one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
   exact pow_lt_pow_of_lt_left h₁ h₀
 #align nat.one_lt_pow Nat.one_lt_pow
 
+theorem two_pow_pos (n : ℕ) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
+
+theorem two_pow_succ (n : ℕ) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
+
 theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
   one_lt_pow (n + 1) (m + 2) (succ_pos n) (Nat.lt_of_sub_eq_succ rfl)
 #align nat.one_lt_pow' Nat.one_lt_pow'

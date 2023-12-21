@@ -1869,9 +1869,9 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
@@ -1898,11 +1898,11 @@ theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s 
 #align finset.card_le_card_mul_left Finset.card_le_card_mul_left
 #align finset.card_le_card_add_left Finset.card_le_card_add_left
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section
 
-variable [RightCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsRightCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive (attr := simp)]
 theorem card_mul_singleton : (s * {a}).card = s.card :=

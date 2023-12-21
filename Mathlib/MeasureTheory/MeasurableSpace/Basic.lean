@@ -1373,6 +1373,10 @@ attribute [simps! apply toEquiv] trans refl
 @[simp]
 theorem symm_symm (e : α ≃ᵐ β) : e.symm.symm = e := rfl
 
+theorem symm_bijective :
+    Function.Bijective (MeasurableEquiv.symm : (α ≃ᵐ β) → β ≃ᵐ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem symm_refl (α : Type*) [MeasurableSpace α] : (refl α).symm = refl α :=
   rfl
@@ -1861,7 +1865,7 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
     (h : Measurable (compl : β → β)) (f : α → β) :
     MeasurableSpace.comap (fun a => (f a)ᶜ) inferInstance =
       MeasurableSpace.comap f inferInstance := by
-  rw [←Function.comp_def, ←MeasurableSpace.comap_comp]
+  rw [← Function.comp_def, ← MeasurableSpace.comap_comp]
   congr
   exact (MeasurableEquiv.ofInvolutive _ compl_involutive h).measurableEmbedding.comap_eq
 #align measurable_space.comap_compl MeasurableSpace.comap_compl

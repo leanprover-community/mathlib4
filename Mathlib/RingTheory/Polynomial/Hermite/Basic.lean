@@ -156,7 +156,7 @@ theorem coeff_hermite_explicit :
   | n + 1, 0 => by
     convert coeff_hermite_succ_zero (2 * n + 1) using 1
     -- porting note: ring_nf did not solve the goal on line 165
-    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] :
+    rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] :
       2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
     push_cast
@@ -178,7 +178,7 @@ theorem coeff_hermite_explicit :
       -- Factor out double factorials.
       norm_cast
       -- porting note: ring_nf did not solve the goal on line 186
-      rw [(by rw [Nat.left_distrib, mul_one, Nat.succ_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
+      rw [(by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
       congr 1

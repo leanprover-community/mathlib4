@@ -533,7 +533,7 @@ def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s)
     Cones.ext i.symm fun j => by
       cases j
       · exact (Iso.eq_inv_comp i).2 h
-      · dsimp; rw[←h]; simp
+      · dsimp; rw[← h]; simp
 #align category_theory.limits.is_kernel.iso_kernel CategoryTheory.Limits.IsKernel.isoKernel
 
 /-- If `i` is an isomorphism such that `i.hom ≫ kernel.ι f = l`, then `l` is a kernel of `f`. -/
@@ -798,7 +798,7 @@ abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X')
     (w : f ≫ q = p ≫ f') : cokernel f ⟶ cokernel f' :=
   cokernel.desc f (q ≫ cokernel.π f') (by
     have : f ≫ q ≫ π f' = p ≫ f' ≫ π f' := by
-      simp only [←Category.assoc]
+      simp only [← Category.assoc]
       apply congrArg (· ≫ π f') w
     simp [this])
 #align category_theory.limits.cokernel.map CategoryTheory.Limits.cokernel.map
@@ -1114,7 +1114,7 @@ def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : Is
   IsColimit.ofIsoColimit hs <|
     Cocones.ext i fun j => by
       cases j
-      · dsimp; rw [←h]; simp
+      · dsimp; rw [← h]; simp
       · exact h
 #align category_theory.limits.is_cokernel.cokernel_iso CategoryTheory.Limits.IsCokernel.cokernelIso
 

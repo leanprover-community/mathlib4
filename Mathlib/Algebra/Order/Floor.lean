@@ -453,7 +453,7 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
 
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   -- Porting note: broken `convert floor_add_nat ha 1`
-  rw [←cast_one, floor_add_nat ha 1]
+  rw [← cast_one, floor_add_nat ha 1]
 #align nat.floor_add_one Nat.floor_add_one
 
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
@@ -1235,7 +1235,7 @@ theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [�
 @[simp]
 theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
   -- Porting note: broken `convert ceil_add_int a (1 : ℤ)`
-  rw [←ceil_add_int a (1 : ℤ), cast_one]
+  rw [← ceil_add_int a (1 : ℤ), cast_one]
 #align int.ceil_add_one Int.ceil_add_one
 
 @[simp]
@@ -1453,7 +1453,7 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
   -- Porting note: broken `convert round_add_int a 1`
-  rw [←round_add_int a 1, cast_one]
+  rw [← round_add_int a 1, cast_one]
 #align round_add_one round_add_one
 
 @[simp]
@@ -1466,7 +1466,7 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
   -- Porting note: broken `convert round_sub_int a 1`
-  rw [←round_sub_int a 1, cast_one]
+  rw [← round_sub_int a 1, cast_one]
 #align round_sub_one round_sub_one
 
 @[simp]

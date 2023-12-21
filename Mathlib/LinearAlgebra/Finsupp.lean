@@ -826,7 +826,7 @@ variable {α} {M} {v}
 
 theorem totalOn_range (s : Set α) : LinearMap.range (Finsupp.totalOn α M R v s) = ⊤ := by
   rw [Finsupp.totalOn, LinearMap.range_eq_map, LinearMap.map_codRestrict,
-    ←LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
+    ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top, LinearMap.range_comp,
     range_subtype]
   exact (span_image_eq_map_total _ _).le
 #align finsupp.total_on_range Finsupp.totalOn_range

@@ -134,7 +134,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
         ENNReal.ofReal (g s) * (Ioi (0 : ℝ)).indicator (fun _ => 1) s *
           (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f x) := by
       funext a
-      by_cases s ∈ Ioc (0 : ℝ) (f a)
+      by_cases h : s ∈ Ioc (0 : ℝ) (f a)
       · simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
           mul_one]
       · have h_copy := h
@@ -152,7 +152,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     simp_rw [show
         (fun a => (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f a)) = fun a =>
           {a : α | s ≤ f a}.indicator (fun _ => 1) a
-        by funext a; by_cases s ≤ f a <;> simp [h]]
+        by funext a; by_cases h : s ≤ f a <;> simp [h]]
     rw [lintegral_indicator₀]
     swap; · exact f_mble.nullMeasurable measurableSet_Ici
     rw [lintegral_one, Measure.restrict_apply MeasurableSet.univ, univ_inter, indicator_mul_left,
@@ -160,7 +160,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
       show
         (Ioi 0).indicator (fun _x : ℝ => (1 : ℝ≥0∞)) s * μ {a : α | s ≤ f a} =
           (Ioi 0).indicator (fun _x : ℝ => 1 * μ {a : α | s ≤ f a}) s
-        by by_cases 0 < s <;> simp [h]]
+        by by_cases h : 0 < s <;> simp [h]]
     simp_rw [mul_comm _ (ENNReal.ofReal _), one_mul]
     rfl
   have aux₂ :
@@ -170,7 +170,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     funext p
     cases p with | mk p_fst p_snd => ?_
     rw [Function.uncurry_apply_pair]
-    by_cases p_snd ∈ Ioc 0 (f p_fst)
+    by_cases h : p_snd ∈ Ioc 0 (f p_fst)
     · have h' : (p_fst, p_snd) ∈ {p : α × ℝ | p.snd ∈ Ioc 0 (f p.fst)} := h
       rw [Set.indicator_of_mem h', Set.indicator_of_mem h]
     · have h' : (p_fst, p_snd) ∉ {p : α × ℝ | p.snd ∈ Ioc 0 (f p.fst)} := h

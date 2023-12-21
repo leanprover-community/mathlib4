@@ -365,18 +365,27 @@ instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
   { mul_comm := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_comm .. }
 
 @[to_additive]
+instance instIsLeftCancelMul [Mul M] [IsLeftCancelMul M] : IsLeftCancelMul (Germ l M) where
+  mul_left_cancel f₁ f₂ f₃ :=
+    inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
+      coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel)
+
+@[to_additive]
+instance instIsRightCancelMul [Mul M] [IsRightCancelMul M] : IsRightCancelMul (Germ l M) where
+  mul_right_cancel f₁ f₂ f₃ :=
+    inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
+      coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel
+
+@[to_additive]
+instance instIsCancelMul [Mul M] [IsCancelMul M] : IsCancelMul (Germ l M) where
+
+@[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
-  { Germ.semigroup with
-    mul_left_cancel := fun f₁ f₂ f₃ =>
-      inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
-        coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel) }
+  { Germ.semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
 
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
-  { Germ.semigroup with
-    mul_right_cancel := fun f₁ f₂ f₃ =>
-      inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
-        coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
+  { Germ.semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
 
 @[to_additive]
 instance mulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=

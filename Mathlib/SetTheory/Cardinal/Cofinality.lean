@@ -640,7 +640,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     · push_neg at h
       cases' wo.wf.min_mem _ h with hji hij
       refine' ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le _ hij⟩, typein_lt_type _ _, _⟩
-      · by_contra' H
+      · by_contra! H
         exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 #align ordinal.exists_fundamental_sequence Ordinal.exists_fundamental_sequence
@@ -781,7 +781,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
   then s has an unbounded member -/
 theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder α r] {s : Set (Set α)}
     (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < StrictOrder.cof r) : ∃ x ∈ s, Unbounded r x := by
-  by_contra' h
+  by_contra! h
   simp_rw [not_unbounded_iff] at h
   let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
   refine' h₂.not_le (le_trans (csInf_le' ⟨range f, fun x => _, rfl⟩) mk_range_le)
@@ -803,7 +803,7 @@ theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) 
 theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).ord.cof) :
     ∃ a : α, #(f ⁻¹' {a}) = #β := by
   have : ∃ a, #β ≤ #(f ⁻¹' {a}) := by
-    by_contra' h
+    by_contra! h
     apply mk_univ.not_lt
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact

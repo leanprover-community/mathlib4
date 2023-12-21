@@ -175,7 +175,7 @@ theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
 #align dfinsupp.le_iff DFinsupp.le_iff
 
 lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
-  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+  fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 

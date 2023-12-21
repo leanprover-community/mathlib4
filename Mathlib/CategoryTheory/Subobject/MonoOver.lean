@@ -257,10 +257,14 @@ def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ ma
   liftIso _ _ (Over.mapComp _ _) ≪≫ (liftComp _ _ _ _).symm
 #align category_theory.mono_over.map_comp CategoryTheory.MonoOver.mapComp
 
+variable (X)
+
 /-- `MonoOver.map` preserves the identity (up to a natural isomorphism). -/
 def mapId : map (𝟙 X) ≅ 𝟭 _ :=
-  liftIso _ _ Over.mapId ≪≫ liftId
+  liftIso _ _ (Over.mapId X) ≪≫ liftId
 #align category_theory.mono_over.map_id CategoryTheory.MonoOver.mapId
+
+variable {X}
 
 @[simp]
 theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
@@ -288,8 +292,8 @@ instance faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
 def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
   functor := map e.hom
   inverse := map e.inv
-  unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId).symm
-  counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId
+  unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)).symm
+  counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)
 #align category_theory.mono_over.map_iso CategoryTheory.MonoOver.mapIso
 
 section

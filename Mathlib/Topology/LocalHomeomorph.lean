@@ -356,6 +356,10 @@ theorem symm_target : e.symm.target = e.source :=
 @[simp, mfld_simps] theorem symm_symm : e.symm.symm = e := rfl
 #align local_homeomorph.symm_symm LocalHomeomorph.symm_symm
 
+theorem symm_bijective : Function.Bijective
+    (LocalHomeomorph.symm : LocalHomeomorph α β → LocalHomeomorph β α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- A local homeomorphism is continuous at any point of its source -/
 protected theorem continuousAt {x : α} (h : x ∈ e.source) : ContinuousAt e x :=
   (e.continuousOn x h).continuousAt (e.open_source.mem_nhds h)
@@ -441,15 +445,15 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : LocalHomeomorph �
     e.left_inv hy, iff_true_intro hyu]
 #align local_homeomorph.preimage_eventually_eq_target_inter_preimage_inter LocalHomeomorph.preimage_eventuallyEq_target_inter_preimage_inter
 
-theorem preimage_open_of_open {s : Set β} (hs : IsOpen s) : IsOpen (e.source ∩ e ⁻¹' s) :=
-  e.continuousOn.preimage_open_of_open e.open_source hs
-#align local_homeomorph.preimage_open_of_open LocalHomeomorph.preimage_open_of_open
+theorem isOpen_inter_preimage {s : Set β} (hs : IsOpen s) : IsOpen (e.source ∩ e ⁻¹' s) :=
+  e.continuousOn.isOpen_inter_preimage e.open_source hs
+#align local_homeomorph.preimage_open_of_open LocalHomeomorph.isOpen_inter_preimage
 
 /-- A local homeomorphism is an open map on its source. -/
 lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) :
     IsOpen (e '' s) := by
   rw [(image_eq_target_inter_inv_preimage (e := e) hse)]
-  exact e.continuous_invFun.preimage_open_of_open e.open_target hs
+  exact e.continuous_invFun.isOpen_inter_preimage e.open_target hs
 
 /-- The inverse of a local homeomorphism `e` is an open map on `e.target`. -/
 lemma isOpen_image_symm_of_subset_target {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
@@ -615,8 +619,8 @@ protected theorem frontier (h : e.IsImage s t) : e.IsImage (frontier s) (frontie
 #align local_homeomorph.is_image.frontier LocalHomeomorph.IsImage.frontier
 
 theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.target ∩ t) :=
-  ⟨fun hs => h.symm_preimage_eq' ▸ e.symm.preimage_open_of_open hs, fun hs =>
-    h.preimage_eq' ▸ e.preimage_open_of_open hs⟩
+  ⟨fun hs => h.symm_preimage_eq' ▸ e.symm.isOpen_inter_preimage hs, fun hs =>
+    h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 #align local_homeomorph.is_image.is_open_iff LocalHomeomorph.IsImage.isOpen_iff
 
 /-- Restrict a `LocalHomeomorph` to a pair of corresponding open sets. -/
@@ -657,21 +661,22 @@ theorem preimage_frontier (s : Set β) :
   (IsImage.of_preimage_eq rfl).frontier.preimage_eq
 #align local_homeomorph.preimage_frontier LocalHomeomorph.preimage_frontier
 
-theorem preimage_open_of_open_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.target ∩ e.symm ⁻¹' s) :=
-  e.symm.continuousOn.preimage_open_of_open e.open_target hs
-#align local_homeomorph.preimage_open_of_open_symm LocalHomeomorph.preimage_open_of_open_symm
+theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.target ∩ e.symm ⁻¹' s) :=
+  e.symm.continuousOn.isOpen_inter_preimage e.open_target hs
+#align local_homeomorph.preimage_open_of_open_symm LocalHomeomorph.isOpen_inter_preimage_symm
 
 /-- The image of an open set in the source is open. -/
-theorem image_open_of_open {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) : IsOpen (e '' s) := by
+theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) :
+    IsOpen (e '' s) := by
   have : e '' s = e.target ∩ e.symm ⁻¹' s := e.toLocalEquiv.image_eq_target_inter_inv_preimage h
   rw [this]
-  exact e.continuousOn_symm.preimage_open_of_open e.open_target hs
-#align local_homeomorph.image_open_of_open LocalHomeomorph.image_open_of_open
+  exact e.continuousOn_symm.isOpen_inter_preimage e.open_target hs
+#align local_homeomorph.image_open_of_open LocalHomeomorph.image_isOpen_of_isOpen
 
 /-- The image of the restriction of an open set to the source is open. -/
-theorem image_open_of_open' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.source ∩ s)) :=
-  image_open_of_open _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
-#align local_homeomorph.image_open_of_open' LocalHomeomorph.image_open_of_open'
+theorem image_isOpen_of_isOpen' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.source ∩ s)) :=
+  image_isOpen_of_isOpen _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
+#align local_homeomorph.image_open_of_open' LocalHomeomorph.image_isOpen_of_isOpen'
 
 /-- A `LocalEquiv` with continuous open forward map and an open source is a `LocalHomeomorph`. -/
 def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.source)
@@ -1285,7 +1290,8 @@ theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
   refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
   rw [Set.restrict_eq, Set.image_comp]
-  exact e.image_open_of_open (e.open_source.isOpenMap_subtype_val V hV) fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
+  exact e.image_isOpen_of_isOpen (e.open_source.isOpenMap_subtype_val V hV)
+    fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
@@ -1415,7 +1421,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : LocalHomeomorph α β) :
     (f.subtypeRestr s).symm.trans (f'.subtypeRestr s) ≈
       (f.symm.trans f').restr (f.target ∩ f.symm ⁻¹' s) := by
   simp only [subtypeRestr_def, trans_symm_eq_symm_trans_symm]
-  have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.preimage_open_of_open_symm s.2
+  have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.2
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
   refine' EqOnSource.trans' _ (eqOnSource_refl _)
   -- f' has been eliminated !!!

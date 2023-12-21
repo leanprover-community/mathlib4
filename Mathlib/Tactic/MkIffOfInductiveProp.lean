@@ -78,7 +78,7 @@ args.foldrM (λarg i:Expr => do
     let l := (← inferType t).sortLevel!
     if arg.occurs i || l != Level.zero
       then pure (mkApp2 (mkConst `Exists [l] : Expr) t
-        (updateLambdaBinderInfoD! <| ←mkLambdaFVars #[arg] i))
+        (updateLambdaBinderInfoD! <| ← mkLambdaFVars #[arg] i))
       else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 

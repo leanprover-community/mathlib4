@@ -322,7 +322,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
       refine' lt_add_of_lt_of_nonneg i0 _
       rw [← Nat.cast_zero, Nat.cast_le]; exact Nat.zero_le k
   convert (u <| n - ⌊1 - s.re⌋₊).symm; rw [Nat.add_sub_of_le]
-  by_cases 0 ≤ 1 - s.re
+  by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]; linarith; linarith

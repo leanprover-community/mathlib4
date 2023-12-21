@@ -336,7 +336,8 @@ theorem testAgainstNN_const (μ : FiniteMeasure Ω) (c : ℝ≥0) :
 theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_le_g : (f : Ω → ℝ≥0) ≤ g) :
     μ.testAgainstNN f ≤ μ.testAgainstNN g := by
   simp only [← ENNReal.coe_le_coe, testAgainstNN_coe_eq]
-  exact lintegral_mono fun ω => ENNReal.coe_mono (f_le_g ω)
+  gcongr
+  apply f_le_g
 #align measure_theory.finite_measure.test_against_nn_mono MeasureTheory.FiniteMeasure.testAgainstNN_mono
 
 @[simp]

@@ -1260,6 +1260,8 @@ def prodComparison (F : C ⥤ D) (A B : C) [HasBinaryProduct A B]
   prod.lift (F.map prod.fst) (F.map prod.snd)
 #align category_theory.limits.prod_comparison CategoryTheory.Limits.prodComparison
 
+variable (A B)
+
 @[reassoc (attr := simp)]
 theorem prodComparison_fst : prodComparison F A B ≫ prod.fst = F.map prod.fst :=
   prod.lift_fst _ _
@@ -1271,6 +1273,8 @@ theorem prodComparison_snd : prodComparison F A B ≫ prod.snd = F.map prod.snd 
   prod.lift_snd _ _
 #align category_theory.limits.prod_comparison_snd CategoryTheory.Limits.prodComparison_snd
 #align category_theory.limits.prod_comparison_snd_assoc CategoryTheory.Limits.prodComparison_snd_assoc
+
+variable {A B}
 
 /-- Naturality of the `prodComparison` morphism in both arguments. -/
 @[reassoc]
