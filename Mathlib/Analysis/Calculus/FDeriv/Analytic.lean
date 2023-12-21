@@ -268,7 +268,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
         (p.changeOriginSeries 1))
       x (n - 1) r := by
   by_cases hn : n = 0
-  ⟩ rw [hn] at h ⊢; simp only [zero_le, tsub_eq_zero_of_le]
+  · rw [hn] at h ⊢; simp only [zero_le, tsub_eq_zero_of_le]
     suffices A :
       HasFiniteFPowerSeriesOnBall
         (fun z => continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1))
