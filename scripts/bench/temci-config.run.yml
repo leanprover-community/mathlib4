@@ -3,7 +3,7 @@
     time: &time
       runner: perf_stat
       perf_stat:
-        properties: ['wall-clock', 'task-clock', 'instructions', 'branches', 'branch-misses']
+        properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
       rusage_properties: ['maxrss']
   run_config:
     <<: *time
@@ -15,7 +15,7 @@
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'instructions']
+      properties: ['wall-clock', 'instructions:u']
     cmd: |
       make lint
 - attributes:
@@ -23,7 +23,7 @@
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'task-clock', 'instructions']
+      properties: ['wall-clock', 'task-clock', 'instructions:u']
     rusage_properties: ['maxrss']
     cmd: |
       # run lake+lean like the file worker would
