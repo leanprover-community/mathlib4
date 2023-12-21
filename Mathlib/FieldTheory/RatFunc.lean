@@ -1284,7 +1284,7 @@ theorem num_denom_mul (x y : RatFunc K) :
 #align ratfunc.num_denom_mul RatFunc.num_denom_mul
 
 theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
-    num x ∣ p ↔ ∃ (q : K[X]) (_ : q ≠ 0), x = algebraMap _ _ p / algebraMap _ _ q := by
+    num x ∣ p ↔ ∃ q : K[X], q ≠ 0 ∧ x = algebraMap _ _ p / algebraMap _ _ q := by
   constructor
   · rintro ⟨q, rfl⟩
     obtain ⟨_hx, hq⟩ := mul_ne_zero_iff.mp hp
