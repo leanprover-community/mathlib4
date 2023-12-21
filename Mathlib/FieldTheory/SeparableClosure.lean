@@ -296,3 +296,66 @@ theorem finInsepDegree_self : finInsepDegree F F = 1 := by
   simp only [finInsepDegree, insepDegree_self, Cardinal.one_toNat]
 
 end Field
+
+namespace IntermediateField
+
+@[simp]
+theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
+  have := sepDegree_eq_of_equiv _ _ _ (botEquiv F E)
+  rwa [sepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
+
+@[simp]
+theorem insepDegree_bot : insepDegree F (⊥ : IntermediateField F E) = 1 := by
+  have := insepDegree_eq_of_equiv _ _ _ (botEquiv F E)
+  rwa [insepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
+
+@[simp]
+theorem finInsepDegree_bot : finInsepDegree F (⊥ : IntermediateField F E) = 1 := by
+  rw [finInsepDegree_eq_of_equiv _ _ _ (botEquiv F E), finInsepDegree_self]
+
+section Tower
+
+variable [Algebra E K] [IsScalarTower F E K]
+
+theorem lift_sepDegree_bot' : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
+    Cardinal.lift.{w} (sepDegree F E) :=
+  sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+
+theorem lift_insepDegree_bot' : Cardinal.lift.{v} (insepDegree F (⊥ : IntermediateField E K)) =
+    Cardinal.lift.{w} (insepDegree F E) :=
+  insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+
+variable {F}
+
+@[simp]
+theorem finInsepDegree_bot' :
+    finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
+  simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
+
+@[simp]
+theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K := by
+  simpa only [Cardinal.lift_id] using sepDegree_eq_of_equiv _ _ _
+    ((topEquiv (F := E) (E := K)).restrictScalars F)
+
+@[simp]
+theorem insepDegree_top : insepDegree F (⊤ : IntermediateField E K) = insepDegree F K := by
+  simpa only [Cardinal.lift_id] using insepDegree_eq_of_equiv _ _ _
+    ((topEquiv (F := E) (E := K)).restrictScalars F)
+
+@[simp]
+theorem finInsepDegree_top : finInsepDegree F (⊤ : IntermediateField E K) = finInsepDegree F K := by
+  simp only [finInsepDegree, insepDegree_top]
+
+variable (K : Type v) [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
+
+@[simp]
+theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F E := by
+  simpa only [Cardinal.lift_id] using lift_sepDegree_bot' F E K
+
+@[simp]
+theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E := by
+  simpa only [Cardinal.lift_id] using lift_insepDegree_bot' F E K
+
+end Tower
+
+end IntermediateField
