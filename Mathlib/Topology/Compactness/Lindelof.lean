@@ -351,3 +351,9 @@ theorem isLindelof_iff_countable_subfamily_closed :
 /-- A compact set `s` is Lindelöf. -/
 theorem IsCompact.isLindelof :
     IsCompact s → IsLindelof s := by tauto
+
+/-- A compact space `X` is Lindelöf. -/
+instance [CompactSpace X] : LindelofSpace X := by
+  refine { isLindelof_univ := ?isLindelof_univ }
+  apply IsCompact.isLindelof
+  apply isCompact_univ
