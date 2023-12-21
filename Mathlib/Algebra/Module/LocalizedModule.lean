@@ -344,18 +344,18 @@ theorem mk_smul_mk (r : R) (m : M) (s t : S) :
 
 variable {T}
 
-private theorem one_smul' (p : LocalizedModule S M) : (1 : T) • p = p := by
+private theorem one_smul_aux (p : LocalizedModule S M) : (1 : T) • p = p := by
   induction' p using LocalizedModule.induction_on with m s
   rw [show (1:T) = IsLocalization.mk' T (1:R) (1:S) by rw [IsLocalization.mk'_one, map_one]]
   rw [mk'_smul_mk, one_smul, one_mul]
 
-private theorem mul_smul' (x y : T) (p : LocalizedModule S M) :
+private theorem mul_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x * y) • p = x • y • p := by
   induction' p using LocalizedModule.induction_on with m s
   rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y]
   simp_rw [← IsLocalization.mk'_mul, mk'_smul_mk, ← mul_smul, mul_assoc]
 
-private theorem smul_add' (x : T) (p q : LocalizedModule S M) :
+private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
     x • (p + q) = x • p + x • q := by
   induction' p using LocalizedModule.induction_on with m s
   induction' q using LocalizedModule.induction_on with n t
@@ -366,10 +366,10 @@ private theorem smul_add' (x : T) (p q : LocalizedModule S M) :
   · simp only [Submonoid.smul_def, smul_add, ← mul_smul, Submonoid.coe_mul]; ring_nf
   · rw [mul_mul_mul_comm] -- ring does not work here
 
-private theorem smul_zero' (x : T) : x • (0 : LocalizedModule S M) = 0 := by
+private theorem smul_zero_aux (x : T) : x • (0 : LocalizedModule S M) = 0 := by
   erw [smul_def, smul_zero, zero_mk]
 
-private theorem add_smul' (x y : T) (p : LocalizedModule S M) :
+private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
   induction' p using LocalizedModule.induction_on with m s
   rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ =  IsLocalization.mk' T _ _ • _ by
@@ -380,19 +380,19 @@ private theorem add_smul' (x y : T) (p : LocalizedModule S M) :
   · simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_eq_mul]; ring_nf
   · rw [mul_mul_mul_comm, mul_assoc] -- ring does not work here
 
-private theorem zero_smul' (p : LocalizedModule S M) : (0 : T) • p = 0 := by
+private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := by
   induction' p using LocalizedModule.induction_on with m s
   rw [show (0:T) = IsLocalization.mk' T (0:R) (1:S) by rw [IsLocalization.mk'_zero], mk'_smul_mk,
     zero_smul, zero_mk]
 
 noncomputable instance isModule : Module T (LocalizedModule S M) where
   smul := (· • ·)
-  one_smul := one_smul'
-  mul_smul := mul_smul'
-  smul_add := smul_add'
-  smul_zero := smul_zero'
-  add_smul := add_smul'
-  zero_smul := zero_smul'
+  one_smul := one_smul_aux
+  mul_smul := mul_smul_aux
+  smul_add := smul_add_aux
+  smul_zero := smul_zero_aux
+  add_smul := add_smul_aux
+  zero_smul := zero_smul_aux
 
 @[simp]
 theorem mk_cancel_common_left (s' s : S) (m : M) : mk (s' • m) (s' * s) = mk m s :=
@@ -420,17 +420,22 @@ theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
   erw [mk_smul_mk r m 1 s, one_mul]
 #align localized_module.smul'_mk LocalizedModule.smul'_mk
 
+theorem smul'_mul {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
+    x • p₁ * p₂ = x • (p₁ * p₂) := by
+  obtain ⟨⟨a₁, s₁⟩, rfl : mk a₁ s₁ = p₁⟩ := Quotient.exists_rep p₁
+  obtain ⟨⟨a₂, s₂⟩, rfl : mk a₂ s₂ = p₂⟩ := Quotient.exists_rep p₂
+  rw [mk_mul_mk, smul_def, smul_def, mk_mul_mk, mul_assoc, smul_mul_assoc]
+
+theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
+    p₁ * x • p₂ = x • (p₁ * p₂) := by
+  obtain ⟨⟨a₁, s₁⟩, rfl : mk a₁ s₁ = p₁⟩ := Quotient.exists_rep p₁
+  obtain ⟨⟨a₂, s₂⟩, rfl : mk a₂ s₂ = p₂⟩ := Quotient.exists_rep p₂
+  rw [smul_def, mk_mul_mk, mk_mul_mk, smul_def, mul_left_comm, mul_smul_comm]
+
 variable (T)
 
-noncomputable instance {A : Type*} [Semiring A] [Algebra R A] :
-    Algebra T (LocalizedModule S A) := by
-  refine Algebra.ofModule (fun _ p₁ p₂ ↦ ?_) (fun x p₁ p₂ ↦  ?_)
-  · obtain ⟨⟨a₁, s₁⟩, rfl : mk a₁ s₁ = p₁⟩ := Quotient.exists_rep p₁
-    obtain ⟨⟨a₂, s₂⟩, rfl : mk a₂ s₂ = p₂⟩ := Quotient.exists_rep p₂
-    rw [mk_mul_mk, smul_def, smul_def, mk_mul_mk, mul_assoc, smul_mul_assoc]
-  · obtain ⟨⟨a₁, s₁⟩, rfl : mk a₁ s₁ = p₁⟩ := Quotient.exists_rep p₁
-    obtain ⟨⟨a₂, s₂⟩, rfl : mk a₂ s₂ = p₂⟩ := Quotient.exists_rep p₂
-    rw [smul_def, mk_mul_mk, mk_mul_mk, smul_def, mul_left_comm, mul_smul_comm]
+noncomputable instance {A : Type*} [Semiring A] [Algebra R A] : Algebra T (LocalizedModule S A) :=
+  Algebra.ofModule smul'_mul mul_smul'
 
 theorem algebraMap_mk' {A : Type*} [Semiring A] [Algebra R A] (a : R) (s : S) :
     algebraMap _ _ (IsLocalization.mk' T a s) = mk (algebraMap R A a) s := by
@@ -448,7 +453,7 @@ instance : IsScalarTower R T (LocalizedModule S M) where
   smul_assoc r x p := by
     induction' p using LocalizedModule.induction_on with m s
     rw [← IsLocalization.mk'_sec (M := S) T x, IsLocalization.smul_mk', mk'_smul_mk, mk'_smul_mk,
-      smul'_mk, @mul_smul]
+      smul'_mk, mul_smul]
 
 noncomputable instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
     Algebra R (LocalizedModule S A) :=
