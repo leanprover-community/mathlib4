@@ -140,6 +140,7 @@ theorem eval₂_nat_cast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   · rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 #align polynomial.eval₂_nat_cast Polynomial.eval₂_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
     (no_index (OfNat.ofNat n : R[X])).eval₂ f a = OfNat.ofNat n := by
@@ -351,6 +352,7 @@ theorem eval₂_at_nat_cast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
   simp
 #align polynomial.eval₂_at_nat_cast Polynomial.eval₂_at_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
     p.eval₂ f (no_index (OfNat.ofNat n)) = f (p.eval (OfNat.ofNat n)) := by
@@ -365,6 +367,7 @@ theorem eval_C : (C a).eval x = a :=
 theorem eval_nat_cast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_nat_cast, eval_C]
 #align polynomial.eval_nat_cast Polynomial.eval_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
     (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
@@ -784,6 +787,7 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
 
 --Porting note: new theorem
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=

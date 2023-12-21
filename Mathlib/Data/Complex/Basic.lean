@@ -499,15 +499,18 @@ set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
 --Porting note: new theorem
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ) : ℂ) = OfNat.ofNat n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 :=
   rfl
@@ -624,6 +627,7 @@ theorem normSq_int_cast (z : ℤ) : normSq z = z * z := normSq_ofReal _
 @[simp]
 theorem normSq_rat_cast (q : ℚ) : normSq q = q * q := normSq_ofReal _
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
     normSq (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n * OfNat.ofNat n :=
@@ -656,7 +660,6 @@ by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
 #align complex.norm_sq_one Complex.normSq_one
-
 
 @[simp]
 theorem normSq_I : normSq I = 1 := by simp [normSq]
@@ -1037,6 +1040,7 @@ theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.
 #align complex.abs_of_nat Complex.abs_natCast
 #align complex.abs_cast_nat Complex.abs_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
     Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=

@@ -382,8 +382,13 @@ noncomputable def homotopyEquiv {C : Type*} [Category C] [Preadditive C] [HasZer
     HomotopyEquiv (AlgebraicTopology.AlternatingFaceMapComplex.obj (drop.obj X))
       ((ChainComplex.single₀ C).obj (point.obj X)) where
   hom := AlternatingFaceMapComplex.ε.app X
-  inv := (ChainComplex.fromSingle₀Equiv _ _).invFun ed.s'
-  homotopyInvHomId := Homotopy.ofEq (ChainComplex.to_single₀_ext _ _ (ed.s'_comp_ε))
+  inv := (ChainComplex.fromSingle₀Equiv _ _).symm (by exact ed.s')
+  homotopyInvHomId := Homotopy.ofEq (by
+    ext
+    dsimp
+    erw [AlternatingFaceMapComplex.ε_app_f_zero,
+      ChainComplex.fromSingle₀Equiv_symm_apply_f_zero, s'_comp_ε]
+    rfl)
   homotopyHomInvId :=
     { hom := fun i j => by
         by_cases i + 1 = j
@@ -398,23 +403,24 @@ noncomputable def homotopyEquiv {C : Type*} [Category C] [Preadditive C] [HasZer
       comm := fun i => by
         rcases i with _|i
         · rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
-          dsimp [ChainComplex.fromSingle₀Equiv, ChainComplex.toSingle₀Equiv]
+          dsimp
+          erw [ChainComplex.fromSingle₀Equiv_symm_apply_f_zero]
           simp only [comp_id, ite_true, zero_add, ComplexShape.down_Rel, not_true,
             AlternatingFaceMapComplex.obj_d_eq, Preadditive.neg_comp]
-          erw [Fin.sum_univ_two]
+          rw [Fin.sum_univ_two]
           simp only [Fin.val_zero, pow_zero, one_smul, Fin.val_one, pow_one, neg_smul,
             Preadditive.comp_add, s_comp_δ₀, drop_obj, Preadditive.comp_neg, neg_add_rev,
-            neg_neg, neg_add_cancel_right, s₀_comp_δ₁]
-          rfl
+            neg_neg, neg_add_cancel_right, s₀_comp_δ₁,
+            AlternatingFaceMapComplex.ε_app_f_zero]
         · rw [Homotopy.prevD_chainComplex, Homotopy.dNext_succ_chainComplex]
-          dsimp [ChainComplex.toSingle₀Equiv, ChainComplex.fromSingle₀Equiv]
-          simp only [comp_zero, ComplexShape.down_Rel, not_true, Preadditive.neg_comp,
+          dsimp
+          simp only [Preadditive.neg_comp,
             AlternatingFaceMapComplex.obj_d_eq, comp_id, ite_true, Preadditive.comp_neg,
             @Fin.sum_univ_succ _ _ (i + 2), Fin.val_zero, pow_zero, one_smul, Fin.val_succ,
             Preadditive.comp_add, drop_obj, s_comp_δ₀, Preadditive.sum_comp,
             Preadditive.zsmul_comp, Preadditive.comp_sum, Preadditive.comp_zsmul,
-            zsmul_neg, ed.s_comp_δ, pow_add, pow_one, mul_neg, mul_one, neg_zsmul, neg_neg,
-            neg_add_cancel_comm_assoc, add_left_neg] }
+            zsmul_neg, s_comp_δ, pow_add, pow_one, mul_neg, mul_one, neg_zsmul, neg_neg,
+            neg_add_cancel_comm_assoc, add_left_neg, zero_comp] }
 #align simplicial_object.augmented.extra_degeneracy.homotopy_equiv SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv
 
 end ExtraDegeneracy

@@ -57,7 +57,7 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt $ dvd_of_mem_primeFactors h
 
 @[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := rfl
-@[simp] lemma primeFactors_one : primeFactors 0 = ∅ := rfl
+@[simp] lemma primeFactors_one : primeFactors 1 = ∅ := rfl
 
 @[simp] lemma primeFactors_eq_empty : n.primeFactors = ∅ ↔ n = 0 ∨ n = 1 := by
   constructor

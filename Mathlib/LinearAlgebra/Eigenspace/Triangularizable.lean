@@ -9,7 +9,9 @@ import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 #align_import linear_algebra.eigenspace.is_alg_closed from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
-# Eigenvectors and eigenvalues over algebraically closed fields.
+# Triangularizable linear endomorphisms
+
+This file contains basic results relevant to the triangularizability of linear endomorphisms.
 
 * Every linear operator on a vector space over an algebraically closed field has an eigenvalue.
 * The generalized eigenvectors span the entire vector space.

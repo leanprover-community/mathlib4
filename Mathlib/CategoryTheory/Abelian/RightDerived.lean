@@ -84,7 +84,8 @@ def Functor.rightDerivedObjIso (F : C ⥤ D) [F.Additive] (n : ℕ) {X : C}
 def Functor.rightDerivedObjInjectiveZero (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     (F.rightDerived 0).obj X ≅ F.obj X :=
   F.rightDerivedObjIso 0 (InjectiveResolution.self X) ≪≫
-    (homology'Functor _ _ _).mapIso ((CochainComplex.single₀MapHomologicalComplex F).app X) ≪≫
+    (homology'Functor _ _ _).mapIso
+      ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℕ) 0).app X) ≪≫
       (CochainComplex.homologyFunctor0Single₀ D).app (F.obj X)
 #align category_theory.functor.right_derived_obj_injective_zero CategoryTheory.Functor.rightDerivedObjInjectiveZero
 
@@ -95,7 +96,8 @@ open ZeroObject
 def Functor.rightDerivedObjInjectiveSucc (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Injective X] :
     (F.rightDerived (n + 1)).obj X ≅ 0 :=
   F.rightDerivedObjIso (n + 1) (InjectiveResolution.self X) ≪≫
-    (homology'Functor _ _ _).mapIso ((CochainComplex.single₀MapHomologicalComplex F).app X) ≪≫
+    (homology'Functor _ _ _).mapIso
+      ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℕ) _).app X) ≪≫
       (CochainComplex.homology'FunctorSuccSingle₀ D n).app (F.obj X) ≪≫ (Functor.zero_obj _).isoZero
 #align category_theory.functor.right_derived_obj_injective_succ CategoryTheory.Functor.rightDerivedObjInjectiveSucc
 
@@ -314,8 +316,7 @@ theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f :
   erw [cokernel.π_desc] -- Porting note: need to insist
   rw [← Category.assoc, ← Functor.map_comp, ← Category.assoc,
     HomologicalComplex.Hom.sqFrom_left, mapHomologicalComplex_map_f, ← Functor.map_comp,
-    show f ≫ Q.ι.f 0 = P.ι.f 0 ≫ (InjectiveResolution.desc f Q P).f 0 from
-      HomologicalComplex.congr_hom (InjectiveResolution.desc_commutes f Q P).symm 0]
+    InjectiveResolution.desc_commutes_zero f Q P]
   rfl -- Porting note: extra rfl
 #align category_theory.abelian.functor.right_derived_zero_to_self_natural CategoryTheory.Abelian.Functor.rightDerivedZeroToSelf_natural
 

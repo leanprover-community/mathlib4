@@ -172,8 +172,7 @@ theorem leftDerived_zero_to_self_natural [EnoughProjectives C] {X : C} {Y : C} (
   simp only [HomologicalComplex.Hom.sqTo_right, mapHomologicalComplex_map_f,
     homology'.π'_map_assoc, homology'.π'_desc', kernel.lift_ι_assoc, Category.assoc,
     homology'.π'_desc'_assoc, ← map_comp,
-    show (ProjectiveResolution.lift f P Q).f 0 ≫ _ = _ ≫ f from
-      HomologicalComplex.congr_hom (ProjectiveResolution.lift_commutes f P Q) 0]
+    ProjectiveResolution.lift_commutes_zero f P Q]
 #align category_theory.abelian.functor.left_derived_zero_to_self_natural CategoryTheory.Abelian.Functor.leftDerived_zero_to_self_natural
 
 /-- Given `PreservesFiniteColimits F`, the natural isomorphism `(F.leftDerived 0) ≅ F`. -/

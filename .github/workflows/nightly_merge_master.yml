@@ -25,6 +25,7 @@ jobs:
       - name: Merge master to nightly favoring nightly changes
         run: |
           git checkout nightly-testing
-          git merge master --strategy-option ours --no-commit --allow-unrelated-histories
+          git merge master --strategy-option ours --no-commit --allow-unrelated-histories || true
+          git add .
           git commit -m "Merge master into nightly-testing"
-          git push origin nightly-testing
+          git push origin nightly-testing || true

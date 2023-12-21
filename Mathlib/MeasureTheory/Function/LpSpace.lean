@@ -641,17 +641,8 @@ theorem Memℒp.indicator (hs : MeasurableSet s) (hf : Memℒp f p μ) : Memℒp
 
 theorem snormEssSup_indicator_eq_snormEssSup_restrict {f : α → F} (hs : MeasurableSet s) :
     snormEssSup (s.indicator f) μ = snormEssSup f (μ.restrict s) := by
-  simp_rw [snormEssSup, nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
-  by_cases hs_null : μ s = 0
-  · rw [Measure.restrict_zero_set hs_null]
-    simp only [essSup_measure_zero, ENNReal.essSup_eq_zero_iff, ENNReal.bot_eq_zero]
-    have hs_empty : s =ᵐ[μ] (∅ : Set α) := by rw [ae_eq_set]; simpa using hs_null
-    refine' (indicator_ae_eq_of_ae_eq_set hs_empty).trans _
-    rw [Set.indicator_empty]
-    rfl
-  rw [essSup_indicator_eq_essSup_restrict (eventually_of_forall fun x => ?_) hs hs_null]
-  rw [Pi.zero_apply]
-  exact zero_le _
+  simp_rw [snormEssSup, nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator,
+    ENNReal.essSup_indicator_eq_essSup_restrict hs]
 #align measure_theory.snorm_ess_sup_indicator_eq_snorm_ess_sup_restrict MeasureTheory.snormEssSup_indicator_eq_snormEssSup_restrict
 
 theorem snorm_indicator_eq_snorm_restrict {f : α → F} (hs : MeasurableSet s) :
@@ -739,11 +730,9 @@ lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
   · simp only [hp_zero, memℒp_zero_iff_aestronglyMeasurable]
     exact AEStronglyMeasurable.piecewise hs hf.1 hg.1
   refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
-  by_cases hp_top : p = ∞
-  · have hf2 := hf.2
-    have hg2 := hg.2
-    simp only [hp_top] at hf2 hg2 ⊢
-    exact (snorm_top_piecewise_le f g hs).trans_lt (max_lt_iff.mpr ⟨hf2, hg2⟩)
+  rcases eq_or_ne p ∞ with rfl | hp_top
+  · rw [snorm_top_piecewise f g hs]
+    exact max_lt hf.2 hg.2
   rw [snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
     ENNReal.add_lt_top]
   constructor

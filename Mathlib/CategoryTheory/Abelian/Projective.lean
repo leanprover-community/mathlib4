@@ -112,9 +112,8 @@ describing the inductive steps. The problems apparent here clearly indicate that
 theorem ofComplex_sq_10_comm (Z : C) :
     0 ≫ HomologicalComplex.d ((ChainComplex.single₀ C).obj Z) 1 0 =
     HomologicalComplex.d (ofComplex Z) 1 0 ≫ Projective.π Z := by
-  simp only [ofComplex_X, ChainComplex.single₀_obj_X_0, ChainComplex.single₀_obj_X_succ,
-    ComplexShape.down_Rel, not_true, ChainComplex.single₀_obj_X_d, comp_zero, ofComplex_d,
-    eqToHom_refl, Category.id_comp, dite_eq_ite, ite_true]
+  dsimp
+  simp only [ite_true, Category.id_comp, zero_comp]
   exact (exact_d_f (Projective.π Z)).w.symm
 
 -- Porting note: the `exact` in `of` was very, very slow. To assist,
