@@ -1279,7 +1279,7 @@ theorem Ideal.prod_le_prime {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P
 prime powers. -/
 theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i))
-    (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → f i ≠ f j) :
+    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => f i ^ e i) = ∏ i in s, f i ^ e i := by
   letI := Classical.decEq ι
   revert prime coprime
@@ -1368,7 +1368,7 @@ the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
 noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
-    (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j)
+    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i in s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   IsDedekindDomain.quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
     (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
@@ -1379,7 +1379,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s
 we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`.-/
 theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type*} {s : Finset ι}
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
-    (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
+    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j) (x : ∀ i : s, R ⧸ P i ^ e i) :
     ∃ y, ∀ (i) (hi : i ∈ s), Ideal.Quotient.mk (P i ^ e i) y = x ⟨i, hi⟩ := by
   let f := IsDedekindDomain.quotientEquivPiOfFinsetProdEq _ P e prime coprime rfl
   obtain ⟨y, rfl⟩ := f.surjective x
@@ -1391,7 +1391,7 @@ theorem IsDedekindDomain.exists_representative_mod_finset {ι : Type*} {s : Fins
 we can choose a representative `y : R` such that `y - x i ∈ P i ^ e i`.-/
 theorem IsDedekindDomain.exists_forall_sub_mem_ideal {ι : Type*} {s : Finset ι} (P : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
-    (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j) (x : s → R) :
+    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j) (x : s → R) :
     ∃ y, ∀ (i) (hi : i ∈ s), y - x ⟨i, hi⟩ ∈ P i ^ e i := by
   obtain ⟨y, hy⟩ :=
     IsDedekindDomain.exists_representative_mod_finset P e prime coprime fun i =>
