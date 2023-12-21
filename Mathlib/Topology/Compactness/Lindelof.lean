@@ -171,7 +171,7 @@ theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs 
 theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U : ι → Set X)
     (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i)
     := by
-  have he : ∃ r : Set ι, r.Countable ∧ ∅ ⊆ ⋃ i ∈ r, U i := by use ∅ ; simp
+  have he : ∃ r : Set ι, r.Countable ∧ ∅ ⊆ ⋃ i ∈ r, U i := by use ∅; simp
   have hmono : ∀ ⦃s t : Set X⦄, s ⊆ t → (∃ r : Set ι, r.Countable ∧ t ⊆ ⋃ i ∈ r, U i)
       → (∃ r : Set ι, r.Countable ∧ s ⊆ ⋃ i ∈ r, U i) := by
     intro _ _ hst ⟨r, ⟨hrcountable,hsub⟩⟩
