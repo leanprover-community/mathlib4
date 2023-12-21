@@ -282,8 +282,8 @@ linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_injective_injective {R' : Type*} {M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : R' → R) (j : M →+ M') (hi : ∀ s, i s = 0 → s = 0) (hj : ∀ x, j x = 0 → x = 0)
-    (hc : ∀ (s : R') (x : M), j (i s • x) = s • j x) : LinearIndependent R' (j ∘ v) := by
+    (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : ∀ m, j m = 0 → m = 0)
+    (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) : LinearIndependent R' (j ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
   intro S r' H s hs
   simp_rw [comp_apply, ← hc, ← map_sum] at H
@@ -296,13 +296,13 @@ of vectors to linearly independent families of vectors. As a special case, takin
 it is `LinearIndependent.map'`. -/
 theorem LinearIndependent.map_of_surjective_injective {R' : Type*} {M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
-    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ x, j x = 0 → x = 0)
-    (hc : ∀ (s : R) (x : M), j (s • x) = i s • j x) : LinearIndependent R' (j ∘ v) := by
+    (i : ZeroHom R R') (j : M →+ M') (hi : Surjective i) (hj : ∀ m, j m = 0 → m = 0)
+    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) : LinearIndependent R' (j ∘ v) := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
-  refine hv.map_of_injective_injective i' j (fun s h ↦ ?_) hj fun s x ↦ ?_
+  refine hv.map_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_
   · apply_fun i at h
     rwa [hi', i.map_zero] at h
-  rw [hc (i' s) x, hi']
+  rw [hc (i' r) m, hi']
 
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/
