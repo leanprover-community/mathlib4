@@ -13,14 +13,15 @@ abbrev toPointedCone (𝕜 : Type*) {E : Type u} [LinearOrderedField 𝕜] [AddC
     [Module 𝕜 E] (s : Set E) :=
   Submodule.span {c : 𝕜 // 0 ≤ c} s
 
+
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 
-def DirectSum.PointedCone (ι : Type u) [DecidableEq ι] (β : ι → PointedCone 𝕜 E) :
-    PointedCone 𝕜 E  :=
-  LinearMap.range $ DirectSum.coeLinearMap β
+-- def DirectSum.PointedCone (ι : Type u) [DecidableEq ι] (β : ι → PointedCone 𝕜 E) :
+--     PointedCone 𝕜 E  :=
+--   LinearMap.range $ DirectSum.coeLinearMap β
 
 namespace Caratheodory
 
@@ -160,7 +161,19 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             exact (ne_of_lt hd₁.2).symm
           rw [this, zero_smul]
 
+
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
+
+lemma toPointedCone_nonempty_iff : (toPointedCone 𝕜 s : Set E).Nonempty ↔ s.Nonempty := by
+  -- rw [Set.nonempty_iff_ne_empty, Set.nonempty_iff_ne_empty, Ne.def, Ne.def, toPointedCone]
+  constructor
+  · contrapose!
+    unfold toPointedCone
+    rintro h
+    rw [h]
+    sorry
+  · unfold toPointedCone
+    exact fun a ↦ Submodule.nonempty (Submodule.span 𝕜≥0 s)
 
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
@@ -175,9 +188,11 @@ theorem mem_minCardFinsetOfMemtoPointedCone :
   sorry
 
 -- TODO: Should be an easy fix
+
 theorem minCardFinsetOfMemtoPointedCone_nonempty : (minCardFinsetOfMemtoPointedCone hx).Nonempty := by
   simp_rw [← Finset.coe_nonempty]
-  exact ⟨x, sorry⟩ --mem_minCardFinsetOfMemtoPointedCone hx⟩
+  rw [← @toPointedCone_nonempty_iff 𝕜 E _ _ _ (minCardFinsetOfMemtoPointedCone hx)]
+  exact ⟨x, mem_minCardFinsetOfMemtoPointedCone _⟩
 
 theorem minCardFinsetOfMemtoPointedCone_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ toPointedCone 𝕜 (t : Set E)) : (minCardFinsetOfMemtoPointedCone hx).card ≤ t.card :=
@@ -202,8 +217,6 @@ theorem affineIndependent_minCardFinsetOfMemtoPointedCone :
 end Caratheodory
 
 variable {s : Set E}
-
--- TODO: Figure out direct sums of PointedCones
 
 /-- **Carathéodory's convexity theorem** -/
 
@@ -230,23 +243,19 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCon
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
   simp_rw [toPointedCone, SetLike.mem_coe, mem_span_finset] at ht₃
-  simp
-  sorry
-  #exit
-  simp only [toPointedCone_eq] at ht₃
-  obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
-  let t' := t.filter fun i => w i ≠ 0
-  refine' ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), _, _, _, _, _⟩
+  replace ⟨f, hf⟩ := ht₃
+  simp only [exists_prop, exists_and_left]
+  let t' := t.filter fun i => f i ≠ 0
+  refine' ⟨t', t'.fintypeCoeSort, Subtype.val, ⟨_, _, (fun x => f x), _, _⟩⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
-  · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
-  · exact fun i =>
-      (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
-  · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
-  · change (∑ i : t' in t'.attach, (fun e => w e • e) ↑i) = x
-    erw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
-    · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
-      exact hw₃
-    · intro e _ hwe contra
-      apply hwe
-      rw [contra, zero_smul]
+  · sorry -- t' is linearly independent
+  . rintro ⟨i, hi⟩
+    rw [mem_filter] at hi
+    refine' lt_of_le_of_ne _ _
+    · exact zero_le (f i)
+    · symm
+      convert hi.2
+      exact eq_iff_eq_of_cmp_eq_cmp rfl
+  · rw [← hf]
+    sorry -- sum does not change
