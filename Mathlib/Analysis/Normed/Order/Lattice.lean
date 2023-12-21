@@ -91,7 +91,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α :
 
 variable {α : Type _} [NormedLatticeAddCommGroup α]
 
-open LatticeOrderedCommGroup HasSolidNorm
+open LatticeOrderedGroup LatticeOrderedCommGroup HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
 import Lean.Data.NameMap
+import Std.Data.RBMap
 
 /-!
 # Additional functions on `Lean.NameMap`.
@@ -12,6 +13,9 @@ We provide `NameMap.filter` and `NameMap.filterMap`.
 -/
 
 namespace Lean.NameMap
+
+instance : ForIn m (NameMap β) (Name × β) :=
+  inferInstanceAs <| ForIn m (RBMap Name β _) _
 
 /--
 `filter f m` returns the `NameMap` consisting of all

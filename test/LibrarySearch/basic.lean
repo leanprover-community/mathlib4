@@ -43,8 +43,8 @@ example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 #guard_msgs in
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
-/-- info: Try this: exact Int.one -/
-#guard_msgs in
+-- Could be any number of results (`Int.one`, `Int.zero`, etc)
+#guard_msgs (drop info) in
 example : Int := by apply?
 
 /-- info: Try this: Nat.lt.base x -/
@@ -61,8 +61,8 @@ example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 #guard_msgs in
 example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by apply?
 
-/-- info: Try this: exact fun a ↦ a -/
-#guard_msgs in
+-- Could be any number of results (`fun x ↦ x`, `id`, etc)
+#guard_msgs (drop info) in
 example (α : Prop) : α → α := by apply?
 
 -- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
@@ -175,21 +175,21 @@ example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 -- This is returning `exact []`.
 -- example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 
-/-- info: Try this: exact List.iotaTR.go h P -/
-#guard_msgs in
+-- Could be any number of results
+#guard_msgs (drop info) in
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by apply? using h, P
 
-/-- info: Try this: exact List.partitionMap f l -/
-#guard_msgs in
+-- Could be any number of results
+#guard_msgs (drop info) in
 example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
   apply? using f -- partitionMap f l
 
-/-- info: Try this: exact Nat.mul n m -/
-#guard_msgs in
+-- Could be any number of results (`Nat.mul n m`, `Nat.add n m`, etc)
+#guard_msgs (drop info) in
 example (n m : ℕ) : ℕ := by apply? using n, m
 
-/-- info: Try this: exact Nat.SOM.Mon.mul P Q -/
-#guard_msgs in
+-- Could be any number of results
+#guard_msgs (drop info) in
 example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 
 -- Check that we don't use sorryAx:
