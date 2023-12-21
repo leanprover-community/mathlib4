@@ -125,7 +125,7 @@ mkSelectionPanelRPC insertEnter
 
 /-- The conv widget. -/
 @[widget_module]
-def ConvSelectionPanel : Component SelectInsertParams :=
+def ConvSelectionPanel : PanelWidget SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc
 
 open scoped Json in
@@ -133,4 +133,4 @@ open scoped Json in
 in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  savePanelWidgetInfo' ConvSelectionPanel { replaceRange } stx
