@@ -195,11 +195,4 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 #align zmod.inhabited ZMod.inhabited
-
-/-- Making `ZMod` a discrete topological space. -/
-instance {d : ℕ} : TopologicalSpace (ZMod d) := ⊥
-attribute [local instance] ZMod.instTopologicalSpaceZMod
-
-instance {d : ℕ} : DiscreteTopology (ZMod d) := { eq_bot := rfl }
-attribute [local instance] ZMod.instDiscreteTopologyZModInstTopologicalSpaceZMod
 end ZMod
