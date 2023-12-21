@@ -1189,10 +1189,8 @@ theorem isCycleOn_support_cycleOf (f : Perm α) (x : α) : f.IsCycleOn (f.cycleO
 theorem SameCycle.exists_pow_eq_of_mem_support (h : SameCycle f x y) (hx : x ∈ f.support) :
     ∃ i < (f.cycleOf x).support.card, (f ^ i) x = y := by
   rw [mem_support] at hx
-  have := Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOf x)
+  exact Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOf x)
     (by rw [mem_support_cycleOf_iff' hx]) (by rwa [mem_support_cycleOf_iff' hx])
-  simp_rw [← exists_prop] at this
-  exact this
 #align equiv.perm.same_cycle.exists_pow_eq_of_mem_support Equiv.Perm.SameCycle.exists_pow_eq_of_mem_support
 
 theorem SameCycle.exists_pow_eq (f : Perm α) (h : SameCycle f x y) :
