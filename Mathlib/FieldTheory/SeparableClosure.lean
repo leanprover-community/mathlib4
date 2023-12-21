@@ -63,34 +63,15 @@ noncomputable section
 
 section Adhoc
 
-universe u v u' v'
+universe w w' v v'
 
-private lemma test {F : Type u} {E : Type v} [Field F] [Ring E] [Algebra F E]
-    {F' : Type u'} {E' : Type v'} [Field F'] [Ring E'] [Algebra F' E']
-    (iF : F ≃+* F') (iE : E ≃+* E')
-    (h : (algebraMap F' E').comp iF.toRingHom = iE.toRingHom.comp (algebraMap F E)) :
-    Cardinal.lift.{v'} (Module.rank F E) = Cardinal.lift.{v} (Module.rank F' E') := by
-  letI := iF.toRingHom.toAlgebra
-  letI := ((algebraMap F E).comp iF.symm.toRingHom).toAlgebra' fun c x ↦ by
-    simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
-    exact Algebra.commutes _ x
-  haveI : IsScalarTower F F' E := IsScalarTower.of_algebraMap_eq fun x ↦ by
-    change _ = ((algebraMap F E).comp iF.symm.toRingHom) (iF.toRingHom x)
-    simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, RingHom.coe_comp, Function.comp_apply,
-      RingEquiv.symm_apply_apply]
-  let e : E ≃ₐ[F'] E' := { iE with
-    commutes' := fun r ↦ by
-      simpa only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-        Function.comp_apply, RingEquiv.apply_symm_apply] using FunLike.congr_fun h.symm (iF.symm r)
-  }
-  let iF' : F ≃ₗ[F] F' := { iF with
-    map_smul' := (IsScalarTower.toAlgHom F F F').toLinearMap.map_smul
-  }
-  have H := iF'.lift_rank_eq
-  rw [rank_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, u'}, Cardinal.lift_inj] at H
-  have := lift_rank_mul_lift_rank F F' E
-  rw [← H, Cardinal.lift_one, one_mul, Cardinal.lift_inj] at this
-  rw [← e.toLinearEquiv.lift_rank_eq, this]
+/-- TODO: remove once #9156 is merged -/
+axiom Algebra.lift_rank_eq_of_equiv_equiv
+    {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
+    {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
+    (i : R ≃+* R') (j : S ≃+* S')
+    (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
+    Cardinal.lift.{v'} (Module.rank R S) = Cardinal.lift.{v} (Module.rank R' S')
 
 end Adhoc
 
@@ -267,7 +248,8 @@ theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.ran
 inseparable degree over `F`. -/
 theorem insepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
     Cardinal.lift.{w} (insepDegree F E) = Cardinal.lift.{v} (insepDegree F K) :=
-  test (separableClosure.algEquivOfAlgEquiv F E K i).toRingEquiv i.toRingEquiv (by rfl)
+  Algebra.lift_rank_eq_of_equiv_equiv (separableClosure.algEquivOfAlgEquiv F E K i).toRingEquiv
+    i.toRingEquiv (by rfl)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same (finite)
 inseparable degree over `F`. -/
