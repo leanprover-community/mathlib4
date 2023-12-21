@@ -291,6 +291,12 @@ end Nat
 
 open Nat
 
+lemma Even.nat_cast {R : Type*} [AddMonoidWithOne R] {n : ℕ} (hn : Even n) : Even (n : R) :=
+  hn.map <| Nat.castAddMonoidHom R
+
+lemma Odd.nat_cast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) :=
+  hn.map <| Nat.castRingHom R
+
 namespace Function
 
 namespace Involutive
