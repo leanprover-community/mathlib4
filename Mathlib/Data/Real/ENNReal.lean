@@ -974,6 +974,14 @@ theorem coe_mem_upperBounds {s : Set ℝ≥0} :
   simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
 #align ennreal.coe_mem_upper_bounds ENNReal.coe_mem_upperBounds
 
+theorem iSup_coe_eq_top {ι : Sort _} (f : ι → ℝ≥0) :
+    ⨆ x, (f x : ℝ≥0∞) = ⊤ ↔ ¬BddAbove (Set.range f) :=
+  WithTop.iSup_coe_eq_top f
+
+theorem iSup_coe_lt_top {ι : Sort _} (f : ι → ℝ≥0) :
+    ⨆ x, (f x : ℝ≥0∞) < ⊤ ↔ BddAbove (Set.range f) :=
+  WithTop.iSup_coe_lt_top f
+
 end CompleteLattice
 
 section Mul

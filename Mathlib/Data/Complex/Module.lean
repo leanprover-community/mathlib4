@@ -108,18 +108,6 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-section
-
-open ComplexOrder
-
-protected theorem orderedSMul : OrderedSMul ℝ ℂ :=
-  OrderedSMul.mk' fun a b r hab hr => ⟨by simp [hr, hab.1.le], by simp [hab.2]⟩
-#align complex.ordered_smul Complex.orderedSMul
-
-scoped[ComplexOrder] attribute [instance] Complex.orderedSMul
-
-end
-
 open Submodule FiniteDimensional
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/

@@ -74,9 +74,7 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open FiniteDimensional
 
--- Porting note: See issue #2220
--- While not strictly necessary, this keeps the file closer to mathlib3 in a few places.
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 lemma FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two {K V : Type _} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=

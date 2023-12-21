@@ -27,7 +27,7 @@ open Finset Polynomial FiniteField Equiv
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- **Euler's four-square identity**. -/
 theorem euler_four_squares {R : Type _} [CommRing R] (a b c d x y z w : R) :

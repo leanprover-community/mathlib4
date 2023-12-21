@@ -103,6 +103,15 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 #align is_chain.image IsChain.image
 
+theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    IsChain (· ≤ ·) (range f) := by
+  rw [← image_univ]
+  exact (isChain_of_trichotomous _).image (· ≤ ·) _ _ hf
+
+theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
+    IsChain (· < ·) s := fun _a ha _b hb hne ↦
+  (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+
 section Total
 
 variable [IsRefl α r]
@@ -349,9 +358,8 @@ section PartialOrder
 
 variable [PartialOrder α] {p : Set α → Prop} [Implies p (IsChain (· ≤ ·))]
 
-theorem isChain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := fun _ ha _ hb h =>
-  (s.le_or_le ha hb).imp h.lt_of_le h.lt_of_le'
-#align flag.chain_lt BundledSet.isChain_lt
+theorem isChain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.isChain_le.lt_of_le
+#align flag.chain_lt Flag.isChain_lt
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : BundledSet α p) :
     LinearOrder s :=
