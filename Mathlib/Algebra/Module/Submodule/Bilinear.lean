@@ -163,14 +163,8 @@ theorem map₂_iSup_right (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (t
 
 theorem map₂_span_singleton_eq_map (f : M →ₗ[R] N →ₗ[R] P) (m : M) :
     map₂ f (span R {m}) = map (f m) := by
-  funext; rw [map₂_eq_span_image2]; apply le_antisymm
-  · rw [span_le, Set.image2_subset_iff]
-    intro x hx y hy
-    obtain ⟨a, rfl⟩ := mem_span_singleton.1 hx
-    rw [f.map_smul]
-    exact smul_mem _ a (mem_map_of_mem hy)
-  · rintro _ ⟨n, hn, rfl⟩
-    exact subset_span ⟨m, n, mem_span_singleton_self m, hn, rfl⟩
+  funext s
+  rw [← span_eq s, map₂_span_span, image2_singleton_left, map_span]
 #align submodule.map₂_span_singleton_eq_map Submodule.map₂_span_singleton_eq_map
 
 theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (n : N) :

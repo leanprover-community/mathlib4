@@ -211,8 +211,6 @@ theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 
   contrapose! h
   have h1 := sq_pos_of_ne_zero a.x h.1
   have h2 := sq_pos_of_ne_zero a.y h.2
-  -- Porting note: added this to help `nlinarith`
-  obtain ⟨d', rfl⟩ : ∃ d', d = -d' := ⟨-d, by exact Iff.mp neg_eq_iff_eq_neg rfl⟩
   nlinarith
 #align pell.solution₁.eq_zero_of_d_neg Pell.Solution₁.eq_zero_of_d_neg
 

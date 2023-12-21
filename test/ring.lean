@@ -158,3 +158,22 @@ example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring_nf
 example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
   ring_nf
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20returns.20ugly.20literals/near/400988184
+example {n : ℝ} :
+    (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) = 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 := by
+  -- `conv_lhs` prevents `ring_nf` picking a bad normalization for both sides.
+  conv_lhs => ring_nf
+
+-- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
+-- about differing instance paths.
+/--
+info: n : ℝ
+_hn : 0 ≤ n
+⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
+-/
+#guard_msgs (info) in
+example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1 / 3) * (n + 1) ^ 2 := by
+  ring_nf
+  trace_state
+  exact test_sorry
