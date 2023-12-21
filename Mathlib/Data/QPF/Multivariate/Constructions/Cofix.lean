@@ -222,7 +222,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
   intro rxy
   apply Quot.sound
   let r' := fun x y => r (Quot.mk _ x) (Quot.mk _ y)
-  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := by rfl
+  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := rfl
   have : IsPrecongr r' := by
     intro a b r'ab
     have h₀ :

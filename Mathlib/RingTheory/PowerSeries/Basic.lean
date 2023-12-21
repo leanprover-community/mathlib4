@@ -1807,17 +1807,12 @@ theorem trunc_zero (n) : trunc n (0 : PowerSeries R) = 0 :=
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : PowerSeries R) = 1 :=
   Polynomial.ext fun m => by
-    rw [coeff_trunc, coeff_one]
-    split_ifs with H H' <;> rw [Polynomial.coeff_one]
-    · subst m
-      rw [if_pos rfl]
-    · symm
-      exact if_neg (Ne.elim (Ne.symm H'))
-    · symm
-      refine' if_neg _
-      rintro rfl
-      apply H
-      exact Nat.zero_lt_succ _
+    rw [coeff_trunc, coeff_one, Polynomial.coeff_one]
+    split_ifs with h _ h'
+    · rfl
+    · rfl
+    · subst h'; simp at h
+    · rfl
 #align power_series.trunc_one PowerSeries.trunc_one
 
 @[simp]
@@ -2007,8 +2002,8 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : PowerSerie
     rw [Finset.Nat.mem_antidiagonal]
 #align power_series.eq_zero_or_eq_zero_of_mul_eq_zero PowerSeries.eq_zero_or_eq_zero_of_mul_eq_zero
 
-instance [NoZeroDivisors R] : NoZeroDivisors (PowerSeries R)
-    where eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
+instance [NoZeroDivisors R] : NoZeroDivisors (PowerSeries R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
 
 instance [IsDomain R] : IsDomain (PowerSeries R) :=
   NoZeroDivisors.to_isDomain _

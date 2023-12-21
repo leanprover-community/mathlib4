@@ -248,8 +248,8 @@ def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
 #align homological_complex.id HomologicalComplex.id
 
 /-- Composition of chain maps. -/
-def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C
-    where f i := φ.f i ≫ ψ.f i
+def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C where
+  f i := φ.f i ≫ ψ.f i
 #align homological_complex.comp HomologicalComplex.comp
 
 section
@@ -360,6 +360,14 @@ def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
 end
 
 noncomputable section
+
+@[reassoc]
+lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
+    φ.f n ≫ (L.XIsoOfEq h).hom = (K.XIsoOfEq h).hom ≫ φ.f n' := by subst h; simp
+
+@[reassoc]
+lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
+    φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h; simp
 
 -- porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,

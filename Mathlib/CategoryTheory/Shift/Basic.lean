@@ -572,8 +572,13 @@ lemma shiftFunctorComm_eq (i j k : A) (h : i + j = k) :
   rfl
 #align category_theory.shift_functor_comm_eq CategoryTheory.shiftFunctorComm_eq
 
+@[simp]
+lemma shiftFunctorComm_eq_refl (i : A) :
+    shiftFunctorComm C i i = Iso.refl _ := by
+  rw [shiftFunctorComm_eq C i i (i + i) rfl, Iso.symm_self_id]
+
 lemma shiftFunctorComm_symm (i j : A) :
-  (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
+    (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
   ext1
   dsimp
   rw [shiftFunctorComm_eq C i j (i+j) rfl, shiftFunctorComm_eq C j i (i+j) (add_comm j i)]
@@ -628,6 +633,12 @@ lemma shiftFunctorZero_inv_app_shift (n : A) :
   dsimp
   rw [Functor.map_id]
 #align category_theory.shift_functor_zero_inv_app_shift CategoryTheory.shiftFunctorZero_inv_app_shift
+
+lemma shiftFunctorComm_zero_hom_app (a : A) :
+    (shiftFunctorComm C a 0).hom.app X =
+      (shiftFunctorZero C A).hom.app (X⟦a⟧) ≫ ((shiftFunctorZero C A).inv.app X)⟦a⟧' := by
+  simp only [shiftFunctorZero_hom_app_shift, Category.assoc, ← Functor.map_comp,
+    Iso.hom_inv_id_app, Functor.map_id, Functor.comp_obj, Category.comp_id]
 
 @[reassoc]
 lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m₃ : A) (X : C) :

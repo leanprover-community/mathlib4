@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 
-#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"5b8284148e8149728f4b90624888d98c36284454"
+#align_import algebraic_topology.dold_kan.functor_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 

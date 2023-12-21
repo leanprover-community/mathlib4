@@ -409,9 +409,6 @@ instance commSemiring : CommSemiring Num := by
     { Num.addMonoid,
       Num.addMonoidWithOne with
       mul := (· * ·)
-      one := 1
-      add := (· + ·)
-      zero := 0
       npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
     try { intros; rfl } <;>
     transfer <;>
@@ -955,45 +952,42 @@ theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
 #align num.lxor_to_nat Num.lxor'_to_nat
 
 @[simp, norm_cast]
-theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
+theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = (m : ℕ) <<< (n : ℕ) := by
   cases m <;> dsimp only [shiftl]
   · symm
-    apply Nat.zero_shiftl
+    apply Nat.zero_shiftLeft
   simp only [cast_pos]
   induction' n with n IH
   · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftl_succ, IH]
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH,
+        Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm]
 #align num.shiftl_to_nat Num.shiftl_to_nat
 
 @[simp, norm_cast]
-theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n := by
-  cases' m with m <;> dsimp only [shiftr]
+
+theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = (m : ℕ) >>> (n : ℕ)  := by
+  cases' m with m <;> dsimp only [shiftr];
   · symm
-    apply Nat.zero_shiftr
+    apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
   cases' m with m m <;> dsimp only [PosNum.shiftr]
-  · rw [Nat.shiftr_eq_div_pow]
+  · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt
-    exact @Nat.pow_lt_pow_of_lt_right 2 (by decide) 0 (n + 1) (Nat.succ_pos _)
+    simp [@Nat.pow_lt_pow_of_lt_right 2 (by decide) 0 (n + 1) (Nat.succ_pos _)]
   · trans
     apply IH
-    change Nat.shiftr m n = Nat.shiftr (_root_.bit1 m) (n + 1)
-    rw [add_comm n 1, Nat.shiftr_add]
-    apply congr_arg fun x => Nat.shiftr x n
-    -- Porting note: `unfold` is not repeated in Lean4.
-    repeat unfold Nat.shiftr
-    change (m : ℕ) = Nat.div2 (Nat.bit true m)
-    rw [Nat.div2_bit]
+    change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
+    rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    apply congr_arg fun x => Nat.shiftRight x n
+    simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
   · trans
     apply IH
-    change Nat.shiftr m n = Nat.shiftr (_root_.bit0 m) (n + 1)
-    rw [add_comm n 1, Nat.shiftr_add]
-    apply congr_arg fun x => Nat.shiftr x n
-    repeat unfold Nat.shiftr
-    change (m : ℕ) = Nat.div2 (Nat.bit false m)
-    rw [Nat.div2_bit]
+    change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
+    rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    apply congr_arg fun x => Nat.shiftRight x n
+    simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
 #align num.shiftr_to_nat Num.shiftr_to_nat
 
 @[simp]
@@ -1001,27 +995,25 @@ theorem testBit_to_nat (m n) : testBit m n = Nat.testBit m n := by
   -- Porting note: `unfold` → `dsimp only`
   cases m <;> dsimp only [testBit, Nat.testBit]
   case zero =>
-    change false = Nat.bodd (Nat.shiftr 0 n)
-    rw [Nat.zero_shiftr]
+    change false = Nat.bodd (0 >>> n)
+    rw [Nat.zero_shiftRight]
     rfl
   case pos m =>
     induction' n with n IH generalizing m <;> cases' m with m m <;> dsimp only [PosNum.testBit]
     · rfl
     · exact (Nat.bodd_bit _ _).symm
     · exact (Nat.bodd_bit _ _).symm
-    · change false = Nat.bodd (Nat.shiftr 1 (n + 1))
-      rw [add_comm, Nat.shiftr_add]
-      change false = Nat.bodd (Nat.shiftr 0 n)
-      rw [Nat.zero_shiftr]; rfl
-    · change PosNum.testBit m n = Nat.bodd (Nat.shiftr (Nat.bit true m) (n + 1))
-      rw [add_comm, Nat.shiftr_add]
-      dsimp only [Nat.shiftr]
-      rw [Nat.div2_bit]
+    · change false = Nat.bodd (1 >>> (n + 1))
+      rw [add_comm, Nat.shiftRight_add]
+      change false = Nat.bodd (0 >>> n)
+      rw [Nat.zero_shiftRight]; rfl
+    · change PosNum.testBit m n = Nat.bodd ((Nat.bit true m) >>> (n + 1))
+      rw [add_comm, Nat.shiftRight_add]
+      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
       apply IH
-    · change PosNum.testBit m n = Nat.bodd (Nat.shiftr (Nat.bit false m) (n + 1))
-      rw [add_comm, Nat.shiftr_add]
-      dsimp only [Nat.shiftr]
-      rw [Nat.div2_bit]
+    · change PosNum.testBit m n = Nat.bodd ((Nat.bit false m) >>> (n + 1))
+      rw [add_comm, Nat.shiftRight_add]
+      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
       apply IH
 #align num.test_bit_to_nat Num.testBit_to_nat
 
@@ -1505,7 +1497,6 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
-    one := 1
     one_mul := by transfer
     mul_one := by transfer
     left_distrib := by
@@ -1694,7 +1685,7 @@ theorem gcd_to_nat_aux :
     refine'
       add_le_add_left
         (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) _)) _
-    suffices : 1 ≤ _; simpa using Nat.mul_le_mul_left (pos a) this
+    suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
     rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
     exact le_to_nat.2 ab
 #align num.gcd_to_nat_aux Num.gcd_to_nat_aux

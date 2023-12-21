@@ -294,8 +294,8 @@ theorem lowerCentralSeries_one : lowerCentralSeries G 1 = commutator G := rfl
 
 theorem mem_lowerCentralSeries_succ_iff (n : ℕ) (q : G) :
     q ∈ lowerCentralSeries G (n + 1) ↔
-    q ∈ closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x }
-  := Iff.rfl
+    q ∈ closure { x | ∃ p ∈ lowerCentralSeries G n,
+                        ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x } := Iff.rfl
 #align mem_lower_central_series_succ_iff mem_lowerCentralSeries_succ_iff
 
 theorem lowerCentralSeries_succ (n : ℕ) :

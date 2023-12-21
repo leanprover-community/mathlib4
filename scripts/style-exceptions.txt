@@ -119,7 +119,6 @@ Mathlib/Tactic/Recover.lean : line 10 : ERR_MOD : Module docstring missing, or t
 Mathlib/Tactic/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RenameBVar.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Replace.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/RestateAxiom.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Set.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Set.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too late

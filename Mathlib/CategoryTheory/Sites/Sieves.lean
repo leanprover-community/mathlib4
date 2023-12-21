@@ -183,6 +183,14 @@ theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
   rfl
 #align category_theory.presieve.functor_pullback_id CategoryTheory.Presieve.functorPullback_id
 
+/-- Given a presieve `R` on `X`, the predicate `R.hasPullbacks` means that for all arrows `f` and
+    `g` in `R`, the pullback of `f` and `g` exists. -/
+class hasPullbacks (R : Presieve X) : Prop where
+  /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
+  has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
+
+instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
+
 section FunctorPushforward
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)

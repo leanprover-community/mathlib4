@@ -153,7 +153,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 #align non_unital_ring_hom.snd_comp_prod NonUnitalRingHom.snd_comp_prod
 
 theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
 end Prod
@@ -240,7 +240,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 #align ring_hom.snd_comp_prod RingHom.snd_comp_prod
 
 theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align ring_hom.prod_unique RingHom.prod_unique
 
 end Prod

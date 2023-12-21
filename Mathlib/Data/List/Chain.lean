@@ -469,8 +469,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     /- Bundle l with a proof that it is r-decreasing to form l' -/
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
-    have : Acc (List.lex_chains r) l'
-    · cases' l with b l
+    have : Acc (List.lex_chains r) l' := by
+      cases' l with b l
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1

@@ -289,7 +289,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   simp only [restrictProd, restrictDvd_def] at hfg
   simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
   ext (x hx)
-  rw [rootSet_def, Polynomial.map_mul, Polynomial.roots_mul] at hx
+  rw [rootSet_def, aroots_mul hpq] at hx
   cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
   · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
       ⟨splits_of_splits_of_dvd _ hpq (SplittingField.splits (p * q)) (dvd_mul_right p q)⟩
@@ -311,7 +311,6 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
       Subtype.ext_iff.mp (Equiv.apply_symm_apply (rootsEquivRoots q _) ⟨x, _⟩).symm
     rw [key, ← AlgEquiv.restrictNormal_commutes, ← AlgEquiv.restrictNormal_commutes]
     exact congr_arg _ (AlgEquiv.ext_iff.mp hfg.2 _)
-  · rwa [Ne.def, mul_eq_zero, map_eq_zero, map_eq_zero, ← mul_eq_zero]
 #align polynomial.gal.restrict_prod_injective Polynomial.Gal.restrictProd_injective
 
 theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ : q₁ ≠ 0) (hq₂ : q₂ ≠ 0)

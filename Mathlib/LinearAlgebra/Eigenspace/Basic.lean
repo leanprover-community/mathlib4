@@ -199,7 +199,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
           id.def, sub_smul, Submodule.subtype_apply, Submodule.coe_sub, Submodule.coe_smul_of_tower,
           LinearMap.sub_apply, mem_eigenspace_iff.1 v.prop, algebraMap_end_apply]
       · rw [DFinsupp.sum_mapRange_index.linearMap]
-      · simp only [DFinsupp.sumAddHom_apply, LinearMap.id_coe, LinearMap.map_dfinsupp_sum, id.def,
+      · simp only [DFinsupp.sumAddHom_apply, LinearMap.id_coe, map_dfinsupp_sum, id.def,
           LinearMap.toAddMonoidHom_coe, DFinsupp.lsum_apply_apply]
       · simp only [DFinsupp.sum_mapRange_index.linearMap, LinearMap.id_comp]
     -- Therefore, by the induction hypothesis, all entries of `l'` are zero.

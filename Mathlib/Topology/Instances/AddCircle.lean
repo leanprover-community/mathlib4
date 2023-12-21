@@ -525,9 +525,8 @@ instance : ProperlyDiscontinuousVAdd (AddSubgroup.opposite (zmultiples p)) ℝ :
 instance : T2Space (AddCircle p) :=
   t2Space_of_properlyDiscontinuousVAdd_of_t2Space
 
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is normal. -/
-instance [Fact (0 < p)] : NormalSpace (AddCircle p) :=
-  normalOfCompactT2
+/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is T₄. -/
+instance [Fact (0 < p)] : T4Space (AddCircle p) := inferInstance
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is second-countable. -/
 instance : SecondCountableTopology (AddCircle p) :=

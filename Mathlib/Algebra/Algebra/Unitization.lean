@@ -197,7 +197,7 @@ instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
   Prod.isScalarTower
 
-instance instSmulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
+instance instSMulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
     [SMulCommClass T S A] : SMulCommClass T S (Unitization R A) :=
   Prod.smulCommClass
 
@@ -578,8 +578,9 @@ instance instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAdd
     [Module R A] [StarModule R A] : StarModule R (Unitization R A) where
   star_smul r x := ext (by simp) (by simp)
 
-instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : StarRing (Unitization R A) :=
+instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A] [StarRing A]
+    [Module R A] [StarModule R A] :
+    StarRing (Unitization R A) :=
   { Unitization.instStarAddMonoid with
     star_mul := fun x y =>
       ext (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }

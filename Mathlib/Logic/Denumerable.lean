@@ -316,10 +316,10 @@ theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s :
 #align nat.subtype.coe_comp_of_nat_range Nat.Subtype.coe_comp_ofNat_range
 
 private def toFunAux (x : s) : ℕ :=
-  (List.range x).countp (· ∈ s)
+  (List.range x).countP (· ∈ s)
 
 private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
-  rw [toFunAux, List.countp_eq_length_filter]
+  rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
 open Finset

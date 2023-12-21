@@ -68,10 +68,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
     simp only [Set.mem_setOf_eq] at hs_in_W ⊢
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
-    have ht_ne_zero : t ≠ 0 := ne_of_gt ht_gt_zero
-    have ht1_ne_zero : t + 1 ≠ 0; linarith [ht_gt_zero]
     have key_gt_zero : t ^ 2 + t + 1 > 0; linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
-    have key_ne_zero : t ^ 2 + t + 1 ≠ 0 := ne_of_gt key_gt_zero
     have h₂ : x ≠ 1 := by rw [hx_t]; field_simp; linarith [key_gt_zero]
     have h₃ : y ≠ 1 := by rw [hy_t]; field_simp; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]

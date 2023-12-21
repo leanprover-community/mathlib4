@@ -35,7 +35,7 @@ def finOneEquiv : Fin 1 ≃ Unit :=
 /-- Equivalence between `Fin 2` and `Bool`. -/
 def finTwoEquiv : Fin 2 ≃ Bool where
   toFun := ![false, true]
-  invFun b := cond b 1 0
+  invFun b := b.casesOn 0 1
   left_inv := Fin.forall_fin_two.2 <| by simp
   right_inv := Bool.forall_bool.2 <| by simp
 #align fin_two_equiv finTwoEquiv

@@ -82,7 +82,7 @@ theorem convex_iff_pointwise_add_subset :
     fun h x hx y hy a b ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
 #align convex_iff_pointwise_add_subset convex_iff_pointwise_add_subset
 
-alias convex_iff_pointwise_add_subset ↔ Convex.set_combo_subset _
+alias ⟨Convex.set_combo_subset, _⟩ := convex_iff_pointwise_add_subset
 #align convex.set_combo_subset Convex.set_combo_subset
 
 theorem convex_empty : Convex 𝕜 (∅ : Set E) := fun _ => False.elim
@@ -618,7 +618,7 @@ theorem convex_iff_ordConnected [LinearOrderedField 𝕜] {s : Set 𝕜} : Conve
   by simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ordConnected_iff_uIcc_subset]
 #align convex_iff_ord_connected convex_iff_ordConnected
 
-alias convex_iff_ordConnected ↔ Convex.ordConnected _
+alias ⟨Convex.ordConnected, _⟩ := convex_iff_ordConnected
 #align convex.ord_connected Convex.ordConnected
 
 end

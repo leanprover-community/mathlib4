@@ -259,13 +259,7 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     have hi : i ∈ s := by simp
     have _ : j ∈ s := by simp
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by
-      -- Porting note: previously this subgoal worked just by:
-      -- simp [hij, Finset.sum_ite, Finset.filter_insert, Finset.filter_eq']
-      -- I'm not sure why `simp` can not successfully use `Finset.filter_eq'`.
-      simp [Finset.sum_ite, Finset.filter_insert, hij]
-      erw [Finset.filter_eq']
-      simp [hij.symm]
+    have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
     use s.affineCombination k b w
     simp [b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord

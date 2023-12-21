@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Order.Basic
 
 #align_import order.synonym from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
@@ -138,14 +138,14 @@ protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p
   Iff.rfl
 #align order_dual.exists OrderDual.exists
 
-alias toDual_le_toDual ↔ _ _root_.LE.le.dual
+alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
 
-alias toDual_lt_toDual ↔ _ _root_.LT.lt.dual
+alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual
 
-alias ofDual_le_ofDual ↔ _ _root_.LE.le.ofDual
+alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
 #align has_le.le.of_dual LE.le.ofDual
 
-alias ofDual_lt_ofDual ↔ _ _root_.LT.lt.ofDual
+alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
 #align has_lt.lt.of_dual LT.lt.ofDual
 
 end OrderDual

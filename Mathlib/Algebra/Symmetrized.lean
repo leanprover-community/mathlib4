@@ -198,11 +198,11 @@ theorem unsym_neg [Neg α] (a : αˢʸᵐ) : unsym (-a) = -unsym a :=
 #align sym_alg.unsym_neg SymAlg.unsym_neg
 
 theorem mul_def [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := by rfl
+    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := rfl
 #align sym_alg.mul_def SymAlg.mul_def
 
 theorem unsym_mul [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := by rfl
+    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := rfl
 #align sym_alg.unsym_mul SymAlg.unsym_mul
 
 theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : α) :
@@ -293,7 +293,6 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
   { SymAlg.addCommMonoid with
     one := 1
     mul := (· * ·)
-    zero := 0
     zero_mul := fun _ => by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]

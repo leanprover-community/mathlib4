@@ -307,6 +307,7 @@ theorem equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
   ⟨fun h => by cases h; rfl, fun h => h ▸ Equiv.refl _⟩
 #align lists.equiv_atom Lists.equiv_atom
 
+@[symm]
 theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
   cases' h with _ _ _ h₁ h₂ <;> [rfl; exact Equiv.antisymm h₂ h₁]
 #align lists.equiv.symm Lists.Equiv.symm

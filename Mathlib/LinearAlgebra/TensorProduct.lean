@@ -310,7 +310,6 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
 
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { TensorProduct.leftDistribMulAction with
-    smul := (· • ·)
     add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
 #align tensor_product.left_module TensorProduct.leftModule

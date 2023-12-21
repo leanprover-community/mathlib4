@@ -92,11 +92,15 @@ theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 #align lie_submodule.mem_carrier LieSubmodule.mem_carrier
 
-@[simp]
 theorem mem_mk_iff (S : Set M) (h₁ h₂ h₃ h₄) {x : M} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubmodule R L M) ↔ x ∈ S :=
   Iff.rfl
 #align lie_submodule.mem_mk_iff LieSubmodule.mem_mk_iff
+
+@[simp]
+theorem mem_mk_iff' (p : Submodule R M) (h) {x : M} :
+    x ∈ (⟨p, h⟩ : LieSubmodule R L M) ↔ x ∈ p :=
+  Iff.rfl
 
 @[simp]
 theorem mem_coeSubmodule {x : M} : x ∈ (N : Submodule R M) ↔ x ∈ N :=
@@ -420,12 +424,25 @@ theorem sInf_coe_toSubmodule (S : Set (LieSubmodule R L M)) :
 #align lie_submodule.Inf_coe_to_submodule LieSubmodule.sInf_coe_toSubmodule
 
 @[simp]
+theorem iInf_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
+    (↑(⨅ i, p i) : Submodule R M) = ⨅ i, (p i : Submodule R M) := by
+  rw [iInf, sInf_coe_toSubmodule]; ext; simp
+
+@[simp]
 theorem sInf_coe (S : Set (LieSubmodule R L M)) : (↑(sInf S) : Set M) = ⋂ s ∈ S, (s : Set M) := by
   rw [← LieSubmodule.coe_toSubmodule, sInf_coe_toSubmodule, Submodule.sInf_coe]
   ext m
   simp only [mem_iInter, mem_setOf_eq, forall_apply_eq_imp_iff₂, exists_imp,
     and_imp, SetLike.mem_coe, mem_coeSubmodule]
 #align lie_submodule.Inf_coe LieSubmodule.sInf_coe
+
+@[simp]
+theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
+  rw [iInf, sInf_coe]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+
+@[simp]
+theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+  rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
 theorem sInf_glb (S : Set (LieSubmodule R L M)) : IsGLB S (sInf S) := by
   have h : ∀ {N N' : LieSubmodule R L M}, (N : Set M) ≤ N' ↔ N ≤ N' := fun {_ _} ↦ Iff.rfl
@@ -882,8 +899,7 @@ same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩
-  change x ∈ (⊥ : LieIdeal _ _) at hx
-  rw [LieSubmodule.mem_bot] at hx
+  rw [LieSubmodule.bot_coeSubmodule, Submodule.mem_bot] at hx
   subst hx
   simp only [Submodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
 #align lie_ideal.subsingleton_of_bot LieIdeal.subsingleton_of_bot
@@ -1040,12 +1056,12 @@ theorem mem_map_of_surjective {y : L'} (h₁ : Function.Surjective f) (h₂ : y 
   rw [← LieSubmodule.mem_coeSubmodule, coe_map_of_surjective h₁, Submodule.mem_map] at h₂
   obtain ⟨x, hx, rfl⟩ := h₂
   use ⟨x, hx⟩
-  rfl
+  rw [LieHom.coe_toLinearMap]
 #align lie_ideal.mem_map_of_surjective LieIdeal.mem_map_of_surjective
 
 theorem bot_of_map_eq_bot {I : LieIdeal R L} (h₁ : Function.Injective f) (h₂ : I.map f = ⊥) :
     I = ⊥ := by
-  rw [← f.ker_eq_bot] at h₁; change comap f ⊥ = ⊥ at h₁
+  rw [← f.ker_eq_bot, LieHom.ker] at h₁
   rw [eq_bot_iff, map_le_iff_le_comap, h₁] at h₂
   rw [eq_bot_iff]; exact h₂
 #align lie_ideal.bot_of_map_eq_bot LieIdeal.bot_of_map_eq_bot

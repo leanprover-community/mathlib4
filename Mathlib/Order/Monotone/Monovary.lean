@@ -319,7 +319,7 @@ protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monova
 #align monotone.monovary Monotone.monovary
 
 protected theorem Monotone.antivary (hf : Monotone f) (hg : Antitone g) : Antivary f g :=
-  (hf.monovary (Antitone.dual_right hg)).dual_right
+  (hf.monovary hg.dual_right).dual_right
 #align monotone.antivary Monotone.antivary
 
 protected theorem Antitone.monovary (hf : Antitone f) (hg : Antitone g) : Monovary f g :=
@@ -327,7 +327,7 @@ protected theorem Antitone.monovary (hf : Antitone f) (hg : Antitone g) : Monova
 #align antitone.monovary Antitone.monovary
 
 protected theorem Antitone.antivary (hf : Antitone f) (hg : Monotone g) : Antivary f g :=
-  (hf.monovary (Monotone.dual_right hg)).dual_right
+  (hf.monovary hg.dual_right).dual_right
 #align antitone.antivary Antitone.antivary
 
 protected theorem MonotoneOn.monovaryOn (hf : MonotoneOn f s) (hg : MonotoneOn g s) :
@@ -336,7 +336,7 @@ protected theorem MonotoneOn.monovaryOn (hf : MonotoneOn f s) (hg : MonotoneOn g
 
 protected theorem MonotoneOn.antivaryOn (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
     AntivaryOn f g s :=
-  (hf.monovaryOn (AntitoneOn.dual_right hg)).dual_right
+  (hf.monovaryOn hg.dual_right).dual_right
 #align monotone_on.antivary_on MonotoneOn.antivaryOn
 
 protected theorem AntitoneOn.monovaryOn (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
@@ -346,7 +346,7 @@ protected theorem AntitoneOn.monovaryOn (hf : AntitoneOn f s) (hg : AntitoneOn g
 
 protected theorem AntitoneOn.antivaryOn (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
     AntivaryOn f g s :=
-  (hf.monovaryOn (MonotoneOn.dual_right hg)).dual_right
+  (hf.monovaryOn hg.dual_right).dual_right
 #align antitone_on.antivary_on AntitoneOn.antivaryOn
 
 end Preorder
@@ -376,18 +376,22 @@ theorem AntivaryOn.comp_antitoneOn_right (h : AntivaryOn f g s) (hg : AntitoneOn
   h hj hi <| hg.reflect_lt (mem_image_of_mem _ hi) (mem_image_of_mem _ hj) hij
 #align antivary_on.comp_antitone_on_right AntivaryOn.comp_antitoneOn_right
 
+@[symm]
 protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf =>
   le_of_not_lt fun hg => hf.not_le <| h hg
 #align monovary.symm Monovary.symm
 
+@[symm]
 protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf =>
   le_of_not_lt fun hg => hf.not_le <| h hg
 #align antivary.symm Antivary.symm
 
+@[symm]
 protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf =>
   le_of_not_lt fun hg => hf.not_le <| h hj hi hg
 #align monovary_on.symm MonovaryOn.symm
 
+@[symm]
 protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf =>
   le_of_not_lt fun hg => hf.not_le <| h hi hj hg
 #align antivary_on.symm AntivaryOn.symm

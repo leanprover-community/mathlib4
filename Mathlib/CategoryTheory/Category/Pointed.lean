@@ -54,7 +54,7 @@ theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
 set_option linter.uppercaseLean3 false in
 #align Pointed.coe_of Pointed.coe_of
 
-alias of ← _root_.Prod.Pointed
+alias _root_.Prod.Pointed := of
 set_option linter.uppercaseLean3 false in
 #align prod.Pointed Prod.Pointed
 

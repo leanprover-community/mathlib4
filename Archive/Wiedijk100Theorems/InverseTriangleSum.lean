@@ -35,6 +35,6 @@ theorem Theorem100.inverse_triangle_sum :
   simp_rw [if_neg (Nat.succ_ne_zero _), Nat.succ_eq_add_one]
   have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast; norm_num
   push_cast
-  field_simp [Nat.cast_add_one_ne_zero]
+  field_simp
   ring
 #align theorem_100.inverse_triangle_sum Theorem100.inverse_triangle_sum

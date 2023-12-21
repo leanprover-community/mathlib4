@@ -238,7 +238,7 @@ theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
 @[to_additive support_prod_mk']
 theorem mulSupport_prod_mk' (f : α → M × N) :
     mulSupport f = (mulSupport fun x => (f x).1) ∪ mulSupport fun x => (f x).2 := by
-  simp only [← mulSupport_prod_mk, Prod.mk.eta]
+  simp only [← mulSupport_prod_mk]
 #align function.mul_support_prod_mk' Function.mulSupport_prod_mk'
 #align function.support_prod_mk' Function.support_prod_mk'
 

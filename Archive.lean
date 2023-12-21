@@ -52,3 +52,4 @@ import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
 import Archive.Wiedijk100Theorems.SolutionOfCubic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
+import Archive.ZagierTwoSquares

@@ -126,7 +126,7 @@ theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : Measurabl
     Measure.map_apply_of_aemeasurable h.aemeasurable_snd hs, h.map_eq]
 #align probability_theory.ident_distrib.measure_mem_eq ProbabilityTheory.IdentDistrib.measure_mem_eq
 
-alias measure_mem_eq ← measure_preimage_eq
+alias measure_preimage_eq := measure_mem_eq
 #align probability_theory.ident_distrib.measure_preimage_eq ProbabilityTheory.IdentDistrib.measure_preimage_eq
 
 theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : MeasurableSet {x | p x})

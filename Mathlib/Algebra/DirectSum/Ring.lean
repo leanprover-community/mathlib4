@@ -345,10 +345,6 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 instance commSemiring : CommSemiring (⨁ i, A i) :=
   { DirectSum.semiring A with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
     mul_comm := mul_comm A }
 #align direct_sum.comm_semiring DirectSum.commSemiring
 
@@ -361,11 +357,7 @@ variable [∀ i, AddCommGroup (A i)] [Add ι] [GNonUnitalNonAssocSemiring A]
 /-- The `Ring` derived from `GSemiring A`. -/
 instance nonAssocRing : NonUnitalNonAssocRing (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring (⨁ i, A i)),
-    (inferInstance : AddCommGroup (⨁ i, A i)) with
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
-    neg := Neg.neg }
+    (inferInstance : AddCommGroup (⨁ i, A i)) with }
 #align direct_sum.non_assoc_ring DirectSum.nonAssocRing
 
 end NonUnitalNonAssocRing
@@ -394,12 +386,7 @@ variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 /-- The `CommRing` derived from `GCommSemiring A`. -/
 instance commRing : CommRing (⨁ i, A i) :=
   { DirectSum.ring A,
-    DirectSum.commSemiring A with
-    one := 1
-    mul := (· * ·)
-    zero := 0
-    add := (· + ·)
-    neg := Neg.neg }
+    DirectSum.commSemiring A with }
 #align direct_sum.comm_ring DirectSum.commRing
 
 end CommRing

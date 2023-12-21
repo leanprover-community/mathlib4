@@ -104,7 +104,7 @@ theorem const.get_map (f : α ⟹ β) (x : (const n A).Obj α) : const.get (f <$
 #align mvpfunctor.const.get_map MvPFunctor.const.get_map
 
 @[simp]
-theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := by rfl
+theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := rfl
 #align mvpfunctor.const.get_mk MvPFunctor.const.get_mk
 
 @[simp]

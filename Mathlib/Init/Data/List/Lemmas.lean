@@ -64,7 +64,7 @@ theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈
 
 #align list.mem_cons_of_mem List.mem_cons_of_mem
 
-alias mem_cons ↔ eq_or_mem_of_mem_cons _
+alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 #align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
 
 #align list.mem_append List.mem_append
@@ -116,7 +116,7 @@ theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p
 
 #align list.sublist List.Sublist
 
-alias Sublist.length_le ← length_le_of_sublist
+alias length_le_of_sublist := Sublist.length_le
 #align list.length_le_of_sublist List.length_le_of_sublist
 
 /-! filter -/

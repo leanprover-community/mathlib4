@@ -630,7 +630,8 @@ variable [AddGroup α] (a b : α)
 #align equiv.pow_add_right Equiv.pow_addRight
 
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
-  (map_zsmul (⟨⟨Equiv.addLeft, addLeft_zero⟩, addLeft_add⟩ : α →+ Additive (Perm α)) _ _).symm
+  (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
+    α →+ Additive (Perm α)) _ _).symm
 #align equiv.zpow_add_left Equiv.zpow_addLeft
 
 @[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
@@ -681,7 +682,8 @@ lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := 
 
 @[to_additive existing (attr := simp) zpow_addLeft]
 lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
-  (map_zpow (⟨⟨Equiv.mulLeft, mulLeft_one⟩, mulLeft_mul⟩ : α →* Perm α) _ _).symm
+  (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
+              α →* Perm α) _ _).symm
 #align equiv.zpow_mul_left Equiv.zpow_mulLeft
 
 @[to_additive existing (attr := simp) zpow_addRight]

@@ -25,9 +25,6 @@ namespace Imo2005Q3
 
 theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x * y * z ≥ 1) :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥ (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by
-  have h₁ : x ^ 5 + y ^ 2 + z ^ 2 ≠ 0 := by positivity
-  have h₃ : x ^ 2 + y ^ 2 + z ^ 2 ≠ 0 := by positivity
-  have h₄ : x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2) ≠ 0 := by positivity
   have key :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) -
         (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) =

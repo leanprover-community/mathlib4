@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Opposites
 
 #align_import algebra.ring.basic from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
@@ -28,15 +30,17 @@ namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
-def mulLeft [Distrib R] (r : R) : AddHom R R :=
-  ⟨(· * ·) r, mul_add r⟩
+def mulLeft [Distrib R] (r : R) : AddHom R R where
+  toFun := (· * ·) r
+  map_add' := mul_add r
 #align add_hom.mul_left AddHom.mulLeft
 #align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
-def mulRight [Distrib R] (r : R) : AddHom R R :=
-  ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
+def mulRight [Distrib R] (r : R) : AddHom R R where
+  toFun a := a * r
+  map_add' _ _ := add_mul _ _ r
 #align add_hom.mul_right AddHom.mulRight
 #align add_hom.mul_right_apply AddHom.mulRight_apply
 

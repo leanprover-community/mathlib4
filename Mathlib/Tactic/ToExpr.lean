@@ -64,6 +64,9 @@ deriving instance ToExpr for Syntax.Preresolved
 deriving instance ToExpr for Syntax
 
 open DataValue in
+/-- Core of a hand-written `ToExpr` handler for `MData`.
+Uses the `KVMap.set*` functions rather than going into the internals
+of the `KVMap` data structure. -/
 private def toExprMData (md : MData) : Expr := Id.run do
   let mut e := mkConst ``MData.empty
   for (k, v) in md do

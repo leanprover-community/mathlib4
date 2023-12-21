@@ -6,6 +6,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Hom.Group.Basic
 
 #align_import algebra.hom.group_instances from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -70,7 +71,7 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp [zpow_ofNat, pow_succ],
     zpow_neg' := fun n f => by
       ext x
-      simp [Nat.succ_eq_add_one, zpow_ofNat] }
+      simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add] }
 
 instance [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid

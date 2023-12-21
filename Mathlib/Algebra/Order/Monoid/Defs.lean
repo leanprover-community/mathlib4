@@ -54,32 +54,14 @@ pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (se
 @[to_additive]
 instance OrderedCommMonoid.to_covariantClass_right (M : Type*) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
-  covariant_swap_mul_le_of_covariant_mul_le M
+  covariant_swap_mul_of_covariant_mul M _
 #align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.to_covariantClass_right
 #align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.to_covariantClass_right
 
-/- This is not an instance, to avoid creating a loop in the type-class system: in a
-`LeftCancelSemigroup` with a `PartialOrder`, assuming `CovariantClass M M (*) (≤)` implies
-`CovariantClass M M (*) (<)`, see `LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le`. -/
-@[to_additive]
-theorem Mul.to_covariantClass_left (M : Type*) [Mul M] [PartialOrder M]
-    [CovariantClass M M (· * ·) (· < ·)] :
-    CovariantClass M M (· * ·) (· ≤ ·) :=
-  ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
-#align has_mul.to_covariant_class_left Mul.to_covariantClass_left
-#align has_add.to_covariant_class_left Add.to_covariantClass_left
-
-/- This is not an instance, to avoid creating a loop in the type-class system: in a
-`RightCancelSemigroup` with a `PartialOrder`, assuming `CovariantClass M M (swap (*)) (<)`
-implies `CovariantClass M M (swap (*)) (≤)`, see
-`RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le`. -/
-@[to_additive]
-theorem Mul.to_covariantClass_right (M : Type*) [Mul M] [PartialOrder M]
-    [CovariantClass M M (swap (· * ·)) (· < ·)] :
-    CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
-  ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
-#align has_mul.to_covariant_class_right Mul.to_covariantClass_right
-#align has_add.to_covariant_class_right Add.to_covariantClass_right
+#noalign has_mul.to_covariant_class_left
+#noalign has_add.to_covariant_class_left
+#noalign has_mul.to_covariant_class_right
+#noalign has_add.to_covariant_class_right
 
 end OrderedInstances
 

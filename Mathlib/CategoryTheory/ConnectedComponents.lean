@@ -136,9 +136,9 @@ instance : Full (decomposedTo J)
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
-    have : j' = k'
-    rw [← hX, ← hY, Quotient.eq'']
-    exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
+    have : j' = k' := by
+      rw [← hX, ← hY, Quotient.eq'']
+      exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
     exact Sigma.SigmaHom.mk f
   witness := by

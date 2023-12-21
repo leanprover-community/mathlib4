@@ -170,8 +170,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     · simp only [Nat.zero_eq, Function.iterate_zero, id.def]
     · rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
-      suffices : succ^[n] i < succ^[n.succ] i
-      exact not_isMax_of_lt this
+      suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
       refine' lt_of_le_of_ne _ _
       · rw [Function.iterate_succ']
         exact le_succ _
@@ -259,7 +258,7 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
   · nth_rw 2 [← hmn]
     rw [Int.toNat_eq_max, toZ_of_ge (le_succ_iterate _ _), max_eq_left]
     exact Nat.cast_nonneg _
-  suffices : IsMax (succ^[n] i0); exact absurd this hn
+  suffices IsMax (succ^[n] i0) from absurd this hn
   exact isMax_iterate_succ_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 #align to_Z_iterate_succ_of_not_is_max toZ_iterate_succ_of_not_isMax
 
@@ -279,8 +278,7 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     rw [Int.toNat_eq_max, toZ_of_lt this, max_eq_left, neg_neg]
     rw [neg_neg]
     exact Nat.cast_nonneg _
-  · suffices : IsMin (pred^[n.succ] i0)
-    exact absurd this hn
+  · suffices IsMin (pred^[n.succ] i0) from absurd this hn
     exact isMin_iterate_pred_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 #align to_Z_iterate_pred_of_not_is_min toZ_iterate_pred_of_not_isMin
 

@@ -26,10 +26,11 @@ instance instInvolutiveStar {S R : Type*} [InvolutiveStar R] [SetLike S R] [Star
     (s : S) : InvolutiveStar s where
   star_involutive r := Subtype.ext <| star_star (r : R)
 
-/-- In a star semigroup (i.e., a semigroup with an antimultiplicative involutive star operation),
-any star-closed subset which is also closed under multiplication is itself a star semigroup. -/
-instance instStarSemigroup {S R : Type*} [Semigroup R] [StarSemigroup R] [SetLike S R]
-    [MulMemClass S R] [StarMemClass S R] (s : S) : StarSemigroup s where
+/-- In a star magma (i.e., a multiplication with an antimultiplicative involutive star
+operation), any star-closed subset which is also closed under multiplication is itself a star
+magma. -/
+instance instStarMul {S R : Type*} [Mul R] [StarMul R] [SetLike S R]
+    [MulMemClass S R] [StarMemClass S R] (s : S) : StarMul s where
   star_mul _ _ := Subtype.ext <| star_mul _ _
 
 /-- In a `StarAddMonoid` (i.e., an additive monoid with an additive involutive star operation), any
@@ -39,11 +40,12 @@ instance instStarAddMonoid {S R : Type*} [AddMonoid R] [StarAddMonoid R] [SetLik
     [AddSubmonoidClass S R] [StarMemClass S R] (s : S) : StarAddMonoid s where
   star_add _ _ := Subtype.ext <| star_add _ _
 
-/-- In a star ring (i.e., a non-unital semiring with an additive, antimultiplicative, involutive
-star operation), an star-closed non-unital subsemiring is itself a star ring. -/
-instance instStarRing {S R : Type*} [NonUnitalSemiring R] [StarRing R] [SetLike S R]
+/-- In a star ring (i.e., a non-unital, non-associative, semiring with an additive,
+antimultiplicative, involutive star operation), a star-closed non-unital subsemiring is itself a
+star ring. -/
+instance instStarRing {S R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] [StarMemClass S R] (s : S) : StarRing s :=
-  { StarMemClass.instStarSemigroup s, StarMemClass.instStarAddMonoid s with }
+  { StarMemClass.instStarMul s, StarMemClass.instStarAddMonoid s with }
 
 /-- In a star `R`-module (i.e., `star (r • m) = (star r) • m`) any star-closed subset which is also
 closed under the scalar action by `R` is itself a star `R`-module. -/

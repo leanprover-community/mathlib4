@@ -844,8 +844,8 @@ theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
 
-/-- Stronger version of `prod.lex_wf`. Instead of requiring `rβ on g` to be well-founded, we only
-require it to be well-founded on fibers of `f`.-/
+/-- Stronger version of `WellFounded.prod_lex`. Instead of requiring `rβ on g` to be well-founded,
+we only require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
@@ -873,7 +873,7 @@ section SigmaLex
 
 variable {rι : ι → ι → Prop} {rπ : ∀ i, π i → π i → Prop} {f : γ → ι} {g : ∀ i, γ → π i} {s : Set γ}
 
-/-- Stronger version of `psigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
+/-- Stronger version of `PSigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
 require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :

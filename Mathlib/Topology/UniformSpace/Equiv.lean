@@ -343,6 +343,41 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
   rfl
 #align uniform_equiv.coe_punit_prod UniformEquiv.coe_punitProd
 
+/-- `Equiv.piCongrLeft` as a uniform isomorphism: this is the natural isomorphism
+`Π i, β (e i) ≃ᵤ Π j, β j` obtained from a bijection `ι ≃ ι'`. -/
+@[simps! apply toEquiv]
+def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
+    (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
+  uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp <| fun i ↦ by
+    simpa only [Equiv.toFun_as_coe_apply, Equiv.piCongrLeft_apply_apply] using
+      Pi.uniformContinuous_proj _ i
+  uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e
+  toEquiv := Equiv.piCongrLeft _ e
+
+/-- `Equiv.piCongrRight` as a uniform isomorphism: this is the natural isomorphism
+`Π i, β₁ i ≃ᵤ Π j, β₂ i` obtained from uniform isomorphisms `β₁ i ≃ᵤ β₂ i` for each `i`. -/
+@[simps! apply toEquiv]
+def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
+    [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) : (∀ i, β₁ i) ≃ᵤ ∀ i, β₂ i where
+  uniformContinuous_toFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).uniformContinuous
+  uniformContinuous_invFun := Pi.uniformContinuous_postcomp' _ fun i ↦ (F i).symm.uniformContinuous
+  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+
+@[simp]
+theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, UniformSpace (β₁ i)]
+    [∀ i, UniformSpace (β₂ i)] (F : ∀ i, β₁ i ≃ᵤ β₂ i) :
+    (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
+  rfl
+
+/-- `Equiv.piCongr` as a uniform isomorphism: this is the natural isomorphism
+`Π i₁, β₁ i ≃ᵤ Π i₂, β₂ i₂` obtained from a bijection `ι₁ ≃ ι₂` and isomorphisms
+`β₁ i₁ ≃ᵤ β₂ (e i₁)` for each `i₁ : ι₁`. -/
+@[simps! apply toEquiv]
+def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
+    [∀ i₁, UniformSpace (β₁ i₁)] [∀ i₂, UniformSpace (β₂ i₂)]
+    (e : ι₁ ≃ ι₂) (F : ∀ i₁, β₁ i₁ ≃ᵤ β₂ (e i₁)) : (∀ i₁, β₁ i₁) ≃ᵤ ∀ i₂, β₂ i₂ :=
+  (UniformEquiv.piCongrRight F).trans (UniformEquiv.piCongrLeft e)
+
 /-- Uniform equivalence between `ULift α` and `α`. -/
 def ulift : ULift.{v, u} α ≃ᵤ α :=
   { Equiv.ulift with
@@ -355,7 +390,7 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 
 end
 
-/-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
+/-- If `ι` has a unique element, then `ι → α` is uniformly isomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
 def funUnique (ι α : Type*) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
     where

@@ -353,6 +353,15 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
   exact Model.isSatisfiable M
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
 
+theorem models_of_models_theory {T' : L.Theory}
+    (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
+    {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
+  simp only [models_sentence_iff] at h
+  intro M
+  have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => h ψ hψ M)
+  let M' : ModelType T' := ⟨M⟩
+  exact hφ M'
+
 /-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
 theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/
 theorem models_iff_finset_models {φ : L.Sentence} :

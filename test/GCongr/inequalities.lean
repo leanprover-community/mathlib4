@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
+import Mathlib.Tactic.NormNum.OfScientific
 
 /-! # Inequality tests for the `gcongr` tactic -/
 

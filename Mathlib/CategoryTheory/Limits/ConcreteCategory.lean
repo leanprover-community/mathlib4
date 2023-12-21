@@ -180,8 +180,7 @@ theorem Concrete.from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColim
     intro a
     obtain ⟨b, hb⟩ := this (TX.hom a)
     refine' ⟨b, _⟩
-    -- porting note: `apply_fun TX.inv at hb` does not work here
-    replace hb := congr_arg TX.inv hb
+    apply_fun TX.inv at hb
     change (TX.hom ≫ TX.inv) (ff b) = (TX.hom ≫ TX.inv) _ at hb
     simpa only [TX.hom_inv_id] using hb
   have : TX.hom ∘ ff = fun a => G.ι.app a.1 a.2 := by
@@ -213,10 +212,7 @@ theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (hD : IsCol
   let hG := Types.colimitCoconeIsColimit.{v, v} (F ⋙ forget C)
   let T : E ≅ G := hE.uniqueUpToIso hG
   let TX : E.pt ≅ G.pt := (Cocones.forget _).mapIso T
-  -- porting note: `apply_fun TX.hom` does not work here
-  apply (show Function.Bijective TX.hom by
-    rw [← isIso_iff_bijective]
-    apply IsIso.of_iso).1
+  apply_fun TX.hom using injective_of_mono TX.hom
   change (E.ι.app i ≫ TX.hom) x = (E.ι.app j ≫ TX.hom) y
   erw [T.hom.w, T.hom.w]
   obtain ⟨k, f, g, h⟩ := h
@@ -245,8 +241,7 @@ theorem Concrete.isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsCol
   let hG := Types.colimitCoconeIsColimit.{v, v} (F ⋙ forget C)
   let T : E ≅ G := hE.uniqueUpToIso hG
   let TX : E.pt ≅ G.pt := (Cocones.forget _).mapIso T
-  -- porting note: `apply_fun TX.hom at h` does not work here
-  replace h := congr_arg TX.hom h
+  apply_fun TX.hom at h
   change (E.ι.app i ≫ TX.hom) x = (E.ι.app j ≫ TX.hom) y at h
   erw [T.hom.w, T.hom.w] at h
   replace h := Quot.exact _ h

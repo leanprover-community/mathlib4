@@ -126,7 +126,7 @@ theorem intrinsicClosure_nonempty : (intrinsicClosure 𝕜 s).Nonempty ↔ s.Non
     Nonempty.mono subset_intrinsicClosure⟩
 #align intrinsic_closure_nonempty intrinsicClosure_nonempty
 
-alias intrinsicClosure_nonempty ↔ Set.Nonempty.ofIntrinsicClosure Set.Nonempty.intrinsicClosure
+alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := intrinsicClosure_nonempty
 #align set.nonempty.of_intrinsic_closure Set.Nonempty.ofIntrinsicClosure
 #align set.nonempty.intrinsic_closure Set.Nonempty.intrinsicClosure
 

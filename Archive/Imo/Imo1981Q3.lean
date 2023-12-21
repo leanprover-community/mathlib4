@@ -203,8 +203,7 @@ numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   have := fun h => @solution_greatest 1981 16 h 3524578
-  simp only [show fib (16 : ℕ) = 987 ∧ fib (16 + 1 : ℕ) = 1597 by norm_num [fib_add_two]] at this
-  apply_mod_cast this trivial trivial
-  rw [ProblemPredicate_iff]
-  norm_num
+  norm_num at this
+  apply this
+  norm_num [ProblemPredicate_iff]
 #align imo1981_q3 imo1981_q3

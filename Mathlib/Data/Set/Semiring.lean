@@ -204,9 +204,7 @@ end One
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
-    Set.mulOneClass with
-    one := 1
-    mul := (· * ·) }
+    Set.mulOneClass with }
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }

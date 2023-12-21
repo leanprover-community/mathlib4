@@ -122,7 +122,9 @@ theorem natAbs_of_negSucc (n : ℕ) : natAbs (negSucc n) = Nat.succ n :=
 protected theorem natAbs_add_nonneg :
     ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
   | ofNat n, ofNat m, _, _ => by
-    simp [natAbs_ofNat_core]
+    simp only [ofNat_eq_coe, natAbs_ofNat]
+    simp only [Int.ofNat_add_ofNat]
+    simp only [← ofNat_eq_coe, natAbs_ofNat_core]
   | _, negSucc m, _, h₂ => absurd (negSucc_lt_zero m) (not_lt_of_ge h₂)
   | negSucc n, _, h₁, _ => absurd (negSucc_lt_zero n) (not_lt_of_ge h₁)
 #align int.nat_abs_add_nonneg Int.natAbs_add_nonneg
@@ -130,7 +132,7 @@ protected theorem natAbs_add_nonneg :
 protected theorem natAbs_add_neg :
     ∀ {a b : Int}, a < 0 → b < 0 → natAbs (a + b) = natAbs a + natAbs b
   | negSucc n, negSucc m, _, _ => by
-    simp [natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
+    simp [negSucc_add_negSucc, natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
 #align int.nat_abs_add_neg Int.natAbs_add_neg
 
 set_option linter.deprecated false in

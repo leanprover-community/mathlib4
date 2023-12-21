@@ -33,8 +33,6 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.skewProd`
 -/
 
-set_option autoImplicit true
-
 
 universe u v w x y z u' v' w' y'
 
@@ -113,8 +111,8 @@ theorem snd_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : (snd R M₂ M�
 theorem pair_fst_snd : prod (fst R M M₂) (snd R M M₂) = LinearMap.id := rfl
 #align linear_map.pair_fst_snd LinearMap.pair_fst_snd
 
-theorem prod_comp [AddCommMonoid M₁] [Module R M₁] (f : M₁ →ₗ[R] M₂) (g : M₁ →ₗ[R] M₃)
-    (h : M →ₗ[R] M₁) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
+theorem prod_comp (f : M₂ →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄)
+    (h : M →ₗ[R] M₂) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
   rfl
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
@@ -277,7 +275,7 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
     where
   toFun f := f.1.coprod f.2
   invFun f := (f.comp (inl _ _ _), f.comp (inr _ _ _))
-  left_inv f := by simp only [Prod.mk.eta, coprod_inl, coprod_inr]
+  left_inv f := by simp only [coprod_inl, coprod_inr]
   right_inv f := by simp only [← comp_coprod, comp_id, coprod_inl_inr]
   map_add' a b := by
     ext
@@ -332,12 +330,12 @@ theorem ker_prodMap (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) :
 
 @[simp]
 theorem prodMap_id : (id : M →ₗ[R] M).prodMap (id : M₂ →ₗ[R] M₂) = id :=
-  LinearMap.ext fun _ => Prod.mk.eta
+  rfl
 #align linear_map.prod_map_id LinearMap.prodMap_id
 
 @[simp]
 theorem prodMap_one : (1 : M →ₗ[R] M).prodMap (1 : M₂ →ₗ[R] M₂) = 1 :=
-  LinearMap.ext fun _ => Prod.mk.eta
+  rfl
 #align linear_map.prod_map_one LinearMap.prodMap_one
 
 theorem prodMap_comp (f₁₂ : M →ₗ[R] M₂) (f₂₃ : M₂ →ₗ[R] M₃) (g₁₂ : M₄ →ₗ[R] M₅)
@@ -747,14 +745,14 @@ def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [M
 
 section prodComm
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
 
 theorem fst_comp_prodComm :
-    (LinearMap.fst R N M).comp (prodComm R M N).toLinearMap = (LinearMap.snd R M N) := by
+    (LinearMap.fst R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.snd R M M₂) := by
   ext <;> simp
 
 theorem snd_comp_prodComm :
-    (LinearMap.snd R N M).comp (prodComm R M N).toLinearMap = (LinearMap.fst R M N) := by
+    (LinearMap.snd R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.fst R M M₂) := by
   ext <;> simp
 
 end prodComm

@@ -43,9 +43,6 @@ As this had no pay-off (everything about limits is non-constructive in mathlib),
 we made everything classical.
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe w w' v u
@@ -379,7 +376,7 @@ end Limits
 
 namespace Limits
 
-variable {J : Type w}
+variable {J : Type w} {K : Type*}
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
@@ -433,7 +430,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whisker_equiv` below.
+-- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
@@ -442,7 +439,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `biproduct.whisker_equiv` below.
+-- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
@@ -593,16 +590,16 @@ Unfortunately there are two natural ways to define each direction of this isomor
 We give the alternative definitions as lemmas below.
 -/
 @[simps]
-def biproduct.whisker_equiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
+def biproduct.whiskerEquiv {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
     [HasBiproduct f] [HasBiproduct g] : ⨁ f ≅ ⨁ g where
   hom := biproduct.desc fun j => (w j).inv ≫ biproduct.ι g (e j)
   inv := biproduct.desc fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom ≫ biproduct.ι f _
 
-lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+lemma biproduct.whiskerEquiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
-    (biproduct.whisker_equiv e w).hom =
+    (biproduct.whiskerEquiv e w).hom =
       biproduct.lift fun k => biproduct.π f (e.symm k) ≫ (w _).inv ≫ eqToHom (by simp) := by
-  simp only [whisker_equiv_hom]
+  simp only [whiskerEquiv_hom]
   ext k j
   by_cases h : k = e j
   · subst h
@@ -614,11 +611,11 @@ lemma biproduct.whisker_equiv_hom_eq_lift {f : J → C} {g : K → C} (e : J ≃
       simp at h
     · exact Ne.symm h
 
-lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
+lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ K)
     (w : ∀ j, g (e j) ≅ f j) [HasBiproduct f] [HasBiproduct g] :
-    (biproduct.whisker_equiv e w).inv =
+    (biproduct.whiskerEquiv e w).inv =
       biproduct.lift fun j => biproduct.π g (e j) ≫ (w j).hom := by
-  simp only [whisker_equiv_inv]
+  simp only [whiskerEquiv_inv]
   ext j k
   by_cases h : k = e j
   · subst h
@@ -632,7 +629,7 @@ lemma biproduct.whisker_equiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃
     · rintro rfl
       simp at h
 
-instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
+instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_biproduct := Nonempty.intro
@@ -658,7 +655,7 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/
 @[simps]
-def biproductBiproductIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
+def biproductBiproductIso {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     (⨁ fun i => ⨁ g i) ≅ (⨁ fun p : Σ i, f i => g p.1 p.2) where
   hom := biproduct.lift fun ⟨i, x⟩ => biproduct.π _ i ≫ biproduct.π _ x
@@ -1959,6 +1956,26 @@ theorem biprod.symmetry' (P Q : C) :
 theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braiding Q P).hom = 𝟙 _ :=
   by simp
 #align category_theory.limits.biprod.symmetry CategoryTheory.Limits.biprod.symmetry
+
+/-- The associator isomorphism which associates a binary biproduct. -/
+@[simps]
+def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
+  hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
+  inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
+
+/-- The associator isomorphism can be passed through a map by swapping the order. -/
+@[reassoc]
+theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
+    biprod.map (biprod.map f g) h ≫ (biprod.associator _ _ _).hom
+      = (biprod.associator _ _ _).hom ≫ biprod.map f (biprod.map g h) := by
+  aesop_cat
+
+/-- The associator isomorphism can be passed through a map by swapping the order. -/
+@[reassoc]
+theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
+    biprod.map f (biprod.map g h) ≫ (biprod.associator _ _ _).inv
+      = (biprod.associator _ _ _).inv ≫ biprod.map (biprod.map f g) h := by
+  aesop_cat
 
 end
 

@@ -44,8 +44,8 @@ def Over (X : T) :=
 instance (X : T) : Category (Over X) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T))
-    where default :=
+instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T)) where
+  default :=
     { left := default
       right := default
       hom := 𝟙 _ }
@@ -341,8 +341,8 @@ def Under (X : T) :=
 instance (X : T) : Category (Under X) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T))
-    where default :=
+instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T)) where
+  default :=
     { left := default
       right := default
       hom := 𝟙 _ }
@@ -568,5 +568,49 @@ noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [IsEquivalence F] :
   StructuredArrow.isEquivalencePre _ _ _
 
 end StructuredArrow
+
+namespace Functor
+
+variable {S : Type u₂} [Category.{v₂} S]
+
+/-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Over X`, it suffices to
+    provide maps `F.obj Y ⟶ X` for all `Y` making the obvious triangles involving all `F.map g`
+    commute. -/
+@[simps! obj_left map_left]
+def toOver (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : S ⥤ Over X :=
+  F.toCostructuredArrow (𝟭 _) X f h
+
+/-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Over X` and composing with the forgetful functor
+    `Over X ⥤ T` recovers the original functor. -/
+def toOverCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : F.toOver X f h ⋙ Over.forget _ ≅ F :=
+  Iso.refl _
+
+@[simp]
+lemma toOver_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → F.obj Y ⟶ X)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), F.map g ≫ f Z = f Y) : F.toOver X f h ⋙ Over.forget _ = F :=
+  rfl
+
+/-- Given `X : T`, to upgrade a functor `F : S ⥤ T` to a functor `S ⥤ Under X`, it suffices to
+    provide maps `X ⟶ F.obj Y` for all `Y` making the obvious triangles involving all `F.map g`
+    commute.  -/
+@[simps! obj_right map_right]
+def toUnder (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : S ⥤ Under X :=
+  F.toStructuredArrow X (𝟭 _) f h
+
+/-- Upgrading a functor `S ⥤ T` to a functor `S ⥤ Under X` and composing with the forgetful functor
+    `Under X ⥤ T` recovers the original functor. -/
+def toUnderCompForget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ ≅ F :=
+  Iso.refl _
+
+@[simp]
+lemma toUnder_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
+    (h : ∀ {Y Z : S} (g : Y ⟶ Z), f Y ≫ F.map g = f Z) : F.toUnder X f h ⋙ Under.forget _ = F :=
+  rfl
+
+end Functor
 
 end CategoryTheory

@@ -335,7 +335,7 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
 
 theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
     (inl (∑ i in s, f i) : tsze R M) = ∑ i in s, inl (f i) :=
-  (LinearMap.inl ℕ _ _).map_sum
+  map_sum (LinearMap.inl ℕ _ _) _ _
 #align triv_sq_zero_ext.inl_sum TrivSqZeroExt.inl_sum
 
 end
@@ -374,7 +374,7 @@ theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M)
 
 theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
     (inr (∑ i in s, f i) : tsze R M) = ∑ i in s, inr (f i) :=
-  (LinearMap.inr ℕ _ _).map_sum
+  map_sum (LinearMap.inr ℕ _ _) _ _
 #align triv_sq_zero_ext.inr_sum TrivSqZeroExt.inr_sum
 
 end

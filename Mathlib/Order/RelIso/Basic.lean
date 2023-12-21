@@ -183,20 +183,14 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
   _root_.injective_of_increasing r s f f.map_rel
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
 
--- TODO: define a `RelIffClass` so we don't have to do all the `convert` trickery?
-theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
+theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
     WellFounded r ↔ WellFounded s :=
   Iff.intro
-    (by
-      refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
-      · exact Classical.choose hf.hasRightInverse
-      intro a b h
-      apply o.2
-      convert h
-      iterate 2 apply Classical.choose_spec hf.hasRightInverse)
+    (RelHomClass.wellFounded (⟨surjInv hf,
+      fun h => by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
-#align surjective.well_founded_iff Surjective.wellFounded_iff
+#align surjective.well_founded_iff Function.Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -475,7 +469,7 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+alias ⟨WellFounded.of_quotient_lift₂, WellFounded.quotient_lift₂⟩ := wellFounded_lift₂_iff
 #align well_founded.of_quotient_lift₂ WellFounded.of_quotient_lift₂
 #align well_founded.quotient_lift₂ WellFounded.quotient_lift₂
 
@@ -485,7 +479,7 @@ theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} 
   wellFounded_lift₂_iff (H := H)
 #align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
 
-alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
+alias ⟨WellFounded.of_quotient_liftOn₂', WellFounded.quotient_liftOn₂'⟩ := wellFounded_liftOn₂'_iff
 #align well_founded.of_quotient_lift_on₂' WellFounded.of_quotient_liftOn₂'
 #align well_founded.quotient_lift_on₂' WellFounded.quotient_liftOn₂'
 
