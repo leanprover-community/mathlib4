@@ -209,6 +209,29 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable
   ⟨fun h ↦ (isSeparable_def _ _).2 fun _ ↦ (mem_separableClosure_iff F E).1 (h ▸ mem_top),
     fun h ↦ top_unique fun x _ ↦ (mem_separableClosure_iff F E).2 (((isSeparable_def _ _).1 h) x)⟩
 
+/-- If `K / E / F` is a field extension tower, then `separableClosure F K` is contained in
+`separableClosure E K`. -/
+theorem separableClosure.le_restrictScalars_of_tower [Algebra E K] [IsScalarTower F E K] :
+    separableClosure F K ≤ (separableClosure E K).restrictScalars F := fun x hx ↦ by
+  simp only [mem_restrictScalars, mem_separableClosure_iff] at hx ⊢
+  exact hx.map (f := algebraMap F E) |>.of_dvd (minpoly.dvd_map_of_isScalarTower F E x)
+
+/-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
+`separableClosure F K` is equal to `separableClosure E K`. -/
+theorem separableClosure.eq_restrictScalars_of_isSeparable [Algebra E K] [IsScalarTower F E K]
+    [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F := by
+  refine le_antisymm (separableClosure.le_restrictScalars_of_tower F E K) fun x hx ↦ ?_
+  rw [mem_restrictScalars, mem_separableClosure_iff,
+    ← isSeparable_adjoin_simple_iff_separable] at hx
+  haveI : IsSeparable F (E⟮x⟯.restrictScalars F) := IsSeparable.trans F E E⟮x⟯
+  have h : x ∈ E⟮x⟯.restrictScalars F := mem_adjoin_simple_self E x
+  exact (mem_separableClosure_iff F _).2 <| separable_of_mem_isSeparable F _ h
+
+-- theorem separableClosure.eq_adjoin_of_isAlgebraic [Algebra E K] [IsScalarTower F E K]
+--     (halg : Algebra.IsAlgebraic F E) :
+--     separableClosure E K = adjoin E (separableClosure F K) := by
+--   sorry
+
 end separableClosure
 
 namespace Field
