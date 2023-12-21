@@ -195,4 +195,5 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 #align zmod.inhabited ZMod.inhabited
+
 end ZMod
