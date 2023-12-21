@@ -12,31 +12,55 @@ namespace SpectralObject
 
 variable (X : SpectralObject C ι)
 
-variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
-    (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+  (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂) (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
-@[simps]
-def shortComplexE : ShortComplex C where
-  X₁ := (X.H n₀).obj (mk₁ f₃)
-  X₂ := (X.H n₁).obj (mk₁ f₂)
-  X₃ := (X.H n₂).obj (mk₁ f₁)
-  f := X.δ n₀ n₁ hn₁ f₂ f₃
-  g := X.δ n₁ n₂ hn₂ f₁ f₂
-  zero := by simp
-
-noncomputable def E : C := (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homology
-
+noncomputable def Ψ : X.cycles n₀ n₁ hn₁ f₂ f₃ ⟶ X.opcycles n₀ n₁ hn₁ f₁ f₂ :=
+  (X.cokernelSequenceCycles_exact n₀ n₁ hn₁ f₂ f₃ _ rfl).desc
+    (X.δ n₀ n₁ hn₁ f₁ (f₂ ≫ f₃) ≫ X.pOpcycles n₀ n₁ hn₁ f₁ f₂) (by
+      dsimp
+      rw [X.δ_naturality_assoc n₀ n₁ hn₁ f₁ f₂ f₁ (f₂ ≫ f₃) (𝟙 _) (twoδ₂Toδ₁ f₂ f₃ _ rfl) rfl,
+        Functor.map_id, id_comp, δ_pOpcycles])
 
 @[reassoc (attr := simp)]
-lemma H_map_twoδ₂Toδ₁_toCycles :
-    (X.H n₀).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ X.toCycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂ = 0 := by
-  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f₁ f₂), assoc, toCycles_i, zero₂, zero_comp]
+lemma toCycles_Ψ :
+    X.toCycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ ≫ X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ =
+      X.δ n₀ n₁ hn₁ f₁ f₂₃ ≫ X.pOpcycles n₀ n₁ hn₁ f₁ f₂ := by
+  subst h₂₃
+  apply (X.cokernelSequenceCycles_exact n₀ n₁ hn₁ f₂ f₃ _ rfl).g_desc
 
 @[reassoc (attr := simp)]
-lemma fromOpcycles_H_map_twoδ₁Toδ₀ :
-    X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂ ≫ (X.H n₁).map (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂) = 0 := by
-  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f₁ f₂), p_fromOpcycles_assoc, zero₂, comp_zero]
+lemma Ψ_fromOpcycles :
+    X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ ≫ X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂ =
+      X.iCycles n₀ n₁ hn₁ f₂ f₃ ≫ X.δ n₀ n₁ hn₁ f₁₂ f₃ := by
+  rw [← cancel_epi (X.toCycles n₀ n₁ hn₁ f₂ f₃ _ rfl),
+    toCycles_Ψ_assoc, p_fromOpcycles, toCycles_i_assoc]
+  exact (X.δ_naturality _ _ _ _ _ _ _ _ _ rfl).symm
+
+lemma cyclesMap_Ψ :
+    X.cyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) ≫
+      X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ = 0 := by
+  rw [← cancel_epi (X.toCycles n₀ n₁ hn₁ f₁₂ f₃ (f₁ ≫ f₂ ≫ f₃)
+    (by rw [reassoc_of% h₁₂])), comp_zero,
+    X.toCycles_cyclesMap_assoc n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (f₁ ≫ f₂ ≫ f₃)
+    (by rw [reassoc_of% h₁₂]) f₂₃ h₂₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂)
+    (twoδ₁Toδ₀ f₁ f₂₃ (f₁ ≫ f₂ ≫ f₃) (by rw [h₂₃])) rfl rfl,
+    toCycles_Ψ, zero₃_assoc, zero_comp]
+
+lemma Ψ_opcyclesMap :
+    X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ ≫
+      X.opcyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) = 0 := by
+  rw [← cancel_mono (X.fromOpcycles n₀ n₁ hn₁ f₁ f₂₃ (f₁ ≫ f₂ ≫ f₃) (by rw [h₂₃])),
+    zero_comp, assoc, X.opcyclesMap_fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁ f₂₃ f₁₂ h₁₂
+    (f₁ ≫ f₂ ≫ f₃) (by rw [h₂₃]) (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃)
+    (twoδ₂Toδ₁ f₁₂ f₃ (f₁ ≫ f₂ ≫ f₃) (by rw [reassoc_of% h₁₂])) rfl rfl,
+    Ψ_fromOpcycles_assoc, zero₁, comp_zero]
+
+noncomputable def sequenceΨ : ComposableArrows C 3 :=
+  mk₃ (X.cyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂))
+    (X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃)
+    (X.opcyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃))
 
 end SpectralObject
 

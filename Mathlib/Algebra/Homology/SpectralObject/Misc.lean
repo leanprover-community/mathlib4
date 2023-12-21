@@ -292,6 +292,8 @@ lemma ComposableArrows.exact_iff_exact_evaluation
 
 namespace ComposableArrows
 
+section
+
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k) (h : f ≫ g = fg)
 
 def twoδ₂Toδ₁ :
@@ -317,6 +319,77 @@ lemma twoδ₁Toδ₀_app_zero :
 @[simp]
 lemma twoδ₁Toδ₀_app_one :
     (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
+
+end
+
+section
+
+variable {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
+    (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+    (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
+
+def threeδ₃Toδ₂ :
+    mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃ :=
+  homMk₂ (𝟙 _) (𝟙 _) f₃ (by simp) (by simpa using h₂₃)
+
+@[simp]
+lemma threeδ₃Toδ₂_app_zero :
+    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 0 = 𝟙 _ := rfl
+
+@[simp]
+lemma threeδ₃Toδ₂_app_one :
+    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 1 = 𝟙 _ := rfl
+
+@[simp]
+lemma threeδ₃Toδ₂_app_two :
+    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app 2 = f₃ := rfl
+
+@[simp]
+lemma threeδ₃Toδ₂_app_two' :
+    (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃).app ⟨2, by linarith⟩ = f₃ := rfl
+
+def threeδ₂Toδ₁ :
+    mk₂ f₁ f₂₃ ⟶ mk₂ f₁₂ f₃ :=
+  homMk₂ (𝟙 _) f₂ (𝟙 _) (by simpa using h₁₂) (by simpa using h₂₃.symm)
+
+@[simp]
+lemma threeδ₂Toδ₁_app_zero :
+    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 0 = 𝟙 _ := rfl
+
+@[simp]
+lemma threeδ₂Toδ₁_app_one :
+    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 1 = f₂ := rfl
+
+@[simp]
+lemma threeδ₂Toδ₁_app_two :
+    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app 2 = 𝟙 _ := rfl
+
+@[simp]
+lemma threeδ₂Toδ₁_app_two' :
+    (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
+
+def threeδ₁Toδ₀ :
+    mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃ :=
+  homMk₂ f₁ (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp)
+
+@[simp]
+lemma threeδ₁Toδ₀_app_zero :
+    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 0 = f₁ := rfl
+
+@[simp]
+lemma threeδ₁Toδ₀_app_one :
+    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 1 = (𝟙 _) := rfl
+
+@[simp]
+lemma threeδ₁Toδ₀_app_two :
+    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app 2 = (𝟙 _) := rfl
+
+@[simp]
+lemma threeδ₁Toδ₀_app_two' :
+    (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂).app ⟨2, by linarith⟩ = (𝟙 _) := rfl
+
+end
+
 
 end ComposableArrows
 

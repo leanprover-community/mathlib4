@@ -37,6 +37,7 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) 
 def δ : (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
   (X.δ' n₀ n₁ hn₁).app (mk₂ f g)
 
+@[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
     (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0):
     (X.H n₀).map β ≫ X.δ n₀ n₁ hn₁ f' g' = X.δ n₀ n₁ hn₁ f g ≫ (X.H n₁).map α := by
@@ -170,6 +171,8 @@ section
 
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
+  {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
+  {i'' j'' k'' : ι} (f'' : i'' ⟶ j'') (g'' : j'' ⟶ k'')
 
 noncomputable def cycles : C := kernel (X.δ n₀ n₁ hn₁ f g)
 
@@ -199,6 +202,79 @@ lemma iCycles_δ : X.iCycles n₀ n₁ hn₁ f g ≫ X.δ n₀ n₁ hn₁ f g = 
 lemma δ_pOpcycles : X.δ n₀ n₁ hn₁ f g ≫ X.pOpcycles n₀ n₁ hn₁ f g = 0 := by
   simp [pOpcycles]
 
+noncomputable def cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') :
+    X.cycles n₀ n₁ hn₁ f g ⟶ X.cycles n₀ n₁ hn₁ f' g' :=
+  kernel.lift _ (X.iCycles n₀ n₁ hn₁ f g ≫
+      (X.H n₀).map (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2))) (by
+      rw [assoc, X.δ_naturality n₀ n₁ hn₁ f g f' g'
+        (homMk₁ (α.app 0) (α.app 1) (naturality' α 0 1))
+          (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) rfl, iCycles_δ_assoc, zero_comp])
+
+@[reassoc]
+lemma cyclesMap_i (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ g ⟶ mk₁ g')
+    (hβ : β = homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) :
+    X.cyclesMap n₀ n₁ hn₁ f g f' g' α ≫ X.iCycles n₀ n₁ hn₁ f' g' =
+      X.iCycles n₀ n₁ hn₁ f g ≫ (X.H n₀).map β := by
+  subst hβ
+  apply kernel.lift_ι
+
+@[simp]
+lemma cyclesMap_id :
+    X.cyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) = 𝟙 _ := by
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g),
+    X.cyclesMap_i n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by aesop_cat),
+    Functor.map_id, comp_id, id_comp]
+
+lemma cyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk₂ f'' g'')
+    (α'' : mk₂ f g ⟶ mk₂ f'' g'') (h : α ≫ α' = α'') :
+    X.cyclesMap n₀ n₁ hn₁ f g f' g' α ≫ X.cyclesMap n₀ n₁ hn₁ f' g' f'' g'' α' =
+      X.cyclesMap n₀ n₁ hn₁ f g f'' g'' α'' := by
+  subst h
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f'' g''), assoc,
+    X.cyclesMap_i n₀ n₁ hn₁ f' g' f'' g'' α' _ rfl,
+    X.cyclesMap_i_assoc n₀ n₁ hn₁ f g f' g' α _ rfl,
+    ← Functor.map_comp]
+  symm
+  apply X.cyclesMap_i
+  aesop_cat
+
+noncomputable def opcyclesMap (α : mk₂ f g ⟶ mk₂ f' g') :
+    X.opcycles n₀ n₁ hn₁ f g ⟶ X.opcycles n₀ n₁ hn₁ f' g' :=
+  cokernel.desc _
+    ((X.H n₁).map (homMk₁ (by exact α.app 0) (by exact α.app 1) (by exact naturality' α 0 1)) ≫
+      X.pOpcycles n₀ n₁ hn₁ f' g') (by
+        rw [← X.δ_naturality_assoc n₀ n₁ hn₁ f g f' g'
+          (homMk₁ (α.app 0) (α.app 1) (naturality' α 0 1))
+          (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) rfl, δ_pOpcycles, comp_zero])
+
+@[reassoc]
+lemma p_opcyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ f ⟶ mk₁ f')
+    (hβ : β = homMk₁ (α.app 0) (α.app 1) (naturality' α 0 1)) :
+    X.pOpcycles n₀ n₁ hn₁ f g ≫ X.opcyclesMap n₀ n₁ hn₁ f g f' g' α =
+      (X.H n₁).map β ≫ X.pOpcycles n₀ n₁ hn₁ f' g' := by
+  subst hβ
+  apply cokernel.π_desc
+
+@[simp]
+lemma opcyclesMap_id :
+    X.opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) = 𝟙 _ := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
+    X.p_opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by aesop_cat),
+    Functor.map_id, comp_id, id_comp]
+
+lemma opcyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk₂ f'' g'')
+    (α'' : mk₂ f g ⟶ mk₂ f'' g'') (h : α ≫ α' = α'') :
+    X.opcyclesMap n₀ n₁ hn₁ f g f' g' α ≫ X.opcyclesMap n₀ n₁ hn₁ f' g' f'' g'' α' =
+      X.opcyclesMap n₀ n₁ hn₁ f g f'' g'' α'' := by
+  subst h
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
+    X.p_opcyclesMap_assoc n₀ n₁ hn₁ f g f' g' α _ rfl,
+    X.p_opcyclesMap n₀ n₁ hn₁ f' g' f'' g'' α' _ rfl,
+    ← Functor.map_comp_assoc]
+  symm
+  apply X.p_opcyclesMap
+  aesop_cat
+
 @[simps, pp_dot]
 noncomputable def kernelSequenceCycles :
     ShortComplex C :=
@@ -225,7 +301,7 @@ lemma cokernelSequenceOpcycles_exact :
     (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
 
-variable (fg : i ⟶ k) (h : f ≫ g = fg)
+variable (fg : i ⟶ k) (h : f ≫ g = fg) (fg' : i' ⟶ k') (h' : f' ≫ g' = fg')
 
 noncomputable def cokernelIsoCycles :
     cokernel ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ≅ X.cycles n₀ n₁ hn₁ f g :=
@@ -250,21 +326,60 @@ lemma opcyclesIsoKernel_hom_fac :
 noncomputable def toCycles : (X.H n₀).obj (mk₁ fg) ⟶ X.cycles n₀ n₁ hn₁ f g :=
   kernel.lift _ ((X.H n₀).map (twoδ₁Toδ₀ f g fg h)) (by simp)
 
+instance : Epi (X.toCycles n₀ n₁ hn₁ f g fg h) :=
+  (ShortComplex.exact_iff_epi_kernel_lift _).1 (X.exact₃ n₀ n₁ hn₁ f g fg h)
+
 @[reassoc (attr := simp)]
 lemma toCycles_i :
     X.toCycles n₀ n₁ hn₁ f g fg h ≫ X.iCycles n₀ n₁ hn₁ f g =
       (X.H n₀).map (twoδ₁Toδ₀ f g fg h) := by
   apply kernel.lift_ι
 
+@[reassoc]
+lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg')
+    (hβ₀ : β.app 0 = α.app 0) (hβ₁ : β.app 1 = α.app 2) :
+    X.toCycles n₀ n₁ hn₁ f g fg h ≫ X.cyclesMap n₀ n₁ hn₁ f g f' g' α =
+      (X.H n₀).map β ≫ X.toCycles n₀ n₁ hn₁ f' g' fg' h' := by
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f' g'), assoc, assoc, toCycles_i,
+    X.cyclesMap_i n₀ n₁ hn₁ f g f' g' α (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) rfl,
+    toCycles_i_assoc, ← Functor.map_comp, ← Functor.map_comp]
+  congr 1
+  ext
+  · dsimp
+    rw [hβ₀]
+    exact naturality' α 0 1
+  · dsimp
+    erw [hβ₁, comp_id, id_comp]
+
 noncomputable def fromOpcycles :
     X.opcycles n₀ n₁ hn₁ f g ⟶ (X.H n₁).obj (mk₁ fg) :=
   cokernel.desc _ ((X.H n₁).map (twoδ₂Toδ₁ f g fg h)) (by simp)
+
+instance : Mono (X.fromOpcycles n₀ n₁ hn₁ f g fg h) :=
+  (ShortComplex.exact_iff_mono_cokernel_desc _).1 (X.exact₁ n₀ n₁ hn₁ f g fg h)
 
 @[reassoc (attr := simp)]
 lemma p_fromOpcycles :
     X.pOpcycles n₀ n₁ hn₁ f g ≫ X.fromOpcycles n₀ n₁ hn₁ f g fg h =
       (X.H n₁).map (twoδ₂Toδ₁ f g fg h) := by
   apply cokernel.π_desc
+
+@[reassoc]
+lemma opcyclesMap_fromOpcycles (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg')
+    (hβ₀ : β.app 0 = α.app 0) (hβ₁ : β.app 1 = α.app 2) :
+    X.opcyclesMap n₀ n₁ hn₁ f g f' g' α ≫ X.fromOpcycles n₀ n₁ hn₁ f' g' fg' h' =
+      X.fromOpcycles n₀ n₁ hn₁ f g fg h ≫ (X.H n₁).map β := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g), p_fromOpcycles_assoc,
+    X.p_opcyclesMap_assoc n₀ n₁ hn₁ f g f' g' α (homMk₁ (α.app 0) (α.app 1)
+      (naturality' α 0 1)) rfl,
+    p_fromOpcycles, ← Functor.map_comp, ← Functor.map_comp]
+  congr 1
+  ext
+  · dsimp
+    erw [hβ₀, id_comp, comp_id]
+  · dsimp
+    rw [hβ₁]
+    exact (naturality' α 1 2).symm
 
 @[reassoc (attr := simp)]
 lemma H_map_twoδ₂Toδ₁_toCycles :
@@ -284,6 +399,14 @@ noncomputable def cokernelSequenceCycles : ShortComplex C :=
 noncomputable def kernelSequenceOpcycles : ShortComplex C :=
   ShortComplex.mk _ _ (X.fromOpcycles_H_map_twoδ₁Toδ₀ n₀ n₁ hn₁ f g fg h)
 
+instance : Epi (X.cokernelSequenceCycles n₀ n₁ hn₁ f g fg h).g := by
+  dsimp [cokernelSequenceCycles]
+  infer_instance
+
+instance : Mono (X.kernelSequenceOpcycles n₀ n₁ hn₁ f g fg h).f := by
+  dsimp [kernelSequenceCycles]
+  infer_instance
+
 lemma cokernelSequenceCycles_exact :
     (X.cokernelSequenceCycles n₀ n₁ hn₁ f g fg h).Exact := by
   apply ShortComplex.exact_of_g_is_cokernel
@@ -301,6 +424,25 @@ lemma kernelSequenceOpcycles_exact :
       dsimp
       simp only [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
         opcyclesIsoKernel_hom_fac, p_fromOpcycles])))
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
+    (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+
+@[simps]
+def shortComplexE : ShortComplex C where
+  X₁ := (X.H n₀).obj (mk₁ f₃)
+  X₂ := (X.H n₁).obj (mk₁ f₂)
+  X₃ := (X.H n₂).obj (mk₁ f₁)
+  f := X.δ n₀ n₁ hn₁ f₂ f₃
+  g := X.δ n₁ n₂ hn₂ f₁ f₂
+  zero := by simp
+
+noncomputable def E : C := (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homology
 
 end
 
