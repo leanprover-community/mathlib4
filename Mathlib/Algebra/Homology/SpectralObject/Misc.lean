@@ -290,4 +290,34 @@ lemma ComposableArrows.exact_iff_exact_evaluation
           intro i
           exact (hS i).exact k }
 
+namespace ComposableArrows
+
+variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k) (h : f ≫ g = fg)
+
+def twoδ₂Toδ₁ :
+    mk₁ f ⟶ mk₁ fg :=
+  homMk₁ (𝟙 _) g (by simpa using h)
+
+@[simp]
+lemma twoδ₂Toδ₁_app_zero :
+    (twoδ₂Toδ₁ f g fg h).app 0 = 𝟙 _ := rfl
+
+@[simp]
+lemma twoδ₂Toδ₁_app_one :
+    (twoδ₂Toδ₁ f g fg h).app 1 = g := rfl
+
+def twoδ₁Toδ₀ :
+    mk₁ fg ⟶ mk₁ g :=
+  homMk₁ f (𝟙 _) (by simpa using h.symm)
+
+@[simp]
+lemma twoδ₁Toδ₀_app_zero :
+    (twoδ₁Toδ₀ f g fg h).app 0 = f := rfl
+
+@[simp]
+lemma twoδ₁Toδ₀_app_one :
+    (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
+
+end ComposableArrows
+
 end CategoryTheory

@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralObject.Misc
+import Mathlib.Algebra.Homology.ExactSequenceFour
 
 namespace CategoryTheory
 
@@ -31,17 +32,6 @@ variable (X : SpectralObject C ι)
 
 section
 
-variable (n₀ : ℤ)
-
-noncomputable def Hδ₂Toδ₁ := whiskerRight (mapFunctorArrows ι 0 1 0 2 2) (H X n₀)
-
-noncomputable def Hδ₁Toδ₀ := whiskerRight (mapFunctorArrows ι 0 2 1 2 2) (H X n₀)
-
-end
-
-
-section
-
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
 def δ : (X.H n₀).obj (mk₁ g) ⟶ (X.H n₁).obj (mk₁ f) :=
@@ -66,21 +56,21 @@ variable (fg : i ⟶ k) (h : f ≫ g = fg)
 
 @[simp]
 noncomputable def iso₁ :
-    mk₂ (X.δ n₀ n₁ hn₁ f g) ((X.H n₁).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg)) ≅
+    mk₂ (X.δ n₀ n₁ hn₁ f g) ((X.H n₁).map (twoδ₂Toδ₁ f g fg h)) ≅
       mk₂ ((X.δ' n₀ n₁ hn₁).app (mk₂ f g)) (((X.H n₁).map
         ((mapFunctorArrows ι 0 1 0 2 2).app (mk₂ f g)))) :=
   isoMk₂ (Iso.refl _) (Iso.refl _) ((X.H n₁).mapIso
     (isoMk₁ (Iso.refl _) (Iso.refl _) (by simpa using h.symm)))
     (by aesop_cat) (by
-      dsimp
+      dsimp [twoδ₂Toδ₁]
       simp only [← Functor.map_comp, id_comp]
       congr 1
       ext <;> simp)
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma zero₁ :
     X.δ n₀ n₁ hn₁ f g ≫
-      (X.H n₁).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg) = 0 :=
+      (X.H n₁).map (twoδ₂Toδ₁ f g fg h) = 0 :=
   (exact_of_iso (X.iso₁ n₀ n₁ hn₁ f g fg h).symm (X.exact₁' n₀ n₁ hn₁ (mk₂ f g))).zero 0
 
 @[simps]
@@ -92,8 +82,7 @@ lemma exact₁ : (X.sc₁ n₀ n₁ hn₁ f g fg h).Exact :=
 
 @[simp]
 noncomputable def iso₂ :
-    mk₂ ((X.H n₀).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg))
-      ((X.H n₀).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g)) ≅
+    mk₂ ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ((X.H n₀).map (twoδ₁Toδ₀ f g fg h)) ≅
         (mk₂ ((X.H n₀).map ((mapFunctorArrows ι 0 1 0 2 2).app (mk₂ f g)))
       ((X.H n₀).map ((mapFunctorArrows ι 0 2 1 2 2).app (mk₂ f g)))) :=
   isoMk₂ (Iso.refl _) ((X.H n₀).mapIso
@@ -101,16 +90,16 @@ noncomputable def iso₂ :
       dsimp
       simp only [← Functor.map_comp, id_comp]
       congr 1
-      ext <;> simp) (by
+      ext <;> simp; rfl) (by
       dsimp
       simp only [← Functor.map_comp, comp_id]
       congr 1
-      ext <;> simp)
+      ext <;> simp; rfl)
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma zero₂ :
-    (X.H n₀).map (homMk₁ (𝟙 _) g (by simpa using h) : mk₁ f ⟶ mk₁ fg) ≫
-    (X.H n₀).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g) = 0 :=
+    (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫
+      (X.H n₀).map (twoδ₁Toδ₀ f g fg h) = 0 :=
   (exact_of_iso (X.iso₂ n₀ f g fg h).symm (X.exact₂' n₀ (mk₂ f g))).zero 0
 
 @[simps]
@@ -122,21 +111,20 @@ lemma exact₂ : (X.sc₂ n₀ f g fg h).Exact :=
 
 @[simp]
 noncomputable def iso₃ :
-    mk₂ ((X.H n₀).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g))
+    mk₂ ((X.H n₀).map (twoδ₁Toδ₀ f g fg h))
         (X.δ n₀ n₁ hn₁ f g) ≅
       mk₂ ((X.H n₀).map ((mapFunctorArrows ι 0 2 1 2 2).app (mk₂ f g)))
         ((X.δ' n₀ n₁ hn₁).app (mk₂ f g)) :=
   isoMk₂ ((X.H n₀).mapIso (isoMk₁ (Iso.refl _) (Iso.refl _) (by simpa using h.symm)))
     (Iso.refl _) (Iso.refl _) (by
       dsimp
-      simp only [← Functor.map_comp, comp_id]
+      rw [comp_id, ← Functor.map_comp]
       congr 1
-      ext <;> simp) (by aesop_cat)
+      aesop_cat) (by aesop_cat)
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma zero₃ :
-    (X.H n₀).map (homMk₁ f (𝟙 _) (by simpa using h.symm) : mk₁ fg ⟶ mk₁ g) ≫
-      X.δ n₀ n₁ hn₁ f g = 0 :=
+    (X.H n₀).map (twoδ₁Toδ₀ f g fg h) ≫ X.δ n₀ n₁ hn₁ f g = 0 :=
   (exact_of_iso (X.iso₃ n₀ n₁ hn₁ f g fg h).symm (X.exact₃' n₀ n₁ hn₁ (mk₂ f g))).zero 0
 
 @[simps]
@@ -145,6 +133,21 @@ def sc₃ : ShortComplex C :=
 
 lemma exact₃ : (X.sc₃ n₀ n₁ hn₁ f g fg h).Exact :=
   (exact_of_iso (X.iso₃ n₀ n₁ hn₁ f g fg h).symm (X.exact₃' n₀ n₁ hn₁ (mk₂ f g))).exact 0
+
+@[simp]
+noncomputable def composableArrows₅ :
+    ComposableArrows C 5 :=
+  mk₅ ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ((X.H n₀).map (twoδ₁Toδ₀ f g fg h))
+    (X.δ n₀ n₁ hn₁ f g) ((X.H n₁).map (twoδ₂Toδ₁ f g fg h))
+    ((X.H n₁).map (twoδ₁Toδ₀ f g fg h))
+
+lemma composableArrows₅_exact :
+    (X.composableArrows₅ n₀ n₁ hn₁ f g fg h).Exact := by
+  subst h
+  exact exact_of_δ₀ (X.exact₂ n₀ f g _ rfl).exact_toComposableArrows
+     (exact_of_δ₀ (X.exact₃ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
+        (exact_of_δ₀ (X.exact₁ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
+          ((X.exact₂ n₁ f g _ rfl).exact_toComposableArrows)))
 
 end
 
@@ -157,7 +160,7 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 
 @[reassoc (attr := simp)]
 lemma δ_δ : X.δ n₀ n₁ hn₁ g h ≫ X.δ n₁ n₂ hn₂ f g = 0 := by
-  have eq := X.δ_naturality n₁ n₂ hn₂ f g f (g ≫ h) (𝟙 _) (homMk₁ (𝟙 _) h (by simp)) rfl
+  have eq := X.δ_naturality n₁ n₂ hn₂ f g f (g ≫ h) (𝟙 _) (twoδ₂Toδ₁ g h _ rfl) rfl
   rw [Functor.map_id, comp_id] at eq
   rw [← eq, X.zero₁_assoc n₀ n₁ hn₁ g h _ rfl, zero_comp]
 
@@ -166,70 +169,103 @@ end
 section
 
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+  {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
-@[simps]
-def δFunctorArrows (i j k n : ℕ)
-    (hij : i ≤ j := by linarith) (hjk : j ≤ k := by linarith) (hk : k ≤ n := by linarith) :
-    functorArrows ι j k n ⋙ X.H n₀ ⟶ functorArrows ι i j n ⋙ X.H n₁ where
-  app S := X.δ n₀ n₁ hn₁ _ _
-  naturality {S S'} φ := by
-    apply X.δ_naturality
-    rfl
+noncomputable def cycles : C := kernel (X.δ n₀ n₁ hn₁ f g)
 
-lemma δ'_eq_δFunctorArrows :
-    X.δ' n₀ n₁ hn₁ = X.δFunctorArrows n₀ n₁ hn₁ 0 1 2 2 := by
-  ext D
-  obtain ⟨i, j, k, f, g, rfl⟩ := mk₂_surjective D
-  rfl
+noncomputable def opcycles : C := cokernel (X.δ n₀ n₁ hn₁ f g)
 
-@[simp]
-noncomputable def composableArrows₅ :
-    ComposableArrows (ComposableArrows ι 2 ⥤ C) 5 :=
-  mk₅ (X.Hδ₂Toδ₁ n₀) (X.Hδ₁Toδ₀ n₀) (X.δ' n₀ n₁ hn₁ )
-    (X.Hδ₂Toδ₁ n₁) (X.Hδ₁Toδ₀ n₁)
+noncomputable def iCycles :
+    X.cycles n₀ n₁ hn₁ f g ⟶ (X.H n₀).obj (mk₁ g) :=
+  kernel.ι _
 
-lemma composableArrows₅_exact :
-    (X.composableArrows₅ n₀ n₁ hn₁).Exact := by
-  rw [exact_iff_exact_evaluation]
-  intro D
-  obtain ⟨i, j, k, f, g, rfl⟩ := mk₂_surjective D
-  exact exact_of_δ₀ (X.exact₂ n₀ f g _ rfl).exact_toComposableArrows
-     (exact_of_δ₀ (X.exact₃ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
-        (exact_of_δ₀ (X.exact₁ n₀ n₁ hn₁ f g _ rfl).exact_toComposableArrows
-          (by
-            refine' exact_of_iso _ (X.exact₂ n₁ f g _ rfl).exact_toComposableArrows
-            refine' ComposableArrows.isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _
-            all_goals
-              dsimp
-              rw [id_comp, comp_id]
-              rfl)))
+noncomputable def pOpcycles :
+    (X.H n₁).obj (mk₁ f) ⟶ X.opcycles n₀ n₁ hn₁ f g :=
+  cokernel.π _
+
+instance : Mono (X.iCycles n₀ n₁ hn₁ f g) := by
+  dsimp [iCycles]
+  infer_instance
+
+instance : Epi (X.pOpcycles n₀ n₁ hn₁ f g) := by
+  dsimp [pOpcycles]
+  infer_instance
 
 @[reassoc (attr := simp)]
-lemma zero₁'' :
-    X.δ' n₀ n₁ hn₁ ≫ X.Hδ₂Toδ₁ n₁ = 0 :=
-  (X.composableArrows₅_exact n₀ n₁ hn₁).zero 2
+lemma iCycles_δ : X.iCycles n₀ n₁ hn₁ f g ≫ X.δ n₀ n₁ hn₁ f g = 0 := by
+  simp [iCycles]
 
 @[reassoc (attr := simp)]
-lemma zero₂'' :
-    X.Hδ₂Toδ₁ n₀ ≫ X.Hδ₁Toδ₀ n₀ = 0 :=
-  (X.composableArrows₅_exact n₀ _ rfl).zero 0
+lemma δ_pOpcycles : X.δ n₀ n₁ hn₁ f g ≫ X.pOpcycles n₀ n₁ hn₁ f g = 0 := by
+  simp [pOpcycles]
+
+@[simps, pp_dot]
+noncomputable def kernelSequenceCycles :
+    ShortComplex C :=
+  ShortComplex.mk _ _ (X.iCycles_δ n₀ n₁ hn₁ f g)
+
+@[simps, pp_dot]
+noncomputable def cokernelSequenceOpcycles :
+    ShortComplex C :=
+  ShortComplex.mk _ _ (X.δ_pOpcycles n₀ n₁ hn₁ f g)
+
+instance : Mono (X.kernelSequenceCycles n₀ n₁ hn₁ f g).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).g := by
+  dsimp
+  infer_instance
+
+lemma kernelSequenceCycles_exact :
+    (X.kernelSequenceCycles n₀ n₁ hn₁ f g).Exact :=
+  ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
+
+lemma cokernelSequenceOpcycles_exact :
+    (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact :=
+  ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
+
+
+variable (fg : i ⟶ k) (h : f ≫ g = fg)
+
+noncomputable def cokernelIsoCycles :
+    cokernel ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ≅ X.cycles n₀ n₁ hn₁ f g :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁ f g fg h).cokerIsoKer 0
 
 @[reassoc (attr := simp)]
-lemma zero₃'' :
-    X.Hδ₁Toδ₀ n₀ ≫ X.δ' n₀ n₁ hn₁ = 0 :=
-  (X.composableArrows₅_exact n₀ n₁ hn₁).zero 1
+lemma cokernelIsoCycles_hom_fac :
+    cokernel.π _ ≫ (X.cokernelIsoCycles n₀ n₁ hn₁ f g fg h).hom ≫
+      X.iCycles n₀ n₁ hn₁ f g = (X.H n₀).map (twoδ₁Toδ₀ f g fg h) :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁ f g fg h).cokerIsoKer_hom_fac 0
 
-lemma exact₁'' :
-    (ShortComplex.mk _ _ (X.zero₁'' n₀ n₁ hn₁)).Exact :=
-  (X.composableArrows₅_exact n₀ n₁ hn₁).exact 2
+noncomputable def opcyclesIsoKernel :
+    X.opcycles n₀ n₁ hn₁ f g ≅ kernel ((X.H n₁).map (twoδ₁Toδ₀ f g fg h)) :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁ f g fg h).cokerIsoKer 2
 
-lemma exact₂'' :
-    (ShortComplex.mk _ _ (X.zero₂'' n₀)).Exact :=
-  (X.composableArrows₅_exact n₀ _ rfl).exact 0
+@[reassoc (attr := simp)]
+lemma opcyclesIsoKernel_hom_fac :
+    X.pOpcycles n₀ n₁ hn₁ f g ≫ (X.opcyclesIsoKernel n₀ n₁ hn₁ f g fg h).hom ≫
+      kernel.ι _ = (X.H n₁).map (twoδ₂Toδ₁ f g fg h) :=
+  (X.composableArrows₅_exact n₀ n₁ hn₁ f g fg h).cokerIsoKer_hom_fac 2
 
-lemma exact₃'' :
-    (ShortComplex.mk _ _ (X.zero₃'' n₀ n₁ hn₁)).Exact :=
-  (X.composableArrows₅_exact n₀ n₁ hn₁).exact 1
+noncomputable def toCycles : (X.H n₀).obj (mk₁ fg) ⟶ X.cycles n₀ n₁ hn₁ f g :=
+  kernel.lift _ ((X.H n₀).map (twoδ₁Toδ₀ f g fg h)) (by simp)
+
+@[reassoc (attr := simp)]
+lemma toCycles_i :
+    X.toCycles n₀ n₁ hn₁ f g fg h ≫ X.iCycles n₀ n₁ hn₁ f g =
+      (X.H n₀).map (twoδ₁Toδ₀ f g fg h) := by
+  apply kernel.lift_ι
+
+noncomputable def fromOpcycles :
+    X.opcycles n₀ n₁ hn₁ f g ⟶ (X.H n₁).obj (mk₁ fg) :=
+  cokernel.desc _ ((X.H n₁).map (twoδ₂Toδ₁ f g fg h)) (by simp)
+
+@[reassoc (attr := simp)]
+lemma p_fromOpcycles :
+    X.pOpcycles n₀ n₁ hn₁ f g ≫ X.fromOpcycles n₀ n₁ hn₁ f g fg h =
+      (X.H n₁).map (twoδ₂Toδ₁ f g fg h) := by
+  apply cokernel.π_desc
 
 end
 
