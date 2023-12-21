@@ -130,7 +130,7 @@ theorem frontier_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
 
 theorem interior_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
-  cases' hr.lt_or_lt with hr hr
+  rcases hr.lt_or_lt with hr | hr
   · rw [closedBall_eq_empty.2 hr, ball_eq_empty.2 hr.le, interior_empty]
   refine' Subset.antisymm _ ball_subset_interior_closedBall
   intro y hy

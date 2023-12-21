@@ -278,7 +278,7 @@ theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
 
 theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
   rw [testBit, shiftRight_eq_div_pow]
-  cases' hm.lt_or_lt with hm hm
+  rcases hm.lt_or_lt with hm | hm
   · rw [Nat.div_eq_of_lt]
     · simp
     · exact pow_lt_pow_right one_lt_two hm
