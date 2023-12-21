@@ -1,7 +1,3 @@
-/-
-manually ported from
-https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1bb258ad9f3e5b/test/matrix.lean
--/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant

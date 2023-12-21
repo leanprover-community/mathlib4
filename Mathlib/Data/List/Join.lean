@@ -52,7 +52,7 @@ theorem join_filter_isEmpty_eq_false [DecidablePred fun l : List α => l.isEmpty
   | [] :: L => by
       simp [join_filter_isEmpty_eq_false (L := L), isEmpty_iff_eq_nil]
   | (a :: l) :: L => by
-      simp [join_filter_isEmpty_eq_false (L := L), isEmpty_cons]
+      simp [join_filter_isEmpty_eq_false (L := L)]
 #align list.join_filter_empty_eq_ff List.join_filter_isEmpty_eq_false
 
 @[simp]
