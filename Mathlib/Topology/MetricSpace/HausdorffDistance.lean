@@ -432,8 +432,8 @@ theorem nonempty_of_hausdorffEdist_ne_top (hs : s.Nonempty) (fin : hausdorffEdis
 
 theorem empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠ ⊤) :
     (s = ∅ ∧ t = ∅) ∨ (s.Nonempty ∧ t.Nonempty) := by
-  cases' s.eq_empty_or_nonempty with hs hs
-  · cases' t.eq_empty_or_nonempty with ht ht
+  rcases s.eq_empty_or_nonempty with hs | hs
+  · rcases t.eq_empty_or_nonempty with ht | ht
     · exact Or.inl ⟨hs, ht⟩
     · rw [hausdorffEdist_comm] at fin
       exact Or.inr ⟨nonempty_of_hausdorffEdist_ne_top ht fin, ht⟩
@@ -727,7 +727,7 @@ theorem hausdorffDist_comm : hausdorffDist s t = hausdorffDist t s := by
 value ∞ instead, use `EMetric.hausdorffEdist`, which takes values in ℝ≥0∞) -/
 @[simp]
 theorem hausdorffDist_empty : hausdorffDist s ∅ = 0 := by
-  cases' s.eq_empty_or_nonempty with h h
+  rcases s.eq_empty_or_nonempty with h | h
   · simp [h]
   · simp [hausdorffDist, hausdorffEdist_empty h]
 #align metric.Hausdorff_dist_empty Metric.hausdorffDist_empty
@@ -744,9 +744,9 @@ theorem hausdorffDist_le_of_infDist {r : ℝ} (hr : 0 ≤ r) (H1 : ∀ x ∈ s, 
     (H2 : ∀ x ∈ t, infDist x s ≤ r) : hausdorffDist s t ≤ r := by
   by_cases h1 : hausdorffEdist s t = ⊤
   · rwa [hausdorffDist, h1, ENNReal.top_toReal]
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · rwa [hs, hausdorffDist_empty']
-  cases' t.eq_empty_or_nonempty with ht ht
+  rcases t.eq_empty_or_nonempty with ht | ht
   · rwa [ht, hausdorffDist_empty]
   have : hausdorffEdist s t ≤ ENNReal.ofReal r := by
     apply hausdorffEdist_le_of_infEdist _ _

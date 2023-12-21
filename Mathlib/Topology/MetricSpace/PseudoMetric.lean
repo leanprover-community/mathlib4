@@ -870,7 +870,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
     (H : ∀ ε > (0 : ℝ),
         ∃ (β : Type u) (_ : Fintype β) (F : s → β), ∀ x y, F x = F y → dist (x : α) y < ε) :
     TotallyBounded s := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · rw [hs]
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
