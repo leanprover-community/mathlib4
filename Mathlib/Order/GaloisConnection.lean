@@ -531,10 +531,6 @@ theorem l_u_eq [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) (b : �
   (gi.gc.l_u_le _).antisymm (gi.le_l_u _)
 #align galois_insertion.l_u_eq GaloisInsertion.l_u_eq
 
-theorem l_top [Preorder α] [PartialOrder β] [OrderTop α] [OrderTop β]
-    (gi : GaloisInsertion l u) : l ⊤ = ⊤ :=
-  top_unique <| (gi.le_l_u _).trans <| gi.gc.monotone_l le_top
-
 theorem leftInverse_l_u [Preorder α] [PartialOrder β] (gi : GaloisInsertion l u) :
     LeftInverse l u :=
   gi.l_u_eq
