@@ -871,7 +871,7 @@ discrete topology.
 This version does not assume the choice of a topology on either the source `X`
 nor the target `Y` of the inclusion `f`. -/
 lemma induced_bot {X Y : Type*} {f : X → Y} (hf : Function.Injective f) :
-  TopologicalSpace.induced f ⊥ = ⊥ :=
+    TopologicalSpace.induced f ⊥ = ⊥ :=
 eq_of_nhds_eq_nhds ( λ x => by
   set hY : TopologicalSpace Y := ⊥
   haveI : DiscreteTopology Y := ⟨rfl⟩
