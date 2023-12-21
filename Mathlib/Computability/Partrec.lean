@@ -138,7 +138,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine' ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
-    simp at this ⊢
+    simp? at this ⊢ says simp only [coe_some, mem_some_iff, ofOption_dom] at this ⊢
     cases' Option.isSome_iff_exists.1 this.symm with a e
     rw [e]; trivial⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
@@ -225,7 +225,7 @@ theorem ppred : Partrec fun n => ppred n :=
           simp [show 0 ≠ m.succ by intro h; injection h] at h
     · refine' eq_some_iff.2 _
       simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
-        Bool.false_eq_decide_iff, true_and]
+        false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred

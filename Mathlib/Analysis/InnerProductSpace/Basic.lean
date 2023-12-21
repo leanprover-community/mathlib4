@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.LinearAlgebra.BilinearForm
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 #align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -1200,7 +1200,7 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     refine' le_sqrt_of_sq_le _
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
-    exact sub_le_sub_left (pow_le_pow_of_le_left hε.le hxy _) 4⟩
+    exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
 #align inner_product_space.to_uniform_convex_space InnerProductSpace.toUniformConvexSpace
 
 section Complex
@@ -1892,7 +1892,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
   rw [@norm_sub_sq 𝕜, sub_add]
   classical
     simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, _root_.inner_sum, _root_.sum_inner]
-    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ←mul_assoc, h₂,
+    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
       add_sub_cancel, sub_right_inj]
     simp only [map_sum, ← inner_conj_symm x, ← h₃]
 

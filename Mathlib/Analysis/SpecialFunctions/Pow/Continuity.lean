@@ -395,7 +395,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       tauto
     have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ :=
       continuous_ofReal.continuousAt.prod_map continuousAt_id
-    exact @ContinuousAt.comp (ℝ × ℂ) (ℂ × ℂ) ℂ _ _ _ _ (fun p => ⟨↑p.1, p.2⟩) ⟨0, y⟩ A B
+    exact ContinuousAt.comp (α := ℝ × ℂ) (f := fun p => ⟨↑p.1, p.2⟩) (x := ⟨0, y⟩) A B
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
@@ -410,7 +410,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
 
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
-  @ContinuousAt.comp _ _ _ _ _ _ _ _ x (continuousAt_ofReal_cpow x y h)
+  ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
     (continuous_id.prod_mk continuous_const).continuousAt
 #align complex.continuous_at_of_real_cpow_const Complex.continuousAt_ofReal_cpow_const
 
@@ -451,7 +451,7 @@ theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
   rw [tsub_add_cancel_of_le hy.le] at hm
   refine' eventually_atTop.2 ⟨m + 1, fun n hn => _⟩
   simpa only [NNReal.rpow_one_div_le_iff (Nat.cast_pos.2 <| m.succ_pos.trans_le hn),
-    NNReal.rpow_nat_cast] using hm.le.trans (pow_le_pow hy.le (m.le_succ.trans hn))
+    NNReal.rpow_nat_cast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
 #align nnreal.eventually_pow_one_div_le NNReal.eventually_pow_one_div_le
 
 end NNReal
@@ -487,7 +487,7 @@ namespace ENNReal
 theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞) {y : ℝ≥0∞} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
   lift x to ℝ≥0 using hx
-  by_cases y = ∞
+  by_cases h : y = ∞
   · exact eventually_of_forall fun n => h.symm ▸ le_top
   · lift y to ℝ≥0 using h
     have := NNReal.eventually_pow_one_div_le x (mod_cast hy : 1 < y)

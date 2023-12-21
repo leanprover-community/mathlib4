@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.NormNum.Mod
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
@@ -52,20 +52,20 @@ lemma CharP.cast_int_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
     _ = ↑(k % p) := by simp [CharP.cast_eq_zero R]
 
-lemma CharP.isInt_of_mod {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) {e : α}
-    (h₁ : IsInt e e') (h₂ : IsInt (e' % n) r) :
-    IsInt e r :=
-  ⟨by rw [h₁.out, CharP.cast_int_eq_mod α n, h₂.out, Int.cast_id]⟩
+lemma CharP.isInt_of_mod {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
+    (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
+  ⟨by rw [he.out, CharP.cast_int_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
 partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing : Q(Ring $α))
-    (instCharP : Q(CharP $α $n)) :
-    MetaM (Mathlib.Meta.NormNum.Result e) := do
-  let instRingInt := q(Int.instRingInt)
-  let ⟨_, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
-  let ⟨r, nr, pr⟩ ← Result.toInt instRingInt (←evalIntMod.go ne q(($n : ℤ)))
-  return .isInt instRing nr r q(CharP.isInt_of_mod $n $instCharP $pe $pr)
+    (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
+  let ⟨ze, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
+  let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
+  let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
+    .isNat q(instAddMonoidWithOne) _ q(isNat_cast _ _ (IsNat.raw_refl $n'))
+  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRingInt)
+  return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)
     (a : ℕ) (a' : α) (p : IsNat (n - 1 : α) a) (pa : a = a') :
@@ -88,7 +88,7 @@ partial def normNeg {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ri
   let r ← (derive (α := α) q($n - 1))
   match r with
   | .isNat sα a p => do
-    have : AddGroupWithOne.toAddMonoidWithOne =Q $sα := ⟨⟩
+    have : instAddMonoidWithOne =Q $sα := ⟨⟩
     let ⟨a', pa'⟩ ← mkOfNat α sα a
     let pf : Q(-$b = $a' * $b) := q(CharP.neg_eq_sub_one_mul $n $instCharP $b $a $a' $p $pa')
     return { expr := q($a' * $b), proof? := pf }
@@ -136,10 +136,10 @@ This should be fast, so this pattern-matches on the type, rather than searching 
 `CharP` instance. -/
 partial def typeToCharP (t : Q(Type u)) : TypeToCharPResult t :=
 match Expr.getAppFnArgs t with
-| (`ZMod, #[(n : Q(ℕ))]) => .intLike n
+| (``ZMod, #[(n : Q(ℕ))]) => .intLike n
   (q((ZMod.commRing _).toRing) : Q(Ring (ZMod $n)))
   (q(ZMod.charP _) : Q(CharP (ZMod $n) $n))
-| (`Polynomial, #[(R : Q(Type u)), _]) => match typeToCharP R with
+| (``Polynomial, #[(R : Q(Type u)), _]) => match typeToCharP R with
   | (.intLike n _ _) => .intLike n
     (q(Polynomial.ring) : Q(Ring (Polynomial $R)))
     (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))

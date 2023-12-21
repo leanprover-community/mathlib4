@@ -173,8 +173,8 @@ theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
       exact Or.inl (succ_pos _))
     (by
       intro h; cases' h with mpos npos
-      · apply add_pos_left mpos
-      apply add_pos_right _ npos)
+      · apply Nat.add_pos_left mpos
+      apply Nat.add_pos_right _ npos)
 #align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
 
 theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
@@ -321,7 +321,7 @@ theorem lt_mul_self_iff : ∀ {n : ℕ}, n < n * n ↔ 1 < n
 theorem add_sub_one_le_mul (hm : m ≠ 0) (hn : n ≠ 0) : m + n - 1 ≤ m * n := by
   cases m
   · cases hm rfl
-  · rw [succ_add, succ_sub_one, succ_mul]
+  · rw [succ_add, Nat.add_one_sub_one, succ_mul]
     exact add_le_add_right (le_mul_of_one_le_right' $ succ_le_iff.2 $ pos_iff_ne_zero.2 hn) _
 #align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
 
@@ -489,6 +489,9 @@ theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 theorem one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
   Nat.mod_eq_of_lt (add_lt_add_right n.succ_pos 1)
 #align nat.one_mod Nat.one_mod
+
+theorem one_mod_of_ne_one : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1
+  | 0, _ | (n + 2), _ => by simp
 
 theorem dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
   ⟨k / n, tsub_eq_of_eq_add_rev (Nat.mod_add_div k n).symm⟩

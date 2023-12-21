@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
 
-#align_import data.finset.preimage from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
+#align_import data.finset.preimage from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Preimage of a `Finset` under an injective map.
@@ -75,6 +75,11 @@ theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype �
     preimage sᶜ f (hf.injOn _) = (preimage s f (hf.injOn _))ᶜ :=
   Finset.coe_injective (by simp)
 #align finset.preimage_compl Finset.preimage_compl
+
+@[simp]
+lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f (f.injective.injOn _) = s :=
+  coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
+#align finset.preimage_map Finset.preimage_map
 
 theorem monotone_preimage {f : α → β} (h : Injective f) :
     Monotone fun s => preimage s f (h.injOn _) := fun _ _ H _ hx =>
