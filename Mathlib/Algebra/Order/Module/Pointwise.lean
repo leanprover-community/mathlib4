@@ -6,6 +6,12 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Order.Module.Defs
 
+/-!
+# Bounds on scalar multiplication of set
+
+This file proves order properties of pointwise operations of sets.
+-/
+
 open scoped Pointwise
 
 variable {α β : Type*}
