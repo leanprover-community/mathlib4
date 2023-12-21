@@ -151,7 +151,7 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
   exact this.neBot
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
-theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f):
+theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f) :
     IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- A filter with the countable intersection property that is finer than the principal filter on
@@ -169,8 +169,8 @@ theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs 
 
 /--For every open cover of a Lindelöf set, there exists a countable subcover. -/
 theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U : ι → Set X)
-    (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i)
-    := by
+    (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
+    ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i) := by
   have he : ∃ r : Set ι, r.Countable ∧ ∅ ⊆ ⋃ i ∈ r, U i := by use ∅; simp
   have hmono : ∀ ⦃s t : Set X⦄, s ⊆ t → (∃ r : Set ι, r.Countable ∧ t ⊆ ⋃ i ∈ r, U i)
       → (∃ r : Set ι, r.Countable ∧ s ⊆ ⋃ i ∈ r, U i) := by
@@ -303,7 +303,7 @@ theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X}
 /-- A set `s` is Lindelöf if for every open cover of `s`, there exists a countable subcover. -/
 theorem isLindelof_of_countable_subcover
     (h : ∀ {ι : Type u} (U : ι → Set X), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
-      ∃ t : Set ι, t.Countable ∧ s ⊆ ⋃ i ∈ t, U i) :
+    ∃ t : Set ι, t.Countable ∧ s ⊆ ⋃ i ∈ t, U i) :
     IsLindelof s := fun f hf hfs => by
   contrapose! h
   simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
@@ -323,7 +323,7 @@ theorem isLindelof_of_countable_subcover
 there exists a countable subfamily whose intersection avoids `s`. -/
 theorem isLindelof_of_countable_subfamily_closed
     (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
-      ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
+    ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
     IsLindelof s :=
   isLindelof_of_countable_subcover fun U hUo hsU => by
     rw [← disjoint_compl_right_iff_subset, compl_iUnion, disjoint_iff] at hsU
@@ -343,6 +343,6 @@ for every family of closed sets whose intersection avoids `s`,
 there exists a countable subfamily whose intersection avoids `s`. -/
 theorem isLindelof_iff_countable_subfamily_closed :
     IsLindelof s ↔ ∀ {ι : Type u} (t : ι → Set X),
-      (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅
-      → ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ :=
+    (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅
+    → ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ :=
   ⟨fun hs => hs.elim_countable_subfamily_closed, isLindelof_of_countable_subfamily_closed⟩
