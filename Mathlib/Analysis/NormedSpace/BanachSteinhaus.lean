@@ -75,7 +75,7 @@ open ENNReal
 
 open ENNReal
 
-/-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖⬝‖₊ : ℝ≥0∞`
+/-- This version of Banach-Steinhaus is stated in terms of suprema of `↑‖·‖₊ : ℝ≥0∞`
 for convenience. -/
 theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ⨆ i, ↑‖g i x‖₊ < ∞) : ⨆ i, ↑‖g i‖₊ < ∞ := by

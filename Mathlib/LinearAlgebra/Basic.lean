@@ -1062,7 +1062,7 @@ theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a 
   ext b; simp only [Submodule.mem_comap, p.smul_mem_iff h, LinearMap.smul_apply]
 #align submodule.comap_smul Submodule.comap_smul
 
-theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0) :
+protected theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0) :
     p.map (a • f) = p.map f :=
   le_antisymm (by rw [map_le_iff_le_comap, comap_smul f _ a h, ← map_le_iff_le_comap])
     (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap])
@@ -1078,7 +1078,7 @@ theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
 -- Porting note: Idem.
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = iSup (fun _ : a ≠ 0 => p.map f) := by
-  classical by_cases h : a = 0 <;> simp [h, map_smul]
+  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
 #align submodule.map_smul' Submodule.map_smul'
 
 end Submodule

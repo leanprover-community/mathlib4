@@ -282,7 +282,7 @@ theorem NonUnitalStarSubalgebra.unitization_apply_coe (S : NonUnitalStarSubalgeb
 
 theorem NonUnitalStarSubalgebra.unitization_surjective (S : NonUnitalStarSubalgebra R A) :
     Function.Surjective S.unitization :=
-  have : StarSubalgebra.adjoin R S ≤ 
+  have : StarSubalgebra.adjoin R S ≤
       ((StarSubalgebra.adjoin R (S : Set A)).subtype.comp S.unitization).range :=
     StarSubalgebra.adjoin_le fun a ha ↦ ⟨(⟨a, ha⟩ : S), by simp⟩
   fun x ↦ match this x.property with | ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩

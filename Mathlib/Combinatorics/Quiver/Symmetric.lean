@@ -220,6 +220,19 @@ theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V')
     · exact hΦinv (Sum.inl _)
 #align quiver.symmetrify.lift_unique Quiver.Symmetrify.lift_unique
 
+/-- A prefunctor canonically defines a prefunctor of the symmetrifications. -/
+@[simps]
+def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V
+    where
+  obj := φ.obj
+  map := Sum.map φ.map φ.map
+#align prefunctor.symmetrify Prefunctor.symmetrify
+
+instance _root_.Prefunctor.symmetrify_mapReverse (φ : U ⥤q V) :
+    Prefunctor.MapReverse φ.symmetrify :=
+  ⟨fun e => by cases e <;> rfl⟩
+#align prefunctor.symmetrify_map_reverse Prefunctor.symmetrify_mapReverse
+
 end Symmetrify
 
 namespace Push

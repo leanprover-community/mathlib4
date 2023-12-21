@@ -135,7 +135,7 @@ with countable intersections property. Let `p : Set α → Prop` be a property s
 countable family of sets satisfying `p` and separating points of `α`. Then `l` is supported on
 a subsingleton: there exists a subsingleton `t` such that `t ∈ l`.
 
-With extra `Nonempty`/`Set.Nonempty` assumptions one can ensure that `t` is a singleton `{x}`. 
+With extra `Nonempty`/`Set.Nonempty` assumptions one can ensure that `t` is a singleton `{x}`.
 
 If `s ∈ l`, then it suffices to assume that the countable family separates only points of `s`.
 -/

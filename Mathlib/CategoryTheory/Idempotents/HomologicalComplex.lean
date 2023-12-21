@@ -215,7 +215,7 @@ def karoubiCochainComplexEquivalence :
 
 instance [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) := by
   rw [isIdempotentComplete_iff_of_equivalence
-      ((toKaroubi_equivalence C).mapHomologicalComplex c),
+      ((toKaroubiEquivalence C).mapHomologicalComplex c),
     ← isIdempotentComplete_iff_of_equivalence (karoubiHomologicalComplexEquivalence C c)]
   infer_instance
 

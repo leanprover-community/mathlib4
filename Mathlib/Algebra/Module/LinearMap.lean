@@ -275,6 +275,21 @@ theorem id_coe : ((LinearMap.id : M →ₗ[R] M) : M → M) = _root_.id :=
   rfl
 #align linear_map.id_coe LinearMap.id_coe
 
+/-- A generalisation of `LinearMap.id` that constructs the identity function
+as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the identity. -/
+@[simps]
+def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
+  toFun x := x
+  map_add' x y := rfl
+  map_smul' r x := by
+    have := (RingHomId.eq_id : σ = _)
+    subst this
+    rfl
+
+@[simp, norm_cast]
+theorem id'_coe {σ : R →+* R} [RingHomId σ] : ((id' : M →ₛₗ[σ] M) : M → M) = _root_.id :=
+  rfl
+
 end
 
 section

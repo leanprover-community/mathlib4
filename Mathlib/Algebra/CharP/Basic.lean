@@ -569,7 +569,7 @@ theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
 
 end Ring
 
-section CharOne
+section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
@@ -605,7 +605,12 @@ theorem ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p
   Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
 #align char_p.ring_char_of_prime_eq_zero CharP.ringChar_of_prime_eq_zero
 
-end CharOne
+theorem charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
+    CharP R p ↔ (p : R) = 0 :=
+  ⟨fun _ => cast_eq_zero R p,
+   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+
+end NonAssocSemiring
 
 end CharP
 

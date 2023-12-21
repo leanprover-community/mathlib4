@@ -40,6 +40,7 @@ adjoint
 
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -142,9 +143,8 @@ theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† =
   simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
 #align continuous_linear_map.adjoint_comp ContinuousLinearMap.adjoint_comp
 
--- Porting note: Originally `‖A x‖ ^ 2`. But this didn't work because the exponent was `2 : ℝ`.
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
-    HPow.hPow ‖A x‖ 2 = re ⟪(A† * A) x, x⟫ := by
+    ‖A x‖ ^ 2 = re ⟪(A† * A) x, x⟫ := by
   have h : ⟪(A† * A) x, x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_left]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_left ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_left
@@ -154,9 +154,8 @@ theorem apply_norm_eq_sqrt_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
   rw [← apply_norm_sq_eq_inner_adjoint_left, Real.sqrt_sq (norm_nonneg _)]
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_left ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_left
 
--- Porting note: Originally `‖A x‖ ^ 2`. But this didn't work because the exponent was `2 : ℝ`.
 theorem apply_norm_sq_eq_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
-    HPow.hPow ‖A x‖ 2 = re ⟪x, (A† * A) x⟫ := by
+    ‖A x‖ ^ 2 = re ⟪x, (A† * A) x⟫ := by
   have h : ⟪x, (A† * A) x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_right]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_right ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_right

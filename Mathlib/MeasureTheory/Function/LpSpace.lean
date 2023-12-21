@@ -552,7 +552,7 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 
 section Indicator
 
-variable {s : Set α} {hs : MeasurableSet s} {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ}
+variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ}
 
 theorem snormEssSup_indicator_le (s : Set α) (f : α → G) :
     snormEssSup (s.indicator f) μ ≤ snormEssSup f μ := by
@@ -579,9 +579,7 @@ theorem snormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) 
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 #align measure_theory.snorm_ess_sup_indicator_const_eq MeasureTheory.snormEssSup_indicator_const_eq
 
-variable (hs)
-
-theorem snorm_indicator_le {E : Type*} [NormedAddCommGroup E] (f : α → E) :
+theorem snorm_indicator_le (f : α → E) {s : Set α} :
     snorm (s.indicator f) p μ ≤ snorm f p μ := by
   refine' snorm_mono_ae (eventually_of_forall fun x => _)
   suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
@@ -589,21 +587,25 @@ theorem snorm_indicator_le {E : Type*} [NormedAddCommGroup E] (f : α → E) :
   exact s.indicator_le_self _ x
 #align measure_theory.snorm_indicator_le MeasureTheory.snorm_indicator_le
 
-variable {hs}
+theorem snorm_indicator_const₀ {c : G} (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
+    snorm (s.indicator fun _ => c) p μ = ‖c‖₊ * μ s ^ (1 / p.toReal) :=
+  have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp hp_top
+  calc
+    snorm (s.indicator fun _ => c) p μ
+      = (∫⁻ x, ((‖(s.indicator fun _ ↦ c) x‖₊ : ℝ≥0∞) ^ p.toReal) ∂μ) ^ (1 / p.toReal) :=
+          snorm_eq_lintegral_rpow_nnnorm hp hp_top
+    _ = (∫⁻ x, (s.indicator fun _ ↦ (‖c‖₊ : ℝ≥0∞) ^ p.toReal) x ∂μ) ^ (1 / p.toReal) := by
+      congr 2
+      refine (Set.comp_indicator_const c (fun x : G ↦ (‖x‖₊ : ℝ≥0∞) ^ p.toReal) ?_)
+      simp [hp_pos]
+    _ = ‖c‖₊ * μ s ^ (1 / p.toReal) := by
+      rw [lintegral_indicator_const₀ hs, ENNReal.mul_rpow_of_nonneg, ← ENNReal.rpow_mul,
+        mul_one_div_cancel hp_pos.ne', ENNReal.rpow_one]
+      positivity
 
 theorem snorm_indicator_const {c : G} (hs : MeasurableSet s) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
-    snorm (s.indicator fun _ => c) p μ = ‖c‖₊ * μ s ^ (1 / p.toReal) := by
-  have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp hp_top
-  rw [snorm_eq_lintegral_rpow_nnnorm hp hp_top]
-  simp_rw [nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
-  have h_indicator_pow :
-    (fun a : α => s.indicator (fun _ : α => (‖c‖₊ : ℝ≥0∞)) a ^ p.toReal) =
-      s.indicator fun _ : α => (‖c‖₊ : ℝ≥0∞) ^ p.toReal := by
-    rw [Set.comp_indicator_const (‖c‖₊ : ℝ≥0∞) (fun x => x ^ p.toReal) _]
-    simp [hp_pos]
-  rw [h_indicator_pow, lintegral_indicator _ hs, set_lintegral_const, ENNReal.mul_rpow_of_nonneg]
-  · rw [← ENNReal.rpow_mul, mul_one_div_cancel hp_pos.ne.symm, ENNReal.rpow_one]
-  · simp [hp_pos.le]
+    snorm (s.indicator fun _ => c) p μ = ‖c‖₊ * μ s ^ (1 / p.toReal) :=
+  snorm_indicator_const₀ hs.nullMeasurableSet hp hp_top
 #align measure_theory.snorm_indicator_const MeasureTheory.snorm_indicator_const
 
 theorem snorm_indicator_const' {c : G} (hs : MeasurableSet s) (hμs : μ s ≠ 0) (hp : p ≠ 0) :
@@ -676,17 +678,10 @@ theorem memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
 theorem memℒp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμsc : c = 0 ∨ μ s ≠ ∞) :
     Memℒp (s.indicator fun _ => c) p μ := by
   rw [memℒp_indicator_iff_restrict hs]
-  by_cases hp_zero : p = 0
-  · rw [hp_zero]
-    exact memℒp_zero_iff_aestronglyMeasurable.mpr aestronglyMeasurable_const
-  by_cases hp_top : p = ∞
-  · rw [hp_top]
-    exact
-      memℒp_top_of_bound aestronglyMeasurable_const ‖c‖ (eventually_of_forall fun _ => le_rfl)
-  rw [memℒp_const_iff hp_zero hp_top, Measure.restrict_apply_univ]
-  cases hμsc with
-  | inl hμsc => exact Or.inl hμsc
-  | inr hμsc => exact Or.inr hμsc.lt_top
+  rcases hμsc with rfl | hμ
+  · exact zero_memℒp
+  · have := Fact.mk hμ.lt_top
+    apply memℒp_const
 #align measure_theory.mem_ℒp_indicator_const MeasureTheory.memℒp_indicator_const
 
 /-- The `ℒ^p` norm of the indicator of a set is uniformly small if the set itself has small measure,
