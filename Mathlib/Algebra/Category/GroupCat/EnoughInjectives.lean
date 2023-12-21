@@ -25,11 +25,11 @@ universe u
 
 namespace AddCommGroupCat
 
-open CharacterModule.unitRationalCircle
+open CharacterModule
 
 instance enoughInjectives : EnoughInjectives (AddCommGroupCat.{u}) where
   presentation A_ := Nonempty.intro
-    { J := of <| (CharacterModule.unitRationalCircle A_) → ULift.{u} (AddCircle (1 : ℚ))
+    { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))
       injective :=
         have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
         injective_of_divisible _
@@ -38,14 +38,16 @@ instance enoughInjectives : EnoughInjectives (AddCommGroupCat.{u}) where
       (injective_iff_map_eq_zero _).mpr fun a h0 ↦ by
         refine eq_zero_of_ofSpanSingleton_apply_self a ?_ -- <|
         let f : of (ℤ ∙ a) ⟶ of (ULift.{u} <| AddCircle (1 : ℚ)) :=
-          (ULift.moduleEquiv.symm.toLinearMap ∘ₗ ofSpanSingleton a).toAddMonoidHom
+          ((ULift.moduleEquiv (R := ℤ)).symm.toLinearMap.toAddMonoidHom.comp <|
+            ofSpanSingleton a)
         suffices H : f ⟨a, Submodule.mem_span_singleton_self a⟩ = 0
         · exact ULift.ext_iff _ _ |>.mp H
         let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
         have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
         erw [← FunLike.congr_fun (Injective.comp_factorThru f g),
           show Injective.factorThru f g a = 0 from congr_fun h0
-            (ULift.moduleEquiv.toLinearMap ∘ₗ (Injective.factorThru f g).toIntLinearMap)] }
+            ((ULift.moduleEquiv (R := ℤ)).toLinearMap.toAddMonoidHom.comp
+              (Injective.factorThru f g))] }
 
 end AddCommGroupCat
 
