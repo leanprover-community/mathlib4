@@ -93,12 +93,6 @@ protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
 
 /-! ### `mod`, `dvd` -/
 
-
-@[simp]
-protected theorem dvd_one {n : ℕ} : n ∣ 1 ↔ n = 1 :=
-  ⟨eq_one_of_dvd_one, fun e => e.symm ▸ dvd_rfl⟩
-#align nat.dvd_one Nat.dvd_one
-
 set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by

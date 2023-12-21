@@ -247,12 +247,13 @@ theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
 #align list.singleton_eq List.singleton_eq
 
-theorem insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) : Insert.insert x l = x :: l :=
-  if_neg h
+theorem insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) :
+    Insert.insert x l = x :: l :=
+  insert_of_not_mem h
 #align list.insert_neg List.insert_neg
 
 theorem insert_pos [DecidableEq α] {x : α} {l : List α} (h : x ∈ l) : Insert.insert x l = l :=
-  if_pos h
+  insert_of_mem h
 #align list.insert_pos List.insert_pos
 
 theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List α) = [x, y] := by
@@ -860,7 +861,7 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
-    simp at h
+    simp? at h says simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
     simp [h]
 #align list.cons_head'_tail List.cons_head?_tail
 
@@ -1076,10 +1077,6 @@ section IndexOf
 
 variable [DecidableEq α]
 
--- Porting note: simp can prove this
--- @[simp]
-theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
-  rfl
 #align list.index_of_nil List.indexOf_nil
 
 /-
@@ -1110,18 +1107,16 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
--- rfl
-theorem indexOf_cons (a b : α) (l : List α) :
-    indexOf a (b :: l) = if b = a then 0 else succ (indexOf a l) := by
-  simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons, indexOf_cons, eq_comm]; split_ifs with h
-  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h
-  · simp only [h, false_or_iff]
+  simp only [length, mem_cons, indexOf_cons, eq_comm]
+  rw [cond_eq_if]
+  split_ifs with h <;> simp at h
+  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+  · simp only [Ne.symm h, false_or_iff]
     rw [← ih]
     exact succ_inj'
 #align list.index_of_eq_length List.indexOf_eq_length
@@ -1133,7 +1128,7 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
-  simp only [length, indexOf_cons]
+  simp only [length, indexOf_cons, cond_eq_if, beq_iff_eq]
   by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
@@ -1312,7 +1307,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   · by_cases h₁ : l = []
     · subst h₁
       rw [get_singleton]
-      simp [lt_succ_iff] at h
+      simp only [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at h
       subst h
       simp
     have h₂ := h
@@ -1339,7 +1334,7 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
   | b :: l, h => by
     by_cases h' : b = a <;>
-      simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l]
+    simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l, cond_eq_if, beq_iff_eq]
 
 @[simp, deprecated indexOf_get]
 theorem indexOf_nthLe [DecidableEq α] {a : α} : ∀ {l : List α} (h), nthLe l (indexOf a l) h = a :=
@@ -1725,14 +1720,11 @@ theorem map_concat (f : α → β) (a : α) (l : List α) :
   induction l <;> [rfl; simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
 
-@[simp]
-theorem map_id'' (l : List α) : map (fun x => x) l = l :=
-  map_id _
-#align list.map_id'' List.map_id''
+#align list.map_id'' List.map_id'
 
-theorem map_id' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
+theorem map_id'' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l := by
   simp [show f = id from funext h]
-#align list.map_id' List.map_id'
+#align list.map_id' List.map_id''
 
 theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) : l = nil :=
   eq_nil_of_length_eq_zero <| by rw [← length_map l f, h]; rfl
@@ -2114,31 +2106,10 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
 
 #align list.drop_nil List.drop_nil
-
-@[simp]
-theorem drop_one : ∀ l : List α, drop 1 l = tail l
-  | [] | _ :: _ => rfl
 #align list.drop_one List.drop_one
-
-theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
-  | _, 0, _ => rfl
-  | _, _ + 1, [] => drop_nil.symm
-  | m, n + 1, _ :: _ => drop_add m n _
 #align list.drop_add List.drop_add
-
-@[simp]
-theorem drop_left : ∀ l₁ l₂ : List α, drop (length l₁) (l₁ ++ l₂) = l₂
-  | [], _ => rfl
-  | _ :: l₁, l₂ => drop_left l₁ l₂
 #align list.drop_left List.drop_left
-
-theorem drop_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : drop n (l₁ ++ l₂) = l₂ := by
-  rw [← h]; apply drop_left
 #align list.drop_left' List.drop_left'
-
-theorem drop_eq_get_cons : ∀ {n} {l : List α} (h), drop n l = get l ⟨n, h⟩ :: drop (n + 1) l
-  | 0, _ :: _, _ => rfl
-  | n + 1, _ :: _, _ => @drop_eq_get_cons n _ _
 #align list.drop_eq_nth_le_cons List.drop_eq_get_consₓ -- nth_le vs get
 
 #align list.drop_length List.drop_length
@@ -2942,7 +2913,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     specialize ih _ _
     · intro l hl
       apply hx l
-      simp at hl ⊢
+      simp only [mem_cons] at hl ⊢
       exact Or.inr hl
     · exact List.noConfusion
     have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
@@ -4073,7 +4044,7 @@ theorem map₂Left_eq_zipWith :
   | a :: as, [], h => by
     simp at h
   | a :: as, b :: bs, h => by
-    simp [Nat.succ_le_succ_iff] at h
+    simp only [length_cons, succ_le_succ_iff] at h
     simp [h, map₂Left_eq_zipWith]
 #align list.map₂_left_eq_map₂ List.map₂Left_eq_zipWith
 
