@@ -51,8 +51,8 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
 #align list.length_zip List.length_zip
 
 theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
-    ∀ {l₁ : List α} {l₂ : List β} (_h : length l₁ = length l₂),
-      Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂
+    ∀ {l₁ : List α} {l₂ : List β}, length l₁ = length l₂ →
+      (Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂)
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
     simp only [length_cons, succ_inj'] at h
