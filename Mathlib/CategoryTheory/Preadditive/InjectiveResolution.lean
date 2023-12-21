@@ -122,9 +122,10 @@ def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z where
   cocomplex := (CochainComplex.single₀ C).obj Z
   ι := 𝟙 ((CochainComplex.single₀ C).obj Z)
   injective n := by
-    cases n <;>
-      · dsimp
-        infer_instance
+    cases n
+    · simpa
+    · exact ((HomologicalComplex.isZero_single_obj_X (ComplexShape.up ℕ) 0 Z) _
+        (Nat.succ_ne_zero _)).injective
   exact₀ := by
     dsimp
     exact exact_epi_zero _

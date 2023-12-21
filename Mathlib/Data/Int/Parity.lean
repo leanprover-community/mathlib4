@@ -27,6 +27,9 @@ theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
 #align int.mod_two_ne_one Int.emod_two_ne_one
 
+@[simp]
+theorem one_emod_two : (1 : Int) % 2 = 1 := rfl
+
 -- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
 @[local simp]
 theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
@@ -102,6 +105,7 @@ theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
   simp [even_iff, h₁, h₂, Int.add_emod]
+  rfl
 #align int.even_add Int.even_add
 
 theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
@@ -279,8 +283,8 @@ theorem two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp [*, (by decide : ¬2 = 0), parity_simps]
+  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
 
-example : ¬Even (25394535 : ℤ) := by simp
+example : ¬Even (25394535 : ℤ) := by decide
 
 end Int

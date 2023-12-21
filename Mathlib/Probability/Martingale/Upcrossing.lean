@@ -321,7 +321,7 @@ theorem upperCrossingTime_bound_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω) 
       refine' strictMonoOn_Iic_of_lt_succ fun m hm => upperCrossingTime_lt_succ hab _
       rw [Nat.lt_pred_iff] at hm
       convert Nat.find_min _ hm
-    convert StrictMonoOn.Iic_id_le hmono N (Nat.le_pred_of_lt hN')
+    convert StrictMonoOn.Iic_id_le hmono N (Nat.le_sub_one_of_lt hN')
   · rw [not_lt] at hN'
     exact upperCrossingTime_stabilize hN' (Nat.find_spec (exists_upperCrossingTime_eq f N ω hab))
 #align measure_theory.upper_crossing_time_bound_eq MeasureTheory.upperCrossingTime_bound_eq
@@ -683,7 +683,8 @@ theorem crossing_pos_eq (hab : a < b) :
     rw [LatticeOrderedGroup.pos_nonpos_iff, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
-    simp only [lowerCrossingTime_zero, hitting, Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf']
@@ -699,7 +700,7 @@ theorem crossing_pos_eq (hab : a < b) :
       split_ifs with h₁ h₂ h₂
       · simp_rw [← sub_le_iff_le_add, hf ω]
       · refine' False.elim (h₂ _)
-        simp_all only [Set.mem_Ici]
+        simp_all only [Set.mem_Ici, not_true_eq_false]
       · refine' False.elim (h₁ _)
         simp_all only [Set.mem_Ici]
       · rfl
@@ -709,7 +710,7 @@ theorem crossing_pos_eq (hab : a < b) :
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf' ω]
     · refine' False.elim (h₂ _)
-      simp_all only [Set.mem_Iic]
+      simp_all only [Set.mem_Iic, not_true_eq_false]
     · refine' False.elim (h₁ _)
       simp_all only [Set.mem_Iic]
     · rfl

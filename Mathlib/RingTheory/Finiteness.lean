@@ -147,7 +147,7 @@ theorem fg_bot : (⊥ : Submodule R M).FG :=
 
 theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type*} [CommSemiring R] [Semiring A]
     [Algebra R A] : (⊥ : Subalgebra R A).toSubmodule.FG :=
-  ⟨{1}, by simp [Algebra.toSubmodule_bot]⟩
+  ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
 #align subalgebra.fg_bot_to_submodule Subalgebra.fg_bot_toSubmodule
 
 theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
@@ -416,6 +416,27 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
         span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
+
+open TensorProduct LinearMap in
+/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
+under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
+theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
+    [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
+      ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+        x = rTensor M (J.inclusion hle) y := by
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
+      (span_singleton_le_iff_mem _ _).mpr i.property,
+      ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
+  | add x₁ x₂ ihx₁ ihx₂ =>
+    obtain ⟨J₁, hfg₁, hle₁, y₁, rfl⟩ := ihx₁
+    obtain ⟨J₂, hfg₂, hle₂, y₂, rfl⟩ := ihx₂
+    refine ⟨J₁ ⊔ J₂, hfg₁.sup hfg₂, sup_le hle₁ hle₂,
+      rTensor M (J₁.inclusion (le_sup_left : J₁ ≤ J₁ ⊔ J₂)) y₁ +
+        rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
+    rewrite [map_add, ← rTensor_comp_apply, ← rTensor_comp_apply]
+    rfl
 
 end Submodule
 

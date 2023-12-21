@@ -157,8 +157,8 @@ variable {R S A B}
 
 @[simp]
 theorem _root_.AlgHom.map_algebraMap (f : A →ₐ[S] B) (r : R) :
-    f (algebraMap R A r) = algebraMap R B r :=
-  by rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
+    f (algebraMap R A r) = algebraMap R B r := by
+  rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
 #align alg_hom.map_algebra_map AlgHom.map_algebraMap
 
 variable (R)

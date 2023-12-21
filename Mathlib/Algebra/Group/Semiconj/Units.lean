@@ -29,7 +29,7 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-set_option autoImplicit true
+variable {M G : Type*}
 
 namespace SemiconjBy
 

@@ -278,12 +278,13 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
     calc
       map (uncurry (· * ·)) (𝓝 (x₀, y₀)) = map (uncurry (· * ·)) (𝓝 x₀ ×ˢ 𝓝 y₀) :=
         by rw [nhds_prod_eq]
-      _ = map (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) (𝓝 1 ×ˢ 𝓝 1) :=
+      _ = map (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) (𝓝 1 ×ˢ 𝓝 1) := by
         -- Porting note: `rw` was able to prove this
         -- Now it fails with `failed to rewrite using equation theorems for 'Function.uncurry'`
         -- and `failed to rewrite using equation theorems for 'Function.comp'`.
         -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
-        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
+        simp (config := { unfoldPartialApp := true }) only [uncurry]
+        simp_rw [hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp_def]
       _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) :=
         by rw [key, ← Filter.map_map]
       _ ≤ map ((fun x : M => x₀ * x) ∘ fun x => x * y₀) (𝓝 1) := map_mono hmul
@@ -573,7 +574,16 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
   ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
-@[to_additive (attr := continuity)]
+-- We register `Continuous.pow` as a `continuity` lemma with low penalty (so
+-- `continuity` will try it before other `continuity` lemmas). This is a
+-- workaround for goals of the form `Continuous fun x => x ^ 2`, where
+-- `continuity` applies `Continuous.mul` since the goal is defeq to
+-- `Continuous fun x => x * x`.
+--
+-- To properly fix this, we should make sure that `continuity` applies its
+-- lemmas with reducible transparency, preventing the unfolding of `^`. But this
+-- is quite an invasive change.
+@[to_additive (attr := aesop safe -100 (rule_sets [Continuous]))]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow

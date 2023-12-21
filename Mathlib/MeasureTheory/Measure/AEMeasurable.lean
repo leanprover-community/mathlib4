@@ -44,6 +44,12 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 #align probability_theory.ae_measurable_id'' aemeasurable_id''
 
+lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
+    {f : α → β} (h : NeZero (μ.map f)) :
+    AEMeasurable f μ := by
+  by_contra h'
+  simp [h'] at h
+
 namespace AEMeasurable
 
 lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :=

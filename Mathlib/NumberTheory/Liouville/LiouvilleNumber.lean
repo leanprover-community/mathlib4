@@ -172,7 +172,7 @@ theorem remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m
 /-- The sum of the `k` initial terms of the Liouville number to base `m` is a ratio of natural
 numbers where the denominator is `m ^ k!`. -/
 theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) :
-    ∃ p : ℕ, partialSum m k = p / (m ^ k ! : ℝ) := by
+    ∃ p : ℕ, partialSum m k = p / ((m ^ k ! :) : ℝ) := by
   induction' k with k h
   · exact ⟨1, by rw [partialSum, range_one, sum_singleton, Nat.cast_one, Nat.factorial,
       pow_one, pow_one]⟩
@@ -196,7 +196,7 @@ theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvill
   intro n
   -- the first `n` terms sum to `p / m ^ k!`
   rcases partialSum_eq_rat (zero_lt_two.trans_le hm) n with ⟨p, hp⟩
-  refine' ⟨p, m ^ n !, by rw [Nat.cast_pow]; exact one_lt_pow mZ1 n.factorial_ne_zero, _⟩
+  refine' ⟨p, m ^ n !, one_lt_pow mZ1 n.factorial_ne_zero, _⟩
   push_cast
   rw [Nat.cast_pow] at hp
   -- separate out the sum of the first `n` terms and the rest

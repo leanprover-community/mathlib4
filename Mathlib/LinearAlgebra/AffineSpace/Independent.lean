@@ -688,7 +688,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
   refine' hp₃ ((AffineSubspace.le_def' _ s).1 _ p₃ h)
   simp_rw [affineSpan_le, Set.image_subset_iff, Set.subset_def, Set.mem_preimage]
   intro x
-  fin_cases x <;> simp [hp₁, hp₂]
+  fin_cases x <;> simp (config := {decide := true}) [hp₁, hp₂]
 #align affine_independent_of_ne_of_mem_of_mem_of_not_mem affineIndependent_of_ne_of_mem_of_mem_of_not_mem
 
 /-- If distinct points `p₁` and `p₃` lie in `s` but `p₂` does not, the three points are affinely
@@ -777,7 +777,7 @@ variable [AffineSpace V P]
 independent points. -/
 structure Simplex (n : ℕ) where
   points : Fin (n + 1) → P
-  Independent : AffineIndependent k points
+  independent : AffineIndependent k points
 #align affine.simplex Affine.Simplex
 
 /-- A `Triangle k P` is a collection of three affinely independent points. -/
@@ -828,7 +828,7 @@ theorem ext_iff {n : ℕ} (s1 s2 : Simplex k P n) : s1 = s2 ↔ ∀ i, s1.points
 points. -/
 def face {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ} (h : fs.card = m + 1) :
     Simplex k P m :=
-  ⟨s.points ∘ fs.orderEmbOfFin h, s.Independent.comp_embedding (fs.orderEmbOfFin h).toEmbedding⟩
+  ⟨s.points ∘ fs.orderEmbOfFin h, s.independent.comp_embedding (fs.orderEmbOfFin h).toEmbedding⟩
 #align affine.simplex.face Affine.Simplex.face
 
 /-- The points of a face of a simplex are given by `mono_of_fin`. -/
@@ -865,7 +865,7 @@ theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1
 /-- Remap a simplex along an `Equiv` of index types. -/
 @[simps]
 def reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) : Simplex k P n :=
-  ⟨s.points ∘ e.symm, (affineIndependent_equiv e.symm).2 s.Independent⟩
+  ⟨s.points ∘ e.symm, (affineIndependent_equiv e.symm).2 s.independent⟩
 #align affine.simplex.reindex Affine.Simplex.reindex
 
 /-- Reindexing by `Equiv.refl` yields the original simplex. -/
@@ -933,7 +933,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
   rw [Finset.centroid_eq_affineCombination_fintype,
     Finset.centroid_eq_affineCombination_fintype] at h
   have ha :=
-    (affineIndependent_iff_indicator_eq_of_affineCombination_eq k s.points).1 s.Independent _ _ _ _
+    (affineIndependent_iff_indicator_eq_of_affineCombination_eq k s.points).1 s.independent _ _ _ _
       (fs₁.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₁)
       (fs₂.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₂) h
   simp_rw [Finset.coe_univ, Set.indicator_univ, Function.funext_iff,
@@ -967,8 +967,8 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
   rw [← Set.image_univ, ← Set.image_univ, ← Finset.coe_univ] at h
   exact
     Finset.univ.centroid_eq_of_inj_on_of_image_eq k _
-      (fun _ _ _ _ he => AffineIndependent.injective s₁.Independent he)
-      (fun _ _ _ _ he => AffineIndependent.injective s₂.Independent he) h
+      (fun _ _ _ _ he => AffineIndependent.injective s₁.independent he)
+      (fun _ _ _ _ he => AffineIndependent.injective s₂.independent he) h
 #align affine.simplex.centroid_eq_of_range_eq Affine.Simplex.centroid_eq_of_range_eq
 
 end Simplex

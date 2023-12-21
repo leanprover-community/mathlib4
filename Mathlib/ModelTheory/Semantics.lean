@@ -934,7 +934,7 @@ theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
     BoundedFormula.Realize (φ.iAlls f) v v' ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iExs
@@ -961,7 +961,7 @@ theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
     BoundedFormula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp
+  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :

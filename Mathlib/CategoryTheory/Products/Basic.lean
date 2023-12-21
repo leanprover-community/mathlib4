@@ -5,6 +5,7 @@ Authors: Stephen Morgan, Scott Morrison
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.CategoryTheory.Opposites
 import Mathlib.Data.Prod.Basic
 
 #align_import category_theory.products.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -351,5 +352,26 @@ def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C :=
     unitIso := functorProdFunctorEquivUnitIso A B C,
     counitIso := functorProdFunctorEquivCounitIso A B C, }
 #align category_theory.functor_prod_functor_equiv CategoryTheory.functorProdFunctorEquiv
+
+section Opposite
+
+open Opposite
+
+/-- The equivalence between the opposite of a product and the product of the opposites. -/
+@[simps]
+def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
+  functor :=
+    { obj := λ X => ⟨op X.unop.1, op X.unop.2⟩,
+      map := λ f => ⟨f.unop.1.op, f.unop.2.op⟩ }
+  inverse :=
+    { obj := λ ⟨X,Y⟩ => op ⟨X.unop, Y.unop⟩,
+      map := λ ⟨f,g⟩ => op ⟨f.unop, g.unop⟩ }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+  functor_unitIso_comp := fun ⟨X, Y⟩ => by
+    dsimp
+    ext <;> simpa using Category.id_comp _
+
+end Opposite
 
 end CategoryTheory

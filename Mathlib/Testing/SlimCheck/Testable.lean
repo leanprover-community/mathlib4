@@ -413,16 +413,16 @@ instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y)
 instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
   printProp := s!"{repr x} < {repr y}"
 
-instance And.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∧ y) where
+instance And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
   printProp := s!"{printProp x} ∧ {printProp y}"
 
-instance Or.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∨ y) where
+instance Or.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∨ y) where
   printProp := s!"{printProp x} ∨ {printProp y}"
 
-instance Iff.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ↔ y) where
+instance Iff.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ↔ y) where
   printProp := s!"{printProp x} ↔ {printProp y}"
 
-instance Imp.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x → y) where
+instance Imp.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x → y) where
   printProp := s!"{printProp x} → {printProp y}"
 
 instance Not.printableProp [PrintableProp x] : PrintableProp (¬x) where

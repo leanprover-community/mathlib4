@@ -1135,8 +1135,7 @@ open Function
 
 variable [IsWellOrder α (· < ·)]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) :
-    sInf s = argminOn id (@IsWellFounded.wf α (· < ·) _) s hs :=
+theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id wellFounded_lt s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
 #align Inf_eq_argmin_on sInf_eq_argmin_on
 
@@ -1364,7 +1363,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
             contrapose! h
             rintro (⟨⟩ | a) ha
             · exact mem_singleton ⊤
-            · exact (h ⟨a, ha⟩).elim
+            · exact (not_nonempty_iff_eq_empty.2 h ⟨a, ha⟩).elim
         · intro b hb
           rw [← some_le_some]
           exact ha hb

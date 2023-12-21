@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Analysis.Convex.Normed
 
 #align_import geometry.manifold.vector_bundle.tangent from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -422,7 +423,8 @@ def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp_rw [inTangentCoordinates, inCoordinates_tangent_bundle_core_model_space]
+  simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
+    inCoordinates_tangent_bundle_core_model_space]
 #align in_tangent_coordinates_model_space inTangentCoordinates_model_space
 
 theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}

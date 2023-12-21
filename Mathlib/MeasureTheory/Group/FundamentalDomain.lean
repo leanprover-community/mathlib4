@@ -137,6 +137,16 @@ theorem iUnion_smul_ae_eq (h : IsFundamentalDomain G s μ) : ⋃ g : G, g • s 
 #align measure_theory.is_add_fundamental_domain.Union_vadd_ae_eq MeasureTheory.IsAddFundamentalDomain.iUnion_vadd_ae_eq
 
 @[to_additive]
+theorem measure_ne_zero [MeasurableSpace G] [Countable G] [MeasurableSMul G α]
+    [SMulInvariantMeasure G α μ] (hμ : μ ≠ 0) (h : IsFundamentalDomain G s μ) :
+    μ s ≠ 0 := by
+  have hc := measure_univ_pos.mpr hμ
+  contrapose! hc
+  rw [← measure_congr h.iUnion_smul_ae_eq]
+  refine le_trans (measure_iUnion_le _) ?_
+  simp_rw [measure_smul, hc, tsum_zero, le_refl]
+
+@[to_additive]
 theorem mono (h : IsFundamentalDomain G s μ) {ν : Measure α} (hle : ν ≪ μ) :
     IsFundamentalDomain G s ν :=
   ⟨h.1.mono_ac hle, hle h.2, h.aedisjoint.mono fun _ _ h => hle h⟩

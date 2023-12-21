@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.Analysis.Complex.Basic
 
 #align_import measure_theory.measure.vector_measure from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
@@ -54,7 +54,7 @@ variable {α β : Type*} {m : MeasurableSpace α}
 /-- A vector measure on a measurable space `α` is a σ-additive `M`-valued function (for some `M`
 an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
-  [TopologicalSpace M] where
+    [TopologicalSpace M] where
   measureOf' : Set α → M
   empty' : measureOf' ∅ = 0
   not_measurable' ⦃i : Set α⦄ : ¬MeasurableSet i → measureOf' i = 0
@@ -412,24 +412,9 @@ def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
-    simp only
-    rw [μ.m_iUnion hf₁ hf₂, ENNReal.tsum_toReal_eq, if_pos (MeasurableSet.iUnion hf₁),
-      Summable.hasSum_iff]
-    · congr
-      ext n
-      rw [if_pos (hf₁ n)]
-    · refine' @summable_of_nonneg_of_le _ (ENNReal.toReal ∘ μ ∘ f) _ _ _ _
-      · intro
-        split_ifs
-        exacts [ENNReal.toReal_nonneg, le_rfl]
-      · intro
-        split_ifs
-        exacts [le_rfl, ENNReal.toReal_nonneg]
-      exact summable_measure_toReal hf₁ hf₂
-    · intro a ha
-      apply ne_of_lt hμ.measure_univ_lt_top
-      rw [eq_top_iff, ← ha]
-      exact measure_mono (Set.subset_univ _)
+    simp only [*, MeasurableSet.iUnion hf₁, if_true, measure_iUnion hf₂ hf₁]
+    rw [ENNReal.tsum_toReal_eq]
+    exacts [(summable_measure_toReal hf₁ hf₂).hasSum, fun _ ↦ measure_ne_top _ _]
 #align measure_theory.measure.to_signed_measure MeasureTheory.Measure.toSignedMeasure
 
 theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] {i : Set α}
@@ -716,8 +701,7 @@ theorem restrict_univ : v.restrict Set.univ = v :=
 theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := by
   by_cases hi : MeasurableSet i
   · ext j hj
-    rw [restrict_apply 0 hi hj]
-    rfl
+    rw [restrict_apply 0 hi hj, zero_apply, zero_apply]
   · exact dif_neg hi
 #align measure_theory.vector_measure.restrict_zero MeasureTheory.VectorMeasure.restrict_zero
 
@@ -1166,7 +1150,6 @@ def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ (∀ (t) (_ : t ⊆ s), v t = 0) ∧ ∀ (t) (_ : t ⊆ sᶜ), w t = 0
 #align measure_theory.vector_measure.mutually_singular MeasureTheory.VectorMeasure.MutuallySingular
 
--- mathport name: vector_measure.mutually_singular
 @[inherit_doc VectorMeasure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ᵥ " => MeasureTheory.VectorMeasure.MutuallySingular
 

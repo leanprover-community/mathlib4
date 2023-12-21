@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
+import Std.Tactic.LeftRight
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.LeftRight
 
 /-!
 # mk_iff_of_inductive_prop
@@ -35,12 +35,14 @@ Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
   | 0, 0             => pure goal
-  | 0, (_ + 1)       => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `left 0 2 goal
-                                | throwError "expected only one new goal"
-                           pure new_goal
-  | (m + 1), (n + 1) => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `right 1 2 goal
-                                | throwError "expected only one new goal"
-                           select m n new_goal
+  | 0, (_ + 1)       => do
+    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `left 0 (some 2) goal
+      | throwError "expected only one new goal"
+    pure new_goal
+  | (m + 1), (n + 1) => do
+    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `right 1 (some 2) goal
+      | throwError "expected only one new goal"
+    select m n new_goal
   | _, _             => failure
 
 /-- `compactRelation bs as_ps`: Produce a relation of the form:
@@ -131,7 +133,7 @@ structure Shape : Type where
 while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-    MetaM (Shape × Expr)  :=
+    MetaM (Shape × Expr) :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
      pure $ ty.replaceFVars fvars params.toArray

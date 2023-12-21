@@ -22,8 +22,6 @@ If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖
 Prove derivative properties of strongly convex functions.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
 open Real
 
 variable {E : Type*} [NormedAddCommGroup E]

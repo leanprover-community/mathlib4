@@ -52,9 +52,9 @@ theorem le_einfsep_iff {d} :
   simp_rw [einfsep, le_iInf_iff]
 #align set.le_einfsep_iff Set.le_einfsep_iff
 
-theorem einfsep_zero : s.einfsep = 0 ↔
-    ∀ (C) (_hC : 0 < C), ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y < C :=
-  by simp_rw [einfsep, ← _root_.bot_eq_zero, iInf_eq_bot, iInf_lt_iff]
+theorem einfsep_zero : s.einfsep = 0 ↔ ∀ (C) (_hC : 0 < C),
+    ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y < C := by
+  simp_rw [einfsep, ← _root_.bot_eq_zero, iInf_eq_bot, iInf_lt_iff]
 #align set.einfsep_zero Set.einfsep_zero
 
 theorem einfsep_pos :
@@ -98,9 +98,9 @@ theorem Subsingleton.einfsep (hs : s.Subsingleton) : s.einfsep = ∞ := by
   exact fun _ hx _ hy hxy => (hxy <| hs hx hy).elim
 #align set.subsingleton.einfsep Set.Subsingleton.einfsep
 
-theorem le_einfsep_image_iff {d} {f : β → α} {s : Set β} :
-    d ≤ einfsep (f '' s) ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), f x ≠ f y → d ≤ edist (f x) (f y) :=
-  by simp_rw [le_einfsep_iff, ball_image_iff]
+theorem le_einfsep_image_iff {d} {f : β → α} {s : Set β} : d ≤ einfsep (f '' s)
+    ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), f x ≠ f y → d ≤ edist (f x) (f y) := by
+  simp_rw [le_einfsep_iff, ball_image_iff]
 #align set.le_einfsep_image_iff Set.le_einfsep_image_iff
 
 theorem le_edist_of_le_einfsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)

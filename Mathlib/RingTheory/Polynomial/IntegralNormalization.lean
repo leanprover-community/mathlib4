@@ -133,7 +133,8 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
           tsub_add_cancel_of_le one_le_deg]
         exact degree_eq_natDegree hp
       · have : i.1 ≤ p.natDegree - 1 :=
-          Nat.le_pred_of_lt (lt_of_le_of_ne (le_natDegree_of_ne_zero (mem_support_iff.mp i.2)) hi)
+          Nat.le_sub_one_of_lt
+            (lt_of_le_of_ne (le_natDegree_of_ne_zero (mem_support_iff.mp i.2)) hi)
         rw [integralNormalization_coeff_ne_natDegree hi, mul_assoc, ← pow_add,
           tsub_add_cancel_of_le this]
     _ = f p.leadingCoeff ^ (natDegree p - 1) * eval₂ f z p := by

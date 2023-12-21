@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: ${{ secrets.NIGHTLY_TESTING }}
@@ -25,6 +25,9 @@ jobs:
       - name: Merge master to nightly favoring nightly changes
         run: |
           git checkout nightly-testing
-          git merge master --strategy-option ours --no-commit --allow-unrelated-histories
+          # If the merge goes badly, we proceed anyway via '|| true'
+          # CI will report failures on the 'nightly-testing' branch direct to Zulip.
+          git merge master --strategy-option ours --no-commit --allow-unrelated-histories || true
+          git add .
           git commit -m "Merge master into nightly-testing"
           git push origin nightly-testing

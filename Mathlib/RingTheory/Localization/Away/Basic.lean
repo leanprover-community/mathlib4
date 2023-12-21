@@ -157,13 +157,10 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommRing R] [CommRi
     surj' := fun z => by
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
-    eq_iff_exists' := fun {x y} => by
+    exists_of_eq := fun {x y} => by
       erw [H.1.eq_iff]
-      constructor
-      · rintro rfl
-        exact ⟨1, rfl⟩
-      · rintro ⟨⟨_, n, rfl⟩, e⟩
-        exact (hr.pow _).mul_right_inj.mp e }
+      rintro rfl
+      exact ⟨1, rfl⟩ }
 #align is_localization.away_of_is_unit_of_bijective IsLocalization.away_of_isUnit_of_bijective
 
 end AtUnits

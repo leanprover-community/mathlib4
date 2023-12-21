@@ -51,8 +51,8 @@ open Presheaf
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
-pullback_isSheaf_of_coverPreserving (compatiblePreserving_opens_map f)
-  (coverPreserving_opens_map f) ⟨F, h⟩
+  pullback_isSheaf_of_coverPreserving (compatiblePreserving_opens_map f)
+    (coverPreserving_opens_map f) ⟨F, h⟩
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.pushforward_sheaf_of_sheaf TopCat.Sheaf.pushforward_sheaf_of_sheaf
 
@@ -61,7 +61,7 @@ variable (C)
 /-- The pushforward functor.
 -/
 def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C :=
-Sites.pullback _ (compatiblePreserving_opens_map f) (coverPreserving_opens_map f)
+  Sites.pullback _ (compatiblePreserving_opens_map f) (coverPreserving_opens_map f)
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.pushforward TopCat.Sheaf.pushforward
 
@@ -77,10 +77,10 @@ def pushforwardForgetIso (f : X ⟶ Y) :
 variable {C}
 
 @[simp] lemma pushforward_obj_val (f : X ⟶ Y) (F : X.Sheaf C) :
-  ((pushforward C f).obj F).1 = f _* F.1 := rfl
+    ((pushforward C f).obj F).1 = f _* F.1 := rfl
 
 @[simp] lemma pushforward_map (f : X ⟶ Y) {F F' : X.Sheaf C} (α : F ⟶ F') :
-  ((pushforward C f).map α).1 = (Presheaf.pushforward C f).map α.1 := rfl
+    ((pushforward C f).map α).1 = (Presheaf.pushforward C f).map α.1 := rfl
 
 variable (A : Type*) [Category.{w} A] [ConcreteCategory.{w} A] [HasColimits A] [HasLimits A]
 variable [PreservesLimits (CategoryTheory.forget A)]

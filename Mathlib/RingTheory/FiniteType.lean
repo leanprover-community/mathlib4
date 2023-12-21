@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Noetherian
+import Mathlib.Data.Polynomial.Module
 
 #align_import ring_theory.finite_type from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -709,70 +710,33 @@ end MonoidAlgebra
 
 section Vasconcelos
 
-variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
-
-noncomputable section
-
-/-- The structure of a module `M` over a ring `R` as a module over `R[X]` when given a
-choice of how `X` acts by choosing a linear map `f : M →ₗ[R] M` -/
-def modulePolynomialOfEndo : Module R[X] M :=
-  Module.compHom M (Polynomial.aeval f).toRingHom
-#align module_polynomial_of_endo modulePolynomialOfEndo
-
-theorem modulePolynomialOfEndo_smul_def (n : R[X]) (a : M) :
-    @HSMul.hSMul _ _ _ (by letI := modulePolynomialOfEndo f; infer_instance) n a =
-    Polynomial.aeval f n a :=
-  rfl
-#align module_polynomial_of_endo_smul_def modulePolynomialOfEndo_smul_def
-
-attribute [local simp] modulePolynomialOfEndo_smul_def
-
-theorem modulePolynomialOfEndo.isScalarTower :
-    @IsScalarTower R R[X] M _
-      (by
-        letI := modulePolynomialOfEndo f
-        infer_instance)
-      _ := by
-  let _ := modulePolynomialOfEndo f
-  constructor
-  intro x y z
-  simp
-#align module_polynomial_of_endo.is_scalar_tower modulePolynomialOfEndo.isScalarTower
-
-open Polynomial Module
-
 /-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
 surjective endomorphism of `M` is also injective. Based on,
 https://math.stackexchange.com/a/239419/31917,
 https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/.
 This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
 commutative case, but does not use a Noetherian hypothesis. -/
-theorem Module.Finite.injective_of_surjective_endomorphism [hfg : Finite R M]
+theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
+    [AddCommGroup M] [Module R M] [Finite R M] (f : M →ₗ[R] M)
     (f_surj : Function.Surjective f) : Function.Injective f := by
-  let _ := modulePolynomialOfEndo f
-  haveI : IsScalarTower R R[X] M := modulePolynomialOfEndo.isScalarTower f
-  have hfgpoly : Finite R[X] M := Finite.of_restrictScalars_finite R _ _
-  have X_mul : ∀ o, (X : R[X]) • o = f o := by
-    intro
-    rw [modulePolynomialOfEndo_smul_def, aeval_X]
-  have : (⊤ : Submodule R[X] M) ≤ Ideal.span {(X : R[X])} • ⊤ := by
-    intro a ha
-    obtain ⟨y, rfl⟩ := f_surj a
-    rw [← X_mul y]
+  have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤
+  · intro a _
+    obtain ⟨y, rfl⟩ := f_surj.comp (AEval'.of f).symm.surjective a
+    rw [Function.comp_apply, ←AEval'.of_symm_X_smul]
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
-    Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] M)
-      (finite_def.mp hfgpoly) this
+    Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
+      (finite_def.mp inferInstance) this
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro m hm
+  rw [← map_eq_zero_iff (AEval'.of f) (AEval'.of f).injective]
+  set m' := Module.AEval'.of f m
   rw [Ideal.mem_span_singleton'] at hFa
   obtain ⟨G, hG⟩ := hFa
-  suffices (F - 1) • m = 0 by
-    have Fmzero := hFb m (by simp)
+  suffices (F - 1) • m' = 0 by
+    have Fmzero := hFb m' (by simp)
     rwa [← sub_add_cancel F 1, add_smul, one_smul, this, zero_add] at Fmzero
-  rw [← hG, mul_smul, X_mul m, hm, smul_zero]
+  rw [← hG, mul_smul, AEval'.X_smul_of, hm, map_zero, smul_zero]
 #align module.finite.injective_of_surjective_endomorphism Module.Finite.injective_of_surjective_endomorphism
-
-end
 
 end Vasconcelos

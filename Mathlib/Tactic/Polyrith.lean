@@ -33,6 +33,11 @@ It then calls a Python file that uses the SageMath API to compute the coefficien
 coefficients are then sent back to Lean, which parses them into pexprs. The information is then
 given to the `linear_combination` tactic, which completes the process by checking the certificate.
 
+In fact, `polyrith` uses Sage to test for membership in the *radical* of the ideal.
+This means it searches for a linear combination of hypotheses that add up to a *power* of the goal.
+When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to report the
+certificate.
+
 `polyrith` calls an external python script `scripts/polyrith_sage.py`. Because this is not a Lean
 file, changes to this script may not be noticed during Lean compilation if you have already
 generated olean files. If you are modifying this python script, you likely know what you're doing;
@@ -250,14 +255,24 @@ instance : FromJson Poly where
         mon := mon.mul' (.pow' (← fromJson? (← j.getArrVal? 0)) (← fromJson? (← j.getArrVal? 1)))
       pure mon
 
+/-- A schema for the data reported by the Sage calculation -/
+structure SageCoeffAndPower where
+  /-- The function call produces an array of polynomials
+  parallel to the input list of hypotheses. -/
+  coeffs : Array Poly
+  /-- Sage produces an exponent (default 1) in the case where the hypothesess
+  sum to a power of the goal. -/
+  power  : ℕ
+  deriving FromJson, Repr
+
 /-- The result of a sage call in the success case. -/
 structure SageSuccess where
   /-- The script returns a string containing python script to be sent to the remote server,
   when the tracing option is set. -/
   trace : Option String := none
   /-- The main result of the function call is an array of polynomials
-  parallel to the input list of hypotheses. -/
-  data : Option (Array Poly) := none
+  parallel to the input list of hypotheses and an exponent for the goal. -/
+  data : Option SageCoeffAndPower := none
   deriving FromJson, Repr
 
 /-- The result of a sage call in the failure case. -/
@@ -338,7 +353,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     match ← sageOutput (createSageArgs traceOnly α vars hyps' tgt) with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
-      if let some polys := data then
+      if let some {coeffs := polys, power := pow} := data then
         let vars ← liftM <| (← get).atoms.mapM delab
         let p ← Poly.sumM (polys.zip hyps') fun (p, src, _) => do
           let h := .hyp (← delab (match src with | .input i => hyps[i]! | .fvar h => .fvar h))
@@ -348,7 +363,8 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
         let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
-          else `(tactic| linear_combination $stx:term)
+          else if pow = 1 then `(tactic| linear_combination $stx:term)
+          else `(tactic| linear_combination (exp := $(quote pow)) $stx:term)
         try
           guard (← Elab.runTactic g tac).1.isEmpty
         catch _ => throwError

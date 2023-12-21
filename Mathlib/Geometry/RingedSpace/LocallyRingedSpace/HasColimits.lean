@@ -250,7 +250,7 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
     NatTrans.naturality, comp_apply, TopCat.Presheaf.pushforwardObj_map, ←
     isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
   -- Porting note : change `rw` to `erw`
-  erw [← comp_apply, ← comp_apply, Category.assoc, ← Y.presheaf.map_comp]
+  erw [← comp_apply, ← comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.val g.val).c.app (op U)) s)
 #align algebraic_geometry.LocallyRingedSpace.has_coequalizer.coequalizer_π_stalk_is_local_ring_hom AlgebraicGeometry.LocallyRingedSpace.HasCoequalizer.coequalizer_π_stalk_isLocalRingHom

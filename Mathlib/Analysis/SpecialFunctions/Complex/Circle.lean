@@ -47,7 +47,7 @@ namespace circle
 
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a local equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   toFun := arg ∘ (↑)
   invFun := expMapCircle
@@ -60,7 +60,7 @@ noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
 #align circle.arg_local_equiv circle.argLocalEquiv
 
 /-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := expMapCircle ∘ (↑)

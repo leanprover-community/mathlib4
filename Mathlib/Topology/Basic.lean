@@ -848,7 +848,7 @@ scoped[Topology] notation "𝓝" => nhds
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x {x}ᶜ
+scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
 scoped[Topology] notation "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
@@ -1082,6 +1082,10 @@ theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in 
     Tendsto f l (𝓝 a) :=
   tendsto_const_nhds.congr' (.symm h)
 
+theorem Filter.EventuallyEq.tendsto {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
+    Tendsto f l (𝓝 a) :=
+  tendsto_nhds_of_eventually_eq hf
+
 /-!
 ### Cluster points
 
@@ -1191,8 +1195,9 @@ theorem acc_iff_cluster (x : α) (F : Filter α) : AccPt x F ↔ ClusterPt x (�
 #align acc_iff_cluster acc_iff_cluster
 
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`.-/
-theorem acc_principal_iff_cluster (x : α) (C : Set α) : AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) :=
-  by rw [acc_iff_cluster, inf_principal, inter_comm]; rfl
+theorem acc_principal_iff_cluster (x : α) (C : Set α) :
+    AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
+  rw [acc_iff_cluster, inf_principal, inter_comm]; rfl
 #align acc_principal_iff_cluster acc_principal_iff_cluster
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
@@ -1405,8 +1410,9 @@ theorem isClosed_iff_clusterPt {s : Set α} : IsClosed s ↔ ∀ a, ClusterPt a 
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
-theorem isClosed_iff_nhds {s : Set α} : IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s :=
-  by simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
+theorem isClosed_iff_nhds {s : Set α} :
+    IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by
+  simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
 #align is_closed_iff_nhds isClosed_iff_nhds
 
 theorem IsClosed.interior_union_left {s t : Set α} (_ : IsClosed s) :
@@ -1609,10 +1615,12 @@ theorem IsOpen.preimage {f : α → β} (hf : Continuous f) {s : Set β} (h : Is
   hf.isOpen_preimage s h
 #align is_open.preimage IsOpen.preimage
 
-theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g := by
-  convert h
-  ext
-  rw [h']
+theorem continuous_congr {f g : α → β} (h : ∀ x, f x = g x) :
+    Continuous f ↔ Continuous g :=
+  .of_eq <| congrArg _ <| funext h
+
+theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g :=
+  continuous_congr h' |>.mp h
 #align continuous.congr Continuous.congr
 
 /-- A function between topological spaces is continuous at a point `x₀`

@@ -67,8 +67,8 @@ theorem incMatrix_apply [Zero R] [One R] {a : α} {e : Sym2 α} :
 /-- Entries of the incidence matrix can be computed given additional decidable instances. -/
 theorem incMatrix_apply' [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] {a : α}
     {e : Sym2 α} : G.incMatrix R a e = if e ∈ G.incidenceSet a then 1 else 0 := by
-  unfold incMatrix Set.indicator -- Porting note: was `convert rfl`
-  simp only [Pi.one_apply]
+  unfold incMatrix Set.indicator
+  convert rfl
 #align simple_graph.inc_matrix_apply' SimpleGraph.incMatrix_apply'
 
 section MulZeroOneClass

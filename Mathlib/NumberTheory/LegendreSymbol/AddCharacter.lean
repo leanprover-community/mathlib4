@@ -453,7 +453,7 @@ theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]
-    exact_mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
+    exact mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
 #align add_char.sum_mul_shift AddChar.sum_mulShift
 
 end Additive

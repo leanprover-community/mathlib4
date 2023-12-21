@@ -165,7 +165,6 @@ theorem eq_of_le_of_lt_succ {n m : ℕ} (h₁ : n ≤ m) (h₂ : m < n + 1) : m 
 -- Moved to Std
 #align nat.one_add Nat.one_add
 
-@[simp]
 theorem succ_pos' {n : ℕ} : 0 < succ n :=
   succ_pos n
 #align nat.succ_pos' Nat.succ_pos'
@@ -192,13 +191,7 @@ theorem one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ :=
 
 -- Porting note: Nat.succ_le_succ_iff is in Std
 
-theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
-  by_cases h1 : m ≤ n
-  rw [max_eq_right h1, max_eq_right (succ_le_succ h1)]
-  · rw [not_le] at h1
-    have h2 := le_of_lt h1
-    rw [max_eq_left h2, max_eq_left (succ_le_succ h2)]
-#align nat.max_succ_succ Nat.max_succ_succ
+#align nat.max_succ_succ Nat.succ_max_succ
 
 theorem not_succ_lt_self {n : ℕ} : ¬succ n < n :=
   not_lt_of_ge (Nat.le_succ _)
@@ -713,6 +706,26 @@ protected theorem div_left_inj {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) : a
   refine ⟨fun h => ?_, congr_arg fun n => n / d⟩
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 #align nat.div_left_inj Nat.div_left_inj
+
+theorem div_mul_div_comm {l : ℕ} (hmn : n ∣ m) (hkl : l ∣ k) :
+    (m / n) * (k / l) = (m * k) / (n * l) := by
+  obtain ⟨x, rfl⟩ := hmn
+  obtain ⟨y, rfl⟩ := hkl
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp
+  rcases l.eq_zero_or_pos with rfl | hl
+  · simp
+  rw [Nat.mul_div_cancel_left _ hn, Nat.mul_div_cancel_left _ hl, mul_assoc n, Nat.mul_left_comm x,
+    ←mul_assoc n, Nat.mul_div_cancel_left _ (Nat.mul_pos hn hl)]
+#align nat.div_mul_div_comm Nat.div_mul_div_comm
+
+protected theorem div_pow {a b c : ℕ} (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
+  rcases c.eq_zero_or_pos with rfl | hc
+  · simp
+  rcases a.eq_zero_or_pos with rfl | ha
+  · simp [Nat.zero_pow hc]
+  refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
+  rw [←Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
 /-! ### `mod`, `dvd` -/
 

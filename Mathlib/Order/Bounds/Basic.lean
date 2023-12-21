@@ -67,7 +67,7 @@ def IsLeast (s : Set α) (a : α) : Prop :=
   a ∈ s ∧ a ∈ lowerBounds s
 #align is_least IsLeast
 
-/-- `a` is a greatest element of a set `s`; for a partial order, it is unique if exists -/
+/-- `a` is a greatest element of a set `s`; for a partial order, it is unique if exists. -/
 def IsGreatest (s : Set α) (a : α) : Prop :=
   a ∈ s ∧ a ∈ upperBounds s
 #align is_greatest IsGreatest

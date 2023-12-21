@@ -19,6 +19,15 @@
     cmd: |
       make lint
 - attributes:
+    description: open Mathlib
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'instructions']
+    rusage_properties: ['maxrss']
+    cmd: |
+      LEAN_PATH=$(lake print-paths --no-build Mathlib | jq -r '.oleanPath | join(":")') lean Mathlib.lean
+- attributes:
     description: size
   run_config:
     cmd: |
@@ -27,7 +36,7 @@
       echo -n '.lean|lines: ' &&
       find Mathlib -name '*.lean' -print0 | wc -l --files0-from=- | tail -1 | cut -d' ' -f 1
       echo -n '.olean|bytes: ' &&
-      find build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1
+      find .lake/build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1
       "
     max_runs: 1
     runner: output

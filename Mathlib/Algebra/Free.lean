@@ -3,12 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Hom.Group.Defs
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.List.Basic
+import Mathlib.Logic.Equiv.Defs
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -250,7 +250,7 @@ theorem traverse_mul (x y : FreeMagma α) :
 
 @[to_additive (attr := simp)]
 theorem traverse_mul' :
-    Function.comp (traverse F) ∘ @Mul.mul (FreeMagma α) _ = fun x y ↦
+    Function.comp (traverse F) ∘ (HMul.hMul : FreeMagma α → FreeMagma α → FreeMagma α) = fun x y ↦
       (· * ·) <$> traverse F x <*> traverse F y := rfl
 #align free_magma.traverse_mul' FreeMagma.traverse_mul'
 
@@ -664,8 +664,9 @@ theorem traverse_mul (x y : FreeSemigroup α) :
 
 @[to_additive (attr := simp)]
 theorem traverse_mul' :
-    Function.comp (traverse F) ∘ @Mul.mul (FreeSemigroup α) _ = fun x y ↦
-      (· * ·) <$> traverse F x <*> traverse F y := funext fun x ↦ funext fun y ↦ traverse_mul F x y
+    Function.comp (traverse F) ∘ (HMul.hMul : FreeSemigroup α → FreeSemigroup α → FreeSemigroup α) =
+      fun x y ↦ (· * ·) <$> traverse F x <*> traverse F y :=
+  funext fun x ↦ funext fun y ↦ traverse_mul F x y
 #align free_semigroup.traverse_mul' FreeSemigroup.traverse_mul'
 
 end
@@ -724,8 +725,7 @@ theorem toFreeSemigroup_comp_of : @toFreeSemigroup α ∘ of = FreeSemigroup.of 
 
 @[to_additive]
 theorem toFreeSemigroup_comp_map (f : α → β) :
-    toFreeSemigroup.comp (map f) = (FreeSemigroup.map f).comp toFreeSemigroup :=
-  by ext1; rfl
+    toFreeSemigroup.comp (map f) = (FreeSemigroup.map f).comp toFreeSemigroup := by ext1; rfl
 #align free_magma.to_free_semigroup_comp_map FreeMagma.toFreeSemigroup_comp_map
 
 @[to_additive]

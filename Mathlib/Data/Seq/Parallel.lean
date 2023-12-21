@@ -328,7 +328,7 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     rw [← WSeq.map_comp]
     refine' (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) _)
     funext c
-    dsimp [id, Function.comp]
+    dsimp [id, Function.comp_def]
     rw [← map_comp]
     exact (map_id _).symm
   have pe := congr_arg parallel this

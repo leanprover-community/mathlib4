@@ -712,8 +712,6 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
 
 variable {l}
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- This is an auxiliary lemma used to prove two statements at once. Use one of the next two
 lemmas instead. -/
 theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = false)
@@ -819,8 +817,8 @@ theorem HasIntegral.of_le_Henstock_of_forall_isLittleO (hl : l ≤ Henstock) (B 
       ∃ δ > 0, ∀ J ≤ I, Box.Icc J ⊆ Metric.closedBall x δ → x ∈ Box.Icc J →
         (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I l f vol (g I) :=
-  have A : l.bHenstock := hl.2.1.resolve_left (by decide)
-  HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl.1.resolve_right (by decide)) B hB0 _ s hs
+  have A : l.bHenstock := Bool.eq_true_of_true_le hl.2.1
+  HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (Bool.eq_false_of_le_false hl.1) B hB0 _ s hs
     (fun _ => A) H₁ <| by simpa only [A, true_imp_iff] using H₂
 set_option linter.uppercaseLean3 false in
 #align box_integral.has_integral_of_le_Henstock_of_forall_is_o BoxIntegral.HasIntegral.of_le_Henstock_of_forall_isLittleO

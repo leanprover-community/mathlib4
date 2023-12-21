@@ -255,8 +255,7 @@ theorem smul_apply (c : S) (m : ι → M) : (c • f) m = c • f m :=
 #align alternating_map.smul_apply AlternatingMap.smul_apply
 
 @[norm_cast]
-theorem coe_smul (c : S) : (c • f : MultilinearMap R (fun _ : ι => M) N) =
-    c • (f : MultilinearMap R (fun _ : ι => M) N) :=
+theorem coe_smul (c : S) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=
   rfl
 #align alternating_map.coe_smul AlternatingMap.coe_smul
 
@@ -450,7 +449,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : AlternatingMap R M M ι :=
 variable (ι)
 
 /-- The constant map is alternating when `ι` is empty. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : N) : AlternatingMap R M N ι :=
   { MultilinearMap.constOfIsEmpty R _ m with
     toFun := Function.const _ m

@@ -20,10 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-
 universe u
-
-set_option autoImplicit true
 
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.

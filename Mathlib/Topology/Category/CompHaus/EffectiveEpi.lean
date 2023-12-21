@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
@@ -18,7 +18,7 @@ In this file, we show that the following are all equivalent:
 - The family `π` is jointly surjective.
 This is the main result of this file, which can be found in `CompHaus.effectiveEpiFamily_tfae`
 
-As a consequence, we also show that `CompHaus` is precoherent.
+As a consequence, we also show that `CompHaus` is precoherent and preregular.
 
 # Projects
 
@@ -192,6 +192,7 @@ theorem effectiveEpiFamily_of_jointly_surjective
 
 open EffectiveEpiFamily
 
+-- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
     {α : Type} [Fintype α] {B : CompHaus.{u}}
@@ -246,5 +247,14 @@ lemma effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   rw [← epi_iff_surjective]
   exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
+instance : Preregular CompHaus where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [CompHaus.effectiveEpi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
 end CompHaus

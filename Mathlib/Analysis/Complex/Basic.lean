@@ -158,7 +158,7 @@ theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
 
 @[simp 1100]
 theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
-  abs_of_nat _
+  abs_natCast _
 #align complex.norm_nat Complex.norm_nat
 
 @[simp 1100]
@@ -233,6 +233,9 @@ def equivRealProdClm : ℂ ≃L[ℝ] ℝ × ℝ :=
   equivRealProdLm.toContinuousLinearEquivOfBounds 1 (Real.sqrt 2) equivRealProd_apply_le' fun p =>
     abs_le_sqrt_two_mul_max (equivRealProd.symm p)
 #align complex.equiv_real_prod_clm Complex.equivRealProdClm
+
+theorem equivRealProdClm_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdClm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 instance : ProperSpace ℂ :=
   (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdClm.toHomeomorph).properSpace

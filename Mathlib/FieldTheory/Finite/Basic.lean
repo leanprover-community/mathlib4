@@ -126,7 +126,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
     -- F has an element u (= ↑↑x) of order p
     let u := ((x : Kˣ) : K)
-    have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
+    have hu : orderOf u = p := by rwa [orderOf_units, Subgroup.orderOf_coe]
     -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
     have h : u = 1 := by
       rw [← sub_left_inj, sub_self 1]
@@ -331,8 +331,7 @@ variable (K' : Type*) [Field K'] {p n : ℕ}
 theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
   have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
     rw [degree_X_pow, degree_X]
-    -- Porting note: the following line was `exact_mod_cast hp`
-    exact WithBot.coe_lt_coe.2 hp
+    exact mod_cast hp
   rw [natDegree_eq_of_degree_eq (degree_sub_eq_left_of_degree_lt h1), natDegree_X_pow]
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_nat_degree_eq FiniteField.X_pow_card_sub_X_natDegree_eq
@@ -435,7 +434,7 @@ theorem Nat.sq_add_sq_zmodEq (p : ℕ) [Fact p.Prime] (x : ℤ) :
   rw [← a.coe_valMinAbs, ← b.coe_valMinAbs] at hx
   push_cast
   rw [sq_abs, sq_abs, ← ZMod.int_cast_eq_int_cast_iff]
-  exact_mod_cast hx
+  exact mod_cast hx
 
 /-- If `p` is a prime natural number and `x` is a natural number, then there exist natural numbers
 `a ≤ p / 2` and `b ≤ p / 2` such that `a ^ 2 + b ^ 2 ≡ x [MOD p]`. This is a version of

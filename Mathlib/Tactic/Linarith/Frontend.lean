@@ -402,9 +402,6 @@ elab_rules : tactic
           (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
           ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
 
--- TODO restore this when `hint` is ported.
--- add_hint_tactic "linarith"
-
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
 -- { name       := "linarith",
@@ -425,9 +422,6 @@ elab_rules : tactic
       Linarith.linarith o.isSome
         (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
         (cfg.updateReducibility bang.isSome)
-
--- TODO restore this when `hint` is ported.
--- add_hint_tactic "nlinarith"
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc

@@ -411,7 +411,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
     Nat.Prime.ne_zero p_deg (natDegree_eq_zero_iff_degree_le_zero.mpr (le_of_eq h))
   let α : p.SplittingField :=
     rootOfSplits (algebraMap F p.SplittingField) (SplittingField.splits p) hp
-  have hα : IsIntegral F α := Algebra.isIntegral_of_finite _ _ α
+  have hα : IsIntegral F α := .of_finite F α
   use FiniteDimensional.finrank F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
     rw [← FiniteDimensional.finrank_mul_finrank F F⟮α⟯ p.SplittingField,

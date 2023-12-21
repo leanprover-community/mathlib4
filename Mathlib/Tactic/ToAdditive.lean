@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
-import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
@@ -462,7 +461,7 @@ def expand (e : Expr) : MetaM Expr := do
       trace[to_additive_detail] "expanded {e} to {e'}"
       return .continue e'
   if e != e₂ then
-    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
+    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -952,7 +951,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     let env ← getEnv
     match getAttributeImpl env attr.name with
     | Except.error errMsg => throwError errMsg
-    | Except.ok attrImpl  =>
+    | Except.ok attrImpl =>
       let runAttr := do
         attrImpl.add src attr.stx attr.kind
         attrImpl.add tgt attr.stx attr.kind

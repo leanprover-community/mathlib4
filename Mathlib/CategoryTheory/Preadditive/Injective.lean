@@ -37,6 +37,9 @@ class Injective (J : C) : Prop where
 
 attribute [inherit_doc Injective] Injective.factors
 
+lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
+  factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
+
 section
 
 /-- An injective presentation of an object `X` consists of a monomorphism `f : X ⟶ J`
@@ -85,8 +88,8 @@ section
 
 open ZeroObject
 
-instance zero_injective [HasZeroObject C] [HasZeroMorphisms C] : Injective (0 : C) where
-  factors g f := ⟨0, by ext⟩
+instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
+  (isZero_zero C).injective
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 
 end

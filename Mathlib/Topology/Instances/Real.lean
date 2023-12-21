@@ -3,16 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.RingTheory.Subring.Basic
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
 
@@ -85,6 +78,9 @@ theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
 theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
   rw [← cobounded_eq_cocompact, cobounded_eq]
 #align real.cocompact_eq Real.cocompact_eq
+
+theorem Real.atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
+theorem Real.atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
