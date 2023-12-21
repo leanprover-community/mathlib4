@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.SpectralObject.Basic
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 namespace CategoryTheory
 
@@ -17,9 +18,8 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂) (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
 noncomputable def Ψ : X.cycles n₀ n₁ hn₁ f₂ f₃ ⟶ X.opcycles n₀ n₁ hn₁ f₁ f₂ :=
-  (X.cokernelSequenceCycles_exact n₀ n₁ hn₁ f₂ f₃ _ rfl).desc
+  X.descCycles n₀ n₁ hn₁ f₂ f₃ _ rfl
     (X.δ n₀ n₁ hn₁ f₁ (f₂ ≫ f₃) ≫ X.pOpcycles n₀ n₁ hn₁ f₁ f₂) (by
-      dsimp
       rw [X.δ_naturality_assoc n₀ n₁ hn₁ f₁ f₂ f₁ (f₂ ≫ f₃) (𝟙 _) (twoδ₂Toδ₁ f₂ f₃ _ rfl) rfl,
         Functor.map_id, id_comp, δ_pOpcycles])
 
@@ -28,7 +28,7 @@ lemma toCycles_Ψ :
     X.toCycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ ≫ X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃ =
       X.δ n₀ n₁ hn₁ f₁ f₂₃ ≫ X.pOpcycles n₀ n₁ hn₁ f₁ f₂ := by
   subst h₂₃
-  apply (X.cokernelSequenceCycles_exact n₀ n₁ hn₁ f₂ f₃ _ rfl).g_desc
+  simp only [Ψ, toCycles_descCycles]
 
 @[reassoc (attr := simp)]
 lemma Ψ_fromOpcycles :
@@ -61,6 +61,47 @@ noncomputable def sequenceΨ : ComposableArrows C 3 :=
   mk₃ (X.cyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂))
     (X.Ψ n₀ n₁ hn₁ f₁ f₂ f₃)
     (X.opcyclesMap n₀ n₁ hn₁ _ _ _ _ (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃))
+
+lemma cyclesMap_Ψ_exact :
+    (ShortComplex.mk _ _ (X.cyclesMap_Ψ n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃)).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A z hz
+  dsimp at z hz
+  refine' ⟨A, 𝟙 _, inferInstance,
+    X.liftCycles n₀ n₁ hn₁ f₁₂ f₃ (z ≫ X.iCycles n₀ n₁ hn₁ f₂ f₃) _, _⟩
+  · dsimp
+    rw [assoc, ← X.Ψ_fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ , reassoc_of% hz, zero_comp]
+  · dsimp
+    rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f₂ f₃), id_comp, assoc,
+      X.cyclesMap_i n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) (𝟙 _) (by aesop_cat),
+     Functor.map_id, comp_id, liftCycles_i]
+
+lemma Ψ_opcyclesMap_exact :
+    (ShortComplex.mk _ _ (X.Ψ_opcyclesMap n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃)).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A z₀ hz₀
+  dsimp at z₀ hz₀
+  obtain ⟨A₁, π₁, _, z₁, hz₁⟩ :=
+    surjective_up_to_refinements_of_epi (X.pOpcycles n₀ n₁ hn₁ f₁ f₂) z₀
+  obtain ⟨A₂, π₂, _, z₂, hz₂⟩ :=
+      (X.cokernelSequenceOpcycles_exact n₀ n₁ hn₁ f₁ f₂₃).exact_up_to_refinements z₁ (by
+    dsimp
+    have H := X.p_opcyclesMap n₀ n₁ hn₁ f₁ f₂ f₁ f₂₃
+      (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) (𝟙 _) (by aesop_cat)
+    rw [Functor.map_id, id_comp] at H
+    rw [← H, ← reassoc_of% hz₁, hz₀, comp_zero])
+  dsimp at z₂ hz₂
+  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _, z₂ ≫ X.toCycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃, _⟩
+  dsimp
+  rw [← cancel_mono (X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂), assoc, assoc,
+    assoc, assoc, toCycles_Ψ_assoc, p_fromOpcycles, ← reassoc_of% hz₂,
+    reassoc_of% hz₁, p_fromOpcycles]
+
+lemma sequenceΨ_exact :
+    (X.sequenceΨ n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).Exact :=
+  exact_of_δ₀
+    (X.cyclesMap_Ψ_exact n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).exact_toComposableArrows
+    (X.Ψ_opcyclesMap_exact n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃).exact_toComposableArrows
 
 end SpectralObject
 

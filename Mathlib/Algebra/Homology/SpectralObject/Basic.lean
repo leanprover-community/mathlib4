@@ -202,6 +202,58 @@ lemma iCycles_δ : X.iCycles n₀ n₁ hn₁ f g ≫ X.δ n₀ n₁ hn₁ f g = 
 lemma δ_pOpcycles : X.δ n₀ n₁ hn₁ f g ≫ X.pOpcycles n₀ n₁ hn₁ f g = 0 := by
   simp [pOpcycles]
 
+@[simps]
+noncomputable def kernelSequenceCycles : ShortComplex C :=
+  ShortComplex.mk _ _ (X.iCycles_δ n₀ n₁ hn₁ f g)
+
+@[simps]
+noncomputable def cokernelSequenceOpcycles : ShortComplex C :=
+  ShortComplex.mk _ _ (X.δ_pOpcycles n₀ n₁ hn₁ f g)
+
+instance : Mono (X.kernelSequenceCycles n₀ n₁ hn₁ f g).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).g := by
+  dsimp
+  infer_instance
+
+noncomputable def kernelSequenceCycles_exact :
+    (X.kernelSequenceCycles n₀ n₁ hn₁ f g).Exact :=
+  ShortComplex.kernelSequence_exact _
+
+noncomputable def cokernelSequenceOpcycles_exact :
+    (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact :=
+  ShortComplex.cokernelSequence_exact _
+
+section
+
+variable {A : C} (x : A ⟶ (X.H n₀).obj (mk₁ g)) (hx : x ≫ X.δ n₀ n₁ hn₁ f g = 0)
+
+noncomputable def liftCycles :
+    A ⟶ X.cycles n₀ n₁ hn₁ f g :=
+  kernel.lift _ x hx
+
+@[reassoc (attr := simp)]
+lemma liftCycles_i : X.liftCycles n₀ n₁ hn₁ f g x hx ≫ X.iCycles n₀ n₁ hn₁ f g = x := by
+  apply kernel.lift_ι
+
+end
+
+section
+
+variable {A : C} (x : (X.H n₁).obj (mk₁ f) ⟶ A) (hx : X.δ n₀ n₁ hn₁ f g ≫ x = 0)
+
+noncomputable def descOpcycles :
+    X.opcycles n₀ n₁ hn₁ f g ⟶ A :=
+  cokernel.desc _ x hx
+
+@[reassoc (attr := simp)]
+lemma p_descOpcycles : X.pOpcycles n₀ n₁ hn₁ f g ≫ X.descOpcycles n₀ n₁ hn₁ f g x hx = x := by
+  apply cokernel.π_desc
+
+end
+
 noncomputable def cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') :
     X.cycles n₀ n₁ hn₁ f g ⟶ X.cycles n₀ n₁ hn₁ f' g' :=
   kernel.lift _ (X.iCycles n₀ n₁ hn₁ f g ≫
@@ -274,32 +326,6 @@ lemma opcyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ m
   symm
   apply X.p_opcyclesMap
   aesop_cat
-
-@[simps, pp_dot]
-noncomputable def kernelSequenceCycles :
-    ShortComplex C :=
-  ShortComplex.mk _ _ (X.iCycles_δ n₀ n₁ hn₁ f g)
-
-@[simps, pp_dot]
-noncomputable def cokernelSequenceOpcycles :
-    ShortComplex C :=
-  ShortComplex.mk _ _ (X.δ_pOpcycles n₀ n₁ hn₁ f g)
-
-instance : Mono (X.kernelSequenceCycles n₀ n₁ hn₁ f g).f := by
-  dsimp
-  infer_instance
-
-instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).g := by
-  dsimp
-  infer_instance
-
-lemma kernelSequenceCycles_exact :
-    (X.kernelSequenceCycles n₀ n₁ hn₁ f g).Exact :=
-  ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
-
-lemma cokernelSequenceOpcycles_exact :
-    (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact :=
-  ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
 
 variable (fg : i ⟶ k) (h : f ≫ g = fg) (fg' : i' ⟶ k') (h' : f' ≫ g' = fg')
 
@@ -400,11 +426,11 @@ noncomputable def kernelSequenceOpcycles : ShortComplex C :=
   ShortComplex.mk _ _ (X.fromOpcycles_H_map_twoδ₁Toδ₀ n₀ n₁ hn₁ f g fg h)
 
 instance : Epi (X.cokernelSequenceCycles n₀ n₁ hn₁ f g fg h).g := by
-  dsimp [cokernelSequenceCycles]
+  dsimp
   infer_instance
 
 instance : Mono (X.kernelSequenceOpcycles n₀ n₁ hn₁ f g fg h).f := by
-  dsimp [kernelSequenceCycles]
+  dsimp
   infer_instance
 
 lemma cokernelSequenceCycles_exact :
@@ -424,6 +450,38 @@ lemma kernelSequenceOpcycles_exact :
       dsimp
       simp only [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
         opcyclesIsoKernel_hom_fac, p_fromOpcycles])))
+
+section
+
+variable {A : C} (x : (X.H n₀).obj (mk₁ fg) ⟶ A)
+  (hx : (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫ x = 0)
+
+noncomputable def descCycles :
+    X.cycles n₀ n₁ hn₁ f g ⟶ A :=
+  (X.cokernelSequenceCycles_exact n₀ n₁ hn₁ f g fg h).desc x hx
+
+@[reassoc (attr := simp)]
+lemma toCycles_descCycles :
+    X.toCycles n₀ n₁ hn₁ f g fg h ≫ X.descCycles n₀ n₁ hn₁ f g fg h x hx = x :=
+  (X.cokernelSequenceCycles_exact n₀ n₁ hn₁ f g fg h).g_desc x hx
+
+end
+
+section
+
+variable {A : C} (x : A ⟶ (X.H n₁).obj (mk₁ fg))
+  (hx : x ≫ (X.H n₁).map (twoδ₁Toδ₀ f g fg h) = 0)
+
+noncomputable def liftOpcycles :
+    A ⟶ X.opcycles n₀ n₁ hn₁ f g :=
+  (X.kernelSequenceOpcycles_exact n₀ n₁ hn₁ f g fg h).lift x hx
+
+@[reassoc (attr := simp)]
+lemma liftOpcycles_fromOpcycles :
+    X.liftOpcycles n₀ n₁ hn₁ f g fg h x hx ≫ X.fromOpcycles n₀ n₁ hn₁ f g fg h = x :=
+  (X.kernelSequenceOpcycles_exact n₀ n₁ hn₁ f g fg h).lift_f x hx
+
+end
 
 end
 
