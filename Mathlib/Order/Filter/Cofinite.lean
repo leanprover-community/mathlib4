@@ -73,6 +73,7 @@ lemma frequently_cofinite_mem_iff_infinite {s : Set α} : (∃ᶠ x in cofinite,
 
 alias ⟨_, _root_.Set.Infinite.frequently_cofinite⟩ := frequently_cofinite_mem_iff_infinite
 
+@[simp]
 lemma cofinite_inf_principal_neBot_iff {s : Set α} : (cofinite ⊓ 𝓟 s).NeBot ↔ s.Infinite :=
   frequently_mem_iff_neBot.symm.trans frequently_cofinite_mem_iff_infinite
 
@@ -133,14 +134,10 @@ theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
 set_option linter.uppercaseLean3 false in
 #align filter.Coprod_cofinite Filter.coprodᵢ_cofinite
 
-@[simp]
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
-  simp only [hasBasis_cofinite.disjoint_iff l.basis_sets, id, disjoint_compl_left_iff_subset]
-  exact ⟨fun ⟨s, hs, t, ht, hts⟩ => ⟨t, ht, hs.subset hts⟩,
-    fun ⟨s, hs, hsf⟩ => ⟨s, hsf, s, hs, Subset.rfl⟩⟩
+  simp [l.basis_sets.disjoint_iff_right]
 #align filter.disjoint_cofinite_left Filter.disjoint_cofinite_left
 
-@[simp]
 theorem disjoint_cofinite_right : Disjoint l cofinite ↔ ∃ s ∈ l, Set.Finite s :=
   disjoint_comm.trans disjoint_cofinite_left
 #align filter.disjoint_cofinite_right Filter.disjoint_cofinite_right
