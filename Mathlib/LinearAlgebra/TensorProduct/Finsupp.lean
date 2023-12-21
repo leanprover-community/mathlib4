@@ -382,6 +382,7 @@ theorem lTensor_mk' (x : M × N →₀ ℤ) (f : N →ₗ[R] P) :
   rewrite [Finsupp.lift_apply]
   rfl
 
+variable (M) in
 theorem lTensor_equiv (f : N →ₗ[R] P) : (f.lTensor M) ∘ₗ TensorProductFinsupp.Equiv R M N =
     TensorProductFinsupp.Equiv R M P ∘ₗ (lTensor M f) := by
   refine TensorProductFinsupp.ext' fun m n => ?_
@@ -389,6 +390,7 @@ theorem lTensor_equiv (f : N →ₗ[R] P) : (f.lTensor M) ∘ₗ TensorProductFi
       TensorProductFinsupp.Equiv_apply, lift_tmul, TensorProduct.mk_apply, LinearMap.lTensor_tmul,
       lTensor_tmul]
 
+variable (M) in
 theorem lTensor_equiv' (f : N →ₗ[R] P) (x : TensorProductFinsupp R M N) :
     (f.lTensor M) (TensorProductFinsupp.Equiv R M N x) =
       TensorProductFinsupp.Equiv R M P (lTensor M f x) := by
@@ -443,6 +445,7 @@ theorem rTensor_mk' (x : M × N →₀ ℤ) (f : M →ₗ[R] P) :
   rewrite [Finsupp.lift_apply]
   rfl
 
+variable (N) in
 theorem rTensor_equiv (f : M →ₗ[R] P) : (f.rTensor N) ∘ₗ TensorProductFinsupp.Equiv R M N =
     TensorProductFinsupp.Equiv R P N ∘ₗ (rTensor N f) := by
   refine TensorProductFinsupp.ext' fun m n => ?_
@@ -450,12 +453,12 @@ theorem rTensor_equiv (f : M →ₗ[R] P) : (f.rTensor N) ∘ₗ TensorProductFi
       TensorProductFinsupp.Equiv_apply, lift_tmul, TensorProduct.mk_apply, LinearMap.rTensor_tmul,
       rTensor_tmul]
 
+variable (N) in
 theorem rTensor_equiv' (f : M →ₗ[R] P) (x : TensorProductFinsupp R M N) :
     (f.rTensor N) (TensorProductFinsupp.Equiv R M N x) =
       TensorProductFinsupp.Equiv R P N (rTensor N f x) := by
   rw [← LinearEquiv.coe_coe, ← LinearMap.comp_apply, ← LinearEquiv.coe_coe,
     ← LinearMap.comp_apply, rTensor_equiv]
-
 
 variable (N) in
 /-- `rEmbed N h`, where `h` is a proof that the `R`-linear map `f : M → P` is injective,
