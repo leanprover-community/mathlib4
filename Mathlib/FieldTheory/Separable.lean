@@ -505,7 +505,7 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
-extension, because the minimal polynomial of a non-integral element is 0, which is not
+extension, because the minimal polynomial of a non-integral element is `0`, which is not
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
@@ -521,11 +521,17 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x := fun x ↦ by
+variable {F} in
+/-- If the minimal polynomial of `x : K` over `F` is separable, then `x` is integral over `F`,
+because the minimal polynomial of a non-integral element is `0`, which is not separable. -/
+theorem Polynomial.Separable.isIntegral {x : K} (h : (minpoly F x).Separable) : IsIntegral F x := by
   cases subsingleton_or_nontrivial F
   · haveI := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
-  · exact of_not_not fun h ↦ not_separable_zero (minpoly.eq_zero h ▸ IsSeparable.separable F x)
+  · exact of_not_not fun h' ↦ not_separable_zero (minpoly.eq_zero h' ▸ h)
+
+theorem IsSeparable.isIntegral [IsSeparable F K] :
+    ∀ x : K, IsIntegral F x := fun x ↦ (IsSeparable.separable F x).isIntegral
 #align is_separable.is_integral IsSeparable.isIntegral
 
 variable {F}
@@ -588,6 +594,19 @@ theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →�
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact isSeparable_tower_bot_of_isSeparable F E E'
 #align is_separable.of_alg_hom IsSeparable.of_algHom
+
+lemma IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
+    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    [IsSeparable A₁ B₁] : IsSeparable A₂ B₂ := by
+  letI := e₁.toRingHom.toAlgebra
+  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  let e : B₁ ≃ₐ[A₂] B₂ := { e₂ with commutes' := fun r ↦ by simpa [RingHom.algebraMap_toAlgebra]
+                                                  using FunLike.congr_fun he.symm (e₁.symm r) }
+  haveI := isSeparable_tower_top_of_isSeparable A₁ A₂ B₁
+  exact IsSeparable.of_algHom _ _ e.symm.toAlgHom
 
 end IsSeparableTower
 

@@ -108,7 +108,7 @@ theorem one_neBot : (1 : Filter α).NeBot :=
 #align filter.one_ne_bot Filter.one_neBot
 #align filter.zero_ne_bot Filter.zero_neBot
 
-scoped[Pointwise] attribute [instance] Filter.one_neBot
+scoped[Pointwise] attribute [instance] one_neBot zero_neBot
 
 @[to_additive (attr := simp)]
 protected theorem map_one' (f : α → β) : (1 : Filter α).map f = pure (f 1) :=

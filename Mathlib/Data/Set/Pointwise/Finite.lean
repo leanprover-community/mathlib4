@@ -135,6 +135,11 @@ theorem infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infi
 #align set.infinite_mul Set.infinite_mul
 #align set.infinite_add Set.infinite_add
 
+@[to_additive]
+lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2  (fun _ _ ↦ (mul_left_injective _).injOn _)
+    fun _ _ ↦ (mul_right_injective _).injOn _
+
 end Cancel
 
 section Group
