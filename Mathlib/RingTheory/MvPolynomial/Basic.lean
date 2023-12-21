@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
@@ -54,6 +55,12 @@ instance [CharP R p] : CharP (MvPolynomial σ R) p where
   cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
+
+section CharZero
+
+instance [CharZero R] : CharZero (MvPolynomial σ R) := CharP.charP_to_charZero (MvPolynomial σ R)
+
+end CharZero
 
 section Homomorphism
 

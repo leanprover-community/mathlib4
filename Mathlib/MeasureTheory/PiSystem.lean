@@ -149,6 +149,21 @@ theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
   @image_univ α _ Ioi ▸ isPiSystem_image_Ioi univ
 #align is_pi_system_Ioi isPiSystem_Ioi
 
+theorem isPiSystem_image_Iic (s : Set α) : IsPiSystem (Iic '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
+  exact ⟨a ⊓ b, inf_ind a b ha hb, Iic_inter_Iic.symm⟩
+
+theorem isPiSystem_Iic : IsPiSystem (range Iic : Set (Set α)) :=
+  @image_univ α _ Iic ▸ isPiSystem_image_Iic univ
+#align is_pi_system_Iic isPiSystem_Iic
+
+theorem isPiSystem_image_Ici (s : Set α) : IsPiSystem (Ici '' s) :=
+  @isPiSystem_image_Iic αᵒᵈ _ s
+
+theorem isPiSystem_Ici : IsPiSystem (range Ici : Set (Set α)) :=
+  @image_univ α _ Ici ▸ isPiSystem_image_Ici univ
+#align is_pi_system_Ici isPiSystem_Ici
+
 -- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)

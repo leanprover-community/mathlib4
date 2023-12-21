@@ -33,14 +33,15 @@ matrix, linear_equiv, determinant, inverse
 
 -/
 
+variable {n : Type*} [Fintype n]
 
 namespace Matrix
+
+section LinearEquiv
 
 open LinearMap
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
-variable {n : Type*} [Fintype n]
 
 section ToLinearEquiv'
 
@@ -195,5 +196,53 @@ alias nondegenerate_iff_det_ne_zero ↔ Nondegenerate.det_ne_zero Nondegenerate.
 #align matrix.nondegenerate.of_det_ne_zero Matrix.Nondegenerate.of_det_ne_zero
 
 end Nondegenerate
+
+end LinearEquiv
+
+section Determinant
+
+open BigOperators
+
+/-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
+column positive has nonzero determinant. -/
+lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
+    {A : Matrix n n S} (h1 : ∀ i j, i ≠ j → A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
+    A.det ≠ 0 := by
+  cases isEmpty_or_nonempty n
+  · simp
+  · contrapose! h2
+    obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_vecMul_eq_zero_iff.mpr h2
+    wlog h_sup : 0 < Finset.sup' Finset.univ Finset.univ_nonempty v
+    · refine this h1 inferInstance h2 (-1 • v) ?_ ?_ ?_
+      · exact smul_ne_zero (by norm_num) h_vnz
+      · rw [Matrix.vecMul_smul, h_vA, smul_zero]
+      · obtain ⟨i, hi⟩ := Function.ne_iff.mp h_vnz
+        simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at h_sup ⊢
+        simp_rw [not_exists, not_lt] at h_sup
+        refine ⟨i, ?_⟩
+        rw [Pi.smul_apply, neg_smul, one_smul, Left.neg_pos_iff]
+        refine Ne.lt_of_le hi (h_sup i)
+    · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
+      refine ⟨j₀, ?_⟩
+      rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
+      rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
+      refine Finset.sum_le_sum (fun i hi => ?_)
+      by_cases h : i = j₀
+      · rw [h]
+      · exact (mul_le_mul_right_of_neg (h1 i j₀ h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
+
+/-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
+row positive has nonzero determinant. -/
+lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
+    {A : Matrix n n S} (h1 : ∀ i j, i ≠ j → A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
+    A.det ≠ 0 := by
+  rw [← Matrix.det_transpose]
+  refine det_ne_zero_of_sum_col_pos ?_ ?_
+  · simp_rw [Matrix.transpose_apply]
+    exact fun i j h => h1 j i h.symm
+  · simp_rw [Matrix.transpose_apply]
+    exact h2
+
+end Determinant
 
 end Matrix

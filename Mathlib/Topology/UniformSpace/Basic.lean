@@ -74,7 +74,7 @@ The uniform space axioms ask the filter `𝓤 X` to satisfy the following:
 These three axioms are stated more abstractly in the definition below, in terms of
 operations on filters, without directly manipulating entourages.
 
-## Main definitions
+## Main definitions
 
 * `UniformSpace X` is a uniform space structure on a type `X`
 * `UniformContinuous f` is a predicate saying a function `f : α → β` between uniform spaces
@@ -358,7 +358,7 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 #align uniformity uniformity
 
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
-scoped[Topology] notation "𝓤[" u "]" => @uniformity _ u
+scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
 @[ext]
 theorem uniformSpace_eq : ∀ {u₁ u₂ : UniformSpace α}, 𝓤[u₁] = 𝓤[u₂] → u₁ = u₂
@@ -607,7 +607,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 #align comp_comp_symm_mem_uniformity_sets comp_comp_symm_mem_uniformity_sets
 
 /-!
-### Balls in uniform spaces
+### Balls in uniform spaces
 -/
 
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
@@ -1092,7 +1092,7 @@ def UniformContinuous [UniformSpace β] (f : α → β) :=
 #align uniform_continuous UniformContinuous
 
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
-scoped[Topology] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
+scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
 
 /-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.FieldTheory.Normal
-import Mathlib.FieldTheory.PerfectClosure
+import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.Integral
 
 #align_import field_theory.is_alg_closed.basic from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"

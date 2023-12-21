@@ -169,16 +169,6 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
       · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
 #align lintegral_infi_directed_of_measurable lintegral_iInf_directed_of_measurable
 
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Iic [SemilatticeInf α] : @IsPiSystem α (range Iic) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Iic_inter_Iic]; exact ⟨us ⊓ ut, rfl⟩
-#align is_pi_system_Iic isPiSystem_Iic
-
--- todo: move to measure_theory/pi_system
-theorem isPiSystem_Ici [SemilatticeSup α] : @IsPiSystem α (range Ici) := by
-  rintro s ⟨us, rfl⟩ t ⟨ut, rfl⟩ _; rw [Ici_inter_Ici]; exact ⟨us ⊔ ut, rfl⟩
-#align is_pi_system_Ici isPiSystem_Ici
-
 end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure

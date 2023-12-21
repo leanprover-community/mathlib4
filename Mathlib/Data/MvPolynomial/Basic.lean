@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
@@ -846,6 +847,19 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
       · rw [not_mem_support_iff] at hi
         rwa [MulZeroClass.mul_zero]
 #align mv_polynomial.C_dvd_iff_dvd_coeff MvPolynomial.C_dvd_iff_dvd_coeff
+
+@[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
+  suffices : IsLeftRegular (X n : MvPolynomial σ R)
+  · exact ⟨this, this.right_of_commute $ Commute.all _⟩
+  intro P Q (hPQ : (X n) * P = (X n) * Q)
+  ext i
+  rw [← coeff_X_mul i n P, hPQ, coeff_X_mul i n Q]
+
+@[simp] lemma isRegular_X_pow (k : ℕ) : IsRegular (X n ^ k : MvPolynomial σ R) := isRegular_X.pow k
+
+@[simp] lemma isRegular_prod_X (s : Finset σ) :
+    IsRegular (∏ n in s, X n : MvPolynomial σ R) :=
+  IsRegular.prod fun _ _ ↦ isRegular_X
 
 end Coeff
 

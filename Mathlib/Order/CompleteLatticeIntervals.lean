@@ -96,6 +96,40 @@ attribute [local instance] subsetSupSet
 
 attribute [local instance] subsetInfSet
 
+lemma sSup_subtype_eq_sSup_univ_of_not_bddAbove {s : Set α} [Inhabited s]
+    (t : Set s) (ht : ¬BddAbove t) : sSup t = sSup univ := by
+  have A : ∀ (u : Set s), ¬BddAbove u → BddAbove (Subtype.val '' u) →
+      sSup ((↑) '' u : Set α) ∉ s := by
+    intro u hu Hu
+    contrapose! hu
+    refine ⟨⟨_, hu⟩, ?_⟩
+    rintro ⟨x, xs⟩ hx
+    simp only [Subtype.mk_le_mk]
+    apply le_csSup Hu
+    exact ⟨⟨x, xs⟩, hx, rfl⟩
+  by_cases Ht : BddAbove ((↑) '' t : Set α)
+  · have I1 : sSup ((↑) '' t : Set α) ∉ s := A t ht Ht
+    have I2 : sSup ((↑) '' (univ : Set s) : Set α) ∉ s := by
+      apply A
+      · contrapose! ht; exact ht.mono (subset_univ _)
+      · refine ⟨sSup ((↑) '' t : Set α), ?_⟩
+        rintro - ⟨⟨x, hx⟩, -, rfl⟩
+        simp [BddAbove, not_nonempty_iff_eq_empty] at ht
+        have : ⟨x, hx⟩ ∉ upperBounds t := by simp [ht]
+        obtain ⟨⟨y, ys⟩, yt, hy⟩ : ∃ y, y ∈ t ∧ { val := x, property := hx } < y :=
+          by simpa only [Subtype.mk_le_mk, not_forall, not_le, exists_prop, exists_and_right,
+            mem_upperBounds]
+        refine le_trans (le_of_lt hy) ?_
+        exact le_csSup Ht ⟨⟨y, ys⟩, yt, rfl⟩
+    simp only [sSup, I1, I2, dite_false]
+  · have I : ¬BddAbove ((↑) '' (univ : Set s) : Set α) := by
+      contrapose! Ht; exact Ht.mono (image_subset Subtype.val (subset_univ _))
+    have X : sSup ((↑) '' t : Set α) = sSup (univ : Set α) :=
+      ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove _ Ht
+    have Y : sSup ((↑) '' (univ : Set s) : Set α) = sSup (univ : Set α) :=
+      ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove _ I
+    simp only [sSup, X, Y]
+
 /-- For a nonempty subset of a conditionally complete linear order to be a conditionally complete
 linear order, it suffices that it contain the `sSup` of all its nonempty bounded-above subsets, and
 the `sInf` of all its nonempty bounded-below subsets.
@@ -124,7 +158,9 @@ noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
     csInf_le := by
       rintro t c h_bdd hct
       rw [← Subtype.coe_le_coe, ← subset_sInf_of_within s (h_Inf ⟨c, hct⟩ h_bdd)]
-      exact (Subtype.mono_coe s).csInf_image_le hct h_bdd }
+      exact (Subtype.mono_coe s).csInf_image_le hct h_bdd
+    csSup_of_not_bddAbove := sSup_subtype_eq_sSup_univ_of_not_bddAbove
+    csInf_of_not_bddBelow := @sSup_subtype_eq_sSup_univ_of_not_bddAbove αᵒᵈ _ _ _ }
 #align subset_conditionally_complete_linear_order subsetConditionallyCompleteLinearOrder
 
 section OrdConnected
