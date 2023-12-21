@@ -99,7 +99,6 @@ theorem formPerm_apply_mem_of_mem (x : α) (l : List α) (h : x ∈ l) : formPer
       simp [formPerm_apply_of_not_mem _ _ hx, ← h]
 #align list.form_perm_apply_mem_of_mem List.formPerm_apply_mem_of_mem
 
-set_option maxHeartbeats 220000 in
 theorem mem_of_formPerm_apply_mem (x : α) (l : List α) (h : l.formPerm x ∈ l) : x ∈ l := by
   cases' l with y l
   · simp at h

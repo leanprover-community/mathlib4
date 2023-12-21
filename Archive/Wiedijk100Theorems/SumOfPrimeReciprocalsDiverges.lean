@@ -144,7 +144,7 @@ The number of `e < x` for which `e + 1` is a squarefree product of primes smalle
 theorem card_le_two_pow {x k : ℕ} :
     card (Finset.filter (fun e => Squarefree (e + 1)) (M x k)) ≤ 2 ^ k := by
   let M₁ := Finset.filter (fun e => Squarefree (e + 1)) (M x k)
-  let f s := (Finset.prod s fun a => a) - 1
+  let f s := (∏ a in s, a) - 1
   let K := powerset (image Nat.succ (range k))
   -- Take `e` in `M x k`. If `e + 1` is squarefree, then it is the product of a subset of `[1, k]`.
   -- It follows that `e` is one less than such a product.

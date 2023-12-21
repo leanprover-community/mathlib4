@@ -75,13 +75,15 @@ def Cofan.mk {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : Cofan f where
   ι := Discrete.natTrans (fun X => p X.as)
 #align category_theory.limits.cofan.mk CategoryTheory.Limits.Cofan.mk
 
-/-- Get the `j`th map in the fan -/
+/-- Get the `j`th "projection" in the fan.
+(Note that the initial letter of `proj` matches the greek letter in `Cone.π`.) -/
 def Fan.proj {f : β → C} (p : Fan f) (j : β) : p.pt ⟶ f j :=
   p.π.app (Discrete.mk j)
 #align category_theory.limits.fan.proj CategoryTheory.Limits.Fan.proj
 
-/-- Get the `j`th map in the cofan -/
-def Cofan.proj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
+/-- Get the `j`th "injection" in the cofan.
+(Note that the initial letter of `inj` matches the greek letter in `Cocone.ι`.) -/
+def Cofan.inj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
   p.ι.app (Discrete.mk j)
 
 @[simp]
@@ -90,8 +92,8 @@ theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) (j : β) : (Fa
 #align category_theory.limits.fan_mk_proj CategoryTheory.Limits.fan_mk_proj
 
 @[simp]
-theorem cofan_mk_proj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) (j : β) :
-    (Cofan.mk P p).proj j = p j :=
+theorem cofan_mk_inj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) (j : β) :
+    (Cofan.mk P p).inj j = p j :=
   rfl
 
 /-- An abbreviation for `HasLimit (Discrete.functor f)`. -/
@@ -115,15 +117,45 @@ def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
   { lift }
 #align category_theory.limits.mk_fan_limit CategoryTheory.Limits.mkFanLimit
 
+/-- Constructor for morphisms to the point of a limit fan. -/
+def Fan.IsLimit.desc {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
+    (f : ∀ i, A ⟶ F i) : A ⟶ c.pt :=
+  hc.lift (Fan.mk A f)
+
+@[reassoc (attr := simp)]
+lemma Fan.IsLimit.fac {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
+    (f : ∀ i, A ⟶ F i) (i : β) :
+    Fan.IsLimit.desc hc f ≫ c.proj i = f i :=
+  hc.fac (Fan.mk A f) ⟨i⟩
+
+lemma Fan.IsLimit.hom_ext {F : I → C} {c : Fan F} (hc : IsLimit c) {A : C}
+    (f g : A ⟶ c.pt) (h : ∀ i, f ≫ c.proj i = g ≫ c.proj i) : f = g :=
+  hc.hom_ext (fun ⟨i⟩ => h i)
+
 /-- Make a cofan `f` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
-    (fac : ∀ (t : Cofan f) (j : β), s.proj j ≫ desc t = t.proj j := by aesop_cat)
-    (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.proj j ≫ m = t.proj j),
+    (fac : ∀ (t : Cofan f) (j : β), s.inj j ≫ desc t = t.inj j := by aesop_cat)
+    (uniq : ∀ (t : Cofan f) (m : s.pt ⟶ t.pt) (_ : ∀ j : β, s.inj j ≫ m = t.inj j),
       m = desc t := by aesop_cat) :
     IsColimit s :=
   { desc }
+
+/-- Constructor for morphisms from the point of a colimit cofan. -/
+def Cofan.IsColimit.desc {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C}
+    (f : ∀ i, F i ⟶ A) : c.pt ⟶ A :=
+  hc.desc (Cofan.mk A f)
+
+@[reassoc (attr := simp)]
+lemma Cofan.IsColimit.fac {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C}
+    (f : ∀ i, F i ⟶ A) (i : β) :
+    c.inj i ≫ Cofan.IsColimit.desc hc f = f i :=
+  hc.fac (Cofan.mk A f) ⟨i⟩
+
+lemma Cofan.IsColimit.hom_ext {F : I → C} {c : Cofan F} (hc : IsColimit c) {A : C}
+    (f g : c.pt ⟶ A) (h : ∀ i, c.inj i ≫ f = c.inj i ≫ g) : f = g :=
+  hc.hom_ext (fun ⟨i⟩ => h i)
 
 section
 
@@ -403,7 +435,7 @@ instance (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.proj ⟨b, c⟩) }
+        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]

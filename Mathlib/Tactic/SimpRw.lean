@@ -13,7 +13,7 @@ open Lean Parser.Tactic Elab.Tactic
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
   passes the rw rules on to `x`. -/
 def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
-  (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
+    (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
   let lbrak := rwRulesSeqStx[0]
   let rules := rwRulesSeqStx[1].getArgs
   -- show initial state up to (incl.) `[`

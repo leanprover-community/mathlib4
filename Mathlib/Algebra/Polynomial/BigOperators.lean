@@ -142,10 +142,14 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
   induction' t using Multiset.induction_on with a t ih; · simp
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
-  rw [Polynomial.leadingCoeff_mul'] <;>
-    · rw [ih]
-      simp [*]
-      apply right_ne_zero_of_mul h
+  rw [Polynomial.leadingCoeff_mul']
+  · rw [ih]
+    simp only [ne_eq]
+    apply right_ne_zero_of_mul h
+  · rw [ih]
+    exact h
+    simp only [ne_eq, not_false_eq_true]
+    apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
 
 /-- The leading coefficient of a product of polynomials is equal to

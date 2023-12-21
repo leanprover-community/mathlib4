@@ -60,7 +60,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   haveI : SeparableSpace (range g ∩ s : Set E) :=
     (hgm.isSeparable_range.mono (inter_subset_left _ _)).separableSpace
   obtain ⟨y₀, h₀⟩ : (range g ∩ s).Nonempty := by
-    rcases(hf.and hfg).exists with ⟨x₀, h₀⟩
+    rcases (hf.and hfg).exists with ⟨x₀, h₀⟩
     exact ⟨f x₀, by simp only [h₀.2, mem_range_self], h₀.1⟩
   rw [integral_congr_ae hfg]; rw [integrable_congr hfg] at hfi
   have hg : ∀ᵐ x ∂μ, g x ∈ closure (range g ∩ s) := by

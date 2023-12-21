@@ -15,7 +15,7 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
-variable {α : Type _} (r : Rel α α)
+variable {α : Type*} (r : Rel α α)
 
 /--
 Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
@@ -157,11 +157,11 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
 end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
-abbrev FiniteDimensionalOrder (γ : Type _) [Preorder γ] :=
+abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
-abbrev InfiniteDimensionalOrder (γ : Type _) [Preorder γ] :=
+abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
 
 section LTSeries

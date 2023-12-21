@@ -1383,7 +1383,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
       · rw [one_div_nonneg]
         exact ENNReal.toReal_nonneg
       refine' lintegral_mono_ae _
-      filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)]with x hx
+      filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)] with x hx
       exact mul_le_mul_right' (ENNReal.rpow_le_rpow hx ENNReal.toReal_nonneg) _
     _ = essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ *
         (∫⁻ x, (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
@@ -1665,7 +1665,7 @@ theorem ae_bdd_liminf_atTop_of_snorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : �
       ae_lt_of_essSup_lt
         (lt_of_le_of_lt (hbdd n) <| ENNReal.lt_add_right ENNReal.coe_ne_top one_ne_zero)
     rw [← ae_all_iff] at this
-    filter_upwards [this]with x hx using lt_of_le_of_lt
+    filter_upwards [this] with x hx using lt_of_le_of_lt
         (liminf_le_of_frequently_le' <| frequently_of_forall fun n => (hx n).le)
         (ENNReal.add_lt_top.2 ⟨ENNReal.coe_lt_top, ENNReal.one_lt_top⟩)
   filter_upwards [ae_bdd_liminf_atTop_rpow_of_snorm_bdd hfmeas hbdd] with x hx

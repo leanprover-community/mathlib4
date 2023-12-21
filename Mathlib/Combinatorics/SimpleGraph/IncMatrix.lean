@@ -157,7 +157,8 @@ theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
       refine' e.ind _
       intro v w h
       rw [← Nat.cast_two, ← card_doubleton (G.ne_of_adj h)]
-      simp [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h]
+      simp only [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h, true_and, mem_univ, forall_true_left,
+        forall_eq_or_imp, forall_eq, and_self, mem_singleton, ne_eq]
       congr 2
       ext u
       simp

@@ -23,6 +23,8 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 #align function.comp Function.comp
 
+lemma comp_def {α β δ : Sort _} (f : β → δ) (g : α → β) : f ∘ g = fun x ↦ f (g x) := rfl
+
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]

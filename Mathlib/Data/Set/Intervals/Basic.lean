@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
 
-#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"4367b192b58a665b6f18773f73eb492eb4df7990"
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals
@@ -1168,7 +1168,7 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
 theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun e => by
       simp [Subset.antisymm_iff] at e
-      simp [le_antisymm_iff]
+      simp only [le_antisymm_iff]
       cases' h with h h <;>
       simp [Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>

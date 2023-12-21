@@ -45,7 +45,7 @@ namespace Ring
 
 /-- The bracket operation for rings is the ring commutator, which captures the extent to which a
 ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) : Bracket A A :=
+instance (priority := 100) instBracket : Bracket A A :=
   ⟨fun x y => x * y - y * x⟩
 
 theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=
@@ -253,6 +253,23 @@ theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x 
 #align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEndomorphism_mk
 
 variable {R L M}
+
+namespace LieModule
+
+variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+  (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L)
+
+lemma toEndomorphism_pow_comp_lieHom :
+    (toEndomorphism R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEndomorphism R L M x ^ k := by
+  apply LinearMap.commute_pow_left_of_commute
+  ext
+  simp
+
+lemma toEndomorphism_pow_apply_map (m : M) :
+    (toEndomorphism R L M₂ x ^ k) (f m) = f ((toEndomorphism R L M x ^ k) m) :=
+  LinearMap.congr_fun (toEndomorphism_pow_comp_lieHom f k x) m
+
+end LieModule
 
 namespace LieSubmodule
 

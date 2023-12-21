@@ -49,7 +49,7 @@ to get a polynomial with integer coefficients and then we map it to `R[X]`, for 
 -/
 
 
-open scoped Classical BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 noncomputable section
 
@@ -132,6 +132,7 @@ theorem roots_of_cyclotomic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
 varies over the `n`-th roots of unity. -/
 theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
     X ^ n - 1 = ∏ ζ in nthRootsFinset n R, (X - C ζ) := by
+  classical
   rw [nthRootsFinset, ← Multiset.toFinset_eq (IsPrimitiveRoot.nthRoots_nodup h)]
   simp only [Finset.prod_mk, RingHom.map_one]
   rw [nthRoots]
@@ -168,6 +169,7 @@ set_option linter.uppercaseLean3 false in
 theorem prod_cyclotomic'_eq_X_pow_sub_one {K : Type*} [CommRing K] [IsDomain K] {ζ : K} {n : ℕ}
     (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
     ∏ i in Nat.divisors n, cyclotomic' i K = X ^ n - 1 := by
+  classical
   have hd : (n.divisors : Set ℕ).PairwiseDisjoint fun k => primitiveRoots k K :=
     fun x _ y _ hne => IsPrimitiveRoot.disjoint hne
   simp only [X_pow_sub_one_eq_prod hpos h, cyclotomic', ← Finset.prod_biUnion hd,

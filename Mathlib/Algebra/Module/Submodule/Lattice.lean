@@ -25,8 +25,7 @@ to unify the APIs where possible.
 
 -/
 
-set_option autoImplicit true
-
+universe v
 
 variable {R S M : Type*}
 
@@ -39,6 +38,10 @@ variable [SMul S R] [IsScalarTower S R M]
 variable {p q : Submodule R M}
 
 namespace Submodule
+
+/-!
+## Bottom element of a submodule
+-/
 
 /-- The set `{0}` is the bottom element of the lattice of submodules. -/
 instance : Bot (Submodule R M) :=
@@ -133,6 +136,10 @@ theorem eq_bot_of_subsingleton (p : Submodule R M) [Subsingleton p] : p = ⊥ :=
   exact congr_arg Subtype.val (Subsingleton.elim (⟨v, hv⟩ : p) 0)
 #align submodule.eq_bot_of_subsingleton Submodule.eq_bot_of_subsingleton
 
+/-!
+## Top element of a submodule
+-/
+
 /-- The universal set is the top element of the lattice of submodules. -/
 instance : Top (Submodule R M) :=
   ⟨{ (⊤ : AddSubmonoid M) with
@@ -190,6 +197,10 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
   left_inv _ := rfl
   right_inv _ := rfl
 #align submodule.top_equiv Submodule.topEquiv
+
+/-!
+## Infima & suprema in a submodule
+-/
 
 instance : InfSet (Submodule R M) :=
   ⟨fun S ↦
@@ -313,7 +324,7 @@ theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Su
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_biSup
 
-/-! Note that `Submodule.mem_iSup` is provided in `LinearAlgebra/Span.lean`. -/
+/-! Note that `Submodule.mem_iSup` is provided in `Mathlib/LinearAlgebra/Span.lean`. -/
 
 
 theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
@@ -322,6 +333,39 @@ theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s �
   rw [LE.le] at this
   exact this
 #align submodule.mem_Sup_of_mem Submodule.mem_sSup_of_mem
+
+variable (R)
+
+@[simp]
+theorem subsingleton_iff : Subsingleton (Submodule R M) ↔ Subsingleton M :=
+  have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) := by
+    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_eq,
+      bot_toAddSubmonoid, top_toAddSubmonoid]
+  h.trans AddSubmonoid.subsingleton_iff
+#align submodule.subsingleton_iff Submodule.subsingleton_iff
+
+@[simp]
+theorem nontrivial_iff : Nontrivial (Submodule R M) ↔ Nontrivial M :=
+  not_iff_not.mp
+    ((not_nontrivial_iff_subsingleton.trans <| subsingleton_iff R).trans
+      not_nontrivial_iff_subsingleton.symm)
+#align submodule.nontrivial_iff Submodule.nontrivial_iff
+
+variable {R}
+
+instance [Subsingleton M] : Unique (Submodule R M) :=
+  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
+
+instance unique' [Subsingleton R] : Unique (Submodule R M) := by
+  haveI := Module.subsingleton R M; infer_instance
+#align submodule.unique' Submodule.unique'
+
+instance [Nontrivial M] : Nontrivial (Submodule R M) :=
+  (nontrivial_iff R).mpr ‹_›
+
+/-!
+## Disjointness of submodules
+-/
 
 theorem disjoint_def {p p' : Submodule R M} : Disjoint p p' ↔ ∀ x ∈ p, x ∈ p' → x = (0 : M) :=
   disjoint_iff_inf_le.trans <| show (∀ x, x ∈ p ∧ x ∈ p' → x ∈ ({0} : Set M)) ↔ _ by simp
@@ -337,9 +381,23 @@ theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M
   exact_mod_cast disjoint_def.mp hpq a (coe_mem a) ha
 #align submodule.eq_zero_of_coe_mem_of_disjoint Submodule.eq_zero_of_coe_mem_of_disjoint
 
+theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :
+    (x : M) ∈ p' ↔ x = 0 :=
+  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x x.2 hx, fun h => h.symm ▸ p'.zero_mem⟩
+#align submodule.mem_right_iff_eq_zero_of_disjoint Submodule.mem_right_iff_eq_zero_of_disjoint
+
+theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
+    (x : M) ∈ p ↔ x = 0 :=
+  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
+#align submodule.mem_left_iff_eq_zero_of_disjoint Submodule.mem_left_iff_eq_zero_of_disjoint
+
 end Submodule
 
 section NatSubmodule
+
+/-!
+## ℕ-submodules
+-/
 
 -- Porting note: `S.toNatSubmodule` doesn't work. I used `AddSubmonoid.toNatSubmodule S` instead.
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
@@ -380,6 +438,10 @@ end NatSubmodule
 end AddCommMonoid
 
 section IntSubmodule
+
+/-!
+## ℤ-submodules
+-/
 
 variable [AddCommGroup M]
 

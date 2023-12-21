@@ -476,11 +476,13 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
   refine' realize_mapTermRel_id (fun n t xs => realize_constantsVarsEquivLeft) fun n R xs => _
-  rw [← (lhomWithConstants L α).map_onRelation
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
   cases' R with R R
-  · simp
+  · -- This used to be `simp` before leanprover/lean4#2644
+    simp; erw [Equiv.sumEmpty_apply_inl]
   · exact isEmptyElim R
 #align first_order.language.bounded_formula.realize_constants_vars_equiv FirstOrder.Language.BoundedFormula.realize_constantsVarsEquiv
 

@@ -20,7 +20,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 ## TODO
 
- * The fact `inner_product_geometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
+ * The fact `InnerProductGeometry.angle (Real.cos θ) (Real.sin θ) = ‖(θ : Real.Angle)‖`
 
 -/
 
@@ -203,11 +203,11 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
   · rcases eq_or_ne p 0 with (rfl | hp)
     · simp only [abs_zero, zero_div] at hε
       simp only [not_lt.mpr hε, coe_real_preimage_closedBall_period_zero, abs_zero, zero_div,
-        if_false, inter_eq_right_iff_subset]
+        if_false, inter_eq_right]
       exact hs.trans (closedBall_subset_closedBall <| by simp [hε])
     -- Porting note: was
     -- simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
-    simp only [not_lt.mpr hε, ite_false, inter_eq_right_iff_subset]
+    simp only [not_lt.mpr hε, ite_false, inter_eq_right]
     rw [closedBall_eq_univ_of_half_period_le p hp (↑x : ℝ ⧸ zmultiples p) hε, preimage_univ]
     apply subset_univ
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by

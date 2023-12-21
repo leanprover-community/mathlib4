@@ -16,7 +16,7 @@ basic properties of these notions.
 
 ## Main definitions and statements
 
-Let `M ` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
+Let `M` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
 `f : M → M'`.
 
 * `ContMDiffWithinAt I I' n f s x` states that the function `f` is `Cⁿ` within the set `s`
@@ -164,7 +164,7 @@ theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
 
 theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x := by
-  simp [ContDiffWithinAtProp]
+  simp only [ContDiffWithinAtProp._eq_1, comp.left_id, preimage_univ, univ_inter]
   have : ContDiffWithinAt 𝕜 n id (range I) (I x) := contDiff_id.contDiffAt.contDiffWithinAt
   refine this.congr (fun y hy => ?_) ?_
   · simp only [ModelWithCorners.right_inv I hy, mfld_simps]
@@ -587,7 +587,7 @@ theorem contMDiffOn_iff_target :
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert(h''.comp' (chartAt H' y).continuous_toFun).comp' h
+    convert (h''.comp' (chartAt H' y).continuous_toFun).comp' h
     simp
   · exact fun h' x y => (h' y).2 x 0
 #align cont_mdiff_on_iff_target contMDiffOn_iff_target
@@ -2121,13 +2121,13 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : LocalHomeomorph M M') :
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
         apply EqOn.symm
         refine' e.isImage_source_target.symm_eqOn_of_inter_eq_of_eqOn _ _
-        · rw [inter_self, inter_eq_right_iff_subset.mpr h2e]
+        · rw [inter_self, inter_eq_right.mpr h2e]
         · rw [inter_self]; exact hef.symm
       have h2 : e.target ⊆ (c.symm ≫ₕ f ≫ₕ c').target := by
         intro x hx; rw [← e.right_inv hx, ← hef (e.symm.mapsTo hx)]
         exact LocalHomeomorph.mapsTo _ (h2e <| e.symm.mapsTo hx)
       rw [inter_self] at h1
-      rwa [inter_eq_right_iff_subset.mpr]
+      rwa [inter_eq_right.mpr]
       refine' h2.trans _
       mfld_set_tac
     refine' ⟨e.symm, StructureGroupoid.symm _ he, h3e, _⟩

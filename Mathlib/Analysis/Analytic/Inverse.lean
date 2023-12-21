@@ -525,7 +525,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       apply (tendsto_order.1 this).2; simp [zero_lt_one]
     have C : ∀ᶠ a in 𝓝[>] (0 : ℝ), (0 : ℝ) < a := by
       filter_upwards [self_mem_nhdsWithin] with _ ha using ha
-    rcases(C.and ((A.and B).filter_mono inf_le_left)).exists with ⟨a, ha⟩
+    rcases (C.and ((A.and B).filter_mono inf_le_left)).exists with ⟨a, ha⟩
     exact ⟨a, ha.1, ha.2.1.le, ha.2.2.le⟩
   -- check by induction that the partial sums are suitably bounded, using the choice of `a` and the
   -- inductive control from Lemma `radius_rightInv_pos_of_radius_pos_aux2`.

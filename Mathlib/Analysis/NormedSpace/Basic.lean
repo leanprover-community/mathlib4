@@ -335,8 +335,8 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rwa [norm_pos_iff]
 #align normed_space.exists_lt_norm NormedSpace.exists_lt_norm
 
-protected theorem NormedSpace.unbounded_univ : ¬Bounded (univ : Set E) := fun h =>
-  let ⟨R, hR⟩ := bounded_iff_forall_norm_le.1 h
+protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
+  let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
   hx.not_le (hR x trivial)
 #align normed_space.unbounded_univ NormedSpace.unbounded_univ
@@ -345,7 +345,7 @@ protected theorem NormedSpace.unbounded_univ : ¬Bounded (univ : Set E) := fun h
 an instance because in order to apply it, Lean would have to search for `NormedSpace 𝕜 E` with
 unknown `𝕜`. We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E :=
-  ⟨fun h => NormedSpace.unbounded_univ 𝕜 _ h.bounded⟩
+  ⟨fun h => NormedSpace.unbounded_univ 𝕜 _ h.isBounded⟩
 #align normed_space.noncompact_space NormedSpace.noncompactSpace
 
 instance (priority := 100) NontriviallyNormedField.noncompactSpace : NoncompactSpace 𝕜 :=

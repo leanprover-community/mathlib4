@@ -14,6 +14,7 @@ import Mathlib.Tactic.Inhabit
 # Extra facts about `Prod`
 
 This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
+It also defines better delaborators for product projections.
 -/
 
 set_option autoImplicit true
@@ -414,3 +415,31 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
 #align prod.map_involutive Prod.map_involutive
 
 end Prod
+
+section delaborators
+open Lean PrettyPrinter Delaborator
+
+/-- Delaborator for simple product projections. -/
+@[delab app.Prod.fst, delab app.Prod.snd]
+def delabProdProjs : Delab := do
+  let #[_, _, _] := (← SubExpr.getExpr).getAppArgs | failure
+  let stx ← delabProjectionApp
+  match stx with
+  | `($(x).fst) => `($(x).1)
+  | `($(x).snd) => `($(x).2)
+  | _ => failure
+
+/-- Delaborator for product first projection when the projection is a function
+that is then applied. -/
+@[app_unexpander Prod.fst]
+def unexpandProdFst : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $xs*) => `($p.1 $xs*)
+  | _ => throw ()
+
+/-- Delaborator for product second projection when the projection is a function
+that is then applied. -/
+@[app_unexpander Prod.snd]
+def unexpandProdSnd : Lean.PrettyPrinter.Unexpander
+  | `($(_) $p $xs*) => `($p.2 $xs*)
+  | _ => throw ()
+end delaborators

@@ -44,7 +44,7 @@ section Iff
 
 variable {R : Type*} [CommRing R]
 
-variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
 are also elements of `R`. -/
@@ -81,7 +81,7 @@ namespace IsIntegrallyClosed
 
 variable {R : Type*} [CommRing R] [id : IsDomain R] [iic : IsIntegrallyClosed R]
 
-variable {K : Type*} [Field K] [Algebra R K] [ifr : IsFractionRing R K]
+variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 
 instance : IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff_isIntegralClosure K).mp iic
@@ -95,7 +95,7 @@ theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
   isIntegral_iff.mp <| isIntegral_of_pow hn hx
 #align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [Field K] [Algebra R K]
+theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩

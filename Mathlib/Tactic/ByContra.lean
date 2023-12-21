@@ -42,4 +42,4 @@ macro_rules
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
         have $e:ident : $y := by { push_neg; exact h };
-        clear h ) )
+        clear h))

@@ -1752,7 +1752,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
     (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
   induction' s using Finset.strongInductionOn with s ihs
-  rcases(s.image f).eq_empty_or_nonempty with (hne | hne)
+  rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne

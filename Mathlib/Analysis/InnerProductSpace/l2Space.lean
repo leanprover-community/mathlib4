@@ -240,7 +240,6 @@ protected theorem linearIsometry_apply_single {i : ι} (x : G i) :
   · simp [h]
 #align orthogonal_family.linear_isometry_apply_single OrthogonalFamily.linearIsometry_apply_single
 
-@[simp]
 protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
   simp

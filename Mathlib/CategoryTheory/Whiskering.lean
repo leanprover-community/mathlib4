@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 /-!
 # Whiskering
 
-Given a functor `F  : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
+Given a functor `F : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
 we can construct a new natural transformation `F ⋙ G ⟶ F ⋙ H`,
 called `whiskerLeft F α`. This is the same as the horizontal composition of `𝟙 F` with `α`.
 

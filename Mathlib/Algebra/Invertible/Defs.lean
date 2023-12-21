@@ -168,7 +168,7 @@ instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible
 /-- If `a` is invertible and `a = b`, then `⅟a = ⅟b`. -/
 @[congr]
 theorem Invertible.congr [Monoid α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
-  ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
+    ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
 
 /-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
 def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si : α) (hs : s = r)

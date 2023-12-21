@@ -178,3 +178,17 @@ theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : S
 #align submodule.map₂_span_singleton_eq_map_flip Submodule.map₂_span_singleton_eq_map_flip
 
 end Submodule
+
+lemma LinearMap.ker_restrictBilinear_eq_of_codisjoint
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+    {p q : Submodule R M} (hpq : Codisjoint p q)
+    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ x ∈ p, ∀ y ∈ q, B x y = 0) :
+    LinearMap.ker (p.restrictBilinear B) = (LinearMap.ker B).comap p.subtype := by
+  ext ⟨z, hz⟩
+  simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coeSubtype]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · ext w
+    obtain ⟨x, hx, y, hy, rfl⟩ := Submodule.exists_add_eq_of_codisjoint hpq w
+    simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
+  · ext ⟨x, hx⟩
+    simpa using LinearMap.congr_fun h x

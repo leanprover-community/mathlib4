@@ -755,14 +755,14 @@ theorem join_nil : join nil = (nil : WSeq α) :=
 
 @[simp]
 theorem join_think (S : WSeq (WSeq α)) : join (think S) = think (join S) := by
-  simp [think, join]
+  simp only [join, think]
   dsimp only [(· <$> ·)]
   simp [join, Seq1.ret]
 #align stream.wseq.join_think Stream'.WSeq.join_think
 
 @[simp]
 theorem join_cons (s : WSeq α) (S) : join (cons s S) = think (append s (join S)) := by
-  simp [think, join]
+  simp only [join, think]
   dsimp only [(· <$> ·)]
   simp [join, cons, append]
 #align stream.wseq.join_cons Stream'.WSeq.join_cons
@@ -800,7 +800,7 @@ def tail.aux : Option (α × WSeq α) → Computation (Option (α × WSeq α))
 #align stream.wseq.tail.aux Stream'.WSeq.tail.aux
 
 theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.aux := by
-  simp [tail]; rw [← bind_pure_comp, LawfulMonad.bind_assoc]
+  simp only [tail, destruct_flatten, tail.aux]; rw [← bind_pure_comp, LawfulMonad.bind_assoc]
   apply congr_arg; ext1 (_ | ⟨a, s⟩) <;> apply (@pure_bind Computation _ _ _ _ _ _).trans _ <;> simp
 #align stream.wseq.destruct_tail Stream'.WSeq.destruct_tail
 
@@ -881,10 +881,10 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
    fun {n} h => by
     cases e : Computation.get (get? s (n + 1))
     · assumption
-    have := mem_of_get_eq _ e
+    have := Computation.mem_of_get_eq _ e
     simp [get?] at this h
     cases' head_some_of_head_tail_some this with a' h'
-    have := mem_unique h' (@mem_of_get_eq _ _ _ _ h)
+    have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
     contradiction⟩
 #align stream.wseq.to_seq Stream'.WSeq.toSeq
 
@@ -966,7 +966,7 @@ theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
 #align stream.wseq.mem_cons Stream'.WSeq.mem_cons
 
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
-  intro h; have := h; cases' h with n e; revert s; simp [Stream'.nth]
+  intro h; have := h; cases' h with n e; revert s; simp [Stream'.get]
   induction' n with n IH <;> intro s <;> induction' s using WSeq.recOn with x s s <;>
     simp <;> intro m e <;>
     injections
@@ -1014,7 +1014,7 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
   · intro s' h
     cases' h with n h
     exists n
-    simp [get?]
+    simp only [get?, dropn_think, head_think]
     apply think_mem h
 #align stream.wseq.exists_nth_of_mem Stream'.WSeq.exists_get?_of_mem
 
@@ -1564,7 +1564,7 @@ theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq 
       intro a b; apply LiftRelO.imp_right
       intro s t; apply Or.inl
     | _, _, Or.inr ⟨s1, t1, rfl, rfl, h⟩ => by
-      simp [destruct_append]
+      simp only [LiftRelO, exists_and_left, destruct_append, destruct_append.aux]
       apply Computation.liftRel_bind _ _ (liftRel_destruct h)
       intro o p h
       cases' o with a <;> cases' p with b
@@ -1618,7 +1618,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           refine' ⟨ob, _, rob⟩
           · simp [destruct_join]
             apply mem_bind mT
-            simp [destruct_append]
+            simp only [destruct_append, destruct_append.aux]
             apply think_mem
             apply mem_bind mt
             exact mb
@@ -1627,7 +1627,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           refine' ⟨some (b, append t' (join T')), _, _⟩
           · simp [destruct_join]
             apply mem_bind mT
-            simp [destruct_append]
+            simp only [destruct_append, destruct_append.aux]
             apply think_mem
             apply mem_bind mt
             apply ret_mem
@@ -1795,7 +1795,7 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
 @[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
     bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g := by
-  simp [bind]; erw [← map_comp f (map g), map_comp (map g ∘ f) join]
+  simp only [bind, map_join]; erw [← map_comp f (map g), map_comp (map g ∘ f) join]
   apply join_join
 #align stream.wseq.bind_assoc Stream'.WSeq.bind_assoc
 

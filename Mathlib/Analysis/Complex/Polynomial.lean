@@ -18,7 +18,7 @@ This file proves that every nonconstant complex polynomial has a root using Liou
 As a consequence, the complex numbers are algebraically closed.
 -/
 
-open Polynomial
+open Polynomial Bornology
 
 open scoped Polynomial
 
@@ -28,9 +28,9 @@ namespace Complex
   has a root -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   contrapose! hf
-  have : Metric.Bounded (Set.range (eval · f)⁻¹)
+  have : IsBounded (Set.range (eval · f)⁻¹)
   · obtain ⟨z₀, h₀⟩ := f.exists_forall_norm_le
-    simp only [Pi.inv_apply, bounded_iff_forall_norm_le, Set.forall_range_iff, norm_inv]
+    simp only [Pi.inv_apply, isBounded_iff_forall_norm_le, Set.forall_range_iff, norm_inv]
     exact ⟨‖eval z₀ f‖⁻¹, fun z => inv_le_inv_of_le (norm_pos_iff.2 <| hf z₀) (h₀ z)⟩
   obtain ⟨c, hc⟩ := (f.differentiable.inv hf).exists_const_forall_eq_of_bounded this
   · obtain rfl : f = C c⁻¹ := Polynomial.funext fun z => by rw [eval_C, ← hc z, inv_inv]

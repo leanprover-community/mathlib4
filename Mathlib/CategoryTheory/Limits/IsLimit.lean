@@ -602,7 +602,7 @@ def descCoconeMorphism {t : Cocone F} (h : IsColimit t) (s : Cocone F) : t ⟶ s
 
 theorem uniq_cocone_morphism {s t : Cocone F} (h : IsColimit t) {f f' : t ⟶ s} : f = f' :=
   have : ∀ {g : t ⟶ s}, g = h.descCoconeMorphism s := by
-    intro g; aesop_cat_nonterminal; exact h.uniq _ _ g.w
+    intro g; ext; exact h.uniq _ _ g.w
   this.trans this.symm
 #align category_theory.limits.is_colimit.uniq_cocone_morphism CategoryTheory.Limits.IsColimit.uniq_cocone_morphism
 

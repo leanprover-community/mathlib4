@@ -167,7 +167,7 @@ set_option linter.deprecated false
 theorem zpow_bit0 (a : α) : ∀ n : ℤ, a ^ bit0 n = a ^ n * a ^ n
   | (n : ℕ) => by simp only [zpow_ofNat, ← Int.ofNat_bit0, pow_bit0]
   | -[n+1] => by
-    simp [← mul_inv_rev, ← pow_bit0]
+    simp only [zpow_negSucc, <-mul_inv_rev, <-pow_bit0]
     rw [negSucc_eq, bit0_neg, zpow_neg]
     norm_cast
 #align zpow_bit0 zpow_bit0
@@ -1116,7 +1116,7 @@ theorem units_zpow_right {a : M} {u : Mˣ} (h : Commute a u)
 
 @[to_additive (attr := simp)]
 theorem units_zpow_left {u : Mˣ} {a : M} (h : Commute (↑u) a)
-  (m : ℤ) : Commute (↑(u ^ m)) a :=
+    (m : ℤ) : Commute (↑(u ^ m)) a :=
   (h.symm.units_zpow_right m).symm
 #align commute.units_zpow_left Commute.units_zpow_left
 #align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
@@ -1130,12 +1130,12 @@ theorem cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b : R) :
 
 @[simp]
 theorem cast_int_mul_left (h : Commute a b) (m : ℤ) :
-   Commute ((m : R) * a) b :=
+    Commute ((m : R) * a) b :=
   SemiconjBy.cast_int_mul_left h m
 #align commute.cast_int_mul_left Commute.cast_int_mul_left
 
 theorem cast_int_mul_cast_int_mul (h : Commute a b)
-  (m n : ℤ) : Commute (m * a : R) (n * b : R) :=
+    (m n : ℤ) : Commute (m * a : R) (n * b : R) :=
   SemiconjBy.cast_int_mul_cast_int_mul h m n
 #align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
 
@@ -1177,7 +1177,6 @@ section Multiplicative
 
 open Multiplicative
 
-@[simp]
 theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _
 #align nat.to_add_pow Nat.toAdd_pow
@@ -1187,12 +1186,10 @@ theorem Nat.ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
   (Nat.toAdd_pow _ _).symm
 #align nat.of_add_mul Nat.ofAdd_mul
 
-@[simp]
 theorem Int.toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _
 #align int.to_add_pow Int.toAdd_pow
 
-@[simp]
 theorem Int.toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _
 #align int.to_add_zpow Int.toAdd_zpow
@@ -1209,14 +1206,13 @@ namespace Units
 variable [Monoid M]
 
 theorem conj_pow (u : Mˣ) (x : M) (n : ℕ) :
-      ((↑u : M) * x * (↑u⁻¹ : M)) ^ n =
-      (u : M) * x ^ n * (↑u⁻¹ : M) :=
+    ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=
   (divp_eq_iff_mul_eq.2
   ((u.mk_semiconjBy x).pow_right n).eq.symm).symm
 #align units.conj_pow Units.conj_pow
 
 theorem conj_pow' (u : Mˣ) (x : M) (n : ℕ) :
-  ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
+    ((↑u⁻¹ : M) * x * (u : M)) ^ n = (↑u⁻¹ : M) * x ^ n * (u : M) :=
   u⁻¹.conj_pow x n
 #align units.conj_pow' Units.conj_pow'
 

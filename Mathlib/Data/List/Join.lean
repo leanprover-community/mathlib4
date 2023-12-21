@@ -228,4 +228,20 @@ theorem join_reverse (L : List (List α)) :
   simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
 
+/-- Any member of `l : List (List α))` is a sublist of `l.join` -/
+lemma sublist_join (l : List (List α)) {s : List α} (hs : s ∈ l) :
+    List.Sublist s (l.join) := by
+  induction l with
+  | nil =>
+    exfalso
+    exact not_mem_nil s hs
+  | cons t m ht =>
+    cases mem_cons.mp hs with
+    | inl h =>
+      rw [h]
+      simp only [join_cons, sublist_append_left]
+    | inr h =>
+      simp only [join_cons]
+      exact sublist_append_of_sublist_right (ht h)
+
 end List

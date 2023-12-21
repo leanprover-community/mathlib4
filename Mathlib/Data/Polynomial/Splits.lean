@@ -32,7 +32,7 @@ irreducible factors over `L` have degree `1`.
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 universe u v w
 
@@ -61,6 +61,7 @@ theorem splits_zero : Splits i (0 : K[X]) :=
 #align polynomial.splits_zero Polynomial.splits_zero
 
 theorem splits_of_map_eq_C {f : K[X]} {a : L} (h : f.map i = C a) : Splits i f :=
+  letI := Classical.decEq L
   if ha : a = 0 then Or.inl (h.trans (ha.symm ▸ C_0))
   else
     Or.inr fun hg ⟨p, hp⟩ =>
@@ -109,6 +110,7 @@ theorem splits_of_natDegree_eq_one {f : K[X]} (hf : natDegree f = 1) : Splits i 
 #align polynomial.splits_of_nat_degree_eq_one Polynomial.splits_of_natDegree_eq_one
 
 theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (f * g) :=
+  letI := Classical.decEq L
   if h : (f * g).map i = 0 then Or.inl h
   else
     Or.inr @fun p hp hpf =>
@@ -150,6 +152,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, (s j).Splits i) → (∏ x in t, s x).Splits i := by
+  classical
   refine' Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => _
   rw [Finset.forall_mem_insert] at ht; rw [Finset.prod_insert hat]
   exact splits_mul i ht.1 (ih ht.2)
@@ -171,6 +174,7 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
+  letI := Classical.decEq L
   if hf0' : f.map i = 0 then by simp [eval₂_eq_eval_map, hf0']
   else
     let ⟨g, hg⟩ :=
@@ -253,12 +257,12 @@ theorem splits_of_splits_of_dvd {f g : K[X]} (hf0 : f ≠ 0) (hf : Splits i f) (
   exact (splits_of_splits_mul i hf0 hf).1
 #align polynomial.splits_of_splits_of_dvd Polynomial.splits_of_splits_of_dvd
 
-theorem splits_of_splits_gcd_left {f g : K[X]} (hf0 : f ≠ 0) (hf : Splits i f) :
+theorem splits_of_splits_gcd_left [DecidableEq K] {f g : K[X]} (hf0 : f ≠ 0) (hf : Splits i f) :
     Splits i (EuclideanDomain.gcd f g) :=
   Polynomial.splits_of_splits_of_dvd i hf0 hf (EuclideanDomain.gcd_dvd_left f g)
 #align polynomial.splits_of_splits_gcd_left Polynomial.splits_of_splits_gcd_left
 
-theorem splits_of_splits_gcd_right {f g : K[X]} (hg0 : g ≠ 0) (hg : Splits i g) :
+theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0) (hg : Splits i g) :
     Splits i (EuclideanDomain.gcd f g) :=
   Polynomial.splits_of_splits_of_dvd i hg0 hg (EuclideanDomain.gcd_dvd_right f g)
 #align polynomial.splits_of_splits_gcd_right Polynomial.splits_of_splits_gcd_right
@@ -270,6 +274,7 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
 
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → ((∏ x in t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
+  classical
   refine'
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)
@@ -326,7 +331,7 @@ theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (h
 
 theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective <| by
-      convert(natDegree_eq_card_roots hf).symm
+      convert (natDegree_eq_card_roots hf).symm
       rw [map_id]).symm
 #align polynomial.roots_map Polynomial.roots_map
 
@@ -390,6 +395,7 @@ open UniqueFactorizationMonoid Associates
 
 theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
+  letI := Classical.decEq K
   if hf0 : f = 0 then hf0.symm ▸ splits_zero i
   else
     Or.inr @fun p hp hdp => by
@@ -445,7 +451,7 @@ theorem splits_iff_card_roots {p : K[X]} :
     exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 #align polynomial.splits_iff_card_roots Polynomial.splits_iff_card_roots
 
-theorem aeval_root_derivative_of_splits [Algebra K L] {P : K[X]} (hmo : P.Monic)
+theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) =
     (((P.aroots L).erase r).map fun a => r - a).prod := by

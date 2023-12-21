@@ -51,7 +51,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
 theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
 theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
-  xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
+    xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
@@ -114,7 +114,7 @@ theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
   gcd.induction x y (by simp) fun x y h IH s t s' t' => by
-    simp [xgcdAux_rec, h, IH]
+    simp only [h, xgcdAux_rec, IH]
     rw [← gcd_rec]
 #align nat.xgcd_aux_fst Nat.xgcdAux_fst
 
@@ -498,6 +498,12 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
   intro hi hj
   exact coe_nat_dvd_left.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
 #align int.lcm_dvd Int.lcm_dvd
+
+theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]
+
+theorem lcm_mul_right {m n k : ℤ} : (m * n).lcm (k * n) = m.lcm k * natAbs n := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_right]
 
 end Int
 

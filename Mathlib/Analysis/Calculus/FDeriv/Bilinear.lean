@@ -65,7 +65,8 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
     _ = fun x ↦ h.deriv (x.1 - x.2) (x.2.1, x.1.2) := by
       ext ⟨⟨x₁, y₁⟩, ⟨x₂, y₂⟩⟩
       rcases p with ⟨x, y⟩
-      simp [h.add_left, h.add_right, h.deriv_apply, h.map_sub_left, h.map_sub_right]
+      simp only [map_sub, deriv_apply, Function.comp_apply, Prod.mk_add_mk, h.add_right, h.add_left,
+        Prod.mk_sub_mk, h.map_sub_left, h.map_sub_right, sub_add_sub_cancel]
       abel
     -- _ =O[𝓝 (0 : T)] fun x ↦ ‖x.1 - x.2‖ * ‖(x.2.1, x.1.2)‖ :=
     --     h.toContinuousLinearMap.deriv₂.isBoundedBilinearMap.isBigO_comp

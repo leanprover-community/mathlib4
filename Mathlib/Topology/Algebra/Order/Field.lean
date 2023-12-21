@@ -122,7 +122,7 @@ theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 
   refine' (atTop_basis' 1).tendsto_right_iff.2 fun b hb => _
   have hb' : 0 < b := by positivity
   filter_upwards [Ioc_mem_nhdsWithin_Ioi
-      ⟨le_rfl, inv_pos.2 hb'⟩]with x hx using(le_inv hx.1 hb').1 hx.2
+      ⟨le_rfl, inv_pos.2 hb'⟩] with x hx using(le_inv hx.1 hb').1 hx.2
 #align tendsto_inv_zero_at_top tendsto_inv_zero_atTop
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/

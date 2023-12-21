@@ -901,7 +901,8 @@ theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundl
     (hs : UniqueMDiffWithinAt I s p.1) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
   refine TotalSpace.ext _ _ (h p.1 hp) ?_
-  simp only [tangentMapWithin, h p.1 hp, mfderivWithin_congr hs h (h _ hp), HEq.refl]
+  -- This used to be `simp only`, but we need `erw` after leanprover/lean4#2644
+  rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr hs h (h _ hp)]
 #align tangent_map_within_congr tangentMapWithin_congr
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :

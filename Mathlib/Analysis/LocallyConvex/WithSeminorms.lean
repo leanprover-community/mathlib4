@@ -848,7 +848,7 @@ lemma bound_of_continuous [Nonempty ι] [t : TopologicalSpace E] (hp : WithSemin
   rcases bound_of_continuous_normedSpace q this with ⟨C, C_pos, hC⟩
   exact ⟨s, ⟨C, C_pos.le⟩, fun H ↦ C_pos.ne.symm (congr_arg NNReal.toReal H), hC⟩
   -- Note that the key ingredient for this proof is that, by scaling arguments hidden in
-  -- `seminorm.continuous`, we only have to look at the `q`-ball of radius one, and the `s` we get
+  -- `Seminorm.continuous`, we only have to look at the `q`-ball of radius one, and the `s` we get
   -- from that will automatically work for all other radii.
 
 end Seminorm

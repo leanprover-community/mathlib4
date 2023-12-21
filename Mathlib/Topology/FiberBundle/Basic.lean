@@ -845,7 +845,7 @@ theorem totalSpaceMk_preimage_source (b : B) :
 
 @[continuity]
 theorem continuous_totalSpaceMk (b : B) :
-  Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
+    Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
   letI := a.totalSpaceTopology
   let e := a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)
   rw [e.toLocalHomeomorph.continuous_iff_continuous_comp_left

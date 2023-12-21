@@ -3,7 +3,6 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
@@ -813,7 +812,7 @@ open TopologicalSpace in
 subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
 of separability does not need in general to be contained in `s`. -/
 theorem _root_.TopologicalSpace.IsSeparable.exists_countable_dense_subset
-   {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
     rcases hs with ⟨t, htc, hst⟩
     refine ⟨t, htc, hst.trans fun x hx => ?_⟩

@@ -77,6 +77,8 @@ theorem BundledSet.mul_mem {p : Set M → Prop} [Implies p IsSubsemigroup] (s : 
     (ha : a ∈ s) (hb : b ∈ s) : a * b ∈ s :=
   IsSubsemigroup.mul_mem (BundledSet.Implies.implies s s.2) ha hb
 
+attribute [aesop safe apply (rule_sets [SetLike])] mul_mem add_mem
+
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 @[to_additive
   "An additive subsemigroup of an additive magma `M` is a subset closed under addition."]

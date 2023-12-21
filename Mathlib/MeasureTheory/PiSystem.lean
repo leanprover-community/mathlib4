@@ -600,7 +600,7 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
 theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp [diff_eq, compl_inter]
+  simp only [diff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
 #align measurable_space.dynkin_system.has_diff MeasurableSpace.DynkinSystem.has_diff
 

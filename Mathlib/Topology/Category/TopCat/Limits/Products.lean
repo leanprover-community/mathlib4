@@ -58,8 +58,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCatMax.{v, u}) :
-  ∏ α ≅ TopCat.of (∀ i, α i) :=
+def piIsoPi {ι : Type v} (α : ι → TopCatMax.{v, u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
 #align Top.pi_iso_pi TopCat.piIsoPi
 

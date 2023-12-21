@@ -123,7 +123,7 @@ theorem sigma_mk_injective {i : α} : Function.Injective (@Sigma.mk α β i)
 #align sigma_mk_injective sigma_mk_injective
 
 theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.Injective f₁) (h₂ : ∀ a, Function.Injective (f₂ a)) :
+    (h₁ : Function.Injective f₁) (h₂ : ∀ a, Function.Injective (f₂ a)) :
     Function.Injective (Sigma.map f₁ f₂)
   | ⟨i, x⟩, ⟨j, y⟩, h => by
     obtain rfl : i = j := h₁ (Sigma.mk.inj_iff.mp h).1
@@ -138,13 +138,13 @@ theorem Function.Injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, 
 #align function.injective.of_sigma_map Function.Injective.of_sigma_map
 
 theorem Function.Injective.sigma_map_iff {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.Injective f₁) :
+    (h₁ : Function.Injective f₁) :
     Function.Injective (Sigma.map f₁ f₂) ↔ ∀ a, Function.Injective (f₂ a) :=
   ⟨fun h ↦ h.of_sigma_map, h₁.sigma_map⟩
 #align function.injective.sigma_map_iff Function.Injective.sigma_map_iff
 
 theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
+    (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
     Function.Surjective (Sigma.map f₁ f₂) := by
   simp only [Function.Surjective, Sigma.forall, h₁.forall]
   exact fun i ↦ (h₂ _).forall.2 fun x ↦ ⟨⟨i, x⟩, rfl⟩

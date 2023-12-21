@@ -13,7 +13,7 @@ import Mathlib.Data.List.Forall2
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
-counterparts. These are defined in [`Data.List.Defs`](./defs).
+counterparts. These are defined in [`Data.List.Defs`](./Defs).
 -/
 
 
@@ -474,7 +474,7 @@ theorem eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = 
 #align list.eq_of_sum_take_eq List.eq_of_sum_take_eq
 
 @[to_additive]
-theorem monotone_prod_take [CanonicallyOrderedMonoid M] (L : List M) :
+theorem monotone_prod_take [CanonicallyOrderedCommMonoid M] (L : List M) :
     Monotone fun i => (L.take i).prod := by
   refine' monotone_nat_of_le_succ fun n => _
   cases' lt_or_le n L.length with h h

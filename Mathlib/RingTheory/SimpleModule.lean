@@ -74,6 +74,8 @@ theorem covby_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
   rw [covby_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
+  -- This used to be in the next `simp`, but we need `erw` after leanprover/lean4#2644
+  erw [RelIso.coe_fn_mk]
   simp [-OrderIso.isCoatom_iff, Submodule.MapSubtype.relIso, Submodule.map_comap_subtype,
     inf_eq_right.2 hAB]
 #align covby_iff_quot_is_simple covby_iff_quot_is_simple

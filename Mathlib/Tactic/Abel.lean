@@ -148,7 +148,7 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
-  simp [h₁.symm, h₂.symm, termg, add_zsmul]
+  simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
@@ -214,13 +214,13 @@ theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smul c a = a') :
-  smul c (@term α _ n x a) = term n' x a' := by
+    (h₁ : c * n = n') (h₂ : smul c a = a') :
+    smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smulg c a = a') :
-  smulg c (@termg α _ n x a) = termg n' x a' := by
+    (h₁ : c * n = n') (h₂ : smulg c a = a') :
+    smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--

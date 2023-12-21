@@ -65,9 +65,9 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       ∃ a : ℕ, ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ u (c b) - c b * l ≤ ε * c b :=
       eventually_atTop.1 (cgrowth.and L)
     let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
-    filter_upwards [Ici_mem_atTop M]with n hn
+    filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
-      rcases(tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
+      rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
       exact ⟨N, by linarith only [hN]⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
@@ -114,7 +114,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     have L : ∀ᶠ n : ℕ in atTop, (c n : ℝ) * l - u (c n) ≤ ε * c n := by
       rw [← tendsto_sub_nhds_zero_iff, ← Asymptotics.isLittleO_one_iff ℝ,
         Asymptotics.isLittleO_iff] at clim
-      filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)]with n hn cnpos'
+      filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
         (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by
@@ -128,9 +128,9 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ (c b : ℝ) * l - u (c b) ≤ ε * c b :=
       eventually_atTop.1 (cgrowth.and L)
     let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
-    filter_upwards [Ici_mem_atTop M]with n hn
+    filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
-      rcases(tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
+      rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
       exact ⟨N, by linarith only [hN]⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
@@ -171,7 +171,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         exact tendsto_const_nhds.add (tendsto_id.mul tendsto_const_nhds)
       simp only [zero_mul, add_zero] at L
       exact (((tendsto_order.1 L).2 l hd).and self_mem_nhdsWithin).exists
-    filter_upwards [B ε εpos, Ioi_mem_atTop 0]with n hn npos
+    filter_upwards [B ε εpos, Ioi_mem_atTop 0] with n hn npos
     simp_rw [div_eq_inv_mul]
     calc
       d < (n : ℝ)⁻¹ * n * (l - ε * (1 + l)) := by
@@ -190,7 +190,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
             (tendsto_id.mul ((tendsto_const_nhds.add tendsto_id).add tendsto_const_nhds))
       simp only [zero_mul, add_zero] at L
       exact (((tendsto_order.1 L).2 d hd).and self_mem_nhdsWithin).exists
-    filter_upwards [A ε εpos, Ioi_mem_atTop 0]with n hn npos
+    filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn npos
     simp_rw [div_eq_inv_mul]
     calc
       (n : ℝ)⁻¹ * u n ≤ (n : ℝ)⁻¹ * (n * l + ε * (1 + ε + l) * n) := by
@@ -235,7 +235,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     ext1 n
     field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
     ring
-  filter_upwards [(tendsto_order.1 B).2 a hk]with n hn
+  filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff (H n)).1 hn.le
 #align tendsto_div_of_monotone_of_tendsto_div_floor_pow tendsto_div_of_monotone_of_tendsto_div_floor_pow
 

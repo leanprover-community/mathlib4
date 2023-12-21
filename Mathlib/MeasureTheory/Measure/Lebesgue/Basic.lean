@@ -191,9 +191,9 @@ instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.rest
 #align real.is_finite_measure_restrict_Ioo Real.isFiniteMeasure_restrict_Ioo
 
 theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
-  by_cases hs : Metric.Bounded s
+  by_cases hs : Bornology.IsBounded s
   · rw [Real.ediam_eq hs, ← volume_Icc]
-    exact volume.mono (Real.subset_Icc_sInf_sSup_of_bounded hs)
+    exact volume.mono (Real.subset_Icc_sInf_sSup_of_isBounded hs)
   · rw [Metric.ediam_of_unbounded hs]; exact le_top
 #align real.volume_le_diam Real.volume_le_diam
 

@@ -247,6 +247,17 @@ theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g
 instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
+instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
+    IsLeftCancelAdd (Π₀ i, β i) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancelAdd (β i)] :
+    IsRightCancelAdd (Π₀ i, β i) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+
+instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
+    IsCancelAdd (Π₀ i, β i) where
+
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
@@ -1245,7 +1256,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
-  simp [h1]
+  simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
+    Finset.mem_erase, false_and]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.support_erase DFinsupp.support_erase
 

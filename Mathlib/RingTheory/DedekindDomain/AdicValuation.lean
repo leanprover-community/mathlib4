@@ -38,7 +38,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   ideal `(r)`.
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
   with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- `is_dedekind_domain.height_one_spectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
@@ -429,7 +429,8 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
       --Porting note: added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
@@ -438,7 +439,8 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       --Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
       --   v.valuation_le_one _
-      rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by

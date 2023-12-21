@@ -66,8 +66,7 @@ variable {φ : G →* MulAut N}
 instance : Mul (SemidirectProduct N G φ) where
   mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
 
-lemma mul_def (a b : SemidirectProduct N G φ) :
-  a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
+lemma mul_def (a b : SemidirectProduct N G φ) : a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl

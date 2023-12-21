@@ -209,7 +209,7 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
           simp only [Set.indicator, Finset.mem_coe, ite_eq_right_iff]
           intro h
           by_contra
-          exact ( mt (@Set.mem_union_right _ i ↑s2 ↑s1) hi) h
+          exact (mt (@Set.mem_union_right _ i ↑s2 ↑s1) hi) h
         simp [h₁, h₂]
     · intro ha s w hw hs i0 hi0
       let w1 : ι → k := Function.update (Function.const ι 0) i0 1
@@ -402,7 +402,8 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  rw [← e.affineIndependent_iff, this, affineIndependent_equiv]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
 #align affine_equiv.affine_independent_set_of_eq_iff AffineEquiv.affineIndependent_set_of_eq_iff
 
 end Composition

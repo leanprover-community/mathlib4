@@ -152,6 +152,9 @@ def Sbtw (x y z : P) : Prop :=
 
 variable {R}
 
+lemma mem_segment_iff_wbtw {x y z : V} : y ∈ segment R x z ↔ Wbtw R x y z := by
+  rw [Wbtw, affineSegment_eq_segment]
+
 theorem Wbtw.map {x y z : P} (h : Wbtw R x y z) (f : P →ᵃ[R] P') : Wbtw R (f x) (f y) (f z) := by
   rw [Wbtw, ← affineSegment_image]
   exact Set.mem_image_of_mem _ h
@@ -561,7 +564,7 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp [vsub_vadd_eq_vsub_sub, smul_sub, smul_smul, ← sub_smul]
+  simp only [vadd_vsub, smul_smul, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul]
   ring_nf
 #align wbtw.same_ray_vsub Wbtw.sameRay_vsub
 

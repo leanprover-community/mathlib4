@@ -16,9 +16,11 @@ These are implemented as the quotient of a list by permutations.
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
+universe v
+
 open List Subtype Nat Function
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type v} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
@@ -300,7 +302,8 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     · have : a ∈ b ::ₘ bs := eq ▸ mem_cons_self _ _
       have : a ∈ bs := by simpa [h]
       rcases exists_cons_of_mem this with ⟨cs, hcs⟩
-      simp [h, hcs]
+      simp only [h, hcs, false_and, ne_eq, not_false_eq_true, cons_inj_right, exists_eq_right',
+        true_and, false_or]
       have : a ::ₘ as = b ::ₘ a ::ₘ cs := by simp [eq, hcs]
       have : a ::ₘ as = a ::ₘ b ::ₘ cs := by rwa [cons_swap]
       simpa using this
@@ -659,7 +662,7 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 #align multiset.le_iff_exists_add Multiset.le_iff_exists_add
 
-instance : CanonicallyOrderedAddMonoid (Multiset α) where
+instance : CanonicallyOrderedAddCommMonoid (Multiset α) where
   __ := inferInstanceAs (OrderBot (Multiset α))
   le_self_add := le_add_right
   exists_add_of_le h := leInductionOn h fun s =>
@@ -1148,7 +1151,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
   exact congr_arg _ (List.map_congr h)
 #align multiset.map_congr Multiset.map_congr
 
-theorem map_hcongr {β' : Type _} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
+theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
     (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
   subst h; simp at hf
   simp [map_congr rfl hf]

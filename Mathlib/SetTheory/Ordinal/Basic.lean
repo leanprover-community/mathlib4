@@ -63,7 +63,7 @@ open Classical Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type _} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Well order on an arbitrary type -/
@@ -378,7 +378,7 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 #align ordinal.type_lt_iff Ordinal.type_lt_iff
 
 theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s : β → β → Prop}
-  [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
+    [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 #align principal_seg.ordinal_type_lt PrincipalSeg.ordinal_type_lt
 
@@ -1265,7 +1265,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       · intro a'
         cases' (hf _).1 (typein_lt_type _ a') with b e
         exists b
-        simp
+        simp only [RelEmbedding.ofMonotone_coe]
         simp [e]
     · cases' h with a e
       rw [← e]
@@ -1584,3 +1584,22 @@ theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp
 #align ordinal.type_fin Ordinal.type_fin
 
 end Ordinal
+
+/-! ### Sorted lists -/
+
+theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [IsWellOrder α (· < ·)] {l m : List α}
+    {o : Ordinal} (hl : l.Sorted (· > ·)) (hm : m.Sorted (· > ·)) (hmltl : m < l)
+    (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) : ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
+  replace hmltl : List.Lex (· < ·) m l := hmltl
+  cases l with
+  | nil => simp at hmltl
+  | cons a as =>
+    cases m with
+    | nil => intro i hi; simp at hi
+    | cons b bs =>
+      intro i hi
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      cases hi with
+      | head as => exact List.head_le_of_lt hmltl
+      | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
+          (List.head_le_of_lt hmltl))

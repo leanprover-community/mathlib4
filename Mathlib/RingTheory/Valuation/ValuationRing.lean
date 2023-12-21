@@ -45,7 +45,7 @@ class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
-  ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
+    ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
 
 namespace ValuationRing
 

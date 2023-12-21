@@ -392,7 +392,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp
+  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and]
   intros
   split_ifs <;> simp_all
 #align pequiv.trans_single_of_eq_none PEquiv.trans_single_of_eq_none

@@ -1640,14 +1640,14 @@ theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
 section ScottContinuous
 variable [Preorder α] [Preorder β] {f : α → β} {a : α}
 
-/-- A function between preorders is said to be Scott continuous if it preserves `is_lub` on directed
+/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
 Scott topology.
 
 The dual notion
 
 ```lean
-∀ ⦃d : set α⦄, d.nonempty → directed_on (≥) d → ∀ ⦃a⦄, is_glb d a → is_glb (f '' d) (f a)
+∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
 ```
 
 does not appear to play a significant role in the literature, so is omitted here.

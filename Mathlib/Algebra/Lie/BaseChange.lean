@@ -24,6 +24,7 @@ Lie algebras have a well-behaved theory of extension and restriction of scalars.
 lie ring, lie algebra, extension of scalars, restriction of scalars, base change
 -/
 
+suppress_compilation
 
 universe u v w w₁ w₂ w₃
 

@@ -229,14 +229,6 @@ theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : Par
   exact @le_top _ _ A _
 #align order_top.ext_top OrderTop.ext_top
 
-theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
-  rcases A with ⟨ha⟩
-  rcases B with ⟨hb⟩
-  congr
-  ext
-  exact le_antisymm (hb _) (ha _)
-#align order_top.ext OrderTop.ext
-
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
 class OrderBot (α : Type u) [LE α] extends Bot α where
@@ -438,14 +430,6 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
   exact @bot_le _ _ A _
 #align order_bot.ext_bot OrderBot.ext_bot
 
-theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
-  rcases A with ⟨ha⟩
-  rcases B with ⟨hb⟩
-  congr
-  ext
-  exact le_antisymm (ha _) (hb _)
-#align order_bot.ext OrderBot.ext
-
 section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α] {a : α}
@@ -531,13 +515,19 @@ instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : Bounde
   __ := inferInstanceAs (OrderTop αᵒᵈ)
   __ := inferInstanceAs (OrderBot αᵒᵈ)
 
-theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B := by
-  have ht : @BoundedOrder.toOrderTop α _ A = @BoundedOrder.toOrderTop α _ B := OrderTop.ext
-  have hb : @BoundedOrder.toOrderBot α _ A = @BoundedOrder.toOrderBot α _ B := OrderBot.ext
-  cases A
-  cases B
-  congr
-#align bounded_order.ext BoundedOrder.ext
+section PartialOrder
+variable [PartialOrder α]
+
+instance OrderBot.instSubsingleton : Subsingleton (OrderBot α) where
+  allEq := by rintro @⟨⟨a⟩, ha⟩ @⟨⟨b⟩, hb⟩; congr; exact le_antisymm (ha _) (hb _)
+
+instance OrderTop.instSubsingleton : Subsingleton (OrderTop α) where
+  allEq := by rintro @⟨⟨a⟩, ha⟩ @⟨⟨b⟩, hb⟩; congr; exact le_antisymm (hb _) (ha _)
+
+instance BoundedOrder.instSubsingleton : Subsingleton (BoundedOrder α) where
+  allEq := by rintro ⟨⟩ ⟨⟩; congr <;> exact Subsingleton.elim _ _
+
+end PartialOrder
 
 section Logic
 

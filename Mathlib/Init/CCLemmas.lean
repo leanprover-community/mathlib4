@@ -82,15 +82,15 @@ theorem false_of_a_eq_not_a {a : Prop} (h : a = Not a) : False :=
 universe u
 
 theorem if_eq_of_eq_true {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h : c = True) :
-  @ite α c d t e = t :=
+    @ite α c d t e = t :=
   if_pos (of_eq_true h)
 
 theorem if_eq_of_eq_false {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h : c = False) :
-  @ite α c d t e = e :=
+    @ite α c d t e = e :=
   if_neg (not_of_eq_false h)
 
 theorem if_eq_of_eq (c : Prop) [d : Decidable c] {α : Sort u} {t e : α} (h : t = e) :
-  @ite α c d t e = t :=
+    @ite α c d t e = t :=
   match d with
   | isTrue _ => rfl
   | isFalse _ => Eq.symm h

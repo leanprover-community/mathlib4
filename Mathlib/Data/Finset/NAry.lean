@@ -531,7 +531,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     exact (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd.add ih
   simp_rw [← biUnion_image_left, disjoint_biUnion_right, not_forall] at h
   obtain ⟨b, hb, h⟩ := h
-  rwa [union_eq_right_iff_subset.2]
+  rwa [union_eq_right.2]
   exact (hs.eq (Set.mem_image_of_mem _ <| mem_insert_self _ _)
       (Set.mem_image_of_mem _ <| mem_insert_of_mem hb) h).trans_subset
     (image_subset_image₂_right hb)

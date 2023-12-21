@@ -348,7 +348,7 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
 
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
   let d := a.gcd b
-  rcases(zero_le a).eq_or_lt with (rfl | ha0)
+  rcases (zero_le a).eq_or_lt with (rfl | ha0)
   · simp
   have hd0 : 0 < d := Nat.gcd_pos_of_pos_left _ ha0
   apply le_of_mul_le_mul_right _ hd0

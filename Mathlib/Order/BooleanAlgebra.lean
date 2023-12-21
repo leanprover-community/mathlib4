@@ -685,6 +685,9 @@ theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
   ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
+@[simp] lemma compl_lt_compl_iff_lt : yᶜ < xᶜ ↔ x < y :=
+  lt_iff_lt_of_le_iff_le' compl_le_compl_iff_le compl_le_compl_iff_le
+
 theorem compl_le_of_compl_le (h : yᶜ ≤ x) : xᶜ ≤ y := by
   simpa only [compl_compl] using compl_le_compl h
 #align compl_le_of_compl_le compl_le_of_compl_le

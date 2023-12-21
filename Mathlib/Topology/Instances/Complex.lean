@@ -75,7 +75,8 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofReal.rangeRestrict r = j (ι x)
       · have :=
           RingHom.congr_fun (ringHom_eq_ofReal_of_continuous hψ₁) r
-        rw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
         convert this using 1
         · exact (DenseInducing.extend_eq di hc.continuous _).symm
         · rw [← ofReal.coe_rangeRestrict, hr]

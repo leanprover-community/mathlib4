@@ -38,7 +38,7 @@ See the implementation notes for remarks about non-associative and non-unital al
 * `algebraMap R A : R →+* A`: the canonical map from `R` to `A`, as a `RingHom`. This is the
   preferred spelling of this map, it is also available as:
   * `Algebra.linearMap R A : R →ₗ[R] A`, a `LinearMap`.
-  * `algebra.ofId R A : R →ₐ[R] A`, an `AlgHom` (defined in a later file).
+  * `Algebra.ofId R A : R →ₐ[R] A`, an `AlgHom` (defined in a later file).
 * Instances of `Algebra` in this file:
   * `Algebra.id`
   * `algebraNat`
@@ -458,7 +458,7 @@ end id
 
 section PUnit
 
-instance _root_.PUnit.algebra : Algebra R PUnit where
+instance _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
   toFun _ := PUnit.unit
   map_one' := rfl
   map_mul' _ _ := rfl

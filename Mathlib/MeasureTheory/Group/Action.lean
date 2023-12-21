@@ -123,7 +123,7 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
     _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [←preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
-    _ = map f μ S  := (map_apply hf hS).symm
+    _ = map f μ S := (map_apply hf hS).symm
 
 @[to_additive]
 instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]

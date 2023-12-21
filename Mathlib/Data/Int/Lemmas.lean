@@ -124,7 +124,7 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
   cases b
   · simp
   · show ofNat _ = _
-    rw [Nat.div_eq_zero] <;> simp
+    rw [Nat.div_eq_of_lt] <;> simp
   · decide
 #align int.div2_bit Int.div2_bit
 

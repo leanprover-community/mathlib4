@@ -87,6 +87,13 @@ theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε])
   ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
+  ext <;> simp
+
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
+
 /-- For two algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext]
 theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A] ⦃f g : R[ε] →ₐ[R] A⦄

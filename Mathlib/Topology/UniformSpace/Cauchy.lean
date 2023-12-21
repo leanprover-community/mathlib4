@@ -413,6 +413,24 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
     ⟨(x1, x2), by rw [nhds_prod_eq, le_prod]; constructor <;> assumption⟩
 #align complete_space.prod CompleteSpace.prod
 
+lemma CompleteSpace.fst_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty β] :
+    CompleteSpace α where
+  complete hf :=
+    let ⟨y⟩ := h
+    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| hf.prod <| cauchy_pure (a := y)
+    ⟨a, by simpa only [map_fst_prod, nhds_prod_eq] using map_mono (m := Prod.fst) hab⟩
+
+lemma CompleteSpace.snd_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty α] :
+    CompleteSpace β where
+  complete hf :=
+    let ⟨x⟩ := h
+    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| (cauchy_pure (a := x)).prod hf
+    ⟨b, by simpa only [map_snd_prod, nhds_prod_eq] using map_mono (m := Prod.snd) hab⟩
+
+lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty β] :
+    CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
+  ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
+
 @[to_additive]
 instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
   complete hf :=
@@ -546,7 +564,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   have : { p : α × α | (f p.1, f p.2) ∈ t } ∈ 𝓤 α := hf ht
   let ⟨c, hfc, hct⟩ := hs _ this
   ⟨f '' c, hfc.image f, by
-    simp [image_subset_iff]
+    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
+      preimage_iUnion, preimage_setOf_eq]
     simp [subset_def] at hct
     intro x hx; simp
     exact hct x hx⟩
@@ -573,22 +592,17 @@ theorem totallyBounded_iff_filter {s : Set α} :
   · intro H d hd
     contrapose! H with hd_cover
     set f := ⨅ t : Finset α, 𝓟 (s \ ⋃ y ∈ t, { x | (x, y) ∈ d })
-    have : Filter.NeBot f := by
-      refine' iInf_neBot_of_directed' (directed_of_sup _) _
-      · intro t₁ t₂ h
-        exact principal_mono.2 (diff_subset_diff_right <| biUnion_subset_biUnion_left h)
-      · intro t
-        simpa [nonempty_diff] using hd_cover t t.finite_toSet
+    have hb : HasAntitoneBasis f fun t : Finset α ↦ s \ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
+      .iInf_principal fun _ _ ↦ diff_subset_diff_right ∘ biUnion_subset_biUnion_left
+    have : Filter.NeBot f := hb.1.neBot_iff.2 fun _ ↦
+      nonempty_diff.2 <| hd_cover _ (Finset.finite_toSet _)
     have : f ≤ 𝓟 s := iInf_le_of_le ∅ (by simp)
     refine' ⟨f, ‹_›, ‹_›, fun c hcf hc => _⟩
     rcases mem_prod_same_iff.1 (hc.2 hd) with ⟨m, hm, hmd⟩
     rcases hc.1.nonempty_of_mem hm with ⟨y, hym⟩
-    set ys := ⋃ y' ∈ ({y} : Finset α), { x | (x, y') ∈ d }
-    have : c ≤ 𝓟 (s \ ys) := hcf.trans (iInf_le_of_le {y} le_rfl)
-    refine' hc.1.ne (empty_mem_iff_bot.mp _)
-    filter_upwards [le_principal_iff.1 this, hm]
-    refine' fun x hx hxm => hx.2 _
-    simpa using hmd (mk_mem_prod hxm hym)
+    have : s \ {x | (x, y) ∈ d} ∈ c := by simpa using hcf (hb.mem {y})
+    rcases hc.1.nonempty_of_mem (inter_mem hm this) with ⟨z, hzm, -, hyz⟩
+    exact hyz (hmd ⟨hzm, hym⟩)
 #align totally_bounded_iff_filter totallyBounded_iff_filter
 
 theorem totallyBounded_iff_ultrafilter {s : Set α} :

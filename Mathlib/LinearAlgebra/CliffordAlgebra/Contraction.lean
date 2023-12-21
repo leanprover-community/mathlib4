@@ -289,7 +289,7 @@ theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
 
 theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
-    (QuadraticForm.associated (R₁ := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
+    (QuadraticForm.associated (R := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
   simp [QuadraticForm.toQuadraticForm_associated]
 #align clifford_algebra.change_form.associated_neg_proof CliffordAlgebra.changeForm.associated_neg_proof
 
@@ -324,8 +324,8 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
--- Porting note: original statement
---    changeForm h (d⌋x) = d⌋changeForm h x := by
+    -- Porting note: original statement
+    --    changeForm h (d⌋x) = d⌋changeForm h x := by
     changeForm h (contractLeft (Q := Q) d x) = contractLeft (Q := Q') d (changeForm h x) := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]

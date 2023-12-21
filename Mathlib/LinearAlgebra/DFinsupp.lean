@@ -81,7 +81,8 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
   map_smul' c f := smul_apply c f i
 #align dfinsupp.lapply DFinsupp.lapply
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem lmk_apply (s : Finset ι) (x) : (lmk s : _ →ₗ[R] Π₀ i, M i) x = mk s x :=
   rfl
 #align dfinsupp.lmk_apply DFinsupp.lmk_apply
@@ -221,7 +222,7 @@ theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x �
     {l : Π₀ i, β₁ i} :
     -- Porting note: Needed to add (M := ...) below
     (DFinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
-      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l  := by
+      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l := by
   simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 #align dfinsupp.sum_map_range_index.linear_map DFinsupp.sum_mapRange_index.linearMap
 

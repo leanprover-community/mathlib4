@@ -237,7 +237,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   rcases hc₂ with ⟨v, hv₁, hv₂⟩
   let k := closure (image2 ϕ v s)
   have hk : IsCompact (k \ n) :=
-    IsCompact.diff (isCompact_of_isClosed_subset hc₁ isClosed_closure hv₂) hn₁
+    (hc₁.of_isClosed_subset isClosed_closure hv₂).diff hn₁
   let j u := (closure (image2 ϕ (u ∩ v) s))ᶜ
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
   have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
@@ -315,7 +315,7 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
       Nonempty.image2 (Filter.nonempty_of_mem (inter_mem u.prop hv₁)) hs
     exact hn.mono subset_closure
   · intro
-    apply isCompact_of_isClosed_subset hc₁ isClosed_closure
+    apply hc₁.of_isClosed_subset isClosed_closure
     calc
       _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset (inter_subset_right _ _) Subset.rfl)
       _ ⊆ c := hv₂

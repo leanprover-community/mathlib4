@@ -291,9 +291,9 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
     cases x n
-    · convert(h0 _ _ _).2.2.2
+    · convert (h0 _ _ _).2.2.2
       rw [PiNat.res_length]
-    convert(h1 _ _ _).2.2.2
+    convert (h1 _ _ _).2.2.2
     rw [PiNat.res_length]
   have hdisj' : CantorScheme.Disjoint D := by
     rintro l (a | a) (b | b) hab <;> try contradiction

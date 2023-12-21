@@ -728,9 +728,10 @@ measures of corresponding sets (images or preimages) have equal measures and fun
 
 section MeasurePreserving
 
-theorem measurePreserving_piEquivPiSubtypeProd {ι : Type u} {α : ι → Type v} [Fintype ι]
-    {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]
-    (p : ι → Prop) [DecidablePred p] :
+variable {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]
+variable [Fintype ι']
+
+theorem measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred p] :
     MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) (Measure.pi μ)
       ((Measure.pi fun i : Subtype p => μ i).prod (Measure.pi fun i => μ i)) := by
   set e := (MeasurableEquiv.piEquivPiSubtypeProd α p).symm
@@ -743,11 +744,52 @@ theorem measurePreserving_piEquivPiSubtypeProd {ι : Type u} {α : ι → Type v
   exact Fintype.prod_subtype_mul_prod_subtype p fun i => μ i (s i)
 #align measure_theory.measure_preserving_pi_equiv_pi_subtype_prod MeasureTheory.measurePreserving_piEquivPiSubtypeProd
 
-theorem volume_preserving_piEquivPiSubtypeProd {ι : Type*} (α : ι → Type*) [Fintype ι]
+theorem volume_preserving_piEquivPiSubtypeProd (α : ι → Type*)
     [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] (p : ι → Prop)
     [DecidablePred p] : MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) :=
   measurePreserving_piEquivPiSubtypeProd (fun _ => volume) p
 #align measure_theory.volume_preserving_pi_equiv_pi_subtype_prod MeasureTheory.volume_preserving_piEquivPiSubtypeProd
+
+theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
+    MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
+      (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
+  measurable := (MeasurableEquiv.piCongrLeft α f).measurable
+  map_eq := by
+    refine' (pi_eq fun s _ => _).symm
+    rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_piCongrLeft f,
+      Equiv.piCongrLeft_preimage_univ_pi, pi_pi _ _, f.prod_comp (fun i => μ i (s i))]
+
+theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι)
+    [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
+    MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
+  measurePreserving_piCongrLeft (fun _ ↦ volume) f
+
+theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type*} [∀ i, MeasurableSpace (π i)]
+    (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
+    MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm
+      ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) (Measure.pi μ) where
+  measurable := (MeasurableEquiv.sumPiEquivProdPi π).symm.measurable
+  map_eq := by
+    refine' (pi_eq fun s _ => _).symm
+    simp_rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_sumPiEquivProdPi_symm,
+      Equiv.sumPiEquivProdPi_symm_preimage_univ_pi, Measure.prod_prod, Measure.pi_pi,
+      Fintype.prod_sum_type]
+
+theorem volume_measurePreserving_sumPiEquivProdPi_symm (π : ι ⊕ ι' → Type*)
+    [∀ i, MeasureSpace (π i)] [∀ i, SigmaFinite (volume : Measure (π i))] :
+    MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm volume volume :=
+  measurePreserving_sumPiEquivProdPi_symm (fun _ ↦ volume)
+
+theorem measurePreserving_sumPiEquivProdPi {π : ι ⊕ ι' → Type*} [∀ i, MeasurableSpace (π i)]
+    (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
+    MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π)
+      (Measure.pi μ) ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) :=
+  measurePreserving_sumPiEquivProdPi_symm μ |>.symm
+
+theorem volume_measurePreserving_sumPiEquivProdPi (π : ι ⊕ ι' → Type*)
+    [∀ i, MeasureSpace (π i)] [∀ i, SigmaFinite (volume : Measure (π i))] :
+    MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π) volume volume :=
+  measurePreserving_sumPiEquivProdPi (fun _ ↦ volume)
 
 theorem measurePreserving_piFinSuccAboveEquiv {n : ℕ} {α : Fin (n + 1) → Type u}
     {m : ∀ i, MeasurableSpace (α i)} (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]

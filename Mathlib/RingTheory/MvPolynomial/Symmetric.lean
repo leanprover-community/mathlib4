@@ -59,12 +59,12 @@ variable {R : Type*} [CommSemiring R]
 
 /-- The `n`th elementary symmetric function evaluated at the elements of `s` -/
 def esymm (s : Multiset R) (n : ℕ) : R :=
-  ((s.powersetLen n).map Multiset.prod).sum
+  ((s.powersetCard n).map Multiset.prod).sum
 #align multiset.esymm Multiset.esymm
 
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
-    (s.val.map f).esymm n = (s.powersetLen n).sum fun t => t.prod f := by
-  simp only [esymm, powersetLen_map, ← Finset.map_val_val_powersetLen, map_map]
+    (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
+  simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
   rfl
 #align finset.esymm_map_val Finset.esymm_map_val
 
@@ -165,7 +165,7 @@ variable (σ R) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R`. -/
 def esymm (n : ℕ) : MvPolynomial σ R :=
-  ∑ t in powersetLen n univ, ∏ i in t, X i
+  ∑ t in powersetCard n univ, ∏ i in t, X i
 #align mv_polynomial.esymm MvPolynomial.esymm
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
@@ -182,19 +182,19 @@ theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
 theorem esymm_eq_sum_subtype (n : ℕ) :
     esymm σ R n = ∑ t : { s : Finset σ // s.card = n }, ∏ i in (t : Finset σ), X i :=
-  sum_subtype _ (fun _ => mem_powerset_len_univ_iff) _
+  sum_subtype _ (fun _ => mem_powersetCard_univ) _
 #align mv_polynomial.esymm_eq_sum_subtype MvPolynomial.esymm_eq_sum_subtype
 
 /-- We can define `esymm σ R n` as a sum over explicit monomials -/
 theorem esymm_eq_sum_monomial (n : ℕ) :
-    esymm σ R n = ∑ t in powersetLen n univ, monomial (∑ i in t, Finsupp.single i 1) 1 := by
+    esymm σ R n = ∑ t in powersetCard n univ, monomial (∑ i in t, Finsupp.single i 1) 1 := by
   simp_rw [monomial_sum_one]
   rfl
 #align mv_polynomial.esymm_eq_sum_monomial MvPolynomial.esymm_eq_sum_monomial
 
 @[simp]
 theorem esymm_zero : esymm σ R 0 = 1 := by
-  simp only [esymm, powersetLen_zero, sum_singleton, prod_empty]
+  simp only [esymm, powersetCard_zero, sum_singleton, prod_empty]
 #align mv_polynomial.esymm_zero MvPolynomial.esymm_zero
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
@@ -203,14 +203,14 @@ theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S 
 
 theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm τ R n :=
   calc
-    rename e (esymm σ R n) = ∑ x in powersetLen n univ, ∏ i in x, X (e i) := by
+    rename e (esymm σ R n) = ∑ x in powersetCard n univ, ∏ i in x, X (e i) := by
       simp_rw [esymm, map_sum, map_prod, rename_X]
-    _ = ∑ t in powersetLen n (univ.map e.toEmbedding), ∏ i in t, X i := by
-      simp [Finset.powersetLen_map, -Finset.map_univ_equiv]
+    _ = ∑ t in powersetCard n (univ.map e.toEmbedding), ∏ i in t, X i := by
+      simp [Finset.powersetCard_map, -Finset.map_univ_equiv]
       --Porting note: Why did `mapEmbedding_apply` not work?
       dsimp [mapEmbedding, OrderEmbedding.ofMapLEIff]
       simp
-    _ = ∑ t in powersetLen n univ, ∏ i in t, X i := by rw [Finset.map_univ_equiv]
+    _ = ∑ t in powersetCard n univ, ∏ i in t, X i := by rw [Finset.map_univ_equiv]
 #align mv_polynomial.rename_esymm MvPolynomial.rename_esymm
 
 theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
@@ -220,11 +220,11 @@ theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
 
 theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetLen n (univ : Finset σ)).biUnion fun t =>
+      (powersetCard n (univ : Finset σ)).biUnion fun t =>
         (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  refine' Finsupp.support_sum_eq_biUnion (powersetLen n (univ : Finset σ)) _
+  refine' Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) _
   intro s t hst
   rw [Finset.disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
   rw [Finsupp.support_single_ne_zero _ one_ne_zero]
@@ -245,7 +245,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
 
 theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetLen n (univ : Finset σ)).biUnion fun t => {∑ i : σ in t, Finsupp.single i 1} := by
+      (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i : σ in t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
@@ -254,7 +254,7 @@ theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
 
 theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetLen n (univ : Finset σ)).image fun t => ∑ i : σ in t, Finsupp.single i 1 := by
+      (powersetCard n (univ : Finset σ)).image fun t => ∑ i : σ in t, Finsupp.single i 1 := by
   rw [support_esymm']
   exact biUnion_singleton
 #align mv_polynomial.support_esymm MvPolynomial.support_esymm
@@ -267,8 +267,8 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       funext
       simp [Finsupp.toMultiset_sum_single]
     rw [degrees_def, support_esymm, sup_image, this]
-    have : ((powersetLen n univ).sup (fun (x : Finset σ) => x)).val
-        = sup (powersetLen n univ) val := by
+    have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
+        = sup (powersetCard n univ) val := by
       refine' comp_sup_eq_sup_comp _ _ _
       · intros
         simp only [union_val, sup_eq_union]
@@ -276,7 +276,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       · rfl
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powersetLen_sup _ _ (Nat.lt_of_succ_le hn)
+    simpa using powersetCard_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric

@@ -30,12 +30,6 @@ open QuadraticForm
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
-instance (V : QuadraticModuleCat.{v} R) : AddCommGroup V :=
-  V.isAddCommGroup
-
-instance (V : QuadraticModuleCat.{v} R) : Module R V :=
-  V.isModule
-
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
 @[simps form]
 def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :

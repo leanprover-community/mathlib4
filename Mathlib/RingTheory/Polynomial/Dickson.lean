@@ -243,7 +243,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         simpa [eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
           mul_zero, sq, zero_add, one_ne_zero]
       classical
-        convert(φ.roots ∪ {0}).toFinset.finite_toSet using 1
+        convert (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
         simp only [Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,

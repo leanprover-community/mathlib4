@@ -23,6 +23,8 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
+* `Finset.filterMap` Given a function `f : α → Option β`, `s.filterMap f` is the
+  image finset in `β`, filtering out `none`s.
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
@@ -337,6 +339,10 @@ theorem forall_image {p : β → Prop} : (∀ b ∈ s.image f, p b) ↔ ∀ a �
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align finset.forall_image Finset.forall_image
 
+theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
+  eq_of_veq (s.map f).2.dedup.symm
+#align finset.map_eq_image Finset.map_eq_image
+
 --@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
   rw [mem_image]
@@ -451,12 +457,22 @@ theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
 #align finset.image_mono Finset.image_mono
 
+lemma image_injective (hf : Injective f) : Injective (image f) := by
+  simpa only [funext (map_eq_image _)] using map_injective ⟨f, hf⟩
+
+lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s = t :=
+  (image_injective hf).eq_iff
+
 theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
     s.image f ⊆ t.image f ↔ s ⊆ t := by
   simp_rw [← coe_subset]
   push_cast
   exact Set.image_subset_image_iff hf
 #align finset.image_subset_image_iff Finset.image_subset_image_iff
+
+lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
+  simp_rw [←lt_iff_ssubset]
+  exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
   calc
@@ -465,7 +481,7 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
 #align finset.coe_image_subset_range Finset.coe_image_subset_range
 
 theorem image_filter {p : β → Prop} [DecidablePred p] :
-    (s.image f).filter p = (s.filter (p ∘ f)).image f :=
+    (s.image f).filter p = (s.filter λ a ↦ p (f a)).image f :=
   ext fun b => by
     simp only [mem_filter, mem_image, exists_prop]
     exact
@@ -600,10 +616,6 @@ theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
       fun _ => Finset.mem_attach _ _⟩
 #align finset.attach_insert Finset.attach_insert
 
-theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
-  eq_of_veq (s.map f).2.dedup.symm
-#align finset.map_eq_image Finset.map_eq_image
-
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
     Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
@@ -646,6 +658,49 @@ theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image
 #align finset.bUnion_singleton Finset.biUnion_singleton
 
 end Image
+
+/-! ### filterMap -/
+
+section FilterMap
+
+/-- `filterMap f s` is a combination filter/map operation on `s`.
+  The function `f : α → Option β` is applied to each element of `s`;
+  if `f a` is `some b` then `b` is included in the result, otherwise
+  `a` is excluded from the resulting finset.
+
+  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s , f a = some b}`. -/
+-- TODO: should there be `filterImage` too?
+def filterMap (f : α → Option β) (s : Finset α)
+    (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
+  ⟨s.val.filterMap f, s.nodup.filterMap f f_inj⟩
+
+variable (f : α → Option β) (s' : Finset α) {s t : Finset α}
+  {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
+
+@[simp]
+theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
+
+@[simp]
+theorem filterMap_empty : (∅ : Finset α).filterMap f f_inj = ∅ := rfl
+
+@[simp]
+theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a = some b :=
+  s.val.mem_filterMap f
+
+@[simp, norm_cast]
+theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
+  Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
+
+@[simp]
+theorem filterMap_some : s.filterMap some (by simp) = s :=
+  ext fun _ => by simp only [mem_filterMap, Option.some.injEq, exists_eq_right]
+
+theorem filterMap_mono (h : s ⊆ t) :
+    filterMap f s f_inj ⊆ filterMap f t f_inj := by
+  rw [←val_le_iff] at h ⊢
+  exact Multiset.filterMap_le_filterMap f h
+
+end FilterMap
 
 /-! ### Subtype -/
 

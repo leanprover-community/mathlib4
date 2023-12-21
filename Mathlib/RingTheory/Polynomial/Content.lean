@@ -239,13 +239,12 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
   isPrimitive_iff_content_eq_one.mp hp
 #align polynomial.is_primitive.content_eq_one Polynomial.IsPrimitive.content_eq_one
 
-open Classical
-
 section PrimPart
 
 /-- The primitive part of a polynomial `p` is the primitive polynomial gained by dividing `p` by
   `p.content`. If `p = 0`, then `p.primPart = 1`.  -/
 noncomputable def primPart (p : R[X]) : R[X] :=
+  letI := Classical.decEq R
   if p = 0 then 1 else Classical.choose (C_content_dvd p)
 #align polynomial.prim_part Polynomial.primPart
 
@@ -481,6 +480,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
 #align polynomial.dvd_iff_content_dvd_content_and_prim_part_dvd_prim_part Polynomial.dvd_iff_content_dvd_content_and_primPart_dvd_primPart
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+  letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM fun p q => by
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with

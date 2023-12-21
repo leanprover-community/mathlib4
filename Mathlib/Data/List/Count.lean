@@ -86,9 +86,8 @@ variable [DecidableEq α]
 #align list.count_nil List.count_nil
 
 @[deprecated] theorem count_cons' (a b : α) (l : List α) :
-    count a (b :: l) = count a l + if a = b then 1 else 0 := by conv =>
-  simp [count, countP_cons]
-  lhs
+    count a (b :: l) = count a l + if a = b then 1 else 0 := by
+  simp only [count, beq_iff_eq, countP_cons, add_right_inj]
   simp only [eq_comm]
 #align list.count_cons' List.count_cons'
 

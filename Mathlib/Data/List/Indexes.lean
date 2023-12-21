@@ -157,6 +157,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
       rw [ih]
       suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
         rw [this]
+        rfl
       funext n' a
       simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
       simp only [length_cons, Nat.succ.injEq] at e; exact e
@@ -167,7 +168,7 @@ theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
   induction' l with hd tl hl generalizing f
   · rfl
   · rw [List.oldMapIdx, List.oldMapIdxCore, List.oldMapIdxCore_eq, hl]
-    simp [enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
+    simp [map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
 #align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
 @[simp]

@@ -154,6 +154,9 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply
+
 @[to_additive]
 instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
 set_option linter.uppercaseLean3 false in

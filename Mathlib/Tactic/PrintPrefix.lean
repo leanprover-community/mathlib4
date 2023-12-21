@@ -15,7 +15,7 @@ structure FindOptions where
   checkPrivate : Bool := false
 
 def findCore (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) :
-  MetaM (Array ConstantInfo) := do
+    MetaM (Array ConstantInfo) := do
   let matches_ ← if !opts.stage1 then pure #[] else
     (← getEnv).constants.map₁.foldM (init := #[]) check
   (← getEnv).constants.map₂.foldlM (init := matches_) check
@@ -26,7 +26,7 @@ where
     else pure matches_
 
 def find (msg : String)
-  (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
+    (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
   let cinfos ← findCore ϕ opts
   let cinfos := cinfos.qsort fun p q ↦ p.name.lt q.name
   let mut msg := msg

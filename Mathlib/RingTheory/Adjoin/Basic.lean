@@ -40,6 +40,7 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 #align algebra.subset_adjoin Algebra.subset_adjoin
@@ -452,12 +453,12 @@ end AlgHom
 
 section NatInt
 
-theorem Algebra.adjoin_nat {R : Type _} [Semiring R] (s : Set R) :
+theorem Algebra.adjoin_nat {R : Type*} [Semiring R] (s : Set R) :
     adjoin ℕ s = subalgebraOfSubsemiring (Subsemiring.closure s) :=
   le_antisymm (adjoin_le Subsemiring.subset_closure)
     (Subsemiring.closure_le.2 subset_adjoin : Subsemiring.closure s ≤ (adjoin ℕ s).toSubsemiring)
 
-theorem Algebra.adjoin_int {R : Type _} [Ring R] (s : Set R) :
+theorem Algebra.adjoin_int {R : Type*} [Ring R] (s : Set R) :
     adjoin ℤ s = subalgebraOfSubring (Subring.closure s) :=
   le_antisymm (adjoin_le Subring.subset_closure)
     (Subring.closure_le.2 subset_adjoin : Subring.closure s ≤ (adjoin ℤ s).toSubring)
