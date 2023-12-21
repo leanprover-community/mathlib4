@@ -871,7 +871,7 @@ discrete topology.
 This version does not assume the choice of a topology on either the source `X`
 nor the target `Y` of the inclusion `f`. -/
 lemma induced_bot {X Y : Type*} {f : X → Y} (hf : Function.Injective f) :
-  TopologicalSpace.induced f ⊥ = ⊥ :=
+    TopologicalSpace.induced f ⊥ = ⊥ :=
 eq_of_nhds_eq_nhds ( λ x => by
   set hY : TopologicalSpace Y := ⊥
   haveI : DiscreteTopology Y := ⟨rfl⟩
@@ -881,8 +881,8 @@ eq_of_nhds_eq_nhds ( λ x => by
     hf.preimage_image, nhds_discrete X]
   simp)
 
-lemma DiscreteTopology_induced {X Y : Type*} [tY : TopologicalSpace Y] [DiscreteTopology Y] {f :
-  X → Y} (hf : Function.Injective f) : @DiscreteTopology X (TopologicalSpace.induced f tY) := by
+lemma DiscreteTopology_induced {X Y : Type*} [tY : TopologicalSpace Y] [DiscreteTopology Y]
+    {f : X → Y} (hf : Function.Injective f) : @DiscreteTopology X (TopologicalSpace.induced f tY) := by
   apply @DiscreteTopology.mk _ (TopologicalSpace.induced f tY) _
   rw [@DiscreteTopology.eq_bot Y _ _, induced_bot hf]
 
