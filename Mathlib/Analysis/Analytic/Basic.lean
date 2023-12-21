@@ -1919,8 +1919,8 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
         ContinuousMultilinearMap.zero_apply]
       simp only
       by_cases h' : k < n
-      . exact le_add_of_le_right (h h')
-      . exact le_add_of_le_left (le_of_not_lt h')
+      · exact le_add_of_le_right (h h')
+      · exact le_add_of_le_left (le_of_not_lt h')
     exact summable_of_finite_support (Set.Finite.subset hs1 hs2)
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     rw [FormalMultilinearSeries.sum]
