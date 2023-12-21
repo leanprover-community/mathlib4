@@ -79,7 +79,7 @@ def space (K : SimplicialComplex 𝕜 E) : Set E :=
 #align geometry.simplicial_complex.space Geometry.SimplicialComplex.space
 
 -- Porting note: Expanded `∃ s ∈ K.faces` to get the type to match more closely with Lean 3
-theorem mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈ convexHull 𝕜 (s : Set E) :=
+theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull 𝕜 (s : Set E) :=
   mem_iUnion₂
 #align geometry.simplicial_complex.mem_space_iff Geometry.SimplicialComplex.mem_space_iff
 
@@ -119,7 +119,7 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
 @[simps]
 def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent 𝕜 ((↑) : s → E))
     (down_closed : ∀ s ∈ faces, ∀ (t) (_ : t ⊆ s), t ∈ faces)
-    (inter_subset_convexHull : ∀ (s) (_ : s ∈ faces) (t) (_ : t ∈ faces),
+    (inter_subset_convexHull : ∀ᵉ (s ∈ faces) (t ∈ faces),
       convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
     SimplicialComplex 𝕜 E where
   faces := faces \ {∅}

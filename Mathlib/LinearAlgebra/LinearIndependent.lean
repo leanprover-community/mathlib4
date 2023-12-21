@@ -152,7 +152,7 @@ theorem linearIndependent_iff' :
 
 theorem linearIndependent_iff'' :
     LinearIndependent R v ↔
-      ∀ (s : Finset ι) (g : ι → R) (_hg : ∀ (i) (_ : i ∉ s), g i = 0),
+      ∀ (s : Finset ι) (g : ι → R), (∀ i ∉ s, g i = 0) →
         ∑ i in s, g i • v i = 0 → ∀ i, g i = 0 := by
   classical
   exact linearIndependent_iff'.trans

@@ -802,7 +802,7 @@ ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded 
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
 theorem HasFPowerSeriesOnBall.image_sub_sub_deriv_le (hf : HasFPowerSeriesOnBall f p x r)
     (hr : r' < r) :
-    ∃ C, ∀ (y) (_ : y ∈ EMetric.ball x r') (z) (_ : z ∈ EMetric.ball x r'),
+    ∃ C, ∀ᵉ (y ∈ EMetric.ball x r') (z ∈ EMetric.ball x r'),
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
   simpa only [isBigO_principal, mul_assoc, norm_mul, norm_norm, Prod.forall, EMetric.mem_ball,
     Prod.edist_eq, max_lt_iff, and_imp, @forall_swap (_ < _) E] using

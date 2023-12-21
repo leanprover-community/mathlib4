@@ -48,13 +48,13 @@ variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
 
 /-- Segments in a vector space. -/
 def segment (x y : E) : Set E :=
-  { z : E | ∃ (a b : 𝕜) (_ : 0 ≤ a) (_ : 0 ≤ b) (_ : a + b = 1), a • x + b • y = z }
+  { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 #align segment segment
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
 the base semiring has some element between `0` and `1`. -/
 def openSegment (x y : E) : Set E :=
-  { z : E | ∃ (a b : 𝕜) (_ : 0 < a) (_ : 0 < b) (_ : a + b = 1), a • x + b • y = z }
+  { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 #align open_segment openSegment
 
 scoped[Convex] notation (priority := high) "[" x "-[" 𝕜 "]" y "]" => segment 𝕜 x y

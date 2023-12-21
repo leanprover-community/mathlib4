@@ -105,7 +105,7 @@ theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜,
   mem_iInter₂
 #align mem_balanced_core_aux_iff mem_balancedCoreAux_iff
 
-theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜) (_ : ‖r‖ ≤ 1), x ∈ r • s :=
+theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ r : 𝕜, ‖r‖ ≤ 1 ∧ x ∈ r • s :=
   mem_iUnion₂
 #align mem_balanced_hull_iff mem_balancedHull_iff
 
@@ -202,7 +202,7 @@ theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
 #align balanced_core_eq_Inter balancedCore_eq_iInter
 
-theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ (a : 𝕜) (_ : ‖a‖ ≤ 1), a • s ⊆ t) :
+theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ ≤ 1 →, a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
   refine' subset_iInter₂ fun a ha => _

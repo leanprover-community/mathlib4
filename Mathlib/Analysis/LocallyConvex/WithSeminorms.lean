@@ -78,7 +78,7 @@ def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
 variable (p : SeminormFamily 𝕜 E ι)
 
 theorem basisSets_iff {U : Set E} :
-    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : _) (_ : 0 < r), U = ball (i.sup p) 0 r := by
+    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
   simp only [basisSets, mem_iUnion, mem_singleton_iff]
 #align seminorm_family.basis_sets_iff SeminormFamily.basisSets_iff
 
