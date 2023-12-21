@@ -3,11 +3,8 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.GroupTheory.MonoidLocalization
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Localization.Module
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
