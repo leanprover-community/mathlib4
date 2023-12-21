@@ -494,7 +494,7 @@ theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_�
     (h_inter : IsPiSystem S) (h_sub : T ⊆ S) (hc : T.Countable) (hU : ⋃₀ T = univ)
     (htop : ∀ s ∈ T, μ s ≠ ∞) (h_eq : ∀ s ∈ S, μ s = ν s) : μ = ν := by
   refine' ext_of_generateFrom_of_cover h_gen hc h_inter hU htop _ fun t ht => h_eq t (h_sub ht)
-  intro t ht s hs; cases' (s ∩ t).eq_empty_or_nonempty with H H
+  intro t ht s hs; rcases (s ∩ t).eq_empty_or_nonempty with H | H
   · simp only [H, measure_empty]
   · exact h_eq _ (h_inter _ hs _ (h_sub ht) H)
 #align measure_theory.measure.ext_of_generate_from_of_cover_subset MeasureTheory.Measure.ext_of_generateFrom_of_cover_subset

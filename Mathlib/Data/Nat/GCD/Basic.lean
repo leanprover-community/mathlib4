@@ -308,7 +308,7 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
-  cases' Nat.eq_zero_or_pos (gcd a b) with g0 g0
+  rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h

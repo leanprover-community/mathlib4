@@ -411,7 +411,7 @@ theorem prod_diff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ 
 /-- A product set is included in a product set if and only factors are included, or a factor of the
 first set is empty. -/
 theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty_iff] at h
   refine' ⟨fun H => Or.inl ⟨_, _⟩, _⟩
@@ -439,7 +439,7 @@ theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
 theorem prod_eq_prod_iff :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ ∨ (s = ∅ ∨ t = ∅) ∧ (s₁ = ∅ ∨ t₁ = ∅) := by
   symm
-  cases' eq_empty_or_nonempty (s ×ˢ t) with h h
+  rcases eq_empty_or_nonempty (s ×ˢ t) with h | h
   · simp_rw [h, @eq_comm _ ∅, prod_eq_empty_iff, prod_eq_empty_iff.mp h, true_and_iff,
       or_iff_right_iff_imp]
     rintro ⟨rfl, rfl⟩

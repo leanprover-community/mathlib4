@@ -290,7 +290,7 @@ instance tendsto_uIcc_of_Icc {l : Filter α} [TendstoIxxClass Icc l l] :
   obtain ⟨t, htl, hts⟩ : ∃ t ∈ l, ∀ p ∈ (t : Set α) ×ˢ t, Icc (p : α × α).1 p.2 ∈ s
   exact mem_prod_self_iff.1 (mem_map.1 (tendsto_fst.Icc tendsto_snd hs))
   refine' ⟨t, htl, fun p hp => _⟩
-  cases' le_total p.1 p.2 with h h
+  rcases le_total p.1 p.2 with h | h
   · rw [mem_preimage, uIcc_of_le h]
     exact hts p hp
   · rw [mem_preimage, uIcc_of_ge h]

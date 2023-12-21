@@ -1077,7 +1077,7 @@ theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
     (⊤ : OuterMeasure α).toMeasure (by rw [OuterMeasure.top_caratheodory]; exact le_top) =
       (⊤ : Measure α) :=
   top_unique fun s hs => by
-    cases' s.eq_empty_or_nonempty with h h <;>
+    rcases s.eq_empty_or_nonempty with h | h <;>
       simp [h, toMeasure_apply ⊤ _ hs, OuterMeasure.top_apply]
 #align measure_theory.outer_measure.to_measure_top MeasureTheory.OuterMeasure.toMeasure_top
 
