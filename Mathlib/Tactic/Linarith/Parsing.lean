@@ -29,6 +29,8 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
+set_option autoImplicit true
+
 open Linarith.Ineq Std
 
 section

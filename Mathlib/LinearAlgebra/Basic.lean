@@ -56,6 +56,8 @@ linear algebra, vector space, module
 
 -/
 
+set_option autoImplicit true
+
 
 open Function
 

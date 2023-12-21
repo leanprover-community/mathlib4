@@ -51,6 +51,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 topological space, interior, closure, frontier, neighborhood, continuity, continuous function
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

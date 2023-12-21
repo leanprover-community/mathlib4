@@ -10,6 +10,8 @@ import Std.Tactic.Ext
 # Basic facts about `Thunk`.
 -/
 
+set_option autoImplicit true
+
 namespace Thunk
 
 #align thunk.mk Thunk.mk

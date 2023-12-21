@@ -77,6 +77,8 @@ machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help w
 `p = fun _ ↦ True`.
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter
 

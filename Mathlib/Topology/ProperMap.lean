@@ -67,6 +67,8 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
+set_option autoImplicit true
+
 open Filter Topology Function Set
 open Prod (fst snd)
 

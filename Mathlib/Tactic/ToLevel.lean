@@ -16,6 +16,8 @@ override the ones from Lean 4 core.
 
 -/
 
+set_option autoImplicit true
+
 namespace Lean
 
 /-- A class to create `Level` expressions that denote particular universe levels in Lean.

@@ -33,6 +33,8 @@ isomorphisms.
 * `≃r`: `RelIso`
 -/
 
+set_option autoImplicit true
+
 
 open Function
 

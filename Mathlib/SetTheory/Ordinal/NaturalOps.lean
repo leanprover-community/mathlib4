@@ -41,6 +41,8 @@ between both types, we attempt to prove and state most results on `Ordinal`.
   form.
 -/
 
+set_option autoImplicit true
+
 
 universe u v
 

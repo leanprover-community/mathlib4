@@ -9,6 +9,8 @@ import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
 
+set_option autoImplicit true
+
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
   let rec aux : List String → List String → List String

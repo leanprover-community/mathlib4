@@ -13,6 +13,8 @@ This implements the `symm` tactic, which can apply symmetry theorems to either t
 hypothesis.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta
 
 namespace Mathlib.Tactic

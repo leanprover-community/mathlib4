@@ -21,6 +21,9 @@ This file introduces the commuting probability of finite groups.
 ## Todo
 * Neumann's theorem.
 -/
+
+set_option autoImplicit true
+
 noncomputable section
 
 open Classical

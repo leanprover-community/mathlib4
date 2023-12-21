@@ -21,6 +21,8 @@ equalities.
 
 -/
 
+set_option autoImplicit true
+
 /-- Define a `Group` structure on a Type by proving `∀ a, 1 * a = a` and
 `∀ a, a⁻¹ * a = 1`.
 Note that this uses the default definitions for `npow`, `zpow` and `div`.

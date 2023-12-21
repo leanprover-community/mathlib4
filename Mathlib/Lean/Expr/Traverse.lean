@@ -11,6 +11,8 @@ import Mathlib.Lean.Expr.Basic
 # Traversal functions for expressions.
 -/
 
+set_option autoImplicit true
+
 namespace Lean.Expr
 
 /-- Maps `f` on each immediate child of the given expression. -/

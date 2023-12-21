@@ -17,6 +17,8 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
+set_option autoImplicit true
+
 open Filter Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/

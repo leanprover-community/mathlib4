@@ -10,6 +10,8 @@ import Qq
 
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
+
+set_option autoImplicit true
 open Lean Elab Tactic Meta
 
 namespace Qq

@@ -12,6 +12,8 @@ import Mathlib.Logic.Basic
 # Relator for functions, pairs, sums, and lists.
 -/
 
+set_option autoImplicit true
+
 namespace Relator
 universe u₁ u₂ v₁ v₂
 

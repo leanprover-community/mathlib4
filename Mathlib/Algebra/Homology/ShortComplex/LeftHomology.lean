@@ -28,6 +28,8 @@ and `S.homology` (TODO).
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Category Limits

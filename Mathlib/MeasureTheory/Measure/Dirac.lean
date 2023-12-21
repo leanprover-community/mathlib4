@@ -11,6 +11,8 @@ In this file we define the Dirac measure `MeasureTheory.Measure.dirac a`
 and prove some basic facts about it.
 -/
 
+set_option autoImplicit true
+
 open Function Set
 open scoped ENNReal Classical
 

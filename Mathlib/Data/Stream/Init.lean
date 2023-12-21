@@ -18,6 +18,8 @@ Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
 name clashes.  -/
 
+set_option autoImplicit true
+
 open Nat Function Option
 
 namespace Stream'

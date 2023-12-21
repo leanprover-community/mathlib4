@@ -70,6 +70,8 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
+set_option autoImplicit true
+
 open Function Set Filter
 
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate

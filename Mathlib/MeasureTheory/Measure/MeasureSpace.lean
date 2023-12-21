@@ -2716,6 +2716,68 @@ theorem biSup_measure_Iic [Preorder α] {s : Set α} (hsc : s.Countable)
   · exact directedOn_iff_directed.2 (hdir.directed_val.mono_comp _ fun x y => Iic_subset_Iic.2)
 #align measure_theory.bsupr_measure_Iic MeasureTheory.biSup_measure_Iic
 
+theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
+    [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
+    Tendsto (fun x => μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
+  haveI : Nonempty α := ⟨a⟩
+  have h_mono : Monotone fun x => μ (Ico a x) := fun i j hij =>
+    measure_mono (Ico_subset_Ico_right hij)
+  convert tendsto_atTop_iSup h_mono
+  obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
+  have h_Ici : Ici a = ⋃ n, Ico a (xs n) := by
+    ext1 x
+    simp only [mem_Ici, mem_iUnion, mem_Ico, exists_and_left, iff_self_and]
+    intro
+    obtain ⟨y, hxy⟩ := NoMaxOrder.exists_gt x
+    obtain ⟨n, hn⟩ := tendsto_atTop_atTop.mp hxs_tendsto y
+    exact ⟨n, hxy.trans_le (hn n le_rfl)⟩
+  rw [h_Ici, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_monotone h_mono hxs_tendsto]
+  exact Monotone.directed_le fun i j hij => Ico_subset_Ico_right (hxs_mono hij)
+#align measure_theory.tendsto_measure_Ico_at_top MeasureTheory.tendsto_measure_Ico_atTop
+
+theorem tendsto_measure_Ioc_atBot [SemilatticeInf α] [NoMinOrder α]
+    [(atBot : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
+    Tendsto (fun x => μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
+  haveI : Nonempty α := ⟨a⟩
+  have h_mono : Antitone fun x => μ (Ioc x a) := fun i j hij =>
+    measure_mono (Ioc_subset_Ioc_left hij)
+  convert tendsto_atBot_iSup h_mono
+  obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_antitone_tendsto_atTop_atBot α
+  have h_Iic : Iic a = ⋃ n, Ioc (xs n) a := by
+    ext1 x
+    simp only [mem_Iic, mem_iUnion, mem_Ioc, exists_and_right, iff_and_self]
+    intro
+    obtain ⟨y, hxy⟩ := NoMinOrder.exists_lt x
+    obtain ⟨n, hn⟩ := tendsto_atTop_atBot.mp hxs_tendsto y
+    exact ⟨n, (hn n le_rfl).trans_lt hxy⟩
+  rw [h_Iic, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_antitone h_mono hxs_tendsto]
+  exact Monotone.directed_le fun i j hij => Ioc_subset_Ioc_left (hxs_mono hij)
+#align measure_theory.tendsto_measure_Ioc_at_bot MeasureTheory.tendsto_measure_Ioc_atBot
+
+theorem tendsto_measure_Iic_atTop [SemilatticeSup α] [(atTop : Filter α).IsCountablyGenerated]
+    (μ : Measure α) : Tendsto (fun x => μ (Iic x)) atTop (𝓝 (μ univ)) := by
+  cases isEmpty_or_nonempty α
+  · have h1 : ∀ x : α, Iic x = ∅ := fun x => Subsingleton.elim _ _
+    have h2 : (univ : Set α) = ∅ := Subsingleton.elim _ _
+    simp_rw [h1, h2]
+    exact tendsto_const_nhds
+  have h_mono : Monotone fun x => μ (Iic x) := fun i j hij => measure_mono (Iic_subset_Iic.mpr hij)
+  convert tendsto_atTop_iSup h_mono
+  obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
+  have h_univ : (univ : Set α) = ⋃ n, Iic (xs n) := by
+    ext1 x
+    simp only [mem_univ, mem_iUnion, mem_Iic, true_iff_iff]
+    obtain ⟨n, hn⟩ := tendsto_atTop_atTop.mp hxs_tendsto x
+    exact ⟨n, hn n le_rfl⟩
+  rw [h_univ, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_monotone h_mono hxs_tendsto]
+  exact Monotone.directed_le fun i j hij => Iic_subset_Iic.mpr (hxs_mono hij)
+#align measure_theory.tendsto_measure_Iic_at_top MeasureTheory.tendsto_measure_Iic_atTop
+
+theorem tendsto_measure_Ici_atBot [SemilatticeInf α] [h : (atBot : Filter α).IsCountablyGenerated]
+    (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
+  @tendsto_measure_Iic_atTop αᵒᵈ _ _ h μ
+#align measure_theory.tendsto_measure_Ici_at_bot MeasureTheory.tendsto_measure_Ici_atBot
+
 variable [PartialOrder α] {a b : α}
 
 theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐ[μ] Iic a := by

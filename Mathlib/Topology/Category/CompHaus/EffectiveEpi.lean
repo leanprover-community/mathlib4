@@ -27,6 +27,8 @@ As a consequence, we also show that `CompHaus` is precoherent.
 
 -/
 
+set_option autoImplicit true
+
 open CategoryTheory Limits
 
 namespace CompHaus

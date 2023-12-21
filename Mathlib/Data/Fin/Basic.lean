@@ -74,6 +74,8 @@ This file expands on the development in the core library.
 
 -/
 
+set_option autoImplicit true
+
 universe u v
 
 open Fin Nat Function

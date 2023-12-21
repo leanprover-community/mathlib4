@@ -239,7 +239,7 @@ theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
 #align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 
 @[to_additive]
-theorem Commute.function_commute_mul_left (h : _root_.Commute a b) :
+theorem Commute.function_commute_mul_left (h : Commute a b) :
     Function.Commute (a * ·) (b * ·) :=
   SemiconjBy.function_semiconj_mul_left h
 #align commute.function_commute_mul_left Commute.function_commute_mul_left
@@ -252,7 +252,7 @@ theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
 #align add_semiconj_by.function_semiconj_add_right_swap AddSemiconjBy.function_semiconj_add_right_swap
 
 @[to_additive]
-theorem Commute.function_commute_mul_right (h : _root_.Commute a b) :
+theorem Commute.function_commute_mul_right (h : Commute a b) :
   Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
 #align commute.function_commute_mul_right Commute.function_commute_mul_right

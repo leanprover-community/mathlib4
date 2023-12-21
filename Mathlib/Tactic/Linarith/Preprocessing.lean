@@ -26,6 +26,8 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
+set_option autoImplicit true
+
 namespace Linarith
 
 /-! ### Preprocessing -/

@@ -68,6 +68,8 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

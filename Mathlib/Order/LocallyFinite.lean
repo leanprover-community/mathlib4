@@ -105,6 +105,8 @@ successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's
 as `Icc (-1) 1` is infinite.
 -/
 
+set_option autoImplicit true
+
 
 open Finset Function
 

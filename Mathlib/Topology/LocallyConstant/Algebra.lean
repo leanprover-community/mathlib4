@@ -16,6 +16,8 @@ on the type of locally constant functions.
 
 -/
 
+set_option autoImplicit true
+
 namespace LocallyConstant
 
 variable {X Y : Type*} [TopologicalSpace X]

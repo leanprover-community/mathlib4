@@ -14,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Canonically ordered monoids
 -/
 
+set_option autoImplicit true
+
 
 universe u
 

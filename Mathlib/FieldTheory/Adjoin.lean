@@ -28,6 +28,8 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
  - `F⟮α⟯`: adjoin a single element `α` to `F`.
 -/
 
+set_option autoImplicit true
+
 
 open FiniteDimensional Polynomial
 

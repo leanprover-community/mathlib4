@@ -41,6 +41,8 @@ actions and register the following instances:
 
 -/
 
+set_option autoImplicit true
+
 open Function
 
 /--

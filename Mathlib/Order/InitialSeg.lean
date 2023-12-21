@@ -39,6 +39,8 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
+set_option autoImplicit true
+
 
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}

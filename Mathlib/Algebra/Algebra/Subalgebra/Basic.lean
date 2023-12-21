@@ -489,6 +489,7 @@ theorem map_map (S : Subalgebra R A) (g : B →ₐ[R] C) (f : A →ₐ[R] B) :
   SetLike.coe_injective <| Set.image_image _ _ _
 #align subalgebra.map_map Subalgebra.map_map
 
+@[simp]
 theorem mem_map {S : Subalgebra R A} {f : A →ₐ[R] B} {y : B} : y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   Subsemiring.mem_map
 #align subalgebra.mem_map Subalgebra.mem_map

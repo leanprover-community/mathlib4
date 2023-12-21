@@ -66,6 +66,8 @@ when defining `μ` in the example above, the measurable space used is the last o
 Part A, Chapter 4.
 -/
 
+set_option autoImplicit true
+
 open MeasureTheory MeasurableSpace
 
 open scoped BigOperators MeasureTheory ENNReal

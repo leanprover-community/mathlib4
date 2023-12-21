@@ -31,6 +31,8 @@ This file starts looking like the ring theory of $ R[X] $
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

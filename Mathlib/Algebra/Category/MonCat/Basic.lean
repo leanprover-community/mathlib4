@@ -20,6 +20,8 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
+set_option autoImplicit true
+
 
 universe u v
 

@@ -59,13 +59,13 @@ theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' 
   (hf.hasSum.mul_right _).tsum_eq
 #align summable.tsum_mul_right Summable.tsum_mul_right
 
-theorem Commute.tsum_right (a) (h : ∀ i, _root_.Commute a (f i)) : _root_.Commute a (∑' i, f i) :=
+theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) :=
   if hf : Summable f then
     (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
   else (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 #align commute.tsum_right Commute.tsum_right
 
-theorem Commute.tsum_left (a) (h : ∀ i, _root_.Commute (f i) a) : _root_.Commute (∑' i, f i) a :=
+theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
   (Commute.tsum_right _ fun i => (h i).symm).symm
 #align commute.tsum_left Commute.tsum_left
 

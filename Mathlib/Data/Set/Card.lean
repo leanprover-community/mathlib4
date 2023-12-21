@@ -56,6 +56,8 @@ the other inside the proof. A few of the theorems, such as `ncard_union_le` do n
 finiteness arguments; they are true by coincidence due to junk values.
 -/
 
+set_option autoImplicit true
+
 namespace Set
 
 variable {s t : Set α}

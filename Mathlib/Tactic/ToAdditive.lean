@@ -29,6 +29,8 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Command Std
 
 /-- The `to_additive_ignore_args` attribute. -/

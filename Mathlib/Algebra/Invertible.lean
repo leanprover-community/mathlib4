@@ -76,6 +76,8 @@ invertible, inverse element, invOf, a half, one half, a third, one third, Â½, â…
 
 -/
 
+set_option autoImplicit true
+
 
 universe u
 

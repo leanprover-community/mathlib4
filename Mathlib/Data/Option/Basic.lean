@@ -43,6 +43,14 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
 theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 #align option.mem_map Option.mem_map
 
+-- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
+theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
+    f a ∈ o.map f ↔ a ∈ o := by
+  aesop
+
 theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
     (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
 #align option.forall_mem_map Option.forall_mem_map

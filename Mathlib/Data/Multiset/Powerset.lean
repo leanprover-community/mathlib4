@@ -12,6 +12,8 @@ import Mathlib.Data.Multiset.Nodup
 # The powerset of a multiset
 -/
 
+set_option autoImplicit true
+
 
 namespace Multiset
 

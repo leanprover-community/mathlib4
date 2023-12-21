@@ -33,6 +33,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.skewProd`
 -/
 
+set_option autoImplicit true
+
 
 universe u v w x y z u' v' w' y'
 

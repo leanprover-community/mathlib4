@@ -1602,6 +1602,7 @@ end
 section LimsupLiminf
 
 namespace ENNReal
+set_option autoImplicit true
 
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=

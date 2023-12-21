@@ -41,6 +41,8 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 equivalence, congruence, bijective map
 -/
 
+set_option autoImplicit true
+
 open Function
 
 namespace Equiv

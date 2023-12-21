@@ -22,6 +22,8 @@ Finally, we prove the category of types has categorical images,
 and that these agree with the range of a function.
 -/
 
+set_option autoImplicit true
+
 
 open CategoryTheory CategoryTheory.Limits
 

@@ -29,6 +29,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
+set_option autoImplicit true
 
 noncomputable section
 

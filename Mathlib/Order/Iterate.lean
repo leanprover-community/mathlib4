@@ -18,8 +18,12 @@ Current selection of inequalities is motivated by formalization of the rotation 
 a circle homeomorphism.
 -/
 
+set_option autoImplicit true
+
 
 open Function
+
+open Function (Commute)
 
 namespace Monotone
 

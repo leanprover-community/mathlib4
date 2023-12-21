@@ -111,6 +111,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 real and complex manifolds).
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

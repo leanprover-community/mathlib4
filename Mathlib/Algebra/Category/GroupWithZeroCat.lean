@@ -14,6 +14,8 @@ import Mathlib.Algebra.Category.MonCat.Basic
 This file defines `GroupWithZeroCat`, the category of groups with zero.
 -/
 
+set_option autoImplicit true
+
 
 universe u
 

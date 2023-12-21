@@ -58,6 +58,8 @@ fields, they can also be C^k vector bundles, etc.
   bundle.
 -/
 
+set_option autoImplicit true
+
 
 assert_not_exists mfderiv
 

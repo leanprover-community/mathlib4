@@ -51,6 +51,8 @@ of the lower topology to the spectrum of a complete lattice coincides with the h
 lower topology, upper topology, preorder
 -/
 
+set_option autoImplicit true
+
 open Set TopologicalSpace
 
 section WithLowerTopology

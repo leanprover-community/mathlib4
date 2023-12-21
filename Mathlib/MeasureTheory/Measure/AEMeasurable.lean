@@ -16,9 +16,7 @@ We discuss several of its properties that are analogous to properties of measura
 -/
 
 
-open MeasureTheory MeasureTheory.Measure Filter Set Function
-
-open MeasureTheory Filter Classical ENNReal Interval
+open MeasureTheory MeasureTheory.Measure Filter Set Function Classical ENNReal
 
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}
@@ -40,6 +38,11 @@ theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   nontriviality α; inhabit α
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aemeasurable_zero_measure
+
+theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
+    @AEMeasurable α α m m0 id μ :=
+  @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
+#align probability_theory.ae_measurable_id'' aemeasurable_id''
 
 namespace AEMeasurable
 

@@ -17,6 +17,8 @@ import Mathlib.Order.Hom.Lattice
 # Lattice operations on finsets
 -/
 
+set_option autoImplicit true
+
 
 variable {F α β γ ι κ : Type*}
 

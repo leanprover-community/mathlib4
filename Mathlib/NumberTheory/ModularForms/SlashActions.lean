@@ -181,9 +181,7 @@ set_option linter.uppercaseLean3 false in
 /-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) := by
-  have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := by
-    simp only [Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix,
-      Matrix.SpecialLinearGroup.det_coe]
+  have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := det_coe'
   funext
   rw [SL_slash, slash_def, slash, zero_sub, this]
   simp
@@ -197,8 +195,7 @@ theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → �
   simp only [subgroup_slash, slash_def, ModularForm.slash]
   convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · rw [mul_comm]
-    simp only [denom, Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, zpow_neg,
-      Matrix.SpecialLinearGroup.det_coe, ofReal_one, one_zpow, mul_one, subgroup_to_sl_moeb,
+    simp only [denom, zpow_neg, det_coe', ofReal_one, one_zpow, mul_one, subgroup_to_sl_moeb,
       sl_moeb]
     rfl
   · convert zpow_ne_zero k (denom_ne_zero γ z)
@@ -232,10 +229,8 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] (A : GL(2, ℝ)⁺) =
         ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
       apply mul_slash
-    _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by
-      simp only [Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix,
-        Matrix.SpecialLinearGroup.det_coe]
-    _ = f ∣[k1] A * g ∣[k2] A := by simp
+    _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by rw [det_coe']
+    _ = f ∣[k1] A * g ∣[k2] A := by rw [one_smul]
 set_option linter.uppercaseLean3 false in
 #align modular_form.mul_slash_SL2 ModularForm.mul_slash_SL2
 

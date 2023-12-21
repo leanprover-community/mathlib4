@@ -28,6 +28,8 @@ two edges is a square.
 Define all other graph products!
 -/
 
+set_option autoImplicit true
+
 
 variable {α β γ : Type*}
 

@@ -9,6 +9,8 @@ import Mathlib.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Nontriviality
 open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
 

@@ -22,6 +22,8 @@ initialize registerTraceClass `notation3
 
 /-! ### Syntaxes supporting `notation3` -/
 
+set_option autoImplicit true
+
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:

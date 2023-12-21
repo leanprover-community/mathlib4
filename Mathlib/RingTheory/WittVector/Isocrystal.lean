@@ -52,6 +52,8 @@ This file introduces notation in the locale `isocrystal`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

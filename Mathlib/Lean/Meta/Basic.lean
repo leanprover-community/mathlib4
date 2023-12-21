@@ -11,6 +11,8 @@ import Lean.Meta.Basic
 Likely these already exist somewhere. Pointers welcome.
 -/
 
+set_option autoImplicit true
+
 /--
 Restore the metavariable context after execution.
 -/

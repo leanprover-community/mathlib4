@@ -29,6 +29,8 @@ import Mathlib.Order.Bounds.Basic
 Bézout's lemma, Bezout's lemma
 -/
 
+set_option autoImplicit true
+
 
 /-! ### Extended Euclidean algorithm -/
 

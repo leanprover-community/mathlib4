@@ -88,6 +88,8 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

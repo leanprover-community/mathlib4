@@ -26,6 +26,8 @@ generally, see `HasSum.tendsto_sum_nat`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

@@ -85,6 +85,8 @@ any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `Sm
 subordinate to `U`. Then we use this fact to prove a version of the Whitney embedding theorem: any
 compact real manifold can be embedded into `ℝ^n` for large enough `n`.  -/
 
+set_option autoImplicit true
+
 
 variable (ι M)
 
