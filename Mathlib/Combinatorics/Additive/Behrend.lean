@@ -153,7 +153,7 @@ theorem map_eq_iff {x₁ x₂ : Fin n.succ → ℕ} (hx₁ : ∀ i, x₁ i < d) 
 theorem map_injOn : {x : Fin n → ℕ | ∀ i, x i < d}.InjOn (map d) := by
   intro x₁ hx₁ x₂ hx₂ h
   induction' n with n ih
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   rw [forall_const] at ih
   ext i
   have x := (map_eq_iff hx₁ hx₂).1 h

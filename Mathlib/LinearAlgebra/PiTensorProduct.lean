@@ -527,6 +527,7 @@ theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
 
 variable (ι)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where

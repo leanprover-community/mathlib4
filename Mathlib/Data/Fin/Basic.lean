@@ -777,6 +777,17 @@ def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
 #align fin.cast_le_mk Fin.castLE_mk
 #align fin.cast_le_zero Fin.castLE_zero
 
+@[simp] lemma castLE_castSucc {n m} (i : Fin n) (h : n + 1 ≤ m) :
+    i.castSucc.castLE h = i.castLE (Nat.le_of_succ_le h) :=
+  rfl
+
+@[simp] lemma castLE_comp_castSucc {n m} (h : n + 1 ≤ m) :
+    Fin.castLE h ∘ Fin.castSucc = Fin.castLE (Nat.le_of_succ_le h) :=
+  rfl
+
+@[simp] lemma castLE_rfl (n : ℕ) : Fin.castLE (le_refl n) = id :=
+  rfl
+
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
   Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
@@ -811,7 +822,8 @@ def castIso (eq : n = m) : Fin n ≃o Fin m where
 #align fin.cast Fin.castIso
 
 @[simp]
-theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
+theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by
+  simp [eq_iff_true_of_subsingleton]
 #align fin.symm_cast Fin.symm_castIso
 
 #align fin.coe_cast Fin.coe_castₓ
@@ -1806,7 +1818,7 @@ section Mul
 
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   cases' n with n
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]

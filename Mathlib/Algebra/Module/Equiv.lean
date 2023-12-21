@@ -721,7 +721,7 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
   ext
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align linear_equiv.of_subsingleton_self LinearEquiv.ofSubsingleton_self
 
 end OfSubsingleton

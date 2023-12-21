@@ -1010,10 +1010,12 @@ instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, CompactSpace (π i
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/
 theorem Filter.coprod_cocompact :
-    (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) :=
-  (sup_le (comap_cocompact_le continuous_fst) (comap_cocompact_le continuous_snd)).antisymm <|
-    (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.coprod hasBasis_cocompact)).2 fun K hK ↦
-      ⟨_, hK.1.prod hK.2, fun x hx ↦ by simpa [or_iff_not_imp_left] using hx⟩
+    (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) := by
+  apply le_antisymm
+  · exact sup_le (comap_cocompact_le continuous_fst) (comap_cocompact_le continuous_snd)
+  · refine (hasBasis_cocompact.coprod hasBasis_cocompact).ge_iff.2 fun K hK ↦ ?_
+    rw [← univ_prod, ← prod_univ, ← compl_prod_eq_union]
+    exact (hK.1.prod hK.2).compl_mem_cocompact
 #align filter.coprod_cocompact Filter.coprod_cocompact
 
 theorem Prod.noncompactSpace_iff :

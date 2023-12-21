@@ -265,7 +265,6 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
 variable (hP : RingHom.PropertyIsLocal @P)
 
 -- Porting note: the terms here are getting huge ~ 1/2 Gb for the goal midway (with `pp.explicit`)
-set_option maxHeartbeats 4000000 in
 theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso @P)
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme} (f : X ⟶ Y) (U : X.affineOpens)
     (s : Set (X.presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
@@ -275,38 +274,36 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply h₃ _ _ hs
   rintro ⟨s, r, hr, hs⟩
-  have := (@Localization.algEquiv _ _ _ _ _ _
-    (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 s)).toRingEquiv.toCommRingCatIso
   refine (h₁.cancel_right_isIso _ (@Localization.algEquiv _ _ _ _ _ _
     (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 s)).toRingEquiv.toCommRingCatIso.hom).mp ?_
   subst hs
   rw [CommRingCat.comp_eq_ring_hom_comp, ← RingHom.comp_assoc]
-  -- Porting note: here is where it gets bad; previously `erw [IsLocalization.map_comp]`
-  -- ask Lean to synthesize instances and it runs away
-  -- we also have to pass in one `Localization` instance now (and not before)
-  erw [@IsLocalization.map_comp _ _ _ _ _ (_)
-    (Scheme.Γ.obj (Opposite.op (X.restrict U.1.openEmbedding))) _ (_) _
-    (Submonoid.powers (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r))
-    ((Scheme.Γ.obj (Opposite.op ((X.restrict U.1.openEmbedding).restrict
-    ((X.restrict U.1.openEmbedding).basicOpen (X.presheaf.map
-      (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))) _ (le_of_eq rfl) (_)
-    (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 _)]
-  erw [RingHom.comp_id]
-  rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp,
-    Scheme.Γ_map_op, Scheme.Γ_map_op, Scheme.Γ_map_op, Category.assoc]
-  erw [← X.presheaf.map_comp]
+  -- Porting note: added the `dsimp only` below and a bunch of `conv`
+  dsimp only [CommRingCat.of, Bundled.of]
+  conv =>
+    arg 1
+    conv =>
+      arg 1
+      -- Porting note: the `erw` below is where it gets bad; previously
+      -- `erw [IsLocalization.map_comp]`. ask Lean to synthesize instances and it runs away
+      -- we also have to pass in one `Localization` instance now (and not before)
+      erw [@IsLocalization.map_comp _ _ _ _ _ (_) _ _ (_) _ _
+            (Scheme.Γ.obj (Opposite.op ((X.restrict _).restrict ((X.restrict _).basicOpen
+              (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))
+            _ (le_of_eq rfl) (_) (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 _)]
+    conv => rhs; rw [op_comp, Functor.map_comp]
+    rw [←CommRingCat.comp_eq_ring_hom_comp, Category.assoc]
+    conv => rhs; erw [← X.presheaf.map_comp]
   rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]
   convert hs' ⟨r, hr⟩ using 1
-  · erw [Category.assoc]
-    rw [← X.presheaf.map_comp, op_comp, Scheme.Γ.map_comp, Scheme.Γ_map_op, Scheme.Γ_map_op]
-    congr!
-    all_goals
-    · dsimp [Functor.op]
-      conv_lhs => rw [Opens.openEmbedding_obj_top]
-      conv_rhs => rw [Opens.openEmbedding_obj_top]
-      erw [Scheme.image_basicOpen (X.ofRestrict U.1.openEmbedding)]
-      erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp_apply]
-      rw [Scheme.basicOpen_res_eq]
+  · rw [Category.assoc, ← X.presheaf.map_comp]
+    conv_rhs => rw [op_comp, Scheme.Γ.map_comp]
+    dsimp [Functor.op]
+    conv_lhs => rw [Opens.openEmbedding_obj_top]
+    conv_rhs => rw [Opens.openEmbedding_obj_top]
+    rw [Scheme.image_basicOpen (X.ofRestrict U.1.openEmbedding)]
+    erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp_apply]
+    rw [Scheme.basicOpen_res_eq]
 #align algebraic_geometry.source_affine_locally_of_source_open_cover_aux AlgebraicGeometry.sourceAffineLocally_of_source_open_cover_aux
 
 theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsIso @P)

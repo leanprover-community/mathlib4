@@ -22,7 +22,8 @@ about these definitions.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
-open Filter Metric Function Set Topology BigOperators NNReal ENNReal uniformity
+open Filter Metric Function Set Topology Bornology
+open scoped BigOperators NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
@@ -341,22 +342,52 @@ protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set
   hx.not_le (hR x trivial)
 #align normed_space.unbounded_univ NormedSpace.unbounded_univ
 
-/-- A normed vector space over a nontrivially normed field is a noncompact space. This cannot be
-an instance because in order to apply it, Lean would have to search for `NormedSpace 𝕜 E` with
-unknown `𝕜`. We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
-protected theorem NormedSpace.noncompactSpace : NoncompactSpace E :=
-  ⟨fun h => NormedSpace.unbounded_univ 𝕜 _ h.isBounded⟩
+protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
+  rw [neBot_iff, Ne.def, cobounded_eq_bot_iff, ← isBounded_univ]
+  exact NormedSpace.unbounded_univ 𝕜 E
+
+instance (priority := 100) NontriviallyNormedField.cobounded_neBot : NeBot (cobounded 𝕜) :=
+  NormedSpace.cobounded_neBot 𝕜 𝕜
+
+instance (priority := 80) RealNormedSpace.cobounded_neBot [NormedSpace ℝ E] :
+    NeBot (cobounded E) := NormedSpace.cobounded_neBot ℝ E
+
+instance (priority := 80) NontriviallyNormedField.infinite : Infinite 𝕜 :=
+  ⟨fun _ ↦ NormedSpace.unbounded_univ 𝕜 𝕜 (Set.toFinite _).isBounded⟩
+
+end NontriviallyNormedSpace
+
+section NormedSpace
+
+variable (𝕜 E : Type*) [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E]
+  [NormedSpace 𝕜 E]
+
+/-- A normed vector space over an infinite normed field is a noncompact space.
+This cannot be an instance because in order to apply it,
+Lean would have to search for `NormedSpace 𝕜 E` with unknown `𝕜`.
+We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
+protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
+  by_cases H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
+  · letI := NontriviallyNormedField.ofNormNeOne H
+    exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
+  · push_neg at H
+    rcases exists_ne (0 : E) with ⟨x, hx⟩
+    suffices ClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
+    refine closedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
+    simp only [dist_eq_norm, ← sub_smul, norm_smul]
+    rw [H, one_mul]
+    rwa [sub_ne_zero, (Embedding.injective _).ne_iff]
 #align normed_space.noncompact_space NormedSpace.noncompactSpace
 
-instance (priority := 100) NontriviallyNormedField.noncompactSpace : NoncompactSpace 𝕜 :=
+instance (priority := 100) NormedField.noncompactSpace : NoncompactSpace 𝕜 :=
   NormedSpace.noncompactSpace 𝕜 𝕜
-#align nontrivially_normed_field.noncompact_space NontriviallyNormedField.noncompactSpace
+#align nontrivially_normed_field.noncompact_space NormedField.noncompactSpace
 
 instance (priority := 100) RealNormedSpace.noncompactSpace [NormedSpace ℝ E] : NoncompactSpace E :=
   NormedSpace.noncompactSpace ℝ E
 #align real_normed_space.noncompact_space RealNormedSpace.noncompactSpace
 
-end NontriviallyNormedSpace
+end NormedSpace
 
 section NormedAlgebra
 

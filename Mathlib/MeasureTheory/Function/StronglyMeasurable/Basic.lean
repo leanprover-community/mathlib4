@@ -119,7 +119,7 @@ theorem Subsingleton.stronglyMeasurable {α β} [MeasurableSpace α] [Topologica
   · exact ⟨fun _ => f_sf, fun x => tendsto_const_nhds⟩
   · have h_univ : f ⁻¹' {x} = Set.univ := by
       ext1 y
-      simp
+      simp [eq_iff_true_of_subsingleton]
     rw [h_univ]
     exact MeasurableSet.univ
 #align measure_theory.subsingleton.strongly_measurable MeasureTheory.Subsingleton.stronglyMeasurable

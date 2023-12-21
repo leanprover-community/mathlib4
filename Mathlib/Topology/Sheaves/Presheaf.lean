@@ -335,10 +335,10 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
         · refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        · simp
+        · simp [eq_iff_true_of_subsingleton]
       -- porting note : add `fac`, `uniq` manually
-      fac := fun _ _ => by ext; simp
-      uniq := fun _ _ _ => by ext; simp }
+      fac := fun _ _ => by ext; simp [eq_iff_true_of_subsingleton]
+      uniq := fun _ _ _ => by ext; simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitOfDiagramTerminal hx _)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_obj_obj_of_image_open TopCat.Presheaf.pullbackObjObjOfImageOpen

@@ -243,7 +243,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       swap
         -- Porting note : Lean cannot infer this instance by itself
       · have : Zero (Sym α 0) := Sym.instZeroSym
-        exact ⟨0, by simp⟩
+        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
