@@ -437,9 +437,38 @@ section Splits
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
     (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
-  rw [Multiset.toFinset_card_of_nodup, ← natDegree_eq_card_roots hsplit]
-  exact nodup_roots hsep.map
+  rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
 #align polynomial.card_root_set_eq_nat_degree Polynomial.card_rootSet_eq_natDegree
+
+/-- If a non-zero polynomial splits, then it has no repeated roots on that field
+if and only if it is separable. -/
+theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
+    f.roots.Nodup ↔ f.Separable := by
+  refine ⟨not_imp_not.1 fun hnsep ↦ ?_, nodup_roots⟩
+  set g := gcd f (derivative f)
+  have hg : g ≠ 0 := gcd_ne_zero_of_left hf
+  by_cases hdeg : g.degree = 0
+  · simp only [Separable, ← gcd_isUnit_iff, isUnit_iff] at hnsep
+    rw [eq_C_of_degree_eq_zero hdeg] at hg
+    exact False.elim <| hnsep ⟨coeff g 0, isUnit_iff_ne_zero.2 (ne_zero_of_map hg),
+      (eq_C_of_degree_eq_zero hdeg).symm⟩
+  obtain ⟨x, hx⟩ := exists_root_of_splits _
+    (splits_of_splits_of_dvd _ hf h (show g ∣ f from gcd_dvd_left f _)) hdeg
+  rw [Multiset.nodup_iff_count_le_one, not_forall]
+  exact ⟨x, by rw [count_roots]; exact Nat.not_le.mpr <|
+    (one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx⟩
+
+/-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
+if and only if it is separable. -/
+theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
+    (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
+  rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
+  rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
+
+theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
+    (h : f.Splits (algebraMap F K)) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+  simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
+    Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
 
 variable {i : F →+* K}
 

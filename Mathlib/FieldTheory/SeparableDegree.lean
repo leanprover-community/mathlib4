@@ -265,24 +265,6 @@ variable {F E}
 
 variable (f : F[X])
 
-/-- If a polynomial has all roots over a field, then it has no repeated roots on that field
-if and only if it is separable. -/
-theorem nodup_roots_iff_of_splits (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
-    f.roots.Nodup ↔ f.Separable := by
-  refine ⟨not_imp_not.1 fun hnsep ↦ ?_, nodup_roots⟩
-  set g := gcd f (derivative f)
-  have hg : g ≠ 0 := gcd_ne_zero_of_left hf
-  by_cases hdeg : g.degree = 0
-  · simp only [Separable, ← gcd_isUnit_iff, isUnit_iff] at hnsep
-    rw [eq_C_of_degree_eq_zero hdeg] at hg
-    exact False.elim <| hnsep ⟨coeff g 0, isUnit_iff_ne_zero.2 (ne_zero_of_map hg),
-      (eq_C_of_degree_eq_zero hdeg).symm⟩
-  obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf h (show g ∣ f from gcd_dvd_left f _)) hdeg
-  rw [Multiset.nodup_iff_count_le_one, not_forall]
-  exact ⟨x, by rw [count_roots]; exact Nat.not_le.mpr <|
-    (one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx⟩
-
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
 defined to be the number of distinct roots of it over its splitting field.
 This is similar to `Polynomial.natDegree` but not to `Polynomial.degree`, namely, the separable
@@ -337,11 +319,9 @@ theorem natSepDegree_ne_zero_iff : f.natSepDegree ≠ 0 ↔ f.natDegree ≠ 0 :=
 it is separable. -/
 theorem natSepDegree_eq_natDegree_iff (hf : f ≠ 0) :
     f.natSepDegree = f.natDegree ↔ f.Separable := by
-  rw [natSepDegree, natDegree_eq_card_roots (SplittingField.splits f), aroots_def,
-    Multiset.toFinset_card_eq_card_iff_nodup,
-    ← separable_map (algebraMap F f.SplittingField)]
-  exact nodup_roots_iff_of_splits _ (map_ne_zero hf) <|
-    (splits_map_iff _ _).2 (SplittingField.splits f)
+  simp_rw [← card_rootSet_eq_natDegree_iff_of_splits hf (SplittingField.splits f),
+    rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
+  rfl
 
 /-- If a polynomial is separable, then its separable degree is equal to its degree. -/
 theorem natSepDegree_eq_natDegree_of_separable (h : f.Separable) :
