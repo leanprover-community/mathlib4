@@ -208,7 +208,7 @@ termination_by _ => n.sqrt + 2 - k
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
   dsimp only [minSqFac]; split_ifs with d2 d4
   · exact ⟨prime_two, (dvd_div_iff d2).1 d4, fun p pp _ => pp.two_le⟩
-  · cases' Nat.eq_zero_or_pos n with n0 n0
+  · rcases Nat.eq_zero_or_pos n with n0 | n0
     · subst n0
       cases d4 (by decide)
     refine' minSqFacProp_div _ prime_two d2 (mt (dvd_div_iff d2).2 d4) _
@@ -216,7 +216,7 @@ theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
     refine' fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
     rintro rfl
     contradiction
-  · cases' Nat.eq_zero_or_pos n with n0 n0
+  · rcases Nat.eq_zero_or_pos n with n0 | n0
     · subst n0
       cases d2 (by decide)
     refine' minSqFacAux_has_prop _ n0 0 rfl _
@@ -522,7 +522,7 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
 
 theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 n < k') :
     SquarefreeHelper n k := by
-  cases' Nat.eq_zero_or_pos n with h h
+  rcases Nat.eq_zero_or_pos n with h | h
   · subst n
     exact fun _ _ => squarefree_one
   subst e

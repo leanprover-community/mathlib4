@@ -248,7 +248,7 @@ theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ 
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
-    cases' n.eq_zero_or_pos with hn hn
+    rcases n.eq_zero_or_pos with hn | hn
     · rw [hn]
       exact zero_le l
     rw [n.add_sub_assoc (Nat.succ_le_of_lt hn), add_lt_add_iff_left] at h'
