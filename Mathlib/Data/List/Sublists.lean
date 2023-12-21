@@ -274,6 +274,10 @@ theorem sublistsLen_succ_cons {α : Type*} (n) (a : α) (l) :
       append_nil]; rfl
 #align list.sublists_len_succ_cons List.sublistsLen_succ_cons
 
+theorem sublistsLen_one {α : Type*} (l : List α) : sublistsLen 1 l = l.reverse.map ([·]) :=
+  l.rec (by rw [sublistsLen_succ_nil, reverse_nil, map_nil]) fun a s ih ↦ by
+    rw [sublistsLen_succ_cons, ih, reverse_cons, map_append, sublistsLen_zero]; rfl
+
 @[simp]
 theorem length_sublistsLen {α : Type*} :
     ∀ (n) (l : List α), length (sublistsLen n l) = Nat.choose (length l) n

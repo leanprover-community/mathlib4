@@ -521,6 +521,17 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
 #align measure_theory.vector_measure.ennreal_to_measure_apply MeasureTheory.VectorMeasure.ennrealToMeasure_apply
 
+@[simp]
+theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
+    (μ : VectorMeasure α ℝ≥0∞) :
+    toENNRealVectorMeasure (ennrealToMeasure μ) = μ := ext fun s hs => by
+  rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
+
+@[simp]
+theorem ennrealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
+    ennrealToMeasure (toENNRealVectorMeasure μ) = μ := Measure.ext fun s hs => by
+  rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+
 /-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
 `MeasureTheory.VectorMeasure.ennrealToMeasure` and
 `MeasureTheory.Measure.toENNRealVectorMeasure`. -/
@@ -528,10 +539,8 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
 def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
   toFun := ennrealToMeasure
   invFun := toENNRealVectorMeasure
-  left_inv _ := ext fun s hs => by
-    rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
-  right_inv _ := Measure.ext fun s hs => by
-    rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+  left_inv := toENNRealVectorMeasure_ennrealToMeasure
+  right_inv := ennrealToMeasure_toENNRealVectorMeasure
 #align measure_theory.vector_measure.equiv_measure MeasureTheory.VectorMeasure.equivMeasure
 
 end
