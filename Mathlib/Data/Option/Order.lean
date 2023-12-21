@@ -46,7 +46,7 @@ lemma lt_of_mem_lt_mem {oa ob : Option α} {a b : α} (ha : a ∈ oa) (hb : b �
       exact some_lt_some_of_lt hab
 
 lemma mem_lt_mem_of_lt {oa ob : Option α} {a b : α} (ha : a ∈ oa) (hb : b ∈ ob)
-  (hab : oa < ob ) : a < b := by
+    (hab : oa < ob ) : a < b := by
   refine lt_of_some_lt_some ?_
   rw [← ha, ← hb]
   exact hab
@@ -120,7 +120,7 @@ lemma get_le_get_of_le {oa : Option α} (ha : oa.isSome) {ob : Option α}
   · exact Bool.noConfusion ha
 
 lemma le_of_mem_le_mem {oa ob : Option α} {a b : α} (ha : a ∈ oa) (hb : b ∈ ob)
-(hab : a ≤ b) : oa ≤ ob := by
+    (hab : a ≤ b) : oa ≤ ob := by
   cases oa
   · cases ha
   · cases ob
@@ -129,7 +129,7 @@ lemma le_of_mem_le_mem {oa ob : Option α} {a b : α} (ha : a ∈ oa) (hb : b �
       exact some_le_some_of_le hab
 
 lemma mem_le_mem_of_le {oa ob : Option α} {a b : α} (ha : a ∈ oa) (hb : b ∈ ob)
-(hab : oa ≤ ob) : a ≤ b := by
+    (hab : oa ≤ ob) : a ≤ b := by
   refine le_of_some_le_some ?_
   rw [← ha, ← hb]
   exact hab
