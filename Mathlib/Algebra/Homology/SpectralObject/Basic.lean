@@ -225,7 +225,6 @@ lemma cokernelSequenceOpcycles_exact :
     (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
 
-
 variable (fg : i ⟶ k) (h : f ≫ g = fg)
 
 noncomputable def cokernelIsoCycles :
@@ -266,6 +265,42 @@ lemma p_fromOpcycles :
     X.pOpcycles n₀ n₁ hn₁ f g ≫ X.fromOpcycles n₀ n₁ hn₁ f g fg h =
       (X.H n₁).map (twoδ₂Toδ₁ f g fg h) := by
   apply cokernel.π_desc
+
+@[reassoc (attr := simp)]
+lemma H_map_twoδ₂Toδ₁_toCycles :
+    (X.H n₀).map (twoδ₂Toδ₁ f g fg h) ≫ X.toCycles n₀ n₁ hn₁ f g fg h = 0 := by
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g), assoc, toCycles_i, zero₂, zero_comp]
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_H_map_twoδ₁Toδ₀ :
+    X.fromOpcycles n₀ n₁ hn₁ f g fg h ≫ (X.H n₁).map (twoδ₁Toδ₀ f g fg h) = 0 := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g), p_fromOpcycles_assoc, zero₂, comp_zero]
+
+@[simps]
+noncomputable def cokernelSequenceCycles : ShortComplex C :=
+  ShortComplex.mk _ _ (X.H_map_twoδ₂Toδ₁_toCycles n₀ n₁ hn₁ f g fg h)
+
+@[simps]
+noncomputable def kernelSequenceOpcycles : ShortComplex C :=
+  ShortComplex.mk _ _ (X.fromOpcycles_H_map_twoδ₁Toδ₀ n₀ n₁ hn₁ f g fg h)
+
+lemma cokernelSequenceCycles_exact :
+    (X.cokernelSequenceCycles n₀ n₁ hn₁ f g fg h).Exact := by
+  apply ShortComplex.exact_of_g_is_cokernel
+  refine' IsColimit.ofIsoColimit (cokernelIsCokernel _)
+    (Cofork.ext (X.cokernelIsoCycles n₀ n₁ hn₁ f g fg h) (by
+      dsimp
+      simp only [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g), assoc,
+        cokernelIsoCycles_hom_fac, toCycles_i]))
+
+lemma kernelSequenceOpcycles_exact :
+    (X.kernelSequenceOpcycles n₀ n₁ hn₁ f g fg h).Exact := by
+  apply ShortComplex.exact_of_f_is_kernel
+  refine' IsLimit.ofIsoLimit (kernelIsKernel _)
+    (Iso.symm (Fork.ext (X.opcyclesIsoKernel n₀ n₁ hn₁ f g fg h) (by
+      dsimp
+      simp only [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
+        opcyclesIsoKernel_hom_fac, p_fromOpcycles])))
 
 end
 
