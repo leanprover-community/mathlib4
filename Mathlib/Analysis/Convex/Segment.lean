@@ -489,7 +489,7 @@ section LinearOrderedAddCommMonoid
 variable [LinearOrderedAddCommMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {a b : 𝕜}
 
 theorem segment_subset_uIcc (x y : E) : [x -[𝕜] y] ⊆ uIcc x y := by
-  cases' le_total x y with h h
+  rcases le_total x y with h | h
   · rw [uIcc_of_le h]
     exact segment_subset_Icc h
   · rw [uIcc_of_ge h, segment_symm]
@@ -542,7 +542,7 @@ theorem openSegment_eq_Ioo (h : x < y) : openSegment 𝕜 x y = Ioo x y :=
 #align open_segment_eq_Ioo openSegment_eq_Ioo
 
 theorem segment_eq_Icc' (x y : 𝕜) : [x -[𝕜] y] = Icc (min x y) (max x y) := by
-  cases' le_total x y with h h
+  rcases le_total x y with h | h
   · rw [segment_eq_Icc h, max_eq_right h, min_eq_left h]
   · rw [segment_symm, segment_eq_Icc h, max_eq_left h, min_eq_right h]
 #align segment_eq_Icc' segment_eq_Icc'

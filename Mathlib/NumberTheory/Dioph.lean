@@ -659,7 +659,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
               rintro rfl
-              cases' le_total y z with yz zy
+              rcases le_total y z with yz | zy
               · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
               · exact Or.inl (tsub_add_cancel_of_le zy).symm⟩
 #align dioph.sub_dioph Dioph.sub_dioph

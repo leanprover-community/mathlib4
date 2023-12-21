@@ -97,7 +97,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
-  cases' le_or_lt (degree p) 0 with hd hd
+  rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
