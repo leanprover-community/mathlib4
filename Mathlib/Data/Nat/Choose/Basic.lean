@@ -127,7 +127,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
   | n + 1, 0, _ => by simp
   | n + 1, succ k, hk => by
-    cases' lt_or_eq_of_le hk with hk₁ hk₁
+    rcases lt_or_eq_of_le hk with hk₁ | hk₁
     · have h : choose n k * k.succ ! * (n - k)! = (k + 1) * n ! := by
         rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)]
         simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]

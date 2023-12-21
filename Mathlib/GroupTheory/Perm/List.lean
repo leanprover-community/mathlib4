@@ -311,7 +311,7 @@ theorem formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (for
       nthLe_reverse' _ _ _ h2, formPerm_apply_nthLe _ h]
     congr
     rw [length_reverse] at *
-    cases' lt_or_eq_of_le (Nat.succ_le_of_lt hk) with h h
+    rcases lt_or_eq_of_le (Nat.succ_le_of_lt hk) with h | h
     · rw [Nat.mod_eq_of_lt h, ← Nat.sub_add_comm, Nat.succ_sub_succ_eq_sub,
         Nat.mod_eq_of_lt h1]
       exact (Nat.le_sub_iff_add_le (length_pos_of_mem hx)).2 (Nat.succ_le_of_lt h)

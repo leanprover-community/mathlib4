@@ -636,7 +636,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
     mem_degreeLE]
   constructor
   · rintro ⟨p, ⟨hpdeg, hpI⟩, rfl⟩
-    cases' lt_or_eq_of_le hpdeg with hpdeg hpdeg
+    rcases lt_or_eq_of_le hpdeg with hpdeg | hpdeg
     · refine' ⟨0, I.zero_mem, bot_le, _⟩
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
