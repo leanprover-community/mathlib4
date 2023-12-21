@@ -137,7 +137,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       arg 2
       arg 1
       rw [← sa]
-    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg P) _
+    convert smul_le_smul_of_nonneg_left (R := ℝ) (star_mul_self_nonneg P) _
     · simp
     · norm_num
   apply le_of_sub_nonneg
@@ -238,7 +238,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
         congr
         rw [← Q_sa]
       convert (star_mul_self_nonneg Q)
-    convert smul_le_smul_of_nonneg (add_nonneg P2_nonneg Q2_nonneg)
+    convert smul_le_smul_of_nonneg_left (add_nonneg P2_nonneg Q2_nonneg)
         (le_of_lt (show 0 < √2⁻¹ by norm_num))
     -- `norm_num` can't directly show `0 ≤ √2⁻¹`
     simp

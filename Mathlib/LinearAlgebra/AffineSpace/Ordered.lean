@@ -50,22 +50,22 @@ variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_right (smul_le_smul_of_nonneg ha (sub_nonneg.2 hr)) _
+  exact add_le_add_right (smul_le_smul_of_nonneg_left ha (sub_nonneg.2 hr)) _
 #align line_map_mono_left lineMap_mono_left
 
 theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_lt_add_right (smul_lt_smul_of_pos ha (sub_pos.2 hr)) _
+  exact add_lt_add_right (smul_lt_smul_of_pos_left ha (sub_pos.2 hr)) _
 #align line_map_strict_mono_left lineMap_strict_mono_left
 
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_left (smul_le_smul_of_nonneg hb hr) _
+  exact add_le_add_left (smul_le_smul_of_nonneg_left hb hr) _
 #align line_map_mono_right lineMap_mono_right
 
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
   simp only [lineMap_apply_module]
-  exact add_lt_add_left (smul_lt_smul_of_pos hb hr) _
+  exact add_lt_add_left (smul_lt_smul_of_pos_left hb hr) _
 #align line_map_strict_mono_right lineMap_strict_mono_right
 
 theorem lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
@@ -82,7 +82,7 @@ theorem lineMap_strict_mono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ 
 theorem lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b r' ↔ a < b := by
   simp only [lineMap_apply_module]
   rw [← lt_sub_iff_add_lt, add_sub_assoc, ← sub_lt_iff_lt_add', ← sub_smul, ← sub_smul,
-    sub_sub_sub_cancel_left, smul_lt_smul_iff_of_pos (sub_pos.2 h)]
+    sub_sub_sub_cancel_left, smul_lt_smul_iff_of_pos_left (sub_pos.2 h)]
 #align line_map_lt_line_map_iff_of_lt lineMap_lt_lineMap_iff_of_lt
 
 theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
@@ -127,7 +127,7 @@ variable {a b : E} {r r' : k}
 theorem lineMap_le_lineMap_iff_of_lt (h : r < r') : lineMap a b r ≤ lineMap a b r' ↔ a ≤ b := by
   simp only [lineMap_apply_module]
   rw [← le_sub_iff_add_le, add_sub_assoc, ← sub_le_iff_le_add', ← sub_smul, ← sub_smul,
-    sub_sub_sub_cancel_left, smul_le_smul_iff_of_pos (sub_pos.2 h)]
+    sub_sub_sub_cancel_left, smul_le_smul_iff_of_pos_left (sub_pos.2 h)]
 #align line_map_le_line_map_iff_of_lt lineMap_le_lineMap_iff_of_lt
 
 theorem left_le_lineMap_iff_le (h : 0 < r) : a ≤ lineMap a b r ↔ a ≤ b :=

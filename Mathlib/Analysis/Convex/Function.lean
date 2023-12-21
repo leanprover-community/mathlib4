@@ -547,8 +547,8 @@ theorem ConvexOn.convex_lt (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x 
       calc
         f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha.le hb.le hab
         _ < a • r + b • r :=
-          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx.2 ha)
-            (smul_le_smul_of_nonneg hy.2.le hb.le))
+          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos_left hx.2 ha)
+            (smul_le_smul_of_nonneg_left hy.2.le hb.le))
         _ = r := Convex.combo_self hab _⟩
 #align convex_on.convex_lt ConvexOn.convex_lt
 
@@ -564,7 +564,7 @@ theorem ConvexOn.openSegment_subset_strict_epigraph (hf : ConvexOn 𝕜 s f) (p 
   calc
     f (a • p.1 + b • q.1) ≤ a • f p.1 + b • f q.1 := hf.2 hp.1 hq.1 ha.le hb.le hab
     _ < a • p.2 + b • q.2 :=
-      add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hp.2 ha) (smul_le_smul_of_nonneg hq.2 hb.le)
+      add_lt_add_of_lt_of_le (smul_lt_smul_of_pos_left hp.2 ha) (smul_le_smul_of_nonneg_left hq.2 hb.le)
 #align convex_on.open_segment_subset_strict_epigraph ConvexOn.openSegment_subset_strict_epigraph
 
 theorem ConcaveOn.openSegment_subset_strict_hypograph (hf : ConcaveOn 𝕜 s f) (p q : E × β)
@@ -714,7 +714,7 @@ theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x
       calc
         f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb hab
         _ < a • f (a • x + b • y) + b • f (a • x + b • y) :=
-          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos h ha) (smul_le_smul_of_nonneg hfy hb))
+          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos_left h ha) (smul_le_smul_of_nonneg_left hfy hb))
         _ = f (a • x + b • y) := Convex.combo_self hab _
 #align convex_on.le_left_of_right_le' ConvexOn.le_left_of_right_le'
 
@@ -775,7 +775,7 @@ theorem ConvexOn.lt_left_of_right_lt' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x
       calc
         f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb.le hab
         _ < a • f (a • x + b • y) + b • f (a • x + b • y) :=
-          (add_lt_add_of_le_of_lt (smul_le_smul_of_nonneg h ha.le) (smul_lt_smul_of_pos hfy hb))
+          (add_lt_add_of_le_of_lt (smul_le_smul_of_nonneg_left h ha.le) (smul_lt_smul_of_pos_left hfy hb))
         _ = f (a • x + b • y) := Convex.combo_self hab _
 #align convex_on.lt_left_of_right_lt' ConvexOn.lt_left_of_right_lt'
 
@@ -980,7 +980,7 @@ theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : Conve
   ⟨hf.1, fun x hx y hy a b ha hb hab =>
     calc
       c • f (a • x + b • y) ≤ c • (a • f x + b • f y) :=
-        smul_le_smul_of_nonneg (hf.2 hx hy ha hb hab) hc
+        smul_le_smul_of_nonneg_left (hf.2 hx hy ha hb hab) hc
       _ = a • c • f x + b • c • f y := by rw [smul_add, smul_comm c, smul_comm c]⟩
 #align convex_on.smul ConvexOn.smul
 
