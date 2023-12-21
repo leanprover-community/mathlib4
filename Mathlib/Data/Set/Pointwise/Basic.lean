@@ -1311,13 +1311,9 @@ theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t �
 
 @[to_additive]
 lemma preimage_mul (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
-    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t := by
-  refine subset_antisymm ?_ (preimage_mul_preimage_subset m)
-  rintro a ⟨b, c, hb, hc, ha⟩
-  obtain ⟨b, rfl⟩ := hs hb
-  obtain ⟨c, rfl⟩ := ht hc
-  simp only [← map_mul, hm.eq_iff] at ha
-  exact ⟨b, c, hb, hc, ha⟩
+    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t := hm.image_injective <| by
+  rw [image_mul, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+    image_preimage_eq_iff.2 (mul_subset_range m hs ht)]
 
 end Mul
 
@@ -1333,7 +1329,7 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 
 @[to_additive]
 lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
-  rintro _ ⟨a, b, ha, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩;
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a / b, map_div _ _ _⟩
@@ -1347,13 +1343,9 @@ theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t �
 
 @[to_additive]
 lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
-    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t := by
-  refine subset_antisymm ?_ (preimage_div_preimage_subset m)
-  rintro a ⟨b, c, hb, hc, ha⟩
-  obtain ⟨b, rfl⟩ := hs hb
-  obtain ⟨c, rfl⟩ := ht hc
-  simp only [← map_div, hm.eq_iff] at ha
-  exact ⟨b, c, hb, hc, ha⟩
+    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t := hm.image_injective <| by
+  rw [image_div, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+    image_preimage_eq_iff.2 (div_subset_range m hs ht)]
 
 end Group
 
