@@ -161,7 +161,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
         exact ⟨div_nonneg h.1 hai, div_le_one_of_le h.2 hai⟩
     · specialize h i
       simp only [smul_eq_mul, Pi.mul_apply]
-      cases' eq_or_ne (a i) 0 with hai hai
+      rcases eq_or_ne (a i) 0 with hai | hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
         rw [hai, ← h, zero_div, zero_mul]
       · rw [div_mul_cancel _ hai]

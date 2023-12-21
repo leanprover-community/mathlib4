@@ -77,7 +77,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   refine' ⟨(aleph0_pos.trans_le ha).ne', _, fun b c hbc => _⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
-  cases' eq_or_ne (b * c) 0 with hz hz
+  rcases eq_or_ne (b * c) 0 with hz | hz
   · rcases mul_eq_zero.mp hz with (rfl | rfl) <;> simp
   wlog h : c ≤ b
   · cases le_total c b <;> [skip; rw [or_comm]] <;> apply_assumption

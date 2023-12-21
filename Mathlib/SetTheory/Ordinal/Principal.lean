@@ -128,7 +128,7 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
   refine' ⟨fun ho₀ => _, fun a hao => _⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
-  · cases' eq_or_ne a 0 with ha ha
+  · rcases eq_or_ne a 0 with ha | ha
     · rw [ha, succ_zero]
       exact ho₁
     · refine' lt_of_le_of_lt _ (ho hao hao)

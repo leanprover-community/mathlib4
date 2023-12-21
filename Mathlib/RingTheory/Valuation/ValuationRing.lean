@@ -368,7 +368,7 @@ theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R
       (show b ∈ Ideal.span {g} by rw [← e]; exact Ideal.subset_span (by simp))
   obtain ⟨x, y, e'⟩ := Ideal.mem_span_pair.mp
       (show g ∈ Ideal.span {a * g, b * g} by rw [e]; exact Ideal.subset_span (by simp))
-  cases' eq_or_ne g 0 with h h
+  rcases eq_or_ne g 0 with h | h
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
