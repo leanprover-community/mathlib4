@@ -133,7 +133,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
         ‖(Unitization.splitMul 𝕜 E x).snd‖ ≤ ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ := by
       simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star]
       intro x
-      /- split based on whether the term inside the nprm is zero or not. If so, it's trivial.
+      /- split based on whether the term inside the norm is zero or not. If so, it's trivial.
       If not, then apply `norm_splitMul_snd_sq` and cancel one copy of the norm -/
       by_cases h : algebraMap 𝕜 (E →L[𝕜] E) x.fst + mul 𝕜 E x.snd = 0
       · simp only [h, norm_zero, norm_le_zero_iff]

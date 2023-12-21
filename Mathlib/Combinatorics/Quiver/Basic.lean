@@ -17,7 +17,7 @@ is a very permissive notion of directed graph.
 
 ## Implementation notes
 
-Currently `Quiver` is defined with `arrow : V → V → Sort v`.
+Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,

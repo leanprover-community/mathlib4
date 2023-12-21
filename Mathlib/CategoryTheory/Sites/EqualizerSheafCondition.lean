@@ -12,7 +12,7 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # The equalizer diagram sheaf condition for a presieve
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular presieve. In this file we provide equivalent conditions in terms of
 equalizer diagrams.
 

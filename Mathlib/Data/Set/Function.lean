@@ -68,7 +68,7 @@ theorem eq_restrict_iff {s : Set α} {f : ∀ a : s, π a} {g : ∀ a, π a} :
 
 @[simp]
 theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) = f '' s :=
-  (range_comp _ _).trans <| congr_arg ((· '' ·) f) Subtype.range_coe
+  (range_comp _ _).trans <| congr_arg (f '' ·) Subtype.range_coe
 #align set.range_restrict Set.range_restrict
 
 theorem image_restrict (f : α → β) (s t : Set α) :
@@ -372,6 +372,11 @@ theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t
   rfl
 #align set.maps_to.coe_restrict_apply Set.MapsTo.val_restrict_apply
 
+theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (k : ℕ) :
+    h.restrict^[k] x = f^[k] x := by
+  induction' k with k ih; · simp
+  simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
+
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
 theorem codRestrict_restrict (h : ∀ x : s, f x ∈ t) :
@@ -422,6 +427,10 @@ theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 #align set.maps_to_empty Set.mapsTo_empty
+
+/-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
+theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
+  (hs.image f).mono (mapsTo'.mp h)
 
 theorem MapsTo.image_subset (h : MapsTo f s t) : f '' s ⊆ t :=
   mapsTo'.1 h
@@ -1003,6 +1012,10 @@ theorem EqOn.bijOn_iff (H : EqOn f₁ f₂ s) : BijOn f₁ s t ↔ BijOn f₂ s 
 theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
   h.surjOn.image_eq_of_mapsTo h.mapsTo
 #align set.bij_on.image_eq Set.BijOn.image_eq
+
+lemma _root_.Equiv.image_eq_iff_bijOn (e : α ≃ β) : e '' s = t ↔ BijOn e s t :=
+  ⟨fun h ↦ ⟨(mapsTo_image e s).mono_right h.subset, e.injective.injOn _, h ▸ surjOn_image e s⟩,
+  BijOn.image_eq⟩
 
 lemma bijOn_id (s : Set α) : BijOn id s s := ⟨s.mapsTo_id, s.injOn_id, s.surjOn_id⟩
 #align set.bij_on_id Set.bijOn_id

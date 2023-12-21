@@ -267,6 +267,11 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
   rw [← pos_iff_ne_zero, card_pos, fiber_nonempty_iff_mem_image]
 #align finset.fiber_card_ne_zero_iff_mem_image Finset.fiber_card_ne_zero_iff_mem_image
 
+lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
+    (s.filter P).card ≤ n ↔ ∀ s' ⊆ s, n < s'.card → ∃ a ∈ s', ¬ P a :=
+  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun x hx ↦ subset_of_le hs' hx) h⟩
+
 @[simp]
 theorem card_map (f : α ↪ β) : (s.map f).card = s.card :=
   Multiset.card_map _ _
@@ -307,6 +312,8 @@ theorem filter_card_eq {p : α → Prop} [DecidablePred p] (h : (s.filter p).car
 theorem card_lt_card (h : s ⊂ t) : s.card < t.card :=
   card_lt_of_lt <| val_lt_iff.2 h
 #align finset.card_lt_card Finset.card_lt_card
+
+lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
 
 theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a)
     (hf' : ∀ (i) (h : i < n), f i h ∈ s)
@@ -586,6 +593,12 @@ theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x 
     exact card_le_of_subset hx
 #align finset.card_le_one_iff_subset_singleton Finset.card_le_one_iff_subset_singleton
 
+lemma exists_mem_ne (hs : 1 < s.card) (a : α) : ∃ b ∈ s, b ≠ a := by
+  have : Nonempty α := ⟨a⟩
+  by_contra!
+  exact hs.not_le (card_le_one_iff_subset_singleton.2 ⟨a, subset_singleton_iff'.2 this⟩)
+#align finset.exists_mem_ne Finset.exists_mem_ne
+
 /-- A `Finset` of a subsingleton type has cardinality at most one. -/
 theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : s.card ≤ 1 :=
   Finset.card_le_one_iff.2 fun {_ _ _ _} => Subsingleton.elim _ _
@@ -676,16 +689,6 @@ theorem card_eq_three : s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ 
     simp only [xy, xz, yz, mem_insert, card_insert_of_not_mem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 #align finset.card_eq_three Finset.card_eq_three
-
-lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
-  rw [covby_iff_exists_insert]
-  constructor
-  · rintro ⟨a, ha, rfl⟩
-    simp [*]
-  · simp_rw [card_eq_one]
-    rintro ⟨hts, a, ha⟩
-    refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
-    rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 end DecidableEq
 

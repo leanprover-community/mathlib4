@@ -622,7 +622,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.A
     · simp [hf]
     rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
     rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
-    exact Nat.coprime_prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
+    exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
 #align nat.arithmetic_function.is_multiplicative.map_prod Nat.ArithmeticFunction.IsMultiplicative.map_prod
 
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
@@ -1042,15 +1042,9 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
-  -- porting note: the rest of this proof was a single `simp only` with all the lemmas thrown in
-  -- followed by the last `rw`.
-  simp only [moebius, ZeroHom.coe_mk]
-  dsimp only [coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
-  simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
-    zero_mul, mul_zero]
-  rw [cardFactors_mul hn hm, pow_add, ite_mul_zero_left, ite_mul_zero_right]
-  split_ifs <;>  -- porting note: added
-  simp           -- porting note: added
+  simp only [moebius, ZeroHom.coe_mk, coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk,
+    IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_zero_mul_ite_zero,
+    cardFactors_mul hn hm, pow_add]
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
 open UniqueFactorizationMonoid
