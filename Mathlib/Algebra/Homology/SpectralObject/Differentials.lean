@@ -125,7 +125,7 @@ lemma δToCycles_iCycles :
 @[reassoc (attr := simp)]
 lemma δ_toCycles :
     X.δ n₀ n₁ hn₁ f₁₂ f₃ ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ =
-      X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃  := by
+      X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
   rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ f₁ f₂), assoc,
     toCycles_i, δToCycles_iCycles,
     ← X.δ_naturality n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂) (𝟙 _) rfl,
@@ -139,6 +139,15 @@ lemma pOpcycles_δFromOpcycles :
     X.pOpcycles n₀ n₁ hn₁ f₂ f₃ ≫ X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
       X.δ n₁ n₂ hn₂ f₁ f₂ := by
   simp only [δFromOpcycles, p_descOpcycles]
+
+@[reassoc (attr := simp)]
+lemma fromOpcyles_δ :
+    X.fromOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ ≫ X.δ n₁ n₂ hn₂ f₁ f₂₃ =
+      X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f₂ f₃),
+    p_fromOpcycles_assoc, pOpcycles_δFromOpcycles,
+    X.δ_naturality n₁ n₂ hn₂ f₁ f₂ f₁ f₂₃ (𝟙 _) (twoδ₂Toδ₁ f₂ f₃ f₂₃ h₂₃) rfl,
+    Functor.map_id, comp_id]
 
 @[simps]
 noncomputable def leftHomologyDataShortComplexE :
@@ -340,6 +349,57 @@ lemma toCycles_πE_descE :
   dsimp only [descE]
   rw [← assoc]
   apply (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g_desc
+
+end
+
+@[simps]
+noncomputable def kernelSequenceE : ShortComplex C where
+  X₁ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
+  X₂ := (X.H n₁).obj (mk₁ f₂₃)
+  X₃ := (X.H n₁).obj (mk₁ f₃) ⊞ (X.H n₂).obj (mk₁ f₁)
+  f := X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.fromOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃
+  g := biprod.lift ((X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃)) (X.δ n₁ n₂ hn₂ f₁ f₂₃)
+  zero := by ext <;> simp
+
+instance : Mono (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).f := by
+  dsimp
+  infer_instance
+
+lemma kernelSequenceE_exact :
+    (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  dsimp at x₂ hx₂
+  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := (X.kernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
+    (X.liftOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
+      dsimp
+      rw [← X.fromOpcyles_δ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃,
+        X.liftOpcycles_fromOpcycles_assoc ]
+      simpa using hx₂ =≫ biprod.snd)
+  dsimp at x₁ hx₁
+  refine' ⟨A₁, π₁, inferInstance, x₁, _⟩
+  dsimp
+  rw [← reassoc_of% hx₁, liftOpcycles_fromOpcycles]
+
+section
+
+variable {A : C} (x : A ⟶ (X.H n₁).obj (mk₁ f₂₃))
+  (h : x ≫ (X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃) = 0)
+  (h' : x ≫ X.δ n₁ n₂ hn₂ f₁ f₂₃ = 0)
+
+noncomputable def liftE  :
+    A ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
+  (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift x (by
+    dsimp
+    ext
+    · simp [h]
+    · simp [h'])
+
+@[reassoc (attr := simp)]
+lemma liftE_ιE_fromOpcycles :
+    X.liftE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃ x h h' ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫
+      X.fromOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ = x := by
+  apply (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift_f
 
 end
 
