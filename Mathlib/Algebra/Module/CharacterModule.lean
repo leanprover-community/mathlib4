@@ -93,6 +93,29 @@ between `B⋆` and `A⋆`
     erw [smul_apply, f.map_smul]
     rfl
 
+lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
+    Function.Surjective <| dual f := by
+  have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
+  have inst1 : Injective (AddCommGroupCat.of <| ULift.{max uA uB, 0} <| AddCircle (1 : ℚ)) :=
+    AddCommGroupCat.injective_of_divisible _
+
+  rintro (g : _ →+ _)
+  let g' : AddCommGroupCat.of (ULift.{max uA uB} A) ⟶
+      AddCommGroupCat.of (ULift.{max uA uB} (AddCircle (1 : ℚ))) :=
+    AddCommGroupCat.ofHom <| (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom.comp g |>.comp
+      (ULift.moduleEquiv (R := ℤ)).toAddMonoidHom
+  let f' : AddCommGroupCat.of (ULift.{max uA uB} A) ⟶ AddCommGroupCat.of (ULift.{max uA uB} B) :=
+    AddCommGroupCat.ofHom <| (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom.comp f |>.comp
+      (ULift.moduleEquiv (R := ℤ)).toAddMonoidHom
+  have inst2 : Mono f'
+  · rw [AddCommGroupCat.mono_iff_injective]
+    exact (ULift.moduleEquiv (R := ℤ)).symm.injective.comp hf |>.comp
+      (ULift.moduleEquiv (R := ℤ)).injective
+  let L := Injective.factorThru g' f'
+  refine ⟨(ULift.moduleEquiv (R := ℤ)).toAddMonoidHom.comp L |>.comp
+    (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom, AddMonoidHom.ext fun _ ↦
+      (ULift.ext_iff _ _).mp <| FunLike.congr_fun (Injective.comp_factorThru g' f') _⟩
+
 /--
 Two isomorphic modules have isomorphic character modules.
 -/
