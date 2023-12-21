@@ -545,7 +545,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
     obtain ⟨_, h₁, h₂⟩ := h
-    cases' le_or_lt (u : ℝ) ξ with ht ht
+    rcases le_or_lt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
@@ -553,7 +553,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
         rw [floor_eq_iff, cast_sub, cast_one, sub_add_cancel]
         exact ⟨(((sub_lt_sub_iff_left _).mpr one_half_lt_one).trans h₁).le, ht⟩
-      cases' eq_or_ne ξ ⌊ξ⌋ with Hξ Hξ
+      rcases eq_or_ne ξ ⌊ξ⌋ with Hξ | Hξ
       · rw [Hξ, hξ₁, cast_sub, cast_one, ← sub_eq_add_neg, sub_lt_sub_iff_left] at h₁
         exact False.elim (lt_irrefl _ <| h₁.trans one_half_lt_one)
       · have hξ₂ : ⌊(fract ξ)⁻¹⌋ = 1 := by

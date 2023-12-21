@@ -1609,7 +1609,7 @@ theorem insertNth_length_self (l : List α) (x : α) : insertNth l.length x l = 
 
 theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
     l.length ≤ (insertNth n x l).length := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
     exact (Nat.lt_succ_self _).le
   · rw [insertNth_of_length_lt _ _ _ hn]
@@ -1617,7 +1617,7 @@ theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
 
 theorem length_insertNth_le_succ (l : List α) (x : α) (n : ℕ) :
     (insertNth n x l).length ≤ l.length + 1 := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
   · rw [insertNth_of_length_lt _ _ _ hn]
     exact (Nat.lt_succ_self _).le

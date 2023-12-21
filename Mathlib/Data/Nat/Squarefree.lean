@@ -184,7 +184,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
         lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt hn') _) (Nat.minFac_lemma n k h)
       @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
         (by simp [e, left_distrib]) fun m m2 d => _
-    cases' Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me ml
+    rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me | ml
     · subst me
       contradiction
     apply (Nat.eq_or_lt_of_le ml).resolve_left
@@ -208,7 +208,7 @@ termination_by _ => n.sqrt + 2 - k
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
   dsimp only [minSqFac]; split_ifs with d2 d4
   · exact ⟨prime_two, (dvd_div_iff d2).1 d4, fun p pp _ => pp.two_le⟩
-  · cases' Nat.eq_zero_or_pos n with n0 n0
+  · rcases Nat.eq_zero_or_pos n with n0 | n0
     · subst n0
       cases d4 (by decide)
     refine' minSqFacProp_div _ prime_two d2 (mt (dvd_div_iff d2).2 d4) _
@@ -216,7 +216,7 @@ theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
     refine' fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
     rintro rfl
     contradiction
-  · cases' Nat.eq_zero_or_pos n with n0 n0
+  · rcases Nat.eq_zero_or_pos n with n0 | n0
     · subst n0
       cases d2 (by decide)
     refine' minSqFacAux_has_prop _ n0 0 rfl _
@@ -522,7 +522,7 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
 
 theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 n < k') :
     SquarefreeHelper n k := by
-  cases' Nat.eq_zero_or_pos n with h h
+  rcases Nat.eq_zero_or_pos n with h | h
   · subst n
     exact fun _ _ => squarefree_one
   subst e
