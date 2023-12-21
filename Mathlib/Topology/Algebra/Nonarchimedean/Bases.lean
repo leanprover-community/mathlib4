@@ -387,7 +387,7 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
   /-- Condition for `B` to be a filter basis on `M`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
   /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
-    there is a `U` in the ring filter basis on `R` such that `U ⬝ m` is in `B i`. -/
+    there is a `U` in the ring filter basis on `R` such that `U * m` is in `B i`. -/
   smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
 #align ring_filter_basis.submodules_basis RingFilterBasis.SubmodulesBasis
 

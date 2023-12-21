@@ -5,6 +5,7 @@ Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.Tauto
 
+set_option autoImplicit true
 section tauto₀
 variable (p q r : Prop)
 variable (h : p ∧ q ∨ p ∧ r)

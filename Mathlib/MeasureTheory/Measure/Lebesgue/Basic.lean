@@ -393,7 +393,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     simp only [LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
       Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
       MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id.def, transvection, Pi.add_apply,
-      MulZeroClass.zero_mul, LinearMap.smul_apply, Function.comp_apply,
+      zero_mul, LinearMap.smul_apply, Function.comp_apply,
       MeasurableEquiv.piEquivPiSubtypeProd_apply, Matrix.TransvectionStruct.toMatrix_mk,
       Matrix.mulVec, LinearEquiv.map_add, ite_mul, Matrix.toLin'_apply, Pi.smul_apply,
       Subtype.coe_mk, LinearMap.add_apply, Finset.sum_congr, Matrix.toLin'_one]
@@ -401,7 +401,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     · simp only [h, true_and_iff, Finset.mem_univ, if_true, eq_self_iff_true, Finset.sum_ite_eq,
         one_apply, boole_mul, add_comm]
     · simp only [h, Ne.symm h, add_zero, if_false, Finset.sum_const_zero, false_and_iff,
-        MulZeroClass.mul_zero]
+        mul_zero]
   rw [this]
   have A : MeasurePreserving e := by
     convert volume_preserving_piEquivPiSubtypeProd (fun _ : ι => ℝ) p

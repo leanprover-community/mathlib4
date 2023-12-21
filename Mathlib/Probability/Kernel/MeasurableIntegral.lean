@@ -133,8 +133,9 @@ variable [IsSFiniteKernel κ] [IsSFiniteKernel η]
 /-- Auxiliary lemma for `Measurable.lintegral_kernel_prod_right`. -/
 theorem kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
     (c : ℝ≥0∞) : Measurable fun a => ∫⁻ b, t.indicator (Function.const (α × β) c) (a, b) ∂κ a := by
-  simp_rw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]
-  -- Porting note: `simp_rw` doesn't take, added the `conv` below
+  -- Porting note: was originally by
+  -- `simp_rw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]`
+  -- but this has no effect, so added the `conv` below
   conv =>
     congr
     ext

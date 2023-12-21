@@ -536,7 +536,7 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
       refine' ⟨⟨_, n, rfl⟩, _⟩
       simpa [mul_comm z] using e
     · rintro ⟨⟨_, n, rfl⟩, e : f ^ n * z = 0⟩
-      rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, MulZeroClass.mul_zero, ←
+      rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, mul_zero, ←
         map_pow]
       -- Porting note: this one lemma needs `erw`
       erw [← map_mul]

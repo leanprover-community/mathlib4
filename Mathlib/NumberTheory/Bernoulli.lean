@@ -235,7 +235,7 @@ theorem sum_bernoulli (n : ℕ) :
       mul_one, choose_zero_right, cast_zero, if_false, zero_add, succ_succ_ne_one]
     ring
   have f := sum_bernoulli' n.succ.succ
-  simp_rw [sum_range_succ', bernoulli'_one, choose_one_right, cast_succ, ← eq_sub_iff_add_eq] at f
+  simp_rw [sum_range_succ', cast_succ, ← eq_sub_iff_add_eq] at f
   -- porting note: was `convert f`
   refine' Eq.trans _ (Eq.trans f _)
   · congr
@@ -282,7 +282,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
     sub_zero, RingHom.map_one, add_eq_zero_iff, if_false, _root_.inv_one, zero_add, one_ne_zero,
-    MulZeroClass.mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← map_sum]
+    mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← map_sum]
   cases' n with n
   · simp
   rw [if_neg n.succ_succ_ne_one]
@@ -297,7 +297,6 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   field_simp [mul_ne_zero hj (hfact x.2), hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc,
     Nat.factorial_ne_zero, hj]
   -- porting note: was `cc`, which was not yet ported
-  simp only
   left
   ring
 #align bernoulli_power_series_mul_exp_sub_one bernoulliPowerSeries_mul_exp_sub_one
@@ -323,7 +322,6 @@ theorem sum_range_pow (n p : ℕ) :
     simp only [coeff_mul, coeff_mk, cast_mul, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
     intros m h
-    simp only [Finset.mem_range]
     simp only [exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,
       RingHom.id_apply, cast_mul, algebraMap_rat_rat]
     -- manipulate factorials and binomial coefficients

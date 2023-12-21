@@ -193,8 +193,8 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
           have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
           rw [hm, map_mul]
           norm_cast
-        · simp only [hy, not_false_iff, dif_neg, MulZeroClass.mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, MulZeroClass.zero_mul]
+        · simp only [hy, not_false_iff, dif_neg, mul_zero]
+      · simp only [hx, IsUnit.mul_iff, false_and_iff, not_false_iff, dif_neg, zero_mul]
   map_nonunit' := by
     intro a ha
     simp only [ha, not_false_iff, dif_neg]

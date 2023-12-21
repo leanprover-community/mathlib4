@@ -68,10 +68,10 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       Matrix.trace (LinearMap.toMatrix b b f) =
           Matrix.trace (LinearMap.toMatrix b b ((LinearMap.id.comp f).comp LinearMap.id)) := by
         rw [LinearMap.id_comp, LinearMap.comp_id]
-      _ = Matrix.trace (LinearMap.toMatrix c b LinearMap.id ⬝ LinearMap.toMatrix c c f ⬝
+      _ = Matrix.trace (LinearMap.toMatrix c b LinearMap.id * LinearMap.toMatrix c c f *
           LinearMap.toMatrix b c LinearMap.id) := by
         rw [LinearMap.toMatrix_comp _ c, LinearMap.toMatrix_comp _ c]
-      _ = Matrix.trace (LinearMap.toMatrix c c f ⬝ LinearMap.toMatrix b c LinearMap.id ⬝
+      _ = Matrix.trace (LinearMap.toMatrix c c f * LinearMap.toMatrix b c LinearMap.id *
           LinearMap.toMatrix c b LinearMap.id) := by
         rw [Matrix.mul_assoc, Matrix.trace_mul_comm]
       _ = Matrix.trace (LinearMap.toMatrix c c ((f.comp LinearMap.id).comp LinearMap.id)) := by

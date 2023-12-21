@@ -187,7 +187,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         simp only [mem_inter_iff, not_lt, not_eventually, mem_setOf_eq] at hx
         exact hx.1
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ o := (mul_le_mul_left' (measure_mono (inter_subset_right _ _)) _)
-      _ = 0 := by rw [ρo, MulZeroClass.mul_zero]
+      _ = 0 := by rw [ρo, mul_zero]
   obtain ⟨u, _, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ≥0, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ≥0)
@@ -480,7 +480,7 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
         rw [coe_nnreal_smul_apply]
         exact mul_le_mul_left' (measure_mono (inter_subset_right _ _)) _
       _ ≤ ρ s := by
-        rw [A, MulZeroClass.mul_zero, add_zero]; exact measure_mono (inter_subset_left _ _)
+        rw [A, mul_zero, add_zero]; exact measure_mono (inter_subset_left _ _)
   refine' v.measure_le_of_frequently_le _ (AbsolutelyContinuous.rfl.smul _) _ _
   intro x hx
   have I : ∀ᶠ a in v.filterAt x, (q : ℝ≥0∞) < ρ a / μ a := (tendsto_order.1 hx.2).1 _ (h hx.1)
@@ -509,7 +509,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞)⁻¹ * ρ s) atTop (𝓝 (∞⁻¹ * ρ s)) := by
     apply ENNReal.Tendsto.mul_const _ (Or.inr ρs)
     exact ENNReal.tendsto_inv_iff.2 (ENNReal.tendsto_coe_nhds_top.2 tendsto_id)
-  simp only [MulZeroClass.zero_mul, ENNReal.inv_top] at B
+  simp only [zero_mul, ENNReal.inv_top] at B
   apply ge_of_tendsto B
   exact eventually_atTop.2 ⟨1, A⟩
 #align vitali_family.measure_lim_ratio_meas_top VitaliFamily.measure_limRatioMeas_top
@@ -532,7 +532,7 @@ theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
     apply ENNReal.Tendsto.mul_const _ (Or.inr μs)
     rw [ENNReal.tendsto_coe]
     exact nhdsWithin_le_nhds
-  simp only [MulZeroClass.zero_mul, ENNReal.coe_zero] at B
+  simp only [zero_mul, ENNReal.coe_zero] at B
   apply ge_of_tendsto B
   filter_upwards [self_mem_nhdsWithin] using A
 #align vitali_family.measure_lim_ratio_meas_zero VitaliFamily.measure_limRatioMeas_zero

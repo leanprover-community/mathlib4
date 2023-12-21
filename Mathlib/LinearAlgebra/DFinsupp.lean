@@ -490,7 +490,7 @@ are `CompleteLattice.Independent`.
 Note that this is not generally true for `[Semiring R]`, for instance when `A` is the
 `ℕ`-submodules of the positive and negative integers.
 
-See `counterexamples/direct_sum_is_internal.lean` for a proof of this fact. -/
+See `Counterexamples/DirectSumIsInternal.lean` for a proof of this fact. -/
 theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Independent p) :
     Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`

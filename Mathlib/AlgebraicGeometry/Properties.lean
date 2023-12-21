@@ -241,7 +241,7 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
   apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-  · exact e.symm.commRingCatIsoToRingEquiv.isDomain _
+  · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
   · apply X.toLocallyRingedSpace.component_nontrivial
   · apply X.toLocallyRingedSpace.component_nontrivial
   · ext x
@@ -292,7 +292,7 @@ theorem isIntegralOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmers
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
     refine' ⟨⟨_, _, hU.some.prop, rfl⟩⟩
   exact (asIso <| f.1.c.app (op <| H.base_open.isOpenMap.functor.obj U) :
-    Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.isDomain _
+    Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 #align algebraic_geometry.is_integral_of_open_immersion AlgebraicGeometry.isIntegralOfOpenImmersion
 
 instance {R : CommRingCat} [H : IsDomain R] :
@@ -304,8 +304,8 @@ instance {R : CommRingCat} [IsDomain R] : IsIntegral (Scheme.Spec.obj <| op R) :
 
 theorem affine_isIntegral_iff (R : CommRingCat) :
     IsIntegral (Scheme.Spec.obj <| op R) ↔ IsDomain R :=
-  ⟨fun _ => RingEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj (op ⊤))
-    (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv, fun _ => inferInstance⟩
+  ⟨fun _ => MulEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj (op ⊤))
+    (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv.toMulEquiv, fun _ => inferInstance⟩
 #align algebraic_geometry.affine_is_integral_iff AlgebraicGeometry.affine_isIntegral_iff
 
 theorem isIntegralOfIsAffineIsDomain [IsAffine X] [Nonempty X.carrier]

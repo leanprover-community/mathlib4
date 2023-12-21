@@ -53,8 +53,15 @@ namespace CocompactMapClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
 
+/-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
+`CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
+@[coe]
+def toCocompactMap (f : F) : CocompactMap α β :=
+  { (f : C(α, β)) with
+    cocompact_tendsto' := cocompact_tendsto f }
+
 instance : CoeTC F (CocompactMap α β) :=
-  ⟨fun f => ⟨f, cocompact_tendsto f⟩⟩
+  ⟨toCocompactMap⟩
 
 end CocompactMapClass
 

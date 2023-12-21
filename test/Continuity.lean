@@ -1,6 +1,7 @@
 import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
 
+set_option autoImplicit true
 section basic
 
 variable [TopologicalSpace W] [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]

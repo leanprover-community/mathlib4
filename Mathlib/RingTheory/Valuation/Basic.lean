@@ -550,7 +550,7 @@ def supp : Ideal R where
     calc
       v (c * x) = v c * v x := map_mul v c x
       _ = v c * 0 := (congr_arg _ hx)
-      _ = 0 := MulZeroClass.mul_zero _
+      _ = 0 := mul_zero _
 #align valuation.supp Valuation.supp
 
 @[simp]

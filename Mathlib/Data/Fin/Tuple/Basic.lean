@@ -78,6 +78,11 @@ theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 #align fin.cons_zero Fin.cons_zero
 
+@[simp]
+theorem cons_one {α : Fin (n + 2) → Type*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
+    cons x p 1 = p 0 := by
+  rw [← cons_succ x p]; rfl
+
 /-- Updating a tuple and adding an element at the beginning commute. -/
 @[simp]
 theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by

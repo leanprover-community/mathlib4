@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.RingTheory.TensorProduct
 
 #align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
@@ -96,9 +97,9 @@ noncomputable section
 namespace Module
 
 -- Porting note: max u v universe issues so name and specific below
-universe u v v' v'' w u₁ u₂
+universe u uA v v' v'' w u₁ u₂
 
-variable (R : Type u) (M : Type v)
+variable (R : Type u) (A : Type uA) (M : Type v)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -122,9 +123,6 @@ theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
 namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
-
-instance : FunLike (Dual R M) M fun _ => R :=
-  inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
 
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
@@ -580,7 +578,7 @@ section IsReflexive
 
 open Function
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- A reflexive module is one for which the natural map to its double dual is a bijection.
 
@@ -639,8 +637,7 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
 
-instance _root_.Prod.instModuleIsReflexive
-    {N : Type*} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
     IsReflexive R (M × N) where
   bijective_dual_eval' := by
     let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
@@ -652,19 +649,22 @@ instance _root_.Prod.instModuleIsReflexive
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
 
-instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) where
+variable {R M N} in
+lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
   bijective_dual_eval' := by
-    let e : Dual R (Dual R (MulOpposite M)) ≃ₗ[R] Dual R (Dual R M) :=
-      LinearEquiv.dualMap <| LinearEquiv.dualMap <| MulOpposite.opLinearEquiv _ |>.symm
-    have : Dual.eval R (MulOpposite M) = e.symm.comp ((Dual.eval R M).comp
-        <| MulOpposite.opLinearEquiv _ |>.symm.toLinearMap) := by
-      ext m f; rfl
+    let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
+    have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
+      ext m f
+      exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
--- TODO: add `ULift.instModuleIsReflexive : IsReflexive R (ULift.{v} M)` once we have
--- `LinearEquiv.ulift`
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
+  equiv <| MulOpposite.opLinearEquiv _
+
+instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
+  equiv ULift.moduleEquiv.symm
 
 end IsReflexive
 
@@ -737,7 +737,6 @@ variable [DecidableEq ι] (h : DualBases e ε)
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   erw [LinearMap.map_sum]
-  simp_rw [map_smul]
   -- Porting note: cannot get at •
   -- simp only [h.eval, map_smul, smul_eq_mul]
   rw [Finset.sum_eq_single i]
@@ -1566,7 +1565,7 @@ end VectorSpace
 
 namespace TensorProduct
 
-variable (R : Type*) (M : Type*) (N : Type*)
+variable (R A : Type*) (M : Type*) (N : Type*)
 
 variable {ι κ : Type*}
 
@@ -1607,6 +1606,24 @@ theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
 #align tensor_product.dual_distrib_apply TensorProduct.dualDistrib_apply
 
 end
+
+namespace AlgebraTensorModule
+variable [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
+
+variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
+
+/-- Heterobasic version of `TensorProduct.dualDistrib` -/
+def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
+  compRight (Algebra.TensorProduct.rid R A A) ∘ₗ homTensorHomMap R A A M N A R
+
+variable {R M N}
+
+@[simp]
+theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
+    dualDistrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = g n • f m :=
+  rfl
+
+end AlgebraTensorModule
 
 variable {R M N}
 

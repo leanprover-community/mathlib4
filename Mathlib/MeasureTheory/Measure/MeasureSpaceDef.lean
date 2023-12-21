@@ -161,7 +161,7 @@ theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : Measura
   `nonempty_measurable_superset`. -/
 theorem measure_eq_iInf' (μ : Measure α) (s : Set α) :
     μ s = ⨅ t : { t // s ⊆ t ∧ MeasurableSet t }, μ t := by
-  simp_rw [iInf_subtype, iInf_and, Subtype.coe_mk, ← measure_eq_iInf]
+  simp_rw [iInf_subtype, iInf_and, ← measure_eq_iInf]
 #align measure_theory.measure_eq_infi' MeasureTheory.measure_eq_iInf'
 
 theorem measure_eq_inducedOuterMeasure :

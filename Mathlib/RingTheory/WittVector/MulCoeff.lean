@@ -281,7 +281,6 @@ theorem nth_mul_coeff' (n : ℕ) :
   intro x y
   dsimp [peval]
   rw [← hf₀]
-  simp only [Function.uncurry_apply_pair]
   congr
   ext a
   cases' a with a ha

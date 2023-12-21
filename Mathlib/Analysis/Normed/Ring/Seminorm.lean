@@ -108,7 +108,7 @@ theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
 
 instance : Zero (RingSeminorm R) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
-    fun _ _ => (MulZeroClass.zero_mul _).ge }⟩
+    fun _ _ => (zero_mul _).ge }⟩
 
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
   FunLike.ext_iff
@@ -156,7 +156,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   obtain hp0 | hp0 := (map_nonneg p (1 : R)).eq_or_gt
   · exfalso
     refine h (ext fun x => (map_nonneg _ _).antisymm' ?_)
-    simpa only [hp0, mul_one, MulZeroClass.mul_zero] using map_mul_le_mul p x 1
+    simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
   · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 #align ring_seminorm.seminorm_one_eq_one_iff_ne_zero RingSeminorm.seminorm_one_eq_one_iff_ne_zero
@@ -345,7 +345,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
           le_antisymm
             (le_trans (map_mul_le_mul f _ _)
               (by rw [← RingSeminorm.toFun_eq_coe, ← AddGroupSeminorm.toFun_eq_coe, hx,
-                MulZeroClass.zero_mul]))
+                zero_mul]))
             (map_nonneg f _)
       exact hc hc0 }
 #align ring_seminorm.to_ring_norm RingSeminorm.toRingNorm

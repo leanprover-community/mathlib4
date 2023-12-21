@@ -208,7 +208,6 @@ theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card
   · rw [disjoint_iff_inter_eq_empty]
     exact filter_inter_filter_neg_eq _ _ _
   intro a ha b hb hab
-  dsimp at hab
   rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
   rw [compress] at ha hab
   split_ifs at ha hab with has

@@ -226,7 +226,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     rw [tendsto_iff_norm_tendsto_zero]
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
-    rw [← MulZeroClass.zero_mul ‖y‖]
+    rw [← zero_mul ‖y‖]
     refine' (_root_.tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
   rw [sub_zero] at feq

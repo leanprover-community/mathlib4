@@ -160,15 +160,15 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
     smul_add := smul_add }
 #align ulift.module' ULift.module'
 
-/-- The `R`-linear equivalence between `ULift M` and `M`. -/
+/-- The `R`-linear equivalence between `ULift M` and `M`.
+
+This is a linear version of `AddEquiv.ulift`. -/
 @[simps apply symm_apply]
 def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
   toFun := ULift.down
   invFun := ULift.up
   map_smul' _ _ := rfl
-  map_add' _ _ := rfl
-  left_inv := ULift.up_down
-  right_inv := ULift.down_up.{v, w}
+  __ := AddEquiv.ulift
 #align ulift.module_equiv ULift.moduleEquiv
 
 end ULift

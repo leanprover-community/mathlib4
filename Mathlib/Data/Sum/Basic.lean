@@ -16,9 +16,9 @@ This file proves basic results about the sum type `α ⊕ β`.
 
 ## Main declarations
 
-* `Sum.getLeft`: Retrieves the left content of `x : α ⊕ β` or returns `none` if it's coming from
+* `Sum.getLeft?`: Retrieves the left content of `x : α ⊕ β` or returns `none` if it's coming from
   the right.
-* `Sum.getRight`: Retrieves the right content of `x : α ⊕ β` or returns `none` if it's coming from
+* `Sum.getRight?`: Retrieves the right content of `x : α ⊕ β` or returns `none` if it's coming from
   the left.
 * `Sum.isLeft`: Returns whether `x : α ⊕ β` comes from the left component or not.
 * `Sum.isRight`: Returns whether `x : α ⊕ β` comes from the right component or not.
@@ -59,6 +59,18 @@ theorem «exists» {p : Sum α β → Prop} : (∃ x, p x) ↔ (∃ a, p (inl a)
     | Or.inr ⟨b, h⟩ => ⟨inr b, h⟩⟩
 #align sum.exists Sum.exists
 
+theorem forall_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
+    (∀ fab, p fab) ↔ (∀ fa fb, p (Sum.rec fa fb)) :=
+  ⟨fun h fa fb => h _, fun h fab => by
+    have h1 : fab = Sum.rec (fun a => fab (Sum.inl a)) (fun b => fab (Sum.inr b)) := by
+      ext ab; cases ab <;> rfl
+    rw [h1]; exact h _ _⟩
+
+theorem exists_sum_pi {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
+    (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
+  rw [← not_forall_not, forall_sum_pi]
+  simp
+
 theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ ↦ inl.inj
 #align sum.inl_injective Sum.inl_injective
 
@@ -68,16 +80,16 @@ theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ �
 section get
 
 /-- Check if a sum is `inl` and if so, retrieve its contents. -/
-def getLeft : Sum α β → Option α
+def getLeft? : Sum α β → Option α
   | inl a => some a
   | inr _ => none
-#align sum.get_left Sum.getLeft
+#align sum.get_left Sum.getLeft?
 
 /-- Check if a sum is `inr` and if so, retrieve its contents. -/
-def getRight : Sum α β → Option β
+def getRight? : Sum α β → Option β
   | inr b => some b
   | inl _ => none
-#align sum.get_right Sum.getRight
+#align sum.get_right Sum.getRight?
 
 /-- Check if a sum is `inl`. -/
 def isLeft : Sum α β → Bool
@@ -93,31 +105,31 @@ def isRight : Sum α β → Bool
 
 variable {x y : Sum α β}
 
-@[simp] theorem getLeft_inl (x : α) : (inl x : α ⊕ β).getLeft = some x := rfl
-@[simp] theorem getLeft_inr (x : β) : (inr x : α ⊕ β).getLeft = none := rfl
-@[simp] theorem getRight_inl (x : α) : (inl x : α ⊕ β).getRight = none := rfl
-@[simp] theorem getRight_inr (x : β) : (inr x : α ⊕ β).getRight = some x := rfl
+@[simp] theorem getLeft?_inl (x : α) : (inl x : α ⊕ β).getLeft? = some x := rfl
+@[simp] theorem getLeft?_inr (x : β) : (inr x : α ⊕ β).getLeft? = none := rfl
+@[simp] theorem getRight?_inl (x : α) : (inl x : α ⊕ β).getRight? = none := rfl
+@[simp] theorem getRight?_inr (x : β) : (inr x : α ⊕ β).getRight? = some x := rfl
 
 @[simp] theorem isLeft_inl (x : α) : (inl x : α ⊕ β).isLeft = true := rfl
 @[simp] theorem isLeft_inr (x : β) : (inr x : α ⊕ β).isLeft = false := rfl
 @[simp] theorem isRight_inl (x : α) : (inl x : α ⊕ β).isRight = false := rfl
 @[simp] theorem isRight_inr (x : β) : (inr x : α ⊕ β).isRight = true := rfl
 
-@[simp] theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
-  cases x <;> simp only [getLeft, isRight, eq_self_iff_true]
-#align sum.get_left_eq_none_iff Sum.getLeft_eq_none_iff
+@[simp] theorem getLeft?_eq_none_iff : x.getLeft? = none ↔ x.isRight := by
+  cases x <;> simp only [getLeft?, isRight, eq_self_iff_true]
+#align sum.get_left_eq_none_iff Sum.getLeft?_eq_none_iff
 
-@[simp] theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
-  cases x <;> simp only [getRight, isLeft, eq_self_iff_true]
-#align sum.get_right_eq_none_iff Sum.getRight_eq_none_iff
+@[simp] theorem getRight?_eq_none_iff : x.getRight? = none ↔ x.isLeft := by
+  cases x <;> simp only [getRight?, isLeft, eq_self_iff_true]
+#align sum.get_right_eq_none_iff Sum.getRight?_eq_none_iff
 
-@[simp] lemma getLeft_eq_some_iff {a : α} : x.getLeft = a ↔ x = inl a := by
-  cases x <;> simp only [getLeft, Option.some.injEq, inl.injEq]
-#align sum.get_left_eq_some_iff Sum.getLeft_eq_some_iff
+@[simp] lemma getLeft?_eq_some_iff {a : α} : x.getLeft? = a ↔ x = inl a := by
+  cases x <;> simp only [getLeft?, Option.some.injEq, inl.injEq]
+#align sum.get_left_eq_some_iff Sum.getLeft?_eq_some_iff
 
-@[simp] lemma getRight_eq_some_iff {b : β} : x.getRight = b ↔ x = inr b := by
-  cases x <;> simp only [getRight, Option.some.injEq, inr.injEq]
-#align sum.get_right_eq_some_iff Sum.getRight_eq_some_iff
+@[simp] lemma getRight?_eq_some_iff {b : β} : x.getRight? = b ↔ x = inr b := by
+  cases x <;> simp only [getRight?, Option.some.injEq, inr.injEq]
+#align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
 
 @[simp]
 theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl
@@ -259,15 +271,15 @@ theorem isRight_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isRight (x
 #align sum.is_right_map Sum.isRight_map
 
 @[simp]
-theorem getLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) :
-    (x.map f g).getLeft = x.getLeft.map f := by
+theorem getLeft?_map (f : α → β) (g : γ → δ) (x : Sum α γ) :
+    (x.map f g).getLeft? = x.getLeft?.map f := by
   cases x <;> rfl
-#align sum.get_left_map Sum.getLeft_map
+#align sum.get_left_map Sum.getLeft?_map
 
 @[simp]
-theorem getRight_map (f : α → β) (g : γ → δ) (x : α ⊕ γ) :
-    (x.map f g).getRight = x.getRight.map g := by cases x <;> rfl
-#align sum.get_right_map Sum.getRight_map
+theorem getRight?_map (f : α → β) (g : γ → δ) (x : α ⊕ γ) :
+    (x.map f g).getRight? = x.getRight?.map g := by cases x <;> rfl
+#align sum.get_right_map Sum.getRight?_map
 
 open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
 
@@ -372,12 +384,12 @@ theorem isRight_swap (x : Sum α β) : x.swap.isRight = x.isLeft := by cases x <
 #align sum.is_right_swap Sum.isRight_swap
 
 @[simp]
-theorem getLeft_swap (x : Sum α β) : x.swap.getLeft = x.getRight := by cases x <;> rfl
-#align sum.get_left_swap Sum.getLeft_swap
+theorem getLeft?_swap (x : Sum α β) : x.swap.getLeft? = x.getRight? := by cases x <;> rfl
+#align sum.get_left_swap Sum.getLeft?_swap
 
 @[simp]
-theorem getRight_swap (x : Sum α β) : x.swap.getRight = x.getLeft := by cases x <;> rfl
-#align sum.get_right_swap Sum.getRight_swap
+theorem getRight?_swap (x : Sum α β) : x.swap.getRight? = x.getLeft? := by cases x <;> rfl
+#align sum.get_right_swap Sum.getRight?_swap
 
 section LiftRel
 

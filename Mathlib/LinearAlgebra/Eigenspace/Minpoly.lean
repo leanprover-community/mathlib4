@@ -81,7 +81,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero f.isIntegral
-    rw [hp, con, MulZeroClass.mul_zero]
+    rw [hp, con, mul_zero]
   have : (aeval f) p = 0 := by
     have h_aeval := minpoly.aeval K f
     revert h_aeval

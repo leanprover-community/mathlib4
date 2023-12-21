@@ -512,10 +512,10 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
       simp only
       rw [LinearMap.toFun_eq_coe]
       refine TensorProduct.induction_on x ?_ ?_ ?_
-      · rw [MulZeroClass.zero_mul, map_zero, MulZeroClass.zero_mul]
+      · rw [zero_mul, map_zero, zero_mul]
       · intro a₁ b₁
         refine TensorProduct.induction_on y ?_ ?_ ?_
-        · rw [MulZeroClass.mul_zero, map_zero, MulZeroClass.mul_zero]
+        · rw [mul_zero, map_zero, mul_zero]
         · intro a₂ b₂
           rw [tmul_mul_tmul, w₁]
         · intro x₁ x₂ h₁ h₂
@@ -1015,13 +1015,13 @@ protected def module : Module (A ⊗[R] B) M where
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
     refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
-    · simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+    · simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
     · intro z w _ _
-      simp only [(· • ·), MulZeroClass.zero_mul, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]
     · intro a b
-      simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a₁ b₁ a₂ b₂
       -- porting note; was one `simp only` not two and a `rw` in mathlib3
       simp only [(· • ·), Algebra.TensorProduct.tmul_mul_tmul]
@@ -1034,7 +1034,7 @@ protected def module : Module (A ⊗[R] B) M where
       rw [mul_add]  -- simp only doesn't work
       simp only [LinearMap.map_add, LinearMap.add_apply, moduleAux_apply, hz, hw, smul_add]
     · intro z w _ _
-      simp only [(· • ·), MulZeroClass.mul_zero, map_zero, LinearMap.zero_apply]
+      simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw
       simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]

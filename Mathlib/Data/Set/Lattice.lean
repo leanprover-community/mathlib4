@@ -2304,3 +2304,19 @@ theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t :
 theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
   @sSup_sUnion βᵒᵈ _ _
 #align Inf_sUnion sInf_sUnion
+
+lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :
+    (⨆ x ∈ ⋃₀ S, f x) = ⨆ (s ∈ S) (x ∈ s), f x := by
+  rw [sUnion_eq_iUnion, iSup_iUnion, ← iSup_subtype'']
+
+lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
+    (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
+  rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
+
+lemma forall_sUnion {p : α → Prop} :
+    (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
+  simp_rw [← iInf_Prop_eq, iInf_sUnion]
+
+lemma exists_sUnion {p : α → Prop} :
+    (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
+  simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]

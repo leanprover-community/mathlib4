@@ -168,7 +168,7 @@ theorem cos_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
   rw [cos_angle_add_of_inner_eq_zero h]
   by_cases hxy : ‖x + y‖ = 0
   · have h' := norm_add_sq_eq_norm_sq_add_norm_sq_real h
-    rw [hxy, MulZeroClass.zero_mul, eq_comm,
+    rw [hxy, zero_mul, eq_comm,
       add_eq_zero_iff' (mul_self_nonneg ‖x‖) (mul_self_nonneg ‖y‖), mul_self_eq_zero] at h'
     simp [h'.1]
   · exact div_mul_cancel _ hxy

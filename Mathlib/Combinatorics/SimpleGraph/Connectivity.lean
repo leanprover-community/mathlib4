@@ -2422,6 +2422,17 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 
 variable (G) [DecidableEq V]
 
+/-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
+Note that `u` and `v` may be the same. -/
+@[simps]
+def walkLengthTwoEquivCommonNeighbors (u v : V) :
+    {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
+  toFun p := ⟨p.val.getVert 1, match p with
+    | ⟨.cons _ (.cons _ .nil), hp⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
+  invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
+  left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
+  right_inv _ := rfl
+
 section LocallyFinite
 
 variable [LocallyFinite G]
@@ -2473,6 +2484,9 @@ instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 #align simple_graph.fintype_set_walk_length SimpleGraph.fintypeSetWalkLength
+
+instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
+  fintypeSetWalkLength G u v n
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by

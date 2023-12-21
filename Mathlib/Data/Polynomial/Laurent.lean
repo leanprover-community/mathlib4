@@ -511,7 +511,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem degree_C_mul_T_ite (n : ℤ) (a : R) : degree (C a * T n) = ite (a = 0) ⊥ ↑n := by
   split_ifs with h <;>
-    simp only [h, map_zero, MulZeroClass.zero_mul, degree_zero, degree_C_mul_T, Ne.def,
+    simp only [h, map_zero, zero_mul, degree_zero, degree_C_mul_T, Ne.def,
       not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T_ite LaurentPolynomial.degree_C_mul_T_ite
@@ -540,7 +540,7 @@ section DegreeBounds
 
 theorem degree_C_mul_T_le (n : ℤ) (a : R) : degree (C a * T n) ≤ n := by
   by_cases a0 : a = 0
-  · simp only [a0, map_zero, MulZeroClass.zero_mul, degree_zero, bot_le]
+  · simp only [a0, map_zero, zero_mul, degree_zero, bot_le]
   · exact (degree_C_mul_T n a a0).le
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T_le LaurentPolynomial.degree_C_mul_T_le

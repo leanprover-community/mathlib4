@@ -99,7 +99,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
     inner_smul_right]
   rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
   · by_cases h : gramSchmidt 𝕜 f a = 0
-    · simp only [h, inner_zero_left, zero_div, MulZeroClass.zero_mul, sub_zero]
+    · simp only [h, inner_zero_left, zero_div, zero_mul, sub_zero]
     · rw [IsROrC.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel, sub_self]
       rwa [inner_self_ne_zero]
   intro i hi hia

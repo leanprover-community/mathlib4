@@ -644,7 +644,7 @@ theorem mul_coeff_right' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {
   apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_right hys) _ fun _ _ => rfl
   intro b hb
   simp only [not_and, mem_sdiff, mem_addAntidiagonal, mem_support, not_imp_not] at hb
-  rw [hb.2 hb.1.1 hb.1.2.2, MulZeroClass.mul_zero]
+  rw [hb.2 hb.1.1 hb.1.2.2, mul_zero]
 #align hahn_series.mul_coeff_right' HahnSeries.mul_coeff_right'
 
 theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} {s : Set Γ}
@@ -655,7 +655,7 @@ theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a
   apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_left hxs) _ fun _ _ => rfl
   intro b hb
   simp only [not_and', mem_sdiff, mem_addAntidiagonal, mem_support, not_ne_iff] at hb
-  rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, MulZeroClass.zero_mul]
+  rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_mul]
 #align hahn_series.mul_coeff_left' HahnSeries.mul_coeff_left'
 
 instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
@@ -690,7 +690,7 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   · simp [hr, mul_coeff]
   simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
   by_cases hx : x.coeff a = 0
-  · simp only [hx, MulZeroClass.mul_zero]
+  · simp only [hx, mul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
@@ -719,7 +719,7 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   · simp [hr, mul_coeff]
   simp only [hr, smul_coeff, mul_coeff, support_single_of_ne, Ne.def, not_false_iff, smul_eq_mul]
   by_cases hx : x.coeff a = 0
-  · simp only [hx, MulZeroClass.zero_mul]
+  · simp only [hx, zero_mul]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
@@ -1595,8 +1595,8 @@ theorem smul_apply {x : HahnSeries Γ R} {s : SummableFamily Γ R α} {a : α} :
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ R α) where
   smul := (· • ·)
-  smul_zero _ := ext fun _ => MulZeroClass.mul_zero _
-  zero_smul _ := ext fun _ => MulZeroClass.zero_mul _
+  smul_zero _ := ext fun _ => mul_zero _
+  zero_smul _ := ext fun _ => zero_mul _
   one_smul _ := ext fun _ => one_mul _
   add_smul _ _ _  := ext fun _ => add_mul _ _ _
   smul_add _ _ _ := ext fun _ => mul_add _ _ _
@@ -1615,12 +1615,12 @@ theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} : (x • s)
       (Set.subset_iUnion (fun j => support (toFun s j)) a)) _
     rintro ⟨i, j⟩ hU ha
     rw [mem_addAntidiagonal] at *
-    rw [Classical.not_not.1 fun con => ha ⟨hU.1, con, hU.2.2⟩, MulZeroClass.mul_zero]
+    rw [Classical.not_not.1 fun con => ha ⟨hU.1, con, hU.2.2⟩, mul_zero]
   · rintro ⟨i, j⟩ _
     refine' (s.finite_co_support j).subset _
     simp_rw [Function.support_subset_iff', Function.mem_support, Classical.not_not]
     intro a ha
-    rw [ha, MulZeroClass.mul_zero]
+    rw [ha, mul_zero]
   · refine' (sum_congr rfl _).trans (sum_subset (addAntidiagonal_mono_right _) _).symm
     · rintro ⟨i, j⟩ _
       rw [mul_finsum]
@@ -1632,7 +1632,7 @@ theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} : (x • s)
     · rintro ⟨i, j⟩ hU ha
       rw [mem_addAntidiagonal] at *
       rw [← hsum_coeff, Classical.not_not.1 fun con => ha ⟨hU.1, con, hU.2.2⟩,
-        MulZeroClass.mul_zero]
+        mul_zero]
 #align hahn_series.summable_family.hsum_smul HahnSeries.SummableFamily.hsum_smul
 
 /-- The summation of a `summable_family` as a `LinearMap`. -/

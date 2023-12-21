@@ -53,13 +53,13 @@ noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι �
     intro i _ hij
     rw [Pi.basisFun_apply, LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply,
       Function.update_noteq hij.symm, Pi.zero_apply, smul_eq_mul, smul_eq_mul,
-      MulZeroClass.mul_zero, MulZeroClass.mul_zero]
+      mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
   erw [hsum]
   simp only [Function.comp, smul_eq_mul]
   split_ifs with h
-  · simp only [h, zero_smul, MulZeroClass.zero_mul, Real.sign_zero]
+  · simp only [h, zero_smul, zero_mul, Real.sign_zero]
   have hwu : w j = u j := by simp only [dif_neg h, Units.val_mk0]
   simp only [Units.val_mk0]
   rw [hwu]

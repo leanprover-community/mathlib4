@@ -86,7 +86,6 @@ theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):= by
-  simp only [op_sum, op_mul, op_pow]
   rw [← sum_range_reflect]
   refine' sum_congr rfl fun j j_in => _
   rw [mem_range, Nat.lt_iff_add_one_le] at j_in
@@ -319,7 +318,6 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
   have : (∑ k in Ico m n, MulOpposite.op y ^ (n - 1 - k) * MulOpposite.op x ^ k) =
       ∑ k in Ico m n, MulOpposite.op x ^ k * MulOpposite.op y ^ (n - 1 - k) := by
     refine' sum_congr rfl fun k _ => _
-    simp only [ge_iff_le, tsub_le_iff_right]
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]

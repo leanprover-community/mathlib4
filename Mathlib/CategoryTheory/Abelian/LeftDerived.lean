@@ -102,8 +102,6 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
   rw [Category.assoc, Category.assoc, Category.assoc]
   convert Category.comp_id (leftDerivedObjIso F 0 P).hom
   rw [← Category.assoc, ← Category.assoc, Iso.comp_inv_eq]
-  -- Porting note: working around 'motive is not type correct'
-  simp only [Category.id_comp]
   -- Porting note: broken ext
   apply homology.hom_from_ext
   simp only [← Category.assoc]

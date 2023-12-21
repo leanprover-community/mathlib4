@@ -107,7 +107,7 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
     Tendsto.congr' _
       ((tendsto_exp_nhds_0_nhds_1.comp
             (by
-              simpa only [MulZeroClass.mul_zero, pow_one] using
+              simpa only [mul_zero, pow_one] using
                 (@tendsto_const_nhds _ _ _ a _).mul
                   (tendsto_div_pow_mul_exp_add_atTop b c 1 hb))).comp
         tendsto_log_atTop)

@@ -295,11 +295,11 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
     mul := (· * ·)
     zero := 0
     zero_mul := fun _ => by
-      rw [mul_def, unsym_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero, add_zero,
-        MulZeroClass.mul_zero, sym_zero]
+      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
+        mul_zero, sym_zero]
     mul_zero := fun _ => by
-      rw [mul_def, unsym_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero, add_zero,
-        MulZeroClass.mul_zero, sym_zero]
+      rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
+        mul_zero, sym_zero]
     mul_one := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_self_assoc, sym_unsym]
     one_mul := fun _ => by
@@ -368,7 +368,7 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
       rw [unsym_mul_self]
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
-      convert MulZeroClass.mul_zero (⅟ (2 : α) * ⅟ (2 : α))
+      convert mul_zero (⅟ (2 : α) * ⅟ (2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
 

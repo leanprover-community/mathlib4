@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
+set_option autoImplicit true
 
 open Function Nat NNReal ENNReal
 

@@ -348,7 +348,7 @@ theorem monomial_mul_monomial (m n : σ →₀ ℕ) (a b : R) :
     exact (h₃ rfl).elim
   · rw [h₃, add_tsub_cancel_right] at h₂
     exact (h₂ rfl).elim
-  · exact MulZeroClass.zero_mul b
+  · exact zero_mul b
   · rw [h₂] at h₁
     exact (h₁ <| le_add_left le_rfl).elim
 #align mv_power_series.monomial_mul_monomial MvPowerSeries.monomial_mul_monomial
@@ -741,7 +741,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
   · rintro ⟨φ, rfl⟩ m h
     rw [coeff_mul, Finset.sum_eq_zero]
     rintro ⟨i, j⟩ hij
-    rw [coeff_X_pow, if_neg, MulZeroClass.zero_mul]
+    rw [coeff_X_pow, if_neg, zero_mul]
     contrapose! h
     subst i
     rw [Finsupp.mem_antidiagonal] at hij
@@ -764,7 +764,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
           refine' ⟨rfl, _⟩
           ext t
           simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]
-        · exact MulZeroClass.zero_mul _
+        · exact zero_mul _
       · intro hni
         exfalso
         apply hni
@@ -779,7 +779,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
           rw [← hij, hi]
           ext
           rw [coe_add, coe_add, Pi.add_apply, Pi.add_apply, add_tsub_cancel_left, add_comm]
-        · exact MulZeroClass.zero_mul _
+        · exact zero_mul _
       · contrapose! H
         ext t
         by_cases hst : s = t
@@ -1572,7 +1572,7 @@ theorem coeff_mul_X_pow (p : PowerSeries R) (n d : ℕ) :
     coeff R (d + n) (p * X ^ n) = coeff R d p := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
   · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, MulZeroClass.mul_zero]
+    rw [coeff_X_pow, if_neg, mul_zero]
     rintro rfl
     apply h2
     rw [Finset.Nat.mem_antidiagonal, add_right_cancel_iff] at h1
@@ -1587,7 +1587,7 @@ theorem coeff_X_pow_mul (p : PowerSeries R) (n d : ℕ) :
     coeff R (d + n) (X ^ n * p) = coeff R d p := by
   rw [coeff_mul, Finset.sum_eq_single (n, d), coeff_X_pow, if_pos rfl, one_mul]
   · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, MulZeroClass.zero_mul]
+    rw [coeff_X_pow, if_neg, zero_mul]
     rintro rfl
     apply h2
     rw [Finset.Nat.mem_antidiagonal, add_comm, add_right_cancel_iff] at h1
@@ -1603,7 +1603,7 @@ theorem coeff_mul_X_pow' (p : PowerSeries R) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
-    rw [coeff_X_pow, if_neg, MulZeroClass.mul_zero]
+    rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (Finset.Nat.mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_X_pow' PowerSeries.coeff_mul_X_pow'
@@ -1614,7 +1614,7 @@ theorem coeff_X_pow_mul' (p : PowerSeries R) (n d : ℕ) :
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
-    rw [coeff_X_pow, if_neg, MulZeroClass.zero_mul]
+    rw [coeff_X_pow, if_neg, zero_mul]
     have := Finset.Nat.mem_antidiagonal.mp hx
     rw [add_comm] at this
     exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
@@ -1724,7 +1724,7 @@ noncomputable def rescale (a : R) : PowerSeries R →+* PowerSeries R where
   toFun f := PowerSeries.mk fun n => a ^ n * PowerSeries.coeff R n f
   map_zero' := by
     ext
-    simp only [LinearMap.map_zero, PowerSeries.coeff_mk, MulZeroClass.mul_zero]
+    simp only [LinearMap.map_zero, PowerSeries.coeff_mk, mul_zero]
   map_one' := by
     ext1
     simp only [mul_boole, PowerSeries.coeff_mk, PowerSeries.coeff_one]
@@ -1988,11 +1988,11 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : PowerSerie
     exact h hm₁
   · rintro ⟨i, j⟩ hij hne
     by_cases hj : j < n
-    · rw [ih j hj, MulZeroClass.mul_zero]
+    · rw [ih j hj, mul_zero]
     by_cases hi : i < m
     · specialize hm₂ _ hi
       push_neg at hm₂
-      rw [hm₂, MulZeroClass.zero_mul]
+      rw [hm₂, zero_mul]
     rw [Finset.Nat.mem_antidiagonal] at hij
     push_neg at hi hj
     suffices m < i by
@@ -2364,9 +2364,9 @@ theorem order_mul_ge (φ ψ : PowerSeries R) : order φ + order ψ ≤ order (φ
   intro n hn; rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
   by_cases hi : ↑i < order φ
-  · rw [coeff_of_lt_order i hi, MulZeroClass.zero_mul]
+  · rw [coeff_of_lt_order i hi, zero_mul]
   by_cases hj : ↑j < order ψ
-  · rw [coeff_of_lt_order j hj, MulZeroClass.mul_zero]
+  · rw [coeff_of_lt_order j hj, mul_zero]
   rw [not_lt] at hi hj; rw [Finset.Nat.mem_antidiagonal] at hij
   exfalso
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)

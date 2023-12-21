@@ -544,7 +544,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     classical
     simp [Function.update, Ne.def]
     split_ifs with hb ha ha <;>
-    simp only [*, not_false_iff, iff_true, not_true, iff_false]
+      try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
       simp
     · rw [Finset.mem_erase]

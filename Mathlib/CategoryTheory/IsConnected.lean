@@ -184,7 +184,6 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
     have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f => by
       change F j₁ = F j₀ ↔ F j₂ = F j₀
       simp [a f];)
-    dsimp at w
     intro j j'
     rw [w j, w j']
 #align category_theory.is_connected.of_induct CategoryTheory.IsConnected.of_induct

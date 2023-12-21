@@ -9,6 +9,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Tests for `norm_num` extensions
 -/
+set_option autoImplicit true
 
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type

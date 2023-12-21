@@ -156,7 +156,7 @@ protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.mono OrderHomClass.mono
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
-`OrderHomClass`. This is declared as the default coercion from `F` to `α →o β`. -/
+`OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
 @[coe]
 def toOrderHom (f : F) : α →o β where
   toFun := f

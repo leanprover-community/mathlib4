@@ -92,7 +92,7 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   · exact zero_ne_one hv
   intro j hj
   rw [smul_eq_mul, AlgHom.map_mul, toSplittingField_evalXSelf (s := v.support) hj,
-    MulZeroClass.mul_zero]
+    mul_zero]
 #align algebraic_closure.span_eval_ne_top AlgebraicClosure.spanEval_ne_top
 
 /-- A random maximal ideal that contains `spanEval k` -/

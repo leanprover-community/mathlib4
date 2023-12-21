@@ -141,7 +141,7 @@ noncomputable instance : Top (ENorm 𝕜 V) :=
       map_smul_le' := fun c x => by
         simp only
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
-        · simp only [MulZeroClass.mul_zero, le_refl]
+        · simp only [mul_zero, le_refl]
         · have : c = 0 := by tauto
           simp [this]
         · tauto

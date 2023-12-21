@@ -270,7 +270,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
                by dsimp at hn ⊢; rw [← pow_eq_mod_orderOf, hn]⟩)
       _ = 0 := ?_
 
-    rw [← mul_left_inj' hx1, MulZeroClass.zero_mul, geom_sum_mul]
+    rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast
     simp [pow_orderOf_eq_one]
 #align sum_hom_units_eq_zero sum_hom_units_eq_zero

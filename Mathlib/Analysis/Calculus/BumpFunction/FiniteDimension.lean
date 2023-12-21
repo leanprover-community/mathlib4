@@ -173,7 +173,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
         intro n
         contrapose! hx
         exact g_s n hx
-      simp only [this, MulZeroClass.mul_zero, tsum_zero]
+      simp only [this, mul_zero, tsum_zero]
     · intro x hx
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n); exact s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
@@ -237,7 +237,6 @@ theorem u_exists :
     · have I1 : x ∉ support f := by rwa [f_support]
       have I2 : -x ∉ support f := by
         rw [f_support]
-        simp only at hx
         simpa using hx
       simp only [mem_support, Classical.not_not] at I1 I2
       simp only [I1, I2, add_zero, zero_div]
@@ -400,7 +399,7 @@ theorem y_eq_zero_of_not_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ b
   have Bx : φ x = 0 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, MulZeroClass.mul_zero, integral_const]
+  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
 #align exists_cont_diff_bump_base.Y_eq_zero_of_not_mem_ball ExistsContDiffBumpBase.y_eq_zero_of_not_mem_ball
 
 theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
@@ -459,7 +458,6 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
         simp only [B.ne', div_le_iff B, field_simps]
-        simp only [mem_ball_zero_iff] at hx
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
