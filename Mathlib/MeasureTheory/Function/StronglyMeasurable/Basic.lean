@@ -244,7 +244,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
   by_cases h0 : ‖hf.approx n x‖ = 0
   · simp only [h0, _root_.div_zero, min_eq_right, zero_le_one, norm_zero, mul_zero]
     exact hc
-  cases' le_total ‖hf.approx n x‖ c with h h
+  rcases le_total ‖hf.approx n x‖ c with h | h
   · rw [min_eq_left _]
     · simpa only [norm_one, one_mul] using h
     · rwa [one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
