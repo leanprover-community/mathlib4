@@ -243,7 +243,7 @@ lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
     monotone_stabilizes f.iterateRange
   refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  cases' le_or_lt l m with h h
+  rcases le_or_lt l m with h | h
   · rw [← hn _ (hl.trans h), hn _ hl]
   · exact f.iterateRange.monotone h.le
 

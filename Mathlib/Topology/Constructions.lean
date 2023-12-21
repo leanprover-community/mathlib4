@@ -731,7 +731,7 @@ theorem isOpenMap_snd : IsOpenMap (@Prod.snd α β) :=
 empty -/
 theorem isOpen_prod_iff' {s : Set α} {t : Set β} :
     IsOpen (s ×ˢ t) ↔ IsOpen s ∧ IsOpen t ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
     constructor

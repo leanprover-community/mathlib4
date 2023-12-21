@@ -928,7 +928,7 @@ theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
 /-- The sum of a converging power series is continuous in its disk of convergence. -/
 protected theorem FormalMultilinearSeries.continuousOn [CompleteSpace F] :
     ContinuousOn p.sum (EMetric.ball 0 p.radius) := by
-  cases' (zero_le p.radius).eq_or_lt with h h
+  rcases (zero_le p.radius).eq_or_lt with h | h
   · simp [← h, continuousOn_empty]
   · exact (p.hasFPowerSeriesOnBall h).continuousOn
 #align formal_multilinear_series.continuous_on FormalMultilinearSeries.continuousOn

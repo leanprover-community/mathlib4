@@ -145,9 +145,6 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
       simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
-    cases' eq_empty_or_nonempty t₂ with h h
-    · simp only [h, prod_empty, mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
-        zero_mul]
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ a in t₁, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} ∂ρ.fst =
         ∫⁻ a in t₁, condKernelReal ρ a t₂ ∂ρ.fst := by
