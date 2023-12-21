@@ -93,6 +93,9 @@ between `B⋆` and `A⋆`
     erw [smul_apply, f.map_smul]
     rfl
 
+/--
+Two isomorphic modules have isomorphic character modules.
+-/
 def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
   LinearEquiv.ofLinear
     (dual e.symm) (dual e)
@@ -107,6 +110,9 @@ def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
 
 open TensorProduct
 
+/--
+Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ b ↦ L a b`
+-/
 @[simps] noncomputable def curry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ by
@@ -129,6 +135,9 @@ open TensorProduct
       rfl
     · aesop
 
+/--
+Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ b ↦ c (a ⊗ b) `
+-/
 @[simps] noncomputable def uncurry :
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
   toFun c :=
@@ -152,6 +161,15 @@ open TensorProduct
     repeat rw [AddMonoidHom.comp_apply]
     simp only [LinearMap.toAddMonoidHom_coe, mk_apply, map_smul]
     rw [smul_apply]
+
+/--
+Linear maps into a character module are exactly characters of tensor product.
+-/
+@[simps!] noncomputable def homEquiv : (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
+  LinearEquiv.ofLinear curry uncurry
+    (LinearMap.ext fun c ↦ FunLike.ext _ _ fun z ↦ by
+      refine z.induction_on ?_ ?_ ?_ <;> aesop)
+    (LinearMap.ext fun l ↦ FunLike.ext _ _ fun _ ↦ by aesop)
 
 end module
 /--
