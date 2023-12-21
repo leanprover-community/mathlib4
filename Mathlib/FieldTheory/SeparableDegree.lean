@@ -92,7 +92,7 @@ This file contains basics about the separable degree of a field extension.
 - `Polynomial.HasSeparableContraction.natSepDegree_eq`: if a polynomial has separable
   contraction, then its separable degree is equal to its separable contraction degree.
 
-- `Polynomial.natSepDegree_dvd_natDegree_of_irreducible`: the separable degree of an irreducible
+- `Irreducible.natSepDegree_dvd_natDegree`: the separable degree of an irreducible
   polynomial divides its degree.
 
 - `IntermediateField.finSepDegree_adjoin_simple_eq_natSepDegree`: the (finite) separable degree of
@@ -489,17 +489,17 @@ theorem HasSeparableContraction.natSepDegree_eq
   rw [← h2, natSepDegree_expand_eq_natSepDegree]
   exact natSepDegree_eq_natDegree_of_separable g h1
 
+section Irreducible
+
+variable {f}
+
 /-- The separable degree of an irreducible polynomial divides its degree. -/
-theorem natSepDegree_dvd_natDegree_of_irreducible (h : Irreducible f) :
+theorem _root_.Irreducible.natSepDegree_dvd_natDegree (h : Irreducible f) :
     f.natSepDegree ∣ f.natDegree := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   have hf := Irreducible.hasSeparableContraction q f h
   rw [hf.natSepDegree_eq]
   exact HasSeparableContraction.dvd_degree hf
-
-section Irreducible
-
-variable {f}
 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one if and only if it is of the form `Polynomial.expand F (q ^ n) (X - C y)`
@@ -549,8 +549,8 @@ theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic 
 private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
     finSepDegree F F⟮α⟯ ∣ finrank F F⟮α⟯ := by
   by_cases halg : IsAlgebraic F α
-  · rw [finSepDegree_adjoin_simple_eq_natSepDegree F E α halg, adjoin.finrank halg.isIntegral]
-    exact natSepDegree_dvd_natDegree_of_irreducible _ (minpoly.irreducible halg.isIntegral)
+  · rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral]
+    exact (minpoly.irreducible halg.isIntegral).natSepDegree_dvd_natDegree
   have : finrank F F⟮α⟯ = 0 := finrank_of_infinite_dimensional <| fun _ ↦
     halg ((AdjoinSimple.isIntegral_gen F α).1 (IsIntegral.of_finite F _)).isAlgebraic
   rw [this]
@@ -567,7 +567,7 @@ theorem finSepDegree_adjoin_simple_le_finrank (α : E) (halg : IsAlgebraic F α)
 of `F⟮α⟯ / F` if and only if `α` is a separable element. -/
 theorem finSepDegree_adjoin_simple_eq_finrank_iff (α : E) (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = finrank F F⟮α⟯ ↔ (minpoly F α).Separable := by
-  rw [finSepDegree_adjoin_simple_eq_natSepDegree F E α halg, adjoin.finrank halg.isIntegral,
+  rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral,
     natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral)]
 
 -- TODO: move to suitable file
