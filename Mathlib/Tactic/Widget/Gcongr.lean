@@ -41,7 +41,7 @@ def GCongrSelectionPanel.rpc := mkSelectionPanelRPC makeGCongrString
 
 /-- The gcongr widget. -/
 @[widget_module]
-def GCongrSelectionPanel : Component SelectInsertParams :=
+def GCongrSelectionPanel : PanelWidget SelectInsertParams :=
   mk_rpc_widget% GCongrSelectionPanel.rpc
 
 open scoped Json in
@@ -49,4 +49,4 @@ open scoped Json in
 subexpressions in the goal.-/
 elab stx:"gcongr?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``GCongrSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  savePanelWidgetInfo' GCongrSelectionPanel { replaceRange } stx

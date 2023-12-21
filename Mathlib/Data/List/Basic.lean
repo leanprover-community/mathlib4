@@ -2106,31 +2106,10 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
 
 #align list.drop_nil List.drop_nil
-
-@[simp]
-theorem drop_one : ∀ l : List α, drop 1 l = tail l
-  | [] | _ :: _ => rfl
 #align list.drop_one List.drop_one
-
-theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
-  | _, 0, _ => rfl
-  | _, _ + 1, [] => drop_nil.symm
-  | m, n + 1, _ :: _ => drop_add m n _
 #align list.drop_add List.drop_add
-
-@[simp]
-theorem drop_left : ∀ l₁ l₂ : List α, drop (length l₁) (l₁ ++ l₂) = l₂
-  | [], _ => rfl
-  | _ :: l₁, l₂ => drop_left l₁ l₂
 #align list.drop_left List.drop_left
-
-theorem drop_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : drop n (l₁ ++ l₂) = l₂ := by
-  rw [← h]; apply drop_left
 #align list.drop_left' List.drop_left'
-
-theorem drop_eq_get_cons : ∀ {n} {l : List α} (h), drop n l = get l ⟨n, h⟩ :: drop (n + 1) l
-  | 0, _ :: _, _ => rfl
-  | n + 1, _ :: _, _ => @drop_eq_get_cons n _ _
 #align list.drop_eq_nth_le_cons List.drop_eq_get_consₓ -- nth_le vs get
 
 #align list.drop_length List.drop_length
