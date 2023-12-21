@@ -1466,6 +1466,15 @@ section FiniteFPowerSeries
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
+/-- A finite formal multilinear series sums to its sum at every point.-/
+protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
+    {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0)  (x : E) :
+    HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) := by
+  rw [FormalMultilinearSeries.sum, tsum_eq_sum (s := Finset.range n)]
+  apply hasSum_sum_of_ne_finset_zero (s := Finset.range n)
+  all_goals (intro m hm; simp only [Finset.mem_range, not_lt] at hm)
+  all_goals (rw [hn m hm, ContinuousMultilinearMap.zero_apply])
+
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series on the ball of radius `r > 0` around `x` if
 `f (x + y) = ∑' pₘ yᵐ` for all `‖y‖ < r` and `pₙ = 0` for `n ≤ m`.
@@ -1519,7 +1528,7 @@ theorem HasFiniteFPowerSeriesAt.cCPolynomialAt (hf : HasFiniteFPowerSeriesAt f p
     CPolynomialAt 𝕜 f x :=
   ⟨p, n, hf⟩
 
-theorem HasFiniteFPowerSeriesOnBall.cCPolynomialAt (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
+theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     CPolynomialAt 𝕜 f x :=
   hf.hasFiniteFPowerSeriesAt.cCPolynomialAt
 
@@ -1551,13 +1560,6 @@ theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f
       convert hf.hasSum hz using 2
       abel }
 
-/-
-theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
-    (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
-  have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy
-  simpa only [add_sub_cancel'_right] using hf.hasSum this
-#align has_fpower_series_on_ball.has_sum_sub HasFPowerSeriesOnBall.hasSum_sub
--/
 
 theorem HasFiniteFPowerSeriesOnBall.radius_infinite (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
     p.radius = ⊤ :=
@@ -1595,30 +1597,6 @@ theorem HasFiniteFPowerSeriesAt.eventually_hasSum (hf : HasFiniteFPowerSeriesAt 
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y)) :=
   hf.hasFPowerSeriesAt.eventually_hasSum
 
-/-
-theorem HasFPowerSeriesOnBall.eventually_hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) :
-    ∀ᶠ y in 𝓝 x, HasSum (fun n : ℕ => p n fun _ : Fin n => y - x) (f y) := by
-  filter_upwards [EMetric.ball_mem_nhds x hf.r_pos] with y using hf.hasSum_sub
-#align has_fpower_series_on_ball.eventually_has_sum_sub HasFPowerSeriesOnBall.eventually_hasSum_sub
-
-theorem HasFPowerSeriesAt.eventually_hasSum_sub (hf : HasFPowerSeriesAt f p x) :
-    ∀ᶠ y in 𝓝 x, HasSum (fun n : ℕ => p n fun _ : Fin n => y - x) (f y) :=
-  let ⟨_, hr⟩ := hf
-  hr.eventually_hasSum_sub
-#align has_fpower_series_at.eventually_has_sum_sub HasFPowerSeriesAt.eventually_hasSum_sub
-
-theorem HasFPowerSeriesOnBall.eventually_eq_zero
-    (hf : HasFPowerSeriesOnBall f (0 : FormalMultilinearSeries 𝕜 E F) x r) :
-    ∀ᶠ z in 𝓝 x, f z = 0 := by
-  filter_upwards [hf.eventually_hasSum_sub] with z hz using hz.unique hasSum_zero
-#align has_fpower_series_on_ball.eventually_eq_zero HasFPowerSeriesOnBall.eventually_eq_zero
-
-theorem HasFPowerSeriesAt.eventually_eq_zero
-    (hf : HasFPowerSeriesAt f (0 : FormalMultilinearSeries 𝕜 E F) x) : ∀ᶠ z in 𝓝 x, f z = 0 :=
-  let ⟨_, hr⟩ := hf
-  hr.eventually_eq_zero
-#align has_fpower_series_at.eventually_eq_zero HasFPowerSeriesAt.eventually_eq_zero
--/
 
 theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ := by
@@ -1833,275 +1811,170 @@ protected theorem FormalMultilinearSeries.continuousOn_of_finite
 
 end FiniteFPowerSeries
 
-#exit
-
-/-!
-### Uniqueness of power series
-If a function `f : E → F` has two representations as power series at a point `x : E`, corresponding
-to formal multilinear series `p₁` and `p₂`, then these representations agree term-by-term. That is,
-for any `n : ℕ` and `y : E`, `p₁ n (fun i ↦ y) = p₂ n (fun i ↦ y)`. In the one-dimensional case,
-when `f : 𝕜 → E`, the continuous multilinear maps `p₁ n` and `p₂ n` are given by
-`ContinuousMultilinearMap.mkPiField`, and hence are determined completely by the value of
-`p₁ n (fun i ↦ 1)`, so `p₁ = p₂`. Consequently, the radius of convergence for one series can be
-transferred to the other.
--/
-
-
-/-!
-### Changing origin in a power series
-
-If a function is analytic in a disk `D(x, R)`, then it is analytic in any disk contained in that
-one. Indeed, one can write
-$$
-f (x + y + z) = \sum_{n} p_n (y + z)^n = \sum_{n, k} \binom{n}{k} p_n y^{n-k} z^k
-= \sum_{k} \Bigl(\sum_{n} \binom{n}{k} p_n y^{n-k}\Bigr) z^k.
-$$
-The corresponding power series has thus a `k`-th coefficient equal to
-$\sum_{n} \binom{n}{k} p_n y^{n-k}$. In the general case where `pₙ` is a multilinear map, this has
-to be interpreted suitably: instead of having a binomial coefficient, one should sum over all
-possible subsets `s` of `Fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
-`y` to the indices outside of `s`.
-
-In this paragraph, we implement this. The new power series is called `p.changeOrigin y`. Then, we
-check its convergence and the fact that its sum coincides with the original sum. The outcome of this
-discussion is that the set of points where a function is analytic is open.
--/
-
-
 namespace FormalMultilinearSeries
 
 section
 
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
-/-- A term of `FormalMultilinearSeries.changeOriginSeries`.
+/-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
+`p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`.  -/
+lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
+    (hs : s.card = l) (hkl : n ≤ k + l) :
+    p.changeOriginSeriesTerm k l s hs = 0 := by
+  rw [changeOriginSeriesTerm]
+  simp only [AddEquivClass.map_eq_zero_iff]
+  exact hn _ hkl
 
-Given a formal multilinear series `p` and a point `x` in its ball of convergence,
-`p.changeOrigin x` is a formal multilinear series such that
-`p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Each term of `p.changeOrigin x`
-is itself an analytic function of `x` given by the series `p.changeOriginSeries`. Each term in
-`changeOriginSeries` is the sum of `changeOriginSeriesTerm`'s over all `s` of cardinality `l`.
-The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fun _ ↦ y) =
-p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
--/
-def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    E[×l]→L[𝕜] E[×k]→L[𝕜] F := by
-  let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
-    (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
-  exact a (p (k + l))
-#align formal_multilinear_series.change_origin_series_term FormalMultilinearSeries.changeOriginSeriesTerm
+/-- If `p` is a formal multilinear series, then so is `p.changeOriginSeries k` for every
+`k` in `ℕ`. More precisely, if `p m = 0` for `n ≤ m`, then `p.changeOriginSeries k m = 0` for
+`n ≤ k + m`.  -/
+lemma changeOriginSeries_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) : ∀ {m : ℕ}, n ≤ k + m →
+    p.changeOriginSeries k m = 0 := by
+  intro m hm
+  rw [changeOriginSeries]
+  exact Finset.sum_eq_zero (fun _ _  => p.changeOriginSeriesTerm_bound hn _ _ _ hm)
 
-theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
-    (x y : E) :
-    (p.changeOriginSeriesTerm k l s hs (fun _ => x) fun _ => y) =
-      p (k + l) (s.piecewise (fun _ => x) fun _ => y) :=
-  ContinuousMultilinearMap.curryFinFinset_apply_const _ _ _ _ _
-#align formal_multilinear_series.change_origin_series_term_apply FormalMultilinearSeries.changeOriginSeriesTerm_apply
+lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
+    (p.changeOriginSeries k).sum = (p.changeOriginSeries k).partialSum n := by
+  apply funext; intro x
+  rw [FormalMultilinearSeries.sum]
+  rw [tsum_eq_sum (f := fun m => p.changeOriginSeries k m (fun _ => x)) (s := Finset.range n)
+    (fun m hm => by simp only; simp only [Finset.mem_range, not_lt] at hm
+                    rw [p.changeOriginSeries_finite_of_finite hn k (le_add_of_le_right hm),
+                      ContinuousMultilinearMap.zero_apply])]
+  rfl
 
-@[simp]
-theorem norm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    ‖p.changeOriginSeriesTerm k l s hs‖ = ‖p (k + l)‖ := by
-  simp only [changeOriginSeriesTerm, LinearIsometryEquiv.norm_map]
-#align formal_multilinear_series.norm_change_origin_series_term FormalMultilinearSeries.norm_changeOriginSeriesTerm
+/-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
+`p.changeOrigin x k = 0` for `n ≤ k`.  -/
+lemma changeOrigin_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) {k : ℕ} (hk : n ≤ k) :
+    p.changeOrigin x k = 0 := by
+  rw [changeOrigin, p.changeOriginSeries_sum_eq_partialSum_of_finite hn]
+  apply Finset.sum_eq_zero
+  intro m hm
+  rw [Finset.mem_range] at hm
+  rw [p.changeOriginSeries_finite_of_finite hn k (le_add_of_le_left hk),
+    ContinuousMultilinearMap.zero_apply]
 
-@[simp]
-theorem nnnorm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    ‖p.changeOriginSeriesTerm k l s hs‖₊ = ‖p (k + l)‖₊ := by
-  simp only [changeOriginSeriesTerm, LinearIsometryEquiv.nnnorm_map]
-#align formal_multilinear_series.nnnorm_change_origin_series_term FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm
+/-- If `p` is finite, then the radius of convergence of `p.changeOrigin x` is equal to `⊤`. -/
+theorem changeOrigin_radius_eq_top_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) : (p.changeOrigin x).radius = ⊤ :=
+  FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ n
+    (fun _ => p.changeOrigin_finite_of_finite hn (le_add_of_le_right (le_refl _)))
 
-theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k + l)))
-    (hs : s.card = l) (x y : E) :
-    ‖p.changeOriginSeriesTerm k l s hs (fun _ => x) fun _ => y‖₊ ≤
-      ‖p (k + l)‖₊ * ‖x‖₊ ^ l * ‖y‖₊ ^ k := by
-  rw [← p.nnnorm_changeOriginSeriesTerm k l s hs, ← Fin.prod_const, ← Fin.prod_const]
-  apply ContinuousMultilinearMap.le_of_op_nnnorm_le
-  apply ContinuousMultilinearMap.le_op_nnnorm
-#align formal_multilinear_series.nnnorm_change_origin_series_term_apply_le FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm_apply_le
+theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
+    HasFiniteFPowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 n ⊤ :=
+  (p.changeOriginSeries k).hasFiniteFPowerSeriesOnBall_of_finite
+  (fun _ hm => p.changeOriginSeries_finite_of_finite hn k (le_add_of_le_right hm))
 
-/-- The power series for `f.changeOrigin k`.
+theorem hasFiniteFPowerSeriesOnBall_changeOrigin_sum (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x : E) :
+    HasFiniteFPowerSeriesOnBall (p.changeOrigin x).sum (p.changeOrigin x) 0 n ⊤ :=
+  (p.changeOrigin x).hasFiniteFPowerSeriesOnBall_of_finite
+  (fun _ hk => p.changeOrigin_finite_of_finite hn hk)
 
-Given a formal multilinear series `p` and a point `x` in its ball of convergence,
-`p.changeOrigin x` is a formal multilinear series such that
-`p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Its `k`-th term is the sum of
-the series `p.changeOriginSeries k`. -/
-def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[𝕜] F) := fun l =>
-  ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
-#align formal_multilinear_series.change_origin_series FormalMultilinearSeries.changeOriginSeries
-
-theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
-    ‖p.changeOriginSeries k l‖₊ ≤
-      ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
-  (nnnorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
-    simp_rw [tsum_fintype, nnnorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
-#align formal_multilinear_series.nnnorm_change_origin_series_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_le_tsum
-
-theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
-    ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
-      ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
-  rw [NNReal.tsum_mul_right, ← Fin.prod_const]
-  exact (p.changeOriginSeries k l).le_of_op_nnnorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
-#align formal_multilinear_series.nnnorm_change_origin_series_apply_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_apply_le_tsum
-
-/-- Changing the origin of a formal multilinear series `p`, so that
-`p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense.
--/
-def changeOrigin (x : E) : FormalMultilinearSeries 𝕜 E F :=
-  fun k => (p.changeOriginSeries k).sum x
-#align formal_multilinear_series.change_origin FormalMultilinearSeries.changeOrigin
-
-/-- An auxiliary equivalence useful in the proofs about
-`FormalMultilinearSeries.changeOriginSeries`: the set of triples `(k, l, s)`, where `s` is a
-`Finset (Fin (k + l))` of cardinality `l` is equivalent to the set of pairs `(n, s)`, where `s` is a
-`Finset (Fin n)`.
-
-The forward map sends `(k, l, s)` to `(k + l, s)` and the inverse map sends `(n, s)` to
-`(n - Finset.card s, Finset.card s, s)`. The actual definition is less readable because of problems
-with non-definitional equalities. -/
-@[simps]
-def changeOriginIndexEquiv :
-    (Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) ≃ Σn : ℕ, Finset (Fin n) where
-  toFun s := ⟨s.1 + s.2.1, s.2.2⟩
-  invFun s :=
-    ⟨s.1 - s.2.card, s.2.card,
-      ⟨s.2.map
-        (Fin.castIso <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEquiv.toEmbedding,
-        Finset.card_map _⟩⟩
-  left_inv := by
-    rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
-    dsimp only [Subtype.coe_mk]
-    -- Lean can't automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
-    -- formulate the generalized goal
-    suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
-        (⟨k', l', ⟨Finset.map (Fin.castIso hkl).toEquiv.toEmbedding s, hs'⟩⟩ :
-          Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
-      apply this <;> simp only [hs, add_tsub_cancel_right]
-    rintro _ _ rfl rfl hkl hs'
-    simp only [Equiv.refl_toEmbedding, Fin.castIso_refl, Finset.map_refl, eq_self_iff_true,
-      OrderIso.refl_toEquiv, and_self_iff, heq_iff_eq]
-  right_inv := by
-    rintro ⟨n, s⟩
-    simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.castIso_to_equiv]
-#align formal_multilinear_series.change_origin_index_equiv FormalMultilinearSeries.changeOriginIndexEquiv
-
-theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
-    Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
-      ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
-  rw [← changeOriginIndexEquiv.symm.summable_iff]
-  dsimp only [Function.comp_def, changeOriginIndexEquiv_symm_apply_fst,
-    changeOriginIndexEquiv_symm_apply_snd_fst]
-  have : ∀ n : ℕ,
-      HasSum (fun s : Finset (Fin n) => ‖p (n - s.card + s.card)‖₊ * r ^ s.card * r' ^ (n - s.card))
-        (‖p n‖₊ * (r + r') ^ n) := by
-    intro n
-    -- TODO: why `simp only [tsub_add_cancel_of_le (card_finset_fin_le _)]` fails?
-    convert_to HasSum (fun s : Finset (Fin n) => ‖p n‖₊ * (r ^ s.card * r' ^ (n - s.card))) _
-    · ext1 s
-      rw [tsub_add_cancel_of_le (card_finset_fin_le _), mul_assoc]
-    rw [← Fin.sum_pow_mul_eq_add_pow]
-    exact (hasSum_fintype _).mul_left _
-  refine' NNReal.summable_sigma.2 ⟨fun n => (this n).summable, _⟩
-  simp only [(this _).tsum_eq]
-  exact p.summable_nnnorm_mul_pow hr
-#align formal_multilinear_series.change_origin_series_summable_aux₁ FormalMultilinearSeries.changeOriginSeries_summable_aux₁
-
-theorem changeOriginSeries_summable_aux₂ (hr : (r : ℝ≥0∞) < p.radius) (k : ℕ) :
-    Summable fun s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
-      ‖p (k + s.1)‖₊ * r ^ s.1 := by
-  rcases ENNReal.lt_iff_exists_add_pos_lt.1 hr with ⟨r', h0, hr'⟩
-  simpa only [mul_inv_cancel_right₀ (pow_pos h0 _).ne'] using
-    ((NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr')).1 k).mul_right (r' ^ k)⁻¹
-#align formal_multilinear_series.change_origin_series_summable_aux₂ FormalMultilinearSeries.changeOriginSeries_summable_aux₂
-
-theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) (k : ℕ) :
-    Summable fun l : ℕ => ‖p.changeOriginSeries k l‖₊ * r ^ l := by
-  refine' NNReal.summable_of_le
-    (fun n => _) (NNReal.summable_sigma.1 <| p.changeOriginSeries_summable_aux₂ hr k).2
-  simp only [NNReal.tsum_mul_right]
-  exact mul_le_mul' (p.nnnorm_changeOriginSeries_le_tsum _ _) le_rfl
-#align formal_multilinear_series.change_origin_series_summable_aux₃ FormalMultilinearSeries.changeOriginSeries_summable_aux₃
-
-theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
-  ENNReal.le_of_forall_nnreal_lt fun _r hr =>
-    le_radius_of_summable_nnnorm _ (p.changeOriginSeries_summable_aux₃ hr k)
-#align formal_multilinear_series.le_change_origin_series_radius FormalMultilinearSeries.le_changeOriginSeries_radius
-
-theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radius) :
-    ‖p.changeOrigin x k‖₊ ≤
-      ∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
-  refine' tsum_of_nnnorm_bounded _ fun l => p.nnnorm_changeOriginSeries_apply_le_tsum k l x
-  have := p.changeOriginSeries_summable_aux₂ h k
-  refine' HasSum.sigma this.hasSum fun l => _
-  exact ((NNReal.summable_sigma.1 this).1 l).hasSum
-#align formal_multilinear_series.nnnorm_change_origin_le FormalMultilinearSeries.nnnorm_changeOrigin_le
-
-/-- The radius of convergence of `p.changeOrigin x` is at least `p.radius - ‖x‖`. In other words,
-`p.changeOrigin x` is well defined on the largest ball contained in the original ball of
-convergence. -/
-theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radius := by
-  refine' ENNReal.le_of_forall_pos_nnreal_lt fun r _h0 hr => _
-  rw [lt_tsub_iff_right, add_comm] at hr
-  have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
-  apply le_radius_of_summable_nnnorm
-  have : ∀ k : ℕ,
-      ‖p.changeOrigin x k‖₊ * r ^ k ≤
-        (∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
-          r ^ k :=
-    fun k => mul_le_mul_right' (p.nnnorm_changeOrigin_le k hr') (r ^ k)
-  refine' NNReal.summable_of_le this _
-  simpa only [← NNReal.tsum_mul_right] using
-    (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
-#align formal_multilinear_series.change_origin_radius FormalMultilinearSeries.changeOrigin_radius
-
-end
-
--- From this point on, assume that the space is complete, to make sure that series that converge
--- in norm also converge in `F`.
-variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
-
-theorem hasFPowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
-    HasFPowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 p.radius :=
-  have := p.le_changeOriginSeries_radius k
-  ((p.changeOriginSeries k).hasFPowerSeriesOnBall (hr.trans_le this)).mono hr this
-#align formal_multilinear_series.has_fpower_series_on_ball_change_origin FormalMultilinearSeries.hasFPowerSeriesOnBall_changeOrigin
-
-/-- Summing the series `p.changeOrigin x` at a point `y` gives back `p (x + y)`. -/
-theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius) :
+theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
+    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x y : E) :
     (p.changeOrigin x).sum y = p.sum (x + y) := by
-  have radius_pos : 0 < p.radius := lt_of_le_of_lt (zero_le _) h
-  have x_mem_ball : x ∈ EMetric.ball (0 : E) p.radius :=
-    mem_emetric_ball_zero_iff.2 ((le_add_right le_rfl).trans_lt h)
-  have y_mem_ball : y ∈ EMetric.ball (0 : E) (p.changeOrigin x).radius := by
-    refine' mem_emetric_ball_zero_iff.2 (lt_of_lt_of_le _ p.changeOrigin_radius)
-    rwa [lt_tsub_iff_right, add_comm]
-  have x_add_y_mem_ball : x + y ∈ EMetric.ball (0 : E) p.radius := by
-    refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ h)
-    exact mod_cast nnnorm_add_le x y
+  have x_mem_ball : x ∈ EMetric.ball (0 : E) ⊤ := by simp only [Metric.emetric_ball_top,
+    mem_univ]
   set f : (Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hsf : Summable f := by
-    refine' .of_nnnorm_bounded _ (p.changeOriginSeries_summable_aux₁ h) _
-    rintro ⟨k, l, s, hs⟩
-    dsimp only [Subtype.coe_mk]
-    exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
+    set s := {p : (k : ℕ) × (l : ℕ) × {s : Finset (Fin (k + l)) // s.card = l} |
+      p.1 < n ∧ p.2.1 < n}
+    have hs1 : s.Finite := by
+      rw [Set.finite_def]
+      apply Nonempty.intro
+      set g : s → (k : Finset.range n) × (l : Finset.range n) ×
+        {s : Finset (Fin (k + l)) | s.card = l} := (fun p =>
+          ⟨⟨p.1.1, Finset.mem_range.mpr p.2.1⟩, ⟨p.1.2.1, Finset.mem_range.mpr p.2.2⟩, p.1.2.2⟩)
+      set h : (k : Finset.range n) × (l : Finset.range n) ×
+        {s : Finset (Fin (k + l)) | s.card = l} → s :=
+        fun p => by refine ⟨⟨p.1, p.2.1, p.2.2⟩, ?_⟩
+                    simp only [coe_setOf, mem_setOf_eq]
+                    exact ⟨Finset.mem_range.mp p.1.property, Finset.mem_range.mp p.2.1.property⟩
+      have h1 : ∀ x, h (g x) = x := by
+        intro ⟨p, hp⟩
+        simp only [coe_setOf, mem_setOf_eq, Sigma.eta]
+      have h2 : ∀ x, g (h x) = x := by
+        intro ⟨k, l, t⟩
+        simp only [coe_setOf, mem_setOf_eq, id_eq]
+      set e : s ≃ (k : Finset.range n) × (l : Finset.range n) ×
+        {s : Finset (Fin (k + l)) | s.card = l} :=
+        {toFun := g
+         invFun := h
+         left_inv := h1
+         right_inv := h2}
+      apply Fintype.ofEquiv _ e.symm
+    have hs2 : f.support ⊆ s := by
+      intro ⟨k, l, t⟩
+      contrapose
+      simp only [mem_setOf_eq, not_and, not_lt, Function.mem_support, ne_eq, not_not]
+      intro h
+      rw [p.changeOriginSeriesTerm_bound hn, ContinuousMultilinearMap.zero_apply,
+        ContinuousMultilinearMap.zero_apply]
+      simp only
+      by_cases h' : k < n
+      . exact le_add_of_le_right (h h')
+      . exact le_add_of_le_left (le_of_not_lt h')
+    exact summable_of_finite_support (Set.Finite.subset hs1 hs2)
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
-    refine' HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => _) hsf
-    · dsimp only
-      refine' ContinuousMultilinearMap.hasSum_eval _ _
-      have := (p.hasFPowerSeriesOnBall_changeOrigin k radius_pos).hasSum x_mem_ball
-      rw [zero_add] at this
-      refine' HasSum.sigma_of_hasSum this (fun l => _) _
-      · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
-        apply hasSum_fintype
-      · refine' .of_nnnorm_bounded _
-          (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k) fun s => _
-        refine' (ContinuousMultilinearMap.le_op_nnnorm _ _).trans_eq _
-        simp
+    rw [FormalMultilinearSeries.sum]
+    have hg : HasSum (fun n => p.changeOrigin x n (fun _ => y))
+      (∑' (n : ℕ), (changeOrigin p x n) fun _ ↦ y) := by
+      apply FormalMultilinearSeries.hasSum_of_finite (n := n)
+      exact fun m hm => p.changeOrigin_finite_of_finite hn hm
+    refine HasSum.sigma_of_hasSum hg ?_ hsf
+    intro m
+    dsimp only
+    refine' ContinuousMultilinearMap.hasSum_eval _ _
+    have := (p.hasFiniteFPowerSeriesOnBall_changeOrigin hn m).hasSum x_mem_ball
+    rw [zero_add] at this
+    refine' HasSum.sigma_of_hasSum this (fun l => _) _
+    · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
+      apply hasSum_fintype
+    · apply summable_of_finite_support
+      set s := {p : (l : ℕ) × {s : Finset (Fin (m + l)) // s.card = l} | p.1 < n}
+      have hs : s.Finite := by
+        rw [Set.finite_def]
+        apply Nonempty.intro
+        set g : s → (l : Finset.range n) ×
+          {s : Finset (Fin (m + l)) | s.card = l} := fun p => ⟨⟨p.1.1, Finset.mem_range.mpr
+          (by have h := p.2; rw [Set.mem_setOf_eq] at h; exact h)⟩, p.1.2⟩
+        set h : (l : Finset.range n) × {s : Finset (Fin (m + l)) | s.card = l} → s :=
+          fun p => by refine ⟨⟨p.1.1, p.2⟩, ?_⟩
+                      simp only [coe_setOf, mem_setOf_eq]
+                      exact Finset.mem_range.mp p.1.2
+        have h1 : ∀ x, h (g x) = x := by
+          intro ⟨p, hp⟩
+          simp only [coe_setOf, mem_setOf_eq, eq_mp_eq_cast, cast_eq, Sigma.eta]
+        have h2 : ∀ x, g (h x) = x := by
+          intro ⟨l, t⟩
+          simp only [coe_setOf, mem_setOf_eq, eq_mp_eq_cast, cast_eq, id_eq]
+        set e : s ≃ (l : Finset.range n) × {s : Finset (Fin (m + l)) | s.card = l} :=
+          {toFun := g
+           invFun := h
+           left_inv := h1
+           right_inv := h2}
+        apply Fintype.ofEquiv _ e.symm
+      apply Set.Finite.subset hs
+      simp only [Function.support_subset_iff, ne_eq, mem_setOf_eq, Sigma.forall, Subtype.forall]
+      intro l s hs
+      contrapose!
+      intro hl
+      rw [p.changeOriginSeriesTerm_bound hn, ContinuousMultilinearMap.zero_apply]
+      simp only
+      exact le_add_of_le_right hl
   refine' hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 _)
   refine' HasSum.sigma_of_hasSum
-    (p.hasSum x_add_y_mem_ball) (fun n => _) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
+    (p.hasSum_of_finite hn (x + y)) (fun n => _) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
   erw [(p n).map_add_univ (fun _ => x) fun _ => y]
-  -- porting note: added explicit function
   convert hasSum_fintype (fun c : Finset (Fin n) => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
   rename_i s _
   dsimp only [changeOriginSeriesTerm, (· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
@@ -2112,83 +1985,83 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     rintro m rfl
     simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
   apply this
-#align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
 
-/-- Power series terms are analytic as we vary the origin -/
-theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : p.radius > 0) (n : ℕ) :
-    AnalyticAt 𝕜 (fun x ↦ p.changeOrigin x n) 0 :=
-  (FormalMultilinearSeries.hasFPowerSeriesOnBall_changeOrigin p n rp).analyticAt
+
+/-- Finite power series terms are polynomial as we vary the origin -/
+theorem analyticAt_changeOrigin_of_finite (p : FormalMultilinearSeries 𝕜 E F)
+    {n : ℕ} (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
+    CPolynomialAt 𝕜 (fun x ↦ p.changeOrigin x k) 0 :=
+  (p.hasFiniteFPowerSeriesOnBall_changeOrigin hn k).cPolynomialAt
+
+end
 
 end FormalMultilinearSeries
 
 section
 
-variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x y : E} {r : ℝ≥0∞}
+variable {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {n : ℕ} {x y : E} {r : ℝ≥0∞}
 
-/-- If a function admits a power series expansion `p` on a ball `B (x, r)`, then it also admits a
-power series on any subball of this ball (even with a different center), given by `p.changeOrigin`.
--/
-theorem HasFPowerSeriesOnBall.changeOrigin (hf : HasFPowerSeriesOnBall f p x r)
-    (h : (‖y‖₊ : ℝ≥0∞) < r) : HasFPowerSeriesOnBall f (p.changeOrigin y) (x + y) (r - ‖y‖₊) :=
+theorem HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBall f p x n r)
+    (h : (‖y‖₊ : ℝ≥0∞) < r) : HasFiniteFPowerSeriesOnBall f (p.changeOrigin y) (x + y) n
+    (r - ‖y‖₊) :=
   { r_le := by
       apply le_trans _ p.changeOrigin_radius
       exact tsub_le_tsub hf.r_le le_rfl
     r_pos := by simp [h]
+    finite := fun _ hm => p.changeOrigin_finite_of_finite hf.finite hm
     hasSum := fun {z} hz => by
       have : f (x + y + z) =
           FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
         rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
-        rw [p.changeOrigin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
+        rw [p.changeOrigin_eval_of_finite hf.finite, add_assoc, hf.sum]
         refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ hz)
         exact mod_cast nnnorm_add_le y z
       rw [this]
-      apply (p.changeOrigin y).hasSum
-      refine' EMetric.ball_subset_ball (le_trans _ p.changeOrigin_radius) hz
-      exact tsub_le_tsub hf.r_le le_rfl }
-#align has_fpower_series_on_ball.change_origin HasFPowerSeriesOnBall.changeOrigin
+      apply (p.changeOrigin y).hasSum_of_finite
+        (fun _ hm => p.changeOrigin_finite_of_finite hf.finite hm)}
 
-/-- If a function admits a power series expansion `p` on an open ball `B (x, r)`, then
-it is analytic at every point of this ball. -/
-theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p x r)
-    (h : y ∈ EMetric.ball x r) : AnalyticAt 𝕜 f y := by
+/-- If a function admits a finite power series expansion `p` on an open ball `B (x, r)`, then
+it is polynomial at every point of this ball. -/
+theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
+    (hf : HasFiniteFPowerSeriesOnBall f p x n r) (h : y ∈ EMetric.ball x r) :
+    CPolynomialAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
   have := hf.changeOrigin this
   rw [add_sub_cancel'_right] at this
-  exact this.analyticAt
-#align has_fpower_series_on_ball.analytic_at_of_mem HasFPowerSeriesOnBall.analyticAt_of_mem
+  exact this.cPolynomialAt
 
-theorem HasFPowerSeriesOnBall.analyticOn (hf : HasFPowerSeriesOnBall f p x r) :
-    AnalyticOn 𝕜 f (EMetric.ball x r) :=
-  fun _y hy => hf.analyticAt_of_mem hy
-#align has_fpower_series_on_ball.analytic_on HasFPowerSeriesOnBall.analyticOn
+theorem HasFiniteFPowerSeriesOnBall.cPolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
+    CPolynomialOn 𝕜 f (EMetric.ball x r) :=
+  fun _y hy => hf.cPolynomialAt_of_mem hy
+
 
 variable (𝕜 f)
 
-/-- For any function `f` from a normed vector space to a Banach space, the set of points `x` such
-that `f` is analytic at `x` is open. -/
-theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
+/-- For any function `f` from a normed vector space to a normed vector space, the set of points
+`x` such that `f` is polynomial at `x` is open. -/
+theorem isOpen_cPolynomialAt : IsOpen { x | CPolynomialAt 𝕜 f x } := by
   rw [isOpen_iff_mem_nhds]
-  rintro x ⟨p, r, hr⟩
-  exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.analyticAt_of_mem hy
-#align is_open_analytic_at isOpen_analyticAt
+  rintro x ⟨p, n, r, hr⟩
+  exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.cPolynomialAt_of_mem hy
 
 variable {𝕜}
 
-theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
-    ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
-(isOpen_analyticAt 𝕜 f).mem_nhds h
+theorem CPolynomialAt.eventually_cPolynomialAt {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, CPolynomialAt 𝕜 f y :=
+(isOpen_cPolynomialAt 𝕜 f).mem_nhds h
 
-theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
-    ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
-h.eventually_analyticAt.exists_mem
+theorem CPolynomialAt.exists_mem_nhds_cPolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+    ∃ s ∈ 𝓝 x, CPolynomialOn 𝕜 f s :=
+h.eventually_cPolynomialAt.exists_mem
 
-/-- If we're analytic at a point, we're analytic in a nonempty ball -/
-theorem AnalyticAt.exists_ball_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
-    ∃ r : ℝ, 0 < r ∧ AnalyticOn 𝕜 f (Metric.ball x r) :=
-  Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+/-- If we're polynomial at a point, we're polynomial in a nonempty ball -/
+theorem CPolynomialAt.exists_ball_cPolynomialOn {f : E → F} {x : E} (h : CPolynomialAt 𝕜 f x) :
+    ∃ r : ℝ, 0 < r ∧ CPolynomialOn 𝕜 f (Metric.ball x r) :=
+  Metric.isOpen_iff.mp (isOpen_cPolynomialAt _ _) _ h
 
 end
 
+/- Is this necessary ?
 section
 
 open FormalMultilinearSeries
@@ -2229,3 +2102,4 @@ theorem hasFPowerSeriesAt_iff' :
 #align has_fpower_series_at_iff' hasFPowerSeriesAt_iff'
 
 end
+-/
