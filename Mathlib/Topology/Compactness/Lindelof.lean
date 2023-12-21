@@ -106,7 +106,7 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop} (he : p
     let f := fun (x : Set X) ↦ xᶜ
     let S' := f '' S
     have hsp : ∀ s ∈ S', p s := by simpa
-    have hS' : S'.Countable := by apply Countable.image hS
+    have hS' : S'.Countable := Countable.image hS _
     have : ⋃ s ∈ S, sᶜ = ⋃ s ∈ S', s := by simp
     rw [this]
     apply hcountable_union S' hS' hsp
@@ -153,3 +153,196 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f):
     IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
+
+/-- A filter with the countable intersection property that is finer than the principal filter on
+a Lindelöf set `s` contains any open set that contains all clusterpoints of `s`. -/
+theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs : IsLindelof s)
+    (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
+  Classical.by_cases mem_of_eq_bot fun (this : f ⊓ 𝓟 tᶜ ≠ ⊥) =>
+  have hinf : CountableInterFilter (f ⊓ 𝓟 tᶜ) := countableInterFilter_inf _ _
+  let ⟨x, hx, (hfx : ClusterPt x <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ hinf <| inf_le_of_left_le hf₂
+  have : x ∈ t := ht₂ x hx hfx.of_inf_left
+  have : tᶜ ∩ t ∈ 𝓝[tᶜ] x := inter_mem_nhdsWithin _ (IsOpen.mem_nhds ht₁ this)
+  have A : 𝓝[tᶜ] x = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
+  have : 𝓝[tᶜ] x ≠ ⊥ := hfx.of_inf_right.ne
+  absurd A this
+
+/--For every open cover of a Lindelöf set, there exists a countable subcover. -/
+theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U : ι → Set X)
+    (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i)
+    := by
+  have he : ∃ r : Set ι, r.Countable ∧ ∅ ⊆ ⋃ i ∈ r, U i := by use ∅ ; simp
+  have hmono : ∀ ⦃s t : Set X⦄, s ⊆ t → (∃ r : Set ι, r.Countable ∧ t ⊆ ⋃ i ∈ r, U i)
+      → (∃ r : Set ι, r.Countable ∧ s ⊆ ⋃ i ∈ r, U i) := by
+    intro _ _ hst ⟨r, ⟨hrcountable,hsub⟩⟩
+    exact ⟨r,hrcountable,Subset.trans hst hsub⟩
+  have hcountable_union : ∀ (S : Set (Set X)), S.Countable
+      → (∀ s ∈ S, ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i))
+      → ∃ r : Set ι, r.Countable ∧ (⋃ s ∈ S, s ⊆ ⋃ i ∈ r, U i) := by
+    intro S hS hsr
+    choose! r hr using hsr
+    use ⋃ s ∈ S, r s
+    constructor
+    · refine (Countable.biUnion_iff hS).mpr ?h.left.a
+      intro s hs
+      apply (hr s hs).1
+    · refine iUnion₂_subset ?h.right.h
+      intro i
+      simp
+      intro is
+      have h := (hr i is).2
+      intro x hx
+      have := h hx
+      exact mem_biUnion is (h hx)
+  have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, r.Countable ∧ (t ⊆ ⋃ i ∈ r, U i) := by
+    intro x hx
+    let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
+    refine' ⟨U i, mem_nhdsWithin_of_mem_nhds (IsOpen.mem_nhds (hUo i) hi),{i}, ?_⟩
+    constructor <;> simp
+    exact Subset.refl _
+  exact hs.induction_on he hmono hcountable_union h_nhds
+
+theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set X)
+    (hU : ∀ x (hx : x ∈ s), U x ‹x ∈ s› ∈ 𝓝 x) :
+    ∃ t : Set s, t.Countable ∧ s ⊆ ⋃ x ∈ t, U (x : s) x.2 := by
+  have := hs.elim_countable_subcover (fun x : s => interior (U x x.2)) (fun _ => isOpen_interior)
+    fun x hx =>
+      mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 <| hU _ _⟩
+  rcases this with ⟨r,⟨hr,hs⟩⟩
+  use r, hr
+  apply Subset.trans hs
+  apply iUnion₂_subset
+  intro i hi
+  apply Subset.trans interior_subset
+  refine' subset_iUnion_of_subset i _
+  refine' subset_iUnion_of_subset hi _
+  apply Subset.refl
+
+theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
+    (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
+    ∃ t : Set X, t.Countable ∧ (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
+  let ⟨t, ⟨htc,htsub⟩⟩ := hs.elim_nhds_subcover' (fun x _ => U x) hU
+  use ↑t
+  constructor
+  · exact Countable.image htc Subtype.val
+  · constructor
+    · intro x; simp; tauto
+    · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
+      rw [← this]; assumption
+
+/-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
+intersection property if and only if the neighborhood filter of each point of this set
+is disjoint with `l`. -/
+theorem IsLindelof.disjoint_nhdsSet_left {l : Filter X} [CountableInterFilter l]
+    (hs : IsLindelof s) :
+    Disjoint (𝓝ˢ s) l ↔ ∀ x ∈ s, Disjoint (𝓝 x) l := by
+  refine' ⟨fun h x hx => h.mono_left <| nhds_le_nhdsSet hx, fun H => _⟩
+  choose! U hxU hUl using fun x hx => (nhds_basis_opens x).disjoint_iff_left.1 (H x hx)
+  choose hxU hUo using hxU
+  rcases hs.elim_nhds_subcover U fun x hx => (hUo x hx).mem_nhds (hxU x hx) with ⟨t, htc, hts, hst⟩
+  refine (hasBasis_nhdsSet _).disjoint_iff_left.2
+    ⟨⋃ x ∈ t, U x, ⟨isOpen_biUnion fun x hx => hUo x (hts x hx), hst⟩, ?_⟩
+  rw [compl_iUnion₂]
+  refine (countable_bInter_mem htc).mpr ?intro.intro.intro.a
+  intro i hi
+  apply hUl
+  apply hts
+  apply hi
+
+/-- A filter `l` with the countable intersection property is disjoint with the neighborhood
+filter of a Lindelöf set if and only if it is disjoint with the neighborhood filter of each point
+of this set. -/
+theorem IsLindelof.disjoint_nhdsSet_right {l : Filter X} [CountableInterFilter l]
+    (hs : IsLindelof s) : Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
+  simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
+
+/-- For every family of closed sets whose intersection avoids a Lindelö set,
+there exists a countable subfamily whose intersection avoids this Lindelöf set. -/
+theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelof s)
+    (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
+    ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ := by
+    let U := tᶜ
+    have hUo : ∀ i, IsOpen (U i) := by simp; exact htc
+    have hsU : s ⊆ ⋃ i, U i := by
+      simp
+      rw [← compl_iInter]
+      apply disjoint_compl_left_iff_subset.mp
+      simp
+      apply Disjoint.symm
+      exact disjoint_iff_inter_eq_empty.mpr hst
+    rcases hs.elim_countable_subcover U hUo hsU with ⟨u, ⟨hucount, husub⟩⟩
+    use u, hucount
+    rw [← disjoint_compl_left_iff_subset] at husub
+    simp at husub
+    apply disjoint_iff_inter_eq_empty.mp
+    apply Disjoint.symm
+    assumption
+
+/--To show that a Lindelöf set intersects the intersection of a family of closed sets,
+  it is sufficient to show that it intersects every countable subfamily. -/
+theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : ι → Set X)
+    (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) :
+    (s ∩ ⋂ i, t i).Nonempty := by
+  contrapose! hst
+  rcases hs.elim_countable_subfamily_closed t htc hst with ⟨u, ⟨_, husub⟩⟩
+  use u
+  apply fun _ ↦ husub
+
+/-- For every open cover of a Lindelöf set, there exists a countable subcover. -/
+theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsLindelof s)
+    (hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i) :
+    ∃ b', b' ⊆ b ∧ Set.Countable b' ∧ s ⊆ ⋃ i ∈ b', c i := by
+  simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
+  rcases hs.elim_countable_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
+  refine' ⟨Subtype.val '' d, _, Countable.image hd.1 Subtype.val, _⟩-- d.image _, _⟩
+  · simp
+  · rw [biUnion_image]
+    apply hd.2
+
+
+/-- A set `s` is Lindelöf if for every open cover of `s`, there exists a countable subcover. -/
+theorem isLindelof_of_countable_subcover
+    (h : ∀ {ι : Type u} (U : ι → Set X), (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) →
+      ∃ t : Set ι, t.Countable ∧ s ⊆ ⋃ i ∈ t, U i) :
+    IsLindelof s := fun f hf hfs => by
+  contrapose! h
+  simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',
+    (nhds_basis_opens _).disjoint_iff_left] at h
+  choose fsub U hU hUf using h
+  refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1 ⟩, ?_ ⟩
+  intro t ht
+  intro h
+  have uinf := f.sets_of_superset (le_principal_iff.1 fsub) h
+  have uninf : ⋂ i ∈ t, (U i)ᶜ ∈ f := by refine (countable_bInter_mem ht).mpr (fun _ _ ↦ hUf _)
+  rw [← compl_iUnion₂] at uninf
+  have uninf := compl_not_mem uninf
+  simp only [compl_compl] at uninf
+  contradiction
+
+/-- A set `s` is Lindelöf if for every family of closed sets whose intersection avoids `s`,
+there exists a countable subfamily whose intersection avoids `s`. -/
+theorem isLindelof_of_countable_subfamily_closed
+    (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
+      ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅) :
+    IsLindelof s :=
+  isLindelof_of_countable_subcover fun U hUo hsU => by
+    rw [← disjoint_compl_right_iff_subset, compl_iUnion, disjoint_iff] at hsU
+    rcases h (fun i => (U i)ᶜ) (fun i => (hUo _).isClosed_compl) hsU with ⟨t, ht⟩
+    refine ⟨t, ?_⟩
+    rwa [← disjoint_compl_right_iff_subset, compl_iUnion₂, disjoint_iff]
+
+/-- A set `s` is Lindelöf if and only if
+for every open cover of `s`, there exists a countable subcover. -/
+theorem isLindelof_iff_countable_subcover :
+    IsLindelof s ↔ ∀ {ι : Type u} (U : ι → Set X),
+      (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) → ∃ t : Set ι, t.Countable ∧ s ⊆ ⋃ i ∈ t, U i :=
+  ⟨fun hs => hs.elim_countable_subcover, isLindelof_of_countable_subcover⟩
+
+/-- A set `s` is Lindelöf if and only if
+for every family of closed sets whose intersection avoids `s`,
+there exists a countable subfamily whose intersection avoids `s`. -/
+theorem isLindelof_iff_countable_subfamily_closed :
+    IsLindelof s ↔ ∀ {ι : Type u} (t : ι → Set X),
+      (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅
+      → ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ :=
+  ⟨fun hs => hs.elim_countable_subfamily_closed, isLindelof_of_countable_subfamily_closed⟩
