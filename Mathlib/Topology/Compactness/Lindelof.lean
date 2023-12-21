@@ -5,6 +5,8 @@ Authors: Josha Dekker
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.Compactness.Compact
+
 /-!
 # Lindelöf sets and Lindelöf spaces
 
@@ -345,3 +347,7 @@ theorem isLindelof_iff_countable_subfamily_closed :
     (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅
     → ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ :=
   ⟨fun hs => hs.elim_countable_subfamily_closed, isLindelof_of_countable_subfamily_closed⟩
+
+/-- A compact set `s` is Lindelöf. -/
+theorem IsCompact.isLindelof :
+    IsCompact s → IsLindelof s := by tauto
