@@ -480,7 +480,8 @@ variable (R : Type u) [CommRing R]
 Here `left` means the composition of linear maps is on the left hand-side.
 -/
 @[simps]
-def leftHomFunctor (M : ModuleCat.{v, u} R) : (ModuleCat.{v', u} R) ⥤ ModuleCat.{max v v', u} R where
+def leftHomFunctor (M : ModuleCat.{v, u} R) :
+    (ModuleCat.{v', u} R) ⥤ ModuleCat.{max v v', u} R where
   obj N := ModuleCat.of R <| M →ₗ[R] N
   map := LinearMap.llcomp R _ _ _
 
@@ -490,7 +491,8 @@ def leftHomFunctor (M : ModuleCat.{v, u} R) : (ModuleCat.{v', u} R) ⥤ ModuleCa
 Here `right` means the composition of linear maps is on the right hand-side.
 -/
 @[simps]
-def rightHomFunctor (N : ModuleCat.{v, u} R) : (ModuleCat.{v', u} R)ᵒᵖ ⥤ ModuleCat.{max v v', u} R where
+def rightHomFunctor (N : ModuleCat.{v, u} R) :
+    (ModuleCat.{v', u} R)ᵒᵖ ⥤ ModuleCat.{max v v', u} R where
   obj M := ModuleCat.of R <| M.unop →ₗ[R] N
   map L := LinearMap.lrcomp R _ _ N L.unop
 
