@@ -21,8 +21,6 @@ namespace Option
 
 #align option.lift_or_get Option.liftOrGet
 
-#align option.rel Option.Rel
-
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
     {F : Type u → Type v} [Applicative F] {α : Type*} {β : Type u} (f : α → F β) :
