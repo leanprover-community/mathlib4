@@ -1725,7 +1725,7 @@ theorem ContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall (g : F →L[𝕜] G
 
 /-- If a function `f` is polynomial on a set `s` and `g` is continuous linear, then `g ∘ f` is
 polynomial on `s`. -/
-theorem ContinuousLinearMap.comp_polynomialOn {s : Set E} (g : F →L[𝕜] G)
+theorem ContinuousLinearMap.comp_cPolynomialOn {s : Set E} (g : F →L[𝕜] G)
     (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, n, r, hp⟩
@@ -1865,10 +1865,11 @@ theorem changeOrigin_radius_eq_top_of_finite (p : FormalMultilinearSeries 𝕜 E
     (fun _ => p.changeOrigin_finite_of_finite hn (le_add_of_le_right (le_refl _)))
 
 theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
-    (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
+    (k : ℕ) (hn : ∀ (m : ℕ), n + k ≤ m → p m = 0) :
     HasFiniteFPowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 n ⊤ :=
   (p.changeOriginSeries k).hasFiniteFPowerSeriesOnBall_of_finite
-  (fun _ hm => p.changeOriginSeries_finite_of_finite hn k (le_add_of_le_right hm))
+  (fun _ hm => p.changeOriginSeries_finite_of_finite hn k
+  (by rw [add_comm n k]; apply add_le_add_left hm))
 
 theorem hasFiniteFPowerSeriesOnBall_changeOrigin_sum (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x : E) :
@@ -1932,7 +1933,8 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     intro m
     dsimp only
     refine' ContinuousMultilinearMap.hasSum_eval _ _
-    have := (p.hasFiniteFPowerSeriesOnBall_changeOrigin hn m).hasSum x_mem_ball
+    have := (p.hasFiniteFPowerSeriesOnBall_changeOrigin m (n := n)
+      (fun _ hN ↦ hn _ (le_trans le_self_add hN))).hasSum x_mem_ball
     rw [zero_add] at this
     refine' HasSum.sigma_of_hasSum this (fun l => _) _
     · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
@@ -1989,7 +1991,8 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
 theorem analyticAt_changeOrigin_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
     CPolynomialAt 𝕜 (fun x ↦ p.changeOrigin x k) 0 :=
-  (p.hasFiniteFPowerSeriesOnBall_changeOrigin hn k).cPolynomialAt
+(p.hasFiniteFPowerSeriesOnBall_changeOrigin k
+(fun _ hN ↦ hn _ (le_trans le_self_add hN))).cPolynomialAt
 
 end
 
