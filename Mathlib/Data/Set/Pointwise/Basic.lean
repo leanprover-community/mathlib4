@@ -1066,6 +1066,8 @@ protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
 #align set.division_monoid Set.divisionMonoid
 #align set.subtraction_monoid Set.subtractionMonoid
 
+scoped[Pointwise] attribute [instance] Set.divisionMonoid Set.subtractionMonoid
+
 @[to_additive (attr := simp 500)]
 theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
@@ -1078,6 +1080,9 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
     exact ha.set
 #align set.is_unit_iff Set.isUnit_iff
 #align set.is_add_unit_iff Set.isAddUnit_iff
+
+@[to_additive (attr := simp)]
+lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
 
 end DivisionMonoid
 
@@ -1102,9 +1107,7 @@ protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistr
 #align set.has_distrib_neg Set.hasDistribNeg
 
 scoped[Pointwise]
-  attribute [instance]
-    Set.divisionMonoid Set.subtractionMonoid Set.divisionCommMonoid Set.subtractionCommMonoid
-    Set.hasDistribNeg
+  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
 
 section Distrib
 

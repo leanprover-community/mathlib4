@@ -572,6 +572,18 @@ theorem image₂_union_inter_subset {f : α → α → β} {s t : Finset α} (hf
 
 end Finset
 
+open Finset
+
+namespace Fintype
+variable {ι : Type*} {α β γ : ι → Type*} [DecidableEq ι] [Fintype ι] [∀ i, DecidableEq (γ i)]
+
+lemma piFinset_image₂ (f : ∀ i, α i → β i → γ i) (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
+    piFinset (fun i ↦ image₂ (f i) (s i) (t i)) =
+      image₂ (fun a b i ↦ f _ (a i) (b i)) (piFinset s) (piFinset t) := by
+  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, Function.funext_iff]
+
+end Fintype
+
 namespace Set
 
 variable [DecidableEq γ] {s : Set α} {t : Set β}
