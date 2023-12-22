@@ -390,8 +390,8 @@ where /-- Implementation of `applyReplacementFun`. -/
               if let some fxd := additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
                 Id.run <| do
                   if trace then
-                    dbg_trace s!"The application of {nm} contains the fixed type {fxd
-                      }, so it is not changed"
+                    dbg_trace s!"The application of {nm} contains the fixed type \
+                      {fxd}, so it is not changed"
                   gf
               else
                 r gf

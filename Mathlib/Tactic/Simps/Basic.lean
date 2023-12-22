@@ -1020,8 +1020,8 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
       throwError "Invalid `simps` attribute. Target {str} is not a structure"
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
-      throwError "Invalid simp lemma {nm.appendAfter firstTodo}.\nProjection {
-        (firstTodo.splitOn "_")[1]!} doesn't exist, because target {str} is not a structure."
+      throwError "Invalid simp lemma {nm.appendAfter firstTodo}.\nProjection \
+        {(firstTodo.splitOn "_")[1]!} doesn't exist, because target {str} is not a structure."
     if cfg.fullyApplied then
       addProjection stxProj univs nm tgt lhsAp rhsAp newArgs cfg
     else
@@ -1091,8 +1091,8 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     let some ⟨newRhs, _⟩ := projInfo[idx]?
       | throwError "unreachable: index of composite projection is out of bounds."
     let newType ← inferType newRhs
-    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:{
-      indentExpr lhsAp}"
+    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:\
+      {indentExpr lhsAp}"
     return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
