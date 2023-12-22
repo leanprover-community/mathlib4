@@ -849,12 +849,15 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   exact Cardinal.eq_of_add_eq_add_left h hb
 #align cardinal.eq_of_add_eq_add_right Cardinal.eq_of_add_eq_add_right
 
-theorem ciSup_add {ι : Type*} [Nonempty ι] (f : ι → Cardinal) (hf : BddAbove (range f))
-    (c : Cardinal) : (⨆ i, f i) + c = ⨆ i, f i + c := by
-  refine le_antisymm ?_ (ciSup_le' fun i ↦ add_le_add_right (le_ciSup hf i) c)
-  have bdd : BddAbove (range (f · + c))
-  · obtain ⟨b, hb⟩ := hf; use b + c
-    rintro _ ⟨i, rfl⟩; exact add_le_add_right (hb ⟨i, rfl⟩) c
+section ciSup
+
+variable {ι : Type u} [Nonempty ι]
+variable (f : ι → Cardinal.{v}) (hf : BddAbove (range f)) (c : Cardinal.{v})
+
+protected theorem ciSup_add : (⨆ i, f i) + c = ⨆ i, f i + c := by
+  have this : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
+  refine le_antisymm ?_ (ciSup_le' this)
+  have bdd : BddAbove (range (f · + c)) := ⟨_, Set.forall_range_iff.mpr this⟩
   obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
   · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
       f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
@@ -863,6 +866,25 @@ theorem ciSup_add {ι : Type*} [Nonempty ι] (f : ι → Cardinal) (hf : BddAbov
   · exact (add_eq_left hs hc.le).trans_le (ciSup_mono bdd fun i ↦ self_le_add_right _ c)
   · exact (add_eq_right (hs.trans hc) hc).trans_le
       ((self_le_add_left _ _).trans <| le_ciSup bdd <| Classical.arbitrary ι)
+
+protected theorem add_ciSup : c + (⨆ i, f i) = ⨆ i, c + f i := by
+  rw [add_comm, Cardinal.ciSup_add f hf]; simp_rw [add_comm]
+
+protected theorem ciSup_add_ciSup (g : ι → Cardinal.{v}) (hg : BddAbove (range g)) :
+    (⨆ i, f i) + (⨆ j, g j) = ⨆ (i) (j), f i + g j := by
+  simp_rw [Cardinal.ciSup_add f hf, Cardinal.add_ciSup g hg]
+
+protected theorem ciSup_mul : (⨆ i, f i) * c = ⨆ i, f i * c := by
+  sorry
+
+protected theorem mul_ciSup : c * (⨆ i, f i) = ⨆ i, c * f i := by
+  sorry
+
+protected theorem ciSup_mul_ciSup (g : ι → Cardinal.{v}) (hg : BddAbove (range g)) :
+    (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
+  sorry
+
+end ciSup
 
 @[simp]
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : aleph o₁ + aleph o₂ = aleph (max o₁ o₂) := by
