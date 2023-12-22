@@ -366,7 +366,7 @@ noncomputable def Finpartition.equivSubtypeSetoidIsPartition (α) [Fintype α] [
         refine' ⟨⟨finsetOrderIsoSet.symm t, ht, _⟩, hat⟩
         exact Equiv.apply_symm_apply _ t
       · rw [← Finset.top_eq_univ, OrderIso.map_top, Set.top_eq_univ]
-        · simp
+    simp
   invFun s := by
     refine' (s.2.finpartition.equiv finsetOrderIsoSet.symm).copy _
     rw [coe_finsetOrderIsoSet_symm, finsetEquivSet_symm_apply, Set.toFinset_univ]
