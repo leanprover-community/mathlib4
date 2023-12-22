@@ -234,10 +234,10 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ ↦ M₃) :=
   { AddHomClass.toFunLike with }
 
-/-- The `DistribMulActionSemiHom` underlying a `LinearMap`. -/
-def toDistribMulActionSemiHom (f : M →ₛₗ[σ] M₃) : DistribMulActionSemiHom σ M M₃ :=
+/-- The `DistribMulActionHom` underlying a `LinearMap`. -/
+def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ M M₃ :=
   { f with map_zero' := show f 0 = 0 from map_zero f }
-#align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionSemiHom
+#align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionHom
 
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
@@ -284,7 +284,7 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
-  { DistribMulActionSemiHom.id R with toFun := _root_.id }
+  { DistribMulActionHom.id R with toFun := _root_.id }
 #align linear_map.id LinearMap.id
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
