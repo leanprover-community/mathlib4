@@ -31,7 +31,7 @@ require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.24"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
-require importGraph from git "https://github.com/hhu-adam/lean-graph.git" @ "main"
+require importGraph from git "https://github.com/leanprover-community/lean-graph.git" @ "main"
 
 /-!
 ## Mathlib libraries
