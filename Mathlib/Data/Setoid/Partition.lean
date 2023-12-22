@@ -348,7 +348,7 @@ noncomputable def Finpartition.equivSubtypeSetoidIsPartition (α) [Fintype α] [
     {C : Finset (Set α) // Setoid.IsPartition (C : Set (Set α))} where
   toFun P := by
     refine' ⟨P.parts.map (finsetOrderIsoSet (α := α)), _⟩
-    let P' : Finpartition (Set.univ : Set α) := (P.equiv finsetOrderIsoSet).copy ?_
+    let P' : Finpartition (Set.univ : Set α) := (P.map finsetOrderIsoSet).copy ?_
     rw [Finset.coe_map]
     constructor
     · simp only [Set.mem_image, not_exists, not_and]
@@ -368,7 +368,7 @@ noncomputable def Finpartition.equivSubtypeSetoidIsPartition (α) [Fintype α] [
       · rw [← Finset.top_eq_univ, OrderIso.map_top, Set.top_eq_univ]
     simp
   invFun s := by
-    refine' (s.2.finpartition.equiv finsetOrderIsoSet.symm).copy _
+    refine' (s.2.finpartition.map finsetOrderIsoSet.symm).copy _
     rw [coe_finsetOrderIsoSet_symm, finsetEquivSet_symm_apply, Set.toFinset_univ]
   left_inv P := by
     ext a
