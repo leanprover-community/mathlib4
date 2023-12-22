@@ -17,8 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (assuming that it exists; the inverse function theorem is in
-  `Mathlib/Analysis/Calculus/Inverse.lean`)
+* taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
 
@@ -114,18 +113,18 @@ theorem fderiv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 
 theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
     (hu : HasStrictFDerivAt u u' x) :
     HasStrictFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMapApply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
 #align has_strict_fderiv_at.clm_apply HasStrictFDerivAt.clm_apply
 
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
     (hu : HasFDerivWithinAt u u' s x) :
     HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x :=
-  (isBoundedBilinearMapApply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
 #align has_fderiv_within_at.clm_apply HasFDerivWithinAt.clm_apply
 
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMapApply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
 #align has_fderiv_at.clm_apply HasFDerivAt.clm_apply
 
 theorem DifferentiableWithinAt.clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)

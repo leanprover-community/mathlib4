@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.GroupTheory.MonoidLocalization
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.NoncommRing
 
@@ -463,21 +463,16 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹]
     induction' z using OreLocalization.ind with r s
     use (r, s); dsimp
     rw [numeratorHom_apply, numeratorHom_apply]; simp
-  eq_iff_exists' r₁ r₂ := by
-    dsimp; constructor
-    · intro h
-      rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
-      rcases h with ⟨u, v, h₁, h₂⟩
-      dsimp at h₂
-      rw [one_mul, one_mul] at h₂
-      subst h₂
-      use u
-      simpa only [mul_comm] using h₁.symm
-    · rintro ⟨s, h⟩
-      rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff]
-      refine' ⟨s, s, _, _⟩
-      · simpa [mul_comm] using h.symm
-      · simp [one_mul]
+  exists_of_eq r₁ r₂ := by
+    dsimp
+    intro h
+    rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
+    rcases h with ⟨u, v, h₁, h₂⟩
+    dsimp at h₂
+    rw [one_mul, one_mul] at h₂
+    subst h₂
+    use u
+    simpa only [mul_comm] using h₁.symm
 #align ore_localization.localization_map OreLocalization.localizationMap
 
 /-- If `R` is commutative, Ore localization and monoid localization are isomorphic. -/
@@ -736,7 +731,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
-  repeat' rw [oreDiv_mul_oreDiv]; simp only [add_mul, add_oreDiv]
+  repeat rw [oreDiv_mul_oreDiv]
+  simp only [add_mul, add_oreDiv]
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
 instance instSemiringOreLocalization : Semiring R[S⁻¹] :=

@@ -38,7 +38,7 @@ protected def Nonneg (r : ℚ) : Prop :=
 @[simp]
 theorem divInt_nonneg (a : ℤ) {b : ℤ} (h : 0 < b) : (a /. b).Nonneg ↔ 0 ≤ a := by
   generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [num_den'] at ha
-  simp [Rat.Nonneg]
+  simp only [Rat.Nonneg]
   have d0 := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h₁)
   have := (divInt_eq_iff (ne_of_gt h) (ne_of_gt d0)).1 ha
   constructor <;> intro h₂
@@ -102,7 +102,7 @@ def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) :
     C a :=
   numDenCasesOn a fun n d h h' => by
-    rw [←mk_eq_divInt _ _ h.ne' h']
+    rw [← mk_eq_divInt _ _ h.ne' h']
     exact H n d h.ne' _
 
 -- Porting note: TODO can this be shortened?
@@ -111,11 +111,12 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
     numDenCasesOn'' b fun nb db hb hbred => by
       change Rat.blt _ _ = false ↔ _
       unfold Rat.blt
-      simp [-divInt_ofNat, mkRat_eq]
+      simp only [Bool.and_eq_true, decide_eq_true_eq, Bool.ite_eq_false_distrib,
+        decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le]
       split_ifs with h h'
       · rw [Rat.sub_def]
-        simp [Rat.Nonneg]
-        simp [normalize_eq]
+        simp only [Rat.Nonneg, false_iff, not_le]
+        simp only [normalize_eq]
         apply Int.ediv_neg'
         · rw [sub_neg]
           apply lt_of_lt_of_le
@@ -125,7 +126,7 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
         · simp only [Nat.cast_pos]
           apply Nat.gcd_pos_of_pos_right
           apply mul_pos <;> rwa [pos_iff_ne_zero]
-      · simp only [divInt_ofNat, ←zero_iff_num_zero, mkRat_eq_zero hb] at h'
+      · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
         simp [h', Rat.Nonneg]
       · simp [Rat.Nonneg, Rat.sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
@@ -140,7 +141,7 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
             · apply le_trans <| mul_nonpos_of_nonpos_of_nonneg ha (Nat.cast_nonneg _)
               exact mul_nonneg hb.le (Nat.cast_nonneg _)
             · exact H (fun _ => ha)
-        · rw [←sub_nonneg]
+        · rw [← sub_nonneg]
           contrapose! H
           apply Int.ediv_neg' H
           simp only [Nat.cast_pos]
@@ -171,7 +172,7 @@ protected theorem le_total : a ≤ b ∨ b ≤ a := by
 protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
   rw [Rat.le_iff_Nonneg] at hab hba
   rw [sub_eq_add_neg] at hba
-  rw [←neg_sub, sub_eq_add_neg] at hab
+  rw [← neg_sub, sub_eq_add_neg] at hab
   have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
   rwa [neg_neg] at this
 #align rat.le_antisymm Rat.le_antisymm
@@ -219,7 +220,7 @@ instance : Preorder ℚ := by infer_instance
 protected theorem le_def' {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← @num_den q, ← @num_den p]
   conv_rhs => simp only [num_den]
-  exact Rat.le_def (by exact_mod_cast p.pos) (by exact_mod_cast q.pos)
+  exact Rat.le_def (mod_cast p.pos) (mod_cast q.pos)
 #align rat.le_def' Rat.le_def'
 
 protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den := by
@@ -295,7 +296,7 @@ theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [
 #align rat.lt_one_iff_num_lt_denom Rat.lt_one_iff_num_lt_denom
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
-  cases' le_total q 0 with hq hq
+  rcases le_total q 0 with hq | hq
   · rw [abs_of_nonpos hq]
     rw [← @num_den q, ← divInt_zero_one, Rat.le_def (Int.coe_nat_pos.2 q.pos) zero_lt_one, mul_one,
       zero_mul] at hq

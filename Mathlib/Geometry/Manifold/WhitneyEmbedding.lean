@@ -67,10 +67,10 @@ theorem embeddingPiTangent_coe :
 
 theorem embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s := by
   intro x hx y _ h
-  simp only [embeddingPiTangent_coe, funext_iff] at h 
+  simp only [embeddingPiTangent_coe, funext_iff] at h
   obtain ⟨h₁, h₂⟩ := Prod.mk.inj_iff.1 (h (f.ind x hx))
-  rw [f.apply_ind x hx] at h₂ 
-  rw [← h₂, f.apply_ind x hx, one_smul, one_smul] at h₁ 
+  rw [f.apply_ind x hx] at h₂
+  rw [← h₂, f.apply_ind x hx, one_smul, one_smul] at h₁
   have := f.mem_extChartAt_source_of_eq_one h₂.symm
   exact (extChartAt I (f.c _)).injOn (f.mem_extChartAt_ind_source x hx) this h₁
 #align smooth_bump_covering.embedding_pi_tangent_inj_on SmoothBumpCovering.embeddingPiTangent_injOn

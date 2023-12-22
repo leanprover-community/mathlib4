@@ -86,6 +86,24 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
+/-- If `α` is a topological space and a preorder, `ClosedIicTopology α` means that `Iic a` is
+closed for all `a : α`. -/
+class ClosedIicTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
+  /-- For any `a`, the set `{b | b ≤ a}` is closed. -/
+  isClosed_le' (a : α) : IsClosed { b : α | b ≤ a }
+
+export ClosedIicTopology (isClosed_le')
+#align is_closed_le' ClosedIicTopology.isClosed_le'
+
+/-- If `α` is a topological space and a preorder, `ClosedIciTopology α` means that `Ici a` is
+closed for all `a : α`. -/
+class ClosedIciTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
+  /-- For any `a`, the set `{b | a ≤ b}` is closed. -/
+  isClosed_ge' (a : α) : IsClosed { b : α | a ≤ b }
+
+export ClosedIciTopology (isClosed_ge')
+#align is_closed_ge' ClosedIciTopology.isClosed_ge'
+
 /-- A topology on a set which is both a topological space and a preorder is _order-closed_ if the
 set of points `(x, y)` with `x ≤ y` is closed in the product space. We introduce this as a mixin.
 This property is satisfied for the order topology on a linear order, but it can be satisfied more
@@ -102,6 +120,62 @@ theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=
   hs
 #align dense.order_dual Dense.orderDual
+
+section ClosedIicTopology
+
+variable [TopologicalSpace α] [Preorder α] [t : ClosedIicTopology α]
+
+instance : ClosedIciTopology αᵒᵈ where
+  isClosed_ge' a := isClosed_le' (α := α) a
+
+theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
+  isClosed_le' a
+#align is_closed_Iic isClosed_Iic
+
+@[simp]
+theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
+  isClosed_Iic.closure_eq
+#align closure_Iic closure_Iic
+
+theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
+  (isClosed_le' b).mem_of_tendsto lim h
+#align le_of_tendsto le_of_tendsto
+
+theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ c, f c ≤ b) : a ≤ b :=
+  le_of_tendsto lim (eventually_of_forall h)
+#align le_of_tendsto' le_of_tendsto'
+
+end ClosedIicTopology
+
+section ClosedIciTopology
+
+variable [TopologicalSpace α] [Preorder α] [t : ClosedIciTopology α]
+
+instance : ClosedIicTopology αᵒᵈ where
+  isClosed_le' a := isClosed_ge' (α := α) a
+
+theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
+  isClosed_ge' a
+#align is_closed_Ici isClosed_Ici
+
+@[simp]
+theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
+  isClosed_Ici.closure_eq
+#align closure_Ici closure_Ici
+
+theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
+  (isClosed_ge' b).mem_of_tendsto lim h
+#align ge_of_tendsto ge_of_tendsto
+
+theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+    (h : ∀ c, b ≤ f c) : b ≤ a :=
+  ge_of_tendsto lim (eventually_of_forall h)
+#align ge_of_tendsto' ge_of_tendsto'
+
+end ClosedIciTopology
 
 section OrderClosedTopology
 
@@ -128,21 +202,11 @@ theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) 
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_le_prod
 #align is_closed_le isClosed_le
 
-theorem isClosed_le' (a : α) : IsClosed { b | b ≤ a } :=
-  isClosed_le continuous_id continuous_const
-#align is_closed_le' isClosed_le'
+instance : ClosedIicTopology α where
+  isClosed_le' _ := isClosed_le continuous_id continuous_const
 
-theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
-  isClosed_le' a
-#align is_closed_Iic isClosed_Iic
-
-theorem isClosed_ge' (a : α) : IsClosed { b | a ≤ b } :=
-  isClosed_le continuous_const continuous_id
-#align is_closed_ge' isClosed_ge'
-
-theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
-  isClosed_ge' a
-#align is_closed_Ici isClosed_Ici
+instance : ClosedIciTopology α where
+  isClosed_ge' _ := isClosed_le continuous_const continuous_id
 
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨(OrderClosedTopology.isClosed_le' (α := α)).preimage continuous_swap⟩
@@ -156,49 +220,19 @@ theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 #align closure_Icc closure_Icc
 
-@[simp]
-theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
-  isClosed_Iic.closure_eq
-#align closure_Iic closure_Iic
-
-@[simp]
-theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
-  isClosed_Ici.closure_eq
-#align closure_Ici closure_Ici
-
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
   have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 #align le_of_tendsto_of_tendsto le_of_tendsto_of_tendsto
 
-alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLE
+alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 #align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLE
 
 theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto hf hg (eventually_of_forall h)
 #align le_of_tendsto_of_tendsto' le_of_tendsto_of_tendsto'
-
-theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
-  le_of_tendsto_of_tendsto lim tendsto_const_nhds h
-#align le_of_tendsto le_of_tendsto
-
-theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ c, f c ≤ b) : a ≤ b :=
-  le_of_tendsto lim (eventually_of_forall h)
-#align le_of_tendsto' le_of_tendsto'
-
-theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
-  le_of_tendsto_of_tendsto tendsto_const_nhds lim h
-#align ge_of_tendsto ge_of_tendsto
-
-theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
-    (h : ∀ c, b ≤ f c) : b ≤ a :=
-  ge_of_tendsto lim (eventually_of_forall h)
-#align ge_of_tendsto' ge_of_tendsto'
 
 @[simp]
 theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
@@ -222,7 +256,7 @@ theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.prod hg).preimage_closed_of_closed hs OrderClosedTopology.isClosed_le'
+  (hf.prod hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
 #align is_closed.is_closed_le IsClosed.isClosed_le
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
@@ -241,25 +275,6 @@ theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (h
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
 #align is_closed.hypograph IsClosed.hypograph
-
--- Porting note: todo: move these lemmas to `Topology.Algebra.Order.LeftRight`
-theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
-  nhdsWithin_neBot_of_mem H₂
-#align nhds_within_Ici_ne_bot nhdsWithin_Ici_neBot
-
-@[instance]
-theorem nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) :=
-  nhdsWithin_Ici_neBot (le_refl a)
-#align nhds_within_Ici_self_ne_bot nhdsWithin_Ici_self_neBot
-
-theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
-  nhdsWithin_neBot_of_mem H
-#align nhds_within_Iic_ne_bot nhdsWithin_Iic_neBot
-
-@[instance]
-theorem nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) :=
-  nhdsWithin_Iic_neBot (le_refl a)
-#align nhds_within_Iic_self_ne_bot nhdsWithin_Iic_self_neBot
 
 end Preorder
 
@@ -939,7 +954,7 @@ theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : �
 
 end Preorder
 
-instance tendstoIxxNhdsWithin {α : Type*} [Preorder α] [TopologicalSpace α] (a : α) {s t : Set α}
+instance tendstoIxxNhdsWithin {α : Type*} [TopologicalSpace α] (a : α) {s t : Set α}
     {Ixx} [TendstoIxxClass Ixx (𝓝 a) (𝓝 a)] [TendstoIxxClass Ixx (𝓟 s) (𝓟 t)] :
     TendstoIxxClass Ixx (𝓝[s] a) (𝓝[t] a) :=
   Filter.tendstoIxxClass_inf
@@ -1311,7 +1326,7 @@ variable (α)
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
 it has second countable topology. Note that the "densely ordered" assumption cannot be dropped, see
 [double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
-theorem TopologicalSpace.SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
+theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
     [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
@@ -1350,11 +1365,11 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
     rcases hxx'.lt_or_lt with (h' | h')
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
-      by_contra' H
+      by_contra! H
       exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
     · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
-      by_contra' H
+      by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
@@ -1395,6 +1410,94 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : 
       fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
   this.of_diff countable_setOf_covby_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. -/
+theorem countable_image_lt_image_Ioi [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y} := by
+  /- If the values of `f` are separated above on the right of `x`, there is an interval `(f x, z x)`
+    which is not reached by `f`. This gives a family of disjoint open intervals in `α`. Such a
+    family can only be countable as `α` is second-countable. -/
+  nontriviality β
+  have : Nonempty α := Nonempty.map f (by infer_instance)
+  let s := {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y}
+  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y := fun x hx ↦ hx
+  -- choose `z x` such that `f` does not take the values in `(f x, z x)`.
+  choose! z hz using this
+  have I : InjOn f s := by
+    apply StrictMonoOn.injOn
+    intro x hx y _ hxy
+    calc
+      f x < z x := (hz x hx).1
+      _ ≤ f y := (hz x hx).2 y hxy
+  -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
+  -- (the intervals `(f x, z x)`) is at most countable.
+  have fs_count : (f '' s).Countable := by
+    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
+      rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
+      wlog hle : u ≤ v generalizing u v
+      · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
+      have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
+      apply disjoint_iff_forall_ne.2
+      rintro a ha b hb rfl
+      simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
+      exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v hlt)).trans hb.1)
+    apply Set.PairwiseDisjoint.countable_of_Ioo A
+    rintro _ ⟨y, ys, rfl⟩
+    simpa only [I.leftInvOn_invFunOn ys] using (hz y ys).1
+  exact MapsTo.countable_of_injOn (mapsTo_image f s) I fs_count
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. -/
+theorem countable_image_gt_image_Ioi [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, z < f x ∧ ∀ y, x < y → f y ≤ z} :=
+  countable_image_lt_image_Ioi (α := αᵒᵈ) f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/
+theorem countable_image_lt_image_Iio [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, f x < z ∧ ∀ y, y < x → z ≤ f y} :=
+  countable_image_lt_image_Ioi (β := βᵒᵈ) f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/
+theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
+  countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
+
+instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
+    IsCountablyGenerated (atTop : Filter α) := by
+  by_cases h : ∃ (x : α), IsTop x
+  · rcases h with ⟨x, hx⟩
+    rw [atTop_eq_pure_of_isTop hx]
+    exact isCountablyGenerated_pure x
+  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
+    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
+    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
+      intro s
+      have : (s : Set α) ≠ ∅ := by
+        intro H
+        apply b_ne
+        convert s.2
+        exact H.symm
+      exact Iff.mp nmem_singleton_empty this
+    choose a ha using A
+    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
+      apply atTop_eq_generate_of_not_bddAbove
+      intro ⟨x, hx⟩
+      simp only [IsTop, not_exists, not_forall, not_le] at h
+      rcases h x with ⟨y, hy⟩
+      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
+        hb.exists_subset_of_mem_open hy isOpen_Ioi
+      have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
+      have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
+      exact lt_irrefl _ (I.trans_lt J)
+    rw [this]
+    exact ⟨_, (countable_range _).image _, rfl⟩
+
+instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
+    IsCountablyGenerated (atBot : Filter α) :=
+  @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
 
 section Pi
 
@@ -1577,6 +1680,9 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
 theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
   ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
+
+lemma nhdsWithin_Ioi_basis [NoMaxOrder α] (a : α) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
+  nhdsWithin_Ioi_basis' <| exists_gt a
 
 theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
   by_cases ha : IsTop a
@@ -2047,7 +2153,7 @@ theorem IsLUB.mem_of_isClosed {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Non
   sc.closure_subset <| ha.mem_closure hs
 #align is_lub.mem_of_is_closed IsLUB.mem_of_isClosed
 
-alias IsLUB.mem_of_isClosed ← IsClosed.isLUB_mem
+alias IsClosed.isLUB_mem := IsLUB.mem_of_isClosed
 #align is_closed.is_lub_mem IsClosed.isLUB_mem
 
 theorem IsGLB.mem_of_isClosed {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty)
@@ -2055,7 +2161,7 @@ theorem IsGLB.mem_of_isClosed {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Non
   sc.closure_subset <| ha.mem_closure hs
 #align is_glb.mem_of_is_closed IsGLB.mem_of_isClosed
 
-alias IsGLB.mem_of_isClosed ← IsClosed.isGLB_mem
+alias IsClosed.isGLB_mem := IsGLB.mem_of_isClosed
 #align is_closed.is_glb_mem IsClosed.isGLB_mem
 
 /-!
@@ -2355,12 +2461,6 @@ instance nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) 
   nhdsWithin_Ioi_neBot (le_refl a)
 #align nhds_within_Ioi_self_ne_bot nhdsWithin_Ioi_self_neBot
 
-theorem Filter.Eventually.exists_gt [NoMaxOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) :
-    ∃ b > a, p b := by
-  simpa only [exists_prop, gt_iff_lt, and_comm] using
-    ((h.filter_mono (@nhdsWithin_le_nhds _ _ a (Ioi a))).and self_mem_nhdsWithin).exists
-#align filter.eventually.exists_gt Filter.Eventually.exists_gt
-
 theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Iio' H₁]
@@ -2377,11 +2477,6 @@ theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝
 instance nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=
   nhdsWithin_Iio_neBot (le_refl a)
 #align nhds_within_Iio_self_ne_bot nhdsWithin_Iio_self_neBot
-
-theorem Filter.Eventually.exists_lt [NoMinOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) :
-    ∃ b < a, p b :=
-  Filter.Eventually.exists_gt (α := αᵒᵈ) h
-#align filter.eventually.exists_lt Filter.Eventually.exists_lt
 
 theorem right_nhdsWithin_Ico_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ico a b] b) :=
   (isLUB_Ico H).nhdsWithin_neBot (nonempty_Ico.2 H)
@@ -2679,7 +2774,7 @@ theorem IsClosed.sInf_mem {α : Type u} [TopologicalSpace α] [CompleteLinearOrd
 this supremum to the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (fbot : f ⊥ = ⊥) : f (sSup s) = sSup (f '' s) := by
-  cases' s.eq_empty_or_nonempty with h h
+  rcases s.eq_empty_or_nonempty with h | h
   · simp [h, fbot]
   · exact Mf.map_sSup_of_continuousAt' Cf h
 #align monotone.map_Sup_of_continuous_at Monotone.map_sSup_of_continuousAt
@@ -2763,6 +2858,14 @@ theorem IsClosed.csInf_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B :
     sInf s ∈ s :=
   (isGLB_csInf hs B).mem_of_isClosed hs hc
 #align is_closed.cInf_mem IsClosed.csInf_mem
+
+theorem IsClosed.isLeast_csInf {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
+    IsLeast s (sInf s) :=
+  ⟨hc.csInf_mem hs B, (isGLB_csInf hs B).1⟩
+
+theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
+    IsGreatest s (sSup s) :=
+  IsClosed.isLeast_csInf (α := αᵒᵈ) hc hs B
 
 /-- If a monotone function is continuous at the supremum of a nonempty bounded above set `s`,
 then it sends this supremum to the supremum of the image of `s`. -/

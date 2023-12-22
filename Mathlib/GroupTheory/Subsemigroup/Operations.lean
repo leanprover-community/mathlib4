@@ -254,7 +254,10 @@ theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g
 #align subsemigroup.map_map Subsemigroup.map_map
 #align add_subsemigroup.map_map AddSubsemigroup.map_map
 
-@[to_additive]
+-- The simpNF linter says that the LHS can be simplified via `Subsemigroup.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
     f x ∈ S.map f ↔ x ∈ S :=
   hf.mem_set_image
@@ -565,8 +568,8 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive "The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`."]
-def subtype : S' →ₙ* M :=
-  ⟨Subtype.val, fun _ _ => rfl⟩
+def subtype : S' →ₙ* M where
+  toFun := Subtype.val; map_mul' := fun _ _ => rfl
 #align mul_mem_class.subtype MulMemClass.subtype
 #align add_mem_class.subtype AddMemClass.subtype
 

@@ -102,14 +102,9 @@ def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
   where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps!]
 def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S) :
-    HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S :=
-  { Homotopy.prod F.toHomotopy G.toHomotopy with
-    prop' := by
-      intro t x hx
-      have hF := F.prop' t x hx
-      have hG := G.prop' t x hx
-      simp only [coe_mk, prod_eval, Prod.mk.inj_iff, Homotopy.prod] at hF hG⊢
-      exact ⟨⟨hF.1, hG.1⟩, ⟨hF.2, hG.2⟩⟩ }
+    HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S where
+  toHomotopy := Homotopy.prod F.toHomotopy G.toHomotopy
+  prop' t x hx := Prod.ext (F.prop' t x hx) (G.prop' t x hx)
 #align continuous_map.homotopy_rel.prod ContinuousMap.HomotopyRel.prod
 
 end Prod

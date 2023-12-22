@@ -159,7 +159,7 @@ theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
-    MulZeroClass.zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
+    zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
   intro k hk
   rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ]
   congr
@@ -271,7 +271,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rw [vars_C_mul] at H
     swap
     · apply pow_ne_zero
-      exact_mod_cast hp.1.ne_zero
+      exact mod_cast hp.1.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H

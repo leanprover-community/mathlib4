@@ -26,20 +26,20 @@ Some notable properties of `H-spaces` are
 ## Main Results
 
 * Every topological group `G` is an `H-space` using its operation `* : G → G → G` (this is already
-true if `G` has an instance of a `mul_one_class` and `continuous_mul`);
+true if `G` has an instance of a `MulOneClass` and `ContinuousMul`);
 * Given two `H-spaces` `X` and `Y`, their product is again an `H`-space. We show in an example that
 starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is definitionally
 equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-spaces`.
 
 ## To Do
-* Prove that for every `normed_add_torsor Z` and every `z : Z`, the operation
+* Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
 `λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
 fourth from the fact that `S^7` coincides with the octonions of norm 1 (it is not a group, in
-particular, only has an instance of `mul_one_class`).
+particular, only has an instance of `MulOneClass`).
 
 ## References
 
@@ -69,7 +69,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
 #align H_space HSpace
 
--- mathport name: H_space.Hmul
 -- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
@@ -92,21 +91,17 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.eHmul.1.1.2
-            (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
+          (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
+      exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
     · rintro ⟨x, y⟩
-      exact Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
+      exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
-      exact
-        ⟨Prod.mk.inj_iff.mpr
-            ⟨HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.1),
-              HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.2)⟩,
-          Prod.mk.inj_iff.mpr ⟨(HSpace.eHmul.2 t x h.1).2, (HSpace.eHmul.2 t y h.2).2⟩⟩
+      replace h := Prod.mk.inj_iff.mp h
+      exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G :=
@@ -116,30 +111,26 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
+      exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
     · rintro ⟨x, y⟩
-      exact Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
+      exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
-      exact
-        ⟨Prod.mk.inj_iff.mpr
-            ⟨HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.1),
-              HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.2)⟩,
-          Prod.mk.inj_iff.mpr ⟨(HSpace.hmulE.2 t x h.1).2, (HSpace.hmulE.2 t y h.2).2⟩⟩
+      replace h := Prod.mk.inj_iff.mp h
+      exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 #align H_space.prod HSpace.prod
 
 
 namespace TopologicalGroup
 
-/-- The definition `to_H_space` is not an instance because its `@additive` version would
-lead to a diamond since a topological field would inherit two `H_space` structures, one from the
-`mul_one_class` and one from the `add_zero_class`. In the case of a group, we make
-`topological_group.H_space` an instance."-/
+/-- The definition `toHSpace` is not an instance because its additive version would
+lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
+`MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
+`TopologicalGroup.hSpace` an instance."-/
 @[to_additive
-      "The definition `to_H_space` is not an instance because it comes together with a
+      "The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
-      two `H_space` structures, one from the `mul_one_class` and one from the `add_zero_class`.
-      In the case of an additive group, we make `topological_group.H_space` an instance."]
+      two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
+      In the case of an additive group, we make `TopologicalAddGroup.hSpace` an instance."]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
@@ -161,8 +152,8 @@ theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [Topological
   rfl
 #align topological_group.one_eq_H_space_e TopologicalGroup.one_eq_hSpace_e
 
-/- In the following example we see that the `H-space` structure on the product of two topological
-groups is definitionally equally to the product `H-space`-structure of the two groups.-/
+/- In the following example we see that the H-space structure on the product of two topological
+groups is definitionally equally to the product H-space-structure of the two groups.-/
 example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
     [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
@@ -281,7 +272,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
-/-- The loop space at x carries a structure of an `H-space`. Note that the field `eHmul`
+/-- The loop space at x carries a structure of an H-space. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/
@@ -291,13 +282,13 @@ instance (x : X) : HSpace (Path x x) where
   hmul_e_e := refl_trans_refl
   eHmul :=
     { toHomotopy :=
-        ⟨⟨fun p : I × Path x x => delayReflLeft p.1 p.2, continuous_delayReflLeft⟩,
+        ⟨⟨fun p : I × Path x x ↦ delayReflLeft p.1 p.2, continuous_delayReflLeft⟩,
           delayReflLeft_zero, delayReflLeft_one⟩
-      prop' := by rintro t _ (rfl : _ = _); exact ⟨refl_trans_refl.symm, rfl⟩ }
+      prop' := by rintro t _ rfl; exact refl_trans_refl.symm }
   hmulE :=
     { toHomotopy :=
-        ⟨⟨fun p : I × Path x x => delayReflRight p.1 p.2, continuous_delayReflRight⟩,
+        ⟨⟨fun p : I × Path x x ↦ delayReflRight p.1 p.2, continuous_delayReflRight⟩,
           delayReflRight_zero, delayReflRight_one⟩
-      prop' := by rintro t _ (rfl : _ = _); exact ⟨refl_trans_refl.symm, rfl⟩ }
+      prop' := by rintro t _ rfl; exact refl_trans_refl.symm }
 
 end Path

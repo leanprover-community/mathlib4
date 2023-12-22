@@ -16,7 +16,7 @@ This file introduces the function `PEquiv.toMatrix`, which returns a matrix cont
 zeros. For any partial equivalence `f`, `f.toMatrix i j = 1 ↔ f i = some j`.
 
 The following important properties of this function are proved
-`toMatrix_trans : (f.trans g).toMatrix = f.toMatrix ⬝ g.toMatrix`
+`toMatrix_trans : (f.trans g).toMatrix = f.toMatrix * g.toMatrix`
 `toMatrix_symm  : f.symm.toMatrix = f.toMatrixᵀ`
 `toMatrix_refl : (PEquiv.refl n).toMatrix = 1`
 `toMatrix_bot : ⊥.toMatrix = 0`
@@ -31,7 +31,7 @@ inverse of this map, sending anything not in the image to zero.
 
 ## notations
 
-This file uses the notation ` ⬝ ` for `Matrix.mul` and `ᵀ` for `Matrix.transpose`.
+This file uses `ᵀ` for `Matrix.transpose`.
 -/
 
 
@@ -61,7 +61,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
 #align pequiv.to_matrix_apply PEquiv.toMatrix_apply
 
 theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
-    (i j) : (f.toMatrix ⬝ M) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
+    (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f i with fi
   · simp [h]
@@ -83,7 +83,7 @@ theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
 #align pequiv.to_matrix_refl PEquiv.toMatrix_refl
 
 theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
-    (i j) : (M ⬝ f.toMatrix) i j = Option.casesOn (f.symm j) 0 fun fj => M i fj := by
+    (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 fun fj => M i fj := by
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f.symm j with fj
   · simp [h, ← f.eq_some_iff]
@@ -95,20 +95,20 @@ theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l
 #align pequiv.matrix_mul_apply PEquiv.matrix_mul_apply
 
 theorem toPEquiv_mul_matrix [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
-    (M : Matrix m n α) : f.toPEquiv.toMatrix ⬝ M = fun i => M (f i) := by
+    (M : Matrix m n α) : f.toPEquiv.toMatrix * M = fun i => M (f i) := by
   ext i j
   rw [mul_matrix_apply, Equiv.toPEquiv_apply]
 #align pequiv.to_pequiv_mul_matrix PEquiv.toPEquiv_mul_matrix
 
 theorem mul_toPEquiv_toMatrix {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
-    (M : Matrix m n α) : M ⬝ f.toPEquiv.toMatrix = M.submatrix id f.symm :=
+    (M : Matrix m n α) : M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.matrix_mul_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id.def]
 #align pequiv.mul_to_pequiv_to_matrix PEquiv.mul_toPEquiv_toMatrix
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
-    (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix ⬝ g.toMatrix := by
+    (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
   ext i j
   rw [mul_matrix_apply]
   dsimp [toMatrix, PEquiv.trans]
@@ -152,13 +152,13 @@ theorem toMatrix_swap [DecidableEq n] [Ring α] (i j : n) :
 @[simp]
 theorem single_mul_single [Fintype n] [DecidableEq k] [DecidableEq m] [DecidableEq n] [Semiring α]
     (a : m) (b : n) (c : k) :
-    ((single a b).toMatrix : Matrix _ _ α) ⬝ (single b c).toMatrix = (single a c).toMatrix := by
+    ((single a b).toMatrix : Matrix _ _ α) * (single b c).toMatrix = (single a c).toMatrix := by
   rw [← toMatrix_trans, single_trans_single]
 #align pequiv.single_mul_single PEquiv.single_mul_single
 
 theorem single_mul_single_of_ne [Fintype n] [DecidableEq n] [DecidableEq k] [DecidableEq m]
     [Semiring α] {b₁ b₂ : n} (hb : b₁ ≠ b₂) (a : m) (c : k) :
-    ((single a b₁).toMatrix : Matrix _ _ α) ⬝ (single b₂ c).toMatrix = 0 := by
+    (single a b₁).toMatrix * (single b₂ c).toMatrix = (0 : Matrix _ _ α) := by
   rw [← toMatrix_trans, single_trans_single_of_ne hb, toMatrix_bot]
 #align pequiv.single_mul_single_of_ne PEquiv.single_mul_single_of_ne
 
@@ -167,7 +167,7 @@ theorem single_mul_single_of_ne [Fintype n] [DecidableEq n] [DecidableEq k] [Dec
 @[simp]
 theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [DecidableEq k]
     [DecidableEq m] [Semiring α] (a : m) (b : n) (c : k) (M : Matrix k l α) :
-    (single a b).toMatrix ⬝ ((single b c).toMatrix ⬝ M) = (single a c).toMatrix ⬝ M := by
+    (single a b).toMatrix * ((single b c).toMatrix * M) = (single a c).toMatrix * M := by
   rw [← Matrix.mul_assoc, single_mul_single]
 #align pequiv.single_mul_single_right PEquiv.single_mul_single_right
 

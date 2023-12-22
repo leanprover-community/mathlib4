@@ -67,7 +67,7 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 
 @[ext]
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
-  cases f; cases g; simp only; congr
+  cases f; cases g; congr
 #align measure_theory.filtration.ext MeasureTheory.Filtration.ext
 
 variable (ι)
@@ -282,7 +282,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
-  simp [natural, filtrationOfSet, measurableSpace_iSup_eq]
+  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
   refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
   · rintro _ ⟨j, hij, rfl⟩

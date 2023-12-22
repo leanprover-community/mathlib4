@@ -62,7 +62,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     rw [← erase_biUnion]
     by_cases hb : a ∈ s'.biUnion fun x => t x
     · rw [card_erase_of_mem hb]
-      exact Nat.le_pred_of_lt ha'
+      exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_not_mem hb]
       exact Nat.le_of_lt ha'
   · rw [nonempty_iff_ne_empty, not_not] at he
@@ -210,7 +210,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
-    split_ifs with h <;> simp
+    split_ifs with h
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in

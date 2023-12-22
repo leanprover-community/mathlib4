@@ -3,10 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Hom.Units
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import algebra.group_with_zero.units.lemmas from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -199,6 +200,9 @@ theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
 #align div_helper div_helper
 
+theorem div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
+  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
 end CommGroupWithZero
 
 section MonoidWithZero
@@ -284,3 +288,11 @@ theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) 
 #align units.smul_mk0 Units.smul_mk0
 
 end Units
+
+/-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
+`n : ℤ`, to `(f x)^n`. -/
+@[simp]
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+    [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
+  map_zpow' f (map_inv₀ f) x n
+#align map_zpow₀ map_zpow₀

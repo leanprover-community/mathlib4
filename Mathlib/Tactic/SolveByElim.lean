@@ -3,12 +3,11 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, David Renshaw
 -/
-import Mathlib.Tactic.Backtracking
-import Lean.Meta.Tactic.Apply
-import Mathlib.Lean.LocalContext
+import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.LabelAttr
-import Mathlib.Control.Basic
+import Lean.Meta.Tactic.Apply
+import Std.Tactic.LabelAttr
+import Std.Data.Sum.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
@@ -32,18 +31,16 @@ we can perform backtracking search based on applying a list of lemmas.
 calls to `apply` succeeded or failed.
 -/
 def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
-    (lemmas : List Expr) :
-    MVarId → MetaM (List (MetaM (List MVarId))) :=
-  fun g => pure <|
-    lemmas.map fun e =>
-      withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
-        let goals ← withTransparency transparency (g.apply e cfg)
-        -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
-        -- deals with closing new typeclass goals by calling
-        -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
-        -- It seems we can't reuse that machinery down here in `MetaM`,
-        -- so we just settle for trying to close each subgoal using `inferInstance`.
-        goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
+    (lemmas : List Expr) (g : MVarId) : Nondet MetaM (List MVarId) :=
+  (Nondet.ofList lemmas).filterMapM fun e => observing? do
+    withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
+      let goals ← withTransparency transparency (g.apply e cfg)
+      -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
+      -- deals with closing new typeclass goals by calling
+      -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
+      -- It seems we can't reuse that machinery down here in `MetaM`,
+      -- so we just settle for trying to close each subgoal using `inferInstance`.
+      goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
 
 /--
 `applyFirst lemmas goal` applies the first of the `lemmas`
@@ -52,9 +49,8 @@ which can be successfully applied to `goal`, and fails if none apply.
 We use this in `apply_rules` and `apply_assumption` where backtracking is not needed.
 -/
 def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
-    (lemmas : List Expr) : MVarId → MetaM (List MVarId) :=
-  fun g => do
-    (← applyTactics cfg transparency lemmas g).firstM (fun t => t)
+    (lemmas : List Expr) (g : MVarId) : MetaM (List MVarId) :=
+  (applyTactics cfg transparency lemmas g).head
 
 /--
 Configuration structure to control the behaviour of `solve_by_elim`:
@@ -187,13 +183,19 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
 def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (g : MVarId) : MetaM (List (MetaM (List MVarId))) := do
-let es ← elabContextLemmas g lemmas ctx
-applyTactics cfg.toApplyConfig cfg.transparency es g
+    (g : MVarId) : Nondet MetaM (List MVarId) := Nondet.squash fun _ => do
+  -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+  -- This has better performance that the mathlib3 approach.
+  let g ← if cfg.symm then g.symmSaturate else pure g
+  let es ← elabContextLemmas g lemmas ctx
+  return applyTactics cfg.toApplyConfig cfg.transparency es g
 
 /-- Applies the first possible lemma to the goal. -/
 def applyFirstLemma (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (g : MVarId) : MetaM (List MVarId) := do
+-- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+-- This has better performance that the mathlib3 approach.
+let g ← if cfg.symm then g.symmSaturate else pure g
 let es ← elabContextLemmas g lemmas ctx
 applyFirst cfg.toApplyConfig cfg.transparency es g
 
@@ -215,15 +217,6 @@ Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this beha
 -/
 def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (goals : List MVarId) : MetaM (List MVarId) := do
-  -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
-  -- Implementation note:
-  -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)
-  -- I initially reproduced the mathlib3 approach, but it had bad performance so switched to this.
-  let goals ← if cfg.symm then
-    goals.mapM fun g => g.symmSaturate
-  else
-    pure goals
-
   try
     run goals
   catch e => do
@@ -257,7 +250,7 @@ def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List (TermElabM Expr)
   solveByElim { cfg with backtracking := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
-open Mathlib.Tactic.LabelAttr
+open Std.Tactic.LabelAttr
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
@@ -366,8 +359,8 @@ def parseArgs (s : Option (TSyntax ``args)) :
     | _ => panic! "Unreachable parse of solve_by_elim arguments."
   let args := args.toList
   (args.contains none,
-    args.filterMap fun o => o.bind Sum.getLeft,
-    args.filterMap fun o => o.bind Sum.getRight)
+    args.filterMap fun o => o.bind Sum.getLeft?,
+    args.filterMap fun o => o.bind Sum.getRight?)
 
 /-- Parse the `using ...` argument for `solve_by_elim`. -/
 def parseUsing (s : Option (TSyntax ``using_)) : Array Ident :=

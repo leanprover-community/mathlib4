@@ -62,7 +62,7 @@ noncomputable def finrank (R V : Type*) [Semiring R] [AddCommGroup V] [Module R 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank K V = ↑n) : finrank K V = n := by
   apply_fun toNat at h
   rw [toNat_cast] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align finite_dimensional.finrank_eq_of_rank_eq FiniteDimensional.finrank_eq_of_rank_eq
 
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank K V = 1 ↔ finrank K V = 1 :=
@@ -85,13 +85,16 @@ theorem finrank_lt_of_rank_lt {n : ℕ} (h : Module.rank K V < ↑n) : finrank K
   · exact nat_lt_aleph0 n
 #align finite_dimensional.finrank_lt_of_rank_lt FiniteDimensional.finrank_lt_of_rank_lt
 
-theorem rank_lt_of_finrank_lt {n : ℕ} (h : n < finrank K V) : ↑n < Module.rank K V := by
+theorem lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank K V) : ↑n < Module.rank K V := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_cast]
   · exact nat_lt_aleph0 n
   · contrapose! h
     rw [finrank, Cardinal.toNat_apply_of_aleph0_le h]
     exact n.zero_le
-#align finite_dimensional.rank_lt_of_finrank_lt FiniteDimensional.rank_lt_of_finrank_lt
+#align finite_dimensional.rank_lt_of_finrank_lt FiniteDimensional.lt_rank_of_lt_finrank
+
+theorem one_lt_rank_of_one_lt_finrank (h : 1 < finrank K V) : 1 < Module.rank K V := by
+  simpa using lt_rank_of_lt_finrank h
 
 theorem finrank_le_finrank_of_rank_le_rank
     (h : lift.{v'} (Module.rank K V) ≤ Cardinal.lift.{v} (Module.rank K V₂))
@@ -105,7 +108,7 @@ variable [Nontrivial K] [NoZeroSMulDivisors K V]
 
 /-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
 theorem nontrivial_of_finrank_pos (h : 0 < finrank K V) : Nontrivial V :=
-  rank_pos_iff_nontrivial.mp (rank_lt_of_finrank_lt h)
+  rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
 #align finite_dimensional.nontrivial_of_finrank_pos FiniteDimensional.nontrivial_of_finrank_pos
 
 /-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
@@ -115,6 +118,7 @@ theorem nontrivial_of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) : No
 #align finite_dimensional.nontrivial_of_finrank_eq_succ FiniteDimensional.nontrivial_of_finrank_eq_succ
 
 /-- A (finite dimensional) space that is a subsingleton has zero `finrank`. -/
+@[nontriviality]
 theorem finrank_zero_of_subsingleton [h : Subsingleton V] : finrank K V = 0 := by
   by_contra h0
   obtain ⟨x, y, hxy⟩ := nontrivial_of_finrank_pos (Nat.pos_of_ne_zero h0)
@@ -369,6 +373,27 @@ theorem span_lt_top_of_card_lt_finrank {s : Set V} [Fintype s]
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 #align span_lt_top_of_card_lt_finrank span_lt_top_of_card_lt_finrank
 
+/-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
+dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
+theorem exists_linearIndependent_snoc_of_lt_finrank {n : ℕ} {v : Fin n → V}
+    (hv : LinearIndependent K v) (h : n < finrank K V) :
+    ∃ (x : V), LinearIndependent K (Fin.snoc v x) :=
+  exists_linearIndependent_snoc_of_lt_rank hv (lt_rank_of_lt_finrank h)
+
+/-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
+dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
+theorem exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
+    (hv : LinearIndependent K v) (h : n < finrank K V) :
+    ∃ (x : V), LinearIndependent K (Fin.cons x v) :=
+  exists_linearIndependent_cons_of_lt_rank hv (lt_rank_of_lt_finrank h)
+
+/-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
+vector linearly independent of the first one. -/
+theorem exists_linearIndependent_pair_of_one_lt_finrank
+    (h : 1 < finrank K V) {x : V} (hx : x ≠ 0) :
+    ∃ y, LinearIndependent K ![x, y] :=
+  exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
+
 end DivisionRing
 
 end Span
@@ -411,7 +436,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     · refine' neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
       refine' smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
-      simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff]
+      simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
     -- To show `b i` is a weighted sum of the other `b j`s, we'll rewrite this sum
     -- to have the form of the assumption `dependent`.
     apply eq_neg_of_add_eq_zero_left
@@ -473,7 +498,7 @@ theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι �
 /-- A finset of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
 noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
-    (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis (s : Set V) K V :=
+    (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis {x // x ∈ s} K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
@@ -567,11 +592,10 @@ variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
-  ((Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.trans <|
-          LinearEquiv.ofEq _ _ Algebra.toSubmodule_bot).rank_eq.trans <| by
+  (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
+    rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
     letI := Module.nontrivial F E
-    rw [rank_span_set]
-    exacts [mk_singleton _, linearIndependent_singleton one_ne_zero]
+    exact linearIndependent_singleton one_ne_zero
 #align subalgebra.rank_bot Subalgebra.rank_bot
 
 @[simp]

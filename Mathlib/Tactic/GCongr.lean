@@ -14,6 +14,8 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 set of lemmas with the attribute `@[gcongr]` and by listing `positivity` as a first-pass
 discharger for side goals (`gcongr_discharger`). -/
 
+set_option autoImplicit true
+
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 
 /-! # ≤, - -/
@@ -75,6 +77,10 @@ protected theorem Nat.div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
+/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
+@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefeq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
+
 attribute [gcongr]
   div_le_div'' div_le_div Nat.div_le_div -- tt / tt
   div_le_div_left' div_le_div_of_le_left Nat.div_le_div_left -- ff / tt
@@ -96,8 +102,8 @@ attribute [gcongr]
 /-! # ≤, ^ -/
 
 attribute [gcongr]
-  pow_le_pow pow_le_pow' zpow_le_zpow zpow_le_of_le -- ff ^ tt
-  pow_le_pow_of_le_left pow_le_pow_of_le_left' zpow_le_zpow' -- tt ^ ff
+  pow_le_pow_right pow_le_pow_right' zpow_le_zpow zpow_le_of_le -- ff ^ tt
+  pow_le_pow_left pow_le_pow_left' zpow_le_zpow' -- tt ^ ff
 
 /-! # <, ^ -/
 
@@ -106,8 +112,8 @@ theorem zpow_lt_of_lt [LinearOrderedSemifield α] {a : α} {m n : ℤ} (hx : 1 <
   zpow_strictMono hx h
 
 attribute [gcongr]
-  pow_lt_pow pow_lt_pow' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
-  pow_lt_pow_of_lt_left zpow_lt_zpow' -- tt ^ ff
+  pow_lt_pow_right pow_lt_pow_right' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
+  pow_lt_pow_left zpow_lt_zpow' -- tt ^ ff
 
 /-! # coercions -/
 

@@ -18,6 +18,8 @@ This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
 
+set_option autoImplicit true
+
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -80,7 +82,7 @@ theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 #align homological_complex.d_eq_to_hom HomologicalComplex.d_eqToHom
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 400000 in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]

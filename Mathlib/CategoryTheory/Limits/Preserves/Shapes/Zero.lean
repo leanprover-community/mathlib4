@@ -53,6 +53,11 @@ protected theorem map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C) :
   PreservesZeroMorphisms.map_zero _ _
 #align category_theory.functor.map_zero CategoryTheory.Functor.map_zero
 
+lemma map_isZero (F : C ⥤ D) [PreservesZeroMorphisms F] {X : C} (hX : IsZero X) :
+    IsZero (F.obj X) := by
+  simp only [IsZero.iff_id_eq_zero] at hX ⊢
+  rw [← F.map_id, hX, F.map_zero]
+
 theorem zero_of_map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X Y : C} (f : X ⟶ Y)
     (h : F.map f = 0) : f = 0 :=
   F.map_injective <| h.trans <| Eq.symm <| F.map_zero _ _
@@ -69,7 +74,6 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
     PreservesZeroMorphisms F where
   map_zero X Y := by
     let adj := Adjunction.ofLeftAdjoint F
-    dsimp
     calc
       F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
       _ = F.map 0 ≫ F.map ((rightAdjoint F).map (0 : F.obj X ⟶ _)) ≫ adj.counit.app (F.obj Y) := ?_

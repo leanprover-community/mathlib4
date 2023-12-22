@@ -12,6 +12,8 @@ import Mathlib.Lean.Expr.Basic
 [TODO] Ideally we would find good homes for everything in this file, eventually removing it.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic

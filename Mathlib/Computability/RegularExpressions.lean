@@ -238,7 +238,7 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
+  · simp only [rmatch, matchEpsilon, Bool.coe_or_iff]
   · repeat' rw [rmatch]
     rw [deriv_add]
     exact ih _ _
@@ -252,7 +252,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     · intro h
       refine' ⟨[], [], rfl, _⟩
       rw [rmatch, rmatch]
-      rwa [Bool.and_coe_iff] at h
+      rwa [Bool.coe_and_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
       cases' List.append_eq_nil.1 h₁.symm with ht hu
       subst ht
@@ -320,7 +320,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           case tail ht' => exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩; dsimp
+    · rintro ⟨S, hsum, helem⟩
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -413,7 +413,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by dsimp; rfl
-  | n + 1 => (congr_arg ((· * ·) (map f P)) (RegularExpression.map_pow f P n) : _)
+  | n + 1 => (congr_arg (map f P * ·) (RegularExpression.map_pow f P n) : _)
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]

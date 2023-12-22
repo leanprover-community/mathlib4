@@ -77,13 +77,13 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     rw [dom_iff_mem] at h₁
     cases' h₁ with y h₁
     replace h₁ := approx_mono' f _ _ h₁
-    suffices : y = b
-    · subst this
+    suffices y = b by
+      subst this
       exact h₁
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
-    · cases' le_total i j with H H <;> [skip; symm] <;> apply_assumption <;> assumption
+    · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
@@ -124,7 +124,7 @@ theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
 #align part.fix.le_f_of_mem_approx Part.Fix.le_f_of_mem_approx
 
 theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
-  Stream'.mem_of_nth_eq rfl
+  Stream'.mem_of_get_eq rfl
 #align part.fix.approx_mem_approx_chain Part.Fix.approx_mem_approxChain
 
 end Fix

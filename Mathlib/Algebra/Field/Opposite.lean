@@ -13,6 +13,8 @@ import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
+set_option autoImplicit true
+
 namespace MulOpposite
 
 variable (α : Type*)

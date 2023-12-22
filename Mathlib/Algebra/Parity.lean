@@ -58,12 +58,43 @@ theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
 #align even_add_self even_add_self
 
 @[to_additive]
-theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
-  ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
+theorem isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
+  ⟨fun ⟨c, hc⟩ => ⟨unop c, congr_arg unop hc⟩, fun ⟨c, hc⟩ => ⟨op c, congr_arg op hc⟩⟩
 #align is_square_op_iff isSquare_op_iff
 #align even_op_iff even_op_iff
 
+@[to_additive]
+theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := isSquare_op_iff.symm
+
+@[to_additive]
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : αᵐᵒᵖ → Prop) :=
+  fun _ => decidable_of_iff _ isSquare_unop_iff
+
+@[simp]
+theorem even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
+
+@[simp]
+theorem isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
+
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (Even : Additive α → Prop) :=
+  fun _ => decidable_of_iff _ isSquare_toMul_iff
+
 end Mul
+
+section Add
+variable [Add α]
+
+@[simp]
+theorem isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even a := Iff.rfl
+
+@[simp]
+theorem even_toAdd_iff {a : Multiplicative α} :
+    Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+
+instance [DecidablePred (Even : α → Prop)] : DecidablePred (IsSquare : Multiplicative α → Prop) :=
+  fun _ => decidable_of_iff _ even_toAdd_iff
+
+end Add
 
 @[to_additive (attr := simp)]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
@@ -89,7 +120,7 @@ theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by 
 #align is_square_iff_exists_sq isSquare_iff_exists_sq
 #align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
-alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
+alias ⟨IsSquare.exists_sq, isSquare_of_exists_sq⟩ := isSquare_iff_exists_sq
 #align is_square.exists_sq IsSquare.exists_sq
 #align is_square_of_exists_sq isSquare_of_exists_sq
 
@@ -129,6 +160,7 @@ theorem IsSquare_sq (a : α) : IsSquare (a ^ 2) :=
 
 variable [HasDistribNeg α]
 
+@[simp]
 theorem Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
   simp_rw [← two_mul, pow_mul, neg_sq]
@@ -164,11 +196,11 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
-  · exact ((isSquare_op_iff a).mpr h).map (MulEquiv.inv' α).symm
+  · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 #align is_square_inv isSquare_inv
 #align even_neg even_neg
 
-alias isSquare_inv ↔ _ IsSquare.inv
+alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 #align is_square.inv IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
@@ -217,7 +249,7 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 #align even.zsmul' Even.zsmul'
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
+theorem Even.tsub [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
@@ -233,7 +265,7 @@ theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
-alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
+alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 #align even.exists_bit0 Even.exists_bit0
 
 section Semiring
@@ -247,7 +279,7 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
 theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
-alias even_iff_two_dvd ↔ Even.two_dvd _
+alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
 #align even.two_dvd Even.two_dvd
 
 theorem Even.trans_dvd (hm : Even m) (hn : m ∣ n) : Even n :=
@@ -309,7 +341,7 @@ theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
     rfl
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
-alias odd_iff_exists_bit1 ↔ Odd.exists_bit1 _
+alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
 set_option linter.deprecated false in
@@ -329,6 +361,9 @@ theorem Even.add_odd : Even m → Odd n → Odd (m + n) := by
   exact ⟨m + n, by rw [mul_add, ← two_mul, add_assoc]⟩
 #align even.add_odd Even.add_odd
 
+theorem Even.odd_add : Even m → Odd n → Odd (n + m) :=
+  fun he ho ↦ by simp only [he.add_odd ho, add_comm n m]
+
 theorem Odd.add_even (hm : Odd m) (hn : Even n) : Odd (m + n) := by
   rw [add_comm]
   exact hn.add_odd hm
@@ -346,10 +381,21 @@ theorem odd_one : Odd (1 : α) :=
   ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
 #align odd_one odd_one
 
-@[simp]
+@[simp] lemma Even.add_one (h : Even m) : Odd (m + 1) := h.add_odd odd_one
+
+@[simp] lemma Even.one_add (h : Even m) : Odd (1 + m) := h.odd_add odd_one
+
 theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
   ⟨m, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
+
+@[simp] lemma odd_add_self_one' : Odd (m + (m + 1)) := by simp [← add_assoc]
+
+@[simp] lemma odd_add_one_self : Odd (m + 1 + m) := by simp [add_comm _ m]
+
+@[simp] lemma odd_add_one_self' : Odd (m + (1 + m)) := by simp [add_comm 1 m]
+
+@[simp] lemma one_add_self_self : Odd (1 + m + m) := by simp [add_comm 1 m]
 
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
@@ -386,6 +432,7 @@ theorem Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
 #align odd.neg_pow Odd.neg_pow
 
+@[simp]
 theorem Odd.neg_one_pow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_pow, one_pow]
 #align odd.neg_one_pow Odd.neg_one_pow
 
@@ -395,7 +442,7 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring α]
 
--- this holds more generally in a `CanonicallyOrderedAddMonoid` if we refactor `Odd` to use
+-- this holds more generally in a `CanonicallyOrderedAddCommMonoid` if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
 theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn

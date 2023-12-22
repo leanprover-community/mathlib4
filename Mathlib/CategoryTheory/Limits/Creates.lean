@@ -508,8 +508,8 @@ def createsLimitsOfShapeOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimitsOfS
 
 /-- If `F` creates limits and `F ≅ G`, then `G` creates limits. -/
 def createsLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimitsOfSize.{w, w'} F] :
-    CreatesLimitsOfSize.{w, w'} G
-    where CreatesLimitsOfShape := createsLimitsOfShapeOfNatIso h
+    CreatesLimitsOfSize.{w, w'} G where
+  CreatesLimitsOfShape := createsLimitsOfShapeOfNatIso h
 #align category_theory.creates_limits_of_nat_iso CategoryTheory.createsLimitsOfNatIso
 
 /-- Transfer creation of colimits along a natural isomorphism in the diagram. -/
@@ -548,8 +548,8 @@ def createsColimitsOfShapeOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimit
 
 /-- If `F` creates colimits and `F ≅ G`, then `G` creates colimits. -/
 def createsColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimitsOfSize.{w, w'} F] :
-    CreatesColimitsOfSize.{w, w'} G
-    where CreatesColimitsOfShape := createsColimitsOfShapeOfNatIso h
+    CreatesColimitsOfSize.{w, w'} G where
+  CreatesColimitsOfShape := createsColimitsOfShapeOfNatIso h
 #align category_theory.creates_colimits_of_nat_iso CategoryTheory.createsColimitsOfNatIso
 
 -- For the inhabited linter later.
@@ -582,8 +582,8 @@ def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c
 #align category_theory.id_lifts_cone CategoryTheory.idLiftsCone
 
 /-- The identity functor creates all limits. -/
-instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C)
-    where CreatesLimitsOfShape :=
+instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
+  CreatesLimitsOfShape :=
     { CreatesLimit := { lifts := fun c _ => idLiftsCone c } }
 #align category_theory.id_creates_limits CategoryTheory.idCreatesLimits
 
@@ -597,8 +597,8 @@ def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c
 #align category_theory.id_lifts_cocone CategoryTheory.idLiftsCocone
 
 /-- The identity functor creates all colimits. -/
-instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C)
-    where CreatesColimitsOfShape :=
+instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
+  CreatesColimitsOfShape :=
     { CreatesColimit := { lifts := fun c _ => idLiftsCocone c } }
 #align category_theory.id_creates_colimits CategoryTheory.idCreatesColimits
 

@@ -198,8 +198,7 @@ instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [IsMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
   intro J hIJ x
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
-  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J
-  · rwa [sup_inf_inf_compl] at ass
+  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
       (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)

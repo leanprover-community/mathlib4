@@ -65,7 +65,7 @@ def TensorAlgebra :=
 #align tensor_algebra TensorAlgebra
 
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabitedRingQuot _
+instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
 instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
@@ -74,22 +74,22 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Module R M] [Module A M]
     [IsScalarTower R A M] :
     Algebra R (TensorAlgebra A M) :=
-  RingQuot.instAlgebraRingQuot _
+  RingQuot.instAlgebra _
 
 -- verify there is no diamond
 example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
-  RingQuot.instSMulCommClassRingQuot _
+  RingQuot.instSMulCommClass _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
-  RingQuot.instIsScalarTowerRingQuot _
+  RingQuot.instIsScalarTower _
 
 namespace TensorAlgebra
 
@@ -107,10 +107,10 @@ variable {M}
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
-      rw [← AlgHom.map_add]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_add]
       exact RingQuot.mkAlgHom_rel R Rel.add
     map_smul' := fun r x => by
-      rw [← AlgHom.map_smul]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_smul]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 #align tensor_algebra.ι TensorAlgebra.ι
 
@@ -206,7 +206,9 @@ theorem induction {C : TensorAlgebra R M → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
-    simp
+    simp only [AlgHom.toLinearMap_id, LinearMap.id_comp, AlgHom.comp_toLinearMap,
+      LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply, lift_ι_apply,
+      Subalgebra.coe_val]
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]

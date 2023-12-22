@@ -262,10 +262,10 @@ theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 #align order.is_pred_limit_to_dual_iff Order.isPredLimit_toDual_iff
 
-alias isSuccLimit_toDual_iff ↔ _ isPredLimit.dual
+alias ⟨_, isPredLimit.dual⟩ := isSuccLimit_toDual_iff
 #align order.is_pred_limit.dual Order.isPredLimit.dual
 
-alias isPredLimit_toDual_iff ↔ _ isSuccLimit.dual
+alias ⟨_, isSuccLimit.dual⟩ := isPredLimit_toDual_iff
 #align order.is_succ_limit.dual Order.isSuccLimit.dual
 
 end LT

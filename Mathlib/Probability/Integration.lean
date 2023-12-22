@@ -172,7 +172,7 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
   have A : (∫⁻ ω, ‖X ω * Y ω‖₊ ∂μ) < ∞ := h'XY.2
   simp only [nnnorm_mul, ENNReal.coe_mul] at A
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.ennnorm hY.ennnorm J, H] at A
-  simp only [ENNReal.top_mul I] at A
+  simp only [ENNReal.top_mul I, lt_self_iff_false] at A
 #align probability_theory.indep_fun.integrable_left_of_integrable_mul ProbabilityTheory.IndepFun.integrable_left_of_integrable_mul
 
 /-- If the product of two independent real-valued random variables is integrable and the
@@ -194,7 +194,7 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
   have A : (∫⁻ ω, ‖X ω * Y ω‖₊ ∂μ) < ∞ := h'XY.2
   simp only [nnnorm_mul, ENNReal.coe_mul] at A
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.ennnorm hY.ennnorm J, H] at A
-  simp only [ENNReal.mul_top I] at A
+  simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 #align probability_theory.indep_fun.integrable_right_of_integrable_mul ProbabilityTheory.IndepFun.integrable_right_of_integrable_mul
 
 /-- The (Bochner) integral of the product of two independent, nonnegative random
@@ -274,13 +274,13 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
       filter_upwards [h'X] with ω hω
       simp [hω]
     simp only [integral_congr_ae h'X, integral_congr_ae h', Pi.zero_apply, integral_const,
-      Algebra.id.smul_eq_mul, MulZeroClass.mul_zero, MulZeroClass.zero_mul]
+      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
   by_cases h'Y : Y =ᵐ[μ] 0
   · have h' : X * Y =ᵐ[μ] 0 := by
       filter_upwards [h'Y] with ω hω
       simp [hω]
     simp only [integral_congr_ae h'Y, integral_congr_ae h', Pi.zero_apply, integral_const,
-      Algebra.id.smul_eq_mul, MulZeroClass.mul_zero, MulZeroClass.zero_mul]
+      Algebra.id.smul_eq_mul, mul_zero, zero_mul]
   by_cases h : Integrable (X * Y) μ
   · have HX : Integrable X μ := hXY.integrable_left_of_integrable_mul h hX hY h'Y
     have HY : Integrable Y μ := hXY.integrable_right_of_integrable_mul h hX hY h'X

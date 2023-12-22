@@ -3,8 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
@@ -99,13 +100,12 @@ immediate predecessors and what conditions are added to each of them.
   - `StrictOrderedRing` & totality of the order
   - `LinearOrderedSemiring` & additive inverses
   - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Domain` & linear order structure
+  - `Ring` & `IsDomain` & linear order structure
 * `LinearOrderedCommRing`
   - `StrictOrderedCommRing` & totality of the order
   - `LinearOrderedRing` & commutativity of multiplication
   - `LinearOrderedCommSemiring` & additive inverses
-  - `IsDomain` & linear order structure
-
+  - `CommRing` & `IsDomain` & linear order structure
 -/
 
 open Function
@@ -140,7 +140,10 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α
+class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+  mul_le_mul_of_nonneg_right a b c ha hc :=
+    -- parentheses ensure this generates an `optParam` rather than an `autoParam`
+    (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
@@ -318,7 +321,7 @@ theorem one_lt_mul_of_lt_of_le (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
   ha.trans_le <| le_mul_of_one_le_right (zero_le_one.trans ha.le) hb
 #align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 
-alias one_lt_mul_of_le_of_lt ← one_lt_mul
+alias one_lt_mul := one_lt_mul_of_le_of_lt
 #align one_lt_mul one_lt_mul
 
 theorem mul_lt_one_of_nonneg_of_lt_one_left (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
@@ -410,7 +413,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
+theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
@@ -719,7 +722,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
+theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 #align strict_anti_mul_left strictAnti_mul_left
 
@@ -792,18 +795,15 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
 
 attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
-theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
+theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
-  -- Porting note: for the middle case, we used to have `rfl`, but it is now rejected.
-  -- https://github.com/leanprover/std4/issues/62
-  rcases lt_trichotomy 0 a with (ha | ha | ha)
+  rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
-  · subst ha
-    exact ((ab le_rfl).asymm (nab le_rfl)).elim
+  · exact ((ab le_rfl).asymm (nab le_rfl)).elim
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
-#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
+#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
 theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
   le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
@@ -831,11 +831,8 @@ theorem nonpos_of_mul_nonpos_right (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
 
 @[simp]
 theorem zero_le_mul_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  -- Porting note: this used to be by:
-  -- convert mul_le_mul_left h
-  -- simp
-  -- but the `convert` no longer works.
-  simpa using (mul_le_mul_left h : c * 0 ≤ c * b ↔ 0 ≤ b)
+  convert mul_le_mul_left h
+  simp
 #align zero_le_mul_left zero_le_mul_left
 
 @[simp]
@@ -1055,7 +1052,7 @@ theorem mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
 #align mul_neg_iff mul_neg_iff
 
 theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
-  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg, fun h =>
+  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 #align mul_nonneg_iff mul_nonneg_iff
 
@@ -1092,32 +1089,6 @@ theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 �
 theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
   (le_total 0 a).elim (fun h => mul_nonneg h h) fun h => mul_nonneg_of_nonpos_of_nonpos h h
 #align mul_self_nonneg mul_self_nonneg
-
-@[simp]
-theorem neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
-  simp [neg_le_iff_add_nonneg, ← two_mul, mul_nonneg_iff, zero_le_one, (zero_lt_two' α).not_le]
-#align neg_le_self_iff neg_le_self_iff
-
-@[simp]
-theorem neg_lt_self_iff : -a < a ↔ 0 < a := by
-  simp [neg_lt_iff_pos_add, ← two_mul, mul_pos_iff, zero_lt_one, (zero_lt_two' α).not_lt]
-#align neg_lt_self_iff neg_lt_self_iff
-
-@[simp]
-theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
-  calc
-    a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
-    _ ↔ 0 ≤ -a := neg_le_self_iff
-    _ ↔ a ≤ 0 := neg_nonneg
-#align le_neg_self_iff le_neg_self_iff
-
-@[simp]
-theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
-  calc
-    a < -a ↔ - -a < -a := by rw [neg_neg]
-    _ ↔ 0 < -a := neg_lt_self_iff
-    _ ↔ a < 0 := neg_pos
-#align lt_neg_self_iff lt_neg_self_iff
 
 theorem neg_one_lt_zero : -1 < (0 : α) :=
   neg_lt_zero.2 zero_lt_one

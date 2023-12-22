@@ -112,7 +112,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [Finsupp.total_apply, Function.surjInv_eq hf]
+  simp [Finsupp.total_apply, Function.surjInv_eq hf, map_finsupp_sum]
 #align module.projective_lifting_property Module.projective_lifting_property
 
 /-- A module which satisfies the universal property is projective: If all surjections of
@@ -158,7 +158,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
   simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
-    LinearMap.map_finsupp_sum]
+    map_finsupp_sum]
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis
 

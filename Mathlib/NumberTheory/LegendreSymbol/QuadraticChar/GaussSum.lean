@@ -54,7 +54,7 @@ theorem FiniteField.isSquare_two_iff :
     simp only [h, Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne.def, (by decide : (-1 : ℤ) ≠ 1),
       imp_false, Classical.not_not]
   all_goals
-    rw [← Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 8)] at h
+    rw [← Nat.mod_mod_of_dvd _ (by decide : 2 ∣ 8)] at h
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
@@ -65,7 +65,7 @@ theorem FiniteField.isSquare_two_iff :
 theorem quadraticChar_neg_two [DecidableEq F] (hF : ringChar F ≠ 2) :
     quadraticChar F (-2) = χ₈' (Fintype.card F) := by
   rw [(by norm_num : (-2 : F) = -1 * 2), map_mul, χ₈'_eq_χ₄_mul_χ₈, quadraticChar_neg_one hF,
-    quadraticChar_two hF, @cast_nat_cast _ (ZMod 4) _ _ _ (by norm_num : 4 ∣ 8)]
+    quadraticChar_two hF, @cast_nat_cast _ (ZMod 4) _ _ _ (by decide : 4 ∣ 8)]
 #align quadratic_char_neg_two quadraticChar_neg_two
 
 /-- `-2` is a square in `F` iff `#F` is not congruent to `5` or `7` mod `8`. -/
@@ -84,7 +84,7 @@ theorem FiniteField.isSquare_neg_two_iff :
     simp only [h, Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne.def, (by decide : (-1 : ℤ) ≠ 1),
       imp_false, Classical.not_not]
   all_goals
-    rw [← Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 8)] at h
+    rw [← Nat.mod_mod_of_dvd _ (by decide : 2 ∣ 8)] at h
     have h₁ := Nat.mod_lt (Fintype.card F) (by decide : 0 < 8)
     revert h₁ h
     generalize Fintype.card F % 8 = n
@@ -137,7 +137,7 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
     obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
     have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
     conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]
-    simp only [zero_pow n.pos, MulZeroClass.mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
+    simp only [zero_pow n.pos, mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
   · rw [← Iff.not_left (@quadraticChar_neg_one_iff_not_isSquare F _ _ _ _),
       quadraticChar_odd_prime hF hp]
     exact hFp

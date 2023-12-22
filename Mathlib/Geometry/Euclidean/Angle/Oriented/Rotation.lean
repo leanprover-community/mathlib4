@@ -439,7 +439,7 @@ zero. -/
 @[simp]
 theorem inner_smul_rotation_pi_div_two_left (x : V) (r : ℝ) :
     ⟪r • o.rotation (π / 2 : ℝ) x, x⟫ = 0 := by
-  rw [inner_smul_left, inner_rotation_pi_div_two_left, MulZeroClass.mul_zero]
+  rw [inner_smul_left, inner_rotation_pi_div_two_left, mul_zero]
 #align orientation.inner_smul_rotation_pi_div_two_left Orientation.inner_smul_rotation_pi_div_two_left
 
 /-- The inner product between a vector and a multiple of a `π / 2` rotation of that vector is
@@ -455,7 +455,7 @@ zero. -/
 @[simp]
 theorem inner_rotation_pi_div_two_left_smul (x : V) (r : ℝ) :
     ⟪o.rotation (π / 2 : ℝ) x, r • x⟫ = 0 := by
-  rw [inner_smul_right, inner_rotation_pi_div_two_left, MulZeroClass.mul_zero]
+  rw [inner_smul_right, inner_rotation_pi_div_two_left, mul_zero]
 #align orientation.inner_rotation_pi_div_two_left_smul Orientation.inner_rotation_pi_div_two_left_smul
 
 /-- The inner product between a multiple of a vector and a `π / 2` rotation of that vector is
@@ -471,7 +471,7 @@ that vector is zero. -/
 @[simp]
 theorem inner_smul_rotation_pi_div_two_smul_left (x : V) (r₁ r₂ : ℝ) :
     ⟪r₁ • o.rotation (π / 2 : ℝ) x, r₂ • x⟫ = 0 := by
-  rw [inner_smul_right, inner_smul_rotation_pi_div_two_left, MulZeroClass.mul_zero]
+  rw [inner_smul_right, inner_smul_rotation_pi_div_two_left, mul_zero]
 #align orientation.inner_smul_rotation_pi_div_two_smul_left Orientation.inner_smul_rotation_pi_div_two_smul_left
 
 /-- The inner product between a multiple of a vector and a multiple of a `π / 2` rotation of

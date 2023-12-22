@@ -37,6 +37,8 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

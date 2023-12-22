@@ -65,7 +65,7 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     have h_top_le : (f.limsup fun x : α => ite (u x = 0) (0 : ℝ≥0∞) ⊤) = ⊤ :=
       eq_top_iff.mpr (le_limsup_of_frequently_le hu_mul)
     have hfu : f.limsup u ≠ 0 := mt limsup_eq_zero_iff.1 hu
-    simp only [ha_top, top_mul', hfu, h_top_le]
+    simp only [ha_top, top_mul', h_top_le, hfu, ite_false]
 #align ennreal.limsup_const_mul ENNReal.limsup_const_mul
 
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :

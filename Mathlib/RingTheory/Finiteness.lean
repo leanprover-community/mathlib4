@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Operations
 
@@ -146,7 +147,7 @@ theorem fg_bot : (⊥ : Submodule R M).FG :=
 
 theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type*} [CommSemiring R] [Semiring A]
     [Algebra R A] : (⊥ : Subalgebra R A).toSubmodule.FG :=
-  ⟨{1}, by simp [Algebra.toSubmodule_bot]⟩
+  ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
 #align subalgebra.fg_bot_to_submodule Subalgebra.fg_bot_toSubmodule
 
 theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
@@ -323,7 +324,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
-    rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, f.map_sum]
+    rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     rw [sub_eq_zero]
     refine' Finset.sum_congr rfl fun y hy => _
     unfold id
@@ -416,6 +417,27 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
 
+open TensorProduct LinearMap in
+/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
+under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
+theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
+    [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
+      ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+        x = rTensor M (J.inclusion hle) y := by
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
+      (span_singleton_le_iff_mem _ _).mpr i.property,
+      ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
+  | add x₁ x₂ ihx₁ ihx₂ =>
+    obtain ⟨J₁, hfg₁, hle₁, y₁, rfl⟩ := ihx₁
+    obtain ⟨J₂, hfg₂, hle₂, y₂, rfl⟩ := ihx₂
+    refine ⟨J₁ ⊔ J₂, hfg₁.sup hfg₂, sup_le hle₁ hle₂,
+      rTensor M (J₁.inclusion (le_sup_left : J₁ ≤ J₁ ⊔ J₂)) y₁ +
+        rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
+    rewrite [map_add, ← rTensor_comp_apply, ← rTensor_comp_apply]
+    rfl
+
 end Submodule
 
 namespace Submodule
@@ -505,9 +527,9 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
     refine' fun i _ => Ideal.mul_le_right.trans _
     obtain h | h := le_or_lt n i
-    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow h).trans hn)
+    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
-      refine' (Ideal.pow_le_pow _).trans hm
+      refine' (Ideal.pow_le_pow_right _).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 #align ideal.exists_radical_pow_le_of_fg Ideal.exists_radical_pow_le_of_fg
@@ -550,15 +572,26 @@ theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ A
 
 variable {R M N}
 
+/-- See also `Module.Finite.exists_fin'`. -/
 theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
+
+lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
+    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+  have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
+  exact ⟨n, piEquiv (Fin n) R M s, by simpa⟩
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
+    [SMul R A] [IsScalarTower R A M] [Finite R M]
+    (N : Submodule A M) : Finite R (M ⧸ N) :=
+  Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
 instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
@@ -609,6 +642,8 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
 
+instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
+
 section Algebra
 
 theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
@@ -622,6 +657,19 @@ theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R
             Submodule.restrictScalars_top]⟩⟩
 #align module.finite.trans Module.Finite.trans
 
+lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
+    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
+  letI := e₁.toRingHom.toAlgebra
+  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  let e : B₁ ≃ₐ[A₂] B₂ := { e₂ with commutes' := fun r ↦ by simpa [RingHom.algebraMap_toAlgebra]
+                                                  using FunLike.congr_fun he.symm (e₁.symm r) }
+  haveI := Module.Finite.of_restrictScalars_finite A₁ A₂ B₁
+  exact Module.Finite.equiv e.toLinearEquiv
+
 end Algebra
 
 end Finite
@@ -629,8 +677,9 @@ end Finite
 end Module
 
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
-local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
-  Module A (TensorProduct R A M) :=
+noncomputable local instance
+    [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
+    Module A (TensorProduct R A M) :=
   haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
   TensorProduct.leftModule
 
@@ -638,10 +687,11 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
     obtain ⟨s, hs⟩ := h.out
-    refine' ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr fun x _ => _⟩⟩
-    apply @TensorProduct.induction_on _ _ _ _ _ _ _ _ _ x
-    · exact zero_mem _
-    · intro x y
+    refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
+    rintro x -
+    induction x using TensorProduct.induction_on with
+    | zero => exact zero_mem _
+    | tmul x y =>
       -- Porting note: new TC reminder
       haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
@@ -649,7 +699,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
       change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
       rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
-    · exact fun _ _ => Submodule.add_mem _
+    | add x y hx hy => exact Submodule.add_mem _ hx hy
 #align module.finite.base_change Module.Finite.base_change
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]

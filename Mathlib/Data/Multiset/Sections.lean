@@ -44,14 +44,14 @@ theorem coe_sections :
         (l.sections.map fun l : List α => (l : Multiset α) : Multiset (Multiset α))
   | [] => rfl
   | a :: l => by
-    simp
+    simp only [List.map_cons, List.sections]
     rw [← cons_coe, sections_cons, bind_map_comm, coe_sections l]
     simp [List.sections, (· ∘ ·), List.bind]
 #align multiset.coe_sections Multiset.coe_sections
 
 @[simp]
 theorem sections_add (s t : Multiset (Multiset α)) :
-    Sections (s + t) = (Sections s).bind fun m => (Sections t).map ((· + ·) m) :=
+    Sections (s + t) = (Sections s).bind fun m => (Sections t).map (m + ·) :=
   Multiset.induction_on s (by simp) fun a s ih => by
     simp [ih, bind_assoc, map_bind, bind_map]
 #align multiset.sections_add Multiset.sections_add

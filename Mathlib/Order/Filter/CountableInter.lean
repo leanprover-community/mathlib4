@@ -136,12 +136,12 @@ def Filter.ofCountableInter (l : Set (Set α))
     hp _ ((countable_singleton _).insert _) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
 #align filter.of_countable_Inter Filter.ofCountableInter
 
-instance Filter.countable_Inter_ofCountableInter (l : Set (Set α))
+instance Filter.countableInter_ofCountableInter (l : Set (Set α))
     (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
     CountableInterFilter (Filter.ofCountableInter l hp h_mono) :=
   ⟨hp⟩
-#align filter.countable_Inter_of_countable_Inter Filter.countable_Inter_ofCountableInter
+#align filter.countable_Inter_of_countable_Inter Filter.countableInter_ofCountableInter
 
 @[simp]
 theorem Filter.mem_ofCountableInter {l : Set (Set α)}

@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.CategoryTheory.Idempotents.Basic
 
-#align_import algebraic_topology.dold_kan.projections from "leanprover-community/mathlib"@"ed98c07faf6d9de3e52771d5b00394c4294ccb4d"
+#align_import algebraic_topology.dold_kan.projections from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -23,8 +23,9 @@ and `P_f_naturality`) and are compatible with the application
 of additive functors (see `map_P`).
 
 By passing to the limit, these endomorphisms `P q` shall be used in `PInfty.lean`
-in order to define `PInfty : K[X] ⟶ K[X]`, see `Equivalence.lean` for the general
-strategy of proof of the Dold-Kan equivalence.
+in order to define `PInfty : K[X] ⟶ K[X]`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

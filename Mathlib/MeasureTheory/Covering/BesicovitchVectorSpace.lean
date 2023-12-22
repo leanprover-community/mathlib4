@@ -44,8 +44,6 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 
 universe u
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Metric Set FiniteDimensional MeasureTheory Filter Fin
 
 open scoped ENNReal Topology
@@ -148,7 +146,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   let μ : Measure E := Measure.addHaar
   let δ : ℝ := (1 : ℝ) / 2
   let ρ : ℝ := (5 : ℝ) / 2
-  have ρpos : 0 < ρ := by norm_num [ρ]
+  have ρpos : 0 < ρ := by norm_num
   set A := ⋃ c ∈ s, ball (c : E) δ with hA
   have D : Set.Pairwise (s : Set E) (Disjoint on fun c => ball (c : E) δ) := by
     rintro c hc d hd hcd
@@ -161,14 +159,14 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
-      _ = 5 / 2 := by norm_num [δ]
+      _ = 5 / 2 := by norm_num
   have I :
     (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) ≤
       ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) :=
     calc
       (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) = μ A := by
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
-        have I : 0 < δ := by norm_num [δ]
+        have I : 0 < δ := by norm_num
         simp only [div_pow, μ.addHaar_ball_of_pos _ I]
         simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := (measure_mono A_subset)
@@ -178,9 +176,10 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (ENNReal.mul_le_mul_right (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
-    simp [ENNReal.toReal_mul] at this
+    simp? [ENNReal.toReal_mul] at this says
+      simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, div_pow] at this
     simpa [div_eq_mul_inv, zero_le_two] using this
-  exact_mod_cast K
+  exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
@@ -212,7 +211,7 @@ theorem exists_goodδ :
     subsequence, to obtain a `1`-separated set in the ball of radius `2` with cardinality
     `N = multiplicity E + 1`. To formalize this, we work with functions `Fin N → E`.
      -/
-  by_contra' h
+  by_contra! h
   set N := multiplicity E + 1 with hN
   have :
     ∀ δ : ℝ, 0 < δ → ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧
@@ -266,11 +265,11 @@ theorem exists_goodδ :
   let s := Finset.image f Finset.univ
   have s_card : s.card = N := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin N
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [hf, forall_apply_eq_imp_iff', forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [hf, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖ := by
-    simp only [forall_apply_eq_imp_iff', forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne.def, exists_true_left, forall_apply_eq_imp_iff', forall_true_left, true_and]
+    simp only [forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
+      Ne.def, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h'f i j this
@@ -319,11 +318,11 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
   let s := Finset.image f Finset.univ
   have s_card : s.card = n := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin n
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [h, forall_apply_eq_imp_iff', forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [h, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, imp_true_iff, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖ := by
-    simp only [forall_apply_eq_imp_iff', forall_exists_index, Finset.mem_univ, Finset.mem_image,
-      Ne.def, exists_true_left, forall_apply_eq_imp_iff', forall_true_left, true_and]
+    simp only [forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
+      Ne.def, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h' i j this

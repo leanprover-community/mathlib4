@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Lift
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -112,13 +112,21 @@ instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
-/- porting note: the result of these definitions is syntactically equal to `Units.val` and
-`Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
-`simp` projections. -/
+/- porting note: the result of these definitions is syntactically equal to `Units.val` because of
+the way coercions work in Lean 4, so there is no need for these custom `simp` projections. -/
 #noalign units.simps.coe
 #noalign add_units.simps.coe
-#noalign units.simps.coe_inv
-#noalign add_units.simps.coe_neg
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note [custom simps projection]"]
+def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
+#align units.simps.coe_inv Units.Simps.val_inv
+#align add_units.simps.coe_neg AddUnits.Simps.val_neg
+
+initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
+
+initialize_simps_projections AddUnits
+  (as_prefix val, val_neg → null, neg → val_neg, as_prefix val_neg)
 
 -- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
@@ -164,6 +172,10 @@ def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) 
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 #align units.copy Units.copy
 #align add_units.copy AddUnits.copy
+#align units.coe_copy Units.val_copy
+#align add_units.coe_copy AddUnits.val_copy
+#align units.coe_inv_copy Units.val_inv_copy
+#align add_units.coe_neg_copy AddUnits.val_neg_copy
 
 @[to_additive]
 theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
@@ -186,7 +198,6 @@ instance : MulOneClass αˣ where
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance : Group αˣ :=
   { (inferInstance : MulOneClass αˣ) with
-    one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
 
@@ -241,12 +252,9 @@ theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h�
 #noalign units.val_eq_coe
 #noalign add_units.val_eq_coe
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem inv_eq_val_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
   rfl
--- Porting note: the lower priority is needed to appease the `simpNF` linter
--- Note that `to_additive` doesn't copy `simp` priorities, so we use this as a workaround
-attribute [simp 900] Units.inv_eq_val_inv AddUnits.neg_eq_val_neg
 #align units.inv_eq_coe_inv Units.inv_eq_val_inv
 #align add_units.neg_eq_coe_neg AddUnits.neg_eq_val_neg
 
@@ -741,7 +749,7 @@ theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
 
 @[to_additive (attr := simp)]
 theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
-  rw [←h.unit.mul_inv]; congr
+  rw [← h.unit.mul_inv]; congr
 #align is_unit.mul_coe_inv IsUnit.mul_val_inv
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
@@ -777,7 +785,7 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
 #align is_add_unit.add_right_cancel IsAddUnit.add_right_cancel
 
 @[to_additive]
-protected theorem mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) :=
+protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
   fun _ _ => h.mul_left_cancel
 #align is_unit.mul_right_injective IsUnit.mul_right_injective
 #align is_add_unit.add_right_injective IsAddUnit.add_right_injective

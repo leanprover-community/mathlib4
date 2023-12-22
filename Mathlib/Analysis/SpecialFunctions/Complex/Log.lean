@@ -19,9 +19,9 @@ noncomputable section
 
 namespace Complex
 
-open Set Filter
+open Set Filter Bornology
 
-open Real Topology ComplexConjugate
+open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
@@ -86,6 +86,14 @@ theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
 
+lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+    log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
+  refine ext_iff.trans <| Iff.trans ?_ <| arg_mul_eq_add_arg_iff hx₀ hy₀
+  simp_rw [add_re, add_im, log_re, log_im, AbsoluteValue.map_mul,
+    Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀), true_and]
+
+alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
+
 @[simp]
 theorem log_zero : log 0 = 0 := by simp [log]
 #align complex.log_zero Complex.log_zero
@@ -121,7 +129,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · simp [hx]
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_abs, Real.log_pow,
-      Nat.cast_two, ofReal_mul, ofReal_bit0, ofReal_one, neg_add, mul_neg, two_mul, neg_neg]
+      Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
     · rw [add_sub_right_comm, sub_add_cancel']
@@ -133,7 +141,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
 theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
 #align complex.log_inv Complex.log_inv
 
-theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num; simp [Real.pi_ne_zero, I_ne_zero]
+theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num [Real.pi_ne_zero, I_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align complex.two_pi_I_ne_zero Complex.two_pi_I_ne_zero
 
@@ -161,7 +169,7 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine' ⟨fun hs => _, fun hs => _⟩
   · refine' ((hs.image exp).insert 0).mono _
-    rw [Set.image_preimage_eq_inter_range, range_exp, ←Set.diff_eq, ←Set.union_singleton,
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
   · rw [← Set.biUnion_preimage_singleton]
@@ -173,7 +181,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
       simp [Set.preimage, hne]
 #align complex.countable_preimage_exp Complex.countable_preimage_exp
 
-alias countable_preimage_exp ↔ _ _root_.Set.Countable.preimage_cexp
+alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 #align set.countable.preimage_cexp Set.Countable.preimage_cexp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
@@ -199,8 +207,7 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
         tendsto_const_nhds) using 1
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.continuous_within_at_log_of_re_neg_of_im_zero
-Complex.continuousWithinAt_log_of_re_neg_of_im_zero
+#align complex.continuous_within_at_log_of_re_neg_of_im_zero Complex.continuousWithinAt_log_of_re_neg_of_im_zero
 
 theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by
@@ -214,9 +221,9 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
 @[simp]
-theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop := by
-  rw [← comap_exp_comap_abs_atTop, map_comap, range_exp, inf_eq_left, le_principal_iff]
-  exact eventually_ne_of_tendsto_norm_atTop tendsto_comap 0
+theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
+  rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
+  exact eventually_ne_cobounded _
 #align complex.map_exp_comap_re_at_top Complex.map_exp_comap_re_atTop
 
 end Complex

@@ -5,16 +5,20 @@ Authors: Frédéric Dupuis, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.SMul
 
-#align_import algebra.order.module from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.order.module from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Ordered module
 
 In this file we provide lemmas about `OrderedSMul` that hold once a module structure is present.
 
+## TODO
+
+Generalise lemmas to the framework from `Mathlib.Algebra.Order.Module.Defs`.
+
 ## References
 
-* https://en.wikipedia.org/wiki/Ordered_module
+* https://en.wikipedia.org/wiki/Ordered_vector_space
 
 ## Tags
 
@@ -24,12 +28,7 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 
 open Pointwise
 
-variable {k M N : Type*}
-
-instance instModuleOrderDual [Semiring k] [OrderedAddCommMonoid M] [Module k M] : Module k Mᵒᵈ
-    where
-  add_smul _ _ x := OrderDual.rec (add_smul _ _) x
-  zero_smul m := OrderDual.rec (zero_smul _) m
+variable {ι k M N : Type*}
 
 section Semiring
 
@@ -48,7 +47,7 @@ end Semiring
 
 section Ring
 
-variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a b : M} {c : k}
+variable [OrderedRing k] [OrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a b : M} {c d : k}
 
 theorem smul_lt_smul_of_neg (h : a < b) (hc : c < 0) : c • b < c • a := by
   rw [← neg_neg c, neg_smul, neg_smul (-c), neg_lt_neg_iff]
@@ -85,23 +84,16 @@ theorem smul_pos_iff_of_neg (hc : c < 0) : 0 < c • a ↔ a < 0 := by
   exact smul_neg_iff_of_pos (neg_pos_of_neg hc)
 #align smul_pos_iff_of_neg smul_pos_iff_of_neg
 
-theorem smul_nonpos_of_nonpos_of_nonneg (hc : c ≤ 0) (ha : 0 ≤ a) : c • a ≤ 0 :=
-  calc
-    c • a ≤ c • (0 : M) := smul_le_smul_of_nonpos ha hc
-    _ = 0 := smul_zero c
 #align smul_nonpos_of_nonpos_of_nonneg smul_nonpos_of_nonpos_of_nonneg
 
 theorem smul_nonneg_of_nonpos_of_nonpos (hc : c ≤ 0) (ha : a ≤ 0) : 0 ≤ c • a :=
-  @smul_nonpos_of_nonpos_of_nonneg k Mᵒᵈ _ _ _ _ _ _ hc ha
+  smul_nonpos_of_nonpos_of_nonneg (β := Mᵒᵈ) hc ha
 #align smul_nonneg_of_nonpos_of_nonpos smul_nonneg_of_nonpos_of_nonpos
 
-alias smul_pos_iff_of_neg ↔ _ smul_pos_of_neg_of_neg
+alias ⟨_, smul_pos_of_neg_of_neg⟩ := smul_pos_iff_of_neg
 #align smul_pos_of_neg_of_neg smul_pos_of_neg_of_neg
 
-alias smul_neg_iff_of_pos ↔ _ smul_neg_of_pos_of_neg
 #align smul_neg_of_pos_of_neg smul_neg_of_pos_of_neg
-
-alias smul_neg_iff_of_neg ↔ _ smul_neg_of_neg_of_pos
 #align smul_neg_of_neg_of_pos smul_neg_of_neg_of_pos
 
 theorem antitone_smul_left (hc : c ≤ 0) : Antitone (SMul.smul c : M → M) := fun _ _ h =>
@@ -216,6 +208,51 @@ theorem BddAbove.smul_of_nonpos (hc : c ≤ 0) (hs : BddAbove s) : BddBelow (c �
 #align bdd_above.smul_of_nonpos BddAbove.smul_of_nonpos
 
 end OrderedRing
+
+section LinearOrderedRing
+variable [LinearOrderedRing k] [LinearOrderedAddCommGroup M] [Module k M] [OrderedSMul k M]
+  {f : ι → k} {g : ι → M} {s : Set ι} {a a₁ a₂ : k} {b b₁ b₂ : M}
+
+theorem smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : M) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
+  (antitone_smul_left ha : Antitone (_ : M → M)).map_max
+#align smul_max_of_nonpos smul_max_of_nonpos
+
+theorem smul_min_of_nonpos (ha : a ≤ 0) (b₁ b₂ : M) : a • min b₁ b₂ = max (a • b₁) (a • b₂) :=
+  (antitone_smul_left ha : Antitone (_ : M → M)).map_min
+#align smul_min_of_nonpos smul_min_of_nonpos
+
+lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :
+    0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
+  simp only [Decidable.or_iff_not_and_not, not_and, not_le]
+  refine fun ab nab ↦ hab.not_lt ?_
+  obtain ha | rfl | ha := lt_trichotomy 0 a
+  exacts [smul_neg_of_pos_of_neg ha (ab ha.le), ((ab le_rfl).asymm (nab le_rfl)).elim,
+    smul_neg_of_neg_of_pos ha (nab ha.le)]
+
+lemma smul_nonneg_iff : 0 ≤ a • b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
+  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg,
+    fun h ↦ h.elim (and_imp.2 smul_nonneg) (and_imp.2 smul_nonneg_of_nonpos_of_nonpos)⟩
+
+lemma smul_nonpos_iff : a • b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
+  rw [← neg_nonneg, ← smul_neg, smul_nonneg_iff, neg_nonneg, neg_nonpos]
+
+lemma smul_nonneg_iff_pos_imp_nonneg : 0 ≤ a • b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) := by
+  refine smul_nonneg_iff.trans ?_
+  simp_rw [← not_le, ← or_iff_not_imp_left]
+  have := le_total a 0
+  have := le_total b 0
+  tauto
+
+lemma smul_nonneg_iff_neg_imp_nonpos : 0 ≤ a • b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
+  rw [← neg_smul_neg, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma smul_nonpos_iff_pos_imp_nonpos : a • b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
+  rw [← neg_nonneg, ← smul_neg, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma smul_nonpos_iff_neg_imp_nonneg : a • b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
+  rw [← neg_nonneg, ← neg_smul, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+end LinearOrderedRing
 
 section LinearOrderedField
 

@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 universe u v w
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
@@ -149,10 +149,10 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.expand_eq_C Polynomial.expand_eq_C
 
 theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
-  cases' p.eq_zero_or_pos with hp hp
-  · rw [hp, coe_expand, pow_zero, MulZeroClass.mul_zero, ← C_1, eval₂_hom, natDegree_C]
+  rcases p.eq_zero_or_pos with hp | hp
+  · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
-  · rw [hf, AlgHom.map_zero, natDegree_zero, MulZeroClass.zero_mul]
+  · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]
   have hf1 : expand R p f ≠ 0 := mt (expand_eq_zero hp).1 hf
   rw [← WithBot.coe_eq_coe]
   convert (degree_eq_natDegree hf1).symm -- Porting note: was `rw [degree_eq_natDegree hf1]`

@@ -3,8 +3,8 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Dynamics.FixedPoints.Basic
 
 #align_import data.set.pointwise.iterate from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -41,6 +41,6 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
   change (zpowGroupHom n)^[j] (g' * y) ∈ s
   replace hg' : (zpowGroupHom n)^[j] g' = 1
   · simpa [zpowGroupHom]
-  rwa [MonoidHom.iterate_map_mul, hg', one_mul]
+  rwa [iterate_map_mul, hg', one_mul]
 #align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self
 #align vadd_eq_self_of_preimage_zsmul_eq_self vadd_eq_self_of_preimage_zsmul_eq_self

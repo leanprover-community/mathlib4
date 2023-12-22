@@ -66,7 +66,7 @@ theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs
     (l : ℝ≥0) : HasConstantSpeedOnWith f s l := by
   rintro x hx y hy; cases hs hx hy
   rw [eVariationOn.subsingleton f (fun y hy z hz => hs hy.1 hz.1 : (s ∩ Icc x x).Subsingleton)]
-  simp only [sub_self, MulZeroClass.mul_zero, ENNReal.ofReal_zero]
+  simp only [sub_self, mul_zero, ENNReal.ofReal_zero]
 #align has_constant_speed_on_with_of_subsingleton hasConstantSpeedOnWith_of_subsingleton
 
 theorem hasConstantSpeedOnWith_iff_ordered :
@@ -127,7 +127,7 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
     exacts [⟨⟨hs.1, hs.2 zs, le_rfl⟩, fun w ⟨_, _, wx⟩ => wx⟩,
       ⟨⟨ht.1, le_rfl, ht.2 yt⟩, fun w ⟨_, xw, _⟩ => xw⟩]
   · cases le_antisymm zy ((hs.2 ys).trans (ht.2 zt))
-    simp only [Icc_self, sub_self, MulZeroClass.mul_zero, ENNReal.ofReal_zero]
+    simp only [Icc_self, sub_self, mul_zero, ENNReal.ofReal_zero]
     exact eVariationOn.subsingleton _ fun _ ⟨_, uz⟩ _ ⟨_, vz⟩ => uz.trans vz.symm
   · have : (s ∪ t) ∩ Icc z y = t ∩ Icc z y := by
       ext w; constructor
@@ -155,11 +155,11 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
 #align has_constant_speed_on_with.Icc_Icc HasConstantSpeedOnWith.Icc_Icc
 
 theorem hasConstantSpeedOnWith_zero_iff :
-    HasConstantSpeedOnWith f s 0 ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), edist (f x) (f y) = 0 := by
+    HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by
   dsimp [HasConstantSpeedOnWith]
-  simp only [MulZeroClass.zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
+  simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
-  · by_contra'
+  · by_contra!
     obtain ⟨h, hfs⟩ := this
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
     push_neg at hfs
@@ -227,7 +227,7 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
   rw [← φst] at hf
   convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
   have : φ 0 = 0 := by
-    have hm : 0 ∈ φ '' Icc 0 s := by simp only [mem_Icc, le_refl, ht, φst]
+    have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
     obtain ⟨x, xs, hx⟩ := hm
     apply le_antisymm ((φm ⟨le_rfl, hs⟩ xs xs.1).trans_eq hx) _
     have := φst ▸ mapsTo_image φ (Icc 0 s)

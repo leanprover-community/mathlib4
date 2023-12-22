@@ -256,13 +256,13 @@ theorem Embedding.closure_eq_preimage_closure_image {e : α → β} (he : Embedd
   he.1.closure_eq_preimage_closure_image s
 #align embedding.closure_eq_preimage_closure_image Embedding.closure_eq_preimage_closure_image
 
-/-- The topology induced under an inclusion `f : X → Y` from the discrete topological space `Y`
-is the discrete topology on `X`. -/
-theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [tY : TopologicalSpace Y]
+/-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
+is the discrete topology on `X`.
+
+See also `DiscreteTopology.of_continuous_injective`. -/
+theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [DiscreteTopology Y] {f : X → Y} (hf : Embedding f) : DiscreteTopology X :=
-  discreteTopology_iff_nhds.2 fun x => by
-    rw [hf.nhds_eq_comap, nhds_discrete, comap_pure, ← image_singleton, hf.inj.preimage_image,
-      principal_singleton]
+  .of_continuous_injective hf.continuous hf.inj
 #align embedding.discrete_topology Embedding.discreteTopology
 
 end Embedding
@@ -276,7 +276,7 @@ def QuotientMap {α : Type*} {β : Type*} [tα : TopologicalSpace α] [tβ : Top
 
 theorem quotientMap_iff [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
-  and_congr Iff.rfl topologicalSpace_eq_iff
+  and_congr Iff.rfl TopologicalSpace.ext_iff
 #align quotient_map_iff quotientMap_iff
 
 theorem quotientMap_iff_closed [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
@@ -504,7 +504,7 @@ theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv :
 
 theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
     IsClosedMap f := by
-  intro s hs; cases' eq_empty_or_nonempty s with h2s h2s
+  intro s hs; rcases eq_empty_or_nonempty s with h2s | h2s
   · simp_rw [h2s, image_empty, isClosed_empty]
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
@@ -602,6 +602,11 @@ theorem OpenEmbedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → 
 theorem OpenEmbedding.tendsto_nhds_iff' {f : α → β} (hf : OpenEmbedding f) {g : β → γ}
     {l : Filter γ} {a : α} : Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
+
+theorem OpenEmbedding.continuousAt_iff {f : α → β} (hf : OpenEmbedding f) {g : β → γ} {x : α} :
+    ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
+  hf.tendsto_nhds_iff'
+#align open_embedding.continuous_at_iff OpenEmbedding.continuousAt_iff
 
 theorem OpenEmbedding.continuous {f : α → β} (hf : OpenEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous

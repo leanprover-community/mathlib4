@@ -172,15 +172,15 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       convert this
       exact sqrt_zero.symm
     have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert(@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      convert (@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
+      simp only [mul_zero]
     have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert(@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      convert (@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
+      simp only [mul_zero]
     have eq₂ :
         Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     convert eq₁.add eq₂
     simp only [add_zero]
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
@@ -487,12 +487,12 @@ def orthogonalProjection : E →L[𝕜] K :=
         have ho : ∀ w ∈ K, ⟪c • x - c • orthogonalProjectionFn K x, w⟫ = 0 := by
           intro w hw
           rw [← smul_sub, inner_smul_left, orthogonalProjectionFn_inner_eq_zero _ w hw,
-            MulZeroClass.mul_zero]
+            mul_zero]
         ext
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
     simp only [one_mul, LinearMap.coe_mk]
-    refine' le_of_pow_le_pow 2 (norm_nonneg _) (by norm_num) _
+    refine' le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) _
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 #align orthogonal_projection orthogonalProjection
@@ -579,6 +579,17 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (orthogonalProjection K v : E
     simp
   · simp
 #align orthogonal_projection_eq_self_iff orthogonalProjection_eq_self_iff
+
+@[simp]
+theorem orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 ↔ v ∈ Kᗮ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
+    (zero_mem _) ?_⟩
+  · simpa [h] using sub_orthogonalProjection_mem_orthogonal (K := K) v
+  · simpa
+
+@[simp]
+theorem ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
+  ext; exact orthogonalProjection_eq_zero_iff
 
 theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
@@ -1179,7 +1190,8 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine' ⟨[], rfl.le, show φ = 1 from _⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
-      rwa [Nat.zero_eq, le_zero_iff, finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
+      rwa [Nat.zero_eq, le_zero_iff, Submodule.finrank_eq_zero,
+        Submodule.orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
@@ -1240,7 +1252,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     -- factorization into reflections for `φ`.
     refine' ⟨x::l, Nat.succ_le_succ hl, _⟩
     rw [List.map_cons, List.prod_cons]
-    have := congr_arg ((· * ·) ρ) hφl
+    have := congr_arg (ρ * ·) hφl
     dsimp only at this
     rwa [← mul_assoc, reflection_mul_reflection, one_mul] at this
 #align linear_isometry_equiv.reflections_generate_dim_aux LinearIsometryEquiv.reflections_generate_dim_aux
@@ -1326,13 +1338,14 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- porting note: was in the previous `simp_rw`, no longer works
-    rw [DFinsupp.singleAddHom_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  · simp_rw [map_add, DFinsupp.add_apply]
+  · simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coeAddHom
 
@@ -1351,8 +1364,9 @@ def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Sub
   left_inv x := by
     dsimp only
     letI := fun i => Classical.decEq (V i)
-    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply,
-      DFinsupp.sumAddHom_apply, DFinsupp.sum_eq_sum_fintype]
+    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
       exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
     · intro i

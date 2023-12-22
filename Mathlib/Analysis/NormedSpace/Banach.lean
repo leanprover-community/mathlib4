@@ -106,14 +106,14 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       have : a + d • y ∈ ball a ε := by
         simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
-      rcases(mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
+      rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
       rw [← xz₁] at h₁
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
       have : a ∈ ball a ε := by
-        simp
+        simp only [mem_ball, dist_self]
         exact εpos
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
-      rcases(mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
+      rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
       rw [← xz₂] at h₂
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
       let x := x₁ - x₂
@@ -199,15 +199,15 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
-    refine' summable_of_nonneg_of_le (fun n => norm_nonneg _) ule _
+    refine' .of_nonneg_of_le (fun n => norm_nonneg _) ule _
     exact Summable.mul_right _ (summable_geometric_of_lt_1 (by norm_num) (by norm_num))
-  have su : Summable u := summable_of_summable_norm sNu
+  have su : Summable u := sNu.of_norm
   let x := tsum u
   have x_ineq : ‖x‖ ≤ (2 * C + 1) * ‖y‖ :=
     calc
       ‖x‖ ≤ ∑' n, ‖u n‖ := norm_tsum_le_tsum_norm sNu
       _ ≤ ∑' n, (1 / 2) ^ n * (C * ‖y‖) :=
-        (tsum_le_tsum ule sNu (Summable.mul_right _ summable_geometric_two))
+        tsum_le_tsum ule sNu (Summable.mul_right _ summable_geometric_two)
       _ = (∑' n, (1 / 2) ^ n) * (C * ‖y‖) := tsum_mul_right
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := (le_add_of_nonneg_right (norm_nonneg y))
@@ -223,10 +223,10 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   simp only [fsumeq] at L₁
   have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by
     refine' tendsto_const_nhds.sub _
-    rw [tendsto_iff_norm_tendsto_zero]
+    rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
-    rw [← MulZeroClass.zero_mul ‖y‖]
+    rw [← zero_mul ‖y‖]
     refine' (_root_.tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
   rw [sub_zero] at feq

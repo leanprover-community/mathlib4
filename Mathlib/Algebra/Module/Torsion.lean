@@ -61,6 +61,8 @@ import Mathlib.RingTheory.Finiteness
 Torsion, submodule, module, quotient
 -/
 
+set_option autoImplicit true
+
 
 namespace Ideal
 
@@ -373,7 +375,7 @@ variable (R M)
 
 theorem torsion_gc :
     @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ annihilator fun I =>
-      torsionBySet R M <| OrderDual.ofDual I :=
+      torsionBySet R M ↑(OrderDual.ofDual I) :=
   fun _ _ =>
   ⟨fun h x hx => (mem_torsionBySet_iff _ _).mpr fun ⟨_, ha⟩ => mem_annihilator.mp (h ha) x hx,
     fun h a ha => mem_annihilator.mpr fun _ hx => (mem_torsionBySet_iff _ _).mp (h hx) ⟨a, ha⟩⟩
@@ -392,7 +394,7 @@ variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
 theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp only [h]
     -- Porting note: converts were not cooperating
     convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp
@@ -424,8 +426,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
       · have := coe_mem (μ i)
         simp only [mem_iInf] at this
         exact Ideal.mul_mem_left _ _ (this j hj ij)
-    · simp_rw [coe_mk]
-      rw [← Finset.sum_smul, hμ, one_smul]
+    · rw [← Finset.sum_smul, hμ, one_smul]
 #align submodule.supr_torsion_by_ideal_eq_torsion_by_infi Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf
 
 -- Porting note: iSup_torsionBySet_ideal_eq_torsionBySet_iInf now requires DecidableEq ι
@@ -828,7 +829,7 @@ namespace AddMonoid
 theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
   refine' ⟨fun h x => _, fun h x => _⟩
-  · obtain ⟨n, h0, hn⟩ := (isOfFinAddOrder_iff_nsmul_eq_zero x).mp (h x)
+  · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x
@@ -838,7 +839,7 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
 theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
   refine' ⟨fun h x => _, fun h x => _⟩
-  · obtain ⟨n, h0, hn⟩ := (isOfFinAddOrder_iff_nsmul_eq_zero x).mp (h x)
+  · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
       ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.coe_nat_pos.mpr h0⟩,
         (coe_nat_zsmul _ _).trans hn⟩

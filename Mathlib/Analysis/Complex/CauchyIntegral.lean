@@ -145,6 +145,8 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
+set_option autoImplicit true
+
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
@@ -314,7 +316,7 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
       div_eq_mul_inv, mul_div_cancel_left _ (circleMap_ne_center (Real.exp_pos _).ne'),
       circleMap_sub_center, deriv_circleMap]
   set R := [[a, b]] ×ℂ [[0, 2 * π]]
-  set g : ℂ → ℂ := (· + ·) c ∘ exp
+  set g : ℂ → ℂ := (c + exp ·)
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
   have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [dist_eq, abs_exp, hle] using h.symm

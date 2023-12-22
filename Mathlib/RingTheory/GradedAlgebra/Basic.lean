@@ -74,8 +74,7 @@ a ring to a direct sum of components. -/
 def decomposeRingEquiv : A ≃+* ⨁ i, 𝒜 i :=
   RingEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
-      map_mul' := (coeRingHom 𝒜).map_mul
-      map_add' := (coeRingHom 𝒜).map_add }
+      map_mul' := (coeRingHom 𝒜).map_mul }
 #align direct_sum.decompose_ring_equiv DirectSum.decomposeRingEquiv
 
 @[simp]
@@ -203,14 +202,31 @@ namespace DirectSum
 
 /-- If `A` is graded by `ι` with degree `i` component `𝒜 i`, then it is isomorphic as
 an algebra to a direct sum of components. -/
-@[simps!]
+-- Porting note: deleted [simps] and added the corresponding lemmas by hand
 def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
       map_mul' := (coeAlgHom 𝒜).map_mul
-      map_add' := (coeAlgHom 𝒜).map_add
       commutes' := (coeAlgHom 𝒜).commutes }
 #align direct_sum.decompose_alg_equiv DirectSum.decomposeAlgEquiv
+
+@[simp]
+lemma decomposeAlgEquiv_apply (a : A) :
+    decomposeAlgEquiv 𝒜 a = decompose 𝒜 a := rfl
+
+@[simp]
+lemma decomposeAlgEquiv_symm_apply (a : ⨁ i, 𝒜 i) :
+    (decomposeAlgEquiv 𝒜).symm a = (decompose 𝒜).symm a := rfl
+
+@[simp]
+lemma decompose_algebraMap (r : R) :
+    decompose 𝒜 (algebraMap R A r) = algebraMap R (⨁ i, 𝒜 i) r :=
+  (decomposeAlgEquiv 𝒜).commutes r
+
+@[simp]
+lemma decompose_symm_algebraMap (r : R) :
+    (decompose 𝒜).symm (algebraMap R (⨁ i, 𝒜 i) r) = algebraMap R A r :=
+  (decomposeAlgEquiv 𝒜).symm.commutes r
 
 end DirectSum
 
@@ -245,7 +261,7 @@ open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
 
-variable [CanonicallyOrderedAddMonoid ι]
+variable [CanonicallyOrderedAddCommMonoid ι]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
@@ -268,10 +284,10 @@ def GradedRing.projZeroRingHom : A →+* A where
     rfl
   map_mul' := by
     refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
-    · simp only [MulZeroClass.zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
       refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
-      · simp only [MulZeroClass.mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+      · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         · simp only [Subtype.coe_mk]
           by_cases h : i + j = 0
@@ -281,8 +297,8 @@ def GradedRing.projZeroRingHom : A →+* A where
               decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
           · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
             cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
-            · simp only [decompose_of_mem_ne 𝒜 hc h', MulZeroClass.zero_mul]
-            · simp only [decompose_of_mem_ne 𝒜 hc' h', MulZeroClass.mul_zero]
+            · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
+            · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
         simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]

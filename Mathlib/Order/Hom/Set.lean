@@ -76,8 +76,7 @@ def setCongr (s t : Set α) (h : s = t) :
 #align order_iso.set_congr OrderIso.setCongr
 
 /-- Order isomorphism between `univ : Set α` and `α`. -/
-def Set.univ : (Set.univ : Set α) ≃o
-      α where
+def Set.univ : (Set.univ : Set α) ≃o α where
   toEquiv := Equiv.Set.univ α
   map_rel_iff' := Iff.rfl
 #align order_iso.set.univ OrderIso.Set.univ

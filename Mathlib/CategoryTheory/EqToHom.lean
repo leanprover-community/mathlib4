@@ -26,6 +26,8 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
+set_option autoImplicit true
+
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -211,6 +213,12 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     funext X Y f
     simpa using h_map X Y f
 #align category_theory.functor.ext CategoryTheory.Functor.ext
+
+lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
+    (happ : ∀ X, e.hom.app X = eqToHom (hobj X)) : F = G :=
+  Functor.ext hobj (fun X Y f => by
+    rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
+    Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
 
 /-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. -/
 theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :

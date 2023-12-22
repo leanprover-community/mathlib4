@@ -6,6 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Tactic.Cases
 
 /-!
 Lemmas for `List` not (yet) in `Std`
@@ -64,7 +65,7 @@ theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈
 
 #align list.mem_cons_of_mem List.mem_cons_of_mem
 
-alias mem_cons ↔ eq_or_mem_of_mem_cons _
+alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 #align list.eq_or_mem_of_mem_cons List.eq_or_mem_of_mem_cons
 
 #align list.mem_append List.mem_append
@@ -116,7 +117,7 @@ theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p
 
 #align list.sublist List.Sublist
 
-alias Sublist.length_le ← length_le_of_sublist
+alias length_le_of_sublist := Sublist.length_le
 #align list.length_le_of_sublist List.length_le_of_sublist
 
 /-! filter -/
@@ -175,7 +176,7 @@ theorem length_mapAccumr₂ :
     calc
       succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
         congr_arg succ (length_mapAccumr₂ f x y c)
-      _ = min (succ (length x)) (succ (length y)) := Eq.symm (min_succ_succ (length x) (length y))
+      _ = min (succ (length x)) (succ (length y)) := Eq.symm (succ_min_succ (length x) (length y))
   | _, _ :: _, [], _ => rfl
   | _, [], _ :: _, _ => rfl
   | _, [], [], _ => rfl

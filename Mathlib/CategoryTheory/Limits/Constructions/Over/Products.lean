@@ -64,7 +64,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     Cone F ⥤ Cone (widePullbackDiagramOfDiagramOver B F) where
   obj := conesEquivInverseObj B F
   map f :=
-    { Hom := f.Hom.left
+    { hom := f.hom.left
       w := fun j => by
         cases' j with j
         · simp
@@ -87,7 +87,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
           -- Porting note: Added a proof for `naturality`
           naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
-  map f := { Hom := Over.homMk f.Hom }
+  map f := { hom := Over.homMk f.hom }
 #align category_theory.over.construct_products.cones_equiv_functor CategoryTheory.Over.ConstructProducts.conesEquivFunctor
 
 -- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym

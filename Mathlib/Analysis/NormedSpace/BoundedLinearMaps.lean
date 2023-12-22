@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.Asymptotics.Asymptotics
 
@@ -39,9 +39,10 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 
 ## Notes
 
-The main use of this file is `IsBoundedBilinearMap`. The file `Analysis.NormedSpace.Multilinear`
-already expounds the theory of multilinear maps, but the `2`-variables case is sufficiently simpler
-to currently deserve its own treatment.
+The main use of this file is `IsBoundedBilinearMap`.
+The file `Analysis.NormedSpace.Multilinear.Basic`
+already expounds the theory of multilinear maps,
+but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
 `IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
 in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
@@ -160,7 +161,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
 
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   let ⟨hf, M, _, hM⟩ := hf
-  tendsto_iff_norm_tendsto_zero.2 <|
+  tendsto_iff_norm_sub_tendsto_zero.2 <|
     squeeze_zero (fun e => norm_nonneg _)
       (fun e =>
         calc
@@ -253,7 +254,7 @@ theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜
       apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
       exact Finset.prod_le_prod (fun i _ => norm_nonneg _) fun i _ => g.le_op_norm _
     _ = ‖g‖ ^ Fintype.card ι * ‖f‖ * ∏ i, ‖m i‖ := by
-      simp [Finset.prod_mul_distrib, Finset.card_univ]
+      simp only [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_univ]
       ring
 
 #align is_bounded_linear_map_continuous_multilinear_map_comp_linear isBoundedLinearMap_continuousMultilinearMap_comp_linear
@@ -461,9 +462,9 @@ theorem ContinuousLinearMap.isBoundedLinearMap_comp_right (f : E →L[𝕜] F) :
   isBoundedBilinearMap_comp.isBoundedLinearMap_left _
 #align continuous_linear_map.is_bounded_linear_map_comp_right ContinuousLinearMap.isBoundedLinearMap_comp_right
 
-theorem isBoundedBilinearMapApply : IsBoundedBilinearMap 𝕜 fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
+theorem isBoundedBilinearMap_apply : IsBoundedBilinearMap 𝕜 fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
   (ContinuousLinearMap.flip (apply 𝕜 F : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F)).isBoundedBilinearMap
-#align is_bounded_bilinear_map_apply isBoundedBilinearMapApply
+#align is_bounded_bilinear_map_apply isBoundedBilinearMap_apply
 
 /-- The function `ContinuousLinearMap.smulRight`, associating to a continuous linear map
 `f : E → 𝕜` and a scalar `c : F` the tensor product `f ⊗ c` as a continuous linear map from `E` to
@@ -526,6 +527,7 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 
 
 end BilinearMap
 
+@[continuity]
 theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
@@ -536,6 +538,16 @@ theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G
     ContinuousOn (fun x => (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prod hf)
 #align continuous_on.clm_comp ContinuousOn.clm_comp
+
+@[continuity]
+theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
+    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) (g x)) :=
+  isBoundedBilinearMap_apply.continuous.comp₂ hf hg
+
+theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
+    {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    ContinuousOn (fun x ↦ f x (g x)) s :=
+  isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prod hg)
 
 namespace ContinuousLinearEquiv
 

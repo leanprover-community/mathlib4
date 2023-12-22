@@ -324,7 +324,7 @@ instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β)
   ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((@Primcodable.prim β).comp left)))).comp
           (pair right ((@Primcodable.prim α).comp left))).of_eq
       fun n => by
-      simp [Nat.unpaired]
+      simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
       cases @decode α _ n.unpair.1; · simp
       cases @decode β _ n.unpair.2 <;> simp⟩
 #align primcodable.prod Primcodable.prod
@@ -343,7 +343,7 @@ theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
-    simp
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 #align primrec.fst Primrec.fst
@@ -354,7 +354,7 @@ theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
-    simp
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 #align primrec.snd Primrec.snd
@@ -568,9 +568,10 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
                 Nat.Primrec.right.pair <| Nat.Primrec.right.comp Nat.Primrec.left).comp <|
           Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
       fun n => by
-      simp
+      simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
+        Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
-      simp [encodek]
+      simp only [encode_some, encodek, Option.map_some', Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_rec
@@ -768,14 +769,14 @@ protected theorem decode₂ : Primrec (decode₂ α) :=
 #align primrec.decode₂ Primrec.decode₂
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
-  ∀ l : List β, Primrec fun a => l.findIdx (p a)
+    ∀ l : List β, Primrec fun a => l.findIdx (p a)
 | [] => const 0
 | a :: l => (cond (hp.comp .id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
   by simp [List.findIdx_cons]
 #align primrec.list_find_index₁ Primrec.list_findIdx₁
 
 theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
-  list_findIdx₁ .beq l
+  list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
 theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
@@ -836,7 +837,7 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
-    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]; rfl
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=
@@ -902,8 +903,8 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     (fst.comp <|
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|
       hG)
-  suffices : ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n)
-  · refine hF.of_eq fun a => ?_
+  suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
+    refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
   dsimp only
@@ -911,7 +912,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   generalize g a = x
   induction' n with n IH generalizing l x
   · rfl
-  simp
+  simp only [iterate_succ, comp_apply]
   cases' l with b l <;> simp [IH]
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
@@ -947,7 +948,7 @@ instance sum : Primcodable (Sum α β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp [decodeSum]
+          simp only [decodeSum, Nat.boddDiv2_eq]
           cases Nat.bodd n <;> simp [decodeSum]
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
@@ -1133,7 +1134,7 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
 #align primrec.list_find_index Primrec.list_findIdx
 
 theorem list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
-  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ (fst.comp fst).to₂ snd.to₂
+  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
 #align primrec.list_index_of Primrec.list_indexOfₓ
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)

@@ -30,9 +30,6 @@ Note that there are related results about convolution with respect to peak funct
 `Analysis.Convolution`, such as `convolution_tendsto_right` there.
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open scoped Topology ENNReal
@@ -95,7 +92,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
         (𝓝 ((0 * ∫ x in s, ‖g x‖ ∂μ) + 0)) := by
       apply Tendsto.mono_left _ nhdsWithin_le_nhds
       exact (tendsto_id.mul tendsto_const_nhds).add tendsto_id
-    rw [MulZeroClass.zero_mul, zero_add] at A
+    rw [zero_mul, zero_add] at A
     exact (((tendsto_order.1 A).2 ε εpos).and self_mem_nhdsWithin).exists
   suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + δ by
     filter_upwards [this] with i hi
@@ -255,12 +252,12 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
               exact lt_of_le_of_lt (measure_mono (inter_subset_right _ _)) hs.measure_lt_top
             · exact (I n).mono (inter_subset_right _ _) le_rfl
             · intro x hx
-              exact pow_le_pow_of_le_left t'_pos.le (le_of_lt (hv hx)) _
+              exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             set_integral_mono_set (I n) (J n) (eventually_of_forall (inter_subset_right _ _))
       simp_rw [← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
-      · exact pow_le_pow_of_le_left (hnc _ hx.1) (ht x hx) _
+      · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
       · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
         have : μ (v ∩ s) ≤ μ s := measure_mono (inter_subset_right _ _)
         exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
@@ -270,7 +267,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
       apply Tendsto.mul tendsto_const_nhds _
       apply tendsto_pow_atTop_nhds_0_of_lt_1 (div_nonneg t_pos t'_pos.le)
       exact (div_lt_one t'_pos).2 tt'
-    rw [MulZeroClass.mul_zero] at N
+    rw [mul_zero] at N
     refine' tendstoUniformlyOn_iff.2 fun ε εpos => _
     filter_upwards [(tendsto_order.1 N).2 ε εpos] with n hn x hx
     simp only [Pi.zero_apply, dist_zero_left, Real.norm_of_nonneg (hnφ n x hx.1)]

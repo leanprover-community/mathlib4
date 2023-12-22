@@ -53,8 +53,15 @@ namespace CocompactMapClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
 
+/-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
+`CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
+@[coe]
+def toCocompactMap (f : F) : CocompactMap α β :=
+  { (f : C(α, β)) with
+    cocompact_tendsto' := cocompact_tendsto f }
+
 instance : CoeTC F (CocompactMap α β) :=
-  ⟨fun f => ⟨f, cocompact_tendsto f⟩⟩
+  ⟨toCocompactMap⟩
 
 end CocompactMapClass
 
@@ -188,7 +195,7 @@ theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β�
             (cocompact_tendsto f <|
               mem_cocompact.mpr ⟨s, hs, compl_subset_compl.mpr (image_preimage_subset f _)⟩))
   exact
-    isCompact_of_isClosed_subset ht (hs.isClosed.preimage <| map_continuous f) (by simpa using hts)
+    ht.of_isClosed_subset (hs.isClosed.preimage <| map_continuous f) (by simpa using hts)
 #align cocompact_map.is_compact_preimage CocompactMap.isCompact_preimage
 
 end Basics

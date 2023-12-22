@@ -68,7 +68,7 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLE
 
-alias homOfLE ← _root_.LE.le.hom
+alias _root_.LE.le.hom := homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
@@ -88,7 +88,7 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
-alias leOfHom ← _root_.Quiver.Hom.le
+alias _root_.Quiver.Hom.le := leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
 -- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs

@@ -31,15 +31,13 @@ namespace AbelRuffini
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Function Polynomial Polynomial.Gal Ideal
 
 open scoped Polynomial
 
 attribute [local instance] splits_ℚ_ℂ
 
-variable (R : Type _) [CommRing R] (a b : ℕ)
+variable (R : Type*) [CommRing R] (a b : ℕ)
 
 /-- A quintic polynomial that we will show is irreducible -/
 noncomputable def Φ : R[X] :=
@@ -49,7 +47,7 @@ noncomputable def Φ : R[X] :=
 variable {R}
 
 @[simp]
-theorem map_Phi {S : Type _} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
+theorem map_Phi {S : Type*} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
 #align abel_ruffini.map_Phi AbelRuffini.map_Phi
 
 @[simp]
@@ -89,15 +87,16 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   apply irreducible_of_eisenstein_criterion
   · rwa [span_singleton_prime (Int.coe_nat_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
   · rw [leadingCoeff_Phi, mem_span_singleton]
-    exact_mod_cast mt Nat.dvd_one.mp hp.ne_one
+    exact mod_cast mt Nat.dvd_one.mp hp.ne_one
   · intro n hn
     rw [mem_span_singleton]
     rw [degree_Phi] at hn; norm_cast at hn
     interval_cases hn : n <;>
-    simp only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb, if_true, coeff_C_mul, if_false,
-      coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub, add_zero, zero_sub, dvd_neg,
-      neg_zero, dvd_mul_of_dvd_left]
+    simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb,
+      if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub,
+      add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
   · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
+    decide
   · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
     exact mt Int.coe_nat_dvd.mp hp2b
   all_goals exact Monic.isPrimitive (monic_Phi a b)
@@ -107,19 +106,16 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  simp only [algebraMap_int_eq, map_one, one_mul, map_natCast, Polynomial.map_add,
-    Polynomial.map_sub, Polynomial.map_pow, map_X, Polynomial.map_mul, Polynomial.map_nat_cast,
-    map_add, map_sub, derivative_X_pow, Nat.cast_ofNat, ge_iff_le, Nat.succ_sub_succ_eq_sub,
-    tsub_zero, derivative_mul, derivative_nat_cast, zero_mul, derivative_X, mul_one, zero_add,
-    add_zero, derivative_C, sub_zero, map_C, eq_ratCast, ne_eq, Rat.cast_eq_zero, not_false_eq_true,
-    roots_C_mul, roots_pow, roots_X, Fintype.card_le_one_iff_subsingleton]
-  rw [← mul_assoc, ← _root_.map_mul, rootSet_C_mul_X_pow] <;>
+  suffices : (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton
+  · norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
+    exact this
+  rw [rootSet_C_mul_X_pow] <;>
   norm_num
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
 theorem real_roots_Phi_ge_aux (hab : b < a) :
     ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
-  let f := fun x : ℝ => aeval x (Φ ℚ a b)
+  let f : ℝ → ℝ := fun x : ℝ => aeval x (Φ ℚ a b)
   have hf : f = fun x : ℝ => x ^ 5 - a * x + b := by simp [Φ]
   have hc : ∀ s : Set ℝ, ContinuousOn f s := fun s => (Φ ℚ a b).continuousOn_aeval
   have ha : (1 : ℝ) ≤ a := Nat.one_le_cast.mpr (Nat.one_le_of_lt hab)
@@ -130,20 +126,18 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hfa : 0 ≤ f a := by
       -- Porting note: was `simp_rw`
       simp only [hf, ← sq]
-      refine' add_nonneg (sub_nonneg.mpr (pow_le_pow ha _)) _ <;> norm_num
+      refine' add_nonneg (sub_nonneg.mpr (pow_le_pow_right ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
     exact ⟨x, y, (hx1.trans hy1).ne, hx2, hy2⟩
-  · replace hb : (b : ℝ) = a - 1 := by linarith [show (b : ℝ) + 1 ≤ a by exact_mod_cast hab]
+  · replace hb : (b : ℝ) = a - 1 := by linarith [show (b : ℝ) + 1 ≤ a from mod_cast hab]
     have hf1 : f 1 = 0 := by simp [hf, hb]
     have hfa :=
       calc
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
-            -- Porting note: was `norm_num [hf, ← sq]`
-            simp only [hf, mul_neg, ← sq, sub_neg_eq_add, Nat.cast_pow, add_left_inj]
-            rw [Odd.neg_pow (by norm_num), neg_add_eq_sub]
+          norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
         _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
-          refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
+          refine' add_le_add (sub_le_sub_left (pow_le_pow_right ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)
@@ -168,7 +162,7 @@ theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by
   apply galActionHom_bijective_of_prime_degree' h_irred
-  · rw [natDegree_Phi]; norm_num
+  · simp only [natDegree_Phi]; decide
   · rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
     exact (real_roots_Phi_le a b).trans (Nat.le_succ 3)
   · simp_rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
@@ -186,7 +180,7 @@ theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) 
 #align abel_ruffini.not_solvable_by_rad AbelRuffini.not_solvable_by_rad
 
 theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : ¬IsSolvableByRad ℚ x := by
-  apply not_solvable_by_rad 4 2 2 x hx <;> norm_num
+  apply not_solvable_by_rad 4 2 2 x hx <;> decide
 #align abel_ruffini.not_solvable_by_rad' AbelRuffini.not_solvable_by_rad'
 
 /-- **Abel-Ruffini Theorem** -/

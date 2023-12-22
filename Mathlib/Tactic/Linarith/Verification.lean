@@ -20,6 +20,8 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Tactic Meta
 
 namespace Qq
@@ -118,7 +120,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
     step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
       let (iq, h') ← mkSingleCompZeroOf coeff npf
       let (nm, niq) := addIneq c iq
-      return (niq, ←mkAppM nm #[pf, h'])
+      return (niq, ← mkAppM nm #[pf, h'])
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do

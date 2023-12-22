@@ -185,6 +185,15 @@ def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
     map_lie' := fun {_ _} => rfl }
 #align lie_submodule.quotient.mk' LieSubmodule.Quotient.mk'
 
+@[simp]
+theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
+
+@[simp]
+theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
+
+instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
+  Submodule.Quotient.isNoetherian (N : Submodule R M)
+
 -- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
@@ -212,6 +221,10 @@ See note [partially-applied ext lemmas]. -/
 theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
   LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h
 #align lie_submodule.quotient.lie_module_hom_ext LieSubmodule.Quotient.lieModuleHom_ext
+
+lemma toEndomorphism_comp_mk' (x : L) :
+    LieModule.toEndomorphism R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEndomorphism R L M x :=
+  rfl
 
 end Quotient
 

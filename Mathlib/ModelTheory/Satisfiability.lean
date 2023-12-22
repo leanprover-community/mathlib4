@@ -102,7 +102,7 @@ theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitely
   fun _ => h.mono
 #align first_order.language.Theory.is_satisfiable.is_finitely_satisfiable FirstOrder.Language.Theory.IsSatisfiable.isFinitelySatisfiable
 
-/-- The Compactness Theorem of first-order logic: A theory is satisfiable if and only if it is
+/-- The **Compactness Theorem of first-order logic**: A theory is satisfiable if and only if it is
 finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
@@ -228,8 +228,8 @@ section
 -- Porting note: This instance interrupts synthesizing instances.
 attribute [-instance] FirstOrder.Language.withConstants_expansion
 
-/-- The Upward Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
-and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
+/-- The **Upward Löwenheim–Skolem Theorem**: If `κ` is a cardinal greater than the cardinalities of
+`L` and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h2 : Cardinal.lift.{w} #M ≤ Cardinal.lift.{w'} κ) :
@@ -352,6 +352,33 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
     exact ⟨h, inferInstance⟩
   exact Model.isSatisfiable M
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
+
+theorem models_of_models_theory {T' : L.Theory}
+    (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
+    {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
+  simp only [models_sentence_iff] at h
+  intro M
+  have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => h ψ hψ M)
+  let M' : ModelType T' := ⟨M⟩
+  exact hφ M'
+
+/-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
+theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/
+theorem models_iff_finset_models {φ : L.Sentence} :
+    T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
+  simp only [models_iff_not_satisfiable]
+  rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  push_neg
+  letI := Classical.decEq (Sentence L)
+  constructor
+  · intro h T0 hT0
+    simpa using h (T0 ∪ {Formula.not φ})
+      (by
+        simp only [Finset.coe_union, Finset.coe_singleton]
+        exact Set.union_subset_union hT0 (Set.Subset.refl _))
+  · intro h T0 hT0
+    exact IsSatisfiable.mono (h (T0.erase (Formula.not φ))
+      (by simpa using hT0)) (by simp)
 
 /-- A theory is complete when it is satisfiable and models each sentence or its negation. -/
 def IsComplete (T : L.Theory) : Prop :=
@@ -656,8 +683,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
   ⟨hS, fun φ => by
     obtain ⟨_, _⟩ := Theory.exists_model_card_eq ⟨hS.some, hT hS.some⟩ κ h1 h2
     rw [Theory.models_sentence_iff, Theory.models_sentence_iff]
-    by_contra con
-    push_neg at con
+    by_contra! con
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine' hMF _

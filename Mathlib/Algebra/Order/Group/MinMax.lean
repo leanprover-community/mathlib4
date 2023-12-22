@@ -23,7 +23,7 @@ theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a :=
 #align max_one_div_max_inv_one_eq_self max_one_div_max_inv_one_eq_self
 #align max_zero_sub_max_neg_zero_eq_self max_zero_sub_max_neg_zero_eq_self
 
-alias max_zero_sub_max_neg_zero_eq_self ← max_zero_sub_eq_self
+alias max_zero_sub_eq_self := max_zero_sub_max_neg_zero_eq_self
 #align max_zero_sub_eq_self max_zero_sub_eq_self
 
 end

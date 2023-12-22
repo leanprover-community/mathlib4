@@ -43,9 +43,9 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
     -- statement is empty otherwise
     by_cases hx : x ∉ closure s
-    · rw [← closure_closure] at hx; exact hasFDerivWithinAt_of_not_mem_closure hx
+    · rw [← closure_closure] at hx; exact hasFDerivWithinAt_of_nmem_closure hx
     push_neg at hx
-    rw [HasFDerivWithinAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
+    rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
       `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it
       suffices to prove this for nearby points inside `s`. In a neighborhood of `x`, the derivative
@@ -137,7 +137,7 @@ theorem has_deriv_at_interval_left_endpoint_of_tendsto_deriv {s : Set ℝ} {e : 
   have : HasDerivWithinAt f e (Icc a b) a := by
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact has_fderiv_at_boundary_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
-  exact this.nhdsWithin (Icc_mem_nhdsWithin_Ici <| left_mem_Ico.2 ab)
+  exact this.mono_of_mem (Icc_mem_nhdsWithin_Ici <| left_mem_Ico.2 ab)
 #align has_deriv_at_interval_left_endpoint_of_tendsto_deriv has_deriv_at_interval_left_endpoint_of_tendsto_deriv
 
 /-- If a function is differentiable on the left of a point `a : ℝ`, continuous at `a`, and
@@ -172,13 +172,13 @@ theorem has_deriv_at_interval_right_endpoint_of_tendsto_deriv {s : Set ℝ} {e :
   have : HasDerivWithinAt f e (Icc b a) a := by
     rw [hasDerivWithinAt_iff_hasFDerivWithinAt, ← t_closure]
     exact has_fderiv_at_boundary_of_tendsto_fderiv t_diff t_conv t_open t_cont t_diff'
-  exact this.nhdsWithin (Icc_mem_nhdsWithin_Iic <| right_mem_Ioc.2 ba)
+  exact this.mono_of_mem (Icc_mem_nhdsWithin_Iic <| right_mem_Ioc.2 ba)
 #align has_deriv_at_interval_right_endpoint_of_tendsto_deriv has_deriv_at_interval_right_endpoint_of_tendsto_deriv
 
 /-- If a real function `f` has a derivative `g` everywhere but at a point, and `f` and `g` are
 continuous at this point, then `g` is also the derivative of `f` at this point. -/
 theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
-    (f_diff : ∀ (y) (_ : y ≠ x), HasDerivAt f (g y) y) (hf : ContinuousAt f x)
+    (f_diff : ∀ y ≠ x, HasDerivAt f (g y) y) (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : HasDerivAt f (g x) x := by
   have A : HasDerivWithinAt f (g x) (Ici x) x := by
     have diff : DifferentiableOn ℝ f (Ioi x) := fun y hy =>
@@ -212,7 +212,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
 /-- If a real function `f` has a derivative `g` everywhere but at a point, and `f` and `g` are
 continuous at this point, then `g` is the derivative of `f` everywhere. -/
 theorem hasDerivAt_of_hasDerivAt_of_ne' {f g : ℝ → E} {x : ℝ}
-    (f_diff : ∀ (y) (_ : y ≠ x), HasDerivAt f (g y) y) (hf : ContinuousAt f x)
+    (f_diff : ∀ y ≠ x, HasDerivAt f (g y) y) (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) (y : ℝ) : HasDerivAt f (g y) y := by
   rcases eq_or_ne y x with (rfl | hne)
   · exact hasDerivAt_of_hasDerivAt_of_ne f_diff hf hg

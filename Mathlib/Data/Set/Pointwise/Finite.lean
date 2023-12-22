@@ -96,7 +96,7 @@ theorem Finite.smul : s.Finite → t.Finite → (s • t).Finite :=
 
 end SMul
 
-section HasSmulSet
+section HasSMulSet
 
 variable [SMul α β] {s : Set β} {a : α}
 
@@ -112,7 +112,7 @@ theorem Infinite.of_smul_set : (a • s).Infinite → s.Infinite :=
 #align set.infinite.of_smul_set Set.Infinite.of_smul_set
 #align set.infinite.of_vadd_set Set.Infinite.of_vadd_set
 
-end HasSmulSet
+end HasSMulSet
 
 section Vsub
 
@@ -135,6 +135,11 @@ theorem infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infi
 #align set.infinite_mul Set.infinite_mul
 #align set.infinite_add Set.infinite_add
 
+@[to_additive]
+lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2  (fun _ _ ↦ (mul_left_injective _).injOn _)
+    fun _ _ ↦ (mul_right_injective _).injOn _
+
 end Cancel
 
 section Group
@@ -153,10 +158,10 @@ theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
 #align set.infinite_smul_set Set.infinite_smul_set
 #align set.infinite_vadd_set Set.infinite_vadd_set
 
-alias finite_smul_set ↔ Finite.of_smul_set _
+alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
 #align set.finite.of_smul_set Set.Finite.of_smul_set
 
-alias infinite_smul_set ↔ _ Infinite.smul_set
+alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
 #align set.infinite.smul_set Set.Infinite.smul_set
 
 attribute [to_additive] Finite.of_smul_set Infinite.smul_set

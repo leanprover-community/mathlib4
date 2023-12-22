@@ -53,7 +53,7 @@ theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
     HasStrictDerivAt (fun y => x ^ y) (x ^ y * log x) y := by
   rcases em (x = 0) with (rfl | hx)
   · replace h := h.neg_resolve_left rfl
-    rw [log_zero, MulZeroClass.mul_zero]
+    rw [log_zero, mul_zero]
     refine' (hasStrictDerivAt_const _ 0).congr_of_eventuallyEq _
     exact (isOpen_ne.eventually_mem h).mono fun y hy => (zero_cpow hy).symm
   · simpa only [cpow_def_of_ne_zero hx, mul_one] using
@@ -161,7 +161,7 @@ theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 
 
 theorem Complex.hasStrictDerivAt_cpow_const (h : 0 < x.re ∨ x.im ≠ 0) :
     HasStrictDerivAt (fun z : ℂ => z ^ c) (c * x ^ (c - 1)) x := by
-  simpa only [MulZeroClass.mul_zero, add_zero, mul_one] using
+  simpa only [mul_zero, add_zero, mul_one] using
     (hasStrictDerivAt_id x).cpow (hasStrictDerivAt_const x c) h
 #align complex.has_strict_deriv_at_cpow_const Complex.hasStrictDerivAt_cpow_const
 
@@ -204,7 +204,6 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 #align has_deriv_within_at.cpow_const HasDerivWithinAt.cpow_const
 
-set_option maxHeartbeats 1000000 in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
 theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
@@ -237,9 +236,9 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     rw [mul_add ((π : ℂ) * _), mul_one, exp_add, exp_pi_mul_I, mul_comm (_ : ℂ) (-1 : ℂ),
       neg_one_mul]
     simp_rw [mul_neg, ← neg_mul, ← ofReal_neg]
-    suffices HasDerivAt (fun y : ℝ => ↑(-y) ^ (r + 1)) (-(r + 1) * ↑(-x) ^ r) x by
+    suffices HasDerivAt (fun y : ℝ => (↑(-y) : ℂ) ^ (r + 1)) (-(r + 1) * ↑(-x) ^ r) x by
       convert this.neg.mul_const _ using 1; ring
-    suffices HasDerivAt (fun y : ℝ => ↑y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) (-x) by
+    suffices HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) (-x) by
       convert @HasDerivAt.scomp ℝ _ ℂ _ _ x ℝ _ _ _ _ _ _ _ _ this (hasDerivAt_neg x) using 1
       rw [real_smul, ofReal_neg 1, ofReal_one]; ring
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
@@ -270,7 +269,6 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 #align real.has_strict_fderiv_at_rpow_of_pos Real.hasStrictFDerivAt_rpow_of_pos
 
-set_option maxHeartbeats 1000000 in
 /-- `(x, y) ↦ x ^ y` is strictly differentiable at `p : ℝ × ℝ` such that `p.fst < 0`. -/
 theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
     HasStrictFDerivAt (fun x : ℝ × ℝ => x.1 ^ x.2)
@@ -331,7 +329,7 @@ lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
   (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
 
 lemma differentiableOn_rpow_const (p : ℝ) :
-    DifferentiableOn ℝ (fun x => x ^ p) {0}ᶜ :=
+    DifferentiableOn ℝ (fun x => (x : ℝ) ^ p) {0}ᶜ :=
   fun _ hx => (Real.differentiableAt_rpow_const_of_ne p hx).differentiableWithinAt
 
 /-- This lemma says that `fun x => a ^ x` is strictly differentiable for `a < 0`. Note that these

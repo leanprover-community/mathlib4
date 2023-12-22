@@ -16,6 +16,8 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
 
+set_option autoImplicit true
+
 
 /-- Propositions form a distributive lattice. -/
 instance Prop.distribLattice : DistribLattice Prop where

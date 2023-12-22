@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.set.enumerate from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -52,7 +53,7 @@ theorem enumerate_eq_none :
       case zero =>
         contradiction
       case succ m' =>
-        simp [hs, enumerate] at h ⊢
+        simp? [hs, enumerate] at h ⊢ says simp only [enumerate, hs, Nat.add_eq, add_zero] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 #align set.enumerate_eq_none Set.enumerate_eq_none
@@ -64,7 +65,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
     cases h : sel s
     case none => simp [enumerate_eq_none_of_sel, h]
     case some a' =>
-      simp [enumerate, h]
+      simp only [enumerate, h, Nat.add_eq, add_zero]
       exact fun h' : enumerate sel (s \ {a'}) n = some a ↦
         have : a ∈ s \ {a'} := enumerate_mem h_sel h'
         this.left

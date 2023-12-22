@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Invertible
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Invertible.Basic
+import Mathlib.Data.Nat.Cast.Order
 
 #align_import algebra.order.invertible from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.
 -/
+
+set_option autoImplicit true
 
 variable [LinearOrderedSemiring α] {a : α}
 

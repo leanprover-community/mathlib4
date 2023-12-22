@@ -239,13 +239,12 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
   isPrimitive_iff_content_eq_one.mp hp
 #align polynomial.is_primitive.content_eq_one Polynomial.IsPrimitive.content_eq_one
 
-open Classical
-
 section PrimPart
 
 /-- The primitive part of a polynomial `p` is the primitive polynomial gained by dividing `p` by
   `p.content`. If `p = 0`, then `p.primPart = 1`.  -/
 noncomputable def primPart (p : R[X]) : R[X] :=
+  letI := Classical.decEq R
   if p = 0 then 1 else Classical.choose (C_content_dvd p)
 #align polynomial.prim_part Polynomial.primPart
 
@@ -365,7 +364,7 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     induction' n with n ih
     · intro p q hpq
       dsimp at hpq
-      rw [Nat.cast_withBot, WithBot.coe_zero,
+      rw [Nat.cast_zero,
         Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp
     intro p q hpq
@@ -373,15 +372,14 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     · simp [p0]
     by_cases q0 : q = 0
     · simp [q0]
-    rw [degree_eq_natDegree (mul_ne_zero p0 q0), Nat.cast_withBot,
-      Nat.cast_withBot, WithBot.coe_lt_coe, Nat.lt_succ_iff_lt_or_eq, ←
-      WithBot.coe_lt_coe, ←Nat.cast_withBot, ← degree_eq_natDegree (mul_ne_zero p0 q0),
-      natDegree_mul p0 q0] at hpq
+    rw [degree_eq_natDegree (mul_ne_zero p0 q0), Nat.cast_lt,
+      Nat.lt_succ_iff_lt_or_eq, ← Nat.cast_lt (α := WithBot ℕ),
+      ← degree_eq_natDegree (mul_ne_zero p0 q0), natDegree_mul p0 q0] at hpq
     rcases hpq with (hlt | heq)
     · apply ih _ _ hlt
-    rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← WithBot.coe_eq_coe,
-      WithBot.coe_add, ← Nat.cast_withBot, ←degree_eq_natDegree p.primPart_ne_zero,
-      ← Nat.cast_withBot, ← degree_eq_natDegree q.primPart_ne_zero] at heq
+    rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← Nat.cast_inj (R := WithBot ℕ),
+      Nat.cast_add, ← degree_eq_natDegree p.primPart_ne_zero,
+      ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1
     · rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
@@ -393,11 +391,11 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       content_eq_gcd_leadingCoeff_content_eraseLead, content_primPart, one_mul,
       mul_comm q.primPart, content_mul_aux, ih, content_primPart, mul_one, gcd_comm, ←
       content_eq_gcd_leadingCoeff_content_eraseLead, content_primPart]
-    · rw [Nat.cast_withBot, ← heq, degree_mul, WithBot.add_lt_add_iff_right]
+    · rw [← heq, degree_mul, WithBot.add_lt_add_iff_right]
       · apply degree_erase_lt p.primPart_ne_zero
       · rw [Ne.def, degree_eq_bot]
         apply q.primPart_ne_zero
-    · rw [mul_comm, Nat.cast_withBot, ← heq, degree_mul, WithBot.add_lt_add_iff_left]
+    · rw [mul_comm, ← heq, degree_mul, WithBot.add_lt_add_iff_left]
       · apply degree_erase_lt q.primPart_ne_zero
       · rw [Ne.def, degree_eq_bot]
         apply p.primPart_ne_zero
@@ -438,7 +436,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s
     · apply hs s.natDegree s rfl
     clear s
-    by_contra' con
+    by_contra! con
     rcases Nat.find_spec con with ⟨s, sdeg, ⟨ps, qs⟩, rs⟩
     have s0 : s ≠ 0 := by
       contrapose! rs
@@ -482,6 +480,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
 #align polynomial.dvd_iff_content_dvd_content_and_prim_part_dvd_prim_part Polynomial.dvd_iff_content_dvd_content_and_primPart_dvd_primPart
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+  letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM fun p q => by
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with

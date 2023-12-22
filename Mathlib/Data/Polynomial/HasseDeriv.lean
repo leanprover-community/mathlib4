@@ -73,13 +73,13 @@ theorem hasseDeriv_coeff (n : ℕ) :
   · intro i _hi hink
     rw [coeff_monomial]
     by_cases hik : i < k
-    · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, MulZeroClass.zero_mul]
+    · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
     · push_neg at hik
       rw [if_neg]
       contrapose! hink
       exact (tsub_eq_iff_eq_add_of_le hik).mp hink
   · intro h
-    simp only [not_mem_support_iff.mp h, monomial_zero_right, MulZeroClass.mul_zero, coeff_zero]
+    simp only [not_mem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 #align polynomial.hasse_deriv_coeff Polynomial.hasseDeriv_coeff
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
@@ -118,17 +118,17 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   · rw [if_pos hnik, if_pos, ← hnik]
     apply tsub_eq_of_eq_add_rev
     rwa [add_comm]
-  · rw [if_neg hnik, MulZeroClass.mul_zero]
+  · rw [if_neg hnik, mul_zero]
     by_cases hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
       rw [if_neg hnik]
     · push_neg at hkn
-      rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, MulZeroClass.zero_mul, ite_self]
+      rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, zero_mul, ite_self]
 #align polynomial.hasse_deriv_monomial Polynomial.hasseDeriv_monomial
 
 theorem hasseDeriv_C (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by
   rw [← monomial_zero_left, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
-    MulZeroClass.zero_mul, monomial_zero_right]
+    zero_mul, monomial_zero_right]
 set_option linter.uppercaseLean3 false in
 #align polynomial.hasse_deriv_C Polynomial.hasseDeriv_C
 
@@ -138,7 +138,7 @@ theorem hasseDeriv_apply_one (hk : 0 < k) : hasseDeriv k (1 : R[X]) = 0 := by
 
 theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
-    MulZeroClass.zero_mul, monomial_zero_right]
+    zero_mul, monomial_zero_right]
 set_option linter.uppercaseLean3 false in
 #align polynomial.hasse_deriv_X Polynomial.hasseDeriv_X
 
@@ -158,7 +158,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   rw [mul_comm (k+1) _, mul_assoc, mul_assoc]
   congr 1
   have : n + k + 1 = n + (k + 1) := by apply add_assoc
-  rw [←choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
+  rw [← choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
   congr
   rw [add_assoc, add_tsub_cancel_left]
 #align polynomial.factorial_smul_hasse_deriv Polynomial.factorial_smul_hasseDeriv
@@ -170,7 +170,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
     mul_one, monomial_eq_zero_iff, sum_monomial_index, mul_zero, ←
     tsub_add_eq_tsub_tsub, add_comm l k]
   rw_mod_cast [nsmul_eq_mul]
-  rw [←Nat.cast_mul]
+  rw [← Nat.cast_mul]
   congr 2
   by_cases hikl : i < k + l
   · rw [choose_eq_zero_of_lt hikl, mul_zero]
@@ -188,9 +188,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [cast_choose ℚ h1, cast_choose ℚ h2, cast_choose ℚ h3, cast_choose ℚ hikl]
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
-  have H : ∀ n : ℕ, (n ! : ℚ) ≠ 0 := by exact_mod_cast factorial_ne_zero
-  field_simp [H]
-  ring
+  field_simp; ring
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
@@ -229,6 +227,8 @@ section
 
 open AddMonoidHom Finset.Nat
 
+open Finset (antidiagonal mem_antidiagonal)
+
 theorem hasseDeriv_mul (f g : R[X]) :
     hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
@@ -249,21 +249,21 @@ theorem hasseDeriv_mul (f g : R[X]) :
         monomial (m - x.1 + (n - x.2)) (↑(m.choose x.1) * r * (↑(n.choose x.2) * s)) =
           monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) := by
     intro x hx
-    rw [Finset.Nat.mem_antidiagonal] at hx
+    rw [mem_antidiagonal] at hx
     subst hx
     by_cases hm : m < x.1
-    · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, MulZeroClass.zero_mul,
+    · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
                  monomial_zero_right]
     by_cases hn : n < x.2
-    · simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, MulZeroClass.zero_mul,
-                 MulZeroClass.mul_zero, monomial_zero_right]
+    · simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, zero_mul,
+                 mul_zero, monomial_zero_right]
     push_neg at hm hn
     rw [tsub_add_eq_add_tsub hm, ← add_tsub_assoc_of_le hn, ← tsub_add_eq_tsub_tsub,
       add_comm x.2 x.1, mul_assoc, ← mul_assoc r, ← (Nat.cast_commute _ r).eq, mul_assoc, mul_assoc]
   rw [Finset.sum_congr rfl aux]
-  rw [← LinearMap.map_sum, ← Finset.sum_mul]
+  rw [← map_sum, ← Finset.sum_mul]
   congr
-  rw_mod_cast [←Nat.add_choose_eq]
+  rw_mod_cast [← Nat.add_choose_eq]
 #align polynomial.hasse_deriv_mul Polynomial.hasseDeriv_mul
 
 end

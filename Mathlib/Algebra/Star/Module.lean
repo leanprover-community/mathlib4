@@ -30,7 +30,7 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 -/
 
 
-section SmulLemmas
+section SMulLemmas
 
 variable {R M : Type*}
 
@@ -70,7 +70,7 @@ theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 #align star_rat_smul star_rat_smul
 
-end SmulLemmas
+end SMulLemmas
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
@@ -82,7 +82,7 @@ def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCo
     map_smul' := star_smul }
 #align star_linear_equiv starLinearEquiv
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
@@ -174,17 +174,18 @@ variable (A)
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
 -- Porting note: This attribute causes a `timeout at 'whnf'`.
--- @[simps!]
+@[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  ext <;> simp
+  -- Note: with #6965 `Submodule.coeSubtype` doesn't fire in `dsimp` or `simp`
+  ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
 theorem algebraMap_star_comm {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
-    [StarSemigroup A] [Algebra R A] [StarModule R A] (r : R) :
+    [StarMul A] [Algebra R A] [StarModule R A] (r : R) :
     algebraMap R A (star r) = star (algebraMap R A r) := by
   simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
 #align algebra_map_star_comm algebraMap_star_comm

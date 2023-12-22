@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
 import Mathlib.Order.Basic
-import Mathlib.Tactic.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Common
 
 #align_import arithcc from "leanprover-community/mathlib"@"eb3595ed8610db8107b75b75ab64ab6390684155"
 
@@ -271,7 +272,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
   constructor; · exact h.1
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
-  cases' lt_or_eq_of_le hr with hr hr
+  rcases lt_or_eq_of_le hr with hr | hr
   · cases' h with _ h
     specialize h r hr
     simp_all

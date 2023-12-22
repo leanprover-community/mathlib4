@@ -49,7 +49,7 @@ variable {s t : Set 𝕜}
 
 variable {L L₁ L₂ : Filter 𝕜}
 
-section Smul
+section SMul
 
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
@@ -113,9 +113,9 @@ theorem deriv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
   (hc.hasDerivAt.smul_const f).deriv
 #align deriv_smul_const deriv_smul_const
 
-end Smul
+end SMul
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
 
@@ -150,7 +150,7 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
   (hf.hasDerivAt.const_smul c).deriv
 #align deriv_const_smul deriv_const_smul
 
-end ConstSmul
+end ConstSMul
 
 section Mul
 
@@ -231,9 +231,9 @@ theorem deriv_mul_const (hc : DifferentiableAt 𝕜 c x) (d : 𝔸) :
 theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u x * v := by
   by_cases hu : DifferentiableAt 𝕜 u x
   · exact deriv_mul_const hu v
-  · rw [deriv_zero_of_not_differentiableAt hu, MulZeroClass.zero_mul]
+  · rw [deriv_zero_of_not_differentiableAt hu, zero_mul]
     rcases eq_or_ne v 0 with (rfl | hd)
-    · simp only [MulZeroClass.mul_zero, deriv_const]
+    · simp only [mul_zero, deriv_const]
     · refine' deriv_zero_of_not_differentiableAt (mt (fun H => _) hu)
       simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
 #align deriv_mul_const_field deriv_mul_const_field
@@ -411,4 +411,3 @@ theorem deriv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 
 #align deriv_clm_apply deriv_clm_apply
 
 end ClmCompApply
-
