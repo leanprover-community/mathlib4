@@ -269,27 +269,20 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
       x (n - 1) r := by
   by_cases hn : n = 0
   · rw [hn] at h ⊢; simp only [zero_le, tsub_eq_zero_of_le]
-    suffices A :
-      HasFiniteFPowerSeriesOnBall
-        (fun z => continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1))
-        ((continuousMultilinearCurryFin1 𝕜 E F :
-              (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F).compFormalMultilinearSeries
-          (p.changeOriginSeries 1)) x 0 r
-    · apply A.congr
-      intro z hz
-      dsimp
-      rw [← h.fderiv_eq, add_sub_cancel'_right]
-      simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
-    suffices B :
-      HasFiniteFPowerSeriesOnBall (fun z => p.changeOrigin (z - x) 1) (p.changeOriginSeries 1) x
-       0 r
-    exact
-      (continuousMultilinearCurryFin1 𝕜 E
-              F).toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall
-        B
-    simpa using
-      ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1
-      (fun m _ ↦ h.finite m (Nat.zero_le m))).mono h.r_pos le_top).comp_sub x
+    refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero ?_ h.r_pos ?_
+    . intro y hy
+      rw [Filter.EventuallyEq.fderiv_eq (f := fun _ => 0)]
+      · rw [fderiv_const, Pi.zero_apply]
+      · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨EMetric.ball x r,
+          EMetric.isOpen_ball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
+    . intro n
+      apply ContinuousMultilinearMap.ext; intro a
+      simp only [ContinuousLinearMap.strongUniformity_topology_eq,
+        ContinuousLinearMap.compFormalMultilinearSeries_apply,
+        ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
+        LinearIsometryEquiv.coe_coe, Function.comp_apply]
+      rw [p.changeOriginSeries_finite_of_finite h.finite 1 (Nat.zero_le _)]
+      rw [ContinuousMultilinearMap.zero_apply, map_zero, ContinuousMultilinearMap.zero_apply]
   · rw [← (Nat.succ_pred hn)] at h
     rw [← Nat.pred_eq_sub_one]
     exact h.fderiv
