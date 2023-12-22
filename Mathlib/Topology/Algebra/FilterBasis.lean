@@ -251,7 +251,7 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     rcases mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
     intro U U_in
     simpa using inv U_in
@@ -318,7 +318,7 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
     rcases B.mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
