@@ -234,7 +234,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) {X Y : Scheme.{u}} (f : X ⟶ Y) :
     TFAE
       [targetAffineLocally P f,
-        ∃ 𝒰 : Scheme.OpenCover.{u} Y, (∀ i, IsAffine (𝒰.obj i)) ∧
+        ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
           ∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)] (i : 𝒰.J),
           P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
@@ -281,7 +281,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
 theorem AffineTargetMorphismProperty.isLocalOfOpenCoverImply (P : AffineTargetMorphismProperty)
     (hP : P.toProperty.RespectsIso)
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y),
-      (∃ 𝒰 : Scheme.OpenCover.{u} Y, (∀ i, IsAffine (𝒰.obj i)) ∧
+      (∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
         ∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) →
         ∀ {U : Scheme} (g : U ⟶ Y) [IsAffine U] [IsOpenImmersion g],
           P (pullback.snd : pullback f g ⟶ U)) :

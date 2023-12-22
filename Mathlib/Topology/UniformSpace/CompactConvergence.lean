@@ -154,7 +154,7 @@ def compactConvergenceFilterBasis (f : C(α, β)) : FilterBasis C(α, β) :=
 
 theorem mem_compactConvergence_nhd_filter (Y : Set C(α, β)) :
     Y ∈ (compactConvergenceFilterBasis f).filter ↔
-    ∃ (K : Set α) (V : Set (β × β)), IsCompact K ∧ V ∈ 𝓤 β) ∧ compactConvNhd K V f ⊆ Y := by
+    ∃ (K : Set α) (V : Set (β × β)), IsCompact K ∧ V ∈ 𝓤 β ∧ compactConvNhd K V f ⊆ Y := by
   constructor
   · rintro ⟨X, ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩, hY⟩
     exact ⟨K, V, hK, hV, hY⟩
@@ -346,7 +346,8 @@ instance compactConvergenceUniformSpace : UniformSpace C(α, β) where
     refine' fun Y => forall₂_congr fun f hf => _
     simp only [mem_compactConvergence_nhd_filter, mem_compactConvergenceUniformity, Prod.forall,
       setOf_subset_setOf, compactConvNhd]
-    refine' exists₄_congr fun K V _hK _hV => ⟨_, fun hY g hg => hY f g hg rfl⟩
+    refine' exists₂_congr fun K V => and_congr_right' <| and_congr_right'
+      ⟨_, fun hY g hg => hY f g hg rfl⟩
     rintro hY g₁ g₂ hg₁ rfl
     exact hY hg₁
 #align continuous_map.compact_convergence_uniform_space ContinuousMap.compactConvergenceUniformSpace
