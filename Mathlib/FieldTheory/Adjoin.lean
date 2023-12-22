@@ -1050,23 +1050,16 @@ theorem exists_lt_finrank_of_infinite_dimensional
     (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
   induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, by
-      rw [IntermediateField.finrank_bot]; exact one_pos⟩
-  obtain ⟨L, _, hn⟩ := ih
-  by_cases h : n.succ < finrank F L
-  · exact ⟨L, by assumption, h⟩
-  have hr := eq_of_ge_of_not_gt (by exact hn) h
+  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, finrank_pos⟩
+  obtain ⟨L, fin, hn⟩ := ih
   obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
-    by_contra hx
-    simp only [not_exists, not_not] at hx
-    have : L = ⊤ := eq_top_iff.2 fun x _ ↦ hx x
-    erw [this, finrank_top F E, finrank_of_infinite_dimensional hnfd] at hr
-    linarith only [hr]
+    contrapose! hnfd
+    rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
+    exact topEquiv.toLinearEquiv.finiteDimensional
   let L' := L ⊔ F⟮x⟯
   haveI := adjoin.finiteDimensional (halg x).isIntegral
-  haveI := finiteDimensional_sup L F⟮x⟯
-  refine ⟨L', by assumption, by_contra fun h ↦ ?_⟩
-  have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left (not_lt.1 (hr.symm ▸ h))
+  refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
+  have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
   have h2 : F⟮x⟯ ≤ L' := le_sup_right
   exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 

@@ -309,7 +309,7 @@ theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := b
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
-  ⟨by simpa only [ne_eq, not_not] using mt (natSepDegree_ne_zero f), natSepDegree_eq_zero f⟩
+  ⟨(natSepDegree_ne_zero f).mtr, natSepDegree_eq_zero f⟩
 
 /-- A polynomial has non-zero separable degree if and only if it is non-constant. -/
 theorem natSepDegree_ne_zero_iff : f.natSepDegree ≠ 0 ↔ f.natDegree ≠ 0 :=

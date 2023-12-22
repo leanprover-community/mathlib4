@@ -444,19 +444,12 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
 if and only if it is separable. -/
 theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
     f.roots.Nodup ↔ f.Separable := by
-  refine ⟨not_imp_not.1 fun hnsep ↦ ?_, nodup_roots⟩
-  set g := gcd f (derivative f)
-  have hg : g ≠ 0 := gcd_ne_zero_of_left hf
-  by_cases hdeg : g.degree = 0
-  · simp only [Separable, ← gcd_isUnit_iff, isUnit_iff] at hnsep
-    rw [eq_C_of_degree_eq_zero hdeg] at hg
-    exact False.elim <| hnsep ⟨coeff g 0, isUnit_iff_ne_zero.2 (ne_zero_of_map hg),
-      (eq_C_of_degree_eq_zero hdeg).symm⟩
+  refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
+  rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
   obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf h (show g ∣ f from gcd_dvd_left f _)) hdeg
-  rw [Multiset.nodup_iff_count_le_one, not_forall]
-  exact ⟨x, by rw [count_roots]; exact Nat.not_le.mpr <|
-    (one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx⟩
+    (splits_of_splits_of_dvd _ hf h (gcd_dvd_left f _)) hnsep
+  simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
+  exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
 /-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
 if and only if it is separable. -/
