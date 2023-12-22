@@ -501,7 +501,7 @@ instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (Modular
     rw [GradedMonoid.GMul.toMul]
     apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_succ]
   natCast n := (n : ModularForm Γ 0)
-  natCast_zero := by simp
+  natCast_zero := by simp only [natCast_coe, zero_smul]
   natCast_succ n := by simp only [natCast_coe, add_smul, one_smul]
   intCast n := (n : ModularForm Γ 0)
   intCast_ofNat := by simp only [intCast_coe, coe_nat_zsmul, natCast_coe, forall_const]
