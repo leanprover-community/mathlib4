@@ -849,6 +849,21 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   exact Cardinal.eq_of_add_eq_add_left h hb
 #align cardinal.eq_of_add_eq_add_right Cardinal.eq_of_add_eq_add_right
 
+theorem ciSup_add {ι : Type*} [Nonempty ι] (f : ι → Cardinal) (hf : BddAbove (range f))
+    (c : Cardinal) : (⨆ i, f i) + c = ⨆ i, f i + c := by
+  refine le_antisymm ?_ (ciSup_le' fun i ↦ add_le_add_right (le_ciSup hf i) c)
+  have bdd : BddAbove (range (f · + c))
+  · obtain ⟨b, hb⟩ := hf; use b + c
+    rintro _ ⟨i, rfl⟩; exact add_le_add_right (hb ⟨i, rfl⟩) c
+  obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
+  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
+      f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
+    exact hi ▸ le_ciSup bdd i
+  obtain hc | hc := lt_or_le c (⨆ i, f i)
+  · exact (add_eq_left hs hc.le).trans_le (ciSup_mono bdd fun i ↦ self_le_add_right _ c)
+  · exact (add_eq_right (hs.trans hc) hc).trans_le
+      ((self_le_add_left _ _).trans <| le_ciSup bdd <| Classical.arbitrary ι)
+
 @[simp]
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : aleph o₁ + aleph o₂ = aleph (max o₁ o₂) := by
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), max_aleph_eq]

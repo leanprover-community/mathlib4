@@ -145,6 +145,16 @@ theorem rank_le {n : ℕ}
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
 #align rank_le rank_le
 
+theorem rank_quotient_add_rank_le (M' : Submodule R M) :
+    Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
+  simp_rw [Module.rank_def]
+  sorry --convert ciSup_add_ciSup_le _
+
+/-
+    lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
+  -/
+
+
 
 /-- The rank of the range of a linear map is at most the rank of the source. -/
 -- The proof is: a free submodule of the range lifts to a free submodule of the
@@ -491,18 +501,6 @@ theorem rank_pos [Nontrivial M] : 0 < Module.rank R M := by
 
 variable [Nontrivial R]
 
-theorem rank_zero_iff_forall_zero : Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · contrapose! h
-    obtain ⟨x, hx⟩ := h
-    letI : Nontrivial M := nontrivial_of_ne _ _ hx
-    exact rank_pos.ne'
-  · have : (⊤ : Submodule R M) = ⊥ := by
-      ext x
-      simp [h x]
-    rw [← rank_top, this, rank_bot]
-#align rank_zero_iff_forall_zero rank_zero_iff_forall_zero
-
 /-- See `rank_zero_iff` for a stronger version with `NoZeroSMulDivisor R M`. -/
 lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
@@ -524,6 +522,11 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     obtain ⟨a, ha, ha'⟩ := h i
     apply ha
     simpa using FunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+
+theorem rank_zero_iff_forall_zero : Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
+  simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
+    exists_and_right, and_iff_right (exists_ne (0 : R))]
+#align rank_zero_iff_forall_zero rank_zero_iff_forall_zero
 
 lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] :
     Module.rank R M = 0 ↔ Module.IsTorsion R M := by
