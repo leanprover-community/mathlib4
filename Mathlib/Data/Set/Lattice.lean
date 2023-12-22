@@ -2117,7 +2117,8 @@ theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : 
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
     seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  simp only [seq_eq_image2, image2_image_left, image2_image2_left, image2_image2_right, comp_apply]
+  simp only [seq_eq_image2, image2_image_left]
+  exact .symm <| image2_assoc fun _ _ _ ↦ rfl
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
