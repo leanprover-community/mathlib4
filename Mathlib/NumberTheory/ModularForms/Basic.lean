@@ -469,7 +469,7 @@ lemma MF_natcast_eq_SIF_natcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
 
 @[simp]
 lemma intCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
-  (n : ModularForm Γ 0 ) = n • (1 : ModularForm Γ 0) := by rfl
+    (n : ModularForm Γ 0 ) = n • (1 : ModularForm Γ 0) := by rfl
 
 instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
   mul f g := f.mul g
