@@ -233,6 +233,9 @@ theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariant
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
 
+instance (Γ : Subgroup SL(2, ℤ)) : NatCast (SlashInvariantForm Γ 0) where
+  natCast := fun n => n • (1 :  SlashInvariantForm Γ 0)
+
 instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
   intCast := fun n => n • (1 :  SlashInvariantForm Γ 0)
 

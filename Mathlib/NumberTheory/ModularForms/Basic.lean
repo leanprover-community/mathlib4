@@ -460,12 +460,19 @@ instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
 
 open GradedMonoid
 
+instance (Γ : Subgroup SL(2, ℤ)) : NatCast (ModularForm Γ 0) where
+  natCast := fun n => n • (1 : ModularForm Γ 0)
+
 instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
   intCast := fun n => n • (1 : ModularForm Γ 0)
 
 lemma MF_intcast_eq_SIF_intcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
     (n : ModularForm Γ 0) =  (n :  SlashInvariantForm Γ 0) := by
   rfl
+
+@[simp]
+lemma natCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
+    (n : ModularForm Γ 0 ) = n • (1 : ModularForm Γ 0) := by rfl
 
 @[simp]
 lemma intCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
@@ -495,8 +502,7 @@ instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (Modular
     apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_succ]
   natCast n := (n : ModularForm Γ 0)
   natCast_zero := by simp
-  natCast_succ n := by simp only [Nat.cast_add, Nat.cast_one, intCast_coe, add_smul,
-    coe_nat_zsmul, one_smul]
+  natCast_succ n := by simp only [natCast_coe, add_smul, one_smul]
   intCast n := (n : ModularForm Γ 0)
-  intCast_ofNat := by simp only [coe_nat_zsmul, intCast_coe, forall_const]
+  intCast_ofNat := by simp only [intCast_coe, coe_nat_zsmul, natCast_coe, forall_const]
   intCast_negSucc_ofNat n := by simp only [Int.negSucc_coe]; apply _root_.neg_smul
