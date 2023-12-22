@@ -805,22 +805,21 @@ theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
   haveI : NeZero x := ⟨hx⟩
   haveI : NeZero y := ⟨hy⟩
   simp_rw [prodPrimeFactors_apply]
-  rw[Nat.primeFactors_mul hx hy, ←Finset.prod_union hxy.disjoint_primeFactors]
+  rw[Nat.primeFactors_mul hx hy, ← Finset.prod_union hxy.disjoint_primeFactors]
 
-theorem prodPrimeFactors_add_of_squarefree [CommSemiring R]
-  {f g : ArithmeticFunction R} (hf : IsMultiplicative f) (hg : IsMultiplicative g) {n : ℕ}
-  (hn : Squarefree n) :
+theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFunction R}
+    (hf : IsMultiplicative f) (hg : IsMultiplicative g) {n : ℕ} (hn : Squarefree n) :
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
   rw [prodPrimeFactors_apply_of_ne_zero hn.ne_zero]
   simp_rw [add_apply (f:=f) (g:=g)]
   rw [Finset.prod_add, mul_apply, sum_divisorsAntidiagonal (f:= λ x y => f x * g y),
-    ←divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
+    ← divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
     factors_eq]
   apply Finset.sum_congr rfl
   intro t ht
-  erw [t.prod_val, ←prod_factors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
+  erw [t.prod_val, ← prod_factors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
     hf.map_prod_of_subset_primeFactors n t (Finset.mem_powerset.mp ht),
-    ←hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t), toFinset_factors]
+    ← hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t), toFinset_factors]
 
 theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} :
@@ -1116,7 +1115,7 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
 theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
-  {f : ArithmeticFunction R} (h_mult : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
+    {f : ArithmeticFunction R} (h_mult : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.primeFactors, (1 + f p) = ∑ d in n.divisors, f d := by
   haveI : NeZero n := ⟨hn.ne_zero⟩
   trans (∏ᵖ p ∣ n, ((ζ:ArithmeticFunction R) + f) p)
