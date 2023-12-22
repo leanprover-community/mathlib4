@@ -234,7 +234,7 @@ open Finset in
 /-- If an affine independent finset is contained in the affine span of another finset, then it is
 smaller than that finset. -/
 lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
-   (hs : AffineIndependent k ((↑) : s → V))
+    (hs : AffineIndependent k ((↑) : s → V))
    (hst : (s : Set V) ⊆ affineSpan k (t : Set V)) : s.card ≤ t.card := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
