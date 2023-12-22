@@ -1136,8 +1136,8 @@ variable {ι : Type*} (b : Basis ι R M)
 /-- Let `Mₛ` be a `R`-module and let `M` be a submodule of `Mₛ` such that `Mₛ` is the localization
 at `S` of `M` where `S` is a submonoid of `R`. Assume that `Mₛ` is a `Rₛ`-module where `Rₛ` is a
 localization of `R` at `S`. Then, any `R`-basis of `M` is a `Rₛ`-basis of `Mₛ`. -/
-noncomputable def Basis.isLocalizedModule : Basis ι Rₛ Mₛ := by
-  exact Basis.mk
+noncomputable def Basis.isLocalizedModule : Basis ι Rₛ Mₛ :=
+  Basis.mk
     ((LinearIndependent.map' b.linearIndependent M.subtype (ker_subtype M)).localization Rₛ S)
     (fun x _ ↦ by rwa [Set.range_comp, SpanEqTop.isLocalizedModule S _ _ b.span_eq])
 
