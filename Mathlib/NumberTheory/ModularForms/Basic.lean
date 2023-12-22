@@ -268,7 +268,8 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
   rfl
 #align modular_form.mul_coe ModularForm.mul_coe
 
-/-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level-/
+/-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
+@[simps! (config := .asFn) toFun toSlashInvariantForm]
 def const (x : ℂ) : (ModularForm Γ 0) where
   toSlashInvariantForm := .const x
   holo' x := mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
@@ -288,15 +289,21 @@ instance (Γ : Subgroup SL(2, ℤ)) : NatCast (ModularForm Γ 0) where
   natCast n := const n
 
 @[simp, norm_cast]
-lemma natCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
+lemma coe_natCast (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
     ⇑(n : ModularForm Γ 0) = n := rfl
+
+lemma toSlashInvariantForm_natCast (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
+    (n : ModularForm Γ 0).toSlashInvariantForm = n := rfl
 
 instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
   intCast z := const z
 
 @[simp, norm_cast]
-lemma intCast_coe (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
+lemma coe_intCast (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
     ⇑(z : ModularForm Γ 0) = z := rfl
+
+lemma toSlashInvariantForm_intCast (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
+    (z : ModularForm Γ 0).toSlashInvariantForm = z := rfl
 
 end ModularForm
 
@@ -445,13 +452,7 @@ instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne (ModularForm Γ) where
 instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
 
-open GradedMonoid
-
-lemma MF_intcast_eq_SIF_intcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
-    (n : ModularForm Γ 0) =  (n :  SlashInvariantForm Γ 0) := by
-  rfl
-
-instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
+instance instGCommRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
   one_mul a := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
   mul_one a := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
   mul_assoc a b c := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)

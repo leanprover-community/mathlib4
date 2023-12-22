@@ -172,7 +172,6 @@ theorem mk_mul_mk [Add ι] [GMul A] {i j} (a : A i) (b : A j) :
   rfl
 #align graded_monoid.mk_mul_mk GradedMonoid.mk_mul_mk
 
-
 namespace GMonoid
 
 variable {A} [AddMonoid ι] [GMul A] [GOne A]
