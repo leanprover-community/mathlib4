@@ -550,36 +550,6 @@ theorem finSepDegree_adjoin_simple_eq_finrank_iff (α : E) (halg : IsAlgebraic F
   rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral,
     natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral)]
 
--- TODO: move to suitable file
-/-- If `E / F` is an infinite algebraic extension, then there exists intermediate field `L / F`
-with arbitrary large finite extension degree. -/
-lemma exists_lt_finrank_of_not_finiteDimensional
-    (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
-    ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
-  induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, by
-      rw [IntermediateField.finrank_bot]; exact one_pos⟩
-  obtain ⟨L, _, hn⟩ := ih
-  by_cases h : n + 1 < finrank F L
-  · exact ⟨L, by assumption, h⟩
-  have hr := eq_of_ge_of_not_gt (by exact hn) h
-  obtain ⟨x, hx⟩ := show ∃ x : E, x ∉ L by
-    by_contra hx
-    simp only [not_exists, not_not] at hx
-    have : L = ⊤ := eq_top_iff.2 fun x _ ↦ hx x
-    erw [this, finrank_top F E, finrank_of_infinite_dimensional hnfd] at hr
-    linarith only [hr]
-  let L' := L ⊔ F⟮x⟯
-  haveI := adjoin.finiteDimensional (halg x).isIntegral
-  haveI := finiteDimensional_sup L F⟮x⟯
-  refine ⟨L', by assumption, ?_⟩
-  have : finrank F L < finrank F L' := by
-    by_contra h
-    have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left (not_lt.1 h)
-    have h2 : F⟮x⟯ ≤ L' := le_sup_right
-    exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
-  rwa [hr] at this
-
 end IntermediateField
 
 namespace Field
@@ -616,7 +586,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
   wlog hfd : FiniteDimensional F E with H
   · rw [finrank_of_infinite_dimensional hfd]
     have halg := IsSeparable.isAlgebraic F E
-    obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_not_finiteDimensional F E halg hfd (finSepDegree F E)
+    obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional halg hfd (finSepDegree F E)
     haveI : IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E (halg.tower_top L)
     rw [H F L h] at hd

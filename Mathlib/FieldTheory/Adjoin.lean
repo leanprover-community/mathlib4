@@ -1043,6 +1043,33 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
 
+variable {F} in
+/-- If `E / F` is an infinite algebraic extension, then there exists intermediate field `L / F`
+with arbitrary large finite extension degree. -/
+theorem exists_lt_finrank_of_infinite_dimensional
+    (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
+    ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
+  induction' n with n ih
+  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, by
+      rw [IntermediateField.finrank_bot]; exact one_pos⟩
+  obtain ⟨L, _, hn⟩ := ih
+  by_cases h : n.succ < finrank F L
+  · exact ⟨L, by assumption, h⟩
+  have hr := eq_of_ge_of_not_gt (by exact hn) h
+  obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
+    by_contra hx
+    simp only [not_exists, not_not] at hx
+    have : L = ⊤ := eq_top_iff.2 fun x _ ↦ hx x
+    erw [this, finrank_top F E, finrank_of_infinite_dimensional hnfd] at hr
+    linarith only [hr]
+  let L' := L ⊔ F⟮x⟯
+  haveI := adjoin.finiteDimensional (halg x).isIntegral
+  haveI := finiteDimensional_sup L F⟮x⟯
+  refine ⟨L', by assumption, by_contra fun h ↦ ?_⟩
+  have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left (not_lt.1 (hr.symm ▸ h))
+  have h2 : F⟮x⟯ ≤ L' := le_sup_right
+  exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
+
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
   le_of_eq_of_le (IntermediateField.adjoin.finrank (.of_finite _ _)).symm
