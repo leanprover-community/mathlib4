@@ -2255,7 +2255,7 @@ theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
 #align cardinal.mk_bUnion_le Cardinal.mk_biUnion_le
 
 theorem mk_biUnion_le_lift {α : Type u} {ι : Type v} (A : ι → Set α) (s : Set ι) :
-    lift.{v}  #(⋃ x ∈ s, A x) ≤ lift.{u} #s* ⨆ x : s, lift.{v} #(A x.1) := by
+    lift.{v} #(⋃ x ∈ s, A x) ≤ lift.{u} #s * ⨆ x : s, lift.{v} #(A x.1) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le_lift
 
