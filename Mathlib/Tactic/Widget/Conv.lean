@@ -125,7 +125,7 @@ mkSelectionPanelRPC insertEnter
 
 /-- The conv widget. -/
 @[widget_module]
-def ConvSelectionPanel : Component SelectInsertParams :=
+def ConvSelectionPanel : PanelWidget SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc
 
 open scoped Json in

@@ -41,7 +41,7 @@ def GCongrSelectionPanel.rpc := mkSelectionPanelRPC makeGCongrString
 
 /-- The gcongr widget. -/
 @[widget_module]
-def GCongrSelectionPanel : Component SelectInsertParams :=
+def GCongrSelectionPanel : PanelWidget SelectInsertParams :=
   mk_rpc_widget% GCongrSelectionPanel.rpc
 
 open scoped Json in

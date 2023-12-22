@@ -54,7 +54,7 @@ structure CalcParams extends SelectInsertParams where
   isFirst : Bool
   /-- indentation level of the calc block. -/
   indent : Nat
-  deriving SelectInsertParamsClass, RpcEncodable
+  deriving SelectInsertParamsClass, ToJson, FromJson
 
 open Lean Meta
 
@@ -118,7 +118,7 @@ def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
 
 /-- The calc widget. -/
 @[widget_module]
-def CalcPanel : Component CalcParams :=
+def CalcPanel : PanelWidget CalcParams :=
   mk_rpc_widget% CalcPanel.rpc
 
 namespace Lean.Elab.Tactic
