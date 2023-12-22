@@ -303,19 +303,19 @@ section Image
 variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 
 section
-variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a')))
+variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) {a : α}
 
-theorem map_mem_minimals {a : α} (ha : a ∈ minimals r x) : f a ∈ minimals s (f '' x) :=
+theorem map_mem_minimals (ha : a ∈ minimals r x) : f a ∈ minimals s (f '' x) :=
   ⟨⟨a, ha.1, rfl⟩, by rintro _ ⟨a', h', rfl⟩; rw [← hf ha.1 h', ← hf h' ha.1]; exact ha.2 h'⟩
 
-theorem map_mem_maximals {a : α} (ha : a ∈ maximals r x) : f a ∈ maximals s (f '' x) :=
+theorem map_mem_maximals (ha : a ∈ maximals r x) : f a ∈ maximals s (f '' x) :=
   map_mem_minimals (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
 
-theorem map_mem_minimals_iff {a : α} (ha : a ∈ x) : f a ∈ minimals s (f '' x) ↔ a ∈ minimals r x :=
+theorem map_mem_minimals_iff (ha : a ∈ x) : f a ∈ minimals s (f '' x) ↔ a ∈ minimals r x :=
   ⟨fun ⟨_, hmin⟩ ↦ ⟨ha, fun a' h' ↦ by
     simpa only [hf h' ha, hf ha h'] using hmin ⟨a', h', rfl⟩⟩, map_mem_minimals hf⟩
 
-theorem map_mem_maximals_iff {a : α} (ha : a ∈ x) : f a ∈ maximals s (f '' x) ↔ a ∈ maximals r x :=
+theorem map_mem_maximals_iff (ha : a ∈ x) : f a ∈ maximals s (f '' x) ↔ a ∈ maximals r x :=
   map_mem_minimals_iff (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
 
 theorem image_minimals_of_rel_iff_rel : f '' minimals r x = minimals s (f '' x) := by
