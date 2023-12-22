@@ -1272,7 +1272,7 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
 theorem coe_sub_iff_le {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = a - b ↔ b ≤ a := by
   cases n; · exact @finZeroElim (fun _ => _) a
   rw [le_iff_val_le_val, Fin.coe_sub, ← add_tsub_assoc_of_le b.is_lt.le a]
-  cases' le_or_lt (b : ℕ) a with h h
+  rcases le_or_lt (b : ℕ) a with h | h
   · simp [← tsub_add_eq_add_tsub h, val_fin_le.mp h,
       Nat.mod_eq_of_lt ((Nat.sub_le _ _).trans_lt a.is_lt)]
   · rw [Nat.mod_eq_of_lt, tsub_eq_zero_of_le h.le, tsub_eq_zero_iff_le, ← not_iff_not]
@@ -1284,7 +1284,7 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
   cases' n with n
   · exact @finZeroElim (fun _ => _) a
   rw [lt_iff_val_lt_val, Fin.coe_sub, add_comm]
-  cases' le_or_lt (b : ℕ) a with h h
+  rcases le_or_lt (b : ℕ) a with h | h
   · refine iff_of_false ?_ (not_lt_of_le h)
     simpa [add_tsub_assoc_of_le h] using
       ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne

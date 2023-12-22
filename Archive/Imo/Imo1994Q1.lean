@@ -53,7 +53,7 @@ open Imo1994Q1
 
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
-    (hadd : ∀ (a) (_ : a ∈ A) (b) (_ : b ∈ A), a + b ≤ n → a + b ∈ A) :
+    (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
     (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`

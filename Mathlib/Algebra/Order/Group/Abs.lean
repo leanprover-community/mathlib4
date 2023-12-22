@@ -146,7 +146,7 @@ theorem abs_pos_of_neg (h : a < 0) : 0 < |a| :=
 #align abs_pos_of_neg abs_pos_of_neg
 
 theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
-  cases' le_total 0 a with h h
+  rcases le_total 0 a with h | h
   · calc
       -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
       _ ≤ 0 := neg_nonpos.mpr h
@@ -206,7 +206,7 @@ theorem lt_of_abs_lt (h : |a| < b) : a < b :=
 #align lt_of_abs_lt lt_of_abs_lt
 
 theorem max_sub_min_eq_abs' (a b : α) : max a b - min a b = |a - b| := by
-  cases' le_total a b with ab ba
+  rcases le_total a b with ab | ba
   · rw [max_eq_right ab, min_eq_left ab, abs_of_nonpos, neg_sub]
     rwa [sub_nonpos]
   · rw [max_eq_left ba, min_eq_right ba, abs_of_nonneg]
