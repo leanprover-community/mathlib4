@@ -499,7 +499,7 @@ def part (ha : a ∈ s) : Finset α := choose (hp := P.existsUnique_mem ha)
 
 theorem part_mem (ha : a ∈ s) : P.part ha ∈ P.parts := choose_mem _ _ _
 
-theorem part_property (ha : a ∈ s) : a ∈ P.part ha := choose_property _ _ _
+theorem mem_part (ha : a ∈ s) : a ∈ P.part ha := choose_property _ _ _
 
 theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.supParts
