@@ -106,16 +106,12 @@ def toTrunc (q : Semiquot α) : Trunc α :=
   q.2.map Subtype.val
 #align semiquot.to_trunc Semiquot.toTrunc
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-warning: expanding binder collection (a b «expr ∈ » q) -/
 /-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) : β :=
   Trunc.liftOn q.2 (fun x => f x.1) fun x y => h _ x.2 _ y.2
 #align semiquot.lift_on Semiquot.liftOn
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-warning: expanding binder collection (a b «expr ∈ » q) -/
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
   by revert h; rw [eq_mk_of_mem aq]; intro; rfl
@@ -201,8 +197,6 @@ theorem pure_le {a : α} {s : Semiquot α} : pure a ≤ s ↔ a ∈ s :=
   Set.singleton_subset_iff
 #align semiquot.pure_le Semiquot.pure_le
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-warning: expanding binder collection (a b «expr ∈ » q) -/
 /-- Assert that a `Semiquot` contains only one possible value. -/
 def IsPure (q : Semiquot α) : Prop :=
   ∀ a ∈ q, ∀ b ∈ q, a = b
