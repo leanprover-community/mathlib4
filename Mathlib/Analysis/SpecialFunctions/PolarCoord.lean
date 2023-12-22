@@ -168,9 +168,8 @@ protected theorem polarCoord_apply (a : ℂ) :
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
   rfl
 
-protected theorem polarCoord_source :
-    Complex.polarCoord.source = Complex.slitPlane := by
-  simp [Complex.polarCoord, Complex.slitPlane_eq_union]
+protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := by
+  simp [Complex.polarCoord, slitPlane_eq_union]
 
 protected theorem polarCoord_target :
     Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := by simp [Complex.polarCoord]

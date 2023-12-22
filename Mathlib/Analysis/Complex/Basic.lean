@@ -643,6 +643,9 @@ lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 
 
 lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
 
+lemma isOpen_slitPlane : IsOpen slitPlane :=
+  (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)
+
 @[simp]
 lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
 
