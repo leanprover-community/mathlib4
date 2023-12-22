@@ -2167,6 +2167,11 @@ theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
   mk_congr (Equiv.ofInjective f h).symm
 #align cardinal.mk_range_eq Cardinal.mk_range_eq
 
+theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
+    lift.{max u w} #(range f) = lift.{max v w} #α :=
+  lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
+#align cardinal.mk_range_eq_lift Cardinal.mk_range_eq_lift
+
 theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{u} #(range f) = lift.{v} #α :=
   lift_mk_eq'.mpr ⟨(Equiv.ofInjective f hf).symm⟩
@@ -2176,11 +2181,6 @@ lemma lift_mk_le_lift_mk_of_injective {α : Type u} {β : Type v} {f : α → β
     Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} (#β) := by
   rw [← Cardinal.mk_range_eq_of_injective hf]
   exact Cardinal.lift_le.2 (Cardinal.mk_set_le _)
-
-theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
-    lift.{max u w} #(range f) = lift.{max v w} #α :=
-  lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
-#align cardinal.mk_range_eq_lift Cardinal.mk_range_eq_lift
 
 theorem mk_image_eq_of_injOn {α β : Type u} (f : α → β) (s : Set α) (h : InjOn f s) :
     #(f '' s) = #s :=
@@ -2379,6 +2379,11 @@ theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → 
   le_antisymm (mk_preimage_of_injective_lift f s h) (mk_preimage_of_subset_range_lift f s h2)
 #align cardinal.mk_preimage_of_injective_of_subset_range_lift Cardinal.mk_preimage_of_injective_of_subset_range_lift
 
+theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
+    (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
+  convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
+#align cardinal.mk_preimage_of_injective_of_subset_range Cardinal.mk_preimage_of_injective_of_subset_range
+
 theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
     #(f ⁻¹' s) ≤ #s := by
   rw [← lift_id #(↑(f ⁻¹' s)), ← lift_id #(↑s)]
@@ -2390,11 +2395,6 @@ theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ rang
   rw [← lift_id #(↑(f ⁻¹' s)), ← lift_id #(↑s)]
   exact mk_preimage_of_subset_range_lift f s h
 #align cardinal.mk_preimage_of_subset_range Cardinal.mk_preimage_of_subset_range
-
-theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
-    (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
-  convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
-#align cardinal.mk_preimage_of_injective_of_subset_range Cardinal.mk_preimage_of_injective_of_subset_range
 
 theorem mk_subset_ge_of_subset_image_lift {α : Type u} {β : Type v} (f : α → β) {s : Set α}
     {t : Set β} (h : t ⊆ f '' s) : lift.{u} #t ≤ lift.{v} #({ x ∈ s | f x ∈ t } : Set α) := by
