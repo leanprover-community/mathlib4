@@ -318,23 +318,23 @@ theorem map_mem_minimals_iff {a : α} (ha : a ∈ x) : f a ∈ minimals s (f '' 
 theorem map_mem_maximals_iff {a : α} (ha : a ∈ x) : f a ∈ maximals s (f '' x) ↔ a ∈ maximals r x :=
   map_mem_minimals_iff (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
 
-theorem minimals_image_of_rel_iff_rel : minimals s (f '' x) = f '' minimals r x := by
-  ext b; refine ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, rfl⟩ := h.1; exact ⟨a, (map_mem_minimals_iff hf ha).mp h, rfl⟩
+theorem image_minimals_of_rel_iff_rel : f '' minimals r x = minimals s (f '' x) := by
+  ext b; refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, ha, rfl⟩; exact map_mem_minimals hf ha
+  · obtain ⟨a, ha, rfl⟩ := h.1; exact ⟨a, (map_mem_minimals_iff hf ha).mp h, rfl⟩
 
-theorem maximals_image_of_rel_iff_rel : maximals s (f '' x) = f '' maximals r x :=
-  minimals_image_of_rel_iff_rel fun _ _ h₁ h₂ ↦ hf h₂ h₁
+theorem image_maximals_of_rel_iff_rel : f '' maximals r x = maximals s (f '' x) :=
+  image_minimals_of_rel_iff_rel fun _ _ h₁ h₂ ↦ hf h₂ h₁
 
 end
 
-theorem RelEmbedding.minimals_image_eq (f : r ↪r s) (x : Set α) :
-    minimals s (f '' x) = f '' minimals r x := by
-  rw [minimals_image_of_rel_iff_rel]; simp [f.map_rel_iff]
+theorem RelEmbedding.image_minimals_eq (f : r ↪r s) (x : Set α) :
+    f '' minimals r x = minimals s (f '' x) := by
+  rw [image_minimals_of_rel_iff_rel]; simp [f.map_rel_iff]
 
-theorem RelEmbedding.maximals_image_eq (f : r ↪r s) (x : Set α) :
-    maximals s (f '' x) = f '' maximals r x :=
-  f.swap.minimals_image_eq x
+theorem RelEmbedding.image_maximals_eq (f : r ↪r s) (x : Set α) :
+    f '' maximals r x = maximals s (f '' x) :=
+  f.swap.image_minimals_eq x
 
 section
 
@@ -342,17 +342,17 @@ variable [LE α] [LE β] {s : Set α} {t : Set β}
 
 theorem image_minimals_univ :
     Subtype.val '' minimals (· ≤ ·) (univ : Set s) = minimals (· ≤ ·) s := by
-  rw [← minimals_image_of_rel_iff_rel, image_univ, Subtype.range_val]; intros; rfl
+  rw [image_minimals_of_rel_iff_rel, image_univ, Subtype.range_val]; intros; rfl
 
 theorem image_maximals_univ :
     Subtype.val '' maximals (· ≤ ·) (univ : Set s) = maximals (· ≤ ·) s :=
   image_minimals_univ (α := αᵒᵈ)
 
-theorem OrderIso.map_mem_minimals (f : s ≃o t) {x : α}
+nonrec theorem OrderIso.map_mem_minimals (f : s ≃o t) {x : α}
     (hx : x ∈ minimals (· ≤ ·) s) : (f ⟨x, hx.1⟩).val ∈ minimals (· ≤ ·) t := by
   rw [← image_minimals_univ] at hx
   obtain ⟨x, h, rfl⟩ := hx
-  convert _root_.map_mem_minimals (f := Subtype.val ∘ f) (fun _ _ _ _ ↦ f.map_rel_iff.symm) h
+  convert map_mem_minimals (f := Subtype.val ∘ f) (fun _ _ _ _ ↦ f.map_rel_iff.symm) h
   rw [image_comp, image_univ, f.range_eq, image_univ, Subtype.range_val]
 
 theorem OrderIso.map_mem_maximals (f : s ≃o t) {x : α}
