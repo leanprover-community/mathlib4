@@ -898,6 +898,7 @@ theorem toEquiv_symm (e : α ≃o β) : e.toEquiv.symm = e.symm.toEquiv :=
   rfl
 #align order_iso.to_equiv_symm OrderIso.toEquiv_symm
 
+@[norm_cast]
 theorem coe_symm (e : α ≃o β) : (e : α ≃ β).symm = e.symm := rfl
 
 /-- Composition of two order isomorphisms is an order isomorphism. -/
