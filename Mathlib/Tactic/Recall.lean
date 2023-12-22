@@ -58,8 +58,8 @@ elab_rules : command
         let newVal := newInfo.value?.get!.instantiateLevelParams newInfo.levelParams mvs
         unless (← isDefEq infoVal newVal) do
           let err :=
-            m!"value mismatch{indentExpr declConst}\nhas value{indentExpr newVal}\n" ++
-            m!"but is expected to have value{indentExpr infoVal}"
+            m!"value mismatch{indentExpr declConst}\nhas value{indentExpr newVal}\n\
+               but is expected to have value{indentExpr infoVal}"
           throwErrorAt val err
     else
       let (binders, type?) := expandOptDeclSig sig
