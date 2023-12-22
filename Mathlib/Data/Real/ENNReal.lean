@@ -1030,7 +1030,7 @@ theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0�
   | (n + 1 + 1), _ => fun x y h => mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
 #align ennreal.pow_strict_mono ENNReal.pow_strictMono
 
-@[gcongr] protected theorem pow_lt_pow_of_lt_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
+@[gcongr] protected theorem pow_lt_pow_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
     a ^ n < b ^ n :=
   ENNReal.pow_strictMono hn h
 
@@ -1240,7 +1240,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
 #align ennreal.sub_right_inj ENNReal.sub_right_inj
 
 theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  cases' le_or_lt a b with hab hab; · simp [hab, mul_right_mono hab]
+  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 #align ennreal.sub_mul ENNReal.sub_mul
@@ -1977,13 +1977,13 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
   · simp only [Int.ofNat_eq_coe, zpow_ofNat]
-    exact pow_le_pow hx (Int.le_of_ofNat_le_ofNat h)
+    exact pow_le_pow_right hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.ofNat_nonneg _)
   · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_ofNat]
     refine' (ENNReal.inv_le_one.2 _).trans _ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
-    apply pow_le_pow hx
+    apply pow_le_pow_right hx
     simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.ofNat_add, Int.ofNat_one, Int.negSucc_eq] using
       h
 #align ennreal.zpow_le_of_le ENNReal.zpow_le_of_le

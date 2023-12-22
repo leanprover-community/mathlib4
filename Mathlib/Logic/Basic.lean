@@ -1217,8 +1217,6 @@ protected theorem Ne.ite_ne_right_iff (h : a ≠ b) : ite P a b ≠ b ↔ P :=
 
 variable (P Q a b)
 
-/-- A `dite` whose results do not actually depend on the condition may be reduced to an `ite`. -/
-@[simp] theorem dite_eq_ite : (dite P (fun _ ↦ a) fun _ ↦ b) = ite P a b := rfl
 #align dite_eq_ite dite_eq_ite
 
 theorem dite_eq_or_eq : (∃ h, dite P A B = A h) ∨ ∃ h, dite P A B = B h :=

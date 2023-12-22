@@ -120,7 +120,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
   rw [sum_const]
   refine' mul_le_mul_right' _ _
   have t := card_filter_atomise_le_two_pow (s := U) hX
-  refine' t.trans (pow_le_pow (by norm_num) <| tsub_le_tsub_right _ _)
+  refine' t.trans (pow_le_pow_right (by norm_num) <| tsub_le_tsub_right _ _)
   exact card_image_le.trans (card_le_of_subset <| filter_subset _ _)
 
 private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
@@ -245,7 +245,7 @@ private theorem m_add_one_div_m_le_one_add [Nonempty α]
   have : ↑1 + ↑1 / (m : ℝ) ≤ ↑1 + ε ^ 5 / 100 := by
     rw [add_le_add_iff_left, ← one_div_div (100 : ℝ)]
     exact one_div_le_one_div_of_le (by sz_positivity) (hundred_div_ε_pow_five_le_m hPα hPε)
-  refine' (pow_le_pow_of_le_left _ this 2).trans _
+  refine' (pow_le_pow_left _ this 2).trans _
   · positivity
   rw [add_sq, one_pow, add_assoc, add_le_add_iff_left, mul_one, ← le_sub_iff_add_le',
     div_eq_mul_one_div _ (49 : ℝ), mul_div_left_comm (2 : ℝ), ← mul_sub_left_distrib, div_pow,
@@ -367,7 +367,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
     · rw [biUnion_parts, biUnion_parts]
     · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← cast_mul, ← mul_pow, cast_pow]
       norm_cast
-  refine' le_trans _ (pow_le_pow_of_le_left hGε this 2)
+  refine' le_trans _ (pow_le_pow_left hGε this 2)
   rw [sub_sq, sub_add, sub_le_sub_iff_left]
   refine' (sub_le_self _ <| sq_nonneg <| ε ^ 5 / 50).trans _
   rw [mul_right_comm, mul_div_left_comm, div_eq_mul_inv (ε ^ 5),

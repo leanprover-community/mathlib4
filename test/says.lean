@@ -50,6 +50,8 @@ set_option says.verify true in
 /--
 error: Tactic `simp?` produced `simp only [List.length_append]`,
 but was expecting it to produce `simp only []`!
+
+You can reproduce this error locally using `set_option says.verify true`.
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
