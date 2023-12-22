@@ -333,12 +333,16 @@ theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun f hf _ hf
 theorem Set.Subsingleton.isLindelof (hs : s.Subsingleton) : IsLindelof s :=
   Subsingleton.induction_on hs isLindelof_empty fun _ ↦ isLindelof_singleton
 
-
-
 /-- Type class for Lindelöf spaces.  -/
 class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Lindelöf space, `Set.univ` is a Lindelöf set. -/
   isLindelof_univ : IsLindelof (univ : Set X)
+
+theorem isLindelof_univ_iff : IsLindelof (univ : Set X) ↔ LindelofSpace X :=
+  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+
+theorem isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
+  h.isLindelof_univ
 
 /-- A compact set `s` is Lindelöf. -/
 theorem IsCompact.isLindelof (hs : IsCompact s) :
