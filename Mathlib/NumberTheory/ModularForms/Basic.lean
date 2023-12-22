@@ -270,7 +270,7 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
 @[simps! (config := .asFn) toFun toSlashInvariantForm]
-def const (x : ℂ) : (ModularForm Γ 0) where
+def const (x : ℂ) : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' x := mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
   bdd_at_infty' A := by
