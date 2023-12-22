@@ -1047,7 +1047,7 @@ theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H]
 
 
 @[to_additive (attr := simp) mod_card_nsmul]
-lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n :=
+lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
   rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
 #align pow_eq_mod_card pow_mod_card
 #align nsmul_eq_mod_card mod_card_nsmul
