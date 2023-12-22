@@ -1048,8 +1048,7 @@ theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H]
 
 @[to_additive (attr := simp) mod_card_nsmul]
 lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n :=
-  mul_left_injective (a ^ (card G * (n / card G))) $ by
-    simp_rw [←pow_add, Nat.mod_add_div, pow_add, pow_mul, pow_card_eq_one, one_pow, mul_one]
+  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
 #align pow_eq_mod_card pow_mod_card
 #align nsmul_eq_mod_card mod_card_nsmul
 
@@ -1178,9 +1177,8 @@ end PowIsSubgroup
 section LinearOrderedSemiring
 variable [LinearOrderedSemiring G] {a : G}
 
-protected lemma IsOfFinOrder.eq_one (ha₀ : 0 ≤ a) : IsOfFinOrder a → a = 1 := by
-  rw [isOfFinOrder_iff_pow_eq_one]
-  rintro ⟨n, hn, ha⟩
+protected lemma IsOfFinOrder.eq_one (ha₀ : 0 ≤ a) (ha : IsOfFinOrder a) : a = 1 := by
+  obtain ⟨n, hn, ha⟩ := ha.exists_pow_eq_one
   exact (pow_eq_one_iff_of_nonneg ha₀ hn.ne').1 ha
 
 end LinearOrderedSemiring
