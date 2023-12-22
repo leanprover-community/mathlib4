@@ -575,9 +575,9 @@ corresponding indexed family whose index type is the subtype
 corresponding to that subset. -/
 theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V} {x : k} {s : Set ι}
     {p : ι → P} {b : P} :
-    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : ∑ i in fs, w i = x),
+    (∃ fs : Finset ι, ↑fs ⊆ s ∧ ∃ w : ι → k, ∑ i in fs, w i = x ∧
         v = fs.weightedVSubOfPoint p b w) ↔
-      ∃ (fs : Finset s) (w : s → k) (_ : ∑ i in fs, w i = x),
+      ∃ (fs : Finset s) (w : s → k), ∑ i in fs, w i = x ∧
         v = fs.weightedVSubOfPoint (fun i : s => p i) b w := by
   classical
     simp_rw [weightedVSubOfPoint_apply]
@@ -600,9 +600,9 @@ only if it can be expressed as `weightedVSub` with sum of weights 0
 for the corresponding indexed family whose index type is the subtype
 corresponding to that subset. -/
 theorem eq_weightedVSub_subset_iff_eq_weightedVSub_subtype {v : V} {s : Set ι} {p : ι → P} :
-    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : ∑ i in fs, w i = 0),
+    (∃ fs : Finset ι, ↑fs ⊆ s ∧ ∃ w : ι → k, ∑ i in fs, w i = 0 ∧
         v = fs.weightedVSub p w) ↔
-      ∃ (fs : Finset s) (w : s → k) (_ : ∑ i in fs, w i = 0),
+      ∃ (fs : Finset s) (w : s → k), ∑ i in fs, w i = 0 ∧
         v = fs.weightedVSub (fun i : s => p i) w :=
   eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype
 #align finset.eq_weighted_vsub_subset_iff_eq_weighted_vsub_subtype Finset.eq_weightedVSub_subset_iff_eq_weightedVSub_subtype
@@ -618,9 +618,9 @@ indexed family whose index type is the subtype corresponding to that
 subset. -/
 theorem eq_affineCombination_subset_iff_eq_affineCombination_subtype {p0 : P} {s : Set ι}
     {p : ι → P} :
-    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : ∑ i in fs, w i = 1),
+    (∃ fs : Finset ι, ↑fs ⊆ s ∧ ∃ w : ι → k, ∑ i in fs, w i = 1 ∧
         p0 = fs.affineCombination k p w) ↔
-      ∃ (fs : Finset s) (w : s → k) (_ : ∑ i in fs, w i = 1),
+      ∃ (fs : Finset s) (w : s → k), ∑ i in fs, w i = 1 ∧
         p0 = fs.affineCombination k (fun i : s => p i) w := by
   simp_rw [affineCombination_apply, eq_vadd_iff_vsub_eq]
   exact eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype
