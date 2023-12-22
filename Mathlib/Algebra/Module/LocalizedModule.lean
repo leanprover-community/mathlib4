@@ -1115,8 +1115,8 @@ section Basis
 open Submodule
 
 variable (Rₛ : Type*) [CommRing Rₛ] [Algebra R Rₛ] [IsLocalization S Rₛ] (Mₛ : Type*)
-  [AddCommGroup Mₛ] [Module R Mₛ] {M : Submodule R Mₛ} [IsLocalizedModule S M.subtype] [Module Rₛ Mₛ]
-  [IsScalarTower R Rₛ Mₛ]
+  [AddCommGroup Mₛ] [Module R Mₛ] {M : Submodule R Mₛ} [IsLocalizedModule S M.subtype]
+  [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
 
 theorem SpanEqTop.isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
     span Rₛ (M.subtype '' v) = ⊤ := by
@@ -1133,8 +1133,8 @@ theorem SpanEqTop.isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
 
 variable {ι : Type*} (b : Basis ι R M)
 
-/-- Let `Mₛ` be a `R`-module and let `M` be a submodule of `Mₛ` such that `Mₛ` is the localization at
-`S` of `M` where `S` is a submonoid of `R`. Assume that `Mₛ` is a `Rₛ`-module where `Rₛ` is a
+/-- Let `Mₛ` be a `R`-module and let `M` be a submodule of `Mₛ` such that `Mₛ` is the localization
+at `S` of `M` where `S` is a submonoid of `R`. Assume that `Mₛ` is a `Rₛ`-module where `Rₛ` is a
 localization of `R` at `S`. Then, any `R`-basis of `M` is a `Rₛ`-basis of `Mₛ`. -/
 noncomputable def Basis.isLocalizedModule : Basis ι Rₛ Mₛ := by
   exact Basis.mk
