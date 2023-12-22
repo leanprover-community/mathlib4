@@ -1503,7 +1503,7 @@ theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
 @[to_additive]
 theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
     K.map f = K.comap (G := N) f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  map_equiv_eq_comap_symm
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* G) (K : Subgroup G) :
