@@ -172,6 +172,7 @@ theorem mk_mul_mk [Add ι] [GMul A] {i j} (a : A i) (b : A j) :
   rfl
 #align graded_monoid.mk_mul_mk GradedMonoid.mk_mul_mk
 
+
 namespace GMonoid
 
 variable {A} [AddMonoid ι] [GMul A] [GOne A]
@@ -282,6 +283,16 @@ variable [Zero ι] [GOne A]
 instance GradeZero.one : One (A 0) :=
   ⟨GOne.one⟩
 #align graded_monoid.grade_zero.has_one GradedMonoid.GradeZero.one
+
+variable [GradedMonoid.GOne A]
+
+@[simp]
+theorem one_fst : (1 : GradedMonoid A).fst = 0 :=
+  rfl
+
+@[simp]
+theorem one_snd : (1 : GradedMonoid A).snd = 1 :=
+  rfl
 
 end One
 

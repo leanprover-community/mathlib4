@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.DirectSum.Ring
+import Mathlib.Algebra.GradedMonoid
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
@@ -412,64 +413,44 @@ def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ
   holo' := f.holo'
   bdd_at_infty' := by intro A; convert f.bdd_at_infty' A <;> exact h.symm
 
-theorem type_eq {a b : ℤ} (Γ : Subgroup SL(2, ℤ)) (h : a = b) :
-    ModularForm Γ a = ModularForm Γ b := by
-  induction h
-  rfl
+@[ext]
+theorem gradedMonoid_eq_of_cast {Γ : Subgroup SL(2, ℤ)} {a b : GradedMonoid (ModularForm Γ)}
+    (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
+  obtain ⟨i, a⟩ := a
+  obtain ⟨j, b⟩ := b
+  cases h
+  exact congr_arg _ h2
 
-theorem cast_eq_mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) :
-    cast (type_eq Γ h) f = mcast h f := by
-  induction h
+theorem one_mul (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
+    mcast (zero_add k) ((1 : ModularForm Γ 0).mul f) = f := by
+  rw [mcast]
   ext1
+  simp
   rfl
 
-theorem hEq_one_mul (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
-    HEq ((1 : ModularForm Γ 0).mul f) f := by
-  apply heq_of_cast_eq (type_eq Γ (zero_add k).symm).symm
-  funext
-  rw [cast_eq_mcast, mcast]
-  simp only [mul_coe, one_coe_eq_one, one_mul]
+theorem mul_one (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
+    mcast (add_zero k) (f.mul (1 : ModularForm Γ 0)) = f := by
+  rw [mcast]
   ext1
+  simp
   rfl
-  simp only [zero_add]
 
-theorem hEq_mul_one (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
-    HEq (f.mul (1 : ModularForm Γ 0)) f := by
-  apply heq_of_cast_eq (type_eq Γ (add_zero k).symm).symm
-  funext
-  rw [cast_eq_mcast, mcast]
-  simp only [mul_coe, one_coe_eq_one, mul_one]
+theorem mul_assoc {a b c : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ a)
+    (g : ModularForm Γ b) (h : ModularForm Γ c) :
+  mcast (add_assoc _ _ _) ((f.mul g).mul h) = (f.mul (g.mul h)) := by
+  rw [mcast]
+  congr
   ext1
-  rfl
-  simp only [add_zero]
+  simp only [mul_coe, Pi.mul_apply, toSlashInvariantForm_coe]
+  ring
 
-theorem hEq_mul_assoc {a b c : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ a)
-    (g : ModularForm Γ b) (h : ModularForm Γ c) : HEq ((f.mul g).mul h) (f.mul (g.mul h)) := by
-  apply heq_of_cast_eq (type_eq Γ (add_assoc a b c))
-  rw [cast_eq_mcast, mcast]
+theorem mul_comm {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ a) (g : ModularForm Γ b) :
+    mcast (add_comm a b) (f.mul g) = (g.mul f) := by
+  rw [mcast]
+  congr
   ext1
-  simp only [mul_coe, Pi.mul_apply, ← mul_assoc]
-  rfl
-  apply add_assoc
-
-theorem hEq_mul_comm {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ a) (g : ModularForm Γ b) :
-    HEq (f.mul g) (g.mul f) := by
-  apply heq_of_cast_eq (type_eq Γ (add_comm a b))
-  rw [cast_eq_mcast, mcast]
-  ext1
-  simp only [mul_coe, Pi.mul_apply, mul_comm]
-  rfl
-  apply add_comm
-
-variable (ι : Type _) (A : ι → Type _) [Zero ι] [GradedMonoid.GOne A]
-
-@[simp]
-theorem one_fst : (1 : GradedMonoid A).fst = 0 :=
-  rfl
-
-@[simp]
-theorem one_snd : (1 : GradedMonoid A).snd = 1 :=
-  rfl
+  simp only [mul_coe, Pi.mul_apply, toSlashInvariantForm_coe]
+  ring
 
 instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne (ModularForm Γ) where
   one := 1
@@ -477,24 +458,25 @@ instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne (ModularForm Γ) where
 instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
 
+open GradedMonoid
+
+instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
+  intCast := fun n => n • (1 : ModularForm Γ 0)
+
+lemma MF_natcast_eq_SIF_natcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
+  (n : ModularForm Γ 0) =  (n :  SlashInvariantForm Γ 0) := by
+  rfl
+
+@[simp]
+lemma intCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
+  (n : ModularForm Γ 0 ) = n • (1 : ModularForm Γ 0) := by rfl
+
 instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
   mul f g := f.mul g
   one := 1
-  one_mul f := by
-    rw [GradedMonoid.GOne.toOne, GradedMonoid.GMul.toMul]
-    apply Sigma.ext
-    · simp only [(· * ·), one_fst, zero_add]
-    · simp only [(· * ·), one_fst, one_snd, Submodule.coe_mk, one_mul, hEq_one_mul]
-  mul_one f := by
-    rw [GradedMonoid.GOne.toOne, GradedMonoid.GMul.toMul]
-    apply Sigma.ext
-    · simp only [(· * ·), one_fst, add_zero]
-    · simp only [(· * ·), one_fst, one_snd, Submodule.coe_mk, mul_one, hEq_mul_one]
-  mul_assoc f g h := by
-    rw [GradedMonoid.GMul.toMul]
-    apply Sigma.ext
-    · apply add_assoc
-    · simp only [(· * ·), Submodule.coe_mk, hEq_mul_assoc]
+  one_mul  := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _ _)
+  mul_one  := fun a => gradedMonoid_eq_of_cast (add_zero _) (mul_one _ _)
+  mul_assoc := fun a b c => gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _)
   mul_zero {i j} f := by ext1; simp
   zero_mul {i j} f := by ext1; simp
   mul_add {i j} f g h := by
@@ -503,11 +485,7 @@ instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (Modular
   add_mul {i j} f g h := by
     ext1
     simp only [add_mul, mul_coe, Pi.mul_apply, add_apply]
-  mul_comm f g := by
-    rw [GradedMonoid.GMul.toMul]
-    apply Sigma.ext
-    · apply add_comm
-    · apply hEq_mul_comm
+  mul_comm := fun a b => gradedMonoid_eq_of_cast (add_comm _ _) (mul_comm  _ _)
   gnpow_zero' := by
     intro f
     apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_zero]
@@ -515,9 +493,10 @@ instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (Modular
     intro n f
     rw [GradedMonoid.GMul.toMul]
     apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_succ]
-  natCast n := n • (1 : ModularForm Γ 0)
-  natCast_zero := by simp only [zero_smul]
-  natCast_succ n := by simp only [add_smul, one_nsmul, add_right_inj]
-  intCast n := n • (1 : ModularForm Γ 0)
-  intCast_ofNat := by simp only [coe_nat_zsmul, forall_const]
+  natCast n := (n : ModularForm Γ 0)
+  natCast_zero := by simp
+  natCast_succ n := by simp only [Nat.cast_add, Nat.cast_one, intCast_coe, add_smul,
+    coe_nat_zsmul, one_smul]
+  intCast n := (n : ModularForm Γ 0)
+  intCast_ofNat := by simp only [coe_nat_zsmul, intCast_coe, forall_const]
   intCast_negSucc_ofNat n := by simp only [Int.negSucc_coe]; apply _root_.neg_smul
