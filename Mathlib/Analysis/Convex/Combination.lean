@@ -6,6 +6,7 @@ Authors: Yury Kudriashov
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.LinearAlgebra.AffineSpace.Basis
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 #align_import analysis.convex.combination from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
@@ -375,6 +376,13 @@ theorem Finset.mem_convexHull {s : Finset E} {x : E} : x ∈ convexHull R (s : S
   rw [Finset.convexHull_eq, Set.mem_setOf_eq]
 #align finset.mem_convex_hull Finset.mem_convexHull
 
+lemma Finset.mem_convexHull' {s : Finset E} {x : E} :
+    x ∈ convexHull R (s : Set E) ↔
+      ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y in s, w y = 1 ∧ ∑ y in s, w y • y = x := by
+  rw [mem_convexHull]
+  refine exists_congr fun w ↦ and_congr_right' $ and_congr_right fun hw ↦ ?_
+  simp_rw [centerMass_eq_of_sum_1 _ _ hw, id_eq]
+
 theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) : convexHull R s =
     { x : E | ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y in hs.toFinset, w y = 1 ∧
       hs.toFinset.centerMass w id = x } := by
@@ -551,3 +559,29 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     rw [b.coord_apply_combination_of_mem hi hw₁] at hx
     exact hx
 #align affine_basis.convex_hull_eq_nonneg_coord AffineBasis.convexHull_eq_nonneg_coord
+
+variable {s t t₁ t₂ : Finset E}
+
+lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))
+    (ht₁ : t₁ ⊆ s) (ht₂ : t₂ ⊆ s) :
+    convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ := by
+  refine (Set.subset_inter (convexHull_mono inf_le_left) $
+    convexHull_mono inf_le_right).antisymm ?_
+  simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
+  rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
+  let w (x) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
+  have h₁w : ∑ i in s, w i = 0 := by simp [Finset.inter_eq_right.2, *]
+  replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w $ by
+    simp only [sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
+      Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,
+      sub_self]
+  have ht (x) (hx₁ : x ∈ t₁) (hx₂ : x ∉ t₂) : w₁ x = 0 := by
+    simpa [hx₁, hx₂] using hs _ (ht₁ hx₁)
+  refine ⟨w₁, ?_, ?_, ?_⟩
+  · simp only [and_imp, Finset.mem_inter]
+    exact fun y hy₁ _ ↦ h₁w₁ y hy₁
+  all_goals
+  · rwa [sum_subset $ inter_subset_left _ _]
+    rintro x
+    simp_intro hx₁ hx₂
+    simp [ht x hx₁ hx₂]

@@ -568,6 +568,7 @@ theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   fun.
 #align set.empty_subset Set.empty_subset
 
+@[simp]
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 #align set.subset_empty_iff Set.subset_empty_iff
