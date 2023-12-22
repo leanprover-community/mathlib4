@@ -375,6 +375,7 @@ theorem Finset.mem_convexHull {s : Finset E} {x : E} : x ∈ convexHull R (s : S
   rw [Finset.convexHull_eq, Set.mem_setOf_eq]
 #align finset.mem_convex_hull Finset.mem_convexHull
 
+/-- This is a version of `Finset.mem_convexHull` stated without `Finset.centerMass`. -/
 lemma Finset.mem_convexHull' {s : Finset E} {x : E} :
     x ∈ convexHull R (s : Set E) ↔
       ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y in s, w y = 1 ∧ ∑ y in s, w y • y = x := by
