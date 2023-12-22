@@ -361,7 +361,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
   induction s generalizing l₁
   case slnil => cases h₂
   case cons r₁ r₂ b s' ih =>
-    simp? at h₂ says simp only [Bool.not_eq_true, mem_cons] at h₂
+    simp? at h₂ says simp only [mem_cons] at h₂
     cases' h₂ with e m
     · subst b
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
