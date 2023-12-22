@@ -177,7 +177,7 @@ theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀
     simp [h]
   rw [← h2, ← mk_preimage_tprod, preimage_preimage]
   simp only [TProd.mk_elim hnd h]
-  dsimp; rfl
+  dsimp
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set

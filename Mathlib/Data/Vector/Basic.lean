@@ -169,7 +169,7 @@ theorem get_tail (x : Vector α n) (i) :
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
-  rw [←h] at ih
+  rw [← h] at ih
   contradiction
 #align vector.nth_tail Vector.get_tail
 

@@ -64,12 +64,12 @@ def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
 set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone Profinite.asLimitCone
 
-instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit X.diagram).lift X.asLimitCone) :=
+instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
   isIso_of_bijective _
     (by
       refine' ⟨fun a b h => _, fun a => _⟩
       · refine' DiscreteQuotient.eq_of_forall_proj_eq fun S => _
-        apply_fun fun f : (limitCone X.diagram).pt => f.val S at h
+        apply_fun fun f : (limitCone.{u, u} X.diagram).pt => f.val S at h
         exact h
       · obtain ⟨b, hb⟩ :=
           DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (homOfLE h)
@@ -87,15 +87,15 @@ set_option linter.uppercaseLean3 false in
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
 -/
-def isoAsLimitConeLift : X ≅ (limitCone X.diagram).pt :=
-  asIso <| (limitConeIsLimit _).lift X.asLimitCone
+def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
+  asIso <| (limitConeIsLimit.{u, u} _).lift X.asLimitCone
 set_option linter.uppercaseLean3 false in
 #align Profinite.iso_as_limit_cone_lift Profinite.isoAsLimitConeLift
 
 /-- The isomorphism of cones `X.asLimitCone` and `Profinite.limitCone X.diagram`.
 The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
-def asLimitConeIso : X.asLimitCone ≅ limitCone _ :=
+def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
   Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
 set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone_iso Profinite.asLimitConeIso

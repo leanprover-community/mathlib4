@@ -72,6 +72,7 @@ def countedSequence (p q : ℕ) : Set (List ℤ) :=
   {l | l.count 1 = p ∧ l.count (-1) = q ∧ ∀ x ∈ l, x = (1 : ℤ) ∨ x = -1}
 #align ballot.counted_sequence Ballot.countedSequence
 
+open scoped List in
 /-- An alternative definition of `countedSequence` that uses `List.Perm`. -/
 theorem mem_countedSequence_iff_perm {p q l} :
     l ∈ countedSequence p q ↔ l ~ List.replicate p (1 : ℤ) ++ List.replicate q (-1) := by
@@ -221,7 +222,9 @@ theorem first_vote_pos :
     simp [ENNReal.div_self _ _]
   | 0, q + 1, _ => by
     rw [counted_left_zero, condCount_singleton]
-    simp
+    simp only [List.replicate, Nat.add_eq, add_zero, mem_setOf_eq, List.headI_cons, Nat.cast_zero,
+      ENNReal.zero_div, ite_eq_right_iff]
+    decide
   | p + 1, q + 1, _ => by
     simp_rw [counted_succ_succ]
     rw [← condCount_disjoint_union ((countedSequence_finite _ _).image _)

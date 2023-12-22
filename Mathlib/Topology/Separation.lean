@@ -29,20 +29,24 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   there is two disjoint open sets, one containing `x`, and the other `y`.
 * `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
-* `T3Space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
-  there is disjoint open sets containing `x` and `C` respectively. In `mathlib`, T₃ implies T₂.₅.
+* `RegularSpace`: A regular space is one where, given any closed `C` and `x ∉ C`,
+  there are disjoint open sets containing `x` and `C` respectively. Such a space is not necessarily
+  Hausdorff.
+* `T3Space`: A T₃ space is a T0 regular space. In `mathlib`, T₃ implies T₂.₅.
 * `NormalSpace`: A normal space, is one where given two disjoint closed sets,
   we can find two open sets that separate them.
 * `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
-* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*
+* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*, is a space in which,
+  given two sets `s` and `t` such that the closure of `s` is disjoint from `t`, and conversely,
+  then `s` and `t` have disjoint neighborhoods.
 
 ## Main results
 
 ### T₀ spaces
 
-* `IsClosed.exists_closed_singleton` Given a closed set `S` in a compact T₀ space,
+* `IsClosed.exists_closed_singleton`: Given a closed set `S` in a compact T₀ space,
   there is some `x ∈ S` such that `{x}` is closed.
-* `exists_open_singleton_of_open_finset` Given an open `Finset` `S` in a T₀ space,
+* `exists_open_singleton_of_open_finite`: Given an open finite set `S` in a T₀ space,
   there is some `x ∈ S` such that `{x}` is open.
 
 ### T₁ spaces
@@ -71,7 +75,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 If the space is also compact:
 
 * `normalOfCompactT2`: A compact T₂ space is a `NormalSpace`.
-* `connectedComponent_eq_iInter_clopen`: The connected component of a point
+* `connectedComponent_eq_iInter_isClopen`: The connected component of a point
   is the intersection of all its clopen neighbourhoods.
 * `compact_t2_tot_disc_iff_tot_sep`: Being a `TotallyDisconnectedSpace`
   is equivalent to being a `TotallySeparatedSpace`.
@@ -306,7 +310,7 @@ theorem minimal_nonempty_open_eq_singleton [T0Space X] {s : Set X} (hs : IsOpen 
 #align minimal_nonempty_open_eq_singleton minimal_nonempty_open_eq_singleton
 
 /-- Given an open finite set `S` in a T₀ space, there is some `x ∈ S` such that `{x}` is open. -/
-theorem exists_open_singleton_of_open_finite [T0Space X] {s : Set X} (hfin : s.Finite)
+theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s.Finite)
     (hne : s.Nonempty) (ho : IsOpen s) : ∃ x ∈ s, IsOpen ({x} : Set X) := by
   lift s to Finset X using hfin
   induction' s using Finset.strongInductionOn with s ihs
@@ -321,11 +325,12 @@ theorem exists_open_singleton_of_open_finite [T0Space X] {s : Set X} (hfin : s.F
     refine' fun t hts htne hto => of_not_not fun hts' => ht _
     lift t to Finset X using s.finite_toSet.subset hts
     exact ⟨t, ssubset_iff_subset_ne.2 ⟨hts, mt Finset.coe_inj.2 hts'⟩, htne, hto⟩
-#align exists_open_singleton_of_open_finite exists_open_singleton_of_open_finite
+#align exists_open_singleton_of_open_finite exists_isOpen_singleton_of_isOpen_finite
 
 theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
     ∃ x : X, IsOpen ({x} : Set X) :=
-  let ⟨x, _, h⟩ := exists_open_singleton_of_open_finite (Set.toFinite _) univ_nonempty isOpen_univ
+  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _)
+    univ_nonempty isOpen_univ
   ⟨x, h⟩
 #align exists_open_singleton_of_fintype exists_open_singleton_of_finite
 
@@ -356,6 +361,9 @@ instance Pi.instT0Space {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace
     T0Space (∀ i, X i) :=
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
 #align pi.t0_space Pi.instT0Space
+
+instance ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
+  embedding_uLift_down.t0Space
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space X := by
@@ -581,8 +589,8 @@ theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [Topological
 
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
-    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' :=
-  by simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
+    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' := by
+  simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 #align continuous_at_update_of_ne continuousAt_update_of_ne
 
 theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
@@ -621,6 +629,9 @@ instance [TopologicalSpace Y] [T1Space X] [T1Space Y] : T1Space (X × Y) :=
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T1Space (X i)] :
     T1Space (∀ i, X i) :=
   ⟨fun f => univ_pi_singleton f ▸ isClosed_set_pi fun _ _ => isClosed_singleton⟩
+
+instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
+  embedding_uLift_down.t1Space
 
 -- see Note [lower instance priority]
 instance (priority := 100) T1Space.t0Space [T1Space X] : T0Space X :=
@@ -723,7 +734,7 @@ theorem nhds_le_nhdsSet_iff [T1Space X] {s : Set X} {x : X} : 𝓝 x ≤ 𝓝ˢ 
 /-- Removing a non-isolated point from a dense set, one still obtains a dense set. -/
 theorem Dense.diff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [NeBot (𝓝[≠] x)] :
     Dense (s \ {x}) :=
-  hs.inter_of_open_right (dense_compl_singleton x) isOpen_compl_singleton
+  hs.inter_of_isOpen_right (dense_compl_singleton x) isOpen_compl_singleton
 #align dense.diff_singleton Dense.diff_singleton
 
 /-- Removing a finset from a dense set in a space without isolated points, one still
@@ -868,6 +879,17 @@ theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s]
     (hx : x ∈ s) : ∃ U ∈ 𝓝 x, U ∩ s = {x} := by
   simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
 #align nhds_inter_eq_singleton_of_mem_discrete nhds_inter_eq_singleton_of_mem_discrete
+
+/-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
+set that only meets `s` at `x`.  -/
+theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+    (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
+  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
+  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
+  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
+  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
+    exact ⟨ht_x, hx⟩
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
@@ -1218,6 +1240,9 @@ theorem Embedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y} (hf : E
   .of_injective_continuous hf.inj hf.continuous
 #align embedding.t2_space Embedding.t2Space
 
+instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
+  embedding_uLift_down.t2Space
+
 instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
@@ -1320,13 +1345,12 @@ section SeparatedFinset
 
 theorem finset_disjoint_finset_opens_of_t2 [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
-  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| by
-    exact_mod_cast h
+  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 #align finset_disjoint_finset_opens_of_t2 finset_disjoint_finset_opens_of_t2
 
 theorem point_disjoint_finset_opens_of_t2 [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
-    SeparatedNhds ({x} : Set X) s := by
-  exact_mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
+    SeparatedNhds ({x} : Set X) s :=
+  mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 point_disjoint_finset_opens_of_t2
 
 end SeparatedFinset
@@ -1540,7 +1564,7 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 /-- There does not exist a nontrivial preirreducible T₂ space. -/
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
-  (PreirreducibleSpace.isPreirreducible_univ (α := X)).subsingleton.not_nontrivial nontrivial_univ
+  (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
 #align not_preirreducible_nontrivial_t2 not_preirreducible_nontrivial_t2
 
 end Separation
@@ -1605,6 +1629,12 @@ theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
     (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
+
+/-- A locally compact T2 space is regular. -/
+instance [LocallyCompactSpace X] [T2Space X] : RegularSpace X := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases local_compact_nhds hx with ⟨k, kx, ks, hk⟩
+  exact ⟨k, kx, hk.isClosed, ks⟩
 
 variable [RegularSpace X] {x : X} {s : Set X}
 
@@ -1729,6 +1759,76 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 end RegularSpace
 
+section ClosableCompactSubsetOpenSpace
+
+/-- A class of topological spaces in which, given a compact set included inside an open set, then
+the closure of the compact set is also included in the open set.
+Satisfied notably for T2 spaces and regular spaces, and useful when discussing classes of
+regular measures. Equivalent to regularity among locally compact spaces. -/
+class ClosableCompactSubsetOpenSpace (X : Type*) [TopologicalSpace X] : Prop :=
+  closure_subset_of_isOpen : ∀ (K U : Set X), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
+
+theorem IsCompact.closure_subset_of_isOpen [ClosableCompactSubsetOpenSpace X]
+    {s : Set X} (hs : IsCompact s) {u : Set X} (hu : IsOpen u) (h : s ⊆ u) :
+    closure s ⊆ u :=
+  ClosableCompactSubsetOpenSpace.closure_subset_of_isOpen s u hs hu h
+
+instance (priority := 150) [T2Space X] : ClosableCompactSubsetOpenSpace X :=
+  ⟨fun K _U K_comp _U_open KU ↦ by rwa [K_comp.isClosed.closure_eq]⟩
+
+/-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
+open set `u`, then its closure is also contained in `u`. -/
+instance (priority := 150) [RegularSpace X] : ClosableCompactSubsetOpenSpace X := by
+  refine ⟨fun s u hs hu h ↦ ?_⟩
+  obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
+    apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
+    · exact ⟨∅, by simp⟩
+    · intro t' t ht't ⟨F, tF, F_closed, Fu⟩
+      exact ⟨F, ht't.trans tF, F_closed, Fu⟩
+    · intro t t' ⟨F, tF, F_closed, Fu⟩ ⟨F', t'F', F'_closed, F'u⟩
+      exact ⟨F ∪ F', union_subset_union tF t'F', F_closed.union F'_closed, union_subset Fu F'u⟩
+    · intro x hx
+      rcases exists_mem_nhds_isClosed_subset (hu.mem_nhds (h hx)) with ⟨F, F_mem, F_closed, Fu⟩
+      exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
+  exact (closure_minimal sF F_closed).trans Fu
+
+/-- In a (possibly non-Hausdorff) locally compact space with the `ClosableCompactSubsetOpenSpace`
+  property (for instance regular spaces), for every containment `K ⊆ U` of a compact set `K` in an
+  open set `U`, there is a compact closed neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently,
+  there is a compact closed set `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
+theorem exists_compact_closed_between [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
+    {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
+    ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
+  rcases exists_compact_between hK hU h_KU with ⟨L, L_comp, KL, LU⟩
+  rcases exists_compact_between hK isOpen_interior KL with ⟨M, M_comp, KM, ML⟩
+  refine ⟨closure M, ?_, isClosed_closure, ?_, ?_⟩
+  · have : closure M ∩ L = closure M := by
+      apply inter_eq_self_of_subset_left
+      exact (M_comp.closure_subset_of_isOpen isOpen_interior ML).trans interior_subset
+    rw [← this]
+    apply L_comp.inter_left isClosed_closure
+  · exact KM.trans (interior_mono subset_closure)
+  · apply M_comp.closure_subset_of_isOpen hU
+    exact ML.trans (interior_subset.trans LU)
+
+/-- A locally compact space with the `ClosableCompactSubsetOpenSpace` is `Regular`. -/
+instance (priority := 80) [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X] :
+    RegularSpace X := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases _root_.mem_nhds_iff.1 hx with ⟨u, us, u_open, xu⟩
+  rcases exists_compact_closed_between (isCompact_singleton (x := x)) u_open (by simpa using xu)
+    with ⟨t, -, t_closed, xt, tu⟩
+  have : interior t ∈ 𝓝 x := isOpen_interior.mem_nhds (by simpa using xt)
+  exact ⟨t, interior_mem_nhds.mp this, t_closed, tu.trans us⟩
+
+protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
+    {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
+  rcases exists_compact_superset hK with ⟨L, L_comp, hL⟩
+  exact L_comp.of_isClosed_subset isClosed_closure
+    ((hK.closure_subset_of_isOpen isOpen_interior hL).trans interior_subset)
+
+end ClosableCompactSubsetOpenSpace
+
 section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
@@ -1757,6 +1857,9 @@ protected theorem Embedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X → 
 instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   embedding_subtype_val.t3Space
 #align subtype.t3_space Subtype.t3Space
+
+instance ULift.instT3Space [T3Space X] : T3Space (ULift X) :=
+  embedding_uLift_down.t3Space
 
 instance [TopologicalSpace Y] [T3Space X] [T3Space Y] : T3Space (X × Y) := ⟨⟩
 
@@ -1863,7 +1966,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     exact (hUd u huU).le_bot ⟨hxu, hx⟩
   · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
-    cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
+    rcases le_total (Encodable.encode u) (Encodable.encode v) with hle | hle
     exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
 #align normal_space_of_t3_second_countable NormalSpace.of_regularSpace_secondCountableTopology
 
@@ -1894,6 +1997,9 @@ protected theorem ClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : 
   toT1Space := hf.toEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 #align closed_embedding.normal_space ClosedEmbedding.t4Space
+
+instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
+  ULift.closedEmbedding_down.t4Space
 
 namespace SeparationQuotient
 
@@ -1941,6 +2047,9 @@ theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : E
 instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
   embedding_subtype_val.t5Space
 
+instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
+  embedding_uLift_down.t5Space
+
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/
 instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
@@ -1967,9 +2076,9 @@ end CompletelyNormal
 
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
-theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X) :
+theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :
     connectedComponent x = ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s := by
-  apply Subset.antisymm connectedComponent_subset_iInter_clopen
+  apply Subset.antisymm connectedComponent_subset_iInter_isClopen
   -- Reduce to showing that the clopen intersection is connected.
   refine' IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun s => s.2.2)
   -- We do this by showing that any disjoint cover by two closed sets implies
@@ -2019,7 +2128,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X)
       · refine Subset.trans ?_ (inter_subset_right s v)
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
-#align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_clopen
+#align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_isClopen
 
 section Profinite
 
@@ -2043,7 +2152,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
   intro hyp
   suffices x ∈ connectedComponent y by
     simpa [totallyDisconnectedSpace_iff_connectedComponent_singleton.1 h y, mem_singleton_iff]
-  rw [connectedComponent_eq_iInter_clopen, mem_iInter]
+  rw [connectedComponent_eq_iInter_isClopen, mem_iInter]
   rintro ⟨w : Set X, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
   exact hyp wᶜ w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
@@ -2060,7 +2169,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
     constructor
     · have hx : connectedComponent x = {x} :=
         totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
-      rw [connectedComponent_eq_iInter_clopen] at hx
+      rw [connectedComponent_eq_iInter_isClopen] at hx
       intro hU
       let N := { s // IsClopen s ∧ x ∈ s }
       suffices : ∃ s : N, s.val ⊆ U
@@ -2079,21 +2188,21 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       exact ⟨V, hUV, V_op, hxV⟩⟩
 #align nhds_basis_clopen nhds_basis_clopen
 
-theorem isTopologicalBasis_clopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
-  apply isTopologicalBasis_of_open_of_nhds fun U (hU : IsClopen U) => hU.1
+theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
+  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.1
   intro x U hxU U_op
   have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
   rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
   use V
   tauto
-#align is_topological_basis_clopen isTopologicalBasis_clopen
+#align is_topological_basis_clopen isTopologicalBasis_isClopen
 
 /-- Every member of an open set in a compact Hausdorff totally disconnected space
   is contained in a clopen set contained in the open set.  -/
-theorem compact_exists_clopen_in_open {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
+theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
     ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
-  isTopologicalBasis_clopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
-#align compact_exists_clopen_in_open compact_exists_clopen_in_open
+  isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
+#align compact_exists_clopen_in_open compact_exists_isClopen_in_isOpen
 
 end Profinite
 
@@ -2104,15 +2213,15 @@ variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 /-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
 theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     IsTopologicalBasis { s : Set H | IsClopen s } := by
-  refine isTopologicalBasis_of_open_of_nhds (fun u hu => hu.1) fun x U memU hU => ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.1) fun x U memU hU => ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
-  obtain ⟨V : Set s, clopen_in_s, Vx, V_sub⟩ := compact_exists_clopen_in_open u_open_in_s xs
-  have V_clopen : IsClopen (((↑) : s → H) '' V) := by
-    refine' ⟨_, comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 clopen_in_s.2⟩
+  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
+  have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
+    refine' ⟨_, comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.2⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
@@ -2123,12 +2232,12 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
           apply Set.inter_eq_self_of_subset_left interior_subset
         rw [this]
         apply isOpen_interior
-    have f2 : IsOpen v := clopen_in_s.1.preimage continuous_subtype_val
+    have f2 : IsOpen v := VisClopen.1.preimage continuous_subtype_val
     have f3 : ((↑) : s → H) '' V = ((↑) : u → H) '' v := by
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_left V_sub]
     rw [f3]
     apply f1.isOpenMap v f2
-  refine' ⟨(↑) '' V, V_clopen, by simp [Vx], Subset.trans _ sU⟩
+  refine' ⟨(↑) '' V, VisClopen', by simp [Vx], Subset.trans _ sU⟩
   simp
 set_option linter.uppercaseLean3 false in
 #align loc_compact_Haus_tot_disc_of_zero_dim loc_compact_Haus_tot_disc_of_zero_dim
@@ -2153,7 +2262,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [ConnectedComponents.coe_ne_coe] at ne
   have h := connectedComponent_disjoint ne
   -- write ↑b as the intersection of all clopen subsets containing it
-  rw [connectedComponent_eq_iInter_clopen b, disjoint_iff_inter_eq_empty] at h
+  rw [connectedComponent_eq_iInter_isClopen b, disjoint_iff_inter_eq_empty] at h
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set X) (V : Set (ConnectedComponents X)),
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by

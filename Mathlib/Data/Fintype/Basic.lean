@@ -596,18 +596,21 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
 
--- see Note [lower instance priority]
-instance (priority := 100) ofIsEmpty [IsEmpty α] : Fintype α :=
+/-- An empty type is a fintype. Not registered as an instance, to make sure that there aren't two
+conflicting `Fintype ι` instances around when casing over whether a fintype `ι` is empty or not. -/
+def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
--- no-lint since while `Finset.univ_eq_empty` can prove this, it isn't applicable for `dsimp`.
 /-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp, nolint simpNF]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α _ = ∅ :=
+@[simp]
+theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+
+instance : Fintype Empty := Fintype.ofIsEmpty
+instance : Fintype PEmpty := Fintype.ofIsEmpty
 
 end Fintype
 
@@ -757,6 +760,7 @@ theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
 
 @[simp]
 theorem toFinset_eq_empty [Fintype s] : s.toFinset = ∅ ↔ s = ∅ := by
+  let A : Fintype (∅ : Set α) := Fintype.ofIsEmpty
   rw [← toFinset_empty, toFinset_inj]
 #align set.to_finset_eq_empty Set.toFinset_eq_empty
 
@@ -1217,17 +1221,26 @@ end Trunc
 
 namespace Multiset
 
-variable [Fintype α] [DecidableEq α] [Fintype β]
+variable [Fintype α] [Fintype β]
 
 @[simp]
-theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
+theorem count_univ [DecidableEq α] (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
 
 @[simp]
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
-  rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
+  rw [← congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
+
+/-- For functions on finite sets, they are bijections iff they map universes into universes. -/
+@[simp]
+theorem bijective_iff_map_univ_eq_univ (f : α → β) :
+    f.Bijective ↔ map f (Finset.univ : Finset α).val = univ.val :=
+  ⟨fun bij ↦ congr_arg (·.val) (map_univ_equiv <| Equiv.ofBijective f bij),
+    fun eq ↦ ⟨
+      fun a₁ a₂ ↦ inj_on_of_nodup_map (eq.symm ▸ univ.nodup) _ (mem_univ a₁) _ (mem_univ a₂),
+      fun b ↦ have ⟨a, _, h⟩ := mem_map.mp (eq.symm ▸ mem_univ_val b); ⟨a, h⟩⟩⟩
 
 end Multiset
 

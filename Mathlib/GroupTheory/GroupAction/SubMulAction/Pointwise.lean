@@ -115,14 +115,14 @@ instance : Monoid (SubMulAction R M) :=
   { SubMulAction.semiGroup,
     SubMulAction.mulOneClass with }
 
-theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), (p ^ n : Set M) = ((p : Set M) ^ n)
+theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n) = (p : Set M) ^ n
   | 0, hn => (hn rfl).elim
   | 1, _ => by rw [pow_one, pow_one]
   | n + 2, _ => by
     rw [pow_succ _ (n + 1), pow_succ _ (n + 1), coe_mul, coe_pow _ n.succ_ne_zero]
 #align sub_mul_action.coe_pow SubMulAction.coe_pow
 
-theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, ((p : Set M) ^ n) ⊆ (p ^ n : Set M)
+theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, (p : Set M) ^ n ⊆ ↑(p ^ n)
   | 0 => by
     rw [pow_zero, pow_zero]
     exact subset_coe_one

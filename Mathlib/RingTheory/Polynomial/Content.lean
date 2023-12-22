@@ -378,7 +378,7 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     rcases hpq with (hlt | heq)
     · apply ih _ _ hlt
     rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← Nat.cast_inj (R := WithBot ℕ),
-      Nat.cast_add, ←degree_eq_natDegree p.primPart_ne_zero,
+      Nat.cast_add, ← degree_eq_natDegree p.primPart_ne_zero,
       ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1
@@ -436,7 +436,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s
     · apply hs s.natDegree s rfl
     clear s
-    by_contra' con
+    by_contra! con
     rcases Nat.find_spec con with ⟨s, sdeg, ⟨ps, qs⟩, rs⟩
     have s0 : s ≠ 0 := by
       contrapose! rs
