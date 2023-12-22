@@ -293,7 +293,7 @@ theorem integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w 
       inter_subset_inter (preimage_mono Ioo_subset_Icc_self) (preimage_mono Ioo_subset_Icc_self)
 #align complex.integral_boundary_rect_eq_zero_of_differentiable_on Complex.integral_boundary_rect_eq_zero_of_differentiableOn
 
-/-- If `f : ℂ → E` is continuous the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`, and is complex
+/-- If `f : ℂ → E` is continuous on the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`, and is complex
 differentiable at all but countably many points of its interior, then the integrals of
 `f z / (z - c)` (formally, `(z - c)⁻¹ • f z`) over the circles `‖z - c‖ = r` and `‖z - c‖ = R` are
 equal to each other. -/
