@@ -115,11 +115,11 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
 #align finpartition.copy Finpartition.copy
 
 /-- Transfer a finpartition over an order isomorphism. -/
-def equiv {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e : α ≃o β) :
+def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e : α ≃o β) :
     Finpartition (e a) where
   parts := P.parts.map e
   supIndep u hu _ hb hbu _ hx hxu := by
-    rw [subset_map_equiv_iff] at hu
+    rw [subset_map_iff'] at hu
     simp only [mem_map_equiv] at hb
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
@@ -202,7 +202,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty 
 
 @[simp]
 theorem parts_equiv {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
-    (P.equiv e).parts = P.parts.map e := rfl
+    (P.map e).parts = P.parts.map e := rfl
 
 instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
@@ -579,7 +579,7 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
     simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
     use a; exact s.refl a
 
-theorem mem_part_univ_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
+theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := by
   simp only [part, ofSetoid]
   generalize_proofs H
