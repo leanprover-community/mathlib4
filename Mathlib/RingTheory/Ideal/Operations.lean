@@ -1271,7 +1271,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
-      cases' s.eq_empty_or_nonempty with hse hsne
+      rcases s.eq_empty_or_nonempty with hse | hsne
       · subst hse
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)

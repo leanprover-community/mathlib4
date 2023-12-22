@@ -78,14 +78,14 @@ theorem image_restrict (f : α → β) (s t : Set α) :
 
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
-    (g : ∀ (a) (_ : a ∉ s), β) :
+    (g : ∀ a ∉ s, β) :
     (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
   funext fun a => dif_pos a.2
 #align set.restrict_dite Set.restrict_dite
 
 @[simp]
 theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
-    (g : ∀ (a) (_ : a ∉ s), β) :
+    (g : ∀ a ∉ s, β) :
     (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
   funext fun a => dif_neg a.2
 #align set.restrict_dite_compl Set.restrict_dite_compl
@@ -427,6 +427,10 @@ theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 #align set.maps_to_empty Set.mapsTo_empty
+
+/-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
+theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
+  (hs.image f).mono (mapsTo'.mp h)
 
 theorem MapsTo.image_subset (h : MapsTo f s t) : f '' s ⊆ t :=
   mapsTo'.1 h
@@ -1489,19 +1493,19 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ :
 #align set.piecewise_eq_on_compl Set.piecewise_eqOn_compl
 
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
-    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g i) :
+    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
     s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
 #align set.piecewise_le Set.piecewise_le
 
 theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
-    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ (i) (_ : i ∉ s), g i ≤ f₂ i) :
+    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ i ∉ s, g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
   @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 #align set.le_piecewise Set.le_piecewise
 
 theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
-    (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
+    (h₂ : ∀ i ∉ s, f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
 #align set.piecewise_le_piecewise Set.piecewise_le_piecewise
 
@@ -1589,7 +1593,7 @@ theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪
 
 theorem injective_piecewise_iff {f g : α → β} :
     Injective (s.piecewise f g) ↔
-      InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ (y) (_ : y ∉ s), f x ≠ g y := by
+      InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ y ∉ s, f x ≠ g y := by
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine' and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => _)

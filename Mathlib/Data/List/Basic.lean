@@ -1077,10 +1077,6 @@ section IndexOf
 
 variable [DecidableEq α]
 
--- Porting note: simp can prove this
--- @[simp]
-theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
-  rfl
 #align list.index_of_nil List.indexOf_nil
 
 /-
@@ -1111,18 +1107,16 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
--- rfl
-theorem indexOf_cons (a b : α) (l : List α) :
-    indexOf a (b :: l) = if b = a then 0 else succ (indexOf a l) := by
-  simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq]
 #align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons, indexOf_cons, eq_comm]; split_ifs with h
-  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h
-  · simp only [h, false_or_iff]
+  simp only [length, mem_cons, indexOf_cons, eq_comm]
+  rw [cond_eq_if]
+  split_ifs with h <;> simp at h
+  · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+  · simp only [Ne.symm h, false_or_iff]
     rw [← ih]
     exact succ_inj'
 #align list.index_of_eq_length List.indexOf_eq_length
@@ -1134,7 +1128,7 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
-  simp only [length, indexOf_cons]
+  simp only [length, indexOf_cons, cond_eq_if, beq_iff_eq]
   by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
   · rw [if_neg h]; exact succ_le_succ ih
@@ -1340,7 +1334,7 @@ theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨indexOf a l, h⟩ = a
   | b :: l, h => by
     by_cases h' : b = a <;>
-      simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l]
+    simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l, cond_eq_if, beq_iff_eq]
 
 @[simp, deprecated indexOf_get]
 theorem indexOf_nthLe [DecidableEq α] {a : α} : ∀ {l : List α} (h), nthLe l (indexOf a l) h = a :=
@@ -1615,7 +1609,7 @@ theorem insertNth_length_self (l : List α) (x : α) : insertNth l.length x l = 
 
 theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
     l.length ≤ (insertNth n x l).length := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
     exact (Nat.lt_succ_self _).le
   · rw [insertNth_of_length_lt _ _ _ hn]
@@ -1623,7 +1617,7 @@ theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
 
 theorem length_insertNth_le_succ (l : List α) (x : α) (n : ℕ) :
     (insertNth n x l).length ≤ l.length + 1 := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
   · rw [insertNth_of_length_lt _ _ _ hn]
     exact (Nat.lt_succ_self _).le
@@ -2112,31 +2106,10 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
 
 #align list.drop_nil List.drop_nil
-
-@[simp]
-theorem drop_one : ∀ l : List α, drop 1 l = tail l
-  | [] | _ :: _ => rfl
 #align list.drop_one List.drop_one
-
-theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
-  | _, 0, _ => rfl
-  | _, _ + 1, [] => drop_nil.symm
-  | m, n + 1, _ :: _ => drop_add m n _
 #align list.drop_add List.drop_add
-
-@[simp]
-theorem drop_left : ∀ l₁ l₂ : List α, drop (length l₁) (l₁ ++ l₂) = l₂
-  | [], _ => rfl
-  | _ :: l₁, l₂ => drop_left l₁ l₂
 #align list.drop_left List.drop_left
-
-theorem drop_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : drop n (l₁ ++ l₂) = l₂ := by
-  rw [← h]; apply drop_left
 #align list.drop_left' List.drop_left'
-
-theorem drop_eq_get_cons : ∀ {n} {l : List α} (h), drop n l = get l ⟨n, h⟩ :: drop (n + 1) l
-  | 0, _ :: _, _ => rfl
-  | n + 1, _ :: _, _ => @drop_eq_get_cons n _ _
 #align list.drop_eq_nth_le_cons List.drop_eq_get_consₓ -- nth_le vs get
 
 #align list.drop_length List.drop_length
@@ -2485,7 +2458,7 @@ for the seed element `b : β` and for all incremental `op : α → β → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
+    (hl : ∀ b, C b → ∀ a ∈ l, C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2500,7 +2473,7 @@ for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
+    (hl : ∀ b, C b → ∀ a ∈ l, C (op b a)) : C (foldl op b l) := by
   induction l generalizing b with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2518,7 +2491,7 @@ theorem foldrRecOn_nil {C : β → Sort*} (op : α → β → β) (b) (hb : C b)
 
 @[simp]
 theorem foldrRecOn_cons {C : β → Sort*} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ x :: l), C (op a b)) :
+    (hl : ∀ b, C b → ∀ a ∈ x :: l, C (op a b)) :
     foldrRecOn (x :: l) op b hb hl =
       hl _ (foldrRecOn l op b hb fun b hb a ha => hl b hb a (mem_cons_of_mem _ ha)) x
         (mem_cons_self _ _) :=

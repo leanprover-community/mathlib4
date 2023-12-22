@@ -90,7 +90,7 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
     exact hr.le
   refine' lt_of_le_of_lt (set_lintegral_mono' measurableSet_Ioc h_int) _
   refine' IntegrableOn.set_lintegral_lt_top _
-  rw [← intervalIntegrable_iff_integrable_Ioc_of_le zero_le_one]
+  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
 #align finite_integral_rpow_sub_one_pow_aux finite_integral_rpow_sub_one_pow_aux

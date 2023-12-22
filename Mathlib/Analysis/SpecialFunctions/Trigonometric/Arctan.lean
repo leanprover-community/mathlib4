@@ -72,7 +72,7 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne.def]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
-  cases' le_or_lt 0 r with h h
+  rcases le_or_lt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine' hx_lt _
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]
