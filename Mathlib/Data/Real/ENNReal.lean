@@ -1718,10 +1718,10 @@ theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ 
 #align ennreal.mul_le_iff_le_inv ENNReal.mul_le_iff_le_inv
 
 instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
-  elim r hr a b hab := by simpa [ENNReal.smul_def, hr]
+  elim r hr a b hab := mul_lt_mul_of_pos_left hab $ coe_pos.2 hr
 
 instance : SMulPosStrictMono ℝ≥0 ℝ≥0∞ where
-  elim r hr a b hab := by simpa [ENNReal.smul_def, hr]
+  elim r hr a b hab := mul_lt_mul_of_pos_right (coe_lt_coe.2 hab) hr
 
 #align ennreal.le_inv_smul_iff_of_pos le_inv_smul_iff_of_pos
 #align ennreal.inv_smul_le_iff_of_pos inv_smul_le_iff_of_pos

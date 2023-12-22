@@ -254,11 +254,11 @@ lemma strictMono_smul_left_of_pos [PosSMulStrictMono α β] (ha : 0 < a) :
     StrictMono ((a • ·) : β → β) := PosSMulStrictMono.elim ha
 #align strict_mono_smul_left strictMono_smul_left_of_pos
 
-lemma smul_le_smul_of_nonneg_left [PosSMulMono α β] (hb : b₁ ≤ b₂) (ha : 0 ≤ a) : a • b₁ ≤ a • b₂ :=
-  monotone_smul_left_of_nonneg ha hb
+@[gcongr] lemma smul_le_smul_of_nonneg_left [PosSMulMono α β] (hb : b₁ ≤ b₂) (ha : 0 ≤ a) :
+    a • b₁ ≤ a • b₂ := monotone_smul_left_of_nonneg ha hb
 #align smul_le_smul_of_nonneg smul_le_smul_of_nonneg_left
 
-lemma smul_lt_smul_of_pos_left [PosSMulStrictMono α β] (hb : b₁ < b₂) (ha : 0 < a) :
+@[gcongr] lemma smul_lt_smul_of_pos_left [PosSMulStrictMono α β] (hb : b₁ < b₂) (ha : 0 < a) :
     a • b₁ < a • b₂ := strictMono_smul_left_of_pos ha hb
 #align smul_lt_smul_of_pos smul_lt_smul_of_pos_left
 
@@ -295,10 +295,10 @@ lemma monotone_smul_right_of_nonneg [SMulPosMono α β] (hb : 0 ≤ b) : Monoton
 lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
     StrictMono ((· • b) : α → β) := SMulPosStrictMono.elim hb
 
-lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
+@[gcongr] lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
     a₁ • b ≤ a₂ • b := monotone_smul_right_of_nonneg hb ha
 
-lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
+@[gcongr] lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
     a₁ • b < a₂ • b := strictMono_smul_right_of_pos hb ha
 
 lemma lt_of_smul_lt_smul_right [SMulPosReflectLT α β] (h : a₁ • b < a₂ • b) (hb : 0 ≤ b) :
