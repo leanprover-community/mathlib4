@@ -186,8 +186,6 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
     g.Derives (v ++ p) (w ++ p) := by
   induction hvw with
   | refl => rfl
-  | tail _ last ih =>
-    apply trans_produces ih
-    exact last.append_right p
+  | tail _ last ih => ih.trans_produces $ last.append_right p
 
 end ContextFreeGrammar
