@@ -463,7 +463,7 @@ open GradedMonoid
 instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
   intCast := fun n => n • (1 : ModularForm Γ 0)
 
-lemma MF_intcast_eq_SIF_natcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
+lemma MF_intcast_eq_SIF_intcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
     (n : ModularForm Γ 0) =  (n :  SlashInvariantForm Γ 0) := by
   rfl
 
