@@ -5,6 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Data.Quot
 import Mathlib.Logic.Relator
+import Mathlib.Logic.Unique
+import Mathlib.Mathport.Notation
 
 #align_import data.quot from "leanprover-community/mathlib"@"6ed6abbde29b8f630001a1b481603f657a3384f1"
 
@@ -39,8 +41,8 @@ namespace Quot
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
 -- mathport name: mk
-@[inherit_doc]
-local notation:arg "⟦" a "⟧" => Quot.mk _ a
+@[inherit_doc Quot.mk]
+local notation3:arg "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
 protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
@@ -53,6 +55,8 @@ instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
 protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) :=
   ⟨fun x ↦ Quot.induction_on x fun _ ↦ Quot.ind fun _ ↦ congr_arg _ (Subsingleton.elim _ _)⟩
 #align quot.subsingleton Quot.Subsingleton
+
+instance [Unique α] : Unique (Quot ra) := Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
@@ -102,7 +106,7 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
 #align quot.lift_mk Quot.lift_mk
 
 theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
-  Quot.liftOn (Quot.mk r a) f h = f a :=
+    Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
 #align quot.lift_on_mk Quot.liftOn_mk
 
@@ -220,14 +224,16 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 -- We have not yet decided which one works best, since the setoid instance can't always be
 -- reliably found but it can't always be inferred from the expected type either.
 -- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
-@[inherit_doc]
-notation:arg "⟦" a "⟧" => Quotient.mk _ a
+@[inherit_doc Quotient.mk]
+notation3:arg "⟦" a "⟧" => Quotient.mk _ a
 
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
 
 instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
   Quot.Subsingleton
+
+instance instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) := Unique.mk' _
 
 instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
   refl := Setoid.refl
@@ -299,15 +305,19 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=
   ⟨Quotient.exact, Quotient.sound⟩
 
-theorem forall_quotient_iff {α : Type*} [r : Setoid α] {p : Quotient r → Prop} :
-    (∀ a : Quotient r, p a) ↔ ∀ a : α, p ⟦a⟧ :=
-  ⟨fun h _ ↦ h _, fun h a ↦ a.induction_on h⟩
-#align forall_quotient_iff forall_quotient_iff
+theorem Quotient.forall {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+    (∀ a, p a) ↔ ∀ a : α, p ⟦a⟧ :=
+  ⟨fun h _ ↦ h _, fun h a ↦ a.ind h⟩
+#align forall_quotient_iff Quotient.forall
+
+theorem Quotient.exists {α : Sort*} {s : Setoid α} {p : Quotient s → Prop} :
+    (∃ a, p a) ↔ ∃ a : α, p ⟦a⟧ :=
+  ⟨fun ⟨q, hq⟩ ↦ q.ind (motive := (p · → _)) .intro hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
 @[simp]
 theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.lift f h (Quotient.mk s x) = f x :=
-rfl
+  rfl
 #align quotient.lift_mk Quotient.lift_mk
 
 @[simp]
@@ -342,11 +352,11 @@ theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.
   Quot.exists_rep
 #align surjective_quot_mk surjective_quot_mk
 
-/-- `Quotient.mk` is a surjective function. -/
-theorem surjective_quotient_mk (α : Sort*) [s : Setoid α] :
-    Function.Surjective (Quotient.mk _ : α → Quotient s) :=
+/-- `Quotient.mk'` is a surjective function. -/
+theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
+    Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
-#align surjective_quotient_mk surjective_quotient_mk
+#align surjective_quotient_mk surjective_quotient_mk'
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
@@ -799,7 +809,7 @@ section
 
 variable [s : Setoid α]
 
-protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
+protected theorem mk''_eq_mk : Quotient.mk'' = Quotient.mk s :=
   rfl
 
 @[simp]
@@ -833,3 +843,16 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
   Quotient.lift₂.decidablePred _ h _ _
 
 end Quotient
+
+@[simp]
+lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
+    Quot.mk r x = Quot.mk r y ↔ r x y := by
+  constructor
+  · rw [Quot.eq]
+    intro hxy
+    induction hxy with
+    | rel _ _ H => exact H
+    | refl _ => exact h.refl _
+    | symm _ _ _ H => exact h.symm H
+    | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
+  · exact Quot.sound

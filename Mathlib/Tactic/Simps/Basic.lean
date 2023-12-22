@@ -4,17 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Lean.Message
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Data.KVMap
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
-import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
-import Mathlib.Lean.Linter
 import Std.Data.List.Count
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Simps attribute
@@ -90,7 +85,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     getSimpTheorems
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
-    config      := cfg
+    config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then
@@ -316,7 +311,7 @@ Some common uses:
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
   `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
-  In this case you have to use `@[simps (config := {fullyApplied := false})]` or equivalently
+  In this case you have to use `@[simps (config := .asFn)]` or equivalently
   `@[simps (config := .asFn)]` whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
@@ -369,7 +364,7 @@ structure ProjectionData where
   target of the first projection is a structure with at least two projections).
   The composition of these projections is required to be definitionally equal to the provided
   Expression. -/
-  projNrs : List ℕ
+  projNrs : List Nat
   /-- A boolean specifying whether `simp` lemmas are generated for this projection by default. -/
   isDefault : Bool
   /-- A boolean specifying whether this projection is written as prefix. -/
@@ -469,7 +464,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
 Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
 projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
-def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
+def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let env ← getEnv
   let .some baseStr := findField? env strName projName |
     throwError "{strName} has no field {projName} in parent structure"
@@ -481,10 +476,10 @@ def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
-partial def getCompositeOfProjectionsAux
-    (proj : String) (e : Expr) (pos : Array ℕ) (args : Array Expr) : MetaM (Expr × Array ℕ) := do
+partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array Nat)
+    (args : Array Expr) : MetaM (Expr × Array Nat) := do
   let env ← getEnv
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+  let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
@@ -515,7 +510,7 @@ partial def getCompositeOfProjectionsAux
   we will be able to generate the "projection"
     `λ {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
   which projection notation cannot do. -/
-def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array ℕ) := do
+def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array Nat) := do
   let strExpr ← mkConstWithLevelParams structName
   let type ← inferType strExpr
   forallTelescopeReducing type fun typeArgs _ ↦
@@ -542,7 +537,7 @@ def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionDa
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
-  CoreM (Array ParsedProjectionData) := do
+    CoreM (Array ParsedProjectionData) := do
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
     | .rename strName strStx newName newStx =>
@@ -590,7 +585,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
-  (rawUnivs : List Level) : CoreM ParsedProjectionData := do
+    (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
     getCompositeOfProjections str proj.strName.getString
@@ -627,7 +622,7 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
 /-- Checks if there are declarations in the current file in the namespace `{str}.Simps` that are
   not used. -/
 def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM Unit := do
+    CoreM Unit := do
   let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
@@ -647,7 +642,7 @@ an applicable name. (e.g. `Iso.inv`)
 Implementation note: getting rid of TermElabM is tricky, since `Expr.mkAppOptM` doesn't allow to
 keep metavariables around, which are necessary for `OutParam`. -/
 def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args : Array Expr) :
-  TermElabM <| Option (Expr × Name) := do
+    TermElabM <| Option (Expr × Name) := do
   if let some ⟨className, isNotation, findArgs⟩ :=
     notationClassAttr.find? (← getEnv) proj.strName then
     let findArgs ← unsafe evalConst findArgType findArgs
@@ -686,7 +681,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
 Find custom projections, automatically found by simps.
 These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM (Array ParsedProjectionData) := do
+    CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str
   trace[simps.debug] "debug: {projs}"
   MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
@@ -995,7 +990,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   -/
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
-  (todo : List (String × Syntax)) (toApply : List ℕ) : MetaM (Array Name) := do
+  (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do

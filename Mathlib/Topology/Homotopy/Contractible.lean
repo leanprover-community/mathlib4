@@ -14,7 +14,6 @@ import Mathlib.Topology.Homotopy.Equiv
 In this file, we define `ContractibleSpace`, a space that is homotopy equivalent to `Unit`.
 -/
 
-
 noncomputable section
 
 namespace ContinuousMap
@@ -105,6 +104,17 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
 #align homeomorph.contractible_space_iff Homeomorph.contractibleSpace_iff
 
 namespace ContractibleSpace
+
+instance [Unique Y] : ContractibleSpace Y := by
+  have : ContractibleSpace (Unit) := ⟨⟨HomotopyEquiv.refl Unit⟩⟩
+  apply (Homeomorph.homeomorphOfUnique Y Unit).contractibleSpace
+
+variable (X Y) in
+theorem hequiv [ContractibleSpace X] [ContractibleSpace Y] :
+    Nonempty (X ≃ₕ Y) := by
+  rcases ContractibleSpace.hequiv_unit' (X := X) with ⟨h⟩
+  rcases ContractibleSpace.hequiv_unit' (X := Y) with ⟨h'⟩
+  exact ⟨h.trans h'.symm⟩
 
 instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   obtain ⟨p, ⟨h⟩⟩ := id_nullhomotopic X

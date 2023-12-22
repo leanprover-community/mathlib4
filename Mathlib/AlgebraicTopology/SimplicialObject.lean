@@ -79,7 +79,7 @@ variable {C}
 -- porting note: added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
+    (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
   NatTrans.ext _ _ (by ext; apply h)
 
 variable (X : SimplicialObject C)
@@ -449,7 +449,7 @@ variable {C}
 -- porting note: added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
+    (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
   NatTrans.ext _ _ (by ext; apply h)
 
 variable (X : CosimplicialObject C)

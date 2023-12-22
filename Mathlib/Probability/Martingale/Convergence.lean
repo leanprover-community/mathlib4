@@ -204,10 +204,11 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) :
     ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
-  rw [@ae_iff _ (⨆ n, ℱ n) _ _, trim_measurableSet_eq]
+  letI := (⨆ n, ℱ n)
+  rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
-  · exact MeasurableSet.compl (@measurableSet_exists_tendsto _ _ _ _ _ _ (⨆ n, ℱ n) _ _ _ _ _
-      fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl)
+  · exact MeasurableSet.compl $ measurableSet_exists_tendsto
+      fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl
 #align measure_theory.submartingale.exists_ae_trim_tendsto_of_bdd MeasureTheory.Submartingale.exists_ae_trim_tendsto_of_bdd
 
 /-- **Almost everywhere martingale convergence theorem**: An L¹-bounded submartingale converges
@@ -398,7 +399,7 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     by_cases hnm : n ≤ m
     · exact ⟨m, (ℱ.mono hnm _ hs).inter ht⟩
     · exact ⟨n, hs.inter (ℱ.mono (not_le.1 hnm).le _ ht)⟩
-  · simp only [measure_empty, WithTop.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
+  · simp only [measure_empty, ENNReal.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
       forall_true_left]
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht

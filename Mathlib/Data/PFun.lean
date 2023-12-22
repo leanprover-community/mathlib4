@@ -274,7 +274,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
     next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
    fun h => by
-    simp [fix]
+    simp only [fix, Part.mem_assert_iff]
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine' ⟨⟨_, fun y h' => _⟩, _⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
@@ -342,7 +342,7 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
   -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize (Part.mem_assert_iff.1 h).fst = ha
+  generalize @fixInduction.proof_1 α β f b a h = ha
   induction ha
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec

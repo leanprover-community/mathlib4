@@ -22,9 +22,9 @@ information about these structures (which are not that standard in informal math
 ## Porting notes
 
 In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`WithOne` and `WithZero` are marked as `Irreducible` at the end of `algebra.group.with_one.defs`,
-so proofs that use `Option α` instead of `WithOne α` no longer typecheck. In Lean 4, both types are
-plain `def`s, so we don't need these `id`s.
+`WithOne` and `WithZero` are marked as `Irreducible` at the end of
+`Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
+longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
 -/
 
 
@@ -309,7 +309,7 @@ instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
     | some x, n => ↑(x ^ n)⟩
 
 @[simp, norm_cast]
-theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n : α) = ((↑a : WithZero α) ^ n) :=
+theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n :=
   rfl
 #align with_zero.coe_zpow WithZero.coe_zpow
 
@@ -367,18 +367,28 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
+instance instLeftDistribClass [Mul α] [Add α] [LeftDistribClass α] :
+    LeftDistribClass (WithZero α) where
+  left_distrib a b c := by
+    cases' a with a; · rfl
+    cases' b with b <;> cases' c with c <;> try rfl
+    exact congr_arg some (left_distrib _ _ _)
+
+instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
+    RightDistribClass (WithZero α) where
+  right_distrib a b c := by
+    cases' c with c
+    · change (a + b) * 0 = a * 0 + b * 0
+      simp
+    cases' a with a <;> cases' b with b <;> try rfl
+    exact congr_arg some (right_distrib _ _ _)
+
+instance instDistrib [Distrib α] : Distrib (WithZero α) where
+  left_distrib := left_distrib
+  right_distrib := right_distrib
+
 instance semiring [Semiring α] : Semiring (WithZero α) :=
   { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
-    WithZero.monoidWithZero with
-    left_distrib := fun a b c => by
-      cases' a with a; · rfl
-      cases' b with b <;> cases' c with c <;> try rfl
-      exact congr_arg some (left_distrib _ _ _),
-    right_distrib := fun a b c => by
-      cases' c with c
-      · change (a + b) * 0 = a * 0 + b * 0
-        simp
-      cases' a with a <;> cases' b with b <;> try rfl
-      exact congr_arg some (right_distrib _ _ _) }
+    WithZero.monoidWithZero, WithZero.instDistrib with }
 
 end WithZero

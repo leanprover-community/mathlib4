@@ -20,6 +20,7 @@ In this file we express trigonometric functions in terms of their series expansi
 * `Real.hasSum_sin`, `Real.sin_eq_tsum`: `Real.sin` as the sum of an infinite series.
 -/
 
+open NormedSpace
 
 open scoped Nat
 
@@ -34,7 +35,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   have := ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
     (expSeries_div_hasSum_exp ℂ (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this
+  dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
@@ -52,7 +53,7 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   have := (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
     (expSeries_div_hasSum_exp ℂ (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this
+  dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
@@ -100,14 +101,14 @@ theorem Complex.sin_eq_tsum (z : ℂ) :
 
 /-- The power series expansion of `Real.cos`. -/
 theorem Real.hasSum_cos (r : ℝ) :
-    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) := by
-  exact_mod_cast Complex.hasSum_cos r
+    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n) / ↑(2 * n)!) (Real.cos r) :=
+  mod_cast Complex.hasSum_cos r
 #align real.has_sum_cos Real.hasSum_cos
 
 /-- The power series expansion of `Real.sin`. -/
 theorem Real.hasSum_sin (r : ℝ) :
-    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) := by
-  exact_mod_cast Complex.hasSum_sin r
+    HasSum (fun n : ℕ => (-1) ^ n * r ^ (2 * n + 1) / ↑(2 * n + 1)!) (Real.sin r) :=
+  mod_cast Complex.hasSum_sin r
 #align real.has_sum_sin Real.hasSum_sin
 
 theorem Real.cos_eq_tsum (r : ℝ) : Real.cos r = ∑' n : ℕ, (-1) ^ n * r ^ (2 * n) / ↑(2 * n)! :=

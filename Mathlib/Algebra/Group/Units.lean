@@ -198,7 +198,6 @@ instance : MulOneClass αˣ where
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance : Group αˣ :=
   { (inferInstance : MulOneClass αˣ) with
-    one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
 
@@ -750,7 +749,7 @@ theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
 
 @[to_additive (attr := simp)]
 theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
-  rw [←h.unit.mul_inv]; congr
+  rw [← h.unit.mul_inv]; congr
 #align is_unit.mul_coe_inv IsUnit.mul_val_inv
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
@@ -786,7 +785,7 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
 #align is_add_unit.add_right_cancel IsAddUnit.add_right_cancel
 
 @[to_additive]
-protected theorem mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) :=
+protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
   fun _ _ => h.mul_left_cancel
 #align is_unit.mul_right_injective IsUnit.mul_right_injective
 #align is_add_unit.add_right_injective IsAddUnit.add_right_injective

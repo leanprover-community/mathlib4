@@ -102,6 +102,10 @@ theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
   simp
 #align complex_shape.symm_symm ComplexShape.symm_symm
 
+theorem symm_bijective :
+    Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- The "composition" of two `ComplexShape`s.
 
 We need this to define "related in k steps" later.
@@ -183,7 +187,7 @@ def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α w
 #align complex_shape.down'_rel ComplexShape.down'_Rel
 
 theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
-  (down' a).Rel i j := h
+    (down' a).Rel i j := h
 #align complex_shape.down'_mk ComplexShape.down'_mk
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
@@ -203,7 +207,7 @@ def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 #align complex_shape.down_rel ComplexShape.down_Rel
 
 theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
-  (down α).Rel i j :=
+    (down α).Rel i j :=
   down'_mk (1 : α) i j h
 #align complex_shape.down_mk ComplexShape.down_mk
 

@@ -146,7 +146,7 @@ theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)
     refine Lex.acc_of_single hbot x fun j hj ↦ ?_
     obtain rfl | hij := eq_or_ne i j
     · exact ha _ hs
-    by_cases r j i
+    by_cases h : r j i
     · rw [hr j h, single_eq_of_ne hij, single_zero]
       exact Lex.acc_zero hbot
     · exact ih _ ⟨h, hij.symm⟩ _
@@ -170,7 +170,7 @@ theorem Lex.wellFounded' [IsTrichotomous ι r] (hr : WellFounded (Function.swap 
 end Zero
 
 instance Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoundedGT ι]
-    [∀ i, CanonicallyOrderedAddMonoid (α i)] [hα : ∀ i, WellFoundedLT (α i)] :
+    [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_lt) (fun i => (hα i).wf) hι.wf⟩
 #align dfinsupp.lex.well_founded_lt DFinsupp.Lex.wellFoundedLT
@@ -224,7 +224,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot
-      · simp only [Function.swap]
+      · simp (config := { unfoldPartialApp := true }) only [Function.swap]
         exact IsWellFounded.wf
     refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange (fun i ↦ e i) fun _ ↦ rfl) this
     have := IsStrictOrder.swap (@WellOrderingRel ι)
@@ -232,7 +232,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩⟩
 #align dfinsupp.well_founded_lt DFinsupp.wellFoundedLT
 
-instance DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddMonoid (α i)]
+instance DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_lt
 #align dfinsupp.well_founded_lt' DFinsupp.wellFoundedLT'

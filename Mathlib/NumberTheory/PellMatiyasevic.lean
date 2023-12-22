@@ -260,7 +260,7 @@ instance dnsq : Zsqrtd.Nonsquare (d a1) :=
 theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
   | 0 => le_refl 1
   | n + 1 => by
-    simp [_root_.pow_succ']
+    simp only [_root_.pow_succ', xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 #align pell.xn_ge_a_pow Pell.xn_ge_a_pow
 
@@ -271,7 +271,7 @@ theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
     have : a ^ n + a ^ n ≤ a ^ n * a := by
       rw [← mul_two]
       exact Nat.mul_le_mul_left _ a1
-    simp [_root_.pow_succ']
+    simp only [_root_.pow_succ', gt_iff_lt]
     refine' lt_of_lt_of_le _ this
     exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
 #align pell.n_lt_a_pow Pell.n_lt_a_pow
@@ -319,7 +319,8 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
                       (mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)) a1p
               erw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
               exact ha t
-        simp at y0l; simp at yl2
+        simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.neg_re, add_right_neg,
+          Zsqrtd.neg_im, neg_neg] at yl2
         exact
           match y, y0l, (yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩) with
           | 0, y0l, _ => y0l (le_refl 0)
@@ -391,7 +392,7 @@ theorem yz_sub {m n} (h : n ≤ m) : yz a1 (m - n) = xz a1 n * yz a1 m - xz a1 m
   exact congr_arg Zsqrtd.im (pellZd_sub a1 h)
 #align pell.yz_sub Pell.yz_sub
 
-theorem xy_coprime (n) : (xn a1 n).coprime (yn a1 n) :=
+theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by
     let p := pell_eq a1 n
     rw [← p]
@@ -436,8 +437,8 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
   ⟨fun h =>
     Nat.dvd_of_mod_eq_zero <|
       (Nat.eq_zero_or_pos _).resolve_right fun hp => by
-        have co : Nat.coprime (yn a1 m) (xn a1 (m * (n / m))) :=
-          Nat.coprime.symm <| (xy_coprime a1 _).coprime_dvd_right (y_mul_dvd a1 m (n / m))
+        have co : Nat.Coprime (yn a1 m) (xn a1 (m * (n / m))) :=
+          Nat.Coprime.symm <| (xy_coprime a1 _).coprime_dvd_right (y_mul_dvd a1 m (n / m))
         have m0 : 0 < m :=
           m.eq_zero_or_pos.resolve_left fun e => by
             rw [e, Nat.mod_zero] at hp;rw [e] at h
@@ -551,8 +552,8 @@ theorem yn_modEq_a_sub_one : ∀ n, yn a1 n ≡ n [MOD a - 1]
 #align pell.yn_modeq_a_sub_one Pell.yn_modEq_a_sub_one
 
 theorem yn_modEq_two : ∀ n, yn a1 n ≡ n [MOD 2]
-  | 0 => by simp
-  | 1 => by simp
+  | 0 => by rfl
+  | 1 => by simp; rfl
   | n + 2 =>
     (yn_modEq_two n).add_right_cancel <| by
       rw [yn_succ_succ, mul_assoc, (by ring : n + 2 + n = 2 * (n + 1))]
@@ -610,7 +611,7 @@ theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j �
         (by
           delta xz; delta yz
           rw [mul_comm (xn _ _ : ℤ)]
-          exact_mod_cast (xn_modEq_x2n_add_lem _ n j))
+          exact mod_cast (xn_modEq_x2n_add_lem _ n j))
         ((dvd_mul_right _ _).mul_left _)
   rw [two_mul, add_tsub_assoc_of_le h, xn_add, add_assoc, ← zero_add 0]
   exact
@@ -695,7 +696,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
           refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
-          cases' lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin ein
+          rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
               rw [← two_mul, mul_comm,
@@ -707,7 +708,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
               apply Nat.le_of_succ_le_succ
               rw [npm]
               exact lin
-            cases' lt_or_eq_of_le il with ill ile
+            rcases lt_or_eq_of_le il with ill | ile
             · exact lt_of_lt_of_le (Nat.add_lt_add_left (strictMono_x a1 ill) _) ll
             · rw [ile]
               apply lt_of_le_of_ne ll
@@ -855,10 +856,10 @@ theorem matiyasevic {a k x y} :
       let v := yn a1 m
       have ky : k ≤ y := yn_ge_n a1 k
       have yv : y * y ∣ v := (ysq_dvd_yy a1 k).trans <| (y_dvd_iff _ _ _).2 <| dvd_mul_left _ _
-      have uco : Nat.coprime u (4 * y) :=
+      have uco : Nat.Coprime u (4 * y) :=
         have : 2 ∣ v :=
           modEq_zero_iff_dvd.1 <| (yn_modEq_two _ _).trans (dvd_mul_right _ _).modEq_zero_nat
-        have : Nat.coprime u 2 := (xy_coprime a1 m).coprime_dvd_right this
+        have : Nat.Coprime u 2 := (xy_coprime a1 m).coprime_dvd_right this
         (this.mul_right this).mul_right <|
           (xy_coprime _ _).coprime_dvd_right (dvd_of_mul_left_dvd yv)
       let ⟨b, ba, bm1⟩ := chineseRemainder uco a 1
@@ -964,7 +965,7 @@ theorem eq_pow_of_pell {m n k} :
       refine' eq_pow_of_pell_lem hn.ne' hk.ne' _
       calc
         n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
-        _ < (w + 1) ^ w := (Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_of_le nw) wpos)
+        _ < (w + 1) ^ w := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne')
         _ ≤ a := xn_ge_a_pow w1 w
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
     have tm : x ≡ y * (a - n) + n ^ k [MOD t] := by
@@ -994,14 +995,14 @@ theorem eq_pow_of_pell {m n k} :
     have hnka : n ^ k < xn hw1 j
     calc
       n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
-      _ < (w + 1) ^ j := (Nat.pow_lt_pow_of_lt_left (Nat.lt_succ_of_le nw) hj0)
+      _ < (w + 1) ^ j := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne')
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j
     have nt : (↑(n ^ k) : ℤ) < 2 * xn hw1 j * n - n * n - 1 :=
       eq_pow_of_pell_lem hn0.ne' hk0.ne' hnka
     have na : n ≤ xn hw1 j := (Nat.le_self_pow hk0.ne' _).trans hnka.le
     have te : (t : ℤ) = 2 * xn hw1 j * n - n * n - 1 := by
       rw [sub_sub, eq_sub_iff_add_eq]
-      exact_mod_cast ta.symm
+      exact mod_cast ta.symm
     have : xn a1 k ≡ yn a1 k * (xn hw1 j - n) + n ^ k [MOD t] := by
       apply modEq_of_dvd
       rw [te, Nat.cast_add, Nat.cast_mul, Int.ofNat_sub na]

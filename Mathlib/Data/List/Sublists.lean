@@ -135,12 +135,14 @@ theorem sublistsAux_eq_bind :
       rw [append_bind, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
-theorem sublists_eq_sublistsAux (l : List α) :
-    sublists l = l.foldr sublistsAux [[]] := by
-  simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
-  rw [← foldr_hom Array.toList]
-  · rfl
-  · intros _ _; congr <;> simp
+@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
+  ext α l : 2
+  trans l.foldr sublistsAux [[]]
+  · rw [sublistsAux_eq_bind, sublists]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
+    rw [← foldr_hom Array.toList]
+    · rfl
+    · intros _ _; congr <;> simp
 
 #noalign list.sublists_aux₁_eq_sublists_aux
 #noalign list.sublists_aux_cons_eq_sublists_aux₁
@@ -154,7 +156,7 @@ theorem sublists_eq_sublistsAux (l : List α) :
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
-  simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
+  simp only [sublists, foldr_append]
   induction l₁
   · case nil => simp
   · case cons a l₁ ih =>
@@ -173,7 +175,7 @@ theorem sublists_cons (a : α) (l : List α) :
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
   rw [sublists_append, sublists_singleton, bind_eq_bind, cons_bind, cons_bind, nil_bind,
-     map_id' append_nil, append_nil]
+     map_id'' append_nil, append_nil]
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
@@ -187,7 +189,7 @@ theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists
 #align list.sublists_eq_sublists' List.sublists_eq_sublists'
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse, Function.comp]
+  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp]
 #align list.sublists'_reverse List.sublists'_reverse
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
@@ -271,6 +273,10 @@ theorem sublistsLen_succ_cons {α : Type*} (n) (a : α) (l) :
   rw [sublistsLen, sublistsLenAux, sublistsLenAux_eq, sublistsLenAux_eq, map_id,
       append_nil]; rfl
 #align list.sublists_len_succ_cons List.sublistsLen_succ_cons
+
+theorem sublistsLen_one {α : Type*} (l : List α) : sublistsLen 1 l = l.reverse.map ([·]) :=
+  l.rec (by rw [sublistsLen_succ_nil, reverse_nil, map_nil]) fun a s ih ↦ by
+    rw [sublistsLen_succ_cons, ih, reverse_cons, map_append, sublistsLen_zero]; rfl
 
 @[simp]
 theorem length_sublistsLen {α : Type*} :
@@ -411,9 +417,11 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
 --Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
-  refine' Perm.map _ _
-  exact (perm_ext (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
-    (by simp)
+  apply Perm.map
+  apply (perm_ext_iff_of_nodup _ _).mpr
+  · simp
+  · exact nodup_sublists.mpr (nodup_finRange _)
+  · exact (nodup_sublists'.mpr (nodup_finRange _))
 #align list.sublists_perm_sublists' List.sublists_perm_sublists'
 
 theorem sublists_cons_perm_append (a : α) (l : List α) :
@@ -427,7 +435,9 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
   · intro l₁ l₂ h
-    simp at h
+    simp? at h says
+      simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
+        mem_singleton, Prod.mk.injEq] at h
     simp [h]
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,

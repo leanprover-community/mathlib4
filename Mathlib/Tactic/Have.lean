@@ -57,8 +57,8 @@ If the bound term is intended to be kept in the context, pass `keepTerm : Bool :
 useful when extending the `let` tactic, which is expected to show the proof term in the infoview.
 -/
 def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
-  (bis : Array (TSyntax ``letIdBinder))
-  (t : Option Term) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
+    (bis : Array (TSyntax ``letIdBinder))
+    (t : Option Term) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
   let declFn := if keepTerm then MVarId.define else MVarId.assert
   goal.withContext do
     let n := optBinderIdent.name name
@@ -67,9 +67,9 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       let t ← match t with
       | none => mkFreshTypeMVar
       | some stx => withRef stx do
-          let e ← Term.elabTerm stx none
-          Term.synthesizeSyntheticMVars false
-          instantiateMVars e
+        let e ← Term.elabType stx
+        Term.synthesizeSyntheticMVars false
+        instantiateMVars e
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
     let (fvar, goal2) ← (← declFn goal n t p).intro1P

@@ -5,6 +5,7 @@ import Mathlib.Init.Function
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Matrix.Basic
 
+private axiom test_sorry : ∀ {α}, α
 
 set_option autoImplicit true
 open Function
@@ -14,7 +15,7 @@ example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
   · guard_target = f x = f y
     assumption
   · guard_target = Injective f
-    sorry
+    exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
   apply_fun f ?foo
@@ -26,7 +27,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (
 -- Uses `refine`-style rules for placeholders:
 example (f : ℕ → ℕ → ℕ) : x = y := by
   fail_if_success apply_fun f _
-  sorry
+  exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
   apply_fun f _ using hinj
@@ -254,6 +255,18 @@ example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
   have g : ∀ f, Function.Injective f
-  · sorry
+  · exact test_sorry
   apply_fun f using (g f)
   rfl
+
+
+def funFamily (_i : ℕ) : Bool → Bool := id
+
+-- `apply_fun` should not silence errors in `assumption`
+set_option linter.unreachableTactic false in
+/--
+error: maximum recursion depth has been reached (use `set_option maxRecDepth <num>` to increase limit)
+-/
+#guard_msgs (error) in
+example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by
+  apply_fun funFamily 0

@@ -27,7 +27,7 @@ The following meta-properties are defined
 -/
 
 
-universe v u
+universe w v v' u u'
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
@@ -872,7 +872,7 @@ class ContainsIdentities (W : MorphismProperty C) : Prop :=
   id_mem' : ∀ (X : C), W (𝟙 X)
 
 lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
-  W (𝟙 X) := ContainsIdentities.id_mem' X
+    W (𝟙 X) := ContainsIdentities.id_mem' X
 
 namespace ContainsIdentities
 
@@ -916,6 +916,52 @@ lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMulti
   (inferInstance : IsMultiplicative W.unop.op)
 
 end IsMultiplicative
+
+section
+
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+
+/-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
+this is the induced morphism property on `C₁ × C₂`. -/
+def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) :
+    MorphismProperty (C₁ × C₂) :=
+  fun _ _ f => W₁ f.1 ∧ W₂ f.2
+
+instance Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+    [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
+  ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
+
+lemma IsInvertedBy.prod {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+    {E₁ E₂ : Type*} [Category E₁] [Category E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
+    (h₁ : W₁.IsInvertedBy F₁) (h₂ : W₂.IsInvertedBy F₂) :
+    (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
+  rw [isIso_prod_iff]
+  exact ⟨h₁ _ hf.1, h₂ _ hf.2⟩
+
+end
+
+section
+
+variable {J : Type w} {C : J → Type u} {D : J → Type u'}
+  [∀ j, Category.{v} (C j)] [∀ j, Category.{v'} (D j)]
+  (W : ∀ j, MorphismProperty (C j))
+
+/-- If `W j` are morphism properties on categories `C j` for all `j`, this is the
+induced morphism property on the category `∀ j, C j`. -/
+def pi : MorphismProperty (∀ j, C j) := fun _ _ f => ∀ j, (W j) (f j)
+
+instance Pi.containsIdentities [∀ j, (W j).ContainsIdentities] :
+    (pi W).ContainsIdentities :=
+  ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
+
+lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (F j)) :
+    (MorphismProperty.pi W).IsInvertedBy (Functor.pi F) := by
+  intro _ _ f hf
+  rw [isIso_pi_iff]
+  intro j
+  exact hF j _ (hf j)
+
+end
 
 end MorphismProperty
 

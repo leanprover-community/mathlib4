@@ -145,7 +145,7 @@ set_option linter.uppercaseLean3 false in
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
@@ -491,9 +491,7 @@ end CategoryTheory.Aut
 instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv
-      -- Porting note: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
-      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact IsIso.of_iso e.toGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
@@ -504,9 +502,7 @@ set_option linter.uppercaseLean3 false in
 instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv
-      -- Porting note: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
-      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact IsIso.of_iso e.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos

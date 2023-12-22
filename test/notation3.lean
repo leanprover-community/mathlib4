@@ -20,6 +20,11 @@ notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) =>
 /-- info: ∀ᶠ (x : ℕ) in Filter.atTop, x < 3 : Prop -/
 #guard_msgs in #check ∀ᶠ x in Filter.atTop, x < 3
 
+-- Testing lambda expressions:
+notation3 "∀ᶠ' " f ", " p => Filter.eventually (fun x => (p : _ → _) x) f
+/-- info: ∀ᶠ' Filter.atTop, fun x ↦ x < 3 : Prop -/
+#guard_msgs in #check ∀ᶠ' Filter.atTop, fun x => x < 3
+
 def foobar (p : α → Prop) (f : Prop) := ∀ x, p x = f
 
 notation3 "∀ᶠᶠ " (...) " in " f ": "
@@ -46,13 +51,21 @@ notation3 "func! " (...) ", " r:(scoped p => func p) => r
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
-notation3 "~{" (x"; "* => foldl (a b => Prod.mk a b) MyUnit) "}~" => x
+notation3 "~{" (x"; "* => foldl (a b => (a, b)) MyUnit) "}~" => x
 /-- info: ~{1; true; ~{2}~}~ : ((Type × ℕ) × Bool) × Type × ℕ -/
 #guard_msgs in #check ~{1; true; ~{2}~}~
 /-- info: ~{}~ : Type -/
 #guard_msgs in #check ~{}~
 
-notation3 "%[" (x", "* => foldr (a b => List.cons a b) List.nil) "]" => x
+structure MyUnit' where
+instance : OfNat MyUnit' (nat_lit 0) := ⟨{}⟩
+notation3 "MyUnit'0" => (0 : MyUnit')
+/-- info: MyUnit'0 : MyUnit' -/
+#guard_msgs in #check (0 : MyUnit')
+/-- info: 0 : ℕ -/
+#guard_msgs in #check 0
+
+notation3 "%[" (x", "* => foldr (a b => a :: b) []) "]" => x
 /-- info: %[1, 2, 3] : List ℕ -/
 #guard_msgs in #check %[1, 2, 3]
 
@@ -73,9 +86,9 @@ notation3 "*'[" x "] " (...) ", " v:(scoped c => bar' x <| foo' x c) => v
 /-- info: bar' 1 : ℕ → ℕ -/
 #guard_msgs in #check bar' 1
 
--- Currently does not pretty print due to pi type
-notation3 (prettyPrint := false) "MyPi " (...) ", " r:(scoped p => (x : _) → p x) => r
-/-- info: ∀ (x : ℕ), (fun x ↦ ∀ (x_1 : ℕ), (fun y ↦ x < y) x_1) x : Prop -/
+-- Need to give type ascription to `p` so that `p x` elaborates when making matcher
+notation3 "MyPi " (...) ", " r:(scoped p => (x : _) → (p : _ → _) x) => r
+/-- info: MyPi (x : ℕ) (y : ℕ), x < y : Prop -/
 #guard_msgs in #check MyPi (x : Nat) (y : Nat), x < y
 
 -- The notation parses fine, but the delaborator never succeeds, which is expected
@@ -83,3 +96,83 @@ def myId (x : α) := x
 notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
+
+section
+variable (x : Nat)
+local notation3 "y" => x + 1
+/-- info: y : ℕ -/
+#guard_msgs in #check y
+/-- info: y : ℕ -/
+#guard_msgs in #check x + 1
+end
+
+section
+variable (α : Type u) [Add α]
+local notation3 x " +α " y => (x + y : α)
+variable (x y : α)
+/-- info: x +α y : α -/
+#guard_msgs in #check x +α y
+/-- info: x +α y : α -/
+#guard_msgs in #check x + y
+/-- info: 1 + 2 : ℕ -/
+#guard_msgs in #check 1 + 2
+end
+
+def idStr : String → String := id
+
+/--
+error: application type mismatch
+  idStr Nat.zero
+argument
+  Nat.zero
+has type
+  ℕ : Type
+but is expected to have type
+  String : Type
+---
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
+pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
+refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
+the notation expansion to make it matchable; pretty printing relies on deriving an expression
+matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+-/
+#guard_msgs in
+notation3 "error" => idStr Nat.zero
+
+section
+/--
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
+pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
+refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
+the notation expansion to make it matchable; pretty printing relies on deriving an expression
+matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+-/
+#guard_msgs (warning, drop error) in local notation3 "#" n => Fin.mk n (by decide)
+end
+
+section
+local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
+
+example : Fin 5 := #1
+
+/--
+error: failed to reduce to 'true'
+  false
+-/
+#guard_msgs in example : Fin 5 := #6
+
+end
+
+section test_scoped
+
+scoped[MyNotation] notation3 "π" => (3 : Nat)
+
+/-- error: unknown identifier 'π' -/
+#guard_msgs in #check π
+
+open scoped MyNotation
+
+/-- info: π : ℕ -/
+#guard_msgs in #check π
+
+end test_scoped

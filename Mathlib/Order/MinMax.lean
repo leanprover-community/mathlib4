@@ -244,7 +244,7 @@ theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
-  cases' le_total a b with h h <;>
+  rcases le_total a b with h | h <;>
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 #align monotone_on.map_max MonotoneOn.map_max
 
@@ -253,7 +253,7 @@ theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align monotone_on.map_min MonotoneOn.map_min
 
 theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
-  min (f a) (f b) := hf.dual_right.map_max ha hb
+    min (f a) (f b) := hf.dual_right.map_max ha hb
 #align antitone_on.map_max AntitoneOn.map_max
 
 theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
@@ -261,7 +261,7 @@ theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align antitone_on.map_min AntitoneOn.map_min
 
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
-  cases' le_total a b with h h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> simp [h, hf h]
 #align monotone.map_max Monotone.map_max
 
 theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
@@ -269,7 +269,7 @@ theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
 #align monotone.map_min Monotone.map_min
 
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
-  cases' le_total a b with h h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> simp [h, hf h]
 #align antitone.map_max Antitone.map_max
 
 theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=

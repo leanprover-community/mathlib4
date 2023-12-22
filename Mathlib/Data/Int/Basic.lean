@@ -63,6 +63,17 @@ instance instCommRingInt : CommRing ℤ where
 
 @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
 
+@[simp, norm_cast]
+theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
+  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
+  · induction m with
+    | zero => simp
+    | succ m ih => simp_all [add_mul]
+  · induction m with
+    | zero => simp
+    | succ m ih => simp_all [add_mul]
+#align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
+
 @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
@@ -129,9 +140,6 @@ theorem sign_coe_add_one (n : ℕ) : Int.sign (n + 1) = 1 :=
   rfl
 #align int.sign_coe_add_one Int.sign_coe_add_one
 
-@[simp]
-theorem sign_negSucc (n : ℕ) : Int.sign -[n+1] = -1 :=
-  rfl
 #align int.sign_neg_succ_of_nat Int.sign_negSucc
 
 /-! ### succ and pred -/

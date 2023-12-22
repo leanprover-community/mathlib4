@@ -217,7 +217,7 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 updating `e_map` and `monom_map` as it goes.
  -/
 def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
-      MetaM (List Comp × ExprMap × Map Monom ℕ)
+    MetaM (List Comp × ExprMap × Map Monom ℕ)
 | m, [],     mm => return ([], m, mm)
 | m, (h::t), mm => do
     let (c, m', mm') ← toComp red h m mm

@@ -96,7 +96,7 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
+    simp only [Sequence₂, mk_uLift, mk_fintype, Nat.cast_zero, lift_zero, Fintype.card_pempty]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -1048,7 +1048,7 @@ theorem toFun_inducedStructureEquiv (e : M ≃ N) :
 
 @[simp]
 theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
-  (by
+    (by
     letI : L.Structure N := inducedStructure e
     exact FunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
   rfl

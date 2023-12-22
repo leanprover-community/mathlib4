@@ -97,7 +97,7 @@ theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 
 @[simp]
 theorem coe_mk (f : ℕ → R) (hf) : @FunLike.coe (ArithmeticFunction R) _ _ _
-  (ZeroHom.mk f hf) = f := rfl
+    (ZeroHom.mk f hf) = f := rfl
 
 @[simp]
 theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
@@ -151,7 +151,7 @@ end Zero
 this in `natCoe` because it gets unfolded too much. -/
 @[coe]  -- porting note: added `coe` tag.
 def natToArithmeticFunction [AddMonoidWithOne R] :
-  (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
+    (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
 
 instance natCoe [AddMonoidWithOne R] : Coe (ArithmeticFunction ℕ) (ArithmeticFunction R) :=
@@ -173,7 +173,7 @@ theorem natCoe_apply [AddMonoidWithOne R] {f : ArithmeticFunction ℕ} {x : ℕ}
 this in `intCoe` because it gets unfolded too much. -/
 @[coe]
 def ofInt [AddGroupWithOne R] :
-  (ArithmeticFunction ℤ) → (ArithmeticFunction R) :=
+    (ArithmeticFunction ℤ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
 
 instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFunction R) :=
@@ -594,35 +594,35 @@ theorem pdiv_zeta [DivisionSemiring R] (f : ArithmeticFunction R) :
 
 end Pdiv
 
-section ProdToFinsetFactors
+section ProdPrimeFactors
 
 /-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
-def prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
-  toFun d := if d = 0 then 0 else ∏ p in d.factors.toFinset, f p
+def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
+  toFun d := if d = 0 then 0 else ∏ p in d.primeFactors, f p
   map_zero' := if_pos rfl
 
 open Std.ExtendedBinder
 
-/-- `∏ᵖ p ∣ n, f p` is custom notation for `prodToFinsetFactors f n` -/
+/-- `∏ᵖ p ∣ n, f p` is custom notation for `prodPrimeFactors f n` -/
 scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term
 scoped macro_rules (kind := bigproddvd)
-  | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodToFinsetFactors (fun $x ↦ $r) $n)
+  | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodPrimeFactors (fun $x ↦ $r) $n)
 
 @[simp]
-theorem prodToFinsetFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} [hn : NeZero n] :
-    ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
+theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} [hn : NeZero n] :
+    ∏ᵖ p ∣ n, f p = ∏ p in n.primeFactors, f p :=
   if_neg (hn.ne)
 
-theorem prodToFinsetFactors_apply_of_ne_zero [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ}
-    (hn : n ≠ 0) : ∏ᵖ p ∣ n, f p = ∏ p in n.factors.toFinset, f p :=
+theorem prodPrimeFactors_apply_of_ne_zero [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ}
+    (hn : n ≠ 0) : ∏ᵖ p ∣ n, f p = ∏ p in n.primeFactors, f p :=
   haveI : NeZero n := ⟨hn⟩
-  prodToFinsetFactors_apply
+  prodPrimeFactors_apply
 
-end ProdToFinsetFactors
+end ProdPrimeFactors
 
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
-  f 1 = 1 ∧ ∀ {m n : ℕ}, m.coprime n → f (m * n) = f m * f n
+  f 1 = 1 ∧ ∀ {m n : ℕ}, m.Coprime n → f (m * n) = f m * f n
 #align nat.arithmetic_function.is_multiplicative Nat.ArithmeticFunction.IsMultiplicative
 
 namespace IsMultiplicative
@@ -638,21 +638,21 @@ theorem map_one {f : ArithmeticFunction R} (h : f.IsMultiplicative) : f 1 = 1 :=
 
 @[simp]
 theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) {m n : ℕ}
-    (h : m.coprime n) : f (m * n) = f m * f n :=
+    (h : m.Coprime n) : f (m * n) = f m * f n :=
   hf.2 h
 #align nat.arithmetic_function.is_multiplicative.map_mul_of_coprime Nat.ArithmeticFunction.IsMultiplicative.map_mul_of_coprime
 
 end MonoidWithZero
 
 theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.ArithmeticFunction R}
-    (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (coprime on g)) :
+    (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i in s, g i) = ∏ i in s, f (g i) := by
   classical
     induction' s using Finset.induction_on with a s has ih hs
     · simp [hf]
-    rw [coe_insert, Set.pairwise_insert_of_symmetric (coprime.symmetric.comap g)] at hs
+    rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
     rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
-    exact Nat.coprime_prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
+    exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
 #align nat.arithmetic_function.is_multiplicative.map_prod Nat.ArithmeticFunction.IsMultiplicative.map_prod
 
 theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
@@ -661,11 +661,11 @@ theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
     f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
   map_prod _ h_mult t fun x hx y hy hxy => (coprime_primes (ht x hx) (ht y hy)).mpr hxy
 
-theorem map_prod_of_subset_factors [CommSemiring R] {f : ArithmeticFunction R}
+theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f) (l : ℕ)
-    (t : Finset ℕ) (ht : t ⊆ l.factors.toFinset) :
+    (t : Finset ℕ) (ht : t ⊆ l.primeFactors) :
      f (∏ a in t, a) = ∏ a : ℕ in t, f a :=
-  map_prod_of_prime h_mult t fun _ a => prime_of_mem_factorization (ht a)
+  map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
@@ -753,7 +753,7 @@ theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicat
 #align nat.arithmetic_function.is_multiplicative.pmul Nat.ArithmeticFunction.IsMultiplicative.pmul
 
 theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
-  (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
+    (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
   ⟨ by simp [hf, hg], fun {m n} cop => by
     simp only [pdiv_apply, map_mul_of_coprime hf cop, map_mul_of_coprime hg cop,
       div_eq_mul_inv, mul_inv]
@@ -771,7 +771,7 @@ theorem multiplicative_factorization [CommMonoidWithZero R] (f : ArithmeticFunct
 /-- A recapitulation of the definition of multiplicative that is simpler for proofs -/
 theorem iff_ne_zero [MonoidWithZero R] {f : ArithmeticFunction R} :
     IsMultiplicative f ↔
-      f 1 = 1 ∧ ∀ {m n : ℕ}, m ≠ 0 → n ≠ 0 → m.coprime n → f (m * n) = f m * f n := by
+      f 1 = 1 ∧ ∀ {m n : ℕ}, m ≠ 0 → n ≠ 0 → m.Coprime n → f (m * n) = f m * f n := by
   refine' and_congr_right' (forall₂_congr fun m n => ⟨fun h _ _ => h, fun h hmn => _⟩)
   rcases eq_or_ne m 0 with (rfl | hm)
   · simp
@@ -793,37 +793,61 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   by_cases hn : n = 0
   · rw [hn, ArithmeticFunction.map_zero, ArithmeticFunction.map_zero]
   rw [multiplicative_factorization f hf hn, multiplicative_factorization g hg hn]
-  refine' Finset.prod_congr rfl _
-  simp only [support_factorization, List.mem_toFinset]
-  intro p hp
-  exact h p _ (Nat.prime_of_mem_factors hp)
+  exact Finset.prod_congr rfl fun p hp ↦ h p _ (Nat.prime_of_mem_primeFactors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers Nat.ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
-theorem prodToFinsetFactors [CommMonoidWithZero R] (f : ℕ → R) :
-    IsMultiplicative (prodToFinsetFactors f) := by
+theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
+    IsMultiplicative (prodPrimeFactors f) := by
   rw [iff_ne_zero]
   constructor
-  · apply prodToFinsetFactors_apply
+  · apply prodPrimeFactors_apply
   intro x y hx hy hxy
   haveI : NeZero x := ⟨hx⟩
   haveI : NeZero y := ⟨hy⟩
-  simp_rw [prodToFinsetFactors_apply]
-  have h_disj := List.disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hxy)
-  rw[factors_mul_toFinset hx hy, ←Finset.prod_disjUnion h_disj, Finset.disjUnion_eq_union]
+  simp_rw [prodPrimeFactors_apply]
+  rw[Nat.primeFactors_mul hx hy, ←Finset.prod_union hxy.disjoint_primeFactors]
 
-theorem prodToFinsetFactors_add_of_squarefree [CommSemiring R]
+theorem prodPrimeFactors_add_of_squarefree [CommSemiring R]
   {f g : ArithmeticFunction R} (hf : IsMultiplicative f) (hg : IsMultiplicative g) {n : ℕ}
   (hn : Squarefree n) :
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
-  rw [prodToFinsetFactors_apply_of_ne_zero hn.ne_zero]; simp_rw [add_apply (f:=f) (g:=g)]
+  rw [prodPrimeFactors_apply_of_ne_zero hn.ne_zero]
+  simp_rw [add_apply (f:=f) (g:=g)]
   rw [Finset.prod_add, mul_apply, sum_divisorsAntidiagonal (f:= λ x y => f x * g y),
     ←divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
     factors_eq]
   apply Finset.sum_congr rfl
   intro t ht
   erw [t.prod_val, ←prod_factors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
-    hf.map_prod_of_subset_factors n t (Finset.mem_powerset.mp ht),
-    ←hg.map_prod_of_subset_factors n (_ \ t) (Finset.sdiff_subset _ t) ]
+    hf.map_prod_of_subset_primeFactors n t (Finset.mem_powerset.mp ht),
+    ←hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t), toFinset_factors]
+
+theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} :
+    f (x.lcm y) * f (x.gcd y) = f x * f y := by
+  by_cases hx : x = 0
+  · simp only [hx, f.map_zero, zero_mul, lcm_zero_left, gcd_zero_left]
+  by_cases hy : y = 0
+  · simp only [hy, f.map_zero, mul_zero, lcm_zero_right, gcd_zero_right, zero_mul]
+  have hgcd_ne_zero : x.gcd y ≠ 0 := gcd_ne_zero_left hx
+  have hlcm_ne_zero : x.lcm y ≠ 0 := lcm_ne_zero hx hy
+  have hfi_zero : ∀ {i}, f (i ^ 0) = 1
+  · intro i; rw [pow_zero, hf.1]
+  iterate 4 rw [hf.multiplicative_factorization f (by assumption),
+    Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
+      (s := (x.primeFactors ⊔ y.primeFactors))]
+  · rw [← Finset.prod_mul_distrib, ← Finset.prod_mul_distrib]
+    apply Finset.prod_congr rfl
+    intro p _
+    rcases Nat.le_or_le (x.factorization p) (y.factorization p) with h | h <;>
+      simp only [factorization_lcm hx hy, ge_iff_le, Finsupp.sup_apply, h, sup_of_le_right,
+        sup_of_le_left, inf_of_le_right, Nat.factorization_gcd hx hy, Finsupp.inf_apply,
+        inf_of_le_left, mul_comm]
+  · apply Finset.subset_union_right
+  · apply Finset.subset_union_left
+  · rw [factorization_gcd hx hy, Finsupp.support_inf, Finset.sup_eq_union]
+    apply Finset.inter_subset_union
+  · simp [factorization_lcm hx hy]
 
 end IsMultiplicative
 
@@ -1086,39 +1110,31 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
   refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
-  -- porting note: the rest of this proof was a single `simp only` with all the lemmas thrown in
-  -- followed by the last `rw`.
-  simp only [moebius, ZeroHom.coe_mk]
-  dsimp only [coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
-  simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
-    zero_mul, mul_zero]
-  rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
-  simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
-  rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
-  split_ifs <;>  -- porting note: added
-  simp           -- porting note: added
+  simp only [moebius, ZeroHom.coe_mk, coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk,
+    IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_zero_mul_ite_zero,
+    cardFactors_mul hn hm, pow_add]
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
 
-theorem IsMultiplicative.prodToFinsetFactors_one_add_of_squarefree [CommSemiring R]
+theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
   {f : ArithmeticFunction R} (h_mult : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
-    ∏ p in n.factors.toFinset, (1 + f p) = ∑ d in n.divisors, f d := by
+    ∏ p in n.primeFactors, (1 + f p) = ∑ d in n.divisors, f d := by
   haveI : NeZero n := ⟨hn.ne_zero⟩
   trans (∏ᵖ p ∣ n, ((ζ:ArithmeticFunction R) + f) p)
-  · simp_rw [prodToFinsetFactors_apply, add_apply, natCoe_apply]
+  · simp_rw [prodPrimeFactors_apply, add_apply, natCoe_apply]
     apply Finset.prod_congr rfl; intro p hp;
     rw [zeta_apply_ne (prime_of_mem_factors $ List.mem_toFinset.mp hp).ne_zero, cast_one]
-  rw [isMultiplicative_zeta.nat_cast.prodToFinsetFactors_add_of_squarefree h_mult hn,
+  rw [isMultiplicative_zeta.nat_cast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]
 
-theorem IsMultiplicative.prodToFinsetFactors_one_sub_of_squarefree [CommRing R]
+theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
-    ∏ p in n.factors.toFinset, (1 - f p) = ∑ d in n.divisors, μ d * f d := by
-  trans (∏ p in n.factors.toFinset, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
+    ∏ p in n.primeFactors, (1 - f p) = ∑ d in n.divisors, μ d * f d := by
+  trans (∏ p in n.primeFactors, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
   · apply Finset.prod_congr rfl; intro p hp
     rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
         (prime_of_mem_factors (List.mem_toFinset.mp hp))]
     ring
-  · rw [(isMultiplicative_moebius.int_cast.pmul hf).prodToFinsetFactors_one_add_of_squarefree hn]
+  · rw [(isMultiplicative_moebius.int_cast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
 
 open UniqueFactorizationMonoid
@@ -1275,19 +1291,19 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     let G := fun (n:ℕ) => (∑ i in n.divisors, f i)
     intro n hn hnP
     suffices ∑ d in n.divisors, μ (n/d) • G d = f n from by
-      rw [Nat.sum_divisorsAntidiagonal' (f:= fun x y => μ x • g y), ←this, sum_congr rfl]
+      rw [Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • g y), ← this, sum_congr rfl]
       intro d hd
-      rw [←h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
-    rw [←Nat.sum_divisorsAntidiagonal' (f:= fun x y => μ x • G y)]
+      rw [← h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
+    rw [← Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • G y)]
     apply sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
     intro _ _; rfl
   · intro h
     let F := fun (n:ℕ) => ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd
     intro n hn hnP
     suffices ∑ d in n.divisors, F d = g n from by
-      rw [←this, sum_congr rfl]
+      rw [← this, sum_congr rfl]
       intro d hd
-      rw [←h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
+      rw [← h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
     apply sum_eq_iff_sum_smul_moebius_eq.mpr _ n hn
     intro _ _; rfl
 

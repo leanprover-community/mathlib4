@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Sites.Whiskering
 
 #align_import category_theory.sites.adjunction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -76,9 +76,14 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
       intro γ
       ext1
       dsimp
-      rw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
+  CategoryTheory.Sheaf.composeEquiv_symm_apply_val
 
 /-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,

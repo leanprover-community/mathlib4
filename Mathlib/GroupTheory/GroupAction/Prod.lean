@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file defines instances for binary product of additive and multiplicative actions and provides
 scalar multiplication as a homomorphism from `α × β` to `β`.
 ## Main declarations
-* `smulMulHom `/`smulMonoidHom `: Scalar multiplication bundled as a multiplicative/monoid
+* `smulMulHom`/`smulMonoidHom`: Scalar multiplication bundled as a multiplicative/monoid
   homomorphism.
 ## See also
 * `Mathlib.GroupTheory.GroupAction.Option`
@@ -209,3 +209,83 @@ def smulMonoidHom [Monoid α] [MulOneClass β] [MulAction α β] [IsScalarTower 
 #align smul_monoid_hom_apply smulMonoidHom_apply
 
 end BundledSMul
+
+section Action_by_Prod
+
+variable (M N α) [Monoid M] [Monoid N]
+
+/-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
+  This is not an instance to avoid diamonds for example when `α := M × N`. -/
+@[to_additive AddAction.prodOfVAddCommClass
+  "Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
+  This is not an instance to avoid diamonds for example when `α := M × N`."]
+abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
+    MulAction (M × N) α where
+  smul mn a := mn.1 • mn.2 • a
+  one_smul a := (one_smul M _).trans (one_smul N a)
+  mul_smul x y a := by
+    change (x.1 * y.1) • (x.2 * y.2) • a = x.1 • x.2 • y.1 • y.2 • a
+    rw [mul_smul, mul_smul, smul_comm y.1 x.2]
+
+/-- A `MulAction` by a product monoid is equivalent to commuting `MulAction`s by the factors. -/
+@[to_additive AddAction.prodEquiv "An `AddAction` by a product monoid is equivalent to
+  commuting `AddAction`s by the factors."]
+def MulAction.prodEquiv :
+    MulAction (M × N) α ≃ Σ' (_ : MulAction M α) (_ : MulAction N α), SMulCommClass M N α where
+  toFun _ :=
+    letI instM := MulAction.compHom α (.inl M N)
+    letI instN := MulAction.compHom α (.inr M N)
+    ⟨instM, instN,
+    { smul_comm := fun m n a ↦ by
+        change (m, (1 : N)) • ((1 : M), n) • a = ((1 : M), n) • (m, (1 : N)) • a
+        simp_rw [smul_smul, Prod.mk_mul_mk, mul_one, one_mul] }⟩
+  invFun _insts :=
+    letI := _insts.1; letI := _insts.2.1; have := _insts.2.2
+    MulAction.prodOfSMulCommClass M N α
+  left_inv := by
+    rintro ⟨-, hsmul⟩; dsimp only; congr; ext ⟨m, n⟩ a
+    change (m, (1 : N)) • ((1 : M), n) • a = _
+    rw [← hsmul, Prod.mk_mul_mk, mul_one, one_mul]; rfl
+  right_inv := by
+    rintro ⟨hM, hN, -⟩
+    dsimp only; congr 1
+    · ext m a; conv_rhs => rw [← hN.one_smul a]; rfl
+    congr 1
+    · funext; congr; ext m a; conv_rhs => rw [← hN.one_smul a]; rfl
+    · congr 1; ext n a; conv_rhs => rw [← hM.one_smul (SMul.smul n a)]; rfl
+    · apply heq_prop
+
+variable [AddMonoid α]
+
+/-- Construct a `DistribMulAction` by a product monoid from `DistribMulAction`s by the factors. -/
+abbrev DistribMulAction.prodOfSMulCommClass [DistribMulAction M α] [DistribMulAction N α]
+    [SMulCommClass M N α] : DistribMulAction (M × N) α where
+  __ := MulAction.prodOfSMulCommClass M N α
+  smul_zero mn := by change mn.1 • mn.2 • 0 = (0 : α); rw [smul_zero, smul_zero]
+  smul_add mn a a' := by change mn.1 • mn.2 • _ = (_ : α); rw [smul_add, smul_add]; rfl
+
+/-- A `DistribMulAction` by a product monoid is equivalent to
+  commuting `DistribMulAction`s by the factors. -/
+def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
+    Σ' (_ : DistribMulAction M α) (_ : DistribMulAction N α), SMulCommClass M N α where
+  toFun _ :=
+    letI instM := DistribMulAction.compHom α (.inl M N)
+    letI instN := DistribMulAction.compHom α (.inr M N)
+    ⟨instM, instN, (MulAction.prodEquiv M N α inferInstance).2.2⟩
+  invFun _insts :=
+    letI := _insts.1; letI := _insts.2.1; have := _insts.2.2
+    DistribMulAction.prodOfSMulCommClass M N α
+  left_inv _ := by
+    dsimp only; congr; ext ⟨m, n⟩ a
+    change (m, (1 : N)) • ((1 : M), n) • a = _
+    rw [smul_smul, Prod.mk_mul_mk, mul_one, one_mul]; rfl
+  right_inv := by
+    rintro ⟨_, x, _⟩
+    dsimp only; congr 1
+    · ext m a; conv_rhs => rw [← one_smul N a]; rfl
+    congr 1
+    · funext i; congr; ext m a; clear i; conv_rhs => rw [← one_smul N a]; rfl
+    · congr 1; ext n a; conv_rhs => rw [← one_smul M (SMul.smul n a)]; rfl
+    · apply heq_prop
+
+end Action_by_Prod

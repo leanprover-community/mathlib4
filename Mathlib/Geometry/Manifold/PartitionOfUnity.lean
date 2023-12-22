@@ -159,8 +159,7 @@ theorem sum_eq_one {x} (hx : x ∈ s) : ∑ᶠ i, f i x = 1 :=
 #align smooth_partition_of_unity.sum_eq_one SmoothPartitionOfUnity.sum_eq_one
 
 theorem exists_pos_of_mem {x} (hx : x ∈ s) : ∃ i, 0 < f i x := by
-  by_contra h
-  push_neg at h
+  by_contra! h
   have H : ∀ i, f i x = 0 := fun i ↦ le_antisymm (h i) (f.nonneg i x)
   have := f.sum_eq_one hx
   simp_rw [H] at this
@@ -343,7 +342,6 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   -- First we deduce some missing instances
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
-  haveI : NormalSpace M := normal_of_paracompact_t2
   -- Next we choose a covering by supports of smooth bump functions
   have hB := fun x hx => SmoothBumpFunction.nhds_basis_support I (hU x hx)
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set hs hB with
@@ -523,7 +521,6 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
-  haveI : NormalSpace M := normal_of_paracompact_t2
   -- porting note(https://github.com/leanprover/std4/issues/116):
   -- split `rcases` into `have` + `rcases`
   have := BumpCovering.exists_isSubordinate_of_prop (Smooth I 𝓘(ℝ)) ?_ hs U ho hU
@@ -645,7 +642,7 @@ theorem IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
       Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1 := by
     intro i
     apply IsOpen.exists_msmooth_support_eq_aux
-    exact LocalHomeomorph.preimage_open_of_open_symm _ hs
+    exact PartialHomeomorph.isOpen_inter_preimage_symm _ hs
   choose g g_supp g_diff hg using A
   have h'g : ∀ c x, 0 ≤ g c x := fun c x ↦ (hg c (mem_range_self (f := g c) x)).1
   have h''g : ∀ c x, 0 ≤ f c x * g c (chartAt H c x) :=
@@ -704,7 +701,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs
-        simp at xs
+        simp? at xs says simp only [mem_compl_iff, not_not] at xs
         exact h.trans f_supp.symm.subset xs
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩

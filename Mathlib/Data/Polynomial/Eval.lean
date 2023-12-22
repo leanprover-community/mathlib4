@@ -140,6 +140,12 @@ theorem eval₂_nat_cast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   · rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 #align polynomial.eval₂_nat_cast Polynomial.eval₂_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
+    (no_index (OfNat.ofNat n : R[X])).eval₂ f a = OfNat.ofNat n := by
+  simp [OfNat.ofNat]
+
 variable [Semiring T]
 
 theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
@@ -150,7 +156,7 @@ theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
       map_add' := fun p q => eval₂_add _ _ }
   have A : ∀ y, eval₂ f x y = T y := fun y => rfl
   simp only [A]
-  rw [sum, T.map_sum, sum]
+  rw [sum, map_sum, sum]
 #align polynomial.eval₂_sum Polynomial.eval₂_sum
 
 theorem eval₂_list_sum (l : List R[X]) (x : S) : eval₂ f x l.sum = (l.map (eval₂ f x)).sum :=
@@ -167,7 +173,7 @@ theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
   map_sum (eval₂AddMonoidHom f x) _ _
 #align polynomial.eval₂_finset_sum Polynomial.eval₂_finset_sum
 
-theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : AddMonoidAlgebra R ℕ} :
+theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
   simp only [eval₂_eq_sum, sum, toFinsupp_sum, support, coeff]
   rfl
@@ -211,6 +217,7 @@ theorem eval₂_list_prod_noncomm (ps : List R[X])
 #align polynomial.eval₂_list_prod_noncomm Polynomial.eval₂_list_prod_noncomm
 
 /-- `eval₂` as a `RingHom` for noncommutative rings -/
+@[simps]
 def eval₂RingHom' (f : R →+* S) (x : S) (hf : ∀ a, Commute (f a) x) : R[X] →+* S where
   toFun := eval₂ f x
   map_add' _ _ := eval₂_add _ _
@@ -345,6 +352,12 @@ theorem eval₂_at_nat_cast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
   simp
 #align polynomial.eval₂_at_nat_cast Polynomial.eval₂_at_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
+    p.eval₂ f (no_index (OfNat.ofNat n)) = f (p.eval (OfNat.ofNat n)) := by
+  simp [OfNat.ofNat]
+
 @[simp]
 theorem eval_C : (C a).eval x = a :=
   eval₂_C _ _
@@ -353,6 +366,12 @@ theorem eval_C : (C a).eval x = a :=
 @[simp]
 theorem eval_nat_cast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_nat_cast, eval_C]
 #align polynomial.eval_nat_cast Polynomial.eval_nat_cast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
+    (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, eval_nat_cast]
 
 @[simp]
 theorem eval_X : X.eval x = x :=
@@ -622,6 +641,12 @@ theorem nat_cast_mul_comp {n : ℕ} : ((n : R[X]) * p).comp r = n * p.comp r := 
   rw [← C_eq_nat_cast, C_mul_comp, C_eq_nat_cast]
 #align polynomial.nat_cast_mul_comp Polynomial.nat_cast_mul_comp
 
+theorem mul_X_add_nat_cast_comp {n : ℕ} :
+    (p * (X + (n : R[X]))).comp q = p.comp q * (q + n) := by
+  rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
+set_option linter.uppercaseLean3 false in
+#align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_nat_cast_comp
+
 @[simp]
 theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
     (p * q).comp r = p.comp r * q.comp r :=
@@ -676,6 +701,9 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
   case h₁ =>
     simp (config := { contextual := true })
 #align polynomial.coeff_comp_degree_mul_degree Polynomial.coeff_comp_degree_mul_degree
+
+@[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
+    (∑ i in s, p i).comp q = ∑ i in s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
 
 end Comp
 
@@ -759,6 +787,7 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
 
 --Porting note: new theorem
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
@@ -787,7 +816,8 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
   -- Porting note: Was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
-  simp [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul]
+  simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
+    simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
 
@@ -1222,14 +1252,6 @@ section Ring
 
 variable [Ring R] {p q r : R[X]}
 
-theorem C_neg : C (-a) = -C a :=
-  RingHom.map_neg C a
-#align polynomial.C_neg Polynomial.C_neg
-
-theorem C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub C a b
-#align polynomial.C_sub Polynomial.C_sub
-
 @[simp]
 protected theorem map_sub {S} [Ring S] (f : R →+* S) : (p - q).map f = p.map f - q.map f :=
   (mapRingHom f).map_sub p q
@@ -1288,6 +1310,16 @@ theorem sub_comp : (p - q).comp r = p.comp r - q.comp r :=
 @[simp]
 theorem cast_int_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
 #align polynomial.cast_int_comp Polynomial.cast_int_comp
+
+@[simp]
+theorem eval₂_at_int_cast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
+    p.eval₂ f n = f (p.eval n) := by
+  convert eval₂_at_apply (p := p) f n
+  simp
+
+theorem mul_X_sub_int_cast_comp {n : ℕ} :
+    (p * (X - (n : R[X]))).comp q = p.comp q * (q - n) := by
+  rw [mul_sub, sub_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_sub]
 
 end Ring
 

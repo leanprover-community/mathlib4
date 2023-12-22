@@ -78,8 +78,8 @@ def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
 variable (p : SeminormFamily 𝕜 E ι)
 
 theorem basisSets_iff {U : Set E} :
-    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : _) (_ : 0 < r), U = ball (i.sup p) 0 r := by
-  simp only [basisSets, mem_iUnion, mem_singleton_iff]
+    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
+  simp only [basisSets, mem_iUnion, exists_prop, mem_singleton_iff]
 #align seminorm_family.basis_sets_iff SeminormFamily.basisSets_iff
 
 theorem basisSets_mem (i : Finset ι) {r : ℝ} (hr : 0 < r) : (i.sup p).ball 0 r ∈ p.basisSets :=
@@ -313,7 +313,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
   have : TopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
-  convert hp.hasBasis_zero_ball.map ((· + ·) x) using 1
+  convert hp.hasBasis_zero_ball.map (x + ·) using 1
   ext sr : 1
   -- Porting note: extra type ascriptions needed on `0`
   have : (sr.fst.sup p).ball (x +ᵥ (0 : E)) sr.snd = x +ᵥ (sr.fst.sup p).ball 0 sr.snd :=
@@ -354,7 +354,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
   have := ((t1Space_TFAE E).out 0 9).mp (inferInstanceAs <| T1Space E)
-  by_contra' h
+  by_contra! h
   refine' hx (this _)
   rw [hp.hasBasis_zero_ball.specializes_iff]
   rintro ⟨s, r⟩ (hr : 0 < r)
@@ -468,7 +468,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
     WithSeminorms p ↔ u = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
-    toTopologicalSpace_iInf, nhds_iInf]
+    UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
@@ -848,7 +848,7 @@ lemma bound_of_continuous [Nonempty ι] [t : TopologicalSpace E] (hp : WithSemin
   rcases bound_of_continuous_normedSpace q this with ⟨C, C_pos, hC⟩
   exact ⟨s, ⟨C, C_pos.le⟩, fun H ↦ C_pos.ne.symm (congr_arg NNReal.toReal H), hC⟩
   -- Note that the key ingredient for this proof is that, by scaling arguments hidden in
-  -- `seminorm.continuous`, we only have to look at the `q`-ball of radius one, and the `s` we get
+  -- `Seminorm.continuous`, we only have to look at the `q`-ball of radius one, and the `s` we get
   -- from that will automatically work for all other radii.
 
 end Seminorm
@@ -968,7 +968,7 @@ variable [TopologicalSpace E]
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology
 is first countable. -/
 theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
-    TopologicalSpace.FirstCountableTopology E := by
+    FirstCountableTopology E := by
   have := hp.topologicalAddGroup
   let _ : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   have : UniformAddGroup E := comm_topologicalAddGroup_is_uniform

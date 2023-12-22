@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Mario Carneiro
 -/
-import Lean
+import Std.Tactic.Replace
 import Mathlib.Tactic.Have
 
 namespace Mathlib.Tactic
@@ -49,7 +49,5 @@ elab_rules : tactic
     let name := optBinderIdent.name n
     let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
     match hId? with
-    | some hId =>
-      try replaceMainGoal [goal1, ← goal2.clear hId]
-      catch | _ => pure ()
+    | some hId => replaceMainGoal [goal1, (← observing? <| goal2.clear hId).getD goal2]
     | none     => replaceMainGoal [goal1, goal2]

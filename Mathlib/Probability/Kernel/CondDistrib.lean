@@ -49,7 +49,7 @@ open scoped ENNReal MeasureTheory ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β Ω F : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [PolishSpace Ω] [BorelSpace Ω]
+variable {α β Ω F : Type*} [MeasurableSpace Ω] [StandardBorelSpace Ω]
   [Nonempty Ω] [NormedAddCommGroup F] {mα : MeasurableSpace α} {μ : Measure α} [IsFiniteMeasure μ]
   {X : α → β} {Y : α → Ω}
 
@@ -105,6 +105,20 @@ theorem aestronglyMeasurable'_integral_condDistrib (hX : AEMeasurable X μ) (hY 
 #align probability_theory.ae_strongly_measurable'_integral_cond_distrib ProbabilityTheory.aestronglyMeasurable'_integral_condDistrib
 
 end Measurability
+
+/-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
+`condKernel`. -/
+theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measurable Y)
+    (κ : kernel β Ω) [IsFiniteKernel κ] (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
+    ∀ᵐ x ∂μ.map X, κ x = condDistrib Y X μ x := by
+  have heq : μ.map X = (μ.map (fun x => (X x, Y x))).fst
+  · ext s hs
+    rw [Measure.map_apply hX hs, Measure.fst_apply hs, Measure.map_apply]
+    exacts [rfl, Measurable.prod hX hY, measurable_fst hs]
+  rw [heq, condDistrib]
+  refine' eq_condKernel_of_measure_eq_compProd _ _ _
+  convert hκ
+  exact heq.symm
 
 section Integrability
 

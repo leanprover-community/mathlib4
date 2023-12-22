@@ -76,8 +76,8 @@ theorem linear_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : e.toAffineMap.linear = e.
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) → P₁ →ᵃ[k] P₂) := by
   rintro ⟨e, el, h⟩ ⟨e', el', h'⟩ H
-  -- porting note: added `()`s and `AffineMap.mk.injEq`
-  simp only [(toAffineMap_mk), (AffineMap.mk.injEq), Equiv.coe_inj,
+  -- porting note: added `AffineMap.mk.injEq`
+  simp only [toAffineMap_mk, AffineMap.mk.injEq, Equiv.coe_inj,
     LinearEquiv.toLinearMap_inj] at H
   congr
   exacts [H.1, H.2]
@@ -167,13 +167,10 @@ def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗ[k] V₂) (p : P₁) (h : ∀ p' : 
     P₁ ≃ᵃ[k] P₂ where
   toFun := e
   invFun := fun q' : P₂ => e'.symm (q' -ᵥ e p) +ᵥ p
-  -- Porting note: `simp` needs `()`
-  left_inv p' := by simp [h p', (vadd_vsub), (vsub_vadd)]
-  -- Porting note: `simp` needs `()`
-  right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), (vadd_vsub), (vsub_vadd)]
+  left_inv p' := by simp [h p', vadd_vsub, vsub_vadd]
+  right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), vadd_vsub, vsub_vadd]
   linear := e'
-  -- Porting note: `simp` needs `()`
-  map_vadd' p' v := by simp [h p', h (v +ᵥ p'), (vadd_vsub_assoc), (vadd_vadd)]
+  map_vadd' p' v := by simp [h p', h (v +ᵥ p'), vadd_vsub_assoc, vadd_vadd]
 #align affine_equiv.mk' AffineEquiv.mk'
 
 @[simp]
@@ -327,8 +324,7 @@ def trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) : P₁ ≃ᵃ[k] 
   toEquiv := e.toEquiv.trans e'.toEquiv
   linear := e.linear.trans e'.linear
   map_vadd' p v := by
-    -- porting note: added `()`
-    simp only [LinearEquiv.trans_apply, (coe_toEquiv), (· ∘ ·), Equiv.coe_trans, (map_vadd)]
+    simp only [LinearEquiv.trans_apply, coe_toEquiv, (· ∘ ·), Equiv.coe_trans, map_vadd]
 #align affine_equiv.trans AffineEquiv.trans
 
 @[simp]
@@ -455,12 +451,11 @@ def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁ where
 def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁ where
   toEquiv := Equiv.constVSub p
   linear := LinearEquiv.neg k
-  -- porting note: added `coe_constVSub` and `()`s
-  map_vadd' p' v := by simp [(Equiv.coe_constVSub), (vsub_vadd_eq_vsub_sub), neg_add_eq_sub]
+  map_vadd' p' v := by simp [vsub_vadd_eq_vsub_sub, neg_add_eq_sub]
 #align affine_equiv.const_vsub AffineEquiv.constVSub
 
 @[simp]
-theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (p -ᵥ ·) :=
   rfl
 #align affine_equiv.coe_const_vsub AffineEquiv.coe_constVSub
 
@@ -649,8 +644,7 @@ theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
 variable {R' : Type*} [CommRing R'] [Module R' V₁]
 
 theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointReflection R' c p := by
-  -- porting note: added `()`, `_`, and `neg_vsub_eq_vsub_rev`
-  simp [(homothety_apply), pointReflection_apply _, (neg_vsub_eq_vsub_rev)]
+  simp [homothety_apply, pointReflection_apply]
 #align affine_map.homothety_neg_one_apply AffineMap.homothety_neg_one_apply
 
 end AffineMap

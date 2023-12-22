@@ -300,6 +300,13 @@ theorem tsub_tsub_tsub_cancel_left (h : b ≤ a) : a - c - (a - b) = b - c :=
   Contravariant.AddLECancellable.tsub_tsub_tsub_cancel_left h
 #align tsub_tsub_tsub_cancel_left tsub_tsub_tsub_cancel_left
 
+-- note: not generalized to `AddLECancellable` because `add_tsub_add_eq_tsub_left` isn't
+/-- The `tsub` version of `sub_sub_eq_add_sub`. -/
+theorem tsub_tsub_eq_add_tsub_of_le [ContravariantClass α α HAdd.hAdd LE.le]
+    (h : c ≤ b) : a - (b - c) = a + c - b := by
+  obtain ⟨d, rfl⟩ := exists_add_of_le h
+  rw [add_tsub_cancel_left c, add_comm a c, add_tsub_add_eq_tsub_left]
+
 end Contra
 
 end ExistsAddOfLE
@@ -307,9 +314,9 @@ end ExistsAddOfLE
 /-! ### Lemmas in a canonically ordered monoid. -/
 
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -394,34 +401,34 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 
 variable (α)
 
-/-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
+/-- A `CanonicallyOrderedAddCommMonoid` with ordered subtraction and order-reflecting addition is
 cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def CanonicallyOrderedAddMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
+def CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
-#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
+#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid
 
 end Contra
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 /-! ### Lemmas in a linearly canonically ordered monoid. -/
 
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
 #align tsub_pos_iff_lt tsub_pos_iff_lt
 
 theorem tsub_eq_tsub_min (a b : α) : a - b = a - min a b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_eq_tsub_min tsub_eq_tsub_min
@@ -490,7 +497,7 @@ end Contra
 
 
 theorem tsub_add_eq_max : a - b + b = max a b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [max_eq_right h, tsub_eq_zero_of_le h, zero_add]
   · rw [max_eq_left h, tsub_add_cancel_of_le h]
 #align tsub_add_eq_max tsub_add_eq_max
@@ -499,7 +506,7 @@ theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, ts
 #align add_tsub_eq_max add_tsub_eq_max
 
 theorem tsub_min : a - min a b = a - b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_min tsub_min
@@ -509,4 +516,4 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 #align tsub_add_min tsub_add_min
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid

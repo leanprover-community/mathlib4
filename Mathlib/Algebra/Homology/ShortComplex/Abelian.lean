@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
+import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Abelian.Basic
 
@@ -120,7 +121,7 @@ instance : Epi S.cokernelToAbelianCoimage :=
   epi_of_epi_fac S.cokernel_π_comp_cokernelToAbelianCoimage
 
 lemma kernel_ι_comp_cokernel_π_comp_cokernelToAbelianCoimage :
-  (kernel.ι S.g ≫ cokernel.π S.f) ≫ S.cokernelToAbelianCoimage = 0 := by simp
+    (kernel.ι S.g ≫ cokernel.π S.f) ≫ S.cokernelToAbelianCoimage = 0 := by simp
 
 /-- `Abelian.coimage S.g` is the cokernel of `kernel.ι S.g ≫ cokernel.π S.f` -/
 noncomputable def cokernelToAbelianCoimageIsCokernel :
@@ -177,6 +178,13 @@ noncomputable def HomologyData.ofAbelian : S.HomologyData where
   right := RightHomologyData.ofAbelian S
   iso := Abelian.coimageIsoImage (kernel.ι S.g ≫ cokernel.π S.f)
 
-instance : S.HasHomology := ⟨⟨HomologyData.ofAbelian S⟩⟩
+instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
+    CategoryWithHomology C where
+  hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
+
+/-- Comparison isomorphism between two definitions of homology. -/
+noncomputable def homology'IsoHomology :
+    _root_.homology' S.f S.g S.zero ≅ S.homology :=
+  homology'IsoCokernelLift S.f S.g S.zero ≪≫ S.homologyIsoCokernelLift.symm
 
 end ShortComplex

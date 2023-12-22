@@ -37,24 +37,24 @@ theorem star_def [∀ i, Star (f i)] (x : ∀ i, f i) : star x = fun i => star (
   rfl
 #align pi.star_def Pi.star_def
 
-instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i)
-    where star_trivial _ := funext fun _ => star_trivial _
+instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i) where
+  star_trivial _ := funext fun _ => star_trivial _
 
-instance [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i)
-    where star_involutive _ := funext fun _ => star_star _
+instance [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i) where
+  star_involutive _ := funext fun _ => star_star _
 
-instance [∀ i, Mul (f i)] [∀ i, StarMul (f i)] : StarMul (∀ i, f i)
-    where star_mul _ _ := funext fun _ => star_mul _ _
+instance [∀ i, Mul (f i)] [∀ i, StarMul (f i)] : StarMul (∀ i, f i) where
+  star_mul _ _ := funext fun _ => star_mul _ _
 
-instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i)
-    where star_add _ _ := funext fun _ => star_add _ _
+instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i) where
+  star_add _ _ := funext fun _ => star_add _ _
 
 instance [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)] : StarRing (∀ i, f i)
   where star_add _ _ := funext fun _ => star_add _ _
 
 instance {R : Type w} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
-    [∀ i, StarModule R (f i)] : StarModule R (∀ i, f i)
-    where star_smul r x := funext fun i => star_smul r (x i)
+    [∀ i, StarModule R (f i)] : StarModule R (∀ i, f i) where
+  star_smul r x := funext fun i => star_smul r (x i)
 
 theorem single_star [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] [DecidableEq I] (i : I)
     (a : f i) : Pi.single i (star a) = star (Pi.single i a) :=

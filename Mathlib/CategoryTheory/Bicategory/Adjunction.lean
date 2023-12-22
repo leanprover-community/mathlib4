@@ -77,9 +77,9 @@ def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
 
 /-- Adjunction between two 1-morphisms. -/
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
-  /-- The unit of an adjuntion. -/
+  /-- The unit of an adjunction. -/
   unit : 𝟙 a ⟶ f ≫ g
-  /-- The counit of an adjuntion. -/
+  /-- The counit of an adjunction. -/
   counit : g ≫ f ⟶ 𝟙 b
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
   left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by aesop_cat
@@ -103,6 +103,60 @@ def id (a : B) : 𝟙 a ⊣ 𝟙 a where
 
 instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
   ⟨id a⟩
+
+section Composition
+
+variable {f₁ : a ⟶ b} {g₁ : b ⟶ a} {f₂ : b ⟶ c} {g₂ : c ⟶ b}
+
+/-- Auxiliary definition for `adjunction.comp`. -/
+@[simp]
+def compUnit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : 𝟙 a ⟶ (f₁ ≫ f₂) ≫ g₂ ≫ g₁ :=
+  adj₁.unit ⊗≫ f₁ ◁ adj₂.unit ▷ g₁ ⊗≫ 𝟙 _
+
+/-- Auxiliary definition for `adjunction.comp`. -/
+@[simp]
+def compCounit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : (g₂ ≫ g₁) ≫ f₁ ≫ f₂ ⟶ 𝟙 c :=
+  𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit
+
+theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
+    leftZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (λ_ _).hom ≫ (ρ_ _).inv := by
+  calc
+    _ = 𝟙 _ ⊗≫
+          adj₁.unit ▷ (f₁ ≫ f₂) ⊗≫
+            f₁ ◁ (adj₂.unit ▷ (g₁ ≫ f₁) ≫ (f₂ ≫ g₂) ◁ adj₁.counit) ▷ f₂ ⊗≫
+              (f₁ ≫ f₂) ◁ adj₂.counit ⊗≫ 𝟙 _ := by
+      simp [bicategoricalComp]; coherence
+    _ = 𝟙 _ ⊗≫
+          (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
+            f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := by
+      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = _ := by
+      simp_rw [left_triangle]; simp [bicategoricalComp]
+
+theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
+    rightZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (ρ_ _).hom ≫ (λ_ _).inv := by
+  calc
+    _ = 𝟙 _ ⊗≫
+          (g₂ ≫ g₁) ◁ adj₁.unit ⊗≫
+            g₂ ◁ ((g₁ ≫ f₁) ◁ adj₂.unit ≫ adj₁.counit ▷ (f₂ ≫ g₂)) ▷ g₁ ⊗≫
+              adj₂.counit ▷ (g₂ ≫ g₁) ⊗≫ 𝟙 _ := by
+      simp [bicategoricalComp]; coherence
+    _ = 𝟙 _ ⊗≫
+          g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
+            (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := by
+      rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+    _ = _ := by
+      simp_rw [right_triangle]; simp [bicategoricalComp]
+
+/-- Composition of adjunctions. -/
+@[simps]
+def comp (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : f₁ ≫ f₂ ⊣ g₂ ≫ g₁ where
+  unit := compUnit adj₁ adj₂
+  counit := compCounit adj₁ adj₂
+  left_triangle := by apply comp_left_triangle_aux
+  right_triangle := by apply comp_right_triangle_aux
+
+end Composition
 
 end Adjunction
 

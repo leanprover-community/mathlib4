@@ -44,6 +44,9 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 #align is_fraction_ring IsFractionRing
 
+instance {R : Type*} [Field R] : IsFractionRing R R :=
+  IsLocalization.at_units _ (fun _ ↦ isUnit_of_mem_nonZeroDivisors)
+
 /-- The cast from `Int` to `Rat` as a `FractionRing`. -/
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
@@ -55,15 +58,10 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
     rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
-  eq_iff_exists' := by
-    intro x y
+  exists_of_eq {x y} := by
     rw [eq_intCast, eq_intCast, Int.cast_inj]
-    apply Iff.intro
-    · rintro rfl
-      use 1
-    · rintro ⟨⟨c, hc⟩, h⟩
-      apply mul_left_cancel₀ _ h
-      rwa [mem_nonZeroDivisors_iff_ne_zero] at hc
+    rintro rfl
+    use 1
 #align rat.is_fraction_ring Rat.isFractionRing
 
 namespace IsFractionRing
@@ -145,6 +143,14 @@ noncomputable def toField : Field K :=
       exact dif_pos rfl }
 #align is_fraction_ring.to_field IsFractionRing.toField
 
+lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
+  mp h := (RingEquiv.ofBijective (algebraMap R K)
+      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
+  mpr h :=
+    letI := h.toField
+    (IsLocalization.atUnits R _ (S := K)
+      (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
+
 end CommRing
 
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
@@ -163,7 +169,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 #align is_fraction_ring.mk'_eq_div IsFractionRing.mk'_eq_div
 
 theorem div_surjective (z : K) :
-    ∃ (x y : A) (hy : y ∈ nonZeroDivisors A), algebraMap _ _ x / algebraMap _ _ y = z :=
+    ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
   let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 #align is_fraction_ring.div_surjective IsFractionRing.div_surjective
@@ -319,12 +325,11 @@ noncomputable def liftAlgebra [IsDomain R] [Field K] [Algebra R K]
   RingHom.toAlgebra (IsFractionRing.lift (NoZeroSMulDivisors.algebraMap_injective R _))
 
 -- Porting note: had to fill in the `_` by hand for this instance
-/-- Should be introduced locally after introducing `FractionRing.liftAlgebra` -/
-theorem isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
+instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
   exact IsScalarTower.of_algebraMap_eq fun x =>
-    (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K ) x).symm
+    (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K) x).symm
 
 /-- Given an integral domain `A` and a localization map to a field of fractions
 `f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient

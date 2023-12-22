@@ -17,9 +17,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
   `f x`.
 * `QuadraticForm.dualProd R M`, the quadratic form on `(f, x) : Module.Dual R M × M` defined as
   `f x`.
-* `QuadraticForm.toDualProd : M × M →ₗ[R] Module.Dual R M × M` a form-preserving map from
-  `(Q.prod $ -Q)` to `QuadraticForm.dualProd R M`. Note that we do not have the morphism
-  version of `QuadraticForm.IsometryEquiv`, so for now this is stated without full bundling.
+* `QuadraticForm.toDualProd : (Q.prod <| -Q) →qᵢ QuadraticForm.dualProd R M` a form-preserving map
+  from `(Q.prod <| -Q)` to `QuadraticForm.dualProd R M`.
 
 -/
 
@@ -142,22 +141,25 @@ This is `σ` from Proposition 4.8, page 84 of
 [*Hermitian K-Theory and Geometric Applications*][hyman1973]; though we swap the order of the pairs.
 -/
 @[simps!]
-def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] : M × M →ₗ[R] Module.Dual R M × M :=
-  LinearMap.prod
+def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
+    (Q.prod <| -Q) →qᵢ QuadraticForm.dualProd R M where
+  toLinearMap := LinearMap.prod
     (Q.associated.toLin.comp (LinearMap.fst _ _ _) + Q.associated.toLin.comp (LinearMap.snd _ _ _))
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)
-#align quadratic_form.to_dual_prod QuadraticForm.toDualProd
+  map_app' x := by
+    dsimp only [associated, associatedHom]
+    dsimp
+    -- porting note: added `()` around `Submonoid.smul_def`
+    simp [polar_comm _ x.1 x.2, ← sub_add, mul_sub, sub_mul, smul_sub, (Submonoid.smul_def), ←
+      sub_eq_add_neg (Q x.1) (Q x.2)]
+#align quadratic_form.to_dual_prod QuadraticForm.toDualProdₓ
 
-theorem toDualProd_isometry [Invertible (2 : R)] (Q : QuadraticForm R M) (x : M × M) :
-    QuadraticForm.dualProd R M (toDualProd Q x) = (Q.prod <| -Q) x := by
-  dsimp only [toDualProd, associated, associatedHom]
-  dsimp
-  -- porting note: added `()` around `Submonoid.smul_def`
-  simp [polar_comm _ x.1 x.2, ← sub_add, mul_sub, sub_mul, smul_sub, (Submonoid.smul_def), ←
-    sub_eq_add_neg (Q x.1) (Q x.2)]
-#align quadratic_form.to_dual_prod_isometry QuadraticForm.toDualProd_isometry
+#align quadratic_form.to_dual_prod_isometry QuadraticForm.Isometry.map_appₓ
 
--- TODO: show that `toDualProd` is an equivalence
+/-!
+TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`
+-/
+
 end Ring
 
 end QuadraticForm

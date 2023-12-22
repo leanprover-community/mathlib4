@@ -3,10 +3,11 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Kleene
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.DeriveFintype
 
 #align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
@@ -172,9 +173,8 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f
   simp [map, image_image]
 #align language.map_map Language.map_map
 
-theorem kstar_def_nonempty (l : Language α) :
-    l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
-  ext x
+lemma mem_kstar_iff_exists_nonempty {x : List α} :
+    x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
   · rintro ⟨S, rfl, h⟩
     refine' ⟨S.filter fun l ↦ ¬List.isEmpty l, by simp, fun y hy ↦ _⟩
@@ -185,6 +185,10 @@ theorem kstar_def_nonempty (l : Language α) :
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
+
+theorem kstar_def_nonempty (l : Language α) :
+    l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
+  ext x; apply mem_kstar_iff_exists_nonempty
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
@@ -293,7 +297,18 @@ instance : KleeneAlgebra (Language α) :=
       refine' iSup_le (fun n ↦ _)
       induction' n with n ih
       · simp
-      rw [pow_succ, ←mul_assoc m l (l^n)]
+      rw [pow_succ, ← mul_assoc m l (l^n)]
       exact le_trans (le_mul_congr h le_rfl) ih }
 
 end Language
+
+/-- Symbols for use by all kinds of grammars. -/
+inductive Symbol (T N : Type*)
+  /-- Terminal symbols (of the same type as the language) -/
+  | terminal    (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | nonterminal (n : N) : Symbol T N
+deriving
+  DecidableEq, Repr, Fintype
+
+attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

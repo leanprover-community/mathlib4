@@ -26,8 +26,6 @@ Preferentially, the homomorphism is written as a coercion.
 
 universe u
 
-attribute [simp] Int.ofNat_eq_coe
-
 /-- Default value for `IntCast.intCast` in an `AddGroupWithOne`. -/
 protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
   | (n : ℕ) => n
@@ -63,4 +61,3 @@ class AddCommGroupWithOne (R : Type u)
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
 #align add_comm_group_with_one.to_add_comm_monoid_with_one AddCommGroupWithOne.toAddCommMonoidWithOne
-

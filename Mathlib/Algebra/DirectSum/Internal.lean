@@ -218,11 +218,11 @@ theorem coe_mul_of_apply_add [AddRightCancelMonoid ι] [SetLike.GradedMonoid A] 
 
 end coe
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 
-variable [CanonicallyOrderedAddMonoid ι] [SetLike.GradedMonoid A]
+variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :
     ((of (fun i => A i) i r * r') n : R) = 0 := by
@@ -251,7 +251,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
-  state them for `CanonicallyOrderedAddMonoid` + the above three typeclasses for convenience. -/
+  state them for `CanonicallyOrderedAddCommMonoid` + the above three typeclasses for convenience. -/
 theorem coe_mul_of_apply_of_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι) (h : i ≤ n) :
     ((r * of (fun i => A i) i r') n : R) = r (n - i) * r' :=
   coe_mul_of_apply_aux _ _ _ fun _x => (eq_tsub_iff_add_eq_of_le h).symm
@@ -274,7 +274,7 @@ theorem coe_of_mul_apply {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) [Decidabl
   exacts [coe_of_mul_apply_of_le _ _ _ n h, coe_of_mul_apply_of_not_le _ _ _ n h]
 #align direct_sum.coe_of_mul_apply DirectSum.coe_of_mul_apply
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 end DirectSum
 
@@ -317,7 +317,7 @@ end Submodule
 /-- The canonical algebra isomorphism between `⨁ i, A i` and `R`. -/
 def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedMonoid A] : (⨁ i, A i) →ₐ[S] R :=
-  DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl) fun _ => rfl
+  DirectSum.toAlgebra S _ (fun i => (A i).subtype) rfl (fun _ _ => rfl)
 #align direct_sum.coe_alg_hom DirectSum.coeAlgHom
 
 /-- The supremum of submodules that form a graded monoid is a subalgebra, and equal to the range of

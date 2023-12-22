@@ -21,29 +21,15 @@ namespace Option
 
 #align option.lift_or_get Option.liftOrGet
 
-/-- Lifts a relation `α → β → Prop` to a relation `Option α → Option β → Prop` by just adding
-`none ~ none`. -/
-inductive rel (r : α → β → Prop) : Option α → Option β → Prop
-  | /-- If `a ~ b`, then `some a ~ some b` -/
-    some {a b} : r a b → rel r (some a) (some b)
-  | /-- `none ~ none` -/
-    none : rel r none none
-#align option.rel Option.rel
-
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
-protected def traverse.{u, v} {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+protected def traverse.{u, v}
+    {F : Type u → Type v} [Applicative F] {α : Type*} {β : Type u} (f : α → F β) :
     Option α → F (Option β)
   | none => pure none
   | some x => some <$> f x
 #align option.traverse Option.traverse
 
-/-- If you maybe have a monadic computation in a `[Monad m]` which produces a term of type `α`,
-then there is a naturally associated way to always perform a computation in `m` which maybe
-produces a result. -/
-def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α) → m (Option α)
-  | none => pure none
-  | some fn => some <$> fn
-#align option.maybe Option.maybe
+#align option.maybe Option.sequence
 
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
@@ -139,3 +125,8 @@ instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (lif
 #align option.lift_or_get_idem Option.liftOrGet_isIdempotent
 #align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
 #align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
+
+/-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
+def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
+  | .some a => some a
+  | _ => none

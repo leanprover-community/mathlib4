@@ -169,8 +169,10 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
 #align pgame.short_birthday SetTheory.PGame.short_birthday
 
 /-- This leads to infinite loops if made into an instance. -/
-def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL xR) :=
-  Short.mk isEmptyElim isEmptyElim
+def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL xR) := by
+  have : Fintype l := Fintype.ofIsEmpty
+  have : Fintype r := Fintype.ofIsEmpty
+  exact Short.mk isEmptyElim isEmptyElim
 #align pgame.short.of_is_empty SetTheory.PGame.Short.ofIsEmpty
 
 instance short0 : Short 0 :=
@@ -274,36 +276,36 @@ instance shortBit1 (x : PGame.{u}) [Short x] : Short (bit1 x) := by dsimp [bit1]
 We build `Decidable (x ≤ y)` and `Decidable (x ⧏ y)` in a simultaneous induction.
 Instances for the two projections separately are provided below.
 -/
-def leLfDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
+def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
     · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
       apply @And.decidable _ _ ?_ ?_
       · apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
-        apply (leLfDecidable _ _).2
+        apply (leLFDecidable _ _).2
       · apply @Fintype.decidableForallFintype yr _ ?_ _
         intro i
-        apply (leLfDecidable _ _).2
+        apply (leLFDecidable _ _).2
     · refine' @decidable_of_iff' _ _ mk_lf_mk (id _)
       apply @Or.decidable _ _ ?_ ?_
       · apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i
-        apply (leLfDecidable _ _).1
+        apply (leLFDecidable _ _).1
       · apply @Fintype.decidableExistsFintype xr _ ?_ _
         intro i
-        apply (leLfDecidable _ _).1
+        apply (leLFDecidable _ _).1
 -- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
-termination_by leLfDecidable x y _ _ => Prod.mk x y
+termination_by leLFDecidable x y _ _ => Prod.mk x y
 -- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
-#align pgame.le_lf_decidable SetTheory.PGame.leLfDecidable
+#align pgame.le_lf_decidable SetTheory.PGame.leLFDecidable
 
 instance leDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≤ y) :=
-  (leLfDecidable x y).1
+  (leLFDecidable x y).1
 #align pgame.le_decidable SetTheory.PGame.leDecidable
 
 instance lfDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ⧏ y) :=
-  (leLfDecidable x y).2
+  (leLFDecidable x y).2
 #align pgame.lf_decidable SetTheory.PGame.lfDecidable
 
 instance ltDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x < y) :=

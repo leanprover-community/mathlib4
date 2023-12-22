@@ -3,12 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Algebra.Hom.Units
-import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
 
 #align_import data.set.pointwise.basic from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
@@ -140,8 +140,8 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
-noncomputable def singletonOneHom : OneHom α (Set α) :=
-  ⟨singleton, singleton_one⟩
+noncomputable def singletonOneHom : OneHom α (Set α) where
+  toFun := singleton; map_one' := singleton_one
 #align set.singleton_one_hom Set.singletonOneHom
 #align set.singleton_zero_hom Set.singletonZeroHom
 
@@ -344,7 +344,6 @@ theorem mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
 #align set.mul_mem_mul Set.mul_mem_mul
 #align set.add_mem_add Set.add_mem_add
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive add_image_prod]
 theorem image_mul_prod : (fun x : α × α => x.fst * x.snd) '' s ×ˢ t = s * t :=
   image_prod _
@@ -400,7 +399,7 @@ theorem mul_singleton : s * {b} = (· * b) '' s :=
 #align set.add_singleton Set.add_singleton
 
 @[to_additive (attr := simp)]
-theorem singleton_mul : {a} * t = (· * ·) a '' t :=
+theorem singleton_mul : {a} * t = (a * ·) '' t :=
   image2_singleton_left
 #align set.singleton_mul Set.singleton_mul
 #align set.singleton_add Set.singleton_add
@@ -473,7 +472,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
+theorem iUnion_mul_left_image : ⋃ a ∈ s, (a * ·) '' t = s * t :=
   iUnion_image_left _
 #align set.Union_mul_left_image Set.iUnion_mul_left_image
 #align set.Union_add_left_image Set.iUnion_add_left_image
@@ -546,8 +545,9 @@ theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-noncomputable def singletonMulHom : α →ₙ* Set α :=
-  ⟨singleton, fun _ _ => singleton_mul_singleton.symm⟩
+noncomputable def singletonMulHom : α →ₙ* Set α where
+  toFun := singleton
+  map_mul' _ _ := singleton_mul_singleton.symm
 #align set.singleton_mul_hom Set.singletonMulHom
 #align set.singleton_add_hom Set.singletonAddHom
 
@@ -610,7 +610,6 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
 #align set.div_mem_div Set.div_mem_div
 #align set.sub_mem_sub Set.sub_mem_sub
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive sub_image_prod]
 theorem image_div_prod : (fun x : α × α => x.fst / x.snd) '' s ×ˢ t = s / t :=
   image_prod _
@@ -739,7 +738,7 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
+theorem iUnion_div_left_image : ⋃ a ∈ s, (a / ·) '' t = s / t :=
   iUnion_image_left _
 #align set.Union_div_left_image Set.iUnion_div_left_image
 #align set.Union_sub_left_image Set.iUnion_sub_left_image
@@ -1195,7 +1194,7 @@ theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
 #align set.is_add_unit_iff_singleton Set.isAddUnit_iff_singleton
 
 @[to_additive (attr := simp)]
-theorem image_mul_left : (· * ·) a '' t = (· * ·) a⁻¹ ⁻¹' t := by
+theorem image_mul_left : (a * ·) '' t = (a⁻¹ * ·) ⁻¹' t := by
   rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
 #align set.image_mul_left Set.image_mul_left
 #align set.image_add_left Set.image_add_left
@@ -1207,7 +1206,7 @@ theorem image_mul_right : (· * b) '' t = (· * b⁻¹) ⁻¹' t := by
 #align set.image_add_right Set.image_add_right
 
 @[to_additive]
-theorem image_mul_left' : (fun b => a⁻¹ * b) '' t = (fun b => a * b) ⁻¹' t := by simp
+theorem image_mul_left' : (a⁻¹ * ·) '' t = (a * ·) ⁻¹' t := by simp
 #align set.image_mul_left' Set.image_mul_left'
 #align set.image_add_left' Set.image_add_left'
 
@@ -1217,7 +1216,7 @@ theorem image_mul_right' : (· * b⁻¹) '' t = (· * b) ⁻¹' t := by simp
 #align set.image_add_right' Set.image_add_right'
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_singleton : (· * ·) a ⁻¹' {b} = {a⁻¹ * b} := by
+theorem preimage_mul_left_singleton : (a * ·) ⁻¹' {b} = {a⁻¹ * b} := by
   rw [← image_mul_left', image_singleton]
 #align set.preimage_mul_left_singleton Set.preimage_mul_left_singleton
 #align set.preimage_add_left_singleton Set.preimage_add_left_singleton
@@ -1229,7 +1228,7 @@ theorem preimage_mul_right_singleton : (· * a) ⁻¹' {b} = {b * a⁻¹} := by
 #align set.preimage_add_right_singleton Set.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : (· * ·) a ⁻¹' 1 = {a⁻¹} := by
+theorem preimage_mul_left_one : (a * ·) ⁻¹' 1 = {a⁻¹} := by
   rw [← image_mul_left', image_one, mul_one]
 #align set.preimage_mul_left_one Set.preimage_mul_left_one
 #align set.preimage_add_left_zero Set.preimage_add_left_zero
@@ -1241,7 +1240,7 @@ theorem preimage_mul_right_one : (· * b) ⁻¹' 1 = {b⁻¹} := by
 #align set.preimage_add_right_zero Set.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : (fun b => a⁻¹ * b) ⁻¹' 1 = {a} := by simp
+theorem preimage_mul_left_one' : (a⁻¹ * ·) ⁻¹' 1 = {a} := by simp
 #align set.preimage_mul_left_one' Set.preimage_mul_left_one'
 #align set.preimage_add_left_zero' Set.preimage_add_left_zero'
 
@@ -1297,11 +1296,28 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 #align set.image_add Set.image_add
 
 @[to_additive]
+lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
+  rintro _ ⟨a, b, ha, hb, rfl⟩;
+  obtain ⟨a, rfl⟩ := hs ha
+  obtain ⟨b, rfl⟩ := ht hb
+  exact ⟨a * b, map_mul _ _ _⟩
+
+@[to_additive]
 theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t ⊆ m ⁻¹' (s * t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
   exact ⟨_, _, ‹_›, ‹_›, (map_mul m _ _).symm⟩
 #align set.preimage_mul_preimage_subset Set.preimage_mul_preimage_subset
 #align set.preimage_add_preimage_subset Set.preimage_add_preimage_subset
+
+@[to_additive]
+lemma preimage_mul (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
+    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t := by
+  refine subset_antisymm ?_ (preimage_mul_preimage_subset m)
+  rintro a ⟨b, c, hb, hc, ha⟩
+  obtain ⟨b, rfl⟩ := hs hb
+  obtain ⟨c, rfl⟩ := ht hc
+  simp only [← map_mul, hm.eq_iff] at ha
+  exact ⟨b, c, hb, hc, ha⟩
 
 end Mul
 
@@ -1316,11 +1332,28 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 #align set.image_sub Set.image_sub
 
 @[to_additive]
+lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
+  rintro _ ⟨a, b, ha, hb, rfl⟩;
+  obtain ⟨a, rfl⟩ := hs ha
+  obtain ⟨b, rfl⟩ := ht hb
+  exact ⟨a / b, map_div _ _ _⟩
+
+@[to_additive]
 theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t ⊆ m ⁻¹' (s / t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
   exact ⟨_, _, ‹_›, ‹_›, (map_div m _ _).symm⟩
 #align set.preimage_div_preimage_subset Set.preimage_div_preimage_subset
 #align set.preimage_sub_preimage_subset Set.preimage_sub_preimage_subset
+
+@[to_additive]
+lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
+    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t := by
+  refine subset_antisymm ?_ (preimage_div_preimage_subset m)
+  rintro a ⟨b, c, hb, hc, ha⟩
+  obtain ⟨b, rfl⟩ := hs hb
+  obtain ⟨c, rfl⟩ := ht hc
+  simp only [← map_div, hm.eq_iff] at ha
+  exact ⟨b, c, hb, hc, ha⟩
 
 end Group
 

@@ -86,19 +86,17 @@ We can provide `SuccOrder α` from `LinearOrder α` and `LocallyFiniteOrder α` 
 
 ```lean
 lemma exists_min_greater [LinearOrder α] [LocallyFiniteOrder α] {x ub : α} (hx : x < ub) :
-  ∃ lub, x < lub ∧ ∀ y, x < y → lub ≤ y :=
-begin -- very non golfed
-  have h : (Finset.Ioc x ub).Nonempty := ⟨ub, Finset.mem_Ioc_iff.2 ⟨hx, le_rfl⟩⟩
+    ∃ lub, x < lub ∧ ∀ y, x < y → lub ≤ y := by
+  -- very non golfed
+  have h : (Finset.Ioc x ub).Nonempty := ⟨ub, Finset.mem_Ioc.2 ⟨hx, le_rfl⟩⟩
   use Finset.min' (Finset.Ioc x ub) h
   constructor
-  · have := Finset.min'_mem _ h
-    simp * at *
+  · exact (Finset.mem_Ioc.mp <| Finset.min'_mem _ h).1
   rintro y hxy
   obtain hy | hy := le_total y ub
-  apply Finset.min'_le
-  simp * at *
-  exact (Finset.min'_le _ _ (Finset.mem_Ioc_iff.2 ⟨hx, le_rfl⟩)).trans hy
-end
+  · refine Finset.min'_le (Ioc x ub) y ?_
+    simp [*] at *
+  · exact (Finset.min'_le _ _ (Finset.mem_Ioc.2 ⟨hx, le_rfl⟩)).trans hy
 ```
 Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : ℤ}`. Any element has a
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
@@ -178,7 +176,7 @@ def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableRel ((· ≤ 
 #align locally_finite_order.of_Icc' LocallyFiniteOrder.ofIcc'
 
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
-the ends. As opposed to `LocallyFiniteOrder.ofIcc`, this one requires `PartialOrder` but only
+the ends. As opposed to `LocallyFiniteOrder.ofIcc'`, this one requires `PartialOrder` but only
 `DecidableEq`. -/
 def LocallyFiniteOrder.ofIcc (α : Type*) [PartialOrder α] [DecidableEq α]
     (finsetIcc : α → α → Finset α) (mem_Icc : ∀ a b x, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b) :
@@ -1083,11 +1081,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
         rw [some_mem_insertNone]
         simp
     | (a : α), (b : α), ⊤ => by
-        simp only [some, le_eq_subset, mem_map, mem_Icc, le_top, top_le_iff, and_false, iff_false,
-          not_exists, not_and, and_imp, Embedding.some, forall_const]
+        simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
+          top_le_iff]
     | (a : α), (b : α), (x : α) => by
         simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
-          some_le_some, aux]
+          some_le_some]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
@@ -1095,23 +1095,40 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [some, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, some_le_some, aux,
           top, some_lt_none, and_true]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
+      -- This used to be in the above `simp` before
+      -- leanprover/lean4#2644
+      erw [aux]
 
 variable (a b : α)
 
@@ -1379,7 +1396,7 @@ section Finite
 
 variable {α : Type*} {s : Set α}
 
-theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
+theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α] :
     s.Finite ↔ BddAbove s :=
   ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
     fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun x hx ↦ ⟨bot_le, hm hx⟩)⟩
@@ -1472,3 +1489,46 @@ instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } :
   ext
   simp
   rfl
+
+namespace Set
+variable {α : Type*} [Preorder α]
+
+section LocallyFiniteOrder
+variable [LocallyFiniteOrder α]
+
+@[simp] lemma toFinset_Icc (a b : α) [Fintype (Icc a b)] : (Icc a b).toFinset = Finset.Icc a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ico (a b : α) [Fintype (Ico a b)] : (Ico a b).toFinset = Finset.Ico a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ioc (a b : α) [Fintype (Ioc a b)] : (Ioc a b).toFinset = Finset.Ioc a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ioo (a b : α) [Fintype (Ioo a b)] : (Ioo a b).toFinset = Finset.Ioo a b := by
+  ext; simp
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α]
+
+@[simp]
+lemma toFinset_Ici (a : α) [Fintype (Ici a)] : (Ici a).toFinset = Finset.Ici a := by ext; simp
+
+@[simp]
+lemma toFinset_Ioi (a : α) [Fintype (Ioi a)] : (Ioi a).toFinset = Finset.Ioi a := by ext; simp
+
+end LocallyFiniteOrderTop
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+@[simp]
+lemma toFinset_Iic (a : α) [Fintype (Iic a)] : (Iic a).toFinset = Finset.Iic a := by ext; simp
+
+@[simp]
+lemma toFinset_Iio (a : α) [Fintype (Iio a)] : (Iio a).toFinset = Finset.Iio a := by ext; simp
+
+end LocallyFiniteOrderBot
+end Set

@@ -863,7 +863,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
     assumption -- Porting note: was `simpa`
-  cases' le_or_lt x₃' (x₁ + p) with h₃₁ h₁₃
+  rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
     · exact hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
@@ -877,7 +877,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
 private theorem toIxxMod_antisymm (h₁₂₃ : toIcoMod hp a b ≤ toIocMod hp a c)
     (h₁₃₂ : toIcoMod hp a c ≤ toIocMod hp a b) :
     b ≡ a [PMOD p] ∨ c ≡ b [PMOD p] ∨ a ≡ c [PMOD p] := by
-  by_contra' h
+  by_contra! h
   rw [modEq_comm] at h
   rw [← (not_modEq_iff_toIcoMod_eq_toIocMod hp).mp h.2.2] at h₁₂₃
   rw [← (not_modEq_iff_toIcoMod_eq_toIocMod hp).mp h.1] at h₁₃₂

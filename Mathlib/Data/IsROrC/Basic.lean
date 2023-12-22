@@ -74,9 +74,12 @@ class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
   le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  -- note we cannot put this in the `extends` clause
+  [toDecidableEq : DecidableEq K]
 #align is_R_or_C IsROrC
 
 scoped[ComplexOrder] attribute [instance 100] IsROrC.toPartialOrder
+attribute [instance 100] IsROrC.toDecidableEq
 
 end
 
@@ -643,14 +646,17 @@ theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofRe
 theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofReal_im]
 #align is_R_or_C.nat_cast_im IsROrC.natCast_im
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, isROrC_simps]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
   natCast_re n
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, isROrC_simps]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
   natCast_im n
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, isROrC_simps, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
@@ -824,11 +830,11 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
-  conj_im_ax z := by simp only [neg_zero, AddMonoidHom.zero_apply]
+  conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
   conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_I_ax z := by simp only [mul_zero, AddMonoidHom.zero_apply]
+  mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 

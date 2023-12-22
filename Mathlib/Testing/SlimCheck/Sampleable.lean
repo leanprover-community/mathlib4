@@ -160,6 +160,10 @@ instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
 instance Int.shrinkable : Shrinkable Int where
   shrink n := Nat.shrink n.natAbs |>.map (λ x => ([x, -x] : List ℤ)) |>.join
 
+instance Rat.shrinkable : Shrinkable Rat where
+  shrink r :=
+    (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
+
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
 
@@ -192,18 +196,24 @@ section Samplers
 open SampleableExt
 
 instance Nat.sampleableExt : SampleableExt Nat :=
-  mkSelfContained (do choose Nat 0 (←getSize) (Nat.zero_le _))
+  mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
-  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
-    simp [Fin.ofNat, LE.le]
-    exact Nat.zero_le _
-  ))
+  mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
+    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
+    exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
   mkSelfContained (do
-    choose Int (-(←getSize)) (←getSize)
+    choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
+
+instance Rat.sampleableExt : SampleableExt Rat :=
+  mkSelfContained (do
+    let d ← choose Int (-(← getSize)) (← getSize)
+      (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
+    let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
+    return Rat.divInt d n)
 
 instance Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained $ chooseAny Bool
@@ -278,18 +288,20 @@ def printSamples {t : Type} [Repr t] (g : Gen t) : IO PUnit := do
 open Lean Meta Qq
 
 /-- Create a `Gen α` expression from the argument of `#sample` -/
-def mkGenerator (e : Expr) : MetaM (Expr × Expr) := do
-  let t ← inferType e
-  match t.getAppFnArgs with
-  | (`Gen, #[t]) => do
-    let repr_inst ← synthInstance (← mkAppM ``Repr #[t])
-    pure (repr_inst, e)
-  | _ => do
-    let sampleableExt_inst ← synthInstance (mkApp (← mkConstWithFreshMVarLevels ``SampleableExt) e)
-    let repr_inst ← mkAppOptM ``SampleableExt.proxyRepr #[e, sampleableExt_inst]
-    let gen ← mkAppOptM ``SampleableExt.sample #[none, sampleableExt_inst]
-    pure (repr_inst, gen)
-
+def mkGenerator (e : Expr) : MetaM (Σ (u : Level) (α : Q(Type $u)), Q(Repr $α) × Q(Gen $α)) := do
+  match ← inferTypeQ e with
+  | ⟨.succ u, ~q(Gen $α), gen⟩ =>
+    let repr_inst ← synthInstanceQ (q(Repr $α) : Q(Type $u))
+    pure ⟨u, α, repr_inst, gen⟩
+  | ⟨.succ u, ~q(Sort u), α⟩ => do
+    let v ← mkFreshLevelMVar
+    let _sampleableExt_inst ← synthInstanceQ (q(SampleableExt.{u,v} $α) : Q(Sort (max u (v + 2))))
+    let v ← instantiateLevelMVars v
+    let repr_inst := q(SampleableExt.proxyRepr (α := $α))
+    let gen := q(SampleableExt.sample (α := $α))
+    pure ⟨v, q(SampleableExt.proxy $α), repr_inst, gen⟩
+  | ⟨_u, t, _e⟩ =>
+    throwError "Must be a Sort u` or a `Gen α`, got value of type{indentExpr t}"
 open Elab
 
 /--
@@ -329,8 +341,10 @@ values of type `type` using an increasing size parameter.
 elab "#sample " e:term : command =>
   Command.runTermElabM fun _ => do
     let e ← Elab.Term.elabTermAndSynthesize e none
-    let (repr_inst, gen) ← mkGenerator e
-    let printSamples ← mkAppOptM ``printSamples #[none, repr_inst, gen]
+    let g ← mkGenerator e
+    -- `printSamples` only works in `Type 0` (see the porting note)
+    let ⟨0, α, _, gen⟩ := g | throwError "Cannot sample from {g.1} due to its universe"
+    let printSamples := q(printSamples (t := $α) $gen)
     let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
     _ ← code
 

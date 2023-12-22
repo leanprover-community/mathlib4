@@ -4,8 +4,7 @@ import Std.Tactic.GuardMsgs
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 
-theorem transpose_apply {m n} (A : m → n → Nat) (i j) :
-  transpose A i j = A j i := rfl
+theorem transpose_apply {m n} (A : m → n → Nat) (i j) : transpose A i j = A j i := rfl
 
 attribute [eqns transpose_apply] transpose
 
@@ -28,7 +27,12 @@ will not have the desired effect.
 -/
 #guard_msgs(error) in
 attribute [eqns t_def] t
+
+/--
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 -- the above should error as the above equation would not have changed the output of the below
 example (n : Nat) : t = n := by
   rw [t]
-  sorry
+  admit

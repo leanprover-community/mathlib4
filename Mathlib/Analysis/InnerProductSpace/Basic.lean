@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.LinearAlgebra.BilinearForm
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 #align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -362,7 +362,6 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       ‖⟪x, y⟫‖ * ‖⟪x, y⟫‖ = ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ := by rw [norm_inner_symm]
       _ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := (inner_mul_inner_self_le x y)
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
-
 #align inner_product_space.core.norm_inner_le_norm InnerProductSpace.Core.norm_inner_le_norm
 
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
@@ -523,7 +522,7 @@ theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
 /-- An inner product with a sum on the right. -/
 theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪x, ∑ i in s, f i⟫ = ∑ i in s, ⟪x, f i⟫ :=
-  (LinearMap.flip sesqFormOfInner x).map_sum
+  map_sum (LinearMap.flip sesqFormOfInner x) _ _
 #align inner_sum inner_sum
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
@@ -1168,7 +1167,7 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
 #align inner_eq_sum_norm_sq_div_four inner_eq_sum_norm_sq_div_four
 
 /-- Formula for the distance between the images of two nonzero points under an inversion with center
-zero. See also `euclidean_geometry.dist_inversion_inversion` for inversions around a general
+zero. See also `EuclideanGeometry.dist_inversion_inversion` for inversions around a general
 point. -/
 theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) :
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) = R ^ 2 / (‖x‖ * ‖y‖) * dist x y :=
@@ -1201,7 +1200,7 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     refine' le_sqrt_of_sq_le _
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
-    exact sub_le_sub_left (pow_le_pow_of_le_left hε.le hxy _) 4⟩
+    exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
 #align inner_product_space.to_uniform_convex_space InnerProductSpace.toUniformConvexSpace
 
 section Complex
@@ -1716,7 +1715,6 @@ theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y�
     ⟪x, y⟫_ℝ < ‖x‖ * ‖y‖ ↔ ⟪x, y⟫_ℝ ≠ ‖x‖ * ‖y‖ :=
       ⟨ne_of_lt, lt_of_le_of_ne (real_inner_le_norm _ _)⟩
     _ ↔ ‖y‖ • x ≠ ‖x‖ • y := not_congr inner_eq_norm_mul_iff_real
-
 #align inner_lt_norm_mul_iff_real inner_lt_norm_mul_iff_real
 
 /-- If the inner product of two unit vectors is strictly less than `1`, then the two vectors are
@@ -1724,6 +1722,15 @@ distinct. One form of the equality case for Cauchy-Schwarz. -/
 theorem inner_lt_one_iff_real_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
 #align inner_lt_one_iff_real_of_norm_one inner_lt_one_iff_real_of_norm_one
+
+/-- The sphere of radius `r = ‖y‖` is tangent to the plane `⟪x, y⟫ = ‖y‖ ^ 2` at `x = y`. -/
+theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) (h : re ⟪x, y⟫ = ‖y‖ ^ 2) :
+    x = y := by
+  suffices H : re ⟪x - y, x - y⟫ ≤ 0
+  · rwa [inner_self_nonpos, sub_eq_zero] at H
+  have H₁ : ‖x‖ ^ 2 ≤ ‖y‖ ^ 2 := by gcongr
+  have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
+  simpa [inner_sub_left, inner_sub_right, ← norm_sq_eq_inner, h, H₂] using H₁
 
 /-- The inner product of two weighted sums, where the weights in each
 sum add to 0, in terms of the norms of pairwise differences. -/
@@ -1815,7 +1822,6 @@ namespace ContinuousLinearMap
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
-set_option synthInstance.maxHeartbeats 40000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
@@ -1886,7 +1892,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
   rw [@norm_sub_sq 𝕜, sub_add]
   classical
     simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, _root_.inner_sum, _root_.sum_inner]
-    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ←mul_assoc, h₂,
+    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
       add_sub_cancel, sub_right_inj]
     simp only [map_sum, ← inner_conj_symm x, ← h₃]
 
@@ -2049,7 +2055,7 @@ theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
     ‖∑ i in s, V i (l i)‖ ^ 2 = ∑ i in s, ‖l i‖ ^ 2 := by
   have : ((‖∑ i in s, V i (l i)‖ : ℝ) : 𝕜) ^ 2 = ∑ i in s, ((‖l i‖ : ℝ) : 𝕜) ^ 2 := by
     simp only [← inner_self_eq_norm_sq_to_K, hV.inner_sum]
-  exact_mod_cast this
+  exact mod_cast this
 #align orthogonal_family.norm_sum OrthogonalFamily.norm_sum
 
 /-- The composition of an orthogonal family of subspaces with an injective function is also an
@@ -2310,8 +2316,8 @@ namespace UniformSpace.Completion
 open UniformSpace Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
-    Inner 𝕜' (Completion E')
-    where inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
+    Inner 𝕜' (Completion E') where
+  inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
 
 @[simp]
 theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=

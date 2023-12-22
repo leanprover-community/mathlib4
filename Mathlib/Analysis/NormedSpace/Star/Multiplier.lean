@@ -354,7 +354,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
-/-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
+/-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
 def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
@@ -709,7 +709,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_of_lt_left hxr zero_le' two_pos
+            using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
 

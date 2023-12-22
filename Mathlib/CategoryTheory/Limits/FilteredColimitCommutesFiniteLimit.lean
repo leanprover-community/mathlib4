@@ -76,7 +76,9 @@ theorem colimitLimitToLimitColimit_injective :
     replace h := fun j => congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
-    simp [colimit_eq_iff.{v, v}] at h
+    simp? [colimit_eq_iff.{v, v}] at h says
+      simp only [Functor.comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
+        colimit_eq_iff.{v, v}, curry_obj_obj_obj, curry_obj_obj_map] at h
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
     let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
@@ -319,7 +321,7 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
 
 instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
-  have : IsIso (colimitLimitToLimitColimitCone F).Hom := by
+  have : IsIso (colimitLimitToLimitColimitCone F).hom := by
     suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
         lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
       apply IsIso.comp_isIso
