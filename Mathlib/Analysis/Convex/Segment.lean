@@ -560,16 +560,14 @@ theorem segment_eq_uIcc (x y : 𝕜) : [x -[𝕜] y] = uIcc x y :=
 /-- A point is in an `Icc` iff it can be expressed as a convex combination of the endpoints. -/
 theorem Convex.mem_Icc (h : x ≤ y) :
     z ∈ Icc x y ↔ ∃ a b, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  rw [← segment_eq_Icc h]
-  rfl
+  simp [← segment_eq_Icc h, segment]
 #align convex.mem_Icc Convex.mem_Icc
 
 /-- A point is in an `Ioo` iff it can be expressed as a strict convex combination of the endpoints.
 -/
 theorem Convex.mem_Ioo (h : x < y) :
     z ∈ Ioo x y ↔ ∃ a b, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  rw [← openSegment_eq_Ioo h]
-  rfl
+  simp [← openSegment_eq_Ioo h, openSegment]
 #align convex.mem_Ioo Convex.mem_Ioo
 
 /-- A point is in an `Ioc` iff it can be expressed as a semistrict convex combination of the
