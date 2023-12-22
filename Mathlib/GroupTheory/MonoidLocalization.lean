@@ -1794,6 +1794,14 @@ variable {M : Type*} [CommMonoidWithZero M] (S : Submonoid M) (N : Type*) [CommM
 
 namespace Submonoid
 
+variable {S N} in
+/-- If `S` contains `0` then the localization at `S` is trivial. -/
+theorem LocalizationMap.subsingleton  (f : Submonoid.LocalizationMap S N) (h : 0 ∈ S) :
+    Subsingleton N := by
+  refine ⟨fun a b ↦ ?_⟩
+  rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
+  exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
+
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
