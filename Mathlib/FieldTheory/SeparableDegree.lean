@@ -582,6 +582,8 @@ When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elem
 (But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
 theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     finSepDegree F E = finrank F E := by
+  -- We need to clear all `K` here, otherwise the `wlog` will generate the statement `H` with `K`
+  -- as an explicit parameter, which is undesired.
   clear! K
   wlog hfd : FiniteDimensional F E with H
   · rw [finrank_of_infinite_dimensional hfd]
