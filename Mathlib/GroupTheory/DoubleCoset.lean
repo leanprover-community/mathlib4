@@ -36,11 +36,14 @@ namespace Doset
 
 /-- The double coset as an element of `Set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=
-  Set.image2 (· * a * ·) s t
+  s * {a} * t
 #align doset Doset.doset
 
-theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, x * a * y = b :=
-  Set.mem_image2
+lemma doset_eq_image2 (a : α) (s t : Set α) : doset a s t = Set.image2 (· * a * ·) s t := by
+  simp_rw [doset, Set.mul_singleton, ← Set.image2_mul, Set.image2_image_left]
+
+theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
+  simp only [doset_eq_image2, Set.mem_image2, eq_comm]
 #align doset.mem_doset Doset.mem_doset
 
 theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
@@ -49,7 +52,7 @@ theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
 
 theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
     doset b H K = doset a H K := by
-  obtain ⟨_, k, ⟨h, a, hh, rfl : _ = _, rfl⟩, hk, rfl⟩ := hb
+  obtain ⟨h, hh, k, hk, rfl⟩ := mem_doset.1 hb
   rw [doset, doset, ← Set.singleton_mul_singleton, ← Set.singleton_mul_singleton, mul_assoc,
     mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
     Subgroup.subgroup_mul_singleton hh]

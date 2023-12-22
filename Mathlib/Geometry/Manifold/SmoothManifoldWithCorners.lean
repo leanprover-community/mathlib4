@@ -888,7 +888,7 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     [SmoothManifoldWithCorners I M] (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
     [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.prod I') (M × M') where
   compatible := by
-    rintro f g ⟨f1, f2, hf1, hf2, rfl⟩ ⟨g1, g2, hg1, hg2, rfl⟩
+    rintro f g ⟨f1, hf1, f2, hf2, rfl⟩ ⟨g1, hg1, g2, hg2, rfl⟩
     rw [PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
     have h1 := (contDiffGroupoid ⊤ I).compatible hf1 hg1
     have h2 := (contDiffGroupoid ⊤ I').compatible hf2 hg2
