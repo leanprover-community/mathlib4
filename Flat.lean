@@ -311,6 +311,10 @@ lemma of_flat_hom [hM : Flat S M] [hS : Flat R S] : Flat R M := by
     let J := Submodule.baseChange S I
     -- letI := (TensorProduct.rid R S).symm
     let e := AlgebraTensorModule.rid R S S
+    let f := TensorProduct.lift ((lsmul R M).comp I.subtype)
+    let g := TensorProduct.lift ((lsmul R S).comp I.subtype)
+    --let h := TensorProduct.lift ((lsmul S M).comp g)
+
     --letI :=  @Equiv.module S J S _  e.symm
     -- --let J := @Ideal.span S _ <| LinearMap.range (TensorProduct.lift ((lsmul R S).comp I.subtype))
     -- --let hM := hM J
@@ -323,13 +327,12 @@ lemma of_flat_hom [hM : Flat S M] [hS : Flat R S] : Flat R M := by
     -- --let σ₃ := (TensorProduct.lid S M).toLinearMap
     -- let e₃ := TensorProduct.congr e₂ (LinearEquiv.refl R I)
     -- let e := e₃.symm ≪≫ₗ e₁
-    let f := TensorProduct.lift ((lsmul R S).comp I.subtype)
+
     --let f' := AlgebraTensorModule.lift ((lsmul S R).comp I.subtype)
     -- have eq : f = f' := sorry
     --have hf : ∀ x ∈ I, f x ∈ J := sorry
     --let f := f.restrict (sorry)
     --let g := TensorProduct.lift ((lsmul S M).comp J.subtype)
-    let h :=  TensorProduct.lift ((lsmul R M).comp I.subtype)
       --let g :=  TensorProduct.lift ((lsmul S M).comp J.subtype)
 
 
@@ -352,11 +355,6 @@ namespace Flat
 
 variable {R : Type u} {S : Type v} [CommRing R] [Ring S] (f : R →+* S)
 
---idk where to put
--- lemma of_preserves_flatness (M : Type w) [CommRing S] [AddCommGroup M]
---   [Module S M] [Module.Flat S M] (h : f.Flat) : @Module.Flat R M _ _ <| Module.compHom M f :=
---   sorry
-
 def PreservesInjectiveness : Prop :=
     @Module.Flat.rTensor_preserves_injectiveness R S _ _ f.toModule
 
@@ -374,10 +372,18 @@ lemma iff_PreservesInjectiveness [UnivLE.{u, v}] :
 
 variable {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [Ring T]
 
+
+-- no issues with scalar tower here, must be related to module, figure it out
 lemma comp {g : S →+* T} {f : R →+* S} (hg : g.Flat) (hf : f.Flat) :
   --[UnivLE.{u, v}] [UnivLE.{v, w}] [UnivLE.{u, w}]
-  Flat (RingHom.comp g f) := sorry
-   -- @Module.Flat.of_flat_hom R S T _ _ f.toAlgebra _ (g.comp f).toModule g.toModule (sorry) hg hf
+  Flat (RingHom.comp g f) := by
+    letI := f.toAlgebra
+    letI := g.toModule
+    letI := (g.comp f).toModule
+    dsimp [Flat] at hg hf
+    letI := hg
+    letI := hf
+    exact Module.Flat.of_flat_hom R S T
 
 end Flat
 
@@ -447,15 +453,15 @@ variable (R : Type u) (S : Type v) (M : Type w)
 [Module R M] [Module S M] [IsScalarTower R S M]
 
 
-#check LinearMap
 def of_faithfully_flat_hom [hM : FaithfullyFlat S M] [hS : FaithfullyFlat R S] :
   FaithfullyFlat R M where
     out := (Flat.of_flat_hom R S M).out
     faithful m hm := by
-      -- let e₁ :=  (TensorProduct.rid S M).restrictScalars R
-      -- let e₂ := TensorProduct.congr e₁ <| LinearEquiv.refl R (R ⧸ m)
-      -- let e₃ := (AlgebraTensorModule.assoc R S S M S (R ⧸ m)).restrictScalars R
-      -- let e := e₃.symm ≪≫ₗ e₂
+      letI :=  (TensorProduct.rid S M).restrictScalars R
+      let e := TensorProduct.congr this <| LinearEquiv.refl R (R ⧸ m)
+      letI := (AlgebraTensorModule.assoc R S S M S (R ⧸ m)).restrictScalars R
+      let e := e.symm ≪≫ₗ this
+
       let h : Nontrivial <| S ⊗[R] (R ⧸ m) := hS.faithful hm
       let I := Ideal.map (algebraMap R S) m
       let f : S ⧸ I →ₐ[S] S ⊗[R] (R ⧸ m) := by
@@ -463,42 +469,53 @@ def of_faithfully_flat_hom [hM : FaithfullyFlat S M] [hS : FaithfullyFlat R S] :
         have hg : ∀ s : S, s ∈ I → g s = 0 := fun s hs => by
           sorry
         exact Ideal.Quotient.liftₐ I g hg
+
       have hI : (I ≠ ⊤) := by
         by_contra hI
         letI := @RingHom.domain_nontrivial (S ⧸ I) (S ⊗[R] (R ⧸ m)) _ _ f _
         letI := Ideal.Quotient.subsingleton_iff.2 hI
         apply not_nontrivial (S ⧸ I)
         assumption
-      let hm' := Ideal.exists_le_maximal I hI
-      obtain ⟨m', hm', _⟩ := hm'
-      letI := hM.faithful hm'
-      --rTensor.surjective
-      --apply Nontrivial
-      let f : S ⊗[R] (R ⧸ m) →ₐ[S] S ⧸ I := by
-        -- letI := AlgHom.id S
-        -- letI := Algebra.ofId R S
-        --letI := TensorProduct.map (AlgHom.id R S) (Algebra.ofId R S)
-        have hm : ∀ r ∈ m, (Algebra.ofId R S) r = 0 := by
-          sorry
-        -- let g := Ideal.Quotient.liftₐ m (Algebra.ofId R S) hm
-        -- letI := (Algebra.ofId S (S ⧸ I)).comp (AlgHom.id S S)
 
-        apply Algebra.TensorProduct.productLeftAlgHom
+      let hm' := Ideal.exists_le_maximal I hI
+      obtain ⟨m', hm', hI⟩ := hm'
+      let hm' := hM.faithful hm'
+      let f : (S ⧸ I) →ₗ[S] (S ⧸ m') := I.liftQ m'.mkQ <| by simp [hI]
+      have hf : Function.Surjective f := by
+        dsimp [Function.Surjective]
+        refine Function.Surjective.comp ?_ ?_
+        · sorry
+        · dsimp [Function.Surjective]
+          simp only [exists_eq, forall_const]
+      letI := lTensor.surjective M hf
+      letI := Function.Surjective.nontrivial this
+
+      let f : S ⊗[R] (R ⧸ m) →ₗ[S] S ⧸ I := by
+        letI := I.mkQ
+        letI := m.liftQ (Algebra.linearMap R (S ⧸ I))
+        let z : m ≤ ker (Algebra.linearMap R (S ⧸ I)) := by
+          intro x hx
+          simp only [mem_ker, Algebra.linearMap_apply]
+          sorry
+        --have hm : ∀ r ∈ m, (AlgHom.mk' (Ideal.Quotient.mk m) (fun x => Ideal.Quotient.mk_eq_mk x)) r = 0 := fun r hr => by
+          --apply Ideal.Quotient.eq_zero_iff_mem.2
+        sorry
+        -- apply Algebra.TensorProduct.productLeftAlgHom
+        -- · sorry
+        -- · sorry
       have hf : Function.Surjective f := by
         sorry
-      --letI := Function.Surjective.nontrivial (lTensor.surjective M hf)
+      let sM : Module S M := inferInstance
+      letI := @lTensor.surjective S _ (S ⊗[R] (R ⧸ m)) (S ⧸ I) M _ _ _ _ _ _ f hf
+      letI := Function.Surjective.nontrivial this
+      apply Equiv.nontrivial e.toEquiv
 
-      sorry
 
 end FaithfullyFlat
-
---end Flat
 
 end Module
 
 namespace RingHom
-
---namespace Flat
 
 variable {R : Type u} {S : Type v} [CommRing R] [Ring S] (f : R →+* S)
 
@@ -509,15 +526,21 @@ namespace FaithfullyFlat
 
 lemma id (R : Type u) [CommRing R] : FaithfullyFlat (RingHom.id R) := Module.FaithfullyFlat.self R
 
-variable  {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [Ring T] (f : R →+* S)
+variable  {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S)
 
+--needs fixing
 lemma comp {g : S →+* T} {f : R →+* S} (hg : g.FaithfullyFlat) (hf : f.FaithfullyFlat) :
-  FaithfullyFlat (g.comp f) :=
-    @Module.FaithfullyFlat.of_faithfully_flat_hom
-      R S T _ _ f.toAlgebra _ (g.comp f).toModule g.toModule (sorry) hg hf
+  FaithfullyFlat (g.comp f) := by
+    letI := f.toAlgebra
+    letI := g.toAlgebra
+    letI := (g.comp f).toAlgebra
+    let scal : S →ₐ[R] T := ⟨g, fun r => by rfl⟩ -- band-aid
+    dsimp [FaithfullyFlat] at hg hf
+    letI := hg
+    letI := hf
+    letI := IsScalarTower.of_ring_hom <| scal
+    exact Module.FaithfullyFlat.of_faithfully_flat_hom R S T
 
 end FaithfullyFlat
-
---end Flat
 
 end RingHom
