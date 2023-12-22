@@ -80,18 +80,17 @@ def LinearExtension (α : Type u) : Type u :=
 
 noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
   le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
-  le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.1.1
-  le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.2.1
-  le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.2.1
-  le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.2.1
+  le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.1.1
+  le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.2.1
+  le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.2.1
+  le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.2.1
   decidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as a relation homomorphism. -/
 def toLinearExtension {α : Type u} [PartialOrder α] :
-    ((· ≤ ·) : α → α → Prop) →r ((· ≤ ·) : LinearExtension α → LinearExtension α → Prop)
-    where
+    ((· ≤ ·) : α → α → Prop) →r ((· ≤ ·) : LinearExtension α → LinearExtension α → Prop) where
   toFun x := x
-  map_rel' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose_spec _ _
+  map_rel' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2 _ _
 #align to_linear_extension toLinearExtension
 
 instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
