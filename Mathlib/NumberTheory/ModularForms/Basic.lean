@@ -283,6 +283,20 @@ theorem one_coe_eq_one : ⇑(1 : ModularForm Γ 0) = 1 :=
   rfl
 #align modular_form.one_coe_eq_one ModularForm.one_coe_eq_one
 
+instance (Γ : Subgroup SL(2, ℤ)) : NatCast (ModularForm Γ 0) where
+  natCast n := const n
+
+@[simp, norm_cast]
+lemma natCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
+    ⇑(n : ModularForm Γ 0) = n := rfl
+
+instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
+  intCast z := const z
+
+@[simp, norm_cast]
+lemma intCast_coe (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
+    ⇑(z : ModularForm Γ 0) = z := rfl
+
 end ModularForm
 
 namespace CuspForm
@@ -408,13 +422,13 @@ namespace ModularForm
 
 section GradedRing
 
-/--cast for modular forms, which is useful for removing `heq`'s.-/
+/-- Cast for modular forms, which is useful for avoiding `Heq`s. -/
 def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
     where
   toFun := (f : ℍ → ℂ)
-  slash_action_eq' := by intro A; have := f.slash_action_eq' A; convert this; exact h.symm
+  slash_action_eq' A := h ▸ f.slash_action_eq' A
   holo' := f.holo'
-  bdd_at_infty' := by intro A; convert f.bdd_at_infty' A <;> exact h.symm
+  bdd_at_infty' A := h ▸ f.bdd_at_infty' A
 
 @[ext]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup SL(2, ℤ)} {a b : GradedMonoid (ModularForm Γ)}
@@ -432,27 +446,11 @@ instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
 
 open GradedMonoid
 
-instance (Γ : Subgroup SL(2, ℤ)) : NatCast (ModularForm Γ 0) where
-  natCast n := const n
-
-@[simp, norm_cast]
-lemma natCast_coe (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
-    ⇑(n : ModularForm Γ 0) = n := rfl
-
-instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
-  intCast z := const z
-
-@[simp, norm_cast]
-lemma intCast_coe (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
-    ⇑(z : ModularForm Γ 0) = z := rfl
-
 lemma MF_intcast_eq_SIF_intcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
     (n : ModularForm Γ 0) =  (n :  SlashInvariantForm Γ 0) := by
   rfl
 
 instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
-  mul f g := f.mul g
-  one := 1
   one_mul a := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
   mul_one a := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
   mul_assoc a b c := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)
