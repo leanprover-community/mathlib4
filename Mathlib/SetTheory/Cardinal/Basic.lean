@@ -220,11 +220,6 @@ theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 #align cardinal.lift_id' Cardinal.lift_id'
 
-/-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp, nolint simpNF]
-theorem lift_id'' (a : Cardinal.{max v u}) : lift.{u} a = a :=
-  inductionOn a fun _ => mk_congr Equiv.ulift
-
 /-- A cardinal lifted to the same universe equals itself. -/
 @[simp]
 theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
@@ -2241,7 +2236,7 @@ theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #�
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
   refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_iSup_lift _)
-  rw [← lift_sum, lift_id''.{v,u}]
+  rw [← lift_sum, lift_id'.{_,u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]
