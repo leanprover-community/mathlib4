@@ -118,8 +118,7 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
 def equiv {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e : α ≃o β) :
     Finpartition (e a) where
   parts := P.parts.map e
-  supIndep := by
-    intro u hu _ hb hbu _ hx hxu
+  supIndep u hu _ hb hbu _ hx hxu := by
     rw [subset_map_equiv_iff] at hu
     simp only [mem_map_equiv] at hb
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
@@ -489,14 +488,14 @@ theorem exists_mem (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
   exact mem_sup.1 ha
 #align finpartition.exists_mem Finpartition.exists_mem
 
-theorem exists_unique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
+theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
   obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
   refine' ⟨t, ⟨ht, ht'⟩, _⟩
   rintro u ⟨hu, hu'⟩
   exact P.eq_of_mem_parts hu ht hu' ht'
 
 /-- The part of the finpartition that `a` lies in. -/
-def part (ha : a ∈ s) : Finset α := choose (hp := P.exists_unique_mem ha)
+def part (ha : a ∈ s) : Finset α := choose (hp := P.existsUnique_mem ha)
 
 theorem part_mem (ha : a ∈ s) : P.part ha ∈ P.parts := choose_mem _ _ _
 

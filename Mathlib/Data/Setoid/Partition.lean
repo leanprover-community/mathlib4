@@ -349,23 +349,23 @@ noncomputable def Finpartition.equivSubtypeSetoidIsPartition (α) [Fintype α] [
   toFun P := by
     refine' ⟨P.parts.map (finsetOrderIsoSet (α := α)), _⟩
     let P' : Finpartition (Set.univ : Set α) := (P.equiv finsetOrderIsoSet).copy ?_
-    · rw [Finset.coe_map]
-      constructor
-      · simp only [Set.mem_image, not_exists, not_and]
-        intro x hx
-        have hx' := P.ne_bot hx
-        contrapose! hx'
-        rw [← finsetOrderIsoSet.injective.eq_iff, OrderIso.map_bot]
-        exact hx'
-      · intro a
-        refine' (P'.isPartition_parts.right a).imp (fun t => And.imp _ _)
-        · simp only [exists_unique_iff_exists, Finset.mem_coe, exists_prop, and_imp]
-          intro ht hat
-          rw [copy_parts] at ht
-          · simp only [parts_equiv, Finset.mem_map_equiv] at ht
-            refine' ⟨⟨finsetOrderIsoSet.symm t, ht, _⟩, hat⟩
-            exact Equiv.apply_symm_apply _ t
-          · rw [← Finset.top_eq_univ, OrderIso.map_top, Set.top_eq_univ]
+    rw [Finset.coe_map]
+    constructor
+    · simp only [Set.mem_image, not_exists, not_and]
+      intro x hx
+      have hx' := P.ne_bot hx
+      contrapose! hx'
+      rw [← finsetOrderIsoSet.injective.eq_iff, OrderIso.map_bot]
+      exact hx'
+    intro a
+    refine' (P'.isPartition_parts.right a).imp (fun t => And.imp _ _)
+    · simp only [exists_unique_iff_exists, Finset.mem_coe, exists_prop, and_imp]
+      intro ht hat
+      rw [copy_parts] at ht
+      · simp only [parts_equiv, Finset.mem_map_equiv] at ht
+        refine' ⟨⟨finsetOrderIsoSet.symm t, ht, _⟩, hat⟩
+        exact Equiv.apply_symm_apply _ t
+      · rw [← Finset.top_eq_univ, OrderIso.map_top, Set.top_eq_univ]
         · simp
   invFun s := by
     refine' (s.2.finpartition.equiv finsetOrderIsoSet.symm).copy _
