@@ -831,15 +831,15 @@ theorem nonpos_of_mul_nonpos_right (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
 #align nonpos_of_mul_nonpos_right nonpos_of_mul_nonpos_right
 
 @[simp]
-theorem zero_le_mul_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
+theorem mul_nonneg_iff_of_pos_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
   convert mul_le_mul_left h
   simp
-#align zero_le_mul_left zero_le_mul_left
+#align zero_le_mul_left mul_nonneg_iff_of_pos_left
 
 @[simp]
-theorem zero_le_mul_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
+theorem mul_nonneg_iff_of_pos_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
   simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
-#align zero_le_mul_right zero_le_mul_right
+#align zero_le_mul_right mul_nonneg_iff_of_pos_right
 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a * b :=
@@ -901,17 +901,17 @@ theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
 
 @[simp]
 theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
-  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two' α)]
 #align one_le_bit1 one_le_bit1
 
 @[simp]
 theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
-  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two' α)]
 #align one_lt_bit1 one_lt_bit1
 
 @[simp]
 theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
-  rw [bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
 #align zero_le_bit0 zero_le_bit0
 
 @[simp]
@@ -1095,13 +1095,13 @@ lemma mul_nonneg_iff_pos_imp_nonneg : 0 ≤ a * b ↔ (0 < a → 0 ≤ b) ∧ (0
   tauto
 
 lemma mul_nonneg_iff_neg_imp_nonpos : 0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
-  rw [←neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_pos_imp_nonpos : a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
-  rw [←neg_nonneg, ←mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
 
 lemma mul_nonpos_iff_neg_imp_nonneg : a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
-  rw [←neg_nonneg, ←neg_mul, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
 
 theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
   (le_total 0 a).elim (fun h => mul_nonneg h h) fun h => mul_nonneg_of_nonpos_of_nonpos h h
