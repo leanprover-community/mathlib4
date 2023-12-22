@@ -58,7 +58,7 @@ variable [AddMonoid A] [DistribSMul M A] [Monoid N] [AddMonoid B] [DistribMulAct
   [SMulCommClass M N A] [DistribMulAction N B]
 
 instance : SMul Mᵈᵐᵃ (A →+[N] B) where
-  smul c f := f.comp (SMulCommClass.toDistribMulActionSemiHom _ _ (mk.symm c))
+  smul c f := f.comp (SMulCommClass.toDistribMulActionHom _ _ (mk.symm c))
 
 instance [DistribSMul M' A] [SMulCommClass M' N A] [SMulCommClass M M' A] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+[N] B) :=
