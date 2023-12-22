@@ -3,7 +3,7 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.DirectSum.Ring
+import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
@@ -467,3 +467,13 @@ instance instGCommRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (Modular
   intCast := Int.cast
   intCast_ofNat n := ext fun _ => AddGroupWithOne.intCast_ofNat _
   intCast_negSucc_ofNat n := ext fun _ => AddGroupWithOne.intCast_negSucc _
+
+instance instGAlgebra (Γ : Subgroup SL(2, ℤ)) : DirectSum.GAlgebra ℂ (ModularForm Γ) where
+  toFun := { toFun := const, map_zero' := rfl, map_add' := fun _ _ => rfl }
+  map_one := rfl
+  map_mul _x _y := rfl
+  commutes _c _x := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
+  smul_def _x _x := gradedMonoid_eq_of_cast (zero_add _).symm (ext fun _ => rfl)
+
+open scoped DirectSum in
+example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := inferInstance
