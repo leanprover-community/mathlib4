@@ -6,7 +6,6 @@ Authors: Yury Kudriashov
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 #align_import analysis.convex.combination from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 

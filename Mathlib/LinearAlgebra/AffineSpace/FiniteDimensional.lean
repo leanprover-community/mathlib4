@@ -239,7 +239,7 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
   obtain rfl | ht' := t.eq_empty_or_nonempty
-  · simpa using hst
+  · simpa [Set.subset_empty_iff] using hst
   have := hs'.to_subtype
   have := ht'.to_set.to_subtype
   have direction_le := AffineSubspace.direction_le (affineSpan_mono k hst)
