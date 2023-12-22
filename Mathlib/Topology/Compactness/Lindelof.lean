@@ -333,7 +333,7 @@ theorem isLindelof_singleton {x : X} : IsLindelof ({x} : Set X) := fun f hf _ hf
 theorem Set.Subsingleton.isLindelof (hs : s.Subsingleton) : IsLindelof s :=
   Subsingleton.induction_on hs isLindelof_empty fun _ ↦ isLindelof_singleton
 
-/-- Type class for Lindelöf spaces.  -/
+/-- X is a Lindelöf space iff every open cover has a countable subcover.-/
 class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Lindelöf space, `Set.univ` is a Lindelöf set. -/
   isLindelof_univ : IsLindelof (univ : Set X)
