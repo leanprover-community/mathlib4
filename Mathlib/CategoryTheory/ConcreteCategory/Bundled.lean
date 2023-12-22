@@ -17,7 +17,8 @@ import Mathlib.Mathport.Rename
 
 We provide `Category` instances for these in `CategoryTheory/ConcreteCategory/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `CategoryTheory/ConcreteCategory/BundledHom.lean` (for categories with bundled homs, e.g. monoids).
+and in `CategoryTheory/ConcreteCategory/BundledHom.lean`
+(for categories with bundled homs, e.g. monoids).
 -/
 
 universe u v
