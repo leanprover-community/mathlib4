@@ -270,12 +270,12 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
   by_cases hn : n = 0
   · rw [hn] at h ⊢; simp only [zero_le, tsub_eq_zero_of_le]
     refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero ?_ h.r_pos ?_
-    . intro y hy
+    · intro y hy
       rw [Filter.EventuallyEq.fderiv_eq (f := fun _ => 0)]
       · rw [fderiv_const, Pi.zero_apply]
       · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨EMetric.ball x r,
           EMetric.isOpen_ball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
-    . intro n
+    · intro n
       apply ContinuousMultilinearMap.ext; intro a
       simp only [ContinuousLinearMap.strongUniformity_topology_eq,
         ContinuousLinearMap.compFormalMultilinearSeries_apply,

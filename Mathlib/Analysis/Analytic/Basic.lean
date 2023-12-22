@@ -1726,7 +1726,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_zero_of_bound_zero
   simp only [Finset.range_zero, Finset.sum_empty]
 
 theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetric.ball x r, f y = 0)
-  (r_pos : 0 < r)  (hp : ∀ n, p n = 0) : HasFiniteFPowerSeriesOnBall f p x 0 r := by
+    (r_pos : 0 < r)  (hp : ∀ n, p n = 0) : HasFiniteFPowerSeriesOnBall f p x 0 r := by
   refine ⟨⟨?_, r_pos, ?_⟩, fun n _ ↦ hp n⟩
   · rw [p.radius_eq_top_of_forall_image_add_eq_zero 0 (fun n ↦ by rw [add_zero]; exact hp n)]
     exact le_top
