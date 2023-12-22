@@ -291,7 +291,7 @@ theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Q
   rintro ⟨i, j⟩; dsimp at i j
   -- replace H := H (Scheme.OpenCover.pullbackCover (Scheme.affineCover Z) g) i
   specialize H _ i
-  -- rw [←isQuasiSeparated_iff_quasiSeparatedSpace] at H
+  -- rw [← isQuasiSeparated_iff_quasiSeparatedSpace] at H
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_ H ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom

@@ -455,7 +455,8 @@ lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R
     (eventually_iInf_lowerCentralSeries_eq R L M)
   obtain ⟨hl₁, hl₂, hl₃⟩ := hl l (le_refl _)
   simp_rw [← iInf_lowerCentralSeries_eq_posFittingComp, hl₁, hl₂, hl₃,
-    LieSubmodule.lowerCentralSeries_map_eq_lcs, ←LieSubmodule.lcs_sup, lowerCentralSeries, h.eq_top]
+    LieSubmodule.lowerCentralSeries_map_eq_lcs, ← LieSubmodule.lcs_sup, lowerCentralSeries,
+    h.eq_top]
 
 lemma weightSpace_weightSpaceOf_map_incl (x : L) (χ : L → R) :
     (weightSpace (weightSpaceOf M (χ x) x) χ).map (weightSpaceOf M (χ x) x).incl =
@@ -661,7 +662,8 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
         rw [← hχ, weightSpace_weightSpaceOf_map_incl]
       simp_rw [biSup_congr this, ← LieSubmodule.map_iSup, ih, LieModuleHom.map_top,
         LieSubmodule.range_incl]
-    simpa only [←ih, iSup_comm (ι := K), iSup_iSup_eq_right] using iSup_weightSpaceOf_eq_top K L M y
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using
+      iSup_weightSpaceOf_eq_top K L M y
 
 end field
 

@@ -556,7 +556,7 @@ theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * 
   exact coeToSubmodule_injective (coeSubmodule_mul _ _ _)
 #align fractional_ideal.coe_ideal_mul FractionalIdeal.coeIdeal_mul
 
-theorem mul_left_mono (I : FractionalIdeal S P) : Monotone ((· * ·) I) := by
+theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := by
   intro J J' h
   simp only [mul_def]
   exact mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)

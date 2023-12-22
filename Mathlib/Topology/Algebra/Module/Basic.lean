@@ -667,7 +667,7 @@ instance uniqueOfRight [Subsingleton M₂] : Unique (M₁ →SL[σ₁₂] M₂) 
 #align continuous_linear_map.unique_of_right ContinuousLinearMap.uniqueOfRight
 
 theorem exists_ne_zero {f : M₁ →SL[σ₁₂] M₂} (hf : f ≠ 0) : ∃ x, f x ≠ 0 := by
-  by_contra' h
+  by_contra! h
   exact hf (ContinuousLinearMap.ext h)
 #align continuous_linear_map.exists_ne_zero ContinuousLinearMap.exists_ne_zero
 
@@ -713,6 +713,9 @@ theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = Li
 theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
   rfl
 #align continuous_linear_map.one_apply ContinuousLinearMap.one_apply
+
+instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
+  ⟨0, 1, fun e ↦ have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using FunLike.congr_fun e.symm x)⟩
 
 section Add
 
@@ -768,7 +771,7 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
     ↑(∑ d in t, f d) = (∑ d in t, f d : M₁ →ₛₗ[σ₁₂] M₂) :=
-  (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ => rfl).map_sum _ _
+  map_sum (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ => rfl) _ _
 #align continuous_linear_map.coe_sum ContinuousLinearMap.coe_sum
 
 @[simp, norm_cast]
@@ -2672,11 +2675,11 @@ def ClosedComplemented (p : Submodule R M) : Prop :=
   ∃ f : M →L[R] p, ∀ x : p, f x = x
 #align submodule.closed_complemented Submodule.ClosedComplemented
 
-theorem ClosedComplemented.has_closed_complement {p : Submodule R M} [T1Space p]
+theorem ClosedComplemented.exists_isClosed_isCompl {p : Submodule R M} [T1Space p]
     (h : ClosedComplemented p) :
-    ∃ (q : Submodule R M) (_ : IsClosed (q : Set M)), IsCompl p q :=
+    ∃ q : Submodule R M, IsClosed (q : Set M) ∧ IsCompl p q :=
   Exists.elim h fun f hf => ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
-#align submodule.closed_complemented.has_closed_complement Submodule.ClosedComplemented.has_closed_complement
+#align submodule.closed_complemented.has_closed_complement Submodule.ClosedComplemented.exists_isClosed_isCompl
 
 protected theorem ClosedComplemented.isClosed [TopologicalAddGroup M] [T1Space M]
     {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
@@ -2694,6 +2697,20 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
 #align submodule.closed_complemented_top Submodule.closedComplemented_top
+
+/-- If `p` is a closed complemented submodule,
+then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
+`e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.
+
+In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
+but we provide both for convenience. -/
+lemma ClosedComplemented.exists_submodule_equiv_prod [TopologicalAddGroup M]
+    {p : Submodule R M} (hp : p.ClosedComplemented) :
+    ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
+      (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
+  let ⟨f, hf⟩ := hp
+  ⟨LinearMap.ker f, .equivOfRightInverse _ p.subtypeL hf,
+    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp [hf], fun _ ↦ rfl⟩
 
 end Submodule
 

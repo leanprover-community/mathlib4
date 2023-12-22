@@ -3,13 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PPWithUniv
@@ -378,6 +379,7 @@ instance : Zero Cardinal.{u} :=
 instance : Inhabited Cardinal.{u} :=
   ⟨0⟩
 
+@[simp]
 theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
   (Equiv.equivOfIsEmpty α (ULift (Fin 0))).cardinal_eq
 #align cardinal.mk_eq_zero Cardinal.mk_eq_zero
@@ -629,11 +631,11 @@ theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by s
 end deprecated
 
 -- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
-theorem lift_two : lift.{u, v} 2 = 2 := by simp [←one_add_one_eq_two]
+theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [←one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
@@ -643,7 +645,7 @@ theorem mk_powerset {α : Type u} (s : Set α) : #(↥(𝒫 s)) = 2 ^ #(↥s) :=
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
 theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
-  simp [←one_add_one_eq_two]
+  simp [← one_add_one_eq_two]
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
@@ -1010,6 +1012,22 @@ protected theorem iSup_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : iSup f
   ciSup_of_empty f
 #align cardinal.supr_of_empty Cardinal.iSup_of_empty
 
+lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
+    {ι : Type u} (f : ι → Cardinal.{max u v}) (ω : Cardinal.{max u v})
+    (hω : ¬ Order.IsSuccLimit ω)
+    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω :=
+  IsLUB.exists_of_not_isSuccLimit (h ▸ isLUB_csSup' (bddAbove_range.{u, v} f)) hω
+
+lemma exists_eq_of_iSup_eq_of_not_isLimit
+    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{max u v}) (ω : Cardinal.{max u v})
+    (hω : ¬ ω.IsLimit)
+    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
+  refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
+    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f ω · h)
+  cases not_not.mp e
+  rw [← le_zero_iff] at h ⊢
+  exact (le_ciSup (Cardinal.bddAbove_range.{u, v} f) _).trans h
+
 -- Portin note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
@@ -1103,7 +1121,7 @@ theorem lift_sInf (s : Set Cardinal) : lift.{u,v} (sInf s) = sInf (lift.{u,v} ''
 theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift.{u,v} (f i) := by
   unfold iInf
   convert lift_sInf (range f)
-  simp_rw [←comp_apply (f := lift), range_comp]
+  simp_rw [← comp_apply (f := lift), range_comp]
 #align cardinal.lift_infi Cardinal.lift_iInf
 
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
@@ -1448,13 +1466,18 @@ theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccLimit_aleph0⟩
 #align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
 
+lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
+  | 0, e => e.1 rfl
+  | Nat.succ n, e => Order.not_isSuccLimit_succ _ (nat_succ n ▸ e.2)
+
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra' h'
-  rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
-  · exact h.ne_zero.irrefl
-  · rw [nat_succ] at h
-    exact not_isSuccLimit_succ _ h.isSuccLimit
-#align cardinal.is_limit.aleph_0_le Cardinal.IsLimit.aleph0_le
+  by_contra! h'
+  rcases lt_aleph0.1 h' with ⟨n, rfl⟩
+  exact not_isLimit_natCast n h
+
+lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{max u v})
+    (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
+  exists_eq_of_iSup_eq_of_not_isLimit.{u, v} f _ (not_isLimit_natCast n) h
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
@@ -1703,7 +1726,7 @@ def toNat : ZeroHom Cardinal ℕ where
 lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
   simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
   refine' forall_congr' fun h => _
-  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+  rw [← @Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
 
 lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
 @[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
@@ -1757,8 +1780,10 @@ theorem toNat_cast (n : ℕ) : Cardinal.toNat n = n := by
   exact (Classical.choose_spec (lt_aleph0.1 (nat_lt_aleph0 n))).symm
 #align cardinal.to_nat_cast Cardinal.toNat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : Cardinal.toNat (OfNat.ofNat n) = OfNat.ofNat n :=
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toNat_cast n
 
 /-- `toNat` has a right-inverse: coercion. -/

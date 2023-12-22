@@ -2,30 +2,22 @@ import Lake
 
 open Lake DSL
 
-def moreServerArgs := #[
-  "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
-  "-Dpp.proofs.withType=false",
-  "-DautoImplicit=false",
-  "-DrelaxedAutoImplicit=false"
-]
-
--- These settings only apply during `lake build`, but not in VSCode editor.
-def moreLeanArgs := moreServerArgs
-
--- These are additional settings which do not affect the lake hash,
--- so they can be enabled in CI and disabled locally or vice versa.
--- Warning: Do not put any options here that actually change the olean files,
--- or inconsistent behavior may result
-def weakLeanArgs : Array String :=
-  if get_config? CI |>.isSome then
-    #["-DwarningAsError=true"]
-  else
-    #[]
-
 package mathlib where
-  moreServerArgs := moreServerArgs
-  moreLeanArgs := moreLeanArgs
-  weakLeanArgs := weakLeanArgs
+  leanOptions := #[
+    ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
+    ⟨`pp.proofs.withType, false⟩,
+    ⟨`autoImplicit, false⟩,
+    ⟨`relaxedAutoImplicit, false⟩
+  ]
+  -- These are additional settings which do not affect the lake hash,
+  -- so they can be enabled in CI and disabled locally or vice versa.
+  -- Warning: Do not put any options here that actually change the olean files,
+  -- or inconsistent behavior may result
+  weakLeanArgs :=
+    if get_config? CI |>.isSome then
+      #["-DwarningAsError=true"]
+    else
+      #[]
 
 /-!
 ## Mathlib dependencies on upstream projects.
@@ -37,7 +29,7 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.23"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.24-pre2"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 
 /-!

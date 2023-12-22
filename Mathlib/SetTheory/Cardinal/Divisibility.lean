@@ -77,7 +77,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   refine' ⟨(aleph0_pos.trans_le ha).ne', _, fun b c hbc => _⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
-  cases' eq_or_ne (b * c) 0 with hz hz
+  rcases eq_or_ne (b * c) 0 with hz | hz
   · rcases mul_eq_zero.mp hz with (rfl | rfl) <;> simp
   wlog h : c ≤ b
   · cases le_total c b <;> [skip; rw [or_comm]] <;> apply_assumption
@@ -134,7 +134,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
 #align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
-  cases' le_or_lt ℵ₀ a with h h
+  rcases le_or_lt ℵ₀ a with h | h
   · simp [h]
   lift a to ℕ using id h
   simp [not_le.mpr h]
@@ -151,7 +151,7 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
           ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
   have key : p ^ (1 : Cardinal) ≤ ↑a := by
-    rw [←hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
+    rw [← hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
   rw [power_one] at key
   lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
   exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, mod_cast hpk⟩

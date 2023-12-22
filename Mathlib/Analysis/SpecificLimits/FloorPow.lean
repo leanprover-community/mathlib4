@@ -70,7 +70,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
-      by_contra' h
+      by_contra! h
       have cNM : c N ≤ M := by
         apply le_max'
         apply mem_image_of_mem
@@ -133,7 +133,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
-      by_contra' h
+      by_contra! h
       have cNM : c N ≤ M := by
         apply le_max'
         apply mem_image_of_mem
@@ -250,7 +250,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
     have : c ^ 3 = c ^ 2 * c := by ring
     simp only [mul_sub, this, mul_one, inv_pow, sub_le_sub_iff_left]
     rw [mul_assoc, mul_comm c, ← mul_assoc, mul_inv_cancel (sq_pos_of_pos cpos).ne', one_mul]
-    simpa using pow_le_pow hc.le one_le_two
+    simpa using pow_le_pow_right hc.le one_le_two
   calc
     (∑ i in (range N).filter fun i => j < c ^ i, (1 : ℝ) / (c ^ i) ^ 2) ≤
         ∑ i in Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
@@ -307,7 +307,7 @@ theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹)
     (1 - c⁻¹) * c ^ i = c ^ i - c ^ i * c⁻¹ := by ring
     _ ≤ c ^ i - 1 := by
       simpa only [← div_eq_mul_inv, sub_le_sub_iff_left, one_le_div cpos, pow_one] using
-        pow_le_pow hc.le hident
+        pow_le_pow_right hc.le hident
     _ ≤ ⌊c ^ i⌋₊ := (Nat.sub_one_lt_floor _).le
 
 #align mul_pow_le_nat_floor_pow mul_pow_le_nat_floor_pow
@@ -337,7 +337,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
         simp only [Nat.le_floor, one_le_pow_of_one_le, hc.le, Nat.one_le_cast, Nat.cast_one]
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]
-      apply pow_le_pow_of_le_left (pow_nonneg cpos.le _)
+      apply pow_le_pow_left (pow_nonneg cpos.le _)
       rw [← div_eq_inv_mul, le_div_iff A, mul_comm]
       exact mul_pow_le_nat_floor_pow hc i
     _ ≤ (1 - c⁻¹)⁻¹ ^ 2 * (c ^ 3 * (c - 1)⁻¹) / j ^ 2 := by

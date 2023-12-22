@@ -180,7 +180,7 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
-  cases' eq_or_ne i j with h h <;> simp [h]
+  rcases eq_or_ne i j with h | h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
 @[simp]

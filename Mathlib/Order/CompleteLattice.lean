@@ -205,8 +205,10 @@ theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
   ⟨fun _ ↦ le_sSup, fun _ ↦ sSup_le⟩
 #align is_lub_Sup isLUB_sSup
 
-theorem IsLUB.sSup_eq (h : IsLUB s a) : sSup s = a :=
-  (isLUB_sSup s).unique h
+lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
+  ⟨(isLUB_sSup s).unique, by rintro rfl; exact isLUB_sSup _⟩
+
+alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
 #align is_lub.Sup_eq IsLUB.sSup_eq
 
 theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
@@ -274,8 +276,10 @@ theorem isGLB_sInf (s : Set α) : IsGLB s (sInf s) :=
   ⟨fun _ => sInf_le, fun _ => le_sInf⟩
 #align is_glb_Inf isGLB_sInf
 
-theorem IsGLB.sInf_eq (h : IsGLB s a) : sInf s = a :=
-  (isGLB_sInf s).unique h
+lemma isGLB_iff_sInf_eq : IsGLB s a ↔ sInf s = a :=
+  ⟨(isGLB_sInf s).unique, by rintro rfl; exact isGLB_sInf _⟩
+
+alias ⟨IsGLB.sInf_eq, _⟩ := isGLB_iff_sInf_eq
 #align is_glb.Inf_eq IsGLB.sInf_eq
 
 theorem sInf_le_of_le (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
@@ -1946,7 +1950,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
 #align prod.snd_infi Prod.snd_iInf
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ←range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
 #align prod.swap_infi Prod.swap_iInf
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
@@ -1963,7 +1967,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
 #align prod.snd_supr Prod.snd_iSup
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ←range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
 #align prod.swap_supr Prod.swap_iSup
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :

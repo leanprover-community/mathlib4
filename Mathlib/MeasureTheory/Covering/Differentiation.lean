@@ -587,7 +587,6 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
           zpow_add₀ t_ne_zero']
         conv_rhs => rw [← mul_one (t ^ n)]
         gcongr
-        · apply NNReal.zpow_pos t_ne_zero' -- TODO: positivity extension for `zpow`
         rw [zpow_neg_one]
         exact inv_lt_one ht
   calc
