@@ -397,7 +397,8 @@ theorem localization_finite : RingHom.LocalizationPreserves @RingHom.Finite := b
   rw [IsLocalization.mk'_eq_mul_mk'_one, mul_comm, Finset.coe_image]
   have hy : y ∈ Submodule.span R ↑T := by rw [hT]; trivial
   replace hy : algebraMap S S' y ∈ Submodule.map fₐ.toLinearMap (Submodule.span R (T : Set S)) :=
-    Submodule.mem_map_of_mem hy
+    -- Note: #8386 had to specify the value of `f` below
+    Submodule.mem_map_of_mem (f := fₐ.toLinearMap) hy
   rw [Submodule.map_span fₐ.toLinearMap T] at hy
   have H : Submodule.span R (algebraMap S S' '' T) ≤
       (Submodule.span R' (algebraMap S S' '' T)).restrictScalars R := by

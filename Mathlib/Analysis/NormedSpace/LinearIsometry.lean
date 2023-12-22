@@ -63,7 +63,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R] [Semiring R₂]
   (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
-  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends
+  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [NDFunLike 𝓕 E E₂] extends
   SemilinearMapClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 #align semilinear_isometry_class SemilinearIsometryClass
@@ -74,11 +74,14 @@ class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiri
 This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
 -/
 abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam (Type*)) [Semiring R]
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂] :=
+    [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
+    [NDFunLike 𝓕 E E₂] :=
   SemilinearIsometryClass 𝓕 (RingHom.id R) E E₂
 #align linear_isometry_class LinearIsometryClass
 
 namespace SemilinearIsometryClass
+
+variable [NDFunLike 𝓕 E E₂]
 
 protected theorem isometry [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Isometry f :=
   AddMonoidHomClass.isometry_of_norm _ (norm_map _)
@@ -180,6 +183,8 @@ initialize_simps_projections LinearIsometry (toLinearMap_toFun → apply)
 theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
 #align linear_isometry.ext LinearIsometry.ext
+
+variable [NDFunLike 𝓕 E E₂]
 
 protected theorem congr_arg [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] {f : 𝓕} :
     ∀ {x x' : E}, x = x' → f x = f x'
@@ -497,8 +502,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
-  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends
-  SemilinearEquivClass 𝓕 σ₁₂ E E₂ where
+  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂]
+  extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 #align semilinear_isometry_equiv_class SemilinearIsometryEquivClass
 
@@ -508,7 +513,8 @@ class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [S
 This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
 -/
 abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam (Type*)) [Semiring R]
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂] :=
+    [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
+    [EquivLike 𝓕 E E₂] :=
   SemilinearIsometryEquivClass 𝓕 (RingHom.id R) E E₂
 #align linear_isometry_equiv_class LinearIsometryEquivClass
 
@@ -517,11 +523,9 @@ namespace SemilinearIsometryEquivClass
 variable (𝓕)
 
 -- `σ₂₁` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] :
+instance (priority := 100) [EquivLike 𝓕 E E₂] [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] :
     SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
-  { s with
-    coe := ((↑) : 𝓕 → E → E₂)
-    coe_injective' := @FunLike.coe_injective 𝓕 _ _ _ }
+  { s with }
 
 end SemilinearIsometryEquivClass
 

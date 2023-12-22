@@ -127,7 +127,9 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
   have : ProperSpace F := properSpace_of_locallyCompactSpace 𝕜
   let M : F × E →ₗ[𝕜] F := LinearMap.id.coprod L
   have M_cont : Continuous M := M.continuous_of_finiteDimensional
-  have hM : Function.Surjective M := by simp [← LinearMap.range_eq_top, LinearMap.range_coprod]
+  -- Note: #8386 had to change `range_eq_top` into `range_eq_top (f := _)`
+  have hM : Function.Surjective M := by
+    simp [← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
   simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
   rw [Measure.ae_prod_mem_iff_ae_ae_mem]

@@ -229,6 +229,9 @@ instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
 instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
 
+instance instFunLike : NDFunLike (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.funLike
+
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass
 #align weak_dual.weak_dual.continuous_linear_map_class WeakDual.instContinuousLinearMapClass

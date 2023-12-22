@@ -98,6 +98,9 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
+instance {M N : ModuleCat.{v} R} : NDFunLike (M ⟶ N) M N :=
+  LinearMap.ndFunLike
+
 -- porting note: was not necessary in mathlib
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass

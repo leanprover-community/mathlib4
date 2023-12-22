@@ -221,7 +221,8 @@ domain, using the `SeminormedAddCommGroup.induced` norm.
 See note [reducible non-instances] -/
 @[reducible]
 def NormedSpace.induced {F : Type*} (α β γ : Type*) [NormedField α] [AddCommGroup β] [Module α β]
-    [SeminormedAddCommGroup γ] [NormedSpace α γ] [LinearMapClass F α β γ] (f : F) :
+    [SeminormedAddCommGroup γ] [NormedSpace α γ] [NDFunLike F β γ] [LinearMapClass F α β γ]
+    (f : F) :
     @NormedSpace α β _ (SeminormedAddCommGroup.induced β γ f) := by
   -- Porting note: trouble inferring SeminormedAddCommGroup β and Module α β
   -- unfolding the induced semi-norm is fiddly
