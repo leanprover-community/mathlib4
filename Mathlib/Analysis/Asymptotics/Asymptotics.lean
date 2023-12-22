@@ -603,6 +603,9 @@ theorem isBigO_refl (f : α → E) (l : Filter α) : f =O[l] f :=
   (isBigOWith_refl f l).isBigO
 #align asymptotics.is_O_refl Asymptotics.isBigO_refl
 
+theorem _root_.Filter.EventuallyEq.isBigO {f₁ f₂ : α → E} (hf : f₁ =ᶠ[l] f₂) : f₁ =O[l] f₂ :=
+  hf.trans_isBigO (isBigO_refl _ _)
+
 theorem IsBigOWith.trans_le (hfg : IsBigOWith c l f g) (hgk : ∀ x, ‖g x‖ ≤ ‖k x‖) (hc : 0 ≤ c) :
     IsBigOWith c l f k :=
   (hfg.trans (isBigOWith_of_le l hgk) hc).congr_const <| mul_one c
@@ -1706,7 +1709,7 @@ theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n)
 theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith c l f g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : IsBigOWith c l (fun x => (g x)⁻¹) fun x => (f x)⁻¹ := by
   refine' IsBigOWith.of_bound (h.bound.mp (h₀.mono fun x h₀ hle => _))
-  cases' eq_or_ne (f x) 0 with hx hx
+  rcases eq_or_ne (f x) 0 with hx | hx
   · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
     replace hle := inv_le_inv_of_le (norm_pos_iff.2 hx) hle

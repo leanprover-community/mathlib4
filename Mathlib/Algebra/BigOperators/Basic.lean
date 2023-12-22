@@ -2239,7 +2239,7 @@ theorem add_eq_union_right_of_le {x y z : Multiset α} (h : z ≤ y) :
 
 theorem finset_sum_eq_sup_iff_disjoint {β : Type*} {i : Finset β} {f : β → Multiset α} :
     i.sum f = i.sup f ↔
-      ∀ (x) (_ : x ∈ i) (y) (_ : y ∈ i), x ≠ y → Multiset.Disjoint (f x) (f y) := by
+      ∀ᵉ (x ∈ i) (y ∈ i), x ≠ y → Multiset.Disjoint (f x) (f y) := by
   induction' i using Finset.cons_induction_on with z i hz hr
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]

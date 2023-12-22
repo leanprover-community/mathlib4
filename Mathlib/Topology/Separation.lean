@@ -1954,7 +1954,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     exact (hUd u huU).le_bot ⟨hxu, hx⟩
   · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
-    cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
+    rcases le_total (Encodable.encode u) (Encodable.encode v) with hle | hle
     exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
 #align normal_space_of_t3_second_countable NormalSpace.of_regularSpace_secondCountableTopology
 

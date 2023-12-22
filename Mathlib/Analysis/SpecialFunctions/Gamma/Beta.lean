@@ -300,7 +300,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     intro n
     rw [integrable_indicator_iff (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)), IntegrableOn,
       Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self, ← IntegrableOn, ←
-      intervalIntegrable_iff_integrable_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
+      intervalIntegrable_iff_integrableOn_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
     apply IntervalIntegrable.continuousOn_mul
     · refine' intervalIntegral.intervalIntegrable_cpow' _
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]

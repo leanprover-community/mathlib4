@@ -482,131 +482,49 @@ open BigOperators
 open Finset
 
 /-- If a finset has cardinality larger than the rank of a module,
-then there is a nontrivial linear relation amongst its elements.
--/
--- TODO: golf this
+then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card
     [Module.Finite R V] {t : Finset V}
     (h : finrank R V < t.card) : ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
-  classical
-  have := mt FiniteDimensional.finset_card_le_finrank_of_linearIndependent (by simpa using h)
-  rw [_root_.not_linearIndependent_iff] at this
-  obtain ⟨s, g, sum, z, zm, nonzero⟩ := this
-  -- Now we have to extend `g` to all of `t`, then to all of `V`.
-  let f : V → R := fun x => if h : x ∈ t then if (⟨x, h⟩ : t) ∈ s then g ⟨x, h⟩ else 0 else 0
-  -- and finally clean up the mess caused by the extension.
-  refine' ⟨f, _, _⟩
-  · dsimp
-    rw [← (sum)] -- porting note: need parens to disambiguate
-    fapply sum_bij_ne_zero fun v hvt _ => (⟨v, hvt⟩ : { v // v ∈ t })
-    · intro v hvt H
-      dsimp
-      rw [dif_pos hvt] at H
-      contrapose! H
-      rw [if_neg H, zero_smul]
-    · intro _ _ _ _ _ _
-      exact Subtype.mk.inj
-    · intro b hbs hb
-      use b
-      simpa only [hbs, exists_prop, dif_pos, Finset.mk_coe, and_true_iff, if_true, Finset.coe_mem,
-        eq_self_iff_true, exists_prop_of_true, Ne.def] using hb
-    · intro a h₁
-      dsimp
-      rw [dif_pos h₁]
-      intro h₂
-      rw [if_pos]
-      contrapose! h₂
-      rw [if_neg h₂, zero_smul]
-  · refine' ⟨z, z.2, _⟩
-    dsimp only
-    erw [dif_pos z.2, if_pos] <;> rwa [Subtype.coe_eta]
+  obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
+    (mt FiniteDimensional.finset_card_le_finrank_of_linearIndependent h.not_le)
+  refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
+  rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
 #align finite_dimensional.exists_nontrivial_relation_of_rank_lt_card Module.exists_nontrivial_relation_of_finrank_lt_card
 
 /-- If a finset has cardinality larger than `finrank + 1`,
 then there is a nontrivial linear relation amongst its elements,
-such that the coefficients of the relation sum to zero.
--/
--- TODO: golf this
+such that the coefficients of the relation sum to zero. -/
 theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card [Module.Finite R V]
     {t : Finset V} (h : finrank R V + 1 < t.card) :
     ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
-  classical
   -- Pick an element x₀ ∈ t,
-  have card_pos : 0 < t.card := lt_trans (Nat.succ_pos _) h
-  obtain ⟨x₀, m⟩ := (Finset.card_pos.1 card_pos).bex
+  obtain ⟨x₀, x₀_mem⟩ := card_pos.1 ((Nat.succ_pos _).trans h)
   -- and apply the previous lemma to the {xᵢ - x₀}
-  let shift : V ↪ V := ⟨fun x => x - x₀, sub_left_injective⟩
+  let shift : V ↪ V := ⟨(· - x₀), sub_left_injective⟩
+  classical
   let t' := (t.erase x₀).map shift
   have h' : finrank R V < t'.card := by
-    simp only [card_map, Finset.card_erase_of_mem m]
+    rw [card_map, card_erase_of_mem x₀_mem]
     exact Nat.lt_pred_iff.mpr h
   -- to obtain a function `g`.
   obtain ⟨g, gsum, x₁, x₁_mem, nz⟩ := exists_nontrivial_relation_of_finrank_lt_card h'
   -- Then obtain `f` by translating back by `x₀`,
   -- and setting the value of `f` at `x₀` to ensure `∑ e in t, f e = 0`.
-  let f : V → R := fun z => if z = x₀ then -∑ z in t.erase x₀, g (z - x₀) else g (z - x₀)
-  refine' ⟨f, _, _, _⟩
+  let f : V → R := fun z ↦ if z = x₀ then -∑ z in t.erase x₀, g (z - x₀) else g (z - x₀)
+  refine ⟨f, ?_, ?_, ?_⟩
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
-  · show (∑ e : V in t, f e • e) = 0
-    -- We prove this by splitting off the `x₀` term of the sum,
-    -- which is itself a sum over `t.erase x₀`,
-    -- combining the two sums, and
-    -- observing that after reindexing we have exactly
-    -- ∑ (x : V) in t', g x • x = 0.
-    simp only
-    conv_lhs =>
-      apply_congr
-      rfl
-      rw [ite_smul]
-    rw [Finset.sum_ite]
-    conv =>
-      congr
-      congr
-      apply_congr
-      -- Porting note: the next two steps used to work by `simp [filter_eq', m]`
-      erw [filter_eq']
-      simp [m]
-    conv =>
-      congr
-      congr
-      rfl
-      apply_congr
-      simp [filter_ne']
-    rw [sum_singleton, neg_smul, add_comm, ← sub_eq_add_neg, sum_smul, ← sum_sub_distrib]
-    simp only [← smul_sub]
-    -- At the end we have to reindex the sum, so we use `change` to
-    -- express the summand using `shift`.
-    change (∑ x : V in t.erase x₀, (fun e => g e • e) (shift x)) = 0
-    -- porting note: last argument can't be inferred
-    rw [← sum_map _ shift (fun e => g e • e)]
-    exact gsum
-  · show (∑ e : V in t, f e) = 0
-    -- Again we split off the `x₀` term,
-    -- observing that it exactly cancels the other terms.
-    rw [← insert_erase m, sum_insert (not_mem_erase x₀ t)]
-    dsimp
-    rw [if_pos rfl]
-    conv_lhs =>
-      congr
-      rfl
-      apply_congr
-      rfl
-      rw [if_neg (show _ ≠ x₀ from (mem_erase.mp ‹_›).1)]
-    exact neg_add_self _
-  · show ∃ (x : V), x ∈ t ∧ f x ≠ 0
-    -- We can use x₁ + x₀.
-    refine' ⟨x₁ + x₀, _, _⟩
-    · rw [Finset.mem_map] at x₁_mem
-      rcases x₁_mem with ⟨x₁, x₁_mem, rfl⟩
-      rw [mem_erase] at x₁_mem
-      simp only [x₁_mem, sub_add_cancel, Function.Embedding.coeFn_mk]
-    · dsimp only
-      rwa [if_neg, add_sub_cancel]
-      rw [add_left_eq_self]
-      rintro rfl
-      simp only [sub_eq_zero, exists_prop, Finset.mem_map, Embedding.coeFn_mk, eq_self_iff_true,
-        mem_erase, not_true, exists_eq_right, Ne.def, false_and_iff] at x₁_mem
+  · rw [sum_map, Embedding.coeFn_mk] at gsum
+    simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
+             ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
+    refine sum_congr rfl fun x x_mem ↦ ?_
+    rw [if_neg (mem_erase.mp x_mem).1]
+  · simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
+    exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
+  · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
+    have := mem_erase.mp x₁_mem'
+    exact ⟨x₁, by simpa only [Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
 #align finite_dimensional.exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
 
 end
@@ -615,21 +533,22 @@ end DivisionRing
 
 section ZeroRank
 
-variable [Ring R] [StrongRankCondition R] [AddCommGroup V] [Module R V]
-
-attribute [local instance] nontrivial_of_invariantBasisNumber
+variable [Ring R] [AddCommGroup V] [Module R V]
 
 open FiniteDimensional
 
 theorem Module.finite_of_rank_eq_nat [Module.Free R V] {n : ℕ} (h : Module.rank R V = n) :
     Module.Finite R V := by
-  have := Cardinal.mk_lt_aleph0_iff.mp
-    (((Free.rank_eq_card_chooseBasisIndex R V).symm.trans h).trans_lt (nat_lt_aleph0 n))
-  exact Module.Finite.of_basis (Free.chooseBasis R V)
+  nontriviality R
+  obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := V)
+  have := mk_lt_aleph0_iff.mp <| cardinal_le_rank_of_linearIndependent
+    b.linearIndependent |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
+  exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_zero [NoZeroSMulDivisors R V]
     (h : Module.rank R V = 0) :
     Module.Finite R V := by
+  nontriviality R
   rw [rank_zero_iff] at h
   infer_instance
 
@@ -651,12 +570,14 @@ variable {R V}
 
 theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R V] (h : Module.rank R V = 0) :
     (⊥ : Submodule R V) = ⊤ := by
+  nontriviality R
   rw [rank_zero_iff] at h
   exact Subsingleton.elim _ _
 #align bot_eq_top_of_rank_eq_zero Submodule.bot_eq_top_of_rank_eq_zero
 
+/-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
-theorem Submodule.rank_eq_zero [NoZeroSMulDivisors R V] {S : Submodule R V} :
+theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R V] {S : Submodule R V} :
     Module.rank R S = 0 ↔ S = ⊥ :=
   ⟨fun h =>
     (Submodule.eq_bot_iff _).2 fun x hx =>
@@ -667,7 +588,8 @@ theorem Submodule.rank_eq_zero [NoZeroSMulDivisors R V] {S : Submodule R V} :
 #align rank_eq_zero Submodule.rank_eq_zero
 
 @[simp]
-theorem Submodule.finrank_eq_zero [NoZeroSMulDivisors R V] {S : Submodule R V} [Module.Finite R S] :
+theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R V]
+    {S : Submodule R V} [Module.Finite R S] :
     finrank R S = 0 ↔ S = ⊥ := by
   rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
 #align finrank_eq_zero Submodule.finrank_eq_zero
@@ -678,7 +600,7 @@ namespace Submodule
 
 open IsNoetherian FiniteDimensional
 
-variable [AddCommGroup V] [Ring R] [StrongRankCondition R] [Module R V]
+variable [Ring R] [AddCommGroup V] [Module R V]
 
 theorem fg_iff_finite (s : Submodule R V) : s.FG ↔ Module.Finite R s :=
   (finite_def.trans (fg_top s)).symm
@@ -714,7 +636,7 @@ end Submodule
 
 section
 
-variable [Ring R] [StrongRankCondition R] [AddCommGroup V] [Module R V]
+variable [Ring R] [AddCommGroup V] [Module R V]
 
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=

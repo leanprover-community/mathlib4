@@ -1240,7 +1240,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
 #align ennreal.sub_right_inj ENNReal.sub_right_inj
 
 theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  cases' le_or_lt a b with hab hab; · simp [hab, mul_right_mono hab]
+  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 #align ennreal.sub_mul ENNReal.sub_mul

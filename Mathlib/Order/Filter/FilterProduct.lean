@@ -129,7 +129,7 @@ noncomputable instance linearOrderedCommRing [LinearOrderedCommRing β] : Linear
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
   inductionOn₂ x y fun a b => by
-    cases' le_total (a : β*) b with h h
+    rcases le_total (a : β*) b with h | h
     · rw [max_eq_right h, map₂_coe, coe_eq]
       exact h.mono fun i hi => (max_eq_right hi).symm
     · rw [max_eq_left h, map₂_coe, coe_eq]
@@ -138,7 +138,7 @@ theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
 
 theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
   inductionOn₂ x y fun a b => by
-    cases' le_total (a : β*) b with h h
+    rcases le_total (a : β*) b with h | h
     · rw [min_eq_left h, map₂_coe, coe_eq]
       exact h.mono fun i hi => (min_eq_left hi).symm
     · rw [min_eq_right h, map₂_coe, coe_eq]

@@ -696,7 +696,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
           refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
-          cases' lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin ein
+          rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
               rw [← two_mul, mul_comm,
@@ -708,7 +708,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
               apply Nat.le_of_succ_le_succ
               rw [npm]
               exact lin
-            cases' lt_or_eq_of_le il with ill ile
+            rcases lt_or_eq_of_le il with ill | ile
             · exact lt_of_lt_of_le (Nat.add_lt_add_left (strictMono_x a1 ill) _) ll
             · rw [ile]
               apply lt_of_le_of_ne ll

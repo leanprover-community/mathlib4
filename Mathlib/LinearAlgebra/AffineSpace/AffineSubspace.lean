@@ -817,7 +817,7 @@ theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty {s : Set P} (hs : s.
 /-- For a non-trivial space, the affine span of a set is `⊤` iff its vector span is `⊤`. -/
 theorem affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial {s : Set P} [Nontrivial P] :
     affineSpan k s = ⊤ ↔ vectorSpan k s = ⊤ := by
-  cases' s.eq_empty_or_nonempty with hs hs
+  rcases s.eq_empty_or_nonempty with hs | hs
   · simp [hs, subsingleton_iff_bot_eq_top, AddTorsor.subsingleton_iff V P, not_subsingleton]
   · rw [affineSpan_eq_top_iff_vectorSpan_eq_top_of_nonempty k V P hs]
 #align affine_subspace.affine_span_eq_top_iff_vector_span_eq_top_of_nontrivial AffineSubspace.affineSpan_eq_top_iff_vectorSpan_eq_top_of_nontrivial
