@@ -4,7 +4,7 @@
  [{"url": "https://github.com/joneugster/std4",
    "type": "git",
    "subDir": null,
-   "rev": "5bee1876c0d52e628bccdfd10680b4e18d9b72f3",
+   "rev": "acd5840bf629f5947c525927bcc68a43b0f08f6a",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "upstream_from_mathlib_for_graph",
