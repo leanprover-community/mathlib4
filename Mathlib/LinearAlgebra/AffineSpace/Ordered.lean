@@ -209,7 +209,7 @@ theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
   rw [lineMap_apply, lineMap_apply, slope, slope, vsub_eq_sub, vsub_eq_sub, vsub_eq_sub,
     vadd_eq_add, vadd_eq_add, smul_eq_mul, add_sub_cancel, smul_sub, smul_sub, smul_sub,
     sub_le_iff_le_add, mul_inv_rev, mul_smul, mul_smul, ← smul_sub, ← smul_sub, ← smul_add,
-    smul_smul, ← mul_inv_rev, inv_smul_le_iff h, smul_smul,
+    smul_smul, ← mul_inv_rev, inv_smul_le_iff_of_pos h, smul_smul,
     mul_inv_cancel_right₀ (right_ne_zero_of_mul h.ne'), smul_add,
     smul_inv_smul₀ (left_ne_zero_of_mul h.ne')]
 #align map_le_line_map_iff_slope_le_slope_left map_le_lineMap_iff_slope_le_slope_left
@@ -243,7 +243,7 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
   rw [← lineMap_apply_one_sub, ← lineMap_apply_one_sub _ _ r]
   revert h; generalize 1 - r = r'; clear! r; intro h
   simp_rw [lineMap_apply, slope, vsub_eq_sub, vadd_eq_add, smul_eq_mul]
-  rw [sub_add_eq_sub_sub_swap, sub_self, zero_sub, neg_mul_eq_mul_neg, neg_sub, le_inv_smul_iff h,
+  rw [sub_add_eq_sub_sub_swap, sub_self, zero_sub, neg_mul_eq_mul_neg, neg_sub, le_inv_smul_iff_of_pos h,
     smul_smul, mul_inv_cancel_right₀, le_sub_comm, ← neg_sub (f b), smul_neg, neg_add_eq_sub]
   · exact right_ne_zero_of_mul h.ne'
 #align map_le_line_map_iff_slope_le_slope_right map_le_lineMap_iff_slope_le_slope_right

@@ -805,7 +805,7 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
     {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = NNReal.rpow ‖r‖₊ d • μH[d] s := by
   suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ NNReal.rpow ‖r‖₊ d • μH[d] s by
     refine' le_antisymm (this hr s) _
-    rw [← ENNReal.le_inv_smul_iff]
+    rw [← ENNReal.le_inv_smul_iff_of_pos]
     dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
     · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
