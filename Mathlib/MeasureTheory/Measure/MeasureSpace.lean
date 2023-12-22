@@ -414,7 +414,7 @@ theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, Measurable
 one of the intersections `s i ∩ s j` is not empty. -/
 theorem exists_nonempty_inter_of_measure_univ_lt_tsum_measure {m : MeasurableSpace α}
     (μ : Measure α) {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i))
-    (H : μ (univ : Set α) < ∑' i, μ (s i)) : ∃ (i j : _) (_h : i ≠ j), (s i ∩ s j).Nonempty := by
+    (H : μ (univ : Set α) < ∑' i, μ (s i)) : ∃ i j, i ≠ j ∧ (s i ∩ s j).Nonempty := by
   contrapose! H
   apply tsum_measure_le_measure_univ hs
   intro i j hij
@@ -504,7 +504,7 @@ sets is the infimum of the measures. -/
 theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, MeasurableSet (s i))
     (hd : Directed (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) : μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   rcases hfin with ⟨k, hk⟩
-  have : ∀ (t) (_ : t ⊆ s k), μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono ht)
+  have : ∀ t ⊆ s k, μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono ht)
   rw [← ENNReal.sub_sub_cancel hk (iInf_le _ k), ENNReal.sub_iInf, ←
     ENNReal.sub_sub_cancel hk (measure_mono (iInter_subset _ k)), ←
     measure_diff (iInter_subset _ k) (MeasurableSet.iInter h) (this _ (iInter_subset _ k)),
@@ -1077,7 +1077,7 @@ theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
     (⊤ : OuterMeasure α).toMeasure (by rw [OuterMeasure.top_caratheodory]; exact le_top) =
       (⊤ : Measure α) :=
   top_unique fun s hs => by
-    cases' s.eq_empty_or_nonempty with h h <;>
+    rcases s.eq_empty_or_nonempty with h | h <;>
       simp [h, toMeasure_apply ⊤ _ hs, OuterMeasure.top_apply]
 #align measure_theory.outer_measure.to_measure_top MeasureTheory.OuterMeasure.toMeasure_top
 

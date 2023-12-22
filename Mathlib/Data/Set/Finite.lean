@@ -1634,7 +1634,7 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
   induction s, h using Set.Finite.dinduction_on with
   | H0 => exact absurd hs not_nonempty_empty
   | @H1 a s his _ ih =>
-    cases' s.eq_empty_or_nonempty with h h
+    rcases s.eq_empty_or_nonempty with h | h
     · use a
       simp [h]
     rcases ih h with ⟨b, hb, ih⟩
