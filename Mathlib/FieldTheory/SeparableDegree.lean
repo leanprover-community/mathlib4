@@ -326,7 +326,7 @@ theorem natSepDegree_eq_natDegree_iff (hf : f ≠ 0) :
 /-- If a polynomial is separable, then its separable degree is equal to its degree. -/
 theorem natSepDegree_eq_natDegree_of_separable (h : f.Separable) :
     f.natSepDegree = f.natDegree :=
-  (natSepDegree_eq_natDegree_iff f (fun h' ↦ not_separable_zero (h' ▸ h))).2 h
+  (natSepDegree_eq_natDegree_iff f h.ne_zero).2 h
 
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/

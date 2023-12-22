@@ -53,6 +53,9 @@ theorem not_separable_zero [Nontrivial R] : ¬Separable (0 : R[X]) := by
   simp only [derivative_zero, mul_zero, add_zero, zero_ne_one] at h
 #align polynomial.not_separable_zero Polynomial.not_separable_zero
 
+theorem Separable.ne_zero [Nontrivial R] {f : R[X]} (h : f.Separable) : f ≠ 0 :=
+  (not_separable_zero <| · ▸ h)
+
 theorem separable_one : (1 : R[X]).Separable :=
   isCoprime_one_left
 #align polynomial.separable_one Polynomial.separable_one
@@ -550,7 +553,7 @@ theorem Polynomial.Separable.isIntegral {x : K} (h : (minpoly F x).Separable) : 
   cases subsingleton_or_nontrivial F
   · haveI := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
-  · exact of_not_not fun h' ↦ not_separable_zero (minpoly.eq_zero h' ▸ h)
+  · exact of_not_not (h.ne_zero <| minpoly.eq_zero ·)
 
 theorem IsSeparable.isIntegral [IsSeparable F K] :
     ∀ x : K, IsIntegral F x := fun x ↦ (IsSeparable.separable F x).isIntegral
