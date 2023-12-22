@@ -186,8 +186,8 @@ protected theorem mul_induction_on {C : A → Prop} {r : A} (hr : r ∈ M * N)
 /-- A dependent version of `mul_induction_on`. -/
 @[elab_as_elim]
 protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
-    (hm : ∀ m (_ : m ∈ M), ∀ n (_ : n ∈ N), C (m * n) (mul_mem_mul ‹_› ‹_›))
-    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {r : A} (hr : r ∈ M * N) :
+    (hm : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
+    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
   refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
