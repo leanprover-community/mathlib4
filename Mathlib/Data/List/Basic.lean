@@ -792,7 +792,7 @@ theorem getLast?_append_cons :
 #align list.last'_cons_cons List.getLast?_cons_cons
 
 theorem getLast?_append_of_ne_nil (l₁ : List α) :
-    ∀ {l₂ : List α}, l₂ ≠ [] → getLast? (l₁ ++ l₂) = getLast? l₂
+    ∀ {l₂ : List α} (_ : l₂ ≠ []), getLast? (l₁ ++ l₂) = getLast? l₂
   | [], hl₂ => by contradiction
   | b :: l₂, _ => getLast?_append_cons l₁ b l₂
 #align list.last'_append_of_ne_nil List.getLast?_append_of_ne_nil
@@ -849,7 +849,7 @@ theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ 
 #align list.head'_append List.head?_append
 
 theorem head?_append_of_ne_nil :
-    ∀ (l₁ : List α) {l₂ : List α}, l₁ ≠ [] → head? (l₁ ++ l₂) = head? l₁
+    ∀ (l₁ : List α) {l₂ : List α} (_ : l₁ ≠ []), head? (l₁ ++ l₂) = head? l₁
   | _ :: _, _, _ => rfl
 #align list.head'_append_of_ne_nil List.head?_append_of_ne_nil
 
@@ -1569,7 +1569,7 @@ theorem insertNth_removeNth_of_le :
 #align list.insert_nth_remove_nth_of_le List.insertNth_removeNth_of_le
 
 theorem insertNth_comm (a b : α) :
-    ∀ (i j : ℕ) (l : List α), i ≤ j → j ≤ length l →
+    ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),
       (l.insertNth i a).insertNth (j + 1) b = (l.insertNth j b).insertNth i a
   | 0, j, l => by simp [insertNth]
   | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
@@ -1580,7 +1580,7 @@ theorem insertNth_comm (a b : α) :
 #align list.insert_nth_comm List.insertNth_comm
 
 theorem mem_insertNth {a b : α} :
-    ∀ {n : ℕ} {l : List α}, n ≤ l.length → (a ∈ l.insertNth n b ↔ a = b ∨ a ∈ l)
+    ∀ {n : ℕ} {l : List α} (_ : n ≤ l.length), a ∈ l.insertNth n b ↔ a = b ∨ a ∈ l
   | 0, as, _ => by simp
   | n + 1, [], h => (Nat.not_succ_le_zero _ h).elim
   | n + 1, a' :: as, h => by
@@ -2057,7 +2057,7 @@ theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
 
 @[simp]
 theorem dropLast_append_of_ne_nil {α : Type*} {l : List α} :
-    ∀ (l' : List α), l ≠ [] → (l' ++ l).dropLast = l' ++ l.dropLast
+    ∀ (l' : List α) (_ : l ≠ []), (l' ++ l).dropLast = l' ++ l.dropLast
   | [], _ => by simp only [nil_append]
   | a :: l', h => by
     rw [cons_append, dropLast, dropLast_append_of_ne_nil l' h, cons_append]
