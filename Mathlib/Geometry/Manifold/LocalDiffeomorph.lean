@@ -28,8 +28,8 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism,
   similarly for local diffeomorphism on `s`
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `Diffeomorph.of_bijective_isLocalDiffeomorph`:
-  a bijective local diffeomorphism is a diffeomorphism.
+* `IslocalDiffeomorph.diffeomorph_of_bijective`:
+  a bijective local diffeomorphism is a diffeomorphism
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
@@ -240,7 +240,7 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
+noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
@@ -266,7 +266,6 @@ noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph
       obtain ⟨hx, hfx⟩ := hyp x
       apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
-      exact this ▸ (Φ x).map_source hx
-  }
+      exact this ▸ (Φ x).map_source hx }
 
 end Basic
