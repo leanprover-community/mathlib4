@@ -308,32 +308,32 @@ variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔
 theorem map_mem_minimals {a : α} (ha : a ∈ minimals r x) : f a ∈ minimals s (f '' x) :=
   ⟨⟨a, ha.1, rfl⟩, by rintro _ ⟨a', h', rfl⟩; rw [← hf ha.1 h', ← hf h' ha.1]; exact ha.2 h'⟩
 
+theorem map_mem_maximals {a : α} (ha : a ∈ maximals r x) : f a ∈ maximals s (f '' x) :=
+  map_mem_minimals (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
+
 theorem map_mem_minimals_iff {a : α} (ha : a ∈ x) : f a ∈ minimals s (f '' x) ↔ a ∈ minimals r x :=
   ⟨fun ⟨_, hmin⟩ ↦ ⟨ha, fun a' h' ↦ by
     simpa only [hf h' ha, hf ha h'] using hmin ⟨a', h', rfl⟩⟩, map_mem_minimals hf⟩
 
-theorem minimals_image_of_rel_iff_rel : minimals s (f '' x) = f '' (minimals r x) := by
+theorem map_mem_maximals_iff {a : α} (ha : a ∈ x) : f a ∈ maximals s (f '' x) ↔ a ∈ maximals r x :=
+  map_mem_minimals_iff (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
+
+theorem minimals_image_of_rel_iff_rel : minimals s (f '' x) = f '' minimals r x := by
   ext b; refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨a, ha, rfl⟩ := h.1; exact ⟨a, (map_mem_minimals_iff hf ha).mp h, rfl⟩
   · rintro ⟨a, ha, rfl⟩; exact map_mem_minimals hf ha
 
-theorem map_mem_maximals {a : α} (ha : a ∈ maximals r x) : f a ∈ maximals s (f '' x) :=
-  map_mem_minimals (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
-
-theorem map_mem_maximals_iff {a : α} (ha : a ∈ x) : f a ∈ maximals s (f '' x) ↔ a ∈ maximals r x :=
-  map_mem_minimals_iff (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
-
-theorem maximals_image_of_rel_iff_rel : maximals s (f '' x) = f '' (maximals r x) :=
+theorem maximals_image_of_rel_iff_rel : maximals s (f '' x) = f '' maximals r x :=
   minimals_image_of_rel_iff_rel fun _ _ h₁ h₂ ↦ hf h₂ h₁
 
 end
 
 theorem RelEmbedding.minimals_image_eq (f : r ↪r s) (x : Set α) :
-    minimals s (f '' x) = f '' (minimals r x) := by
+    minimals s (f '' x) = f '' minimals r x := by
   rw [minimals_image_of_rel_iff_rel]; simp [f.map_rel_iff]
 
 theorem RelEmbedding.maximals_image_eq (f : r ↪r s) (x : Set α) :
-    maximals s (f '' x) = f '' (maximals r x) :=
+    maximals s (f '' x) = f '' maximals r x :=
   f.swap.minimals_image_eq x
 
 section
