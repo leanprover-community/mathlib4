@@ -426,6 +426,7 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.QuadraticDiscriminant
