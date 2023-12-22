@@ -3261,3 +3261,23 @@ theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h 
     Filter.Tendsto f (𝓟 s) (𝓟 t) :=
   Filter.tendsto_principal_principal.2 h
 #align set.maps_to.tendsto Set.MapsTo.tendsto
+
+/-- Construct a filter from a property that is stable under finite intersections.
+This constructor deduces `Filter.univ_sets` and `Filter.inter_sets` from the finite
+intersection property. -/
+def Filter.ofProp_finite_inter {p : Set α → Prop} (he : p univ) (hmono : ∀ ⦃s t⦄, s ⊆ t → p s → p t)
+    (hinter : ∀ ⦃s t⦄, p s → p t → p (s ∩ t)) : Filter α where
+  sets := {t | p t}
+  univ_sets := by simpa
+  sets_of_superset := fun {s t} a a_1 ↦ hmono a_1 a
+  inter_sets := fun {s t} hs ht ↦ hinter hs ht
+
+/-- Construct a filter from a property that is stable under finite unions.
+This constructor deduces `Filter.univ_sets` and `Filter.inter_sets` from the finite
+intersection property. -/
+def Filter.ofProp_finite_union {p : Set α → Prop} (he : p ∅) (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
+    (hunion : ∀ ⦃s t⦄, p s → p t → p (s ∪ t)) : Filter α where
+  sets := {t | p tᶜ}
+  univ_sets := by simpa
+  sets_of_superset := fun ht₁ ht => hmono (compl_subset_compl.2 ht) ht₁
+  inter_sets := fun ht₁ ht₂ => by simp [compl_inter, hunion ht₁ ht₂]
