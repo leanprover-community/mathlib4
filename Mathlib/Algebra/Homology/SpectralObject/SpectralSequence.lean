@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.SpectralObject.Differentials
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
+import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
 
 namespace CategoryTheory
 
@@ -31,6 +32,21 @@ structure SpectralSequenceMkData where
   hc₀₂ (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : i₀ r hr pq = i₂ pq'
   hc₁₃ (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : i₁ pq = i₃ r hr pq'
 
+@[simps!]
+def mkDataE₂Cohomological :
+    SpectralSequenceMkData ℤt (fun r => ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
+  deg pq := pq.1 + pq.2
+  i₀ r hr pq := ℤt.mk (pq.2 - r + 2)
+  i₁ pq := ℤt.mk pq.2
+  i₂ pq := ℤt.mk (pq.2 + 1)
+  i₃ r hr pq := ℤt.mk (pq.2 + r - 1)
+  le₀₁ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  le₁₂ pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  le₂₃ r hr pq := by dsimp; simp only [ℤt.mk_le_mk_iff]; linarith
+  hc := by rintro r _ pq _ rfl; dsimp; linarith
+  hc₀₂ := by rintro r hr pq _ rfl; dsimp; congr 1; linarith
+  hc₁₃ := by rintro r hr pq _ rfl; dsimp; congr 1; linarith
+
 variable {ι c r₀}
 
 variable (data : SpectralSequenceMkData ι c r₀)
@@ -51,8 +67,7 @@ noncomputable def pageXIso (r : ℤ) (hr : r₀ ≤ r) (pq : κ) (n₀ n₁ n₂
       (homOfLE' i₂ i₃ (by subst h₂ h₃; exact data.le₂₃ r hr pq)) :=
   eqToIso (by
     obtain rfl : n₀ = n₁ - 1 := by linarith
-    obtain rfl := hn₂
-    subst h h₀ h₁ h₂ h₃
+    subst h hn₂ h₀ h₁ h₂ h₃
     rfl)
 
 noncomputable def paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) :
@@ -116,6 +131,7 @@ lemma paged_paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ) :
   · dsimp only [paged]
     rw [dif_neg hpq, zero_comp]
 
+@[simps]
 noncomputable def page (r : ℤ) (hr : r₀ ≤ r) :
     HomologicalComplex C (c r) where
   X pq := pageX X data r hr pq
