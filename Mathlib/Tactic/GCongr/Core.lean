@@ -155,9 +155,9 @@ initialize registerBuiltinAttribute {
   add := fun decl _ kind ↦ MetaM.run' do
     let declTy := (← getConstInfo decl).type
     withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
-    let fail := throwError
-      "@[gcongr] attribute only applies to lemmas proving \
-       x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
+    let fail := throwError "\
+      @[gcongr] attribute only applies to lemmas proving \
+      x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
     -- verify that conclusion of the lemma is of the form `rel (head x₁ ... xₙ) (head y₁ ... yₙ)`
     let .app (.app rel lhs) rhs ← whnf targetTy | fail
     let some relName := rel.getAppFn.constName? | fail

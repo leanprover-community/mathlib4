@@ -574,8 +574,8 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
           proj else
         projs.push {strName := nm, newName := nm, strStx := stx, newStx := stx, isPrefix := true}
   trace[simps.debug] "Projection info after applying the rules: {projs}."
-  unless (projs.map (·.newName)).toList.Nodup do throwError
-    "Invalid projection names. Two projections have the same name.\n\
+  unless (projs.map (·.newName)).toList.Nodup do throwError "\
+    Invalid projection names. Two projections have the same name.\n\
     This is likely because a custom composition of projections was given the same name as an \
     existing projection. Solution: rename the existing projection (before naming the \
     custom projection)."
@@ -612,7 +612,7 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
         throwError "Invalid custom projection:{indentExpr customProj}\n\
           Expression is not definitionally equal to {indentExpr rawExpr}"
       else
-        throwError "Invalid custom projection:\n  {customProj}\n\
+        throwError "Invalid custom projection:{indentExpr customProj}\n\
           Expression has different type than {str ++ proj.strName}. Given type:\
           {indentExpr customProjType}\nExpected type:{indentExpr rawExprType}\n\
           Note: make sure order of implicit arguments is exactly the same."
@@ -629,9 +629,9 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
   if nrCustomProjections < customDeclarations.size then
-    Linter.logLintIf linter.simpsUnusedCustomDeclarations stx
-      m!"Not all of the custom declarations {customDeclarations} are used. Double check the \
-         spelling, and use `?` to get more information."
+    Linter.logLintIf linter.simpsUnusedCustomDeclarations stx m!"\
+      Not all of the custom declarations {customDeclarations} are used. Double check the \
+      spelling, and use `?` to get more information."
 
 /-- If a structure has a field that corresponds to a coercion to functions or sets, or corresponds
   to notation, find the custom projection that uses this coercion or notation.
@@ -649,8 +649,8 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
     let findArgs ← unsafe evalConst findArgType findArgs
     let classArgs ← try findArgs str className args
     catch ex =>
-      trace[simps.debug] "Projection {proj.strName} is likely unrelated to the projection of {
-        className}:\n{ex.toMessageData}"
+      trace[simps.debug] "Projection {proj.strName} is likely unrelated to the projection of \
+        {className}:\n{ex.toMessageData}"
       return none
     let classArgs ← classArgs.mapM fun e => match e with
       | none => mkFreshExprMVar none
@@ -662,8 +662,8 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
     let eInstType ←
       try withoutErrToSorry (elabAppArgs (← Term.mkConst className) #[] classArgs none true false)
       catch ex =>
-        trace[simps.debug] "Projection doesn't have the right type for the automatic projection:\n{
-          ex.toMessageData}"
+        trace[simps.debug] "Projection doesn't have the right type for the automatic projection:\n\
+          {ex.toMessageData}"
         return none
     return ← withLocalDeclD `self eStr fun instStr ↦ do
       trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
@@ -696,7 +696,7 @@ def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
         trace[simps.verbose] "Warning: Projection {proj.newName} is given manually by the user, \
           but it can be generated automatically."
         return proj
-      trace[simps.verbose] "Using {indentExpr projExpr}\n for projection {proj.newName}."
+      trace[simps.verbose] "Using {indentExpr projExpr}\nfor projection {proj.newName}."
       return { proj with expr? := some projExpr }
     return proj
   return projs
@@ -1045,25 +1045,25 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
       trace[simps.debug] "Using relaxed reducibility."
-      Linter.logLintIf linter.simpsNoConstructor ref
-        m!"The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\
-           \n\nExplanation: `@[simps]` uses the definition to find what the simp lemmas should \
-           be. If the definition is a constructor, then this is easy, since the values of the \
-           projections are just the arguments to the constructor. If the definition is not a \
-           constructor, then `@[simps]` will unfold the right-hand side until it has found a \
-           constructor application, and uses those values.\n\n\
-           This might not always result in the simp-lemmas you want, so you are advised to use \
-           `@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n\
-           Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain \
-           cases.\n\
-           Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, \
-           simpRhs := true})]`. You can also try `@[simps (config := \{rhsMd := .default})]` \
-           to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n\
-           Note 3: You need `simps!` if not all fields are given explicitly in this definition, \
-           even if the definition is a constructor application. For example, if you give a \
-           `MulEquiv` by giving the corresponding `Equiv` and the proof that it respects \
-           multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
-           unfold the corresponding `Equiv` to get to the `toFun` field."
+      Linter.logLintIf linter.simpsNoConstructor ref m!"\
+        The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\
+        \n\nExplanation: `@[simps]` uses the definition to find what the simp lemmas should \
+        be. If the definition is a constructor, then this is easy, since the values of the \
+        projections are just the arguments to the constructor. If the definition is not a \
+        constructor, then `@[simps]` will unfold the right-hand side until it has found a \
+        constructor application, and uses those values.\n\n\
+        This might not always result in the simp-lemmas you want, so you are advised to use \
+        `@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n\
+        Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain \
+        cases.\n\
+        Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, \
+        simpRhs := true})]`. You can also try `@[simps (config := \{rhsMd := .default})]` \
+        to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n\
+        Note 3: You need `simps!` if not all fields are given explicitly in this definition, \
+        even if the definition is a constructor application. For example, if you give a \
+        `MulEquiv` by giving the corresponding `Equiv` and the proof that it respects \
+        multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
+        unfold the corresponding `Equiv` to get to the `toFun` field."
       let nms ← addProjections nm type lhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
       return if addThisProjection then nms.push nm else nms
