@@ -424,37 +424,6 @@ theorem gradedMonoid_eq_of_cast {Γ : Subgroup SL(2, ℤ)} {a b : GradedMonoid (
   cases h
   exact congr_arg _ h2
 
-theorem one_mul (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
-    mcast (zero_add k) ((1 : ModularForm Γ 0).mul f) = f := by
-  rw [mcast]
-  ext1
-  simp
-  rfl
-
-theorem mul_one (k : ℤ) {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k) :
-    mcast (add_zero k) (f.mul (1 : ModularForm Γ 0)) = f := by
-  rw [mcast]
-  ext1
-  simp
-  rfl
-
-theorem mul_assoc {a b c : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ a)
-    (g : ModularForm Γ b) (h : ModularForm Γ c) :
-  mcast (add_assoc _ _ _) ((f.mul g).mul h) = (f.mul (g.mul h)) := by
-  rw [mcast]
-  congr
-  ext1
-  simp only [mul_coe, Pi.mul_apply, toSlashInvariantForm_coe]
-  ring
-
-theorem mul_comm {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ a) (g : ModularForm Γ b) :
-    mcast (add_comm a b) (f.mul g) = (g.mul f) := by
-  rw [mcast]
-  congr
-  ext1
-  simp only [mul_coe, Pi.mul_apply, toSlashInvariantForm_coe]
-  ring
-
 instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne (ModularForm Γ) where
   one := 1
 
@@ -484,26 +453,17 @@ lemma MF_intcast_eq_SIF_intcast  (Γ : Subgroup SL(2, ℤ)) (n : ℤ) :
 instance gradedModRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
   mul f g := f.mul g
   one := 1
-  one_mul a := gradedMonoid_eq_of_cast (zero_add _) (one_mul _ _)
-  mul_one a := gradedMonoid_eq_of_cast (add_zero _) (mul_one _ _)
-  mul_assoc a b c := gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _)
-  mul_zero {i j} f := by ext1; simp
-  zero_mul {i j} f := by ext1; simp
-  mul_add {i j} f g h := by
-    ext1
-    simp only [Pi.mul_apply, mul_add, mul_coe, add_apply]
-  add_mul {i j} f g h := by
-    ext1
-    simp only [add_mul, mul_coe, Pi.mul_apply, add_apply]
-  mul_comm := fun a b => gradedMonoid_eq_of_cast (add_comm _ _) (mul_comm  _ _)
-  gnpow_zero' f := by
-    apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_zero]
-  gnpow_succ' n f := by
-    rw [GradedMonoid.GMul.toMul]
-    apply Sigma.ext <;> rw [GradedMonoid.GMonoid.gnpowRec_succ]
-  natCast n := (n : ModularForm Γ 0)
+  one_mul a := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
+  mul_one a := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
+  mul_assoc a b c := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)
+  mul_zero {i j} f := ext fun _ => mul_zero _
+  zero_mul {i j} f := ext fun _ => zero_mul _
+  mul_add {i j} f g h := ext fun _ => mul_add _ _ _
+  add_mul {i j} f g h := ext fun _ => add_mul _ _ _
+  mul_comm a b := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
+  natCast := Nat.cast
   natCast_zero := ext fun _ => Nat.cast_zero
   natCast_succ n := ext fun _ => Nat.cast_succ _
-  intCast n := (n : ModularForm Γ 0)
+  intCast := Int.cast
   intCast_ofNat n := ext fun _ => AddGroupWithOne.intCast_ofNat _
   intCast_negSucc_ofNat n := ext fun _ => AddGroupWithOne.intCast_negSucc _
