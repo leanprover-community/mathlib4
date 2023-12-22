@@ -466,7 +466,7 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
     ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha, floor_of_nonpos (tsub_nonpos_of_le (ha.trans n.cast_nonneg)), zero_tsub]
-  cases' le_total a n with h h
+  rcases le_total a n with h | h
   · rw [floor_of_nonpos (tsub_nonpos_of_le h), eq_comm, tsub_eq_zero_iff_le]
     exact Nat.cast_le.1 ((Nat.floor_le ha).trans h)
   · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_nat _, tsub_add_cancel_of_le h]
@@ -490,7 +490,7 @@ theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n 
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_comm n, add_comm (n : α), add_lt_add_iff_right, add_lt_add_iff_right,
         lt_ceil]
-    · exact iff_of_true (lt_add_of_nonneg_of_lt ha <| cast_lt.2 hb) (lt_add_left _ _ _ hb)
+    · exact iff_of_true (lt_add_of_nonneg_of_lt ha <| cast_lt.2 hb) (Nat.lt_add_left _ hb)
 #align nat.ceil_add_nat Nat.ceil_add_nat
 
 theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
@@ -531,7 +531,7 @@ variable [LinearOrderedSemifield α] [FloorSemiring α]
 -- TODO: should these lemmas be `simp`? `norm_cast`?
 
 theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
-  cases' le_total a 0 with ha ha
+  rcases le_total a 0 with ha | ha
   · rw [floor_of_nonpos, floor_of_nonpos ha]
     · simp
     apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
@@ -1349,7 +1349,7 @@ theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc
 #align int.preimage_ceil_singleton Int.preimage_ceil_singleton
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : α) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : α) := by
-  cases' eq_or_ne (fract a) 0 with ha ha
+  rcases eq_or_ne (fract a) 0 with ha | ha
   · exact Or.inl ha
   right
   suffices (⌈a⌉ : α) = ⌊a⌋ + 1 by

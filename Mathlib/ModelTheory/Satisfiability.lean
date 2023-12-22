@@ -102,7 +102,7 @@ theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitely
   fun _ => h.mono
 #align first_order.language.Theory.is_satisfiable.is_finitely_satisfiable FirstOrder.Language.Theory.IsSatisfiable.isFinitelySatisfiable
 
-/-- The Compactness Theorem of first-order logic: A theory is satisfiable if and only if it is
+/-- The **Compactness Theorem of first-order logic**: A theory is satisfiable if and only if it is
 finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=

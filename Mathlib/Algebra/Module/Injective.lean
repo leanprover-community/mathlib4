@@ -219,7 +219,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
-            have eq1 : r • _ = (r • x).1 := congr_arg ((· • ·) r) x.2.choose_spec
+            have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
             rw [← LinearMap.map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, LinearMap.map_smul] }

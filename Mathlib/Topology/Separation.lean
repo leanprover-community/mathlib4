@@ -362,6 +362,9 @@ instance Pi.instT0Space {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
 #align pi.t0_space Pi.instT0Space
 
+instance ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
+  embedding_uLift_down.t0Space
+
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space X := by
   refine' ⟨fun x y hxy => _⟩
@@ -626,6 +629,9 @@ instance [TopologicalSpace Y] [T1Space X] [T1Space Y] : T1Space (X × Y) :=
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T1Space (X i)] :
     T1Space (∀ i, X i) :=
   ⟨fun f => univ_pi_singleton f ▸ isClosed_set_pi fun _ _ => isClosed_singleton⟩
+
+instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
+  embedding_uLift_down.t1Space
 
 -- see Note [lower instance priority]
 instance (priority := 100) T1Space.t0Space [T1Space X] : T0Space X :=
@@ -1234,6 +1240,9 @@ theorem Embedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y} (hf : E
   .of_injective_continuous hf.inj hf.continuous
 #align embedding.t2_space Embedding.t2Space
 
+instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
+  embedding_uLift_down.t2Space
+
 instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
@@ -1837,6 +1846,9 @@ instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   embedding_subtype_val.t3Space
 #align subtype.t3_space Subtype.t3Space
 
+instance ULift.instT3Space [T3Space X] : T3Space (ULift X) :=
+  embedding_uLift_down.t3Space
+
 instance [TopologicalSpace Y] [T3Space X] [T3Space Y] : T3Space (X × Y) := ⟨⟩
 
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T3Space (X i)] :
@@ -1942,7 +1954,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     exact (hUd u huU).le_bot ⟨hxu, hx⟩
   · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
     rintro a ⟨u, huU, hau, haV⟩ v hvV hav
-    cases' le_total (Encodable.encode u) (Encodable.encode v) with hle hle
+    rcases le_total (Encodable.encode u) (Encodable.encode v) with hle | hle
     exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
 #align normal_space_of_t3_second_countable NormalSpace.of_regularSpace_secondCountableTopology
 
@@ -1973,6 +1985,9 @@ protected theorem ClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : 
   toT1Space := hf.toEmbedding.t1Space
   toNormalSpace := hf.normalSpace
 #align closed_embedding.normal_space ClosedEmbedding.t4Space
+
+instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
+  ULift.closedEmbedding_down.t4Space
 
 namespace SeparationQuotient
 
@@ -2019,6 +2034,9 @@ theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : E
 /-- A subspace of a `T₅` space is a `T₅` space. -/
 instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
   embedding_subtype_val.t5Space
+
+instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
+  embedding_uLift_down.t5Space
 
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/
