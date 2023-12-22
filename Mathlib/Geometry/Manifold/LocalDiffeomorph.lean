@@ -397,3 +397,17 @@ lemma IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeo
   (hf x).mfderiv_toContinuousLinearEquiv_coe hn
 
 end Differential
+
+/-! ## Extended charts are local diffeomorphisms -/
+section Charts
+variable {e : PartialHomeomorph M H}
+
+/-- Each extended chart is a local diffeomorphism on its source. -/
+theorem extend_isLocalDiffeomorphOn :
+  IsLocalDiffeomorphOn I 𝓘(𝕜, E) ⊤ (e.extend I) e.source := sorry
+
+/-- Each inverse extended chart is a local diffeomorphism on its source. -/
+theorem extend_isLocalDiffeomorphOn_symm :
+  IsLocalDiffeomorphOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target := sorry
+
+end Charts
