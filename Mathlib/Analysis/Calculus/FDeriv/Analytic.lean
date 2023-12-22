@@ -220,7 +220,7 @@ fun _ hy => (h.cPolynomialAt_of_mem hy).analyticAt.differentiableWithinAt
 theorem HasFiniteFPowerSeriesOnBall.hasFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
-  (h.changeOrigin hy).hasFPowerSeriesOnBall.hasFPowerSeriesAt.hasFDerivAt
+  (h.changeOrigin hy).toHasFPowerSeriesOnBall.hasFPowerSeriesAt.hasFDerivAt
 
 
 theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f p x n r)
