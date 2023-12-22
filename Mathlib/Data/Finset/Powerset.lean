@@ -129,14 +129,14 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Pro
 /-- A version of `Finset.decidableExistsOfDecidableSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊆ s), Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊆ s), p t) :=
+    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊆ s), p t) :=
   @Finset.decidableExistsOfDecidableSubsets _ _ _ hu
 #align finset.decidable_exists_of_decidable_subsets' Finset.decidableExistsOfDecidableSubsets'
 
 /-- A version of `Finset.decidableForallOfDecidableSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊆ s), Decidable (p t)) : Decidable (∀ (t) (_h : t ⊆ s), p t) :=
+    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∀ t ⊆ s, p t) :=
   @Finset.decidableForallOfDecidableSubsets _ _ _ hu
 #align finset.decidable_forall_of_decidable_subsets' Finset.decidableForallOfDecidableSubsets'
 
@@ -177,14 +177,14 @@ instance decidableForallOfDecidableSSubsets {s : Finset α} {p : ∀ (t) (_ : t 
 /-- A version of `Finset.decidableExistsOfDecidableSSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableExistsOfDecidableSSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊂ s), Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊂ s), p t) :=
+    (hu : ∀ t ⊂ s, Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊂ s), p t) :=
   @Finset.decidableExistsOfDecidableSSubsets _ _ _ _ hu
 #align finset.decidable_exists_of_decidable_ssubsets' Finset.decidableExistsOfDecidableSSubsets'
 
 /-- A version of `Finset.decidableForallOfDecidableSSubsets` with a non-dependent `p`.
 Typeclass inference cannot find `hu` here, so this is not an instance. -/
 def decidableForallOfDecidableSSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ (t) (_h : t ⊂ s), Decidable (p t)) : Decidable (∀ (t) (_h : t ⊂ s), p t) :=
+    (hu : ∀ t ⊂ s, Decidable (p t)) : Decidable (∀ t ⊂ s, p t) :=
   @Finset.decidableForallOfDecidableSSubsets _ _ _ _ hu
 #align finset.decidable_forall_of_decidable_ssubsets' Finset.decidableForallOfDecidableSSubsets'
 

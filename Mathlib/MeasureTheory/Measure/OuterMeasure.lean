@@ -743,7 +743,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
 
   set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
-  have hI : ∀ (u) (_ : u ⊆ s ∪ t), μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
+  have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
     calc
       μ u ≤ μ (⋃ i : I u, f i) :=
         μ.mono fun x hx =>

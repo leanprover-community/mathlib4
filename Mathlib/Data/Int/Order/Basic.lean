@@ -347,7 +347,7 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
 
 #align int.mul_div_cancel' Int.mul_ediv_cancel'
 
-theorem ediv_dvd_ediv : ∀ {a b c : ℤ} (_ : a ∣ b) (_ : b ∣ c), b / a ∣ c / a
+theorem ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
     else by
