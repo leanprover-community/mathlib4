@@ -54,7 +54,6 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [Module.Free R M] [Module.Finite R M]
   [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
-attribute [local instance] isNoetherian_of_isNoetherianRing_of_finite
 attribute [local instance] Module.free_of_finite_type_torsion_free'
 
 local notation "φ" => LieModule.toEndomorphism R L M
@@ -190,7 +189,9 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
     intro x k
-    induction' k with k ih; simp
+    induction k with
+    | zero => simp
+    | succ k ih =>
     intro m n
     replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]

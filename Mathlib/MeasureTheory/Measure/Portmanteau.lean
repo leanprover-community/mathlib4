@@ -102,6 +102,7 @@ of measures.
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
+/-- **Portmanteau theorem** -/
 theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :

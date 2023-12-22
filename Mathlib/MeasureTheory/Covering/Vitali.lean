@@ -43,7 +43,7 @@ open NNReal Classical ENNReal Topology
 
 namespace Vitali
 
-/-- Vitali covering theorem: given a set `t` of subsets of a type, one may extract a disjoint
+/-- **Vitali covering theorem**: given a set `t` of subsets of a type, one may extract a disjoint
 subfamily `u` such that the `τ`-enlargment of this family covers all elements of `t`, where `τ > 1`
 is any fixed number.
 

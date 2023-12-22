@@ -67,6 +67,6 @@ elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e $[$cfg]? only [←$e:term] $g ?)
+        `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
         `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))

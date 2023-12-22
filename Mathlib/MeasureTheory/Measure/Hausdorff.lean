@@ -927,7 +927,7 @@ namespace MeasureTheory
 
 @[to_additive]
 theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsometricSMul α X] {d : ℝ} (c : α)
-    (h : 0 ≤ d ∨ Surjective ((· • ·) c : X → X)) (s : Set X) : μH[d] (c • s) = μH[d] s :=
+    (h : 0 ≤ d ∨ Surjective (c • · : X → X)) (s : Set X) : μH[d] (c • s) = μH[d] s :=
   (isometry_smul X c).hausdorffMeasure_image h _
 #align measure_theory.hausdorff_measure_smul MeasureTheory.hausdorffMeasure_smul
 #align measure_theory.hausdorff_measure_vadd MeasureTheory.hausdorffMeasure_vadd
@@ -1019,7 +1019,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_nat_cast]
         intros i _
-        exact pow_le_pow_of_le_left' (hn i) _
+        exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
       simp only [Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
@@ -1087,7 +1087,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   have hn : ‖v‖ ≠ 0 := norm_ne_zero_iff.mpr hv
   -- break lineMap into pieces
   suffices
-      μH[1] ((· • ·) ‖v‖ '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
+      μH[1] ((‖v‖ • ·) '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
     -- porting note: proof was shorter, could need some golf
     simp only [hausdorffMeasure_real, nnreal_smul_coe_apply]
     convert this
@@ -1118,7 +1118,7 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
     (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = NNReal.rpow ‖c‖₊ d • μH[d] s := by
   suffices
-    μH[d] (IsometryEquiv.vaddConst x '' ((· • ·) c '' ((IsometryEquiv.vaddConst x).symm '' s))) =
+    μH[d] (IsometryEquiv.vaddConst x '' ((c • ·) '' ((IsometryEquiv.vaddConst x).symm '' s))) =
       NNReal.rpow ‖c‖₊ d • μH[d] s by
     simpa only [Set.image_image]
   borelize E

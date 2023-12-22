@@ -1213,7 +1213,7 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
   rcases exists_pos_mul_lt ε₀ (A * C) with ⟨δ, δ₀, hδ⟩
   filter_upwards [hf δ δ₀, hC] with i hf hg
   refine' (h_op _ _).trans_lt _
-  cases' le_total A 0 with hA hA
+  rcases le_total A 0 with hA | hA
   · exact (mul_nonpos_of_nonpos_of_nonneg (mul_nonpos_of_nonpos_of_nonneg hA <| norm_nonneg' _) <|
       norm_nonneg' _).trans_lt ε₀
   calc
@@ -1582,7 +1582,7 @@ theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r
 
 @[to_additive (attr := simp 1001)]
 -- porting note: increase priority so that the left-hand side doesn't simplify
-theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ball (a / b) r := by
+theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
 #align preimage_mul_ball preimage_mul_ball
@@ -1591,14 +1591,14 @@ theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ba
 @[to_additive (attr := simp 1001)]
 -- porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
-    (· * ·) b ⁻¹' closedBall a r = closedBall (a / b) r := by
+    (b * ·) ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_closedBall, div_div_eq_mul_div, mul_comm]
 #align preimage_mul_closed_ball preimage_mul_closedBall
 #align preimage_add_closed_ball preimage_add_closedBall
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_sphere (a b : E) (r : ℝ) : (· * ·) b ⁻¹' sphere a r = sphere (a / b) r := by
+theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = sphere (a / b) r := by
   ext c
   simp only [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
 #align preimage_mul_sphere preimage_mul_sphere
@@ -2005,7 +2005,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   let d : ℕ → E := fun n => ∏ k in range (n + 1), u k / v k
   rw [show (fun n => ∏ k in range (n + 1), u k) = d * fun n => ∏ k in range (n + 1), v k
       by ext n; simp]
-  suffices ∀ n ≥ N, d n = d N by exact (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
+  suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
   dsimp
   rw [eventually_constant_prod _ (add_le_add_right hn 1)]
