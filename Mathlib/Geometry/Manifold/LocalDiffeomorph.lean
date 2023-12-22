@@ -358,7 +358,9 @@ lemma IsLocalDiffeomorphAt.mfderiv_surjective (hf : IsLocalDiffeomorphAt I J n f
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := mfderiv_id J
   exact LinearMap.range_eq_top.mpr (RightInverse.of_composition this).surjective
 
+/-- `TangentSpace I x` is defeq to `E`, hence also a normed additive abelian group. -/
 local instance (x : M) : NormedAddCommGroup (TangentSpace I x) := instE
+/-- `TangentSpace I x` is defeq to `E`, hence also a normed space. -/
 local instance (x : M) : NormedSpace 𝕜 (TangentSpace I x) := instE'
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds at `x`, for `n ≥ 1`,
