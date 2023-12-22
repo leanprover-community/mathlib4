@@ -18,7 +18,7 @@ open Lean Meta Elab
 private def isBlackListed (declName : Name) : CoreM Bool := do
   if declName.toString.startsWith "Lean" then return true
   let env ← getEnv
-  pure $ declName.isInternal'
+  pure $ declName.isInternalDetail
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
