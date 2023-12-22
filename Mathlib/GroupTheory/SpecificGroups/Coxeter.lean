@@ -79,7 +79,6 @@ end Relations
 end CoxeterGroup
 
 /-- The group presentation corresponding to a Coxeter matrix. -/
-@[simp]
 def Matrix.CoxeterGroup := PresentedGroup <| CoxeterGroup.Relations.toSet M
 
 instance : Group (Matrix.CoxeterGroup M) := by
@@ -145,49 +144,51 @@ def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) : CoxeterSystem D (CoxeterGr
     CoxeterSystem.ofCoxeterGroup X D x = CoxeterGroup.of D x :=
   rfl
 
-def coxeterGroupCongr (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) := by
-  refine QuotientGroup.congr (Subgroup.normalClosure (CoxeterGroup.Relations.toSet M))
-    (Subgroup.normalClosure (CoxeterGroup.Relations.toSet (reindex e e M)))
-    (FreeGroup.freeGroupCongr e) ?_
-  refine Subgroup.ext ?h
-  intro fb'
-  constructor
-  · simp only [Subgroup.mem_map, MonoidHom.coe_coe, FreeGroup.freeGroupCongr_apply, reindex_apply,
-    forall_exists_index, and_imp]
-    intro fb fbm mp1
-    -- have h1 := @Subgroup.mem_closure (FreeGroup B) _
-    --   (Group.conjugatesOfSet (CoxeterGroup.Relations.toSet M)) fb
-    simp [Subgroup.normalClosure] at fbm ⊢
-    -- have h2 := h1.mp fbm
-    simp [Subgroup.mem_closure] at fbm ⊢
-    intro K HK
-    rw [← mp1]
-    sorry
-  · sorry
+@[simp]
+lemma map_relations_eq_reindex_relations (e : B ≃ B') :
+    (FreeGroup.freeGroupCongr e) '' CoxeterGroup.Relations.toSet M =
+    CoxeterGroup.Relations.toSet (reindex e e M) := by
+  simp [CoxeterGroup.Relations.toSet, CoxeterGroup.Relations.ofMatrix]
+  apply le_antisymm
+  · rw [Set.le_iff_subset]; intro _
+    simp only [Set.mem_image, Set.mem_range, Prod.exists, Function.uncurry_apply_pair,
+      forall_exists_index, and_imp]
+    intro _ hb b _ heq; rw [← heq]
+    use (e hb); use (e b); aesop
+  · rw [Set.le_iff_subset]; intro hb'
+    simp only [Set.mem_range, Prod.exists, Function.uncurry_apply_pair, Set.mem_image,
+      forall_exists_index]
+    intro b1' b2' heq; rw [← heq]
+    use ((FreeGroup.freeGroupCongr e).symm hb')
+    exact ⟨by use (e.symm b1'); use (e.symm b2'); aesop, by aesop⟩
 
-    /-- Reindex a Coxeter system through a bijection of the indexing sets. -/
+/-- Coxeter groups of isomorphic types types are isomorphic. -/
+def equivCoxeterGroup (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) := by
+  simp [CoxeterGroup]
+  have := PresentedGroup.equivPresentedGroup (rels := CoxeterGroup.Relations.toSet M) e
+  rwa [@map_relations_eq_reindex_relations B B' M e] at this
+
+/-- Reindex a Coxeter system through a bijection of the indexing sets. -/
 protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
-    CoxeterSystem (reindex e e M) W := by
-  have := QuotientGroup.congr (Subgroup.normalClosure (CoxeterGroup.Relations.toSet M))
-    (Subgroup.normalClosure (CoxeterGroup.Relations.toSet (reindex e e M)))
-    (FreeGroup.freeGroupCongr e)
-  exact ofMulEquiv (cs.mulEquiv.trans (coxeterGroupCongr e))
+    CoxeterSystem (reindex e e M) W :=
+  ofMulEquiv (cs.mulEquiv.trans (equivCoxeterGroup e))
 
-@[simp] lemma reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b : B') :
-    cs.reindex e b = cs (e.symm b) := by rfl
+@[simp]
+lemma reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b : B') :
+    cs.reindex e b = cs (e.symm b) :=
+  rfl
 
 /-- Pushing a Coxeter system through a group isomorphism. -/
 protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
   ofMulEquiv (e.symm.trans cs.mulEquiv)
 
-@[simp] lemma map_apply (cs : CoxeterSystem M W) (e : W ≃* H) (x : B) :
-    cs.map e x = e (cs x) := rfl
+@[simp]
+lemma map_apply (cs : CoxeterSystem M W) (e : W ≃* H) (x : B) : cs.map e x = e (cs x) :=
+  rfl
 
 lemma presentedGroup.of_injective :
-    Function.Injective (PresentedGroup.of (rels := CoxeterGroup.Relations.toSet M)) :=
-  fun _ _ H => by
-    simp [PresentedGroup.of] at H
-    sorry
+    Function.Injective (PresentedGroup.of (rels := CoxeterGroup.Relations.toSet M)) := by
+  sorry
 
 protected lemma injective (cs : CoxeterSystem M W) : Function.Injective cs :=
   cs.mulEquiv.symm.injective.comp (presentedGroup.of_injective)
@@ -221,8 +222,8 @@ The corresponding Coxeter-Dynkin diagram is:
 -/
 abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
-    if i == j then 1
-      else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
+    if i = j then 1
+      else (if i = n - 1 ∨ j = n - 1 then 2 else 3)
 
 instance AₙIsCoxeter : IsCoxeter (Aₙ n) where
 
@@ -236,9 +237,9 @@ The corresponding Coxeter-Dynkin diagram is:
 -/
 abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
-    if i == j then 1
-      else (if i == (1 : ℕ) ∨ j == (1 : ℕ) then 4
-        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
+    if i = j then 1
+      else (if i = (1 : ℕ) ∨ j = (1 : ℕ) then 4
+        else (if i = n - 1 ∨ j = n - 1 then 2 else 3))
 
 instance BₙIsCoxeter : IsCoxeter (Bₙ n) where
 
@@ -255,9 +256,9 @@ The corresponding Coxeter-Dynkin diagram is:
 -/
 abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
-    if i == j then 1
-      else (if i == (1 : ℕ) ∨ j == (1 : ℕ) then 4
-        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
+    if i = j then 1
+      else (if i = (1 : ℕ) ∨ j = (1 : ℕ) then 4
+        else (if i = n - 1 ∨ j = n - 1 then 2 else 3))
 
 instance DₙIsCoxeter : IsCoxeter (Dₙ n) where
 
@@ -270,7 +271,7 @@ The corresponding Coxeter-Dynkin diagram is:
 ```
 -/
 abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
-  Matrix.of fun i j => if i == j then 1 else m + 2
+  Matrix.of fun i j => if i = j then 1 else m + 2
 
 instance I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
 
