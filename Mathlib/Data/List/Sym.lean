@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Sym.Sym2
+import Mathlib.RingTheory.Binomial
 
 /-! # Unordered tuples of elements of a list
 
@@ -249,14 +250,16 @@ protected theorem Nodup.sym (n : ℕ) {xs : List α} (h : xs.Nodup) : (xs.sym n)
   termination_by _ n xs _ => n + xs.length
 
 theorem length_sym {n : ℕ} {xs : List α} :
-    (xs.sym n).length = Nat.multichoose xs.length n :=
+    (xs.sym n).length = Ring.multichoose xs.length n :=
   match n, xs with
-  | 0, _ => by rw [List.sym, Nat.multichoose]; rfl
-  | n + 1, [] => rfl
+  | 0, _ => by rw [List.sym, Ring.multichoose_zero_right (length _)]; rfl
+  | n + 1, [] => by
+    rw [List.sym, length_nil, length_nil, @Ring.multichoose_zero_succ ℕ]
+    simp only [add_eq_zero_iff, one_ne_zero, and_false, IsEmpty.forall_iff]
   | n + 1, x :: xs => by
-    rw [List.sym, length_append, length_map, length_cons]
-    rw [@length_sym n (x :: xs), @length_sym (n + 1) xs]
-    rw [Nat.multichoose_succ_succ, length_cons, add_comm]
+    rw [List.sym, length_append, length_map, length_cons, @length_sym n (x :: xs),
+      @length_sym (n + 1) xs, ← Nat.add_one, Ring.multichoose_succ_succ (length xs) n, length_cons,
+      Nat.add_one, Nat.add_one, add_comm]
   termination_by _ n xs => n + xs.length
 
 end Sym

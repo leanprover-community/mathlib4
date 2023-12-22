@@ -93,13 +93,14 @@ set_option linter.uppercaseLean3 false in
 #align sym.E2 Sym.e2
 
 -- porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
-theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
+theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = Ring.multichoose n k
   | n, 0 => by simp
-  | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
+  | 0, k + 1 => by rw [@Ring.multichoose_zero_succ]; exact card_eq_zero
   | 1, k + 1 => by simp
   | n + 2, k + 1 => by
-    rw [multichoose_succ_succ, ← card_sym_fin_eq_multichoose (n + 1) (k + 1),
-      ← card_sym_fin_eq_multichoose (n + 2) k, add_comm (Fintype.card _), ← card_sum]
+    rw [show n + 2 = n + 1 + 1 by linarith, Ring.multichoose_succ_succ (n+1) k,
+      ← card_sym_fin_eq_multichoose (n + 1) (k + 1), ← card_sym_fin_eq_multichoose (n + 1 + 1) k,
+      add_comm (Fintype.card _), ← card_sum]
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
@@ -108,7 +109,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
-    card (Sym α k) = multichoose (card α) k := by
+    card (Sym α k) = Ring.multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equivCongr (equivFin α))
 #align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
@@ -117,7 +118,7 @@ theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sy
 `Nat.choose (card α + k - 1) k`. -/
 theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
-  rw [card_sym_eq_multichoose, Nat.multichoose_eq]
+  rw [card_sym_eq_multichoose, Ring.multichoose_eq]
 #align sym.card_sym_eq_choose Sym.card_sym_eq_choose
 
 end Sym
