@@ -8,7 +8,6 @@ We show that the fibre functor `F` has as essential image the subcategory
 of continuous `Aut F` sets.
 
 Possible strategy:
-
 - F preserves decompositions in connected objects, so we only need to show this
   for connected `Aut F`-sets, aka. finite sets with continuous and transitive
   `Aut F` action.
@@ -448,7 +447,7 @@ noncomputable def help47 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toS
     rw [←hf (SingleObj.star M), h1]
     rfl
 
-example (V : OpenSubgroup (Aut F))
+lemma ess_surj_of_quotient_by_open (V : OpenSubgroup (Aut F))
     : ∃ (X : C), Nonempty ((H F).obj X ≅ Action.ofMulAction' (Aut F) (Aut F ⧸ V.toSubgroup)) := by
   obtain ⟨I, hf, hc, hi⟩ := help1 F V.toSubgroup V.isOpen'
   have : Fintype I := inferInstance
