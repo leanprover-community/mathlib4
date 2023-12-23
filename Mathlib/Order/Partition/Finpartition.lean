@@ -119,7 +119,7 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e
     Finpartition (e a) where
   parts := P.parts.map e
   supIndep u hu _ hb hbu _ hx hxu := by
-    rw [subset_map_iff'] at hu
+    rw [← symm_map_subset_iff] at hu
     simp only [mem_map_equiv] at hb
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this

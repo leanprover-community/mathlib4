@@ -79,17 +79,6 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
       simpa, fun h => ⟨_, h, by simp⟩⟩
 #align finset.mem_map_equiv Finset.mem_map_equiv
 
-/-- The `Finset` version of `Set.image_subset_iff`. -/
-theorem map_subset_iff {t : Finset β} {f : α ≃ β} : s.map f ⊆ t ↔ s ⊆ t.map f.symm := by
-  constructor <;> intro h x hx
-  · simp only [mem_map_equiv]
-    exact h (by simp [hx])
-  · simp only [mem_map_equiv, Equiv.symm_symm] at hx
-    simpa using h hx
-
-theorem subset_map_iff' {t : Finset β} {f : α ≃ β} : t ⊆ s.map f ↔ t.map f.symm ⊆ s := by
-  simp only [map_subset_iff, Equiv.symm_symm]
-
 -- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
@@ -172,6 +161,18 @@ theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s
   ⟨fun h x xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
 #align finset.map_subset_map Finset.map_subset_map
+
+/-- The `Finset` version of `Equiv.subset_symm_image_iff`. -/
+theorem subset_symm_map_iff {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
+  constructor <;> intro h x hx
+  · simp only [mem_map_equiv, Equiv.symm_symm] at hx
+    simpa using h hx
+  · simp only [mem_map_equiv]
+    exact h (by simp [hx])
+
+/-- The `Finset` version of `Equiv.symm_image_subset_iff`. -/
+theorem symm_map_subset_iff {t : Finset β} {f : α ≃ β} : t.map f.symm ⊆ s ↔ t ⊆ s.map f := by
+  simp only [← subset_symm_map_iff, Equiv.symm_symm]
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a finset to its
 image under `f`. -/
