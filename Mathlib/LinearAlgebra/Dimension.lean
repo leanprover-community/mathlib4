@@ -108,6 +108,9 @@ protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
 #align module.rank Module.rank
 
+instance : Nonempty { s : Set V // LinearIndependent K ((↑) : s → V) } :=
+  ⟨⟨∅, linearIndependent_empty _ _⟩⟩
+
 end
 
 section
@@ -145,16 +148,27 @@ theorem rank_le {n : ℕ}
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
 #align rank_le rank_le
 
-theorem rank_quotient_add_rank_le (M' : Submodule R M) :
+theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
   simp_rw [Module.rank_def]
-  sorry --convert ciSup_add_ciSup_le _
+  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
+  refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
+  choose f hf using Quotient.mk_surjective M'
+  let g : s ⊕ t → M := Sum.elim (f ·) (·)
+  suffices : LinearIndependent R g
+  · refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
+    rw [mk_range_eq _ this.injective, mk_sum, lift_id, lift_id]
+  refine .sum_type (.of_comp M'.mkQ ?_) (ht.map' M'.subtype M'.ker_subtype) ?_
+  · convert hs; ext x; exact hf x
+  refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
+  have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ i.1.2) h₂
+  obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h₁
+  simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply, hf] at this
+  rw [linearIndependent_iff.mp hs _ this, Finsupp.sum_zero_index]
 
-/-
+theorem lift_rank_add_lift_rank_le_rank_prod :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
-  -/
-
-
+  sorry
 
 /-- The rank of the range of a linear map is at most the rank of the source. -/
 -- The proof is: a free submodule of the range lifts to a free submodule of the

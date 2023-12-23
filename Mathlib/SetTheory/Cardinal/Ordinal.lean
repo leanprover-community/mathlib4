@@ -851,38 +851,49 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
 
 section ciSup
 
-variable {ι : Type u} [Nonempty ι]
+variable {ι : Type u} [Nonempty ι] {ι' : Type w} [Nonempty ι']
 variable (f : ι → Cardinal.{v}) (hf : BddAbove (range f)) (c : Cardinal.{v})
 
 protected theorem ciSup_add : (⨆ i, f i) + c = ⨆ i, f i + c := by
-  have this : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
+  have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
-  have bdd : BddAbove (range (f · + c)) := ⟨_, Set.forall_range_iff.mpr this⟩
+  have bdd : BddAbove (range (f · + c)) := ⟨_, forall_range_iff.mpr this⟩
   obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
   · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
       f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
     exact hi ▸ le_ciSup bdd i
-  obtain hc | hc := lt_or_le c (⨆ i, f i)
-  · exact (add_eq_left hs hc.le).trans_le (ciSup_mono bdd fun i ↦ self_le_add_right _ c)
-  · exact (add_eq_right (hs.trans hc) hc).trans_le
-      ((self_le_add_left _ _).trans <| le_ciSup bdd <| Classical.arbitrary ι)
+  rw [add_eq_max hs, max_le_iff]
+  exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
+    (self_le_add_left _ _).trans (le_ciSup bdd <| Classical.arbitrary ι)⟩
 
 protected theorem add_ciSup : c + (⨆ i, f i) = ⨆ i, c + f i := by
   rw [add_comm, Cardinal.ciSup_add f hf]; simp_rw [add_comm]
 
-protected theorem ciSup_add_ciSup (g : ι → Cardinal.{v}) (hg : BddAbove (range g)) :
+protected theorem ciSup_add_ciSup (g : ι' → Cardinal.{v}) (hg : BddAbove (range g)) :
     (⨆ i, f i) + (⨆ j, g j) = ⨆ (i) (j), f i + g j := by
   simp_rw [Cardinal.ciSup_add f hf, Cardinal.add_ciSup g hg]
 
 protected theorem ciSup_mul : (⨆ i, f i) * c = ⨆ i, f i * c := by
-  sorry
+  have : ∀ i, f i * c ≤ (⨆ i, f i) * c := fun i ↦ mul_le_mul_right' (le_ciSup hf i) c
+  refine le_antisymm ?_ (ciSup_le' this)
+  have bdd : BddAbove (range (f · * c)) := ⟨_, forall_range_iff.mpr this⟩
+  obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
+  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
+      f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
+    exact hi ▸ le_ciSup bdd i
+  obtain rfl | h0 := eq_or_ne c 0
+  · simp_rw [mul_zero, ciSup_const, le_rfl]
+  rw [mul_eq_max_of_aleph0_le_left hs h0, max_le_iff]
+  obtain ⟨i, hi⟩ := exists_lt_of_lt_ciSup' (one_lt_aleph0.trans_le hs)
+  exact ⟨ciSup_mono bdd fun i ↦ le_mul_right h0,
+    (le_mul_left (zero_lt_one.trans hi).ne').trans (le_ciSup bdd i)⟩
 
 protected theorem mul_ciSup : c * (⨆ i, f i) = ⨆ i, c * f i := by
-  sorry
+  rw [mul_comm, Cardinal.ciSup_mul f hf]; simp_rw [mul_comm]
 
-protected theorem ciSup_mul_ciSup (g : ι → Cardinal.{v}) (hg : BddAbove (range g)) :
+protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) (hg : BddAbove (range g)) :
     (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
-  sorry
+  simp_rw [Cardinal.ciSup_mul f hf, Cardinal.mul_ciSup g hg]
 
 end ciSup
 
