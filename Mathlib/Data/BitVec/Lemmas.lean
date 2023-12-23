@@ -273,7 +273,7 @@ theorem getLsb'_rev (x : BitVec w) (i : Fin w) :
 
 /-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_lsb` -/
 theorem ext_msb {x y : BitVec w} (h : ∀ i, x.getMsb' i = y.getMsb' i) : x = y := by
-  ext i; simpa [getMsb'_eq_getLsb'] using h i.rev
+  ext i; simpa [← getLsb'_rev] using h i.rev
 
 /-!
 ### Distributivity of `Std.BitVec.getLsb'`
