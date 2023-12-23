@@ -85,9 +85,7 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
       ConjAct.ofConjAct_toConjAct, ConjAct.toConjAct_inv, map_inv, inv_inv] at hz
     subst hb
-    suffices ∃ y : M, ι Q y = ⅟ (ι Q a) * ι Q b * ι Q a by
-      simp_all only [invOf_units]
-      done
+    suffices ∃ y : M, ι Q y = ⅟ (ι Q a) * ι Q b * ι Q a by simp_all only [invOf_units]
     rw [invOf_ι_mul_ι_mul_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
   · simp only [ConjAct.toConjAct_one, (one_smul _ (LinearMap.range (ι Q))), le_refl]
@@ -132,7 +130,6 @@ theorem mem_involute_le [Invertible (2 : R)]
     refine'
       ⟨-((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b), by
         simp only [map_neg, neg_mul, ι_mul_ι_mul_invOf_ι Q a b]⟩
-    done
   · rintro x ⟨a, ha⟩ b
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
@@ -144,7 +141,6 @@ theorem mem_involute_le [Invertible (2 : R)]
     refine'
       ⟨-((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b), by
         simp only [map_neg, neg_mul, invOf_ι_mul_ι_mul_ι Q a b]⟩
-    done
   · simp only [Units.val_one, map_one, one_mul, inv_one, mul_one, LinearMap.mem_range,
       exists_apply_eq_apply, forall_const]
   · intro y z hy hz b
@@ -157,7 +153,7 @@ theorem mem_involute_le [Invertible (2 : R)]
       refine' ⟨p, by simp only [hp, mul_assoc]⟩
     rw [← hz']
     use y'
-    done
+
 #align mem_lipschitz_involute_le lipschitzGroup.mem_involute_le
 
 theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :
