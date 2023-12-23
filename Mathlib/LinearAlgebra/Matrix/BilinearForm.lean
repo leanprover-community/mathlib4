@@ -515,8 +515,9 @@ noncomputable def Matrix.toBilin : Matrix n n R₂ ≃ₗ[R₂] BilinForm R₂ M
 @[simp]
 theorem BilinForm.toMatrix_apply' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (i j : n) :
     BilinForm.toMatrix''' b B i j = B (b i) (b j) := by
-  rw [BilinForm.toMatrix''', LinearEquiv.trans_apply, BilinForm.toMatrix'_apply',
-    LinearMap.congrl₁₂_apply, b.equivFun_symm_stdBasis, b.equivFun_symm_stdBasis]
+  rw [BilinForm.toMatrix''', LinearEquiv.trans_apply, BilinForm.toMatrix'_apply']
+  simp only [LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, stdBasis_apply',
+    ite_zero_smul, one_smul, sum_ite_eq, mem_univ, ite_true, LinearEquiv.refl_apply]
 
 @[simp]
 theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
@@ -528,8 +529,8 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
 theorem Matrix.toBilin_apply' (M : Matrix n n N₂) (x y : M₂) :
     Matrix.toBilin''' b M x y = ∑ i, ∑ j, b.repr x i • b.repr y j • M i j  := by
   rw [Matrix.toBilin''', toMatrix''', LinearEquiv.symm_trans_apply, ← Matrix.toBilin'']
-  simp only [LinearMap.congrl₁₂_symm, LinearMap.congrl₁₂_apply, LinearEquiv.symm_symm,
-    Basis.equivFun_apply, toBilin'_apply'']
+  simp only [LinearEquiv.arrowCongr_symm_apply, Basis.equivFun_apply, LinearEquiv.refl_symm,
+    LinearEquiv.refl_apply, toBilin'_apply'']
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
