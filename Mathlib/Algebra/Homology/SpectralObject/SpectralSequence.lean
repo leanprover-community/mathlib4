@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralObject.Differentials
+import Mathlib.Algebra.Homology.SpectralObject.Homology
 import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
 import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
 
@@ -61,6 +61,8 @@ instance : mkDataE₂Cohomological.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; linarith
   hi₂₃ pq := by dsimp; congr 1; linarith
 
+section
+
 variable [data.HasFirstPageComputation]
 
 lemma hi₀₁ (pq : κ) :
@@ -70,6 +72,43 @@ lemma hi₀₁ (pq : κ) :
 lemma hi₂₃ (pq : κ) :
     data.i₂ pq = data.i₃ r₀ (by rfl) pq := by
   apply HasFirstPageComputation.hi₂₃
+
+end
+
+
+class HasHomologyComputationBasic : Prop where
+  prev_rel (r : ℤ) (hr : r₀ ≤ r) (pq : κ) : (c r).Rel ((c r).prev pq) pq
+  rel_next (r : ℤ) (hr : r₀ ≤ r) (pq : κ) : (c r).Rel pq ((c r).next pq)
+  i₀_prev' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
+      data.i₀ (r + 1) (by linarith) pq = data.i₁ pq'
+  i₃_next' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
+      data.i₃ (r + 1) (by linarith) pq' = data.i₂ pq
+
+section
+
+variable [hdata : data.HasHomologyComputationBasic]
+
+lemma prev_rel (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
+    (c r).Rel ((c r).prev pq) pq :=
+  hdata.prev_rel r hr pq
+
+lemma rel_next (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
+    (c r).Rel pq ((c r).next pq) :=
+  hdata.rel_next r hr pq
+
+lemma i₀_prev (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
+    (hpq : (c r).Rel pq pq') :
+    data.i₀ r' (by linarith) pq = data.i₁ pq' := by
+  subst hrr'
+  exact HasHomologyComputationBasic.i₀_prev' r hr pq pq' hpq
+
+lemma i₃_next (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
+    (hpq : (c r).Rel pq pq') :
+    data.i₃ r' (by linarith) pq' = data.i₂ pq := by
+  subst hrr'
+  exact HasHomologyComputationBasic.i₃_next' r hr pq pq' hpq
+
+end
 
 end SpectralSequenceMkData
 
@@ -216,11 +255,61 @@ def first_page_d_eq (pq pq' : κ) (hpq : (c r₀).Rel pq pq') (n n' : ℤ) (hn :
 
 end
 
+section
+
+noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
+    (hpq : (c r).Rel pq pq') (hpq' : (c r).Rel pq' pq'')
+    (n₀ n₁ n₂ n₃ n₄ : ℤ)
+    (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) (hn₄ : n₃ + 1 = n₄)
+    (hn₂' : n₂ = data.deg pq') :
+    (page X data r hr).sc' pq pq' pq'' ≅
+      X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ (homOfLE (data.le₀₁ r hr pq''))
+        (homOfLE (data.le₁₂ pq'')) (homOfLE (data.le₂₃ r hr pq''))
+        (homOfLE (by simpa only [← data.hc₁₃ r hr pq' pq'' hpq', data.hc₀₂ r hr pq pq' hpq]
+          using data.le₁₂ pq')) (homOfLE (data.le₀₁ r hr pq))
+        (homOfLE (data.le₁₂ pq)) (homOfLE (data.le₂₃ r hr pq)) := by
+  refine ShortComplex.isoMk
+    (pageXIso X data _ _ _ _ _ _ _ _ (by linarith [data.hc r hr pq pq' hpq])
+      _ _ _ _ rfl rfl rfl rfl)
+    (pageXIso X data _ _ _ _ _ _ _ _ hn₂' _ _ _ _
+      (by rw [data.hc₀₂ r hr pq' pq'' hpq']) (by rw [data.hc₁₃ r hr pq' pq'' hpq'])
+      (by rw [data.hc₀₂ r hr pq pq' hpq]) (by rw [data.hc₁₃ r hr pq pq' hpq]))
+    (pageXIso X data _ _ _ _ _ _ _ _ (by linarith [data.hc r hr pq' pq'' hpq'])
+        _ _ _ _ rfl rfl rfl rfl) ?_ ?_
+  · dsimp
+    rw [paged_eq X data r hr pq pq' hpq, assoc, assoc, Iso.inv_hom_id, comp_id]
+  · dsimp
+    rw [paged_eq X data r hr pq' pq'' hpq', assoc, assoc, Iso.inv_hom_id, comp_id]
+
+variable [data.HasHomologyComputationBasic]
+
+noncomputable def iso (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
+    (pq pq' pq'' : κ) (hpq : (c r).Rel pq pq') (hpq' : (c r).Rel pq' pq'') :
+    ((page X data r hr).sc' pq pq' pq'').homology ≅ (page X data r' (by linarith)).X pq' :=
+  ShortComplex.homologyMapIso (shortComplexIso X data r hr pq pq' pq'' hpq hpq'
+    (data.deg pq - 1) (data.deg pq) (data.deg pq') (data.deg pq'') (data.deg pq'' + 1)
+    (by simp) (by linarith [data.hc r hr pq pq' hpq])
+    (by linarith [data.hc r hr pq' pq'' hpq']) rfl rfl) ≪≫
+  (X.dHomologyIso _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ rfl _ rfl) ≪≫ (by
+    symm
+    apply pageXIso
+    · rfl
+    · exact (data.i₀_prev r r' hrr' hr pq' pq'' hpq').symm
+    · exact (data.hc₁₃ r hr pq' pq'' hpq').symm
+    · exact data.hc₀₂ r hr pq pq' hpq
+    · exact (data.i₃_next r r' hrr' hr pq pq' hpq).symm)
+
+end
+
 end SpectralSequence
 
-/-def spectralSequence : SpectralSequence C c r₀ where
+variable [data.HasHomologyComputationBasic]
+
+noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page' := SpectralSequence.page X data
-  iso' := sorry-/
+  iso' r r' hrr' pq hr :=
+    SpectralSequence.iso X data r r' hrr' hr
+      ((c r).prev pq) pq ((c r).next pq) (data.prev_rel r hr pq) (data.rel_next r hr pq)
 
 end SpectralObject
 
