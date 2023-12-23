@@ -78,6 +78,7 @@ structure IsLinearMap (R : Type u) {M : Type v} {M₂ : Type w} [Semiring R] [Ad
 
 section
 
+/-
 /-- A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. Elements of `LinearMap σ M M₂` (available under the notation
@@ -87,15 +88,19 @@ maps is available with the predicate `IsLinearMap`, but it should be avoided mos
 structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
     AddHom M M₂, MulActionHom σ M M₂
--- -/ where
+--  where
 --   /-- A linear map preserves scalar multiplication.
 --   We prefer the spelling `_root_.map_smul` instead. -/
 --   map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
+-/
 
+/-
 /-- The `AddHom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
 #align linear_map.to_add_hom LinearMap.toAddHom
+
+-/
 
 -- mathport name: «expr →ₛₗ[ ] »
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
@@ -109,6 +114,7 @@ notation:25 M " →ₗ[" R:25 "] " M₂:0 => LinearMap (RingHom.id R) M M₂
 -- mathport name: «expr →ₗ⋆[ ] »
 notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂
 
+/-
 /-- `SemilinearMapClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear maps `M → M₂`.
 
 See also `LinearMapClass F R M M₂` for the case where `σ` is the identity map on `R`.
@@ -125,6 +131,8 @@ class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semi
   -- map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_map_class SemilinearMapClass
 
+-/
+
 end
 
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
@@ -138,6 +146,7 @@ export SemilinearMapClass (map_smulₛₗ)
 attribute [simp] map_smulₛₗ
 -/
 
+/-
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
@@ -145,6 +154,8 @@ abbrev LinearMapClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [Ad
     [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
+
+-/
 
 @[simp]
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]

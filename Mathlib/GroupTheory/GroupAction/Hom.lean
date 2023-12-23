@@ -435,7 +435,7 @@ variable (A' : Type _) [AddGroup A'] [DistribMulAction M A']
 variable (B' : Type _) [AddGroup B'] [DistribMulAction N B']
 
 /-- Equivariant additive monoid homomorphisms. -/
-structure LinearMap extends A →ₑ[φ] B, A →+ B
+structure LinearMap extends MulActionHom φ A B, AddMonoidHom A B
 #align distrib_mul_action_hom LinearMap
 
 /-
