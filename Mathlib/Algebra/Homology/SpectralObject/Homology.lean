@@ -34,22 +34,32 @@ lemma d_EMap_fourδ₄Toδ₃ :
 
 instance :
     Epi (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
-  have fac : X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
+  have : X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
       X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) =
         X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃₄ := by
     rw [X.πE_EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄
       (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) (𝟙 _) (by ext <;> simp; rfl), cyclesMap_id, id_comp]
-  exact epi_of_epi_fac fac
+  exact epi_of_epi_fac this
 
-/-@[reassoc (attr := simp)]
+@[reassoc (attr := simp)]
 lemma EMap_fourδ₁Toδ₀_d :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
       X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ = 0 := by
-  sorry
+  rw [← cancel_mono (X.ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃),
+    ← cancel_mono (X.fromOpcycles n₁ n₂ hn₂ f₂ f₃ f₂₃ h₂₃), zero_comp, zero_comp, assoc,
+    assoc, X.d_ιE_fromOpcycles n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ _ rfl _ rfl]
+  rw [X.EMap_ιE_assoc n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅
+    (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _) (by ext <;> simp <;> rfl),
+    opcyclesMap_id, fromOpcyles_δ, id_comp, ιE_δFromOpcycles]
 
 instance :
     Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
-  sorry-/
+  have : X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
+      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ =
+        X.ιE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ := by
+    rw [X.EMap_ιE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _)
+      (by ext <;> simp <;> rfl), opcyclesMap_id, comp_id]
+  exact mono_of_mono_fac this
 
 @[simps!]
 noncomputable def dCokernelSequence : ShortComplex C :=
@@ -59,10 +69,10 @@ instance : Epi (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f
   dsimp
   infer_instance
 
-/-lemma dCokernelSequence_exact :
-    (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄).Exact := sorry-/
+--lemma dCokernelSequence_exact :
+--    (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄).Exact := sorry
 
-/-@[simps!]
+@[simps!]
 noncomputable def dKernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (X.EMap_fourδ₁Toδ₀_d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
 
@@ -71,7 +81,21 @@ instance : Mono (X.dKernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f�
   infer_instance
 
 lemma dKernelSequence_exact :
-    (X.dKernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃).Exact := sorry-/
+    (X.dKernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  dsimp at x₂ hx₂ ⊢
+  obtain ⟨A₁, π₁, _, y₂, hy₂⟩ :=
+    surjective_up_to_refinements_of_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅) x₂
+  have hy₂' := hy₂ =≫ (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫ X.ιE _ _ _ _ _ _ _ _)
+  simp only [assoc, reassoc_of% hx₂, zero_comp, comp_zero, πE_d_ιE] at hy₂'
+  obtain ⟨A₂, π₂, _, y₁, hy₁⟩ := ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄
+    f₂₃ h₂₃ _ rfl).exact 0).exact_up_to_refinements y₂ hy₂'.symm
+  dsimp [sequenceΨ] at y₁ hy₁
+  refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _ , y₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅, _⟩
+  rw [assoc, assoc, hy₂, reassoc_of% hy₁,
+    X.πE_EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
+    (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃ h₂₃) (by ext <;> simp; rfl)]
 
 end
 

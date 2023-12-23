@@ -455,6 +455,23 @@ end
 
 section
 
+variable (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+  {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
+
+@[reassoc (attr := simp)]
+lemma πE_d_ιE :
+    X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ≫ X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫
+      X.ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ = X.Ψ n₁ n₂ hn₂ f₂ f₃ f₄ := by
+  rw [← cancel_epi (X.toCycles n₁ n₂ hn₂ f₃ f₄ _ rfl), toCycles_Ψ,
+    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ _ rfl,
+    πE_ιE, toCycles_i_assoc, ← X.δ_naturality_assoc n₁ n₂ hn₂ (f₁ ≫ f₂) (f₃ ≫ f₄) f₂ (f₃ ≫ f₄)
+      (twoδ₁Toδ₀ f₁ f₂ _ rfl) (𝟙 _) rfl, Functor.map_id, id_comp]
+
+end
+
+section
+
 variable (n₀ n₁ n₂ n₃ n₄ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) (hn₄ : n₃ + 1 = n₄)
   {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
@@ -542,6 +559,8 @@ variable (n₀ n₁ n₂ : ℤ)
   (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
   (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
   (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2))
+  (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
+  (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3))
 
 @[reassoc]
 lemma cyclesIso_inv_cyclesMap :
@@ -551,10 +570,24 @@ lemma cyclesIso_inv_cyclesMap :
         (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').inv := by
   subst hβ
   rw [← cancel_mono (ShortComplex.iCycles _), assoc, assoc, ShortComplex.cyclesMap_i,
-    cyclesIso_inv_i_assoc, cyclesIso_inv_i]
+    cyclesIso_inv_i_assoc, cyclesIso_inv_i, shortComplexEMap_τ₂]
   symm
   apply cyclesMap_i
   rfl
+
+@[reassoc]
+lemma opcyclesMap_opcyclesIso_hom :
+    ShortComplex.opcyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) ≫
+      (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').hom =
+    (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
+  subst hγ
+  rw [← cancel_epi (ShortComplex.pOpcycles _), ShortComplex.p_opcyclesMap_assoc,
+    p_opcyclesIso_hom, p_opcyclesIso_hom_assoc, shortComplexEMap_τ₂]
+  simp only [shortComplexE_X₂, shortComplexEMap_τ₂]
+  symm
+  apply p_opcyclesMap
+  rfl
+
 
 @[reassoc]
 lemma πE_EMap :
@@ -563,6 +596,14 @@ lemma πE_EMap :
   dsimp [πE, EMap]
   simp only [assoc, ShortComplex.homologyπ_naturality,
     X.cyclesIso_inv_cyclesMap_assoc n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α β hβ]
+
+@[reassoc]
+lemma EMap_ιE :
+    X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' =
+      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
+  dsimp [ιE, EMap]
+  simp only [ShortComplex.homologyι_naturality_assoc, assoc,
+    X.opcyclesMap_opcyclesIso_hom n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α γ hγ]
 
 end
 
