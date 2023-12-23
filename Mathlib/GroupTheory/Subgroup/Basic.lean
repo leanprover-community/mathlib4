@@ -3508,19 +3508,20 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
-theorem Subgroup.map_normalClosure_equiv_eq_normalClosure_image {s : Set G} (f : G ≃* N) :
+theorem Subgroup.map_normalClosure {s : Set G} (f : G ≃* N) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f f.surjective
   apply le_antisymm
   · rw [map_le_iff_le_comap]
     refine normalClosure_le_normal ?_
-    simp only [coe_comap, ←Set.image_subset_iff]
+    simp only [coe_comap, ← Set.image_subset_iff]
     exact subset_normalClosure
   · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
-theorem Subgroup.comap_normalClosure_equiv_eq_normalClosure_preimage {s : Set N} (f : G ≃* N) :
-    (normalClosure s).comap f = normalClosure (f.symm '' s) := by
-  simp [comap_equiv_eq_map_symm, map_normalClosure_equiv_eq_normalClosure_image]
+theorem Subgroup.comap_normalClosure {s : Set N} (f : G ≃* N) :
+    (normalClosure s).comap f = normalClosure (f ⁻¹' s) := by
+  have := Set.preimage_equiv_eq_image_symm s f.toEquiv
+  simp_all [comap_equiv_eq_map_symm, map_normalClosure]
 
 namespace MonoidHom
 
