@@ -241,7 +241,7 @@ theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factoriz
 
 /-- The only prime factor of prime `p` is `p` itself, with multiplicity `1` -/
 @[simp]
-theorem Prime.factorization {p : ℕ} (hp : Prime p) : p.factorization = single p 1 := by
+protected theorem Prime.factorization {p : ℕ} (hp : Prime p) : p.factorization = single p 1 := by
   ext q
   rw [← factors_count_eq, factors_prime hp, single_apply, count_singleton', if_congr eq_comm] <;>
     rfl
