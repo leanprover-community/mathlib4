@@ -596,11 +596,18 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field 
 
 section IsSeparableTower
 
+/-- If `R / K / A` is an extension tower, `x : R` is separable over `A`, then it's also separable
+over `K`. -/
+theorem Polynomial.Separable.map_minpoly {A : Type*} [CommRing A]
+    (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
+    [IsScalarTower A K R] {x : R} (h : (minpoly A x).Separable) : (minpoly K x).Separable :=
+  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+
 variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
-  ⟨fun x ↦ (IsSeparable.separable F x).map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)⟩
+  ⟨fun x ↦ (IsSeparable.separable F x).map_minpoly _⟩
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=

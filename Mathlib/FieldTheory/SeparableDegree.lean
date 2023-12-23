@@ -596,8 +596,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      (IsSeparable.separable F x).map (f := algebraMap F L) |>.of_dvd
-        (minpoly.dvd_map_of_isScalarTower F L x)
+      (IsSeparable.separable F x).map_minpoly L
   set M := L⟮x⟯; clear_value M
   letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
   letI : Module L M := Algebra.toModule
@@ -651,8 +650,7 @@ theorem isSeparable_adjoin_two_of_separable {x y : E}
   have halg' := hy.isIntegral.isAlgebraic.tower_top L
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·)
     (finSepDegree_adjoin_simple_eq_finrank_iff F E x hx.isIntegral.isAlgebraic |>.2 hx)
-    (finSepDegree_adjoin_simple_eq_finrank_iff L E y halg' |>.2
-      (hy.map (f := algebraMap F F⟮x⟯) |>.of_dvd (minpoly.dvd_map_of_isScalarTower F L y)))
+    (finSepDegree_adjoin_simple_eq_finrank_iff L E y halg' |>.2 (hy.map_minpoly L))
   let M := L⟮y⟯
   letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
   letI : Module L M := Algebra.toModule
