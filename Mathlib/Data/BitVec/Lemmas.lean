@@ -267,8 +267,8 @@ theorem ext_lsb {x y : BitVec w} (h : ∀ i, x.getLsb' i = y.getLsb' i) : x = y 
   simp only [testBit_toNat]
   exact getLsb_eq_of_getLsb' h
 
-theorem getMsb'_eq_getLsb' (x : BitVec w) (i : Fin w) :
-    x.getMsb' i = x.getLsb' i.rev := by
+theorem getLsb'_rev (x : BitVec w) (i : Fin w) :
+    x.getLsb' i.rev = x.getMsb' i := by
   simp [getMsb', getMsb, getLsb', tsub_add_eq_tsub_tsub_swap]
 
 /-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_lsb` -/
