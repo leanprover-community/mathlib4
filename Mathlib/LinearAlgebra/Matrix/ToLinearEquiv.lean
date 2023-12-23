@@ -206,7 +206,7 @@ open BigOperators
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 column positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
-    {A : Matrix n n S} (h1 : ∀ i j, i ≠ j → A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
+    {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
     A.det ≠ 0 := by
   cases isEmpty_or_nonempty n
   · simp
@@ -234,7 +234,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 row positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
-    {A : Matrix n n S} (h1 : ∀ i j, i ≠ j → A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
+    {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]
   refine det_ne_zero_of_sum_col_pos ?_ ?_

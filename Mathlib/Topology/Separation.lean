@@ -246,7 +246,7 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
 theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ ∀ x y, x ≠ y → ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
+    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_open]
 #align t0_space_iff_exists_is_open_xor_mem t0Space_iff_exists_isOpen_xor'_mem
@@ -525,7 +525,7 @@ theorem CofiniteTopology.continuous_of [T1Space X] : Continuous (@CofiniteTopolo
 #align cofinite_topology.continuous_of CofiniteTopology.continuous_of
 
 theorem t1Space_iff_exists_open :
-    T1Space X ↔ ∀ x y, x ≠ y → ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
+    T1Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
   (t1Space_TFAE X).out 0 6
 #align t1_space_iff_exists_open t1Space_iff_exists_open
 
@@ -919,7 +919,7 @@ theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
 @[mk_iff t2Space_iff]
 class T2Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Every two points in a Hausdorff space admit disjoint open neighbourhoods. -/
-  t2 : ∀ x y, x ≠ y → ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
+  t2 : Pairwise fun x y => ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
 #align t2_space T2Space
 
 /-- Two different points can be separated by open sets. -/

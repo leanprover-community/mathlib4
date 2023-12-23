@@ -720,7 +720,7 @@ theorem real_inner_mul_inner_self_le (x y : F) : ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ
 /-- A family of vectors is linearly independent if they are nonzero
 and orthogonal. -/
 theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E} (hz : ∀ i, v i ≠ 0)
-    (ho : ∀ i j, i ≠ j → ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
+    (ho : Pairwise fun i j => ⟪v i, v j⟫ = 0) : LinearIndependent 𝕜 v := by
   rw [linearIndependent_iff']
   intro s g hg i hi
   have h' : g i * inner (v i) (v i) = inner (v i) (∑ j in s, g j • v j) := by
@@ -742,7 +742,7 @@ variable {ι : Type*} [dec_ι : DecidableEq ι] (𝕜)
 
 /-- An orthonormal set of vectors in an `InnerProductSpace` -/
 def Orthonormal (v : ι → E) : Prop :=
-  (∀ i, ‖v i‖ = 1) ∧ ∀ {i j}, i ≠ j → ⟪v i, v j⟫ = 0
+  (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => ⟪v i, v j⟫ = 0
 #align orthonormal Orthonormal
 
 variable {𝕜}

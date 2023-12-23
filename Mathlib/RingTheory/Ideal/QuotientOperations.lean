@@ -198,7 +198,7 @@ lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfT
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
 
 lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
-    (hI : ∀ i j, i ≠ j → IsCoprime (I i) (I j)) : Surjective (quotientInfToPiQuotient I) := by
+    (hI : Pairwise fun i j => IsCoprime (I i) (I j)) : Surjective (quotientInfToPiQuotient I) := by
   classical
   intro g
   choose f hf using fun i ↦ mk_surjective (g i)
@@ -223,7 +223,7 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
 
 /-- Chinese Remainder Theorem. Eisenbud Ex.2.6. Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 noncomputable def quotientInfRingEquivPiQuotient [Fintype ι] (f : ι → Ideal R)
-    (hf : ∀ i j, i ≠ j → IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
+    (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 #align ideal.quotient_inf_ring_equiv_pi_quotient Ideal.quotientInfRingEquivPiQuotient
