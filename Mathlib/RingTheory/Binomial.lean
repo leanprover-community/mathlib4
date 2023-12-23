@@ -27,12 +27,19 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 
 * [J. Elliott, *Binomial rings, integer-valued polynomials, and λ-rings*][elliott2006binomial]
 
+## TODO
+
+* Replace `Nat.multichoose` with `Ring.multichoose`.
+* `Int.instBinomialSemiring`
+* `Ring.choose` for binomial rings.
+* Generalize to the power-associative case, when power-associativity is implemented.
+
 -/
 
 open Function
 
 /-- A mixin for multi-binomial coefficients. -/
-class IsBinomialRing (R : Type*) [Semiring R] where
+class BinomialRing (R : Type*) [Semiring R] where
   /-- Multiplication by positive integers is injective -/
   nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
@@ -45,21 +52,22 @@ section Binomial
 
 namespace Ring
 
-variable {R : Type*} [Semiring R] [IsBinomialRing R]
+variable {R : Type*} [Semiring R] [BinomialRing R]
 
 theorem nsmul_right_injective (n : ℕ) (h : n ≠ 0) :
-    Injective (n • · : R → R) := IsBinomialRing.nsmul_right_injective n h
+    Injective (n • · : R → R) := BinomialRing.nsmul_right_injective n h
 
-/-- This is a generalization of the combinatorial multichoose function, given by choosing with
-replacement. -/
-def multichoose (r : R) (n : ℕ) : R := IsBinomialRing.multichoose r n
+/-- The multichoose function is the quotient of ascending Pochhammer evaluation by the corresponding
+factorial. When applied to natural numbers, `multichoose k n` describes choosing a multiset of `n`
+items from a group of `k`, i.e., choosing with replacement. -/
+def multichoose (r : R) (n : ℕ) : R := BinomialRing.multichoose r n
 
 theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
-  IsBinomialRing.factorial_nsmul_multichoose r n
+  BinomialRing.factorial_nsmul_multichoose r n
 
-instance naturals_binomial : IsBinomialRing ℕ := by
-  refine IsBinomialRing.mk ?nsmul_right_injective ?multichoose ?factorial_nsmul_multichoose
+instance Nat.instBinomialSemiring : BinomialRing ℕ := by
+  refine BinomialRing.mk ?nsmul_right_injective ?multichoose ?factorial_nsmul_multichoose
   intro n hn r s hrs
   exact Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
   use Nat.multichoose
