@@ -86,6 +86,8 @@ class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] where
   mul_smul (a a' : GradedMonoid A) (b : GradedMonoid M) : (a * a') • b = a • a' • b
 #align graded_monoid.gmul_action GradedMonoid.GMulAction
 
+attribute [instance] GMulAction.toGSMul
+
 /-- The graded version of `Monoid.toMulAction`. -/
 instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
   { one_smul := GMonoid.one_mul

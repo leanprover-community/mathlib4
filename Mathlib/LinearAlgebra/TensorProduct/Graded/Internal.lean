@@ -211,18 +211,18 @@ theorem tmul_coe_mul_zero_coe_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
 
 theorem tmul_one_mul_coe_tmul {i₂ : ι} (a₁ : A) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ * a₂ : A) ᵍ⊗ₜ (b₂ : B) := by
-  convert tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
+  convert tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ 1 a₂ b₂
   rw [SetLike.coe_gOne, one_mul]
 
 theorem tmul_coe_mul_one_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₁ * b₂ : B) := by
-  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ 1 b₂
   rw [SetLike.coe_gOne, mul_one]
 
 theorem tmul_one_mul_one_tmul (a₁ : A) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₂ : B) := by
-  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ
-    a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ 1 1 b₂
+  · rw [SetLike.coe_gOne]
   · rw [SetLike.coe_gOne, mul_one]
   · rw [SetLike.coe_gOne, one_mul]
 

@@ -36,15 +36,15 @@ open GradedMonoid
 /-- A graded version of `DistribMulAction`. -/
 class GdistribMulAction [AddMonoid ιA] [VAdd ιA ιB] [GMonoid A] [∀ i, AddMonoid (M i)]
     extends GMulAction A M where
-  smul_add {i j} (a : A i) (b c : M j) : smul a (b + c) = smul a b + smul a c
-  smul_zero {i j} (a : A i) : smul a (0 : M j) = 0
+  smul_add {i j} (a : A i) (b c : M j) : a • (b + c) = a • b + a • c
+  smul_zero {i j} (a : A i) : a • (0 : M j) = (0 : M (i +ᵥ j))
 #align direct_sum.gdistrib_mul_action DirectSum.GdistribMulAction
 
 /-- A graded version of `Module`. -/
 class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [GMonoid A]
     extends GdistribMulAction A M where
-  add_smul {i j} (a a' : A i) (b : M j) : smul (a + a') b = smul a b + smul a' b
-  zero_smul {i j} (b : M j) : smul (0 : A i) b = 0
+  add_smul {i j} (a a' : A i) (b : M j) : (a + a') • b = a • b + a' • b
+  zero_smul {i j} (b : M j) : (0 : A i) • b = (0 : M (i +ᵥ j))
 #align direct_sum.gmodule DirectSum.Gmodule
 
 /-- A graded version of `Semiring.toModule`. -/
@@ -63,7 +63,7 @@ variable [AddMonoid ιA] [VAdd ιA ιB] [∀ i : ιA, AddCommMonoid (A i)] [∀ 
 @[simps]
 def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i +ᵥ j) where
   toFun a :=
-    { toFun := fun b => GSMul.smul a b
+    { toFun := fun b => a • b
       map_zero' := GdistribMulAction.smul_zero _
       map_add' := GdistribMulAction.smul_add _ }
   map_zero' := AddMonoidHom.ext fun a => Gmodule.zero_smul a
@@ -98,14 +98,14 @@ theorem smul_def [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
 @[simp]
 theorem smulAddMonoidHom_apply_of_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     {i j} (x : A i) (y : M j) :
-    smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i +ᵥ j) (GSMul.smul x y) := by
+    smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i +ᵥ j) (x • y) := by
   simp [smulAddMonoidHom]
 #align direct_sum.gmodule.smul_add_monoid_hom_apply_of_of DirectSum.Gmodule.smulAddMonoidHom_apply_of_of
 
 -- @[simp] -- Porting note: simpNF lint
 theorem of_smul_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     {i j} (x : A i) (y : M j) :
-    DirectSum.of A i x • of M j y = of M (i +ᵥ j) (GSMul.smul x y) :=
+    DirectSum.of A i x • of M j y = of M (i +ᵥ j) (x • y) :=
   smulAddMonoidHom_apply_of_of _ _ _ _
 #align direct_sum.gmodule.of_smul_of DirectSum.Gmodule.of_smul_of
 
@@ -118,7 +118,7 @@ private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodu
     (1 : ⨁ i, A i) • x = x := by
   suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from FunLike.congr_fun this x
   apply DirectSum.addHom_ext; intro i xi
-  rw [show (1 : DirectSum ιA fun i => A i) = (of A 0) GOne.one by rfl]
+  rw [show (1 : DirectSum ιA fun i => A i) = (of A 0) 1 by rfl]
   rw [smulAddMonoidHom_apply_of_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
 
@@ -178,8 +178,7 @@ namespace SetLike
 
 instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
     [SetLike.GradedSMul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
-  { SetLike.toGSMul 𝓐 𝓜 with
-    one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_vadd _ _) (one_smul _ _)
+  { one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_vadd _ _) (one_smul _ _)
     mul_smul := fun ⟨_i, _a⟩ ⟨_j, _a'⟩ ⟨_k, _b⟩ =>
       Sigma.subtype_ext (add_vadd _ _ _) (mul_smul _ _ _) }
 #align set_like.gmul_action SetLike.gmulAction
@@ -198,9 +197,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
 /-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]` is the internal version of graded
   module, the internal version can be translated into the external version `gmodule`. -/
 instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
-  { SetLike.gdistribMulAction 𝓐 𝓜 with
-    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
-    add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _
+  { add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _
     zero_smul := fun _b => Subtype.ext <| zero_smul _ _ }
 #align set_like.gmodule SetLike.gmodule
 
