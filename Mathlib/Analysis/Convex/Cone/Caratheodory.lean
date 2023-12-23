@@ -164,16 +164,6 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
 
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 
-lemma toPointedCone_nonempty_iff : (toPointedCone 𝕜 s : Set E).Nonempty ↔ s.Nonempty := by
-  -- rw [Set.nonempty_iff_ne_empty, Set.nonempty_iff_ne_empty, Ne.def, Ne.def, toPointedCone]
-  constructor
-  · contrapose!
-    unfold toPointedCone
-    rintro h
-    rw [h]
-    sorry
-  · unfold toPointedCone
-    exact fun a ↦ Submodule.nonempty (Submodule.span 𝕜≥0 s)
 
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
@@ -185,14 +175,16 @@ theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedC
 -- TODO: Get help for this one
 theorem mem_minCardFinsetOfMemtoPointedCone :
     x ∈ toPointedCone 𝕜 (minCardFinsetOfMemtoPointedCone hx : Set E) := by
+--   unfold minCardFinsetOfMemtoPointedCone
   sorry
 
 -- TODO: Should be an easy fix
 
 theorem minCardFinsetOfMemtoPointedCone_nonempty : (minCardFinsetOfMemtoPointedCone hx).Nonempty := by
   simp_rw [← Finset.coe_nonempty]
-  rw [← @toPointedCone_nonempty_iff 𝕜 E _ _ _ (minCardFinsetOfMemtoPointedCone hx)]
-  exact ⟨x, mem_minCardFinsetOfMemtoPointedCone _⟩
+  -- apply @toPointedCone_nonempty_iff 𝕜 E _ _ _ (minCardFinsetOfMemtoPointedCone hx)
+  sorry
+  -- exact ⟨x, mem_minCardFinsetOfMemtoPointedCone _⟩
 
 theorem minCardFinsetOfMemtoPointedCone_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ toPointedCone 𝕜 (t : Set E)) : (minCardFinsetOfMemtoPointedCone hx).card ≤ t.card :=
@@ -249,7 +241,9 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCon
   refine' ⟨t', t'.fintypeCoeSort, Subtype.val, ⟨_, _, (fun x => f x), _, _⟩⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
-  · sorry -- t' is linearly independent
+  · have := @linearIndependent_finset_map_embedding_subtype 𝕜 E _ _ _ t ht₂
+    simp [this]
+    sorry -- t' is linearly independent
   . rintro ⟨i, hi⟩
     rw [mem_filter] at hi
     refine' lt_of_le_of_ne _ _
@@ -257,5 +251,6 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCon
     · symm
       convert hi.2
       exact eq_iff_eq_of_cmp_eq_cmp rfl
-  · rw [← hf]
-    sorry -- sum does not change
+  · have := @Finset.sum_subset E _ t' t (fun i => (f i) • i) _ (by aesop) (by aesop)
+    rw [← hf, ← this]
+    conv_rhs => rw [← Finset.sum_coe_sort]
