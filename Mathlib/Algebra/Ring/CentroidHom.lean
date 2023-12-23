@@ -433,7 +433,8 @@ instance : Module R (CentroidHom α) :=
   toEnd_injective.module R (toEndRingHom α).toAddMonoidHom toEnd_smul
 
 /-!
-The following instances show that `α` is a non-unital and non-associative algebra over `CentroidHom α`
+The following instances show that `α` is a non-unital and non-associative algebra over
+`CentroidHom α`.
 -/
 
 /-- The tautological action by `CentroidHom α` on `α`.
