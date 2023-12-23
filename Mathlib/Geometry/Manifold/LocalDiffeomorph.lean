@@ -400,7 +400,9 @@ end Differential
 
 /-! ## Extended charts are local diffeomorphisms -/
 section Charts
-variable [I.Boundaryless] [SmoothManifoldWithCorners I M] {e : PartialHomeomorph M H}
+open SmoothManifoldWithCorners
+variable [I.Boundaryless] [SmoothManifoldWithCorners I M]
+  {e : PartialHomeomorph M H} (he : e ∈ maximalAtlas I M)
 
 namespace PartialHomeomorph
 variable (e) in
@@ -414,8 +416,6 @@ def extend_toPartialHomeomorph : PartialHomeomorph M E where
 
 lemma extend_toPartialHomeomorph_coe :
   (e.extend_toPartialHomeomorph I).toFun = e.extend I := rfl
-
-variable (he : e ∈ SmoothManifoldWithCorners.maximalAtlas I M)
 
 /-- If `M` has no boundary, every extended chart is a local diffeomorphism
 between its source and target. -/
@@ -481,32 +481,6 @@ theorem extend_isLocalDiffeomorphOn_symm :
     IsLocalDiffeomorphOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target :=
   fun x ↦ ⟨(extend_toPartialDiffeomorph I he).symm, Subtype.mem x, eqOn_refl _ _⟩
 
-variable {I}
-
-#exit
-def extChartAt_sourceToOpen (x : M) : Opens M :=
-  ⟨(extChartAt I x).source, isOpen_extChartAt_source I x⟩
-
-/- depends on isOpen_extChartAt_target, in my branch
-def extChartAt_targetToOpen (x : M) : Opens E :=
-  ⟨(extChartAt I x).target, isOpen_extChartAt_target I x⟩
--/
-
-/-- If `M` has no boundary, `extChartAt I x` is a local diffeomorphism at `x`. -/
--- TODO: show this for every interior point x (once we know the interior is open)
-lemma extChartAt_isLocalDiffeomorphAt (x : M) [I.Boundaryless] : -- why needed?
-    IsLocalDiffeomorphAt I 𝓘(𝕜, E) ⊤ (extChartAt I x) x := by
-  rw [extChartAt]
-  let r := (chartAt H x).extend_isLocalDiffeomorphOn
-  sorry --exact (chartAt H x).extend_isLocalDiffeomorphAt (chart_mem_maximalAtlas I x)
-  --  (mem_chart_source H x)
-
--- /-- If `M` has no boundary, `(extChartAt I x).symm` is a local diffeomorphism at `x`. -/
--- TODO: show this for every interior point x (once we know the interior is open)
--- lemma extChartAt_symm_isLocalDiffeomorphAt {x : M} {y : E} (hy : y ∈ (extChartAt I x).target) :
---     IsLocalDiffeomorphAt 𝓘(𝕜, E) I n (extChartAt I x).symm y := by
---   rw [extChartAt]
---   exact (chartAt H x).extend_symm_isLocalDiffeomorphAt n (chart_mem_maximalAtlas I x) hy
 end PartialHomeomorph
 
 end Charts
