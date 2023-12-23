@@ -470,18 +470,15 @@ variable {R : Type*}
 variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
-/-- The natural ring homomorphism from `R` into `CentroidHom α` -/
+/-- The natural ring homomorphism from `R` into `CentroidHom α`.
+
+This is a stronger version of `Module.toAddMonoidEnd`. -/
 @[simps! apply_toFun]
-def _root_.Module.toCentroidHom : R →+* CentroidHom α where
-  toFun r := r • 1
-  map_one' := one_smul _ _
-  map_mul' r₁ r₂ := ext fun a => smul_assoc r₁ r₂ a
-  map_zero' := zero_smul _ _
-  map_add' r₁ r₂ := ext fun a => add_smul r₁ r₂ a
+def _root_.Module.toCentroidHom : R →+* CentroidHom α := RingHom.smulOneHom
 
 open Module in
-/-- `CentroidHom α` as an algebra over `R` -/
-def ringtoAlg (h : ∀ (r : R) (T : CentroidHom α), toCentroidHom r * T = T * toCentroidHom r) :
+/-- `CentroidHom α` as an algebra over `R`. -/
+abbrev ringtoAlg (h : ∀ (r : R) (T : CentroidHom α), toCentroidHom r * T = T * toCentroidHom r) :
     Algebra R (CentroidHom α) := toCentroidHom.toAlgebra' h
 
 local notation "L" => AddMonoid.End.mulLeft
