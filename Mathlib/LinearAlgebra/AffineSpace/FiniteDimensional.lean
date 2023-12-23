@@ -247,7 +247,7 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
     ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at direction_le
   have finrank_le := add_le_add_right (Submodule.finrank_le_finrank_of_le direction_le) 1
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
-  simpa  using finrank_le.trans $ finrank_vectorSpan_range_add_one_le _ _
+  simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
 
 /-- If the `vectorSpan` of a finite subset of an affinely independent
 family lies in a submodule with dimension one less than its
