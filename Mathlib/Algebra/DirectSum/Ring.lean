@@ -121,6 +121,8 @@ class GSemiring [AddMonoid ι] [∀ i, AddCommMonoid (A i)] extends GNonUnitalNo
   natCast_succ : ∀ n : ℕ, natCast (n + 1) = natCast n + 1
 #align direct_sum.gsemiring DirectSum.GSemiring
 
+attribute [nolint docBlame] GSemiring.toGOne
+
 /-- A graded version of `CommSemiring`. -/
 class GCommSemiring [AddCommMonoid ι] [∀ i, AddCommMonoid (A i)] extends GSemiring A,
   GradedMonoid.GCommMonoid A

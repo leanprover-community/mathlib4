@@ -527,7 +527,7 @@ instance SetLike.gOne {S : Type*} [SetLike S R] [One R] [Zero ι] (A : ι → S)
   one := ⟨1, SetLike.one_mem_graded _⟩
 #align set_like.ghas_one SetLike.gOne
 
-@[simp]
+@[simp, nolint simpNF]
 theorem SetLike.coe_gOne {S : Type*} [SetLike S R] [One R] [Zero ι] (A : ι → S)
     [SetLike.GradedOne A] : ↑(1 : A 0) = (1 : R) :=
   rfl
