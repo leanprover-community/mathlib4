@@ -3521,11 +3521,7 @@ theorem Subgroup.map_normalClosure_equiv_eq_normalClosure_image {s : Set G} (f :
     apply subset_normalClosure
     simp only [Set.mem_image]
     refine ⟨r, hr, rfl⟩
-  · apply normalClosure_le_normal
-    simp only [coe_map, MonoidHom.coe_coe, Set.image_subset_iff]
-    intro r hr
-    simp only [Set.mem_preimage, Set.mem_image, SetLike.mem_coe]
-    exact ⟨r, subset_normalClosure hr, rfl⟩
+  · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
 theorem Subgroup.comap_normalClosure_equiv_eq_normalClosure_preimage {s : Set N} (f : G ≃* N) :
     (normalClosure s).comap f = normalClosure (f.symm '' s) := by
