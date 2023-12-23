@@ -1229,3 +1229,14 @@ theorem max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
 #align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
 
 end LinearOrderedCommRing
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023/12/23
+-/
+
+@[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
+@[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
+@[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
+@[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
