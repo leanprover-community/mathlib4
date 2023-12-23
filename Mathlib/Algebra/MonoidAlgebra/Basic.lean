@@ -679,7 +679,7 @@ values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   NonUnitalAlgHom.to_distribMulActionHom_injective <|
-    Finsupp.distribMulActionSemiHom_ext' fun a => DistribMulActionSemiHom.ext_ring (h a)
+    Finsupp.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
 #align monoid_algebra.non_unital_alg_hom_ext MonoidAlgebra.nonUnitalAlgHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/

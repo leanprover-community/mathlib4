@@ -194,7 +194,7 @@ theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
     Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
-  simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]
+  simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply, id_eq]
 #align free_product.of_left_inverse Monoid.CoprodI.of_leftInverse
 
 theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by

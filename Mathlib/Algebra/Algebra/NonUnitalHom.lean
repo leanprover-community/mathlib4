@@ -61,7 +61,7 @@ structure NonUnitalAlgHom
 infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 
 @[inherit_doc]
-notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (@id R) A B
+notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
 
 @[inherit_doc]
 notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
@@ -137,7 +137,6 @@ instance {F R : Type*} {A B : Type*} [Monoid R]
     { (f : A →ₙ+* B) with
       toFun := f
       map_smul' := map_smulₛₗ f }
-
 
 end NonUnitalAlgHomClass
 

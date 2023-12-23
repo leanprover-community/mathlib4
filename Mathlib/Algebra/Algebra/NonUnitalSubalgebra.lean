@@ -341,7 +341,8 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
     -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
-    (map f S).toSubmodule = Submodule.map ((↑f : A →+[R] B) : A →ₗ[R] B) S.toSubmodule :=
+    (map f S).toSubmodule = Submodule.map (f : A →ₗ[R] B) S.toSubmodule :=
+    -- -- (↑f : A →+[R] B) : A →ₗ[R] B) S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
@@ -422,7 +423,7 @@ namespace NonUnitalAlgHom
 variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
-variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F (@id R) A B]
+variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F R A B]
 
 /-- Range of an `NonUnitalAlgHom` as a non-unital subalgebra. -/
 protected def range (φ : F) : NonUnitalSubalgebra R B where
@@ -460,7 +461,7 @@ def codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : 
 
 @[simp]
 theorem subtype_comp_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
-    (NonUnitalSubalgebraClass.subtype S).comp (NonUnitalAlgHom.codRestrict f S hf) = f :=
+    (NonUnitalSubalgebraClass.subtype S).comp' (NonUnitalAlgHom.codRestrict f S hf) (CompTriple.comp_id) = f :=
   NonUnitalAlgHom.ext fun _ => rfl
 
 @[simp]
@@ -930,7 +931,9 @@ theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
 
 @[simp]
 theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
-    (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
+    (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by
+  ext
+  simp only [NonUnitalAlgHom.comp_apply, iSupLift_inclusion]
 
 @[simp]
 theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
