@@ -232,7 +232,7 @@ end Nat
 /-!
 ### Deprecated lemmas
 
-Those lemmas have been deprecated on the 2023/12/23.
+Those lemmas have been deprecated on 2023-12-23.
 -/
 
 @[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left

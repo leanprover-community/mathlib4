@@ -360,7 +360,7 @@ end DivInvMonoid
 /-!
 ### Deprecated lemmas
 
-Those lemmas have been deprecated on the 2023/12/23.
+Those lemmas have been deprecated on 2023-12-23.
 -/
 
 @[deprecated] alias pow_le_pow_of_le_left' := pow_le_pow_left'

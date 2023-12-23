@@ -462,7 +462,7 @@ end MonoidHom
 /-!
 ### Deprecated lemmas
 
-Those lemmas have been deprecated on the 2023/12/23.
+Those lemmas have been deprecated on 2023-12-23.
 -/
 
 @[deprecated] alias pow_mono := pow_right_mono
