@@ -27,6 +27,9 @@ def primesBelow (n : ℕ) : Finset ℕ := (Finset.range n).filter (fun p ↦ p.P
 lemma primesBelow_zero : primesBelow 0 = ∅ := by
   rw [primesBelow, Finset.range_zero, Finset.filter_empty]
 
+lemma mem_primesBelow_iff {k n : ℕ} :
+    n ∈ primesBelow k ↔ n < k ∧ n.Prime := by simp [primesBelow]
+
 lemma prime_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p.Prime :=
   (Finset.mem_filter.mp h).2
 
@@ -44,12 +47,16 @@ lemma not_mem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
 positive natural numbers all of whose prime factors are less than `n`. -/
 def smoothNumbers (n : ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
 
-lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p < n :=
+lemma mem_smoothNumbers_iff {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p < n :=
   Iff.rfl
 
+/-- Membership in `Nat.smoothNumbers n` is decidable. -/
+instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
+  inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
+
 /-- `m` is `n`-smooth if and only if all prime divisors of `m` are less than `n`. -/
-lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
-  rw [mem_smoothNumbers]
+lemma mem_smoothNumbers_iff' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
+  rw [mem_smoothNumbers_iff]
   refine ⟨fun H p hp h ↦ H.2 p <| (mem_factors_iff_dvd H.1 hp).mpr h,
           fun H ↦ ⟨?_, fun p hp ↦ H p (prime_of_mem_factors hp) (dvd_of_mem_factors hp)⟩⟩
   rintro rfl
@@ -59,13 +66,13 @@ lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime 
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
   ext m
-  rw [Set.mem_singleton_iff, mem_smoothNumbers]
+  rw [Set.mem_singleton_iff, mem_smoothNumbers_iff]
   simp_rw [not_lt_zero]
   rw [← List.eq_nil_iff_forall_not_mem, factors_eq_nil, and_or_left, not_and_self_iff, false_or,
     ne_and_eq_iff_right zero_ne_one]
 
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
-lemma prod_mem_smoothNumbers (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
+lemma prod_mem_smoothNumbers_iff (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
   have h₀ : (n.factors.filter (· < N)).prod ≠ 0 :=
     List.prod_ne_zero fun h ↦ (pos_of_mem_factors (List.mem_of_mem_filter h)).false
   refine ⟨h₀, fun p hp ↦ ?_⟩
@@ -90,13 +97,13 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
 lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
-  simp only [Set.mem_compl_iff, mem_smoothNumbers, Set.mem_diff, ne_eq, not_and, not_forall,
+  simp only [Set.mem_compl_iff, mem_smoothNumbers_iff, Set.mem_diff, ne_eq, not_and, not_forall,
     not_lt, exists_prop, Set.mem_singleton_iff] at hn
   obtain ⟨m, hm₁, hm₂⟩ := hn.1 hn.2
   exact hm₂.trans <| le_of_mem_factors hm₁
 
 /-- If `p` is positive and `n` is `p`-smooth, then every product `p^e * n` is `(p+1)`-smooth. -/
-lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈ smoothNumbers p) :
+lemma pow_mul_mem_smoothNumbers_iff {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈ smoothNumbers p) :
     p ^ e * n ∈ smoothNumbers (succ p) := by
   have hp' := pow_ne_zero e hp
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
@@ -125,9 +132,9 @@ given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` 
 when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers p.succ where
-  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_smoothNumbers hp.ne_zero e n.2⟩
+  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_smoothNumbers_iff hp.ne_zero e n.2⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
-                            ⟨(m.factors.filter (· < p)).prod, prod_mem_smoothNumbers ..⟩)
+                            ⟨(m.factors.filter (· < p)).prod, prod_mem_smoothNumbers_iff ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
     simp (config := { etaStruct := .all }) only
