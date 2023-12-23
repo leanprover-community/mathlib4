@@ -9,7 +9,7 @@ open BigOperators
 
 /-- Give a set `s` in `E`, `toPointedCone 𝕜 s` is the cone consisting of linear combinations of
 elements in `s` with non-negative coefficients. -/
-abbrev toPointedCone (𝕜 : Type*) {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E]
+abbrev Set.toPointedCone (𝕜 : Type*) {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E]
     [Module 𝕜 E] (s : Set E) :=
   Submodule.span {c : 𝕜 // 0 ≤ c} s
 
@@ -18,18 +18,13 @@ variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] 
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
-
--- def DirectSum.PointedCone (ι : Type u) [DecidableEq ι] (β : ι → PointedCone 𝕜 E) :
---     PointedCone 𝕜 E  :=
---   LinearMap.range $ DirectSum.coeLinearMap β
-
 namespace Caratheodory
 
 /-- If `x` is in the cone of some finset `t` whose elements are not linearly-independent,
 then it is in the cone of a strict subset of `t`. -/
 theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
-    (h : ¬LinearIndependent 𝕜 ((↑) : t → E)) {x : E} (hx : x ∈ toPointedCone 𝕜 t) :
-    ∃ y : (↑t : Set E), x ∈ toPointedCone 𝕜 (↑(t.erase y) : Set E) := by
+    (h : ¬LinearIndependent 𝕜 ((↑) : t → E)) {x : E} (hx : x ∈ Set.toPointedCone 𝕜 t) :
+    ∃ y : (↑t : Set E), x ∈ (↑(t.erase y) : Set E).toPointedCone 𝕜 := by
 
   -- `relation₁: ∑ i in t, f i • i = x`
   replace ⟨f, relation₁⟩ := mem_span_finset.1 hx
@@ -164,47 +159,45 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
 
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 
-
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
-noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ toPointedCone 𝕜 s) : Finset E :=
-  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } <| by exact Submodule.mem_span_finite_of_mem_span hx
+noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ s.toPointedCone 𝕜) : Finset E :=
+  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } <| by exact Submodule.mem_span_finite_of_mem_span hx
 
-theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s := (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ toPointedCone 𝕜 (t : Set E) } _).1
+theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s := (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } _).1
 
--- TODO: Get help for this one
-theorem mem_minCardFinsetOfMemtoPointedCone :
-    x ∈ toPointedCone 𝕜 (minCardFinsetOfMemtoPointedCone hx : Set E) := by
---   unfold minCardFinsetOfMemtoPointedCone
-  sorry
-
--- TODO: Should be an easy fix
-
-theorem minCardFinsetOfMemtoPointedCone_nonempty : (minCardFinsetOfMemtoPointedCone hx).Nonempty := by
-  simp_rw [← Finset.coe_nonempty]
-  -- apply @toPointedCone_nonempty_iff 𝕜 E _ _ _ (minCardFinsetOfMemtoPointedCone hx)
-  sorry
-  -- exact ⟨x, mem_minCardFinsetOfMemtoPointedCone _⟩
+theorem mem_minCardFinsetOfMemtoPointedCone : x ∈ (minCardFinsetOfMemtoPointedCone hx : Set E).toPointedCone 𝕜  := by
+  have hs : Set.Nonempty {(t : Finset E) | (t : Set E) ⊆ s ∧ x ∈ toPointedCone 𝕜 ↑t} := by
+    exact Submodule.mem_span_finite_of_mem_span hx
+  have h := (Function.argminOn_mem Finset.card Nat.lt_wfRel.2 { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } hs).2
+  -- deterministic timeout if with `exact` instead of `have`
+  exact h
 
 theorem minCardFinsetOfMemtoPointedCone_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
-    (ht₂ : x ∈ toPointedCone 𝕜 (t : Set E)) : (minCardFinsetOfMemtoPointedCone hx).card ≤ t.card :=
+    (ht₂ : x ∈ (t : Set E).toPointedCone 𝕜) : (minCardFinsetOfMemtoPointedCone hx).card ≤ t.card :=
   Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
 
-theorem affineIndependent_minCardFinsetOfMemtoPointedCone :
+theorem linearIndependent_minCardFinsetOfMemtoPointedCone :
     LinearIndependent 𝕜 ((↑) : minCardFinsetOfMemtoPointedCone hx → E) := by
-  let k := (minCardFinsetOfMemtoPointedCone hx).card - 1
-  have hk : (minCardFinsetOfMemtoPointedCone hx).card = k + 1 :=
-    (Nat.succ_pred_eq_of_pos (Finset.card_pos.mpr (minCardFinsetOfMemtoPointedCone_nonempty hx))).symm
-  classical
-  by_contra h
-  obtain ⟨p, hp⟩ := mem_toPointedCone_erase h (mem_minCardFinsetOfMemtoPointedCone hx)
-  have contra := minCardFinsetOfMemtoPointedCone_card_le_card hx (Set.Subset.trans
-    (Finset.erase_subset (p : E) (minCardFinsetOfMemtoPointedCone hx))
-    (minCardFinsetOftoPointedCone_subseteq hx)) hp
-  rw [← not_lt] at contra
-  apply contra
-  erw [card_erase_of_mem p.2, hk]
-  exact lt_add_one _
+  by_cases h : minCardFinsetOfMemtoPointedCone hx = ∅
+  · rw [h]
+    exact linearIndependent_empty_type
+  · have : 0 < (minCardFinsetOfMemtoPointedCone hx).card := by
+      rw [card_pos]
+      exact nonempty_of_ne_empty h
+    set k := (minCardFinsetOfMemtoPointedCone hx).card - 1 with hk
+    have hk : (minCardFinsetOfMemtoPointedCone hx).card = k + 1 := by
+      rwa [hk, ← Nat.succ_eq_add_one, ← Nat.pred_eq_sub_one, Nat.succ_pred_eq_of_pos]
+    classical
+    by_contra h
+    obtain ⟨p, hp⟩ := mem_toPointedCone_erase h (mem_minCardFinsetOfMemtoPointedCone hx)
+    have contra := minCardFinsetOfMemtoPointedCone_card_le_card hx (Set.Subset.trans
+      (Finset.erase_subset (p : E) (minCardFinsetOfMemtoPointedCone hx))
+      (minCardFinsetOftoPointedCone_subseteq hx)) hp
+    rw [← not_lt] at contra
+    apply contra
+    erw [card_erase_of_mem p.2, hk]
+    exact lt_add_one _
 
 end Caratheodory
 
@@ -212,7 +205,7 @@ variable {s : Set E}
 
 /-- **Carathéodory's convexity theorem** -/
 
-theorem toPointedCone_eq_union : (toPointedCone 𝕜 s : Set E) =
+theorem toPointedCone_eq_union : (s.toPointedCone 𝕜 : Set E) =
     ⋃ (t : Finset E) (_ : ↑t ⊆ s) (_ : LinearIndependent 𝕜 ((↑) : t → E)),
       (SetLike.coe $ toPointedCone 𝕜 t)
     := by
@@ -221,13 +214,13 @@ theorem toPointedCone_eq_union : (toPointedCone 𝕜 s : Set E) =
     simp only [exists_prop, Set.mem_iUnion]
     exact ⟨Caratheodory.minCardFinsetOfMemtoPointedCone hx,
       Caratheodory.minCardFinsetOftoPointedCone_subseteq hx,
-      Caratheodory.affineIndependent_minCardFinsetOfMemtoPointedCone hx,
+      Caratheodory.linearIndependent_minCardFinsetOfMemtoPointedCone hx,
       Caratheodory.mem_minCardFinsetOfMemtoPointedCone hx⟩
   · iterate 3 convert Set.iUnion_subset _; intro
     exact Submodule.span_mono ‹_›
 
 /-- A more explicit version of `toPointedCone_eq_union`. -/
-theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCone 𝕜 s) :
+theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ s.toPointedCone 𝕜) :
     ∃ (ι : Sort (u + 1)) (_ : Fintype ι),
       ∃ (z : ι → E) (w : ι → 𝕜) (_ : Set.range z ⊆ s) (_ : LinearIndependent 𝕜 z)
         (_ : ∀ i, 0 < w i), ∑ i, w i • z i = x := by
@@ -241,9 +234,7 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCon
   refine' ⟨t', t'.fintypeCoeSort, Subtype.val, ⟨_, _, (fun x => f x), _, _⟩⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
-  · have := @linearIndependent_finset_map_embedding_subtype 𝕜 E _ _ _ t ht₂
-    simp [this]
-    sorry -- t' is linearly independent
+  · exact @LinearIndependent.mono 𝕜 E _ _ _ t' t (t.filter_subset _) ht₂
   . rintro ⟨i, hi⟩
     rw [mem_filter] at hi
     refine' lt_of_le_of_ne _ _
@@ -252,5 +243,4 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ toPointedCon
       convert hi.2
       exact eq_iff_eq_of_cmp_eq_cmp rfl
   · have := @Finset.sum_subset E _ t' t (fun i => (f i) • i) _ (by aesop) (by aesop)
-    rw [← hf, ← this]
-    conv_rhs => rw [← Finset.sum_coe_sort]
+    conv_rhs => rw [← hf, ← this, ← Finset.sum_coe_sort]
