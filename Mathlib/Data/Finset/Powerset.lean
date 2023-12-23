@@ -113,14 +113,14 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
 #align finset.powerset_insert Finset.powerset_insert
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
-instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊆ s), Prop}
+instance decidableExistsOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∃ (t : _) (h : t ⊆ s), p t h) :=
   decidable_of_iff (∃ (t : _) (hs : t ∈ s.powerset), p t (mem_powerset.1 hs))
     ⟨fun ⟨t, _, hp⟩ => ⟨t, _, hp⟩, fun ⟨t, hs, hp⟩ => ⟨t, mem_powerset.2 hs, hp⟩⟩
 #align finset.decidable_exists_of_decidable_subsets Finset.decidableExistsOfDecidableSubsets
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
-instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ (t) (_ : t ⊆ s), Prop}
+instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Prop}
     [∀ (t) (h : t ⊆ s), Decidable (p t h)] : Decidable (∀ (t) (h : t ⊆ s), p t h) :=
   decidable_of_iff (∀ (t) (h : t ∈ s.powerset), p t (mem_powerset.1 h))
     ⟨fun h t hs => h t (mem_powerset.2 hs), fun h _ _ => h _ _⟩
@@ -218,13 +218,23 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 #align finset.card_powerset_len Finset.card_powersetCard
 
 @[simp]
-theorem powersetCard_zero (s : Finset α) : Finset.powersetCard 0 s = {∅} := by
+theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
   refine'
     ⟨fun h => h.2, fun h => by
       rw [h]
       exact ⟨empty_subset s, rfl⟩⟩
 #align finset.powerset_len_zero Finset.powersetCard_zero
+
+@[simp]
+theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
+    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
+  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
+#align finset.map_val_val_powerset_len Finset.map_val_val_powersetCard
+
+theorem powersetCard_one (s : Finset α) :
+    s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ :=
+  eq_of_veq <| Multiset.map_injective val_injective <| by simp [Multiset.powersetCard_one]
 
 @[simp]
 theorem powersetCard_empty (n : ℕ) {s : Finset α} (h : s.card < n) : powersetCard n s = ∅ :=
@@ -307,15 +317,13 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     rintro x ⟨h, -⟩
     exact h
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
-    cases' (Nat.succ_le_of_lt hn).eq_or_lt with h' h'
-    · simp [h']
-    · intro x hx
-      simp only [mem_biUnion, exists_prop, id.def]
-      obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
-        (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
-      · refine' ⟨insert x t, _, mem_insert_self _ _⟩
-        rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
-        exact mem_union_right _ (mem_image_of_mem _ ht)
+    intro x hx
+    simp only [mem_biUnion, exists_prop, id.def]
+    obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
+      (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
+    · refine' ⟨insert x t, _, mem_insert_self _ _⟩
+      rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
+      exact mem_union_right _ (mem_image_of_mem _ ht)
 #align finset.powerset_len_sup Finset.powersetCard_sup
 
 @[simp]
@@ -323,12 +331,6 @@ theorem powersetCard_card_add (s : Finset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (s.card + i) = ∅ :=
   Finset.powersetCard_empty _ (lt_add_of_pos_right (Finset.card s) hi)
 #align finset.powerset_len_card_add Finset.powersetCard_card_add
-
-@[simp]
-theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
-    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
-  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
-#align finset.map_val_val_powerset_len Finset.map_val_val_powersetCard
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=

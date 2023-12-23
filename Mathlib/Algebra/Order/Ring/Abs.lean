@@ -32,7 +32,7 @@ theorem abs_two : |(2 : α)| = 2 :=
 
 theorem abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
-  cases' le_total a 0 with ha ha <;> cases' le_total b 0 with hb hb <;>
+  rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
     simp only [abs_of_nonpos, abs_of_nonneg, true_or_iff, or_true_iff, eq_self_iff_true, neg_mul,
       mul_neg, neg_neg, *]
 #align abs_mul abs_mul

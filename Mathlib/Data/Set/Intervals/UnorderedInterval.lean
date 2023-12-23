@@ -248,9 +248,7 @@ lemma uIcc_subset_uIcc_iff_le :
 /-- A sort of triangle inequality. -/
 lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x => by
   simp only [mem_uIcc, mem_union]
-  cases' le_total a c with h1 h1 <;>
-  cases' le_total x b with h2 h2 <;>
-  tauto
+  rcases le_total x b with h2 | h2 <;> tauto
 #align set.uIcc_subset_uIcc_union_uIcc Set.uIcc_subset_uIcc_union_uIcc
 
 lemma monotone_or_antitone_iff_uIcc :
@@ -268,7 +266,7 @@ lemma monotone_or_antitone_iff_uIcc :
 -- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s) (c) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
+      ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
   by simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 #align set.monotone_on_or_antitone_on_iff_uIcc Set.monotoneOn_or_antitoneOn_iff_uIcc
