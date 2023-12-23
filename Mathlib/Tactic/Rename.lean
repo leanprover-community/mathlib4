@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic
 
@@ -15,7 +14,7 @@ syntax renameArg := term " => " ident
 /-- `rename' h => hnew` renames the hypothesis named `h` to `hnew`.
 To rename several hypothesis, use `rename' h₁ => h₁new, h₂ => h₂new`.
 You can use `rename' a => b, b => a` to swap two variables. -/
-syntax (name := rename') "rename'" (ppSpace renameArg),* : tactic
+syntax (name := rename') "rename' " renameArg,+ : tactic
 
 elab_rules : tactic
   | `(tactic| rename' $[$as:term => $bs:ident],*) => do

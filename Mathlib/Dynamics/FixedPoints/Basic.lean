@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.fixed_points.basic
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Function.Iterate
 import Mathlib.GroupTheory.Perm.Basic
+
+#align_import dynamics.fixed_points.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 
 /-!
 # Fixed points of a self-map
@@ -36,6 +33,8 @@ variable {α : Type u} {β : Type v} {f fa g : α → α} {x y : α} {fb : β �
 
 namespace Function
 
+open Function (Commute)
+
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) :=
   f x = x
@@ -48,7 +47,7 @@ theorem isFixedPt_id (x : α) : IsFixedPt id x :=
 
 namespace IsFixedPt
 
-instance instDecidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
+instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
 /-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
@@ -61,11 +60,10 @@ protected theorem comp (hf : IsFixedPt f x) (hg : IsFixedPt g x) : IsFixedPt (f 
   calc
     f (g x) = f x := congr_arg f hg
     _ = x := hf
-
 #align function.is_fixed_pt.comp Function.IsFixedPt.comp
 
 /-- If `x` is a fixed point of `f`, then it is a fixed point of `f^[n]`. -/
-protected theorem iterate (hf : IsFixedPt f x) (n : ℕ) : IsFixedPt (f^[n]) x :=
+protected theorem iterate (hf : IsFixedPt f x) (n : ℕ) : IsFixedPt f^[n] x :=
   iterate_fixed hf n
 #align function.is_fixed_pt.iterate Function.IsFixedPt.iterate
 
@@ -74,7 +72,6 @@ theorem left_of_comp (hfg : IsFixedPt (f ∘ g) x) (hg : IsFixedPt g x) : IsFixe
   calc
     f x = f (g x) := congr_arg f hg.symm
     _ = x := hfg
-
 #align function.is_fixed_pt.left_of_comp Function.IsFixedPt.left_of_comp
 
 /-- If `x` is a fixed point of `f` and `g` is a left inverse of `f`, then `x` is a fixed
@@ -83,7 +80,6 @@ theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g 
   calc
     g x = g (f x) := congr_arg g hf.symm
     _ = x := h x
-
 #align function.is_fixed_pt.to_left_inverse Function.IsFixedPt.to_leftInverse
 
 /-- If `g` (semi)conjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
@@ -93,17 +89,20 @@ protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semico
   calc
     fb (g x) = g (fa x) := (h.eq x).symm
     _ = g x := congr_arg g hx
-
 #align function.is_fixed_pt.map Function.IsFixedPt.map
 
 protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by convert hx
 #align function.is_fixed_pt.apply Function.IsFixedPt.apply
 
 theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
-    IsFixedPt (Set.preimage (f^[n])) s := by
+    IsFixedPt (Set.preimage f^[n]) s := by
   rw [Set.preimage_iterate_eq]
   exact h.iterate n
 #align function.is_fixed_pt.preimage_iterate Function.IsFixedPt.preimage_iterate
+
+lemma image_iterate {s : Set α} (h : IsFixedPt (Set.image f) s) (n : ℕ) :
+    IsFixedPt (Set.image f^[n]) s :=
+  Set.image_iterate_eq ▸ h.iterate n
 
 protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
   h.to_leftInverse e.leftInverse_symm
@@ -114,7 +113,7 @@ protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
 #align function.is_fixed_pt.perm_inv Function.IsFixedPt.perm_inv
 
 protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
-  rw [← Equiv.Perm.iterate_eq_pow]
+  rw [Equiv.Perm.coe_pow]
   exact h.iterate _
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
@@ -136,17 +135,17 @@ def fixedPoints (f : α → α) : Set α :=
   { x : α | IsFixedPt f x }
 #align function.fixed_points Function.fixedPoints
 
-instance fixedPoints.instDecidable [DecidableEq α] (f : α → α) (x : α) :
+instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
     Decidable (x ∈ fixedPoints f) :=
-  IsFixedPt.instDecidable
-#align function.fixed_points.decidable Function.fixedPoints.instDecidable
+  IsFixedPt.decidable
+#align function.fixed_points.decidable Function.fixedPoints.decidable
 
 @[simp]
 theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
   Iff.rfl
 #align function.mem_fixed_points Function.mem_fixedPoints
 
-theorem mem_fixedPoints_iff {α : Type _} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
+theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
   rfl
 #align function.mem_fixed_points_iff Function.mem_fixedPoints_iff
 

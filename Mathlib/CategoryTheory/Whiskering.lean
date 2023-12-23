@@ -2,21 +2,17 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.whiskering
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 
+#align_import category_theory.whiskering from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
+
 /-!
 # Whiskering
 
-Given a functor `F  : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
+Given a functor `F : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
 we can construct a new natural transformation `F ⋙ G ⟶ F ⋙ H`,
 called `whiskerLeft F α`. This is the same as the horizontal composition of `𝟙 F` with `α`.
 
@@ -53,6 +49,7 @@ def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
   app X := α.app (F.obj X)
   naturality X Y f := by rw [Functor.comp_map, Functor.comp_map, α.naturality]
 #align category_theory.whisker_left CategoryTheory.whiskerLeft
+#align category_theory.whisker_left_app CategoryTheory.whiskerLeft_app
 
 /-- If `α : G ⟶ H` then
 `whisker_right α F : (G ⋙ F) ⟶ (G ⋙ F)` has components `F.map (α.app X)`.
@@ -64,6 +61,7 @@ def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
   naturality X Y f := by
     rw [Functor.comp_map, Functor.comp_map, ← F.map_comp, ← F.map_comp, α.naturality]
 #align category_theory.whisker_right CategoryTheory.whiskerRight
+#align category_theory.whisker_right_app CategoryTheory.whiskerRight_app
 
 variable (C D E)
 
@@ -83,6 +81,9 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
           naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
       naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
 #align category_theory.whiskering_left CategoryTheory.whiskeringLeft
+#align category_theory.whiskering_left_obj_map CategoryTheory.whiskeringLeft_obj_map
+#align category_theory.whiskering_left_obj_obj CategoryTheory.whiskeringLeft_obj_obj
+#align category_theory.whiskering_left_map_app_app CategoryTheory.whiskeringLeft_map_app_app
 
 /-- Right-composition gives a functor `(D ⥤ E) ⥤ ((C ⥤ D) ⥤ (C ⥤ E))`.
 
@@ -100,13 +101,17 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
           naturality := fun X Y f => by dsimp; rw [τ.naturality] }
       naturality := fun X Y f => by ext; dsimp; rw [← NatTrans.naturality] }
 #align category_theory.whiskering_right CategoryTheory.whiskeringRight
+#align category_theory.whiskering_right_map_app_app CategoryTheory.whiskeringRight_map_app_app
+#align category_theory.whiskering_right_obj_obj CategoryTheory.whiskeringRight_obj_obj
+#align category_theory.whiskering_right_obj_map CategoryTheory.whiskeringRight_obj_map
 
 variable {C} {D} {E}
 
 instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
     Faithful ((whiskeringRight C D E).obj F) where
-  map_injective hαβ := NatTrans.ext _ _
-    (funext fun X => (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X))
+  map_injective hαβ := by
+    ext X
+    exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
 @[simp]
@@ -173,7 +178,7 @@ def isoWhiskerRight {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) : G ⋙ F ≅ H
 theorem isoWhiskerRight_hom {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
     (isoWhiskerRight α F).hom = whiskerRight α.hom F :=
   rfl
-#align category_theory.isoWhiskerRight_hom CategoryTheory.isoWhiskerRight_hom
+#align category_theory.iso_whisker_right_hom CategoryTheory.isoWhiskerRight_hom
 
 @[simp]
 theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
@@ -232,6 +237,8 @@ def leftUnitor (F : A ⥤ B) :
   hom := { app := fun X => 𝟙 (F.obj X) }
   inv := { app := fun X => 𝟙 (F.obj X) }
 #align category_theory.functor.left_unitor CategoryTheory.Functor.leftUnitor
+#align category_theory.functor.left_unitor_inv_app CategoryTheory.Functor.leftUnitor_inv_app
+#align category_theory.functor.left_unitor_hom_app CategoryTheory.Functor.leftUnitor_hom_app
 
 /-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
 -/
@@ -241,6 +248,8 @@ def rightUnitor (F : A ⥤ B) :
   hom := { app := fun X => 𝟙 (F.obj X) }
   inv := { app := fun X => 𝟙 (F.obj X) }
 #align category_theory.functor.right_unitor CategoryTheory.Functor.rightUnitor
+#align category_theory.functor.right_unitor_hom_app CategoryTheory.Functor.rightUnitor_hom_app
+#align category_theory.functor.right_unitor_inv_app CategoryTheory.Functor.rightUnitor_inv_app
 
 variable {C : Type u₃} [Category.{v₃} C]
 
@@ -257,6 +266,8 @@ def associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 #align category_theory.functor.associator CategoryTheory.Functor.associator
+#align category_theory.functor.associator_inv_app CategoryTheory.Functor.associator_inv_app
+#align category_theory.functor.associator_hom_app CategoryTheory.Functor.associator_hom_app
 
 protected theorem assoc (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
   rfl

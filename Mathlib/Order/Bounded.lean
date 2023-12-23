@@ -2,13 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-! This file was ported from Lean 3 source module order.bounded
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelClasses
 import Mathlib.Data.Set.Intervals.Basic
+
+#align_import order.bounded from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
 /-!
 # Bounded and unbounded sets
@@ -20,7 +18,7 @@ different general ideas.
 
 namespace Set
 
-variable {α : Type _} {r : α → α → Prop} {s t : Set α}
+variable {α : Type*} {r : α → α → Prop} {s t : Set α}
 
 /-! ### Subsets of bounded and unbounded sets -/
 
@@ -44,7 +42,7 @@ theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 #align set.unbounded_le_of_forall_exists_lt Set.unbounded_le_of_forall_exists_lt
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
-  simp only [Unbounded, not_le, iff_self]
+  simp only [Unbounded, not_le]
 #align set.unbounded_le_iff Set.unbounded_le_iff
 
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
@@ -54,7 +52,7 @@ theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 #align set.unbounded_lt_of_forall_exists_le Set.unbounded_lt_of_forall_exists_le
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
-  simp only [Unbounded, not_lt, iff_self]
+  simp only [Unbounded, not_lt]
 #align set.unbounded_lt_iff Set.unbounded_lt_iff
 
 theorem unbounded_ge_of_forall_exists_gt [Preorder α] (h : ∀ a, ∃ b ∈ s, b < a) :
@@ -335,7 +333,6 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
   convert @unbounded_le_inter_not_le _ s _ a
-  ext
   exact lt_iff_not_le
 #align set.unbounded_le_inter_lt Set.unbounded_le_inter_lt
 
@@ -369,14 +366,12 @@ theorem unbounded_lt_inter_not_lt [SemilatticeSup α] (a : α) :
 theorem bounded_lt_inter_le [LinearOrder α] (a : α) :
     Bounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· < ·) s := by
   convert @bounded_lt_inter_not_lt _ s _ a
-  ext
   exact not_lt.symm
 #align set.bounded_lt_inter_le Set.bounded_lt_inter_le
 
 theorem unbounded_lt_inter_le [LinearOrder α] (a : α) :
     Unbounded (· < ·) (s ∩ { b | a ≤ b }) ↔ Unbounded (· < ·) s := by
   convert @unbounded_lt_inter_not_lt _ s _ a
-  ext
   exact not_lt.symm
 #align set.unbounded_lt_inter_le Set.unbounded_lt_inter_le
 

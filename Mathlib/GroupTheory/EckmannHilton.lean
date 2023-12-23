@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module group_theory.eckmann_hilton
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
+
+#align_import group_theory.eckmann_hilton from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
 /-!
 # Eckmann-Hilton argument
@@ -43,8 +40,8 @@ structure IsUnital (m : X → X → X) (e : X) extends IsLeftId _ m e, IsRightId
 @[to_additive EckmannHilton.AddZeroClass.IsUnital]
 theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :=
   IsUnital.mk ⟨MulOneClass.one_mul⟩ ⟨MulOneClass.mul_one⟩
-
 #align eckmann_hilton.mul_one_class.is_unital EckmannHilton.MulOneClass.isUnital
+#align eckmann_hilton.add_zero_class.is_unital EckmannHilton.AddZeroClass.IsUnital
 
 variable {m₁ m₂ : X → X → X} {e₁ e₂ : X}
 
@@ -91,26 +88,26 @@ theorem mul_assoc : IsAssociative _ m₂ :=
 
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "If a type carries a unital additive magma structure that distributes over a unital binary
       operation, then the additive magma structure is a commutative additive monoid."]
 def commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
   { h with
-      mul := (· * ·), one := 1, mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
+      mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
       mul_assoc := (mul_assoc h₁ MulOneClass.isUnital distrib).assoc }
 #align eckmann_hilton.comm_monoid EckmannHilton.commMonoid
+#align eckmann_hilton.add_comm_monoid EckmannHilton.addCommMonoid
 
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "If a type carries an additive group structure that distributes over a unital binary
       operation, then the additive group is commutative."]
 def commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { EckmannHilton.commMonoid h₁ distrib, G with .. }
 #align eckmann_hilton.comm_group EckmannHilton.commGroup
+#align eckmann_hilton.add_comm_group EckmannHilton.addCommGroup
 
 end EckmannHilton

@@ -2,23 +2,20 @@
 Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.applicative
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
 
+#align_import control.applicative from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
+
 /-!
 # `applicative` instances
 
-This file provides `applicative` instances for concrete functors:
+This file provides `Applicative` instances for concrete functors:
 * `id`
-* `functor.comp`
-* `functor.const`
-* `functor.add_const`
+* `Functor.comp`
+* `Functor.const`
+* `Functor.add_const`
 -/
 
 universe u v w
@@ -34,10 +31,11 @@ variable [Applicative F] [LawfulApplicative F]
 variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
-    f <$> x <*> g <$> y = (flip (· ∘ ·) g ∘ f) <$> x <*> y := by simp [flip, functor_norm]
+    f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
+  simp [flip, functor_norm]
 #align applicative.map_seq_map Applicative.map_seq_map
 
-theorem Applicative.pure_seq_eq_map' (f : α → β) : (· <*> ·) (pure f : F (α → β)) = (· <$> ·) f :=
+theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) :=
   by ext; simp [functor_norm]
 #align applicative.pure_seq_eq_map' Applicative.pure_seq_eq_map'
 
@@ -48,8 +46,8 @@ theorem Applicative.ext {F} :
           @Seq.seq _ A1.toSeq _ _ f (fun _ => x) = @Seq.seq _ A2.toSeq _ _ f (fun _ => x)) →
       A1 = A2
   | { toFunctor := F1, seq := s1, pure := p1, seqLeft := sl1, seqRight := sr1 },
-    { toFunctor := F2, seq := s2, pure := p2, seqLeft := sl2, seqRight := sr2 }, L1, L2, H1, H2 =>
-    by
+    { toFunctor := F2, seq := s2, pure := p2, seqLeft := sl2, seqRight := sr2 },
+    L1, L2, H1, H2 => by
     obtain rfl : @p1 = @p2 := by
       funext α x
       apply H1
@@ -65,7 +63,6 @@ theorem Applicative.ext {F} :
     congr <;> funext α β x y
     · exact (seqLeft_eq1 _ (y Unit.unit)).trans (seqLeft_eq2 _ _).symm
     · exact (seqRight_eq1 _ (y Unit.unit)).trans (seqRight_eq2 _ (y Unit.unit)).symm
-
 #align applicative.ext Applicative.ext
 
 end Lemmas
@@ -112,7 +109,7 @@ theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$>
 #align functor.comp.pure_seq_eq_map Functor.Comp.pure_seq_eq_map
 
 -- TODO: the first two results were handled by `control_laws_tac` in mathlib3
-instance : LawfulApplicative (Comp F G) where
+instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
   seqLeft_eq := by intros; rfl
   seqRight_eq := by intros; rfl
   pure_seq := @Comp.pure_seq_eq_map F G _ _ _ _
@@ -124,13 +121,13 @@ instance : LawfulApplicative (Comp F G) where
 
 theorem applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
     @instApplicativeComp Id F _ _ = AF :=
-  @Applicative.ext F _ _ (@instLawfulApplicativeCompInstApplicativeComp Id F _ _ _ _) _
+  @Applicative.ext F _ _ (@instLawfulApplicativeComp Id F _ _ _ _) _
     (fun _ => rfl) (fun _ _ => rfl)
 #align functor.comp.applicative_id_comp Functor.Comp.applicative_id_comp
 
 theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
     @Comp.instApplicativeComp F Id _ _ = AF :=
-  @Applicative.ext F _ _ (@Comp.instLawfulApplicativeCompInstApplicativeComp F Id _ _ _ _) _
+  @Applicative.ext F _ _ (@Comp.instLawfulApplicativeComp F Id _ _ _ _) _
     (fun _ => rfl) (fun f x => show id <$> f <*> x = f <*> x by rw [id_map])
 #align functor.comp.applicative_comp_id Functor.Comp.applicative_comp_id
 
@@ -138,11 +135,11 @@ open CommApplicative
 
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) := by
-  refine' { @instLawfulApplicativeCompInstApplicativeComp f g _ _ _ _ with .. }
+  refine' { @instLawfulApplicativeComp f g _ _ _ _ with .. }
   intros
   simp! [map, Seq.seq, functor_norm]
   rw [commutative_map]
-  simp [Comp.mk, flip, (· ∘ ·), functor_norm]
+  simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
   congr
   funext x y
   rw [commutative_map]

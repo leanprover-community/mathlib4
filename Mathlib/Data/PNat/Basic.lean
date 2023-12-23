@@ -2,11 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.basic
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bits
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
+
+#align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
 
 /-!
 # The positive natural numbers
@@ -28,6 +25,10 @@ deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigr
 
 namespace PNat
 
+-- Porting note: this instance is no longer automatically inferred in Lean 4.
+instance : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
+instance : IsWellOrder ℕ+ (· < ·) where
+
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
   rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
@@ -38,13 +39,11 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 #align pnat.nat_pred_add_one PNat.natPred_add_one
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 #align pnat.nat_pred_strict_mono PNat.natPred_strictMono
 
- -- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 #align pnat.nat_pred_monotone PNat.natPred_monotone
@@ -72,13 +71,11 @@ end PNat
 
 namespace Nat
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 #align nat.succ_pnat_strict_mono Nat.succPNat_strictMono
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 #align nat.succ_pnat_mono Nat.succPNat_mono
@@ -123,7 +120,7 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 #align pnat.add_coe PNat.add_coe
 
-/-- `coe` promoted to an `add_hom`, that is, a morphism which preserves addition. -/
+/-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
 def coeAddHom : AddHom ℕ+ ℕ where
   toFun := Coe.coe
   map_add' := add_coe
@@ -141,21 +138,24 @@ instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
 instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
   Positive.contravariantClass_add_lt
 
-/-- An equivalence between `ℕ+` and `ℕ` given by `pnat.natPred` and `nat.succPNat`. -/
-@[simps (config := { fullyApplied := false })]
+/-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
+@[simps (config := .asFn)]
 def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   toFun := PNat.natPred
   invFun := Nat.succPNat
   left_inv := succPNat_natPred
   right_inv := Nat.natPred_succPNat
 #align equiv.pnat_equiv_nat Equiv.pnatEquivNat
+#align equiv.pnat_equiv_nat_symm_apply Equiv.pnatEquivNat_symm_apply
+#align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
 #align order_iso.pnat_iso_nat OrderIso.pnatIsoNat
+#align order_iso.pnat_iso_nat_apply OrderIso.pnatIsoNat_apply
 
 @[simp]
 theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
@@ -182,7 +182,7 @@ section deprecated
 
 set_option linter.deprecated false
 
--- Some lemmas that rewrite `pnat.mk n h`, for `n` an explicit numeral, into explicit numerals.
+-- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp, deprecated]
 theorem mk_bit0 (n) {h} : (⟨bit0 n, h⟩ : ℕ+) = (bit0 ⟨n, pos_of_bit0_pos h⟩ : ℕ+) :=
   rfl
@@ -227,7 +227,7 @@ theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
   rfl
 #align pnat.mul_coe PNat.mul_coe
 
-/-- `pnat.coe` promoted to a `monoid_hom`. -/
+/-- `PNat.coe` promoted to a `MonoidHom`. -/
 def coeMonoidHom : ℕ+ →* ℕ where
   toFun := Coe.coe
   map_one' := one_coe
@@ -269,13 +269,8 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 
 end deprecated
 
--- Porting note:
--- mathlib3 statement was
--- `((m ^ n : ℕ+) : ℕ) = (m : ℕ) ^ n`
--- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
--- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Monoid.Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
@@ -307,7 +302,7 @@ theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n
 #align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
 
 /-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
-def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
+def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
   apply strongInductionOn a
   rintro ⟨k, kprop⟩ hk
@@ -321,16 +316,13 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
-noncomputable
-def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
   · exact absurd h (by decide)
   · cases' n with n
     · exact p1
     · exact hp _ (IH n.succ_pos)
--- Porting note: added `noncomputable` because of
--- "code generator does not support recursor 'Nat.rec' yet" error.
 #align pnat.rec_on PNat.recOn
 
 @[simp]
@@ -339,10 +331,10 @@ theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 #align pnat.rec_on_one PNat.recOn_one
 
 @[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
-  cases n <;> [exact absurd h (by decide), rfl]
+  cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
 theorem modDivAux_spec :
@@ -389,13 +381,12 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note : Specified type of `h₂` explicitely because `rw` could not unify
+        -- Porting note : Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂
       exact ⟨h₂, le_refl (k : ℕ)⟩
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
-
 #align pnat.mod_le PNat.mod_le
 
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
@@ -410,7 +401,6 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
     | succ n =>
       use ⟨n.succ, n.succ_pos⟩
       rw [← coe_inj, h, mul_coe, mk_coe]
-      exact k.property
 #align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by

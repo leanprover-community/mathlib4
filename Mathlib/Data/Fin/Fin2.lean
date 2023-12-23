@@ -2,14 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fin.fin2
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Tactic.NoMatch
 import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Mathport.Rename
+
+#align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Inductive type variant of `Fin`
@@ -23,7 +21,7 @@ equalities.
 * `Fin2 n`: Inductive type variant of `Fin n`. `fz` corresponds to `0` and `fs n` corresponds to
   `n`.
 * `Fin2.toNat`, `Fin2.optOfNat`, `Fin2.ofNat'`: Conversions to and from `ℕ`. `ofNat' m` takes a
-  proof that `m < n` through the class `Fin2.IsLt`.
+  proof that `m < n` through the class `Fin2.IsLT`.
 * `Fin2.add k`: Takes `i : Fin2 n` to `i + k : Fin2 (n + k)`.
 * `Fin2.left`: Embeds `Fin2 n` into `Fin2 (n + k)`.
 * `Fin2.insertPerm a`: Permutation of `Fin2 n` which cycles `0, ..., a - 1` and leaves
@@ -42,6 +40,7 @@ inductive Fin2 : ℕ → Type
   | fz {n} : Fin2 (succ n)
   /-- `n` as a member of `Fin (succ n)` -/
   | fs {n} : Fin2 n → Fin2 (succ n)
+#align fin2 Fin2
 
 namespace Fin2
 
@@ -52,30 +51,36 @@ protected def cases' {n} {C : Fin2 (succ n) → Sort u} (H1 : C fz) (H2 : ∀ n,
     ∀ i : Fin2 (succ n), C i
   | fz => H1
   | fs n => H2 n
+#align fin2.cases' Fin2.cases'
 
 /-- Ex falso. The dependent eliminator for the empty `Fin2 0` type. -/
 def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i := fun.
+#align fin2.elim0 Fin2.elim0
 
 /-- Converts a `Fin2` into a natural. -/
 def toNat : ∀ {n}, Fin2 n → ℕ
   | _, @fz _ => 0
   | _, @fs _ i => succ (toNat i)
+#align fin2.to_nat Fin2.toNat
 
 /-- Converts a natural into a `Fin2` if it is in range -/
 def optOfNat : ∀ {n}, ℕ → Option (Fin2 n)
   | 0, _ => none
   | succ _, 0 => some fz
   | succ m, succ k => fs <$> @optOfNat m k
+#align fin2.opt_of_nat Fin2.optOfNat
 
 /-- `i + k : Fin2 (n + k)` when `i : Fin2 n` and `k : ℕ` -/
 def add {n} (i : Fin2 n) : ∀ k, Fin2 (n + k)
   | 0 => i
   | succ k => fs (add i k)
+#align fin2.add Fin2.add
 
 /-- `left k` is the embedding `Fin2 n → Fin2 (k + n)` -/
 def left (k) : ∀ {n}, Fin2 n → Fin2 (k + n)
   | _, @fz _ => fz
   | _, @fs _ i => fs (left k i)
+#align fin2.left Fin2.left
 
 /-- `insertPerm a` is a permutation of `Fin2 n` with the following properties:
   * `insertPerm a i = i+1` if `i < a`
@@ -89,6 +94,7 @@ def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
     match insertPerm i j with
     | fz => fz
     | fs k => fs (fs k)
+#align fin2.insert_perm Fin2.insertPerm
 
 /-- `remapLeft f k : Fin2 (m + k) → Fin2 (n + k)` applies the function
   `f : Fin2 m → Fin2 n` to inputs less than `m`, and leaves the right part
@@ -97,25 +103,28 @@ def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + 
   | 0, i => f i
   | succ _, @fz _ => fz
   | succ _, @fs _ i => fs (remapLeft f _ i)
+#align fin2.remap_left Fin2.remapLeft
 
 /-- This is a simple type class inference prover for proof obligations
   of the form `m < n` where `m n : ℕ`. -/
-class IsLt (m n : ℕ) where
-  /-- The unique field of `Fin2.IsLt`, a proof that `m < n`. -/
+class IsLT (m n : ℕ) : Prop where
+  /-- The unique field of `Fin2.IsLT`, a proof that `m < n`. -/
   h : m < n
+#align fin2.is_lt Fin2.IsLT
 
-instance IsLt.zero (n) : IsLt 0 (succ n) :=
+instance IsLT.zero (n) : IsLT 0 (succ n) :=
   ⟨succ_pos _⟩
 
-instance IsLt.succ (m n) [l : IsLt m n] : IsLt (succ m) (succ n) :=
+instance IsLT.succ (m n) [l : IsLT m n] : IsLT (succ m) (succ n) :=
   ⟨succ_lt_succ l.h⟩
 
 /-- Use type class inference to infer the boundedness proof, so that we can directly convert a
 `Nat` into a `Fin2 n`. This supports notation like `&1 : Fin 3`. -/
-def ofNat' : ∀ {n} (m) [IsLt m n], Fin2 n
-  | 0, _, ⟨h⟩ => absurd h (Nat.not_lt_zero _)
-  | succ _, 0, ⟨_⟩ => fz
-  | succ n, succ m, ⟨h⟩ => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h⟩)
+def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
+  | 0, _, h => absurd h.h (Nat.not_lt_zero _)
+  | succ _, 0, _ => fz
+  | succ n, succ m, h => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h.h⟩)
+#align fin2.of_nat' Fin2.ofNat'
 
 @[inherit_doc] local prefix:arg "&" => ofNat'
 

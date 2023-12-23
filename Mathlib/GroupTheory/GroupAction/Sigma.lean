@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module group_theory.group_action.sigma
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.sigma from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-!
 # Sigma instances for additive and multiplicative actions
@@ -23,7 +20,7 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 -/
 
 
-variable {ι : Type _} {M N : Type _} {α : ι → Type _}
+variable {ι : Type*} {M N : Type*} {α : ι → Type*}
 
 namespace Sigma
 
@@ -33,17 +30,19 @@ variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α 
 
 @[to_additive Sigma.VAdd]
 instance : SMul M (Σi, α i) :=
-  ⟨fun a => (Sigma.map id) fun _ => (· • ·) a⟩
+  ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map id fun _ => (· • ·) a :=
+theorem smul_def : a • x = x.map id fun _ => (a • ·) :=
   rfl
 #align sigma.smul_def Sigma.smul_def
+#align sigma.vadd_def Sigma.vadd_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
   rfl
 #align sigma.smul_mk Sigma.smul_mk
+#align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
 instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
@@ -68,6 +67,7 @@ instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsC
 protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
   ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (ext_iff.1 <| h <| mk i a).2⟩
 #align sigma.has_faithful_smul' Sigma.FaithfulSMul'
+#align sigma.has_faithful_vadd' Sigma.FaithfulVAdd'
 
 @[to_additive]
 instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=

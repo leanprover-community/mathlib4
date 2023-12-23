@@ -2,15 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.sqrt
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
+
+#align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Square root of natural numbers
@@ -27,6 +25,7 @@ See [Wikipedia, *Methods of computing square roots*]
 
 namespace Nat
 
+#align nat.sqrt Nat.sqrt
 -- Porting note: the implementation òf `Nat.sqrt` in `Std` no longer needs `sqrt_aux`.
 #noalign nat.sqrt_aux_dec
 #noalign nat.sqrt_aux
@@ -48,8 +47,8 @@ To turn this into a lean proof we need to manipulate, use properties of natural 
 -/
 private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
-  | 0 => simp [IsSqrt]
-  | 1 => simp [IsSqrt]
+  | 0 => simp [IsSqrt, sqrt]
+  | 1 => simp [IsSqrt, sqrt]
   | n + 2 =>
     have h : ¬ (n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
@@ -113,10 +112,8 @@ theorem sqrt_zero : sqrt 0 = 0 := rfl
 
 theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
   ⟨fun h =>
-    Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
-   by
-    rintro rfl
-    simp⟩
+      Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
+    by rintro rfl; simp⟩
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
@@ -180,6 +177,11 @@ theorem exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
   simpa only [pow_two] using exists_mul_self x
 #align nat.exists_mul_self' Nat.exists_mul_self'
 
+/-- `IsSquare` can be decided on `ℕ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℕ → Prop) :=
+  fun m => decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
+    simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
+
 theorem sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
   lt_succ_iff.mpr (sqrt_le _)
 #align nat.sqrt_mul_sqrt_lt_succ Nat.sqrt_mul_sqrt_lt_succ
@@ -197,8 +199,8 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 #align nat.succ_le_succ_sqrt' Nat.succ_le_succ_sqrt'
 
 /-- There are no perfect squares strictly between m² and (m+1)² -/
-theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t * t = n :=
-  by
+theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
+    ¬∃ t, t * t = n := by
   rintro ⟨t, rfl⟩
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
   have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.mpr hr

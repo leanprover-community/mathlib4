@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Spread
 
+set_option autoImplicit true
 class Foo (α : Type) where
   bar : True
 

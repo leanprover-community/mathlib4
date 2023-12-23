@@ -2,16 +2,12 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module combinatorics.quiver.connected_component
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import combinatorics.quiver.connected_component from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 ## Weakly connected components
@@ -27,19 +23,21 @@ universe v u
 
 namespace Quiver
 
-variable (V : Type _) [Quiver.{u+1} V]
+variable (V : Type*) [Quiver.{u+1} V]
 
 /-- Two vertices are related in the zigzag setoid if there is a
     zigzag of arrows from one to the other. -/
 def zigzagSetoid : Setoid V :=
   ⟨fun a b ↦ Nonempty (@Path (Symmetrify V) _ a b), fun _ ↦ ⟨Path.nil⟩, fun ⟨p⟩ ↦
     ⟨p.reverse⟩, fun ⟨p⟩ ⟨q⟩ ↦ ⟨p.comp q⟩⟩
+#align quiver.zigzag_setoid Quiver.zigzagSetoid
 
 /-- The type of weakly connected components of a directed graph. Two vertices are
     in the same weakly connected component if there is a zigzag of arrows from one
     to the other. -/
 def WeaklyConnectedComponent : Type _ :=
   Quotient (zigzagSetoid V)
+#align quiver.weakly_connected_component Quiver.WeaklyConnectedComponent
 
 namespace WeaklyConnectedComponent
 
@@ -48,6 +46,7 @@ variable {V}
 /-- The weakly connected component corresponding to a vertex. -/
 protected def mk : V → WeaklyConnectedComponent V :=
   @Quotient.mk' _ (zigzagSetoid V)
+#align quiver.weakly_connected_component.mk Quiver.WeaklyConnectedComponent.mk
 
 instance : CoeTC V (WeaklyConnectedComponent V) :=
   ⟨WeaklyConnectedComponent.mk⟩
@@ -57,7 +56,8 @@ instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) :=
 
 protected theorem eq (a b : V) :
     (a : WeaklyConnectedComponent V) = b ↔ Nonempty (@Path (Symmetrify V) _ a b) :=
-  Quotient.eq'
+  Quotient.eq''
+#align quiver.weakly_connected_component.eq Quiver.WeaklyConnectedComponent.eq
 
 end WeaklyConnectedComponent
 
@@ -66,9 +66,9 @@ variable {V}
 -- Without the explicit universe level in `Quiver.{v+1}` Lean comes up with
 -- `Quiver.{max u_2 u_3 + 1}`. This causes problems elsewhere, so we write `Quiver.{v+1}`.
 /-- A wide subquiver `H` of `Symmetrify V` determines a wide subquiver of `V`, containing an
-    an arrow `e` if either `e` or its reversal is in `H`. -/
+    arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
+#align quiver.wide_subquiver_symmetrify Quiver.wideSubquiverSymmetrify
 
 end Quiver
-

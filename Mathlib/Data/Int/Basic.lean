@@ -2,18 +2,13 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Logic.Nontrivial
+
+#align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
 # Basic operations on the integers
@@ -23,13 +18,15 @@ This file contains:
 * some basic lemmas about integers
 -/
 
+set_option autoImplicit true
+
 open Nat
 
 namespace Int
 
-instance : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
-instance : CommRing ℤ where
+instance instCommRingInt : CommRing ℤ where
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
@@ -48,10 +45,14 @@ instance : CommRing ℤ where
   add_left_neg := Int.add_left_neg
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
-  nsmul_succ n x := by
-    show ofNat (Nat.succ n) * x = x + ofNat n * x
-    simp only [ofNat_eq_coe]
-    rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  nsmul_succ n x :=
+    show (n + 1 : ℤ) * x = x + n * x
+    by rw [Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul := (·*·)
+  zsmul_zero' := Int.zero_mul
+  zsmul_succ' m n := by
+    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
   natCast_zero := rfl
@@ -61,6 +62,17 @@ instance : CommRing ℤ where
   intCast_negSucc _ := rfl
 
 @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+
+@[simp, norm_cast]
+theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
+  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
+  · induction m with
+    | zero => simp
+    | succ m ih => simp_all [add_mul]
+  · induction m with
+    | zero => simp
+    | succ m ih => simp_all [add_mul]
+#align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
 
 @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 
@@ -76,12 +88,10 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 @[norm_cast]
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
--- TODO restore @[to_additive coe_nat_zsmul]
-@[simp, norm_cast]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
-@[simp]
-theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+  zpow_ofNat ..
+#align coe_nat_zsmul coe_nat_zsmul
 
 /-! ### Extra instances to short-circuit type class resolution
 
@@ -100,7 +110,7 @@ instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
 instance : CommSemiring ℤ     := by infer_instance
 instance : Semiring ℤ         := by infer_instance
-instance : Ring ℤ             := by infer_instance
+instance instRingInt : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg
@@ -120,41 +130,62 @@ theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.of
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
 theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
+#align int.coe_nat_nonneg Int.coe_nat_nonneg
 
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
+
+@[simp]
+theorem sign_coe_add_one (n : ℕ) : Int.sign (n + 1) = 1 :=
+  rfl
+#align int.sign_coe_add_one Int.sign_coe_add_one
+
+#align int.sign_neg_succ_of_nat Int.sign_negSucc
 
 /-! ### succ and pred -/
 
 /-- Immediate successor of an integer: `succ n = n + 1` -/
 def succ (a : ℤ) := a + 1
+#align int.succ Int.succ
 
 /-- Immediate predecessor of an integer: `pred n = n - 1` -/
 def pred (a : ℤ) := a - 1
+#align int.pred Int.pred
 
 theorem nat_succ_eq_int_succ (n : ℕ) : (Nat.succ n : ℤ) = Int.succ n := rfl
+#align int.nat_succ_eq_int_succ Int.nat_succ_eq_int_succ
 
 theorem pred_succ (a : ℤ) : pred (succ a) = a := add_sub_cancel _ _
+#align int.pred_succ Int.pred_succ
 
 theorem succ_pred (a : ℤ) : succ (pred a) = a := sub_add_cancel _ _
+#align int.succ_pred Int.succ_pred
 
 theorem neg_succ (a : ℤ) : -succ a = pred (-a) := neg_add _ _
+#align int.neg_succ Int.neg_succ
 
 theorem succ_neg_succ (a : ℤ) : succ (-succ a) = -a := by rw [neg_succ, succ_pred]
+#align int.succ_neg_succ Int.succ_neg_succ
 
 theorem neg_pred (a : ℤ) : -pred a = succ (-a) := by
-  rw [eq_neg_of_eq_neg (neg_succ (-a)).symm, neg_neg]
+  rw [neg_eq_iff_eq_neg.mp (neg_succ (-a)), neg_neg]
+#align int.neg_pred Int.neg_pred
 
 theorem pred_neg_pred (a : ℤ) : pred (-pred a) = -a := by rw [neg_pred, pred_succ]
+#align int.pred_neg_pred Int.pred_neg_pred
 
 theorem pred_nat_succ (n : ℕ) : pred (Nat.succ n) = n := pred_succ n
+#align int.pred_nat_succ Int.pred_nat_succ
 
 theorem neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
+#align int.neg_nat_succ Int.neg_nat_succ
 
 theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
+#align int.succ_neg_nat_succ Int.succ_neg_nat_succ
 
 @[norm_cast] theorem coe_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
   cases n; cases h; simp
+#align int.coe_pred_of_pos Int.coe_pred_of_pos
 
 @[elab_as_elim] protected theorem induction_on {p : ℤ → Prop} (i : ℤ)
     (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
@@ -168,8 +199,12 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
     intro n; induction n with
     | zero => simp [hz, Nat.cast_zero]
     | succ n ih => convert hn _ ih using 1; simp [sub_eq_neg_add]
+#align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
+
+theorem natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
+#align int.nat_abs_surjective Int.natAbs_surjective
 
 #align int.nat_abs_add_le Int.natAbs_add_le
 #align int.nat_abs_sub_le Int.natAbs_sub_le
@@ -231,8 +266,8 @@ theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -(
 #align int.zero_mod Int.zero_modₓ -- int div alignment
 #align int.mod_zero Int.mod_zeroₓ -- int div alignment
 #align int.mod_one Int.mod_oneₓ -- int div alignment
-#align int.mod_eq_of_lt Int.mod_eq_of_ltₓ -- int div alignment
-#align int.mod_add_div Int.mod_add_divₓ -- int div alignment
+#align int.mod_eq_of_lt Int.emod_eq_of_lt -- int div alignment
+#align int.mod_add_div Int.emod_add_ediv -- int div alignment
 #align int.div_add_mod Int.div_add_modₓ -- int div alignment
 #align int.mod_add_div' Int.mod_add_div'ₓ -- int div alignment
 #align int.div_add_mod' Int.div_add_mod'ₓ -- int div alignment
@@ -256,7 +291,7 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 #align int.of_nat_add_neg_succ_of_nat_of_lt Int.ofNat_add_negSucc_of_lt
 #align int.neg_add_neg Int.negSucc_add_negSucc
 
-/-! ### to_nat -/
+/-! ### toNat -/
 
 #align int.to_nat_eq_max Int.toNat_eq_max
 #align int.to_nat_zero Int.toNat_zero
@@ -277,70 +312,4 @@ theorem sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sig
 #align int.to_nat_sub_to_nat_neg Int.toNat_sub_toNat_neg
 #align int.to_nat_add_to_nat_neg_eq_nat_abs Int.toNat_add_toNat_neg_eq_natAbs
 #align int.mem_to_nat' Int.mem_toNat'
-#align int.toNat_neg_nat Int.toNat_neg_nat
-
-/- TODO
-/-! ### units -/
-
-@[simp]
-theorem units_nat_abs (u : ℤˣ) : natAbs u = 1 :=
-  Units.ext_iff.1 <|
-    Nat.units_eq_one
-      ⟨natAbs u, natAbs ↑u⁻¹, by rw [← nat_abs_mul, Units.mul_inv] <;> rfl, by
-        rw [← nat_abs_mul, Units.inv_mul] <;> rfl⟩
-#align int.units_nat_abs Int.units_nat_abs
-
-theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by simpa only [Units.ext_iff, units_nat_abs] using nat_abs_eq u
-#align int.units_eq_one_or Int.units_eq_one_or
-
-theorem is_unit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
-  | ⟨x, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg coe) (congr_arg coe)
-#align int.is_unit_eq_one_or Int.is_unit_eq_one_or
-
-theorem is_unit_iff {a : ℤ} : IsUnit a ↔ a = 1 ∨ a = -1 := by
-  refine' ⟨fun h ↦ is_unit_eq_one_or h, fun h ↦ _⟩
-  rcases h with (rfl | rfl)
-  · exact is_unit_one
-
-  · exact is_unit_one.neg
-
-#align int.is_unit_iff Int.is_unit_iff
-
-theorem is_unit_eq_or_eq_neg {a b : ℤ} (ha : IsUnit a) (hb : IsUnit b) : a = b ∨ a = -b := by
-  rcases is_unit_eq_one_or hb with (rfl | rfl)
-  · exact is_unit_eq_one_or ha
-
-  · rwa [or_comm', neg_neg, ← is_unit_iff]
-
-#align int.is_unit_eq_or_eq_neg Int.is_unit_eq_or_eq_neg
-
-theorem eq_one_or_neg_one_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = 1 ∨ z = -1 :=
-  is_unit_iff.mp (is_unit_of_mul_eq_one z w h)
-#align int.eq_one_or_neg_one_of_mul_eq_one Int.eq_one_or_neg_one_of_mul_eq_one
-
-theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) : z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
-  have h' : w * z = 1 := mul_comm z w ▸ h
-  rcases eq_one_or_neg_one_of_mul_eq_one h with (rfl | rfl) <;>
-    rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
-#align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
-
-theorem is_unit_iff_nat_abs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by simp [nat_abs_eq_iff, is_unit_iff, Nat.cast_zero]
-#align int.is_unit_iff_nat_abs_eq Int.is_unit_iff_nat_abs_eq
-
-alias is_unit_iff_nat_abs_eq ↔ is_unit.nat_abs_eq _
-
-@[norm_cast]
-theorem of_nat_is_unit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by
-  rw [Nat.is_unit_iff, is_unit_iff_nat_abs_eq, nat_abs_of_nat]
-#align int.of_nat_is_unit Int.of_nat_is_unit
-
-theorem is_unit_mul_self {a : ℤ} (ha : IsUnit a) : a * a = 1 :=
-  (is_unit_eq_one_or ha).elim (fun h ↦ h.symm ▸ rfl) fun h ↦ h.symm ▸ rfl
-#align int.is_unit_mul_self Int.is_unit_mul_self
-
-theorem is_unit_add_is_unit_eq_is_unit_add_is_unit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b) (hc : IsUnit c)
-    (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
-  rw [is_unit_iff] at ha hb hc hd
-  cases ha <;> cases hb <;> cases hc <;> cases hd <;> subst ha <;> subst hb <;> subst hc <;> subst hd <;> tidy
-#align int.is_unit_add_is_unit_eq_is_unit_add_is_unit Int.is_unit_add_is_unit_eq_is_unit_add_is_unit
--/
+#align int.to_nat_neg_nat Int.toNat_neg_nat

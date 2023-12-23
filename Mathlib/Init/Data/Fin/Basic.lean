@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Util.MapsTo
 
 /-!
 # Theorems about equality in `Fin`.
 -/
+
+set_option autoImplicit true
 
 namespace Fin
 

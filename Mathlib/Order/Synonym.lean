@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.synonym
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Order.Basic
+
+#align_import order.synonym from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Type synonyms
@@ -39,7 +36,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-! ### Order dual -/
 
@@ -52,10 +49,12 @@ instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
 /-- `toDual` is the identity function to the `OrderDual` of a linear order.  -/
 def toDual : α ≃ αᵒᵈ :=
   Equiv.refl _
+#align order_dual.to_dual OrderDual.toDual
 
 /-- `ofDual` is the identity function from the `OrderDual` of a linear order.  -/
 def ofDual : αᵒᵈ ≃ α :=
   Equiv.refl _
+#align order_dual.of_dual OrderDual.ofDual
 
 @[simp]
 theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
@@ -125,25 +124,28 @@ theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < 
 
 /-- Recursor for `αᵒᵈ`. -/
 @[elab_as_elim]
-protected def rec {C : αᵒᵈ → Sort _} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
+protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
   h₂
+#align order_dual.rec OrderDual.rec
 
 @[simp]
 protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
   Iff.rfl
+#align order_dual.forall OrderDual.forall
 
 @[simp]
 protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
   Iff.rfl
+#align order_dual.exists OrderDual.exists
 
-alias toDual_le_toDual ↔ _ _root_.LE.le.dual
+alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
 
-alias toDual_lt_toDual ↔ _ _root_.LT.lt.dual
+alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual
 
-alias ofDual_le_ofDual ↔ _ _root_.LE.le.ofDual
+alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
 #align has_le.le.of_dual LE.le.ofDual
 
-alias ofDual_lt_ofDual ↔ _ _root_.LT.lt.ofDual
+alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
 #align has_lt.lt.of_dual LT.lt.ofDual
 
 end OrderDual
@@ -152,18 +154,21 @@ end OrderDual
 
 
 /-- A type synonym to equip a type with its lexicographic order. -/
-def Lex (α : Type _) :=
+def Lex (α : Type*) :=
   α
+#align lex Lex
 
 /-- `toLex` is the identity function to the `Lex` of a type.  -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
+#align to_lex toLex
 
-/-- `ofLex` is the identity function from the `lex` of a type.  -/
+/-- `ofLex` is the identity function from the `Lex` of a type.  -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _
+#align of_lex ofLex
 
 @[simp]
 theorem toLex_symm_eq : (@toLex α).symm = ofLex :=
@@ -198,4 +203,8 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
 #align of_lex_inj ofLex_inj
 
 /-- A recursor for `Lex`. Use as `induction x using Lex.rec`. -/
-protected def Lex.rec {β : Lex α → Sort _} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
+protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
+#align lex.rec Lex.rec
+
+@[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) := Iff.rfl
+@[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl
