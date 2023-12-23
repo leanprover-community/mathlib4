@@ -228,3 +228,16 @@ theorem lt_of_pow_dvd_right {p i n : ℕ} (hn : n ≠ 0) (hp : 2 ≤ p) (h : p ^
 #align nat.lt_of_pow_dvd_right Nat.lt_of_pow_dvd_right
 
 end Nat
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on the 2023/12/23.
+-/
+
+@[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated] alias Nat.pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+@[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
+@[deprecated] alias Nat.pow_right_strictMono := pow_right_strictMono
+@[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
+@[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
