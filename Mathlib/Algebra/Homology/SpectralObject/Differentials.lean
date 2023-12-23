@@ -532,6 +532,40 @@ lemma d_EIsoH_hom :
 
 end
 
+section
+
+variable (n₀ n₁ n₂ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i₀ i₁ i₂ i₃ : ι}
+  (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  {i₀' i₁' i₂' i₃' : ι}
+  (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
+  (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
+  (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2))
+
+@[reassoc]
+lemma cyclesIso_inv_cyclesMap :
+    (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
+      ShortComplex.cyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) =
+      X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫
+        (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').inv := by
+  subst hβ
+  rw [← cancel_mono (ShortComplex.iCycles _), assoc, assoc, ShortComplex.cyclesMap_i,
+    cyclesIso_inv_i_assoc, cyclesIso_inv_i]
+  symm
+  apply cyclesMap_i
+  rfl
+
+@[reassoc]
+lemma πE_EMap :
+    X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α =
+      X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' := by
+  dsimp [πE, EMap]
+  simp only [assoc, ShortComplex.homologyπ_naturality,
+    X.cyclesIso_inv_cyclesMap_assoc n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α β hβ]
+
+end
+
 end SpectralObject
 
 end Abelian

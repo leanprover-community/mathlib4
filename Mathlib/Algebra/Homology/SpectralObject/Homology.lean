@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.SpectralObject.Differentials
 
 namespace CategoryTheory
 
-open ComposableArrows
+open Category Limits ComposableArrows
 
 namespace Abelian
 
@@ -21,24 +21,35 @@ variable (n₀ n₁ n₂ n₃ : ℤ)
   (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
   (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
 
-/-@[reassoc (attr := simp)]
+@[reassoc (attr := simp)]
 lemma d_EMap_fourδ₄Toδ₃ :
     X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫
       X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) = 0 := by
-  sorry
+  rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅),
+    ← cancel_epi (X.toCycles n₁ n₂ hn₂ f₃ f₄ f₃₄ h₃₄), comp_zero, comp_zero,
+    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ _ rfl f₃₄ h₃₄,
+    X.πE_EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) (𝟙 _) (by ext <;> simp; rfl),
+    cyclesMap_id, Category.id_comp, δ_toCycles_assoc, δToCycles_πE]
 
 instance :
     Epi (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
-  sorry
+  have fac : X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
+      X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) =
+        X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃₄ := by
+    rw [X.πE_EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄
+      (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) (𝟙 _) (by ext <;> simp; rfl), cyclesMap_id, id_comp]
+  exact epi_of_epi_fac fac
 
-@[reassoc (attr := simp)]
+/-@[reassoc (attr := simp)]
 lemma EMap_fourδ₁Toδ₀_d :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
-      X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ = 0 := sorry
+      X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ = 0 := by
+  sorry
 
 instance :
     Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
-  sorry
+  sorry-/
 
 @[simps!]
 noncomputable def dCokernelSequence : ShortComplex C :=
@@ -48,10 +59,10 @@ instance : Epi (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f
   dsimp
   infer_instance
 
-lemma dCokernelSequence_exact :
-    (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄).Exact := sorry
+/-lemma dCokernelSequence_exact :
+    (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄).Exact := sorry-/
 
-@[simps!]
+/-@[simps!]
 noncomputable def dKernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (X.EMap_fourδ₁Toδ₀_d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
 
