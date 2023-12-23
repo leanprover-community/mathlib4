@@ -17,10 +17,6 @@ This is mostly useful to define pointwise operations and `Set.seq`.
 
 This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry`, and to
 `Data.Option.NAry`. Please keep them in sync.
-
-We also define `Set.image3`.
-Its only purpose is to prove properties of `Set.image2`,
-and it should be rarely used outside of this file.
 -/
 
 open Function
@@ -219,62 +215,17 @@ theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s
   image2_congr fun a _ b _ => h a b
 #align set.image2_congr' Set.image2_congr'
 
-/-- The image of a ternary function `f : α → β → γ → δ` as a function
-  `Set α → Set β → Set γ → Set δ`. Mathematically this should be thought of as the image of the
-  corresponding function `α × β × γ → δ`.
--/
-def image3 (g : α → β → γ → δ) (s : Set α) (t : Set β) (u : Set γ) : Set δ :=
-  { d | ∃ a b c, a ∈ s ∧ b ∈ t ∧ c ∈ u ∧ g a b c = d }
-#align set.image3 Set.image3
-
-@[simp]
-theorem mem_image3 : d ∈ image3 g s t u ↔ ∃ a b c, a ∈ s ∧ b ∈ t ∧ c ∈ u ∧ g a b c = d :=
-  Iff.rfl
-#align set.mem_image3 Set.mem_image3
-
-theorem image3_mono (hs : s ⊆ s') (ht : t ⊆ t') (hu : u ⊆ u') :
-    image3 g s t u ⊆ image3 g s' t' u' := fun _ =>
-  Exists₃.imp fun _ _ _ ⟨ha, hb, hc, hx⟩ => ⟨hs ha, ht hb, hu hc, hx⟩
-#align set.image3_mono Set.image3_mono
-
-@[congr]
-theorem image3_congr (h : ∀ a ∈ s, ∀ b ∈ t, ∀ c ∈ u, g a b c = g' a b c) :
-    image3 g s t u = image3 g' s t u := by
-  ext x
-  constructor <;> rintro ⟨a, b, c, ha, hb, hc, rfl⟩ <;>
-    exact ⟨a, b, c, ha, hb, hc, by rw [h a ha b hb c hc]⟩
-#align set.image3_congr Set.image3_congr
-
-/-- A common special case of `image3_congr` -/
-theorem image3_congr' (h : ∀ a b c, g a b c = g' a b c) : image3 g s t u = image3 g' s t u :=
-  image3_congr fun a _ b _ c _ => h a b c
-#align set.image3_congr' Set.image3_congr'
-
-theorem image2_image2_left (f : δ → γ → ε) (g : α → β → δ) :
-    image2 f (image2 g s t) u = image3 (fun a b c => f (g a b) c) s t u := by
-  ext; constructor
-  · rintro ⟨_, c, ⟨a, b, ha, hb, rfl⟩, hc, rfl⟩
-    refine' ⟨a, b, c, ha, hb, hc, rfl⟩
-  · rintro ⟨a, b, c, ha, hb, hc, rfl⟩
-    refine' ⟨_, c, ⟨a, b, ha, hb, rfl⟩, hc, rfl⟩
-#align set.image2_image2_left Set.image2_image2_left
-
-theorem image2_image2_right (f : α → δ → ε) (g : β → γ → δ) :
-    image2 f s (image2 g t u) = image3 (fun a b c => f a (g b c)) s t u := by
-  ext; constructor
-  · rintro ⟨a, _, ha, ⟨b, c, hb, hc, rfl⟩, rfl⟩
-    refine' ⟨a, b, c, ha, hb, hc, rfl⟩
-  · rintro ⟨a, b, c, ha, hb, hc, rfl⟩
-    refine' ⟨a, _, ha, ⟨b, c, hb, hc, rfl⟩, rfl⟩
-#align set.image2_image2_right Set.image2_image2_right
+#noalign set.image3
+#noalign set.mem_image3
+#noalign set.image3_mono
+#noalign set.image3_congr
+#noalign set.image3_congr'
+#noalign set.image2_image2_left
+#noalign set.image2_image2_right
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
     g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
-  ext; constructor
-  · rintro ⟨_, ⟨a, b, ha, hb, rfl⟩, rfl⟩
-    refine' ⟨a, b, ha, hb, rfl⟩
-  · rintro ⟨a, b, ha, hb, rfl⟩
-    refine' ⟨_, ⟨a, b, ha, hb, rfl⟩, rfl⟩
+  simp only [← image_prod, image_image]
 #align set.image_image2 Set.image_image2
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
@@ -300,7 +251,9 @@ theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
 theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
     image2 f (image2 g s t) u = image2 f' s (image2 g' t u) := by
-  simp only [image2_image2_left, image2_image2_right, h_assoc]
+  rw [← image_prod g, ← image_prod g', image2_image_left, image2_image_right]
+  ext
+  simp only [mem_image2, Prod.exists, h_assoc, prod_mk_mem_set_prod_eq, and_assoc]
 #align set.image2_assoc Set.image2_assoc
 
 theorem image2_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image2 f s t = image2 g t s :=
