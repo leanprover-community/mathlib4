@@ -88,8 +88,8 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
   rfl
 #align finset.pi_empty Finset.pi_empty
 
-lemma pi_nonempty (ht : ∀ a ∈ s, (t a).Nonempty) : (s.pi t).Nonempty := by
-  choose x hx using ht; exact ⟨x, mem_pi.2 hx⟩
+@[simp] lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty  := by
+  simp [Finset.Nonempty, Classical.skolem]
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}

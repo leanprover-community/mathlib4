@@ -60,8 +60,8 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
   eq_empty_of_forall_not_mem fun _ => by simp
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
-lemma piFinset_nonempty (hs : ∀ a, (s a).Nonempty) : (piFinset s).Nonempty :=
-  (pi_nonempty fun _ _ ↦ hs _).map
+@[simp] lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
+  simp [Finset.Nonempty, Classical.skolem]
 
 @[simp]
 lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s = univ :=
