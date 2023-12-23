@@ -347,7 +347,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
-@[simp] lemma cast_eq_self (h : n = n) (a : Fin n) : cast h a = a := rfl
+@[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
   ext <| by
