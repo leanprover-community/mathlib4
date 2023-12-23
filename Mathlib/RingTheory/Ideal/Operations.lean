@@ -790,24 +790,24 @@ theorem sup_mul : (I ⊔ J) * K = I * K ⊔ J * K :=
 
 variable {I J K}
 
-theorem pow_le_pow {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
+theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
   cases' Nat.exists_eq_add_of_le h with k hk
   rw [hk, pow_add]
   exact le_trans mul_le_inf inf_le_left
-#align ideal.pow_le_pow Ideal.pow_le_pow
+#align ideal.pow_le_pow_right Ideal.pow_le_pow_right
 
 theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
   calc
-    I ^ n ≤ I ^ 1 := pow_le_pow (Nat.pos_of_ne_zero hn)
+    I ^ n ≤ I ^ 1 := pow_le_pow_right (Nat.pos_of_ne_zero hn)
     _ = I := pow_one _
 #align ideal.pow_le_self Ideal.pow_le_self
 
-theorem pow_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
+theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
   induction' n with _ hn
   · rw [pow_zero, pow_zero]
   · rw [pow_succ, pow_succ]
     exact Ideal.mul_mono e hn
-#align ideal.pow_mono Ideal.pow_mono
+#align ideal.pow_right_mono Ideal.pow_right_mono
 
 theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
     I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
@@ -1271,7 +1271,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
-      cases' s.eq_empty_or_nonempty with hse hsne
+      rcases s.eq_empty_or_nonempty with hse | hsne
       · subst hse
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)

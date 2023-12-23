@@ -401,7 +401,7 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {
       · exact fun x y => (OrderIso.funUnique (Fin 1) ℝ).symm.le_iff_le
       · exact (volume_preserving_funUnique (Fin 1) ℝ).symm _
       · intro x; rw [Fin.sum_univ_one, hF', e_symm, Pi.single_eq_same, one_smul]
-      · rw [intervalIntegrable_iff_integrable_Ioc_of_le hle] at Hi
+      · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
       simp only [Fin.sum_univ_one, e_symm]
@@ -419,7 +419,7 @@ theorem integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b
     (hs : s.Countable) (Hc : ContinuousOn f [[a, b]])
     (Hd : ∀ x ∈ Ioo (min a b) (max a b) \ s, HasDerivAt f (f' x) x)
     (Hi : IntervalIntegrable f' volume a b) : ∫ x in a..b, f' x = f b - f a := by
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · simp only [uIcc_of_le hab, min_eq_left hab, max_eq_right hab] at *
     exact integral_eq_of_hasDerivWithinAt_off_countable_of_le f f' hab hs Hc Hd Hi
   · simp only [uIcc_of_ge hab, min_eq_right hab, max_eq_left hab] at *
