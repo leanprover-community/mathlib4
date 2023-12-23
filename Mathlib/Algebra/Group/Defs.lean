@@ -25,7 +25,7 @@ The file does not contain any lemmas except for
 
 For basic lemmas about these classes see `Algebra.Group.Basic`.
 
-We also introduce notation classes `SMul` and `VAdd` for multiplicative and additive
+We also introduce notation classes `lul` and `VAdd` for multiplicative and additive
 actions and register the following instances:
 
 - `Pow M ℕ`, for monoids `M`, and `Pow G ℤ` for groups `G`;
@@ -139,6 +139,9 @@ attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
+@[to_additive]
+theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
+
 attribute [to_additive existing (reorder := 1 2)] instHPow
 
 variable {G : Type*}
@@ -222,7 +225,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 #align add_left_cancel_iff add_left_cancel_iff
 
 @[to_additive]
-theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
+theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
 #align mul_right_injective mul_right_injective
 #align add_right_injective add_right_injective
 
@@ -989,7 +992,7 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
+    _ = a * a ^ n := congr_arg (a * ·) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 #align zpow_coe_nat zpow_ofNat
 #align zpow_of_nat zpow_ofNat

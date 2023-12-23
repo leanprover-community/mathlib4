@@ -2774,7 +2774,7 @@ theorem IsClosed.sInf_mem {α : Type u} [TopologicalSpace α] [CompleteLinearOrd
 this supremum to the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (fbot : f ⊥ = ⊥) : f (sSup s) = sSup (f '' s) := by
-  cases' s.eq_empty_or_nonempty with h h
+  rcases s.eq_empty_or_nonempty with h | h
   · simp [h, fbot]
   · exact Mf.map_sSup_of_continuousAt' Cf h
 #align monotone.map_Sup_of_continuous_at Monotone.map_sSup_of_continuousAt

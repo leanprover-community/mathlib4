@@ -216,7 +216,7 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
 theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     IsSupClosedCompact α := by
   intro s hne hsc; obtain ⟨t, ht₁, ht₂⟩ := h s; clear h
-  cases' t.eq_empty_or_nonempty with h h
+  rcases t.eq_empty_or_nonempty with h | h
   · subst h
     rw [Finset.sup_empty] at ht₂
     rw [ht₂]
@@ -263,7 +263,7 @@ theorem isSupFiniteCompact_iff_all_elements_compact :
 
 open List in
 theorem wellFounded_characterisations : List.TFAE
-    [WellFounded (( · > · ) : α → α → Prop),
+    [WellFounded ((· > ·) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
   tfae_have 1 → 2
   · exact WellFounded.isSupFiniteCompact α

@@ -56,6 +56,7 @@ back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
+instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 

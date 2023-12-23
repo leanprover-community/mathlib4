@@ -30,7 +30,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
     -- we go through the application until we reach the end, counting how many explicit arguments
     -- it has and noting whether they are explicit or implicit
     while descExp.isApp do
-      if (←Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
+      if (← Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
         explicitList := true::explicitList
         count := count + 1
       else
@@ -133,4 +133,5 @@ open scoped Json in
 in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
+   (pure $ json% { replaceRange: $(replaceRange) }) stx
