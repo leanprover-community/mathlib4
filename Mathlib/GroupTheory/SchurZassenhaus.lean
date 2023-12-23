@@ -65,8 +65,8 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
         (fun q _ => Subtype.ext _) (fun q _ => g • q) (fun q _ => Finset.mem_univ _)
         (fun q _ => smul_inv_smul g q) fun q _ => inv_smul_smul g q)
       (map_prod ϕ _ _).symm
-  simp only [MonoidHom.id_apply, MonoidHom.coe_mk, OneHom.coe_mk,
-    smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc]
+  simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev,
+    MonoidHom.id_apply, id_eq, MonoidHom.coe_mk, OneHom.coe_mk, mul_assoc]
 #align subgroup.smul_diff_smul' Subgroup.smul_diff_smul'
 
 variable {H} [Normal H]
@@ -90,9 +90,10 @@ theorem smul_diff' (h : H) :
   letI := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
-  simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
-  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op, mul_left_inj, ← Subtype.ext_iff,
-    Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
+  simp only [MonoidHom.id_apply, id_eq, Subtype.ext_iff, Submonoid.coe_mul,
+    coe_toSubmonoid, mul_assoc, mul_right_inj]
+  rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, unop_op,
+    mul_left_inj, ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
   exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
