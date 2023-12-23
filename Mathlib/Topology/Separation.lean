@@ -248,12 +248,12 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
 theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
-    inseparable_iff_forall_open]
+    inseparable_iff_forall_open, Pairwise]
 #align t0_space_iff_exists_is_open_xor_mem t0Space_iff_exists_isOpen_xor'_mem
 
 theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) :=
-  (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› x y h
+  (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› h
 #align exists_is_open_xor_mem exists_isOpen_xor'_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
@@ -925,7 +925,7 @@ class T2Space (X : Type u) [TopologicalSpace X] : Prop where
 /-- Two different points can be separated by open sets. -/
 theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
     ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v :=
-  T2Space.t2 x y h
+  T2Space.t2 h
 #align t2_separation t2_separation
 
 -- todo: use this as a definition?

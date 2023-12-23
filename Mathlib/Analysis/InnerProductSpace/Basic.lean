@@ -729,7 +729,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     convert Finset.sum_eq_single (β := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
-      rw [inner_smul_right, ho i j hji.symm, mul_zero]
+      rw [inner_smul_right, ho hji.symm, mul_zero]
     · exact fun h => False.elim (h hi)
   simpa [hg, hz] using h'
 #align linear_independent_of_ne_zero_of_inner_eq_zero linearIndependent_of_ne_zero_of_inner_eq_zero

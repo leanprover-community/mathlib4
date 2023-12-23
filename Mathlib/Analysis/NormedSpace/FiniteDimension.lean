@@ -448,7 +448,7 @@ theorem finiteDimensional_of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
       conv_lhs => rw [← mul_one ‖c‖]
       simp only [dist_eq_norm, ← smul_sub, norm_smul]
       gcongr
-      apply lef _ _ (ne_of_gt _)
+      apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ finiteDimensional_of_isCompact_closedBall₀

@@ -206,7 +206,7 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     intro i
     have hI' : ∀ j ∈ ({i} : Finset ι)ᶜ, IsCoprime (I i) (I j) := by
       intros j hj
-      exact hI _ _ (by simpa [ne_comm, isCoprime_iff_add] using hj)
+      exact hI (by simpa [ne_comm, isCoprime_iff_add] using hj)
     rcases isCoprime_iff_exists.mp (isCoprime_biInf hI') with ⟨u, hu, e, he, hue⟩
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
     refine ⟨e, ?_, ?_⟩

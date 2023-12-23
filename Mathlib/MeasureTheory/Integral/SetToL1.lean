@@ -374,7 +374,7 @@ theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAd
         have h_eq : T ((⇑(f.pair g)) ⁻¹' {(f a, g a)}) = T (f ⁻¹' {f a} ∩ g ⁻¹' {g a}) := by
           congr; rw [pair_preimage_singleton f g]
         rw [h_eq]
-        exact h (f a) (g a) eq
+        exact h eq
       simp only [this, ContinuousLinearMap.zero_apply, pair_apply]
 #align measure_theory.simple_func.set_to_simple_func_congr' MeasureTheory.SimpleFunc.setToSimpleFunc_congr'
 

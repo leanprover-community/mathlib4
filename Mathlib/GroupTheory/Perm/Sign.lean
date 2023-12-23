@@ -578,7 +578,7 @@ theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
 #align equiv.perm.sign_symm Equiv.Perm.sign_symm
 
 theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 :=
-  (signAux3_mul_and_swap 1 1 _ mem_univ).2 x y h
+  (signAux3_mul_and_swap 1 1 _ mem_univ).2 h
 #align equiv.perm.sign_swap Equiv.Perm.sign_swap
 
 @[simp]

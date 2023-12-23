@@ -229,7 +229,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀
       · rw [h]
-      · exact (mul_le_mul_right_of_neg (h1 i j₀ h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
+      · exact (mul_le_mul_right_of_neg (h1 h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
 
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 row positive has nonzero determinant. -/
@@ -239,7 +239,7 @@ lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
   rw [← Matrix.det_transpose]
   refine det_ne_zero_of_sum_col_pos ?_ ?_
   · simp_rw [Matrix.transpose_apply]
-    exact fun i j h => h1 j i h.symm
+    exact fun i j h => h1 h.symm
   · simp_rw [Matrix.transpose_apply]
     exact h2
 
