@@ -81,6 +81,12 @@ def perfect (x : α) (y : β) : ℕ → BinTree α β
   | 0 => leaf y
   | n+1 => branch x (perfect x y n) (perfect x y n)
 
+/-- The height - length of the longest path from the root - of a binary tree -/
+@[simp]
+def height : BinTree α β → ℕ
+  | leaf _ => 0
+  | branch _ l r => max l.height r.height + 1
+
 nonrec def Bare.perfect : ℕ → Bare := perfect () ()
 
 -- Notation for making a node with `Unit` data
@@ -317,21 +323,49 @@ def cata (f : L → ω) (g : N → ω → ω → ω) : BinTree N L → ω
   | leaf x => f x
   | branch y l r => g y (cata f g l) (cata f g r)
 
-def terminatesOn (f : σ → L ⊕ (N × σ × σ)) : σ → Prop := Acc isChild
-  where isChild (s s₀ : σ) := s ∈ (f s₀).getRight?.map (Prod.fst ∘ Prod.snd)
-                              ∨ s ∈ (f s₀).getRight?.map (Prod.snd ∘ Prod.snd)
+-- I tried working with anamorphisms but it was too messy
+inductive generatedBy (f : σ → L ⊕ (N × σ × σ)) : σ → BinTree N L → Prop
+  | halt : ∀ {s x}, f s = Sum.inl x → generatedBy f s (leaf x)
+  | step : ∀ {s sₗ sᵣ y l r}, f s = Sum.inr (y, sₗ, sᵣ) → generatedBy f sₗ l
+                           → generatedBy f sᵣ r → generatedBy f s (branch y l r)
 
-def ana (f : σ → L ⊕ (N × σ × σ)) (s : σ) (h : terminatesOn f s) : BinTree N L :=
-  h.rec $ fun s' _ self =>
-  have Hₗ {y sₗ sᵣ} (h' : f s' = Sum.inr (y, sₗ, sᵣ)) :
-      terminatesOn.isChild f sₗ s' := Or.inl (h'.substr rfl)
-  have Hᵣ {y sₗ sᵣ} (h' : f s' = Sum.inr (y, sₗ, sᵣ)) :
-      terminatesOn.isChild f sᵣ s' := Or.inr (h'.substr rfl)
-  match f s', @Hₗ, @Hᵣ with
-  | Sum.inl x, _, _ => leaf x
-  | Sum.inr (y, sₗ, sᵣ), h1, h2 => branch y (self sₗ (h1 rfl)) (self sᵣ (h2 rfl))
+@[eliminator]
+def generatedBy.rec' {f : σ → L ⊕ (N × σ × σ)}
+    {motive : (s : σ) → (t : BinTree N L) → generatedBy f s t → Sort u}
+    (halt : {s : σ} → {x : L} → (h : f s = Sum.inl x)
+                    → motive s (leaf x) (generatedBy.halt h))
+    (step : {s sₗ sᵣ : σ} → {y : N} → {l r : BinTree N L}
+          → (h : f s = Sum.inr (y, sₗ, sᵣ)) → (h1 : generatedBy f sₗ l)
+          → (h2 : generatedBy f sᵣ r) → motive sₗ l h1
+          → motive sᵣ r h2 → motive s (branch y l r) (generatedBy.step h h1 h2))
+    {s : σ} : ∀ {t : BinTree N L} (h : generatedBy f s t), motive s t h
+  | leaf x, h => halt $ by cases h; assumption
+  | branch y l r, h =>
+    have h' : (f s).isRight := by
+      cases' h with _ _ _ _ _ _ _ _ _ h
+      exact Eq.trans (congrArg _ h) Sum.isRight_inr
+    let e := (f s).getRight h'
+    let sₗ := Prod.fst $ Prod.snd e
+    let sᵣ := Prod.snd $ Prod.snd e
+    have h1 : generatedBy f sₗ l :=
+      by cases' h with _ _ _ _ _ _ _ _ _ h hₗ; simp only [h]; assumption
+    have h2 : generatedBy f sᵣ r :=
+      by cases' h with _ _ _ _ _ _ _ _ _ h _ hᵣ; simp only [h]; assumption
+    have h3 : e.fst = y :=
+      by cases' h with _ _ _ _ _ _ _ _ _ h; simp only [h, Sum.getRight_inr]
+    have h4 : f s = Sum.inr (y, sₗ, sᵣ) :=
+      (Sum.getRight_eq_iff h').mp (Prod.ext h3 rfl)
+    step h4 h1 h2 (generatedBy.rec' halt step h1) (generatedBy.rec' halt step h2)
 
-def ana' (f : σ → L ⊕ (N × σ × σ)) (s : σ) : Part (BinTree N L) := ⟨_, ana f s⟩
+def generatedBy.ndrec {f : σ → L ⊕ (N × σ × σ)}
+    {motive : (s : σ) → (t : BinTree N L) → Sort u}
+    (halt : {s : σ} → {x : L} → (h : f s = Sum.inl x) → motive s (leaf x))
+    (step : {s sₗ sᵣ : σ} → {y : N} → {l r : BinTree N L}
+          → (h : f s = Sum.inr (y, sₗ, sᵣ))
+          → (h1 : generatedBy f sₗ l) → (h2 : generatedBy f sᵣ r)
+          → motive sₗ l → motive sᵣ r → motive s (branch y l r))
+    {s : σ} {t : BinTree N L} (h : generatedBy f s t) : motive s t :=
+  generatedBy.rec' halt step h
 
 @[inline] def bimap (f : N → N') (g : L → L') : BinTree N L → BinTree N' L' :=
   cata (leaf ∘ g) (branch ∘ f)
@@ -370,184 +404,6 @@ lemma cata_eq_autoEval_bimap (t : BinTree N L) :
   | branch => simp only [bimap, cata_branch, Function.comp_apply, autoEval_branch]; congr
 end cataLemmas
 
-section anaLemmas
-variable {f : σ → L ⊕ (N × σ × σ)} {s : σ} {p : BinAddr}
-         {x : L} {y : N} {l r : BinTree N L}
-
-lemma ana_def (h : terminatesOn f s) : ana f s h = Part.get (ana' f s) h := rfl
-
-lemma ana'_step : ana' f s = (f s).elim (Part.some ∘ leaf) (fun (y, s₁, s₂) =>
-                               branch y <$> ana' f s₁ <*> ana' f s₂) := by
-  apply Part.ext'
-  . rw [ana']
-    generalize h : f s = e
-    rcases e with ⟨_⟩ | ⟨⟨y, s₁, s₂⟩⟩
-    . dsimp only [terminatesOn, Sum.elim_inl, Function.comp_apply, Part.some]
-      refine iff_true_intro $ Acc.intro _ (fun s' => Not.elim $ not_or.mpr ?_)
-      simp only [terminatesOn.isChild, h, Sum.getRight?_inl, Option.map_none']
-      exact ⟨Option.not_mem_none _, Option.not_mem_none _⟩
-    . dsimp only [(. <$> .), Seq.seq, Sum.elim, Part.map, Part.bind, Part.assert]
-      refine Iff.trans ?_ exists_prop.symm
-      dsimp only [ana']
-      constructor
-      . refine imp_and.mpr ⟨(Acc.inv . (Or.inl ?_)), (Acc.inv . (Or.inr ?_))⟩
-        <;> simp only [terminatesOn.isChild, h, Sum.getRight?_inr, Sum.getLeft?_inr,
-                       Option.map_some', Option.map_none', Option.mem_some_iff]
-        <;> rfl
-      . intro ⟨h1, h2⟩
-        constructor
-        intro s'
-        simp only [terminatesOn.isChild, h, Sum.getRight?_inr, Sum.getLeft?_inr,
-                   Option.map_some', Option.map_none', Option.mem_some_iff, Function.comp_apply]
-        rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> assumption
-  . intro (h : terminatesOn f s) h'
-    rw [← ana_def]
-    generalize h'' : f s = e at h'
-    rcases e with ⟨_⟩ | ⟨⟨y, s₁, s₂⟩⟩
-    <;> dsimp only [(. <$> .), Seq.seq, Sum.elim, Part.map, Part.bind,
-                    Part.assert, Function.comp_apply] at h' ⊢
-    <;> cases h <;> dsimp only [ana] <;> split
-    <;> simp only [h'', Sum.inl.inj_iff, Sum.inr.inj_iff,
-                   Prod.mk.injEq, Sum.inl_ne_inr] at *
-    . refine congrArg leaf (Eq.symm ?_); assumption
-    . rw [← ana, ← ana, ← ana_def, ← ana_def]
-      congr <;> refine Eq.symm ?_
-      . apply And.left ?_; swap; assumption
-      . apply And.left ?_; on_goal -1 => apply And.right ?_; on_goal -1 => assumption
-      . apply And.right ?_; on_goal -1 => apply And.right ?_; on_goal -1 => assumption
-
-lemma leaf_mem_ana'_iff : leaf x ∈ ana' f s ↔ x ∈ (f s).getLeft? := by
-  rw [ana'_step]
-  generalize f s = e
-  cases e
-  <;> simp only [Sum.elim, Sum.getLeft?, Function.comp_apply, Part.mem_some_iff,
-                 Option.mem_some_iff, leaf.injEq, (. <$> .), Seq.seq, and_false,
-                 Option.not_mem_none, Part.mem_map_iff, Part.mem_bind_iff,
-                 exists_exists_and_eq_and, exists_false]
-  exact eq_comm
-
-lemma branch_mem_ana'_iff :
-    branch y l r ∈ ana' f s
-    ↔ y ∈ (f s).getRight?.map Prod.fst
-    ∧ l ∈ ((f s).getRight? : Part (N ×σ × σ)).bind (ana' f ∘ Prod.fst ∘ Prod.snd)
-    ∧ r ∈ ((f s).getRight? : Part (N ×σ × σ)).bind (ana' f ∘ Prod.snd ∘ Prod.snd) := by
-  rw [ana'_step]
-  generalize f s = e
-  cases e
-  <;> simp only [Sum.elim, Sum.getRight?, Function.comp_apply, Part.coe_none,
-                 Part.mem_some_iff, Option.map_none', Part.bind_none, Seq.seq,
-                 Option.not_mem_none, Part.not_mem_none, false_and, (. <$> .),
-                 Option.map_some', Part.coe_some, Part.bind_some, branch.injEq,
-                 Option.mem_some_iff, Part.mem_bind_iff, Part.mem_map_iff,
-                 exists_exists_and_eq_and]
-  conv_lhs => simp only [← exists_and_left, ← and_assoc, exists_eq_right]
-  rw [and_comm]
-
-def mem_ana'_ndrec {motive : (s : σ) → (t : BinTree N L) → Sort u}
-                   (halt : {x : L} → {s : σ} → f s = Sum.inl x → motive s (leaf x))
-                   (step : {y : N} → {l r : BinTree N L} → {s sₗ sᵣ : σ}
-                           → f s = Sum.inr (y, sₗ, sᵣ) → l ∈ ana' f sₗ → r ∈ ana' f sᵣ
-                           → motive sₗ l → motive sᵣ r → motive s (branch y l r))
-                   {s : σ} : ∀ {t : BinTree N L}, t ∈ ana' f s → motive s t
-  | leaf x, h => halt $ Sum.getLeft?_eq_some_iff.mp
-                      $ Option.mem_def.mp $ leaf_mem_ana'_iff.mp h
-  | branch y l r, h =>
-    have ⟨h1, h2, h3⟩ := branch_mem_ana'_iff.mp h
-    have h0 := Sum.isSome_getRight?_iff_isRight.mp
-               $ Eq.trans Option.isSome_map.symm
-               $ Option.isSome_iff_exists.mpr ⟨_, h1⟩
-    have H : Sum.getRight? (f s) = some (Sum.getRight (f s) h0) :=
-      Sum.getRight?_eq_some_iff.mpr $ Eq.symm $ Sum.inr_getRight _ h0
-    let sₗ := (Sum.getRight (f s) h0).snd.fst
-    let sᵣ := (Sum.getRight (f s) h0).snd.snd
-    have h4 : f s = Sum.inr (y, sₗ, sᵣ) := by
-      rw [H] at h1
-      refine Eq.trans (Sum.inr_getRight _ h0).symm (congrArg Sum.inr ?_)
-      refine Prod.ext (Option.some_injective _ h1) rfl
-    have h5 : l ∈ ana' f sₗ := by rw [H, Part.coe_some, Part.bind_some] at h2; exact h2
-    have h6 : r ∈ ana' f sᵣ := by rw [H, Part.coe_some, Part.bind_some] at h3; exact h3
-    step h4 h5 h6 (mem_ana'_ndrec halt step h5) (mem_ana'_ndrec halt step h6)
-
-def hypothetical_getNodeAt?_ana (f : σ → L ⊕ (N × σ × σ)) (s : σ) (p : BinAddr) :=
-  p.rec' (motive := fun _ => σ → Option (N ⊕ L))
-         (some ∘ Sum.swap ∘ Sum.map id Prod.fst ∘ f)
-         (fun _ self s => (f s).elim (fun _ => none) (fun (_, s₁, _) => self s₁))
-         (fun _ self s => (f s).elim (fun _ => none) (fun (_, _, s₂) => self s₂)) s
-
-lemma getNodeAt?_ana'_le_hypothetical_getNodeAt?_ana :
-    (ana' f s).bind (Part.ofOption $ getNodeAt? . p)
-    ≤ hypothetical_getNodeAt?_ana f s p := by
-  intro node h
-  simp only [Part.mem_bind_iff, Part.mem_coe] at h ⊢
-  obtain ⟨t, h1, h2⟩ := h
-  revert node p; revert t s; apply mem_ana'_ndrec
-  . intro x s h1 p node h2
-    have : p.isHere? :=
-      Decidable.not_imp_not.mp
-        (Option.not_isSome_iff_eq_none.mpr ∘ getSubtreeAt?_leaf_eq_none x)
-      $ Eq.trans Option.isSome_map.symm (Option.isSome_iff_exists.mpr ⟨_, h2⟩)
-    induction this
-    simp only [hypothetical_getNodeAt?_ana, BinAddr.rec'_here, Function.comp_apply,
-               Option.mem_some_iff, h1, Sum.map_inl, Sum.swap_inl, id_eq]
-    simp only [getNodeAt?_leaf_here_eq, Option.mem_some_iff] at h2
-    exact h2
-  . intros y l r s sₗ sᵣ h1 _ _ ihₗ ihᵣ p node h2
-    cases p using BinAddr.cases' with
-    | atHere =>
-      simp only [hypothetical_getNodeAt?_ana, BinAddr.rec'_here, Function.comp_apply,
-                 Option.mem_some_iff, h1, Sum.map_inr, Sum.swap_inr, id_eq]
-      simp only [getNodeAt?_branch_here_eq, Option.mem_some_iff] at h2
-      exact h2
-    | goLeft =>
-      rw [getNodeAt?_branch_left] at h2
-      simp only [hypothetical_getNodeAt?_ana, BinAddr.rec'_left, h1]
-      exact ihₗ node h2
-    | goRight =>
-      rw [getNodeAt?_branch_right] at h2
-      simp only [hypothetical_getNodeAt?_ana, BinAddr.rec'_right, h1]
-      exact ihᵣ node h2
-
-lemma getNodeAt?_ana_eq_hypothetical_getNodeAt?_ana (h : terminatesOn f s) :
-    getNodeAt? (ana f s h) p = hypothetical_getNodeAt?_ana f s p := by
-  refine Eq.trans (Part.to_ofOption _).symm (Eq.trans ?_ (Part.to_ofOption _))
-  congr 1
-  apply Part.ext'
-  . constructor
-    . intro H
-      refine Part.dom_iff_mem.mpr ⟨Part.get _ H, ?_⟩
-      refine getNodeAt?_ana'_le_hypothetical_getNodeAt?_ana _ ?_
-      refine Part.mem_bind (Part.get_mem ?_) (Part.get_mem H)
-      exact h
-    . simp only [Part.ofOption_dom, Option.isSome_map]
-      generalize h' : ana f s h = t
-      rw [ana_def, Part.get_eq_iff_mem] at h'; clear h; revert s t
-      apply mem_ana'_ndrec
-      . intros
-
-        admit
-      . intros
-
-        admit
-      -- induction p with
-      -- | atHere =>
-      --   simp only [hypothetical_getNodeAt?_ana, BinAddr.rec'_here, implies_true,
-      --              getSubtreeAt?_here_eq, Function.comp_apply, Option.isSome_some]
-      -- | goLeft p ih =>
-
-      --   -- simp_rw (config:={singlePass:=true}) [ana_def, ana'_step]
-      --   simp only [hypothetical_getNodeAt?_ana, BinAddr.rec'_left]
-
-      --   admit
-      -- | goRight =>
-      --   admit
-  . intro h1 h2
-    refine Part.mem_unique ?_ (Part.get_mem _)
-    refine getNodeAt?_ana'_le_hypothetical_getNodeAt?_ana _ ?_
-    rw [Part.bind, Part.assert_pos]
-    exact Part.get_mem _
-
-end anaLemmas
-
 section bimapLemmas
 variable {f : N → N'} {g : L → L'} {x y l r} {t : BinTree N L}
 @[simp] lemma bimap_leaf : bimap f g (leaf x) = leaf (g x) := cata_leaf
@@ -569,49 +425,7 @@ protected def bimap_asAna'.go (f : N → N') (g : L → L') (x : { p // hasNodeA
                 ⟨BinAddr.pushLeft x.val, (hasNodeAt_pushLeft _ _).mpr H⟩,
                 ⟨BinAddr.pushRight x.val, (hasNodeAt_pushRight _ _).mpr H⟩)
 
-private lemma bimap_asAna'.go_total :
-    ∀ (x : { p // hasNodeAt t p }), terminatesOn (bimap_asAna'.go f g) x := by
-  rintro ⟨p, h⟩
-  -- have := BinAddr.reverse_reverse p
-  -- generalize BinAddr.reverse p = p' at this
-  -- induction p'
-  -- . admit
-  -- . admit
 
-  -- have : IsWellFounded BinAddr (. < . : BinAddr → BinAddr → Prop) := inferInstance
-
--- #print bimap_asAna'.go_total
-  -- rw [hasNodeAt_iff_getNodeAt?_isSome, getNodeAt?,
-  --     eq_iff_eq_cancel_right.mpr Option.isSome_map,
-  --     Option.isSome_iff_exists] at h
-  -- obtain ⟨t', h⟩ := h
-  -- induction t' generalizing p t with
-  -- | leaf =>
-  --   admit
-    -- cases p with
-    -- | atHere =>
-
-    --   admit
-    -- | goLeft => admit
-    -- | goRight => admit
-    -- rw [getSubtreeAt?_here_eq] at h
-
-    -- admit
-  -- | branch => admit
-
-lemma bimap_asAna' :
-    bimap f g t ∈ ana' (bimap_asAna'.go f g) ⟨BinAddr.here, hasNodeAt_here t⟩ := by
-  rw [show bimap f g t = getSubtreeAt (hasNodeAt_here (bimap f g t))
-      from Option.mem_unique (getSubtreeAt?_here_mem _) (Option.get_mem _)]
-  dsimp [ana', Part.mem_eq]
-  use ?_; swap
-  . refine Function.app (Subtype.forall.mpr (BinAddr.rec' ?_ ?_ ?_)) _
-    .
-      admit
-    . admit
-    . admit
-  .
-    admit
 
 abbrev mapLeaves := bimap (id : N → N) g
 abbrev mapNodes := bimap f (id : L → L)
@@ -990,13 +804,6 @@ abbrev numInnerNodes : BinTree α β → ℕ := foldAddMapInnerNodes (fun _ => 1
 
 /-- The number of leaves of a binary tree -/
 abbrev numLeaves : BinTree α β → ℕ := foldAddMapLeaves (fun _ => 1)
-
--- not a foldMap
-/-- The height - length of the longest path from the root - of a binary tree -/
-@[simp]
-def height : BinTree α β → ℕ
-  | leaf _ => 0
-  | branch _ l r => max l.height r.height + 1
 
 def flatten (t : BinTree α β) : List (α ⊕ β) :=
   DList.toList $ t.foldBimap' (. ++ .) (DList.singleton ∘ Sum.inl)
