@@ -127,10 +127,7 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e
     · convert e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
-  supParts := by
-    rw [sup_map]
-    convert show sup P.parts e = e (sup P.parts id) by rw [map_finset_sup, comp.right_id]
-    exact P.supParts.symm
+  supParts := by simp [← P.supParts]
   not_bot_mem := by
     rw [mem_map_equiv]
     convert P.not_bot_mem
