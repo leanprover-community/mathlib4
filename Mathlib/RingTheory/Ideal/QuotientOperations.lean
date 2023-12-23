@@ -232,7 +232,7 @@ noncomputable def quotientInfRingEquivPiQuotient [Fintype ι] (f : ι → Ideal 
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I ⊓ J ≃+* (R ⧸ I) × R ⧸ J :=
   let f : Fin 2 → Ideal R := ![I, J]
-  have hf : ∀ i j : Fin 2, i ≠ j → IsCoprime (f i) (f j) := by
+  have hf : Pairwise fun i j => IsCoprime (f i) (f j) := by
     intro i j h
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption

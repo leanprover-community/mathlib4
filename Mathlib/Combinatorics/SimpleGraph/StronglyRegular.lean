@@ -50,7 +50,7 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
   regular : G.IsRegularOfDegree k
   of_adj : ∀ v w : V, G.Adj v w → Fintype.card (G.commonNeighbors v w) = ℓ
-  of_not_adj : ∀ v w : V, v ≠ w → ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
+  of_not_adj : Pairwise fun v w => ¬G.Adj v w → Fintype.card (G.commonNeighbors v w) = μ
 set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with SimpleGraph.IsSRGWith
 

@@ -186,8 +186,8 @@ theorem t0Space_iff_inseparable (X : Type u) [TopologicalSpace X] :
 #align t0_space_iff_inseparable t0Space_iff_inseparable
 
 theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ ∀ x y : X, x ≠ y → ¬Inseparable x y := by
-  simp only [t0Space_iff_inseparable, Ne.def, not_imp_not]
+    T0Space X ↔ Pairwise fun x y : X => ¬Inseparable x y := by
+  simp only [t0Space_iff_inseparable, Ne.def, not_imp_not, Pairwise]
 #align t0_space_iff_not_inseparable t0Space_iff_not_inseparable
 
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
@@ -349,7 +349,7 @@ instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
 #align subtype.t0_space Subtype.t0Space
 
 theorem t0Space_iff_or_not_mem_closure (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ ∀ a b : X, a ≠ b → a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
+    T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 #align t0_space_iff_or_not_mem_closure t0Space_iff_or_not_mem_closure
 
@@ -929,7 +929,7 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
 #align t2_separation t2_separation
 
 -- todo: use this as a definition?
-theorem t2Space_iff_disjoint_nhds : T2Space X ↔ ∀ x y : X, x ≠ y → Disjoint (𝓝 x) (𝓝 y) := by
+theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
   simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), exists_prop, ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
@@ -937,7 +937,7 @@ theorem t2Space_iff_disjoint_nhds : T2Space X ↔ ∀ x y : X, x ≠ y → Disjo
 
 @[simp]
 theorem disjoint_nhds_nhds [T2Space X] {x y : X} : Disjoint (𝓝 x) (𝓝 y) ↔ x ≠ y :=
-  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, t2Space_iff_disjoint_nhds.mp ‹_› x y⟩
+  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, (t2Space_iff_disjoint_nhds.mp ‹_› ·)⟩
 #align disjoint_nhds_nhds disjoint_nhds_nhds
 
 theorem pairwise_disjoint_nhds [T2Space X] : Pairwise (Disjoint on (𝓝 : X → Filter X)) := fun _ _ =>
@@ -972,15 +972,16 @@ instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
 
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
-  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm]
+  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm, Pairwise]
 #align t2_iff_nhds t2_iff_nhds
 
 theorem eq_of_nhds_neBot [T2Space X] {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) : x = y :=
   t2_iff_nhds.mp ‹_› h
 #align eq_of_nhds_ne_bot eq_of_nhds_neBot
 
-theorem t2Space_iff_nhds : T2Space X ↔ ∀ {x y : X}, x ≠ y → ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
-  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff]
+theorem t2Space_iff_nhds :
+    T2Space X ↔ Pairwise fun x y : X => ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
+  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, Pairwise]
 #align t2_space_iff_nhds t2Space_iff_nhds
 
 theorem t2_separation_nhds [T2Space X] {x y : X} (h : x ≠ y) :
@@ -1002,7 +1003,7 @@ theorem t2_iff_ultrafilter :
 
 theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
   simp only [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
-    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff]
+    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, Pairwise]
 #align t2_iff_is_closed_diagonal t2_iff_isClosed_diagonal
 
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=

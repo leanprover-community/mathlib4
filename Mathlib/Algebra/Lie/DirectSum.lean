@@ -204,7 +204,7 @@ variable {R L ι}
 then this map is a morphism of Lie algebras. -/
 @[simps]
 def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L']
-    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : ∀ i j : ι, i ≠ j → ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
+    (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
     (⨁ i, L i) →ₗ⁅R⁆ L' :=
   { toModule R ι L' fun i => (f i : L i →ₗ[R] L') with
     toFun := toModule R ι L' fun i => (f i : L i →ₗ[R] L')

@@ -1990,7 +1990,7 @@ we have an associated orthogonal family of one-dimensional subspaces of `E`, whi
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
 def OrthogonalFamily (G : ι → Type*) [∀ i, NormedAddCommGroup (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
-  ∀ ⦃i j⦄, i ≠ j → ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
+  Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 #align orthogonal_family OrthogonalFamily
 
 variable {𝕜}
