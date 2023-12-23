@@ -273,9 +273,7 @@ theorem getLsb'_rev (x : BitVec w) (i : Fin w) :
 
 theorem getMsb'_rev (x : BitVec w) (i : Fin w) :
     x.getMsb' i.rev = x.getLsb' i := by
-  simp [getMsb', getMsb, getLsb']
-  -- This needs to be proven.
-  sorry
+  rw [← getLsb'_rev, Fin.rev_involutive]
 
 /-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_lsb` -/
 theorem ext_msb {x y : BitVec w} (h : ∀ i, x.getMsb' i = y.getMsb' i) : x = y := by
