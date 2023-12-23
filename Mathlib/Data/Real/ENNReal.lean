@@ -2702,3 +2702,12 @@ def evalENNRealOfNNReal : PositivityExt where eval {_ _} _zα _pα e := do
   | _ => pure .none
 
 end Mathlib.Meta.Positivity
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on the 2023/12/23.
+-/
+
+@[deprecated] protected alias ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
+@[deprecated] protected alias ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

@@ -970,3 +970,27 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   | _, _ => pure .none
 
 end Mathlib.Meta.Positivity
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on the 2023/12/23.
+-/
+
+@[deprecated] alias monotone_smul_left := monotone_smul_left_of_nonneg
+@[deprecated] alias strict_mono_smul_left := strictMono_smul_left_of_pos
+@[deprecated] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
+@[deprecated] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
+@[deprecated] alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
+@[deprecated] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
+@[deprecated] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
+@[deprecated] alias smul_max := smul_max_of_nonneg
+@[deprecated] alias smul_min := smul_min_of_nonneg
+@[deprecated] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
+@[deprecated] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
+@[deprecated] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
+@[deprecated] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
+@[deprecated] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
+@[deprecated] alias OrderIso.smulLeft := OrderIso.smulRight
+@[deprecated] alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
+@[deprecated] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
