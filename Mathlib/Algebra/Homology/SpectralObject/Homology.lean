@@ -69,8 +69,22 @@ instance : Epi (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f
   dsimp
   infer_instance
 
---lemma dCokernelSequence_exact :
---    (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄).Exact := sorry
+lemma dCokernelSequence_exact :
+    (X.dCokernelSequence n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  dsimp at x₂ hx₂ ⊢
+  have hx₂' := hx₂ =≫ X.ιE _ _ _ _ _ _ _ _
+  simp only [assoc, zero_comp] at hx₂'
+  rw [X.EMap_ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
+    (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) (by ext <;> simp; rfl)] at hx₂'
+  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄ _ rfl
+    f₃₄ h₃₄).exact 1).exact_up_to_refinements (x₂ ≫ X.ιE _ _ _ _ _ _ _ _) (by
+      dsimp [sequenceΨ]
+      rw [assoc, hx₂'])
+  dsimp [sequenceΨ] at x₁ hx₁
+  refine' ⟨A₁, π₁, inferInstance, x₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅, _⟩
+  rw [← cancel_mono (X.ιE _ _ _ _ _ _ _ _), assoc, assoc, assoc, hx₁, πE_d_ιE]
 
 @[simps!]
 noncomputable def dKernelSequence : ShortComplex C :=
@@ -99,7 +113,6 @@ lemma dKernelSequence_exact :
 
 end
 
-
 variable (n₀ n₁ n₂ n₃ n₄ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) (hn₄ : n₃ + 1 = n₄)
   {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
@@ -120,7 +133,7 @@ lemma EMap_fac :
   congr 1
   ext <;> simp
 
-/-noncomputable def dHomologyData :
+noncomputable def dHomologyData :
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇).HomologyData :=
   ShortComplex.HomologyData.ofEpiMonoFactorisation
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇)
@@ -132,7 +145,7 @@ noncomputable def dHomologyIso :
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇).homology ≅
       X.E n₁ n₂ n₃ hn₂ hn₃ f₂₃ f₄ f₅₆ :=
   (X.dHomologyData n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄
-    f₁ f₂ f₃ f₄ f₅ f₆ f₇ f₂₃ h₂₃ f₅₆ h₅₆).left.homologyIso-/
+    f₁ f₂ f₃ f₄ f₅ f₆ f₇ f₂₃ h₂₃ f₅₆ h₅₆).left.homologyIso
 
 end SpectralObject
 
