@@ -348,28 +348,12 @@ local notation:100 M₂ "•ᵣ" M₁:100 => SMatrixRightMul.hSMul M₂ M₁
 @[simp]
 theorem SMatrixLeft.diagonal_mul {m : Type*} [Fintype m] [DecidableEq m] (d : m → R₂)
     (M : Matrix m n N₂) (i j) : (diagonal d •ₗ M) i j = d i • M i j := by
-  simp [SMatrixLeftMul, diagonal]
-  convert Finset.sum_eq_single i _ _
-  · exact (if_pos rfl).symm
-  · intros b _ hb₂
-    have e1 : (if i = b then d i else 0) = 0 := by
-      exact if_neg (_root_.id (Ne.symm hb₂))
-    rw [e1, zero_smul]
-  · intro h
-    simp at h
+  simp only [SMatrixLeftMul, diagonal, of_apply, ite_zero_smul, sum_ite_eq, mem_univ, ite_true]
 
 @[simp]
 theorem SMatrixRight.mul_diagonal {m : Type*} [Fintype m] [DecidableEq m] (d : m → R₂)
     (M : Matrix n m N₂) (i j) : (M •ᵣ diagonal d) i j = d j • M i j := by
-  simp [SMatrixRightMul, diagonal]
-  convert Finset.sum_eq_single j _ _
-  · exact (if_pos rfl).symm
-  · intros b _ hb₂
-    have e1 : (if b = j then d b else 0) = 0 := by
-      exact if_neg hb₂
-    rw [e1, zero_smul]
-  · intro h
-    simp at h
+  simp only [SMatrixRightMul, diagonal, of_apply, ite_zero_smul, sum_ite_eq', mem_univ, ite_true]
 
 @[simp]
 lemma SMatrixLeft.OneMul (M : Matrix n n N₂) : (1 : Matrix n n R₂) •ₗ M = M := ext (fun _ _ => by
@@ -508,7 +492,8 @@ variable [DecidableEq n] (b : Basis n R₂ M₂)
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def BilinForm.toMatrix''' : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) ≃ₗ[R₂] Matrix n n N₂ :=
-  (LinearMap.congrl₁₂ b.equivFun b.equivFun).trans BilinForm.toMatrix''
+  (b.equivFun.arrowCongr <| b.equivFun.arrowCongr <| .refl R₂ N₂).trans BilinForm.toMatrix''
+
 
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
