@@ -432,7 +432,6 @@ theorem get_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
   | n + 1, s₁, s₂ => by
     change get (s₁ ⋈ s₂) (succ (succ (2 * n))) = get s₁ (succ n)
     rw [get_succ, get_succ, interleave_eq, tail_cons, tail_cons]
-    have : n < succ n := Nat.lt_succ_self n
     rw [get_interleave_left n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_left Stream'.get_interleave_left
@@ -627,7 +626,8 @@ theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : Nat, take n s₁ = take
   intro h; apply Stream'.ext; intro n
   induction' n with n _
   · have aux := h 1
-    simp [take] at aux
+    simp? [take] at aux says
+      simp only [take, List.cons.injEq, and_true] at aux
     exact aux
   · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
       rw [← get?_take_succ, ← get?_take_succ, h (succ (succ n))]

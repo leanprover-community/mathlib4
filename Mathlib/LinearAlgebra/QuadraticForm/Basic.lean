@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Algebra.Module.LinearMap
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
@@ -1224,7 +1225,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_not_isOrtho_self x hx)] at hd
   let B' := B.restrict (B.orthogonal <| K ∙ x)
-  obtain ⟨v', hv₁⟩ := ih (B.restrictSymm hB₂ _ : B'.IsSymm) (Nat.succ.inj hd)
+  obtain ⟨v', hv₁⟩ := ih (hB₂.restrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=
     Basis.mkFinCons x v'

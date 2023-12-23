@@ -825,7 +825,7 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
-#align measure_theory.integrable.measurege_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
+#align measure_theory.integrable.measure_ge_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ > ε` is finite for all positive `ε`. -/

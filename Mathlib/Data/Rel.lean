@@ -291,7 +291,7 @@ theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := b
 
 @[simp]
 theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
-  rw[← dom_inv, preimage, preimage, image_inter_dom_eq]
+  rw [← dom_inv, preimage, preimage, image_inter_dom_eq]
 
 theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
   intro x hx
@@ -384,7 +384,7 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
     use f x
     simp only [forall_eq', and_self]
   · intro h
-    rcases Classical.axiomOfChoice (λ x ↦ (h x).exists) with ⟨f,hf⟩
+    choose f hf using fun x ↦ (h x).exists
     use f
     constructor
     · ext x _

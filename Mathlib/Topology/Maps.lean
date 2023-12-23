@@ -504,7 +504,7 @@ theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv :
 
 theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
     IsClosedMap f := by
-  intro s hs; cases' eq_empty_or_nonempty s with h2s h2s
+  intro s hs; rcases eq_empty_or_nonempty s with h2s | h2s
   · simp_rw [h2s, image_empty, isClosed_empty]
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
@@ -602,6 +602,11 @@ theorem OpenEmbedding.tendsto_nhds_iff {ι : Type*} {f : ι → β} {g : β → 
 theorem OpenEmbedding.tendsto_nhds_iff' {f : α → β} (hf : OpenEmbedding f) {g : β → γ}
     {l : Filter γ} {a : α} : Tendsto (g ∘ f) (𝓝 a) l ↔ Tendsto g (𝓝 (f a)) l := by
   rw [Tendsto, ← map_map, hf.map_nhds_eq]; rfl
+
+theorem OpenEmbedding.continuousAt_iff {f : α → β} (hf : OpenEmbedding f) {g : β → γ} {x : α} :
+    ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
+  hf.tendsto_nhds_iff'
+#align open_embedding.continuous_at_iff OpenEmbedding.continuousAt_iff
 
 theorem OpenEmbedding.continuous {f : α → β} (hf : OpenEmbedding f) : Continuous f :=
   hf.toEmbedding.continuous
