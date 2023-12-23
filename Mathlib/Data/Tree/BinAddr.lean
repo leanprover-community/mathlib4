@@ -795,4 +795,35 @@ instance : SemilatticeInf BinAddr where
 
 end longestCommonPrefix
 
+def pushLeft (p : BinAddr) : BinAddr := ⟨p.length + 1, p.bitvec.cons false⟩
+def pushRight (p : BinAddr) : BinAddr := ⟨p.length + 1, p.bitvec.cons true⟩
+
+lemma reverse_pushLeft {p} : reverse (pushLeft p) = left (reverse p) :=
+  congrArg (BinAddr.mk (p.length + 1)) (reverse_cons _ _)
+
+lemma reverse_pushRight {p} : reverse (pushRight p) = right (reverse p) :=
+  congrArg (BinAddr.mk (p.length + 1)) (reverse_cons _ _)
+
+lemma pushLeft_eq_append_left_here {p} : pushLeft p = p ++ left here :=
+  Eq.trans (involutive_reverse.eq_iff.mp reverse_pushLeft)
+  $ Eq.trans (reverse_left _) (congrArg (. ++ _) (reverse_reverse _))
+
+lemma pushRight_eq_append_right_here {p} : pushRight p = p ++ right here :=
+  Eq.trans (involutive_reverse.eq_iff.mp reverse_pushRight)
+  $ Eq.trans (reverse_right _) (congrArg (. ++ _) (reverse_reverse _))
+
+lemma pushLeft_append {p q} : pushLeft (p ++ q) = p ++ pushLeft q :=
+  Eq.trans pushLeft_eq_append_left_here $ Eq.trans (append_assoc _ _ _).symm
+  $ congrArg (p ++ .) pushLeft_eq_append_left_here.symm
+
+lemma pushRight_append {p q} : pushRight (p ++ q) = p ++ pushRight q :=
+  Eq.trans pushRight_eq_append_right_here $ Eq.trans (append_assoc _ _ _).symm
+  $ congrArg (p ++ .) pushRight_eq_append_right_here.symm
+
+lemma append_left_eq_pushLeft_append {p q} : p ++ left q = pushLeft p ++ q :=
+  by rw [pushLeft_eq_append_left_here, ← append_assoc, left_append, here_append]
+
+lemma append_right__eq_pushRight_append {p q} : p ++ right q = pushRight p ++ q :=
+  by rw [pushRight_eq_append_right_here, ← append_assoc, right_append, here_append]
+
 end BinAddr
