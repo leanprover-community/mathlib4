@@ -123,7 +123,7 @@ theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → 
   | 0, hn => by contradiction
   | n + 1, _ => by
     simpa only [pow_succ'] using
-      mul_lt_mul_of_le_of_ltₚ' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
+      mul_lt_mul_of_le_of_ltₚ' (pow_le_pow_left hx h.le _) h hx (pow_pos (hx.trans_lt h) _)
 #align pow_lt_pow_of_lt_left pow_lt_pow_left
 
 /-- See also `pow_left_strictMonoOn`. -/
