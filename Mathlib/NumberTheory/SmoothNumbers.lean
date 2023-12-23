@@ -72,7 +72,7 @@ lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
     ne_and_eq_iff_right zero_ne_one]
 
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
-lemma prod_mem_smoothNumbers_iff (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
+lemma prod_mem_smoothNumbers (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
   have h₀ : (n.factors.filter (· < N)).prod ≠ 0 :=
     List.prod_ne_zero fun h ↦ (pos_of_mem_factors (List.mem_of_mem_filter h)).false
   refine ⟨h₀, fun p hp ↦ ?_⟩
@@ -103,7 +103,7 @@ lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ 
   exact hm₂.trans <| le_of_mem_factors hm₁
 
 /-- If `p` is positive and `n` is `p`-smooth, then every product `p^e * n` is `(p+1)`-smooth. -/
-lemma pow_mul_mem_smoothNumbers_iff {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈ smoothNumbers p) :
+lemma pow_mul_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈ smoothNumbers p) :
     p ^ e * n ∈ smoothNumbers (succ p) := by
   have hp' := pow_ne_zero e hp
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
@@ -132,9 +132,9 @@ given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` 
 when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers p.succ where
-  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_smoothNumbers_iff hp.ne_zero e n.2⟩
+  toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_smoothNumbers hp.ne_zero e n.2⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
-                            ⟨(m.factors.filter (· < p)).prod, prod_mem_smoothNumbers_iff ..⟩)
+                            ⟨(m.factors.filter (· < p)).prod, prod_mem_smoothNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
     simp (config := { etaStruct := .all }) only
