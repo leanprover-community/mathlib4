@@ -2710,7 +2710,9 @@ section Filter
 
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s : Finset α}
 
-/-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`. -/
+/-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
+For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with a `t : Set α`
+as a `Finset α`. -/
 def filter (s : Finset α) : Finset α :=
   ⟨_, s.2.filter p⟩
 #align finset.filter Finset.filter
