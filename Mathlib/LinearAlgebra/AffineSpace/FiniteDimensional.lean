@@ -234,8 +234,8 @@ open Finset in
 /-- If an affine independent finset is contained in the affine span of another finset, then its
 cardinality is at most the cardinality of that finset. -/
 lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
-    (hs : AffineIndependent k ((↑) : s → V))
-   (hst : (s : Set V) ⊆ affineSpan k (t : Set V)) : s.card ≤ t.card := by
+    (hs : AffineIndependent k ((↑) : s → V)) (hst : (s : Set V) ⊆ affineSpan k (t : Set V)) :
+    s.card ≤ t.card := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
   obtain rfl | ht' := t.eq_empty_or_nonempty
@@ -248,6 +248,25 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   have finrank_le := add_le_add_right (Submodule.finrank_le_finrank_of_le direction_le) 1
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
   simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
+
+open Finset in
+/-- If the affine span of an affine independent finset is strictly contained in the affine span of
+another finset, then its cardinality is strictly less than the cardinality of that finset. -/
+lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V}
+    (hs : AffineIndependent k ((↑) : s → V))
+   (hst : affineSpan k (s : Set V) < affineSpan k (t : Set V)) : s.card < t.card := by
+  obtain rfl | hs' := s.eq_empty_or_nonempty
+  · simpa [card_pos] using hst
+  obtain rfl | ht' := t.eq_empty_or_nonempty
+  · simp [Set.subset_empty_iff] at hst
+  have := hs'.to_subtype
+  have := ht'.to_set.to_subtype
+  have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst $ hs'.to_set.affineSpan k
+  rw [direction_affineSpan, direction_affineSpan,
+    ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at dir_lt
+  have finrank_lt := add_lt_add_right (Submodule.finrank_lt_finrank_of_lt dir_lt) 1
+  erw [hs.finrank_vectorSpan_add_one] at finrank_lt
+  simpa using finrank_lt.trans_le <| finrank_vectorSpan_range_add_one_le _ _
 
 /-- If the `vectorSpan` of a finite subset of an affinely independent
 family lies in a submodule with dimension one less than its
