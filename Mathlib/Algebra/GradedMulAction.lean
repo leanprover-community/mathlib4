@@ -60,26 +60,26 @@ variable (A : ιA → Type*) (M : ιM → Type*)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
 if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
-class GSMul [VAdd ιA ιM] where
-  /-- The homogeneous multiplication map `smul` -/
-  smul {i j} : A i → M j → M (i +ᵥ j)
+abbrev GSMul [VAdd ιA ιM] :=
+  ∀ ⦃i j⦄, HSMul (A i) (M j) (M (i +ᵥ j))
 #align graded_monoid.ghas_smul GradedMonoid.GSMul
 
 /-- A graded version of `Mul.toSMul` -/
-instance GMul.toGSMul [Add ιA] [GMul A] : GSMul A A where smul := GMul.mul
+instance GMul.toGSMul [Add ιA] [GMul A] : GSMul A A := fun _ _ => { hSMul := HMul.hMul }
 #align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGSMul
 
 instance GSMul.toSMul [VAdd ιA ιM] [GSMul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
-  ⟨fun x y ↦ ⟨_, GSMul.smul x.snd y.snd⟩⟩
+  ⟨fun x y ↦ ⟨_, x.snd • y.snd⟩⟩
 #align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GSMul.toSMul
 
 theorem mk_smul_mk [VAdd ιA ιM] [GSMul A M] {i j} (a : A i) (b : M j) :
-    mk i a • mk j b = mk (i +ᵥ j) (GSMul.smul a b) :=
+    mk i a • mk j b = mk (i +ᵥ j) (a • b) :=
   rfl
 #align graded_monoid.mk_smul_mk GradedMonoid.mk_smul_mk
 
 /-- A graded version of `MulAction`. -/
-class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M where
+class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] where
+  [toGSMul : GSMul A M]
   /-- One is the neutral element for `•` -/
   one_smul (b : GradedMonoid M) : (1 : GradedMonoid A) • b = b
   /-- Associativity of `•` and `*` -/
@@ -88,8 +88,7 @@ class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M wh
 
 /-- The graded version of `Monoid.toMulAction`. -/
 instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
-  { GMul.toGSMul _ with
-    one_smul := GMonoid.one_mul
+  { one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }
 #align graded_monoid.gmonoid.to_gmul_action GradedMonoid.GMonoid.toGMulAction
 
@@ -120,8 +119,8 @@ class SetLike.GradedSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M
 
 instance SetLike.toGSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
     (A : ιA → S) (B : ιB → N) [SetLike.GradedSMul A B] :
-    GradedMonoid.GSMul (fun i ↦ A i) fun i ↦ B i where
-  smul a b := ⟨a.1 • b.1, SetLike.GradedSMul.smul_mem a.2 b.2⟩
+    GradedMonoid.GSMul (fun i ↦ A i) fun i ↦ B i :=
+  fun _ _ => { hSMul := fun a b => ⟨a.1 • b.1, SetLike.GradedSMul.smul_mem a.2 b.2⟩ }
 #align set_like.ghas_smul SetLike.toGSMul
 
 /-
@@ -135,7 +134,7 @@ example {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
 @[simp,nolint simpNF]
 theorem SetLike.coe_GSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
     (A : ιA → S) (B : ιB → N) [SetLike.GradedSMul A B] {i : ιA} {j : ιB} (x : A i) (y : B j) :
-    (@GradedMonoid.GSMul.smul ιA ιB (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
+    ↑(x • y) = x.1 • y.1 :=
   rfl
 #align set_like.coe_ghas_smul SetLike.coe_GSMul
 
