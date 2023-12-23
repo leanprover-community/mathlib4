@@ -392,6 +392,71 @@ end
 
 section
 
+variable {i₀ i₁ i₂ i₃ i₄ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₄ : i₃ ⟶ i₄)
+  (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+  (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
+
+def fourδ₄Toδ₃ :
+    mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄ :=
+  homMk₃ (𝟙 _) (𝟙 _) (𝟙 _) f₄ (by simp) (by simp) (by simpa using h₃₄)
+
+@[simp]
+lemma fourδ₄Toδ₃_app_zero :
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 0 = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₄Toδ₃_app_one :
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 1 = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₄Toδ₃_app_two :
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 2 = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₄Toδ₃_app_two' :
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₄Toδ₃_app_three :
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app 3 = f₄ := rfl
+
+@[simp]
+lemma fourδ₄Toδ₃_app_three' :
+    (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄).app ⟨3, by linarith⟩ = f₄ := rfl
+
+def fourδ₁Toδ₀ :
+    mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄ :=
+  homMk₃ f₁ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using h₁₂.symm) (by simp) (by simp)
+
+@[simp]
+lemma fourδ₁Toδ₀_app_zero :
+    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 0 = f₁ := rfl
+
+@[simp]
+lemma fourδ₁Toδ₀_app_one :
+    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 1 = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₁Toδ₀_app_two :
+    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 2 = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₁Toδ₀_app_two' :
+    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app ⟨2, by linarith⟩ = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₁Toδ₀_app_three :
+    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app 3 = 𝟙 _ := rfl
+
+@[simp]
+lemma fourδ₁Toδ₀_app_three' :
+    (fourδ₁Toδ₀ f₁ f₂ f₃ f₄ f₁₂ h₁₂).app ⟨3, by linarith⟩ = 𝟙 _ := rfl
+
+end
+
+section
+
 lemma isIso_iff {n : ℕ} {S₁ S₂ : ComposableArrows C n} (f : S₁ ⟶ S₂) :
     IsIso f ↔ ∀ (i : Fin (n + 1)), IsIso (f.app i) := by
   constructor
