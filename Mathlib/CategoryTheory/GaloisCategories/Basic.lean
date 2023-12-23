@@ -43,7 +43,7 @@ class FibreFunctor {C : Type u} [Category.{v, u} C] [PreGaloisCategory C] (F : C
   -- (G5)
   preservesFiniteCoproducts : PreservesFiniteCoproducts F
   preservesEpis : Functor.PreservesEpimorphisms F
-  preservesQuotientsByFiniteGroups (G : Type w) [Group G] [Finite G] :
+  preservesQuotientsByFiniteGroups (G : Type v) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F
   -- (G6)
   reflectsIsos : ReflectsIsomorphisms F
@@ -67,6 +67,8 @@ instance : HasFiniteCoproducts C := PreGaloisCategory.hasFiniteCoproducts
 instance (ι : Type*) [Finite ι] : HasColimitsOfShape (Discrete ι) C :=
   hasColimitsOfShape_discrete C ι
 instance : HasInitial C := inferInstance
+instance (G : Type v) [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) C :=
+  PreGaloisCategory.hasQuotientsByFiniteGroups G 
 
 variable {C : Type u} [Category.{v, u} C] {F : C ⥤ FintypeCat.{w}} [PreGaloisCategory C] [FibreFunctor F]
 
@@ -82,6 +84,8 @@ instance : ReflectsIsomorphisms F :=
   FibreFunctor.reflectsIsos
 noncomputable instance reflectsEmptyColimits : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
   reflectsColimitsOfShapeOfReflectsIsomorphisms
+instance (G : Type v) [Group G] [Finite G] : PreservesColimitsOfShape (SingleObj G) F :=
+  FibreFunctor.preservesQuotientsByFiniteGroups G
 
 noncomputable instance preservesFiniteLimits : PreservesFiniteLimits F :=
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
@@ -246,13 +250,14 @@ variable {C : Type u} [Category.{v, u} C]
 
 variable (F : C ⥤ FintypeCat.{w}) [PreGaloisCategory C] [FibreFunctor F]
 
-instance (X : C) : SMul (Aut X) (F.obj X) := ⟨fun σ a => F.map σ.hom a⟩
+instance autMulFibre (X : C) : SMul (Aut X) (F.obj X) := ⟨fun σ a => F.map σ.hom a⟩
 
 class GaloisObject (X : C) : Prop where
   connected : ConnectedObject X
   transitiveAction : MulAction.IsPretransitive (Aut X) (F.obj X)
 
-instance (X : C) [GaloisObject F X] : MulAction.IsPretransitive (Aut X) (F.obj X) :=
+instance autMulFibreTransitiveOfGalois (X : C) [GaloisObject F X] :
+    MulAction.IsPretransitive (Aut X) (F.obj X) :=
   GaloisObject.transitiveAction
 
 --instance (X : C) [GaloisObject F X] : ConnectedObject X := sorry
@@ -396,7 +401,14 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
 
 instance : FibreFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) := sorry
 
-instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V := sorry
+instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V where
+  smul g x := X.ρ g x
+  one_smul x := by
+    show X.ρ 1 x = x
+    simp only [MonCat.one_of, Action.ρ_one, FintypeCat.id_apply]
+  mul_smul g h x := by
+    show X.ρ (g * h) x = (X.ρ g * X.ρ h) x
+    rw [MonoidHom.map_mul X.ρ g h]
 
 lemma Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) :
     ConnectedObject X ↔ MulAction.IsPretransitive G X.V :=
@@ -415,6 +427,21 @@ def Action.ofMulAction (X : FintypeCat) [MulAction G X] : Action FintypeCat (Mon
       intro y
       show (σ * τ) • y = σ • τ • y
       rw [MulAction.mul_smul]
+  }
+
+def Action.ofMulAction' (X : Type _) [Fintype X] [MulAction G X] :
+    Action FintypeCat (MonCat.of G) where
+  V := FintypeCat.of X
+  ρ := MonCat.ofHom {
+    toFun := fun (g : G) (x : X) => g • x
+    map_one' := by simp only [one_smul, End.one_def]; rfl
+    map_mul' := by
+      intro σ τ 
+      apply FintypeCat.hom_ext
+      intro y
+      admit
+      --show (σ * τ) • y = σ • τ • y
+      --rw [MulAction.mul_smul]
   }
 
 lemma connected_of_transitive (X : FintypeCat) [MulAction G X]

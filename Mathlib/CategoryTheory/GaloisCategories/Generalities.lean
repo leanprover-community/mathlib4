@@ -6,9 +6,12 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
+import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.RepresentationTheory.Action.Limits
 
-universe u v w v₁ u₁ u₂ w₂
+universe u v w v₁ u₁ u₂ w₂ w₁
 
 section Finite
 
@@ -467,3 +470,127 @@ example (X Y : Type u) (x : X) (y : Y) :
     @prod.fst (Type u) _ X Y _ ((Types.binaryProductIso X Y).inv (x, y)) = x := by
   rw [←Types.binaryProductIso_hom_comp_fst]
   simp only [types_comp_apply, inv_hom_id_apply]
+
+section SingleObj
+
+def SingleObj.functor {α : Type w} [Monoid α] {X : C} (f : α →* End X) :
+    SingleObj α ⥤ C where
+  obj _ := X
+  map a := f a
+  map_id _ := by
+    show f 1 = 1
+    rw [MonoidHom.map_one]
+  map_comp a b := by
+    show f (b * a) = f b * f a
+    rw [MonoidHom.map_mul]
+
+def SingleObj.natTrans {α : Type w} [Monoid α] {F G : SingleObj α ⥤ C}
+    (u : F.obj (SingleObj.star α) ⟶ G.obj (SingleObj.star α))
+    (h : ∀ a : α, F.map a ≫ u = u ≫ G.map a)
+    : F ⟶ G where
+  app _ := u
+  naturality _ _ a := h a
+
+def equivMulOfFullyFaithful {D : Type u₁} [Category.{v₁, u₁} D] (F : C ⥤ D)
+    [Full F] [Faithful F] {X : C } :
+    End X ≃* End (F.obj X) := by
+  apply MulEquiv.mk'
+  intro f g
+  erw [equivOfFullyFaithful_apply, equivOfFullyFaithful_apply, equivOfFullyFaithful_apply]
+  simp only [End.mul_def, map_comp]
+
+@[simp]
+lemma equivMulOfFullyFaithful_symm_apply {D : Type u₁} [Category.{v₁, u₁} D] (F : C ⥤ D)
+    [Full F] [Faithful F] {X : C } (f : End (F.obj X)) :
+    F.map ((equivMulOfFullyFaithful F).symm f) = f := by
+  show F.map ((equivOfFullyFaithful F).symm f) = f
+  simp only [equivOfFullyFaithful_symm_apply, image_preimage]
+
+end SingleObj
+
+section Profinite
+
+--open TopologicalSpace
+
+variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+
+lemma closed_of_open (U : Subgroup G) (h : IsOpen (U : Set G)) : IsClosed (U : Set G) := by
+  sorry
+
+def finiteQuotientOfOpen [CompactSpace G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+    Finite (G ⧸ U) :=
+  sorry
+
+def finiteQuotientSubgroups [CompactSpace G] (U K : Subgroup G) (hUopen : IsOpen (U : Set G))
+    (hKpoen : IsOpen (K : Set G)) : Finite (U ⧸ Subgroup.subgroupOf K U) :=
+  sorry
+
+end Profinite
+
+section
+
+variable {G : Type u} [Group G]
+
+open Function Set
+
+lemma QuotientGroup.preimage_mk_singleton_mk (H : Subgroup G) (g : G) :
+    mk (s := H) ⁻¹' {mk g} = (g * ·) '' H := by
+  ext g'
+  simp only [mem_preimage, mem_singleton_iff, QuotientGroup.eq, image_mul_left, SetLike.mem_coe]
+  rw [← H.inv_mem_iff]
+  simp
+
+variable [TopologicalSpace G] [TopologicalGroup G] (U : Subgroup G)
+
+lemma Subgroup.discreteTopology  (U_open : IsOpen (U : Set G)) : DiscreteTopology (G ⧸ U) := by
+  apply singletons_open_iff_discrete.mp
+  rintro ⟨g⟩
+  erw [isOpen_mk, QuotientGroup.preimage_mk_singleton_mk]
+  exact Homeomorph.mulLeft g |>.isOpen_image|>.mpr U_open
+
+lemma Subgroup.finiteQuotient [CompactSpace G] (U_open : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
+  have : CompactSpace (G ⧸ U) := Quotient.compactSpace
+  have : DiscreteTopology (G ⧸ U) := U.discreteTopology U_open
+  finite_of_compact_of_discrete
+
+end
+
+section
+
+variable (V : Type (w + 1)) [LargeCategory.{w} V] [ConcreteCategory V] (G : MonCat.{w})
+
+private def SingleObj.preservesColimit {C : Type*} [Category C] (F : C ⥤ SingleObj G ⥤ V)
+    {J : Type w₁} [Category.{w₂, w₁} J] (K : J ⥤ C)
+    (h : PreservesColimit K (F ⋙ (evaluation (SingleObj G) V).obj (SingleObj.star G)))
+    : PreservesColimit K F := by
+  apply preservesColimitOfEvaluation
+  intro _
+  exact h
+
+def Action.preservesColimitOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂, w₁} J] (K : J ⥤ C)
+    (h : PreservesColimit K (F ⋙ forget₂ (Action V G) V)) : PreservesColimit K F := by
+  let F' : C ⥤ SingleObj G ⥤ V := F ⋙ (Action.functorCategoryEquivalence V G).functor
+  let i : PreservesColimit K F' := by
+    apply SingleObj.preservesColimit
+    show PreservesColimit K (F ⋙ forget₂ (Action V G) V)
+    assumption
+  apply preservesColimitOfReflectsOfPreserves F (Action.functorCategoryEquivalence V G).functor
+
+def Action.preservesColimitOfShapeOfPreserves (F : C ⥤ Action V G) {J : Type w₁}
+    [Category.{w₂, w₁} J] (h : PreservesColimitsOfShape J (F ⋙ forget₂ (Action V G) V)) :
+    PreservesColimitsOfShape J F := by
+  constructor
+  intro K
+  apply Action.preservesColimitOfPreserves
+  exact PreservesColimitsOfShape.preservesColimit
+
+def Action.preservesColimitOfSizeOfPreserves (F : C ⥤ Action V G)
+    (h : PreservesColimitsOfSize.{w₂, w₁} (F ⋙ forget₂ (Action V G) V)) :
+    PreservesColimitsOfSize.{w₂, w₁} F := by
+  constructor
+  intro J _
+  apply Action.preservesColimitOfShapeOfPreserves
+  exact PreservesColimitsOfSize.preservesColimitsOfShape
+
+end

@@ -207,6 +207,8 @@ def H : C ⥤ Action FintypeCat (MonCat.of (Aut F)) where
       exact symm <| g.hom.naturality f
   }
 
+lemma H_forget_eq_F : H F ⋙ forget₂ _ FintypeCat = F := rfl
+
 instance : PreservesMonomorphisms (H F) := sorry
 
 instance : PreservesConnectedObjects (H F) := sorry
@@ -453,6 +455,12 @@ noncomputable instance H_full : Full (H F) := by
   show p1 (u'.hom z) = (u'.hom ≫ u ≫ (is1.inv ≫ (PreservesLimitPair.iso F X Y).hom) ≫ prod.fst) z
   rw [Iso.inv_hom_id, Category.id_comp, prod.lift_fst]
   rfl
+
+instance : Faithful (H F) := by
+  have : Faithful (H F ⋙ forget₂ _ FintypeCat) := by
+    show Faithful F
+    exact fibreFunctorFaithful
+  apply Faithful.of_comp (H F) (forget₂ _ FintypeCat)
 
 end Action
 
