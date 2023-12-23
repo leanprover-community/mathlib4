@@ -134,6 +134,8 @@ protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
 
 protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd : c < d) :
     a * c < b * d := by
+  -- TODO: This should be an instance but it currently times out
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
     exact mul_pos ((zero_le _).trans_lt hab) hcd

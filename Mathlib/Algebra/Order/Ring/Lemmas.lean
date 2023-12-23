@@ -1092,13 +1092,4 @@ theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosRefle
   simp only [PosMulReflectLE, MulPosReflectLE, IsSymmOp.symm_op]
 #align pos_mul_mono_rev_iff_mul_pos_mono_rev posMulReflectLE_iff_mulPosReflectLE
 
-instance PosMulMono.toMulPosMono [PosMulMono α] : MulPosMono α :=
-  posMulMono_iff_mulPosMono.1 ‹_›
-instance PosMulStrictMono.toMulPosStrictMono [PosMulStrictMono α] : MulPosStrictMono α :=
-  posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
-instance PosMulReflectLE.toMulPosReflectLE [PosMulReflectLE α] : MulPosReflectLE α :=
-  posMulReflectLE_iff_mulPosReflectLE.1 ‹_›
-instance PosMulReflectLT.toMulPosReflectLT [PosMulReflectLT α] : MulPosReflectLT α :=
-  posMulReflectLT_iff_mulPosReflectLT.1 ‹_›
-
 end CommSemigroupHasZero
