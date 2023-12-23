@@ -156,14 +156,17 @@ variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 /-- Given a point `x` in the convex cone of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex cone contains `x`. -/
 noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ s.toPointedCone 𝕜) : Finset E :=
-  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } <| by exact Submodule.mem_span_finite_of_mem_span hx
+  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 }
+    <| by exact Submodule.mem_span_finite_of_mem_span hx
 
 theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s := (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } _).1
 
-theorem mem_minCardFinsetOfMemtoPointedCone : x ∈ (minCardFinsetOfMemtoPointedCone hx : Set E).toPointedCone 𝕜  := by
+theorem mem_minCardFinsetOfMemtoPointedCone :
+    x ∈ (minCardFinsetOfMemtoPointedCone hx : Set E).toPointedCone 𝕜  := by
   have hs : Set.Nonempty {(t : Finset E) | (t : Set E) ⊆ s ∧ x ∈ toPointedCone 𝕜 ↑t} := by
     exact Submodule.mem_span_finite_of_mem_span hx
-  have h := (Function.argminOn_mem Finset.card Nat.lt_wfRel.2 { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } hs).2
+  have h := (Function.argminOn_mem Finset.card Nat.lt_wfRel.2
+    { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } hs).2
   -- deterministic timeout if we use `exact` directly instead of the intermediate `have`
   exact h
 
