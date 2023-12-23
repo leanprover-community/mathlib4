@@ -53,8 +53,6 @@ variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
 
---variable [SMulCommClass R₂ R₂ N₂]
-
 section Matrix
 
 variable {n o : Type*}
@@ -65,10 +63,7 @@ open BilinForm Finset LinearMap Matrix
 
 open Matrix
 
-lemma test4 (r₁ r₂ r₃ : R₂) (n : N₂) : r₁ • r₂ • r₃ • n = r₂ • r₁ • r₃ • n := by
-  rw [smul_comm]
-
-/-- The map from `Matrix n n R` to bilinear maps on `n → R`.
+/-- The map from `Matrix n n R` to bilinear maps on `n → N₂`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n N₂) : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂ where
@@ -78,7 +73,7 @@ def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n N₂) : (n → R₂) →ₗ[
       simp only [Pi.add_apply, add_smul, smul_add, sum_add_distrib]
     map_smul' := fun _ _ => by
       simp only [Pi.smul_apply, smul_eq_mul, MulAction.mul_smul, RingHom.id_apply, smul_sum]
-      simp_rw [test4]
+      simp_rw [smul_algebra_smul_comm (v _)]
   }
   map_add' := fun _ _ => by
     ext
@@ -88,7 +83,7 @@ def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n N₂) : (n → R₂) →ₗ[
     simp [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, coe_mk, AddHom.coe_mk,
       RingHom.id_apply, LinearMap.smul_apply, mul_sum, Finset.smul_sum, MulAction.mul_smul]
 
-/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
+/-- The map from `Matrix n n R` to bilinear forms on `n → R₂`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) :=
