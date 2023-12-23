@@ -159,7 +159,8 @@ noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ s.toPointedCone �
   Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 }
     <| by exact Submodule.mem_span_finite_of_mem_span hx
 
-theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s := (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } _).1
+theorem minCardFinsetOftoPointedCone_subseteq : ↑(minCardFinsetOfMemtoPointedCone hx) ⊆ s :=
+  (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } _).1
 
 theorem mem_minCardFinsetOfMemtoPointedCone :
     x ∈ (minCardFinsetOfMemtoPointedCone hx : Set E).toPointedCone 𝕜  := by
