@@ -3510,17 +3510,12 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 
 theorem Subgroup.map_normalClosure_equiv_eq_normalClosure_image {s : Set G} (f : G ≃* N) :
     (normalClosure s).map f = normalClosure (f '' s) := by
-  have : Normal (G := N) (map f (normalClosure s)) := by
-    rw [map_equiv_eq_comap_symm]
-    simp [Normal.comap]
+  have : Normal (map f (normalClosure s)) := Normal.map inferInstance f f.surjective
   apply le_antisymm
   · rw [map_le_iff_le_comap]
-    apply normalClosure_le_normal
-    intro r hr
-    simp only [coe_comap, MonoidHom.coe_coe, Set.mem_preimage, SetLike.mem_coe]
-    apply subset_normalClosure
-    simp only [Set.mem_image]
-    refine ⟨r, hr, rfl⟩
+    refine normalClosure_le_normal ?_
+    simp only [coe_comap, ←Set.image_subset_iff]
+    exact subset_normalClosure
   · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
 theorem Subgroup.comap_normalClosure_equiv_eq_normalClosure_preimage {s : Set N} (f : G ≃* N) :
