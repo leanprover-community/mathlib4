@@ -89,6 +89,10 @@ theorem contMDiffAt_extend {x : M} (he : e ∈ maximalAtlas I M) (hx : x ∈ e.s
   (contMDiff_model _).comp x <| contMDiffAt_of_mem_maximalAtlas he hx
 #align cont_mdiff_at_extend contMDiffAt_extend
 
+theorem contMDiffOn_extend (he : e ∈ maximalAtlas I M) :
+    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
+  fun _x' hx' => (contMDiffAt_extend he hx').contMDiffWithinAt
+
 theorem contMDiffAt_extChartAt' {x' : M} (h : x' ∈ (chartAt H x).source) :
     ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) x' :=
   contMDiffAt_extend (chart_mem_maximalAtlas I x) h

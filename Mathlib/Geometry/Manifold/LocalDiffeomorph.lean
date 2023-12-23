@@ -400,14 +400,113 @@ end Differential
 
 /-! ## Extended charts are local diffeomorphisms -/
 section Charts
-variable {e : PartialHomeomorph M H}
+variable [I.Boundaryless] [SmoothManifoldWithCorners I M] {e : PartialHomeomorph M H}
 
-/-- Each extended chart is a local diffeomorphism on its source. -/
+namespace PartialHomeomorph
+variable (e) in
+/-- If `I` is boundaryless, an extended partial homeomorphism is a partial homeomorphism. -/
+def PartialHomeomorph.extend_toPartialHomeomorph : PartialHomeomorph M E where
+  toPartialEquiv := e.extend I
+  open_source := isOpen_extend_source e I
+  open_target := isOpen_extend_target e I
+  continuousOn_toFun := continuousOn_extend e I
+  continuousOn_invFun := continuousOn_extend_symm e I
+
+variable (he : e ∈ SmoothManifoldWithCorners.maximalAtlas I M)
+
+/-- If `M` has no boundary, every extended chart is a local diffeomorphism
+between its source and target. -/
+-- TODO: once we know `I.interior M` is open, show the same for every interior point x
+def extend_toPartialDiffeomorph : PartialDiffeomorph I 𝓘(𝕜, E) M E ⊤ where
+  toPartialEquiv := e.extend I
+  open_source := e.isOpen_extend_source I
+  open_target := e.isOpen_extend_target I
+  contMDiffOn_toFun := by
+    show ContMDiffOn I 𝓘(𝕜, E) ⊤ (e.extend I) (e.extend I).source
+    rw [e.extend_source]
+    exact contMDiffOn_extend he
+  contMDiffOn_invFun := by
+    show ContMDiffOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target
+    -- this should be a lemma! xxx think: why not the standard form for extend_target?
+    have : (e.extend I).target = I '' e.target := by rw [e.extend_target, I.image_eq]
+    exact this ▸ contMDiffOn_extend_symm he
+
+lemma extend_toPartialDiffeomorph_coe :
+    (extend_toPartialDiffeomorph I he).toFun = e.extend I :=
+  rfl
+
+lemma extend_toPartialDiffeomorph_source :
+    (extend_toPartialDiffeomorph I he).source = e.source := by
+  rw [← e.extend_source I]
+  rfl
+
+-- this is currently unused -> is this useful to keep?
+lemma extend_toPartialDiffeomorph_target :
+    (extend_toPartialDiffeomorph I he).target = (e.extend I).target :=
+  rfl
+
+/-- If `M` has no boundary, every inverse extended chart is a local diffeomorphism
+between its source and target. -/
+-- TODO: once we know `I.interior M` is open, show the same for every interior point x
+def extend_symm_toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E) I E M ⊤ :=
+  (extend_toPartialDiffeomorph I he).symm
+
+-- Are the following three lemmas useful?
+lemma extend_symm_toPartialDiffeomorph_coe :
+    (extend_symm_toPartialDiffeomorph I he).toFun = (e.extend I).symm :=
+  rfl
+
+lemma extend_symm_toPartialDiffeomorph_source :
+    (extend_symm_toPartialDiffeomorph I he).source = (e.extend I).target :=
+  rfl
+
+lemma extend_symm_toPartialDiffeomorph_target :
+    (extend_symm_toPartialDiffeomorph I he).target = e.source := by
+    rw [← e.extend_source I]
+    rfl
+
+/-- If `M` has no boundary, each extended chart is a local diffeomorphism on its source. -/
+-- TODO: once we know `I.interior M` is open, show the same for every interior point x
 theorem extend_isLocalDiffeomorphOn :
-  IsLocalDiffeomorphOn I 𝓘(𝕜, E) ⊤ (e.extend I) e.source := sorry
+    IsLocalDiffeomorphOn I 𝓘(𝕜, E) ⊤ (e.extend I) e.source := by
+  refine fun x ↦ ⟨extend_toPartialDiffeomorph I he, ?_, ?_⟩
+  · rw [extend_toPartialDiffeomorph_source I he]
+    exact Subtype.mem x
+  · rw [extend_toPartialDiffeomorph_source I he, ← extend_toPartialDiffeomorph_coe]
+    exact eqOn_refl _ _
 
-/-- Each inverse extended chart is a local diffeomorphism on its source. -/
+/-- If `M` has no boundary, each inverse extended chart is a local diffeomorphism on its source. -/
+-- TODO: once we know `I.interior M` is open, show the same for every interior point x
 theorem extend_isLocalDiffeomorphOn_symm :
-  IsLocalDiffeomorphOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target := sorry
+    IsLocalDiffeomorphOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target :=
+  fun x ↦ ⟨(extend_toPartialDiffeomorph I he).symm, Subtype.mem x, eqOn_refl _ _⟩
+
+variable {I}
+
+#exit
+def extChartAt_sourceToOpen (x : M) : Opens M :=
+  ⟨(extChartAt I x).source, isOpen_extChartAt_source I x⟩
+
+/- depends on isOpen_extChartAt_target, in my branch
+def extChartAt_targetToOpen (x : M) : Opens E :=
+  ⟨(extChartAt I x).target, isOpen_extChartAt_target I x⟩
+-/
+
+/-- If `M` has no boundary, `extChartAt I x` is a local diffeomorphism at `x`. -/
+-- TODO: show this for every interior point x (once we know the interior is open)
+lemma extChartAt_isLocalDiffeomorphAt (x : M) [I.Boundaryless] : -- why needed?
+    IsLocalDiffeomorphAt I 𝓘(𝕜, E) ⊤ (extChartAt I x) x := by
+  rw [extChartAt]
+  let r := (chartAt H x).extend_isLocalDiffeomorphOn
+  sorry --exact (chartAt H x).extend_isLocalDiffeomorphAt (chart_mem_maximalAtlas I x)
+  --  (mem_chart_source H x)
+
+-- /-- If `M` has no boundary, `(extChartAt I x).symm` is a local diffeomorphism at `x`. -/
+-- TODO: show this for every interior point x (once we know the interior is open)
+-- lemma extChartAt_symm_isLocalDiffeomorphAt {x : M} {y : E} (hy : y ∈ (extChartAt I x).target) :
+--     IsLocalDiffeomorphAt 𝓘(𝕜, E) I n (extChartAt I x).symm y := by
+--   rw [extChartAt]
+--   exact (chartAt H x).extend_symm_isLocalDiffeomorphAt n (chart_mem_maximalAtlas I x) hy
+end PartialHomeomorph
 
 end Charts
