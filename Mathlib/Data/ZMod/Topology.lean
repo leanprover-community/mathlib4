@@ -21,4 +21,10 @@ end ZMod
 lemma induced_top_cont_inv {n : ℕ} : @Continuous _ _ (TopologicalSpace.induced
     (Units.coeHom (ZMod n)) inferInstance) _ (Units.inv : (ZMod n)ˣ → ZMod n) := by
   convert continuous_of_discreteTopology
-  refine' DiscreteTopology_induced (λ a b h => Units.eq_iff.1 h)
+  have : @Embedding _ _ (TopologicalSpace.induced
+    (Units.coeHom (ZMod n)) inferInstance) _ (Units.coeHom (ZMod n))
+  { refine' Function.Injective.embedding_induced (λ a b h => _)
+    simp only [Units.coeHom_apply, ← Units.ext_iff] at h
+    rw [h] }
+  refine' @Embedding.discreteTopology _ _ (TopologicalSpace.induced
+    (Units.coeHom (ZMod n)) inferInstance) _ _ _ this

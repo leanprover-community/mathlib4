@@ -866,26 +866,6 @@ theorem nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) :
   rw [mem_nhds_induced, mem_comap]
 #align nhds_induced nhds_induced
 
-/-- The topology pulled-back under an inclusion `f : X → Y` from the discrete topology (`⊥`) is the
-discrete topology.
-This version does not assume the choice of a topology on either the source `X`
-nor the target `Y` of the inclusion `f`. -/
-lemma induced_bot {X Y : Type*} {f : X → Y} (hf : Function.Injective f) :
-    TopologicalSpace.induced f ⊥ = ⊥ :=
-eq_of_nhds_eq_nhds ( λ x => by
-  set hY : TopologicalSpace Y := ⊥
-  haveI : DiscreteTopology Y := ⟨rfl⟩
-  set hX : TopologicalSpace X := ⊥
-  haveI : DiscreteTopology X := ⟨rfl⟩
-  rw [@nhds_induced _ _ ⊥ f _, nhds_discrete, Filter.comap_pure, ← Set.image_singleton,
-    hf.preimage_image, nhds_discrete X]
-  simp)
-
-lemma DiscreteTopology_induced {X Y : Type*} [tY : TopologicalSpace Y] [DiscreteTopology Y] {f :
-    X → Y} (hf : Function.Injective f) : @DiscreteTopology X (TopologicalSpace.induced f tY) := by
-  apply @DiscreteTopology.mk _ (TopologicalSpace.induced f tY) _
-  rw [@DiscreteTopology.eq_bot Y _ _, induced_bot hf]
-
 theorem induced_iff_nhds_eq [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : β → α) :
     tβ = tα.induced f ↔ ∀ b, 𝓝 b = comap f (𝓝 <| f b) :=
   ⟨fun h a => h.symm ▸ nhds_induced f a, fun h =>
