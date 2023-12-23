@@ -9,14 +9,16 @@ import Mathlib.Logic.Equiv.Defs
 
 /-!
 
-# Functors can be applied to `equiv`s.
+# Functors can be applied to `Equiv`s.
 
 ```
-def functor.map_equiv (f : Type u → Type v) [functor f] [is_lawful_functor f] :
-  α ≃ β → f α ≃ f β
+def Functor.mapEquiv (f : Type u → Type v) [functor f] [LawfulFunctor f] :
+    α ≃ β → f α ≃ f β
 ```
 
 -/
+
+set_option autoImplicit true
 
 open Equiv
 
@@ -24,7 +26,7 @@ namespace Functor
 
 variable (f : Type u → Type v) [Functor f] [LawfulFunctor f]
 
-/-- Apply a functor to an `equiv`. -/
+/-- Apply a functor to an `Equiv`. -/
 def map_equiv (h : α ≃ β) : f α ≃ f β where
   toFun    := map h
   invFun   := map h.symm
@@ -32,11 +34,10 @@ def map_equiv (h : α ≃ β) : f α ≃ f β where
   right_inv x := by simp [map_map]
 
 @[simp]
-lemma map_equiv_apply (h : α ≃ β) (x : f α) :
-  (map_equiv f h : f α ≃ f β) x = map h x := rfl
+lemma map_equiv_apply (h : α ≃ β) (x : f α) : (map_equiv f h : f α ≃ f β) x = map h x := rfl
 
 @[simp]
 lemma map_equiv_symm_apply (h : α ≃ β) (y : f β) :
-  (map_equiv f h : f α ≃ f β).symm y = map h.symm y := rfl
+    (map_equiv f h : f α ≃ f β).symm y = map h.symm y := rfl
 
 end Functor

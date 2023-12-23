@@ -2,15 +2,11 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module combinatorics.quiver.subquiver
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Combinatorics.Quiver.Basic
+
+#align_import combinatorics.quiver.subquiver from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 ## Wide subquivers
@@ -28,6 +24,7 @@ universe v u
     NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
 def WideSubquiver (V) [Quiver.{v + 1} V] :=
   ∀ a b : V, Set (a ⟶ b)
+#align wide_subquiver WideSubquiver
 
 /-- A type synonym for `V`, when thought of as a quiver having only the arrows from
 some `WideSubquiver`. -/
@@ -66,6 +63,9 @@ structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
   right : V
   /-- an arrow -/
   hom : left ⟶ right
+#align quiver.total Quiver.Total
+#align quiver.total.ext Quiver.Total.ext
+#align quiver.total.ext_iff Quiver.Total.ext_iff
 
 /-- A wide subquiver of `G` can equivalently be viewed as a total set of arrows. -/
 def wideSubquiverEquivSetTotal {V} [Quiver V] :
@@ -75,10 +75,12 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
   invFun S a b := { e | Total.mk a b e ∈ S }
   left_inv _ := rfl
   right_inv _ := rfl
+#align quiver.wide_subquiver_equiv_set_total Quiver.wideSubquiverEquivSetTotal
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
-def Labelling (V : Type u) [Quiver V] (L : Sort _) :=
+def Labelling (V : Type u) [Quiver V] (L : Sort*) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
+#align quiver.labelling Quiver.Labelling
 
 instance {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
   ⟨fun _ _ _ ↦ default⟩

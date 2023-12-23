@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Kevin Lacker
-
-! This file was ported from Lean 3 source module algebra.group_power.identities
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
+
+#align_import algebra.group_power.identities from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Identities
@@ -17,7 +14,7 @@ This file contains some "named" commutative ring identities.
 -/
 
 
-variable {R : Type _} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y₁ y₂ y₃ y₄ y₅ y₆ y₇ y₈ n : R}
+variable {R : Type*} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y₁ y₂ y₃ y₄ y₅ y₆ y₇ y₈ n : R}
 
 /-- Brahmagupta-Fibonacci identity or Diophantus identity, see
 <https://en.wikipedia.org/wiki/Brahmagupta%E2%80%93Fibonacci_identity>.
@@ -27,6 +24,7 @@ This sign choice here corresponds to the signs obtained by multiplying two compl
 theorem sq_add_sq_mul_sq_add_sq :
     (x₁ ^ 2 + x₂ ^ 2) * (y₁ ^ 2 + y₂ ^ 2) = (x₁ * y₁ - x₂ * y₂) ^ 2 + (x₁ * y₂ + x₂ * y₁) ^ 2 := by
   ring
+#align sq_add_sq_mul_sq_add_sq sq_add_sq_mul_sq_add_sq
 
 /-- Brahmagupta's identity, see <https://en.wikipedia.org/wiki/Brahmagupta%27s_identity>
 -/
@@ -34,18 +32,21 @@ theorem sq_add_mul_sq_mul_sq_add_mul_sq :
     (x₁ ^ 2 + n * x₂ ^ 2) * (y₁ ^ 2 + n * y₂ ^ 2) =
     (x₁ * y₁ - n * x₂ * y₂) ^ 2 + n * (x₁ * y₂ + x₂ * y₁) ^ 2 := by
   ring
+#align sq_add_mul_sq_mul_sq_add_mul_sq sq_add_mul_sq_mul_sq_add_mul_sq
 
 /-- Sophie Germain's identity, see <https://www.cut-the-knot.org/blue/SophieGermainIdentity.shtml>.
 -/
 theorem pow_four_add_four_mul_pow_four :
     a ^ 4 + 4 * b ^ 4 = ((a - b) ^ 2 + b ^ 2) * ((a + b) ^ 2 + b ^ 2) := by
   ring
+#align pow_four_add_four_mul_pow_four pow_four_add_four_mul_pow_four
 
 /-- Sophie Germain's identity, see <https://www.cut-the-knot.org/blue/SophieGermainIdentity.shtml>.
 -/
 theorem pow_four_add_four_mul_pow_four' :
     a ^ 4 + 4 * b ^ 4 = (a ^ 2 - 2 * a * b + 2 * b ^ 2) * (a ^ 2 + 2 * a * b + 2 * b ^ 2) := by
   ring
+#align pow_four_add_four_mul_pow_four' pow_four_add_four_mul_pow_four'
 
 /-- Euler's four-square identity, see <https://en.wikipedia.org/wiki/Euler%27s_four-square_identity>.
 
@@ -57,6 +58,7 @@ theorem sum_four_sq_mul_sum_four_sq :
           (x₁ * y₃ - x₂ * y₄ + x₃ * y₁ + x₄ * y₂) ^ 2 +
         (x₁ * y₄ + x₂ * y₃ - x₃ * y₂ + x₄ * y₁) ^ 2 :=
   by ring
+#align sum_four_sq_mul_sum_four_sq sum_four_sq_mul_sum_four_sq
 
 /-- Degen's eight squares identity, see <https://en.wikipedia.org/wiki/Degen%27s_eight-square_identity>.
 
@@ -74,3 +76,4 @@ theorem sum_eight_sq_mul_sum_eight_sq :
       (x₁ * y₇ + x₂ * y₈ + x₃ * y₅ - x₄ * y₆ - x₅ * y₃ + x₆ * y₄ + x₇ * y₁ - x₈ * y₂) ^ 2 +
       (x₁ * y₈ - x₂ * y₇ + x₃ * y₆ + x₄ * y₅ - x₅ * y₄ - x₆ * y₃ + x₇ * y₂ + x₈ * y₁) ^ 2 := by
   ring
+#align sum_eight_sq_mul_sum_eight_sq sum_eight_sq_mul_sum_eight_sq

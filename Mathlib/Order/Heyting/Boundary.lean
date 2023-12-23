@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.boundary
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BooleanAlgebra
-import Mathlib.Tactic.ScopedNS
+import Mathlib.Tactic.Common
+
+#align_import order.heyting.boundary from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Co-Heyting boundary
@@ -28,7 +25,7 @@ boundary.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Coheyting
 
@@ -119,16 +116,12 @@ theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b)
   · refine le_sup_of_le_right ?_
     rw [hnot_le_iff_codisjoint_right]
     exact codisjoint_hnot_right.mono_right (hnot_anti inf_le_left)
-#align
-  coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
-  Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
+#align coheyting.boundary_le_boundary_sup_sup_boundary_inf_left Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
 
 theorem boundary_le_boundary_sup_sup_boundary_inf_right : ∂ b ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
   rw [@sup_comm _ _ a, inf_comm]
   exact boundary_le_boundary_sup_sup_boundary_inf_left
-#align
-  coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
-  Coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
+#align coheyting.boundary_le_boundary_sup_sup_boundary_inf_right Coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
 
 theorem boundary_sup_sup_boundary_inf (a b : α) : ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) = ∂ a ⊔ ∂ b :=
   le_antisymm (sup_le boundary_sup_le boundary_inf_le) <|

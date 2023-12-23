@@ -2,16 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
-Ported by: Winston Yin, Arien Malec
-
-! This file was ported from Lean 3 source module data.set.intervals.basic
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
-import Mathlib.Tactic.ApplyRules
+import Mathlib.Tactic.Says
+
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals
@@ -23,7 +19,7 @@ closed) using the following naming conventions:
 - `c`: closed
 
 Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the inverval `(a, b]`.
+`Ioc a b` denotes the interval `(a, b]`.
 
 This file contains these definitions, and basic facts on inclusion, intersection, difference of
 intervals (where the precise statements may depend on the properties of the order, in particular
@@ -32,12 +28,11 @@ for some statements it should be `LinearOrder` or `DenselyOrdered`).
 TODO: This is just the beginning; a lot of rules are missing
 -/
 
-
 open Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -716,6 +711,40 @@ theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
 #align set.Iic_inter_Ioc_of_le Set.Iic_inter_Ioc_of_le
 
+theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
+#align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
+
+theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
+#align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
+
+theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
+#align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
+
+theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
+#align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
+
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
+#align set.not_mem_Ioi_self Set.not_mem_Ioi_self
+
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
+#align set.not_mem_Iio_self Set.not_mem_Iio_self
+
+theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+#align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
+
+theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+#align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
+
+theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+#align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
+
+theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+#align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
+
 end Preorder
 
 section PartialOrder
@@ -737,6 +766,18 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   · rintro ⟨rfl, rfl⟩
     exact Icc_self _
 #align set.Icc_eq_singleton_iff Set.Icc_eq_singleton_iff
+
+lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
+  fun _x ⟨hax, hxb⟩ _y ⟨hay, hyb⟩ ↦ le_antisymm
+    (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
+#align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
+
+@[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
+    Set.Subsingleton (Icc a b) ↔ b ≤ a := by
+  refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
+  contrapose! h
+  simp only [ge_iff_le, gt_iff_lt, not_subsingleton_iff]
+  exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
 theorem Icc_diff_left : Icc a b \ {a} = Ioc a b :=
@@ -796,7 +837,7 @@ theorem Icc_diff_Ioc_same (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by
 @[simp]
 theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   rw [← Icc_diff_both, diff_diff_cancel_left]
-  simp [insert_subset, h]
+  simp [insert_subset_iff, h]
 #align set.Icc_diff_Ioo_same Set.Icc_diff_Ioo_same
 
 @[simp]
@@ -829,6 +870,12 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
   simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
 #align set.Ioo_union_right Set.Ioo_union_right
+
+theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
+  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
+    | x, .inl rfl => left_mem_Icc.mpr h
+    | x, .inr rfl => right_mem_Icc.mpr h
+  rw [← this, Icc_diff_both]
 
 theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
   rw [← Icc_diff_left, diff_union_self,
@@ -1015,22 +1062,6 @@ theorem not_mem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
 #align set.not_mem_Iic Set.not_mem_Iic
 
-theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b :=
-  not_mem_subset Icc_subset_Ici_self <| not_mem_Ici.mpr ha
-#align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
-
-theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b :=
-  not_mem_subset Icc_subset_Iic_self <| not_mem_Iic.mpr hb
-#align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
-
-theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b :=
-  not_mem_subset Ico_subset_Ici_self <| not_mem_Ici.mpr ha
-#align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
-
-theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b :=
-  not_mem_subset Ioc_subset_Iic_self <| not_mem_Iic.mpr hb
-#align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
-
 theorem not_mem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 #align set.not_mem_Ioi Set.not_mem_Ioi
@@ -1039,51 +1070,23 @@ theorem not_mem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
 #align set.not_mem_Iio Set.not_mem_Iio
 
--- Porting note: `simp` can prove this
--- @[simp]
-theorem not_mem_Ioi_self : a ∉ Ioi a :=
-  lt_irrefl _
-#align set.not_mem_Ioi_self Set.not_mem_Ioi_self
-
--- Porting note: `simp` can prove this
--- @[simp]
-theorem not_mem_Iio_self : b ∉ Iio b :=
-  lt_irrefl _
-#align set.not_mem_Iio_self Set.not_mem_Iio_self
-
-theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b :=
-  not_mem_subset Ioc_subset_Ioi_self <| not_mem_Ioi.mpr ha
-#align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
-
-theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b :=
-  not_mem_subset Ico_subset_Iio_self <| not_mem_Iio.mpr hb
-#align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
-
-theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b :=
-  not_mem_subset Ioo_subset_Ioi_self <| not_mem_Ioi.mpr ha
-#align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
-
-theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b :=
-  not_mem_subset Ioo_subset_Iio_self <| not_mem_Iio.mpr hb
-#align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
-
 @[simp]
-theorem compl_Iic : Iic aᶜ = Ioi a :=
+theorem compl_Iic : (Iic a)ᶜ = Ioi a :=
   ext fun _ => not_le
 #align set.compl_Iic Set.compl_Iic
 
 @[simp]
-theorem compl_Ici : Ici aᶜ = Iio a :=
+theorem compl_Ici : (Ici a)ᶜ = Iio a :=
   ext fun _ => not_le
 #align set.compl_Ici Set.compl_Ici
 
 @[simp]
-theorem compl_Iio : Iio aᶜ = Ici a :=
+theorem compl_Iio : (Iio a)ᶜ = Ici a :=
   ext fun _ => not_lt
 #align set.compl_Iio Set.compl_Iio
 
 @[simp]
-theorem compl_Ioi : Ioi aᶜ = Iic a :=
+theorem compl_Ioi : (Ioi a)ᶜ = Iic a :=
   ext fun _ => not_lt
 #align set.compl_Ioi Set.compl_Ioi
 
@@ -1147,7 +1150,7 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
 #align set.Ico_subset_Ico_iff Set.Ico_subset_Ico_iff
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ <;> exact (@dual_Ico α _ _ _).symm
+  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@dual_Ico α _ _ _).symm
 #align set.Ioc_subset_Ioc_iff Set.Ioc_subset_Ioc_iff
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
@@ -1164,16 +1167,23 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
 
 theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun e => by
-      simp [Subset.antisymm_iff] at e
-      simp [le_antisymm_iff]
+      simp only [Subset.antisymm_iff] at e
+      simp only [le_antisymm_iff]
       cases' h with h h <;>
-      simp [Ico_subset_Ico_iff h] at e <;>
-      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩, rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
+      simp only [gt_iff_lt, not_lt, ge_iff_le, Ico_subset_Ico_iff h] at e <;>
+      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩, exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
+      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
+
+lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
+  refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
+  by_contra! H
+  have : y ∈ Ici x := H.le
+  rw [h, mem_singleton_iff] at this
+  exact lt_irrefl y (this.le.trans_lt H)
 
 open Classical
 
@@ -1253,13 +1263,13 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioo, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
-  · simp only [hc, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, or_true] -- Porting note: restore `tauto`
   · have hxb : x < b := (le_of_not_gt hc).trans_lt h₁
-    simp only [hxb, and_true, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ioo_union_Ioi' Set.Ioo_union_Ioi'
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
-  cases' le_total a b with hab hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp [hab] at h
   · exact Ioo_union_Ioi' h
   · rw [min_comm]
     simp [*, min_eq_left_of_lt]
@@ -1287,13 +1297,13 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, or_true] -- Porting note: restore `tauto`
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    simp only [hxb, and_true, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ico_union_Ici' Set.Ico_union_Ici'
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
-  cases' le_total a b with hab hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp [hab] at h
   · exact Ico_union_Ici' h
   · simp [*]
 #align set.Ico_union_Ici Set.Ico_union_Ici
@@ -1311,13 +1321,13 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ioc, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
-  · simp only [hc, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, or_true] -- Porting note: restore `tauto`
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
-    simp only [hxb, and_true, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Ioc_union_Ioi' Set.Ioc_union_Ioi'
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
-  cases' le_total a b with hab hab <;> simp [hab] at h
+  rcases le_total a b with hab | hab <;> simp [hab] at h
   · exact Ioc_union_Ioi' h
   · simp [*]
 #align set.Ioc_union_Ioi Set.Ioc_union_Ioi
@@ -1354,18 +1364,17 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Icc, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, or_true] -- Porting note: restore `tauto`
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    simp only [hxb, and_true, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true] -- Porting note: restore `tauto`
 #align set.Icc_union_Ici' Set.Icc_union_Ici'
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
-  cases' le_or_lt a b with hab hab <;> simp [hab] at h
+  rcases le_or_lt a b with hab | hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
-  · cases h
+  · cases' h with h h
     · simp [*]
-    · rename_i h
-      have hca : c ≤ a := h.trans hab.le
+    · have hca : c ≤ a := h.trans hab.le
       simp [*]
 #align set.Icc_union_Ici Set.Icc_union_Ici
 
@@ -1396,13 +1405,13 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
   ext1 x
   simp_rw [mem_union, mem_Iio, mem_Ico, lt_max_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, true_and, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, true_and] -- Porting note: restore `tauto`
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    simp only [hxb, true_or, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, true_or] -- Porting note: restore `tauto`
 #align set.Iio_union_Ico' Set.Iio_union_Ico'
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
-  cases' le_total c d with hcd hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
   · exact Iio_union_Ico' h
   · simp [*]
 #align set.Iio_union_Ico Set.Iio_union_Ico
@@ -1421,13 +1430,13 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Ioc, le_max_iff]
   by_cases hc : c < x
-  · simp only [hc, true_and, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, true_and] -- Porting note: restore `tauto`
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁.le
-    simp only [hxb, true_or, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, true_or] -- Porting note: restore `tauto`
 #align set.Iic_union_Ioc' Set.Iic_union_Ioc'
 
 theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
-  cases' le_total c d with hcd hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
   · exact Iic_union_Ioc' h
   · rw [max_comm]
     simp [*, max_eq_right_of_lt h]
@@ -1453,7 +1462,7 @@ theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
 #align set.Iio_union_Ioo' Set.Iio_union_Ioo'
 
 theorem Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
-  cases' le_total c d with hcd hcd <;> simp [hcd] at h
+  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
   · exact Iio_union_Ioo' h
   · rw [max_comm]
     simp [*, max_eq_right_of_lt h]
@@ -1473,17 +1482,16 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Icc, le_max_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, true_and, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, true_and] -- Porting note: restore `tauto`
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    simp only [hxb, true_or, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, true_or] -- Porting note: restore `tauto`
 #align set.Iic_union_Icc' Set.Iic_union_Icc'
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
-  cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
+  rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
-  · cases h
-    · rename_i h
-      have hdb : d ≤ b := hcd.le.trans h
+  · cases' h with h h
+    · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
 #align set.Iic_union_Icc Set.Iic_union_Icc
@@ -1527,18 +1535,17 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
   ext1 x
   simp_rw [mem_union, mem_Ico, min_le_iff, lt_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x < d
-  · simp only [hc, hd, and_self, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
   · have hax : a ≤ x := h₂.trans (le_of_not_gt hd)
-    simp only [hax, true_and, hc, or_self, iff_self] -- Porting note: restore `tauto`
+    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or, iff_self]
-    -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Ico_union_Ico' Set.Ico_union_Ico'
 
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
-  cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;> simp [hab, hcd] at h₁ h₂
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [*] at h₁ h₂
   · exact Ico_union_Ico' h₂ h₁
   all_goals simp [*]
 #align set.Ico_union_Ico Set.Ico_union_Ico
@@ -1616,18 +1623,17 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
   ext1 x
   simp_rw [mem_union, mem_Ioc, min_lt_iff, le_max_iff]
   by_cases hc : c < x <;> by_cases hd : x ≤ d
-  · simp only [hc, hd, and_self, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
   · have hax : a < x := h₂.trans_lt (lt_of_not_ge hd)
-    simp only [hax, true_and, hc, or_self, iff_self] -- Porting note: restore `tauto`
+    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or, iff_self]
-    -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Ioc_union_Ioc' Set.Ioc_union_Ioc'
 
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
-  cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;> simp [hab, hcd] at h₁ h₂
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;> simp [*] at h₁ h₂
   · exact Ioc_union_Ioc' h₂ h₁
   all_goals simp [*]
 #align set.Ioc_union_Ioc Set.Ioc_union_Ioc
@@ -1673,13 +1679,12 @@ theorem Icc_union_Icc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Icc a b ∪ Icc c d =
   ext1 x
   simp_rw [mem_union, mem_Icc, min_le_iff, le_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x ≤ d
-  · simp only [hc, hd, and_self, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
   · have hax : a ≤ x := h₂.trans (le_of_not_ge hd)
-    simp only [hax, true_and, hc, or_self, iff_self] -- Porting note: restore `tauto`
+    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or, iff_self]
-    -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Icc_union_Icc' Set.Icc_union_Icc'
 
 /-- We cannot replace `<` by `≤` in the hypotheses.
@@ -1687,7 +1692,7 @@ Otherwise for `b < a = d < c` the l.h.s. is `∅` and the r.h.s. is `{a}`.
 -/
 theorem Icc_union_Icc (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
-  cases' le_or_lt a b with hab hab <;> cases' le_or_lt c d with hcd hcd <;>
+  rcases le_or_lt a b with hab | hab <;> rcases le_or_lt c d with hcd | hcd <;>
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, min_eq_left_of_lt,
       min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt, hab, hcd] at h₁ h₂
   · exact Icc_union_Icc' h₂.le h₁.le
@@ -1709,18 +1714,17 @@ theorem Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo
   ext1 x
   simp_rw [mem_union, mem_Ioo, min_lt_iff, lt_max_iff]
   by_cases hc : c < x <;> by_cases hd : x < d
-  · simp only [hc, hd, and_self, or_true, iff_self] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
   · have hax : a < x := h₂.trans_le (le_of_not_lt hd)
-    simp only [hax, true_and, hc, or_self, iff_self] -- Porting note: restore `tauto`
+    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
   · have hxb : x < b := (le_of_not_lt hc).trans_lt h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or, iff_self]
-    -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false, iff_self] -- Porting note: restore `tauto`
+    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
+  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
 #align set.Ioo_union_Ioo' Set.Ioo_union_Ioo'
 
 theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by
-  cases' le_total a b with hab hab <;> cases' le_total c d with hcd hcd <;>
+  rcases le_total a b with hab | hab <;> rcases le_total c d with hcd | hcd <;>
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, hab, hcd] at h₁ h₂
   · exact Ioo_union_Ioo' h₂ h₁
   all_goals
@@ -1874,7 +1878,7 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
   rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
-  -- Porting note: mathlib3 proof finished from here as folllows:
+  -- Porting note: mathlib3 proof finished from here as follows:
   -- (It can probably be restored after https://github.com/leanprover-community/mathlib4/pull/856)
   -- ac_rfl
   -- all_goals
@@ -1882,7 +1886,6 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   --     le_max_of_le_left, le_max_of_le_right, le_refl]
   simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
     min_assoc, max_comm]
-
 #align set.Ioc_union_Ioc_union_Ioc_cycle Set.Ioc_union_Ioc_union_Ioc_cycle
 
 end LinearOrder

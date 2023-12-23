@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.option.n_ary
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
+
+#align_import data.option.n_ary from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
 /-!
 # Binary map of options
@@ -30,6 +27,9 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 `Option.map₂` and casing already fulfills this task.
 -/
 
+set_option autoImplicit true
+
+universe u
 
 open Function
 
@@ -45,7 +45,7 @@ def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
 
 /-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem map₂_def {α β γ : Type _} (f : α → β → γ) (a : Option α) (b : Option β) :
+theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b : Option β) :
     map₂ f a b = f <$> a <*> b :=
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def
@@ -208,5 +208,19 @@ theorem map_map₂_right_anticomm {f : α → β' → γ} {g : β → β'} {f' :
     (h_right_anticomm : ∀ a b, f a (g b) = g' (f' b a)) :
     map₂ f a (b.map g) = (map₂ f' b a).map g' := by cases a <;> cases b <;> simp [h_right_anticomm]
 #align option.map_map₂_right_anticomm Option.map_map₂_right_anticomm
+
+/-- If `a` is a left identity for a binary operation `f`, then `some a` is a left identity for
+`Option.map₂ f`. -/
+lemma map₂_left_identity {f : α → β → β} {a : α} (h : ∀ b, f a b = b) (o : Option β) :
+    map₂ f (some a) o = o := by
+  cases o; exacts [rfl, congr_arg some (h _)]
+#align option.map₂_left_identity Option.map₂_left_identity
+
+/-- If `b` is a right identity for a binary operation `f`, then `some b` is a right identity for
+`Option.map₂ f`. -/
+lemma map₂_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = a) (o : Option α) :
+    map₂ f o (some b) = o := by
+  simp [h, map₂]
+#align option.map₂_right_identity Option.map₂_right_identity
 
 end Option

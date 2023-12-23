@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Lean
 import Std.Lean.Parser
-import Mathlib.Util.MapsTo
 
 /-! # `simp_intro` tactic -/
 

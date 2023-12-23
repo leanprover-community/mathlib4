@@ -2,15 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module control.basic
-! leanprover-community/mathlib commit 08aeb33b5b693fb1392a7568ae2c0b253516535e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Control.SimpSet
-import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+import Mathlib.Init.Function
+import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Attr.Core
+import Std.Data.List.Basic
+
+#align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 Extends the theory on functors, applicatives and monads.
@@ -29,7 +28,6 @@ theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$>
 #align functor.map_map Functor.map_mapₓ
 -- order of implicits
 
-attribute [simp] id_map'
 #align id_map' id_map'ₓ
 -- order of implicits
 
@@ -54,20 +52,16 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
 
 variable [LawfulApplicative F]
 
-attribute [functor_norm] seq_assoc pure_seq
-
 @[simp]
 theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
   pure_id_seq x
 #align pure_id'_seq pure_id'_seq
 
-attribute [functor_norm] seq_assoc pure_seq
-
 @[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
-  simp [← pure_seq]
-  simp [seq_assoc, ← comp_map, (· ∘ ·)]
+  simp only [← pure_seq]
+  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
@@ -79,52 +73,44 @@ theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
 
 end Applicative
 
--- TODO: setup `functor_norm` for `monad` laws
-attribute [functor_norm] pure_bind bind_assoc bind_pure
-
 section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 open List
 
-/-- A generalization of `List.partition` which partitions the list according to a monadic
-predicate. `List.partition` corresponds to the case where `f = Id`. -/
-def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
-    List α → f (List α × List α)
-  | [] => pure ([], [])
-  | x :: xs => condM (p x)
-    (Prod.map (cons x) id <$> List.partitionM p xs)
-    (Prod.map id (cons x) <$> List.partitionM p xs)
 #align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
     f <$> (x >>= g) = x >>= fun a => f <$> g a := by
-  rw [← bind_pure_comp, bind_assoc] <;> simp [bind_pure_comp]
+  rw [← bind_pure_comp, bind_assoc]; simp [bind_pure_comp]
 #align map_bind map_bind
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
-  show bind (f <$> x) g = bind x (g ∘ f)
-  by rw [← bind_pure_comp, bind_assoc] <;> simp [pure_bind, (· ∘ ·)]
+  show bind (f <$> x) g = bind x (g ∘ f) by
+    rw [← bind_pure_comp, bind_assoc]
+    simp [pure_bind, Function.comp_def]
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
-theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
 
 @[functor_norm]
-theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pipe fish_pipe
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp only [(· >=> ·), functor_norm]
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
@@ -158,7 +144,7 @@ section
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
-  joinM (Functor.map f <$> a) = f <$> joinM a := by
+    joinM (Functor.map f <$> a) = f <$> joinM a := by
   simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 
@@ -182,7 +168,7 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
--- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
+-- [todo] add notation for `Functor.mapConst` and port `Functor.mapConstRev`
 /-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
@@ -192,6 +178,10 @@ def succeeds {α} (x : F α) : F Bool :=
 def tryM {α} (x : F α) : F Unit :=
   Functor.mapConst () x <|> pure ()
 #align mtry tryM
+
+/-- Attempts to perform the computation, and returns `none` if it doesn't succeed. -/
+def try? {α} (x : F α) : F (Option α) :=
+  some <$> x <|> pure none
 
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
@@ -219,7 +209,8 @@ instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
   bind := @Sum.bind e
 
-instance : LawfulFunctor (Sum.{v, u} e) := by refine' { .. } <;> intros <;> casesm Sum _ _ <;> rfl
+instance : LawfulFunctor (Sum.{v, u} e) := by
+  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by
@@ -263,12 +254,9 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
-    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) :=
-      by
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
-    _ = (fun b a => f a b) <$> b <*> a :=
-      by
-        rw [@CommApplicative.commutative_prod m h] <;>
-        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
-
+    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
+    _ = (fun b a => f a b) <$> b <*> a := by
+      rw [@CommApplicative.commutative_prod m h]
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map

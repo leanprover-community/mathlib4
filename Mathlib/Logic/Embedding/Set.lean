@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.embedding.set
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Set.Image
+
+#align_import logic.embedding.set from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Interactions between embeddings and sets.
@@ -40,6 +37,7 @@ namespace Embedding
 def coeWithTop {α} : α ↪ WithTop α :=
   { Embedding.some with toFun := WithTop.some }
 #align function.embedding.coe_with_top Function.Embedding.coeWithTop
+#align function.embedding.coe_with_top_apply Function.Embedding.coeWithTop_apply
 
 /-- Given an embedding `f : α ↪ β` and a point outside of `Set.range f`, construct an embedding
 `Option α ↪ β`. -/
@@ -47,15 +45,19 @@ def coeWithTop {α} : α ↪ WithTop α :=
 def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option α ↪ β :=
   ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.2, h⟩⟩
 #align function.embedding.option_elim Function.Embedding.optionElim
+#align function.embedding.option_elim_apply Function.Embedding.optionElim_apply
 
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
-def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range fᶜ) where
+def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def] ; rfl
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def] ; rfl
+  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]; rfl
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]; rfl
 #align function.embedding.option_embedding_equiv Function.Embedding.optionEmbeddingEquiv
+#align function.embedding.option_embedding_equiv_apply_snd_coe Function.Embedding.optionEmbeddingEquiv_apply_snd_coe
+#align function.embedding.option_embedding_equiv_symm_apply Function.Embedding.optionEmbeddingEquiv_symm_apply
+#align function.embedding.option_embedding_equiv_apply_fst Function.Embedding.optionEmbeddingEquiv_apply_fst
 
 /-- Restrict the codomain of an embedding. -/
 def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α ↪ p :=
@@ -74,6 +76,7 @@ open Set
 protected def image {α β} (f : α ↪ β) : Set α ↪ Set β :=
   ⟨image f, f.2.image_injective⟩
 #align function.embedding.image Function.Embedding.image
+#align function.embedding.image_apply Function.Embedding.image_apply
 
 end Embedding
 
@@ -88,12 +91,13 @@ def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
     congr
     injection h⟩
 #align set.embedding_of_subset Set.embeddingOfSubset
+#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply
 
 end Set
 
 section Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` is equivalent to a sum of
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when
@@ -128,6 +132,7 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
           intro hp
           simpa using h.le_bot x ⟨hp, x.prop⟩
 #align subtype_or_equiv subtypeOrEquiv
+#align subtype_or_equiv_apply subtypeOrEquiv_apply
 
 @[simp]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)

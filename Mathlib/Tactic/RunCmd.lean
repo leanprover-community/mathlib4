@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Mario Carneiro
 -/
 import Lean.Elab.Eval
-import Mathlib.Util.MapsTo
 import Std.Util.TermUnsafe
 
 /-!
@@ -34,7 +33,7 @@ elab (name := runCmd) "run_cmd " elems:doSeq : command => do
       (← `(discard do $elems))
 
 /-- The `run_tac doSeq` tactic executes code in `TacticM Unit`. -/
-elab (name := runTac) "run_tac" e:doSeq : tactic => do
+elab (name := runTac) "run_tac " e:doSeq : tactic => do
   ← unsafe evalTerm (TacticM Unit) (mkApp (mkConst ``TacticM) (mkConst ``Unit))
     (← `(discard do $e))
 
@@ -44,7 +43,7 @@ elab (name := runTac) "run_tac" e:doSeq : tactic => do
 * `by_elab fun expectedType? ↦ do doSeq` receives the expected type (an `Option Expr`)
   as well.
 -/
-syntax (name := byElab) "by_elab" doSeq : term
+syntax (name := byElab) "by_elab " doSeq : term
 
 /-- Elaborator for `by_elab`. -/
 @[term_elab byElab] def elabRunElab : TermElab := fun

@@ -2,18 +2,14 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.defs
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Dvd.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
+
+#align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Basics for the Rational Numbers
@@ -43,9 +39,7 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
-instance : IntCast ℚ :=
-  ⟨ofInt⟩
-
+@[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.ofInt_eq_cast
@@ -59,15 +53,6 @@ theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
 theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
   rfl
 #align rat.coe_int_denom Rat.coe_int_den
-
-instance : Zero ℚ :=
-  ⟨(0 : ℤ)⟩
-
-instance : One ℚ :=
-  ⟨(1 : ℤ)⟩
-
-instance : Inhabited ℚ :=
-  ⟨0⟩
 
 #noalign rat.mk_pnat
 
@@ -90,14 +75,19 @@ theorem zero_mk (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
 #align rat.zero_mk_nat Rat.zero_mkRat
 #align rat.zero_mk Rat.zero_divInt
 
-private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a :=
-  Int.dvd_natAbs.1 <| Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left (Int.natAbs a) b
--- Porting note: no #align here as the declaration is private.
+@[simp]
+lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
+  induction q
+  constructor
+  · rintro rfl
+    exact zero_mk _ _ _
+  · exact congr_arg num
+
+lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
-  rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
-
+  rw [← zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
 #align rat.mk_eq_zero Rat.divInt_eq_zero
 
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
@@ -128,8 +118,8 @@ theorem coe_int_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := num_den'
 numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
 @[elab_as_elim]
 def numDenCasesOn.{u} {C : ℚ → Sort u} :
-    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).coprime d → C (n /. d)), C a
-  | ⟨n, d, h, c⟩, H => by rw [num_den'] ; exact H n d (Nat.pos_of_ne_zero h) c
+    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).Coprime d → C (n /. d)), C a
+  | ⟨n, d, h, c⟩, H => by rw [num_den']; exact H n d (Nat.pos_of_ne_zero h) c
 #align rat.num_denom_cases_on Rat.numDenCasesOn
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
@@ -168,7 +158,6 @@ theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
 
 #align rat.add_def Rat.add_def''
-
 #align rat.neg Rat.neg
 
 -- Porting note: there's already an instance for `Neg ℚ` is in Std.
@@ -230,7 +219,8 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃]
+        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
+          or_self, h₃]
         rw [mul_assoc, add_mul, add_mul, mul_assoc, add_assoc]
         congr 2
         ac_rfl
@@ -250,7 +240,7 @@ theorem divInt_zero_one : 0 /. 1 = 0 :=
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp
+    simp [mkRat, normalize]
     rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
@@ -258,9 +248,18 @@ theorem divInt_one_one : 1 /. 1 = 1 :=
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp
+    simp [mkRat, normalize]
     rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
+
+theorem divInt_one (n : ℤ) : n /. 1 = n :=
+  show divInt _ _ = _ by
+    rw [divInt]
+    simp [mkRat, normalize]
+    rfl
+
+theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
+  simp [Rat.mkRat_eq, Rat.divInt_one]
 
 #align rat.mul_one Rat.mul_one
 #align rat.one_mul Rat.one_mul
@@ -277,8 +276,9 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, mul_ne_zero]
-        rw [←  divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
+          or_self, h₃, mul_def']
+        rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
 
@@ -329,27 +329,24 @@ instance commRing : CommRing ℚ where
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
   intCast := fun n => n
-  natCast n := ofInt n
+  natCast n := Int.cast n
   natCast_zero := rfl
   natCast_succ n := by
     simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
-  { Rat.commRing with
-    zero := 0
-    one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    div := (· / ·)
-    exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
-    inv_zero := rfl
+  { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
+    inv_zero := by
+      change Rat.inv 0 = 0
+      rw [Rat.inv_def]
+      rfl
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ :=
-  NoZeroDivisors.toIsDomain _
+  NoZeroDivisors.to_isDomain _
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
@@ -467,7 +464,6 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
       _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
-
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
@@ -519,28 +515,30 @@ theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q
   rfl
 #align rat.coe_int_num_of_denom_eq_one Rat.coe_int_num_of_den_eq_one
 
+lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
+  rw [Rat.isInt, Nat.beq_eq_true_eq] at h
+  exact (Rat.coe_int_num_of_den_eq_one h).symm
+
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
 
--- Porting note:
--- Waiting on port of the `lift` tactic.
--- instance canLift : CanLift ℚ ℤ coe fun q => q.denom = 1 :=
---   ⟨fun q hq => ⟨q.num, coe_int_num_of_denom_eq_one hq⟩⟩
--- #align rat.can_lift Rat.canLift
+instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
+  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+#align rat.can_lift Rat.canLift
 
 theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_eq_divInt]
+  rw [← Int.cast_ofNat, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast]
 theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_num]
+  rw [← Int.cast_ofNat, coe_int_num]
 #align rat.coe_nat_num Rat.coe_nat_num
 
 @[simp, norm_cast]
 theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
-  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_den]
+  rw [← Int.cast_ofNat, coe_int_den]
 #align rat.coe_nat_denom Rat.coe_nat_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
@@ -551,8 +549,21 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 
 end Casts
 
+theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
+  simp only [mkRat, zero_mk]
+  by_cases h : d = 0
+  · simp [h]
+  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+    unfold Rat.inv
+    have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
+    have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl
+    simp [h₁, h₂, ← Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+      Rat.mkRat_mul_mkRat]
+
 end Rat
 
--- Porting note: `assert_not_exists` is not implemented yet.
 -- Guard against import creep.
--- assert_not_exists field
+assert_not_exists Field
+assert_not_exists PNat
+assert_not_exists Nat.dvd_mul
+assert_not_exists IsDomain.toCancelMonoidWithZero

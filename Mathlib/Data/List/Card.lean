@@ -9,27 +9,29 @@ It might make sense to remove this when we have a proper theory of finite sets.
 -/
 import Mathlib.Data.List.Basic
 
+set_option autoImplicit true
+
 namespace List
 
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
 
 theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hsub : as ⊆ bs) :
-  inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
+    inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
 
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 
 theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ bs ∧ bs ⊆ as :=
-Iff.intro
-  (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
-  (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
+  Iff.intro
+    (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
+    (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
 
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x ↦ by simp
 
-theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
+theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as ∪ bs).equiv (as ++ bs) :=
   fun x ↦ by simp
 
-section decidable_eq
+section DecidableEq
 variable [DecidableEq α] [DecidableEq β]
 
 /- remove -/
@@ -42,13 +44,13 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
   induction as with
   | nil => simp [remove]
   | cons a' as ih =>
-    simp [remove]
+    simp only [remove, Bool.not_eq_true, mem_cons, ne_eq]
     cases Decidable.em (a = a') with
     | inl h =>
       simp only [if_pos h, ih]
       exact ⟨fun ⟨h1, h2⟩ ↦ ⟨Or.inr h1, h2⟩, fun ⟨h1, h2⟩ ↦ ⟨Or.resolve_left h1 (h ▸ h2), h2⟩⟩
     | inr h =>
-      simp [if_neg h, ih]
+      simp only [if_neg h, Bool.not_eq_true, mem_cons, ih, ne_eq]
       constructor
       { focus
         intro h'
@@ -100,7 +102,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
   | (a' :: as), h => by
     cases Decidable.em (a = a') with
     | inl h' =>
-      simp [remove, if_pos h']
+      simp only [remove, if_pos h']
       cases Decidable.em (a ∈ as) with
       | inl h'' =>
         have h₃ : a' ∈ as := h' ▸ h''
@@ -110,7 +112,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
         simp [card_cons_of_not_mem h₃, remove_eq_of_not_mem h'']
     | inr h' =>
         have h₃ : a ∈ as := (mem_cons.1 h).resolve_left h'
-        simp [remove, h']
+        simp only [remove, h', ite_false]
         cases Decidable.em (a' ∈ as) with
         | inl h'' =>
           have : a' ∈ remove a as := by rw [mem_remove_iff]; exact ⟨h'', Ne.symm h'⟩
@@ -128,7 +130,7 @@ theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card b
       simp [h', card_subset_le hsub']
     | inr h' =>
       have : a ∈ bs := hsub (Mem.head ..)
-      simp [h', card_remove_of_mem this]
+      rw [card_cons_of_not_mem h', card_remove_of_mem this]
       apply Nat.add_le_add_right
       apply card_subset_le
       intro x xmem
@@ -140,14 +142,16 @@ theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as
   | nil => simp
   | cons a as ih =>
     cases Decidable.em (f a ∈ map f as) with
-    | inl h => simp [h]; apply Nat.le_trans ih (card_le_card_cons ..)
+    | inl h =>
+      rw [map, card_cons_of_mem h]
+      apply Nat.le_trans ih (card_le_card_cons ..)
     | inr h =>
       have : a ∉ as := fun h'' ↦ h (mem_map_of_mem _ h'')
-      simp [h, this]
+      rw [map, card_cons_of_not_mem h, card_cons_of_not_mem this]
       exact Nat.add_le_add_right ih _
 
 theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
-    inj_on f as →  card (as.map f) = card as := by
+    inj_on f as → card (as.map f) = card as := by
   induction as with
   | nil => simp
   | cons a as ih =>
@@ -156,15 +160,15 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
       intro inj_on'
       cases (exists_of_mem_map h) with
       | intro x hx =>
-        have : a = x := inj_on' (mem_cons_self ..) (mem_cons_of_mem _ hx.1) hx.2
+        have : x = a := inj_on' (mem_cons_of_mem _ hx.1) (mem_cons_self ..) hx.2
         have h1 : a ∈ as := this ▸ hx.1
         have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
-        simp  [h1, mem_map_of_mem f h1, ih h2]
+        rw [map, card_cons_of_mem h, ih h2, card_cons_of_mem h1]
     | inr h =>
       intro inj_on'
       have h1 : a ∉ as := fun h'' ↦ h (mem_map_of_mem _ h'')
       have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
-      simp [h, h1, ih h2]
+      rw [map, card_cons_of_not_mem h, card_cons_of_not_mem h1, ih h2]
 
 theorem card_eq_of_equiv {as bs : List α} (h : as.equiv bs) : card as = card bs :=
   let sub_and_sub := equiv_iff_subset_and_subset.1 h
@@ -180,13 +184,14 @@ theorem card_append_disjoint : ∀ {as bs : List α},
       simp [h, card_append_disjoint disj']
     | inr h =>
       have h1 : a ∉ bs := fun h' ↦ disj (mem_cons_self a as) h'
-      simp [h, h1, card_append_disjoint disj']
+      simp only [cons_append, mem_append, h, h1, or_self, not_false_eq_true, card_cons_of_not_mem,
+        card_append_disjoint disj']
       rw [Nat.add_right_comm]
 
 theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
-    card (as.union bs) = card as + card bs := by
+    card (as ∪ bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
 
-end decidable_eq
+end DecidableEq
 
 end List

@@ -5,7 +5,6 @@ Authors: Daniel Selsam, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 
@@ -60,13 +59,6 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 
 /-! ## `init.control.functor` -/
 
-/-! ## `init.control.lawful` -/
-
-#align is_lawful_functor LawfulFunctor
-#align is_lawful_applicative LawfulApplicative
-#align is_lawful_monad LawfulMonad
-#align is_lawful_applicative.pure_seq_eq_map LawfulApplicative.pure_seq
-
 /-! ## `init.control.lift` -/
 
 /-! ## `init.control.monad` -/
@@ -100,6 +92,7 @@ set_option align.precheck false in #align mk_array mkArray'
 #align list.erase List.eraseₓ
 #align list.bag_inter List.bagInterₓ
 #align list.diff List.diffₓ
+#align list.empty List.isEmpty
 #align list.filter List.filterₓ
 #align list.partition List.partitionₓ
 #align list.drop_while List.dropWhileₓ
@@ -227,6 +220,20 @@ attribute [trans] Setoid.trans
 /-! ## `init.meta.widget.replace_save_info` -/
 
 /-! ## `init.meta.widget.tactic_component` -/
+
+/-! ## `init.prelude` -/
+
+#align function.comp Function.comp
+#align function.const Function.const
+
+#align infer_instance inferInstance
+
+#align inhabited Inhabited
+#align nonempty Nonempty
+#align classical.choice Classical.choice
+#align nonempty.elim Nonempty.elim
+
+#align fin Fin
 
 /-! ## `init.propext` -/
 

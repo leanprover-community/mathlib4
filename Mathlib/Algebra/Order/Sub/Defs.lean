@@ -2,16 +2,13 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.sub.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Order.Lattice
+
+#align_import algebra.order.sub.defs from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
 
 /-!
 # Ordered Subtraction
@@ -25,9 +22,9 @@ subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENN
 ## Implementation details
 
 `OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
-where we don't have a `CanonicallyOrderedAddMonoid` instance
+where we don't have a `CanonicallyOrderedAddCommMonoid` instance
 (even though that is our main focus). Conversely, this means we can use
-`CanonicallyOrderedAddMonoid` without necessarily having to define a subtraction.
+`CanonicallyOrderedAddCommMonoid` without necessarily having to define a subtraction.
 
 The results in this file are ordered by the type-class assumption needed to prove it.
 This means that similar results might not be close to each other. Furthermore, we don't prove
@@ -47,7 +44,7 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
 In other words, `a - b` is the least `c` such that `a ≤ b + c`.
@@ -55,19 +52,20 @@ In other words, `a - b` is the least `c` such that `a ≤ b + c`.
 This is satisfied both by the subtraction in additive ordered groups and by truncated subtraction
 in canonically ordered monoids on many specific types.
 -/
-class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] where
+class OrderedSub (α : Type*) [LE α] [Add α] [Sub α] : Prop where
   /-- `a - b` provides a lower bound on `c` such that `a ≤ c + b`. -/
   tsub_le_iff_right : ∀ a b c : α, a - b ≤ c ↔ a ≤ c + b
 #align has_ordered_sub OrderedSub
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
-
 @[simp]
-theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
+theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α} :
+    a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
+
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
@@ -92,6 +90,7 @@ variable [Preorder α]
 section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+/- TODO: Most results can be generalized to [Add α] [IsSymmOp α α (· + ·)] -/
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 #align tsub_le_iff_left tsub_le_iff_left
@@ -105,7 +104,7 @@ theorem add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 #align add_tsub_le_left add_tsub_le_left
 
-theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
+@[gcongr] theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
   tsub_le_iff_left.mpr <| h.trans le_add_tsub
 #align tsub_le_tsub_right tsub_le_tsub_right
 
@@ -121,11 +120,11 @@ section Cov
 
 variable [CovariantClass α α (· + ·) (· ≤ ·)]
 
-theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
+@[gcongr] theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
   tsub_le_iff_left.mpr <| le_add_tsub.trans <| add_le_add_right h _
 #align tsub_le_tsub_left tsub_le_tsub_left
 
-theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
+@[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
 #align tsub_le_tsub tsub_le_tsub
 
@@ -170,7 +169,6 @@ theorem tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
       a ≤ a - b + b := le_tsub_add
       _ ≤ a - b + (c + (b - c)) := add_le_add_left le_add_tsub _
       _ = a - b + c + (b - c) := (add_assoc _ _ _).symm
-
 #align tsub_tsub_le_tsub_add tsub_tsub_le_tsub_add
 
 /-- See `tsub_add_tsub_comm` for the equality. -/
@@ -251,7 +249,8 @@ variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 #align tsub_nonpos tsub_nonpos
 
-alias tsub_nonpos ↔ _ tsub_nonpos_of_le
+alias ⟨_, tsub_nonpos_of_le⟩ := tsub_nonpos
+#align tsub_nonpos_of_le tsub_nonpos_of_le
 
 end Preorder
 
@@ -263,9 +262,7 @@ variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c
 theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
   apply le_antisymm
   · rw [tsub_le_iff_left, tsub_le_iff_left, ← add_assoc, ← tsub_le_iff_left]
-
   · rw [tsub_le_iff_left, add_assoc, ← tsub_le_iff_left, ← tsub_le_iff_left]
-
 #align tsub_tsub tsub_tsub
 
 theorem tsub_add_eq_tsub_tsub (a b c : α) : a - (b + c) = a - b - c :=
@@ -278,8 +275,7 @@ theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
 #align tsub_add_eq_tsub_tsub_swap tsub_add_eq_tsub_tsub_swap
 
 theorem tsub_right_comm : a - b - c = a - c - b := by
-  rw [←tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
-
+  rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
 #align tsub_right_comm tsub_right_comm
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/
