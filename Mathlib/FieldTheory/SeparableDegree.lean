@@ -582,16 +582,13 @@ When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elem
 (But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
 theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     finSepDegree F E = finrank F E := by
-  -- We need to clear all `K` here, otherwise the `wlog` will generate the statement `H` with `K`
-  -- as an explicit parameter, which is undesired.
-  clear! K
-  wlog hfd : FiniteDimensional F E with H
+  wlog hfd : FiniteDimensional F E generalizing E with H
   · rw [finrank_of_infinite_dimensional hfd]
     have halg := IsSeparable.isAlgebraic F E
     obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional halg hfd (finSepDegree F E)
     haveI : IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E (halg.tower_top L)
-    rw [H F L h] at hd
+    rw [H L h] at hd
     by_cases hd' : finSepDegree L E = 0
     · rw [← hd, hd', mul_zero]
     linarith only [h', hd, Nat.le_mul_of_pos_right (m := finrank F L) (Nat.pos_of_ne_zero hd')]
