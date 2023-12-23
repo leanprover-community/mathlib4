@@ -355,7 +355,7 @@ theorem mem_even {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : x ∈ even Q
 theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q) :
     x ∈ lipschitzGroup Q :=
   pinGroup.units_mem_lipschitzGroup (mem_pin hx)
-#align spin_group.units_mem_lipschitzGroup spinGroup.units_mem_lipschitzGroup
+#align spin_group.units_mem_lipschitz spinGroup.units_mem_lipschitzGroup
 
 /-- If x is in `spinGroup Q`, then `involute x` is equal to x.-/
 theorem mem_involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
