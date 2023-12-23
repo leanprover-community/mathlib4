@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.FieldTheory.PerfectClosure
 
 /-!
 
@@ -341,3 +342,18 @@ theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E 
     mul_zero]
 
 end Field
+
+section prefectClosure
+
+/-- The (relative) perfect closure of `E / F`, or called maximal purely inseparable subextension
+of `E / F`, is defined to be the compositum of all purely inseparable intermediate field of `E / F`.
+-/
+irreducible_def perfectClosure : IntermediateField F E :=
+  ⨆ L : { L : IntermediateField F E // IsPurelyInseparable F L }, L.1
+
+end prefectClosure
+
+-- theorem separableClosure.eq_adjoin_of_isAlgebraic [Algebra E K] [IsScalarTower F E K]
+--     (halg : Algebra.IsAlgebraic F E) :
+--     separableClosure E K = adjoin E (separableClosure F K) := by
+--   sorry

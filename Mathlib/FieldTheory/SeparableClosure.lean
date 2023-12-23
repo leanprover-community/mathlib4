@@ -211,7 +211,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable
 
 /-- If `K / E / F` is a field extension tower, then `separableClosure F K` is contained in
 `separableClosure E K`. -/
-theorem separableClosure.le_restrictScalars_of_tower [Algebra E K] [IsScalarTower F E K] :
+theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F := fun x hx ↦ by
   simp only [mem_restrictScalars, mem_separableClosure_iff] at hx ⊢
   exact hx.map (f := algebraMap F E) |>.of_dvd (minpoly.dvd_map_of_isScalarTower F E x)
@@ -220,17 +220,31 @@ theorem separableClosure.le_restrictScalars_of_tower [Algebra E K] [IsScalarTowe
 `separableClosure F K` is equal to `separableClosure E K`. -/
 theorem separableClosure.eq_restrictScalars_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F := by
-  refine le_antisymm (separableClosure.le_restrictScalars_of_tower F E K) fun x hx ↦ ?_
+  refine le_antisymm (separableClosure.le_restrictScalars F E K) fun x hx ↦ ?_
   rw [mem_restrictScalars, mem_separableClosure_iff,
     ← isSeparable_adjoin_simple_iff_separable] at hx
   haveI : IsSeparable F (E⟮x⟯.restrictScalars F) := IsSeparable.trans F E E⟮x⟯
   have h : x ∈ E⟮x⟯.restrictScalars F := mem_adjoin_simple_self E x
   exact (mem_separableClosure_iff F _).2 <| separable_of_mem_isSeparable F _ h
 
--- theorem separableClosure.eq_adjoin_of_isAlgebraic [Algebra E K] [IsScalarTower F E K]
---     (halg : Algebra.IsAlgebraic F E) :
---     separableClosure E K = adjoin E (separableClosure F K) := by
---   sorry
+/-- If `K / E / F` is a field extension tower, then `E` adjoin `separableClosure F K` is contained
+in `separableClosure E K`. -/
+theorem separableClosure.adjoin_le [Algebra E K] [IsScalarTower F E K] :
+    adjoin E (separableClosure F K) ≤ separableClosure E K :=
+  adjoin_le_iff.2 <| le_restrictScalars F E K
+
+/-- A compositum of two separable extensions is separable. -/
+instance IntermediateField.isSeparable_sup (L1 L2 : IntermediateField F E)
+    [h1 : IsSeparable F L1] [h2 : IsSeparable F L2] :
+    IsSeparable F (L1 ⊔ L2 : IntermediateField F E) := by
+  rw [← le_separableClosure_iff] at h1 h2 ⊢
+  exact sup_le h1 h2
+
+/-- A compositum of separable extensions is separable. -/
+instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
+    [h : ∀ i, IsSeparable F (t i)] : IsSeparable F (⨆ i, t i : IntermediateField F E) := by
+  simp_rw [← le_separableClosure_iff] at h ⊢
+  exact iSup_le h
 
 end separableClosure
 
