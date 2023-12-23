@@ -1046,8 +1046,9 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
       trace[simps.debug] "Using relaxed reducibility."
       Linter.logLintIf linter.simpsNoConstructor ref m!"\
-        The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\
-        \n\nExplanation: `@[simps]` uses the definition to find what the simp lemmas should \
+        The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\n\
+        \n\
+        Explanation: `@[simps]` uses the definition to find what the simp lemmas should \
         be. If the definition is a constructor, then this is easy, since the values of the \
         projections are just the arguments to the constructor. If the definition is not a \
         constructor, then `@[simps]` will unfold the right-hand side until it has found a \
@@ -1106,11 +1107,14 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     fun proj ↦ !(proj.getString ++ "_").isPrefixOf x then
     let simpLemma := nm.appendAfter x
     let neededProj := (x.splitOn "_")[0]!
-    throwError "Invalid simp lemma {simpLemma}. Structure {str} does not have projection \
-      {neededProj}.\nThe known projections are:\n  {projs}\nYou can also see this information \
-      by running\n  `initialize_simps_projections? {str}`.\nNote: these projection names might \
-      be customly defined for `simps`, and could differ from the projection names of the \
-      structure."
+    throwError "Invalid simp lemma {simpLemma}. \
+      Structure {str} does not have projection {neededProj}.\n\
+      The known projections are:\
+      {indentD <| toMessageData projs}\n\
+      You can also see this information by running\
+      \n  `initialize_simps_projections? {str}`.\n\
+      Note: these projection names might be customly defined for `simps`, \
+      and could differ from the projection names of the structure."
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap

@@ -216,8 +216,8 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
     if gas == 0 && i < binders.size then
       let binders' := binders.extract 0 i
       logErrorAt binders[i]! m!"Maximum recursion depth for variables! reached. This might be a \
-        bug, or you can try adjusting `set_option variable?.maxSteps {maxSteps}`\
-        \n\nCurrent variable command:{indentD (← `(command| variable $binders'*))}"
+        bug, or you can try adjusting `set_option variable?.maxSteps {maxSteps}`\n\n\
+        Current variable command:{indentD (← `(command| variable $binders'*))}"
     return (binders, toOmit)
 where
   isVariableAlias (type : Expr) : MetaM Bool := do
