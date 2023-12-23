@@ -3512,14 +3512,16 @@ theorem Subgroup.map_normalClosure {s : Set G} (f : G ≃* N) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f f.surjective
   apply le_antisymm
-  · rw [map_le_iff_le_comap]
-    refine normalClosure_le_normal ?_
-    simp only [coe_comap, ← Set.image_subset_iff]
-    exact subset_normalClosure
+  · simp [map_le_iff_le_comap, normalClosure_le_normal, coe_comap,
+      ← Set.image_subset_iff, subset_normalClosure]
   · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
+theorem Subgroup.normalClosure_preimage_le_comap {s : Set N} (f : G →* N) :
+    normalClosure (f ⁻¹' s) ≤ (normalClosure s).comap f := by
+  simp [normalClosure_le_normal, coe_comap, Set.preimage_mono, subset_normalClosure]
+
 theorem Subgroup.comap_normalClosure {s : Set N} (f : G ≃* N) :
-    (normalClosure s).comap f = normalClosure (f ⁻¹' s) := by
+    normalClosure (f ⁻¹' s) = (normalClosure s).comap f  := by
   have := Set.preimage_equiv_eq_image_symm s f.toEquiv
   simp_all [comap_equiv_eq_map_symm, map_normalClosure]
 
