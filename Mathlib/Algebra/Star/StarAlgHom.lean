@@ -69,7 +69,7 @@ homomorphisms from `A` to `B`. -/
 class NonUnitalStarAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [Monoid R] [Star A] [Star B] [NonUnitalNonAssocSemiring A]
   [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B] extends
-  NonUnitalAlgSemiHomClass F (@id R) A B, StarHomClass F A B
+  NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B, StarHomClass F A B
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
 
 -- Porting note: no longer needed
@@ -553,7 +553,10 @@ variable {R A B C}
 @[simps!]
 def prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : A →⋆ₙₐ[R] B × C :=
   { f.toNonUnitalAlgHom.prod g.toNonUnitalAlgHom with
-    map_star' := fun x => by simp [map_star, Prod.star_def] }
+    map_star' := fun x => by
+      -- simp [map_star, Prod.star_def]
+      change (f (star x), g (star x)) = (star (f x), star (g x))
+      simp [map_star] }
 #align non_unital_star_alg_hom.prod NonUnitalStarAlgHom.prod
 
 theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
