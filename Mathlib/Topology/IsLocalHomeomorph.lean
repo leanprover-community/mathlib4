@@ -78,7 +78,7 @@ theorem mk (h : ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ S
 #align is_locally_homeomorph_on.mk IsLocalHomeomorphOn.mk
 
 /-- A `PartialHomeomorph` is a local homeomorphism on its source. -/
-def PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
+lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
     IsLocalHomeomorphOn e e.source :=
   fun _ hx ↦ ⟨e, (and_iff_left rfl).mpr hx⟩
 
@@ -175,7 +175,7 @@ theorem mk (h : ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ Set
 #align is_locally_homeomorph.mk IsLocalHomeomorph.mk
 
 /-- A homeomorphism is a local homeomorphism. -/
-def Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
+lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
   fun _ ↦ ⟨h.toPartialHomeomorph, trivial, rfl⟩
 
 variable {g f}
