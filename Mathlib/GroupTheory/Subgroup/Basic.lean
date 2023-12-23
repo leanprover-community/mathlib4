@@ -3508,7 +3508,7 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
-theorem Subgroup.normalClosure_map_equiv_eq_normalClosure_comap {s : Set G} (f : G ≃* N) :
+theorem Subgroup.map_normalClosure_equiv_eq_normalClosure_image {s : Set G} (f : G ≃* N) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (G := N) (map f (normalClosure s)) := by
     rw [map_equiv_eq_comap_symm]
@@ -3527,9 +3527,9 @@ theorem Subgroup.normalClosure_map_equiv_eq_normalClosure_comap {s : Set G} (f :
     simp only [Set.mem_preimage, Set.mem_image, SetLike.mem_coe]
     exact ⟨r, subset_normalClosure hr, rfl⟩
 
-theorem Subgroup.normalClosure_comap_equiv_eq_normalClosure_map {s : Set N} (f : G ≃* N) :
+theorem Subgroup.comap_normalClosure_equiv_eq_normalClosure_preimage {s : Set N} (f : G ≃* N) :
     (normalClosure s).comap f = normalClosure (f.symm '' s) := by
-  simp [comap_equiv_eq_map_symm, normalClosure_map_equiv_eq_normalClosure_comap]
+  simp [comap_equiv_eq_map_symm, map_normalClosure_equiv_eq_normalClosure_image]
 
 namespace MonoidHom
 
