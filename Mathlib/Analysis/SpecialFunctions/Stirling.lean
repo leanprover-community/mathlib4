@@ -32,7 +32,7 @@ formula for `π`.
 -/
 
 
-open scoped Topology Real BigOperators Nat
+open scoped Topology Real BigOperators Nat Asymptotics
 
 open Finset Filter Nat Real
 
@@ -255,5 +255,17 @@ theorem tendsto_stirlingSeq_sqrt_pi : Tendsto (fun n : ℕ => stirlingSeq n) atT
     tendsto_nhds_unique Wallis.tendsto_W_nhds_pi_div_two (second_wallis_limit a hapos.ne' halimit)
   rwa [(div_left_inj' (two_ne_zero' ℝ)).mp hπ, sqrt_sq hapos.le]
 #align stirling.tendsto_stirling_seq_sqrt_pi Stirling.tendsto_stirlingSeq_sqrt_pi
+
+/-- **Stirling's Formula**, formulated in terms of `Asymptotics.IsEquivalent`. -/
+lemma factorial_isEquivalent_stirling :
+    (fun n ↦ n ! : ℕ → ℝ) ~[atTop] fun n ↦ Real.sqrt (2 * n * π) * (n / exp 1) ^ n := by
+  refine Asymptotics.isEquivalent_of_tendsto_one ?_ ?_
+  · filter_upwards [eventually_ne_atTop 0] with n hn h
+    exact absurd h (by positivity)
+  · have : sqrt π ≠ 0 := by positivity
+    nth_rewrite 2 [← div_self this]
+    convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
+    ext n
+    field_simp [stirlingSeq, mul_right_comm]
 
 end Stirling
