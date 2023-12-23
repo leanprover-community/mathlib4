@@ -246,7 +246,8 @@ theorem mul_algebraMap₀ {n} (r : R) (a : (⨂[R]^n) M) :
 #align tensor_power.mul_algebra_map₀ TensorPower.mul_algebraMap₀
 
 theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
-    cast R M (add_zero _) (algebraMap₀ (M := M) r * algebraMap₀ (M := M) s) = algebraMap₀ (r * s) := by
+    cast R M (add_zero _)
+      (algebraMap₀ (M := M) r * algebraMap₀ (M := M) s) = algebraMap₀ (r * s) := by
   rw [← smul_eq_mul, LinearEquiv.map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
