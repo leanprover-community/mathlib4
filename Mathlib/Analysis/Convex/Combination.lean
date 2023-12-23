@@ -562,6 +562,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
 
 variable {s t t₁ t₂ : Finset E}
 
+/-- Two simplices glue nicely if the union of their vertices is affine independent. -/
 lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))
     (ht₁ : t₁ ⊆ s) (ht₂ : t₂ ⊆ s) :
     convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ := by
