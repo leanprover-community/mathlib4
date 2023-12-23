@@ -360,7 +360,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
   exact ⟨ULift Empty, [], fun _ => by simp⟩
-  simp? at d says simp only [imp_false, List.forall_cons] at d
+  simp? at d says simp only [List.forall_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl

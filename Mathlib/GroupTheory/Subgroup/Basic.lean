@@ -645,7 +645,7 @@ protected theorem zpow_mem {x : G} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K :=
 
 /-- Construct a subgroup from a nonempty set that is closed under division. -/
 @[to_additive "Construct a subgroup from a nonempty set that is closed under subtraction"]
-def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), x * y⁻¹ ∈ s) :
+def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ᵉ (x ∈ s) (y ∈ s), x * y⁻¹ ∈ s) :
     Subgroup G :=
   have one_mem : (1 : G) ∈ s := by
     let ⟨x, hx⟩ := hsn
