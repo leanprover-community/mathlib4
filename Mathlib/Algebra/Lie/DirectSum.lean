@@ -234,7 +234,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
       · simp_rw [lie_of_same, toAddMonoid_of, LinearMap.toAddMonoidHom_coe, LieHom.coe_toLinearMap,
           LieHom.map_lie]
       · simp_rw [lie_of_of_ne _ hij.symm, map_zero,  LinearMap.toAddMonoidHom_coe,
-          LieHom.coe_toLinearMap, hf j i hij.symm x y] }
+          LieHom.coe_toLinearMap, hf hij.symm x y] }
 #align direct_sum.to_lie_algebra DirectSum.toLieAlgebra
 
 end Algebras
