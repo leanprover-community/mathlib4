@@ -805,12 +805,12 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
     {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = NNReal.rpow ‖r‖₊ d • μH[d] s := by
   suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ NNReal.rpow ‖r‖₊ d • μH[d] s by
     refine' le_antisymm (this hr s) _
-    rw [← ENNReal.le_inv_smul_iff]
+    rw [← le_inv_smul_iff_of_pos]
     dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
     · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
       rw [inv_smul_smul₀ hr]
-    · simp [hr]
+    · simp [pos_iff_ne_zero, hr]
   intro r _ s
   simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]
   exact (lipschitzWith_smul (β := E) r).hausdorffMeasure_image_le hd s
@@ -1019,7 +1019,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_nat_cast]
         intros i _
-        exact pow_le_pow_of_le_left' (hn i) _
+        exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
       simp only [Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,

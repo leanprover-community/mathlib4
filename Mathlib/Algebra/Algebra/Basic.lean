@@ -924,3 +924,27 @@ end Module
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=
   Algebra.ofModule smul_mul_assoc mul_smul_comm
+
+section invertibility
+
+variable {R A B : Type*}
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+/-- If there is a linear map `f : A →ₗ[R] B` that preserves `1`, then `algebraMap R B r` is
+invertible when `algebraMap R A r` is. -/
+abbrev Invertible.algebraMapOfInvertibleAlgebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
+    (h : Invertible (algebraMap R A r)) : Invertible (algebraMap R B r) where
+  invOf := f ⅟(algebraMap R A r)
+  invOf_mul_self := by rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul, Algebra.smul_def,
+    mul_invOf_self, hf]
+  mul_invOf_self := by rw [← Algebra.smul_def, ← map_smul, Algebra.smul_def, mul_invOf_self, hf]
+
+/-- If there is a linear map `f : A →ₗ[R] B` that preserves `1`, then `algebraMap R B r` is
+a unit when `algebraMap R A r` is. -/
+lemma IsUnit.algebraMap_of_algebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
+    (h : IsUnit (algebraMap R A r)) : IsUnit (algebraMap R B r) :=
+  let ⟨i⟩ := nonempty_invertible h
+  letI := Invertible.algebraMapOfInvertibleAlgebraMap f hf i
+  isUnit_of_invertible _
+
+end invertibility
