@@ -1494,23 +1494,28 @@ theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup
 #align add_subgroup.mem_map_iff_mem AddSubgroup.mem_map_iff_mem
 
 @[to_additive]
-theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
+theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
     K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
-#align subgroup.map_equiv_eq_comap_symm Subgroup.map_equiv_eq_comap_symm
-#align add_subgroup.map_equiv_eq_comap_symm AddSubgroup.map_equiv_eq_comap_symm
+#align subgroup.map_equiv_eq_comap_symm Subgroup.map_equiv_eq_comap_symm'
+#align add_subgroup.map_equiv_eq_comap_symm AddSubgroup.map_equiv_eq_comap_symm'
 
 @[to_additive]
-theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
+theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
     K.map f = K.comap (G := N) f.symm :=
-  map_equiv_eq_comap_symm
+  map_equiv_eq_comap_symm' _ _
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* G) (K : Subgroup G) :
+    K.comap (G := N) f = K.map f.symm :=
+  (map_equiv_eq_comap_symm f.symm K).symm
+
+@[to_additive]
+theorem comap_equiv_eq_map_symm' (f : N ≃* G) (K : Subgroup G) :
     K.comap f.toMonoidHom = K.map f.symm.toMonoidHom :=
   (map_equiv_eq_comap_symm f.symm K).symm
-#align subgroup.comap_equiv_eq_map_symm Subgroup.comap_equiv_eq_map_symm
-#align add_subgroup.comap_equiv_eq_map_symm AddSubgroup.comap_equiv_eq_map_symm
+#align subgroup.comap_equiv_eq_map_symm Subgroup.comap_equiv_eq_map_symm'
+#align add_subgroup.comap_equiv_eq_map_symm AddSubgroup.comap_equiv_eq_map_symm'
 
 @[to_additive]
 theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} :
@@ -2051,21 +2056,21 @@ theorem characteristic_iff_le_comap : H.Characteristic ↔ ∀ ϕ : G ≃* G, H 
 
 @[to_additive]
 theorem characteristic_iff_map_eq : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.map ϕ.toMonoidHom = H := by
-  simp_rw [map_equiv_eq_comap_symm]
+  simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_comap_eq.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 #align subgroup.characteristic_iff_map_eq Subgroup.characteristic_iff_map_eq
 #align add_subgroup.characteristic_iff_map_eq AddSubgroup.characteristic_iff_map_eq
 
 @[to_additive]
 theorem characteristic_iff_map_le : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.map ϕ.toMonoidHom ≤ H := by
-  simp_rw [map_equiv_eq_comap_symm]
+  simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_comap_le.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 #align subgroup.characteristic_iff_map_le Subgroup.characteristic_iff_map_le
 #align add_subgroup.characteristic_iff_map_le AddSubgroup.characteristic_iff_map_le
 
 @[to_additive]
 theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H ≤ H.map ϕ.toMonoidHom := by
-  simp_rw [map_equiv_eq_comap_symm]
+  simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_le_comap.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 #align subgroup.characteristic_iff_le_map Subgroup.characteristic_iff_le_map
 #align add_subgroup.characteristic_iff_le_map AddSubgroup.characteristic_iff_le_map
@@ -3504,23 +3509,27 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
 theorem Subgroup.normalClosure_map_equiv_eq_normalClosure_comap {s : Set G} (f : G ≃* N) :
-    (Subgroup.normalClosure s).map f = Subgroup.normalClosure (f '' s) := by
-  have : Subgroup.Normal (G := N) (Subgroup.map f (Subgroup.normalClosure s)) := by
-    rw [Subgroup.map_equiv_eq_comap_symm']
-    simp [Subgroup.Normal.comap]
+    (normalClosure s).map f = normalClosure (f '' s) := by
+  have : Normal (G := N) (map f (normalClosure s)) := by
+    rw [map_equiv_eq_comap_symm]
+    simp [Normal.comap]
   apply le_antisymm
-  · rw [Subgroup.map_le_iff_le_comap]
-    apply Subgroup.normalClosure_le_normal
+  · rw [map_le_iff_le_comap]
+    apply normalClosure_le_normal
     intro r hr
-    simp only [Subgroup.coe_comap, MonoidHom.coe_coe, Set.mem_preimage, SetLike.mem_coe]
-    apply Subgroup.subset_normalClosure
+    simp only [coe_comap, MonoidHom.coe_coe, Set.mem_preimage, SetLike.mem_coe]
+    apply subset_normalClosure
     simp only [Set.mem_image]
     refine ⟨r, hr, rfl⟩
-  · apply Subgroup.normalClosure_le_normal
-    simp only [Subgroup.coe_map, MonoidHom.coe_coe, Set.image_subset_iff]
+  · apply normalClosure_le_normal
+    simp only [coe_map, MonoidHom.coe_coe, Set.image_subset_iff]
     intro r hr
     simp only [Set.mem_preimage, Set.mem_image, SetLike.mem_coe]
-    exact ⟨r, Subgroup.subset_normalClosure hr, rfl⟩
+    exact ⟨r, subset_normalClosure hr, rfl⟩
+
+theorem Subgroup.normalClosure_comap_equiv_eq_normalClosure_map {s : Set N} (f : G ≃* N) :
+    (normalClosure s).comap f = normalClosure (f.symm '' s) := by
+  simp [comap_equiv_eq_map_symm, normalClosure_map_equiv_eq_normalClosure_comap]
 
 namespace MonoidHom
 
