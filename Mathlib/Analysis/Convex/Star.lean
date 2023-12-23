@@ -385,7 +385,7 @@ lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
   refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
   rw [mem_compl_iff, mem_Iic] at hz ⊢
   contrapose! hz
-  refine (lt_of_smul_lt_smul_of_nonneg ?_ hb.le).le
+  refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
   calc
     b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]
     _ < b • x := by
