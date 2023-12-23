@@ -892,7 +892,7 @@ lemma Finite.of_surjOn {s : Set α} {t : Set β} (f : α → β) (hf : SurjOn f 
     t.Finite := (hs.image _).subset hf
 
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
-    { y : β | ∃ (x : _) (hx : x ∈ s), y = F x hx }.Finite := by
+    {y : β | ∃ x hx, F x hx = y}.Finite := by
   cases hs
   simpa [range, eq_comm] using finite_range fun x : s => F x x.2
 #align set.finite.dependent_image Set.Finite.dependent_image
