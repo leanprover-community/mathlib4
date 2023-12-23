@@ -500,7 +500,7 @@ theorem Left.mul_lt_mulₚ [PosMulStrictMono α] [MulPosMono α]
   mul_lt_mul_of_le_of_ltₚ' h₁.le h₂ c0 (a0.trans_lt h₁)
 
 /-- Assumes right strict covariance. -/
-theorem right.mul_lt_mulₚ [PosMulMono α] [MulPosStrictMono α]
+theorem Right.mul_lt_mulₚ [PosMulMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
   mul_lt_mul_of_lt_of_leₚ h₁ h₂.le a0 (c0.trans_lt h₂)
 
