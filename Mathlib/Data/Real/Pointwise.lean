@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Wieser
 -/
 import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Data.Real.Archimedean
 
 #align_import data.real.pointwise from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
@@ -40,7 +41,7 @@ theorem Real.sInf_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : sInf (a • s) =
   · rw [zero_smul_set hs, zero_smul]
     exact csInf_singleton 0
   by_cases h : BddBelow s
-  · exact ((OrderIso.smulLeft ℝ ha').map_csInf' hs h).symm
+  · exact ((OrderIso.smulRight ha').map_csInf' hs h).symm
   · rw [Real.sInf_of_not_bddBelow (mt (bddBelow_smul_iff_of_pos ha').1 h),
         Real.sInf_of_not_bddBelow h, smul_zero]
 #align real.Inf_smul_of_nonneg Real.sInf_smul_of_nonneg
@@ -56,7 +57,7 @@ theorem Real.sSup_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : sSup (a • s) =
   · rw [zero_smul_set hs, zero_smul]
     exact csSup_singleton 0
   by_cases h : BddAbove s
-  · exact ((OrderIso.smulLeft ℝ ha').map_csSup' hs h).symm
+  · exact ((OrderIso.smulRight ha').map_csSup' hs h).symm
   · rw [Real.sSup_of_not_bddAbove (mt (bddAbove_smul_iff_of_pos ha').1 h),
         Real.sSup_of_not_bddAbove h, smul_zero]
 #align real.Sup_smul_of_nonneg Real.sSup_smul_of_nonneg
