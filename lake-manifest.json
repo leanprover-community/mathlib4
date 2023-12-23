@@ -4,7 +4,7 @@
  [{"url": "https://github.com/nomeata/std4",
    "type": "git",
    "subDir": null,
-   "rev": "b6caad655976d0e1ead6efaa9699c99e8416ba10",
+   "rev": "43e17686742cb937b855bbfeb39977433a631671",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "lean-pr-testing-3040",
