@@ -405,12 +405,15 @@ variable [I.Boundaryless] [SmoothManifoldWithCorners I M] {e : PartialHomeomorph
 namespace PartialHomeomorph
 variable (e) in
 /-- If `I` is boundaryless, an extended partial homeomorphism is a partial homeomorphism. -/
-def PartialHomeomorph.extend_toPartialHomeomorph : PartialHomeomorph M E where
+def extend_toPartialHomeomorph : PartialHomeomorph M E where
   toPartialEquiv := e.extend I
   open_source := isOpen_extend_source e I
   open_target := isOpen_extend_target e I
   continuousOn_toFun := continuousOn_extend e I
   continuousOn_invFun := continuousOn_extend_symm e I
+
+lemma extend_toPartialHomeomorph_coe :
+  (e.extend_toPartialHomeomorph I).toFun = e.extend I := rfl
 
 variable (he : e ∈ SmoothManifoldWithCorners.maximalAtlas I M)
 
@@ -427,12 +430,11 @@ def extend_toPartialDiffeomorph : PartialDiffeomorph I 𝓘(𝕜, E) M E ⊤ whe
     exact contMDiffOn_extend he
   contMDiffOn_invFun := by
     show ContMDiffOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target
-    -- this should be a lemma! xxx think: why not the standard form for extend_target?
+    -- this should be a lemma! xxx: why is this not the standard form in extend_target?
     have : (e.extend I).target = I '' e.target := by rw [e.extend_target, I.image_eq]
     exact this ▸ contMDiffOn_extend_symm he
 
-lemma extend_toPartialDiffeomorph_coe :
-    (extend_toPartialDiffeomorph I he).toFun = e.extend I :=
+lemma extend_toPartialDiffeomorph_coe : (extend_toPartialDiffeomorph I he).toFun = e.extend I :=
   rfl
 
 lemma extend_toPartialDiffeomorph_source :
@@ -440,7 +442,6 @@ lemma extend_toPartialDiffeomorph_source :
   rw [← e.extend_source I]
   rfl
 
--- this is currently unused -> is this useful to keep?
 lemma extend_toPartialDiffeomorph_target :
     (extend_toPartialDiffeomorph I he).target = (e.extend I).target :=
   rfl
@@ -451,7 +452,6 @@ between its source and target. -/
 def extend_symm_toPartialDiffeomorph : PartialDiffeomorph 𝓘(𝕜, E) I E M ⊤ :=
   (extend_toPartialDiffeomorph I he).symm
 
--- Are the following three lemmas useful?
 lemma extend_symm_toPartialDiffeomorph_coe :
     (extend_symm_toPartialDiffeomorph I he).toFun = (e.extend I).symm :=
   rfl
