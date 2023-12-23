@@ -2328,7 +2328,8 @@ theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
-noncomputable def unionEqSigmaOfDisjoint {t : α → Set β} (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
+    (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     (⋃ i, t i) ≃ Σi, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 #align set.Union_eq_sigma_of_disjoint Set.unionEqSigmaOfDisjoint

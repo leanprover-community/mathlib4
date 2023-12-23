@@ -128,7 +128,8 @@ structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (�
   c : Fin N.succ → α
   r : Fin N.succ → ℝ
   rpos : ∀ i, 0 < r i
-  h : Pairwise fun i j => r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
+  h : Pairwise fun i j =>
+    r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
   hlast : ∀ i < last N, r i ≤ dist (c i) (c (last N)) ∧ r (last N) ≤ τ * r i
   inter : ∀ i < last N, dist (c i) (c (last N)) ≤ r i + r (last N)
 #align besicovitch.satellite_config Besicovitch.SatelliteConfig

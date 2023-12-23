@@ -523,7 +523,8 @@ theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs
   --clear _let_match
   subst hl
   show
-    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧ Pairwise fun x y => signAux2 l (swap x y) = -1
+    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
+    Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
     Equiv.ext fun h => by simp [mul_apply]
   constructor
