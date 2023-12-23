@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Apurva Nakade. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Apurva Nakade
+-/
 import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Analysis.Convex.Caratheodory
 
@@ -13,9 +18,7 @@ abbrev Set.toPointedCone (𝕜 : Type*) {E : Type u} [LinearOrderedField 𝕜] [
     [Module 𝕜 E] (s : Set E) :=
   Submodule.span {c : 𝕜 // 0 ≤ c} s
 
-
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 namespace Caratheodory
@@ -25,12 +28,10 @@ then it is in the cone of a strict subset of `t`. -/
 theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
     (h : ¬LinearIndependent 𝕜 ((↑) : t → E)) {x : E} (hx : x ∈ Set.toPointedCone 𝕜 t) :
     ∃ y : (↑t : Set E), x ∈ (↑(t.erase y) : Set E).toPointedCone 𝕜 := by
-
   -- `relation₁: ∑ i in t, f i • i = x`
   replace ⟨f, relation₁⟩ := mem_span_finset.1 hx
   simp only [toPointedCone, mem_span_finset, mem_span_finset, coe_sort_coe, coe_mem,
     not_true_eq_false, Subtype.exists, exists_prop]
-
   by_cases hf : ∃ i₀, i₀ ∈ t ∧ f i₀ = 0
   · -- Easy case: some `f i₀ = 0`.
     -- In this case, we can erase `i₀`.
@@ -38,29 +39,22 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
     use i₀, hi₀t, f
     rwa [sum_erase_eq_sub, hf, zero_smul, sub_zero, relation₁]
   · -- Case: `∀ i, f i ≠ 0`
-
     have _ : ∀ i ∈ t, 0 < f i := by
       intro i hi
       push_neg at hf
       exact zero_lt_iff.mpr (hf i hi)
-
     -- `relation₂: ∑ i : t, g i • ↑i = 0`
     -- `hnzero: g c ≠ 0`
     replace ⟨g, relation₂, c, hnzero⟩ := Fintype.not_linearIndependent_iff.1 h
-
     -- extend `g` to all of `E`
     let g' := Function.extend Subtype.val g 0
-
     -- For any `λ`, `∑ i in t, (f i + λ * g i) • i = x`.
     -- We choose a `λ` that make one of the coefficient `f i + λ * g i` while leaving all the other
     -- coefficients non-negative. The choice of `λ` depends on the signs of the coeffs `g i`.
-
     obtain (hneg | hpos) := Ne.lt_or_lt hnzero
     · -- Case: there is a negative coefficient `g c` in `relation₂`.
-
       -- Look at all the negative coefficients in `relation₂`.
       let s := @Finset.filter _ (fun z => g' z < 0) (fun _ => LinearOrder.decidableLT _ _) t
-
       -- Choose `λ = - max (f/g)` where the max is taken over all negative coefficients.
       obtain ⟨d, hd₁, hd₂⟩ := s.exists_max_image (fun z => f z / g' z) $ ⟨c, by {
         simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
@@ -68,10 +62,8 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
           Function.Injective.extend_apply Subtype.val_injective] }⟩
       rw [mem_filter] at hd₁
       use d, hd₁.1
-
       · -- Define new coefficients `k = f + λ g`
         let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
-
         -- First we show that all `k i ≥ 0`
         rw [sub_nonneg]
         by_cases hzt : z ∈ t
@@ -107,10 +99,8 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             exact ne_of_lt hd₁.2
           rw [this, zero_smul]
     · -- Case: there is a positive coefficient `g c` in `relation₂`.
-
       -- Look at all the positive coefficients in `relation₂`.
       let s := @Finset.filter _ (fun z => 0 < g' z) (fun _ => LinearOrder.decidableLT _ _) t
-
       -- Choose `λ = - min (f/g)` where the min is taken over all positive coefficients.
       obtain ⟨d, hd₁, hd₂⟩ := s.exists_min_image (fun z => f z / g' z) $ ⟨c, by {
         simpa only [filter_congr_decidable, Subtype.exists, exists_prop, exists_eq_right, not_lt,
@@ -118,10 +108,8 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
           Function.Injective.extend_apply Subtype.val_injective] }⟩
       rw [mem_filter] at hd₁
       use d, hd₁.1
-
       · -- Define new coefficients `k = f + λ g`
         let k : E → 𝕜≥0 := fun z => ⟨f z - f d / g' d * g' z, by {
-
         -- First we show that all `k i ≥ 0`
         rw [sub_nonneg]
         by_cases hzt : z ∈ t
@@ -156,11 +144,10 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             exact (ne_of_lt hd₁.2).symm
           rw [this, zero_smul]
 
-
 variable {s : Set E} {x : E} (hx : x ∈ toPointedCone 𝕜 s)
 
-/-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
-cardinality, whose convex hull contains `x`. -/
+/-- Given a point `x` in the convex cone of a set `s`, this is a finite subset of `s` of minimum
+cardinality, whose convex cone contains `x`. -/
 noncomputable def minCardFinsetOfMemtoPointedCone (hx : x ∈ s.toPointedCone 𝕜) : Finset E :=
   Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } <| by exact Submodule.mem_span_finite_of_mem_span hx
 
@@ -170,7 +157,7 @@ theorem mem_minCardFinsetOfMemtoPointedCone : x ∈ (minCardFinsetOfMemtoPointed
   have hs : Set.Nonempty {(t : Finset E) | (t : Set E) ⊆ s ∧ x ∈ toPointedCone 𝕜 ↑t} := by
     exact Submodule.mem_span_finite_of_mem_span hx
   have h := (Function.argminOn_mem Finset.card Nat.lt_wfRel.2 { t : Finset E | ↑t ⊆ s ∧ x ∈ (t : Set E).toPointedCone 𝕜 } hs).2
-  -- deterministic timeout if with `exact` instead of `have`
+  -- deterministic timeout if we use `exact` directly instead of the intermediate `have`
   exact h
 
 theorem minCardFinsetOfMemtoPointedCone_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
@@ -203,7 +190,7 @@ end Caratheodory
 
 variable {s : Set E}
 
-/-- **Carathéodory's convexity theorem** -/
+/-- **Carathéodory's convexity theorem for convex cones** -/
 
 theorem toPointedCone_eq_union : (s.toPointedCone 𝕜 : Set E) =
     ⋃ (t : Finset E) (_ : ↑t ⊆ s) (_ : LinearIndependent 𝕜 ((↑) : t → E)),
