@@ -273,6 +273,7 @@ theorem getLsb'_rev (x : BitVec w) (i : Fin w) :
 
 theorem getMsb'_rev (x : BitVec w) (i : Fin w) :
     x.getMsb' i.rev = x.getLsb' i := by
+  simp [getMsb', getMsb, getLsb']
   -- This needs to be proven.
   sorry
 
