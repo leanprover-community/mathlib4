@@ -135,6 +135,8 @@ instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :
 -- porting note: syntactic tautology because of the way coercions work in Lean 4
 #noalign measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
 
+@[simp, norm_cast] lemma coe_mk (μ : Measure Ω) (hμ) : toMeasure ⟨μ, hμ⟩ = μ := rfl
+
 @[simp]
 theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) :=
   rfl
@@ -533,6 +535,9 @@ noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : 
    ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
                   preimage_univ, measure_univ]⟩⟩
 
+@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
+    (ν.map hf).toMeasure = ν.toMeasure.map f := rfl
+
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.ProbabilityMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
@@ -546,7 +551,7 @@ lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
   have := ν.map_apply' f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
 
-@[simp] lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
+lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     (ν.map f_aemble) A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_aemble A_mble

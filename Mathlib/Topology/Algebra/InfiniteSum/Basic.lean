@@ -361,7 +361,7 @@ theorem hasSum_sum_disjoint {ι} (s : Finset ι) {t : ι → Set β} {a : ι →
     (hs : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, HasSum (f ∘ (↑) : t i → α) (a i)) :
     HasSum (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∑ i in s, a i) := by
   simp_rw [hasSum_subtype_iff_indicator] at *
-  rw [Set.indicator_finset_biUnion _ _ hs]
+  rw [Finset.indicator_biUnion _ _ hs]
   exact hasSum_sum hf
 #align has_sum_sum_disjoint hasSum_sum_disjoint
 
@@ -475,9 +475,13 @@ section tsum
 
 variable [AddCommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
 
-theorem tsum_congr_subtype (f : β → α) {s t : Set β} (h : s = t) :
+theorem tsum_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
     ∑' x : s, f x = ∑' x : t, f x := by rw [h]
-#align tsum_congr_subtype tsum_congr_subtype
+#align tsum_congr_subtype tsum_congr_set_coe
+
+theorem tsum_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x):
+    ∑' x : {x // P x}, f x = ∑' x : {x // Q x}, f x :=
+  tsum_congr_set_coe f <| Set.ext h
 
 theorem tsum_eq_finsum (hf : (support f).Finite) :
     ∑' b, f b = ∑ᶠ b, f b := by simp [tsum_def, summable_of_finite_support hf, hf]
@@ -1343,9 +1347,33 @@ theorem Summable.countable_support [FirstCountableTopology G] [T1Space G]
     (hf : Summable f) : f.support.Countable := by
   simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
 
+theorem summable_const_iff [Infinite β] [T2Space G] (a : G) :
+    Summable (fun _ : β ↦ a) ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · by_contra ha
+    have : {a}ᶜ ∈ 𝓝 0 := compl_singleton_mem_nhds (Ne.symm ha)
+    have : Finite β := by
+      simpa [← Set.finite_univ_iff] using h.tendsto_cofinite_zero this
+    exact not_finite β
+  · rintro rfl
+    exact summable_zero
+
+@[simp]
+theorem tsum_const [T2Space G] : ∑' _ : β, (a : G) = Nat.card β • a := by
+  rcases finite_or_infinite β with hβ|hβ
+  · letI : Fintype β := Fintype.ofFinite β
+    rw [tsum_eq_sum (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
+    simp only [sum_const, Nat.card_eq_fintype_card]
+    rfl
+  · simp only [Nat.card_eq_zero_of_infinite, zero_smul]
+    rcases eq_or_ne a 0 with rfl|ha
+    · simp
+    · apply tsum_eq_zero_of_not_summable
+      simpa [summable_const_iff] using ha
+
 end TopologicalGroup
 
-section ConstSmul
+section ConstSMul
 
 variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
   [ContinuousConstSMul γ α] {f : β → α}
@@ -1395,7 +1423,7 @@ lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [Continuou
   change ¬ Summable (mul_g ∘ f)
   rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
 
-end ConstSmul
+end ConstSMul
 
 /-! ### Product and pi types -/
 

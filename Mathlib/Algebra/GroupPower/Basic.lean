@@ -245,6 +245,10 @@ theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
 
 end Monoid
 
+lemma eq_zero_or_one_of_sq_eq_self [CancelMonoidWithZero M] {x : M} (hx : x ^ 2 = x) :
+    x = 0 ∨ x = 1 :=
+  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
+
 /-!
 ### Commutative (additive) monoid
 -/

@@ -166,8 +166,8 @@ open scoped Topology
 
 -- Here's the fun part of Stone-Weierstrass!
 theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
-    (inf_mem : ∀ (f) (_ : f ∈ L) (g) (_ : g ∈ L), f ⊓ g ∈ L)
-    (sup_mem : ∀ (f) (_ : f ∈ L) (g) (_ : g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
+    (inf_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊓ g ∈ L)
+    (sup_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
     closure L = ⊤ := by
   -- We start by boiling down to a statement about close approximation.
   apply eq_top_iff.mpr
@@ -380,7 +380,7 @@ variable [CompactSpace X]
 
 set_option synthInstance.maxHeartbeats 30000 in
 /-- The Stone-Weierstrass approximation theorem, `IsROrC` version, that a star subalgebra `A` of
-`C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if itseparates
+`C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if it separates
 points. -/
 theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     (A : StarSubalgebra 𝕜 C(X, 𝕜)) (hA : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by

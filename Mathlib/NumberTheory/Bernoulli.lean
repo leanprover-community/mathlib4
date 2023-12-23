@@ -65,7 +65,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
 def bernoulli' : ℕ → ℚ :=
-  WellFounded.fix lt_wfRel.wf fun n bernoulli' =>
+  WellFounded.fix Nat.lt_wfRel.wf fun n bernoulli' =>
     1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k k.2
 #align bernoulli' bernoulli'
 
@@ -322,7 +322,7 @@ theorem sum_range_pow (n p : ℕ) :
     simp only [exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,
       RingHom.id_apply, cast_mul, algebraMap_rat_rat]
     -- manipulate factorials and binomial coefficients
-    simp at h
+    simp? at h says simp only [mem_range] at h
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
     simp only [add_eq, add_zero, ge_iff_le, IsUnit.mul_iff, Nat.isUnit_iff, succ.injEq, cast_mul,
