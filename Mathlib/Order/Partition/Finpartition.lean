@@ -661,8 +661,8 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
   simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,
-    and_imp, Finset.Nonempty, exists_imp]
-  rintro P' i hi P ⟨PQ, rfl⟩ hy₂ j _hj
+    and_imp, Finset.Nonempty, exists_imp, and_imp]
+  rintro P' i hi P PQ rfl hy₂ j _hj
   refine' ⟨P.erase t, erase_subset_erase _ PQ, _⟩
   simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
 #align finpartition.card_filter_atomise_le_two_pow Finpartition.card_filter_atomise_le_two_pow
