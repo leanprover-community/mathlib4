@@ -637,14 +637,14 @@ variable [Fintype κ]
 
 @[to_additive]
 lemma prod_fiberwise (s : Finset ι) (g : ι → κ) (f : ι → α) :
-      ∏ j, ∏ i in s.filter fun i ↦ g i = j, f i = ∏ i in s, f i :=
+    ∏ j, ∏ i in s.filter fun i ↦ g i = j, f i = ∏ i in s, f i :=
   prod_fiberwise_of_maps_to (fun _ _ ↦ mem_univ _) _
 #align finset.prod_fiberwise Finset.prod_fiberwise
 #align finset.sum_fiberwise Finset.sum_fiberwise
 
 @[to_additive]
 lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → α) :
-      ∏ j, ∏ _i in s.filter fun i ↦ g i = j, f j = ∏ i in s, f (g i) :=
+    ∏ j, ∏ _i in s.filter fun i ↦ g i = j, f j = ∏ i in s, f (g i) :=
   prod_fiberwise_of_maps_to' (fun _ _ ↦ mem_univ _) _
 
 end bij
