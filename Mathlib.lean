@@ -427,6 +427,7 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.QuadraticDiscriminant
@@ -655,6 +656,7 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.Conformal
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit

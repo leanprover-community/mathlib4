@@ -206,6 +206,9 @@ theorem sec_spec' (z : S) :
 
 variable {M}
 
+/-- If `M` contains `0` then the localization at `M` is trivial. -/
+theorem subsingleton (h : 0 ∈ M) : Subsingleton S := (toLocalizationMap M S).subsingleton h
+
 theorem map_right_cancel {x y} {c : M} (h : algebraMap R S (c * x) = algebraMap R S (c * y)) :
     algebraMap R S x = algebraMap R S y :=
   (toLocalizationMap M S).map_right_cancel h
