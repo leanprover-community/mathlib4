@@ -54,14 +54,21 @@ lemma mem_smoothNumbers_iff {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ 
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
 
+/-- `m` is `n`-smooth if and only if `m` is nonzero and all prime divisors `≤ m` of `m`
+are less than `n`. -/
+lemma mem_smoothNumbers_iff_forall_le  {n m : ℕ} :
+    m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ≤ m, p.Prime → p ∣ m → p < n := by
+  simp_rw [mem_smoothNumbers_iff, mem_factors']
+  exact ⟨fun ⟨H₀, H₁⟩ ↦ ⟨H₀, fun p _ hp₂ hp₃ ↦ H₁ p ⟨hp₂, hp₃, H₀⟩⟩,
+    fun ⟨H₀, H₁⟩ ↦
+      ⟨H₀, fun p ⟨hp₁, hp₂, hp₃⟩ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero hp₃) hp₂) hp₁ hp₂⟩⟩
+
 /-- `m` is `n`-smooth if and only if all prime divisors of `m` are less than `n`. -/
 lemma mem_smoothNumbers_iff' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
-  rw [mem_smoothNumbers_iff]
-  refine ⟨fun H p hp h ↦ H.2 p <| (mem_factors_iff_dvd H.1 hp).mpr h,
-          fun H ↦ ⟨?_, fun p hp ↦ H p (prime_of_mem_factors hp) (dvd_of_mem_factors hp)⟩⟩
-  rintro rfl
   obtain ⟨p, hp₁, hp₂⟩ := exists_infinite_primes n
-  exact ((H p hp₂ <| dvd_zero _).trans_le hp₁).false
+  rw [mem_smoothNumbers_iff_forall_le]
+  exact ⟨fun ⟨H₀, H₁⟩ ↦ fun p hp₁ hp₂ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero H₀) hp₂) hp₁ hp₂,
+         fun H ↦ ⟨fun h ↦ ((H p hp₂ <| h.symm ▸ dvd_zero p).trans_le hp₁).false, fun p _ ↦ H p⟩⟩
 
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
