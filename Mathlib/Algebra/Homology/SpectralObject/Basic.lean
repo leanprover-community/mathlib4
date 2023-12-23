@@ -597,6 +597,118 @@ lemma EMap_comp' (h : α ≫ β  = γ) :
 
 end
 
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i j k l : ι}
+  {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
+  {i' j' k' l' : ι} (f₁' : i' ⟶ j') (f₂' : j' ⟶ k') (f₃' : k' ⟶ l')
+
+lemma EMap_eqToHom (h : mk₃ f₁ f₂ f₃ = mk₃ f₁' f₂' f₃') :
+    X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' (eqToHom h) = eqToHom (by
+      obtain rfl : i = i' := Functor.congr_obj h 0
+      obtain rfl : j = j' := Functor.congr_obj h 1
+      obtain rfl : k = k' := Functor.congr_obj h 2
+      obtain rfl : l = l' := Functor.congr_obj h 3
+      have h₁ := naturality' (eqToHom h) 0 1
+      have h₂ := naturality' (eqToHom h) 1 2
+      have h₃ := naturality' (eqToHom h) 2 3
+      dsimp at h₁ h₂ h₃
+      erw [eqToHom_app, eqToHom_app, eqToHom_refl, eqToHom_refl, id_comp, comp_id] at h₁ h₂ h₃
+      subst h₁ h₂ h₃
+      rfl) := by
+  obtain rfl : i = i' := Functor.congr_obj h 0
+  obtain rfl : j = j' := Functor.congr_obj h 1
+  obtain rfl : k = k' := Functor.congr_obj h 2
+  obtain rfl : l = l' := Functor.congr_obj h 3
+  have h₁ := naturality' (eqToHom h) 0 1
+  have h₂ := naturality' (eqToHom h) 1 2
+  have h₃ := naturality' (eqToHom h) 2 3
+  dsimp at h₁ h₂ h₃
+  erw [eqToHom_app, eqToHom_app, eqToHom_refl, eqToHom_refl, id_comp, comp_id] at h₁ h₂ h₃
+  subst h₁ h₂ h₃
+  simp only [eqToHom_refl, EMap_id]
+
+end
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+  {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
+
+lemma δ_eq_zero_of_isIso₁ (hf : IsIso f) :
+    X.δ n₀ n₁ hn₁ f g = 0 := by
+  have : IsIso (twoδ₁Toδ₀ f g _ rfl) := by
+    rw [isIso_iff₁]
+    dsimp
+    constructor <;> infer_instance
+  simpa only [Preadditive.IsIso.comp_left_eq_zero] using X.zero₃ n₀ n₁ hn₁ f g _ rfl
+
+lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) :
+    X.δ n₀ n₁ hn₁ f g = 0 := by
+  have : IsIso (twoδ₂Toδ₁ f g _ rfl) := by
+    rw [isIso_iff₁]
+    dsimp
+    constructor <;> infer_instance
+  simpa only [Preadditive.IsIso.comp_right_eq_zero] using X.zero₁ n₀ n₁ hn₁ f g _ rfl
+
+end
+
+lemma isZero_H_obj_of_isIso (n : ℤ) {i j : ι} (f : i ⟶ j) (hf : IsIso f) :
+    IsZero ((X.H n).obj (mk₁ f)) := by
+  have e : mk₁ (𝟙 i) ≅ mk₁ f := isoMk₁ (Iso.refl _) (asIso f) (by simp)
+  refine' IsZero.of_iso _ ((X.H n).mapIso e.symm)
+  have h := X.zero₂ n (𝟙 i) (𝟙 i) (𝟙 i) (by simp)
+  rw [← Functor.map_comp] at h
+  rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← h]
+  congr 1
+  aesop_cat
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i j : ι} (f : i ⟶ j) {i' j' : ι} (f' : i' ⟶ j')
+
+noncomputable def EIsoH :
+    X.E n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j) ≅ (X.H n₁).obj (mk₁ f) :=
+  (ShortComplex.HomologyData.ofZeros (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j))
+    (X.δ_eq_zero_of_isIso₂ n₀ n₁ hn₁ f (𝟙 j) inferInstance)
+    (X.δ_eq_zero_of_isIso₁ n₁ n₂ hn₂ (𝟙 i) f inferInstance)).left.homologyIso
+
+noncomputable def cycles'IsoH :
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).cycles ≅ (X.H n₁).obj (mk₁ f) :=
+  (ShortComplex.HomologyData.ofZeros (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j))
+    (X.δ_eq_zero_of_isIso₂ n₀ n₁ hn₁ f (𝟙 j) inferInstance)
+    (X.δ_eq_zero_of_isIso₁ n₁ n₂ hn₂ (𝟙 i) f inferInstance)).left.cyclesIso
+
+@[reassoc (attr := simp)]
+lemma cycles'IsoH_inv_iCycles :
+    (X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f).inv ≫
+      (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).iCycles = 𝟙 _ := by
+  simp [cycles'IsoH]
+
+@[reassoc (attr := simp)]
+lemma homologyπ_EIsoH_hom :
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).homologyπ ≫
+      (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom =
+      (X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f).hom := by
+  simp [EIsoH, cycles'IsoH]
+
+lemma EIsoH_hom_naturality (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
+    (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
+      (by simp) (naturality' α 0 1) (by simp)) :
+  X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
+    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
+    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
+  have : α = homMk₁ (β.app 1) (β.app 2) (naturality' β 1 2 ) := by
+    subst hβ
+    exact hom_ext₁ rfl rfl
+  subst this
+  exact (ShortComplex.LeftHomologyMapData.ofZeros
+    (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ β) _ _ _ _).homologyMap_comm
+
+end
+
 end SpectralObject
 
 end

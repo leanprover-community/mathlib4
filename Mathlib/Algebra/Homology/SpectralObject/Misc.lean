@@ -390,6 +390,44 @@ lemma threeδ₁Toδ₀_app_two' :
 
 end
 
+section
+
+lemma isIso_iff {n : ℕ} {S₁ S₂ : ComposableArrows C n} (f : S₁ ⟶ S₂) :
+    IsIso f ↔ ∀ (i : Fin (n + 1)), IsIso (f.app i) := by
+  constructor
+  · intro hf i
+    infer_instance
+  · intro h
+    apply NatIso.isIso_of_isIso_app
+
+lemma isIso_iff₀ {S₁ S₂ : ComposableArrows C 0} (f : S₁ ⟶ S₂) :
+    IsIso f ↔ IsIso (f.app 0) := by
+  rw [isIso_iff]
+  constructor
+  · intro h
+    exact h 0
+  · rintro h₀ i
+    fin_cases i; assumption
+
+lemma isIso_iff₁ {S₁ S₂ : ComposableArrows C 1} (f : S₁ ⟶ S₂) :
+    IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) := by
+  rw [isIso_iff]
+  constructor
+  · intro h
+    exact ⟨h 0, h 1⟩
+  · rintro ⟨h₀, h₁⟩ i
+    fin_cases i <;> assumption
+
+lemma isIso_iff₂ {S₁ S₂ : ComposableArrows C 2} (f : S₁ ⟶ S₂) :
+    IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) ∧ IsIso (f.app 2) := by
+  rw [isIso_iff]
+  constructor
+  · intro h
+    exact ⟨h 0, h 1, h 2⟩
+  · rintro ⟨h₀, h₁, h₂⟩ i
+    fin_cases i <;> assumption
+
+end
 
 end ComposableArrows
 

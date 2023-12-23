@@ -473,6 +473,65 @@ lemma d_d :
 
 end
 
+section
+
+variable (n₀ n₁ n₂ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
+
+noncomputable def cyclesIsoH :
+    X.cycles n₁ n₂ hn₂ (𝟙 i₀) f ≅ (X.H n₁).obj (mk₁ f) :=
+  (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫ X.cycles'IsoH n₀ n₁ n₂ hn₁ hn₂ f
+
+@[simp]
+lemma cyclesIsoH_inv :
+    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv = X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) := by
+  rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ (𝟙 _) f ), toCycles_i]
+  dsimp [cyclesIsoH]
+  rw [assoc, cyclesIso_hom_i, cycles'IsoH_inv_iCycles, ← Functor.map_id]
+  congr 1
+  aesop_cat
+
+@[reassoc (attr := simp)]
+lemma cyclesIsoH_hom_inv_id :
+    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫
+      X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) = 𝟙 _ := by
+  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma cyclesIsoH_inv_hom_id :
+    X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) ≫
+      (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom = 𝟙 _ := by
+  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv_hom_id
+
+end
+
+section
+
+variable (n₀ n₁ n₂ n₃ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+  {i₀ i₁ i₂ : ι}
+  (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂)
+
+@[reassoc (attr := simp)]
+lemma πE_EIsoH_hom :
+    X.πE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f₁ (𝟙 i₁) ≫ (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f₁).hom =
+      (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f₁).hom := by
+  simp [πE, cyclesIsoH]
+
+@[reassoc]
+lemma d_EIsoH_hom :
+    X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ (𝟙 i₀) f₁ (𝟙 i₁) f₂ (𝟙 i₂) ≫
+      (X.EIsoH n₁ n₂ n₃ hn₂ hn₃ f₁).hom =
+    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f₂).hom ≫ X.δ n₁ n₂ hn₂ f₁ f₂ := by
+  rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₁) f₂ (𝟙 i₂)),
+    ← cancel_epi (X.toCycles n₁ n₂ hn₂ (𝟙 i₁) f₂ f₂ (by simp)),
+    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ (𝟙 i₀) f₁ (𝟙 i₁) f₂ (𝟙 i₂) f₁ (by simp),
+    πE_EIsoH_hom, πE_EIsoH_hom_assoc, cyclesIsoH_inv_hom_id, comp_id,
+    cyclesIsoH_inv_hom_id_assoc]
+
+end
+
 end SpectralObject
 
 end Abelian
