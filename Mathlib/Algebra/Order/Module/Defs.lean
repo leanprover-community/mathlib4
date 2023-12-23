@@ -932,7 +932,7 @@ lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ =
   (antitone_smul_left ha : Antitone (_ : β → β)).map_max
 #align smul_max_of_nonpos smul_max_of_nonpos
 
-lemma smul_min_of_nonpos [PosSMulMono α β] (ha : a ≤ 0) (b₁ b₂ : β) : a • min b₁ b₂ = max (a • b₁) (a • b₂) :=
+lemma smul_min_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • min b₁ b₂ = max (a • b₁) (a • b₂) :=
   (antitone_smul_left ha : Antitone (_ : β → β)).map_min
 #align smul_min_of_nonpos smul_min_of_nonpos
 
