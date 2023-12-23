@@ -31,22 +31,22 @@ therefore two different ingredients in a charted space:
 We separate these two parts in the definition: the charted space structure is just the set of
 charts, and then the different smoothness requirements (smooth manifold, orientable manifold,
 contact manifold, and so on) are additional properties of these charts. These properties are
-formalized through the notion of structure groupoid, i.e., a set of local homeomorphisms stable
+formalized through the notion of structure groupoid, i.e., a set of partial homeomorphisms stable
 under composition and inverse, to which the change of coordinates should belong.
 
 ## Main definitions
 
-* `StructureGroupoid H` : a subset of local homeomorphisms of `H` stable under composition,
-  inverse and restriction (ex: local diffeos).
-* `continuousGroupoid H` : the groupoid of all local homeomorphisms of `H`.
+* `StructureGroupoid H` : a subset of partial homeomorphisms of `H` stable under composition,
+  inverse and restriction (ex: local diffeomorphisms).
+* `continuousGroupoid H` : the groupoid of all partial homeomorphisms of `H`.
 * `ChartedSpace H M` : charted space structure on `M` modelled on `H`, given by an atlas of
-  local homeomorphisms from `M` to `H` whose sources cover `M`. This is a type class.
+  partial homeomorphisms from `M` to `H` whose sources cover `M`. This is a type class.
 * `HasGroupoid M G` : when `G` is a structure groupoid on `H` and `M` is a charted space
   modelled on `H`, require that all coordinate changes belong to `G`. This is a type class.
 * `atlas H M` : when `M` is a charted space modelled on `H`, the atlas of this charted
   space structure, i.e., the set of charts.
 * `G.maximalAtlas M` : when `M` is a charted space modelled on `H` and admitting `G` as a
-  structure groupoid, one can consider all the local homeomorphisms from `M` to `H` such that
+  structure groupoid, one can consider all the partial homeomorphisms from `M` to `H` such that
   changing coordinate from any chart to them belongs to `G`. This is a larger atlas, called the
   maximal atlas (for the groupoid `G`).
 * `Structomorph G M M'` : the type of diffeomorphisms between the charted spaces `M` and `M'` for
