@@ -96,6 +96,65 @@ theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
 instance isPurelyInseparable_self : IsPurelyInseparable F F :=
   ⟨fun _ ↦ isIntegral_algebraMap, fun x _ ↦ ⟨x, rfl⟩⟩
 
+-- TODO: should move to SeparableDegree
+theorem minpoly.natSepDegree_eq_one_iff_eq_expand_X_sub_C (q : ℕ) [hF : ExpChar F q] {x : E} :
+    (minpoly F x).natSepDegree = 1 ↔
+    ∃ (n : ℕ) (y : F), minpoly F x = expand F (q ^ n) (X - C y) := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
+  · have halg : IsIntegral F x := by_contra fun h' ↦ by
+      simp only [eq_zero h', natSepDegree_zero, zero_ne_one] at h
+    exact (minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic' q
+      (minpoly.monic halg) |>.1 h
+  rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
+
+-- TODO: should move to SeparableDegree
+theorem minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C (q : ℕ) [hF : ExpChar F q] {x : E} :
+    (minpoly F x).natSepDegree = 1 ↔
+    ∃ (n : ℕ) (y : F), minpoly F x = X ^ (q ^ n) - C y := by
+  simp only [minpoly.natSepDegree_eq_one_iff_eq_expand_X_sub_C F E q, map_sub, expand_X, expand_C]
+
+-- TODO: should move to SeparableDegree
+theorem minpoly.natSepDegree_eq_one_iff_mem_pow (q : ℕ) [hF : ExpChar F q] {x : E} :
+    (minpoly F x).natSepDegree = 1 ↔ ∃ n : ℕ, x ^ (q ^ n) ∈ (algebraMap F E).range := by
+  have hq : 0 < q := by
+    rcases expChar_is_prime_or_one F q with h | rfl
+    exacts [Nat.Prime.pos h, Nat.one_pos]
+  refine ⟨fun h ↦ ?_, fun ⟨n, y, hx⟩ ↦ ?_⟩
+  · obtain ⟨n, y, hx⟩ := (minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C F E q).1 h
+    refine ⟨n, y, ?_⟩
+    apply_fun Polynomial.aeval x at hx
+    rw [aeval, map_sub, map_pow, aeval_X, aeval_C] at hx
+    exact (sub_eq_zero.1 hx.symm).symm
+  let g := X - C y
+  have hzero : Polynomial.aeval x (expand F (q ^ n) g) = 0 := by
+    simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
+  have hnezero : expand F (q ^ n) g ≠ 0 :=
+    (expand_ne_zero (Nat.pos_pow_of_pos n hq)).2 <| X_sub_C_ne_zero y
+  have hdeg := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
+  rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at hdeg
+  have := minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
+  rw [Nat.pos_iff_ne_zero, ← natSepDegree_ne_zero_iff, ← Nat.pos_iff_ne_zero] at this
+  exact le_antisymm hdeg this
+
+-- TODO: should move to SeparableDegree
+theorem minpoly.natSepDegree_eq_one_iff_eq_X_sub_C_pow (q : ℕ) [hF : ExpChar F q] {x : E} :
+    (minpoly F x).natSepDegree = 1 ↔
+    ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ (q ^ n) := by
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
+  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_mem_pow F E q).2 ?_⟩
+  · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C F E q).1 h
+    have hx := congr_arg (Polynomial.aeval x) h.symm
+    rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero] at hx
+    apply_fun map (algebraMap F E) at h
+    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C,
+      ← hx, map_pow, ← sub_pow_expChar_pow] at h
+    exact ⟨n, h⟩
+  apply_fun constantCoeff at h
+  simp only [constantCoeff_apply, coeff_map, map_pow, map_sub, coeff_X_zero, coeff_C_zero] at h
+  rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
+  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
+
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, there exists a natural number `n` such that
 `x ^ (q ^ n)` is contained in `F`. -/
@@ -106,23 +165,12 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
   · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ (minpoly.irreducible (h x).1)
     exact ⟨n, (h _).2 <| Separable.of_dvd h1 <| minpoly.dvd F _ <| by
       simpa only [expand_aeval, minpoly.aeval] using congr_arg (aeval x) h2⟩
-  cases' hF with _ _ hprime _
-  · simp only [one_pow, pow_one, exists_const] at h
-    exact ⟨by obtain ⟨_, rfl⟩ := h x; exact isIntegral_algebraMap, fun _ ↦ h x⟩
-  haveI := Fact.mk hprime
-  haveI : ExpChar F q := ExpChar.prime hprime
-  obtain ⟨n, y, hx⟩ := h x
-  let g := X - C y
-  have hzero : aeval x (expand F (q ^ n) g) = 0 := by
-    simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
-  have hnezero : expand F (q ^ n) g ≠ 0 := (expand_ne_zero Fin.size_pos').2 <| X_sub_C_ne_zero y
-  have halg := IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
+  have hdeg := (minpoly.natSepDegree_eq_one_iff_mem_pow F E q).2 (h x)
+  have halg : IsIntegral F x := by_contra fun h' ↦ by
+    simp only [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at hdeg
   refine ⟨halg, fun hsep ↦ ?_⟩
-  have hdeg := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
-  rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C,
-    natSepDegree_eq_natDegree_of_separable _ hsep] at hdeg
-  replace hdeg := le_antisymm hdeg (minpoly.natDegree_pos halg)
-  rw [← adjoin.finrank halg, IntermediateField.finrank_eq_one_iff] at hdeg
+  rw [natSepDegree_eq_natDegree_of_separable _ hsep, ← adjoin.finrank halg,
+    IntermediateField.finrank_eq_one_iff] at hdeg
   simpa only [hdeg] using mem_adjoin_simple_self F x
 
 /-- If `K / E / F` is a field extension tower such that `K / F` is purely inseparable,
@@ -165,62 +213,24 @@ its minimal polynomial has separable degree one. -/
 theorem isPurelyInseparable_iff_natSepDegree_eq_one :
     IsPurelyInseparable F E ↔ ∀ x : E, (minpoly F x).natSepDegree = 1 := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  have hq : 0 < q := by
-    rcases expChar_is_prime_or_one F q with h | rfl
-    exacts [Nat.Prime.pos h, Nat.one_pos]
-  refine ⟨fun h x ↦ ?_, fun h ↦ isPurelyInseparable_iff.2 fun x ↦ ?_⟩
-  · rw [isPurelyInseparable_iff_mem_pow _ _ q] at h
-    obtain ⟨n, y, hx⟩ := h x
-    let g := X - C y
-    have hzero : aeval x (expand F (q ^ n) g) = 0 := by
-      simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
-    have hnezero : expand F (q ^ n) g ≠ 0 :=
-      (expand_ne_zero (Nat.pos_pow_of_pos n hq)).2 <| X_sub_C_ne_zero y
-    have hdeg := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
-    rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at hdeg
-    have := minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
-    rw [Nat.pos_iff_ne_zero, ← natSepDegree_ne_zero_iff, ← Nat.pos_iff_ne_zero] at this
-    exact le_antisymm hdeg this
-  refine ⟨by_contra fun g ↦ (ne_of_apply_ne natDegree <| (natSepDegree_ne_zero_iff _).1 <|
-    ne_zero_of_eq_one (h x)) (minpoly.eq_zero g), fun g ↦ minpoly.mem_range_of_degree_eq_one F x ?_⟩
-  simpa only [natSepDegree_eq_natDegree_of_separable _ g,
-    ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] using h x
+  simp_rw [isPurelyInseparable_iff_mem_pow F E q, minpoly.natSepDegree_eq_one_iff_mem_pow F E q]
 
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, the minimal polynomial of `x` over `F` is of form
 `X ^ (q ^ n) - y` for some natural number `n` and some element `y` of `F`. -/
 theorem isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C (q : ℕ) [hF : ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ (n : ℕ) (y : F), minpoly F x = X ^ (q ^ n) - C y := by
-  refine ⟨fun h x ↦ ?_, fun h ↦ (isPurelyInseparable_iff_natSepDegree_eq_one F E).2 fun x ↦ ?_⟩
-  · have halg := h.isIntegral' x
-    exact ((minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic q (minpoly.monic halg)).1 <|
-      (isPurelyInseparable_iff_natSepDegree_eq_one F E).1 h x
-  obtain ⟨n, y, h⟩ := h x
-  replace h : minpoly F x = expand F (q ^ n) (X - C y) := by rwa [map_sub, expand_X, expand_C]
-  apply_fun natSepDegree at h
-  rwa [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at h
+  simp_rw [isPurelyInseparable_iff_natSepDegree_eq_one,
+    minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C F E q]
 
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, the minimal polynomial of `x` over `F` is of form
 `(X - x) ^ (q ^ n)` for some natural number `n`. -/
 theorem isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow (q : ℕ) [hF : ExpChar F q] :
-    IsPurelyInseparable F E ↔ ∀ x : E, ∃ (n : ℕ), (minpoly F x).map (algebraMap F E) =
-      (X - C x) ^ (q ^ n) := by
-  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
-  refine ⟨fun h x ↦ ?_, fun h ↦ (isPurelyInseparable_iff_mem_pow F E q).2 fun x ↦ ?_⟩
-  · obtain ⟨n, y, h⟩ := (isPurelyInseparable_iff_minpoly_eq_X_pow_sub_C F E q).1 h x
-    have hx := congr_arg (aeval x) h.symm
-    rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero] at hx
-    apply_fun map (algebraMap F E) at h
-    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C,
-      ← hx, map_pow, ← sub_pow_expChar_pow] at h
-    exact ⟨n, h⟩
-  obtain ⟨n, h⟩ := h x
-  apply_fun constantCoeff at h
-  simp only [constantCoeff_apply, coeff_map, map_pow, map_sub, coeff_X_zero, coeff_C_zero] at h
-  rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
-  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
+    IsPurelyInseparable F E ↔
+    ∀ x : E, ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ (q ^ n) := by
+  simp_rw [isPurelyInseparable_iff_natSepDegree_eq_one,
+    minpoly.natSepDegree_eq_one_iff_eq_X_sub_C_pow F E q]
 
 /-- If an algebraic extension has (finite) separable degree one, then it is purely inseparable. -/
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
