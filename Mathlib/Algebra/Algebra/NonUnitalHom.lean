@@ -168,7 +168,7 @@ theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
 def Simps.apply (f : A →ₛₙₐ[φ] B) : A → B := f
 
 initialize_simps_projections NonUnitalAlgHom
-  (toDistribMulActionSemiHom_toMulActionHom_toFun → apply, -toDistribMulActionSemiHom)
+  (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [NonUnitalAlgSemiHomClass F φ A B] (f : F) :
@@ -215,15 +215,15 @@ theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
 
 instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₑ+[φ] B) :=
-  ⟨toDistribMulActionSemiHom⟩
+  ⟨toDistribMulActionHom⟩
 
 instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₙ* B) :=
   ⟨toMulHom⟩
 
 @[simp]
-theorem toDistribMulActionSemiHom_eq_coe (f : A →ₛₙₐ[φ] B) :
-    f.toDistribMulActionSemiHom = ↑f := rfl
-#align non_unital_alg_hom.to_distrib_mul_action_hom_eq_coe NonUnitalAlgHom.toDistribMulActionSemiHom_eq_coe
+theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) :
+    f.toDistribMulActionHom = ↑f := rfl
+#align non_unital_alg_hom.to_distrib_mul_action_hom_eq_coe NonUnitalAlgHom.toDistribMulActionHom_eq_coe
 
 @[simp]
 theorem toMulHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toMulHom = ↑f :=
@@ -231,9 +231,9 @@ theorem toMulHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toMulHom = ↑f :=
 #align non_unital_alg_hom.to_mul_hom_eq_coe NonUnitalAlgHom.toMulHom_eq_coe
 
 @[simp, norm_cast]
-theorem coe_to_distribMulActionSemiHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₑ+[φ] B) = f :=
+theorem coe_to_distribMulActionHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₑ+[φ] B) = f :=
   rfl
-#align non_unital_alg_hom.coe_to_distrib_mul_action_hom NonUnitalAlgHom.coe_to_distribMulActionSemiHom
+#align non_unital_alg_hom.coe_to_distrib_mul_action_hom NonUnitalAlgHom.coe_to_distribMulActionHom
 
 @[simp, norm_cast]
 theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
@@ -243,7 +243,7 @@ theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
 theorem to_distribMulActionHom_injective {f g : A →ₛₙₐ[φ] B}
     (h : (f : A →ₑ+[φ] B) = (g : A →ₑ+[φ] B)) : f = g := by
   ext a
-  exact DistribMulActionSemiHom.congr_fun h a
+  exact DistribMulActionHom.congr_fun h a
 #align non_unital_alg_hom.to_distrib_mul_action_hom_injective NonUnitalAlgHom.to_distribMulActionHom_injective
 
 theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
