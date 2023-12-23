@@ -3,7 +3,6 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.Hom
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
@@ -475,11 +474,6 @@ variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 This is a stronger version of `Module.toAddMonoidEnd`. -/
 @[simps! apply_toFun]
 def _root_.Module.toCentroidHom : R →+* CentroidHom α := RingHom.smulOneHom
-
-open Module in
-/-- `CentroidHom α` as an algebra over `R`. -/
-abbrev ringToAlg (h : ∀ (r : R) (T : CentroidHom α), toCentroidHom r * T = T * toCentroidHom r) :
-    Algebra R (CentroidHom α) := toCentroidHom.toAlgebra' h
 
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
