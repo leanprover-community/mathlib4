@@ -231,8 +231,8 @@ lemma AffineIndependent.card_le_finrank_succ [Fintype ι] {p : ι → P} (hp : A
     (tsub_add_cancel_of_le <| Nat.one_le_iff_ne_zero.2 Fintype.card_ne_zero).symm).1 hp
 
 open Finset in
-/-- If an affine independent finset is contained in the affine span of another finset, then it is
-smaller than that finset. -/
+/-- If an affine independent finset is contained in the affine span of another finset, then its
+cardinality is at most the cardinality of that finset. -/
 lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
     (hs : AffineIndependent k ((↑) : s → V))
    (hst : (s : Set V) ⊆ affineSpan k (t : Set V)) : s.card ≤ t.card := by
