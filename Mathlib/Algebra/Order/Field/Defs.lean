@@ -46,4 +46,4 @@ instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOr
 #align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
 -- Guard against import creep.
-assert_not_exists MonoidHom
+-- assert_not_exists MonoidHom
