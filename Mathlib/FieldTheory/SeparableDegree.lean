@@ -487,9 +487,6 @@ for some `n : ℕ` and `y : F`. -/
 theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), f = expand F (q ^ n) (X - C y) := by
-  have hq : 0 < q := by
-    rcases expChar_is_prime_or_one F q with h | rfl
-    exacts [Nat.Prime.pos h, Nat.one_pos]
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
   · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ hi
     have h3 : g.natDegree = 1 := by
@@ -497,7 +494,7 @@ theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar 
         natSepDegree_eq_natDegree_of_separable g h1] at h
     replace h3 : g.degree = 1 := (degree_eq_iff_natDegree_eq_of_pos Nat.one_pos).2 h3
     have hg := eq_X_add_C_of_degree_eq_one h3
-    rw [← h2, monic_expand_iff (Nat.pos_pow_of_pos n hq), Monic] at hm
+    rw [← h2, monic_expand_iff (expChar_pow_pos F q n), Monic] at hm
     rw [hm, map_one, one_mul] at hg
     exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add, ← hg, h2]⟩
   rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
