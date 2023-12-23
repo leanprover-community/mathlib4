@@ -88,12 +88,6 @@ theorem sup_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
   exact Finset.fold_congr hfg
 #align finset.sup_congr Finset.sup_congr
 
-theorem sup_orderIso [SemilatticeSup β] [OrderBot β] (s : Finset α) (e : α ≃o β) :
-    s.sup e = e (s.sup id) := by
-  induction' s using cons_induction_on with _ _ _ IH
-  · simp
-  · rw [sup_cons, sup_cons, e.map_sup, IH]; rfl
-
 @[simp]
 theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β] [SupBotHomClass F α β] (f : F)
     (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
