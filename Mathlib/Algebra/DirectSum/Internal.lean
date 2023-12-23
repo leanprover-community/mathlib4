@@ -91,8 +91,7 @@ submonoids. -/
 instance gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedMul A] :
     DirectSum.GNonUnitalNonAssocSemiring fun i => A i :=
-  { SetLike.gMul A with
-    mul_zero := fun _ => Subtype.ext (mul_zero _)
+  { mul_zero := fun _ => Subtype.ext (mul_zero _)
     zero_mul := fun _ => Subtype.ext (zero_mul _)
     mul_add := fun _ _ _ => Subtype.ext (mul_add _ _ _)
     add_mul := fun _ _ _ => Subtype.ext (add_mul _ _ _) }

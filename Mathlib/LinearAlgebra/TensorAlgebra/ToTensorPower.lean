@@ -36,13 +36,13 @@ theorem toTensorAlgebra_tprod {n} (x : Fin n → M) :
 
 @[simp]
 theorem toTensorAlgebra_gOne :
-    TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => (⨂[R]^n) M) _ _) = 1 :=
+    TensorPower.toTensorAlgebra (1 : (⨂[R]^0) M) = 1 :=
   TensorPower.toTensorAlgebra_tprod _
 #align tensor_power.to_tensor_algebra_ghas_one TensorPower.toTensorAlgebra_gOne
 
 @[simp]
 theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
-    TensorPower.toTensorAlgebra (@GradedMonoid.GMul.mul _ (fun n => (⨂[R]^n) M) _ _ _ _ a b) =
+    TensorPower.toTensorAlgebra (a * b) =
       TensorPower.toTensorAlgebra a * TensorPower.toTensorAlgebra b := by
   -- change `a` and `b` to `tprod R a` and `tprod R b`
   rw [TensorPower.gMul_eq_coe_linearMap, ← LinearMap.compr₂_apply, ← @LinearMap.mul_apply' R, ←

@@ -25,7 +25,7 @@ abbreviation for `⨂[R] i : Fin n, M`.
 
 ## Implementation notes
 
-In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplicative structure on
+In this file we use `1` and `*` as local notation for the graded multiplicative structure on
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
 
@@ -70,9 +70,9 @@ open PiTensorProduct
 instance gOne : GradedMonoid.GOne fun i => (⨂[R]^i) M where one := tprod R <| @Fin.elim0' M
 #align tensor_power.ghas_one TensorPower.gOne
 
-local notation "ₜ1" => @GradedMonoid.GOne.one ℕ (fun i => (⨂[R]^i) M) _ _
+local notation "ₜ1" => (1 : (⨂[R]^0) M)
 
-theorem gOne_def : ₜ1 = tprod R (@Fin.elim0' M) :=
+theorem gOne_def : 1 = tprod R (@Fin.elim0' M) :=
   rfl
 #align tensor_power.ghas_one_def TensorPower.gOne_def
 
@@ -82,20 +82,18 @@ def mulEquiv {n m : ℕ} : (⨂[R]^n) M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n
 #align tensor_power.mul_equiv TensorPower.mulEquiv
 
 /-- As a graded monoid, `⨂[R]^i M` has a `(*) : ⨂[R]^i M → ⨂[R]^j M → ⨂[R]^(i + j) M`. -/
-instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M where
-  mul {i j} a b :=
-    (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b
+instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M :=
+  fun i j => { hMul := fun a b =>
+    (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b }
 #align tensor_power.ghas_mul TensorPower.gMul
 
-local infixl:70 " ₜ* " => @GradedMonoid.GMul.mul ℕ (fun i => (⨂[R]^i) M) _ _ _ _
-
 theorem gMul_def {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
-    a ₜ* b = @mulEquiv R M _ _ _ i j (a ⊗ₜ b) :=
+    a * b = @mulEquiv R M _ _ _ i j (a ⊗ₜ b) :=
   rfl
 #align tensor_power.ghas_mul_def TensorPower.gMul_def
 
 theorem gMul_eq_coe_linearMap {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
-    a ₜ* b = ((TensorProduct.mk R _ _).compr₂ ↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M) :
+    a * b = ((TensorProduct.mk R _ _).compr₂ ↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M) :
       (⨂[R]^i) M →ₗ[R] (⨂[R]^j) M →ₗ[R] (⨂[R]^(i + j)) M) a b :=
   rfl
 #align tensor_power.ghas_mul_eq_coe_linear_map TensorPower.gMul_eq_coe_linearMap
@@ -154,7 +152,7 @@ theorem cast_eq_cast {i j} (h : i = j) :
 variable (R)
 
 theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
-    tprod R a ₜ* tprod R b = tprod R (Fin.append a b) := by
+    tprod R a * tprod R b = tprod R (Fin.append a b) := by
   dsimp [gMul_def, mulEquiv]
   rw [tmulEquiv_apply R M a b]
   refine' (reindex_tprod _ _).trans _
@@ -166,7 +164,7 @@ theorem tprod_mul_tprod {na nb} (a : Fin na → M) (b : Fin nb → M) :
 
 variable {R}
 
-theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
+theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 * a) = a := by
   rw [gMul_def, gOne_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
   · rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
@@ -178,7 +176,7 @@ theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a
   · rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]
 #align tensor_power.one_mul TensorPower.one_mul
 
-theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a := by
+theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a * ₜ1) = a := by
   rw [gMul_def, gOne_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
   · rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
@@ -191,18 +189,18 @@ theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a
 #align tensor_power.mul_one TensorPower.mul_one
 
 theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R]^nc) M) :
-    cast R M (add_assoc _ _ _) (a ₜ* b ₜ* c) = a ₜ* (b ₜ* c) := by
+    cast R M (add_assoc _ _ _) (a * b * c) = a * (b * c) := by
   let mul : ∀ n m : ℕ, (⨂[R]^n) M →ₗ[R] (⨂[R]^m) M →ₗ[R] (⨂[R]^(n + m)) M := fun n m =>
     (TensorProduct.mk R _ _).compr₂ ↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(n + m)) M)
   -- replace `a`, `b`, `c` with `tprod R a`, `tprod R b`, `tprod R c`
   let e : (⨂[R]^(na + nb + nc)) M ≃ₗ[R] (⨂[R]^(na + (nb + nc))) M := cast R M (add_assoc _ _ _)
   let lhs : (⨂[R]^na) M →ₗ[R] (⨂[R]^nb) M →ₗ[R] (⨂[R]^nc) M →ₗ[R] (⨂[R]^(na + (nb + nc))) M :=
     (LinearMap.llcomp R _ _ _ ((mul _ nc).compr₂ e.toLinearMap)).comp (mul na nb)
-  have lhs_eq : ∀ a b c, lhs a b c = e (a ₜ* b ₜ* c) := fun _ _ _ => rfl
+  have lhs_eq : ∀ a b c, lhs a b c = e (a * b * c) := fun _ _ _ => rfl
   let rhs : (⨂[R]^na) M →ₗ[R] (⨂[R]^nb) M →ₗ[R] (⨂[R]^nc) M →ₗ[R] (⨂[R]^(na + (nb + nc))) M :=
     (LinearMap.llcomp R _ _ _ (LinearMap.lflip (R := R)) <|
         (LinearMap.llcomp R _ _ _ (mul na _).flip).comp (mul nb nc)).flip
-  have rhs_eq : ∀ a b c, rhs a b c = a ₜ* (b ₜ* c) := fun _ _ _ => rfl
+  have rhs_eq : ∀ a b c, rhs a b c = a * (b * c) := fun _ _ _ => rfl
   suffices : lhs = rhs
   exact LinearMap.congr_fun (LinearMap.congr_fun (LinearMap.congr_fun this a) b) c
   ext a b c
@@ -216,8 +214,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
 
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => (⨂[R]^i) M :=
-  { TensorPower.gMul, TensorPower.gOne with
-    one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
+  { one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
     mul_one := fun a => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
     mul_assoc := fun a b c => gradedMonoid_eq_of_cast (add_assoc _ _ _) (mul_assoc _ _ _) }
 #align tensor_power.gmonoid TensorPower.gmonoid
@@ -228,28 +225,28 @@ def algebraMap₀ : R ≃ₗ[R] (⨂[R]^0) M :=
   LinearEquiv.symm <| isEmptyEquiv (Fin 0)
 #align tensor_power.algebra_map₀ TensorPower.algebraMap₀
 
-theorem algebraMap₀_eq_smul_one (r : R) : (algebraMap₀ r : (⨂[R]^0) M) = r • ₜ1 := by
+theorem algebraMap₀_eq_smul_one (r : R) : (algebraMap₀ r : (⨂[R]^0) M) = r • 1 := by
   simp [algebraMap₀]; congr
 #align tensor_power.algebra_map₀_eq_smul_one TensorPower.algebraMap₀_eq_smul_one
 
-theorem algebraMap₀_one : (algebraMap₀ 1 : (⨂[R]^0) M) = ₜ1 :=
+theorem algebraMap₀_one : (algebraMap₀ 1 : (⨂[R]^0) M) = 1 :=
   (algebraMap₀_eq_smul_one 1).trans (one_smul _ _)
 #align tensor_power.algebra_map₀_one TensorPower.algebraMap₀_one
 
 theorem algebraMap₀_mul {n} (r : R) (a : (⨂[R]^n) M) :
-    cast R M (zero_add _) (algebraMap₀ r ₜ* a) = r • a := by
+    cast R M (zero_add _) (algebraMap₀ (M := M) r * a) = r • a := by
   rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, LinearMap.map_smul₂,
     LinearEquiv.map_smul, ← gMul_eq_coe_linearMap, one_mul]
 #align tensor_power.algebra_map₀_mul TensorPower.algebraMap₀_mul
 
 theorem mul_algebraMap₀ {n} (r : R) (a : (⨂[R]^n) M) :
-    cast R M (add_zero _) (a ₜ* algebraMap₀ r) = r • a := by
+    cast R M (add_zero _) (a * algebraMap₀ (M := M) r) = r • a := by
   rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, LinearMap.map_smul,
     LinearEquiv.map_smul, ← gMul_eq_coe_linearMap, mul_one]
 #align tensor_power.mul_algebra_map₀ TensorPower.mul_algebraMap₀
 
 theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
-    cast R M (add_zero _) (algebraMap₀ r ₜ* algebraMap₀ s) = algebraMap₀ (r * s) := by
+    cast R M (add_zero _) (algebraMap₀ (M := M) r * algebraMap₀ (M := M) s) = algebraMap₀ (r * s) := by
   rw [← smul_eq_mul, LinearEquiv.map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
