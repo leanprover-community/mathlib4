@@ -200,7 +200,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   have : ∃i, x ∈ s i := by exists i
   rcases Nat.findX this with ⟨j, hj, hlt⟩
   clear hx i
-  cases' le_or_lt j n with hjn hnj
+  rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by rw [add_assoc, tsub_add_cancel_of_le hnj.nat_succ_le]
   refine' Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)
@@ -840,7 +840,7 @@ theorem boundedBy_eq_ofFunction (m_empty : m ∅ = 0) (s : Set α) :
     boundedBy m s = OuterMeasure.ofFunction m m_empty s := by
   have : (fun s : Set α => ⨆ _ : s.Nonempty, m s) = m := by
     ext1 t
-    cases' t.eq_empty_or_nonempty with h h <;> simp [h, Set.not_nonempty_empty, m_empty]
+    rcases t.eq_empty_or_nonempty with h | h <;> simp [h, Set.not_nonempty_empty, m_empty]
   simp [boundedBy, this]
 #align measure_theory.outer_measure.bounded_by_eq_of_function MeasureTheory.OuterMeasure.boundedBy_eq_ofFunction
 
@@ -862,14 +862,14 @@ theorem boundedBy_eq_self (m : OuterMeasure α) : boundedBy m = m :=
 
 theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s ≤ m s := by
   rw [boundedBy , le_ofFunction, forall_congr']; intro s
-  cases' s.eq_empty_or_nonempty with h h <;> simp [h, Set.not_nonempty_empty]
+  rcases s.eq_empty_or_nonempty with h | h <;> simp [h, Set.not_nonempty_empty]
 #align measure_theory.outer_measure.le_bounded_by MeasureTheory.OuterMeasure.le_boundedBy
 
 theorem le_boundedBy' {μ : OuterMeasure α} :
     μ ≤ boundedBy m ↔ ∀ s : Set α, s.Nonempty → μ s ≤ m s := by
   rw [le_boundedBy, forall_congr']
   intro s
-  cases' s.eq_empty_or_nonempty with h h <;> simp [h]
+  rcases s.eq_empty_or_nonempty with h | h <;> simp [h]
 #align measure_theory.outer_measure.le_bounded_by' MeasureTheory.OuterMeasure.le_boundedBy'
 
 @[simp]
@@ -1077,7 +1077,7 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
 theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) : MeasurableSet[(boundedBy m).caratheodory] s := by
   apply ofFunction_caratheodory; intro t
-  cases' t.eq_empty_or_nonempty with h h
+  rcases t.eq_empty_or_nonempty with h | h
   · simp [h, Set.not_nonempty_empty]
   · convert le_trans _ (hs t)
     · simp [h]
