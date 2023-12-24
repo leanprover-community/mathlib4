@@ -30,6 +30,8 @@ We provide many ways to build finpartitions:
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
+* `Finpartition.ofSetoid`: With `Fintype α`, constructs the finpartition of `univ : Finset α`
+  induced by the equivalence classes of `s : Setoid α`.
 * `Finpartition.atomise`: Makes a finpartition of `s : Finset α` by breaking `s` along all finsets
   in `F : Finset (Finset α)`. Two elements of `s` belong to the same part iff they belong to the
   same elements of `F`.
