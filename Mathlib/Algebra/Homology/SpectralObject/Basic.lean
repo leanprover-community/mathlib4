@@ -501,6 +501,11 @@ def shortComplexE : ShortComplex C where
 
 noncomputable def E : C := (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homology
 
+lemma isZero_E_of_isZero_H (h : IsZero ((X.H n₁).obj (mk₁ f₂))) :
+    IsZero (X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) := by
+  erw [← (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_iff_isZero_homology]
+  exact ShortComplex.exact_of_isZero_X₂ _ h
+
 end
 
 section

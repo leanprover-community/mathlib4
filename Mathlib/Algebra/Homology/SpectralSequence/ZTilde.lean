@@ -53,8 +53,17 @@ lemma some_some_le_some_some_iff (a b : ℤ) :
   erw [WithTop.coe_le_coe, WithBot.coe_le_coe]
 
 @[simp]
+lemma some_some_lt_some_some_iff (a b : ℤ) :
+    @LT.lt ℤt _ (some (some a)) (some (some b)) ↔ a < b := by
+  erw [WithTop.coe_lt_coe, WithBot.coe_lt_coe]
+
+@[simp]
 lemma mk_le_mk_iff (a b : ℤ) :
     mk a ≤ mk b ↔ a ≤ b := some_some_le_some_some_iff a b
+
+@[simp]
+lemma mk_lt_mk_iff (a b : ℤ) :
+    mk a < mk b ↔ a < b := some_some_lt_some_some_iff a b
 
 instance : OrderTop ℤt := by dsimp [ℤt] ; infer_instance
 instance : OrderBot ℤt := by dsimp [ℤt] ; infer_instance

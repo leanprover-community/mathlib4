@@ -19,6 +19,10 @@ def spectralSequenceNat (u : ℤ × ℤ) : ComplexShape (ℕ × ℕ) where
     rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
     ext <;> linarith
 
+instance (u : ℤ × ℤ) : DecidableRel (spectralSequenceNat u).Rel := fun a b => by
+  dsimp [spectralSequenceNat]
+  infer_instance
+
 @[simp]
 lemma spectralSequenceNat_rel_iff (u : ℤ × ℤ) (a b : ℕ × ℕ) :
     (spectralSequenceNat u).Rel a b ↔ a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2 := by rfl
