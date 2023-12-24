@@ -817,7 +817,7 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
-    have : ∀ (m a') (_ : Sum.inr a' ∈ F a m) (_ : b ∈ PFun.fix f a'), b ∈ PFun.fix f a := by
+    have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
       induction' m with m IH generalizing a' <;> simp at am
       · rwa [← am]

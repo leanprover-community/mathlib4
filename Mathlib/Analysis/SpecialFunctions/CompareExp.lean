@@ -144,7 +144,7 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
           filter_upwards [isLittleO_iff_nat_mul_le'.1 hl.isLittleO_log_re_re n,
             hl.abs_im_pow_eventuallyLE_exp_re n,
             hl.tendsto_re.eventually_gt_atTop 1] with z hre him h₁
-          cases' le_total |z.im| z.re with hle hle
+          rcases le_total |z.im| z.re with hle | hle
           · rwa [max_eq_left hle]
           · have H : 1 < |z.im| := h₁.trans_le hle
             norm_cast at *
