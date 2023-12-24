@@ -720,10 +720,11 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
   Iff.trans continuous_iff_coinduced_le (gc_coinduced_induced f _ _)
 #align continuous_iff_le_induced continuous_iff_le_induced
 
-theorem continuous_generateFrom {t : TopologicalSpace α} {b : Set (Set β)}
-    (h : ∀ s ∈ b, IsOpen (f ⁻¹' s)) :
-    Continuous[t, generateFrom b] f :=
-  continuous_iff_coinduced_le.2 <| le_generateFrom h
+lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
+    Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
+  rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]; rfl
+
+@[deprecated] alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
 
 @[continuity]
