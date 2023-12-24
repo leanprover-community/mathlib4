@@ -80,28 +80,6 @@ variable (data : SpectralSequenceMkData ι c r₀)
 
 namespace SpectralSequenceMkData
 
-class HasFirstPageComputation : Prop where
-  hi₀₁ (pq : κ) : data.i₀ r₀ (by rfl) pq = data.i₁ pq
-  hi₂₃ (pq : κ) : data.i₂ pq = data.i₃ r₀ (by rfl) pq
-
-instance : mkDataE₂Cohomological.HasFirstPageComputation where
-  hi₀₁ pq := by dsimp; congr 1; linarith
-  hi₂₃ pq := by dsimp; congr 1; linarith
-
-section
-
-variable [data.HasFirstPageComputation]
-
-lemma hi₀₁ (pq : κ) :
-    data.i₀ r₀ (by rfl) pq = data.i₁ pq := by
-  apply HasFirstPageComputation.hi₀₁
-
-lemma hi₂₃ (pq : κ) :
-    data.i₂ pq = data.i₃ r₀ (by rfl) pq := by
-  apply HasFirstPageComputation.hi₂₃
-
-end
-
 class HasHomologyComputation : Prop where
   i₀_le' (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
       data.i₀ (r + 1) (by linarith) pq ≤ data.i₀ r hr pq
@@ -327,62 +305,6 @@ noncomputable def page (r : ℤ) (hr : r₀ ≤ r) :
   X pq := pageX X data r hr pq
   d := paged X data r hr
   shape pq pq' hpq := dif_neg hpq
-
-section
-
-variable [data.HasFirstPageComputation]
-
-noncomputable def firstPageXIso (pq : κ) (n : ℤ) (hn : n = data.deg pq)
-    (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq) :
-    (page X data r₀ (by rfl)).X pq ≅ (X.H n).obj (mk₁ (homOfLE' i₁ i₂
-      (by simpa only [hi₁, hi₂] using data.le₁₂ pq))) :=
-  pageXIso X data r₀ _ pq (n - 1) n (n + 1) _ rfl hn i₁ i₁ i₂ i₂
-    (by rw [hi₁, data.hi₀₁]) hi₁ hi₂ (by rw [hi₂, data.hi₂₃]) ≪≫
-    X.EIsoH (n - 1) n (n + 1) (by simp) rfl (homOfLE _)
-
-lemma firstPageXIso_hom (pq : κ) (n : ℤ) (hn : n = data.deg pq)
-    (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq)
-    (n₀ n₂ : ℤ) (hn₀ : n₀ + 1 = n) (hn₂ : n + 1 = n₂) :
-    (firstPageXIso X data pq n hn i₁ i₂ hi₁ hi₂).hom =
-      (pageXIso X data r₀ _ _ _ _ _ _ _ hn _ _ _ _
-        (by rw [hi₁, data.hi₀₁]) hi₁ hi₂ (by rw [hi₂, data.hi₂₃])).hom ≫
-        (X.EIsoH n₀ n n₂ hn₀ hn₂ _).hom := by
-  obtain rfl : n₀ = n - 1 := by linarith
-  obtain rfl := hn₂
-  rfl
-
-lemma firstPageXIso_inv (pq : κ) (n : ℤ) (hn : n = data.deg pq)
-    (i₁ i₂ : ι) (hi₁ : i₁ = data.i₁ pq) (hi₂ : i₂ = data.i₂ pq)
-    (n₀ n₂ : ℤ) (hn₀ : n₀ + 1 = n) (hn₂ : n + 1 = n₂) :
-    (firstPageXIso X data pq n hn i₁ i₂ hi₁ hi₂).inv =
-      (X.EIsoH n₀ n n₂ hn₀ hn₂ _).inv ≫
-      (pageXIso X data r₀ _ _ _ _ _ _ _ hn _ _ _ _
-        (by rw [hi₁, data.hi₀₁]) hi₁ hi₂ (by rw [hi₂, data.hi₂₃])).inv := by
-  obtain rfl : n₀ = n - 1 := by linarith
-  obtain rfl := hn₂
-  rfl
-
-lemma first_page_d_eq (pq pq' : κ) (hpq : (c r₀).Rel pq pq') (n n' : ℤ) (hn : n = data.deg pq)
-    (hn' : n + 1 = n') (i j k : ι)
-    (hi : i = data.i₁ pq') (hj : j = data.i₁ pq) (hk : k = data.i₂ pq) :
-    (page X data r₀ (by rfl)).d pq pq' =
-      (firstPageXIso X data pq n hn j k hj hk).hom ≫ X.δ n n' hn' (homOfLE' i j
-        (by simpa only [hi, hj, data.hc₁₃ r₀ (by rfl) pq pq' hpq, ← data.hi₂₃ pq']
-          using data.le₁₂ pq'))
-        (homOfLE' j k (by simpa only [hj, hk] using data.le₁₂ pq)) ≫
-      (firstPageXIso X data pq' n'
-        (by rw [← hn', hn, data.hc r₀ (by rfl) pq pq' hpq]) i j hi
-        (by rw [hj, ← data.hc₀₂ r₀ (by rfl) pq pq' hpq, data.hi₀₁ pq])).inv := by
-  dsimp
-  simp only [assoc, firstPageXIso_hom X data pq n hn j k hj hk (n - 1) n' (by simp) hn',
-    ← X.d_EIsoH_hom_assoc (n - 1) n n' (n' + 1) (by simp) hn' rfl,
-    firstPageXIso_inv X data pq' n' (by rw [← hn', hn, data.hc r₀ (by rfl) pq pq' hpq]) i j
-      hi (by rw [hj, data.hi₂₃, data.hc₁₃ r₀ (by rfl) pq pq' hpq]) n (n' + 1) hn' rfl,
-    Iso.hom_inv_id_assoc]
-  apply paged_eq
-  exact hpq
-
-end
 
 section
 
@@ -692,6 +614,36 @@ variable [data.HasHomologyComputation] [X.HasSpectralSequence data]
 noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page' := SpectralSequence.page X data
   iso' r r' hrr' pq hr := SpectralSequence.homologyIso X data r r' hrr' hr pq
+
+noncomputable def spectralSequencePageXIso (r : ℤ) [(X.spectralSequence data).HasPage r]
+    (pq : κ) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (h : n₁ = data.deg pq)
+    (i₀ i₁ i₂ i₃ : ι) (h₀ : i₀ = data.i₀ r ((X.spectralSequence data).le_of_hasPage r) pq)
+    (h₁ : i₁ = data.i₁ pq) (h₂ : i₂ = data.i₂ pq)
+    (h₃ : i₃ = data.i₃ r ((X.spectralSequence data).le_of_hasPage r) pq):
+    ((X.spectralSequence data).page r).X pq ≅
+      X.E n₀ n₁ n₂ hn₁ hn₂
+        (homOfLE' i₀ i₁ (by subst h₀ h₁; exact data.le₀₁ r _ pq))
+        (homOfLE' i₁ i₂ (by subst h₁ h₂; exact data.le₁₂ pq))
+        (homOfLE' i₂ i₃ (by subst h₂ h₃; exact data.le₂₃ r _ pq)) :=
+  SpectralSequence.pageXIso X data _ _ _ _ _ _ _ _ h _ _ _ _ h₀ h₁ h₂ h₃
+
+lemma spectralSequence_page_d_eq (r : ℤ) [(X.spectralSequence data).HasPage r]
+    (pq pq' : κ) (hpq : (c r).Rel pq pq')
+    (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+    {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+    (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (hn₁' : n₁ = data.deg pq)
+    (h₀ : i₀ = data.i₀ r ((X.spectralSequence data).le_of_hasPage r) pq') (h₁ : i₁ = data.i₁ pq')
+    (h₂ : i₂ = data.i₀ r ((X.spectralSequence data).le_of_hasPage r) pq)
+    (h₃ : i₃ = data.i₁ pq) (h₄ : i₄ = data.i₂ pq) (h₅ : i₅ = data.i₃ r ((X.spectralSequence data).le_of_hasPage r) pq) :
+    ((X.spectralSequence data).page r).d pq pq' =
+      (X.spectralSequencePageXIso data _ _ _ _ _ _ _ hn₁' _ _ _ _ h₂ h₃ h₄ h₅).hom ≫
+        X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫
+        (X.spectralSequencePageXIso data _ _ _ _ _ _ _
+          (by simpa only [← hn₂, hn₁'] using
+            data.hc r ((X.spectralSequence data).le_of_hasPage r) pq pq' hpq) _ _ _ _ h₀ h₁
+          (by rw [h₂, data.hc₀₂ r _ pq pq' hpq]) (by rw [h₃, data.hc₁₃ r _ pq pq' hpq])).inv := by
+  apply SpectralSequence.paged_eq
+  exact hpq
 
 end
 
