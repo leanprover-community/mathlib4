@@ -227,7 +227,7 @@ variable {α : Type*} [DecidableEq α] (s : Finset α) {R : Type*}
   Proof is by induction on the number of summands.
 -/
 theorem sum_pow_of_commute [Semiring R] (x : α → R)
-    (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
+    (hc : (s : Set α).Pairwise (Commute on x)) :
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,

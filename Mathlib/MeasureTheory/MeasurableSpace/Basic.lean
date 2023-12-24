@@ -862,7 +862,7 @@ a measurable function `f : α → β` that agrees with each `g i` on `t i`.
 We only need the assumption `[Nonempty ι]` to prove `[Nonempty (α → β)]`. -/
 theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι → Set α)
     (t_meas : ∀ n, MeasurableSet (t n)) (g : ι → α → β) (hg : ∀ n, Measurable (g n))
-    (ht : Pairwise fun i j => EqOn (g i) (g j) (t i ∩ t j)) :
+    (ht : Pairwise (EqOn on g) (t i ∩ t j)) :
     ∃ f : α → β, Measurable f ∧ ∀ n, EqOn f (g n) (t n) := by
   inhabit ι
   set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)

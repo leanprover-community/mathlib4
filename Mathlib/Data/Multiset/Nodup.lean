@@ -233,7 +233,7 @@ theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ N
 
 @[simp]
 theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
-    Nodup (bind s t) ↔ (∀ a ∈ s, Nodup (t a)) ∧ s.Pairwise fun a b => Disjoint (t a) (t b) :=
+    Nodup (bind s t) ↔ (∀ a ∈ s, Nodup (t a)) ∧ s.Pairwise (Disjoint on t) :=
   have h₁ : ∀ a, ∃ l : List β, t a = l := fun a => Quot.induction_on (t a) fun l => ⟨l, rfl⟩
   let ⟨t', h'⟩ := Classical.axiom_of_choice h₁
   have : t = fun a => ofList (t' a) := funext h'
