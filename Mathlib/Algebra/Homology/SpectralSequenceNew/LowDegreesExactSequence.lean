@@ -19,23 +19,6 @@ lemma shape_to (i j : ι) (hi : ∀ (k : ι), ¬ c.Rel i k) :
 
 end HomologicalComplex
 
-namespace ComplexShape
-
-def spectralSequenceNat (u : ℤ × ℤ) : ComplexShape (ℕ × ℕ) where
-  Rel a b := a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2
-  next_eq {a b b'} := by
-    rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> linarith
-  prev_eq {a a' b} := by
-    rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
-    ext <;> linarith
-
-@[simp]
-lemma spectralSequenceNat_rel_iff (u : ℤ × ℤ) (a b : ℕ × ℕ) :
-    (spectralSequenceNat u).Rel a b ↔ a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2 := by rfl
-
-end ComplexShape
-
 namespace CategoryTheory
 
 open Category Limits ZeroObject

@@ -8,6 +8,23 @@ lemma Int.eq_add_ofNat_of_le {i j : ℤ} (hij : i ≤ j) :
   obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le h
   exact ⟨d, by linarith⟩
 
+namespace ComplexShape
+
+def spectralSequenceNat (u : ℤ × ℤ) : ComplexShape (ℕ × ℕ) where
+  Rel a b := a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2
+  next_eq {a b b'} := by
+    rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
+    ext <;> linarith
+  prev_eq {a a' b} := by
+    rintro ⟨h₁, h₂⟩ ⟨h₃, h₄⟩
+    ext <;> linarith
+
+@[simp]
+lemma spectralSequenceNat_rel_iff (u : ℤ × ℤ) (a b : ℕ × ℕ) :
+    (spectralSequenceNat u).Rel a b ↔ a.1 + u.1 = b.1 ∧ a.2 + u.2 = b.2 := by rfl
+
+end ComplexShape
+
 namespace CategoryTheory
 
 open Category Limits

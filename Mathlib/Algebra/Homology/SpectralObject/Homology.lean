@@ -15,6 +15,28 @@ variable (X : SpectralObject C ι)
 section
 
 variable (n₀ n₁ n₂ n₃ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i₀' i₀ i₁ i₂ i₃ i₃' : ι} (f₁ : i₀ ⟶ i₁) (f₁' : i₀' ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃) (f₃' : i₂ ⟶ i₃')
+
+lemma epi_EMap (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃')
+    (hα₀ : α.app 0 = 𝟙 _) (hα₁ : α.app 1 = 𝟙 _) (hα₂ : α.app 2 = 𝟙 _) :
+    Epi (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃' α) := by
+  have := X.πE_EMap  n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ α (𝟙 _) (by aesop_cat)
+  rw [cyclesMap_id, id_comp] at this
+  exact epi_of_epi_fac this
+
+lemma mono_EMap (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂ f₃)
+    (hα₁ : α.app 1 = 𝟙 _) (hα₂ : α.app 2 = 𝟙 _) (hα₃ : α.app 3 = 𝟙 _) :
+    Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂ f₃ α) := by
+  have := X.EMap_ιE  n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ α (𝟙 _) (by aesop_cat)
+  rw [opcyclesMap_id, comp_id] at this
+  exact mono_of_mono_fac this
+
+end
+
+section
+
+variable (n₀ n₁ n₂ n₃ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
   {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
@@ -34,12 +56,8 @@ lemma d_EMap_fourδ₄Toδ₃ :
 
 instance :
     Epi (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
-  have : X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
-      X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) =
-        X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃₄ := by
-    rw [X.πE_EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄
-      (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) (𝟙 _) (by ext <;> simp; rfl), cyclesMap_id, id_comp]
-  exact epi_of_epi_fac this
+  apply X.epi_EMap
+  all_goals rfl
 
 @[reassoc (attr := simp)]
 lemma EMap_fourδ₁Toδ₀_d :
@@ -54,12 +72,8 @@ lemma EMap_fourδ₁Toδ₀_d :
 
 instance :
     Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
-  have : X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
-      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ =
-        X.ιE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ := by
-    rw [X.EMap_ιE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _)
-      (by ext <;> simp <;> rfl), opcyclesMap_id, comp_id]
-  exact mono_of_mono_fac this
+  apply mono_EMap
+  all_goals rfl
 
 @[simps!]
 noncomputable def dCokernelSequence : ShortComplex C :=
