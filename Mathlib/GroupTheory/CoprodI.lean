@@ -876,7 +876,7 @@ variable (X : ι → Set α)
 
 variable (hXnonempty : ∀ i, (X i).Nonempty)
 
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
+variable (hXdisj : Pairwise (Disjoint on X))
 
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 
@@ -1037,9 +1037,9 @@ variable (X Y : ι → Set α)
 
 variable (hXnonempty : ∀ i, (X i).Nonempty)
 
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
+variable (hXdisj : Pairwise (Disjoint on X))
 
-variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
+variable (hYdisj : Pairwise (Disjoint on Y))
 
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 
@@ -1078,7 +1078,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   apply lift_injective_of_ping_pong f _ X'
   show ∀ i, (X' i).Nonempty
   · exact fun i => Set.Nonempty.inl (hXnonempty i)
-  show Pairwise fun i j => Disjoint (X' i) (X' j)
+  show Pairwise (Disjoint on X')
   · intro i j hij
     simp only
     apply Disjoint.union_left <;> apply Disjoint.union_right

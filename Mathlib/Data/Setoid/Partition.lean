@@ -363,7 +363,7 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
-    (dis : Pairwise fun i j => Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
+    (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
     where
   eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
@@ -399,7 +399,7 @@ theorem iUnion : ⋃ i, s i = univ := by
   simp [hs.exists_mem x]
 #align indexed_partition.Union IndexedPartition.iUnion
 
-theorem disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
+theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 #align indexed_partition.disjoint IndexedPartition.disjoint
 
