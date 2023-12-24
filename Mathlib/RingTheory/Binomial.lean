@@ -7,9 +7,9 @@ Authors: Scott Carnahan
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
-# Binomial semirings and binomial rings
+# Binomial rings
 
-In this file we introduce the binomial property as a Prop-valued mixin, and define the `multichoose`
+In this file we introduce the binomial property as a mixin, and define the `multichoose`
 and `choose` functions generalizing binomial coefficients.
 
 According to our main reference [elliott2006binomial] (which lists many equivalent conditions), a
@@ -30,7 +30,7 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 ## TODO
 
 * Replace `Nat.multichoose` with `Ring.multichoose`.
-* `Int.instBinomialSemiring`
+* `Int.instBinomialRing`
 * `Ring.choose` for binomial rings.
 * Generalize to the power-associative case, when power-associativity is implemented.
 
@@ -38,7 +38,9 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 
 open Function
 
-/-- A mixin for multi-binomial coefficients. -/
+/-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
+suitable factorials.  We define this notion for semirings, but retain the ring name.  We introduce
+`Ring.multichoose` as the uniquely defined quotient. -/
 class BinomialRing (R : Type*) [Semiring R] where
   /-- Multiplication by positive integers is injective -/
   nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
@@ -62,17 +64,19 @@ factorial. When applied to natural numbers, `multichoose k n` describes choosing
 items from a group of `k`, i.e., choosing with replacement. -/
 def multichoose (r : R) (n : ℕ) : R := BinomialRing.multichoose r n
 
+@[simp]
+theorem multichoose_eq_multichoose (r : R) (n : ℕ) :
+    BinomialRing.multichoose r n = multichoose r n := rfl
+
 theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
   BinomialRing.factorial_nsmul_multichoose r n
 
-instance Nat.instBinomialSemiring : BinomialRing ℕ := by
-  refine BinomialRing.mk ?nsmul_right_injective ?multichoose ?factorial_nsmul_multichoose
-  intro n hn r s hrs
-  exact Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
-  use Nat.multichoose
-  intro r n
-  rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
+instance Nat.instBinomialRing : BinomialRing ℕ where
+  nsmul_right_injective n hn r s hrs := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
+  multichoose := Nat.multichoose
+  factorial_nsmul_multichoose r n := by
+    rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
     ascPochhammer_nat_eq_descFactorial]
 
 end Ring
