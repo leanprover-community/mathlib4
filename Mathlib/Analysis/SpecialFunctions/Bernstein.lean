@@ -125,8 +125,8 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   conv_rhs => rw [div_mul_cancel _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp only [nsmul_eq_mul, Finset.sum_range, map_sum, MonoidHom.coe_mk, OneHom.
-    coe_mk, map_mul, map_pow, map_sub, map_natCast, Polynomial.aeval_X,
+  simp only [nsmul_eq_mul, Finset.sum_range, map_sum, MonoidHom.coe_mk,
+    OneHom.coe_mk, map_mul, map_pow, map_sub, map_natCast, Polynomial.aeval_X,
     Polynomial.coe_aeval_eq_eval, map_one] at this
 --  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.nat_cast_mul] at this says
 --    simp only [nsmul_eq_mul, Finset.sum_range, map_sum, map_mul, map_pow, map_sub, map_natCast,
