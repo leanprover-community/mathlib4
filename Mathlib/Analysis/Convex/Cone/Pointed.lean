@@ -27,7 +27,7 @@ abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module �
 
 /-- Give a set `s` in `E`, `toPointedCone 𝕜 s` is the cone consisting of linear combinations of
 elements in `s` with non-negative coefficients. -/
-abbrev _root_.Set.toPointedCone (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+abbrev Set.toPointedCone (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
     (s : Set E) :=
   Submodule.span {c : 𝕜 // 0 ≤ c} s
 
