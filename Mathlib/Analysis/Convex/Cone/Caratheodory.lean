@@ -16,6 +16,12 @@ vector spaces having bases for the setting of convex cones.
 
 The proof follows the proof of Carathéodory's theorem for convex hulls closely.
 
+
+## Main results
+
+- `toPointedCone_eq_union`: Carathéodory's convexity theorem for convex cones.
+- `eq_pos_convex_span_of_mem_toPointedCone`: A more explicit version of `toPointedCone_eq_union`.
+
 -/
 
 
