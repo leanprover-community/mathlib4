@@ -95,7 +95,7 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             ← Finset.smul_sum]
           convert smul_zero (f d / g' d)
           rw [← relation₂]
-          conv_lhs => rw [←Finset.sum_coe_sort]
+          conv_lhs => rw [← Finset.sum_coe_sort]
           apply Finset.sum_congr rfl ?_
           rintro _ -
           rw [Function.Injective.extend_apply]
@@ -140,7 +140,7 @@ theorem mem_toPointedCone_erase [DecidableEq E] {t : Finset E}
             ← Finset.smul_sum]
           convert smul_zero (f d / g' d)
           rw [← relation₂]
-          conv_lhs => rw [←Finset.sum_coe_sort]
+          conv_lhs => rw [← Finset.sum_coe_sort]
           apply Finset.sum_congr rfl ?_
           rintro _ -
           rw [Function.Injective.extend_apply]
@@ -205,8 +205,7 @@ variable {s : Set E}
 
 theorem toPointedCone_eq_union : (s.toPointedCone 𝕜 : Set E) =
     ⋃ (t : Finset E) (_ : ↑t ⊆ s) (_ : LinearIndependent 𝕜 ((↑) : t → E)),
-      (SetLike.coe $ toPointedCone 𝕜 t)
-    := by
+      (SetLike.coe $ toPointedCone 𝕜 t) := by
   apply Set.Subset.antisymm
   · intro x hx
     simp only [exists_prop, Set.mem_iUnion]
@@ -233,7 +232,7 @@ theorem eq_pos_convex_span_of_mem_toPointedCone {x : E} (hx : x ∈ s.toPointedC
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact @LinearIndependent.mono 𝕜 E _ _ _ t' t (t.filter_subset _) ht₂
-  . rintro ⟨i, hi⟩
+  · rintro ⟨i, hi⟩
     rw [mem_filter] at hi
     refine' lt_of_le_of_ne _ _
     · exact zero_le (f i)
