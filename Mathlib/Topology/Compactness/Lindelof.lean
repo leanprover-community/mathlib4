@@ -14,15 +14,22 @@ import Mathlib.Topology.Compactness.Compact
 
 We define the following properties for sets in a topological space:
 
-* `IsLindelof s`: every nontrivial filter on `s` with the countable intersection property has
-  a clusterpoint.
-* `LindelofSpace X`: `X` is Lindelöf iff every open cover has a countable subcover.
-* `NonLindelofSpace`: a space that is not a Lindëlof space.
+* `IsLindelof s`: Two definitions are possible here. The more standard definition is that
+every open cover that contains `s` contains a countable subcover. We choose for the equivalent
+definition where we require that every nontrivial filter on `s` with the countable intersection
+property has a clusterpoint. Equivalence is established in `isLindelof_iff_countable_subcover`.
+* `LindelofSpace X`: `X` is Lindelöf if it is Lindelöf as a set.
+* `NonLindelofSpace`: a space that is not a Lindëlof space, e.g. the Long Line.
 
 ## Main results
 
 * `isLindelof_iff_countable_subcover`: A set is Lindelöf iff every open cover has a
   countable subcover.
+
+## Implementation details
+
+* This API is mainly based on the API for IsCompact and follows notation and style as much
+  as possible.
 -/
 open Set Filter Topology TopologicalSpace
 
@@ -35,9 +42,9 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Lindelof
 
-/-- A set `s` is Lindelöf if for every nontrivial filter `f` with the countable intersection
-  property that contains `s`, there exists `a ∈ s` such that every set of `f`
-  meets every neighborhood of `a`. -/
+/-- A set `s` is Lindelöf if every nontrivial filter `f` with the countable intersection
+  property that contains `s`, has a clusterpoint in `s`. The filter-free definition is given by
+  `isLindelof_iff_countable_subcover`. -/
 def IsLindelof (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f] [CountableInterFilter f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 
@@ -176,8 +183,7 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
   have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, r.Countable ∧ (t ⊆ ⋃ i ∈ r, U i) := by
     intro x hx
     let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
-    refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi),{i}, ?_⟩
-    refine ⟨by simp, ?_⟩
+    refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi),{i}, by simp, ?_⟩
     simp only [mem_singleton_iff, iUnion_iUnion_eq_left]
     exact Subset.refl _
   exact hs.induction_on he hmono hcountable_union h_nhds
@@ -194,9 +200,7 @@ theorem IsLindelof.elim_nhds_subcover' (hs : IsLindelof s) (U : ∀ x ∈ s, Set
   apply iUnion₂_subset
   intro i hi
   apply Subset.trans interior_subset
-  refine subset_iUnion_of_subset i ?_
-  refine subset_iUnion_of_subset hi ?_
-  apply Subset.refl
+  exact subset_iUnion_of_subset i (subset_iUnion_of_subset hi (Subset.refl _))
 
 theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
     (hU : ∀ x ∈ s, U x ∈ 𝓝 x) :
@@ -267,8 +271,7 @@ theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X}
     ∃ b', b' ⊆ b ∧ Set.Countable b' ∧ s ⊆ ⋃ i ∈ b', c i := by
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
   rcases hs.elim_countable_subcover (fun i ↦ c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
-  refine ⟨Subtype.val '' d, ?_, Countable.image hd.1 Subtype.val, ?_⟩-- d.image _, _⟩
-  · simp
+  refine ⟨Subtype.val '' d, by simp, Countable.image hd.1 Subtype.val, ?_⟩
   · rw [biUnion_image]
     apply hd.2
 
@@ -285,7 +288,7 @@ theorem isLindelof_of_countable_subcover
   refine ⟨s, U, fun x ↦ (hU x).2, fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1 ⟩, ?_ ⟩
   intro t ht h
   have uinf := f.sets_of_superset (le_principal_iff.1 fsub) h
-  have uninf : ⋂ i ∈ t, (U i)ᶜ ∈ f := by refine (countable_bInter_mem ht).mpr (fun _ _ ↦ hUf _)
+  have uninf : ⋂ i ∈ t, (U i)ᶜ ∈ f := (countable_bInter_mem ht).mpr (fun _ _ ↦ hUf _)
   rw [← compl_iUnion₂] at uninf
   have uninf := compl_not_mem uninf
   simp only [compl_compl] at uninf
