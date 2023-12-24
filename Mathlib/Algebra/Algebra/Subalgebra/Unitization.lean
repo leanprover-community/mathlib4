@@ -86,10 +86,10 @@ theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
     (lift f).range ≤ S ↔ NonUnitalAlgHom.range f ≤ S.toNonUnitalSubalgebra := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rintro - ⟨x, rfl⟩
-    exact @h (f x) ⟨x, by simp⟩
+    exact @h (f x) ⟨x, by simp [lift]⟩
   · rintro - ⟨x, rfl⟩
     induction x using ind with
-    | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
+    | _ r a => simpa [lift] using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem lift_range (f : A →ₙₐ[R] C) :
     (lift f).range = Algebra.adjoin R (NonUnitalAlgHom.range f : Set C) :=
@@ -322,10 +322,10 @@ theorem starLift_range_le
     (starLift f).range ≤ S ↔ NonUnitalStarAlgHom.range f ≤ S.toNonUnitalStarSubalgebra := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rintro - ⟨x, rfl⟩
-    exact @h (f x) ⟨x, by simp⟩
+    exact @h (f x) ⟨x, by simp [lift]; rfl⟩
   · rintro - ⟨x, rfl⟩
     induction x using ind with
-    | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
+    | _ r a => simpa [lift] using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem starLift_range (f : A →⋆ₙₐ[R] C) :
     (starLift f).range = StarSubalgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=

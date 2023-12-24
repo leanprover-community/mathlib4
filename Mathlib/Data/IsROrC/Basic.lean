@@ -824,16 +824,16 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   I_re_ax := by simp only [AddMonoidHom.map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
-    simp only [add_zero, mul_zero, Algebra.id.map_eq_id, RingHom.id_apply, AddMonoidHom.id_apply]
+    simp only [add_zero, mul_zero, Algebra.id.map_eq_id, RingHom.id_apply, AddMonoidHom.id_apply, id_eq]
   ofReal_re_ax f := rfl
   ofReal_im_ax r := rfl
-  mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
+  mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply, id_eq]
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
   conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
   conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
-    mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
+    mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply, id_eq]
   mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
