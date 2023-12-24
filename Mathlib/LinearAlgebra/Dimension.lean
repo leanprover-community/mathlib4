@@ -108,7 +108,7 @@ protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
 #align module.rank Module.rank
 
-instance : Nonempty { s : Set V // LinearIndependent K ((↑) : s → V) } :=
+lemma nonempty_linearIndependent_set : Nonempty {s : Set V // LinearIndependent K ((↑) : s → V)} :=
   ⟨⟨∅, linearIndependent_empty _ _⟩⟩
 
 end
@@ -151,6 +151,8 @@ theorem rank_le {n : ℕ}
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
   simp_rw [Module.rank_def]
+  have := nonempty_linearIndependent_set R (M ⧸ M')
+  have := nonempty_linearIndependent_set R M'
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
@@ -567,6 +569,7 @@ theorem rank_quotient_eq_of_le_torsion {R} {M : Type v} [CommRing R] [AddCommGro
   (rank_quotient_le N).antisymm <| by
     nontriviality R
     rw [Module.rank]
+    have := nonempty_linearIndependent_set R M
     refine ciSup_le fun ⟨s, hs⟩ ↦ cardinal_le_rank_of_linearIndependent (v := (N.mkQ ·)) ?_
     rw [linearIndependent_iff'] at hs ⊢
     simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
