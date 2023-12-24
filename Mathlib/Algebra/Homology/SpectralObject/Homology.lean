@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.SpectralObject.Differentials
 
 namespace CategoryTheory
 
-open Category Limits ComposableArrows
+open Category Limits ComposableArrows Preadditive
 
 namespace Abelian
 
@@ -59,6 +59,24 @@ instance :
   apply X.epi_EMap
   all_goals rfl
 
+lemma isIso_EMap_fourδ₄Toδ₃ (h : ((X.H n₁).map (twoδ₁Toδ₀ f₃ f₄ f₃₄ h₃₄) = 0)) :
+    IsIso (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
+  apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
+  · exact (X.exact₂ _ f₃ f₄ f₃₄ h₃₄).epi_f h
+  · dsimp
+    have : 𝟙 (mk₁ f₂) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
+    erw [← this]
+    infer_instance
+  · dsimp
+    have : 𝟙 (mk₁ f₁) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
+    erw [← this]
+    infer_instance
+
+lemma isIso_EMap_fourδ₄Toδ₃_of_isZero (h : IsZero ((X.H n₁).obj (mk₁ f₄))) :
+    IsIso (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
+  apply X.isIso_EMap_fourδ₄Toδ₃
+  apply h.eq_of_tgt
+
 @[reassoc (attr := simp)]
 lemma EMap_fourδ₁Toδ₀_d :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
@@ -74,6 +92,24 @@ instance :
     Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
   apply mono_EMap
   all_goals rfl
+
+lemma isIso_EMap_fourδ₁Toδ₀ (h : ((X.H n₂).map (twoδ₂Toδ₁ f₂ f₃ f₂₃ h₂₃) = 0)) :
+    IsIso (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
+  apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
+  · dsimp
+    have : 𝟙 (mk₁ f₅) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
+    erw [← this]
+    infer_instance
+  · dsimp
+    have : 𝟙 (mk₁ f₄) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
+    erw [← this]
+    infer_instance
+  · exact (X.exact₂ n₂ f₂ f₃ f₂₃ h₂₃).mono_g h
+
+lemma isIso_EMap_fourδ₁Toδ₀_of_isZero (h : IsZero ((X.H n₂).obj (mk₁ f₂))) :
+    IsIso (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
+  apply X.isIso_EMap_fourδ₁Toδ₀
+  apply h.eq_of_src
 
 @[simps!]
 noncomputable def dCokernelSequence : ShortComplex C :=
