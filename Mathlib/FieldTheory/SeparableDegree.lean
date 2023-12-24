@@ -344,17 +344,12 @@ theorem natSepDegree_eq_of_splits (h : f.Splits (algebraMap F E)) :
   rw [Multiset.toFinset_map, this] at heq
   convert heq
 
-section
-
-variable (E)
-
+variable (E) in
 /-- The separable degree of a polynomial is equal to
 the number of distinct roots of it over any algebraically closed field. -/
 theorem natSepDegree_eq_of_isAlgClosed [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
   natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
-
-end
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
@@ -469,12 +464,16 @@ theorem HasSeparableContraction.natSepDegree_eq
   rw [← h2, natSepDegree_expand_eq_natSepDegree]
   exact natSepDegree_eq_natDegree_of_separable g h1
 
-section Irreducible
+end Polynomial
 
-variable {f}
+namespace Irreducible
+
+variable {F}
+
+variable {f : F[X]}
 
 /-- The separable degree of an irreducible polynomial divides its degree. -/
-theorem _root_.Irreducible.natSepDegree_dvd_natDegree (h : Irreducible f) :
+theorem natSepDegree_dvd_natDegree (h : Irreducible f) :
     f.natSepDegree ∣ f.natDegree := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   have hf := Irreducible.hasSeparableContraction q f h
@@ -484,7 +483,7 @@ theorem _root_.Irreducible.natSepDegree_dvd_natDegree (h : Irreducible f) :
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one if and only if it is of the form `Polynomial.expand F (q ^ n) (X - C y)`
 for some `n : ℕ` and `y : F`. -/
-theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
+theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), f = expand F (q ^ n) (X - C y) := by
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
@@ -502,13 +501,79 @@ theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one if and only if it is of the form `X ^ (q ^ n) - C y`
 for some `n : ℕ` and `y : F`. -/
-theorem _root_.Irreducible.natSepDegree_eq_one_iff_of_monic (q : ℕ) [ExpChar F q] (hm : f.Monic)
-    (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F), f = X ^ (q ^ n) - C y := by
+theorem natSepDegree_eq_one_iff_of_monic (q : ℕ) [ExpChar F q] (hm : f.Monic)
+    (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F), f = X ^ q ^ n - C y := by
   simp only [hi.natSepDegree_eq_one_iff_of_monic' q hm, map_sub, expand_X, expand_C]
 
 end Irreducible
 
-end Polynomial
+namespace minpoly
+
+variable {F E}
+
+variable (q : ℕ) [hF : ExpChar F q] {x : E}
+
+/-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
+separable degree one if and only if the minimal polynomial is of the form
+`Polynomial.expand F (q ^ n) (X - C y)` for some `n : ℕ` and `y : F`. -/
+theorem natSepDegree_eq_one_iff_eq_expand_X_sub_C : (minpoly F x).natSepDegree = 1 ↔
+    ∃ (n : ℕ) (y : F), minpoly F x = expand F (q ^ n) (X - C y) := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
+  · have halg : IsIntegral F x := by_contra fun h' ↦ by
+      simp only [eq_zero h', natSepDegree_zero, zero_ne_one] at h
+    exact (minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic' q
+      (minpoly.monic halg) |>.1 h
+  rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
+
+/-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
+separable degree one if and only if the minimal polynomial is of the form
+`X ^ (q ^ n) - C y` for some `n : ℕ` and `y : F`. -/
+theorem natSepDegree_eq_one_iff_eq_X_pow_sub_C : (minpoly F x).natSepDegree = 1 ↔
+    ∃ (n : ℕ) (y : F), minpoly F x = X ^ q ^ n - C y := by
+  simp only [minpoly.natSepDegree_eq_one_iff_eq_expand_X_sub_C q, map_sub, expand_X, expand_C]
+
+/-- The minimal polynomial of an element `x` of `E / F` of exponential characteristic `q` has
+separable degree one if and only if `x ^ (q ^ n) ∈ F` for some `n : ℕ`. -/
+theorem natSepDegree_eq_one_iff_mem_pow : (minpoly F x).natSepDegree = 1 ↔
+    ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, y, hx⟩ ↦ ?_⟩
+  · obtain ⟨n, y, hx⟩ := (minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
+    refine ⟨n, y, ?_⟩
+    apply_fun Polynomial.aeval x at hx
+    rw [aeval, map_sub, map_pow, aeval_X, aeval_C] at hx
+    exact (sub_eq_zero.1 hx.symm).symm
+  let g := X - C y
+  have hzero : Polynomial.aeval x (expand F (q ^ n) g) = 0 := by
+    simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
+  have hnezero : expand F (q ^ n) g ≠ 0 :=
+    (expand_ne_zero (expChar_pow_pos F q n)).2 <| X_sub_C_ne_zero y
+  have h1 := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
+  rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at h1
+  have h2 := minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
+  rw [Nat.pos_iff_ne_zero, ← natSepDegree_ne_zero_iff, ← Nat.pos_iff_ne_zero] at h2
+  exact le_antisymm h1 h2
+
+/-- The minimal polynomial of an element `x` of `E / F` of exponential characteristic `q` has
+separable degree one if and only if the minimal polynomial is of the form
+`(X - x) ^ (q ^ n)` for some `n : ℕ`. -/
+theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 ↔
+    ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
+  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_mem_pow q).2 ?_⟩
+  · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
+    have hx := congr_arg (Polynomial.aeval x) h.symm
+    rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero] at hx
+    apply_fun map (algebraMap F E) at h
+    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C,
+      ← hx, map_pow, ← sub_pow_expChar_pow] at h
+    exact ⟨n, h⟩
+  apply_fun constantCoeff at h
+  simp only [constantCoeff_apply, coeff_map, map_pow, map_sub, coeff_X_zero, coeff_C_zero] at h
+  rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
+  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
+
+end minpoly
 
 namespace IntermediateField
 
