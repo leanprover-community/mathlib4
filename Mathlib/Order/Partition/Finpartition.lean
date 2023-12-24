@@ -213,8 +213,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
 @[reducible]
-def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
-    where
+def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a) where
   default := indiscrete ha.1
   uniq P := by
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
@@ -260,8 +259,7 @@ instance : PartialOrder (Finpartition a) :=
         rwa [hbc.antisymm]
         rwa [Q.disjoint.eq_of_le hb hd (Q.ne_bot hb) (hbc.trans hcd)] }
 
-instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
-    where
+instance [Decidable (a = ⊥)] : OrderTop (Finpartition a) where
   top := if ha : a = ⊥ then (Finpartition.empty α).copy ha.symm else indiscrete ha
   le_top P := by
     split_ifs with h
