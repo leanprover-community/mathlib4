@@ -369,7 +369,7 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
   rw [canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id, MonoidHom.id_apply,
       MonoidHom.id_apply, QuotientGroup.leftRel_apply]
   refine ⟨Units.mk0 (algebraMap R _ a) fa_ne_zero, ?_⟩
-  rw [_root_.eq_inv_mul_iff_mul_eq, eq_comm, mul_comm I]
+  rw [_root_.eq_inv_mul_iff_mul_eq, eq_comm, id_eq, id_eq, mul_comm I]
   apply Units.ext
   simp only [FractionalIdeal.coe_mk0, FractionalIdeal.map_canonicalEquiv_mk0,
     Units.val_mk0, coe_toPrincipalIdeal, Units.val_mul,
