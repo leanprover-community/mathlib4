@@ -58,7 +58,7 @@ namespace Ring
 open Polynomial
 
 theorem nsmul_right_injective (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [IsBinomialRing R] (n : ℕ)
-     (h : n ≠ 0) : Injective (n • · : R → R) := IsBinomialRing.nsmul_right_injective n h
+    (h : n ≠ 0) : Injective (n • · : R → R) := IsBinomialRing.nsmul_right_injective n h
 
 variable {R : Type*} [NonAssocSemiring R] [Pow R ℕ] [IsBinomialRing R]
 
@@ -309,8 +309,8 @@ theorem choose_zero_succ (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S
   rw [Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, ← Nat.add_one,
     multichoose_succ_neg_cast]
 
-theorem choose_zero_pos (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [IsBinomialRing S] (k : ℕ)
-    (h_pos: 0 < k) : choose (0 : S) k = 0 := by
+theorem choose_zero_pos (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [IsBinomialRing S]
+    (k : ℕ) (h_pos: 0 < k) : choose (0 : S) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
 
 theorem choose_zero_ite (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [IsBinomialRing S]

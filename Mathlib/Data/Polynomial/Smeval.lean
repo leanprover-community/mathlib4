@@ -333,7 +333,7 @@ theorem smeval_neg (R : Type u) {S : Type v} [NonAssocRing S] [Pow S ℕ] [Ring 
   rw [smeval_add, add_eq_zero_iff_neg_eq] at h
   exact id h.symm
 
-theorem smeval_sub (R : Type u) {S : Type v} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [CommRing R]
+theorem smeval_sub (R : Type u) {S : Type v} [NonAssocRing S] [Pow S ℕ] [CommRing R]
     [Module R S] (p q : R[X]) (x : S) : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
 

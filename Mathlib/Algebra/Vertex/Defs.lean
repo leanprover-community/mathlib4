@@ -281,9 +281,10 @@ in terms of composition of endomorphisms. -/
 def isLocalToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (n : ℕ) : Prop := ∀ (k l : ℤ) (x : V), Finset.sum
     (Finset.antidiagonal n) (fun m => (-1)^(m.1) • (Nat.choose n m.1) •
-    coeff A (k + m.1) (coeff B (l + m.2) x)) = Finset.sum (Finset.antidiagonal n) (fun m => (-1)^(m.1) •
-    (Nat.choose n m.1) • coeff B (l + m.1) (coeff A (k + m.2) x))
+    coeff A (k + m.1) (coeff B (l + m.2) x)) = Finset.sum (Finset.antidiagonal n)
+    (fun m => (-1)^(m.1) • (Nat.choose n m.1) • coeff B (l + m.1) (coeff A (k + m.2) x))
 
+/-- Two fields are local if they are local to order `≤ n` for some `n`. -/
 def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) : Prop := ∃(n : ℕ), isLocalToOrderLeq R V A B n
 
