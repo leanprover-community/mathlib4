@@ -35,17 +35,8 @@ theorem countable_iff_nonempty_embedding : Countable α ↔ Nonempty (α ↪ ℕ
   ⟨fun ⟨⟨f, hf⟩⟩ => ⟨⟨f, hf⟩⟩, fun ⟨f⟩ => ⟨⟨f, f.2⟩⟩⟩
 #align countable_iff_nonempty_embedding countable_iff_nonempty_embedding
 
-
-theorem uncountable_iff_empty_embedding : Uncountable α ↔ ¬ Nonempty (α ↪ ℕ) := by
-  have := @countable_iff_nonempty_embedding α
-  constructor
-  · intro _
-    by_contra h'
-    exact uncountable_not_countable (this.mpr h')
-  · intro _
-    by_contra h'
-    have := this.mp (countable_iff_not_uncountable.mpr h')
-    contradiction
+theorem uncountable_iff_isEmpty_embedding : Uncountable α ↔ IsEmpty (α ↪ ℕ) := by
+  rw [← not_countable_iff, countable_iff_nonempty_embedding, not_nonempty_iff]
 
 theorem nonempty_embedding_nat (α) [Countable α] : Nonempty (α ↪ ℕ) :=
   countable_iff_nonempty_embedding.1 ‹_›
@@ -54,6 +45,9 @@ theorem nonempty_embedding_nat (α) [Countable α] : Nonempty (α ↪ ℕ) :=
 protected theorem Function.Embedding.countable [Countable β] (f : α ↪ β) : Countable α :=
   f.injective.countable
 #align function.embedding.countable Function.Embedding.countable
+
+protected lemma Function.Embddding.uncountable [Uncountable α] (f : α ↪ β) : Uncountable β :=
+  f.injective.uncountable
 
 end Embedding
 
@@ -65,7 +59,7 @@ section type
 
 variable {α : Type u} {β : Type v} {π : α → Type w}
 
-instance [Countable α] [Countable β] : Countable (Sum α β) := by
+instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
   exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
@@ -83,6 +77,10 @@ instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   choose g hg using fun a => exists_injective_nat (π a)
   exact ((Equiv.sigmaEquivProd ℕ ℕ).injective.comp <| hf.sigma_map hg).countable
 
+instance (priority := 500) SetCoe.countable [Countable α] (s : Set α) : Countable s :=
+  Subtype.countable
+#align set_coe.countable SetCoe.countable
+
 end type
 
 section sort
@@ -92,10 +90,6 @@ variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 /-!
 ### Operations on `Sort*`s
 -/
-
-instance (priority := 500) SetCoe.countable {α} [Countable α] (s : Set α) : Countable s :=
-  Subtype.countable
-#align set_coe.countable SetCoe.countable
 
 instance [Countable α] [Countable β] : Countable (PSum α β) :=
   Countable.of_equiv (Sum (PLift α) (PLift β)) (Equiv.plift.sumPSum Equiv.plift)
