@@ -69,12 +69,8 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
 
 @[simp]
 lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
-  rw [← not_iff_not]
-  simp only [Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, not_lt]
-  match n with
-  | 0 => simp
-  | 1 => simp
-  | n + 2 => simp
+  rw [← not_iff_not, Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, not_lt,
+    Nat.le_one_iff_eq_zero_or_eq_one]
 
 @[simp] protected lemma Prime.primeFactors (hp : p.Prime) : p.primeFactors = {p} := by
   simp [Nat.primeFactors, factors_prime hp]

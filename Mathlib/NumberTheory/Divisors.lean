@@ -172,6 +172,14 @@ theorem properDivisors_zero : properDivisors 0 = ∅ := by
   simp
 #align nat.proper_divisors_zero Nat.properDivisors_zero
 
+@[simp]
+lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
+  ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 :=
+  not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
+
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
 #align nat.proper_divisors_subset_divisors Nat.properDivisors_subset_divisors
@@ -209,30 +217,30 @@ lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
   · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
 
 lemma one_lt_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) : 1 < n :=
-  match n with
-  | 0 => by simp at h
-  | 1 => by simp at h
-  | n + 2 => n.one_lt_succ_succ
+  lt_of_le_of_lt (pos_of_mem_properDivisors h) (mem_properDivisors.1 h).2
 
 lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) :
     1 < n / m := by
-  have hm := pos_of_mem_properDivisors h
-  apply lt_of_mul_lt_mul_right ?_ hm.le
   obtain ⟨h_dvd, h_lt⟩ := mem_properDivisors.mp h
-  simpa [Nat.div_mul_cancel h_dvd] using h_lt
+  rwa [Nat.lt_div_iff_mul_lt h_dvd, mul_one]
 
+/-- See also `Nat.mem_properDivisors`. -/
 lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
     m ∈ n.properDivisors ↔ ∃ k > 1, n = m * k := by
   refine ⟨fun h ↦ ⟨n / m, one_lt_div_of_mem_properDivisors h, ?_⟩, ?_⟩
-  · rw [mul_comm]
-    exact (Nat.div_mul_cancel (mem_properDivisors.mp h).1).symm
-  · rintro ⟨k, hk, h⟩
-    refine mem_properDivisors.mpr ⟨⟨k, h⟩, ?_⟩
-    calc
-      m = m * 1 := (mul_one m).symm
-      _ < m * k := mul_lt_mul_of_pos_left hk <|
-        Nat.pos_of_ne_zero fun hm ↦ hn <| by simpa [hm] using h
-      _ = n     := h.symm
+  · exact (Nat.mul_div_cancel' (mem_properDivisors.mp h).1).symm
+  · rintro ⟨k, hk, rfl⟩
+    rw [mul_ne_zero_iff] at hn
+    exact mem_properDivisors.mpr ⟨⟨k, rfl⟩, lt_mul_of_one_lt_right (Nat.pos_of_ne_zero hn.1) hk⟩
+
+@[simp]
+lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
+  ⟨fun ⟨_m, hm⟩ ↦ one_lt_of_mem_properDivisors hm, fun hn ↦
+    ⟨1, one_mem_properDivisors_iff_one_lt.2 hn⟩⟩
+
+@[simp]
+lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
+  rw [← not_nonempty_iff_eq_empty, nonempty_properDivisors, not_lt]
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
