@@ -264,7 +264,7 @@ lemma klReal_le_integral_llrAddConst [IsFiniteMeasure μ] [Measure.HaveLebesgueD
 
 lemma klReal_le_ciInf_integral_llrAddConst [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
-    ∫ x, LLR μ ν x ∂μ ≤ ⨅ u : {v // (0 : ℝ) < v}, ∫ x, LLRAddConst μ ν u x ∂μ :=
+    KLReal μ ν ≤ ⨅ u : {v // (0 : ℝ) < v}, ∫ x, LLRAddConst μ ν u x ∂μ :=
   le_ciInf (fun u ↦ klReal_le_integral_llrAddConst u.2.le hμν h_int)
 
 lemma integral_llrAddConst_le_ciSup_add [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
