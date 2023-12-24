@@ -39,11 +39,11 @@ open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {f : α → ℝ}
 
 section move_this
 
-lemma todo_div {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+lemma todo_div [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
   have hν_ac : ν ≪ μ + ν := by
     rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
@@ -82,13 +82,13 @@ lemma exp_llr_of_ac' (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] (hμ
   filter_upwards [exp_llr μ ν, Measure.rnDeriv_pos' hμν] with x hx hx_pos
   rwa [if_neg hx_pos.ne'] at hx
 
-lemma neg_llr {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+lemma neg_llr [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     - LLR μ ν =ᵐ[μ] LLR ν μ := by
   filter_upwards [Measure.inv_rnDeriv hμν] with x hx
   rw [Pi.neg_apply, LLR, LLR, ← log_inv, ← ENNReal.toReal_inv]
   congr
 
-lemma exp_neg_llr {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+lemma exp_neg_llr [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (fun x ↦ exp (- LLR μ ν x)) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x).toReal := by
   filter_upwards [neg_llr hμν, exp_llr_of_ac' ν μ hμν] with x hx hx_exp_log
   rw [Pi.neg_apply] at hx
@@ -102,7 +102,7 @@ lemma measurable_llr (μ ν : Measure α) : Measurable (LLR μ ν) :=
 lemma stronglyMeasurable_llr (μ ν : Measure α) : StronglyMeasurable (LLR μ ν) :=
   (measurable_llr μ ν).stronglyMeasurable
 
-lemma llr_smul_left {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     LLR (c • μ) ν =ᵐ[μ] fun x ↦ LLR μ ν x + log c.toReal := by
   simp only [LLR, llr_def]
@@ -119,7 +119,7 @@ lemma llr_smul_left {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebes
     simp [hx_pos.ne', hx_ne_top.ne]
   ring
 
-lemma llr_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     LLR μ (c • ν) =ᵐ[μ] fun x ↦ LLR μ ν x - log c.toReal := by
   simp only [LLR, llr_def]
@@ -137,31 +137,12 @@ lemma llr_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebe
   rw [ENNReal.toReal_inv, log_inv]
   ring
 
-lemma integrable_toReal_rnDeriv_mul {μ ν : Measure α} {f : α → ℝ} [SigmaFinite μ]
-    [Measure.HaveLebesgueDecomposition μ ν]
-    (hμν : μ ≪ ν) (h_int : Integrable f μ) (hf : AEStronglyMeasurable f ν) :
-    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * f x) ν := by
-  rw [← memℒp_one_iff_integrable]
-  refine ⟨(Measure.measurable_rnDeriv μ ν).ennreal_toReal.aestronglyMeasurable.mul hf, ?_⟩
-  simp only [snorm_one_eq_lintegral_nnnorm, nnnorm_mul, ENNReal.coe_mul]
-  simp_rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg ENNReal.toReal_nonneg,
-    ofReal_norm_eq_coe_nnnorm]
-  have h : ∀ᵐ x ∂ν, ENNReal.ofReal (μ.rnDeriv ν x).toReal * ‖f x‖₊ = μ.rnDeriv ν x * ‖f x‖₊ := by
-    filter_upwards [Measure.rnDeriv_ne_top μ ν] with x hx using by rw [ENNReal.ofReal_toReal hx]
-  rw [lintegral_congr_ae h]
-  change ∫⁻ a, (μ.rnDeriv ν * (fun a ↦ (‖f a‖₊ : ℝ≥0∞))) a ∂ν < ⊤
-  rw [← lintegral_withDensity_eq_lintegral_mul_non_measurable]
-  · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
-    exact h_int.2
-  · exact Measure.measurable_rnDeriv _ _
-  · exact Measure.rnDeriv_lt_top _ _
-
 section llr_tilted
 
-variable {μ ν : Measure α} [IsFiniteMeasure ν]
+variable [IsFiniteMeasure ν]
 
 lemma llr_tilted_right [IsFiniteMeasure μ]
-    (hμν : μ ≪ ν) {f : α → ℝ} (hf : Integrable (fun x ↦ exp (f x)) ν) :
+    (hμν : μ ≪ ν) (hf : Integrable (fun x ↦ exp (f x)) ν) :
     (LLR μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + log (∫ x, exp (f x) ∂ν) + LLR μ ν x := by
   cases eq_zero_or_neZero ν with
   | inl h =>
@@ -175,15 +156,14 @@ lemma llr_tilted_right [IsFiniteMeasure μ]
     · refine (mul_pos (exp_pos _) (integral_exp_pos hf)).ne'
     · simp [ENNReal.toReal_eq_zero_iff, hx_lt_top.ne, hx_pos.ne']
 
-lemma integrable_llr_tilted_right [IsFiniteMeasure μ]
-    (hμν : μ ≪ ν) {f : α → ℝ} (hfμ : Integrable f μ)
+lemma integrable_llr_tilted_right [IsFiniteMeasure μ] (hμν : μ ≪ ν) (hfμ : Integrable f μ)
     (hfν : Integrable (fun x ↦ exp (f x)) ν) (h_int : Integrable (LLR μ ν) μ) :
     Integrable (LLR μ (ν.tilted f)) μ := by
   rw [integrable_congr (llr_tilted_right hμν hfν)]
   exact Integrable.add (hfμ.neg.add (integrable_const _)) h_int
 
 lemma integral_llr_tilted_right [IsProbabilityMeasure μ]
-    {f : α → ℝ} (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
+    (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
     (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, LLR μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by
   calc ∫ x, LLR μ (ν.tilted f) x ∂μ
@@ -199,17 +179,7 @@ lemma integral_llr_tilted_right [IsProbabilityMeasure μ]
 
 end llr_tilted
 
-lemma set_lintegral_rnDeriv_le {μ ν : Measure α} (s : Set α) :
-    ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s := by
-  let t := toMeasurable μ s
-  calc ∫⁻ x in s, μ.rnDeriv ν x ∂ν
-    ≤ ∫⁻ x in t, μ.rnDeriv ν x ∂ν := lintegral_mono_set (subset_toMeasurable μ s)
-  _ ≤ μ t := by
-        rw [← withDensity_apply _ (measurableSet_toMeasurable μ s)]
-        exact Measure.withDensity_rnDeriv_le _ _ _ (measurableSet_toMeasurable μ s)
-  _ = μ s := by rw [← measure_toMeasurable s]
-
-lemma integrableOn_exp_neg_llr {μ ν : Measure α} [SigmaFinite ν] [SigmaFinite μ] (hμν : μ ≪ ν)
+lemma integrableOn_exp_neg_llr [SigmaFinite ν] [SigmaFinite μ] (hμν : μ ≪ ν)
     (s : Set α) (hνs : ν s ≠ ∞) :
     IntegrableOn (fun x ↦ exp (- LLR μ ν x)) s μ := by
   constructor
@@ -231,7 +201,7 @@ lemma integrableOn_exp_neg_llr {μ ν : Measure α} [SigmaFinite ν] [SigmaFinit
         filter_upwards [Measure.rnDeriv_ne_top ν μ] with x hx _
         rw [← ofReal_norm_eq_coe_nnnorm]
         simp [hx]
-    _ ≤ ν t := set_lintegral_rnDeriv_le t
+    _ ≤ ν t := Measure.set_lintegral_rnDeriv_le t
     _ < ∞ := hνt.lt_top
 
 

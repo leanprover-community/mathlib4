@@ -454,6 +454,11 @@ theorem integrable_rnDeriv_smul_iff [HaveLebesgueDecomposition μ ν] (hμν : �
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
+lemma integrable_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
+    [SigmaFinite μ] {f : α → E} (hf : Integrable f μ) :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal • f x) ν :=
+  (integrable_rnDeriv_smul_iff hμν).mpr hf
+
 theorem withDensityᵥ_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
     [SigmaFinite μ] {f : α → E} (hf : Integrable f μ) :
     ν.withDensityᵥ (fun x ↦ (rnDeriv μ ν x).toReal • f x) = μ.withDensityᵥ f := by

@@ -162,15 +162,13 @@ lemma integrable_lrf_mul_log {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbab
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     Integrable (LRf (fun x ↦ x * log x) μ ν) ν := by
   simp only [lrf_def]
-  exact integrable_toReal_rnDeriv_mul hμν h_int (stronglyMeasurable_llr _ _).aestronglyMeasurable
+  exact integrable_rnDeriv_smul hμν h_int
 
 lemma integral_llr_nonneg_aux' {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     (μ Set.univ).toReal * log (μ Set.univ).toReal ≤ ∫ x, LLR μ ν x ∂μ := by
   refine (le_integral_lrf Real.convexOn_id_mul_log Real.continuous_id_mul_log.continuousOn
-    ?_ hμν).trans ?_
-  · simp only [lrf_def]
-    exact integrable_toReal_rnDeriv_mul hμν h_int (stronglyMeasurable_llr _ _).aestronglyMeasurable
+    (integrable_lrf_mul_log hμν h_int) hμν).trans ?_
   rw [integral_llr_eq_integral_lrf hμν]
 
 lemma integral_llr_ge {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
