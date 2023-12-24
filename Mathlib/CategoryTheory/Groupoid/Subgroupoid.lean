@@ -688,7 +688,7 @@ theorem full_empty : full ∅ = (⊥ : Subgroupoid C) := by
 @[simp]
 theorem full_univ : full Set.univ = (⊤ : Subgroupoid C) := by
   ext
-  simp only [mem_full_iff, mem_univ, mem_top]
+  simp only [mem_full_iff, mem_univ, and_self, mem_top]
 #align category_theory.subgroupoid.full_univ CategoryTheory.Subgroupoid.full_univ
 
 theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by

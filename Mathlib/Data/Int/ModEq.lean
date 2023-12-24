@@ -42,7 +42,7 @@ instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
-@[refl]
+@[refl, simp]
 protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
   @rfl _ _
 #align int.modeq.refl Int.ModEq.refl
@@ -129,7 +129,7 @@ protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n
   obtain hc | rfl | hc := lt_trichotomy c 0
   · rw [← neg_modEq_neg, ← modEq_neg, ← neg_mul, ← neg_mul, ← neg_mul]
     simp only [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
-  · simp
+  · simp only [zero_mul, ModEq.rfl]
   · simp only [ModEq, mul_emod_mul_of_pos _ _ hc, h.eq]
 #align int.modeq.mul_left' Int.ModEq.mul_left'
 
@@ -315,7 +315,7 @@ theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
 theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
   let ⟨z, hz1, hz2, hz3⟩ := exists_unique_equiv a hb
   ⟨z.natAbs, by
-    constructor <;> rw [ofNat_natAbs_eq_of_nonneg z hz1] <;> assumption⟩
+    constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
 #align int.exists_unique_equiv_nat Int.exists_unique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=

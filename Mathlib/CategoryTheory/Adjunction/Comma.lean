@@ -37,6 +37,7 @@ section OfInitials
 
 variable [∀ A, HasInitial (StructuredArrow A G)]
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- Implementation: If each structured arrow category on `G` has an initial object, an equivalence
 which is helpful for constructing a left adjoint to `G`.
 -/
@@ -87,6 +88,7 @@ section OfTerminals
 
 variable [∀ A, HasTerminal (CostructuredArrow G A)]
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- Implementation: If each costructured arrow category on `G` has a terminal object, an equivalence
 which is helpful for constructing a right adjoint to `G`.
 -/

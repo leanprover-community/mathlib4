@@ -190,7 +190,7 @@ theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
 #align measure_theory.nonempty_of_measure_ne_zero MeasureTheory.nonempty_of_measure_ne_zero
 
-theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
+@[gcongr] theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   μ.mono h
 #align measure_theory.measure_mono MeasureTheory.measure_mono
 
@@ -294,6 +294,9 @@ theorem measure_sUnion_null_iff {S : Set (Set α)} (hS : S.Countable) :
     μ (⋃₀ S) = 0 ↔ ∀ s ∈ S, μ s = 0 :=
   μ.toOuterMeasure.sUnion_null_iff hS
 #align measure_theory.measure_sUnion_null_iff MeasureTheory.measure_sUnion_null_iff
+
+lemma measure_null_iff_singleton {s : Set α} (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
+  rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
 
 theorem measure_union_le (s₁ s₂ : Set α) : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ :=
   μ.toOuterMeasure.union _ _
@@ -428,7 +431,11 @@ theorem all_ae_of {ι : Sort _} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, �
     ∀ᵐ a ∂μ, p a i := by
   filter_upwards [hp] with a ha using ha i
 
-theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : ∀ (_x : α), ∀ i ∈ S, Prop} :
+lemma ae_iff_of_countable [Countable α] {p : α → Prop} : (∀ᵐ x ∂μ, p x) ↔ ∀ x, μ {x} ≠ 0 → p x := by
+  rw [ae_iff, measure_null_iff_singleton]
+  exacts [forall_congr' fun _ ↦ not_imp_comm, Set.to_countable _]
+
+theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : α → ∀ i ∈ S, Prop} :
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=
   eventually_countable_ball hS
 #align measure_theory.ae_ball_iff MeasureTheory.ae_ball_iff
@@ -445,11 +452,9 @@ theorem ae_eq_trans {f g h : α → δ} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ]
   h₁.trans h₂
 #align measure_theory.ae_eq_trans MeasureTheory.ae_eq_trans
 
-theorem ae_le_of_ae_lt {f g : α → ℝ≥0∞} (h : ∀ᵐ x ∂μ, f x < g x) : f ≤ᵐ[μ] g := by
-  rw [Filter.EventuallyLE, ae_iff]
-  rw [ae_iff] at h
-  refine' measure_mono_null (fun x hx => _) h
-  exact not_lt.2 (le_of_lt (not_le.1 hx))
+theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ x ∂μ, f x < g x) :
+    f ≤ᵐ[μ] g :=
+  h.mono fun _ ↦ le_of_lt
 #align measure_theory.ae_le_of_ae_lt MeasureTheory.ae_le_of_ae_lt
 
 @[simp]
@@ -467,7 +472,6 @@ theorem ae_le_set : s ≤ᵐ[μ] t ↔ μ (s \ t) = 0 :=
   calc
     s ≤ᵐ[μ] t ↔ ∀ᵐ x ∂μ, x ∈ s → x ∈ t := Iff.rfl
     _ ↔ μ (s \ t) = 0 := by simp [ae_iff]; rfl
-
 #align measure_theory.ae_le_set MeasureTheory.ae_le_set
 
 theorem ae_le_set_inter {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
@@ -564,9 +568,9 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
-/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+/-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
-- `∅ : set α`
+- `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
@@ -618,8 +622,8 @@ theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
 
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
-(This property holds without the assumption `μ s ≠ ∞` when the space is sigma-finite,
-see `measure_toMeasurable_inter_of_sigmaFinite`).
+(This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
+σ-finite), see `measure_toMeasurable_inter_of_sFinite`).
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/

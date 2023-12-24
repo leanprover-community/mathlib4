@@ -310,7 +310,7 @@ theorem lastStep_nonempty :
   simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_le,
     Subtype.exists, Subtype.coe_mk] at A
   specialize A x H
-  simp [hxy] at A
+  simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 #align besicovitch.tau_package.last_step_nonempty Besicovitch.TauPackage.lastStep_nonempty
 
@@ -377,7 +377,8 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have : k ∈ A := by
       simpa only [true_and_iff, mem_univ, Classical.not_not, mem_diff] using
         Nat.not_mem_of_lt_sInf hk
-    simp [and_assoc, -exists_and_left] at this
+    simp only [mem_iUnion, mem_singleton_iff, exists_prop, Subtype.exists, exists_and_right,
+      and_assoc] at this
     simpa only [exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
@@ -672,7 +673,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
 
 variable [HasBesicovitchCovering α]
 
-/-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
+/-- The **measurable Besicovitch covering theorem**. Assume that, for any `x` in a set `s`,
 one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
 Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
 points of `s`.
@@ -928,7 +929,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
   obtain ⟨u, su, u_open, μu⟩ : ∃ U, U ⊇ s ∧ IsOpen U ∧ μ U ≤ μ s + ε / 2 :=
     Set.exists_isOpen_le_add _ _
       (by
-        simpa only [or_false_iff, Ne.def, ENNReal.div_eq_zero_iff, ENNReal.one_ne_top] using hε)
+        simpa only [or_false, Ne.def, ENNReal.div_eq_zero_iff, ENNReal.two_ne_top] using hε)
   have : ∀ x ∈ s, ∃ R > 0, ball x R ⊆ u := fun x hx =>
     Metric.mem_nhds_iff.1 (u_open.mem_nhds (su hx))
   choose! R hR using this
@@ -946,8 +947,8 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
   obtain ⟨v, s'v, v_open, μv⟩ : ∃ v, v ⊇ s' ∧ IsOpen v ∧ μ v ≤ μ s' + ε / 2 / N :=
     Set.exists_isOpen_le_add _ _
       (by
-        simp only [hε, ENNReal.nat_ne_top, WithTop.mul_eq_top_iff, Ne.def, ENNReal.div_eq_zero_iff,
-          ENNReal.one_ne_top, not_false_iff, and_false_iff, false_and_iff, or_self_iff])
+        simp only [ne_eq, ENNReal.div_eq_zero_iff, hε, ENNReal.two_ne_top, or_self,
+          ENNReal.nat_ne_top, not_false_eq_true])
   have : ∀ x ∈ s', ∃ r1 ∈ f x ∩ Ioo (0 : ℝ) 1, closedBall x r1 ⊆ v := by
     intro x hx
     rcases Metric.mem_nhds_iff.1 (v_open.mem_nhds (s'v hx)) with ⟨r, rpos, hr⟩

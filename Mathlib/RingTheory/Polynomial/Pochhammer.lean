@@ -228,8 +228,8 @@ theorem ascPochhammer_nat_eval_succ (r : ℕ) :
 
 theorem ascPochhammer_eval_succ (r n : ℕ) :
     (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
-    (n + r) * (ascPochhammer S r).eval (n : S) := by
-  exact_mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+    (n + r) * (ascPochhammer S r).eval (n : S) :=
+  mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
 #align pochhammer_eval_succ ascPochhammer_eval_succ
 
 end Factorial
@@ -310,7 +310,7 @@ theorem descPochhammer_succ_right (n : ℕ) :
     rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
 
 @[simp]
-theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R]:
+theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
     (descPochhammer R n).natDegree = n := by
   induction' n with n hn
   · simp
@@ -354,7 +354,7 @@ theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
         Nat.descFactorial_eq_zero_iff_lt]
     rw [mul_comm]
     simp only [mul_eq_mul_right_iff, Nat.cast_eq_zero, Nat.descFactorial_eq_zero_iff_lt]
-    by_cases n < t
+    by_cases h : n < t
     · tauto
     · left
       exact (Int.ofNat_sub <| not_lt.mp h).symm

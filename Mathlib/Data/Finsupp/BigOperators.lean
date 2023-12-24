@@ -36,7 +36,7 @@ it is a member of the support of a member of the collection:
 variable {ι M : Type*} [DecidableEq ι]
 
 theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
-    l.sum.support ⊆ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by
+    l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
   · simp only [List.sum_cons, Finset.union_comm]
@@ -57,7 +57,7 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 #align finset.support_sum_subset Finset.support_sum_subset
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
-    x ∈ l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
+    x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ (f : ι →₀ M) (_ : f ∈ l), x ∈ f.support := by
   simp only [Finset.sup_eq_union, List.foldr_map, Finsupp.mem_support_iff, exists_prop]
   induction' l with hd tl IH
   · simp
@@ -79,7 +79,7 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
 
 theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
-    l.sum.support = l.foldr ((· ⊔ ·) ∘ Finsupp.support) ∅ := by
+    l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
   induction' l with hd tl IH
   · simp
   · simp only [List.pairwise_cons] at hl
@@ -103,11 +103,11 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   suffices : a.Pairwise (_root_.Disjoint on Finsupp.support)
   · convert List.support_sum_eq a this
     · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_sum]
-    · dsimp only [Function.comp]
+    · dsimp only [Function.comp_def]
       simp only [quot_mk_to_coe'', coe_map, sup_coe, ge_iff_le, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl
-    exact hl.symm.pairwise hd fun _ _ h ↦ _root_.Disjoint.symm h
+    exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 #align multiset.support_sum_eq Multiset.support_sum_eq
 
 theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))

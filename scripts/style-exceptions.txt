@@ -84,9 +84,9 @@ Mathlib/Lean/Exception.lean : line 4 : ERR_AUT : Authors line should look like: 
 Mathlib/Lean/Exception.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Expr/ReplaceRec.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Logic/Equiv/LocalEquiv.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Logic/Equiv/LocalEquiv.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Logic/Equiv/LocalEquiv.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
+Mathlib/Logic/Equiv/PartialEquiv.lean : line 1 : ERR_COP : Malformed or missing copyright header
+Mathlib/Logic/Equiv/PartialEquiv.lean : line 12 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Logic/Equiv/PartialEquiv.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 9 : ERR_MOD : Module docstring missing, or too late
@@ -112,7 +112,6 @@ Mathlib/Tactic/Expect.lean : line 9 : ERR_MOD : Module docstring missing, or too
 Mathlib/Tactic/Have.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/LeftRight.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/NormCast/Tactic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/PermuteGoals.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PrintPrefix.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Recover.lean : line 10 : ERR_MOD : Module docstring missing, or too late

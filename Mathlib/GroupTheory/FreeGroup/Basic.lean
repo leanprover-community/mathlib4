@@ -260,10 +260,8 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
         generalizing L₁ L₂
       · subst_vars
         cases eq₂
-        cases eq₁
         constructor
       · subst_vars
-        cases eq₂
         cases' p with a b
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)
@@ -530,6 +528,9 @@ theorem one_eq_mk : (1 : FreeGroup α) = mk [] :=
 @[to_additive]
 instance : Inhabited (FreeGroup α) :=
   ⟨1⟩
+
+@[to_additive]
+instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
 
 @[to_additive]
 instance : Mul (FreeGroup α) :=
@@ -947,7 +948,7 @@ theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
 
 @[simp]
 theorem sum.of {x : α} : sum (of x) = x :=
-  prod.of
+  @prod.of _ (_) _
 #align free_group.sum.of FreeGroup.sum.of
 
 -- note: there are no bundled homs with different notation in the domain and codomain, so we copy
@@ -1159,7 +1160,8 @@ theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α
         intro h
         exfalso
         have := congr_arg List.length h
-        simp [List.length] at this
+        simp? [List.length] at this says
+         simp only [List.length, zero_add, List.length_append] at this
         rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
         simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
         -- Porting note: needed to add this step in #3414.
@@ -1342,8 +1344,8 @@ theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
 #align free_group.to_word_inv FreeGroup.toWord_inv
 #align free_add_group.to_word_neg FreeAddGroup.toWord_neg
 
-/-- Constructive Church-Rosser theorem (compare `church_rosser`). -/
-@[to_additive "Constructive Church-Rosser theorem (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 #align free_group.reduce.church_rosser FreeGroup.reduce.churchRosser

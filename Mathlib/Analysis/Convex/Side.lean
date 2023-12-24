@@ -42,7 +42,7 @@ variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
 def WSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ (p₁ : _) (_ : p₁ ∈ s) (p₂ : _) (_ : p₂ ∈ s), SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
+  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
 #align affine_subspace.w_same_side AffineSubspace.WSameSide
 
 /-- The points `x` and `y` are strictly on the same side of `s`. -/
@@ -52,7 +52,7 @@ def SSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
 
 /-- The points `x` and `y` are weakly on opposite sides of `s`. -/
 def WOppSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ (p₁ : _) (_ : p₁ ∈ s) (p₂ : _) (_ : p₂ ∈ s), SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
+  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
 #align affine_subspace.w_opp_side AffineSubspace.WOppSide
 
 /-- The points `x` and `y` are strictly on opposite sides of `s`. -/
@@ -140,22 +140,22 @@ theorem _root_.AffineEquiv.sOppSide_map_iff {s : AffineSubspace R P} {x y : P} (
 
 theorem WSameSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.WSameSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.choose, h.choose_spec.choose⟩
+  ⟨h.choose, h.choose_spec.left⟩
 #align affine_subspace.w_same_side.nonempty AffineSubspace.WSameSide.nonempty
 
 theorem SSameSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.1.choose, h.1.choose_spec.choose⟩
+  ⟨h.1.choose, h.1.choose_spec.left⟩
 #align affine_subspace.s_same_side.nonempty AffineSubspace.SSameSide.nonempty
 
 theorem WOppSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.WOppSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.choose, h.choose_spec.choose⟩
+  ⟨h.choose, h.choose_spec.left⟩
 #align affine_subspace.w_opp_side.nonempty AffineSubspace.WOppSide.nonempty
 
 theorem SOppSide.nonempty {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     (s : Set P).Nonempty :=
-  ⟨h.1.choose, h.1.choose_spec.choose⟩
+  ⟨h.1.choose, h.1.choose_spec.left⟩
 #align affine_subspace.s_opp_side.nonempty AffineSubspace.SOppSide.nonempty
 
 theorem SSameSide.wSameSide {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) :

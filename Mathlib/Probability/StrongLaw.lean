@@ -57,8 +57,6 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open MeasureTheory Filter Finset Asymptotics
 
 open Set (indicator)
@@ -366,7 +364,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
         simp only [hij, mem_sigma, mem_range, and_self_iff]
       · rintro ⟨i, j⟩ hij; rfl
       · rintro ⟨i, j⟩ hij; rfl
-    _ ≤ ∑ k in range K, ↑2 / (k + ↑1) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
+    _ ≤ ∑ k in range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       refine' mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) _
       refine' intervalIntegral.integral_nonneg_of_forall _ fun u => sq_nonneg _
@@ -433,7 +431,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   set Y := fun n : ℕ => truncation (X n) n
   set S := fun n => ∑ i in range n, Y i with hS
   let u : ℕ → ℕ := fun n => ⌊c ^ n⌋₊
-  have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_le_pow c_one.le hij)
+  have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_le_pow_right c_one.le hij)
   have I1 : ∀ K, ∑ j in range K, ((j : ℝ) ^ 2)⁻¹ * Var[Y j] ≤ 2 * 𝔼[X 0] := by
     intro K
     calc
@@ -465,7 +463,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         · rintro ⟨i, j⟩ hij
           simp only [mem_sigma, mem_range] at hij
           simp only [hij.1, hij.2, mem_sigma, mem_range, mem_filter, and_true_iff]
-          exact hij.2.trans_le (u_mono (Nat.le_pred_of_lt hij.1))
+          exact hij.2.trans_le (u_mono (Nat.le_sub_one_of_lt hij.1))
         · rintro ⟨i, j⟩ hij
           simp only [mem_sigma, mem_range, mem_filter] at hij
           simp only [hij.2.1, hij.2.2, mem_sigma, mem_range, and_self_iff]

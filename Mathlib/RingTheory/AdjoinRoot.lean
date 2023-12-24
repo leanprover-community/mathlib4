@@ -538,7 +538,7 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
-  isAlgebraic_iff_isIntegral.mp (isAlgebraic_root hf)
+  (isAlgebraic_root hf).isIntegral
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
@@ -655,7 +655,7 @@ such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `Adjo
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
   { AdjoinRoot.liftHom g pb.gen h₂ with
@@ -895,7 +895,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
                     RingHom.toFun_eq_coe, Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe,
                     RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
-                    Quotient.mk_algebraMap]; rfl)).trans (AdjoinRoot.quotEquivQuotMap _ _)
+                    Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 #align power_basis.quotient_equiv_quotient_minpoly_map PowerBasis.quotientEquivQuotientMinpolyMap
 
 -- This lemma should have the simp tag but this causes a lint issue.
