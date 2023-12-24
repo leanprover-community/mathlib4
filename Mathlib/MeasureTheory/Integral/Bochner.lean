@@ -155,7 +155,7 @@ namespace MeasureTheory
 
 variable {α E F 𝕜 : Type*}
 
-section WeightedSmul
+section WeightedSMul
 
 open ContinuousLinearMap
 
@@ -250,7 +250,7 @@ theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weight
   exact mul_nonneg toReal_nonneg hx
 #align measure_theory.weighted_smul_nonneg MeasureTheory.weightedSMul_nonneg
 
-end WeightedSmul
+end WeightedSMul
 
 -- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
@@ -1653,6 +1653,10 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
     ∫ x, g (f x) ∂μ = ∫ y, g y ∂ν :=
   h₁.map_eq ▸ (h₂.integral_map g).symm
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
+
+theorem MeasurePreserving.integral_comp' {β} [MeasurableSpace β] {ν} {f : α ≃ᵐ β}
+    (h : MeasurePreserving f μ ν) (g : β → G) :
+    ∫ x, g (f x) ∂μ = ∫ y, g y ∂ν := MeasurePreserving.integral_comp h f.measurableEmbedding _
 
 theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :

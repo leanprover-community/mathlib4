@@ -39,6 +39,16 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
 #align inv_coe_set inv_coe_set
 #align neg_coe_set neg_coe_set
 
+@[to_additive (attr := simp)]
+lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_left, ha]
+
+@[to_additive (attr := simp)]
+lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+    MulOpposite.op a • (s : Set G) = s := by
+  ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
+
 variable [Group G] [AddGroup A] {s : Set G}
 
 namespace Subgroup
@@ -156,10 +166,8 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
 @[to_additive]
 theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
     s * (N : Set G) = (N : Set G) * s := by
-  ext x
-  refine (exists_congr fun y => ?_).trans exists_swap
-  simp only [exists_and_left, @and_left_comm _ (y ∈ s), ← eq_inv_mul_iff_mul_eq (b := y),
-    ← eq_mul_inv_iff_mul_eq (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
+  rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
+  simp only [image_mul_left, image_mul_right, Set.preimage, SetLike.mem_coe, hN.mem_comm_iff]
 
 /-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
@@ -189,12 +197,11 @@ theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * 
 #align subgroup.normal_mul Subgroup.normal_mul
 #align add_subgroup.normal_add AddSubgroup.normal_add
 
--- porting note: todo: use `∩` in the RHS
 @[to_additive]
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
-    (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ⊓ C := by
+    (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ∩ C := by
   ext
-  simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
+  simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, z, hy, ⟨hzB, hzC⟩, rfl⟩
     refine' ⟨_, mul_mem (h hy) hzC⟩
@@ -206,12 +213,11 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
 #align add_subgroup.add_inf_assoc AddSubgroup.add_inf_assoc
 
--- porting note: todo: use `∩` in the RHS
 @[to_additive]
 theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
-    ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ⊓ ↑B * ↑C := by
+    ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ∩ (↑B * ↑C) := by
   ext
-  simp only [coe_inf, Set.inf_eq_inter, Set.mem_mul, Set.mem_inter_iff]
+  simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, z, ⟨hyA, hyB⟩, hz, rfl⟩
     refine' ⟨A.mul_mem hyA (h hz), _⟩

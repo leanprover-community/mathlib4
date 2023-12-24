@@ -141,8 +141,9 @@ variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 is designed to be specialized for `L = 𝓝 x` (in `HasFDerivAt`), giving rise to the usual notion
 of Fréchet derivative, and for `L = 𝓝[s] x` (in `HasFDerivWithinAt`), giving rise to
 the notion of Fréchet derivative along the set `s`. -/
-def HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) :=
-  (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
+@[mk_iff hasFDerivAtFilter_iff_isLittleO]
+structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
+  of_isLittleO :: isLittleO : (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
 #align has_fderiv_at_filter HasFDerivAtFilter
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
@@ -257,7 +258,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
     constructor
     · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
     · rwa [tendsto_principal]
-  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h
+  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
   have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
     this.comp_tendsto tendsto_arg
   have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel']
@@ -312,8 +313,8 @@ theorem hasFDerivAtFilter_iff_tendsto :
   have h : ∀ x', ‖x' - x‖ = 0 → ‖f x' - f x - f' (x' - x)‖ = 0 := fun x' hx' => by
     rw [sub_eq_zero.1 (norm_eq_zero.1 hx')]
     simp
-  unfold HasFDerivAtFilter
-  rw [← isLittleO_norm_left, ← isLittleO_norm_right, isLittleO_iff_tendsto h]
+  rw [hasFDerivAtFilter_iff_isLittleO, ← isLittleO_norm_left, ← isLittleO_norm_right,
+    isLittleO_iff_tendsto h]
   exact tendsto_congr fun _ => div_eq_inv_mul _ _
 #align has_fderiv_at_filter_iff_tendsto hasFDerivAtFilter_iff_tendsto
 
@@ -330,7 +331,7 @@ theorem hasFDerivAt_iff_tendsto :
 
 theorem hasFDerivAt_iff_isLittleO_nhds_zero :
     HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h => h := by
-  rw [HasFDerivAt, HasFDerivAtFilter, ← map_add_left_nhds_zero x, isLittleO_map]
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
   simp [(· ∘ ·)]
 #align has_fderiv_at_iff_is_o_nhds_zero hasFDerivAt_iff_isLittleO_nhds_zero
 
@@ -368,7 +369,7 @@ theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : 
 
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
-  h.mono hst
+  .of_isLittleO <| h.isLittleO.mono hst
 #align has_fderiv_at_filter.mono HasFDerivAtFilter.mono
 
 theorem HasFDerivWithinAt.mono_of_mem (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
@@ -420,7 +421,7 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
 theorem hasFDerivWithinAt_insert {y : E} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
-  · simp_rw [HasFDerivWithinAt, HasFDerivAtFilter]
+  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
     apply Asymptotics.isLittleO_insert
     simp only [sub_self, map_zero]
   refine' ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem _⟩
@@ -449,13 +450,13 @@ set_option linter.uppercaseLean3 false in
 
 theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
     (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
-  h.isBigO.congr_of_sub.2 (f'.isBigO_sub _ _)
+  h.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_sub _ _)
 set_option linter.uppercaseLean3 false in
 #align has_fderiv_at_filter.is_O_sub HasFDerivAtFilter.isBigO_sub
 
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasFDerivAt f f' x := by
-  rw [HasFDerivAt, HasFDerivAtFilter, isLittleO_iff]
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff]
   exact fun c hc => tendsto_id.prod_mk_nhds tendsto_const_nhds (isLittleO_iff.1 hf hc)
 #align has_strict_fderiv_at.has_fderiv_at HasStrictFDerivAt.hasFDerivAt
 
@@ -513,7 +514,7 @@ theorem hasFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
 theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
     (ht : HasFDerivWithinAt f f' t x) : HasFDerivWithinAt f f' (s ∪ t) x := by
   simp only [HasFDerivWithinAt, nhdsWithin_union]
-  exact hs.sup ht
+  exact .of_isLittleO <| hs.isLittleO.sup ht.isLittleO
 #align has_fderiv_within_at.union HasFDerivWithinAt.union
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
@@ -528,32 +529,24 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
 
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem HasFDerivWithinAt_of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
+theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
     HasFDerivWithinAt f f' s x := by
-  by_cases hx : x ∈ s
-  · have : s = s\{x} ∪ {x} := by simpa using (insert_eq_self.2 hx).symm
-    have A : 𝓝[s] x = 𝓝[s\{x}] x ⊔ 𝓟 {x} := by
-      conv_lhs => rw [this]
-      simp only [union_singleton, nhdsWithin_insert, sup_comm, principal_singleton]
-    simp [HasFDerivWithinAt, HasFDerivAtFilter, A, h]
-  · rw [diff_singleton_eq_self hx] at h
-    simp [HasFDerivWithinAt, HasFDerivAtFilter, h]
+  rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h, hasFDerivAtFilter_iff_isLittleO]
+  apply isLittleO_bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x := by
-  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
-  simp [HasFDerivWithinAt, HasFDerivAtFilter, h, IsLittleO, IsBigOWith]
+theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
+  .of_nhdsWithin_eq_bot <| eq_bot_mono (nhdsWithin_mono _ (diff_subset _ _)) <| by
+    rwa [mem_closure_iff_nhdsWithin_neBot, not_neBot] at h
 #align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_nmem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
   by_cases H : 𝓝[s \ {x}] x = ⊥
-  · exact HasFDerivWithinAt_of_nhdsWithin_eq_bot H
-  · simp only [fderivWithin]
-    rw [if_neg H]
-    dsimp only [DifferentiableWithinAt] at h
-    rw [dif_pos h]
+  · exact .of_nhdsWithin_eq_bot H
+  · unfold DifferentiableWithinAt at h
+    rw [fderivWithin, if_neg H, dif_pos h]
     exact Classical.choose_spec h
 #align differentiable_within_at.has_fderiv_within_at DifferentiableWithinAt.hasFDerivWithinAt
 
@@ -705,15 +698,11 @@ theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x
 @[simp]
 theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   ext1 x
-  by_cases H : 𝓝[univ \ {x}] x = ⊥
-  · have : Subsingleton E := by
-      apply not_nontrivial_iff_subsingleton.1
-      contrapose! H
-      have : (𝓝[{x}ᶜ] x).NeBot := Module.punctured_nhds_neBot 𝕜 E x
-      rw [compl_eq_univ_diff] at this
-      exact NeBot.ne this
-    exact Subsingleton.elim _ _
-  · simp [fderivWithin, fderiv, H]
+  nontriviality E
+  have H : 𝓝[univ \ {x}] x ≠ ⊥
+  · rw [← compl_eq_univ_diff, ← neBot_iff]
+    exact Module.punctured_nhds_neBot 𝕜 E x
+  simp [fderivWithin, fderiv, H]
 #align fderiv_within_univ fderivWithin_univ
 
 theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
@@ -747,7 +736,7 @@ theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)
 theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
     (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
-  simp_rw [HasFDerivWithinAt, HasFDerivAtFilter,
+  simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
     h.eq_zero_of_norm_pow_within hx₀ <| zero_lt_one.trans hn, zero_apply, sub_zero,
     h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
 set_option linter.uppercaseLean3 false in
@@ -843,7 +832,7 @@ theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
     (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
   have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
     isBigO_iff.2 ⟨C, eventually_of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
-  (this.trans (hf.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
+  (this.trans (hf.isLittleO.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
     sub_add_cancel _ _
 set_option linter.uppercaseLean3 false in
 #align has_fderiv_at_filter.is_O_sub_rev HasFDerivAtFilter.isBigO_sub_rev
@@ -905,7 +894,7 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
-  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) (eventually_of_forall fun _ => _root_.rfl)
+  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) .rfl
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 #align filter.eventually_eq.has_strict_fderiv_at_iff Filter.EventuallyEq.hasStrictFDerivAt_iff
@@ -927,9 +916,9 @@ theorem HasStrictFDerivAt.congr_of_eventuallyEq (h : HasStrictFDerivAt f f' x)
 #align has_strict_fderiv_at.congr_of_eventually_eq HasStrictFDerivAt.congr_of_eventuallyEq
 
 theorem Filter.EventuallyEq.hasFDerivAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
-    (h₁ : ∀ x, f₀' x = f₁' x) : HasFDerivAtFilter f₀ f₀' x L ↔ HasFDerivAtFilter f₁ f₁' x L :=
-  isLittleO_congr (h₀.mono fun y hy => by simp only [hy, h₁, hx])
-    (eventually_of_forall fun _ => _root_.rfl)
+    (h₁ : ∀ x, f₀' x = f₁' x) : HasFDerivAtFilter f₀ f₀' x L ↔ HasFDerivAtFilter f₁ f₁' x L := by
+  simp only [hasFDerivAtFilter_iff_isLittleO]
+  exact isLittleO_congr (h₀.mono fun y hy => by simp only [hy, h₁, hx]) .rfl
 #align filter.eventually_eq.has_fderiv_at_filter_iff Filter.EventuallyEq.hasFDerivAtFilter_iff
 
 theorem HasFDerivAtFilter.congr_of_eventuallyEq (h : HasFDerivAtFilter f f' x L) (hL : f₁ =ᶠ[L] f)
@@ -1085,7 +1074,7 @@ theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (id 𝕜 E) x :=
 #align has_strict_fderiv_at_id hasStrictFDerivAt_id
 
 theorem hasFDerivAtFilter_id (x : E) (L : Filter E) : HasFDerivAtFilter id (id 𝕜 E) x L :=
-  (isLittleO_zero _ _).congr_left <| by simp
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left <| by simp
 #align has_fderiv_at_filter_id hasFDerivAtFilter_id
 
 theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (id 𝕜 E) s x :=
@@ -1148,7 +1137,6 @@ section Const
 
 /-! ### Derivative of a constant function -/
 
-
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
   (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
@@ -1156,7 +1144,7 @@ theorem hasStrictFDerivAt_const (c : F) (x : E) :
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
 #align has_fderiv_at_filter_const hasFDerivAtFilter_const
 
 theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :
@@ -1205,8 +1193,8 @@ theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ => c) s :=
 
 theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) {x} x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_singleton, HasFDerivAtFilter, isLittleO_pure,
-    ContinuousLinearMap.zero_apply, sub_self]
+  simp only [HasFDerivWithinAt, nhdsWithin_singleton, hasFDerivAtFilter_iff_isLittleO,
+    isLittleO_pure, ContinuousLinearMap.zero_apply, sub_self]
 #align has_fderiv_within_at_singleton hasFDerivWithinAt_singleton
 
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :

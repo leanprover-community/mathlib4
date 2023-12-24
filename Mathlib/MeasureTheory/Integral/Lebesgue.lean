@@ -175,7 +175,7 @@ variable (μ)
 integral. -/
 theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
-  cases' eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ h₀
+  rcases eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ | h₀
   · exact ⟨0, measurable_zero, zero_le f, h₀.trans lintegral_zero.symm⟩
   rcases exists_seq_strictMono_tendsto' h₀.bot_lt with ⟨L, _, hLf, hL_tendsto⟩
   have : ∀ n, ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ L n < ∫⁻ a, g a ∂μ := by
@@ -720,7 +720,8 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     rw [mul_comm]
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
-  simp [(mul_assoc _ _ _).symm, rinv'] at this
+  simp? [(mul_assoc _ _ _).symm, rinv'] at this says
+    simp only [(mul_assoc _ _ _).symm, rinv', one_mul] at this
   simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
 #align measure_theory.lintegral_const_mul' MeasureTheory.lintegral_const_mul'
 
@@ -1431,13 +1432,6 @@ theorem set_lintegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f
     restrict_restrict hs, inter_eq_right.2 (Subtype.coe_image_subset _ _)]
 
 section DiracAndCount
-
-instance (priority := 10) _root_.MeasurableSpace.Top.measurableSingletonClass {α : Type*} :
-    @MeasurableSingletonClass α (⊤ : MeasurableSpace α) :=
-  @MeasurableSingletonClass.mk α (⊤ : MeasurableSpace α) <|
-    fun _ => MeasurableSpace.measurableSet_top
-#align measurable_space.top.measurable_singleton_class MeasurableSpace.Top.measurableSingletonClass
-
 variable [MeasurableSpace α]
 
 theorem lintegral_dirac' (a : α) {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂dirac a = f a :=
