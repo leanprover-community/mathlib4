@@ -136,10 +136,11 @@ lemma not_uncountable_iff : ¬Uncountable α ↔ Countable α := by
 lemma not_countable_iff : ¬Countable α ↔ Uncountable α := (uncountable_iff_not_countable α).symm
 
 @[simp]
-lemma not_uncountable [Countable α] : ¬Uncountable α := not_uncountable_iff.2 ‹_›
+lemma not_uncountable [Countable α] : ¬Uncountable α :=
+  mt not_countable_iff.2 <| not_not_intro ‹_›
 
 @[simp]
-lemma not_countable [Uncountable α] : ¬Countable α := not_countable_iff.2 ‹_›
+lemma not_countable [Uncountable α] : ¬Countable α := Uncountable.not_countable
 
 protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
     Uncountable β :=
