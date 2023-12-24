@@ -108,8 +108,10 @@ local postfix:90 "/ₙ" => z
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range] at this says
-    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, map_one] at this
+  simp only [Finset.sum_range, map_sum, MonoidHom.coe_mk, OneHom.coe_mk,
+    Polynomial.coe_aeval_eq_eval, map_one] at this  -- says
+--  simp? [AlgHom.map_sum, Finset.sum_range] at this says
+--    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, map_one] at this
   exact this
 #align bernstein.probability bernstein.probability
 
