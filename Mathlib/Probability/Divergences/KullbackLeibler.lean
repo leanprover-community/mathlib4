@@ -233,7 +233,7 @@ lemma integral_sub_logIntegralExp_le {μ ν : Measure α}
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
   refine integral_llr_nonneg (hμν.trans (absolutelyContinuous_tilted hf)) ?_
-  exact integrable_llr_tilted_right hμν hfμ hf h_int
+  exact integrable_llr_tilted_right hμν hfμ h_int hf
 
 lemma ciSup_le_integral_llr {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :

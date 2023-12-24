@@ -157,7 +157,7 @@ lemma llr_tilted_right [IsFiniteMeasure μ]
     · simp [ENNReal.toReal_eq_zero_iff, hx_lt_top.ne, hx_pos.ne']
 
 lemma integrable_llr_tilted_right [IsFiniteMeasure μ] (hμν : μ ≪ ν) (hfμ : Integrable f μ)
-    (hfν : Integrable (fun x ↦ exp (f x)) ν) (h_int : Integrable (LLR μ ν) μ) :
+    (h_int : Integrable (LLR μ ν) μ) (hfν : Integrable (fun x ↦ exp (f x)) ν) :
     Integrable (LLR μ (ν.tilted f)) μ := by
   rw [integrable_congr (llr_tilted_right hμν hfν)]
   exact Integrable.add (hfμ.neg.add (integrable_const _)) h_int
