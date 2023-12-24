@@ -463,13 +463,6 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
-  { PartENat.linearOrder, PartENat.addCommMonoid with
-    add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp [top_add]) fun c =>
-        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
-          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
-
 instance : CanonicallyOrderedAdd PartENat :=
   { le_self_add := fun a b =>
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun b =>
