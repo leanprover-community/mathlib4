@@ -1112,58 +1112,87 @@ end IsLocalizedModule
 
 section Basis
 
-open Submodule
+open Submodule BigOperators
 
-variable (Rₛ : Type*) [CommRing Rₛ] [Algebra R Rₛ] [IsLocalization S Rₛ] (Mₛ : Type*)
-  [AddCommGroup Mₛ] [Module R Mₛ] {M : Submodule R Mₛ} [IsLocalizedModule S M.subtype]
-  [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
+variable (Rₛ : Type*) [CommRing Rₛ] [Algebra R Rₛ] [IsLocalization S Rₛ] [Module Rₛ M']
+  [IsLocalizedModule S f] [IsScalarTower R Rₛ M']
 
 theorem SpanEqTop.isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
-    span Rₛ (M.subtype '' v) = ⊤ := by
+    span Rₛ (f '' v) = ⊤ := by
   rw [eq_top_iff]
   intro x _
-  obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S M.subtype x
-  rw [show x = IsLocalization.mk' Rₛ 1 s • m by
-    rwa [← IsLocalizedModule.smul_inj M.subtype s, Submonoid.smul_def, Submonoid.smul_def,
+  obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S f x
+  rw [show x = IsLocalization.mk' Rₛ 1 s • f m by
+    rwa [← IsLocalizedModule.smul_inj f s, Submonoid.smul_def, Submonoid.smul_def,
       ← smul_assoc, IsLocalization.smul_mk' (s:R) 1 s, IsLocalization.mk'_mul_cancel_left, map_one,
       one_smul]]
   refine smul_mem _ _  (span_subset_span R Rₛ _ ?_)
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span]
   exact mem_map_of_mem (hv.symm ▸ mem_top)
 
-variable {ι : Type*} (b : Basis ι R M)
+theorem LinearIndependent.localization' {ι : Type*} (b : ι → M') (hli : LinearIndependent R b) :
+    LinearIndependent Rₛ b := by
+  rw [linearIndependent_iff'] at hli ⊢
+  intro s g hg i hi
+  choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
+  specialize hli s g' _ i hi
+  · rw [← @smul_zero _ M' _ _ (a : R), ← hg, Finset.smul_sum]
+    refine Finset.sum_congr rfl fun i hi => ?_
+    rw [← IsScalarTower.algebraMap_smul Rₛ, hg' i hi, smul_assoc]
+  · refine (IsLocalization.map_units Rₛ a).mul_right_eq_zero.mp ?_
+    rw [← Algebra.smul_def, ← _root_.map_zero (algebraMap R Rₛ), ← hli, hg' i hi]
 
-/-- Let `Mₛ` be a `R`-module and let `M` be a submodule of `Mₛ` such that `Mₛ` is the localization
-at `S` of `M` where `S` is a submonoid of `R`. Assume that `Mₛ` is a `Rₛ`-module where `Rₛ` is a
-localization of `R` at `S`. Then, any `R`-basis of `M` is a `Rₛ`-basis of `Mₛ`. -/
-noncomputable def Basis.isLocalizedModule : Basis ι Rₛ Mₛ :=
-  Basis.mk
-    ((LinearIndependent.map' b.linearIndependent M.subtype (ker_subtype M)).localization Rₛ S)
-    (fun x _ ↦ by rwa [Set.range_comp, SpanEqTop.isLocalizedModule S _ _ b.span_eq])
+theorem LinearIndependent.localization_localization' {ι : Type*} {v : ι → M}
+    (hv : LinearIndependent R v) : LinearIndependent Rₛ (f ∘ v) := by
+  rw [linearIndependent_iff'] at hv ⊢
+  intro t g hg i hi
+  choose! a g' hg' using IsLocalization.exist_integer_multiples S t g
+  have h0 : f (∑ i in t, g' i • v i) = 0 := by
+    apply_fun ((a : R) • ·) at hg
+    rw [smul_zero, Finset.smul_sum] at hg
+    rw [map_sum, ← hg]
+    refine Finset.sum_congr rfl fun i hi => ?_
+    rw [← smul_assoc, ← hg' i hi, map_smul, Function.comp_apply, algebraMap_smul]
+  obtain ⟨s, hs⟩ := (IsLocalizedModule.eq_zero_iff S f).mp h0
+  simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hs
+  specialize hv t _ hs i hi
+  rw [← (IsLocalization.map_units Rₛ a).mul_right_eq_zero, ← Algebra.smul_def, ← hg' i hi]
+  exact (IsLocalization.map_eq_zero_iff S _ _).2 ⟨s, hv⟩
+
+variable {Mₛ : Type*} [AddCommGroup Mₛ] [Module R Mₛ] [Module Rₛ Mₛ] (f : M →ₗ[R] Mₛ)
+  [IsLocalizedModule S f] [IsScalarTower R Rₛ Mₛ] {ι : Type*} (b : Basis ι R M)
+
+/-- Let `S` be a submonoid of `R`. For `Mₛ` and `M` two `R`-modules such `Mₛ` is the localized
+module at `S` of `M` by `f : M →ₗ[R] Mₛ`. Assume that `Mₛ` is a `Rₛ`-module where `Rₛ` is a
+localization of `R` at `S`. Then, for any `R`-basis of `M`, its image by `f` is a `Rₛ`-basis
+of `Mₛ`. -/
+noncomputable def Basis.isLocalizedModule : Basis ι Rₛ Mₛ := by
+  refine Basis.mk (b.linearIndependent.localization_localization' S f Rₛ) ?_
+  rw [Set.range_comp, SpanEqTop.isLocalizedModule S _ _ b.span_eq]
 
 @[simp]
 theorem Basis.isLocalizedModule_apply (i : ι) :
-    b.isLocalizedModule S Rₛ Mₛ i = b i := by
-  rw [isLocalizedModule, coe_mk, coeSubtype, Function.comp_apply]
+    b.isLocalizedModule S Rₛ f i = f (b i) := by
+  rw [isLocalizedModule, coe_mk, Function.comp_apply]
 
 @[simp]
 theorem Basis.isLocalizedModule_repr_apply (m : M) (i : ι) :
-    ((b.isLocalizedModule S Rₛ Mₛ).repr (m:Mₛ)) i = algebraMap R Rₛ (b.repr m i) := by
-  suffices ((b.isLocalizedModule S Rₛ Mₛ).repr.toLinearMap.restrictScalars R) ∘ₗ
-      M.subtype = Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
+    ((b.isLocalizedModule S Rₛ f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
+  suffices ((b.isLocalizedModule S Rₛ f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
+      Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
     exact FunLike.congr_fun (LinearMap.congr_fun this m) i
   refine Basis.ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, coeSubtype, ← b.isLocalizedModule_apply S Rₛ Mₛ, repr_self,
-    LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe, repr_self,
-    Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
+    LinearEquiv.coe_coe, ← b.isLocalizedModule_apply S Rₛ f, repr_self, LinearMap.coe_comp,
+    Function.comp_apply, LinearEquiv.coe_coe, repr_self, Finsupp.mapRange.linearMap_apply,
+    Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 theorem Basis.isLocalizedModule_span :
-    span R (Set.range (b.isLocalizedModule S Rₛ Mₛ)) = M := by
-  calc span R (Set.range ↑(b.isLocalizedModule S Rₛ Mₛ))
-    _ = span R (M.subtype '' (Set.range b)) := by congr; ext; simp
-    _ = map M.subtype (span R (Set.range b)) := by rw [Submodule.map_span]
-    _ = M := by rw [b.span_eq, Submodule.map_top, range_subtype]
+    span R (Set.range (b.isLocalizedModule S Rₛ f)) = LinearMap.range f := by
+  calc span R (Set.range (b.isLocalizedModule S Rₛ f))
+    _ = span R (f '' (Set.range b)) := by congr; ext; simp
+    _ = map f (span R (Set.range b)) := by rw [Submodule.map_span]
+    _ = LinearMap.range f := by rw [b.span_eq, Submodule.map_top]
 
 end Basis
 
