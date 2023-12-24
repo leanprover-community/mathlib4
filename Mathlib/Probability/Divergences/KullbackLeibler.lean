@@ -52,6 +52,10 @@ noncomputable
 def KL (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (LLR μ ν) μ then ENNReal.ofReal (∫ x, LLR μ ν x ∂μ) else ∞
 
+@[simp]
+lemma klReal_of_not_integrable (h : ¬ Integrable (LLR μ ν) μ) : KLReal μ ν = 0 := by
+  rw [KLReal, integral_undef h]
+
 section llr_and_llrf
 
 lemma klReal_eq_integral_lrf [SigmaFinite μ] [Measure.HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
@@ -128,44 +132,17 @@ lemma klReal_ge_mul_log [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   · rw [ENNReal.toReal_ne_zero]
     simp [hν, measure_ne_top ν]
 
-lemma klReal_nonneg [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
+lemma klReal_nonneg [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (hμν : μ ≪ ν) :
     0 ≤ KLReal μ ν := by
-  rw [klReal_eq_integral_lrf hμν]
-  exact integral_lrf_nonneg Real.convexOn_mul_log Real.continuous_mul_log.continuousOn
-    (by simp) (integrable_lrf_mul_log hμν h_int) hμν
+  by_cases h_int : Integrable (LLR μ ν) μ
+  · rw [klReal_eq_integral_lrf hμν]
+    exact integral_lrf_nonneg Real.convexOn_mul_log Real.continuous_mul_log.continuousOn
+      (by simp) (integrable_lrf_mul_log hμν h_int) hμν
+  · rw [KLReal, integral_undef h_int]
 
 end klReal_nonneg
 
-lemma integral_sub_logIntegralExp_le [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ)
-    (f : α → ℝ) (hfμ : Integrable f μ) (hf : Integrable (fun x ↦ exp (f x)) ν) :
-    ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν) ≤ KLReal μ ν := by
-  have : KLReal μ ν - ∫ x, LLR μ (ν.tilted f) x ∂μ
-      = ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν) := by
-    rw [KLReal, integral_llr_tilted_right hμν hfμ hf h_int]
-    abel
-  rw [← this]
-  simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
-  have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
-  refine klReal_nonneg (hμν.trans (absolutelyContinuous_tilted hf)) ?_
-  exact integrable_llr_tilted_right hμν hfμ h_int hf
-
-lemma ciSup_le_klReal [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
-    ⨆ (f : α → ℝ) (_ : Integrable f μ)
-        (_ : Integrable (fun x ↦ exp (f x)) ν), ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν)
-      ≤ KLReal μ ν := by
-  refine ciSup_le (fun f ↦ ?_)
-  by_cases hfμ : Integrable f μ
-  · simp only [hfμ, ciSup_unique]
-    by_cases hf : Integrable (fun x ↦ exp (f x)) ν
-    · simp only [hf, ciSup_unique]
-      exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
-    · simp [hf, ciSup_empty]
-      exact klReal_nonneg hμν h_int
-  · simp only [hfμ, ciSup_empty]
-    exact klReal_nonneg hμν h_int
+section LLRAddConst
 
 /-- Logarithm of the sum of the likelihood ratio and a constant `u`.
 This is used with `0 < u` to avoid issues with `LLR` due to the likelihood ratio being 0. -/
@@ -251,6 +228,37 @@ lemma log_integral_exp_llrAddConst [IsProbabilityMeasure μ] [IsProbabilityMeasu
   rw [Measure.integral_toReal_rnDeriv hμν]
   simp only [measure_univ, ENNReal.one_toReal]
 
+end LLRAddConst
+
+lemma integral_sub_log_integral_exp_le_klReal [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ)
+    (f : α → ℝ) (hfμ : Integrable f μ) (hf : Integrable (fun x ↦ exp (f x)) ν) :
+    ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν) ≤ KLReal μ ν := by
+  have : KLReal μ ν - ∫ x, LLR μ (ν.tilted f) x ∂μ
+      = ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν) := by
+    rw [KLReal, integral_llr_tilted_right hμν hfμ hf h_int]
+    abel
+  rw [← this]
+  simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
+  have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
+  exact klReal_nonneg (hμν.trans (absolutelyContinuous_tilted hf))
+
+lemma ciSup_le_klReal [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
+    ⨆ (f : α → ℝ) (_ : Integrable f μ)
+        (_ : Integrable (fun x ↦ exp (f x)) ν), ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂ν)
+      ≤ KLReal μ ν := by
+  refine ciSup_le (fun f ↦ ?_)
+  by_cases hfμ : Integrable f μ
+  · simp only [hfμ, ciSup_unique]
+    by_cases hf : Integrable (fun x ↦ exp (f x)) ν
+    · simp only [hf, ciSup_unique]
+      exact integral_sub_log_integral_exp_le_klReal hμν h_int f hfμ hf
+    · simp [hf, ciSup_empty]
+      exact klReal_nonneg hμν
+  · simp only [hfμ, ciSup_empty]
+    exact klReal_nonneg hμν
+
 lemma klReal_le_integral_llrAddConst [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     {u : ℝ} (hu : 0 ≤ u) (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     KLReal μ ν ≤ ∫ x, LLRAddConst μ ν u x ∂μ := by
@@ -281,7 +289,7 @@ lemma integral_llrAddConst_le_ciSup_add [IsProbabilityMeasure μ] [IsProbability
           refine le_ciSup_of_le ?_ ⟨u, hu⟩ le_rfl
           refine ⟨∫ x, LLR μ ν x ∂μ, fun y ⟨u, huy⟩ ↦ ?_⟩
           rw [← huy]
-          exact integral_sub_logIntegralExp_le hμν h_int (LLRAddConst μ ν _)
+          exact integral_sub_log_integral_exp_le_klReal hμν h_int (LLRAddConst μ ν _)
             (integrable_llrAddConst u.2.le h_int) (integrable_exp_llrAddConst u.2)
     _ = (⨆ u : {v // (0 : ℝ) < v},
           ∫ x, LLRAddConst μ ν u x ∂μ - log (∫ x, exp (LLRAddConst μ ν u x) ∂ν))
@@ -334,11 +342,11 @@ lemma klReal_le_ciSup [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     · simp only [hfμ, ciSup_unique]
       by_cases hf : Integrable (fun x ↦ exp (f x)) ν
       · simp only [hf, ciSup_unique]
-        exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
+        exact integral_sub_log_integral_exp_le_klReal hμν h_int f hfμ hf
       · simp only [hf, ciSup_empty]
-        exact klReal_nonneg hμν h_int
+        exact klReal_nonneg hμν
     · simp only [hfμ, ciSup_empty]
-      exact klReal_nonneg hμν h_int
+      exact klReal_nonneg hμν
   · simp [integrable_llrAddConst u.2.le h_int, integrable_exp_llrAddConst u.2]
 
 /-- **Donsker-Varadhan** variational formula for the Kullback-Leibler divergence. -/
