@@ -125,8 +125,10 @@ instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient 
 This typeclass says that a given `Sort*` is not countable.
 -/
 
+/-- A type `α` is uncountable if it is not uncountable. -/
 @[mk_iff]
 class Uncountable (α : Sort*) : Prop where
+  /-- A type `α` is uncountable if it is not uncountable. -/
   not_countable : ¬Countable α
 
 lemma countable_iff_not_uncountable {α : Sort u} : Countable α ↔ ¬ Uncountable α := by
