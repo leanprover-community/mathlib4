@@ -89,8 +89,8 @@ section Defs
 variable (A : ι → Type*)
 
 /-- A graded version of `NonUnitalNonAssocSemiring`. -/
-class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] where
-  [toGMul : GradedMonoid.GMul A]
+class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)]
+    extends GradedMonoid.GMul A where
   /-- Multiplication from the right with any graded component's zero vanishes. -/
   mul_zero : ∀ {i j} (a : A i), a * (0 : A j) = 0
   /-- Multiplication from the left with any graded component's zero vanishes. -/
@@ -101,8 +101,6 @@ class GNonUnitalNonAssocSemiring [Add ι] [∀ i, AddCommMonoid (A i)] where
   /-- Multiplication from the left between graded components distributes with respect to
   addition. -/  add_mul : ∀ {i j} (a b : A i) (c : A j), (a + b) * c = a * c + b * c
 #align direct_sum.gnon_unital_non_assoc_semiring DirectSum.GNonUnitalNonAssocSemiring
-
-attribute [instance] GNonUnitalNonAssocSemiring.toGMul
 
 end Defs
 

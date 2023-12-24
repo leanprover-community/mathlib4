@@ -166,8 +166,13 @@ instance GOne.toOne [Zero ι] [GOne A] : One (GradedMonoid A) :=
 
 /-- A graded version of `Mul`. Multiplication combines grades additively, like
 `AddMonoidAlgebra`. -/
-abbrev GMul [Add ι] := ∀ ⦃i j⦄, HMul (A i) (A j) (A (i + j))
+class GMul [Add ι] where
+  /-- The homogeneous multiplication map `mul` -/
+  mul {i j} : A i → A j → A (i + j)
 #align graded_monoid.ghas_mul GradedMonoid.GMul
+
+instance GMul.toHMul [Add ι] [GMul A] {i j : ι} : HMul (A i) (A j) (A (i + j)) where
+  hMul := GMul.mul
 
 /-- `GMul` implies `Mul (GradedMonoid A)`. -/
 instance GMul.toMul [Add ι] [GMul A] : Mul (GradedMonoid A) :=
@@ -469,6 +474,9 @@ section
 
 variable (ι) {R : Type*}
 
+@[simps mul]
+instance Mul.gMul [Add ι] [Mul R] : GradedMonoid.GMul fun _ : ι => R where mul x y := x * y
+#align has_mul.ghas_mul Mul.gMul
 
 /-- If all grades are the same type and themselves form a monoid, then there is a trivial grading
 structure. -/
@@ -545,9 +553,14 @@ theorem SetLike.mul_mem_graded {S : Type*} [SetLike S R] [Mul R] [Add ι] {A : �
 #align set_like.mul_mem_graded SetLike.mul_mem_graded
 
 instance SetLike.gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
-    [SetLike.GradedMul A] : GradedMonoid.GMul fun i => A i :=
-  fun _i _j => { hMul := fun a b => ⟨(a * b : R), SetLike.mul_mem_graded a.prop b.prop⟩ }
+    [SetLike.GradedMul A] : GradedMonoid.GMul (A ·) where
+  mul a b := ⟨(a * b : R), SetLike.mul_mem_graded a.prop b.prop⟩
 #align set_like.ghas_mul SetLike.gMul
+
+-- unification struggles with `A` here otherwise
+instance SetLike.gMul_toHMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
+    [SetLike.GradedMul A] {i j} : HMul (A i) (A j) (A (i + j)) :=
+  GradedMonoid.GMul.toHMul (A ·)
 
 /-
 Porting note: simpNF linter returns
@@ -564,7 +577,7 @@ example {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
 @[simp,nolint simpNF]
 theorem SetLike.coe_gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → S)
     [SetLike.GradedMul A] {i j : ι} (x : A i) (y : A j) :
-    ↑(x * y) = (x * y : R) :=
+    ↑(x * y : A (i + j)) = (x * y : R) :=
   rfl
 #align set_like.coe_ghas_mul SetLike.coe_gMul
 

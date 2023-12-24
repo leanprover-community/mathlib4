@@ -82,9 +82,8 @@ def mulEquiv {n m : ℕ} : (⨂[R]^n) M ⊗[R] (⨂[R]^m) M ≃ₗ[R] (⨂[R]^(n
 #align tensor_power.mul_equiv TensorPower.mulEquiv
 
 /-- As a graded monoid, `⨂[R]^i M` has a `(*) : ⨂[R]^i M → ⨂[R]^j M → ⨂[R]^(i + j) M`. -/
-instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M :=
-  fun i j => { hMul := fun a b =>
-    (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b }
+instance gMul : GradedMonoid.GMul fun i => (⨂[R]^i) M where
+  mul {i j} a b := (TensorProduct.mk R _ _).compr₂ (↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M)) a b
 #align tensor_power.ghas_mul TensorPower.gMul
 
 theorem gMul_def {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
