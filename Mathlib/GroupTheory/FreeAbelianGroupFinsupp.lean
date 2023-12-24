@@ -75,7 +75,8 @@ theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_toFinsupp {X} (x : FreeAbelianGroup X) :
     Finsupp.toFreeAbelianGroup (FreeAbelianGroup.toFinsupp x) = x := by
-  rw [← AddMonoidHom.comp_apply, Finsupp.toFreeAbelianGroup_comp_toFinsupp, AddMonoidHom.id_apply, id_eq]
+  rw [← AddMonoidHom.comp_apply, Finsupp.toFreeAbelianGroup_comp_toFinsupp,
+    AddMonoidHom.id_apply, id_eq]
 #align finsupp.to_free_abelian_group_to_finsupp Finsupp.toFreeAbelianGroup_toFinsupp
 
 namespace FreeAbelianGroup
