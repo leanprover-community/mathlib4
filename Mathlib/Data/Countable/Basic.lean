@@ -64,18 +64,41 @@ instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
   rcases exists_injective_nat β with ⟨g, hg⟩
   exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
 
+instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
+  inl_injective.uncountable
+
+instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
+  inr_injective.uncountable
+
 instance [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
+
+instance [Uncountable α] : Uncountable (Option α) :=
+  Injective.uncountable fun _ _ ↦ Option.some_inj.1
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
   exact (Nat.pairEquiv.injective.comp <| hf.Prod_map hg).countable
 
+instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
+  inhabit β
+  exact (Prod.mk.inj_right default).uncountable
+
+instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
+  inhabit α
+  exact (Prod.mk.inj_left default).uncountable
+
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   choose g hg using fun a => exists_injective_nat (π a)
   exact ((Equiv.sigmaEquivProd ℕ ℕ).injective.comp <| hf.sigma_map hg).countable
+
+lemma Sigma.uncountable (a : α) [Uncountable (π a)] : Uncountable (Sigma π) :=
+  (sigma_mk_injective (i := a)).uncountable
+
+instance [Nonempty α] [∀ a, Uncountable (π a)] : Uncountable (Sigma π) := by
+  inhabit α; exact Sigma.uncountable default
 
 instance (priority := 500) SetCoe.countable [Countable α] (s : Set α) : Countable s :=
   Subtype.countable
