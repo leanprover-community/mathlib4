@@ -800,12 +800,14 @@ theorem mul_le_one [MulPosMono α] (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1)
 #align mul_le_one mul_le_one
 
 -- this lemma was in `Algebra.Order.Ring.Defs`
-theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
+theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α]
+    (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
   mul_lt_one_of_lt_of_le_left ha hb ha₀
 #align mul_lt_one_of_nonneg_of_lt_one_left mul_lt_one_of_nonneg_of_lt_one_left
 
 -- this lemma was in `Algebra.Order.Ring.Defs`
-theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
+theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
+    (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
   mul_lt_one_of_le_of_lt_right ha hb hb₀
 #align mul_lt_one_of_nonneg_of_lt_one_right mul_lt_one_of_nonneg_of_lt_one_right
 
