@@ -24,7 +24,7 @@ lemma set_integral_exp_neg_llr_le {μ ν : Measure α} [SigmaFinite ν] [SigmaFi
         rfl
   _ = ∫ x in t, (ν.rnDeriv μ x).toReal ∂μ := by
         refine set_integral_congr_ae ht ?_
-        filter_upwards [exp_llr ν μ, rnDeriv_pos' hμν] with x hx hx_pos _
+        filter_upwards [exp_llr ν μ, Measure.rnDeriv_pos' hμν] with x hx hx_pos _
         rw [hx]
         simp [hx_pos.ne']
   _ ≤ (ν t).toReal := Measure.set_integral_toReal_rnDeriv_le hνt

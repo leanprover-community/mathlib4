@@ -278,7 +278,7 @@ lemma stronglyMeasurable_llrAddConst {μ ν : Measure α} {u : ℝ} :
 
 lemma log_le_llrAddConst {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u) :
     log u ≤ LLRAddConst μ ν u x := by
-  rw [LLRAddConst, Real.log_le_log hu]
+  rw [LLRAddConst, Real.log_le_log_iff hu]
   · simp
   · positivity
 
@@ -286,7 +286,7 @@ lemma llrAddConst_le_log_max {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u
     LLRAddConst μ ν u x ≤ log (max (μ.rnDeriv ν x).toReal u) + log 2 := by
   rw [← log_mul _ two_ne_zero]
   swap; · refine ne_of_gt ?_; positivity
-  rw [LLRAddConst, Real.log_le_log]
+  rw [LLRAddConst, Real.log_le_log_iff]
   · rw [mul_two]
     exact add_le_add (le_max_left _ _) (le_max_right _ _)
   · positivity
@@ -348,7 +348,7 @@ lemma integral_llr_le_integral_llrAddConst {μ ν : Measure α} [IsFiniteMeasure
   refine integral_mono_ae h_int (integrable_llrAddConst hu h_int) ?_
   filter_upwards [Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
     with x hx_pos hx_lt_top
-  rw [LLR, LLRAddConst, Real.log_le_log]
+  rw [LLR, LLRAddConst, Real.log_le_log_iff]
   · exact le_add_of_le_of_nonneg le_rfl hu
   · exact ENNReal.toReal_pos hx_pos.ne' hx_lt_top.ne
   · exact add_pos_of_pos_of_nonneg (ENNReal.toReal_pos hx_pos.ne' hx_lt_top.ne) hu

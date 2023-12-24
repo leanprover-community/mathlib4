@@ -61,7 +61,7 @@ lemma isEValue_exp (h_ne_zero : ∀ μ ∈ S, NeZero μ)
   integrable := h_int
   nonneg := fun x ↦ (exp_pos _).le
   integral_le_one := fun μ hμS ↦ by
-    rw [← Real.log_le_log _ zero_lt_one]
+    rw [← Real.log_le_log_iff _ zero_lt_one]
     · simp only [log_one]
       exact h_log μ hμS
     · have := h_ne_zero μ hμS
@@ -76,7 +76,7 @@ lemma isEValue_exp_sub_logIntegralExp (h_ne_zero : ∀ μ ∈ S, NeZero μ)
     exact Integrable.div_const (h_int μ hμS) _
   nonneg := fun x ↦ (exp_pos _).le
   integral_le_one := fun μ hμS ↦ by
-    rw [← Real.log_le_log _ zero_lt_one]
+    rw [← Real.log_le_log_iff _ zero_lt_one]
     · simp only [log_one, exp_sub]
       rw [integral_div, log_div]
       · simp only [log_exp, tsub_le_iff_right, zero_add]
