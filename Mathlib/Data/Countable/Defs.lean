@@ -167,7 +167,7 @@ protected theorem Function.Surjective.uncountable [Uncountable β] {f : α → �
     Uncountable α := (injective_surjInv hf).uncountable
 
 theorem not_exists_surjective_nat (α : Sort u) [Nonempty α] [Uncountable α] :
-   ¬ ∃ f : ℕ → α, Surjective f := by
+    ¬ ∃ f : ℕ → α, Surjective f := by
   by_contra h
   rcases h with ⟨f, hf⟩
   have : Countable α := by
