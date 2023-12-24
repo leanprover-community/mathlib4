@@ -136,7 +136,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         have : ∀ {m k : ℕ}, m ≤ k → 1 < m → p ≠ m * k := fun {m k} mk m1 e =>
           a m m1 (le_sqrt.2 (e.symm ▸ Nat.mul_le_mul_left m mk)) ⟨k, e⟩
         fun m m2 l ⟨k, e⟩ => by
-        cases' le_total m k with mk km
+        rcases le_total m k with mk | km
         · exact this mk m2 e
         · rw [mul_comm] at e
           refine' this km (lt_of_mul_lt_mul_right _ (zero_le m)) e
@@ -174,7 +174,7 @@ theorem prime_three : Prime 3 := by decide
 
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
-  by_contra' h
+  by_contra! h
   revert h_two h_three hp
   -- Porting note: was `decide!`
   match p with
@@ -296,7 +296,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · refine'
         have := minFac_lemma n k h
         minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
-      cases' Nat.eq_or_lt_of_le (a m m2 d) with me ml
+      rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction
       apply (Nat.eq_or_lt_of_le ml).resolve_left
@@ -430,7 +430,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   constructor
   · intro h
-    rw [←h]
+    rw [← h]
     exact minFac_dvd n
   · intro h
     have ub := minFac_le_of_dvd (le_refl 2) h

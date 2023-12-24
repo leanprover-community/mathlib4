@@ -67,6 +67,8 @@ theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card
   exact (hq1.pow_eq_iff.mp (hg.symm.trans hk).symm).1.symm
 #align is_p_group.iff_card IsPGroup.iff_card
 
+alias ⟨exists_card_eq, _⟩ := iff_card
+
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
@@ -121,7 +123,7 @@ theorem powEquiv_apply {n : ℕ} (hn : p.Coprime n) (g : G) : hG.powEquiv hn g =
 
 @[simp]
 theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
-    (hG.powEquiv hn).symm g = g ^ (orderOf g).gcdB n := by rw [←Nat.card_zpowers]; rfl
+    (hG.powEquiv hn).symm g = g ^ (orderOf g).gcdB n := by rw [← Nat.card_zpowers]; rfl
 #align is_p_group.pow_equiv_symm_apply IsPGroup.powEquiv_symm_apply
 
 variable [hp : Fact p.Prime]

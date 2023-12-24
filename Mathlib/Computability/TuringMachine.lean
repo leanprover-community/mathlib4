@@ -133,10 +133,10 @@ theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
     BlankRel l₁ l₂ → BlankRel l₂ l₃ → BlankRel l₁ l₃ := by
   rintro (h₁ | h₁) (h₂ | h₂)
   · exact Or.inl (h₁.trans h₂)
-  · cases' le_total l₁.length l₃.length with h h
+  · rcases le_total l₁.length l₃.length with h | h
     · exact Or.inl (h₁.above_of_le h₂ h)
     · exact Or.inr (h₂.above_of_le h₁ h)
-  · cases' le_total l₁.length l₃.length with h h
+  · rcases le_total l₁.length l₃.length with h | h
     · exact Or.inl (h₁.below_of_le h₂ h)
     · exact Or.inr (h₂.below_of_le h₁ h)
   · exact Or.inr (h₂.trans h₁)
@@ -284,7 +284,7 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   cases' lt_or_le n _ with h h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
-  cases' le_or_lt _ n with h₂ h₂
+  rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
   rw [List.getI_eq_get _ h₂, List.get_append_right' h, List.get_replicate]
 #align turing.list_blank.nth Turing.ListBlank.nth
@@ -504,7 +504,7 @@ instance Tape.inhabited {Γ} [Inhabited Γ] : Inhabited (Tape Γ) :=
   ⟨by constructor <;> apply default⟩
 #align turing.tape.inhabited Turing.Tape.inhabited
 
-/-- A direction for the turing machine `move` command, either
+/-- A direction for the Turing machine `move` command, either
   left or right. -/
 inductive Dir
   | left
@@ -986,7 +986,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
 /-!
 ## The TM0 model
 
-A TM0 turing machine is essentially a Post-Turing machine, adapted for type theory.
+A TM0 Turing machine is essentially a Post-Turing machine, adapted for type theory.
 
 A Post-Turing machine with symbol type `Γ` and label type `Λ` is a function
 `Λ → Γ → Option (Λ × Stmt)`, where a `Stmt` can be either `move left`, `move right` or `write a`
@@ -1349,7 +1349,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
   case halt => subst h; trivial
 #align turing.TM1.stmts₁_supports_stmt_mono Turing.TM1.stmts₁_supportsStmt_mono
 
-/-- The set of all statements in a turing machine, plus one extra value `none` representing the
+/-- The set of all statements in a Turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
 noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) :=
   Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))

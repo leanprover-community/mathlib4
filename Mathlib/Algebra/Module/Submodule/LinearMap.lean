@@ -29,7 +29,7 @@ In this file we define a number of linear maps involving submodules of a module.
 submodule, subspace, linear map
 -/
 
-open BigOperators Function
+open BigOperators Function Set
 
 universe u'' u' u v w
 
@@ -199,6 +199,20 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
   rfl
 #align linear_map.restrict_apply LinearMap.restrict_apply
 
+lemma restrict_comp
+    {M₂ M₃ : Type*} [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₂] [Module R M₃]
+    {p : Submodule R M} {p₂ : Submodule R M₂} {p₃ : Submodule R M₃}
+    {f : M →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃}
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘ₗ f) p p₃ := hg.comp hf) :
+    (g ∘ₗ f).restrict hfg = (g.restrict hg) ∘ₗ (f.restrict hf) :=
+  rfl
+
+lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
+    (hf : MapsTo f p p) (hg : MapsTo g p p) :
+    Commute (f.restrict hf) (g.restrict hg) := by
+  change _ * _ = _ * _
+  conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
+
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
   rfl
@@ -226,13 +240,15 @@ instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂)
 #align linear_map.unique_of_right LinearMap.uniqueOfRight
 
 /-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
+@[simps]
 def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
   toFun f := f a
   map_add' f g := LinearMap.add_apply f g a
   map_zero' := rfl
 #align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
 
-/-- `LinearMap.toAddMonoidHom` promoted to a `AddMonoidHom` -/
+/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
+@[simps]
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   toFun := toAddMonoidHom
   map_zero' := by ext; rfl
