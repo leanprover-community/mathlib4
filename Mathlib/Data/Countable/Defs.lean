@@ -129,21 +129,22 @@ This typeclass says that a given `Sort*` is not countable.
 class Uncountable (α : Sort*) : Prop where
   not_countable : ¬Countable α
 
-lemma countable_not_uncountable {α : Sort u} (hnot_unc : ¬ Uncountable α) : Countable α := by
-  contrapose hnot_unc
-  rw [not_not]
-  exact (Uncountable_iff α).mpr hnot_unc
+lemma countable_iff_not_uncountable {α : Sort u} : Countable α ↔ ¬ Uncountable α := by
+  constructor
+  · intro h
+    contrapose! h
+    exact (Uncountable_iff α).mp h
+  · intro h
+    contrapose! h
+    exact (Uncountable_iff α).mpr h
 
-lemma uncountable_not_countable {α : Sort u} (hnot_unc : ¬ Countable α) : Uncountable α := by
-  exact (Uncountable_iff α).mpr hnot_unc
-
-lemma countable_not_uncountable₂ {α : Sort u} [Countable α] : ¬ Uncountable α := by
-  by_contra h
-  have := h.not_countable
+lemma countable_not_uncountable [Countable α] : ¬ Uncountable α := by
+  apply countable_iff_not_uncountable.mp
   trivial
 
-lemma uncountable_not_countable₂ {α : Sort u} [Uncountable α] :
-  ¬ Countable α := Uncountable.not_countable
+lemma uncountable_not_countable [Uncountable α] : ¬ Countable α := by
+  apply (Uncountable_iff α).mp
+  trivial
 
 lemma Uncountable.not_exists_injective_nat (α : Sort u) [Uncountable α] :
     ¬ (∃ f : α → ℕ, Injective f) := by
@@ -152,6 +153,19 @@ lemma Uncountable.not_exists_injective_nat (α : Sort u) [Uncountable α] :
   have : ¬ Countable α := Uncountable.not_countable
   contradiction
 
+export Uncountable (not_exists_injective_nat)
+
+protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
+    Uncountable β := by
+  by_contra h
+  apply countable_iff_not_uncountable.mpr at h
+  have this1 := Function.Injective.countable hf
+  have this2 := @uncountable_not_countable α
+  exact this2 this1
+
+protected theorem Function.Surjective.uncountable [Uncountable β] {f : α → β} (hf : Surjective f) :
+    Uncountable α := (injective_surjInv hf).uncountable
+
 theorem not_exists_surjective_nat (α : Sort u) [Nonempty α] [Uncountable α] :
    ¬ ∃ f : ℕ → α, Surjective f := by
   by_contra h
@@ -159,27 +173,27 @@ theorem not_exists_surjective_nat (α : Sort u) [Nonempty α] [Uncountable α] :
   have : Countable α := by
     refine countable_iff_exists_surjective.mpr ?_
     use f
-  have : ¬ Uncountable α := countable_not_uncountable₂
+  apply countable_iff_not_uncountable.mp this
   trivial
-
-export Uncountable (not_exists_injective_nat)
-
-protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
-    Uncountable β := by
-  by_contra h
-  apply countable_not_uncountable at h
-  have this1 := Function.Injective.countable hf
-  have this2 := @uncountable_not_countable₂ α
-  exact this2 this1
-
-protected theorem Function.Surjective.uncountable [Uncountable β] {f : α → β} (hf : Surjective f) :
-    Uncountable α := (injective_surjInv hf).uncountable
 
 theorem uncountable_iff_not_exists_surjective [Nonempty α] : Uncountable α ↔
     ¬ ∃ f : ℕ → α, Surjective f := by
     constructor
-    · apply @not_exists_surjective_nat _ _
+    · exact @not_exists_surjective_nat _ _
     · intro hf
       refine { not_countable := ?mpr.not_countable }
       contrapose! hf
       apply exists_surjective_nat
+
+theorem Uncountable.of_equiv (α : Sort*) [Uncountable α] (e : α ≃ β) : Uncountable β := by
+  by_contra h
+  have := countable_iff_not_uncountable.mpr h
+  have hca := Countable.of_equiv β e.symm
+  have := @uncountable_not_countable α _
+  contradiction
+
+theorem Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable β :=
+  ⟨fun h => @Uncountable.of_equiv _ _ h e, fun h => @Uncountable.of_equiv _ _ h e.symm⟩
+
+instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=
+  Uncountable.of_equiv _ Equiv.ulift.symm
