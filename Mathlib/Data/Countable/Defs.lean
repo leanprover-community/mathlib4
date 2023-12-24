@@ -117,3 +117,69 @@ instance (priority := 500) Quotient.countable [Countable α] {r : α → α → 
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=
   (inferInstance : Countable (@Quot α _))
+
+
+/-
+# Uncountable types
+
+This typeclass says that a given `Sort*` is not countable.
+-/
+
+@[mk_iff]
+class Uncountable (α : Sort*) : Prop where
+  not_countable : ¬Countable α
+
+lemma countable_not_uncountable {α : Sort u} (hnot_unc : ¬ Uncountable α) : Countable α := by
+  contrapose hnot_unc
+  rw [not_not]
+  exact (Uncountable_iff α).mpr hnot_unc
+
+lemma uncountable_not_countable {α : Sort u} (hnot_unc : ¬ Countable α) : Uncountable α := by
+  exact (Uncountable_iff α).mpr hnot_unc
+
+lemma countable_not_uncountable₂ {α : Sort u} [Countable α] : ¬ Uncountable α := by
+  by_contra h
+  have := h.not_countable
+  trivial
+
+lemma uncountable_not_countable₂ {α : Sort u} [Uncountable α] :
+  ¬ Countable α := Uncountable.not_countable
+
+lemma Uncountable.not_exists_injective_nat (α : Sort u) [Uncountable α] :
+    ¬ (∃ f : α → ℕ, Injective f) := by
+  by_contra h
+  have : Countable α := { exists_injective_nat' := h}
+  have : ¬ Countable α := Uncountable.not_countable
+  contradiction
+
+theorem not_exists_surjective_nat (α : Sort u) [Nonempty α] [Uncountable α] :
+   ¬ ∃ f : ℕ → α, Surjective f := by
+  by_contra h
+  rcases h with ⟨f, hf⟩
+  have : Countable α := by
+    refine countable_iff_exists_surjective.mpr ?_
+    use f
+  have : ¬ Uncountable α := countable_not_uncountable₂
+  trivial
+
+export Uncountable (not_exists_injective_nat)
+
+protected theorem Function.Injective.uncountable [Uncountable α] {f : α → β} (hf : Injective f) :
+    Uncountable β := by
+  by_contra h
+  apply countable_not_uncountable at h
+  have this1 := Function.Injective.countable hf
+  have this2 := @uncountable_not_countable₂ α
+  exact this2 this1
+
+protected theorem Function.Surjective.uncountable [Uncountable β] {f : α → β} (hf : Surjective f) :
+    Uncountable α := (injective_surjInv hf).uncountable
+
+theorem uncountable_iff_not_exists_surjective [Nonempty α] : Uncountable α ↔
+    ¬ ∃ f : ℕ → α, Surjective f := by
+    constructor
+    · apply @not_exists_surjective_nat _ _
+    · intro hf
+      refine { not_countable := ?mpr.not_countable }
+      contrapose! hf
+      apply exists_surjective_nat
