@@ -93,6 +93,9 @@ structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M 
 --   map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
+/-- The `MulActionHom` underlying a `LinearMap`. -/
+add_decl_doc LinearMap.toMulActionHom
+
 /-- The `AddHom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
 #align linear_map.to_add_hom LinearMap.toAddHom
