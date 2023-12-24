@@ -2079,6 +2079,9 @@ theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
 #align nnnorm_ne_zero_iff' nnnorm_ne_zero_iff'
 #align nnnorm_ne_zero_iff nnnorm_ne_zero_iff
 
+@[to_additive (attr := simp) nnnorm_pos]
+lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+
 @[to_additive]
 theorem tendsto_norm_div_self_punctured_nhds (a : E) :
     Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=

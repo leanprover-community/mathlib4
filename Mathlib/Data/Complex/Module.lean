@@ -3,7 +3,7 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Order.SMul
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower

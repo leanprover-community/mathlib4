@@ -248,15 +248,19 @@ variable [Zero α]
 
 lemma monotone_smul_left_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) : Monotone ((a • ·) : β → β) :=
   PosSMulMono.elim ha
+#align monotone_smul_left monotone_smul_left_of_nonneg
 
 lemma strictMono_smul_left_of_pos [PosSMulStrictMono α β] (ha : 0 < a) :
     StrictMono ((a • ·) : β → β) := PosSMulStrictMono.elim ha
+#align strict_mono_smul_left strictMono_smul_left_of_pos
 
-lemma smul_le_smul_of_nonneg_left [PosSMulMono α β] (hb : b₁ ≤ b₂) (ha : 0 ≤ a) : a • b₁ ≤ a • b₂ :=
-  monotone_smul_left_of_nonneg ha hb
+@[gcongr] lemma smul_le_smul_of_nonneg_left [PosSMulMono α β] (hb : b₁ ≤ b₂) (ha : 0 ≤ a) :
+    a • b₁ ≤ a • b₂ := monotone_smul_left_of_nonneg ha hb
+#align smul_le_smul_of_nonneg smul_le_smul_of_nonneg_left
 
-lemma smul_lt_smul_of_pos_left [PosSMulStrictMono α β] (hb : b₁ < b₂) (ha : 0 < a) :
+@[gcongr] lemma smul_lt_smul_of_pos_left [PosSMulStrictMono α β] (hb : b₁ < b₂) (ha : 0 < a) :
     a • b₁ < a • b₂ := strictMono_smul_left_of_pos ha hb
+#align smul_lt_smul_of_pos smul_lt_smul_of_pos_left
 
 lemma lt_of_smul_lt_smul_left [PosSMulReflectLT α β] (h : a • b₁ < a • b₂) (ha : 0 ≤ a) : b₁ < b₂ :=
   PosSMulReflectLT.elim ha h
@@ -266,16 +270,19 @@ lemma le_of_smul_le_smul_left [PosSMulReflectLE α β] (h : a • b₁ ≤ a •
 
 alias lt_of_smul_lt_smul_of_nonneg_left := lt_of_smul_lt_smul_left
 alias le_of_smul_le_smul_of_pos_left := le_of_smul_le_smul_left
+#align lt_of_smul_lt_smul_of_nonneg lt_of_smul_lt_smul_of_nonneg_left
 
 @[simp]
 lemma smul_le_smul_iff_of_pos_left [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) :
     a • b₁ ≤ a • b₂ ↔ b₁ ≤ b₂ :=
   ⟨fun h ↦ le_of_smul_le_smul_left h ha, fun h ↦ smul_le_smul_of_nonneg_left h ha.le⟩
+#align smul_le_smul_iff_of_pos smul_le_smul_iff_of_pos_left
 
 @[simp]
 lemma smul_lt_smul_iff_of_pos_left [PosSMulStrictMono α β] [PosSMulReflectLT α β] (ha : 0 < a) :
     a • b₁ < a • b₂ ↔ b₁ < b₂ :=
   ⟨fun h ↦ lt_of_smul_lt_smul_left h ha.le, fun hb ↦ smul_lt_smul_of_pos_left hb ha⟩
+#align smul_lt_smul_iff_of_pos smul_lt_smul_iff_of_pos_left
 
 end Left
 
@@ -288,10 +295,10 @@ lemma monotone_smul_right_of_nonneg [SMulPosMono α β] (hb : 0 ≤ b) : Monoton
 lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
     StrictMono ((· • b) : α → β) := SMulPosStrictMono.elim hb
 
-lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
+@[gcongr] lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
     a₁ • b ≤ a₂ • b := monotone_smul_right_of_nonneg hb ha
 
-lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
+@[gcongr] lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
     a₁ • b < a₂ • b := strictMono_smul_right_of_pos hb ha
 
 lemma lt_of_smul_lt_smul_right [SMulPosReflectLT α β] (h : a₁ • b < a₂ • b) (hb : 0 ≤ b) :
@@ -381,9 +388,11 @@ lemma posSMulMono_iff_posSMulReflectLT : PosSMulMono α β ↔ PosSMulReflectLT 
 
 lemma smul_max_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (b₁ b₂ : β) :
     a • max b₁ b₂ = max (a • b₁) (a • b₂) := (monotone_smul_left_of_nonneg ha).map_max
+#align smul_max smul_max_of_nonneg
 
 lemma smul_min_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (b₁ b₂ : β) :
     a • min b₁ b₂ = min (a • b₁) (a • b₂) := (monotone_smul_left_of_nonneg ha).map_min
+#align smul_min smul_min_of_nonneg
 
 end Left
 
@@ -440,6 +449,7 @@ variable [Preorder α] [Preorder β]
 
 lemma smul_pos [PosSMulStrictMono α β] (ha : 0 < a) (hb : 0 < b) : 0 < a • b := by
   simpa only [smul_zero] using smul_lt_smul_of_pos_left hb ha
+#align smul_pos smul_pos
 
 lemma smul_neg_of_pos_of_neg [PosSMulStrictMono α β] (ha : 0 < a) (hb : b < 0) : a • b < 0 := by
   simpa only [smul_zero] using smul_lt_smul_of_pos_left hb ha
@@ -448,12 +458,15 @@ lemma smul_neg_of_pos_of_neg [PosSMulStrictMono α β] (ha : 0 < a) (hb : b < 0)
 lemma smul_pos_iff_of_pos_left [PosSMulStrictMono α β] [PosSMulReflectLT α β] (ha : 0 < a) :
     0 < a • b ↔ 0 < b := by
   simpa only [smul_zero] using smul_lt_smul_iff_of_pos_left ha (b₁ := 0) (b₂ := b)
+#align smul_pos_iff_of_pos smul_pos_iff_of_pos_left
 
 lemma smul_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (hb : 0 ≤ b₁) : 0 ≤ a • b₁ := by
   simpa only [smul_zero] using smul_le_smul_of_nonneg_left hb ha
+#align smul_nonneg smul_nonneg
 
 lemma smul_nonpos_of_nonneg_of_nonpos [PosSMulMono α β] (ha : 0 ≤ a) (hb : b ≤ 0) : a • b ≤ 0 := by
   simpa only [smul_zero] using smul_le_smul_of_nonneg_left hb ha
+#align smul_nonpos_of_nonneg_of_nonpos smul_nonpos_of_nonneg_of_nonpos
 
 lemma pos_of_smul_pos_right [PosSMulReflectLT α β] (h : 0 < a • b) (ha : 0 ≤ a) : 0 < b :=
   lt_of_smul_lt_smul_left (by rwa [smul_zero]) ha
@@ -721,22 +734,35 @@ instance PosSMulStrictMono.toSMulPosStrictMono [PosSMulStrictMono α β] : SMulP
 
 end OrderedRing
 
-section Field
+section GroupWithZero
 variable [GroupWithZero α] [Preorder α] [Preorder β] [MulAction α β]
 
 lemma inv_smul_le_iff_of_pos [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) :
     a⁻¹ • b₁ ≤ b₂ ↔ b₁ ≤ a • b₂ := by rw [← smul_le_smul_iff_of_pos_left ha, smul_inv_smul₀ ha.ne']
+#align inv_smul_le_iff inv_smul_le_iff_of_pos
 
 lemma le_inv_smul_iff_of_pos [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) :
     b₁ ≤ a⁻¹ • b₂ ↔ a • b₁ ≤ b₂ := by rw [← smul_le_smul_iff_of_pos_left ha, smul_inv_smul₀ ha.ne']
+#align le_inv_smul_iff le_inv_smul_iff_of_pos
 
 lemma inv_smul_lt_iff_of_pos [PosSMulStrictMono α β] [PosSMulReflectLT α β] (ha : 0 < a) :
     a⁻¹ • b₁ < b₂ ↔ b₁ < a • b₂ := by rw [← smul_lt_smul_iff_of_pos_left ha, smul_inv_smul₀ ha.ne']
+#align inv_smul_lt_iff inv_smul_lt_iff_of_pos
 
 lemma lt_inv_smul_iff_of_pos [PosSMulStrictMono α β] [PosSMulReflectLT α β] (ha : 0 < a) :
     b₁ < a⁻¹ • b₂ ↔ a • b₁ < b₂ := by rw [← smul_lt_smul_iff_of_pos_left ha, smul_inv_smul₀ ha.ne']
+#align lt_inv_smul_iff lt_inv_smul_iff_of_pos
 
-end Field
+/-- Right scalar multiplication as an order isomorphism. -/
+@[simps!]
+def OrderIso.smulRight [PosSMulMono α β] [PosSMulReflectLE α β] {a : α} (ha : 0 < a) : β ≃o β where
+  toEquiv := Equiv.smulRight ha.ne'
+  map_rel_iff' := smul_le_smul_iff_of_pos_left ha
+#align order_iso.smul_left OrderIso.smulRight
+#align order_iso.smul_left_symm_apply OrderIso.smulRight_symm_apply
+#align order_iso.smul_left_apply OrderIso.smulRight_apply
+
+end GroupWithZero
 
 section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
@@ -889,3 +915,82 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β wh
     exact lt_of_smul_lt_smul_right h hb
 
 end Lift
+
+namespace Mathlib.Meta.Positivity
+section OrderedSMul
+variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
+  {b : β}
+
+private theorem smul_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b :=
+  smul_nonneg ha.le hb
+
+private theorem smul_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b :=
+  smul_nonneg ha hb.le
+
+end OrderedSMul
+
+section NoZeroSMulDivisors
+variable [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] {a : α} {b : β}
+
+private theorem smul_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 :=
+  smul_ne_zero ha.ne' hb
+
+private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder β] (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 :=
+  smul_ne_zero ha hb.ne'
+
+end NoZeroSMulDivisors
+
+open Lean.Meta Qq
+
+/-- Positivity extension for HSMul, i.e. (_ • _).  -/
+@[positivity HSMul.hSMul _ _]
+def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+  let .app (.app (.app (.app (.app (.app
+        (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
+          (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
+  let zM : Q(Zero $β) ← synthInstanceQ (q(Zero $β))
+  let pM : Q(PartialOrder $β) ← synthInstanceQ (q(PartialOrder $β))
+  -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
+  -- required typeclasses. Ideally we could tell `q()` to do this automatically.
+  match ← core zM pM a, ← core zα pα b with
+  | .positive pa, .positive pb =>
+      pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
+  | .positive pa, .nonnegative pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
+  | .nonnegative pa, .positive pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
+  | .nonnegative pa, .nonnegative pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
+  | .positive pa, .nonzero pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
+  | .nonzero pa, .positive pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero_of_ne_zero_of_pos #[pa, pb]))
+  | .nonzero pa, .nonzero pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero #[pa, pb]))
+  | _, _ => pure .none
+
+end Mathlib.Meta.Positivity
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on the 2023/12/23.
+-/
+
+@[deprecated] alias monotone_smul_left := monotone_smul_left_of_nonneg
+@[deprecated] alias strict_mono_smul_left := strictMono_smul_left_of_pos
+@[deprecated] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
+@[deprecated] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
+@[deprecated] alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
+@[deprecated] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
+@[deprecated] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
+@[deprecated] alias smul_max := smul_max_of_nonneg
+@[deprecated] alias smul_min := smul_min_of_nonneg
+@[deprecated] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
+@[deprecated] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
+@[deprecated] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
+@[deprecated] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
+@[deprecated] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
+@[deprecated] alias OrderIso.smulLeft := OrderIso.smulRight
+@[deprecated] alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
+@[deprecated] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
