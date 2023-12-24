@@ -372,7 +372,7 @@ theorem SMatrixRightMul.mul_apply {m : Type*}  {M₁ : Matrix m n N₂} {M₂ : 
     (M₁ •ᵣ M₂) i k = ∑ j,  M₂ j k • M₁ i j := rfl
 
 @[simp]
-theorem LinearMap.toMatrix'_comp' (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂)
+theorem LinearMap.toMatrix'₂_comp (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂)
     (l r : (o → R₂) →ₗ[R₂] n → R₂) : LinearMap.toMatrix'₂ (R₂ := R₂) (B.compl₁₂ l r) =
     (LinearMap.toMatrix' l)ᵀ •ₗ (LinearMap.toMatrix'₂ (R₂ := R₂) B) •ᵣ (LinearMap.toMatrix' r) := by
   ext i j
@@ -398,7 +398,7 @@ theorem BilinForm.toMatrix'_comp (B : BilinForm R₂ (n → R₂)) (l r : (o →
       (LinearMap.toMatrix' l)ᵀ * BilinForm.toMatrix' B * LinearMap.toMatrix' r := by
   rw [BilinForm.toMatrix', BilinForm.toMatrix', LinearEquiv.trans_apply, LinearEquiv.trans_apply,
     Matrix.mul_assoc, ← SMatrixLeftMul_eq_Mul, ← SMatrixRightMul_eq_Mul,
-    ← LinearMap.toMatrix'_comp']
+    ← LinearMap.toMatrix'₂_comp]
   exact rfl
 
 #align bilin_form.to_matrix'_comp BilinForm.toMatrix'_comp
@@ -407,7 +407,7 @@ theorem LinearMap.toMatrix'₂_compLeft (B : (n → R₂) →ₗ[R₂] (n → R�
     (f : (n → R₂) →ₗ[R₂] n → R₂) :
     LinearMap.toMatrix'₂ (B.compl₁₂ f LinearMap.id) =
       (LinearMap.toMatrix' f)ᵀ •ₗ LinearMap.toMatrix'₂ B := by
-  simp only [toMatrix'_comp', toMatrix'_id, SMatrixRight.mul_one]
+  simp only [toMatrix'₂_comp, toMatrix'_id, SMatrixRight.mul_one]
 
 theorem BilinForm.toMatrix'_compLeft (B : BilinForm R₂ (n → R₂)) (f : (n → R₂) →ₗ[R₂] n → R₂) :
     BilinForm.toMatrix' (B.compLeft f) = (LinearMap.toMatrix' f)ᵀ * BilinForm.toMatrix' B := by
@@ -418,7 +418,7 @@ theorem BilinForm.toMatrix'₂_compRight (B : (n → R₂) →ₗ[R₂] (n → R
     (f : (n → R₂) →ₗ[R₂] n → R₂) :
     LinearMap.toMatrix'₂ (B.compl₁₂ LinearMap.id f) =
       LinearMap.toMatrix'₂ B •ᵣ LinearMap.toMatrix' f := by
-  simp only [toMatrix'_comp', toMatrix'_id, transpose_one, SMatrixLeft.OneMul]
+  simp only [toMatrix'₂_comp, toMatrix'_id, transpose_one, SMatrixLeft.OneMul]
 
 theorem BilinForm.toMatrix'_compRight (B : BilinForm R₂ (n → R₂)) (f : (n → R₂) →ₗ[R₂] n → R₂) :
     BilinForm.toMatrix' (B.compRight f) = BilinForm.toMatrix' B * LinearMap.toMatrix' f := by
@@ -429,7 +429,7 @@ theorem BilinForm.toMatrix'_compRight (B : BilinForm R₂ (n → R₂)) (f : (n 
 theorem LinearMap.mul_toMatrix'₂_mul (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂) (M : Matrix o n R₂)
     (N : Matrix n o R₂) : M •ₗ LinearMap.toMatrix'₂ B •ᵣ N =
       LinearMap.toMatrix'₂ (B.compl₁₂ (Matrix.toLin' Mᵀ) (Matrix.toLin' N)) := by
-  simp only [B.toMatrix'_comp', transpose_transpose, toMatrix'_toLin']
+  simp only [B.toMatrix'₂_comp, transpose_transpose, toMatrix'_toLin']
 
 theorem BilinForm.mul_toMatrix'_mul (B : BilinForm R₂ (n → R₂)) (M : Matrix o n R₂)
     (N : Matrix n o R₂) : M * BilinForm.toMatrix' B * N =
@@ -450,7 +450,7 @@ theorem BilinForm.mul_toMatrix' (B : BilinForm R₂ (n → R₂)) (M : Matrix n 
 theorem LinearMap.toMatrix'₂_mul (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂) (M : Matrix n n R₂) :
     LinearMap.toMatrix'₂ B •ᵣ M =
       LinearMap.toMatrix'₂ (B.compl₁₂ LinearMap.id (Matrix.toLin' M)) := by
-  simp only [toMatrix'_comp', toMatrix'_id, transpose_one, toMatrix'_toLin', SMatrixLeft.OneMul]
+  simp only [toMatrix'₂_comp, toMatrix'_id, transpose_one, toMatrix'_toLin', SMatrixLeft.OneMul]
 
 theorem BilinForm.toMatrix'_mul (B : BilinForm R₂ (n → R₂)) (M : Matrix n n R₂) :
     BilinForm.toMatrix' B * M = BilinForm.toMatrix' (B.compRight (Matrix.toLin' M)) := by
@@ -460,7 +460,7 @@ theorem BilinForm.toMatrix'_mul (B : BilinForm R₂ (n → R₂)) (M : Matrix n 
 theorem Matrix.toBilin'_comp' (M : Matrix n n N₂) (P Q : Matrix n o R₂) :
     M.toBilin''.compl₁₂ (Matrix.toLin' P) (Matrix.toLin' Q) = Matrix.toBilin'' (Pᵀ •ₗ M •ᵣ Q) :=
   LinearMap.toMatrix'₂.injective
-    (by simp only [toMatrix'_comp', toMatrix'_toLin', toMatrix'₂_toBilin'])
+    (by simp only [toMatrix'₂_comp, toMatrix'_toLin', toMatrix'₂_toBilin'])
 
 theorem Matrix.toBilin'_comp (M : Matrix n n R₂) (P Q : Matrix n o R₂) :
     M.toBilin'.comp (Matrix.toLin' P) (Matrix.toLin' Q) = Matrix.toBilin' (Pᵀ * M * Q) :=
@@ -505,7 +505,7 @@ noncomputable def Matrix.toBilin : Matrix n n R₂ ≃ₗ[R₂] BilinForm R₂ M
 #align matrix.to_bilin Matrix.toBilin
 
 @[simp]
-theorem BilinForm.toMatrix_apply' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (i j : n) :
+theorem LinearMap.toMatrix'₂'_apply (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (i j : n) :
     LinearMap.toMatrix'₂' b B i j = B (b i) (b j) := by
   rw [LinearMap.toMatrix'₂', LinearEquiv.trans_apply, LinearMap.toMatrix'₂_apply]
   simp only [LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, stdBasis_apply',
@@ -514,7 +514,7 @@ theorem BilinForm.toMatrix_apply' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂)
 @[simp]
 theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
     BilinForm.toMatrix b B i j = B (b i) (b j) := by
-  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, toMatrix_apply', toLin_apply]
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, toMatrix'₂'_apply, toLin_apply]
 #align bilin_form.to_matrix_apply BilinForm.toMatrix_apply
 
 @[simp]
@@ -535,9 +535,9 @@ theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
-theorem BilinearForm.toMatrixAux_eq' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) :
+theorem BilinearForm.toMatrix'₂'Aux_eq (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) :
     LinearMap.toMatrixAux (R₂ := R₂) b B = LinearMap.toMatrix'₂' b B :=
-  ext fun i j => by rw [BilinForm.toMatrix_apply', LinearMap.toMatrixAux_apply]
+  ext fun i j => by rw [LinearMap.toMatrix'₂'_apply, LinearMap.toMatrixAux_apply]
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₂ M₂) :
@@ -546,8 +546,8 @@ theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₂ M₂) :
 #align bilinear_form.to_matrix_aux_eq BilinearForm.toMatrixAux_eq
 
 @[simp]
-theorem BilinForm.toMatrix_symm' :
-    (LinearMap.toMatrix'₂' b).symm = Matrix.toBilin''' (N₂ := N₂) b :=
+theorem LinearMap.toMatrix'₂'_symm' :
+    (toMatrix'₂' b).symm = Matrix.toBilin''' (N₂ := N₂) b :=
   rfl
 
 @[simp]
@@ -604,11 +604,11 @@ local notation:100 M₁ "•ₗ" M₂:100 => SMatrixLeftMul.hSMul M₁ M₂
 local notation:100 M₂ "•ᵣ" M₁:100 => SMatrixRightMul.hSMul M₂ M₁
 
 -- Cannot be a `simp` lemma because `b` must be inferred.
-theorem BilinForm.toMatrix_comp' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (l r : M₂' →ₗ[R₂] M₂) :
+theorem LinearMap.toMatrix'₂'_comp (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (l r : M₂' →ₗ[R₂] M₂) :
     LinearMap.toMatrix'₂' c (B.compl₁₂ l r) =
       (LinearMap.toMatrix c b l)ᵀ •ₗ LinearMap.toMatrix'₂' b B •ᵣ LinearMap.toMatrix c b r := by
   ext i j
-  simp only [toMatrix_apply', compl₁₂_apply, SMatrixLeftMul, LinearMap.toMatrix, SMatrixRightMul,
+  simp only [toMatrix'₂'_apply, compl₁₂_apply, SMatrixLeftMul, LinearMap.toMatrix, SMatrixRightMul,
     SMatrixLeftMul.mul_apply, transpose_apply, smul_sum]
   conv_lhs => rw [← LinearMap.sum_repr_mul_repr_mul b b (l (c i)) (r (c j))]
   rw [Finsupp.sum_fintype]
@@ -630,7 +630,7 @@ theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R�
       (LinearMap.toMatrix c b l)ᵀ * BilinForm.toMatrix b B * LinearMap.toMatrix c b r := by
   rw [BilinForm.toMatrix, BilinForm.toMatrix, LinearEquiv.trans_apply, LinearEquiv.trans_apply,
     Matrix.mul_assoc, ← SMatrixLeftMul_eq_Mul, ← SMatrixRightMul_eq_Mul,
-    ← BilinForm.toMatrix_comp']
+    ← LinearMap.toMatrix'₂'_comp]
   rfl
 #align bilin_form.to_matrix_comp BilinForm.toMatrix_comp
 
