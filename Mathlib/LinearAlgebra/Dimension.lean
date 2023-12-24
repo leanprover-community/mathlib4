@@ -166,10 +166,6 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply, hf] at this
   rw [linearIndependent_iff.mp hs _ this, Finsupp.sum_zero_index]
 
-theorem lift_rank_add_lift_rank_le_rank_prod :
-    lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
-  sorry
-
 /-- The rank of the range of a linear map is at most the rank of the source. -/
 -- The proof is: a free submodule of the range lifts to a free submodule of the
 -- source, by arbitrarily lifting a basis.
@@ -264,6 +260,25 @@ theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Modul
 #align rank_quotient_le rank_quotient_le
 
 variable [Nontrivial R]
+
+variable (R M M')
+
+open LinearMap in
+theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
+    lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
+  convert rank_quotient_add_rank_le (ker <| LinearMap.fst R M M')
+  · refine Eq.trans ?_ (lift_id'.{v, v'} _)
+    rw [(quotKerEquivRange _).lift_rank_eq,
+        rank_range_of_surjective _ fst_surjective, lift_umax.{v, v'}]
+  · refine Eq.trans ?_ (lift_id'.{v', v} _)
+    rw [ker_fst, ← (LinearEquiv.ofInjective _ <| inr_injective (M := M) (M₂ := M')).lift_rank_eq,
+        lift_umax.{v', v}]
+
+theorem rank_add_rank_le_rank_prod :
+    Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
+  convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
+
+variable {R M M'}
 
 theorem cardinal_lift_le_rank_of_linearIndependent {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
@@ -546,6 +561,19 @@ lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M
     Module.rank R M = 0 ↔ Module.IsTorsion R M := by
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
+
+theorem rank_quotient_eq_of_le_torsion {R} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
+    {N : Submodule R M} (hN : N ≤ torsion R M) : Module.rank R (M ⧸ N) = Module.rank R M :=
+  (rank_quotient_le N).antisymm <| by
+    nontriviality R
+    rw [Module.rank]
+    refine ciSup_le fun ⟨s, hs⟩ ↦ cardinal_le_rank_of_linearIndependent (v := (N.mkQ ·)) ?_
+    rw [linearIndependent_iff'] at hs ⊢
+    simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
+    intro t g hg i hi
+    obtain ⟨r, hg⟩ := hN hg
+    simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
+    exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
 Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
