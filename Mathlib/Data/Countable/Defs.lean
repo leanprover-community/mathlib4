@@ -199,3 +199,6 @@ theorem Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable �
 
 instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=
   Uncountable.of_equiv _ Equiv.ulift.symm
+
+instance [Uncountable α] : Uncountable (PLift α) :=
+  Equiv.plift.surjective.uncountable

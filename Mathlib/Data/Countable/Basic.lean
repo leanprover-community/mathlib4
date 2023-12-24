@@ -35,6 +35,18 @@ theorem countable_iff_nonempty_embedding : Countable α ↔ Nonempty (α ↪ ℕ
   ⟨fun ⟨⟨f, hf⟩⟩ => ⟨⟨f, hf⟩⟩, fun ⟨f⟩ => ⟨⟨f, f.2⟩⟩⟩
 #align countable_iff_nonempty_embedding countable_iff_nonempty_embedding
 
+
+theorem uncountable_iff_empty_embedding : Uncountable α ↔ ¬ Nonempty (α ↪ ℕ) := by
+  have := @countable_iff_nonempty_embedding α
+  constructor
+  · intro _
+    by_contra h'
+    exact uncountable_not_countable (this.mpr h')
+  · intro _
+    by_contra h'
+    have := this.mp (countable_iff_not_uncountable.mpr h')
+    contradiction
+
 theorem nonempty_embedding_nat (α) [Countable α] : Nonempty (α ↪ ℕ) :=
   countable_iff_nonempty_embedding.1 ‹_›
 #align nonempty_embedding_nat nonempty_embedding_nat
