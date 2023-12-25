@@ -75,7 +75,8 @@ lemma comp {M N P : Type _}
     {φ : M → N} {ψ : N → P} :
   CompTriple φ ψ  (ψ.comp φ) := {comp_eq := rfl}
 
-lemma comp_inv {M N : Type _} {φ : M → N} {ψ : N → M} (h : Function.RightInverse φ ψ) {χ : M → M} [isId χ] :
+lemma comp_inv {M N : Type _} {φ : M → N} {ψ : N → M}
+    (h : Function.RightInverse φ ψ) {χ : M → M} [isId χ] :
     CompTriple φ ψ χ := {
   comp_eq := by simp only [isId.eq_id, h.id] }
 
