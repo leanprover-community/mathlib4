@@ -332,17 +332,10 @@ theorem natSepDegree_eq_natDegree_of_separable (h : f.Separable) :
 the number of distinct roots of it over `E`. -/
 theorem natSepDegree_eq_of_splits (h : f.Splits (algebraMap F E)) :
     f.natSepDegree = (f.aroots E).toFinset.card := by
-  let i := SplittingField.lift f h
-  have heq := (f.map (algebraMap F f.SplittingField)).map_roots_le_of_injective i.injective
-  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, map_map, AlgHom.comp_algebraMap_of_tower] at heq
-  replace heq := congr_arg Finset.card <| congr_arg Multiset.toFinset <|
-    Multiset.eq_of_le_of_card_le heq <| by rw [Multiset.card_map, ← natDegree_eq_card_roots h,
-      ← natDegree_eq_card_roots <| SplittingField.splits f]
-  have := Finset.card_image_of_injective
-    (f.map (algebraMap F f.SplittingField)).roots.toFinset i.injective
-  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at this
-  rw [Multiset.toFinset_map, this] at heq
-  convert heq
+  rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
+    roots_map _ ((splits_id_iff_splits _).mpr <| SplittingField.splits f),
+    Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _)]
+  rfl
 
 variable (E) in
 /-- The separable degree of a polynomial is equal to
@@ -383,19 +376,14 @@ theorem natSepDegree_mul (g : F[X]) :
     (f * g).natSepDegree ≤ f.natSepDegree + g.natSepDegree := by
   by_cases h : f * g = 0
   · simp only [h, natSepDegree_zero, zero_le]
-  simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h,
-    Multiset.toFinset_add]
+  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add]
   exact Finset.card_union_le _ _
 
 theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
     f.natSepDegree ≤ g.natSepDegree := by
-  simp only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots]
-  set f' := f.map (algebraMap F (AlgebraicClosure F))
-  set g' := g.map (algebraMap F (AlgebraicClosure F))
-  have : f'.roots.dedup ≤ g'.roots.dedup :=
-    (Multiset.Nodup.le_dedup_iff_le <| Multiset.nodup_dedup _).2 <| (Multiset.dedup_le _).trans <|
-      roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
-  exact Multiset.card_le_of_le this
+  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F)]
+  exact Finset.card_le_of_subset <| Multiset.toFinset_subset.mpr <|
+    Multiset.Le.subset <| roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
 
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
@@ -403,30 +391,10 @@ In fact it's given by `x ↦ x ^ p`, but we don't give a proof here. -/
 def rootsExpandEquivRoots
     (R : Type u) [CommRing R] [IsDomain R]
     (p : ℕ) [Fact p.Prime] [CharP R p] [PerfectRing R p] {f : R[X]} :
-    (expand R p f).roots.toFinset ≃ f.roots.toFinset := by
-  rw [polynomial_expand_eq, roots_pow, Multiset.toFinset_nsmul _ p (NeZero.ne p)]
-  let g := f.map (frobeniusEquiv R p).symm.toRingHom
-  let toFun : g.roots.toFinset → f.roots.toFinset := fun ⟨x, h⟩ ↦ ⟨frobeniusEquiv R p x, by
-    simp only [RingEquiv.toRingHom_eq_coe, Multiset.mem_toFinset, mem_roots',
-      ne_eq, IsRoot.def] at h ⊢
-    use fun hf ↦ by simp [hf, Polynomial.map_zero, not_true, false_and] at h
-    replace h := congr_arg (frobeniusEquiv R p) h.2
-    have := eval₂_hom (p := g) (frobeniusEquiv R p).toRingHom x
-    simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_coe] at this
-    simpa only [← this, eval₂_map, RingEquiv.comp_symm, map_zero] using h⟩
-  let invFun : f.roots.toFinset → g.roots.toFinset := fun ⟨x, h⟩ ↦ ⟨(frobeniusEquiv R p).symm x, by
-    simp only [RingEquiv.toRingHom_eq_coe, Multiset.mem_toFinset, mem_roots',
-      ne_eq, IsRoot.def] at h ⊢
-    use (Polynomial.map_ne_zero_iff <| EquivLike.injective _).2 h.1
-    replace h := congr_arg (frobeniusEquiv R p).symm h.2
-    have := eval₂_hom (p := f) (frobeniusEquiv R p).symm.toRingHom x
-    simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_coe] at this
-    simpa only [← this, eval_map, map_zero] using h⟩
-  refine ⟨toFun, invFun, fun ⟨x, h⟩ ↦ ?_, fun ⟨x, h⟩ ↦ ?_⟩
-  · simp only [RingEquiv.toRingHom_eq_coe, frobeniusEquiv_apply,
-      frobeniusEquiv_symm_apply_frobenius]
-  · simp only [RingEquiv.toRingHom_eq_coe, frobeniusEquiv_apply,
-      frobenius_apply_frobeniusEquiv_symm]
+    (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
+  ((frobeniusEquiv R p).image _).trans <| Equiv.Set.ofEq <| show _ '' (setOf _) = setOf _ by
+    ext r; obtain ⟨r, rfl⟩ := surjective_frobenius R p r
+    simp [expand_eq_zero (Fact.out : p.Prime).pos, (frobenius_inj R p).eq_iff, ← frobenius_def]
 
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
 a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
@@ -478,7 +446,7 @@ theorem natSepDegree_dvd_natDegree (h : Irreducible f) :
   obtain ⟨q, _⟩ := ExpChar.exists F
   have hf := Irreducible.hasSeparableContraction q f h
   rw [hf.natSepDegree_eq]
-  exact HasSeparableContraction.dvd_degree hf
+  exact hf.dvd_degree
 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one if and only if it is of the form `Polynomial.expand F (q ^ n) (X - C y)`
@@ -487,15 +455,12 @@ theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), f = expand F (q ^ n) (X - C y) := by
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
-  · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ hi
-    have h3 : g.natDegree = 1 := by
-      rwa [← h2, natSepDegree_expand_eq_natSepDegree _ q,
+  · obtain ⟨g, h1, n, rfl⟩ := Irreducible.hasSeparableContraction q _ hi
+    have h2 : g.natDegree = 1 := by
+      rwa [natSepDegree_expand_eq_natSepDegree _ q,
         natSepDegree_eq_natDegree_of_separable g h1] at h
-    replace h3 : g.degree = 1 := (degree_eq_iff_natDegree_eq_of_pos Nat.one_pos).2 h3
-    have hg := eq_X_add_C_of_degree_eq_one h3
-    rw [← h2, monic_expand_iff (expChar_pow_pos F q n), Monic] at hm
-    rw [hm, map_one, one_mul] at hg
-    exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add, ← hg, h2]⟩
+    rw [((monic_expand_iff <| expChar_pow_pos F q n).mp hm).eq_X_add_C h2]
+    exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add]⟩
   rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
