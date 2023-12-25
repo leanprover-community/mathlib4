@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Bases
 
 #align_import order.filter.n_ary from "leanprover-community/mathlib"@"78f647f8517f021d839a7553d5dc97e79b508dea"
 
@@ -64,6 +64,15 @@ theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β
 theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
   simp only [← map_prod_eq_map₂, map_id']
 #align filter.map₂_mk_eq_prod Filter.map₂_mk_eq_prod
+
+protected lemma HasBasis.map₂ {ι ι' : Type*} {p : ι → Prop} {q : ι' → Prop} {s t}
+    (hf : f.HasBasis p s) (hg : g.HasBasis q t) (m : α → β → γ) :
+    (map₂ m f g).HasBasis (fun i : ι × ι' ↦ p i.1 ∧ q i.2) fun i ↦ image2 m (s i.1) (t i.2) := by
+  simpa only [← map_prod_eq_map₂, ← image_prod] using (hf.prod hg).map _
+
+lemma hasBasis_map₂ :
+    (map₂ m f g).HasBasis (fun s : Set α × Set β ↦ s.1 ∈ f ∧ s.2 ∈ g) fun s ↦ image2 m s.1 s.2 :=
+  f.basis_sets.map₂ g.basis_sets m
 
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,
