@@ -1156,7 +1156,7 @@ to use. This is equivalent to the definition which requires measurability. To pr
 `MutuallySingular` with the measurability condition, use
 `MeasureTheory.VectorMeasure.MutuallySingular.mk`. -/
 def MutuallySingular (v : VectorMeasure α M) (w : VectorMeasure α N) : Prop :=
-  ∃ s : Set α, MeasurableSet s ∧ (∀ t ⊆ s, v t = 0) ∧ ∀ (t) (_ : t ⊆ sᶜ), w t = 0
+  ∃ s : Set α, MeasurableSet s ∧ (∀ t ⊆ s, v t = 0) ∧ ∀ t ⊆ sᶜ, w t = 0
 #align measure_theory.vector_measure.mutually_singular MeasureTheory.VectorMeasure.MutuallySingular
 
 @[inherit_doc VectorMeasure.MutuallySingular]

@@ -512,7 +512,7 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
   let bd : ℕ → ℝ → ℝ := fun n t => t ^ (s.re - 1) * exp (-π * t * ((n : ℝ) + 1) ^ 2)
   let f : ℕ → ℝ → ℂ := fun n t => (t : ℂ) ^ (s - 1) * exp (-π * t * ((n : ℝ) + 1) ^ 2)
   have hm : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
-  have h_norm : ∀ (n : ℕ) {t : ℝ} (_ : 0 < t), ‖f n t‖ = bd n t := by
+  have h_norm : ∀ (n : ℕ) {t : ℝ}, 0 < t → ‖f n t‖ = bd n t := by
     intro n t ht
     rw [norm_mul, Complex.norm_eq_abs, Complex.norm_eq_abs, Complex.abs_of_nonneg (exp_pos _).le,
       abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
@@ -526,7 +526,7 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
           (continuous_exp.comp ((continuous_const.mul continuous_id').mul continuous_const))
   have h_le : ∀ n : ℕ, ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), ‖f n t‖ ≤ bd n t := fun n =>
     (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => le_of_eq (h_norm n ht))
-  have h_sum0 : ∀ {t : ℝ} (_ : 0 < t), HasSum (fun n => f n t)
+  have h_sum0 : ∀ {t : ℝ}, 0 < t → HasSum (fun n => f n t)
       ((t : ℂ) ^ (s - 1) * zetaKernel₁ t) := by
     intro t ht
     rw [zetaKernel₁]
