@@ -259,8 +259,9 @@ theorem dvd_coord_smul (i : ι) (m : M) (r : R) : r ∣ b.coord i (r • m) :=
   ⟨b.coord i m, by simp⟩
 #align basis.dvd_coord_smul Basis.dvd_coord_smul
 
-theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) : b.coord i (b.repr.symm f) = f i :=
-  by simp only [repr_symm_apply, coord_apply, repr_total]
+theorem coord_repr_symm (b : Basis ι R M) (i : ι) (f : ι →₀ R) :
+    b.coord i (b.repr.symm f) = f i := by
+  simp only [repr_symm_apply, coord_apply, repr_total]
 #align basis.coord_repr_symm Basis.coord_repr_symm
 
 end Coord
@@ -472,7 +473,7 @@ theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange 
       Subtype.coe_mk]
   · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
     letI := Module.subsingleton R M
-    simp [reindexRange]
+    simp [reindexRange, eq_iff_true_of_subsingleton]
 #align basis.reindex_range_self Basis.reindexRange_self
 
 theorem reindexRange_repr_self (i : ι) :
@@ -1161,7 +1162,7 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 `j`th element of the basis. -/
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
-  cases' eq_or_ne j i with h h
+  rcases eq_or_ne j i with h | h
   · simp only [h, if_true, eq_self_iff_true, mk_coord_apply_eq i]
   · simp only [h, if_false, mk_coord_apply_ne h]
 #align basis.mk_coord_apply Basis.mk_coord_apply
@@ -1256,7 +1257,7 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     · congr
       simp [Basis.unitsSMul, ← mul_smul]
     simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
-      SMulHomClass.map_smul, Finsupp.single_apply]
+      map_smul, Finsupp.single_apply]
     split_ifs with h <;> simp [h]
 #align basis.coord_units_smul Basis.coord_unitsSMul
 
@@ -1323,7 +1324,7 @@ theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) :
     (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
-      Fin.cons ⟨y, yO⟩ (Submodule.ofLe hNO ∘ b) :=
+      Fin.cons ⟨y, yO⟩ (Submodule.inclusion hNO ∘ b) :=
   coe_mkFinCons _ _ _ _
 #align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLE
 
@@ -1392,6 +1393,52 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
 #align submodule.induction_on_rank_aux Submodule.inductionOnRankAux
 
 end Induction
+
+/-- An element of a non-unital-non-associative algebra is in the center exactly when it commutes
+with the basis elements. -/
+lemma Basis.mem_center_iff {A}
+    [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [SMulCommClass R A A] [SMulCommClass R R A] [IsScalarTower R A A]
+    (b : Basis ι R A) {z : A} :
+    z ∈ Set.center A ↔
+      (∀ i, Commute (b i) z) ∧ ∀ i j,
+        z * (b i * b j) = (z * b i) * b j
+          ∧ (b i * z) * b j = b i * (z * b j)
+          ∧ (b i * b j) * z = b i * (b j * z) := by
+  constructor
+  · intro h;
+    constructor
+    · intro i
+      apply (h.1 (b i)).symm
+    · intros
+      exact ⟨h.2 _ _, ⟨h.3 _ _, h.4 _ _⟩⟩
+  · intro h
+    rw [center, mem_setOf_eq]
+    constructor
+    case comm =>
+      intro y
+      rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
+      simp_rw [mul_smul_comm, smul_mul_assoc, (h.1 _).eq]
+    case left_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
+        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
+        (@SMulCommClass.smul_comm R R A)]
+      rw [Finset.sum_comm]
+    case mid_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      simp_rw [smul_mul_assoc, Finset.sum_mul, mul_smul_comm, smul_mul_assoc, (h.2 _ _).2.1]
+    case right_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul]
+      simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
+        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
+        (h.2 _ _).2.2]
 
 section RestrictScalars
 

@@ -27,7 +27,12 @@ will not have the desired effect.
 -/
 #guard_msgs(error) in
 attribute [eqns t_def] t
+
+/--
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 -- the above should error as the above equation would not have changed the output of the below
 example (n : Nat) : t = n := by
   rw [t]
-  sorry
+  admit

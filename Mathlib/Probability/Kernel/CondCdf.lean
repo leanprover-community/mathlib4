@@ -195,7 +195,7 @@ theorem IicSnd_mono {r r' : ℝ} (h_le : r ≤ r') : ρ.IicSnd r ≤ ρ.IicSnd r
   intro s hs
   simp_rw [IicSnd_apply ρ _ hs]
   refine' measure_mono (prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr _⟩))
-  exact_mod_cast h_le
+  exact mod_cast h_le
 #align measure_theory.measure.Iic_snd_mono MeasureTheory.Measure.IicSnd_mono
 
 theorem IicSnd_le_fst (r : ℝ) : ρ.IicSnd r ≤ ρ.fst := by
@@ -222,12 +222,12 @@ theorem iInf_IicSnd_gt (t : ℚ) {s : Set α} (hs : MeasurableSet s) [IsFiniteMe
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
     refine' ⟨fun h => _, fun h a hta => h.trans _⟩
     · refine' le_of_forall_lt_rat_imp_le fun q htq => h q _
-      exact_mod_cast htq
-    · exact_mod_cast hta.le
+      exact mod_cast htq
+    · exact mod_cast hta.le
   · exact fun _ => hs.prod measurableSet_Iic
   · refine' Monotone.directed_ge fun r r' hrr' => prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, _⟩)
     refine' Iic_subset_Iic.mpr _
-    exact_mod_cast hrr'
+    exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 #align measure_theory.measure.infi_Iic_snd_gt MeasureTheory.Measure.iInf_IicSnd_gt
 
@@ -238,7 +238,7 @@ theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
   refine' tendsto_measure_iUnion fun r q hr_le_q x => _
   simp only [mem_prod, mem_Iic, and_imp]
   refine' fun hxs hxr => ⟨hxs, hxr.trans _⟩
-  exact_mod_cast hr_le_q
+  exact mod_cast hr_le_q
 #align measure_theory.measure.tendsto_Iic_snd_at_top MeasureTheory.Measure.tendsto_IicSnd_atTop
 
 theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableSet s) :
@@ -263,7 +263,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
   refine' fun q r hqr => prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, fun x hx => _⟩)
   simp only [Rat.cast_neg, mem_Iic] at hx ⊢
   refine' hx.trans (neg_le_neg _)
-  exact_mod_cast hqr
+  exact mod_cast hqr
 #align measure_theory.measure.tendsto_Iic_snd_at_bot MeasureTheory.Measure.tendsto_IicSnd_atBot
 
 end MeasureTheory.Measure
@@ -323,7 +323,7 @@ theorem monotone_preCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
       fun s hs _ => _
   rw [set_lintegral_preCdf_fst ρ r hs, set_lintegral_preCdf_fst ρ r' hs]
   refine' Measure.IicSnd_mono ρ _ s hs
-  exact_mod_cast hrr'
+  exact mod_cast hrr'
 #align probability_theory.monotone_pre_cdf ProbabilityTheory.monotone_preCdf
 
 theorem set_lintegral_iInf_gt_preCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (t : ℚ) {s : Set α}
@@ -421,7 +421,7 @@ theorem tendsto_preCdf_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
           _ h_tendsto_ℕ
       filter_upwards [h_mono] with a ha
       refine' fun n m hnm => ha _
-      exact_mod_cast hnm
+      exact mod_cast hnm
     have h_lintegral' :
       Tendsto (fun r : ℕ => ∫⁻ a, preCdf ρ r a ∂ρ.fst) atTop (𝓝 (∫⁻ _, 1 ∂ρ.fst)) := by
       rw [lintegral_one, Measure.fst_univ]
@@ -504,7 +504,7 @@ theorem tendsto_preCdf_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
         (fun i j hij x => _) ⟨0, measure_ne_top ρ _⟩
     simp only [mem_prod, mem_univ, mem_Iic, true_and_iff]
     refine' fun hxj => hxj.trans (neg_le_neg _)
-    exact_mod_cast hij
+    exact mod_cast hij
   exact tendsto_nhds_unique h_lintegral h_lintegral'
 #align probability_theory.tendsto_pre_cdf_at_bot_zero ProbabilityTheory.tendsto_preCdf_atBot_zero
 
@@ -717,8 +717,8 @@ theorem condCdf'_eq_condCdfRat (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) :
   rw [← inf_gt_condCdfRat ρ a r, condCdf']
   refine' Equiv.iInf_congr _ _
   · exact
-      { toFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
-        invFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
+      { toFun := fun t => ⟨t.1, mod_cast t.2⟩
+        invFun := fun t => ⟨t.1, mod_cast t.2⟩
         left_inv := fun t => by simp only [Subtype.coe_eta]
         right_inv := fun t => by simp only [Subtype.coe_eta] }
   · intro t
@@ -810,7 +810,7 @@ theorem tendsto_condCdf_atBot (ρ : Measure (α × ℝ)) (a : α) :
     have h_le : ↑(qs y) ≤ (q : ℝ) - 1 + 1 :=
       (h_exists y).choose_spec.2.le.trans (add_le_add hy le_rfl)
     rw [sub_add_cancel] at h_le
-    exact_mod_cast h_le
+    exact mod_cast h_le
   refine'
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
       ((tendsto_condCdfRat_atBot ρ a).comp hqs_tendsto) (condCdf_nonneg ρ a) fun x => _
@@ -903,7 +903,7 @@ theorem set_lintegral_condCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x
     exact measure_ne_top ρ _
   · refine' Monotone.directed_ge fun i j hij a => ENNReal.ofReal_le_ofReal ((condCdf ρ a).mono _)
     rw [h_coe, h_coe]
-    exact_mod_cast hij
+    exact mod_cast hij
   simp_rw [set_lintegral_condCdf_rat ρ _ hs]
   rw [← measure_iInter_eq_iInf]
   · rw [← prod_iInter]
@@ -913,7 +913,7 @@ theorem set_lintegral_condCdf (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x
   · exact fun i => hs.prod measurableSet_Iic
   · refine' Monotone.directed_ge fun i j hij => _
     refine' prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr _⟩)
-    exact_mod_cast hij
+    exact mod_cast hij
   · exact ⟨h_nonempty.some, measure_ne_top _ _⟩
 #align probability_theory.set_lintegral_cond_cdf ProbabilityTheory.set_lintegral_condCdf
 

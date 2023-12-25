@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
+import Mathlib.Algebra.CharP.Reduced
 
 /-!
 
@@ -108,7 +109,7 @@ lemma polynomial_expand_eq (f : R[X]) :
 theorem not_irreducible_expand (f : R[X]) : ¬ Irreducible (expand R p f) := by
   have hp : Fact p.Prime := inferInstance
   rw [polynomial_expand_eq]
-  exact fun hf ↦ hf.not_unit $ (of_irreducible_pow hp.out.ne_one hf).pow p
+  exact not_irreducible_pow hp.out.ne_one
 
 instance (S : Type*) [CommSemiring S] [CharP S p] [PerfectRing S p] :
     PerfectRing (R × S) p := by
@@ -167,7 +168,7 @@ instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K
   have hg_dvd : g.map ι ∣ (X - C a) ^ p := by
     convert Polynomial.map_dvd ι (minpoly.dvd K a hfa)
     rw [sub_pow_char, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, ← ha_pow, map_pow]
-  have ha : IsIntegral K a := isIntegral_of_finite K a
+  have ha : IsIntegral K a := .of_finite K a
   have hg_pow : g.map ι = (X - C a) ^ (g.map ι).natDegree := by
     obtain ⟨q, -, hq⟩ := (dvd_prime_pow (prime_X_sub_C a) p).mp hg_dvd
     rw [eq_of_monic_of_associated ((minpoly.monic ha).map ι) ((monic_X_sub_C a).pow q) hq,

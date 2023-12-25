@@ -356,6 +356,11 @@ theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 #align filter.has_basis.to_has_basis Filter.HasBasis.to_hasBasis
 
+protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
+    (hs : ∀ i, p i → s i = s' i) : l.HasBasis p' s' :=
+  ⟨fun t ↦ by simp only [hl.mem_iff, ← hp]; exact exists_congr fun i ↦
+    and_congr_right fun hi ↦ hs i hi ▸ Iff.rfl⟩
+
 theorem HasBasis.to_subset (hl : l.HasBasis p s) {t : ι → Set α} (h : ∀ i, p i → t i ⊆ s i)
     (ht : ∀ i, p i → t i ∈ l) : l.HasBasis p t :=
   hl.to_hasBasis' (fun i hi => ⟨i, hi, h i hi⟩) ht
@@ -455,8 +460,8 @@ theorem HasBasis.ge_iff (hl' : l'.HasBasis p' s') : l ≤ l' ↔ ∀ i', p' i' �
 #align filter.has_basis.ge_iff Filter.HasBasis.ge_iff
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
-theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t :=
-  by simp only [le_def, hl.mem_iff]
+theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t := by
+  simp only [le_def, hl.mem_iff]
 #align filter.has_basis.le_iff Filter.HasBasis.le_iffₓ
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
@@ -576,8 +581,9 @@ theorem hasBasis_principal (t : Set α) : (𝓟 t).HasBasis (fun _ : Unit => Tru
   ⟨fun U => by simp⟩
 #align filter.has_basis_principal Filter.hasBasis_principal
 
-theorem hasBasis_pure (x : α) : (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} :=
-  by simp only [← principal_singleton, hasBasis_principal]
+theorem hasBasis_pure (x : α) :
+    (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} := by
+  simp only [← principal_singleton, hasBasis_principal]
 #align filter.has_basis_pure Filter.hasBasis_pure
 
 theorem HasBasis.sup' (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
@@ -944,6 +950,10 @@ theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ 
   la.basis_sets.prod_self.mem_iff
 #align filter.mem_prod_self_iff Filter.mem_prod_self_iff
 
+lemma eventually_prod_self_iff {r : α → α → Prop} :
+    (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
+  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
+
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :
     HasAntitoneBasis (f ×ˢ g) fun n => s n ×ˢ t n :=
@@ -1034,7 +1044,7 @@ theorem countable_biInf_eq_iInf_seq [CompleteLattice α] {B : Set ι} (Bcbl : B.
 
 theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
     (f : ι → α) {i₀ : ι} (h : f i₀ = ⊤) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) := by
-  cases' B.eq_empty_or_nonempty with hB Bnonempty
+  rcases B.eq_empty_or_nonempty with hB | Bnonempty
   · rw [hB, iInf_emptyset]
     use fun _ => i₀
     simp [h]

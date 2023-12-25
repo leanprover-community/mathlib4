@@ -106,8 +106,8 @@ theorem prod_sum {δ : α → Type*} [DecidableEq α] [∀ a, DecidableEq (δ a)
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
-      have : Pi.cons s a x p₂ a (mem_insert_self _ _) = Pi.cons s a y p₃ a (mem_insert_self _ _) :=
-        by rw [eq₂, eq₃, eq]
+      have : Pi.cons s a x p₂ a (mem_insert_self _ _)
+              = Pi.cons s a y p₃ a (mem_insert_self _ _) := by rw [eq₂, eq₃, eq]
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
@@ -134,8 +134,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
   classical
   calc
     ∏ a in s, (f a + g a) =
-        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
-      by simp
+        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a := by simp
     _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
@@ -147,7 +146,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
           rw [prod_ite]
           congr 1
           exact prod_bij'
-            (fun a _ => a.1) (by simp; tauto) (by simp)
+            (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_filter.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp)
           exact prod_bij'
@@ -228,7 +227,7 @@ variable {R : Type*} [CommRing R]
 theorem prod_range_cast_nat_sub (n k : ℕ) :
     ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
-  cases' le_or_lt k n with hkn hnk
+  rcases le_or_lt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp
