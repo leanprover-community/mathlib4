@@ -238,7 +238,7 @@ instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ �
   { AddHomClass.toFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
-def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ M M₃ :=
+def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.toMonoidHom M M₃ :=
   { f with map_zero' := show f 0 = 0 from map_zero f }
 #align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionHom
 
@@ -690,19 +690,19 @@ def compHom.toLinearMap {R S : Type*} [Semiring R] [Semiring S] (g : R →+* S) 
 
 end Module
 
-namespace DistribMulActionSemiHom
+namespace DistribMulActionHom
 
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂]
 variable {σ : R →+* S}
 
-/-- A `DistribMulActionSemiHom` between two modules is a linear map. -/
+/-- A `DistribMulActionHom` between two modules is a linear map. -/
 @[coe]
-def toLinearMap (fₗ : M →ₑ+[σ] M₂) : M →ₛₗ[σ] M₂ :=
+def toLinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
-#align distrib_mul_action_hom.to_linear_map DistribMulActionSemiHom.toLinearMap
+#align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : Coe (M →ₑ+[σ] M₂) (M →ₛₗ[σ] M₂) :=
+instance : Coe (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -711,17 +711,19 @@ instance : Coe (M →ₑ+[σ] M₂) (M →ₛₗ[σ] M₂) :=
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
-theorem coe_toLinearMap (f : M →ₑ+[σ] M₂) : ((f : M →ₑ+[σ] M₂) : M → M₂) = f :=
+theorem coe_toLinearMap (f : M →ₑ+[σ.toMonoidHom] M₂) :
+    ((f : M →ₛₗ[σ] M₂) : M → M₂) = f :=
   rfl
-#align distrib_mul_action_hom.coe_to_linear_map DistribMulActionSemiHom.coe_toLinearMap
+#align distrib_mul_action_hom.coe_to_linear_map DistribMulActionHom.coe_toLinearMap
 
-theorem toLinearMap_injective {f g : M →ₑ+[σ] M₂} (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
+theorem toLinearMap_injective {f g : M →ₑ+[σ.toMonoidHom] M₂}
+    (h : (f : M →ₛₗ[σ] M₂) = (g : M →ₛₗ[σ] M₂)) :
     f = g := by
   ext m
   exact LinearMap.congr_fun h m
-#align distrib_mul_action_hom.to_linear_map_injective DistribMulActionSemiHom.toLinearMap_injective
+#align distrib_mul_action_hom.to_linear_map_injective DistribMulActionHom.toLinearMap_injective
 
-end DistribMulActionSemiHom
+end DistribMulActionHom
 
 namespace IsLinearMap
 
