@@ -393,9 +393,9 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
       fun x : F => f' (g x - g a) - (x - a) := by
     refine' ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => _) fun _ => rfl
     simp
-  refine' this.trans_isLittleO _
+  refine HasFDerivAtFilter.of_isLittleO <| this.trans_isLittleO ?_
   clear this
-  refine ((hf.comp_tendsto hg).symm.congr' (hfg.mono ?_) .rfl).trans_isBigO ?_
+  refine ((hf.isLittleO.comp_tendsto hg).symm.congr' (hfg.mono ?_) .rfl).trans_isBigO ?_
   · intro p hp
     simp [hp, hfg.self_of_nhds]
   · refine' ((hf.isBigO_sub_rev f'.antilipschitz).comp_tendsto hg).congr'
@@ -432,7 +432,7 @@ theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
   rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
   have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
     isBigO_iff.2 <| hf'.imp fun C hC => eventually_of_forall fun z => hC _
-  have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.trans_isBigO A
+  have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
   simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
 #align has_fderiv_within_at.eventually_ne HasFDerivWithinAt.eventually_ne
 

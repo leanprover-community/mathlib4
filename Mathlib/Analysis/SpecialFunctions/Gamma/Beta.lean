@@ -71,8 +71,8 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
     apply ContinuousAt.cpow
     · exact (continuous_const.sub continuous_ofReal).continuousAt
     · exact continuousAt_const
-    · rw [sub_re, one_re, ofReal_re, sub_pos]
-      exact Or.inl (hx.2.trans_lt (by norm_num : (1 / 2 : ℝ) < 1))
+    · norm_cast
+      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 #align complex.beta_integral_convergent_left Complex.betaIntegral_convergent_left
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/
@@ -300,7 +300,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     intro n
     rw [integrable_indicator_iff (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)), IntegrableOn,
       Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self, ← IntegrableOn, ←
-      intervalIntegrable_iff_integrable_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
+      intervalIntegrable_iff_integrableOn_Ioc_of_le (by positivity : (0 : ℝ) ≤ n)]
     apply IntervalIntegrable.continuousOn_mul
     · refine' intervalIntegral.intervalIntegrable_cpow' _
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]

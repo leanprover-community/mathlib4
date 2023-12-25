@@ -784,6 +784,10 @@ theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots
   rw [smul_eq_C_mul, roots_C_mul _ ha]
 #align polynomial.roots_smul_nonzero Polynomial.roots_smul_nonzero
 
+@[simp]
+lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
+  rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
+
 theorem roots_list_prod (L : List R[X]) :
     (0 : R[X]) ∉ L → L.prod.roots = (L : Multiset R[X]).bind roots :=
   List.recOn L (fun _ => roots_one) fun hd tl ih H => by
@@ -1068,6 +1072,11 @@ theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
   aroots_C 1
 
 @[simp]
+theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
+    (-p).aroots S = p.aroots S :=
+  by rw [aroots, Polynomial.map_neg, roots_neg]
+
+@[simp]
 theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
     (C a * p).aroots S = p.aroots S := by
@@ -1127,6 +1136,15 @@ set_option linter.uppercaseLean3 false in
 theorem rootSet_zero (S) [CommRing S] [IsDomain S] [Algebra T S] : (0 : T[X]).rootSet S = ∅ := by
   rw [← C_0, rootSet_C]
 #align polynomial.root_set_zero Polynomial.rootSet_zero
+
+@[simp]
+theorem rootSet_one (S) [CommRing S] [IsDomain S] [Algebra T S] : (1 : T[X]).rootSet S = ∅ := by
+  rw [← C_1, rootSet_C]
+
+@[simp]
+theorem rootSet_neg (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
+    (-p).rootSet S = p.rootSet S := by
+  rw [rootSet, aroots_neg, rootSet]
 
 instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     Fintype (p.rootSet S) :=
@@ -1267,6 +1285,31 @@ theorem eq_of_monic_of_dvd_of_natDegree_le {R} [CommRing R] {p q : R[X]} (hp : p
   convert eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg
   rw [hq.leadingCoeff, C_1, one_mul]
 #align polynomial.eq_of_monic_of_dvd_of_nat_degree_le Polynomial.eq_of_monic_of_dvd_of_natDegree_le
+
+lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
+    (p : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
+    (heval : ∀ i, p.eval (f i) = 0) (hcard : natDegree p < Fintype.card ι) : p = 0 := by
+  classical
+  by_contra hp
+  apply not_lt_of_le (le_refl (Finset.card p.roots.toFinset))
+  calc
+    Finset.card p.roots.toFinset ≤ Multiset.card p.roots := Multiset.toFinset_card_le _
+    _ ≤ natDegree p := Polynomial.card_roots' p
+    _ < Fintype.card ι := hcard
+    _ = Fintype.card (Set.range f) := (Set.card_range_of_injective hf).symm
+    _ = Finset.card (Finset.univ.image f) := by rw [← Set.toFinset_card, Set.toFinset_range]
+    _ ≤ Finset.card p.roots.toFinset := Finset.card_mono ?_
+  intro _
+  simp only [Finset.mem_image, Finset.mem_univ, true_and, Multiset.mem_toFinset, mem_roots', ne_eq,
+    IsRoot.def, forall_exists_index, hp, not_false_eq_true]
+  rintro x rfl
+  exact heval _
+
+lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R]
+    (p : R[X]) (s : Finset R) (heval : ∀ i ∈ s, p.eval i = 0) (hcard : natDegree p < s.card) :
+    p = 0 :=
+  eq_zero_of_natDegree_lt_card_of_eval_eq_zero p Subtype.val_injective
+    (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=

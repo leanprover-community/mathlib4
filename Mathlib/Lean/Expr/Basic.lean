@@ -200,44 +200,6 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
-/-- Turn an expression that is a natural number literal into a natural number. -/
-def natLit! : Expr → Nat
-  | lit (Literal.natVal v) => v
-  | _                      => panic! "nat literal expected"
-
-/-- Turn an expression that is a constructor of `Int` applied to a natural number literal
-into an integer. -/
-def intLit! (e : Expr) : Int :=
-  if e.isAppOfArity ``Int.ofNat 1 then
-    e.appArg!.natLit!
-  else if e.isAppOfArity ``Int.negOfNat 1 then
-    .negOfNat e.appArg!.natLit!
-  else
-    panic! "not a raw integer literal"
-
-/--
-Check if an expression is a "natural number in normal form",
-i.e. of the form `OfNat n`, where `n` matches `.lit (.natVal lit)` for some `lit`.
-and if so returns `lit`.
--/
--- Note that an `Expr.lit (.natVal n)` is not considered in normal form!
-def nat? (e : Expr) : Option Nat := do
-  guard <| e.isAppOfArity ``OfNat.ofNat 3
-  let lit (.natVal n) := e.appFn!.appArg! | none
-  n
-
-
-/--
-Check if an expression is an "integer in normal form",
-i.e. either a natural number in normal form, or the negation of one,
-and if so returns the integer.
--/
-def int? (e : Expr) : Option Int :=
-  if e.isAppOfArity ``Neg.neg 3 then
-    (- ·) <$> e.appArg!.nat?
-  else
-    e.nat?
-
 /--
 Check if an expression is a "rational in normal form",
 i.e. either an integer number in normal form,

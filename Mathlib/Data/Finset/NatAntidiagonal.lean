@@ -35,6 +35,23 @@ instance instHasAntidiagonal : HasAntidiagonal ℕ where
   mem_antidiagonal {n} {xy} := by
     rw [mem_def, Multiset.Nat.mem_antidiagonal]
 
+lemma antidiagonal_eq_map (n : ℕ) :
+    antidiagonal n = (range (n + 1)).map ⟨fun i ↦ (i, n - i), fun _ _ h ↦ (Prod.ext_iff.1 h).1⟩ :=
+  rfl
+
+lemma antidiagonal_eq_map' (n : ℕ) :
+    antidiagonal n =
+      (range (n + 1)).map ⟨fun i ↦ (n - i, i), fun _ _ h ↦ (Prod.ext_iff.1 h).2⟩ := by
+  rw [← map_swap_antidiagonal, antidiagonal_eq_map, map_map]; rfl
+
+lemma antidiagonal_eq_image (n : ℕ) :
+    antidiagonal n = (range (n + 1)).image fun i ↦ (i, n - i) := by
+  simp only [antidiagonal_eq_map, map_eq_image, Function.Embedding.coeFn_mk]
+
+lemma antidiagonal_eq_image' (n : ℕ) :
+    antidiagonal n = (range (n + 1)).image fun i ↦ (n - i, i) := by
+  simp only [antidiagonal_eq_map', map_eq_image, Function.Embedding.coeFn_mk]
+
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
 theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]

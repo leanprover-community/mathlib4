@@ -596,18 +596,21 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
 
--- see Note [lower instance priority]
-instance (priority := 100) ofIsEmpty [IsEmpty α] : Fintype α :=
+/-- An empty type is a fintype. Not registered as an instance, to make sure that there aren't two
+conflicting `Fintype ι` instances around when casing over whether a fintype `ι` is empty or not. -/
+def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
--- no-lint since while `Finset.univ_eq_empty` can prove this, it isn't applicable for `dsimp`.
 /-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp, nolint simpNF]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α _ = ∅ :=
+@[simp]
+theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+
+instance : Fintype Empty := Fintype.ofIsEmpty
+instance : Fintype PEmpty := Fintype.ofIsEmpty
 
 end Fintype
 
@@ -757,6 +760,7 @@ theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
 
 @[simp]
 theorem toFinset_eq_empty [Fintype s] : s.toFinset = ∅ ↔ s = ∅ := by
+  let A : Fintype (∅ : Set α) := Fintype.ofIsEmpty
   rw [← toFinset_empty, toFinset_inj]
 #align set.to_finset_eq_empty Set.toFinset_eq_empty
 
@@ -1295,7 +1299,7 @@ function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
-    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ ∀ m n, m ≠ n → r (f m) (f n) := by
+    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine' ⟨f, hf, fun m n hmn => _⟩
   rcases lt_trichotomy m n with (h | rfl | h)
