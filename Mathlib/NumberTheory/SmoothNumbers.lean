@@ -54,6 +54,15 @@ lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ 
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
 
+/-- A number that divides an `n`-smooth number is itself `n`-smooth. -/
+lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k ∣ m) (hk : k ≠ 0) :
+    k ∈ smoothNumbers n := by
+  rw [mem_smoothNumbers] at h ⊢
+  obtain ⟨h₁, h₂⟩ := h
+  refine ⟨hk, fun p hp ↦ h₂ p ?_⟩
+  rw [mem_factors <| by assumption] at hp ⊢
+  exact ⟨hp.1, hp.2.trans h'⟩
+
 /-- `m` is `n`-smooth if and only if `m` is nonzero and all prime divisors `≤ m` of `m`
 are less than `n`. -/
 lemma mem_smoothNumbers_iff_forall_le  {n m : ℕ} :
@@ -69,6 +78,9 @@ lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime 
   rw [mem_smoothNumbers_iff_forall_le]
   exact ⟨fun ⟨H₀, H₁⟩ ↦ fun p hp₁ hp₂ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero H₀) hp₂) hp₁ hp₂,
          fun H ↦ ⟨fun h ↦ ((H p hp₂ <| h.symm ▸ dvd_zero p).trans_le hp₁).false, fun p _ ↦ H p⟩⟩
+
+lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m ≠ 0 :=
+  (mem_smoothNumbers_iff_forall_le.mp h).1
 
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
