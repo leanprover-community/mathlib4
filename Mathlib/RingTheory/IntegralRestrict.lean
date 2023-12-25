@@ -130,7 +130,7 @@ end galois
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 
 noncomputable
-instance (priority := 900) [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
+instance (priority := 900) [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
     [Module.Finite A B] [NoZeroSMulDivisors A B] : Fintype (B ≃ₐ[A] B) :=
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _ (Algebra.IsIntegral.of_finite A B)
@@ -306,6 +306,8 @@ variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
+/-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
+the trace on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
 noncomputable
 def Algebra.intNorm : B →* A :=
   haveI : IsIntegralClosure B A (FractionRing B) :=

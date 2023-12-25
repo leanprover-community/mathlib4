@@ -476,13 +476,14 @@ lemma isAlgebraic_of_isLocalization {R} [CommRing R] (M : Submonoid R) (S) [Comm
       map_mul, AlgHom.commutes, aeval_X, IsLocalization.mk'_spec', aeval_C, sub_self]
 
 open nonZeroDivisors in
-lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [Field L]
-  [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
-  [IsScalarTower R K L] [IsFractionRing R K] [IsFractionRing S L]
+lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
+    [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
+    [IsScalarTower R K L] [IsFractionRing S L]
     (h : Algebra.IsIntegral R S) : Algebra.IsAlgebraic K L := by
   intro x
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S⁰ x
-  rw [isAlgebraic_iff_isIntegral, IsLocalization.mk'_eq_mul_mk'_one]
+  apply IsIntegral.isAlgebraic
+  rw [IsLocalization.mk'_eq_mul_mk'_one]
   apply RingHom.IsIntegralElem.mul
   · apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
