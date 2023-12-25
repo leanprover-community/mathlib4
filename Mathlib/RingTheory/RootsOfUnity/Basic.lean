@@ -921,15 +921,15 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha
 
 /-- The multiset `nthRoots ↑n (1 : R)` has no repeated elements
 if there is a primitive root of unity in `R`. -/
-theorem nthRoots_nodup_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
+theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRoots n (1 : R)).Nodup :=
   h.nthRoots_nodup one_ne_zero
-#align is_primitive_root.nth_roots_nodup IsPrimitiveRoot.nthRoots_nodup_one
+#align is_primitive_root.nth_roots_nodup IsPrimitiveRoot.nthRoots_one_nodup
 
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRootsFinset n R).card = n := by
-  rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup_one h), card_mk, h.card_nthRoots_one]
+  rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), card_mk, h.card_nthRoots_one]
 #align is_primitive_root.card_nth_roots_finset IsPrimitiveRoot.card_nthRootsFinset
 
 open scoped Nat
@@ -971,7 +971,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   symm
   apply Finset.eq_of_subset_of_card_le
   · intro x
-    simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_nodup_one h), exists_prop,
+    simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), exists_prop,
       Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nthRoots, Finset.mem_mk,
       Nat.mem_divisors, and_true_iff, Ne.def, PNat.ne_zero, PNat.pos, not_false_iff]
     rintro ⟨a, ⟨d, hd⟩, ha⟩
