@@ -583,6 +583,29 @@ lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrime (I : Ideal 
     simp only [vanishingIdeal_zeroLocus_eq_radical, hJ1.isRadical.radical] at this
     exact hJ2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩ this
 
+lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrime_of_radical
+    {I : Ideal R} (hI : I.IsRadical) :
+    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I ∈ minimalPrimes R := by
+  fconstructor
+  · rintro ⟨(hI1 : IsIrreducible _), hI2⟩
+    have := isIrreducible_iff_vanishingIdeal_isPrime.mp hI1
+    simp [vanishingIdeal_zeroLocus_eq_radical, hI.radical] at this
+    refine ⟨⟨this, bot_le⟩, ?_⟩
+    rintro J ⟨hJ1, -⟩ le
+    specialize @hI2 (zeroLocus J)
+      (isIrreducible_iff_vanishingIdeal_isPrime.mpr <| by simpa [hJ1.radical])
+      (zeroLocus_anti_mono le)
+    convert vanishingIdeal_anti_mono hI2 <;>
+    simp [hI.radical,  hJ1.radical]
+  · rintro ⟨⟨hI1, -⟩, hI2⟩
+    refine ⟨isIrreducible_iff_vanishingIdeal_isPrime.mpr <| by simpa [hI1.radical], ?_⟩
+    rintro t (ht : IsIrreducible t) le1
+    refine subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr ?_
+    have := vanishingIdeal_anti_mono le1
+    simp only [vanishingIdeal_zeroLocus_eq_radical, hI1.radical] at this
+    refine hI2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩ this
+
+
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
   simpa using Ideal.bot_prime
