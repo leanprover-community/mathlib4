@@ -308,7 +308,7 @@ theorem covariant_le_of_covariant_lt [PartialOrder N] :
   · exact (h _ bc).le
 #align covariant_le_of_covariant_lt covariant_le_of_covariant_lt
 
-instance (priority := 50) covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
+theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
     CovariantClass M N μ (· ≤ ·) := ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 
 theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
@@ -318,10 +318,10 @@ theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
   · exact (h a bc.le).antisymm (h a bc.ge)
   · exact bc.lt_or_eq.elim (fun bc ↦ (h.1 a bc).le) (fun bc ↦ (h.2 a bc).le)
 
-instance (priority := 100) covariantClass_lt_of_le [PartialOrder N]
-    [ContravariantClass M N μ (· ≤ ·)] : ContravariantClass M N μ (· < ·) :=
-  ⟨And.left ((contravariant_le_iff_contravariant_lt_and_eq M N μ).mp ContravariantClass.elim)⟩
-#align contravariant_lt_of_contravariant_le covariantClass_lt_of_le
+theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
+    Contravariant M N μ (· ≤ ·) → Contravariant M N μ (· < ·) :=
+  And.left ∘ (contravariant_le_iff_contravariant_lt_and_eq M N μ).mp
+#align contravariant_lt_of_contravariant_le contravariant_lt_of_contravariant_le
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=

@@ -83,9 +83,9 @@ instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
 #noalign ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left
 
 @[to_additive]
-theorem OrderedCancelCommMonoid.toContravariantClassLeft :
-    ContravariantClass α α (· * ·) (· < ·) :=
-  inferInstance
+instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeft :
+    ContravariantClass α α (· * ·) (· < ·) where
+  elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toContravariantClassLeft
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toContravariantClassLeft
 
