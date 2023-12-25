@@ -217,19 +217,17 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
     Finset.filter_union_right]
   suffices : Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N
   · convert this with n
-    have hn : n ∈ smoothNumbers k → n ≠ 0 := fun h ↦ (mem_smoothNumbers.mp h).1
+    have hn : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
     tauto
   · rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
     simp
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
--- This needs Mathlib.Data.Nat.Squarefree
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
   obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
   have hl : l ∈ smoothNumbers k :=
     mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁) <| Squarefree.ne_zero H₂
-  have := List.toFinset_eq H₂.nodup_factors
   refine ⟨l.factors.toFinset, ?_,  m, ?_⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
     refine fun p hp ↦ mem_primesBelow.mpr ⟨?_, (mem_primeFactors.mp hp).1⟩
