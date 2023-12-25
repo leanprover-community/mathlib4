@@ -117,7 +117,7 @@ lemma id_comp {φ : M →* N} {ψ : N →* N} [isId ψ] :
 -/
 
 lemma comp {φ : M →* N} {ψ : N →* P} :
-  CompTriple φ ψ (ψ.comp φ) := {comp_eq := rfl}
+    CompTriple φ ψ (ψ.comp φ) := {comp_eq := rfl}
 
 lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
     {χ : M →* M} [MonoidHomCompTriple.isId χ] :
