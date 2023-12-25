@@ -172,8 +172,7 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
 
 theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
     (expand R p f).leadingCoeff = f.leadingCoeff := by
-  simp only [leadingCoeff, natDegree_expand, coeff_expand hp, dvd_mul_left, ite_true,
-    Nat.mul_div_cancel _ hp]
+  simp_rw [leadingCoeff, natDegree_expand, coeff_expand_mul hp]
 
 theorem monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
   simp only [Monic, leadingCoeff_expand hp]
