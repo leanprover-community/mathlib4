@@ -669,4 +669,37 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 
 end Atomise
 
+section Representatives
+
+/-- Choose representatives from each part of a finpartition, collecting them into a finset. -/
+noncomputable def reprs : Finset α :=
+  P.parts.attach.map ⟨fun p => (P.nonempty_of_mem_parts p.2).choose, by
+    rw [Injective]
+    intro ⟨v1, p1⟩ ⟨v2, p2⟩ eq
+    rw [Subtype.mk.injEq]
+    exact P.eq_of_mem_parts p1 p2 (eq ▸ (P.nonempty_of_mem_parts p1).choose_spec)
+      (P.nonempty_of_mem_parts p2).choose_spec⟩
+
+theorem card_reprs : P.reprs.card = P.parts.card := by simp [reprs]
+
+theorem mem_of_reprs (h : a ∈ P.reprs) : a ∈ s := by
+  simp_rw [reprs, mem_map, mem_attach, true_and] at h
+  obtain ⟨p, rfl⟩ := h
+  exact mem_of_subset ((le_sup p.2).trans P.supParts.le) (P.nonempty_of_mem_parts p.2).choose_spec
+
+/-- Two representatives coming from the same part are equal. -/
+theorem reprs_injective {b : α} (ha : a ∈ P.reprs) (hb : b ∈ P.reprs)
+    (hc : P.part (P.mem_of_reprs ha) = P.part (P.mem_of_reprs hb)) : a = b := by
+  rw [reprs, mem_map] at ha hb
+  obtain ⟨⟨_, am⟩, _, ha'⟩ := ha
+  obtain ⟨⟨_, bm⟩, _, hb'⟩ := hb
+  rw [P.eq_of_mem_parts (P.part_mem _) am (P.mem_part _)
+    (ha' ▸ (P.nonempty_of_mem_parts am).choose_spec),
+      P.eq_of_mem_parts (P.part_mem _) bm (P.mem_part _)
+    (hb' ▸ (P.nonempty_of_mem_parts bm).choose_spec)] at hc
+  simp_rw [hc] at ha'
+  exact ha' ▸ hb'
+
+end Representatives
+
 end Finpartition
