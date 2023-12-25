@@ -625,7 +625,7 @@ theorem openEmbedding_of_embedding_open {f : α → β} (h₁ : Embedding f) (h�
 /-- A surjective embedding is an `OpenEmbedding`. -/
 theorem _root_.Embedding.toOpenEmbedding_of_surjective {f : α → β}
     (hf : Embedding f) (hsurj: f.Surjective) : OpenEmbedding f :=
-  ⟨hf, (Set.range_iff_surjective.mpr hsurj) ▸ isOpen_univ⟩
+  ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 
 theorem openEmbedding_iff_embedding_open {f : α → β} :
     OpenEmbedding f ↔ Embedding f ∧ IsOpenMap f :=
