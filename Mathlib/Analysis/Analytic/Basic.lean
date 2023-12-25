@@ -1898,8 +1898,8 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     convert (hasSum_sum_of_ne_finset_zero (s := (Finset.range n).sigma fun k =>
-           ((Finset.range n).filter (fun l => k + l < n)).sigma fun l =>
-           (Finset.univ : Finset ({s : Finset (Fin (k + l)) // s.card = l}))) (fun ⟨k, l, s⟩ h ↦ ?_))
+           ((Finset.range n).filter (fun l => k + l < n)).sigma fun l => (Finset.univ :
+           Finset ({s : Finset (Fin (k + l)) // s.card = l}))) (fun ⟨k, l, s⟩ h ↦ ?_))
     · rw [FormalMultilinearSeries.sum, tsum_eq_sum (s := Finset.range n) (fun _ hm ↦
         by simp only [Finset.mem_range, not_lt] at hm
            rw [p.changeOrigin_finite_of_finite hn hm, ContinuousMultilinearMap.zero_apply])]
