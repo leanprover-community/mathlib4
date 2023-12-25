@@ -443,7 +443,7 @@ variable {f : F[X]}
 theorem natSepDegree_dvd_natDegree (h : Irreducible f) :
     f.natSepDegree ∣ f.natDegree := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  have hf := Irreducible.hasSeparableContraction q f h
+  have hf := h.hasSeparableContraction q
   rw [hf.natSepDegree_eq]
   exact hf.dvd_degree
 
@@ -454,7 +454,7 @@ theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), f = expand F (q ^ n) (X - C y) := by
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
-  · obtain ⟨g, h1, n, rfl⟩ := Irreducible.hasSeparableContraction q _ hi
+  · obtain ⟨g, h1, n, rfl⟩ := hi.hasSeparableContraction q
     have h2 : g.natDegree = 1 := by
       rwa [natSepDegree_expand _ q,
         natSepDegree_eq_natDegree_of_separable g h1] at h
