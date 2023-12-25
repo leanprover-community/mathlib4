@@ -949,31 +949,10 @@ irreducible component is a zero locus of some minimal prime ideal.
 -/
 protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ :=
-  let e := PrimeSpectrum.pointsEquivIrreducibleCloseds R
-  { toFun := fun p ↦
-      let s := e ⟨p.1, p.2.1.1⟩
-      OrderDual.toDual ⟨s.1, ⟨s.2.1, fun t (ht : IsIrreducible t) (le : closure _ ⊆ t) ↦
-        show t ⊆ closure _ from PrimeSpectrum.closure_singleton ⟨p.1, _⟩ ▸ by
-          exact subset_zeroLocus_iff_le_vanishingIdeal t p.1 |>.mpr <| p.2.2
-            ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩ fun x hx ↦
-              (mem_vanishingIdeal _ _ |>.mp hx) ⟨p.1, p.2.1.1⟩ <| le <|
-                closure_singleton ⟨p.1, _⟩ ▸ (mem_zeroLocus _ _ |>.mpr <| le_refl _)⟩⟩
-    invFun := fun s ↦
-      let p := e.symm <| OrderDual.toDual ⟨s.1, s.2.1, isClosed_of_mem_irreducibleComponents _ s.2⟩
-      ⟨p.1, ⟨p.2, bot_le⟩, fun q ⟨hq, _⟩ (le : q ≤ s.2.1.genericPoint.asIdeal) ↦
-        show s.2.1.genericPoint.asIdeal ≤ q by
-        have eq1 : closure _ = _ := s.2.1.genericPoint_spec
-        rw [isClosed_of_mem_irreducibleComponents _ s.2 |>.closure_eq,
-          PrimeSpectrum.closure_singleton] at eq1
-        rw [← hq.radical, ← zeroLocus_subset_zeroLocus_iff, eq1]
-        exact s.2.2 (isIrreducible_zeroLocus_iff_of_radical _ hq.isRadical |>.mpr hq) <|
-          subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr <| le.trans <| by
-          rw [← subset_zeroLocus_iff_le_vanishingIdeal, eq1]⟩
-    left_inv := fun p ↦ Subtype.ext <| show (e.symm <| e _).1 = p.1 by
-      rw [e.symm_apply_apply]
-    right_inv := fun s ↦ Subtype.ext <| show (e (e.symm _)).1 = s.1 by
-      rw [e.apply_symm_apply]; rfl
-    map_rel_iff' := e.map_rel_iff }
+  let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
+    ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
+  (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
+    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_closed, and_comm]).dual
 
 open PrimeSpectrum in
 lemma minimalPrimes.eq_irreducibleComponents :
