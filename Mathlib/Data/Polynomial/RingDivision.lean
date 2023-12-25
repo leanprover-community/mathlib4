@@ -887,7 +887,7 @@ theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
 #align polynomial.nth_roots_zero Polynomial.nthRoots_zero
 
 @[simp]
-theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] {n : ℕ} :
+theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] (n : ℕ) :
     nthRoots n (0 : R) = Multiset.replicate n 0 := by
   rw [nthRoots, C.map_zero, sub_zero, roots_pow, roots_X, Multiset.nsmul_singleton]
 
