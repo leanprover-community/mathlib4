@@ -139,15 +139,16 @@ lemma HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid [CompleteS
       have aux : f_loc.source ∩ s' = s' := by simp
       rw [f_loc.restrOpen_source]--, aux]
       constructor
-      -- show property on s' (copy from below), then use monotonicity!
-      · have : P.property f_loc s' := sorry
-        show P.property f_loc (f_loc.source ∩ s'')
-        apply P.monotonicity (t := s') (f_loc.open_source.inter hs'')
+      · apply P.monotonicity (t := s') (f_loc.open_source.inter hs'') ?_ hfP'
         rw [← aux]
-        exact inter_subset_inter_right f_loc.source (inter_subset_left _ _)
-        exact this
-      · have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by rw [f_loc.restrOpen_target s' hs', aux]
-        -- complete proof, with the below things!
+        exact inter_subset_inter_right _ (inter_subset_left _ _)
+      · have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by
+          rw [f_loc.restrOpen_target s' hs', aux]
+        -- TODO: complete proof, using things with t and t'!
+        show P.property (f_loc.restrOpen s'' hs'').symm (f_loc.restrOpen s'' hs'').target
+
+
+
         sorry
     · rw [f_loc.restrOpen_source]
       apply (mem_inter hx' hx)
@@ -160,6 +161,8 @@ lemma HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid [CompleteS
   --     rw [f_loc.restrOpen_source, aux]
   --     sorry -- TODO: fix proof!
   --     --exact ⟨hfP', this ▸ p⟩
+
+#exit
 
 /-- The pregroupoid of `C^n` functions on `E`. -/
 def contDiffPregroupoidBasic : Pregroupoid E := {
