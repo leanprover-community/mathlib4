@@ -677,7 +677,7 @@ structure ClosedEmbedding (f : α → β) extends Embedding f : Prop where
 #align closed_embedding ClosedEmbedding
 #align closed_embedding_iff closedEmbedding_iff
 
-variable {f : α → β}
+variable {f : α → β} {g : β → γ}
 
 theorem ClosedEmbedding.tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α}
     (hf : ClosedEmbedding f) : Tendsto g a (𝓝 b) ↔ Tendsto (f ∘ g) a (𝓝 (f b)) :=
@@ -721,12 +721,12 @@ theorem closedEmbedding_id : ClosedEmbedding (@id α) :=
   ⟨embedding_id, IsClosedMap.id.closed_range⟩
 #align closed_embedding_id closedEmbedding_id
 
-theorem ClosedEmbedding.comp {g : β → γ} {f : α → β} (hg : ClosedEmbedding g)
-    (hf : ClosedEmbedding f) : ClosedEmbedding (g ∘ f) :=
+theorem ClosedEmbedding.comp (hg : ClosedEmbedding g) (hf : ClosedEmbedding f) :
+    ClosedEmbedding (g ∘ f) :=
   ⟨hg.toEmbedding.comp hf.toEmbedding, (hg.isClosedMap.comp hf.isClosedMap).closed_range⟩
 #align closed_embedding.comp ClosedEmbedding.comp
 
-theorem ClosedEmbedding.closure_image_eq {f : α → β} (hf : ClosedEmbedding f) (s : Set α) :
+theorem ClosedEmbedding.closure_image_eq (hf : ClosedEmbedding f) (s : Set α) :
     closure (f '' s) = f '' closure s :=
   hf.isClosedMap.closure_image_eq_of_continuous hf.continuous s
 #align closed_embedding.closure_image_eq ClosedEmbedding.closure_image_eq
