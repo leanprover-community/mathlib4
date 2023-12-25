@@ -208,9 +208,8 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
 
 variable {f : E → F} {x : E} {s : Set E}
 
-/- The case of continuously polynomial functions. We get the same differentiability
+/-! The case of continuously polynomial functions. We get the same differentiability
 results as for analytic functions, but without the assumptions that `F` is complete.-/
-
 
 theorem HasFiniteFPowerSeriesOnBall.differentiableOn
     (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=
@@ -240,9 +239,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv (h : HasFiniteFPowerSeriesOnBall f p 
     HasFiniteFPowerSeriesOnBall
       (fun z => continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1))
       ((continuousMultilinearCurryFin1 𝕜 E F :
-            (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F).compFormalMultilinearSeries
-        (p.changeOriginSeries 1))
-      x n r
+        (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F).compFormalMultilinearSeries (p.changeOriginSeries 1)) x n r
   · apply A.congr
     intro z hz
     dsimp
@@ -251,16 +248,12 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv (h : HasFiniteFPowerSeriesOnBall f p 
   suffices B :
     HasFiniteFPowerSeriesOnBall (fun z => p.changeOrigin (z - x) 1) (p.changeOriginSeries 1) x
     n r
-  exact
-    (continuousMultilinearCurryFin1 𝕜 E
-              F).toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall
-      B
+  exact (continuousMultilinearCurryFin1 𝕜 E
+    F).toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall B
   simpa using
-    ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos
-          le_top).comp_sub
-      x
+    ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
 
-/-- Variant of the previous result where the degree of `f` is `n` and not `n + 1`. -/
+/-- Variant of the previous result where the degree of `f` is `< n` and not `< n + 1`. -/
 theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p x n r) :
     HasFiniteFPowerSeriesOnBall (_root_.fderiv 𝕜 f)
       ((continuousMultilinearCurryFin1 𝕜 E F :
@@ -319,17 +312,15 @@ theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
   apply contDiffOn_of_continuousOn_differentiableOn
   · rintro m -
     apply (H.iteratedFDeriv m).continuousOn.congr
-    intro x hx
-    exact iteratedFDerivWithin_of_isOpen _ t_open hx
+      (fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
   · rintro m -
     apply (H.iteratedFDeriv m).analyticOn.differentiableOn.congr
-    intro x hx
-    exact iteratedFDerivWithin_of_isOpen _ t_open hx
+      (fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
 theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
-    ContDiffAt 𝕜 n f x := by
-  obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
-  exact hf.contDiffOn.contDiffAt hs
+    ContDiffAt 𝕜 n f x :=
+  let ⟨s, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
+  hf.contDiffOn.contDiffAt hs
 
 end fderiv
 
