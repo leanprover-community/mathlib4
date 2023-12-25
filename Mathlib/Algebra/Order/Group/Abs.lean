@@ -346,7 +346,7 @@ theorem abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
 #align abs_min_le_max_abs_abs abs_min_le_max_abs_abs
 
 theorem eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=
-  sub_eq_zero.1 <| (abs_eq_zero (α := α)).1 h
+  sub_eq_zero.1 <| abs_eq_zero.1 h
 #align eq_of_abs_sub_eq_zero eq_of_abs_sub_eq_zero
 
 theorem abs_sub_le (a b c : α) : |a - c| ≤ |a - b| + |b - c| :=
