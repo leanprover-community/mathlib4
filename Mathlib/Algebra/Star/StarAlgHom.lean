@@ -273,7 +273,7 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
 instance : Zero (A →⋆ₙₐ[R] B) :=
-  ⟨{ (0 : NonUnitalAlgHom (@id R) A B) with map_star' := by simp }⟩
+  ⟨{ (0 : NonUnitalAlgHom (MonoidHom.id R) A B) with map_star' := by simp }⟩
 
 instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
@@ -747,7 +747,7 @@ instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A]
 -- See note [lower instance priority]
 instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [Star A] [SMul R A]
     [Add B] [Mul B] [SMul R B] [Star B] [hF : StarAlgEquivClass F R A B] :
-    MulActionSemiHomClass F (@id R) A B :=
+    MulActionSemiHomClass F (MonoidHom.id R) A B :=
   { hF with
     coe := fun f => f
     coe_injective' := FunLike.coe_injective }
