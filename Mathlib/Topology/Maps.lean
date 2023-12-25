@@ -504,7 +504,7 @@ theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv :
 
 theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
     IsClosedMap f := by
-  intro s hs; cases' eq_empty_or_nonempty s with h2s h2s
+  intro s hs; rcases eq_empty_or_nonempty s with h2s | h2s
   · simp_rw [h2s, image_empty, isClosed_empty]
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
@@ -621,6 +621,11 @@ theorem openEmbedding_of_embedding_open {f : α → β} (h₁ : Embedding f) (h�
     OpenEmbedding f :=
   ⟨h₁, h₂.isOpen_range⟩
 #align open_embedding_of_embedding_open openEmbedding_of_embedding_open
+
+/-- A surjective embedding is an `OpenEmbedding`. -/
+theorem _root_.Embedding.toOpenEmbedding_of_surjective {f : α → β}
+    (hf : Embedding f) (hsurj: f.Surjective) : OpenEmbedding f :=
+  ⟨hf, hsurj.range_eq ▸ isOpen_univ⟩
 
 theorem openEmbedding_iff_embedding_open {f : α → β} :
     OpenEmbedding f ↔ Embedding f ∧ IsOpenMap f :=
