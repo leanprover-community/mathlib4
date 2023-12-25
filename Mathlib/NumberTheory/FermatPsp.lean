@@ -133,14 +133,11 @@ theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatP
 -- pseudoprimes
 section HelperLemmas
 
-private theorem pow_gt_exponent {a : ℕ} (b : ℕ) (h : 2 ≤ a) : b < a ^ b :=
-  lt_of_lt_of_le (Nat.lt_two_pow b) <| Nat.pow_le_pow_of_le_left h _
-
 private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) := by
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  exact self_lt_pow (Nat.lt_of_succ_le ha) hb
+  exact lt_self_pow (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -148,7 +145,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
     _ = a ^ 3 := by rw [pow_succ a 2]
-    _ ≤ a ^ b := pow_le_pow (Nat.le_of_succ_le ha) hb
+    _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
@@ -331,7 +328,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by linarith)
   have : 2 + p ≤ 2 * p := by linarith
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
-  exact Nat.lt_of_le_of_lt this (pow_gt_exponent _ b_ge_two)
+  exact this.trans_lt (lt_pow_self b_ge_two _)
 
 /-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
@@ -350,7 +347,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     cases' h with p hp
     cases' hp with hp₁ hp₂
     have h₁ : 0 < b := pos_of_gt (Nat.succ_le_iff.mp b_ge_two)
-    have h₂ : 4 ≤ b ^ 2 := pow_le_pow_of_le_left' b_ge_two 2
+    have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left' b_ge_two 2
     have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (gt_of_ge_of_gt h₂ (by norm_num))
     have h₄ : 0 < b * (b ^ 2 - 1) := mul_pos h₁ h₃
     have h₅ : b * (b ^ 2 - 1) < p := by linarith

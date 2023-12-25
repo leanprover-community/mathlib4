@@ -376,7 +376,9 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
           if_neg (mem_finPairsLT.1 hab).not_le]
         split_ifs with h₁
         · dsimp [finPairsLT] at hab
-          simp at hab
+          simp? at hab says
+            simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
+              true_and] at hab
           exact absurd h₁ (not_le_of_gt hab)
         · rfl
       else by
@@ -388,7 +390,9 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
         · rfl
         · dsimp at *
           dsimp [finPairsLT] at hab
-          simp at *
+          simp? at * says
+            simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
+              true_and, not_lt, apply_inv_self, not_le, Int.neg_units_ne_self] at *
           exact absurd h₃ (asymm_of LT.lt hab))
     signBijAux_inj signBijAux_surj
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
@@ -513,13 +517,14 @@ def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) →
 
 theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
-      ∀ x y, x ≠ y → signAux3 (swap x y) hs = -1 := by
+      Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   let ⟨l, hl⟩ := Quotient.exists_rep s
   let e := equivFin α
   --clear _let_match
   subst hl
   show
-    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧ ∀ x y, x ≠ y → signAux2 l (swap x y) = -1
+    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
+    Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
     Equiv.ext fun h => by simp [mul_apply]
   constructor
@@ -573,7 +578,7 @@ theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
 #align equiv.perm.sign_symm Equiv.Perm.sign_symm
 
 theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 :=
-  (signAux3_mul_and_swap 1 1 _ mem_univ).2 x y h
+  (signAux3_mul_and_swap 1 1 _ mem_univ).2 h
 #align equiv.perm.sign_swap Equiv.Perm.sign_swap
 
 @[simp]

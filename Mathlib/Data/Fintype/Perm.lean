@@ -99,7 +99,7 @@ theorem mem_permsOfList_iff {l : List α} {f : Perm α} :
   ⟨mem_of_mem_permsOfList, mem_permsOfList_of_mem⟩
 #align mem_perms_of_list_iff mem_permsOfList_iff
 
-theorem nodup_permsOfList : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).Nodup
+theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
   | [], _ => by simp [permsOfList]
   | a :: l, hl => by
     have hl' : l.Nodup := hl.of_cons
