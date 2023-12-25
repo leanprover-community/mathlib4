@@ -564,7 +564,7 @@ lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
-theorem rank_quotient_eq_of_le_torsion {R} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
+theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
     {N : Submodule R M} (hN : N ≤ torsion R M) : Module.rank R (M ⧸ N) = Module.rank R M :=
   (rank_quotient_le N).antisymm <| by
     nontriviality R
