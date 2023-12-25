@@ -369,6 +369,15 @@ theorem setFinite [Module.Finite R V] {b : Set V}
 
 end LinearIndependent
 
+@[deprecated]
+alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
+@[deprecated]
+alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
+@[deprecated]
+alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
+@[deprecated]
+alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
+
 theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [Module.Finite R V]
     (v : ι → V) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
 #align finite_dimensional.not_linear_independent_of_infinite Module.Finite.not_linearIndependent_of_infinite

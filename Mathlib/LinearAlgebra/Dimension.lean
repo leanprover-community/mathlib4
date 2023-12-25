@@ -241,7 +241,9 @@ theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Modul
 
 variable [Nontrivial R]
 
-theorem LinearIndependent.cardinal_lift_le_rank {ι : Type w} {v : ι → M}
+namespace LinearIndependent
+
+theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
@@ -250,19 +252,28 @@ theorem LinearIndependent.cardinal_lift_le_rank {ι : Type w} {v : ι → M}
 #align cardinal_lift_le_rank_of_linear_independent LinearIndependent.cardinal_lift_le_rank
 #align cardinal_lift_le_rank_of_linear_independent' LinearIndependent.cardinal_lift_le_rank
 
-lemma LinearIndependent.aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
+lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : ℵ₀ ≤ Module.rank R M :=
   aleph0_le_lift.mp <| (aleph0_le_lift.mpr <| aleph0_le_mk ι).trans hv.cardinal_lift_le_rank
 
-theorem LinearIndependent.cardinal_le_rank {ι : Type v} {v : ι → M}
+theorem cardinal_le_rank {ι : Type v} {v : ι → M}
     (hv : LinearIndependent R v) : #ι ≤ Module.rank R M := by
   simpa using hv.cardinal_lift_le_rank
 #align cardinal_le_rank_of_linear_independent LinearIndependent.cardinal_le_rank
 
-theorem LinearIndependent.cardinal_le_rank' {s : Set M}
+theorem cardinal_le_rank' {s : Set M}
     (hs : LinearIndependent R (fun x => x : s → M)) : #s ≤ Module.rank R M :=
   hs.cardinal_le_rank
 #align cardinal_le_rank_of_linear_independent' LinearIndependent.cardinal_le_rank'
+
+end LinearIndependent
+
+@[deprecated]
+alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
+@[deprecated]
+alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
+@[deprecated] alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
+@[deprecated] alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
 variable (R M)
 
