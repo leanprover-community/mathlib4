@@ -793,7 +793,7 @@ lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
 /-- If `R` contains a `n`-th primitive root, and `S/R` is a ring extension,
 then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
-@[simps! apply_coe_val apply_coe_inv_val]
+@[simps! (config := .lemmasOnly) apply_coe_val apply_coe_inv_val]
 noncomputable
 def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S] [MonoidHomClass F R S]
     {n : ℕ+} {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
