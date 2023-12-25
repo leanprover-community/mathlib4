@@ -65,6 +65,7 @@ structure IFTPregroupoid (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕂 E]
 where
   /-- Our property is **monotone** on open sets: if `s` is open and `s ⊆ t`, then
     `f ∈ P` on `t` implies `f ∈ P` on `s`. -/
+  -- xxx: does this follow from the locality property of pregroupoids? think!
   monotonicity : ∀ {f s t}, IsOpen s → s ⊆ t → property f t → property f s
   /-- If `f ∈ P` on `s` and `f` is strictly differentiable at `x` with invertible differential,
     a local inverse `g` of `f` at `f x` also lies in `P` on some open neighbourhood `t` of `f x`.
@@ -146,9 +147,11 @@ lemma HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid [CompleteS
           rw [f_loc.restrOpen_target s' hs', aux]
         -- TODO: complete proof, using things with t and t'!
         show P.property (f_loc.restrOpen s'' hs'').symm (f_loc.restrOpen s'' hs'').target
-
-
-
+        have : P.property f_loc.symm t' := hP
+        --have : t' ⊆ f_loc '' s' := htt', hence t' ⊆ f_loc '' s'' follows
+        rw [f_loc.restrOpen_target]
+        -- final step: argue with the congr property; restrOpen equals f_loc on s'',
+        -- which is an open set (by `hs''`)
         sorry
     · rw [f_loc.restrOpen_source]
       apply (mem_inter hx' hx)
