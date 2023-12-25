@@ -41,6 +41,14 @@ structure SpectralSequenceMkData where
   hc (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : deg pq + 1 = deg pq'
   hc₀₂ (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : i₀ r hr pq = i₂ pq'
   hc₁₃ (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') : i₁ pq = i₃ r hr pq'
+  i₀_le' (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
+      i₀ (r + 1) (by linarith) pq ≤ i₀ r hr pq
+  i₃_le' (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
+      i₃ r hr pq ≤ i₃ (r + 1) (by linarith) pq
+  i₀_prev' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
+      i₀ (r + 1) (by linarith) pq = i₁ pq'
+  i₃_next' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
+      i₃ (r + 1) (by linarith) pq' = i₂ pq
 
 @[simps!]
 def mkDataE₂Cohomological :
@@ -56,6 +64,24 @@ def mkDataE₂Cohomological :
   hc := by rintro r _ pq _ rfl; dsimp; linarith
   hc₀₂ := by rintro r hr pq _ rfl; dsimp; congr 1; linarith
   hc₁₃ := by rintro r hr pq _ rfl; dsimp; congr 1; linarith
+  i₀_le' r hr pq := by
+    dsimp
+    simp only [ℤt.mk_le_mk_iff]
+    linarith
+  i₃_le' r hr pq := by
+    dsimp
+    simp only [ℤt.mk_le_mk_iff]
+    linarith
+  i₀_prev':= by
+    rintro r hr pq _ rfl
+    dsimp
+    congr 1
+    linarith
+  i₃_next' := by
+    rintro r hr pq _ rfl
+    dsimp
+    congr 1
+    linarith
 
 @[simps!]
 def mkDataE₂CohomologicalNat :
@@ -83,73 +109,6 @@ def mkDataE₂CohomologicalNat :
     dsimp
     congr 1
     linarith
-
-variable {ι c r₀}
-
-variable (data : SpectralSequenceMkData ι c r₀)
-
-namespace SpectralSequenceMkData
-
-class HasHomologyComputation : Prop where
-  i₀_le' (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
-      data.i₀ (r + 1) (by linarith) pq ≤ data.i₀ r hr pq
-  i₃_le' (r : ℤ) (hr : r₀ ≤ r) (pq : κ) :
-      data.i₃ r hr pq ≤ data.i₃ (r + 1) (by linarith) pq
-  i₀_prev' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
-      data.i₀ (r + 1) (by linarith) pq = data.i₁ pq'
-  i₃_next' (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq') :
-      data.i₃ (r + 1) (by linarith) pq' = data.i₂ pq
-
-instance : mkDataE₂Cohomological.HasHomologyComputation where
-  i₀_le' r hr pq := by
-    dsimp
-    simp only [ℤt.mk_le_mk_iff]
-    linarith
-  i₃_le' r hr pq := by
-    dsimp
-    simp only [ℤt.mk_le_mk_iff]
-    linarith
-  i₀_prev':= by
-    rintro r hr pq _ rfl
-    dsimp
-    congr 1
-    linarith
-  i₃_next' := by
-    rintro r hr pq _ rfl
-    dsimp
-    congr 1
-    linarith
-
-section
-
-variable [hdata : data.HasHomologyComputation]
-
-lemma i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq : κ) :
-    data.i₀ r' (by linarith) pq ≤ data.i₀ r hr pq := by
-  subst hrr'
-  apply HasHomologyComputation.i₀_le'
-
-lemma i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq : κ) :
-    data.i₃ r hr pq ≤ data.i₃ r' (by linarith) pq := by
-  subst hrr'
-  apply HasHomologyComputation.i₃_le'
-
-lemma i₀_prev (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
-    (hpq : (c r).Rel pq pq') :
-    data.i₀ r' (by linarith) pq = data.i₁ pq' := by
-  subst hrr'
-  exact HasHomologyComputation.i₀_prev' r hr pq pq' hpq
-
-lemma i₃_next (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
-    (hpq : (c r).Rel pq pq') :
-    data.i₃ r' (by linarith) pq' = data.i₂ pq := by
-  subst hrr'
-  exact HasHomologyComputation.i₃_next' r hr pq pq' hpq
-
-
-end
-
-instance : mkDataE₂CohomologicalNat.HasHomologyComputation where
   i₀_le' r hr pq := by
     dsimp
     rw [ℤt.mk_le_mk_iff]
@@ -169,11 +128,34 @@ instance : mkDataE₂CohomologicalNat.HasHomologyComputation where
     congr 1
     linarith
 
+variable {ι c r₀}
+variable (data : SpectralSequenceMkData ι c r₀)
+
+namespace SpectralSequenceMkData
+
+lemma i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq : κ) :
+    data.i₀ r' (by linarith) pq ≤ data.i₀ r hr pq := by
+  subst hrr'
+  apply data.i₀_le'
+
+lemma i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq : κ) :
+    data.i₃ r hr pq ≤ data.i₃ r' (by linarith) pq := by
+  subst hrr'
+  apply data.i₃_le'
+
+lemma i₀_prev (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
+    (hpq : (c r).Rel pq pq') :
+    data.i₀ r' (by linarith) pq = data.i₁ pq' := by
+  subst hrr'
+  exact data.i₀_prev' r hr pq pq' hpq
+
+lemma i₃_next (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq pq' : κ)
+    (hpq : (c r).Rel pq pq') :
+    data.i₃ r' (by linarith) pq' = data.i₂ pq := by
+  subst hrr'
+  exact data.i₃_next' r hr pq pq' hpq
+
 end SpectralSequenceMkData
-
-section
-
-variable [data.HasHomologyComputation]
 
 class HasSpectralSequence : Prop where
   isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
@@ -218,8 +200,6 @@ lemma isZero_H_obj_mk₁_i₃_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ �
       simpa only [hi₃, hi₃'] using data.i₃_le r r' hrr' hr pq)))) := by
   subst hi₃ hi₃'
   exact HasSpectralSequence.isZero_H_obj_mk₁_i₃_le r r' hrr' hr pq hpq n hn
-
-end
 
 namespace SpectralSequence
 
@@ -344,7 +324,7 @@ noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
 
 section
 
-variable [data.HasHomologyComputation] [X.HasSpectralSequence data]
+variable [X.HasSpectralSequence data]
 
 variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (pq pq' pq'' : κ) (hpq : (c r).prev pq' = pq) (hpq' : (c r).next pq' = pq'')
@@ -619,7 +599,7 @@ end SpectralSequence
 
 section
 
-variable [data.HasHomologyComputation] [X.HasSpectralSequence data]
+variable [X.HasSpectralSequence data]
 
 noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page' := SpectralSequence.page X data

@@ -12,7 +12,7 @@ variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι]
   (X : SpectralObject C ι)
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
   [∀ r, DecidableRel (c r).Rel]
-  (data : SpectralSequenceMkData ι c r₀) [data.HasHomologyComputation]
+  (data : SpectralSequenceMkData ι c r₀)
 
 namespace SpectralSequenceMkData
 
