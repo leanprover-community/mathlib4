@@ -277,11 +277,12 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     Finset.filter_congr_decidable, Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
-  refine exists_congr fun p ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-  · have : p < N.succ := LE.le.trans_lt (le_of_dvd (Nat.pos_of_ne_zero H.2.1) H.2.2.2.2.1) H.1
-    tauto
-  · have : ¬ m < p := not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero H.2.2.1) H.2.2.2
-    tauto
+  refine exists_congr fun p ↦ ?_
+  have H₁ : m ≠ 0 → p ∣ m → m < N.succ → p < N.succ :=
+    fun h₁ h₂ h₃ ↦ LE.le.trans_lt (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂) h₃
+  have H₂ : m ≠ 0 →  p ∣ m → ¬ m < p :=
+    fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
+  tauto
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/
