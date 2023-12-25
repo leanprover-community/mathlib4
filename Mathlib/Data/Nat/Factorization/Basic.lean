@@ -866,7 +866,8 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 
 -- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
-/-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`. -/
+/-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
+See `Nat.card_multiples'` for an alternative spelling of the statement.  -/
 theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn
   · simp
@@ -886,5 +887,17 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p �
   simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
     Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n), Nat.succ_eq_add_one]
 #align nat.Ioc_filter_dvd_card_eq_div Nat.Ioc_filter_dvd_card_eq_div
+
+/-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
+See `Nat.card_multiples` for a "shifted-by-one" version. -/
+lemma card_multiples' (N n : ℕ) :
+    ((Finset.range N.succ).filter (fun k ↦ k ≠ 0 ∧ n ∣ k)).card = N / n := by
+  induction N with
+    | zero => simp
+    | succ N ih =>
+        rw [Finset.range_succ, Finset.filter_insert]
+        by_cases h : n ∣ N.succ
+        · simp [h, succ_div_of_dvd, ih]
+        · simp [h, succ_div_of_not_dvd, ih]
 
 end Nat

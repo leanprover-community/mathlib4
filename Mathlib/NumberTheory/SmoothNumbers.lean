@@ -27,7 +27,7 @@ def primesBelow (n : ℕ) : Finset ℕ := (Finset.range n).filter (fun p ↦ p.P
 lemma primesBelow_zero : primesBelow 0 = ∅ := by
   rw [primesBelow, Finset.range_zero, Finset.filter_empty]
 
-lemma mem_primesBelow_iff {k n : ℕ} :
+lemma mem_primesBelow {k n : ℕ} :
     n ∈ primesBelow k ↔ n < k ∧ n.Prime := by simp [primesBelow]
 
 lemma prime_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p.Prime :=
@@ -47,7 +47,7 @@ lemma not_mem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
 positive natural numbers all of whose prime factors are less than `n`. -/
 def smoothNumbers (n : ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
 
-lemma mem_smoothNumbers_iff {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p < n :=
+lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p < n :=
   Iff.rfl
 
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
@@ -58,13 +58,13 @@ instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
 are less than `n`. -/
 lemma mem_smoothNumbers_iff_forall_le  {n m : ℕ} :
     m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ≤ m, p.Prime → p ∣ m → p < n := by
-  simp_rw [mem_smoothNumbers_iff, mem_factors']
+  simp_rw [mem_smoothNumbers, mem_factors']
   exact ⟨fun ⟨H₀, H₁⟩ ↦ ⟨H₀, fun p _ hp₂ hp₃ ↦ H₁ p ⟨hp₂, hp₃, H₀⟩⟩,
     fun ⟨H₀, H₁⟩ ↦
       ⟨H₀, fun p ⟨hp₁, hp₂, hp₃⟩ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero hp₃) hp₂) hp₁ hp₂⟩⟩
 
 /-- `m` is `n`-smooth if and only if all prime divisors of `m` are less than `n`. -/
-lemma mem_smoothNumbers_iff' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
+lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
   obtain ⟨p, hp₁, hp₂⟩ := exists_infinite_primes n
   rw [mem_smoothNumbers_iff_forall_le]
   exact ⟨fun ⟨H₀, H₁⟩ ↦ fun p hp₁ hp₂ ↦ H₁ p (Nat.le_of_dvd (Nat.pos_of_ne_zero H₀) hp₂) hp₁ hp₂,
@@ -73,7 +73,7 @@ lemma mem_smoothNumbers_iff' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Pr
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
   ext m
-  rw [Set.mem_singleton_iff, mem_smoothNumbers_iff]
+  rw [Set.mem_singleton_iff, mem_smoothNumbers]
   simp_rw [not_lt_zero]
   rw [← List.eq_nil_iff_forall_not_mem, factors_eq_nil, and_or_left, not_and_self_iff, false_or,
     ne_and_eq_iff_right zero_ne_one]
@@ -104,7 +104,7 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
 lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
-  simp only [Set.mem_compl_iff, mem_smoothNumbers_iff, Set.mem_diff, ne_eq, not_and, not_forall,
+  simp only [Set.mem_compl_iff, mem_smoothNumbers, Set.mem_diff, ne_eq, not_and, not_forall,
     not_lt, exists_prop, Set.mem_singleton_iff] at hn
   obtain ⟨m, hm₁, hm₂⟩ := hn.1 hn.2
   exact hm₂.trans <| le_of_mem_factors hm₁
