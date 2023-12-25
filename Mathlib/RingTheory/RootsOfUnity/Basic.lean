@@ -501,7 +501,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
 #align is_primitive_root.pow IsPrimitiveRoot.pow
 
 lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
-    Set.InjOn (fun x => ζ ^ x) (Finset.range n) := by
+    Set.InjOn (ζ ^ ·) (Finset.range n) := by
   obtain (rfl|hn) := n.eq_zero_or_pos; · simp
   intros i hi j hj e
   rw [Finset.coe_range, Set.mem_Iio] at hi hj
@@ -565,7 +565,7 @@ variable {M₀ : Type*} [CancelCommMonoidWithZero M₀]
 
 lemma injOn_pow_mul {n : ℕ} {ζ : M₀} (hζ : IsPrimitiveRoot ζ n)
     {α : M₀} (hα : α ≠ 0) :
-    Set.InjOn (fun x => ζ ^ x * α) (Finset.range n) := fun i hi j hj e ↦
+    Set.InjOn (ζ ^ · * α) (Finset.range n) := fun i hi j hj e ↦
   hζ.injOn_pow hi hj (by simpa [mul_eq_mul_right_iff, or_iff_left hα] using e)
 
 end CancelCommMonoidWithZero
