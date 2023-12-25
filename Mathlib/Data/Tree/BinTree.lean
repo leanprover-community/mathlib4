@@ -271,6 +271,12 @@ lemma hasNodeAt_pushRight (t : BinTree α β) (p : BinAddr) :
                  getSubtreeAt?_here_eq, getNodeData, Sum.getLeft?_inr,
                  Sum.getLeft?_inl, Option.isSome_some, Option.isSome_none]
 
+lemma hasNodeAt_leaf {x} (p : BinAddr) : hasNodeAt (@leaf α β x) p ↔ p.isHere? :=
+  ⟨Decidable.not_imp_not.mp
+    (Option.not_isSome_iff_eq_none.mpr ∘ getNodeAt?_leaf_eq_none x)
+  ∘ (hasNodeAt_iff_getNodeAt?_isSome _ _).mp,
+  BinAddr.isHere?.ndrec (motive:=hasNodeAt _) (hasNodeAt_here _)⟩
+
 end predicates
 
 lemma getNodeAt?_faithful ⦃t₁ t₂ : BinTree α β⦄
@@ -311,6 +317,85 @@ def autoEval : BinTree (α → α → α) α → α
 @[simp] lemma autoEval_branch {y : α → α → α} {l r} :
     @autoEval α (branch y l r) = y l.autoEval r.autoEval := rfl
 
+section isBuiltFrom
+
+universe u₁ u₂ v₁ v₂
+variable {N : Type u₁} {N' : Type u₂} {L : Type v₁} {L' : Type v₂} {σ : Type w}
+
+-- I tried working with anamorphisms but it was too messy
+inductive isBuiltFrom (f : σ → L ⊕ (N × σ × σ)) : σ → BinTree N L → Prop
+  | halt : ∀ {s x}, f s = Sum.inl x → isBuiltFrom f s (leaf x)
+  | step : ∀ {s sₗ sᵣ y l r}, f s = Sum.inr (y, sₗ, sᵣ) → isBuiltFrom f sₗ l
+                           → isBuiltFrom f sᵣ r → isBuiltFrom f s (branch y l r)
+
+@[eliminator]
+def isBuiltFrom.rec' {f : σ → L ⊕ (N × σ × σ)}
+    {motive : (s : σ) → (t : BinTree N L) → isBuiltFrom f s t → Sort u}
+    (halt : {s : σ} → {x : L} → (h : f s = Sum.inl x)
+                    → motive s (leaf x) (isBuiltFrom.halt h))
+    (step : {s sₗ sᵣ : σ} → {y : N} → {l r : BinTree N L}
+          → (h : f s = Sum.inr (y, sₗ, sᵣ)) → (h1 : isBuiltFrom f sₗ l)
+          → (h2 : isBuiltFrom f sᵣ r) → motive sₗ l h1
+          → motive sᵣ r h2 → motive s (branch y l r) (isBuiltFrom.step h h1 h2))
+    {s : σ} : ∀ {t : BinTree N L} (h : isBuiltFrom f s t), motive s t h
+  | leaf x, h => halt $ by cases h; assumption
+  | branch y l r, h =>
+    have h' : (f s).isRight := by
+      cases' h with _ _ _ _ _ _ _ _ _ h
+      exact Eq.trans (congrArg _ h) Sum.isRight_inr
+    let e := (f s).getRight h'
+    let sₗ := Prod.fst $ Prod.snd e
+    let sᵣ := Prod.snd $ Prod.snd e
+    have h1 : isBuiltFrom f sₗ l :=
+      by cases' h with _ _ _ _ _ _ _ _ _ h hₗ; simp only [h]; assumption
+    have h2 : isBuiltFrom f sᵣ r :=
+      by cases' h with _ _ _ _ _ _ _ _ _ h _ hᵣ; simp only [h]; assumption
+    have h3 : e.fst = y :=
+      by cases' h with _ _ _ _ _ _ _ _ _ h; simp only [h, Sum.getRight_inr]
+    have h4 : f s = Sum.inr (y, sₗ, sᵣ) :=
+      (Sum.getRight_eq_iff h').mp (Prod.ext h3 rfl)
+    step h4 h1 h2 (isBuiltFrom.rec' halt step h1) (isBuiltFrom.rec' halt step h2)
+
+def isBuiltFrom.ndrec {f : σ → L ⊕ (N × σ × σ)}
+    {motive : (s : σ) → (t : BinTree N L) → Sort u}
+    (halt : {s : σ} → {x : L} → (h : f s = Sum.inl x) → motive s (leaf x))
+    (step : {s sₗ sᵣ : σ} → {y : N} → {l r : BinTree N L}
+          → (h : f s = Sum.inr (y, sₗ, sᵣ))
+          → (h1 : isBuiltFrom f sₗ l) → (h2 : isBuiltFrom f sᵣ r)
+          → motive sₗ l → motive sᵣ r → motive s (branch y l r))
+    {s : σ} {t : BinTree N L} (h : isBuiltFrom f s t) : motive s t :=
+  isBuiltFrom.rec' halt step h
+
+def actionOnState (f : σ → L ⊕ (N × σ × σ)) (s : σ) : Option (σ × σ) :=
+  (f s).getRight?.map Prod.snd
+
+def getStateAt? (f : σ → Option (σ × σ)) (s : σ) (p : BinAddr) : Option σ :=
+  p.rec' some (fun _ self s => ((f s).map Prod.fst).bind self)
+              (fun _ self s => ((f s).map Prod.snd).bind self) s
+
+lemma getNodeAt?_eq_getStateAt?_of_isBuiltFrom (f : σ → L ⊕ (N × σ × σ))
+    {s : σ} {t : BinTree N L} (p : BinAddr) (H : isBuiltFrom f s t) :
+    getNodeAt? t p = (getStateAt? (actionOnState f) s p).map (fun x =>
+      Sum.swap $ Sum.map id Prod.fst $ f x) := by
+  induction H generalizing p with
+  | halt h =>
+    cases' p using BinAddr.cases'
+    <;> simp only [getNodeAt?_leaf_here_eq, getStateAt?, BinAddr.rec'_here,
+                   getNodeAt?_leaf_left, getNodeAt?_leaf_right, Sum.getRight?_inl,
+                   BinAddr.rec'_left, BinAddr.rec'_right, actionOnState,
+                   Option.map_some', h, Sum.map_inl, Sum.swap_inl, id_eq,
+                   Option.map_none', Option.none_bind]
+  | step H _ _ ihₗ ihᵣ =>
+    cases' p using BinAddr.cases'
+    <;> simp only [getNodeAt?_branch_here_eq, getNodeAt?_branch_left, ihₗ, ihᵣ,
+                   getNodeAt?_branch_right, getStateAt?, BinAddr.rec'_here,
+                   BinAddr.rec'_left, BinAddr.rec'_right, Option.map_some', H,
+                   Sum.map_inl, Sum.map_inr, Sum.swap_inl, Sum.swap_inr,
+                   actionOnState]
+    <;> rfl
+
+end isBuiltFrom
+
 section HigherOrderFunctions
 
 universe u₁ u₂ u₃ v₁ v₂ v₃ w₁ w₂
@@ -322,50 +407,6 @@ variable {N : Type u₁} {N' : Type u₂} {N'' : Type u₃}
 def cata (f : L → ω) (g : N → ω → ω → ω) : BinTree N L → ω
   | leaf x => f x
   | branch y l r => g y (cata f g l) (cata f g r)
-
--- I tried working with anamorphisms but it was too messy
-inductive generatedBy (f : σ → L ⊕ (N × σ × σ)) : σ → BinTree N L → Prop
-  | halt : ∀ {s x}, f s = Sum.inl x → generatedBy f s (leaf x)
-  | step : ∀ {s sₗ sᵣ y l r}, f s = Sum.inr (y, sₗ, sᵣ) → generatedBy f sₗ l
-                           → generatedBy f sᵣ r → generatedBy f s (branch y l r)
-
-@[eliminator]
-def generatedBy.rec' {f : σ → L ⊕ (N × σ × σ)}
-    {motive : (s : σ) → (t : BinTree N L) → generatedBy f s t → Sort u}
-    (halt : {s : σ} → {x : L} → (h : f s = Sum.inl x)
-                    → motive s (leaf x) (generatedBy.halt h))
-    (step : {s sₗ sᵣ : σ} → {y : N} → {l r : BinTree N L}
-          → (h : f s = Sum.inr (y, sₗ, sᵣ)) → (h1 : generatedBy f sₗ l)
-          → (h2 : generatedBy f sᵣ r) → motive sₗ l h1
-          → motive sᵣ r h2 → motive s (branch y l r) (generatedBy.step h h1 h2))
-    {s : σ} : ∀ {t : BinTree N L} (h : generatedBy f s t), motive s t h
-  | leaf x, h => halt $ by cases h; assumption
-  | branch y l r, h =>
-    have h' : (f s).isRight := by
-      cases' h with _ _ _ _ _ _ _ _ _ h
-      exact Eq.trans (congrArg _ h) Sum.isRight_inr
-    let e := (f s).getRight h'
-    let sₗ := Prod.fst $ Prod.snd e
-    let sᵣ := Prod.snd $ Prod.snd e
-    have h1 : generatedBy f sₗ l :=
-      by cases' h with _ _ _ _ _ _ _ _ _ h hₗ; simp only [h]; assumption
-    have h2 : generatedBy f sᵣ r :=
-      by cases' h with _ _ _ _ _ _ _ _ _ h _ hᵣ; simp only [h]; assumption
-    have h3 : e.fst = y :=
-      by cases' h with _ _ _ _ _ _ _ _ _ h; simp only [h, Sum.getRight_inr]
-    have h4 : f s = Sum.inr (y, sₗ, sᵣ) :=
-      (Sum.getRight_eq_iff h').mp (Prod.ext h3 rfl)
-    step h4 h1 h2 (generatedBy.rec' halt step h1) (generatedBy.rec' halt step h2)
-
-def generatedBy.ndrec {f : σ → L ⊕ (N × σ × σ)}
-    {motive : (s : σ) → (t : BinTree N L) → Sort u}
-    (halt : {s : σ} → {x : L} → (h : f s = Sum.inl x) → motive s (leaf x))
-    (step : {s sₗ sᵣ : σ} → {y : N} → {l r : BinTree N L}
-          → (h : f s = Sum.inr (y, sₗ, sᵣ))
-          → (h1 : generatedBy f sₗ l) → (h2 : generatedBy f sᵣ r)
-          → motive sₗ l → motive sᵣ r → motive s (branch y l r))
-    {s : σ} {t : BinTree N L} (h : generatedBy f s t) : motive s t :=
-  generatedBy.rec' halt step h
 
 @[inline] def bimap (f : N → N') (g : L → L') : BinTree N L → BinTree N' L' :=
   cata (leaf ∘ g) (branch ∘ f)
@@ -412,7 +453,7 @@ variable {f : N → N'} {g : L → L'} {x y l r} {t : BinTree N L}
 lemma bimap_asCata : bimap f g = cata (leaf ∘ g) (branch ∘ f) := rfl
 lemma bimap_asCata' : bimap f g t = cata (leaf ∘ g) (branch ∘ f) t := rfl
 
-protected def bimap_asAna'.go (f : N → N') (g : L → L') (x : { p // hasNodeAt t p }) :
+protected def bimap.builder (f : N → N') (g : L → L') (x : { p // hasNodeAt t p }) :
     L' ⊕ N' × { p // hasNodeAt t p } × { p // hasNodeAt t p } :=
   let y := getNodeAt x.property
   if h : y.isRight
@@ -425,7 +466,35 @@ protected def bimap_asAna'.go (f : N → N') (g : L → L') (x : { p // hasNodeA
                 ⟨BinAddr.pushLeft x.val, (hasNodeAt_pushLeft _ _).mpr H⟩,
                 ⟨BinAddr.pushRight x.val, (hasNodeAt_pushRight _ _).mpr H⟩)
 
+lemma bimap_isBuiltFrom :
+    isBuiltFrom (bimap.builder f g) ⟨_, hasNodeAt_here t⟩ (bimap f g t) := by
+  suffices : ∀ (p : BinAddr) (h : hasNodeAt t p),
+      isBuiltFrom (bimap.builder f g) ⟨p, h⟩ (bimap f g (getSubtreeAt h))
+  . have := this BinAddr.here (hasNodeAt_here _)
+    refine Eq.mp (congrArg _ ?_) this
+    simp only [getSubtreeAt, getSubtreeAt?_here_eq, Option.get_some]
+  intro p h
+  generalize H : getSubtreeAt h = t'
+  replace H : t' ∈ getSubtreeAt? t p := Eq.mp (congrArg (. ∈ _) H) (Option.get_mem _)
+  induction' t' with x y l r ihₗ ihᵣ generalizing t p
+  . refine isBuiltFrom.halt ?_
+    -- simp only [getSubtreeAt?] at H
+    simp only [bimap.builder]
 
+    -- simp only [bimap.builder, getNodeAt, getNodeAt?_leaf_here_eq,
+    --            Option.get_some, Sum.isRight_inr, dite_true, Sum.getRight_inr]
+
+    admit
+  . admit
+  -- induction t <;> intro p h h'
+  -- . induction (hasNodeAt_leaf _).mp h
+  --   simp only [getSubtreeAt, getSubtreeAt?_here_eq, Option.get_some, bimap_leaf]
+  -- . have := Eq.refl (bimap.builder f g ⟨p, h⟩)
+  --   conv_rhs at this => dsimp only [bimap.builder]
+  --   split_ifs at this with H
+  --   . convert isBuiltFrom.halt this
+  --     admit
+  --   . admit
 
 abbrev mapLeaves := bimap (id : N → N) g
 abbrev mapNodes := bimap f (id : L → L)
