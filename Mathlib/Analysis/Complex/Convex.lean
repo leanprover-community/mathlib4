@@ -34,3 +34,10 @@ lemma starConvex_ofReal_slitPlane {x : ℝ} (hx : 0 < x) : StarConvex ℝ ↑x s
 
 /-- The slit plane is star-shaped at `1`. -/
 lemma starConvex_one_slitPlane : StarConvex ℝ 1 slitPlane := starConvex_slitPlane one_pos
+
+/-- The slit plane is star-shaped at `1`, spelled out for convenience. -/
+lemma starConvex_one_slitPlane' {z : ℂ} (hz : 1 + z ∈ slitPlane) {t : ℝ} (ht : t ∈ Set.Icc 0 1) :
+    1 + t * z ∈ slitPlane := by
+  convert starConvex_one_slitPlane hz (sub_nonneg.mpr ht.2) ht.1 (by ring) using 1
+  simp only [real_smul, ofReal_sub, ofReal_one, mul_one, smul_add]
+  ring
