@@ -537,7 +537,7 @@ notation:25 (name := «DistribMulActionHomIdLocal≺»)
 
 /-- `DistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
   preserving the additive monoid structure and equivariant with respect to `φ`.
-    You should extend this class when you extend `DistribMulActionHom`. -/
+    You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type _)
   {M N : outParam (Type _)} (φ : outParam (M → N)) (A B : outParam (Type _))
   [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]

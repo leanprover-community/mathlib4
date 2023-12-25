@@ -47,13 +47,16 @@ set_option autoImplicit true
 
 universe u v w w₁ w₂ w₃
 
-variable {R : Type u} {S : Type u'} (φ : R → S) (A : Type v) (B : Type w) (C : Type w₁)
+variable {R : Type*} {S : Type*} -- [Monoid R] [Monoid S] (φ : R →* S)
+--   (A : Type v) (B : Type w) (C : Type w₁)
 
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
 structure NonUnitalAlgHom
-    [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [Monoid S] [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
+    [Monoid R] [Monoid S] (φ : R →* S)
+    (A : Type v) (B : Type w)
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
     extends A →ₑ+[φ] B, A →ₙ* B
 #align non_unital_alg_hom NonUnitalAlgHom
 
@@ -71,7 +74,7 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
 class NonUnitalAlgSemiHomClass (F : Type*)
-    {R S : outParam (Type*)} (φ : outParam (R → S)) [Monoid R] [Monoid S]
+    {R S : outParam (Type*)} [Monoid R] [Monoid S] (φ : outParam (R →* S))
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B]
@@ -97,8 +100,8 @@ namespace NonUnitalAlgHomClass
 -- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
-  {F R S : Type*} {φ : outParam (R → S)} {A B : Type*}
-    [Monoid R] [Monoid S] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+  {F R S : Type*} [Monoid R] [Monoid S] {φ : outParam (R →* S)} {A B : Type*}
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with coe := (⇑) }
@@ -108,8 +111,10 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [Semiring S] [NonUnitalNonAssocSemiring B] [Module S B]
   {φ : R →+* S}
 
+-- Why do I need to specify R and S ?
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type*} [NonUnitalAlgSemiHomClass F φ A B] :
+instance (priority := 100) {F : Type*}
+    [NonUnitalAlgSemiHomClass (R := R) (S := S) F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
 
@@ -118,7 +123,8 @@ instance (priority := 100) {F : Type*} [Module R B] [NonUnitalAlgHomClass F R A 
     LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
-instance {F R S : Type*} {φ : R → S} {A B : Type*} [Monoid R] [Monoid S]
+instance {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S}
+    {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [NonUnitalAlgSemiHomClass F φ A B] :
     CoeTC F (A →ₛₙₐ[φ] B)
@@ -142,9 +148,10 @@ end NonUnitalAlgHomClass
 
 namespace NonUnitalAlgHom
 
+variable [Monoid R] [Monoid S] (φ : R →* S)
 variable {A B C}
-variable [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-variable [Monoid S] [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
+variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable {T : Type*} [Monoid T] [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
 -- Porting note: Replaced with FunLike instance
@@ -320,10 +327,10 @@ theorem one_apply (a : A) : (1 : A →ₙₐ[R] A) a = a :=
 instance : Inhabited (A →ₛₙₐ[φ] B) :=
   ⟨0⟩
 
-variable {φ' : S → R} {ψ : S → T} {χ : R → T}
+variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
 /-- The composition of morphisms is a morphism. -/
-def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ ∘ φ] C :=
+def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ.comp φ] C :=
   { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
 #align non_unital_alg_hom.comp NonUnitalAlgHom.comp
 
