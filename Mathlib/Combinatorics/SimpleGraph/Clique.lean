@@ -298,7 +298,7 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   exact absurd he hn
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
-theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t : α) (h : G.CliqueFree n) :
+theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t) (h : G.CliqueFree n) :
     (G.replaceVertex s t).CliqueFree n := by
   contrapose h
   obtain ⟨⟨f, hi⟩, ha⟩ := topEmbeddingOfNotCliqueFree h
@@ -343,6 +343,34 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   · rintro rfl
     exact cliqueFree_bot le_rfl
 #align simple_graph.clique_free_two SimpleGraph.cliqueFree_two
+
+/-- Adding an edge increases the clique number by at most one. -/
+theorem cliqueFree_of_addEdge_cliqueFree (v w) (h : G.CliqueFree n) :
+    (G.addEdge v w).CliqueFree (n + 1) := by
+  contrapose h
+  obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
+  simp only [ne_eq, top_adj] at ha
+  rw [not_cliqueFree_iff]
+  by_cases mw : w ∈ Set.range f
+  · obtain ⟨x, hx⟩ := mw
+    use ⟨f ∘ x.succAboveEmb, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
+    intro a b
+    simp_rw [Embedding.coeFn_mk, comp_apply, Fin.succAboveEmb_apply, top_adj]
+    have hs := @ha (x.succAbove a) (x.succAbove b)
+    have ia : w ≠ f (x.succAbove a) :=
+      (hx ▸ f.apply_eq_iff_eq x (x.succAbove a)).ne.mpr (x.succAbove_ne a).symm
+    have ib : w ≠ f (x.succAbove b) :=
+      (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
+    simp only [ia, ib, and_false, false_and, or_false] at hs
+    rw [hs, Fin.succAbove_right_inj]
+  · use ⟨f ∘ Fin.succEmbedding n, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
+    intro a b
+    simp only [Fin.val_succEmbedding, Embedding.coeFn_mk, comp_apply, top_adj]
+    have hs := @ha a.succ b.succ
+    have ia : f a.succ ≠ w := by simp_all
+    have ib : f b.succ ≠ w := by simp_all
+    simp only [ia.symm, ib.symm, and_false, false_and, or_false] at hs
+    rw [hs, Fin.succ_inj]
 
 end CliqueFree
 
