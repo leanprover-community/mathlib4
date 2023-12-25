@@ -420,16 +420,19 @@ theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
       (f := f.map (algebraMap F (AlgebraicClosure F))) (n := n)⟩
 
 variable {f} in
+/-- If `g` is a separable contraction of `f`, then the separable degree of `f` is equal to
+the degree of `g`. -/
+theorem IsSeparableContraction.natSepDegree_eq {g : Polynomial F} {q : ℕ} [ExpChar F q]
+    (h : IsSeparableContraction q f g) : f.natSepDegree = g.natDegree := by
+  obtain ⟨h1, m, h2⟩ := h
+  rw [← h2, natSepDegree_expand, natSepDegree_eq_natDegree_of_separable g h1]
+
+variable {f} in
 /-- If a polynomial has separable contraction, then its separable degree is equal to the degree of
 the given separable contraction. -/
 theorem HasSeparableContraction.natSepDegree_eq
     {q : ℕ} [ExpChar F q] (hf : f.HasSeparableContraction q) :
-    f.natSepDegree = hf.degree := by
-  obtain ⟨g, h1⟩ := id hf
-  rw [← h1.degree_eq q hf g]
-  obtain ⟨h1, m, h2⟩ := h1
-  rw [← h2, natSepDegree_expand]
-  exact natSepDegree_eq_natDegree_of_separable g h1
+    f.natSepDegree = hf.degree := hf.isSeparableContraction.natSepDegree_eq
 
 end Polynomial
 

@@ -69,6 +69,10 @@ def HasSeparableContraction.degree : ℕ :=
   hf.contraction.natDegree
 #align polynomial.has_separable_contraction.degree Polynomial.HasSeparableContraction.degree
 
+/-- The `HasSeparableContraction.contraction` is indeed a separable contraction. -/
+theorem HasSeparableContraction.isSeparableContraction :
+    IsSeparableContraction q f hf.contraction := Classical.choose_spec hf
+
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
 theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
     ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree := by
