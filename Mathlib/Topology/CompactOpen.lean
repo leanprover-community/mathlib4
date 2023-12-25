@@ -177,6 +177,7 @@ section Ev
 
 /-- The evaluation map `C(α, β) × α → β` is continuous
 if `α, β` is a locally compact pair of spaces. -/
+@[continuity]
 theorem continuous_eval [LocallyCompactPair α β] : Continuous fun p : C(α, β) × α => p.1 p.2 := by
   simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
   rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
