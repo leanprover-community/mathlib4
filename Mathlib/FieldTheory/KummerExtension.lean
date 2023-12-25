@@ -31,9 +31,9 @@ then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
 
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
-`X_pow_sub_C_irreducible_iff_of_prime`: `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
+- `X_pow_sub_C_irreducible_iff_of_prime`: `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
 
-TODO: criteria for general `n`.
+TODO: criteria for general `n`. See [serge_lang_algebra] VI,§9.
 
 -/
 variable {K : Type*} [Field K]
