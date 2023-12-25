@@ -46,11 +46,6 @@ This file contains basics about the separable degree of a field extension.
 - `Polynomial.natSepDegree`: the separable degree of a polynomial is a natural number,
   defined to be the number of distinct roots of it over its splitting field.
 
-- `Polynomial.rootsExpandEquivRoots`, `Polynomial.rootsExpandPowEquivRoots`: if `f` is a polynomial
-  over a perfect ring `R` of characteristic `p`, then there is a bijection from the set of roots of
-  `Polynomial.expand R p f` (resp. `Polynomial.expand R (p ^ n) f`) to the set of roots of `f`.
-  In fact it's given by `x ↦ x ^ p` (resp. `x ↦ x ^ (p ^ n)`), but we don't give a proof here.
-
 ## Main results
 
 - `Field.embEquivOfEquiv`, `Field.finSepDegree_eq_of_equiv`:
@@ -385,29 +380,6 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
   exact Finset.card_le_of_subset <| Multiset.toFinset_subset.mpr <|
     Multiset.Le.subset <| roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
 
-/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
-a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
-In fact it's given by `x ↦ x ^ p`, but we don't give a proof here. -/
-def rootsExpandEquivRoots
-    (R : Type u) [CommRing R] [IsDomain R]
-    (p : ℕ) [Fact p.Prime] [CharP R p] [PerfectRing R p] {f : R[X]} :
-    (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| Equiv.Set.ofEq <| show _ '' (setOf _) = setOf _ by
-    ext r; obtain ⟨r, rfl⟩ := surjective_frobenius R p r
-    simp [expand_eq_zero (Fact.out : p.Prime).pos, (frobenius_inj R p).eq_iff, ← frobenius_def]
-
-/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
-a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
-In fact it's given by `x ↦ x ^ (p ^ n)`, but we don't give a proof here. -/
-def rootsExpandPowEquivRoots
-    (R : Type u) [CommRing R] [IsDomain R]
-    (p : ℕ) [Fact p.Prime] [CharP R p] [PerfectRing R p] {f : R[X]} {n : ℕ} :
-    (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset := by
-  induction' n with n ih
-  · rw [pow_zero, expand_one]
-  · rw [pow_succ, ← expand_expand]
-    exact (rootsExpandEquivRoots R p).trans <| ih
-
 /-- If a field `F` is of exponential characteristic `q`, then `Polynomial.expand F (q ^ n) f`
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
@@ -416,8 +388,8 @@ theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
   · simp only [one_pow, expand_one]
   haveI := Fact.mk hprime
   simpa only [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_def, map_expand,
-    Fintype.card_coe] using Fintype.card_eq.2 ⟨rootsExpandPowEquivRoots q
-      (f := f.map (algebraMap F (AlgebraicClosure F))) (n := n)⟩
+    Fintype.card_coe] using Fintype.card_eq.2
+      ⟨(f.map (algebraMap F (AlgebraicClosure F))).rootsExpandPowEquivRoots q n⟩
 
 variable {f} in
 /-- If `g` is a separable contraction of `f`, then the separable degree of `f` is equal to
