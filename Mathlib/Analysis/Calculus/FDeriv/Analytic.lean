@@ -319,7 +319,7 @@ theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
 
 theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
     ContDiffAt 𝕜 n f x :=
-  let ⟨s, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
+  let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
   hf.contDiffOn.contDiffAt hs
 
 end fderiv
