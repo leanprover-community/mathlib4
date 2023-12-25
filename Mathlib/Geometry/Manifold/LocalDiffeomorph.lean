@@ -392,7 +392,7 @@ variable [I.Boundaryless] [SmoothManifoldWithCorners I M]
 
 namespace PartialHomeomorph
 variable (e) in
-/-- If `I` is boundaryless, an extended partial homeomorphism is a partial homeomorphism. -/
+/-- If `M` has no boundary, an extended partial homeomorphism is a partial homeomorphism. -/
 def extend_toPartialHomeomorph : PartialHomeomorph M E where
   toPartialEquiv := e.extend I
   open_source := isOpen_extend_source e I
@@ -400,8 +400,8 @@ def extend_toPartialHomeomorph : PartialHomeomorph M E where
   continuousOn_toFun := continuousOn_extend e I
   continuousOn_invFun := continuousOn_extend_symm e I
 
-lemma extend_toPartialHomeomorph_coe :
-  (e.extend_toPartialHomeomorph I).toFun = e.extend I := rfl
+lemma extend_toPartialHomeomorph_coe : (e.extend_toPartialHomeomorph I).toFun = e.extend I :=
+  rfl
 
 /-- If `M` has no boundary, every extended chart is a local diffeomorphism
 between its source and target. -/
@@ -416,7 +416,8 @@ def extend_toPartialDiffeomorph : PartialDiffeomorph I 𝓘(𝕜, E) M E ⊤ whe
     exact contMDiffOn_extend he
   contMDiffOn_invFun := by
     show ContMDiffOn 𝓘(𝕜, E) I ⊤ (e.extend I).symm (e.extend I).target
-    -- this should be a lemma! xxx: why is this not the standard form in extend_target?
+    -- xxx: extract this into a lemma?
+    -- why does extend_target have a different normal form?
     have : (e.extend I).target = I '' e.target := by rw [e.extend_target, I.image_eq]
     exact this ▸ contMDiffOn_extend_symm he
 
