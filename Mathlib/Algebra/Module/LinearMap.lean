@@ -696,6 +696,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂]
 variable {σ : R →+* S}
 
+-- ACL : Why is it necessary to specify .toMonoidHom?
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 @[coe]
 def toLinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
