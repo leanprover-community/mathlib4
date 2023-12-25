@@ -112,7 +112,7 @@ theorem expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
   rcases expChar_is_prime_or_one R q with h | rfl
   exacts [Nat.Prime.pos h, Nat.one_pos]
 
-/-- The power of exponential characteristic is positive. -/
+/-- Any power of the exponential characteristic is positive. -/
 theorem expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
   Nat.pos_pow_of_pos n (expChar_pos R q)
 
