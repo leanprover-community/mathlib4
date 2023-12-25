@@ -1044,8 +1044,8 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   rw [natDegree_toSubring, natDegree_map]
 
 variable {F} in
-/-- If `E / F` is an infinite algebraic extension, then there exists intermediate field `L / F`
-with arbitrary large finite extension degree. -/
+/-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field
+`L / F` with arbitrarily large finite extension degree. -/
 theorem exists_lt_finrank_of_infinite_dimensional
     (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
