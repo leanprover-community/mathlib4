@@ -17,6 +17,11 @@ We also define the finite set `Nat.primesBelow n` to be the set of prime numbers
 The main definition `Nat.equivProdNatSmoothNumbers` establishes the bijection between
 `ℕ × (smoothNumbers p)` and `smoothNumbers (p+1)` given by sending `(e, n)` to `p^e * n`.
 Here `p` is a prime number.
+
+Additionally, we define `Nat.smoothNumbersUpTo N n` as the `Finset` of `n`-smooth numbers
+up to and including `N`, and similarly `Nat.roughNumbersUpTo` for its complement in `{1, ..., N}`,
+and we provide some API, in particular bounds for their cardinalities; see
+`Nat.smoothNumbersUpTo_card_le` and `Nat.roughNumbersUpTo_card_le`.
 -/
 
 namespace Nat
@@ -201,7 +206,7 @@ lemma mem_smoothNumbersUpTo {N k n : ℕ} :
     n ∈ smoothNumbersUpTo N k ↔ n ≤ N ∧ n ∈ smoothNumbers k := by
   simp [smoothNumbersUpTo, lt_succ]
 
-/-- The positive non-`k`-smooth numbers up to and including `N` as a `Finset` -/
+/-- The positive non-`k`-smooth (so "`k`-rough") numbers up to and including `N` as a `Finset` -/
 def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
     (Finset.range N.succ).filter (fun n ↦ n ≠ 0 ∧ n ∉ smoothNumbers k)
 
