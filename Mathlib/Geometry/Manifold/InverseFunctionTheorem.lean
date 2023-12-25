@@ -35,12 +35,12 @@ inverse function theorem, manifold, groupoid
 
 open Function Manifold Set TopologicalSpace Topology
 
--- Let M and N be manifolds over (E,H) and (E',H'), respectively.
+-- Let M and N be manifolds over (E,H) and (E',H), respectively (on the same model space!).
 -- We don't assume smoothness, but allow any structure groupoid.
 variable {E E' H H' M N : Type*} {𝕂 : Type*} [NontriviallyNormedField 𝕂]
   [NormedAddCommGroup E] [NormedSpace 𝕂 E] [NormedAddCommGroup E'] [NormedSpace 𝕂 E']
   [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-   [TopologicalSpace N] [ChartedSpace H N]
+  [TopologicalSpace N] [ChartedSpace H N]
   (I : ModelWithCorners 𝕂 E H) (J : ModelWithCorners 𝕂 E' H)
 
 /-! Re-phrasing the implicit function theorem over normed spaces in categorical language,
@@ -66,7 +66,7 @@ where
   /-- Our property is **monotone** on open sets: if `s` is open and `s ⊆ t`, then
     `f ∈ P` on `t` implies `f ∈ P` on `s`. -/
   monotonicity : ∀ {f s t}, IsOpen s → s ⊆ t → property f t → property f s
-  /-- If `f ∈ P` on `s` and `f` is differentiable at `x` with invertible differential `df_x`,
+  /-- If `f ∈ P` on `s` and `f` is strictly differentiable at `x` with invertible differential,
     a local inverse `g` of `f` at `f x` also lies in `P` on some open neighbourhood `t` of `f x`.
     It is sufficient to consider the case of `s` open.
     We assume the existence of `g`; this holds automatically over ℝ or ℂ. -/
@@ -74,20 +74,22 @@ where
   -- We need t' to be open to deduce that `f` is a local structomorphism:
   -- that definition requires a partial homeomorphism in the (pre-)groupoid,
   -- which our setting only yields around x; that source is *open*.
-    HasStrictFDerivAt (𝕜 := 𝕂) f f' x → InvOn g f s t → ∃ t' ⊆ t, f x ∈ t' ∧ IsOpen t' ∧ property g t'
+    HasStrictFDerivAt (𝕜 := 𝕂) f f' x → InvOn g f s t →
+    ∃ t' ⊆ t, f x ∈ t' ∧ IsOpen t' ∧ property g t'
 
 /-- The groupoid associated to an IFT pre-groupoid. -/
 def IFTPregroupoid.groupoid (P : IFTPregroupoid 𝕂 E) : StructureGroupoid E :=
   (P.toPregroupoid).groupoid
 
 @[simp]
-lemma IFTPregroupoid.groupoid_coe {P : IFTPregroupoid 𝕂 E} : P.groupoid = P.toPregroupoid.groupoid :=
+lemma IFTPregroupoid.groupoid_coe (P : IFTPregroupoid 𝕂 E) :
+    P.groupoid = P.toPregroupoid.groupoid :=
   rfl
 
 /-- If `P` is an `IFTPregroupoid`, its induced groupoid is `ClosedUnderRestriction`. -/
--- FUTURE: this proof only uses monotonicity, hence could be generalised to
+-- Note: this proof only uses monotonicity, hence could be generalised to
 -- "a monotone pregroupoid induces a groupoid closed under restriction".
--- Is it worth refactoring existing proofs of ClosedUnderRestriction this way?
+-- Is it worth refactoring existing proofs of `ClosedUnderRestriction` this way?
 lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid 𝕂 E) :
     ClosedUnderRestriction (P.groupoid) := by
   refine { closedUnderRestriction := ?_ }
@@ -105,16 +107,17 @@ lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid 𝕂 
   Suppose `f` has invertible differential at `x` and lies in an IFTPregroupoid `P` on `s ∋ x`.
   Then `f` is a local structomorphism at `x` (within some open set `s' ∋ x`).
   For `P=contDiffPregroupoid n`, this recovers the standard statement. -/
-lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
-    (hf : ContDiffOn 𝕂 n f s) {f' : E ≃L[𝕂] E} (hf' : HasStrictFDerivAt (𝕜 := 𝕂) f f' x) (hs : IsOpen s)
-    (hx : x ∈ s) (hn : 1 ≤ n) {P : IFTPregroupoid 𝕂 E} (hfP : P.property f s) :
+lemma HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid [CompleteSpace E] {f : E → E}
+    {s : Set E} {x : E} {f' : E ≃L[𝕂] E} (hf' : HasStrictFDerivAt (𝕜 := 𝕂) f f' x)
+    (hf : ContDiffOn 𝕂 n f s) (hs : IsOpen s) (hx : x ∈ s) (hn : 1 ≤ n)
+    {P : IFTPregroupoid 𝕂 E} (hfP : P.property f s) :
     ∃ s', x ∈ s' ∧ IsOpen s' ∧ P.groupoid.IsLocalStructomorphWithinAt f s' x := by
   set G := P.groupoid
   -- Apply the local lemma to find a local inverse `g` of `f` at `f x`.
   let f_loc := hf'.toPartialHomeomorph
   have hx' : x ∈ f_loc.source := hf'.mem_toPartialHomeomorph_source
 
-  -- Two sets in play here: `f` is `P` on `s`; we get a local inverse `f_loc` on `f_loc.source`.
+  -- Since `f` is `P` on `s`, we get a local inverse `f_loc` on `f_loc.source`.
   -- Our IFT groupoid property applies on the intersection, hence we need monotonity of `P`.
   let s' := (f_loc.source ∩ s)
   have hs' : IsOpen s' := f_loc.open_source.inter hs
