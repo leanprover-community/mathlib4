@@ -271,16 +271,17 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     roughNumbersUpTo N k =
       (N.succ.primesBelow \ k.primesBelow).biUnion
         fun p ↦ (Finset.range N.succ).filter (fun m ↦ m ≠ 0 ∧ p ∣ m) := by
-  ext
+  ext m
   simp only [roughNumbersUpTo, mem_smoothNumbers_iff_forall_le, not_and, not_forall,
-    not_lt, exists_prop, exists_and_left, Finset.mem_range, not_exists, not_le, Finset.mem_filter,
-    Finset.filter_congr_decidable, Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow]
-  refine ⟨fun ⟨H₁, H₂, H₃⟩ ↦ ?_,
-          fun ⟨p, ⟨⟨_, h₂⟩, h₃⟩, h₄, h₅, h₆⟩ ↦
-              ⟨h₄, h₅, fun _ ↦ ⟨p, Nat.le_of_dvd (Nat.pos_of_ne_zero h₅) h₆, h₂, h₆, ?_⟩⟩⟩
-  · obtain ⟨p, h₁, h₂, h₃, h₄⟩ := H₃ H₂
-    exact ⟨p, ⟨⟨h₁.trans_lt H₁, h₂⟩, fun h₁ _ ↦ (h₁.trans_le h₄).false.elim⟩, H₁, H₂, h₃⟩
-  · exact Nat.not_lt.mp <| h₃.mt <| not_not.mpr h₂
+    not_lt, exists_prop, exists_and_left, Finset.mem_range, not_le, Finset.mem_filter,
+    Finset.filter_congr_decidable, Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
+    show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
+  simp_rw [← exists_and_left, ← not_lt]
+  refine exists_congr fun p ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
+  · have : p < N.succ := LE.le.trans_lt (le_of_dvd (Nat.pos_of_ne_zero H.2.1) H.2.2.2.2.1) H.1
+    tauto
+  · have : ¬ m < p := not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero H.2.2.1) H.2.2.2
+    tauto
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/
