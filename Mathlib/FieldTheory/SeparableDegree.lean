@@ -86,7 +86,7 @@ This file contains basics about the separable degree of a field extension.
 - `Polynomial.natSepDegree_eq_of_isAlgClosed`: the separable degree of a polynomial is equal to
   the number of distinct roots of it over any algebraically closed field.
 
-- `Polynomial.natSepDegree_expand_eq_natSepDegree`: if a field `F` is of exponential characteristic
+- `Polynomial.natSepDegree_expand`: if a field `F` is of exponential characteristic
   `q`, then `Polynomial.expand F (q ^ n) f` and `f` have the same separable degree.
 
 - `Polynomial.HasSeparableContraction.natSepDegree_eq`: if a polynomial has separable
@@ -410,7 +410,7 @@ def rootsExpandPowEquivRoots
 
 /-- If a field `F` is of exponential characteristic `q`, then `Polynomial.expand F (q ^ n) f`
 and `f` have the same separable degree. -/
-theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
+theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
   cases' hF with _ _ hprime _
   · simp only [one_pow, expand_one]
@@ -429,7 +429,7 @@ theorem HasSeparableContraction.natSepDegree_eq
   obtain ⟨g, h1⟩ := hf'
   rw [← IsSeparableContraction.degree_eq q hf g h1]
   obtain ⟨h1, m, h2⟩ := h1
-  rw [← h2, natSepDegree_expand_eq_natSepDegree]
+  rw [← h2, natSepDegree_expand]
   exact natSepDegree_eq_natDegree_of_separable g h1
 
 end Polynomial
@@ -457,11 +457,11 @@ theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
   · obtain ⟨g, h1, n, rfl⟩ := Irreducible.hasSeparableContraction q _ hi
     have h2 : g.natDegree = 1 := by
-      rwa [natSepDegree_expand_eq_natSepDegree _ q,
+      rwa [natSepDegree_expand _ q,
         natSepDegree_eq_natDegree_of_separable g h1] at h
     rw [((monic_expand_iff <| expChar_pow_pos F q n).mp hm).eq_X_add_C h2]
     exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add]⟩
-  rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
+  rw [h, natSepDegree_expand _ q, natSepDegree_X_sub_C]
 
 /-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one if and only if it is of the form `X ^ (q ^ n) - C y`
@@ -488,7 +488,7 @@ theorem natSepDegree_eq_one_iff_eq_expand_X_sub_C : (minpoly F x).natSepDegree =
       simp only [eq_zero h', natSepDegree_zero, zero_ne_one] at h
     exact (minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic' q
       (minpoly.monic halg) |>.1 h
-  rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
+  rw [h, natSepDegree_expand _ q, natSepDegree_X_sub_C]
 
 /-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
 separable degree one if and only if the minimal polynomial is of the form
@@ -513,7 +513,7 @@ theorem natSepDegree_eq_one_iff_mem_pow : (minpoly F x).natSepDegree = 1 ↔
   have hnezero : expand F (q ^ n) g ≠ 0 :=
     (expand_ne_zero (expChar_pow_pos F q n)).2 <| X_sub_C_ne_zero y
   have h1 := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
-  rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at h1
+  rw [natSepDegree_expand, natSepDegree_X_sub_C] at h1
   have h2 := minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
   rw [Nat.pos_iff_ne_zero, ← natSepDegree_ne_zero_iff, ← Nat.pos_iff_ne_zero] at h2
   exact le_antisymm h1 h2
