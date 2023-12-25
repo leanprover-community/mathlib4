@@ -3327,11 +3327,16 @@ theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h 
 #align set.maps_to.tendsto Set.MapsTo.tendsto
 
 /-- Construct a filter from a property that is stable under finite unions.
-This constructor deduces `Filter.univ_sets` and `Filter.inter_sets` from the finite
-union property. -/
-def Filter.comk {p : Set α → Prop} (he : p ∅) (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
+A set `s` belongs to `Filter.comk p _ _ _` iff its complement satisfies the predicate `p`.
+This constructor is useful to define filters like `Filter.cofinite`. -/
+def Filter.comk (p : Set α → Prop) (he : p ∅) (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s)
     (hunion : ∀ ⦃s t⦄, p s → p t → p (s ∪ t)) : Filter α where
   sets := {t | p tᶜ}
   univ_sets := by simpa
   sets_of_superset := fun ht₁ ht => hmono (compl_subset_compl.2 ht) ht₁
   inter_sets := fun ht₁ ht₂ => by simp [compl_inter, hunion ht₁ ht₂]
+
+@[simp]
+lemma Filter.mem_comk {p : Set α → Prop} {he hmono hunion s} :
+    s ∈ comk p he hmono hunion ↔ p sᶜ :=
+  .rfl

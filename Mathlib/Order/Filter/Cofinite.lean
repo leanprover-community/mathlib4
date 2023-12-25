@@ -29,11 +29,8 @@ variable {ι α β : Type*} {l : Filter α}
 namespace Filter
 
 /-- The cofinite filter is the filter of subsets whose complements are finite. -/
-def cofinite : Filter α where
-  sets := { s | sᶜ.Finite }
-  univ_sets := by simp only [compl_univ, finite_empty, mem_setOf_eq]
-  sets_of_superset hs st := hs.subset <| compl_subset_compl.2 st
-  inter_sets hs ht := by simpa only [compl_inter, mem_setOf_eq] using hs.union ht
+def cofinite : Filter α :=
+  comk Set.Finite finite_empty (fun _s _t hsub ht ↦ ht.subset hsub) fun _ _ ↦ Finite.union
 #align filter.cofinite Filter.cofinite
 
 @[simp]
