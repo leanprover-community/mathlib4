@@ -819,16 +819,16 @@ We use a linear order on ι to identify all finsets of `ι` of cardinality `n` t
 def toFormalMultilinearSeries_fixedDegree [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) (n : ℕ) :
     MultilinearMap R (fun (_ : Fin n) => (i : ι) → M₁ i) M₂ :=
-  ∑ s : univ.powerset.filter (·.card = n),
+  ∑ s : univ.powersetCard n,
    ((f.domDomRestrict s.1.toSet (fun i => x i.1)).compLinearMap (fun (i : s.1) => LinearMap.proj
-  i (φ := M₁))).domDomCongr (s.1.orderIsoOfFin (mem_filter.mp s.2).2).symm.toEquiv
+  i (φ := M₁))).domDomCongr (s.1.orderIsoOfFin (mem_powersetCard.mp s.2).2).symm.toEquiv
 
 open Finset in
 @[simp]
 lemma toFormalMultilinearSeries_fixedDegree_apply_diag [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x y : (i : ι) → M₁ i) (n : ℕ) :
     f.toFormalMultilinearSeries_fixedDegree x n (fun _ => y) =
-    (∑ s : univ.powerset.filter (·.card = n), f (s.1.piecewise y x)) := by
+    (∑ s : univ.powersetCard n, f (s.1.piecewise y x)) := by
   unfold toFormalMultilinearSeries_fixedDegree
   simp only [coe_sort_coe, coe_sum, Finset.sum_apply, domDomCongr_apply,
     compLinearMap_apply, LinearMap.coe_proj, eval]
@@ -840,15 +840,12 @@ lemma toFormalMultilinearSeriest_fixedDegree_zero [DecidableEq ι] [Fintype ι] 
     (f : MultilinearMap R M₁ M₂) (x : (i : ι) → M₁ i) {n : ℕ} (hn : (Fintype.card ι).succ ≤ n) :
     f.toFormalMultilinearSeries_fixedDegree x n = 0 := by
   unfold toFormalMultilinearSeries_fixedDegree
-  have he : ∀ ⦃s : Finset ι⦄, s ∈ Finset.univ → ¬ s.card = n := by
-    intro s _
-    apply ne_of_lt
-    calc
-      s.card ≤ Fintype.card ι := Finset.card_le_univ _
-      _ < (Fintype.card ι).succ := Nat.lt_succ_self _
-      _ ≤ n := hn
-  rw [Finset.univ_eq_empty_iff.mpr (Finset.isEmpty_coe_sort.mpr
-    (Finset.filter_eq_empty_iff.mpr he)), Finset.sum_empty]
+  convert Finset.sum_empty
+  rw [Finset.univ_eq_empty_iff, Finset.isEmpty_coe_sort]
+  apply Finset.powersetCard_empty
+  rw [Finset.card_univ]
+  exact lt_of_lt_of_le (Nat.lt_succ_self _) hn
+
 
 /-- Expression of `f(x + y)` using the formal multilinear series of `f` at `x`, as a finite sum.-/
 lemma hasFiniteFPowerSeries [DecidableEq ι] [Fintype ι] [LinearOrder ι]
