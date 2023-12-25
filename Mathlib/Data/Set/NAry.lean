@@ -92,9 +92,7 @@ variable (f)
 
 -- Porting note: Removing `simp` - LHS does not simplify
 lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :=
-  ext fun a ↦
-  ⟨ by rintro ⟨_, _, rfl⟩; exact ⟨_, (mem_prod.1 ‹_›).1, _, (mem_prod.1 ‹_›).2, rfl⟩,
-    by rintro ⟨_, _, _, _, rfl⟩; exact ⟨(_, _), ⟨‹_›, ‹_›⟩, rfl⟩⟩
+  ext fun _ ↦ by simp [and_assoc]
 #align set.image_prod Set.image_prod
 
 @[simp] lemma image_uncurry_prod (s : Set α) (t : Set β) : uncurry f '' s ×ˢ t = image2 f s t :=

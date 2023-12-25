@@ -443,7 +443,7 @@ theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_ze
 
 instance instAdd : Add (ConvexCone 𝕜 E) :=
   ⟨fun K₁ K₂ =>
-    { carrier := K₁ + K₂
+    { carrier := { z | ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = z }
       smul_mem' := by
         rintro c hc _ ⟨x, hx, y, hy, rfl⟩
         rw [smul_add]
@@ -451,7 +451,7 @@ instance instAdd : Add (ConvexCone 𝕜 E) :=
       add_mem' := by
         rintro _ ⟨x₁, hx₁, x₂, hx₂, rfl⟩ y ⟨y₁, hy₁, y₂, hy₂, rfl⟩
         use x₁ + y₁, K₁.add_mem hx₁ hy₁, x₂ + y₂, K₂.add_mem hx₂ hy₂
-        dsimp; abel }⟩
+        abel }⟩
 
 @[simp]
 theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
