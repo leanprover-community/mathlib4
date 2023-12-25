@@ -262,7 +262,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
     (smoothNumbersUpTo N k).card ≤ 2 ^ k.primesBelow.card * N.sqrt := by
   convert (Finset.card_le_of_subset <| smoothNumbersUpTo_subset_image N k).trans <|
-     Finset.card_image_le
+    Finset.card_image_le
   simp
 
 /-- The set of `k`-rough numbers `≤ N` can be written as the union of the sets of multiples `≤ N`
@@ -280,7 +280,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
   refine exists_congr fun p ↦ ?_
   have H₁ : m ≠ 0 → p ∣ m → m < N.succ → p < N.succ :=
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
-  have H₂ : m ≠ 0 →  p ∣ m → ¬ m < p :=
+  have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
   tauto
 
