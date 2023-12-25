@@ -80,7 +80,7 @@ theorem mk (h : ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ S
 /-- A `PartialHomeomorph` is a local homeomorphism on its source. -/
 lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
     IsLocalHomeomorphOn e e.source :=
-  fun _ hx ↦ ⟨e, (and_iff_left rfl).mpr hx⟩
+  fun _ hx ↦ ⟨e, hx, rfl⟩
 
 variable {g f s t}
 
