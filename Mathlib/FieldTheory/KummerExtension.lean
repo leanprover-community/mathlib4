@@ -70,8 +70,7 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     rw [hn, pow_zero, ← C.map_one, ← map_sub]
     exact splits_C _ _
   | inr hn =>
-    rw [splits_iff_card_roots, ← nthRoots, nthRoots_eq_of_isPrimitiveRoot hn hζ e,
-      natDegree_X_pow_sub_C, Finset.range_val, Multiset.card_map, Multiset.card_range]
+    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
 open BigOperators
 
@@ -79,8 +78,7 @@ theorem X_pow_sub_C_eq_prod
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i in Finset.range n, (X - C (ζ ^ i * α)) := by
   rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
-    (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots,
-    nthRoots_eq_of_isPrimitiveRoot hn hζ e, Multiset.map_map]
+    (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
 
 end Splits
@@ -143,9 +141,8 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
   rw [← separable_map (algebraMap K K[n√a]), Polynomial.map_sub, Polynomial.map_pow, map_C, map_X,
     algebraMap_eq, X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
-  refine injOn_pow_mul_of_isPrimitiveRoot hn (hζ.map_of_injective (algebraMap K _).injective)
-    (root_X_pow_sub_C_ne_zero ?_ _)
-  exact lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')
+  exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
+    (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
 /-- The natural embedding of the roots of unity of `K` into `Gal(K[ⁿ√a]/K)`, by sending
 `η ↦ (ⁿ√a ↦ η • ⁿ√a)`. Also see `autAdjoinRootXPowSubC` for the `AlgEquiv` version. -/
@@ -209,7 +206,7 @@ def autAdjoinRootXPowSubCEquiv :
     ext
     simp only [algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
-      rootsOfUnity.val_mkOfPowEq_coe, rootsOfUnityEquivOfPrimitiveRoots_apply,
+      rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
@@ -353,10 +350,9 @@ lemma autEquivRootsOfUnity_smul (σ : L ≃ₐ[K] L) :
     autEquivRootsOfUnity hζ hn H L σ • α = σ α := by
   have ⟨ζ, hζ'⟩ := hζ
   rw [mem_primitiveRoots hn] at hζ'
-  have := nthRoots_eq_of_isPrimitiveRoot hn (hζ'.map_of_injective (algebraMap K L).injective)
-    (rootOfSplitsXPowSubC_pow hn a L)
-  rw [← mem_nthRoots hn] at hα
-  simp only [this, Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
+  rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
+    (rootOfSplitsXPowSubC_pow hn a L)] at hα
+  simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
   simp only [map_mul, ← map_pow, ← Algebra.smul_def, AlgEquiv.map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ hn H L]
@@ -373,17 +369,15 @@ def autEquivZmod {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
       (hζ.isUnit_unit' hn)).symm).trans (AddEquiv.toMultiplicative'
         (hζ.isUnit_unit' hn).zmodEquivZPowers.symm))
 
-lemma autEquivZmod_symm_apply_ofAdd {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
+lemma autEquivZmod_symm_apply_intCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   rw [← autEquivRootsOfUnity_smul ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ hn H L hα]
   simp [MulEquiv.subgroupCongr_symm_apply, Subgroup.smul_def, Units.smul_def, autEquivZmod]
 
-lemma autEquivZmod_symm_apply {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m) :
-    (autEquivZmod H L hζ).symm m α = ζ ^ (Multiplicative.toAdd m : ℕ) • α := by
-  have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
-  rw [← autEquivRootsOfUnity_smul ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ hn H L hα]
-  simp [MulEquiv.subgroupCongr_symm_apply, Subgroup.smul_def, Units.smul_def, autEquivZmod]
+lemma autEquivZmod_symm_apply_natCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
+    (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
+  simpa only [Int.cast_ofNat, zpow_coe_nat] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
 lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
