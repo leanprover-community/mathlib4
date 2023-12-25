@@ -41,10 +41,7 @@ each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
-* if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
-is a continuous linear isomorphism.
-* conversely, if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
+* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
 `f` is a local diffeomorphism at `x`.
 * if `f` is `C^n` and each differential is a linear isomorphism, `f` is a local diffeomorphism.
 
@@ -275,6 +272,7 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
 
 end Basic
 
+/-! ## The differential of a local diffeomorphism is an isomorphism -/
 section Differential
 variable {I J n} {f : M → N} {x : M} (hn : 1 ≤ n)
   [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
