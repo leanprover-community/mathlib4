@@ -88,11 +88,9 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     push_cast
     field_simp
     ring
-  · have h : ∀ (x : ℝ) (_ : x ≠ 0), 1 + x⁻¹ = (x + 1) / x := by
-      intro x hx; rw [_root_.add_div, div_self hx, inv_eq_one_div]
-    simp (disch := norm_cast <;> apply_rules [mul_ne_zero, succ_ne_zero, factorial_ne_zero,
-      exp_ne_zero]) only [log_stirlingSeq_formula, log_div, log_mul, log_exp, factorial_succ,
-      cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
+  · have h : ∀ x ≠ (0 : ℝ), 1 + x⁻¹ = (x + 1) / x := fun x hx ↦ by field_simp [hx]
+    simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
+      factorial_succ, cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
     ring
 #align stirling.log_stirling_seq_diff_has_sum Stirling.log_stirlingSeq_diff_hasSum
 

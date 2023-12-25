@@ -1024,7 +1024,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
               hc hyc ⟨n, hrny⟩,
               fun z => le_sSup⟩)
           I hri
-      have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
+      have : ∀ x ∉ m, r ∈ radical (m ⊔ span {x}) := fun x hxm =>
         by_contradiction fun hrmx =>
           hxm <|
             hm (m ⊔ span {x}) hrmx le_sup_left ▸
