@@ -267,6 +267,7 @@ theorem Embedding.discreteTopology {X Y : Type*} [TopologicalSpace X] [Topologic
 
 end Embedding
 
+section QuotientMap
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set β`, `s` is open iff its preimage is an open set. -/
 def QuotientMap {α : Type*} {β : Type*} [tα : TopologicalSpace α] [tβ : TopologicalSpace β]
@@ -274,21 +275,20 @@ def QuotientMap {α : Type*} {β : Type*} [tα : TopologicalSpace α] [tβ : Top
   Surjective f ∧ tβ = tα.coinduced f
 #align quotient_map QuotientMap
 
-theorem quotientMap_iff [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
-    QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
+variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
+  {g : β → γ} {f : α → β}
+
+theorem quotientMap_iff : QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
   and_congr Iff.rfl TopologicalSpace.ext_iff
 #align quotient_map_iff quotientMap_iff
 
-theorem quotientMap_iff_closed [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+theorem quotientMap_iff_closed :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set β, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
   quotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
     simp only [isOpen_compl_iff, preimage_compl]
 #align quotient_map_iff_closed quotientMap_iff_closed
 
 namespace QuotientMap
-
-variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-  {g : β → γ} {f : α → β}
 
 protected theorem id : QuotientMap (@id α) :=
   ⟨fun a => ⟨a, rfl⟩, coinduced_id.symm⟩
@@ -333,21 +333,22 @@ protected theorem isClosed_preimage (hf : QuotientMap f) {s : Set β} :
 #align quotient_map.is_closed_preimage QuotientMap.isClosed_preimage
 
 end QuotientMap
+end QuotientMap
 
+section OpenMap
 /-- A map `f : α → β` is said to be an *open map*, if the image of any open `U : Set α`
 is open in `β`. -/
 def IsOpenMap [TopologicalSpace α] [TopologicalSpace β] (f : α → β) :=
   ∀ U : Set α, IsOpen U → IsOpen (f '' U)
 #align is_open_map IsOpenMap
 
-namespace IsOpenMap
-
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : α → β}
 
+namespace IsOpenMap
 protected theorem id : IsOpenMap (@id α) := fun s hs => by rwa [image_id]
 #align is_open_map.id IsOpenMap.id
 
-protected theorem comp {g : β → γ} {f : α → β} (hg : IsOpenMap g) (hf : IsOpenMap f) :
+protected theorem comp {g : β → γ} (hg : IsOpenMap g) (hf : IsOpenMap f) :
     IsOpenMap (g ∘ f) := fun s hs => by rw [image_comp]; exact hg _ (hf _ hs)
 #align is_open_map.comp IsOpenMap.comp
 
@@ -384,7 +385,7 @@ theorem of_nhds_le (hf : ∀ a, 𝓝 (f a) ≤ map f (𝓝 a)) : IsOpenMap f := 
   isOpen_iff_mem_nhds.2 fun _b ⟨_a, has, hab⟩ => hab ▸ hf _ (image_mem_map <| hs.mem_nhds has)
 #align is_open_map.of_nhds_le IsOpenMap.of_nhds_le
 
-theorem of_sections {f : α → β}
+theorem of_sections
     (h : ∀ x, ∃ g : β → α, ContinuousAt g (f x) ∧ g (f x) = x ∧ RightInverse g f) : IsOpenMap f :=
   of_nhds_le fun x =>
     let ⟨g, hgc, hgx, hgf⟩ := h x
@@ -394,14 +395,14 @@ theorem of_sections {f : α → β}
       _ = map f (𝓝 x) := by rw [hgx]
 #align is_open_map.of_sections IsOpenMap.of_sections
 
-theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')
+theorem of_inverse {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')
     (r_inv : RightInverse f f') : IsOpenMap f :=
   of_sections fun _ => ⟨f', h.continuousAt, r_inv _, l_inv⟩
 #align is_open_map.of_inverse IsOpenMap.of_inverse
 
 /-- A continuous surjective open map is a quotient map. -/
-theorem to_quotientMap {f : α → β} (open_map : IsOpenMap f) (cont : Continuous f)
-    (surj : Surjective f) : QuotientMap f :=
+theorem to_quotientMap (open_map : IsOpenMap f) (cont : Continuous f) (surj : Surjective f) :
+    QuotientMap f :=
   quotientMap_iff.2
     ⟨surj, fun s => ⟨fun h => h.preimage cont, fun h => surj.image_preimage s ▸ open_map _ h⟩⟩
 #align is_open_map.to_quotient_map IsOpenMap.to_quotientMap
@@ -443,13 +444,11 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
 
 end IsOpenMap
 
-theorem isOpenMap_iff_nhds_le [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
-    IsOpenMap f ↔ ∀ a : α, 𝓝 (f a) ≤ (𝓝 a).map f :=
+theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ a : α, 𝓝 (f a) ≤ (𝓝 a).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 #align is_open_map_iff_nhds_le isOpenMap_iff_nhds_le
 
-theorem isOpenMap_iff_interior [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
-    IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
+theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
     subset_interior_iff_isOpen.mp <|
       calc
@@ -458,14 +457,14 @@ theorem isOpenMap_iff_interior [TopologicalSpace α] [TopologicalSpace β] {f : 
 #align is_open_map_iff_interior isOpenMap_iff_interior
 
 /-- An inducing map with an open range is an open map. -/
-protected theorem Inducing.isOpenMap [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
-    (hi : Inducing f) (ho : IsOpen (range f)) : IsOpenMap f :=
+protected theorem Inducing.isOpenMap (hi : Inducing f) (ho : IsOpen (range f)) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun _ => (hi.map_nhds_of_mem _ <| IsOpen.mem_nhds ho <| mem_range_self _).ge
 #align inducing.is_open_map Inducing.isOpenMap
+end OpenMap
 
 section IsClosedMap
 
-variable [TopologicalSpace α] [TopologicalSpace β]
+variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- A map `f : α → β` is said to be a *closed map*, if the image of any closed `U : Set α`
 is closed in `β`. -/
@@ -473,47 +472,45 @@ def IsClosedMap (f : α → β) :=
   ∀ U : Set α, IsClosed U → IsClosed (f '' U)
 #align is_closed_map IsClosedMap
 
-end IsClosedMap
-
 namespace IsClosedMap
 
-variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {f : α → β}
 
 open Function
 
 protected theorem id : IsClosedMap (@id α) := fun s hs => by rwa [image_id]
 #align is_closed_map.id IsClosedMap.id
 
-protected theorem comp {g : β → γ} {f : α → β} (hg : IsClosedMap g) (hf : IsClosedMap f) :
+protected theorem comp {g : β → γ} (hg : IsClosedMap g) (hf : IsClosedMap f) :
     IsClosedMap (g ∘ f) := by
   intro s hs
   rw [image_comp]
   exact hg _ (hf _ hs)
 #align is_closed_map.comp IsClosedMap.comp
 
-theorem closure_image_subset {f : α → β} (hf : IsClosedMap f) (s : Set α) :
+theorem closure_image_subset (hf : IsClosedMap f) (s : Set α) :
     closure (f '' s) ⊆ f '' closure s :=
   closure_minimal (image_subset _ subset_closure) (hf _ isClosed_closure)
 #align is_closed_map.closure_image_subset IsClosedMap.closure_image_subset
 
-theorem of_inverse {f : α → β} {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')
+theorem of_inverse {f' : β → α} (h : Continuous f') (l_inv : LeftInverse f f')
     (r_inv : RightInverse f f') : IsClosedMap f := fun s hs => by
   rw [image_eq_preimage_of_inverse r_inv l_inv]
   exact hs.preimage h
 #align is_closed_map.of_inverse IsClosedMap.of_inverse
 
-theorem of_nonempty {f : α → β} (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
+theorem of_nonempty (h : ∀ s, IsClosed s → s.Nonempty → IsClosed (f '' s)) :
     IsClosedMap f := by
   intro s hs; rcases eq_empty_or_nonempty s with h2s | h2s
   · simp_rw [h2s, image_empty, isClosed_empty]
   · exact h s hs h2s
 #align is_closed_map.of_nonempty IsClosedMap.of_nonempty
 
-theorem closed_range {f : α → β} (hf : IsClosedMap f) : IsClosed (range f) :=
+theorem closed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
 #align is_closed_map.closed_range IsClosedMap.closed_range
 
-theorem to_quotientMap {f : α → β} (hcl : IsClosedMap f) (hcont : Continuous f)
+theorem to_quotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : QuotientMap f :=
   quotientMap_iff_closed.2 ⟨hsurj, fun s =>
     ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
@@ -565,6 +562,7 @@ theorem IsClosedMap.mapClusterPt_iff_lift'_closure [TopologicalSpace α] [Topolo
     MapClusterPt y F f ↔ ((F.lift' closure) ⊓ 𝓟 (f ⁻¹' {y})).NeBot := by
   rw [MapClusterPt, clusterPt_iff_lift'_closure', f_closed.lift'_closure_map_eq f_cont,
       ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]
+end IsClosedMap
 
 section OpenEmbedding
 
