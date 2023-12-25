@@ -628,4 +628,62 @@ theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
 
 end tsum
 
+section slitPlane
+
+/-!
+### Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
+-/
+
+open scoped ComplexOrder
+
+/-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
+def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
+
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
+
+lemma isOpen_slitPlane : IsOpen slitPlane :=
+  (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)
+
+@[simp]
+lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
+
+@[simp]
+lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
+  simpa using ofReal_mem_slitPlane (x := -x)
+
+@[simp] lemma one_mem_slitPlane : 1 ∈ slitPlane := ofReal_mem_slitPlane.2 one_pos
+
+@[simp]
+lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+
+@[simp]
+lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
+  simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
+
+@[simp]
+lemma ofNat_mem_slitPlane (n : ℕ) [h : n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+  nat_cast_mem_slitPlane.2 h.ne_zero
+
+lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
+  mem_slitPlane_iff.trans not_le_zero_iff.symm
+
+protected lemma compl_Iic_zero : (Set.Iic 0)ᶜ = slitPlane := Set.ext fun _ ↦
+  mem_slitPlane_iff_not_le_zero.symm
+
+lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
+  ne_of_mem_of_not_mem hz zero_not_mem_slitPlane
+
+/-- The slit plane includes the open unit ball of radius `1` around `1`. -/
+lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|
+  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_abs _).trans_lt hz
+  by linarith
+
+/-- The slit plane includes the open unit ball of radius `1` around `1`. -/
+lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=
+  ball_one_subset_slitPlane <| by simpa
+
+end slitPlane
+
 end Complex

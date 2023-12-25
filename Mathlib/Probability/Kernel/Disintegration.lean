@@ -139,9 +139,7 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
   apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
   · simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
       zero_mul]
-  · intro t ht
-    rw [mem_image2] at ht
-    obtain ⟨t₁, t₂, ht₁, ht₂, rfl⟩ := ht
+  · rintro _ ⟨t₁, t₂, ht₁, ht₂, rfl⟩
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
       simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]

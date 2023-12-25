@@ -186,8 +186,8 @@ theorem t0Space_iff_inseparable (X : Type u) [TopologicalSpace X] :
 #align t0_space_iff_inseparable t0Space_iff_inseparable
 
 theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ ∀ x y : X, x ≠ y → ¬Inseparable x y := by
-  simp only [t0Space_iff_inseparable, Ne.def, not_imp_not]
+    T0Space X ↔ Pairwise fun x y : X => ¬Inseparable x y := by
+  simp only [t0Space_iff_inseparable, Ne.def, not_imp_not, Pairwise]
 #align t0_space_iff_not_inseparable t0Space_iff_not_inseparable
 
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
@@ -246,14 +246,14 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
 theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ ∀ x y, x ≠ y → ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
+    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
-    inseparable_iff_forall_open]
+    inseparable_iff_forall_open, Pairwise]
 #align t0_space_iff_exists_is_open_xor_mem t0Space_iff_exists_isOpen_xor'_mem
 
 theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) :=
-  (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› x y h
+  (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› h
 #align exists_is_open_xor_mem exists_isOpen_xor'_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
@@ -349,7 +349,7 @@ instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
 #align subtype.t0_space Subtype.t0Space
 
 theorem t0Space_iff_or_not_mem_closure (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ ∀ a b : X, a ≠ b → a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
+    T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 #align t0_space_iff_or_not_mem_closure t0Space_iff_or_not_mem_closure
 
@@ -525,7 +525,7 @@ theorem CofiniteTopology.continuous_of [T1Space X] : Continuous (@CofiniteTopolo
 #align cofinite_topology.continuous_of CofiniteTopology.continuous_of
 
 theorem t1Space_iff_exists_open :
-    T1Space X ↔ ∀ x y, x ≠ y → ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
+    T1Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
   (t1Space_TFAE X).out 0 6
 #align t1_space_iff_exists_open t1Space_iff_exists_open
 
@@ -919,17 +919,17 @@ theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
 @[mk_iff t2Space_iff]
 class T2Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Every two points in a Hausdorff space admit disjoint open neighbourhoods. -/
-  t2 : ∀ x y, x ≠ y → ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
+  t2 : Pairwise fun x y => ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v
 #align t2_space T2Space
 
 /-- Two different points can be separated by open sets. -/
 theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
     ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v :=
-  T2Space.t2 x y h
+  T2Space.t2 h
 #align t2_separation t2_separation
 
 -- todo: use this as a definition?
-theorem t2Space_iff_disjoint_nhds : T2Space X ↔ ∀ x y : X, x ≠ y → Disjoint (𝓝 x) (𝓝 y) := by
+theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
   simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), exists_prop, ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
@@ -937,7 +937,7 @@ theorem t2Space_iff_disjoint_nhds : T2Space X ↔ ∀ x y : X, x ≠ y → Disjo
 
 @[simp]
 theorem disjoint_nhds_nhds [T2Space X] {x y : X} : Disjoint (𝓝 x) (𝓝 y) ↔ x ≠ y :=
-  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, t2Space_iff_disjoint_nhds.mp ‹_› x y⟩
+  ⟨fun hd he => by simp [he, nhds_neBot.ne] at hd, (t2Space_iff_disjoint_nhds.mp ‹_› ·)⟩
 #align disjoint_nhds_nhds disjoint_nhds_nhds
 
 theorem pairwise_disjoint_nhds [T2Space X] : Pairwise (Disjoint on (𝓝 : X → Filter X)) := fun _ _ =>
@@ -972,15 +972,16 @@ instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
 
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
-  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm]
+  simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm, Pairwise]
 #align t2_iff_nhds t2_iff_nhds
 
 theorem eq_of_nhds_neBot [T2Space X] {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) : x = y :=
   t2_iff_nhds.mp ‹_› h
 #align eq_of_nhds_ne_bot eq_of_nhds_neBot
 
-theorem t2Space_iff_nhds : T2Space X ↔ ∀ {x y : X}, x ≠ y → ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
-  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff]
+theorem t2Space_iff_nhds :
+    T2Space X ↔ Pairwise fun x y : X => ∃ U ∈ 𝓝 x, ∃ V ∈ 𝓝 y, Disjoint U V := by
+  simp only [t2Space_iff_disjoint_nhds, Filter.disjoint_iff, Pairwise]
 #align t2_space_iff_nhds t2Space_iff_nhds
 
 theorem t2_separation_nhds [T2Space X] {x y : X} (h : x ≠ y) :
@@ -1002,7 +1003,7 @@ theorem t2_iff_ultrafilter :
 
 theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
   simp only [t2Space_iff_disjoint_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds, Prod.forall,
-    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff]
+    nhds_prod_eq, compl_diagonal_mem_prod, mem_compl_iff, mem_diagonal_iff, Pairwise]
 #align t2_iff_is_closed_diagonal t2_iff_isClosed_diagonal
 
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
@@ -1831,7 +1832,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine' ⟨fun x y hne => _⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
-    (t0Space_iff_or_not_mem_closure X).mp inferInstance x y hne
+    (t0Space_iff_or_not_mem_closure X).mp inferInstance hne
   simp only [← disjoint_nhds_nhdsSet, nhdsSet_singleton] at this
   exact this.elim id fun h => h.symm
 #align t3_space.t2_5_space T3Space.t25Space

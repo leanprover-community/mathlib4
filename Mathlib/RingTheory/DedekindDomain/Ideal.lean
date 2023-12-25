@@ -1308,18 +1308,19 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R)
-    (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : ∀ i j, i ≠ j → P i ≠ P j)
+    (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i))
+    (coprime : Pairwise fun i j => P i ≠ P j)
     (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
   (Ideal.quotEquivOfEq
     (by
       simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
-        ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i) fun i _ j _ =>
-        coprime i j])).trans <|
+        ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
+        (coprime.set_pairwise _)])).trans <|
     Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
       intro P hPi hPj hPp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
-      refine coprime i j hij ?_
+      refine coprime hij ?_
       refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
         (Ideal.le_of_pow_le_prime hPi)).trans
         ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp

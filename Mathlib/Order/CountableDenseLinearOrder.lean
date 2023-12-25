@@ -74,7 +74,7 @@ variable (α β : Type*) [LinearOrder α] [LinearOrder β]
     of pairs which should be identified. -/
 def PartialIso : Type _ :=
   { f : Finset (α × β) //
-    ∀ (p) (_ : p ∈ f) (q) (_ : q ∈ f),
+    ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
 #align order.partial_iso Order.PartialIso
 
