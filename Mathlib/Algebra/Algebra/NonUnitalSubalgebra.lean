@@ -311,6 +311,11 @@ def toSubmoduleEquiv (S : NonUnitalSubalgebra R A) : S.toSubmodule ≃ₗ[R] S :
 
 variable [NonUnitalAlgHomClass F R A B]
 
+def _root_.NonUnitalAlgHomClass.toLinearMap (f : F) : A →ₗ[R] B where
+  toFun := f
+  map_add' := map_add f
+  map_smul' := map_smulₛₗ f
+
 /-- Transport a non-unital subalgebra via an algebra homomorphism. -/
 def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
   { S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) with
@@ -341,8 +346,7 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S �
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
     -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
-    (map f S).toSubmodule = Submodule.map (f : A →ₗ[R] B) S.toSubmodule :=
-    -- -- (↑f : A →+[R] B) : A →ₗ[R] B) S.toSubmodule :=
+    (map f S).toSubmodule = Submodule.map (NonUnitalAlgHomClass.toLinearMap f) S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
