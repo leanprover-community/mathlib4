@@ -250,10 +250,8 @@ theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
 
 theorem image2_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :
-    image2 f (image2 g s t) u = image2 f' s (image2 g' t u) := by
-  rw [← image_prod g, ← image_prod g', image2_image_left, image2_image_right]
-  ext
-  simp only [mem_image2, Prod.exists, h_assoc, prod_mk_mem_set_prod_eq, and_assoc]
+    image2 f (image2 g s t) u = image2 f' s (image2 g' t u) :=
+  eq_of_forall_subset_iff fun _ ↦ by simp only [image2_subset_iff, forall_image2_iff, h_assoc]
 #align set.image2_assoc Set.image2_assoc
 
 theorem image2_comm {g : β → α → γ} (h_comm : ∀ a b, f a b = g b a) : image2 f s t = image2 g t s :=
