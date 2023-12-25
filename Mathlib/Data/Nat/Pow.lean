@@ -176,7 +176,7 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
         rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
 
-theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l
+theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ}, 0 < x → (x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l)
   | x + 1, w => by
     constructor
     · intro a

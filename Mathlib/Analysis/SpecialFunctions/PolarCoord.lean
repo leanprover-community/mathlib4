@@ -83,7 +83,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   continuousOn_toFun := by
     apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.continuousOn.prod
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
-        {z | 0 < z.re ∨ z.im ≠ 0} := by
+        Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
     refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
       (g := Complex.arg) (fun z hz => _) _ A
@@ -161,18 +161,17 @@ open scoped Real
 /-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
-  equivRealProdClm.toHomeomorph.toPartialHomeomorph.trans polarCoord
+  equivRealProdClm.toHomeomorph.transPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
   rfl
 
-protected theorem polarCoord_source :
-    Complex.polarCoord.source = {a | 0 < a.re} ∪ {a | a.im ≠ 0} := by simp [Complex.polarCoord]
+protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
 
 protected theorem polarCoord_target :
-    Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := by simp [Complex.polarCoord]
+    Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := rfl
 
 @[simp]
 protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :

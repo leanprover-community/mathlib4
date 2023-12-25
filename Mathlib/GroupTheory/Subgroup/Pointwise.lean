@@ -213,7 +213,6 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
 #align add_subgroup.add_inf_assoc AddSubgroup.add_inf_assoc
 
--- porting note: todo: use `∩` in the RHS
 @[to_additive]
 theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
     ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ∩ (↑B * ↑C) := by

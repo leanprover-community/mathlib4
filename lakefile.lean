@@ -93,7 +93,7 @@ post_update pkg do
     -/
     let exitCode ← IO.Process.spawn {
       cmd := "elan"
-      args := #["run", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
+      args := #["run", "--install", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
     } >>= (·.wait)
     if exitCode ≠ 0 then
       logError s!"{pkg.name}: failed to fetch cache"

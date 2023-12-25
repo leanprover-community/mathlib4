@@ -148,9 +148,9 @@ lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsComp
 
 @[to_additive]
 lemma smul_set_closure_subset (K : Set M) (L : Set X) :
-    closure K • closure L ⊆ closure (K • L) := by
-  rw [← Set.image_smul_prod, ← Set.image_smul_prod, ← closure_prod_eq]
-  exact image_closure_subset_closure_image continuous_smul
+    closure K • closure L ⊆ closure (K • L) :=
+  Set.smul_subset_iff.2 fun _x hx _y hy ↦ map_mem_closure₂ continuous_smul hx hy fun _a ha _b hb ↦
+    Set.smul_mem_smul ha hb
 
 end SMul
 

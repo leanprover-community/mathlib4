@@ -1311,9 +1311,10 @@ theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t �
 
 @[to_additive]
 lemma preimage_mul (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
-    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t := hm.image_injective <| by
-  rw [image_mul, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
-    image_preimage_eq_iff.2 (mul_subset_range m hs ht)]
+    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t :=
+  hm.image_injective <| by
+    rw [image_mul, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+      image_preimage_eq_iff.2 (mul_subset_range m hs ht)]
 
 end Mul
 
@@ -1343,18 +1344,19 @@ theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t �
 
 @[to_additive]
 lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
-    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t := hm.image_injective <| by
-  rw [image_div, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
-    image_preimage_eq_iff.2 (div_subset_range m hs ht)]
+    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t :=
+  hm.image_injective <| by
+    rw [image_div, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+      image_preimage_eq_iff.2 (div_subset_range m hs ht)]
 
 end Group
 
 @[to_additive]
-theorem bddAbove_mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
+theorem BddAbove.mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
     BddAbove (A * B) :=
   hA.image2 (fun _ _ _ h ↦ mul_le_mul_right' h _) (fun _ _ _ h ↦ mul_le_mul_left' h _) hB
-#align set.bdd_above_mul Set.bddAbove_mul
-#align set.bdd_above_add Set.bddAbove_add
+#align set.bdd_above_mul Set.BddAbove.mul
+#align set.bdd_above_add Set.BddAbove.add
 
 end Set
 
