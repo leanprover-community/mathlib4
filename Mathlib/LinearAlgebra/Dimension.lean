@@ -547,6 +547,142 @@ theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
 
 end RankZero
 
+section SurjectiveInjective
+
+section Module
+
+variable {R : Type w} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+  {R' : Type w'} {M' : Type v'} [Ring R'] [AddCommGroup M'] [Module R' M']
+
+/-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends non-zero elements to
+non-zero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
+multiplications on `M` and `M'` are compatible, then the rank of `M / R` is smaller than or equal to
+the rank of `M' / R'`. As a special case, taking `R = R'` it is
+`LinearMap.lift_rank_le_of_injective`. -/
+theorem lift_rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
+    (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
+    (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
+    lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
+  simp_rw [Module.rank, lift_iSup (bddAbove_range.{v', v'} _), lift_iSup (bddAbove_range.{v, v} _)]
+  exact ciSup_mono' (bddAbove_range.{v', v} _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+    (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
+      lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
+
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
+`j : M →+ M'` is an injective group homomorphism, such that the scalar multiplications on `M` and
+`M'` are compatible, then the rank of `M / R` is smaller than or equal to the rank of `M' / R'`.
+As a special case, taking `R = R'` it is `LinearMap.lift_rank_le_of_injective`. -/
+theorem lift_rank_le_of_surjective_injective (i : ZeroHom R R') (j : M →+ M')
+    (hi : Surjective i) (hj : Injective j) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
+  obtain ⟨i', hi'⟩ := hi.hasRightInverse
+  refine lift_rank_le_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_
+  · apply_fun i at h
+    rwa [hi', i.map_zero] at h
+  rw [hc (i' r) m, hi']
+
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a bijective map which maps zero to zero,
+`j : M ≃+ M'` is a group isomorphism, such that the scalar multiplications on `M` and `M'` are
+compatible, then the rank of `M / R` is equal to the rank of `M' / R'`.
+As a special case, taking `R = R'` it is `LinearEquiv.lift_rank_eq`. -/
+theorem lift_rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
+    (hi : Bijective i) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
+  (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
+    lift_rank_le_of_injective_injective i j.symm (fun _ _ ↦ hi.1 <| by rwa [i.map_zero])
+      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+
+variable {M' : Type v} [Ring R'] [AddCommGroup M'] [Module R' M']
+
+/-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
+theorem rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
+    (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
+    (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
+    Module.rank R M ≤ Module.rank R' M' := by
+  simpa only [lift_id] using lift_rank_le_of_injective_injective i j hi hj hc
+
+/-- The same-universe version of `lift_rank_le_of_surjective_injective`. -/
+theorem rank_le_of_surjective_injective (i : ZeroHom R R') (j : M →+ M')
+    (hi : Surjective i) (hj : Injective j)
+    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    Module.rank R M ≤ Module.rank R' M' := by
+  simpa only [lift_id] using lift_rank_le_of_surjective_injective i j hi hj hc
+
+/-- The same-universe version of `lift_rank_eq_of_equiv_equiv`. -/
+theorem rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
+    (hi : Bijective i) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    Module.rank R M = Module.rank R' M' := by
+  simpa only [lift_id] using lift_rank_eq_of_equiv_equiv i j hi hc
+
+end Module
+
+namespace Algebra
+
+variable {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
+  {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
+
+/-- If `S / R` and `S' / R'` are algebras, `i : R' →+* R` and `j : S →+* S'` are injective ring
+homorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
+smaller than or equal to the rank of `S' / R'`. -/
+theorem lift_rank_le_of_injective_injective
+    (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
+    (hc : (j.comp (algebraMap R S)).comp i = algebraMap R' S') :
+    lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
+  refine _root_.lift_rank_le_of_injective_injective i j
+    (fun _ _ ↦ hi <| by rwa [i.map_zero]) hj fun r _ ↦ ?_
+  have := congr($hc r)
+  simp only [RingHom.coe_comp, comp_apply] at this
+  simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
+
+/-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
+`j : S →+* S'` is an injective ring homorphism, such that `R → R' → S'` and `R → S → S'` commute,
+then the rank of `S / R` is smaller than or equal to the rank of `S' / R'`. -/
+theorem lift_rank_le_of_surjective_injective
+    (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)
+    (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
+    lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
+  refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
+  have := congr($hc r)
+  simp only [RingHom.coe_comp, comp_apply] at this
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+
+/-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
+ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
+then the rank of `S / R` is equal to the rank of `S' / R'`. -/
+theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
+    (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
+    lift.{v'} (Module.rank R S) = lift.{v} (Module.rank R' S') := by
+  refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
+  have := congr($hc r)
+  simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+
+variable {S' : Type v} [CommRing R'] [Ring S'] [Algebra R' S']
+
+/-- The same-universe version of `Algebra.lift_rank_le_of_injective_injective`. -/
+theorem rank_le_of_injective_injective
+    (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
+    (hc : (j.comp (algebraMap R S)).comp i = algebraMap R' S') :
+    Module.rank R S ≤ Module.rank R' S' := by
+  simpa only [lift_id] using lift_rank_le_of_injective_injective i j hi hj hc
+
+/-- The same-universe version of `Algebra.lift_rank_le_of_surjective_injective`. -/
+theorem rank_le_of_surjective_injective
+    (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)
+    (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
+    Module.rank R S ≤ Module.rank R' S' := by
+  simpa only [lift_id] using lift_rank_le_of_surjective_injective i j hi hj hc
+
+/-- The same-universe version of `Algebra.lift_rank_eq_of_equiv_equiv`. -/
+theorem rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
+    (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
+    Module.rank R S = Module.rank R' S' := by
+  simpa only [lift_id] using lift_rank_eq_of_equiv_equiv i j hc
+
+end Algebra
+
+end SurjectiveInjective
+
 section InvariantBasisNumber
 
 variable {R : Type u} [Ring R] [InvariantBasisNumber R]
