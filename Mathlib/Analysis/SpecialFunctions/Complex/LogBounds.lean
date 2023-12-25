@@ -121,7 +121,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
       exact norm_one.symm
 
 lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
-  IntervalIntegrable (fun t : ℝ ↦ t ^ n * ‖(1 + t * z)⁻¹‖) MeasureTheory.volume 0 1 := by
+    IntervalIntegrable (fun t : ℝ ↦ t ^ n * ‖(1 + t * z)⁻¹‖) MeasureTheory.volume 0 1 := by
   have := continousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   rw [← Set.uIcc_of_le zero_le_one] at this
   exact ContinuousOn.intervalIntegrable <|
