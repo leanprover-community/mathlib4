@@ -425,9 +425,8 @@ the given separable contraction. -/
 theorem HasSeparableContraction.natSepDegree_eq
     {q : ℕ} [ExpChar F q] (hf : f.HasSeparableContraction q) :
     f.natSepDegree = hf.degree := by
-  have hf' := hf
-  obtain ⟨g, h1⟩ := hf'
-  rw [← IsSeparableContraction.degree_eq q hf g h1]
+  obtain ⟨g, h1⟩ := id hf
+  rw [← h1.degree_eq q hf g]
   obtain ⟨h1, m, h2⟩ := h1
   rw [← h2, natSepDegree_expand]
   exact natSepDegree_eq_natDegree_of_separable g h1
