@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Filtration
 
 #align_import ring_theory.ideal.cotangent from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
@@ -210,5 +211,11 @@ instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
 
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
+
+lemma subsingleton_CotangentSpace_iff [IsNoetherianRing R] :
+    Subsingleton (CotangentSpace R) ↔ IsField R := by
+  refine (maximalIdeal R).cotangent_subsingleton_iff.trans ?_
+  rw [LocalRing.isField_iff_maximalIdeal_eq, Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing]
+  simp [(maximalIdeal.isMaximal R).ne_top]
 
 end LocalRing

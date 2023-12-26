@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Nakayama
 # Equivalent conditions for DVR
 
 In `DiscreteValuationRing.TFAE`, we show that the following are equivalent for a
-noetherian local domain `(R, m, k)`:
+noetherian local domain that is not a field `(R, m, k)`:
 - `R` is a discrete valuation ring
 - `R` is a valuation ring
 - `R` is a dedekind domain
@@ -24,6 +24,7 @@ noetherian local domain `(R, m, k)`:
 - `dimₖ m/m² = 1`
 - Every nonzero ideal is a power of `m`.
 
+Also see `DiscreteValuationRing.TFAE'` for a version without `¬ IsField R`.
 -/
 
 
@@ -36,8 +37,10 @@ open LocalRing
 open scoped BigOperators
 
 theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing R] [IsDomain R]
-    (h : ¬IsField R) (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
+    (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
+  by_cases h : IsField R;
+  · exact ⟨0, by simp [letI := h.toField; (eq_bot_or_eq_top I).resolve_left hI]⟩
   classical
   obtain ⟨x, hx : _ = Ideal.span _⟩ := h'
   by_cases hI' : I = ⊤
@@ -229,7 +232,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     rw [← sup_eq_left, eq_comm]
     exact le_sup_left.antisymm (h₁.trans <| le_of_eq this)
   tfae_have 5 → 7
-  · exact exists_maximalIdeal_pow_eq_of_principal R h
+  · exact exists_maximalIdeal_pow_eq_of_principal R
   tfae_have 7 → 2
   · rw [ValuationRing.iff_ideal_total]
     intro H
@@ -250,3 +253,45 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     · right; exact Ideal.pow_le_pow_right h'
   tfae_finish
 #align discrete_valuation_ring.tfae DiscreteValuationRing.TFAE
+
+lemma LocalRing.finrank_CotangentSpace_eq_zero_iff [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
+    FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 0 ↔ IsField R := by
+  rw [FiniteDimensional.finrank_zero_iff, subsingleton_CotangentSpace_iff]
+
+lemma LocalRing.finrank_CotangentSpace_eq_zero (R) [Field R] :
+    FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 0 :=
+  (finrank_CotangentSpace_eq_zero_iff R).mpr (Field.toIsField R)
+
+theorem DiscreteValuationRing.TFAE' [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
+    List.TFAE
+      [IsPrincipalIdealRing R, ValuationRing R, IsDedekindDomain R,
+        IsIntegrallyClosed R ∧ ∀ P : Ideal R, P ≠ ⊥ → P.IsPrime → P = maximalIdeal R,
+        (maximalIdeal R).IsPrincipal,
+        FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) ≤ 1,
+        ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
+    by_cases hR : IsField R
+    · letI := hR.toField
+      have : IsPrincipalIdealRing R := inferInstance
+      have : ValuationRing R := inferInstance
+      have : IsDedekindDomain R := inferInstance
+      have : IsIntegrallyClosed R := inferInstance
+      have : maximalIdeal R = ⊥ := maximalIdeal_eq_bot
+      have := finrank_CotangentSpace_eq_zero R
+      have : ∀ I : Ideal R, I ≠ ⊥ ↔ I = ⊤ := fun I ↦ by cases eq_bot_or_eq_top I <;> simp [*]
+      have : ∀ I : Ideal R, Ideal.IsPrime I ↔ I = ⊥ := fun I ↦ by
+        obtain rfl|rfl := eq_bot_or_eq_top I <;> simp only [Ideal.bot_prime, top_ne_bot, iff_false]
+        exact fun h ↦ h.1 rfl
+      have : ∃ n, ⊤ = (⊥ : Ideal R) ^ n := ⟨0, by simp⟩
+      simp only [*, or_true, ne_eq, true_and, zero_le, List.tfae_cons_self, eq_true bot_isPrincipal,
+        imp_self, implies_true, forall_const, forall_eq, List.tfae_singleton]
+    have hR' := LocalRing.isField_iff_maximalIdeal_eq.not.mp hR
+    rw [Nat.le_one_iff_eq_zero_or_eq_one]
+    convert DiscreteValuationRing.TFAE R hR
+    · exact ⟨fun _ ↦ ⟨hR'⟩, @DiscreteValuationRing.toIsPrincipalIdealRing R _ _⟩
+    · exact ⟨fun h ↦ ⟨maximalIdeal R, ⟨hR', inferInstance⟩, by simpa using h⟩,
+        fun H P hP₁ hP₂ ↦ H.unique ⟨hP₁, hP₂⟩ ⟨hR', inferInstance⟩⟩
+    · simp [finrank_CotangentSpace_eq_zero_iff, hR]
+
+instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
+    [LocalRing R] [IsDedekindDomain R] :
+    IsPrincipalIdealRing R := ((DiscreteValuationRing.TFAE' R).out 2 0).mp ‹_›
