@@ -33,12 +33,27 @@ universe u v w u₁ v₁
 /-- Defining the homomorphism in the category R-Alg. -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
-  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+  [Algebra R A] [Algebra R B] extends RingHom A B, LinearMap (RingHom.id R) A B
+--  where
+-- commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_hom AlgHom
+
+def AlgHom.mk_of_commutes (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (f : A →+* B)
+  (hf : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
+  AlgHom R A B := {
+f with
+map_smul' := fun r x => by
+  simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    MonoidHom.coe_coe, RingHom.id_apply]
+  rw [← one_mul x, ← smul_eq_mul, ← smul_assoc, ← Algebra.algebraMap_eq_smul_one, smul_eq_mul, map_mul, hf r,
+    Algebra.algebraMap_eq_smul_one]
+  simp only [Algebra.smul_mul_assoc, one_mul, smul_eq_mul] }
 
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
+
+/-- Reinterpret an `AlgHom` as a `LinearMap` -/
+add_decl_doc AlgHom.toLinearMap
 
 @[inherit_doc AlgHom]
 infixr:25 " →ₐ " => AlgHom _
@@ -50,8 +65,9 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 from `A` to `B`.  -/
 class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B] extends RingHomClass F A B where
-  commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
+  [Algebra R B] extends RingHomClass F A B, SemilinearMapClass F (RingHom.id R) A B
+  -- where
+  -- commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
@@ -65,11 +81,14 @@ namespace AlgHomClass
 variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
+theorem commutes {F : Type*} [AlgHomClass F R A B] (f : F) (r : R) :
+    f (algebraMap R A r) = algebraMap R B r  := by
+  simp only [Algebra.algebraMap_eq_smul_one r, map_smul, map_one]
+
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
-      simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
+    map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
 -- Porting note: A new definition underlying a coercion `↑`.
@@ -79,7 +98,9 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 def toAlgHom {F : Type*} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
   { (f : A →+* B) with
       toFun := f
-      commutes' := AlgHomClass.commutes f }
+      map_smul' := map_smulₛₗ f
+       -- commutes' := AlgHomClass.commutes f
+       }
 
 instance coeTC {F : Type*} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -111,7 +132,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
   map_one f := f.map_one'
-  commutes f := f.commutes'
+  map_smulₛₗ f := f.map_smul' -- commutes f := f.commutes'
 #align alg_hom.alg_hom_class AlgHom.algHomClass
 
 /-- See Note [custom simps projection] -/
@@ -235,7 +256,7 @@ theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, 
 
 @[simp]
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
-  φ.commutes' r
+  AlgHomClass.commutes φ r
 #align alg_hom.commutes AlgHom.commutes
 
 theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
@@ -290,8 +311,9 @@ protected theorem map_bit1 (x) : φ (bit1 x) = bit1 (φ x) :=
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
-    toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    map_smul' := h
+    toFun := f }
+    -- commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
 #align alg_hom.mk' AlgHom.mk'
 
 @[simp]
@@ -305,7 +327,8 @@ variable (R A)
 
 /-- Identity map as an `AlgHom`. -/
 protected def id : A →ₐ[R] A :=
-  { RingHom.id A with commutes' := fun _ => rfl }
+  { RingHom.id A with -- commutes' := fun _ => rfl
+    map_smul' := fun r x => by simp }
 #align alg_hom.id AlgHom.id
 
 @[simp]
@@ -327,7 +350,8 @@ theorem id_apply (p : A) : AlgHom.id R A p = p :=
 /-- Composition of algebra homeomorphisms. -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
-    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
+    map_smul' := fun r x => by simp }
+    -- cmmutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
 #align alg_hom.comp AlgHom.comp
 
 @[simp]
@@ -359,12 +383,14 @@ theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A �
   ext fun _x => rfl
 #align alg_hom.comp_assoc AlgHom.comp_assoc
 
+/-
 /-- R-Alg ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
   toFun := φ
   map_add' := map_add _
   map_smul' := map_smul _
 #align alg_hom.to_linear_map AlgHom.toLinearMap
+-/
 
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
@@ -395,7 +421,8 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    map_smul' := f.map_smul' }
+    -- commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 #align alg_hom.of_linear_map AlgHom.ofLinearMap
 
 @[simp]
@@ -501,12 +528,27 @@ variable {R S : Type*}
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
-    commutes' := fun n => by simp }
+    map_smul' := map_nsmul f }
+    -- commutes' := fun n => by simp }
 #align ring_hom.to_nat_alg_hom RingHom.toNatAlgHom
+
+lemma foo [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) (n : ℤ) (r : R) :
+    f (n • r) = n • (f r) := by
+  simp only [zsmul_eq_mul, map_mul, map_intCast]
+
+/-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
+def toIntAlgHom' [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S := {
+  f with
+  map_smul' := fun n r => by
+    simp
+    convert map_zsmul f n r
+    sorry
+    sorry }
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  AlgHom.mk_of_commutes ℤ R S f (by simp)
+    -- commutes' := fun n => by simp } -/
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
@@ -516,7 +558,9 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
-  { f with commutes' := f.map_rat_algebraMap }
+  { f with
+    map_smul' := map_rat_smul f}
+    -- commutes' := f.map_rat_algebraMap }
 #align ring_hom.to_rat_alg_hom RingHom.toRatAlgHom
 
 @[simp]
@@ -555,9 +599,15 @@ variable (R : Type u) (A : Type v)
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
+lemma algebraMap_smul (r s : R) :
+    algebraMap R A (r • s) = r • algebraMap R A s := by
+  simp only [Algebra.algebraMap_eq_smul_one, smul_assoc]
+
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
-  { algebraMap R A with commutes' := fun _ => rfl }
+  { algebraMap R A with
+    map_smul' := algebraMap_smul R A }
+    -- commutes' := fun _ => rfl }
 #align algebra.of_id Algebra.ofId
 
 variable {R}
@@ -600,7 +650,9 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
     toFun := fun a => m • a
-    commutes' := smul_algebraMap _ }
+    map_smul' := fun r x => by
+      simp [smul_comm] }
+    -- commutes' := smul_algebraMap _ }
 #align mul_semiring_action.to_alg_hom MulSemiringAction.toAlgHom
 
 theorem toAlgHom_injective [FaithfulSMul M A] :
