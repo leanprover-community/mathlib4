@@ -433,7 +433,8 @@ lemma _root_.CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq :
     CompositionSeries.ofIsArtinianOfIsNoetherian_toFun, Function.comp_apply, Fin.val_last,
     nthSubmodule_coe] using nthSubmodule_indexOfTopSubmodule_eq_top R M
 
-noncomputable instance [IsArtinian R M] [IsNoetherian R M] : FiniteLengthModule R M where
+noncomputable instance FiniteLengthModule.of_noetherian_of_artinian
+    [IsArtinian R M] [IsNoetherian R M] : FiniteLengthModule R M where
   compositionSeries := _
   head_eq := CompositionSeries.ofIsArtinianOfIsNoetherian_head_eq R M
   last_eq := CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq R M
@@ -445,5 +446,151 @@ instance [IsArtinian R M] [IsNoetherian R M] : IsFiniteLengthModule R M where
       CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq R M⟩
 
 end decIssue
+
+section additive
+
+variable {N : Submodule R M} (c : CompositionSeries (Submodule R (M ⧸ N)))
+variable (d : CompositionSeries (Submodule R N))
+
+/--
+Give a composition series `p₀ ⋖ p₁ ⋖ ... ⋖  pₙ` of `M ⧸ N`, we can lift it to a composition series
+of `M`.
+-/
+@[simps]
+def CompositionSeries.liftQuotient : CompositionSeries (Submodule R M) where
+  length := c.length
+  toFun i := N.comapMkQRelIso (c i)
+  step i := show (N.comapMkQRelIso (c _)).1 ⋖ (N.comapMkQRelIso (c _)).1 by
+    obtain ⟨lt, H⟩ := (c.step i)
+    refine ⟨N.comapMkQRelIso.lt_iff_lt.mpr lt, ?_⟩
+    intro p h
+    have p_le : N ≤ p
+    · simp only [Submodule.comapMkQRelIso, RelIso.coe_fn_mk, Equiv.coe_fn_mk] at h
+      intro m hm
+      refine h.1 ?_
+      simp only [Submodule.comap_coe, Set.mem_preimage, Submodule.mkQ_apply, SetLike.mem_coe]
+      convert Submodule.zero_mem _
+      simpa only [Submodule.Quotient.mk_eq_zero]
+    specialize @H (N.comapMkQRelIso.symm ⟨p, p_le⟩) (by
+      have := N.comapMkQRelIso.symm.strictMono
+        (Subtype.mk_lt_mk.mpr h : N.comapMkQRelIso (c _) < ⟨p, p_le⟩)
+      convert this using 1
+      change _ = Submodule.map _ (Submodule.comap _ _)
+      rw [Submodule.map_comap_eq_of_surjective]
+      exact Submodule.mkQ_surjective N)
+    contrapose! H
+    convert N.comapMkQRelIso.symm.strictMono
+      (Subtype.mk_lt_mk.mpr H : ⟨p, p_le⟩ < N.comapMkQRelIso (c _)) using 1
+    change _ = Submodule.map _ (Submodule.comap _ _)
+    rw [Submodule.map_comap_eq_of_surjective]
+    exact Submodule.mkQ_surjective N
+
+lemma CompositionSeries.liftQuotient_head :
+  CompositionSeries.bot c.liftQuotient = N.comapMkQRelIso c.bot := rfl
+
+lemma CompositionSeries.liftQuotient_last :
+    CompositionSeries.top c.liftQuotient = N.comapMkQRelIso c.top := rfl
+
+def CompositionSeries.liftSubmodule : CompositionSeries (Submodule R M) where
+  length := d.length
+  toFun i := Submodule.MapSubtype.relIso N (d i)
+  step i := show Submodule.map _ _ ⋖ Submodule.map _ _ by
+    obtain ⟨lt, H⟩ := d.step i
+    refine ⟨Submodule.MapSubtype.relIso N |>.lt_iff_lt.mpr lt, ?_⟩
+    contrapose! H
+    obtain ⟨p, hp1, hp2⟩ := H
+    have hp3 : p ≤ N
+    · intro x hx
+      have := hp2.1 hx
+      simp only [Submodule.map_coe, Submodule.coeSubtype, Set.mem_image, SetLike.mem_coe,
+        Subtype.exists, exists_and_right, exists_eq_right] at this
+      obtain ⟨hx', -⟩ := this
+      exact hx'
+    have hp1' : Submodule.MapSubtype.relIso N (d i.castSucc) < ⟨p, hp3⟩ := hp1
+    have hp2' : ⟨p, hp3⟩ < Submodule.MapSubtype.relIso N (d i.succ) := hp2
+    have hp1' := Submodule.MapSubtype.relIso N |>.symm |>.lt_iff_lt |>.mpr hp1'
+    have hp2' := Submodule.MapSubtype.relIso N |>.symm |>.lt_iff_lt |>.mpr hp2'
+    simp only [OrderIso.symm_apply_apply] at hp1' hp2'
+    exact ⟨Submodule.MapSubtype.relIso N |>.symm ⟨p, hp3⟩, hp1', hp2'⟩
+
+lemma CompositionSeries.liftSubmodule_head :
+    CompositionSeries.bot d.liftSubmodule = (Submodule.map N.subtype d.bot) := rfl
+
+lemma CompositionSeries.liftSubmodule_last :
+    CompositionSeries.top d.liftSubmodule = (Submodule.map N.subtype d.top) := rfl
+
+noncomputable def FiniteLengthModule.submodule [finLen : FiniteLengthModule R M] :
+    FiniteLengthModule R N where
+  compositionSeries := finLen.compositionSeries.ofInterList N
+  head_eq := finLen.compositionSeries.ofInterList_head_eq_bot_of_head_eq_bot N finLen.head_eq
+  last_eq := finLen.compositionSeries.ofInterList_last_eq_top_of_last_eq_top N finLen.last_eq
+
+noncomputable def FiniteLengthModule.quotient [finLen : FiniteLengthModule R M] :
+    FiniteLengthModule R (M ⧸ N) := by
+  classical
+  exact FiniteLengthModule.of_noetherian_of_artinian R (M ⧸ N)
+
+def FiniteLengthModule.of_quotient_of_submodule
+      [quotFin : FiniteLengthModule R (M ⧸ N)] [subFin : FiniteLengthModule R N] :
+    FiniteLengthModule R M where
+  compositionSeries :=
+    let c1 := quotFin.compositionSeries.liftQuotient
+    let c2 := subFin.compositionSeries.liftSubmodule
+    c2.append c1  <| by
+      rw [CompositionSeries.liftQuotient_head, CompositionSeries.liftSubmodule_last]
+      ext m
+      simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+        exists_eq_right, Submodule.comapMkQRelIso, RelIso.coe_fn_mk, Equiv.coe_fn_mk,
+        Submodule.mem_comap, Submodule.mkQ_apply]
+      set x : Submodule R N := CompositionSeries.top compositionSeries
+      set y : Submodule R (M ⧸ N) := CompositionSeries.bot compositionSeries
+      have x_eq := show x = ⊤ from subFin.last_eq
+      have y_eq := show y = ⊥ from quotFin.head_eq
+      rw [x_eq, y_eq]
+      simp only [Submodule.mem_top, exists_prop, and_true, Submodule.mem_bot,
+        Submodule.Quotient.mk_eq_zero]
+  head_eq := by
+    simp only [CompositionSeries.append, RelSeries.combine_head]
+    show Submodule.map _ _ = ⊥
+    rw [show RelSeries.toFun compositionSeries 0 = ⊥ from subFin.head_eq, Submodule.map_bot]
+  last_eq := by
+    simp only [CompositionSeries.append, RelSeries.combine_last]
+    show Submodule.comap _ _ = ⊤
+    erw [show RelSeries.toFun compositionSeries (Fin.last _) = ⊤ from quotFin.last_eq,
+      Submodule.comap_top]
+
+variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
+
+lemma moduleLength.eq_length_submodule_add_length_quotient :
+    moduleLength R M = moduleLength R N + moduleLength R (M ⧸ N) := by
+  by_cases finiteLength : IsFiniteLengthModule R M
+  · haveI inst1 : FiniteLengthModule R M := Classical.choice finiteLength.finite
+    let finiteLength_submodule : FiniteLengthModule R N := FiniteLengthModule.submodule R M
+    let finiteLength_quotient : FiniteLengthModule R (M ⧸ N) := FiniteLengthModule.quotient R M
+    let finiteLength : FiniteLengthModule R M :=
+      FiniteLengthModule.of_quotient_of_submodule (N := N)
+    rw [finiteLength.compositionSeries.moduleLength_eq_length
+          finiteLength.head_eq finiteLength.last_eq,
+      finiteLength_quotient.compositionSeries.moduleLength_eq_length
+          finiteLength_quotient.head_eq finiteLength_quotient.last_eq,
+      finiteLength_submodule.compositionSeries.moduleLength_eq_length
+          finiteLength_submodule.head_eq finiteLength_submodule.last_eq]
+    norm_cast
+  · conv_lhs => delta moduleLength
+    rw [dif_neg finiteLength]
+    have inst1 : ¬ IsFiniteLengthModule R N ∨ ¬ IsFiniteLengthModule R (M ⧸ N)
+    · contrapose! finiteLength
+      haveI i1 := Classical.choice finiteLength.1.finite
+      haveI i2 := Classical.choice finiteLength.2.finite
+      exact ⟨⟨FiniteLengthModule.of_quotient_of_submodule (N := N)⟩⟩
+    rcases inst1 with inst1 | inst1
+    · conv_rhs => lhs; delta moduleLength
+      rw [dif_neg inst1]
+      rfl
+    · conv_rhs => rhs; delta moduleLength
+      rw [dif_neg inst1, add_comm]
+      rfl
+
+end additive
 
 end Noetherian_and_Artinian

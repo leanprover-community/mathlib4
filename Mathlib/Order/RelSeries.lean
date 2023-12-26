@@ -588,6 +588,22 @@ lemma combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) 
     simp only [Fin.val_succ, Fin.coe_natAdd]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
+@[simp] lemma combine_head {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) :
+    (combine s₁ s₂ h).head = s₁.head := by
+  delta combine head
+  simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
+    ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
+  intro H; symm; convert h
+  congr
+  rw [H]
+  rfl
+
+@[simp] lemma combine_last {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) :
+    (combine s₁ s₂ h).last = s₂.last := by
+  delta combine last
+  simp only [Fin.val_last, add_lt_iff_neg_left, not_lt_zero', add_tsub_cancel_left, dite_false]
+  congr
+
 variable (r)
 lemma exists_len_gt_of_infiniteDimensional [r.InfiniteDimensional] (n : ℕ) :
     ∃ (p : RelSeries r), n < p.length :=
