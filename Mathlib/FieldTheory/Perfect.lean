@@ -134,7 +134,8 @@ noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.ro
     ext r; obtain ⟨r, rfl⟩ := surjective_frobenius R p r
     simp [expand_eq_zero (Fact.out : p.Prime).pos, (frobenius_inj R p).eq_iff, ← frobenius_def]
 
-theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x).1 = x.1 ^ p := rfl
+@[simp]
+theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
 
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
 a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
@@ -145,8 +146,9 @@ noncomputable def rootsExpandPowEquivRoots :
   | n + 1 => (Equiv.Set.ofEq <| by rw [pow_succ, ← expand_expand]).trans
     (rootsExpandEquivRoots p (expand R (p ^ n) f)) |>.trans (rootsExpandPowEquivRoots n)
 
+@[simp]
 theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :
-    (rootsExpandPowEquivRoots p f n x).1 = x.1 ^ p ^ n := by
+    (rootsExpandPowEquivRoots p f n x : R) = x ^ p ^ n := by
   induction' n with n ih
   · simp only [pow_zero, pow_one]
     rfl
