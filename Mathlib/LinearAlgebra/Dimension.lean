@@ -266,7 +266,7 @@ variable [Nontrivial R]
 variable (R M M')
 
 open LinearMap in
-theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
+theorem lift_rank_add_lift_rank_le_rank_prod :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
   convert rank_quotient_add_rank_le (ker <| LinearMap.fst R M M')
   · refine Eq.trans ?_ (lift_id'.{v, v'} _)
