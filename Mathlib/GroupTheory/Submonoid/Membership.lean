@@ -398,8 +398,8 @@ theorem closure_eq_image_prod (s : Set M) :
 
 @[to_additive]
 theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
-    ∃ (l : List M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
-  rwa [← SetLike.mem_coe, closure_eq_image_prod, Set.mem_image_iff_bex] at hx
+    ∃ l : List M, (∀ y ∈ l, y ∈ s) ∧ l.prod = x := by
+  rwa [← SetLike.mem_coe, closure_eq_image_prod, Set.mem_image] at hx
 #align submonoid.exists_list_of_mem_closure Submonoid.exists_list_of_mem_closure
 #align add_submonoid.exists_list_of_mem_closure AddSubmonoid.exists_list_of_mem_closure
 

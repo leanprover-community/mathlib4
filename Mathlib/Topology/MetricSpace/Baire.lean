@@ -226,7 +226,7 @@ theorem dense_iInter_of_isOpen [Encodable β] {f : β → Set α} (ho : ∀ s, I
 #align dense_Inter_of_open dense_iInter_of_isOpen
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
-theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆ s), IsGδ t ∧ Dense t := by
+theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ t ⊆ s, IsGδ t ∧ Dense t := by
   constructor
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩
