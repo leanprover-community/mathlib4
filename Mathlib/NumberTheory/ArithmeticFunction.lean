@@ -896,7 +896,8 @@ theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply Nat.ArithmeticFunction.cardFactors_apply
 
-@[simp] lemma cardFactors_zero : Ω 0 = 0 := rfl
+@[simp, nolint simpNF] -- this is a `dsimp` lemma
+lemma cardFactors_zero : Ω 0 = 0 := rfl
 
 @[simp] theorem cardFactors_one : Ω 1 = 0 := rfl
 #align nat.arithmetic_function.card_factors_one Nat.ArithmeticFunction.cardFactors_one
