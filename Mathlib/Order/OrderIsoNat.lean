@@ -251,7 +251,7 @@ theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     (h : WellFounded ((· > ·) : α → α → Prop)) (a : ℕ →o α) :
     iSup a = monotonicSequenceLimit a := by
   refine' (iSup_le fun m => _).antisymm (le_iSup a _)
-  cases' le_or_lt m (monotonicSequenceLimitIndex a) with hm hm
+  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
   · cases' WellFounded.monotone_chain_condition'.1 h a with n hn
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
