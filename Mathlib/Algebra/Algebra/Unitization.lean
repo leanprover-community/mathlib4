@@ -808,5 +808,3 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
 end StarAlgHom
 
 end Unitization
-
-#lint
