@@ -176,8 +176,8 @@ instance module [Semiring R] : Module R PUnit := by
 /--
 If `M` is the trivial `R`-module, then it is isomorphic to `*`
 -/
-def linearEquiv_of_subsingleton (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    [Unique M] : M ≃ₗ[R] PUnit where
+def linearEquivOfUnique (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+    [uniq : Unique M] : M ≃ₗ[R] PUnit where
   toFun _ := ⟨⟩
   map_add' := by aesop
   map_smul' := by aesop
