@@ -50,7 +50,7 @@ theorem stepBound_mono : Monotone stepBound := fun a b h =>
 #align szemeredi_regularity.step_bound_mono SzemerediRegularity.stepBound_mono
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
-  zero_lt_mul_right <| by positivity
+  mul_pos_iff_of_pos_right <| by positivity
 #align szemeredi_regularity.step_bound_pos_iff SzemerediRegularity.stepBound_pos_iff
 
 alias ⟨_, stepBound_pos⟩ := stepBound_pos_iff
