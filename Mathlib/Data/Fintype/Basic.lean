@@ -1305,6 +1305,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim
-  · apply symm
+  · unfold Function.onFun
+    apply symm
     exact hf' n m h
 #align exists_seq_of_forall_finset_exists' exists_seq_of_forall_finset_exists'
