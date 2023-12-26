@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
+import Mathlib.Algebra.Homology.SpectralObject.Stabilization
 import Mathlib.Algebra.Homology.SpectralSequenceNew.LowDegreesExactSequence
 
 namespace CategoryTheory
@@ -17,11 +17,6 @@ namespace SpectralObject
 
 noncomputable def abutment (n : ℤ) : C :=
     (X.H n).obj (mk₁ (homOfLE' ⊥ ⊤ bot_le))
-
-noncomputable def pageInfinity (n₀ n₁ n₂ : ℤ)
-    (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
-    (i j : ι) (hij : i ≤ j) : C :=
-    X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE bot_le) (homOfLE hij) (homOfLE le_top)
 
 noncomputable def abutmentFiltration (n : ℤ) (j : ι) : C :=
   kernel ((X.H n).map (show mk₁ (homOfLE' (⊥ : ι) ⊤ bot_le) ⟶ mk₁ (homOfLE' j ⊤ le_top) from
@@ -68,10 +63,8 @@ def mkDataE₂CohomologicalNatCompatibility :
       CohomologicalSpectralSequenceNat.stripes where
   deg n := n
 
-end SpectralObject
+  end SpectralObject
 
-end Abelian
+  end Abelian
 
-end CategoryTheory
-
-#lint
+  end CategoryTheory
