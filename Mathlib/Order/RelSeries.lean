@@ -235,7 +235,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
   toFun :=  (Fin.castSucc i.succ).insertNth a p
   step m := by
     set x := _; set y := _; change r x y
-    obtain (hm|hm|hm) := lt_trichotomy m.1 i.1
+    obtain hm | hm | hm := lt_trichotomy m.1 i.1
     · convert p.step ⟨m, hm.trans i.2⟩
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
@@ -255,7 +255,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
         rw [show m.succ = i.succ.castSucc by ext; change _ + 1 = _ + 1; rw [hm],
           Fin.insertNth_apply_same]
     · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
-      obtain (hm|hm) := hm
+      obtain hm | hm := hm
       · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above (h := hm)]
