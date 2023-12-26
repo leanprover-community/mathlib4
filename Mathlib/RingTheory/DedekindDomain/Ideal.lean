@@ -245,7 +245,7 @@ assuming `IsDedekindDomain A`, which implies `IsDedekindDomainInv`. For **integr
 `IsDedekindDomain`(`_inv`) implies only `Ideal.cancelCommMonoidWithZero`.
 -/
 def IsDedekindDomainInv : Prop :=
-  ∀ (I) (_ : I ≠ (⊥ : FractionalIdeal A⁰ (FractionRing A))), I * I⁻¹ = 1
+  ∀ I ≠ (⊥ : FractionalIdeal A⁰ (FractionRing A)), I * I⁻¹ = 1
 #align is_dedekind_domain_inv IsDedekindDomainInv
 
 open FractionalIdeal
@@ -253,7 +253,7 @@ open FractionalIdeal
 variable {R A K}
 
 theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
-    IsDedekindDomainInv A ↔ ∀ (I) (_ : I ≠ (⊥ : FractionalIdeal A⁰ K)), I * I⁻¹ = 1 := by
+    IsDedekindDomainInv A ↔ ∀ I ≠ (⊥ : FractionalIdeal A⁰ K), I * I⁻¹ = 1 := by
   let h : FractionalIdeal A⁰ (FractionRing A) ≃+* FractionalIdeal A⁰ K :=
     FractionalIdeal.mapEquiv (FractionRing.algEquiv A K)
   refine h.toEquiv.forall_congr (fun {x} => ?_)
