@@ -238,7 +238,9 @@ theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
   let ⟨t', h'⟩ := Classical.axiom_of_choice h₁
   have : t = fun a => ofList (t' a) := funext h'
   have hd : Symmetric fun a b => List.Disjoint (t' a) (t' b) := fun a b h => h.symm
-  Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
+  Quot.induction_on s <| by
+    unfold Function.onFun
+    simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
 #align multiset.nodup_bind Multiset.nodup_bind
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
