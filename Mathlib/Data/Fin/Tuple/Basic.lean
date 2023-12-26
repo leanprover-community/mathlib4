@@ -759,11 +759,6 @@ def insertNth (i : Fin (n + 1)) (x : α i) (p : ∀ j : Fin n, α (i.succAbove j
   succAboveCases i x p j
 #align fin.insert_nth Fin.insertNth
 
-theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
-    (Fin.insertNth i x p) ∘ Fin.rev = Fin.insertNth (Fin.rev i) x (p ∘ Fin.rev) := by
-  funext x
-  apply insertNth_rev
-
 @[simp]
 theorem insertNth_apply_same (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i.succAbove j)) :
     insertNth i x p i = x := by simp [insertNth, succAboveCases]
@@ -865,6 +860,11 @@ lemma insertNth_rev {α : Type*} (i : Fin (n + 1)) (a : α) (f : Fin n → α) (
   induction j using Fin.succAboveCases; exact rev i
   · simp
   · simp [rev_succAbove]
+
+theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
+    (Fin.insertNth i x p) ∘ Fin.rev = Fin.insertNth (Fin.rev i) x (p ∘ Fin.rev) := by
+  funext x
+  apply insertNth_rev
 
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
     cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
