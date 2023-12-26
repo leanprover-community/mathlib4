@@ -1208,7 +1208,7 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α
 #align set.finite.dinduction_on Set.Finite.dinduction_on
 
 theorem Finite.induction_univ [Finite α] (C : Set α → Prop) (S0 : Set α)
-    (H0 : C S0) (ih : ∀ S ≠ Set.univ, C S → ∃ a ∉ S, C ({a} ∪ S)) : C Set.univ := by
+    (H0 : C S0) (ih : ∀ S ≠ Set.univ, C S → ∃ a ∉ S, C (insert a S)) : C Set.univ := by
   refine' Finite.to_wellFoundedGT.wf.induction_bot' (fun S hS hS' ↦ _) H0
   obtain ⟨a, ha, ha'⟩ := ih S hS hS'
   exact ⟨_, Set.ssubset_insert ha, ha'⟩
