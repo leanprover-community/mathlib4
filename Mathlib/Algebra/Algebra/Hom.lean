@@ -310,19 +310,27 @@ theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) :
   rfl
 #align alg_hom.coe_mk' AlgHom.coe_mk'
 
+lemma _root_.RingHom.commutes_iff_isLinear (f : A →+* B) :
+    (∀ (c : R), f (algebraMap R A c) = algebraMap R B c)
+      ↔ (∀ (c : R) (x), f (c • x) = c • f x) := by
+  apply forall_congr'
+  intro c
+  constructor
+  · intro h x
+    rw [← one_mul x, ← smul_eq_mul, ← smul_assoc, ← Algebra.algebraMap_eq_smul_one, smul_eq_mul, map_mul, h,
+      Algebra.algebraMap_eq_smul_one]
+    simp only [Algebra.smul_mul_assoc, one_mul, smul_eq_mul]
+  · intro h
+    simp only [Algebra.algebraMap_eq_smul_one, h 1, map_one]
+
 /-- Construct an `AlgHom` from a `RingHom` and the commutation property
   of its `algebraMap` -/
 def mk_of_commutes (R A B : Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     (f : A →+* B) (hf : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
     AlgHom R A B := {
-f with
-map_smul' := fun r x => by
-  simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-    MonoidHom.coe_coe, RingHom.id_apply]
-  rw [← one_mul x, ← smul_eq_mul, ← smul_assoc, ← Algebra.algebraMap_eq_smul_one, smul_eq_mul, map_mul, hf r,
-    Algebra.algebraMap_eq_smul_one]
-  simp only [Algebra.smul_mul_assoc, one_mul, smul_eq_mul] }
+  f with
+  map_smul' := f.commutes_iff_isLinear.mp hf }
 
 @[simp]
 lemma coe_mk_of_commutes (R A B : Type*) [CommSemiring R]
