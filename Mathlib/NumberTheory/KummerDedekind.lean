@@ -92,8 +92,7 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
-  [IsScalarTower R S L] [NoZeroSMulDivisors S L]
-    (x : S) (y : L) :
+    [IsScalarTower R S L] [NoZeroSMulDivisors S L] {x : S} {y : L} :
     y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
       y * (algebraMap S L) z ∈ Algebra.adjoin R {algebraMap S L x} := by
   cases subsingleton_or_nontrivial L
