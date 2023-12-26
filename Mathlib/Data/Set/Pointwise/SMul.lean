@@ -444,9 +444,8 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
 @[to_additive]
 theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
-    range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 := by
-  simp only [← image2_smul, ← image_univ, image2_image_left, image2_image_right, ← univ_prod_univ,
-    ← image2_curry]; rfl
+    range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
+  image2_range ..
 #align set.range_smul_range Set.range_smul_range
 #align set.range_vadd_range Set.range_vadd_range
 

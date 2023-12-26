@@ -59,8 +59,8 @@ TODO: prove the equivalence.
 -/
 structure IsDedekindDomainDvr : Prop where
   isNoetherianRing : IsNoetherianRing A
-  is_dvr_at_nonzero_prime :
-    ∀ (P) (_ : P ≠ (⊥ : Ideal A)) (_ : P.IsPrime), DiscreteValuationRing (Localization.AtPrime P)
+  is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
+    DiscreteValuationRing (Localization.AtPrime P)
 #align is_dedekind_domain_dvr IsDedekindDomainDvr
 
 /-- Localizing a domain of Krull dimension `≤ 1` gives another ring of Krull dimension `≤ 1`.
