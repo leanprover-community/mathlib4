@@ -479,7 +479,7 @@ def _root_.Module.toCentroidHom : R →+* CentroidHom α := RingHom.smulOneHom
 
 open Module in
 /-- `CentroidHom α` as an algebra over `R`. -/
-abbrev ringToAlg (h : ∀ (r : R) (T : CentroidHom α), toCentroidHom r * T = T * toCentroidHom r) :
+example (h : ∀ (r : R) (T : CentroidHom α), toCentroidHom r * T = T * toCentroidHom r) :
     Algebra R (CentroidHom α) := toCentroidHom.toAlgebra' h
 
 local notation "L" => AddMonoid.End.mulLeft
