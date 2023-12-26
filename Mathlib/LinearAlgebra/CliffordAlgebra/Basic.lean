@@ -262,15 +262,36 @@ theorem ι_mul_ι_add_swap (a b : M) :
   mul_add_swap_eq_polar_of_forall_mul_self_eq _ (ι_sq_scalar _) _ _
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
-theorem ι_mul_comm (a b : M) :
+theorem ι_mul_ι_comm (a b : M) :
     ι Q a * ι Q b = algebraMap R _ (QuadraticForm.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
-#align clifford_algebra.ι_mul_comm CliffordAlgebra.ι_mul_comm
+#align clifford_algebra.ι_mul_comm CliffordAlgebra.ι_mul_ι_comm
+
+section isOrtho
+
+@[simp] theorem ι_mul_ι_add_swap_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
+    ι Q a * ι Q b + ι Q b * ι Q a = 0 := by
+  rw [ι_mul_ι_add_swap, h.polar_eq_zero]
+  simp
+
+theorem ι_mul_ι_comm_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
+    ι Q a * ι Q b = -(ι Q b * ι Q a) :=
+  eq_neg_of_add_eq_zero_left <| ι_mul_ι_add_swap_of_isOrtho h
+
+theorem mul_ι_mul_ι_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
+    x * ι Q a * ι Q b = -(x * ι Q b * ι Q a) := by
+  rw [mul_assoc, ι_mul_ι_comm_of_isOrtho h, mul_neg, mul_assoc]
+
+theorem ι_mul_ι_mul_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
+    ι Q a * (ι Q b * x) = -(ι Q b * (ι Q a * x)) := by
+  rw [← mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
+
+end isOrtho
 
 /-- $aba$ is a vector. -/
 theorem ι_mul_ι_mul_ι (a b : M) :
     ι Q a * ι Q b * ι Q a = ι Q (QuadraticForm.polar Q a b • a - Q a • b) := by
-  rw [ι_mul_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
+  rw [ι_mul_ι_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
     Algebra.smul_def, ← map_smul, ← map_smul, ← map_sub]
 #align clifford_algebra.ι_mul_ι_mul_ι CliffordAlgebra.ι_mul_ι_mul_ι
 
