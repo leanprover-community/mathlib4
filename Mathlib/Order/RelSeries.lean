@@ -259,8 +259,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
       · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above (h := hm)]
-          simp only [eq_rec_constant]
-          congr
+          aesop
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; exact hm.trans (lt_add_one _)
