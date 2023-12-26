@@ -2,15 +2,12 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.l2_space
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import analysis.inner_product_space.l2_space from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Hilbert sum of a family of inner product spaces
@@ -91,16 +88,13 @@ open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: see lean4#2220
+variable {ι : Type*}
 
-variable {ι : Type _}
-
-variable {𝕜 : Type _} [IsROrC 𝕜] {E : Type _}
+variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
 
-variable {G : ι → Type _} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -115,7 +109,7 @@ namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine' summable_of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
+  refine' .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
   · rw [Real.isConjugateExponent_iff] <;> norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -147,7 +141,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
     add_left := fun f₁ f₂ g => by
       calc
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
-        _ = ∑' i, ⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫ := by
+        _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
           simp only [inner_add_left, Pi.add_apply, coeFn_add]
         _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := (tsum_add ?_ ?_)
         _ = _ := by congr
@@ -220,7 +214,7 @@ protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
       refine' tendsto_nhds_unique _ (lp.hasSum_norm H f)
       convert (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
       ext s
-      exact_mod_cast (hV.norm_sum f s).symm
+      exact mod_cast (hV.norm_sum f s).symm
 #align orthogonal_family.linear_isometry OrthogonalFamily.linearIsometry
 
 protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑' i, V i (f i) :=
@@ -244,14 +238,9 @@ protected theorem linearIsometry_apply_single {i : ι} (x : G i) :
   · simp [h]
 #align orthogonal_family.linear_isometry_apply_single OrthogonalFamily.linearIsometry_apply_single
 
-@[simp]
 protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  have :
-    hV.linearIsometry (∑ i in W₀.support, lp.single 2 i (W₀ i)) =
-      ∑ i in W₀.support, hV.linearIsometry (lp.single 2 i (W₀ i)) :=
-    hV.linearIsometry.toLinearMap.map_sum
-  simp (config := { contextual := true }) [Dfinsupp.sum, this]
+  simp
 #align orthogonal_family.linear_isometry_apply_dfinsupp_sum_single OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
@@ -285,15 +274,15 @@ variable (𝕜 G)
 
 variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
-/-- Given a family of Hilbert spaces `G : ι → Type _`, a Hilbert sum of `G` consists of a Hilbert
+/-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
 `Φ : lp G 2 → E` is surjective.
 
-Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type _`, this is analogous
+Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type*`, this is analogous
 to `DirectSum.IsInternal`, except that we don't express it in terms of actual submodules. -/
 structure IsHilbertSum : Prop where
   ofSurjective ::
-  /-- The orthogonal family consituting the summands in the Hilbert sum. -/
+  /-- The orthogonal family constituting the summands in the Hilbert sum. -/
   protected OrthogonalFamily : OrthogonalFamily 𝕜 G V
   /-- The isometry `lp G 2 → E` induced by the orthogonal family is surjective. -/
   protected surjective_isometry : Function.Surjective OrthogonalFamily.linearIsometry
@@ -374,7 +363,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp (config := { contextual := true }) [Dfinsupp.sum, lp.single_apply]
+  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
 #align is_hilbert_sum.linear_isometry_equiv_apply_dfinsupp_sum_single IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
@@ -411,7 +400,7 @@ variable (ι) (𝕜) (E)
 /-- A Hilbert basis on `ι` for an inner product space `E` is an identification of `E` with the `lp`
 space `ℓ²(ι, 𝕜)`. -/
 structure HilbertBasis where ofRepr ::
-  /-- The linear isometric equivlence implementing identifiying the hilbert space with `ℓ²`. -/
+  /-- The linear isometric equivalence implementing identifying the Hilbert space with `ℓ²`. -/
   repr : E ≃ₗᵢ[𝕜] ℓ²(ι, 𝕜)
 #align hilbert_basis HilbertBasis
 
@@ -419,12 +408,12 @@ end
 
 namespace HilbertBasis
 
-instance {ι : Type _} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
+instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
 /-- `b i` is the `i`th basis vector. -/
-instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E
-    where coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
+instance instCoeFun : CoeFun (HilbertBasis ι 𝕜 E) fun _ => ι → E where
+  coe b i := b.repr.symm (lp.single 2 i (1 : 𝕜))
 
 @[simp]
 protected theorem repr_symm_single (b : HilbertBasis ι 𝕜 E) (i : ι) :
@@ -503,7 +492,7 @@ protected theorem summable_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E
 #align hilbert_basis.summable_inner_mul_inner HilbertBasis.summable_inner_mul_inner
 
 protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
-    (∑' i, ⟪x, b i⟫ * ⟪b i, y⟫) = ⟪x, y⟫ :=
+    ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 #align hilbert_basis.tsum_inner_mul_inner HilbertBasis.tsum_inner_mul_inner
 
@@ -575,7 +564,7 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 
 -- Note : this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
-/-- An orthonormal basis is an Hilbert basis. -/
+/-- An orthonormal basis is a Hilbert basis. -/
 protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by
@@ -595,14 +584,15 @@ theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
   let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs
   ⟨w, HilbertBasis.mkOfOrthogonalEqBot hw_ortho
-    (by simpa [maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
+    (by simpa only [Subtype.range_coe_subtype, Set.setOf_mem_eq,
+      maximal_orthonormal_iff_orthogonalComplement_eq_bot hw_ortho] using hw_max),
     hws, HilbertBasis.coe_mkOfOrthogonalEqBot _ _⟩
 #align orthonormal.exists_hilbert_basis_extension Orthonormal.exists_hilbertBasis_extension
 
 variable (𝕜 E)
 
 /-- A Hilbert space admits a Hilbert basis. -/
-theorem _root_.exists_hilbertBasis : ∃ (w : Set E)(b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
+theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
 #align exists_hilbert_basis exists_hilbertBasis

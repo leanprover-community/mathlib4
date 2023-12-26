@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
-
-! This file was ported from Lean 3 source module combinatorics.additive.pluennecke_ruzsa
-! leanprover-community/mathlib commit 4aab2abced69a9e579b1e6dc2856ed3db48e2cbd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Rat.NNRat
 import Mathlib.Tactic.GCongr
+
+#align_import combinatorics.additive.pluennecke_ruzsa from "leanprover-community/mathlib"@"4aab2abced69a9e579b1e6dc2856ed3db48e2cbd"
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -39,7 +36,7 @@ open NNRat Pointwise
 
 namespace Finset
 
-variable {α : Type _} [CommGroup α] [DecidableEq α] {A B C : Finset α}
+variable {α : Type*} [CommGroup α] [DecidableEq α] {A B C : Finset α}
 
 /-- **Ruzsa's triangle inequality**. Division version. -/
 @[to_additive card_sub_mul_le_card_sub_mul_card_sub
@@ -90,7 +87,7 @@ theorem card_mul_mul_le_card_mul_mul_card_div (A B C : Finset α) :
 
 @[to_additive]
 theorem mul_pluennecke_petridis (C : Finset α)
-    (hA : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card ≤ (A' * B).card * A.card) :
+    (hA : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card) :
     (A * B * C).card * A.card ≤ (A * B).card * (A * C).card := by
   induction' C using Finset.induction_on with x C _ ih
   · simp
@@ -126,13 +123,13 @@ theorem mul_pluennecke_petridis (C : Finset α)
 @[to_additive]
 private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
     (h : ∀ A' ∈ B.powerset.erase ∅, ((A * C).card : ℚ≥0) / ↑A.card ≤ (A' * C).card / ↑A'.card) :
-    ∀ (A') (_ : A' ⊆ A), (A * C).card * A'.card ≤ (A' * C).card * A.card := by
+    ∀ A' ⊆ A, (A * C).card * A'.card ≤ (A' * C).card * A.card := by
   rintro A' hAA'
   obtain rfl | hA' := A'.eq_empty_or_nonempty
   · simp
   have hA₀ : (0 : ℚ≥0) < A.card := cast_pos.2 hA.card_pos
   have hA₀' : (0 : ℚ≥0) < A'.card := cast_pos.2 hA'.card_pos
-  exact_mod_cast
+  exact mod_cast
     (div_le_div_iff hA₀ hA₀').1
       (h _ <| mem_erase_of_ne_of_mem hA'.ne_empty <| mem_powerset.2 <| hAA'.trans hAB)
 
@@ -157,7 +154,7 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
       (zero_le _) (zero_le _))
   rw [← mul_div_right_comm, ← mul_assoc]
   refine' (le_div_iff <| cast_pos.2 hU.1.card_pos).2 _
-  exact_mod_cast mul_pluennecke_petridis C (mul_aux hU.1 hU.2 hUA)
+  exact mod_cast mul_pluennecke_petridis C (mul_aux hU.1 hU.2 hUA)
 #align finset.card_mul_mul_card_le_card_mul_mul_card_mul Finset.card_mul_mul_card_le_card_mul_mul_card_mul
 #align finset.card_add_mul_card_le_card_add_mul_card_add Finset.card_add_mul_card_le_card_add_mul_card_add
 
@@ -182,8 +179,8 @@ theorem card_div_mul_le_card_div_mul_card_mul (A B C : Finset α) :
   exact card_mul_mul_le_card_div_mul_card_div _ _ _
 #align finset.card_div_mul_le_card_div_mul_card_mul Finset.card_div_mul_le_card_div_mul_card_mul
 
-theorem card_add_nsmul_le {α : Type _} [AddCommGroup α] [DecidableEq α] {A B : Finset α}
-    (hAB : ∀ (A') (_ : A' ⊆ A), (A + B).card * A'.card ≤ (A' + B).card * A.card) (n : ℕ) :
+theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B : Finset α}
+    (hAB : ∀ A' ⊆ A, (A + B).card * A'.card ≤ (A' + B).card * A.card) (n : ℕ) :
     (A + n • B).card ≤ ((A + B).card / A.card : ℚ≥0) ^ n * A.card := by
   obtain rfl | hA := A.eq_empty_or_nonempty
   · simp
@@ -198,7 +195,7 @@ theorem card_add_nsmul_le {α : Type _} [AddCommGroup α] [DecidableEq α] {A B 
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
 
 @[to_additive existing]
-theorem card_mul_pow_le (hAB : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card ≤ (A' * B).card * A.card)
+theorem card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card)
     (n : ℕ) : (A * B ^ n).card ≤ ((A * B).card / A.card : ℚ≥0) ^ n * A.card := by
   obtain rfl | hA := A.eq_empty_or_nonempty
   · simp

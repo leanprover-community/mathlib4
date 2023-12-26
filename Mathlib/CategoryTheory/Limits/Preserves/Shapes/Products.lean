@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.products
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.products from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # Preserving products

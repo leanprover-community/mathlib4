@@ -2,27 +2,24 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.minpoly.basic
-! leanprover-community/mathlib commit df0098f0db291900600f32070f6abb3e178be2ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegralClosure
+
+#align_import field_theory.minpoly.basic from "leanprover-community/mathlib"@"df0098f0db291900600f32070f6abb3e178be2ba"
 
 /-!
 # Minimal polynomials
 
 This file defines the minimal polynomial of an element `x` of an `A`-algebra `B`,
 under the assumption that x is integral over `A`, and derives some basic properties
-such as ireducibility under the assumption `B` is a domain.
+such as irreducibility under the assumption `B` is a domain.
 
 -/
 
 
 open Classical Polynomial Set Function
 
-variable {A B B' : Type _}
+variable {A B B' : Type*}
 
 section MinPolyDef
 
@@ -67,16 +64,21 @@ theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 #align minpoly.eq_zero minpoly.eq_zero
 
-theorem minpoly_algHom (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
+theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
   refine' dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => _) fun _ => rfl
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
-#align minpoly.minpoly_alg_hom minpoly.minpoly_algHom
+#align minpoly.minpoly_alg_hom minpoly.algHom_eq
+
+theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
+    (h : Function.Injective (algebraMap B B')) (x : B) :
+    minpoly A (algebraMap B B' x) = minpoly A x :=
+  algHom_eq (IsScalarTower.toAlgHom A B B') h x
 
 @[simp]
-theorem minpoly_algEquiv (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
-  minpoly_algHom (f : B →ₐ[A] B') f.injective x
-#align minpoly.minpoly_alg_equiv minpoly.minpoly_algEquiv
+theorem algEquiv_eq (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
+  algHom_eq (f : B →ₐ[A] B') f.injective x
+#align minpoly.minpoly_alg_equiv minpoly.algEquiv_eq
 
 variable (A x)
 
@@ -84,11 +86,9 @@ variable (A x)
 @[simp]
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
-  split_ifs with hx -- Porting note: `split_ifs` doesn't remove the `if`s
-  · rw [dif_pos hx]
-    exact (degree_lt_wf.min_mem _ hx).2
-  · rw [dif_neg hx]
-    exact aeval_zero _
+  split_ifs with hx
+  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
 /-- A minimal polynomial is not `1`. -/
@@ -98,7 +98,7 @@ theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
-theorem map_ne_one [Nontrivial B] {R : Type _} [Semiring R] [Nontrivial R] (f : A →+* R) :
+theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
   by_cases hx : IsIntegral A x
   · exact mt ((monic hx).eq_one_of_map_eq_one f) (ne_one A x)
@@ -151,8 +151,8 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have : natDegree r ≤ 0 := by
     have hr0 : r ≠ 0 := by
       rintro rfl
-      exact ne_zero hx (MulZeroClass.mul_zero p ▸ hr)
-    apply_fun natDegree  at hr
+      exact ne_zero hx (mul_zero p ▸ hr)
+    apply_fun natDegree at hr
     rw [hm.natDegree_mul' hr0] at hr
     apply Nat.le_of_add_le_add_left
     rw [add_zero]
@@ -166,8 +166,9 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
-  cases' le_or_lt (minpoly A x).degree 0 with h h
-  · rwa [(monic ⟨1, monic_one, by simp⟩ : (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
+  rcases le_or_lt (minpoly A x).degree 0 with h | h
+  · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
+           (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
   · exact (this.not_lt h).elim
 #align minpoly.subsingleton minpoly.subsingleton
 
@@ -209,7 +210,7 @@ theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMa
   simp_rw [or_iff_not_imp_left]
   intro q hl h0
   rw [← natDegree_lt_natDegree_iff h0, natDegree_X_sub_C, Nat.lt_one_iff] at hl
-  rw [eq_C_of_natDegree_eq_zero hl] at h0⊢
+  rw [eq_C_of_natDegree_eq_zero hl] at h0 ⊢
   rwa [aeval_C, map_ne_zero_iff _ hf, ← C_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align minpoly.eq_X_sub_C_of_algebra_map_inj minpoly.eq_X_sub_C_of_algebraMap_inj
@@ -243,7 +244,7 @@ variable [IsDomain A] [IsDomain B]
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
-  by_contra' h
+  by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   cases' heval with heval heval

@@ -2,20 +2,17 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.linear_map
-! leanprover-community/mathlib commit 62c0a4ef1441edb463095ea02a06e87f3dfe135c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
+#align_import linear_algebra.matrix.charpoly.linear_map from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
+
 /-!
 
-# Calyley-Hamilton theorem for f.g. modules.
+# Cayley-Hamilton theorem for f.g. modules.
 
-Given a fixed finite spanning set `b : ι → M` of a `R`-module `M`, we say that a matrix `M`
+Given a fixed finite spanning set `b : ι → M` of an `R`-module `M`, we say that a matrix `M`
 represents an endomorphism `f : M →ₗ[R] M` if the matrix as an endomorphism of `ι → R` commutes
 with `f` via the projection `(ι → R) →ₗ[R] M` given by `b`.
 
@@ -26,15 +23,15 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 -/
 
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
-variable {M : Type _} [AddCommGroup M] (R : Type _) [CommRing R] [Module R M] (I : Ideal R)
+variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
 open BigOperators Polynomial
 
-/-- The composition of a matrix (as an endomporphism of `ι → R`) with the projection
+/-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`.  -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
   (LinearMap.llcomp R _ _ _ (Fintype.total R R b)).comp algEquivMatrix'.symm.toLinearMap
@@ -103,7 +100,7 @@ theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
 #align matrix.represents_iff Matrix.represents_iff
 
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
-    A.Represents b f ↔ ∀ j, (∑ i : ι, A i j • b i) = f (b j) := by
+    A.Represents b f ↔ ∀ j, ∑ i : ι, A i j • b i = f (b j) := by
   constructor
   · intro h i
     have := LinearMap.congr_fun h (Pi.single i 1)
@@ -135,7 +132,7 @@ theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
 
 theorem Matrix.Represents.add {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A + A').Represents b (f + f') := by
-  delta Matrix.Represents at h h'⊢; rw [map_add, map_add, h, h']
+  delta Matrix.Represents at h h' ⊢; rw [map_add, map_add, h, h']
 #align matrix.represents.add Matrix.Represents.add
 
 theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
@@ -148,6 +145,10 @@ theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.
   delta Matrix.Represents at h ⊢
   rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
 #align matrix.represents.smul Matrix.Represents.smul
+
+theorem Matrix.Represents.algebraMap (r : R) :
+    (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
+  simpa only [Algebra.algebraMap_eq_smul_one] using Matrix.Represents.one.smul r
 
 theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : A.Represents b f') : f = f' :=
@@ -164,7 +165,7 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
   one_mem' := ⟨1, Matrix.Represents.one⟩
   add_mem' := fun ⟨f₁, e₁⟩ ⟨f₂, e₂⟩ => ⟨f₁ + f₂, e₁.add e₂⟩
   zero_mem' := ⟨0, Matrix.Represents.zero⟩
-  algebraMap_mem' r := ⟨r • (1 : Module.End R M), Matrix.Represents.one.smul r⟩
+  algebraMap_mem' r := ⟨algebraMap _ _ r, .algebraMap _⟩
 #align matrix.is_representation Matrix.isRepresentation
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
@@ -176,7 +177,7 @@ noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b �
   map_zero' := (0 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.zero
   map_add' A₁ A₂ := (A₁ + A₂).2.choose_spec.eq hb (A₁.2.choose_spec.add A₂.2.choose_spec)
   commutes' r :=
-    (r • (1 : Matrix.isRepresentation R b)).2.choose_spec.eq hb (Matrix.Represents.one.smul r)
+    (algebraMap _ (Matrix.isRepresentation R b) r).2.choose_spec.eq hb (.algebraMap r)
 #align matrix.is_representation.to_End Matrix.isRepresentation.toEnd
 
 theorem Matrix.isRepresentation.toEnd_represents (A : Matrix.isRepresentation R b) :
@@ -231,7 +232,8 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
   classical
     cases subsingleton_or_nontrivial R
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
-    obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ := Module.Finite.out
+    obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
+      Module.Finite.out (R := R) (M := M)
     -- Porting note: `H` was `rfl`
     obtain ⟨A, H, h⟩ :=
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)

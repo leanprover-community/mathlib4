@@ -5,7 +5,6 @@ Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 import Lean
 import Std.Tactic.RCases
-import Mathlib.Tactic.Cache
 
 open Lean (HashSet)
 open Lean Meta Elab Tactic
@@ -15,7 +14,7 @@ namespace Mathlib.Tactic
 /--
 Get all metavariables which `mvarId` depends on. These are the metavariables
 which occur in the target or local context or delayed assignment (if any) of
-`mvarId`, plus the metvariables which occur in these metavariables, etc.
+`mvarId`, plus the metavariables which occur in these metavariables, etc.
 -/
 partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     MetaM (HashSet MVarId) :=

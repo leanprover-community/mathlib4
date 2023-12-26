@@ -5,7 +5,6 @@ Authors: Daniel Selsam, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 
@@ -59,13 +58,6 @@ set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder
 #align except.bind Except.bindₓ
 
 /-! ## `init.control.functor` -/
-
-/-! ## `init.control.lawful` -/
-
-#align is_lawful_functor LawfulFunctor
-#align is_lawful_applicative LawfulApplicative
-#align is_lawful_monad LawfulMonad
-#align is_lawful_applicative.pure_seq_eq_map LawfulApplicative.pure_seq
 
 /-! ## `init.control.lift` -/
 

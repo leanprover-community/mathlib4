@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module order.monotone.union
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.Basic
+
+#align_import order.monotone.union from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Monotonicity on intervals
@@ -22,7 +19,7 @@ set.
 
 open Set
 
-variable {α β : Type _} [LinearOrder α] [Preorder β] {a : α} {f : α → β}
+variable {α β : Type*} [LinearOrder α] [Preorder β] {a : α} {f : α → β}
 
 /-- If `f` is strictly monotone both on `s` and `t`, with `s` to the left of `t` and the center
 point belonging to both `s` and `t`, then `f` is strictly monotone on `s ∪ t` -/

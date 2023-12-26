@@ -2,16 +2,13 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.category.basic
-! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.RestateAxiom
+import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.Common
+
+#align_import category_theory.category.basic from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
 /-!
 # Categories
@@ -20,14 +17,14 @@ Defines a category, as a type class parametrised by the type of objects.
 
 ## Notations
 
-Introduces notations
+Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
 * `𝟙 X` for the identity morphism on `X` (type as `\b1`),
 * `f ≫ g` for composition in the 'arrows' convention (type as `\gg`).
 
-Users may like to add `f ⊚ g` for composition in the standard convention, using
+Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation f ` ⊚ `:80 g:80 := category.comp g f    -- type as \oo
+local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
 ```
 
 ## Porting note
@@ -95,6 +92,7 @@ namespace CategoryTheory
 
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
+@[pp_with_univ]
 class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
@@ -105,10 +103,10 @@ class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v +
 initialize_simps_projections CategoryStruct (-toQuiver_Hom)
 
 /-- Notation for the identity morphism in a category. -/
-notation "𝟙" => CategoryStruct.id  -- type as \b1
+scoped notation "𝟙" => CategoryStruct.id  -- type as \b1
 
 /-- Notation for composition of morphisms in a category. -/
-infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
+scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
@@ -116,17 +114,25 @@ allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
 use in auto-params.
 -/
-macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
+macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (options := { introsTransparency? := some .default, terminal := true })
+            (simp_options := { decide := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
+/--
+We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
+-/
+macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
+`(tactic|
+  aesop? $c* (options := { introsTransparency? := some .default, terminal := true })
+  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
 nonterminal `simp`.
 -/
-macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause*: tactic =>
+macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
     (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
@@ -134,6 +140,9 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+
+-- We turn on the mathlib version of `rfl` inside `aesop_cat`.
+attribute [aesop safe tactic (rule_sets [CategoryTheory])] Mathlib.Tactic.rflTac
 
 -- Porting note:
 -- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
@@ -146,6 +155,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 
 See <https://stacks.math.columbia.edu/tag/0014>.
 -/
+@[pp_with_univ]
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
@@ -199,24 +209,22 @@ theorem whisker_eq (f : X ⟶ Y) {g h : Y ⟶ Z} (w : g = h) : f ≫ g = f ≫ h
 Notation for whiskering an equation by a morphism (on the right).
 If `f g : X ⟶ Y` and `w : f = g` and `h : Y ⟶ Z`, then `w =≫ h : f ≫ h = g ≫ h`.
 -/
-infixr:80 " =≫ " => eq_whisker
+scoped infixr:80 " =≫ " => eq_whisker
 
 /--
 Notation for whiskering an equation by a morphism (on the left).
 If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
 -/
-infixr:80 " ≫= " => whisker_eq
+scoped infixr:80 " ≫= " => whisker_eq
 
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
-  convert w (𝟙 Y) <;>
-  aesop
+  convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_left_eq CategoryTheory.eq_of_comp_left_eq
 
 theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
     f = g := by
-  convert w (𝟙 Y) <;>
-  aesop
+  convert w (𝟙 Y) <;> simp
 #align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
 
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
@@ -231,12 +239,12 @@ theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
 
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
   convert w (𝟙 X)
-  aesop
+  simp
 #align category_theory.id_of_comp_left_id CategoryTheory.id_of_comp_left_id
 
 theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ f = g) : f = 𝟙 X := by
   convert w (𝟙 X)
-  aesop
+  simp
 #align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
 
 theorem comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :
@@ -273,7 +281,7 @@ class Epi (f : X ⟶ Y) : Prop where
 See <https://stacks.math.columbia.edu/tag/003B>.
 -/
 class Mono (f : X ⟶ Y) : Prop where
-  /-- A morphism `f` is an monomorphism if it can be cancelled when postcomposed. -/
+  /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 

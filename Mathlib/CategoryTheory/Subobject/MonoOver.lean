@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.subobject.mono_over
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Adjunction.Reflective
+
+#align_import category_theory.subobject.mono_over from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Monomorphisms over a fixed object
@@ -127,14 +124,15 @@ theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
 #align category_theory.mono_over.w CategoryTheory.MonoOver.w
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
-abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left) (w : h ≫ g.arrow = f.arrow) : f ⟶ g :=
+abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
+    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
   Over.homMk h w
 #align category_theory.mono_over.hom_mk CategoryTheory.MonoOver.homMk
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
-def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left) (w : h.hom ≫ g.arrow = f.arrow) : f ≅ g
-    where
+def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
+    (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 #align category_theory.mono_over.iso_mk CategoryTheory.MonoOver.isoMk
@@ -143,7 +141,7 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left) (w : h.hom ≫ g.ar
     package it as an isomorphism. -/
 @[simp]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
-  isoMk (Iso.refl _) (by simp)
+  isoMk (Iso.refl _)
 #align category_theory.mono_over.mk'_arrow_iso CategoryTheory.MonoOver.mk'ArrowIso
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
@@ -151,8 +149,8 @@ given suitable evidence that morphisms are taken to monomorphisms.
 -/
 @[simps]
 def lift {Y : D} (F : Over Y ⥤ Over X)
-    (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) : MonoOver Y ⥤ MonoOver X
-    where
+    (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) :
+    MonoOver Y ⥤ MonoOver X where
   obj f := ⟨_, h f⟩
   map k := (MonoOver.forget X).preimage ((MonoOver.forget Y ⋙ F).map k)
 #align category_theory.mono_over.lift CategoryTheory.MonoOver.lift
@@ -192,11 +190,11 @@ theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
 are equivalent to monomorphisms over the source of `f`.
 -/
 def slice {A : C} {f : Over A}
-  (h₁ : ∀ (g : MonoOver f),
-    Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
-  (h₂ : ∀ (g : MonoOver f.left),
-    Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
-  MonoOver f ≌ MonoOver f.left where
+    (h₁ : ∀ (g : MonoOver f),
+      Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
+    (h₂ : ∀ (g : MonoOver f.left),
+      Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
+    MonoOver f ≌ MonoOver f.left where
   functor := MonoOver.lift f.iteratedSliceEquiv.functor h₁
   inverse := MonoOver.lift f.iteratedSliceEquiv.inverse h₂
   unitIso :=
@@ -259,10 +257,14 @@ def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ ma
   liftIso _ _ (Over.mapComp _ _) ≪≫ (liftComp _ _ _ _).symm
 #align category_theory.mono_over.map_comp CategoryTheory.MonoOver.mapComp
 
+variable (X)
+
 /-- `MonoOver.map` preserves the identity (up to a natural isomorphism). -/
 def mapId : map (𝟙 X) ≅ 𝟭 _ :=
-  liftIso _ _ Over.mapId ≪≫ liftId
+  liftIso _ _ (Over.mapId X) ≪≫ liftId
 #align category_theory.mono_over.map_id CategoryTheory.MonoOver.mapId
+
+variable {X}
 
 @[simp]
 theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : C) = g.obj.left :=
@@ -290,8 +292,8 @@ instance faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
 def mapIso {A B : C} (e : A ≅ B) : MonoOver A ≌ MonoOver B where
   functor := map e.hom
   inverse := map e.inv
-  unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId).symm
-  counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ mapId
+  unitIso := ((mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)).symm
+  counitIso := (mapComp _ _).symm ≪≫ eqToIso (by simp) ≪≫ (mapId _)
 #align category_theory.mono_over.map_iso CategoryTheory.MonoOver.mapIso
 
 section
@@ -311,10 +313,8 @@ def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
         dsimp
         infer_instance) ⋙
       (mapIso (e.unitIso.symm.app X)).functor
-  unitIso := NatIso.ofComponents (fun Y => isoMk (e.unitIso.app Y)
-    (by aesop_cat)) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun Y => isoMk (e.counitIso.app Y)
-    (by aesop_cat)) (by aesop_cat)
+  unitIso := NatIso.ofComponents fun Y => isoMk (e.unitIso.app Y)
+  counitIso := NatIso.ofComponents fun Y => isoMk (e.counitIso.app Y)
 #align category_theory.mono_over.congr CategoryTheory.MonoOver.congr
 
 end
@@ -424,7 +424,7 @@ section Exists
 variable [HasImages C]
 
 /-- In the case where `f` is not a monomorphism but `C` has images,
-we can still take the "forward map" under it, which agrees with `mono_over.map f`.
+we can still take the "forward map" under it, which agrees with `MonoOver.map f`.
 -/
 def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image
@@ -436,15 +436,13 @@ instance faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
 def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
-  NatIso.ofComponents
-    (by
-      intro Z
-      suffices : (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z)
+  NatIso.ofComponents (by
+    intro Z
+    suffices (forget _).obj ((«exists» f).obj Z) ≅ (forget _).obj ((map f).obj Z) by
       apply (forget _).preimageIso this
-      apply Over.isoMk _ _
-      apply imageMonoIsoSource (Z.arrow ≫ f)
-      apply imageMonoIsoSource_hom_self)
-    (fun _ => Subsingleton.elim _ _)
+    apply Over.isoMk _ _
+    apply imageMonoIsoSource (Z.arrow ≫ f)
+    apply imageMonoIsoSource_hom_self)
 #align category_theory.mono_over.exists_iso_map CategoryTheory.MonoOver.existsIsoMap
 
 /-- `exists` is adjoint to `pullback` when images exist -/

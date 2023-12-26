@@ -2,15 +2,13 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.calculus.taylor
-! leanprover-community/mathlib commit 3a69562db5a458db8322b190ec8d9a8bbd8a5b14
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Data.Polynomial.Module
+
+#align_import analysis.calculus.taylor from "leanprover-community/mathlib"@"3a69562db5a458db8322b190ec8d9a8bbd8a5b14"
 
 /-!
 # Taylor's theorem
@@ -49,7 +47,7 @@ open scoped BigOperators Interval Topology Nat
 
 open Set
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -120,7 +118,7 @@ theorem taylor_within_apply (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : �
   induction' n with k hk
   · simp
   rw [taylorWithinEval_succ, Finset.sum_range_succ, hk]
-  simp
+  simp [Nat.factorial]
 #align taylor_within_apply taylor_within_apply
 
 /-- If `f` is `n` times continuous differentiable on a set `s`, then the Taylor polynomial
@@ -164,15 +162,11 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       (-((k ! : ℝ)⁻¹ * (x - y) ^ k)) t y := by
     -- Commuting the factors:
     have : -((k ! : ℝ)⁻¹ * (x - y) ^ k) = ((k + 1 : ℝ) * k !)⁻¹ * (-(k + 1) * (x - y) ^ k) := by
-      field_simp [k.factorial_ne_zero]
-      -- Porting note: was `ring_nf`
-      rw [mul_div_mul_right, ← neg_add_rev, neg_mul, neg_div, mul_div_cancel_left]
-      · exact k.cast_add_one_ne_zero
-      · simp [k.factorial_ne_zero]
+      field_simp; ring
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
   convert this.smul hf using 1
-  field_simp [Nat.cast_add_one_ne_zero k, Nat.factorial_ne_zero k]
+  field_simp
   rw [neg_div, neg_smul, sub_eq_add_neg]
 #align has_deriv_within_at_taylor_coeff_within hasDerivWithinAt_taylor_coeff_within
 
@@ -194,10 +188,9 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     exact hf'.hasDerivWithinAt.mono h
   simp_rw [Nat.add_succ, taylorWithinEval_succ]
   simp only [add_zero, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
-  have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' := by
-    have coe_lt_succ : (k : WithTop ℕ) < k.succ := Nat.cast_lt.2 k.lt_succ_self
-    refine' DifferentiableOn.mono _ h
-    exact hf.differentiableOn_iteratedDerivWithin coe_lt_succ hs_unique
+  have coe_lt_succ : (k : WithTop ℕ) < k.succ := Nat.cast_lt.2 k.lt_succ_self
+  have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
+    (hf.differentiableOn_iteratedDerivWithin coe_lt_succ hs_unique).mono h
   specialize hk hf.of_succ ((hdiff y hy).mono_of_mem hs')
   convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
     (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
@@ -237,7 +230,7 @@ theorem has_deriv_within_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (
 
 We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
 `n+1`-times differentiable on the open set `Ioo x₀ x`, and `g` is a differentiable function on
-`Ioo x₀ x` and continuous on `Icc x₀ x`. Then there exists a `x' ∈ Ioo x₀ x` such that
+`Ioo x₀ x` and continuous on `Icc x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such that
 $$f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$. -/
 theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
@@ -246,7 +239,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
     (gcont : ContinuousOn g (Icc x₀ x))
     (gdiff : ∀ x_1 : ℝ, x_1 ∈ Ioo x₀ x → HasDerivAt g (g' x_1) x_1)
     (g'_ne : ∀ x_1 : ℝ, x_1 ∈ Ioo x₀ x → g' x_1 ≠ 0) :
-    ∃ (x' : ℝ) (_ : x' ∈ Ioo x₀ x), f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
+    ∃ x' ∈ Ioo x₀ x, f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
     ((x - x') ^ n / n ! * (g x - g x₀) / g' x') • iteratedDerivWithin (n + 1) f (Icc x₀ x) x' := by
   -- We apply the mean value theorem
   rcases exists_ratio_hasDerivAt_eq_ratio_slope (fun t => taylorWithinEval f n (Icc x₀ x) t x)
@@ -258,21 +251,21 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   simp only [taylorWithinEval_self] at h
   rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel _ (g'_ne y hy)] at h
   rw [← h]
-  field_simp [g'_ne y hy, n.factorial_ne_zero]
+  field_simp [g'_ne y hy]
   ring
 #align taylor_mean_remainder taylor_mean_remainder
 
 /-- **Taylor's theorem** with the Lagrange form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists a `x' ∈ Ioo x₀ x` such that
-$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
+`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
     (hf : ContDiffOn ℝ n f (Icc x₀ x))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Ioo x₀ x)) :
-    ∃ (x' : ℝ) (_ : x' ∈ Ioo x₀ x), f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
+    ∃ x' ∈ Ioo x₀ x, f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
       iteratedDerivWithin (n + 1) f (Icc x₀ x) x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
   have gcont : ContinuousOn (fun t : ℝ => (x - t) ^ (n + 1)) (Icc x₀ x) := by
     refine' Continuous.continuousOn _
@@ -282,7 +275,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
     refine' pow_ne_zero _ _
     rw [mem_Ioo] at hy
     rw [sub_ne_zero]
-    exact hy.2.ne.symm
+    exact hy.2.ne'
   have hg' : ∀ y : ℝ, y ∈ Ioo x₀ x → -(↑n + 1) * (x - y) ^ n ≠ 0 := fun y hy =>
     mul_ne_zero (neg_ne_zero.mpr (Nat.cast_add_one_ne_zero n)) (xy_ne y hy)
   -- We apply the general theorem with g(t) = (x - t)^(n+1)
@@ -291,29 +284,20 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   use y, hy
   simp only [sub_self, zero_pow', Ne.def, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
-  field_simp
-  -- Porting note: was `ring`
-  conv_lhs =>
-    arg 2
-    rw [← mul_assoc, mul_comm]
-  rw [mul_assoc, mul_div_mul_left _ _ (xy_ne y hy)]
-  conv_lhs =>
-    arg 2
-    rw [mul_comm]
-  nth_rw 1 [mul_comm]
+  field_simp [xy_ne y hy, Nat.factorial];  ring
 #align taylor_mean_remainder_lagrange taylor_mean_remainder_lagrange
 
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc x₀ x` and
-`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists a `x' ∈ Ioo x₀ x` such that
-$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
+`n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
     (hf : ContDiffOn ℝ n f (Icc x₀ x))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Ioo x₀ x)) :
-    ∃ (x' : ℝ) (_ : x' ∈ Ioo x₀ x), f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
+    ∃ x' ∈ Ioo x₀ x, f x - taylorWithinEval f n (Icc x₀ x) x₀ x =
       iteratedDerivWithin (n + 1) f (Icc x₀ x) x' * (x - x') ^ n / n ! * (x - x₀) := by
   have gcont : ContinuousOn id (Icc x₀ x) := Continuous.continuousOn (by continuity)
   have gdiff : ∀ x_1 : ℝ, x_1 ∈ Ioo x₀ x → HasDerivAt id ((fun _ : ℝ => (1 : ℝ)) x_1) x_1 :=
@@ -343,20 +327,17 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     hf.differentiableOn_iteratedDerivWithin (WithTop.coe_lt_coe.mpr n.lt_succ_self)
       (uniqueDiffOn_Icc h)
   -- We can uniformly bound the derivative of the Taylor polynomial
-  have h' : ∀ (y : ℝ) (_ : y ∈ Ico a x),
+  have h' : ∀ y ∈ Ico a x,
       ‖((n ! : ℝ)⁻¹ * (x - y) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤
         (n ! : ℝ)⁻¹ * |x - a| ^ n * C := by
     rintro y ⟨hay, hyx⟩
     rw [norm_smul, Real.norm_eq_abs]
+    gcongr
+    · rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
+      gcongr
+      rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
     -- Estimate the iterated derivative by `C`
-    refine' mul_le_mul _ (hC y ⟨hay, hyx.le.trans hx.2⟩) (by positivity) (by positivity)
-    -- The rest is a trivial calculation
-    rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
-    -- Porting note: was `mono* with 0 ≤ (n ! : ℝ)⁻¹; any_goals positivity; linarith [hx.1, hyx]`
-    have : 0 ≤ (n ! : ℝ)⁻¹ := by simp only [inv_nonneg, Nat.cast_nonneg]
-    refine' mul_le_mul_of_nonneg_left (pow_le_pow_of_le_left _ _ n) this
-    · simp only [abs_nonneg]
-    · rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
+    · exact hC y ⟨hay, hyx.le.trans hx.2⟩
   -- Apply the mean value theorem for vector valued functions:
   have A : ∀ t ∈ Icc a x, HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((↑n !)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a x) t := by

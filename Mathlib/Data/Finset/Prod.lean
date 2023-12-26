@@ -2,13 +2,10 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
-
-! This file was ported from Lean 3 source module data.finset.prod
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
+
+#align_import data.finset.prod from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Finsets in product types
@@ -28,7 +25,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
 
 open Multiset
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Finset
 
@@ -143,6 +140,12 @@ theorem card_product (s : Finset α) (t : Finset β) : card (s ×ˢ t) = card s 
   Multiset.card_product _ _
 #align finset.card_product Finset.card_product
 
+/-- The product of two Finsets is nontrivial iff both are nonempty
+  at least one of them is nontrivial. -/
+lemma nontrivial_prod_iff : Nontrivial (s ×ˢ t) ↔
+    s.Nonempty ∧ t.Nonempty ∧ (Nontrivial s ∨ Nontrivial t) := by
+  simp_rw [← card_pos, ← one_lt_card_iff_nontrivial_coe, card_product]; apply Nat.one_lt_mul_iff
+
 theorem filter_product (p : α → Prop) (q : β → Prop) [DecidablePred p] [DecidablePred q] :
     ((s ×ˢ t).filter fun x : α × β => p x.1 ∧ q x.2) = s.filter p ×ˢ t.filter q := by
   ext ⟨a, b⟩
@@ -170,8 +173,8 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
       ext ⟨a, b⟩
       simp only [filter_union_right, mem_filter, mem_product]
       constructor <;> intro h <;> use h.1
-      . simp only [h.2, Function.comp_apply, Decidable.em, and_self]
-      . revert h
+      · simp only [h.2, Function.comp_apply, Decidable.em, and_self]
+      · revert h
         simp only [Function.comp_apply, and_imp]
         rintro _ _ (_|_) <;> simp [*]
     · apply Finset.disjoint_filter_filter'

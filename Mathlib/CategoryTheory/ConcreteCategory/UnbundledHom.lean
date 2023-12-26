@@ -2,13 +2,10 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.unbundled_hom
-! leanprover-community/mathlib commit f153a85a8dc0a96ce9133fed69e34df72f7f191f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+
+#align_import category_theory.concrete_category.unbundled_hom from "leanprover-community/mathlib"@"f153a85a8dc0a96ce9133fed69e34df72f7f191f"
 
 /-!
 # Category instances for structures that use unbundled homs
@@ -27,7 +24,7 @@ namespace CategoryTheory
 /-- A class for unbundled homs used to define a category. `hom` must
 take two types `α`, `β` and instances of the corresponding structures,
 and return a predicate on `α → β`. -/
-class UnbundledHom {c : Type u → Type u} (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) where
+class UnbundledHom {c : Type u → Type u} (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) : Prop where
   hom_id : ∀ {α} (ia : c α), hom ia ia id
   hom_comp : ∀ {α β γ} {Iα : c α} {Iβ : c β} {Iγ : c γ} {g : β → γ} {f : α → β} (_ : hom Iβ Iγ g)
       (_ : hom Iα Iβ f), hom Iα Iγ (g ∘ f)

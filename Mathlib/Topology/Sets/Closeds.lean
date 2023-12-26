@@ -2,13 +2,10 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.sets.closeds
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.sets.closeds from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Closed sets
@@ -25,7 +22,7 @@ For a topological space `α`,
 
 open Order OrderDual Set
 
-variable {ι α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
@@ -33,7 +30,7 @@ namespace TopologicalSpace
 
 
 /-- The type of closed subsets of a topological space. -/
-structure Closeds (α : Type _) [TopologicalSpace α] where
+structure Closeds (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -171,7 +168,7 @@ theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set
 #align topological_space.closeds.coe_infi TopologicalSpace.Closeds.coe_iInf
 
 theorem iInf_def {ι} (s : ι → Closeds α) :
-    (⨅ i, s i) = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
 #align topological_space.closeds.infi_def TopologicalSpace.Closeds.iInf_def
 
 @[simp]
@@ -191,6 +188,8 @@ instance : Coframe (Closeds α) :=
 def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
 #align topological_space.closeds.singleton TopologicalSpace.Closeds.singleton
+
+@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
 
 end Closeds
 
@@ -248,18 +247,22 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
-/-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the
-`TopologicalSpace.Closeds.singleton`s.
+lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
+    ∃ a, (s : Set α) = {a} := by
+  refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
+  lift t to Closeds α using ht'
+  exact SetLike.coe_injective.eq_iff.2 $ (hs.le_iff_eq $ coe_nonempty.1 ht).1 hts
 
-TODO: use `minimal_nonempty_closed_eq_singleton` to show that an atom in `TopologicalSpace.Closeds`
-in a T₀ space is a singleton. -/
+@[simp, norm_cast] lemma Closeds.isAtom_coe [T1Space α] {s : Closeds α} :
+    IsAtom (s : Set α) ↔ IsAtom s :=
+  Closeds.gi.isAtom_iff' rfl
+    (fun t ht ↦ by obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht; exact closure_singleton) s
+
+/-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the
+`TopologicalSpace.Closeds.singleton`s. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = Closeds.singleton x := by
-  have : IsAtom (s : Set α) ↔ IsAtom s := by
-    refine' Closeds.gi.isAtom_iff' rfl (fun t ht => _) s
-    obtain ⟨x, rfl⟩ := t.isAtom_iff.mp ht
-    exact closure_singleton
-  simp only [← this, (s : Set α).isAtom_iff, SetLike.ext'_iff, Closeds.singleton_coe]
+  simp [← Closeds.isAtom_coe, Set.isAtom_iff, SetLike.ext_iff, Set.ext_iff]
 #align topological_space.closeds.is_atom_iff TopologicalSpace.Closeds.isAtom_iff
 
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
@@ -276,9 +279,9 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 
 /-- The type of clopen sets of a topological space. -/
-structure Clopens (α : Type _) [TopologicalSpace α] where
+structure Clopens (α : Type*) [TopologicalSpace α] where
   carrier : Set α
-  clopen' : IsClopen carrier
+  isClopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens
 
 namespace Clopens
@@ -287,9 +290,9 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-theorem clopen (s : Clopens α) : IsClopen (s : Set α) :=
-  s.clopen'
-#align topological_space.clopens.clopen TopologicalSpace.Clopens.clopen
+theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
+  s.isClopen'
+#align topological_space.clopens.clopen TopologicalSpace.Clopens.isClopen
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
@@ -299,7 +302,7 @@ initialize_simps_projections Clopens (carrier → coe)
 /-- Reinterpret a clopen as an open. -/
 @[simps]
 def toOpens (s : Clopens α) : Opens α :=
-  ⟨s, s.clopen.isOpen⟩
+  ⟨s, s.isClopen.isOpen⟩
 #align topological_space.clopens.to_opens TopologicalSpace.Clopens.toOpens
 
 @[ext]
@@ -312,12 +315,12 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.clopens.coe_mk TopologicalSpace.Clopens.coe_mk
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.clopen.union t.clopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.clopen.inter t.clopen⟩⟩
+instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
-instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.clopen.diff t.clopen⟩⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.clopen.compl⟩⟩
+instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
+instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 instance : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
@@ -338,7 +341,7 @@ instance : BooleanAlgebra (Clopens α) :=
 @[simp] theorem coe_sdiff (s t : Clopens α) : (↑(s \ t) : Set α) = ↑s \ ↑t := rfl
 #align topological_space.clopens.coe_sdiff TopologicalSpace.Clopens.coe_sdiff
 
-@[simp] theorem coe_compl (s : Clopens α) : (↑(sᶜ) : Set α) = ↑sᶜ := rfl
+@[simp] theorem coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩

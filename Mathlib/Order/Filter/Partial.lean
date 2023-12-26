@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module order.filter.partial
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Data.PFun
+
+#align_import order.filter.partial from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # `Tendsto` for relations and partial functions
@@ -65,7 +62,7 @@ def rmap (r : Rel α β) (l : Filter α) : Filter β where
   inter_sets hs ht := by
     simp only [Set.mem_setOf_eq]
     convert inter_mem hs ht
-    rw [←Rel.core_inter]
+    rw [← Rel.core_inter]
 #align filter.rmap Filter.rmap
 
 theorem rmap_sets (r : Rel α β) (l : Filter α) : (l.rmap r).sets = r.core ⁻¹' l.sets :=
@@ -133,7 +130,7 @@ theorem rcomap_compose (r : Rel α β) (s : Rel β γ) : rcomap r ∘ rcomap s =
 theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     RTendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
-  simp_rw [←l₂.mem_sets]
+  simp_rw [← l₂.mem_sets]
   simp [Filter.le_def, rcomap, Rel.mem_image]; constructor
   · exact fun h s t tl₂ => mem_of_superset (h t tl₂)
   · exact fun h t tl₂ => h _ t tl₂ Set.Subset.rfl

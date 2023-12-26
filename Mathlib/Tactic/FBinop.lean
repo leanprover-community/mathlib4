@@ -18,7 +18,7 @@ The code is drawn from the Lean 4 core `binop%` elaborator. Two simplifications 
    (think `Set.prod : Set α → Set β → Set (α × β)`).
 2. It is assumed that there are no "non-homogeneous" default instances.
 
-It also makes the assumption that the binop wants to be as homegenous as possible.
+It also makes the assumption that the binop wants to be as homogeneous as possible.
 For example, when the type of an argument is unknown it will try to unify the argument's type
 with `S _`, which can help certain elaboration problems proceed (like for `{a,b,c}` notation).
 

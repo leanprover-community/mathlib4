@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.character
-! leanprover-community/mathlib commit 132328c4dd48da87adca5d408ca54f315282b719
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.LinearAlgebra.Dual
+
+#align_import algebra.lie.character from "leanprover-community/mathlib"@"132328c4dd48da87adca5d408ca54f315282b719"
 
 /-!
 # Characters of Lie algebras

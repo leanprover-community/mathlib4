@@ -2,11 +2,6 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.locally_convex.bounded
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Cauchy
+
+#align_import analysis.locally_convex.bounded from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Von Neumann Boundedness
@@ -44,7 +41,7 @@ von Neumann-bounded sets.
 -/
 
 
-variable {𝕜 𝕜' E E' F ι : Type _}
+variable {𝕜 𝕜' E E' F ι : Type*}
 
 open Set Filter
 
@@ -82,7 +79,7 @@ theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 
 #align bornology.is_vonN_bounded_iff Bornology.isVonNBounded_iff
 
 theorem _root_.Filter.HasBasis.isVonNBounded_basis_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
-    (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ (i) (_ : q i), Absorbs 𝕜 (s i) A := by
+    (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ i, q i → Absorbs 𝕜 (s i) A := by
   refine' ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => _⟩
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
   exact (hA i hi).mono_left hV
@@ -117,7 +114,7 @@ end MultipleTopologies
 
 section Image
 
-variable {𝕜₁ 𝕜₂ : Type _} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
+variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace E] [TopologicalSpace F]
 
 /-- A continuous linear image of a bounded set is bounded. -/
@@ -144,7 +141,7 @@ end Image
 
 section sequence
 
-variable {𝕝 : Type _} [NormedField 𝕜] [NontriviallyNormedField 𝕝] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕝 : Type*} [NormedField 𝕜] [NontriviallyNormedField 𝕝] [AddCommGroup E] [Module 𝕜 E]
   [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E]
 
 theorem IsVonNBounded.smul_tendsto_zero {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
@@ -165,12 +162,12 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     (hε : ∀ᶠ n in l, ε n ≠ 0) {S : Set E}
     (H : ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0)) : IsVonNBounded 𝕝 S := by
   rw [(nhds_basis_balanced 𝕝 E).isVonNBounded_basis_iff]
-  by_contra' H'
+  by_contra! H'
   rcases H' with ⟨V, ⟨hV, hVb⟩, hVS⟩
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
-    filter_upwards [hε]with n hn
+    filter_upwards [hε] with n hn
     rw [Absorbs] at hVS
-    push_neg  at hVS
+    push_neg at hVS
     rcases hVS _ (norm_pos_iff.mpr <| inv_ne_zero hn) with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine' ⟨⟨x, hxS⟩, fun hnx => _⟩
@@ -256,11 +253,8 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
   refine' Absorbs.mono_right _ hs
   rw [ht.absorbs_iUnion]
-  have hx_fstsnd : x.fst + x.snd ⊆ U := by
-    intro z hz
-    rcases Set.mem_add.mp hz with ⟨z1, z2, hz1, hz2, hz⟩
-    have hz' : (z1, z2) ∈ x.fst ×ˢ x.snd := ⟨hz1, hz2⟩
-    simpa only [hz] using h'' hz'
+  have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
+    h'' <| mk_mem_prod hz1 hz2
   refine' fun y _ => Absorbs.mono_left _ hx_fstsnd
   rw [← Set.singleton_vadd, vadd_eq_add]
   exact (absorbent_nhds_zero hx.1.1).absorbs.add hx.2.2.absorbs_self
@@ -285,7 +279,7 @@ theorem isVonNBounded_closedBall (r : ℝ) :
 #align normed_space.is_vonN_bounded_closed_ball NormedSpace.isVonNBounded_closedBall
 
 theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
-  rw [← Metric.bounded_iff_isBounded, Metric.bounded_iff_subset_ball (0 : E)]
+  rw [Metric.isBounded_iff_subset_closedBall (0 : E)]
   constructor
   · intro h
     rcases h (Metric.ball_mem_nhds 0 zero_lt_one) with ⟨ρ, hρ, hρball⟩
@@ -298,12 +292,12 @@ theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Borno
 #align normed_space.is_vonN_bounded_iff NormedSpace.isVonNBounded_iff
 
 theorem isVonNBounded_iff' (s : Set E) :
-    Bornology.IsVonNBounded 𝕜 s ↔ ∃ r : ℝ, ∀ (x : E) (_ : x ∈ s), ‖x‖ ≤ r := by
-  rw [NormedSpace.isVonNBounded_iff, ← Metric.bounded_iff_isBounded, bounded_iff_forall_norm_le]
+    Bornology.IsVonNBounded 𝕜 s ↔ ∃ r : ℝ, ∀ x ∈ s, ‖x‖ ≤ r := by
+  rw [NormedSpace.isVonNBounded_iff, isBounded_iff_forall_norm_le]
 #align normed_space.is_vonN_bounded_iff' NormedSpace.isVonNBounded_iff'
 
 theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
-    Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ (x : E') (_ : x ∈ s), ‖f x‖ ≤ r := by
+    Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ x ∈ s, ‖f x‖ ≤ r := by
   simp_rw [isVonNBounded_iff', Set.ball_image_iff]
 #align normed_space.image_is_vonN_bounded_iff NormedSpace.image_isVonNBounded_iff
 

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.mv_polynomial.supported
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import data.mv_polynomial.supported from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Polynomials supported by a set of variables
@@ -30,7 +27,7 @@ universe u v w
 
 namespace MvPolynomial
 
-variable {σ τ : Type _} {R : Type u} {S : Type v} {r : R} {e : ℕ} {n m : σ}
+variable {σ τ : Type*} {R : Type u} {S : Type v} {r : R} {e : ℕ} {n m : σ}
 
 section CommSemiring
 
@@ -135,7 +132,7 @@ theorem supported_strictMono [Nontrivial R] :
   strictMono_of_le_iff_le fun _ _ ↦ supported_le_supported_iff.symm
 #align mv_polynomial.supported_strict_mono MvPolynomial.supported_strictMono
 
-theorem exists_restrict_to_vars (R : Type _) [CommRing R] {F : MvPolynomial σ ℤ}
+theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
     (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval x F := by
   rw [← mem_supported, supported_eq_range_rename, AlgHom.mem_range] at hF
   cases' hF with F' hF'

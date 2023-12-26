@@ -2,16 +2,13 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.category.ulift
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
+
+#align_import category_theory.category.ulift from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Basic API for ULift
@@ -19,8 +16,8 @@ import Mathlib.Data.ULift
 This file contains a very basic API for working with the categorical
 instance on `ULift C` where `C` is a type with a category instance.
 
-1. `CategoryTheory.ULift.up` is the functorial version of the usual `ULift.up`.
-2. `CategoryTheory.ULift.down` is the functorial version of the usual `ULift.down`.
+1. `CategoryTheory.ULift.upFunctor` is the functorial version of the usual `ULift.up`.
+2. `CategoryTheory.ULift.downFunctor` is the functorial version of the usual `ULift.down`.
 3. `CategoryTheory.ULift.equivalence` is the categorical equivalence between
   `C` and `ULift C`.
 
@@ -31,7 +28,7 @@ If we have `category.{v} C`, then `ULiftHom.{w} C` is endowed with a category in
 whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 
 This is a category equivalent to `C`. The forward direction of the equivalence is `ULiftHom.up`,
-the backward direction is `ULiftHom.donw` and the equivalence is `ULiftHom.equiv`.
+the backward direction is `ULiftHom.down` and the equivalence is `ULiftHom.equiv`.
 
 # AsSmall
 
@@ -152,8 +149,8 @@ def ULiftHom.down : ULiftHom C ⥤ C where
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
   inverse := ULiftHom.down
-  unitIso := NatIso.ofComponents (fun A => eqToIso rfl) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun A => eqToIso rfl) (by aesop_cat)
+  unitIso := NatIso.ofComponents fun A => eqToIso rfl
+  counitIso := NatIso.ofComponents fun A => eqToIso rfl
 #align category_theory.ulift_hom.equiv CategoryTheory.ULiftHom.equiv
 
 end ULiftHom
@@ -198,11 +195,8 @@ def AsSmall.down : AsSmall C ⥤ C where
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents (fun X => eqToIso rfl) (by aesop_cat)
-  counitIso :=
-    NatIso.ofComponents
-      (fun X => eqToIso <| ULift.ext _ _ rfl)
-      (by aesop_cat)
+  unitIso := NatIso.ofComponents fun X => eqToIso rfl
+  counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
 #align category_theory.as_small.equiv CategoryTheory.AsSmall.equiv
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=

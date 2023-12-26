@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.valuation.integral
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.Integers
 
+#align_import ring_theory.valuation.integral from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
+
 /-!
-# Integral elements over the ring of integers of a valution
+# Integral elements over the ring of integers of a valuation
 
 The ring of integers is integrally closed inside the original ring.
 -/
@@ -44,8 +41,8 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
     rw [eval₂_mul, eval₂_pow, eval₂_C, eval₂_X, v.map_mul, v.map_pow, ←
       one_mul (v x ^ p.natDegree)]
     cases' (hv.2 <| p.coeff i).lt_or_eq with hvpi hvpi
-    · exact mul_lt_mul₀ hvpi (pow_lt_pow₀ hvx <| Finset.mem_range.1 hi)
-    · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow₀ hvx (Finset.mem_range.1 hi)
+    · exact mul_lt_mul₀ hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi)
+    · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
 #align valuation.integers.mem_of_integral Valuation.Integers.mem_of_integral
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=

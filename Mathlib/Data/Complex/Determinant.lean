@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module data.complex.determinant
-! leanprover-community/mathlib commit 65ec59902eb17e4ab7da8d7e3d0bd9774d1b8b99
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.Determinant
+
+#align_import data.complex.determinant from "leanprover-community/mathlib"@"65ec59902eb17e4ab7da8d7e3d0bd9774d1b8b99"
 
 /-!
 # Determinants of maps in the complex numbers as a vector space over `ℝ`

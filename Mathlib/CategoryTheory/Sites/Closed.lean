@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.closed
-! leanprover-community/mathlib commit 4cfc30e317caad46858393f1a7a33f609296cc30
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.Order.Closure
+
+#align_import category_theory.sites.closed from "leanprover-community/mathlib"@"4cfc30e317caad46858393f1a7a33f609296cc30"
 
 /-!
 # Closed sieves
@@ -107,18 +104,17 @@ theorem close_isClosed {X : C} (S : Sieve X) : J₁.IsClosed (J₁.close S) :=
   fun _ g hg => J₁.arrow_trans g _ S hg fun _ hS => hS
 #align category_theory.grothendieck_topology.close_is_closed CategoryTheory.GrothendieckTopology.close_isClosed
 
+/-- A Grothendieck topology induces a natural family of closure operators on sieves. -/
+@[simps! isClosed]
+def closureOperator (X : C) : ClosureOperator (Sieve X) :=
+  .ofPred J₁.close J₁.IsClosed J₁.le_close J₁.close_isClosed fun _ _ ↦ J₁.le_close_of_isClosed
+#align category_theory.grothendieck_topology.closure_operator CategoryTheory.GrothendieckTopology.closureOperator
+
+#align category_theory.grothendieck_topology.closed_iff_closed CategoryTheory.GrothendieckTopology.closureOperator_isClosed
+
 /-- The sieve `S` is closed iff its closure is equal to itself. -/
-theorem isClosed_iff_close_eq_self {X : C} (S : Sieve X) : J₁.IsClosed S ↔ J₁.close S = S := by
-  constructor
-  · intro h
-    apply le_antisymm
-    · intro Y f hf
-      rw [← J₁.covers_iff_mem_of_isClosed h]
-      apply hf
-    · apply J₁.le_close
-  · intro e
-    rw [← e]
-    apply J₁.close_isClosed
+theorem isClosed_iff_close_eq_self {X : C} (S : Sieve X) : J₁.IsClosed S ↔ J₁.close S = S :=
+  (J₁.closureOperator _).isClosed_iff
 #align category_theory.grothendieck_topology.is_closed_iff_close_eq_self CategoryTheory.GrothendieckTopology.isClosed_iff_close_eq_self
 
 theorem close_eq_self_of_isClosed {X : C} {S : Sieve X} (hS : J₁.IsClosed S) : J₁.close S = S :=
@@ -139,13 +135,12 @@ theorem pullback_close {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
 
 @[mono]
 theorem monotone_close {X : C} : Monotone (J₁.close : Sieve X → Sieve X) :=
-  fun _ S₂ h => J₁.le_close_of_isClosed (h.trans (J₁.le_close _)) (J₁.close_isClosed S₂)
+  (J₁.closureOperator _).monotone
 #align category_theory.grothendieck_topology.monotone_close CategoryTheory.GrothendieckTopology.monotone_close
 
 @[simp]
 theorem close_close {X : C} (S : Sieve X) : J₁.close (J₁.close S) = J₁.close S :=
-  le_antisymm (J₁.le_close_of_isClosed le_rfl (J₁.close_isClosed S))
-    (J₁.monotone_close (J₁.le_close _))
+  (J₁.closureOperator _).idempotent _
 #align category_theory.grothendieck_topology.close_close CategoryTheory.GrothendieckTopology.close_close
 
 /--
@@ -165,20 +160,6 @@ theorem close_eq_top_iff_mem {X : C} (S : Sieve X) : J₁.close S = ⊤ ↔ S �
     apply J₁.pullback_stable _ hS
 #align category_theory.grothendieck_topology.close_eq_top_iff_mem CategoryTheory.GrothendieckTopology.close_eq_top_iff_mem
 
-/-- A Grothendieck topology induces a natural family of closure operators on sieves. -/
-@[simps!]
-def closureOperator (X : C) : ClosureOperator (Sieve X) :=
-  ClosureOperator.mk' J₁.close
-    (fun _ S₂ h => J₁.le_close_of_isClosed (h.trans (J₁.le_close _)) (J₁.close_isClosed S₂))
-    J₁.le_close fun S => J₁.le_close_of_isClosed le_rfl (J₁.close_isClosed S)
-#align category_theory.grothendieck_topology.closure_operator CategoryTheory.GrothendieckTopology.closureOperator
-
-@[simp]
-theorem closed_iff_closed {X : C} (S : Sieve X) :
-    S ∈ (J₁.closureOperator X).closed ↔ J₁.IsClosed S :=
-  (J₁.isClosed_iff_close_eq_self S).symm
-#align category_theory.grothendieck_topology.closed_iff_closed CategoryTheory.GrothendieckTopology.closed_iff_closed
-
 end GrothendieckTopology
 
 /--
@@ -192,7 +173,7 @@ def Functor.closedSieves : Cᵒᵖ ⥤ Type max v u where
 #align category_theory.functor.closed_sieves CategoryTheory.Functor.closedSieves
 
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
-The proof of this is adapted from [MM92], Chatper III, Section 7, Lemma 1.
+The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 -/
 theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
   intro X S hS
@@ -200,15 +181,13 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
   refine' ⟨_, _⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
     simp only [Functor.closedSieves_obj]
-    ext Y
-    intro f
+    ext Y f
     dsimp only [Subtype.coe_mk]
     rw [← J₁.covers_iff_mem_of_isClosed hM, ← J₁.covers_iff_mem_of_isClosed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
       fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
-      ext Z
-      intro g
+      ext Z g
       rw [Sieve.inter_apply, Sieve.inter_apply]
       simp only [and_comm]
       apply and_congr_right
@@ -315,15 +294,14 @@ The topology given by the closure operator `J.close` on a Grothendieck topology 
 -/
 theorem topologyOfClosureOperator_self :
     (topologyOfClosureOperator J₁.closureOperator fun X Y => J₁.pullback_close) = J₁ := by
-  ext (X S)
+  ext X S
   apply GrothendieckTopology.close_eq_top_iff_mem
 #align category_theory.topology_of_closure_operator_self CategoryTheory.topologyOfClosureOperator_self
 
 theorem topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X))
     (pb : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Sieve X), c Y (S.pullback f) = (c X S).pullback f) (X : C)
     (S : Sieve X) : (topologyOfClosureOperator c pb).close S = c X S := by
-  ext Y
-  intro f
+  ext Y f
   change c _ (Sieve.pullback f S) = ⊤ ↔ c _ S f
   rw [pb, Sieve.pullback_eq_top_iff_mem]
 #align category_theory.topology_of_closure_operator_close CategoryTheory.topologyOfClosureOperator_close

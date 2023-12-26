@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
-
-! This file was ported from Lean 3 source module number_theory.lucas_lehmer
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.PNat.Interval
@@ -15,16 +10,16 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
 
+#align_import number_theory.lucas_lehmer from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
+
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
 
 We define `lucasLehmerResidue : Π p : ℕ, ZMod (2^p - 1)`, and
 prove `lucasLehmerResidue p = 0 → Prime (mersenne p)`.
 
-Porting note: the tactics have not been ported yet.
-
-We construct a tactic `LucasLehmer.run_test`, which iteratively certifies the arithmetic
-required to calculate the residue, and enables us to prove
+We construct a `norm_num` extension to calculate this residue to certify primality of Mersenne
+primes using `lucas_lehmer_sufficiency`.
 
 
 ## TODO
@@ -38,6 +33,8 @@ required to calculate the residue, and enables us to prove
 This development began as a student project by Ainsley Pahljina,
 and was then cleaned up for mathlib by Scott Morrison.
 The tactic for certified computation of Lucas-Lehmer residues was provided by Mario Carneiro.
+This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
+extension and made to use kernel reductions by Kyle Miller.
 -/
 
 
@@ -56,7 +53,7 @@ theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
 theorem one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
   lt_tsub_iff_right.2 <|
     calc 1 + 1 = 2 ^ 1 := by rw [one_add_one_eq_two, pow_one]
-    _ < 2 ^ p := Nat.pow_lt_pow_of_lt_right one_lt_two hp
+    _ < 2 ^ p := pow_lt_pow_right one_lt_two hp
 
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
@@ -97,27 +94,27 @@ def sMod (p : ℕ) : ℕ → ℤ
   | i + 1 => (sMod p i ^ 2 - 2) % (2 ^ p - 1)
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
-theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| by exact_mod_cast Nat.one_lt_two_pow p hp
+theorem mersenne_int_pos {p : ℕ} (hp : p ≠ 0) : (0 : ℤ) < 2 ^ p - 1 :=
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
 
-theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
-  (mersenne_int_pos w).ne'
+theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 :=
+  (mersenne_int_pos hp).ne'
 #align lucas_lehmer.mersenne_int_ne_zero LucasLehmer.mersenne_int_ne_zero
 
-theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
+theorem sMod_nonneg (p : ℕ) (hp : p ≠ 0) (i : ℕ) : 0 ≤ sMod p i := by
   cases i <;> dsimp [sMod]
   · exact sup_eq_right.mp rfl
   · apply Int.emod_nonneg
-    exact mersenne_int_ne_zero p w
+    exact mersenne_int_ne_zero p hp
 #align lucas_lehmer.s_mod_nonneg LucasLehmer.sMod_nonneg
 
 theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [sMod]
 #align lucas_lehmer.s_mod_mod LucasLehmer.sMod_mod
 
-theorem sMod_lt (p : ℕ) (w : 0 < p) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
+theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p w)).trans_eq ?_
-  exact abs_of_nonneg (mersenne_int_pos w).le
+  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  exact abs_of_nonneg (mersenne_int_pos hp).le
 #align lucas_lehmer.s_mod_lt LucasLehmer.sMod_lt
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
@@ -154,24 +151,30 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
+    simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
+      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos, cast_pred,
+        cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
-    · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
-    · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
+    · exact sMod_nonneg _ (by positivity) _
+    · exact sMod_lt _ (by positivity) _
   · intro h
     rw [h]
     simp
 #align lucas_lehmer.residue_eq_zero_iff_s_mod_eq_zero LucasLehmer.residue_eq_zero_iff_sMod_eq_zero
 
-/-- A Mersenne number `2^p-1` is prime if and only if
+/-- **Lucas-Lehmer Test**: a Mersenne number `2^p-1` is prime if and only if
 the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=
   lucasLehmerResidue p = 0
 #align lucas_lehmer.lucas_lehmer_test LucasLehmer.LucasLehmerTest
 
+-- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
+-- have `simp` use `decide`!
+/-
 instance : DecidablePred LucasLehmerTest :=
   inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
+-/
 
 /-- `q` is defined as the minimum factor of `mersenne p`, bundled as an `ℕ+`. -/
 def q (p : ℕ) : ℕ+ :=
@@ -281,8 +284,15 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.nat_coe_snd
 
-@[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : X q).fst = OfNat.ofNat n := rfl
-@[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : X q).snd = 0 := rfl
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
+  rfl
+
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : X q).snd = 0 :=
+  rfl
 
 instance : AddGroupWithOne (X q) :=
   { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
@@ -414,7 +424,9 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
-  simp [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h
+  simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
+    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two,
+      pow_pos, cast_pred, cast_pow, cast_ofNat] at h
   cases' h with k h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
@@ -429,7 +441,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   rw [mul_comm _ (k : X (q (p' + 2)))] at h
   replace h := eq_sub_of_add_eq h
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
-  exact_mod_cast h
+  exact mod_cast h
 #align lucas_lehmer.ω_pow_formula LucasLehmer.ω_pow_formula
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
@@ -478,7 +490,7 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     have ω_pow := orderOf_dvd_iff_pow_eq_one.1 o
     replace ω_pow :=
       congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) ω_pow
-    simp at ω_pow
+    simp? at ω_pow says simp only [map_pow, Units.coeHom_apply, ωUnit_coe, map_one] at ω_pow
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
@@ -517,71 +529,104 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   exact not_lt_of_ge (Nat.sub_le _ _) h
 #align lucas_lehmer_sufficiency lucas_lehmer_sufficiency
 
--- Here we calculate the residue, very inefficiently, using `dec_trivial`. We can do much better.
-example : (mersenne 5).Prime :=
-  lucas_lehmer_sufficiency 5 (by norm_num) (by decide)
-
--- Next we use `norm_num` to calculate each `s p i`.
 namespace LucasLehmer
 
-open Tactic
+/-!
+### `norm_num` extension
 
-theorem sMod_succ {p a i b c} (h1 : (2 ^ p - 1 : ℤ) = a) (h2 : sMod p i = b)
-    (h3 : (b * b - 2) % a = c) : sMod p (i + 1) = c := by
-  substs a b c
-  rw [← sq]
+Next we define a `norm_num` extension that calculates `LucasLehmerTest p` for `1 < p`.
+It makes use of a version of `sMod` that is specifically written to be reducible by the
+Lean 4 kernel, which has the capability of efficiently reducing natural number expressions.
+With this reduction in hand, it's a simple matter of applying the lemma
+`LucasLehmer.residue_eq_zero_iff_sMod_eq_zero`.
+
+See [Archive/Examples/MersennePrimes.lean] for certifications of all Mersenne primes
+up through `mersenne 4423`.
+-/
+
+namespace norm_num_ext
+open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
+
+/-- Version of `sMod` that is `ℕ`-valued. One should have `q = 2 ^ p - 1`.
+This can be reduced by the kernel. -/
+def sMod' (q : ℕ) : ℕ → ℕ
+  | 0 => 4 % q
+  | i + 1 => (sMod' q i ^ 2 + (q - 2)) % q
+
+theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) = sMod p k := by
+  have h1 := calc
+    4 = 2 ^ 2 := by norm_num
+    _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
+  have h2 : 1 ≤ 2 ^ p := by linarith
+  induction k with
+  | zero =>
+    rw [sMod', sMod, Int.ofNat_emod]
+    simp [h2]
+  | succ k ih =>
+    rw [sMod', sMod, ← ih]
+    have h3 : 2 ≤ 2 ^ p - 1 := by
+      zify [h2]
+      calc
+        (2 : Int) ≤ 4 - 1 := by norm_num
+        _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
+    zify [h2, h3]
+    rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
+      Int.add_emod_self, ← sub_eq_add_neg]
+
+lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod' (2 ^ p - 1) (p - 2) = 0) :
+    LucasLehmerTest p := by
+  rw [Nat.blt_eq] at hp
+  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp, h]
   rfl
-#align lucas_lehmer.s_mod_succ LucasLehmer.sMod_succ
 
--- /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- /-- Given a goal of the form `lucas_lehmer_test p`,
--- attempt to do the calculation using `norm_num` to certify each step.
--- -/
--- unsafe def run_test : tactic Unit := do
---   let q(LucasLehmerTest $(p)) ← target
---   sorry
---   sorry
---   let p ← eval_expr ℕ p
---   let-- Calculate the candidate Mersenne prime
---   M : ℤ := 2 ^ p - 1
---   let t ← to_expr ``(2 ^ $(q(p)) - 1 = $(q(M)))
---   let v ← to_expr ``((by norm_num : 2 ^ $(q(p)) - 1 = $(q(M))))
---   let w ← assertv `w t v
---   let t
---     ←-- base case
---         to_expr
---         ``(sMod $(q(p)) 0 = 4)
---   let v ← to_expr ``((by norm_num [LucasLehmer.sMod] : sMod $(q(p)) 0 = 4))
---   let h ← assertv `h t v
---   -- step case, repeated p-2 times
---       iterate_exactly
---       (p - 2) sorry
---   let h
---     ←-- now close the goal
---         get_local
---         `h
---   exact h
--- #align lucas_lehmer.run_test lucas_lehmer.run_test
+lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
+    (h : Nat.ble 1 (sMod' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+  rw [Nat.blt_eq] at hp
+  rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
+  rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp]
+  simpa using h
+
+theorem isNat_lucasLehmerTest : {p np : ℕ} →
+    IsNat p np → LucasLehmerTest np → LucasLehmerTest p
+  | _, _, ⟨rfl⟩, h => h
+
+theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
+    IsNat p np → ¬ LucasLehmerTest np → ¬ LucasLehmerTest p
+  | _, _, ⟨rfl⟩, h => h
+
+/-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
+`sMod'` function. -/
+@[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
+def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
+  let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
+  let ⟨ep, hp⟩ ← deriveNat p _
+  let np := ep.natLit!
+  unless 1 < np do
+    failure
+  haveI' h1ltp : Nat.blt 1 $ep =Q true := ⟨⟩
+  if sMod' (2 ^ np - 1) (np - 2) = 0 then
+    haveI' hs : sMod' (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
+    have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
+    have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
+    return .isTrue pf'
+  else
+    haveI' hs : Nat.ble 1 (sMod' (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
+    have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
+    have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
+    return .isFalse pf'
+
+end norm_num_ext
 
 end LucasLehmer
 
--- /-- We verify that the tactic works to prove `127.prime`. -/
--- example : (mersenne 7).Prime :=
---   lucas_lehmer_sufficiency _ (by norm_num)
---     (by
---       run_tac
---         lucas_lehmer.run_test)
-
 /-!
-This implementation works successfully to prove `(2^127 - 1).prime`,
-and all the Mersenne primes up to this point appear in [archive/examples/mersenne_primes.lean].
+This implementation works successfully to prove `(2^4423 - 1).Prime`,
+and all the Mersenne primes up to this point appear in [Archive/Examples/MersennePrimes.lean].
+These can be calculated nearly instantly, and `(2^9689 - 1).Prime` only fails due to deep
+recursion.
 
-`(2^127 - 1).prime` takes about 5 minutes to run (depending on your CPU!),
-and unfortunately the next Mersenne prime `(2^521 - 1)`,
-which was the first "computer era" prime,
-is out of reach with the current implementation.
+(Note by kmill: the following notes were for the Lean 3 version. They seem like they could still
+be useful, so I'm leaving them here.)
 
 There's still low hanging fruit available to do faster computations
 based on the formula

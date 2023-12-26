@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.basic
-! leanprover-community/mathlib commit d78597269638367c3863d40d45108f52207e03cf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
+
+#align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
 /-!
 # Finite types
@@ -48,13 +45,13 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- `Fintype α` means that `α` is finite, i.e. there are only
   finitely many distinct elements of type `α`. The evidence of this
   is a finset `elems` (a list up to permutation without duplicates),
   together with a proof that everything of type `α` is in the list. -/
-class Fintype (α : Type _) where
+class Fintype (α : Type*) where
   /-- The `Finset` containing all elements of a `Fintype` -/
   elems : Finset α
   /-- A proof that `elems` contains every element of the type -/
@@ -174,9 +171,12 @@ theorem not_mem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 #align finset.not_mem_compl Finset.not_mem_compl
 
 @[simp, norm_cast]
-theorem coe_compl (s : Finset α) : ↑(sᶜ) = (↑s : Set α)ᶜ :=
+theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
   Set.ext fun _ => mem_compl
 #align finset.coe_compl Finset.coe_compl
+
+@[simp] lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := @compl_le_compl_iff_le (Finset α) _ _ _
+@[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
 
 @[simp]
 theorem compl_empty : (∅ : Finset α)ᶜ = univ :=
@@ -219,16 +219,19 @@ theorem compl_inter (s t : Finset α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
 #align finset.compl_inter Finset.compl_inter
 
 @[simp]
-theorem compl_erase : s.erase aᶜ = insert a (sᶜ) := by
+theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
   ext
   simp only [or_iff_not_imp_left, mem_insert, not_and, mem_compl, mem_erase]
 #align finset.compl_erase Finset.compl_erase
 
 @[simp]
-theorem compl_insert : insert a sᶜ = sᶜ.erase a := by
+theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   ext
   simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
 #align finset.compl_insert Finset.compl_insert
+
+theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
+  simp_rw [compl_insert, insert_erase (mem_compl.2 ha)]
 
 @[simp]
 theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
@@ -237,7 +240,7 @@ theorem insert_compl_self (x : α) : insert x ({x}ᶜ : Finset α) = univ := by
 
 @[simp]
 theorem compl_filter (p : α → Prop) [DecidablePred p] [∀ x, Decidable ¬p x] :
-    univ.filter pᶜ = univ.filter fun x => ¬p x :=
+    (univ.filter p)ᶜ = univ.filter fun x => ¬p x :=
   ext <| by simp
 #align finset.compl_filter Finset.compl_filter
 
@@ -259,6 +262,18 @@ theorem image_univ_of_surjective [Fintype β] {f : β → α} (hf : Surjective f
   eq_univ_of_forall <| hf.forall.2 fun _ => mem_image_of_mem _ <| mem_univ _
 #align finset.image_univ_of_surjective Finset.image_univ_of_surjective
 
+@[simp]
+theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
+  Finset.image_univ_of_surjective f.surjective
+
+@[simp] lemma univ_inter (s : Finset α) : univ ∩ s = s := by ext a; simp
+#align finset.univ_inter Finset.univ_inter
+
+@[simp] lemma inter_univ (s : Finset α) : s ∩ univ = s := by rw [inter_comm, univ_inter]
+#align finset.inter_univ Finset.inter_univ
+
+@[simp] lemma inter_eq_univ : s ∩ t = univ ↔ s = univ ∧ t = univ := inf_eq_top_iff
+
 end BooleanAlgebra
 
 theorem map_univ_of_surjective [Fintype β] {f : β ↪ α} (hf : Surjective f) : univ.map f = univ :=
@@ -271,35 +286,26 @@ theorem map_univ_equiv [Fintype β] (f : β ≃ α) : univ.map f.toEmbedding = u
 #align finset.map_univ_equiv Finset.map_univ_equiv
 
 @[simp]
-theorem univ_inter [DecidableEq α] (s : Finset α) : univ ∩ s = s :=
-  ext fun a => by simp
-#align finset.univ_inter Finset.univ_inter
-
-@[simp]
-theorem inter_univ [DecidableEq α] (s : Finset α) : s ∩ univ = s := by rw [inter_comm, univ_inter]
-#align finset.inter_univ Finset.inter_univ
-
-@[simp]
-theorem piecewise_univ [∀ i : α, Decidable (i ∈ (univ : Finset α))] {δ : α → Sort _}
+theorem piecewise_univ [∀ i : α, Decidable (i ∈ (univ : Finset α))] {δ : α → Sort*}
     (f g : ∀ i, δ i) : univ.piecewise f g = f := by
   ext i
   simp [piecewise]
 #align finset.piecewise_univ Finset.piecewise_univ
 
 theorem piecewise_compl [DecidableEq α] (s : Finset α) [∀ i : α, Decidable (i ∈ s)]
-    [∀ i : α, Decidable (i ∈ sᶜ)] {δ : α → Sort _} (f g : ∀ i, δ i) :
+    [∀ i : α, Decidable (i ∈ sᶜ)] {δ : α → Sort*} (f g : ∀ i, δ i) :
     sᶜ.piecewise f g = s.piecewise g f := by
   ext i
   simp [piecewise]
 #align finset.piecewise_compl Finset.piecewise_compl
 
 @[simp]
-theorem piecewise_erase_univ {δ : α → Sort _} [DecidableEq α] (a : α) (f g : ∀ a, δ a) :
+theorem piecewise_erase_univ {δ : α → Sort*} [DecidableEq α] (a : α) (f g : ∀ a, δ a) :
     (Finset.univ.erase a).piecewise f g = Function.update f a (g a) := by
   rw [← compl_singleton, piecewise_compl, piecewise_singleton]
 #align finset.piecewise_erase_univ Finset.piecewise_erase_univ
 
-theorem univ_map_equiv_to_embedding {α β : Type _} [Fintype α] [Fintype β] (e : α ≃ β) :
+theorem univ_map_equiv_to_embedding {α β : Type*} [Fintype α] [Fintype β] (e : α ≃ β) :
     univ.map e.toEmbedding = univ :=
   eq_univ_iff_forall.mpr fun b => mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
 #align finset.univ_map_equiv_to_embedding Finset.univ_map_equiv_to_embedding
@@ -322,13 +328,19 @@ theorem coe_filter_univ (p : α → Prop) [DecidablePred p] : (univ.filter p : S
   by simp
 #align finset.coe_filter_univ Finset.coe_filter_univ
 
+@[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
+    s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [ext_iff]
+
+@[simp] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.subtype p = univ := by simp
+
 end Finset
 
 open Finset Function
 
 namespace Fintype
 
-instance decidablePiFintype {α} {β : α → Type _} [∀ a, DecidableEq (β a)] [Fintype α] :
+instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
     (by simp [Function.funext_iff, Fintype.complete])
@@ -423,7 +435,7 @@ def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α
   ⟨l.toFinset, by simpa using H⟩
 #align fintype.of_list Fintype.ofList
 
-instance subsingleton (α : Type _) : Subsingleton (Fintype α) :=
+instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 #align fintype.subsingleton Fintype.subsingleton
 
@@ -570,7 +582,7 @@ noncomputable def ofInjective [Fintype β] (f : α → β) (H : Function.Injecti
 #align fintype.of_injective Fintype.ofInjective
 
 /-- If `f : α ≃ β` and `α` is a fintype, then `β` is also a fintype. -/
-def ofEquiv (α : Type _) [Fintype α] (f : α ≃ β) : Fintype β :=
+def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
   ofBijective _ f.bijective
 #align fintype.of_equiv Fintype.ofEquiv
 
@@ -584,18 +596,21 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
 
--- see Note [lower instance priority]
-instance (priority := 100) ofIsEmpty [IsEmpty α] : Fintype α :=
+/-- An empty type is a fintype. Not registered as an instance, to make sure that there aren't two
+conflicting `Fintype ι` instances around when casing over whether a fintype `ι` is empty or not. -/
+def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
--- no-lint since while `Finset.univ_eq_empty` can prove this, it isn't applicable for `dsimp`.
 /-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp, nolint simpNF]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α _ = ∅ :=
+@[simp]
+theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+
+instance : Fintype Empty := Fintype.ofIsEmpty
+instance : Fintype PEmpty := Fintype.ofIsEmpty
 
 end Fintype
 
@@ -678,10 +693,10 @@ theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆
   rw [← Finset.coe_subset, coe_toFinset]
 #align set.to_finset_subset Set.toFinset_subset
 
-alias toFinset_subset_toFinset ↔ _ toFinset_mono
+alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 #align set.to_finset_mono Set.toFinset_mono
 
-alias toFinset_ssubset_toFinset ↔ _ toFinset_strict_mono
+alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 #align set.to_finset_strict_mono Set.toFinset_strict_mono
 
 @[simp]
@@ -745,6 +760,7 @@ theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
 
 @[simp]
 theorem toFinset_eq_empty [Fintype s] : s.toFinset = ∅ ↔ s = ∅ := by
+  let A : Fintype (∅ : Set α) := Fintype.ofIsEmpty
   rw [← toFinset_empty, toFinset_inj]
 #align set.to_finset_eq_empty Set.toFinset_eq_empty
 
@@ -778,6 +794,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   simp
 #align set.to_finset_range Set.toFinset_range
 
+@[simp] -- porting note: new attribute
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp
@@ -811,6 +828,9 @@ theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, L
   rfl
 #align fin.univ_def Fin.univ_def
 
+@[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
+  ext; simp
+
 @[simp]
 theorem Fin.image_succAbove_univ {n : ℕ} (i : Fin (n + 1)) : univ.image i.succAbove = {i}ᶜ := by
   ext m
@@ -823,8 +843,9 @@ theorem Fin.image_succ_univ (n : ℕ) : (univ : Finset (Fin n)).image Fin.succ =
 #align fin.image_succ_univ Fin.image_succ_univ
 
 @[simp]
-theorem Fin.image_castSucc (n : ℕ) : (univ : Finset (Fin n)).image Fin.castSucc = {Fin.last n}ᶜ :=
-  by rw [← Fin.succAbove_last, Fin.image_succAbove_univ]
+theorem Fin.image_castSucc (n : ℕ) :
+    (univ : Finset (Fin n)).image Fin.castSucc = {Fin.last n}ᶜ := by
+  rw [← Fin.succAbove_last, Fin.image_succAbove_univ]
 #align fin.image_cast_succ Fin.image_castSucc
 
 /- The following three lemmas use `Finset.cons` instead of `insert` and `Finset.map` instead of
@@ -837,21 +858,22 @@ theorem Fin.univ_succ (n : ℕ) :
 #align fin.univ_succ Fin.univ_succ
 
 /-- Embed `Fin n` into `Fin (n + 1)` by appending a new `Fin.last n` to the `univ` -/
-theorem Fin.univ_castSucc (n : ℕ) :
+theorem Fin.univ_castSuccEmb (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      cons (Fin.last n) (univ.map Fin.castSucc.toEmbedding) (by simp [map_eq_image]) :=
+      cons (Fin.last n) (univ.map Fin.castSuccEmb.toEmbedding) (by simp [map_eq_image]) :=
   by simp [map_eq_image]
-#align fin.univ_cast_succ Fin.univ_castSucc
+#align fin.univ_cast_succ Fin.univ_castSuccEmb
 
 /-- Embed `Fin n` into `Fin (n + 1)` by inserting
 around a specified pivot `p : Fin (n + 1)` into the `univ` -/
 theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
-    (univ : Finset (Fin (n + 1))) = cons p (univ.map <| (Fin.succAbove p).toEmbedding) (by simp) :=
+    (univ : Finset (Fin (n + 1))) =
+      cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
   by simp [map_eq_image]
 #align fin.univ_succ_above Fin.univ_succAbove
 
 @[instance]
-def Unique.fintype {α : Type _} [Unique α] : Fintype α :=
+def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 #align unique.fintype Unique.fintype
 
@@ -921,23 +943,23 @@ def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 #align fintype.prod_right Fintype.prodRight
 
-instance ULift.fintype (α : Type _) [Fintype α] : Fintype (ULift α) :=
+instance ULift.fintype (α : Type*) [Fintype α] : Fintype (ULift α) :=
   Fintype.ofEquiv _ Equiv.ulift.symm
 #align ulift.fintype ULift.fintype
 
-instance PLift.fintype (α : Type _) [Fintype α] : Fintype (PLift α) :=
+instance PLift.fintype (α : Type*) [Fintype α] : Fintype (PLift α) :=
   Fintype.ofEquiv _ Equiv.plift.symm
 #align plift.fintype PLift.fintype
 
-instance OrderDual.fintype (α : Type _) [Fintype α] : Fintype αᵒᵈ :=
+instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
   ‹Fintype α›
 #align order_dual.fintype OrderDual.fintype
 
-instance OrderDual.finite (α : Type _) [Finite α] : Finite αᵒᵈ :=
+instance OrderDual.finite (α : Type*) [Finite α] : Finite αᵒᵈ :=
   ‹Finite α›
 #align order_dual.finite OrderDual.finite
 
-instance Lex.fintype (α : Type _) [Fintype α] : Fintype (Lex α) :=
+instance Lex.fintype (α : Type*) [Fintype α] : Fintype (Lex α) :=
   ‹Fintype α›
 #align lex.fintype Lex.fintype
 
@@ -1033,27 +1055,39 @@ def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ { a : α // a ≠ 0 } :=
 end
 
 namespace Fintype
+variable [Fintype α]
 
 /-- Given `Fintype α`, `finsetEquivSet` is the equiv between `Finset α` and `Set α`. (All
 sets on a finite type are finite.) -/
-noncomputable def finsetEquivSet [Fintype α] : Finset α ≃ Set α
-    where
+noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
   left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 #align fintype.finset_equiv_set Fintype.finsetEquivSet
 
-@[simp]
-theorem finsetEquivSet_apply [Fintype α] (s : Finset α) : finsetEquivSet s = s :=
-  rfl
+@[simp, norm_cast] lemma coe_finsetEquivSet : ⇑finsetEquivSet = ((↑) : Finset α → Set α) := rfl
+
+@[simp] lemma finsetEquivSet_apply (s : Finset α) : finsetEquivSet s = s := rfl
 #align fintype.finset_equiv_set_apply Fintype.finsetEquivSet_apply
 
-@[simp]
-theorem finsetEquivSet_symm_apply [Fintype α] (s : Set α) [Fintype s] :
+@[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
     finsetEquivSet.symm s = s.toFinset := by
   simp [finsetEquivSet]; congr; exact Subsingleton.elim _ _
 #align fintype.finset_equiv_set_symm_apply Fintype.finsetEquivSet_symm_apply
+
+/-- Given a fintype `α`, `finsetOrderIsoSet` is the order isomorphism between `Finset α` and `Set α`
+(all sets on a finite type are finite). -/
+@[simps toEquiv]
+noncomputable def finsetOrderIsoSet : Finset α ≃o Set α where
+  toEquiv := finsetEquivSet
+  map_rel_iff' := Finset.coe_subset
+
+@[simp, norm_cast]
+lemma coe_finsetOrderIsoSet : ⇑finsetOrderIsoSet = ((↑) : Finset α → Set α) := rfl
+
+@[simp] lemma coe_finsetOrderIsoSet_symm :
+    ⇑(finsetOrderIsoSet : Finset α ≃o Set α).symm = ⇑finsetEquivSet.symm := rfl
 
 end Fintype
 
@@ -1062,13 +1096,13 @@ instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·
   Fintype.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
 #align quotient.fintype Quotient.fintype
 
-instance PSigma.fintypePropLeft {α : Prop} {β : α → Type _} [Decidable α] [∀ a, Fintype (β a)] :
+instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
   if h : α then Fintype.ofEquiv (β h) ⟨fun x => ⟨h, x⟩, PSigma.snd, fun _ => rfl, fun ⟨_, _⟩ => rfl⟩
   else ⟨∅, fun x => (h x.1).elim⟩
 #align psigma.fintype_prop_left PSigma.fintypePropLeft
 
-instance PSigma.fintypePropRight {α : Type _} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
+instance PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
     Fintype (Σ'a, β a) :=
   Fintype.ofEquiv { a // β a }
     ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
@@ -1080,14 +1114,14 @@ instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [�
     (h ⟨x, y⟩).elim⟩
 #align psigma.fintype_prop_prop PSigma.fintypePropProp
 
-instance pfunFintype (p : Prop) [Decidable p] (α : p → Type _) [∀ hp, Fintype (α hp)] :
+instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintype (α hp)] :
     Fintype (∀ hp : p, α hp) :=
   if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
   else ⟨singleton fun h => (hp h).elim, fun h => mem_singleton.2
     (funext $ fun x => by contradiction)⟩
 #align pfun_fintype pfunFintype
 
-theorem mem_image_univ_iff_mem_range {α β : Type _} [Fintype α] [DecidableEq β] {f : α → β}
+theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp
 #align mem_image_univ_iff_mem_range mem_image_univ_iff_mem_range
 
@@ -1116,7 +1150,7 @@ theorem choose_spec (hp : ∃! a, p a) : p (choose p hp) :=
 #align fintype.choose_spec Fintype.choose_spec
 
 -- @[simp] Porting note: removing simp, never applies
-theorem choose_subtype_eq {α : Type _} (p : α → Prop) [Fintype { a : α // p a }] [DecidableEq α]
+theorem choose_subtype_eq {α : Type*} (p : α → Prop) [Fintype { a : α // p a }] [DecidableEq α]
     (x : { a : α // p a })
     (h : ∃! a : { a // p a }, (a : α) = x :=
       ⟨x, rfl, fun y hy => by simpa [Subtype.ext_iff] using hy⟩) :
@@ -1187,17 +1221,31 @@ end Trunc
 
 namespace Multiset
 
-variable [Fintype α] [DecidableEq α]
+variable [Fintype α] [Fintype β]
 
 @[simp]
-theorem count_univ (a : α) : count a Finset.univ.val = 1 :=
+theorem count_univ [DecidableEq α] (a : α) : count a Finset.univ.val = 1 :=
   count_eq_one_of_mem Finset.univ.nodup (Finset.mem_univ _)
 #align multiset.count_univ Multiset.count_univ
+
+@[simp]
+theorem map_univ_val_equiv (e : α ≃ β) :
+    map e univ.val = univ.val := by
+  rw [← congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
+
+/-- For functions on finite sets, they are bijections iff they map universes into universes. -/
+@[simp]
+theorem bijective_iff_map_univ_eq_univ (f : α → β) :
+    f.Bijective ↔ map f (Finset.univ : Finset α).val = univ.val :=
+  ⟨fun bij ↦ congr_arg (·.val) (map_univ_equiv <| Equiv.ofBijective f bij),
+    fun eq ↦ ⟨
+      fun a₁ a₂ ↦ inj_on_of_nodup_map (eq.symm ▸ univ.nodup) _ (mem_univ a₁) _ (mem_univ a₂),
+      fun b ↦ have ⟨a, _, h⟩ := mem_map.mp (eq.symm ▸ mem_univ_val b); ⟨a, h⟩⟩⟩
 
 end Multiset
 
 /-- Auxiliary definition to show `exists_seq_of_forall_finset_exists`. -/
-noncomputable def seqOfForallFinsetExistsAux {α : Type _} [DecidableEq α] (P : α → Prop)
+noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : α → Prop)
     (r : α → α → Prop) (h : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y) : ℕ → α
   | n =>
     Classical.choose
@@ -1214,7 +1262,7 @@ More precisely, Assume that, for any finite set `s`, one can find another point 
 some relation `r` with respect to all the points in `s`. Then one may construct a
 function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m < n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
-theorem exists_seq_of_forall_finset_exists {α : Type _} (P : α → Prop) (r : α → α → Prop)
+theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : α → α → Prop)
     (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ ∀ m n, m < n → r (f m) (f n) := by
   classical
@@ -1249,9 +1297,9 @@ More precisely, Assume that, for any finite set `s`, one can find another point 
 some relation `r` with respect to all the points in `s`. Then one may construct a
 function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
-theorem exists_seq_of_forall_finset_exists' {α : Type _} (P : α → Prop) (r : α → α → Prop)
+theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
-    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ ∀ m n, m ≠ n → r (f m) (f n) := by
+    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine' ⟨f, hf, fun m n hmn => _⟩
   rcases lt_trichotomy m n with (h | rfl | h)

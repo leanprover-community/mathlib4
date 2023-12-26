@@ -2,13 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.star
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Tactic.GCongr
+
+#align_import analysis.convex.star from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Star-convex sets
@@ -51,7 +49,7 @@ open Set
 
 open Convex Pointwise
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 section OrderedSemiring
 
@@ -114,7 +112,7 @@ theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x 
     StarConvex 𝕜 x (⋂₀ S) := fun _ hy _ _ ha hb hab s hs => h s hs (hy s hs) ha hb hab
 #align star_convex_sInter starConvex_sInter
 
-theorem starConvex_iInter {ι : Sort _} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
+theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
   sInter_range s ▸ starConvex_sInter <| forall_range_iff.2 h
 #align star_convex_Inter starConvex_iInter
@@ -126,10 +124,10 @@ theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
   · exact Or.inr (ht hy ha hb hab)
 #align star_convex.union StarConvex.union
 
-theorem starConvex_iUnion {ι : Sort _} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
+theorem starConvex_iUnion {ι : Sort*} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋃ i, s i) := by
   rintro y hy a b ha hb hab
-  rw [mem_iUnion] at hy⊢
+  rw [mem_iUnion] at hy ⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
 #align star_convex_Union starConvex_iUnion
@@ -145,7 +143,7 @@ theorem StarConvex.prod {y : F} {s : Set E} {t : Set F} (hs : StarConvex 𝕜 x 
   ⟨hs hy.1 ha hb hab, ht hy.2 ha hb hab⟩
 #align star_convex.prod StarConvex.prod
 
-theorem starConvex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
+theorem starConvex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
     {x : ∀ i, E i} {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → StarConvex 𝕜 (x i) (t i)) :
     StarConvex 𝕜 x (s.pi t) := fun _ hy _ _ ha hb hab i hi => ht hi (hy i hi) ha hb hab
 #align star_convex_pi starConvex_pi
@@ -203,10 +201,9 @@ theorem starConvex_singleton (x : E) : StarConvex 𝕜 x {x} := by
 #align star_convex_singleton starConvex_singleton
 
 theorem StarConvex.linear_image (hs : StarConvex 𝕜 x s) (f : E →ₗ[𝕜] F) :
-    StarConvex 𝕜 (f x) (s.image f) := by
-  intro y hy a b ha hb hab
-  obtain ⟨y', hy', rfl⟩ := hy
-  exact ⟨a • x + b • y', hs hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+    StarConvex 𝕜 (f x) (f '' s) := by
+  rintro _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align star_convex.linear_image StarConvex.linear_image
 
 theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
@@ -215,7 +212,7 @@ theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf 
 #align star_convex.is_linear_image StarConvex.is_linear_image
 
 theorem StarConvex.linear_preimage {s : Set F} (f : E →ₗ[𝕜] F) (hs : StarConvex 𝕜 (f x) s) :
-    StarConvex 𝕜 x (s.preimage f) := by
+    StarConvex 𝕜 x (f ⁻¹' s) := by
   intro y hy a b ha hb hab
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hy ha hb hab
@@ -379,6 +376,28 @@ theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
 
 end AddCommGroup
 
+section OrderedAddCommGroup
+
+variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
+
+/-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
+lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
+  refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
+  rw [mem_compl_iff, mem_Iic] at hz ⊢
+  contrapose! hz
+  refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
+  calc
+    b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]
+    _ < b • x := by
+      rw [add_smul, sub_lt_iff_lt_add']
+      gcongr
+
+/-- If `x < y`, then `(Set.Ici y)ᶜ` is star convex at `x`. -/
+lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ :=
+  starConvex_compl_Iic (E := Eᵒᵈ) h
+
+end OrderedAddCommGroup
+
 end OrderedRing
 
 section LinearOrderedField
@@ -420,9 +439,10 @@ end LinearOrderedField
 Relates `starConvex` and `Set.ordConnected`.
 -/
 
-
 section OrdConnected
 
+/-- If `s` is an order-connected set in an ordered module over an ordered semiring
+and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
 theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
     (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
@@ -431,16 +451,16 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
   · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
     calc
       x = a • x + b • x := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg hxy hb) _
+      _ ≤ a • x + b • y := by gcongr
     calc
-      a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg hxy ha) _
+      a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
   · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
     calc
       y = a • y + b • y := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := add_le_add_right (smul_le_smul_of_nonneg hyx ha) _
+      _ ≤ a • x + b • y := by gcongr
     calc
-      a • x + b • y ≤ a • x + b • x := add_le_add_left (smul_le_smul_of_nonneg hyx hb) _
+      a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _
 #align set.ord_connected.star_convex Set.OrdConnected.starConvex
 
@@ -449,7 +469,7 @@ theorem starConvex_iff_ordConnected [LinearOrderedField 𝕜] {x : 𝕜} {s : Se
   simp_rw [ordConnected_iff_uIcc_subset_left hx, starConvex_iff_segment_subset, segment_eq_uIcc]
 #align star_convex_iff_ord_connected starConvex_iff_ordConnected
 
-alias starConvex_iff_ordConnected ↔ StarConvex.ordConnected _
+alias ⟨StarConvex.ordConnected, _⟩ := starConvex_iff_ordConnected
 #align star_convex.ord_connected StarConvex.ordConnected
 
 end OrdConnected

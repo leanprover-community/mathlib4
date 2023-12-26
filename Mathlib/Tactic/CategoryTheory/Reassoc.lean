@@ -8,7 +8,7 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.Lean.Meta.Simp
 
 /-!
-# The `reasoc` attribute
+# The `reassoc` attribute
 
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ⟶ Y` in some category
@@ -28,7 +28,7 @@ open Mathlib.Tactic
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics.  -/
 theorem eq_whisker' {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :

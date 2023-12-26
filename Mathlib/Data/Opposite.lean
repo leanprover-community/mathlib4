@@ -2,13 +2,10 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton, Simon Hudon, Kenny Lau
-
-! This file was ported from Lean 3 source module data.opposite
-! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
+
+#align_import data.opposite from "leanprover-community/mathlib"@"99e8971dc62f1f7ecf693d75e75fbbabd55849de"
 
 /-!
 # Opposites
@@ -112,6 +109,10 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
 
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
+
+instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
+
+instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
 /-- A recursor for `Opposite`.
 The `@[eliminator]` attribute makes it the default induction principle for `Opposite`

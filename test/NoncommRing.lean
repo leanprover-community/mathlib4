@@ -3,7 +3,7 @@ import Mathlib.Tactic.NoncommRing
 local notation (name := commutator) "⁅"a", "b"⁆" => a * b - b * a
 
 set_option quotPrecheck false
-local infix:70  " ⚬ " => fun a b => a * b + b * a
+local infix:70 " ⚬ " => fun a b => a * b + b * a
 
 variable {R : Type _} [Ring R]
 variable (a b c : R)
@@ -57,5 +57,10 @@ example : ⁅a, b ⚬ c⁆ = ⁅a, b⁆ ⚬ c + b ⚬ ⁅a, c⁆ := by noncomm_r
 example : ⁅a ⚬ b, c⁆ = a ⚬ ⁅b, c⁆ + ⁅a, c⁆ ⚬ b := by noncomm_ring
 example : (a ⚬ b) ⚬ c - a ⚬ (b ⚬ c) = -⁅⁅a, b⁆, c⁆ + ⁅a, ⁅b, c⁆⁆ := by noncomm_ring
 
-example : a + -b = -b + a := by noncomm_ring
+example : a + -b = -b + a := by
+  -- This should print "`noncomm_ring` simp lemmas don't apply; try `abel` instead"
+  -- but I don't know how to test for this:
+  -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60fail.60.20that.20doesn't.20print.20the.20goal.3F/near/382280010
+  fail_if_success noncomm_ring
+  abel
 example : a ^ 50 * a ^ 37 = a ^ 23 * a ^ 64 := by noncomm_ring

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.star.chsh
-! leanprover-community/mathlib commit 468b141b14016d54b479eb7a0fff1e360b7e3cf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Real.Sqrt
+
+#align_import algebra.star.chsh from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
@@ -85,7 +82,7 @@ The physical interpretation is that `A₀` and `A₁` are a pair of boolean obse
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
 --@[nolint has_nonempty_instance] Porting note: linter does not exist
-structure IsCHSHTuple {R} [Monoid R] [StarSemigroup R] (A₀ A₁ B₀ B₁ : R) where
+structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1
   B₀_inv : B₀ ^ 2 = 1
@@ -110,12 +107,9 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
   -- If we had a Gröbner basis algorithm, this would be trivial.
   -- Without one, it is somewhat tedious!
   rw [← sub_eq_zero]
-  repeat'
-    ring_nf
-    simp only [A₁_inv, B₁_inv, sub_eq_add_neg, add_mul, mul_add, sub_mul, mul_sub, add_assoc,
-      neg_add, neg_sub, sub_add, sub_sub, neg_mul, ← sq, A₀_inv, B₀_inv, ← sq, ← mul_assoc, one_mul,
-      mul_one, add_right_neg, add_zero, sub_eq_add_neg, A₀_inv, mul_one, add_right_neg,
-      MulZeroClass.zero_mul]
+  ring_nf
+  simp_all
+  ring_nf
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 
@@ -138,14 +132,8 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       dsimp
       simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
-    rw [idem']
-    conv_rhs =>
-      arg 2
-      arg 1
-      rw [← sa]
-    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg : 0 ≤ star P * P) _
-    · simp
-    · norm_num
+    simpa only [← idem', sa]
+      using smul_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
 set_option linter.uppercaseLean3 false in
@@ -173,8 +161,8 @@ we prepare some easy lemmas about √2.
 theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * √2⁻¹ + 4 * (√2⁻¹ * 2⁻¹)) := by
   ring_nf
   rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
-  convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;> simp only [← pow_mul] <;>
-    norm_num
+  convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
+    (try simp only [← pow_mul]) <;> norm_num
 #align tsirelson_inequality.tsirelson_inequality_aux TsirelsonInequality.tsirelson_inequality_aux
 
 theorem sqrt_two_inv_mul_self : √2⁻¹ * √2⁻¹ = (2⁻¹ : ℝ) := by
@@ -235,7 +223,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
         skip
         congr
         rw [← P_sa]
-      convert(star_mul_self_nonneg : 0 ≤ star P * P)
+      convert (star_mul_self_nonneg P)
     have Q2_nonneg : 0 ≤ Q ^ 2 := by
       rw [sq]
       conv =>
@@ -243,8 +231,8 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
         skip
         congr
         rw [← Q_sa]
-      convert(star_mul_self_nonneg : 0 ≤ star Q * Q)
-    convert smul_le_smul_of_nonneg (add_nonneg P2_nonneg Q2_nonneg)
+      convert (star_mul_self_nonneg Q)
+    convert smul_le_smul_of_nonneg_left (add_nonneg P2_nonneg Q2_nonneg)
         (le_of_lt (show 0 < √2⁻¹ by norm_num))
     -- `norm_num` can't directly show `0 ≤ √2⁻¹`
     simp

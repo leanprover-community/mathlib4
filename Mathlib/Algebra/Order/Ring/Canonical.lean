@@ -2,22 +2,18 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.ring.canonical
-! leanprover-community/mathlib commit 824f9ae93a4f5174d2ea948e2d75843dd83447bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.GroupTheory.GroupAction.Defs
 
+#align_import algebra.order.ring.canonical from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
+
 /-!
-# Canoncially ordered rings and semirings.
+# Canonically ordered rings and semirings.
 
 * `CanonicallyOrderedCommSemiring`
-  - `CanonicallyOrderedAddMonoid` & multiplication & `*` respects `≤` & no zero divisors
+  - `CanonicallyOrderedAddCommMonoid` & multiplication & `*` respects `≤` & no zero divisors
   - `CommSemiring` & `a ≤ b ↔ ∃ c, b = a + c` & no zero divisors
 
 ## TODO
@@ -32,12 +28,12 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type _}
+variable {α : Type u} {β : Type*}
 
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
 not the integers or other ordered groups. -/
-class CanonicallyOrderedCommSemiring (α : Type _) extends CanonicallyOrderedAddMonoid α,
+class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddCommMonoid α,
     CommSemiring α where
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
@@ -85,9 +81,25 @@ end ExistsAddOfLE
 
 end StrictOrderedSemiring
 
+section LinearOrderedCommSemiring
+variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α] {a b : α}
+
+lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
+  calc
+    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
+        simp_rw [pow_succ, pow_zero, mul_one, add_mul_self_eq, mul_assoc, two_mul,
+          add_right_comm _ (_ + _), mul_comm]
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
+  cases le_total a b
+  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
+  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
+
+end LinearOrderedCommSemiring
+
 namespace CanonicallyOrderedCommSemiring
 
-variable [CanonicallyOrderedCommSemiring α] {a b : α}
+variable [CanonicallyOrderedCommSemiring α] {a b c d : α}
 
 -- see Note [lower instance priority]
 instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
@@ -116,9 +128,18 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
 #align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedCommSemiring.toOrderedCommSemiring
 
 @[simp]
-theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
+protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedCommSemiring.mul_pos
+
+protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd : c < d) :
+    a * c < b * d := by
+  -- TODO: This should be an instance but it currently times out
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
+  obtain rfl | hc := eq_zero_or_pos c
+  · rw [mul_zero]
+    exact mul_pos ((zero_le _).trans_lt hab) hcd
+  · exact mul_lt_mul_of_lt_of_lt' hab hcd ((zero_le _).trans_lt hab) hc
 
 end CanonicallyOrderedCommSemiring
 

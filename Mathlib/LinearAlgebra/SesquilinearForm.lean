@@ -2,17 +2,14 @@
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
-
-! This file was ported from Lean 3 source module linear_algebra.sesquilinear_form
-! leanprover-community/mathlib commit 87c54600fe3cdc7d32ff5b50873ac724d86aef8d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+
+#align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
 /-!
 # Sesquilinear form
@@ -44,7 +41,7 @@ Sesquilinear form,
 
 open BigOperators
 
-variable {R R₁ R₂ R₃ M M₁ M₂ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type _}
+variable {R R₁ R₂ R₃ M M₁ M₂ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
 namespace LinearMap
 
@@ -277,7 +274,8 @@ theorem self_eq_zero (x : M₁) : B x x = 0 :=
 
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
-  simp [map_add, self_eq_zero H] at H1
+  simp? [map_add, self_eq_zero H] at H1 says
+    simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
   exact H1
 #align linear_map.is_alt.neg LinearMap.IsAlt.neg
@@ -397,7 +395,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _  (K ∙ x) B) :=
+    IsCompl (K ∙ x) (@Submodule.orthogonalBilin _ _ _ _ _ _ (_) _ _ (K ∙ x) B) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 #align linear_map.is_compl_span_singleton_orthogonal LinearMap.isCompl_span_singleton_orthogonal
@@ -437,7 +435,7 @@ variable {B B' f g}
 
 theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g := by
   constructor <;> intro h
-  · ext (x y)
+  · ext x y
     rw [comp_apply, compl₂_apply]
     exact h x y
   · intro _ _
@@ -662,7 +660,7 @@ theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R R)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
     convert h.congr e₁.symm e₂.symm
-    ext (x y)
+    ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩
 #align linear_map.separating_left_congr_iff LinearMap.separatingLeft_congr_iff

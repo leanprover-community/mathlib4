@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.list.sort
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sorting algorithms on lists
@@ -51,7 +48,15 @@ protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· 
 
 protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
-  h₁.imp₂ (fun _ _ => lt_of_le_of_ne)  h₂
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
+
+protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· > ·)) :
+    l.Sorted (· ≥ ·) :=
+  h.imp le_of_lt
+
+protected theorem Sorted.gt_of_ge [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≥ ·))
+    (h₂ : l.Nodup) : l.Sorted (· > ·) :=
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=
@@ -69,6 +74,20 @@ theorem Sorted.tail {r : α → α → Prop} {l : List α} (h : Sorted r l) : So
 theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b ∈ l, r a b :=
   rel_of_pairwise_cons
 #align list.rel_of_sorted_cons List.rel_of_sorted_cons
+
+theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
+    (ha : a ∈ l) : l.head! ≤ a := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
+
+theorem Sorted.le_head! [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· > ·) l)
+    (ha : a ∈ l) : a ≤ l.head! := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
 
 @[simp]
 theorem sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l, r a b) ∧ Sorted r l :=
@@ -91,7 +110,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
     rw [← append_assoc]
     congr
-    have : ∀ (x : α) (_ : x ∈ u₂), x = a := fun x m =>
+    have : ∀ x ∈ u₂, x = a := fun x m =>
       antisymm ((pairwise_append.1 s₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
     rw [(@eq_replicate _ a (length u₂ + 1) (a :: u₂)).2,
           (@eq_replicate _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
@@ -135,7 +154,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
   rw [get_take', get_drop']
   rw [length_take] at hix
-  exact h.rel_nthLe_of_lt _ _ (ix.lt_add_right _ _ (lt_min_iff.mp hix).left)
+  exact h.rel_nthLe_of_lt _ _ (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
 end Sorted
@@ -146,7 +165,7 @@ variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
-  exact Iff.symm (Fin.cast _).surjective.forall₂
+  exact Iff.symm (Fin.rightInverse_cast _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -162,7 +181,7 @@ theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) :=
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 
 /-- The list obtained from a monotone tuple is sorted. -/
-alias sorted_le_ofFn_iff ↔ _ _root_.Monotone.ofFn_sorted
+alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 #align list.monotone.of_fn_sorted Monotone.ofFn_sorted
 
 end Monotone
@@ -237,7 +256,6 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
-  split_ifs <;> simp only [Nat.succ_eq_add_one, add_zero]
 #align list.ordered_insert_count List.orderedInsert_count
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
@@ -250,12 +268,12 @@ variable {r}
 
 /-- If `l` is already `List.Sorted` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionSort r l = l
+theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSort r l = l
   | [], _ => rfl
   | [a], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive
@@ -414,7 +432,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
   | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
   | a :: l, b :: l', h₁, h₂ => by
     by_cases h : a ≼ b
-    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r l (b :: l')), r a b' by
+    · suffices ∀ b' ∈ List.merge r l (b :: l'), r a b' by
         simpa [List.merge, h, h₁.of_cons.merge h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
@@ -424,7 +442,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
       · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
-    · suffices ∀ (b' : α) (_ : b' ∈ List.merge r (a :: l) l'), r b b' by
+    · suffices ∀ b' ∈ List.merge r (a :: l) l', r b b' by
         simpa [List.merge, h, h₁.merge h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h

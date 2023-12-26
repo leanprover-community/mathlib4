@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.fixed_points
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Hom.Order
+
+#align_import order.fixed_points from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Fixed point construction on complete lattices
@@ -104,8 +101,7 @@ theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ lfp f → p
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (sSup s)) : p (lfp f) := by
   set s := { a | a ≤ lfp f ∧ p a }
   specialize hSup s fun a => And.right
-  suffices : sSup s = lfp f
-  exact this ▸ hSup
+  suffices sSup s = lfp f from this ▸ hSup
   have h : sSup s ≤ lfp f := sSup_le fun b => And.left
   have hmem : f (sSup s) ∈ s := ⟨f.map_le_lfp h, step _ hSup h⟩
   exact h.antisymm (f.lfp_le <| le_sSup hmem)

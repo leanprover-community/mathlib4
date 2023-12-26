@@ -2,15 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
-
-! This file was ported from Lean 3 source module topology.discrete_quotient
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
-import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.LocallyConstant.Basic
+
+#align_import topology.discrete_quotient from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 
@@ -38,13 +34,13 @@ The top element `⊤` is the trivial quotient, meaning that every element of `X`
 to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLE h`.
 
 Whenever `X` is a locally connected space, the type `DiscreteQuotient X` is also endowed with an
-instance of a `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
+instance of an `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
 i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In particular, if `X`
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
 
-Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for `A :
-DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`.  If
+Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
+`A : DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`. If
 `cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 
@@ -68,11 +64,11 @@ of finite discrete spaces.
 
 open Set Function
 
-variable {α X Y Z : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
 @[ext] -- porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
-structure DiscreteQuotient (X : Type _) [TopologicalSpace X] extends Setoid X where
+structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is a clopen set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
 #align discrete_quotient DiscreteQuotient
@@ -86,10 +82,10 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
 /-- Construct a discrete quotient from a clopen set. -/
-def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
-  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl,  Iff.symm,  Iff.trans⟩
+def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
+  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
-#align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
+#align discrete_quotient.of_clopen DiscreteQuotient.ofIsClopen
 
 theorem refl : ∀ x, S.Rel x x := S.refl'
 #align discrete_quotient.refl DiscreteQuotient.refl
@@ -366,10 +362,10 @@ end Map
 
 theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
     {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
-  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
+  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_isClopen,
     mem_iInter]
   rintro ⟨U, hU1, hU2⟩
-  exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
+  exact (Quotient.exact' (h (ofIsClopen hU1))).mpr hU2
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
 theorem fiber_subset_ofLE {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
@@ -387,7 +383,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
     IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_inf H₁)
+      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
   exact ⟨x, mem_iInter.1 hx⟩

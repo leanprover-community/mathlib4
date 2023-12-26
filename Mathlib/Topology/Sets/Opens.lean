@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module topology.sets.opens
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
@@ -14,6 +9,8 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.Copy
+
+#align_import topology.sets.opens from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Open sets
@@ -56,7 +53,7 @@ open Filter Function Order Set
 
 open Topology
 
-variable {ι α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace TopologicalSpace
 
@@ -64,7 +61,7 @@ variable (α)
 
 /-- The type of open subsets of a topological space. -/
 structure Opens where
-  /-- The underlying set of a bundled `TopoogicalSpace.Opens` object. -/
+  /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier
@@ -187,6 +184,8 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
 #align topological_space.opens.coe_bot TopologicalSpace.Opens.coe_bot
 
+@[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
+
 -- porting note: new lemma
 @[simp, norm_cast]
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
@@ -196,6 +195,8 @@ theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
 theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
   rfl
 #align topological_space.opens.coe_top TopologicalSpace.Opens.coe_top
+
+@[simp] theorem mk_univ : (⟨univ, isOpen_univ⟩ : Opens α) = ⊤ := rfl
 
 -- porting note: new lemma
 @[simp, norm_cast]
@@ -232,7 +233,7 @@ theorem coe_iSup {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set α)
   simp [iSup]
 #align topological_space.opens.coe_supr TopologicalSpace.Opens.coe_iSup
 
-theorem iSup_def {ι} (s : ι → Opens α) : (⨆ i, s i) = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
+theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
   ext <| coe_iSup s
 #align topological_space.opens.supr_def TopologicalSpace.Opens.iSup_def
 
@@ -258,6 +259,9 @@ instance : Frame (Opens α) :=
     sSup := sSup
     inf_sSup_le_iSup_inf := fun a s =>
       (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
+
+theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
+  U.isOpen.openEmbedding_subtype_val
 
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     OpenEmbedding (Set.inclusion $ SetLike.coe_subset_coe.2 i) :=
@@ -301,7 +305,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     dsimp at H₂
     subst H₂
     exact hsV
-  · refine' isTopologicalBasis_of_open_of_nhds _ _
+  · refine' isTopologicalBasis_of_isOpen_of_nhds _ _
     · rintro sU ⟨U, -, rfl⟩
       exact U.2
     · intro x sU hx hsU
@@ -327,7 +331,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/
-theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type _} (b : ι → Opens α)
+theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Opens α)
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
@@ -397,7 +401,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
 #align topological_space.opens.comap_injective TopologicalSpace.Opens.comap_injective
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap f.symm.toContinuousMap
   invFun := Opens.comap f.toContinuousMap

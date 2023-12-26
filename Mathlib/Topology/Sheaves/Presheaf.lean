@@ -2,16 +2,14 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.sheaves.presheaf
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
+
+#align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Presheaves on a topological space
@@ -31,6 +29,8 @@ We also define the functors `pushforward` and `pullback` between the categories
 `X.Presheaf C` and `Y.Presheaf C`, and provide their adjunction at
 `TopCat.Presheaf.pushforwardPullbackAdjunction`.
 -/
+
+set_option autoImplicit true
 
 
 universe w v u
@@ -55,31 +55,55 @@ variable {C}
 
 namespace Presheaf
 
-attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.hasCoeToFun
+-- Porting note: added an `ext` lemma,
+-- since `NatTrans.ext` can not see through the definition of `Presheaf`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
+    f = g := by
+  apply NatTrans.ext
+  ext U
+  induction U with | _ U => ?_
+  apply w
 
-/-- attribute `sheaf_restrict` to mark lemmas related to restricting sheafs -/
+attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
+  CategoryTheory.ConcreteCategory.funLike
+
+/-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
-  `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Restrict):ident]))
+  `(attr|aesop safe 50 apply (rule_sets [$(Lean.mkIdent `Restrict):ident]))
 
 attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
   le_sup_left le_sup_right
 
 /-- `restrict_tac` solves relations among subsets (copied from `aesop cat`) -/
 macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
+`(tactic| first | assumption |
+  aesop $c* (options :=
+    { terminal := true, assumptionTransparency := .reducible })
+    (simp_options := { enabled := false })
+  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+
+/-- `restrict_tac?` passes along `Try this` from `aesop` -/
+macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { introsTransparency? := some .default, terminal := true })
-  (rule_sets [$(Lean.mkIdent `Restrict):ident]))
+  aesop? $c* (options :=
+    { terminal := true, assumptionTransparency := .reducible, maxRuleApplications := 300 })
+  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
-example {X : TopCat} {v w x y z : Opens X} (h₀ : v ≤ x) (h₁ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v ≤ y :=
+attribute[aesop 10% (rule_sets [Restrict])] le_trans
+attribute[aesop safe destruct (rule_sets [Restrict])] Eq.trans_le
+attribute[aesop safe -50 (rule_sets [Restrict])] Aesop.BuiltinRules.assumption
+
+example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_ : v 1 = v 2)
+    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y :=
   by restrict_tac
-
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
 and the notation `x |_ₗ U ⟪i⟫` (`l` stands for `le`) for `i : U ≤ V`.
 -/
-def restrict {X : TopCat} {C : Type _} [Category C] [ConcreteCategory C] {F : X.Presheaf C}
+def restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {F : X.Presheaf C}
     {V : Opens X} (x : F.obj (op V)) {U : Opens X} (h : U ⟶ V) : F.obj (op U) :=
   F.map h.op x
 set_option linter.uppercaseLean3 false in
@@ -96,7 +120,7 @@ open AlgebraicGeometry
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
 the tactic `Top.presheaf.restrict_tac'` -/
-abbrev restrictOpen {X : TopCat} {C : Type _} [Category C] [ConcreteCategory C] {F : X.Presheaf C}
+abbrev restrictOpen {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C] {F : X.Presheaf C}
     {V : Opens X} (x : F.obj (op V)) (U : Opens X)
     (e : U ≤ V := by restrict_tac) :
     F.obj (op U) :=
@@ -109,7 +133,7 @@ scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
 -- Porting note : linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
-theorem restrict_restrict {X : TopCat} {C : Type _} [Category C] [ConcreteCategory C]
+theorem restrict_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : F.obj (op W)) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
@@ -120,7 +144,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note : linter tells this lemma is no going to be picked up by the simplifier, hence
 -- `@[simp]` is removed
-theorem map_restrict {X : TopCat} {C : Type _} [Category C] [ConcreteCategory C]
+theorem map_restrict {X : TopCat} {C : Type*} [Category C] [ConcreteCategory C]
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : F.obj (op V)) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
@@ -169,7 +193,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
-  (h : f = g) (ℱ : X.Presheaf C) (U) :
+    (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
       ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
   by simp [pushforwardEq]
@@ -223,12 +247,17 @@ theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
--- porting note: TODO: attribute [local tidy] tactic.op_induction'
+-- Porting note:
+-- the proof below could be `by aesop_cat` if
+-- https://github.com/JLimperg/aesop/issues/59
+-- can be resolved, and we add:
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 @[simp]
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
-  -- was `tidy`
-  induction' U with U
+  -- was `tidy`, see porting note above.
+  induction U
   apply id_hom_app'
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
@@ -311,13 +340,13 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
         change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
-        . refine' (homOfLE _).op
+        · refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        . simp
+        · simp [autoParam, eq_iff_true_of_subsingleton]
       -- porting note : add `fac`, `uniq` manually
-      fac := fun _ _ => by ext; simp
-      uniq := fun _ _ _ => by ext; simp }
+      fac := fun _ _ => by ext; simp [eq_iff_true_of_subsingleton]
+      uniq := fun _ _ _ => by ext; simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitOfDiagramTerminal hx _)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pullback_obj_obj_of_image_open TopCat.Presheaf.pullbackObjObjOfImageOpen
@@ -381,9 +410,8 @@ set_option linter.uppercaseLean3 false in
 theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
   · intros a b f
-    -- porting note : `ext` does not see this
-    refine NatTrans.ext _ _ (funext fun U => ?_)
-    . erw [NatTrans.congr f (Opens.op_map_id_obj U)]
+    ext U
+    · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
       simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
         Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq
@@ -426,7 +454,7 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
     Functor.id_obj, Functor.comp_obj, Iso.symm_hom, NatIso.op_inv, Iso.symm_inv, NatTrans.op_app,
     NatIso.ofComponents_hom_app, eqToIso.hom, eqToHom_op, Equivalence.Equivalence_mk'_unitInv,
     Equivalence.Equivalence_mk'_counitInv, NatIso.op_hom, unop_op, op_unop, eqToIso.inv,
-    NatIso.ofComponents_inv_app, eqToHom_unop, ←ℱ.map_comp, eqToHom_trans, eqToHom_map,
+    NatIso.ofComponents_inv_app, eqToHom_unop, ← ℱ.map_comp, eqToHom_trans, eqToHom_map,
     presheafEquivOfIso_unitIso_hom_app_app]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.to_pushforward_of_iso_app TopCat.Presheaf.toPushforwardOfIso_app
@@ -474,7 +502,7 @@ set_option linter.uppercaseLean3 false in
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
 @[simps! unit_app_app counit_app_app]
 def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
-  pullback C f ⊣ pushforward C f :=
+    pullback C f ⊣ pushforward C f :=
   Lan.adjunction _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_pullback_adjunction TopCat.Presheaf.pushforwardPullbackAdjunction

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebra.category.Ring.instances
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import algebra.category.Ring.instances from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Ring-theoretic results in terms of categorical languages
@@ -30,12 +27,12 @@ instance localization_unit_isIso' (R : CommRingCat) :
   exact localization_unit_isIso _
 #align localization_unit_is_iso' localization_unit_isIso'
 
-theorem IsLocalization.epi {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
+theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
     [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=
   ⟨fun {T} _ _ => @IsLocalization.ringHom_ext R _ M S _ _ T _ _ _ _⟩
 #align is_localization.epi IsLocalization.epi
 
-instance Localization.epi {R : Type _} [CommRing R] (M : Submonoid R) :
+instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
     Epi (CommRingCat.ofHom <| algebraMap R <| Localization M) :=
   IsLocalization.epi M _
 #align localization.epi Localization.epi

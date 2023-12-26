@@ -48,9 +48,8 @@ def proveIntIsCoprime (ex ey : Q(ℤ)) : Q(IsCoprime $ex $ey) ⊕ Q(¬ IsCoprime
 @[norm_num IsCoprime (_ : ℤ) (_ : ℤ)]
 def evalIntIsCoprime : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
-  let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
-  let ⟨ex, p⟩ ← deriveInt x
-  let ⟨ey, q⟩ ← deriveInt y
+  let ⟨ex, p⟩ ← deriveInt x _
+  let ⟨ey, q⟩ ← deriveInt y _
   match proveIntIsCoprime ex ey with
   | .inl pf =>
     have pf' : Q(IsCoprime $x $y) := q(isInt_isCoprime $p $q $pf)

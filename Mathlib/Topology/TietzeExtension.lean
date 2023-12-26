@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.tietze_extension
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Set.Intervals.IsoIoo
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.UrysohnsBounded
+
+#align_import topology.tietze_extension from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Tietze extension theorem
@@ -38,7 +35,7 @@ Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y]
 
 open Metric Set Filter
 
@@ -80,13 +77,13 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbed
   · refine' (dist_le <| mul_nonneg h23.le hf.le).mpr fun x => _
     have hfx : -‖f‖ ≤ f x ∧ f x ≤ ‖f‖ := by
       simpa only [Real.norm_eq_abs, abs_le] using f.norm_coe_le_norm x
-    cases' le_total (f x) (-‖f‖ / 3) with hle₁ hle₁
+    rcases le_total (f x) (-‖f‖ / 3) with hle₁ | hle₁
     · calc
         |g (e x) - f x| = -‖f‖ / 3 - f x := by
           rw [hg₁ (mem_image_of_mem _ hle₁), Function.const_apply,
             abs_of_nonneg (sub_nonneg.2 hle₁)]
         _ ≤ 2 / 3 * ‖f‖ := by linarith
-    · cases' le_total (f x) (‖f‖ / 3) with hle₂ hle₂
+    · rcases le_total (f x) (‖f‖ / 3) with hle₂ | hle₂
       · simp only [neg_div] at *
         calc
           dist (g (e x)) (f x) ≤ |g (e x)| + |f x| := dist_le_norm_add_norm _ _
@@ -108,7 +105,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
   /- For the proof, we iterate `tietze_extension_step`. Each time we apply it to the difference
     between the previous approximation and `f`. -/
   choose F hF_norm hF_dist using fun f : X →ᵇ ℝ => tietze_extension_step f e he
-  set g : ℕ → Y →ᵇ ℝ := fun n => ((fun g => g + F (f - g.compContinuous e))^[n]) 0
+  set g : ℕ → Y →ᵇ ℝ := fun n => (fun g => g + F (f - g.compContinuous e))^[n] 0
   have g0 : g 0 = 0 := rfl
   have g_succ : ∀ n, g (n + 1) = g n + F (f - (g n).compContinuous e) := fun n =>
     Function.iterate_succ_apply' _ _ _
@@ -136,7 +133,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
   have hge : (limUnder atTop g).compContinuous e = f := by
     refine' tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 _)
     refine' squeeze_zero (fun _ => dist_nonneg) hgf _
-    rw [← MulZeroClass.zero_mul ‖f‖]
+    rw [← zero_mul ‖f‖]
     refine' (tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num1
   refine' ⟨limUnder atTop g, le_antisymm _ _, hge⟩
   · rw [← dist_zero_left, ← g0]
@@ -203,9 +200,9 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   inhabit X
   -- Put `a = ⨅ x, f x` and `b = ⨆ x, f x`
   obtain ⟨a, ha⟩ : ∃ a, IsGLB (range f) a
-  exact ⟨_, isGLB_ciInf (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).1⟩
+  exact ⟨_, isGLB_ciInf (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1⟩
   obtain ⟨b, hb⟩ : ∃ b, IsLUB (range f) b
-  exact ⟨_, isLUB_ciSup (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2⟩
+  exact ⟨_, isLUB_ciSup (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2⟩
   -- Then `f x ∈ [a, b]` for all `x`
   have hmem : ∀ x, f x ∈ Icc a b := fun x => ⟨ha.1 ⟨x, rfl⟩, hb.1 ⟨x, rfl⟩⟩
   -- Rule out the trivial case `a = b`
@@ -248,7 +245,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
     refine' ⟨g + dg, fun y => _, funext hgf⟩
     · have hay : a < (g + dg) y := by
-        rcases(hg_mem y).1.eq_or_lt with (rfl | hlt)
+        rcases (hg_mem y).1.eq_or_lt with (rfl | hlt)
         · refine' (lt_add_iff_pos_right _).2 _
           calc
             0 < c - g y := sub_pos.2 hac
@@ -256,7 +253,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
       rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
       refine' ⟨x, hxy.le, _⟩
-      cases' le_total c (g y) with hc hc
+      rcases le_total c (g y) with hc | hc
       · simp [dg0 (Or.inr hc), (hg_mem y).2]
       · calc
           g y + dg y ≤ c + (c - a) := add_le_add hc (dgmem _).2
@@ -281,7 +278,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
   refine' ⟨g - dg, fun y => _, funext hgf⟩
   · have hyb : (g - dg) y < b := by
-      rcases(hgb y).eq_or_lt with (rfl | hlt)
+      rcases (hgb y).eq_or_lt with (rfl | hlt)
       · refine' (sub_lt_self_iff _).2 _
         calc
           0 < g y - c := sub_pos.2 hcb
@@ -356,9 +353,8 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
   let F : X →ᵇ ℝ :=
     { toFun := (↑) ∘ h ∘ f
       continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
-      map_bounded' :=
-        bounded_range_iff.1
-          ((bounded_Ioo (-1 : ℝ) 1).mono <| forall_range_iff.2 fun x => (h (f x)).2) }
+      map_bounded' := isBounded_range_iff.1
+        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
   let t' : Set ℝ := (↑) ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
   have : OrdConnected t' := by

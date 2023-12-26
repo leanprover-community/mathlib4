@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.abelian
-! leanprover-community/mathlib commit 8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.IdealOperations
+
+#align_import algebra.lie.abelian from "leanprover-community/mathlib"@"8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d"
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras
@@ -47,6 +44,14 @@ theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieMo
     (x : L) (m : M) : ⁅x, m⁆ = 0 :=
   LieModule.IsTrivial.trivial x m
 #align trivial_lie_zero trivial_lie_zero
+
+instance LieModule.instIsTrivialOfSubsingleton {L M : Type*}
+    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
+  ⟨fun x m ↦ by rw [Subsingleton.eq_zero x, zero_lie]⟩
+
+instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
+    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton M] : LieModule.IsTrivial L M :=
+  ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
 
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
 abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
@@ -89,11 +94,6 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
-
-theorem LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
-    [LieAlgebra R L] : IsLieAbelian (⊥ : LieIdeal R L) :=
-  ⟨fun ⟨x, hx⟩ _ => by simp⟩
-#align lie_algebra.is_lie_abelian_bot LieAlgebra.isLieAbelian_bot
 
 section Center
 
@@ -284,6 +284,21 @@ theorem isLieAbelian_iff_center_eq_top : IsLieAbelian L ↔ center R L = ⊤ :=
 
 end LieAlgebra
 
+namespace LieModule
+
+variable {R L}
+variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
+
+lemma commute_toEndomorphism_of_mem_center_left :
+    Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
+  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
+
+lemma commute_toEndomorphism_of_mem_center_right :
+    Commute (toEndomorphism R L M y) (toEndomorphism R L M x) :=
+  (LieModule.commute_toEndomorphism_of_mem_center_left M hx y).symm
+
+end LieModule
+
 end Center
 
 section IdealOperations
@@ -302,7 +317,7 @@ variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by
   suffices : ⁅I, N⁆ ≤ ⊥; exact le_bot_iff.mp this
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
-  rintro m ⟨x, n, h⟩; rw [trivial_lie_zero] at h ; simp [← h]
+  rintro m ⟨x, n, h⟩; rw [trivial_lie_zero] at h; simp [← h]
 #align lie_submodule.trivial_lie_oper_zero LieSubmodule.trivial_lie_oper_zero
 
 theorem LieSubmodule.lie_abelian_iff_lie_self_eq_bot : IsLieAbelian I ↔ ⁅I, I⁆ = ⊥ := by

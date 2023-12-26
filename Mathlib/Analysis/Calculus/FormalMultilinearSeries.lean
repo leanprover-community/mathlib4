@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.formal_multilinear_series
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear
+import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+
+#align_import analysis.calculus.formal_multilinear_series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Formal multilinear series
@@ -46,7 +43,7 @@ variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
 @[nolint unusedArguments]
-def FormalMultilinearSeries (𝕜 : Type _) (E : Type _) (F : Type _) [Ring 𝕜] [AddCommGroup E]
+def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Ring 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
     [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
     [ContinuousConstSMul 𝕜 F] :=
@@ -60,12 +57,6 @@ instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
 instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
   ⟨0⟩
 
-@[simp] -- porting note: new; was not needed in Lean 3
-theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
-
-@[simp] -- porting note: new; was not needed in Lean 3
-theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
-
 section Module
 
 /- `derive` is not able to find the module structure, probably because Lean is confused by the
@@ -78,6 +69,12 @@ end Module
 
 namespace FormalMultilinearSeries
 
+@[simp] -- porting note: new; was not needed in Lean 3
+theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
+
+@[simp] -- porting note: new; was not needed in Lean 3
+theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
+
 @[ext] -- porting note: new theorem
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
@@ -89,6 +86,12 @@ protected theorem ext_iff {p q : FormalMultilinearSeries 𝕜 E F} : p = q ↔ �
 protected theorem ne_iff {p q : FormalMultilinearSeries 𝕜 E F} : p ≠ q ↔ ∃ n, p n ≠ q n :=
   Function.ne_iff
 #align formal_multilinear_series.ne_iff FormalMultilinearSeries.ne_iff
+
+/-- Cartesian product of two formal multilinear series (with the same field `𝕜` and the same source
+space, but possibly different target spaces). -/
+def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
+    FormalMultilinearSeries 𝕜 E (F × G)
+  | n => (p n).prod (q n)
 
 /-- Killing the zeroth coefficient in a formal multilinear series -/
 def removeZero (p : FormalMultilinearSeries 𝕜 E F) : FormalMultilinearSeries 𝕜 E F
@@ -316,7 +319,7 @@ theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
 #align formal_multilinear_series.coeff_fslope FormalMultilinearSeries.coeff_fslope
 
 @[simp]
-theorem coeff_iterate_fslope (k n : ℕ) : ((fslope^[k]) p).coeff n = p.coeff (n + k) := by
+theorem coeff_iterate_fslope (k n : ℕ) : (fslope^[k] p).coeff n = p.coeff (n + k) := by
   induction k generalizing p with
   | zero => rfl
   | succ k ih => simp [ih, add_assoc]
@@ -331,9 +334,9 @@ section Const
 /-- The formal multilinear series where all terms of positive degree are equal to zero, and the term
 of degree zero is `c`. It is the power series expansion of the constant function equal to `c`
 everywhere. -/
-def constFormalMultilinearSeries (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _)
+def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [TopologicalAddGroup E]
-    {F : Type _} [NormedAddCommGroup F] [TopologicalAddGroup F] [NormedSpace 𝕜 F]
+    {F : Type*} [NormedAddCommGroup F] [TopologicalAddGroup F] [NormedSpace 𝕜 F]
     [ContinuousConstSMul 𝕜 F] (c : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => ContinuousMultilinearMap.curry0 _ _ c
   | _ => 0
@@ -347,3 +350,39 @@ theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [Norme
 #align const_formal_multilinear_series_apply constFormalMultilinearSeries_apply
 
 end Const
+
+section Linear
+
+variable [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+namespace ContinuousLinearMap
+
+/-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
+`f y = f x + f (y - x)`. -/
+def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
+  | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x)
+  | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
+  | _ => 0
+#align continuous_linear_map.fpower_series ContinuousLinearMap.fpowerSeries
+
+theorem fpowerSeries_apply_zero (f : E →L[𝕜] F) (x : E) :
+    f.fpowerSeries x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x) :=
+  rfl
+
+theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
+    f.fpowerSeries x 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm f :=
+  rfl
+
+theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
+  rfl
+#align continuous_linear_map.fpower_series_apply_add_two ContinuousLinearMap.fpowerSeries_apply_add_two
+
+attribute
+  [eqns fpowerSeries_apply_zero fpowerSeries_apply_one fpowerSeries_apply_add_two] fpowerSeries
+attribute [simp] fpowerSeries
+
+end ContinuousLinearMap
+
+end Linear

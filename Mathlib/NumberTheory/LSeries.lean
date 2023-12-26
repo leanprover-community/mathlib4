@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module number_theory.l_series
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.PSeries
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+
+#align_import number_theory.l_series from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # L-series
@@ -68,7 +65,7 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
     have hf : f = 0 := ArithmeticFunction.ext fun n =>
       Complex.abs.eq_zero.1 (le_antisymm (h n) (Complex.abs.nonneg _))
     simp [hf]
-  refine' summable_of_norm_bounded (fun n : ℕ => m / n ^ z) _ _
+  refine' .of_norm_bounded (fun n : ℕ => m / n ^ z) _ _
   · simp_rw [div_eq_mul_inv]
     exact (summable_mul_left_iff h0).2 (Real.summable_nat_rpow_inv.2 hz)
   · intro n
@@ -77,7 +74,7 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
     · simp [hm, Real.zero_rpow (_root_.ne_of_gt (lt_trans Real.zero_lt_one hz))]
     simp only [map_div₀, Complex.norm_eq_abs]
     apply div_le_div hm (h _) (Real.rpow_pos_of_pos (Nat.cast_pos.2 n.succ_pos) _) (le_of_eq _)
-    rw [Complex.abs_cpow_real, Complex.abs_cast_nat]
+    rw [Complex.abs_cpow_real, Complex.abs_natCast]
 #align nat.arithmetic_function.l_series_summable_of_bounded_of_one_lt_real Nat.ArithmeticFunction.LSeriesSummable_of_bounded_of_one_lt_real
 
 theorem LSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ} (h : w.re = z.re) :
@@ -95,7 +92,7 @@ theorem LSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ}
   simp only [h, Complex.mul_re, mul_eq_mul_left_iff, sub_right_inj]
   right
   rw [Complex.log_im, ← Complex.ofReal_nat_cast]
-  exact Complex.arg_of_real_of_nonneg (le_of_lt (cast_pos.2 n.succ_pos))
+  exact Complex.arg_ofReal_of_nonneg (le_of_lt (cast_pos.2 n.succ_pos))
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re Nat.ArithmeticFunction.LSeriesSummable_iff_of_re_eq_re
 
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ArithmeticFunction ℂ} {m : ℝ}
@@ -120,7 +117,7 @@ theorem zeta_LSeriesSummable_iff_one_lt_re {z : ℂ} : LSeriesSummable ζ z ↔ 
     · simp [h0]
     simp only [cast_zero, natCoe_apply, zeta_apply, succ_ne_zero, if_false, cast_succ, one_div,
       Complex.norm_eq_abs, map_inv₀, Complex.abs_cpow_real, inv_inj, zero_add]
-    rw [← cast_one, ← cast_add, Complex.abs_of_nat, cast_add, cast_one]
+    rw [← cast_one, ← cast_add, Complex.abs_natCast, cast_add, cast_one]
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re Nat.ArithmeticFunction.zeta_LSeriesSummable_iff_one_lt_re
 
 @[simp]

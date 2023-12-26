@@ -2,15 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.inseparable
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
+
+#align_import topology.inseparable from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Inseparable points in a topological space
@@ -22,7 +18,7 @@ In this file we define
 * `Inseparable`: a relation saying that two points in a topological space have the same
   neighbourhoods; equivalently, they can't be separated by an open set;
 
-* `InseparableSetoid X`: same relation, as a `setoid`;
+* `InseparableSetoid X`: same relation, as a `Setoid`;
 
 * `SeparationQuotient X`: the quotient of `X` by its `InseparableSetoid`.
 
@@ -42,8 +38,8 @@ topological space, separation setoid
 
 open Set Filter Function Topology List
 
-variable {X Y Z α ι : Type _} {π : ι → Type _} [TopologicalSpace X] [TopologicalSpace Y]
-  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f : X → Y}
+variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y]
+  [TopologicalSpace Z] [∀ i, TopologicalSpace (π i)] {x y z : X} {s : Set X} {f g : X → Y}
 
 /-!
 ### `Specializes` relation
@@ -83,7 +79,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 2 → 3
   · exact fun h s hso hy => h (hso.mem_nhds hy)
   tfae_have 3 → 4
-  · exact fun h s hsc hx => of_not_not fun hy => h (sᶜ) hsc.isOpen_compl hy hx
+  · exact fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
   tfae_have 4 → 5
   · exact fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
   tfae_have 6 ↔ 5
@@ -106,11 +102,14 @@ theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
   (specializes_TFAE x y).out 0 1
 #align specializes_iff_pure specializes_iff_pure
 
-alias specializes_iff_nhds ↔ Specializes.nhds_le_nhds _
+alias ⟨Specializes.nhds_le_nhds, _⟩ := specializes_iff_nhds
 #align specializes.nhds_le_nhds Specializes.nhds_le_nhds
 
-alias specializes_iff_pure ↔ Specializes.pure_le_nhds _
+alias ⟨Specializes.pure_le_nhds, _⟩ := specializes_iff_pure
 #align specializes.pure_le_nhds Specializes.pure_le_nhds
+
+theorem ker_nhds_eq_specializes : (𝓝 x).ker = {y | y ⤳ x} := by
+  ext; simp [specializes_iff_pure, le_def]
 
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
   (specializes_TFAE x y).out 0 2
@@ -140,14 +139,14 @@ theorem specializes_iff_mem_closure : x ⤳ y ↔ y ∈ closure ({x} : Set X) :=
   (specializes_TFAE x y).out 0 4
 #align specializes_iff_mem_closure specializes_iff_mem_closure
 
-alias specializes_iff_mem_closure ↔ Specializes.mem_closure _
+alias ⟨Specializes.mem_closure, _⟩ := specializes_iff_mem_closure
 #align specializes.mem_closure Specializes.mem_closure
 
 theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ closure {x} :=
   (specializes_TFAE x y).out 0 5
 #align specializes_iff_closure_subset specializes_iff_closure_subset
 
-alias specializes_iff_closure_subset ↔ Specializes.closure_subset _
+alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 #align specializes.closure_subset Specializes.closure_subset
 
 -- porting note: new lemma
@@ -229,6 +228,20 @@ theorem not_specializes_iff_exists_closed : ¬x ⤳ y ↔ ∃ S : Set X, IsClose
   rfl
 #align not_specializes_iff_exists_closed not_specializes_iff_exists_closed
 
+theorem IsOpen.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsOpen s)
+    (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, f x ⤳ g x) :
+    Continuous (s.piecewise f g) := by
+  have : ∀ U, IsOpen U → g ⁻¹' U ⊆ f ⁻¹' U := fun U hU x hx ↦ (hspec x).mem_open hU hx
+  rw [continuous_def]
+  intro U hU
+  rw [piecewise_preimage, ite_eq_of_subset_right _ (this U hU)]
+  exact hU.preimage hf |>.inter hs |>.union (hU.preimage hg)
+
+theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsClosed s)
+    (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, g x ⤳ f x) :
+    Continuous (s.piecewise f g) := by
+  simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
+
 variable (X)
 
 /-- Specialization forms a preorder on the topological space. -/
@@ -289,8 +302,8 @@ theorem inseparable_iff_forall_open : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s →
 #align inseparable_iff_forall_open inseparable_iff_forall_open
 
 theorem not_inseparable_iff_exists_open :
-    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) :=
-  by simp [inseparable_iff_forall_open, ← xor_iff_not_iff]
+    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) := by
+  simp [inseparable_iff_forall_open, ← xor_iff_not_iff]
 #align not_inseparable_iff_exists_open not_inseparable_iff_exists_open
 
 theorem inseparable_iff_forall_closed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
@@ -321,8 +334,8 @@ theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) 
 #align subtype_inseparable_iff subtype_inseparable_iff
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
-    ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) :=
-  by simp only [Inseparable, nhds_prod_eq, prod_inj]
+    ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) := by
+  simp only [Inseparable, nhds_prod_eq, prod_inj]
 #align inseparable_prod inseparable_prod
 
 theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (hy : y₁ ~ᵢ y₂) :
@@ -512,8 +525,9 @@ theorem image_mk_closure : mk '' closure s = closure (mk '' s) :=
     isClosedMap_mk.closure_image_subset _
 #align separation_quotient.image_mk_closure SeparationQuotient.image_mk_closure
 
-theorem map_prod_map_mk_nhds (x : X) (y : Y) : map (Prod.map mk mk) (𝓝 (x, y)) = 𝓝 (mk x, mk y) :=
-  by rw [nhds_prod_eq, ← prod_map_map_eq', map_mk_nhds, map_mk_nhds, nhds_prod_eq]
+theorem map_prod_map_mk_nhds (x : X) (y : Y) :
+    map (Prod.map mk mk) (𝓝 (x, y)) = 𝓝 (mk x, mk y) := by
+  rw [nhds_prod_eq, ← prod_map_map_eq', map_mk_nhds, map_mk_nhds, nhds_prod_eq]
 #align separation_quotient.map_prod_map_mk_nhds SeparationQuotient.map_prod_map_mk_nhds
 
 theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
@@ -635,3 +649,8 @@ theorem continuous_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) →
 #align separation_quotient.continuous_lift₂ SeparationQuotient.continuous_lift₂
 
 end SeparationQuotient
+
+theorem continuous_congr_of_inseparable (h : ∀ x, f x ~ᵢ g x) :
+    Continuous f ↔ Continuous g := by
+  simp_rw [SeparationQuotient.inducing_mk.continuous_iff (β := Y)]
+  exact continuous_congr fun x ↦ SeparationQuotient.mk_eq_mk.mpr (h x)

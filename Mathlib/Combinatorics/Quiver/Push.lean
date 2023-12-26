@@ -2,13 +2,10 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
-
-! This file was ported from Lean 3 source module combinatorics.quiver.push
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
+
+#align_import combinatorics.quiver.push from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-!
 
@@ -23,7 +20,7 @@ namespace Quiver
 
 universe v v₁ v₂ u u₁ u₂
 
-variable {V : Type _} [Quiver V] {W : Type _} (σ : V → W)
+variable {V : Type*} [Quiver V] {W : Type*} (σ : V → W)
 
 /-- The `Quiver` instance obtained by pushing arrows of `V` along the map `σ : V → W` -/
 @[nolint unusedArguments]
@@ -55,7 +52,7 @@ theorem of_obj : (of σ).obj = σ :=
   rfl
 #align quiver.push.of_obj Quiver.Push.of_obj
 
-variable {W' : Type _} [Quiver W'] (φ : V ⥤q W') (τ : W → W') (h : ∀ x, φ.obj x = τ (σ x))
+variable {W' : Type*} [Quiver W'] (φ : V ⥤q W') (τ : W → W') (h : ∀ x, φ.obj x = τ (σ x))
 
 /-- Given a function `τ : W → W'` and a prefunctor `φ : V ⥤q W'`, one can extend `τ` to be
 a prefunctor `W ⥤q W'` if `τ` and `σ` factorize `φ` at the level of objects, where `W` is given

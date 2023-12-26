@@ -9,6 +9,8 @@ import Mathlib.Init.Data.Nat.Notation
 # Theorems about equality in `Fin`.
 -/
 
+set_option autoImplicit true
+
 namespace Fin
 
 theorem eq_of_veq : ∀ {i j : Fin n}, i.val = j.val → i = j

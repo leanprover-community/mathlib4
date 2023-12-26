@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.images
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+#align_import category_theory.abelian.images from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # The abelian image and coimage.
@@ -107,20 +104,18 @@ in which this is always an isomorphism, is abelian.
 See <https://stacks.math.columbia.edu/tag/0107>
 -/
 def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
-  cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) <|
-    by apply equalizer.hom_ext; simp
+  cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) (by ext; simp)
 #align category_theory.abelian.coimage_image_comparison CategoryTheory.Abelian.coimageImageComparison
 
 /-- An alternative formulation of the canonical map from the abelian coimage to the abelian image.
 -/
 def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
-  kernel.lift (cokernel.π f) (cokernel.desc (kernel.ι f) f (by simp))
-    (by apply coequalizer.hom_ext; simp)
+  kernel.lift (cokernel.π f) (cokernel.desc (kernel.ι f) f (by simp)) (by ext; simp)
 #align category_theory.abelian.coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison'
 
 theorem coimageImageComparison_eq_coimageImageComparison' :
     coimageImageComparison f = coimageImageComparison' f := by
-  apply coequalizer.hom_ext; apply equalizer.hom_ext
+  ext
   simp [coimageImageComparison, coimageImageComparison']
 #align category_theory.abelian.coimage_image_comparison_eq_coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison_eq_coimageImageComparison'
 
@@ -130,4 +125,3 @@ theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f 
 #align category_theory.abelian.coimage_image_factorisation CategoryTheory.Abelian.coimage_image_factorisation
 
 end CategoryTheory.Abelian
-

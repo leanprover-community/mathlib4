@@ -2,17 +2,14 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.baire
-! leanprover-community/mathlib commit b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Order.Filter.CountableInter
+
+#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
 /-!
 # Baire theorem
@@ -35,7 +32,7 @@ open Classical Topology Filter ENNReal
 
 open Filter Encodable Set TopologicalSpace
 
-variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 section BaireTheorem
 
@@ -43,16 +40,16 @@ open EMetric ENNReal
 
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
-Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_open` working
+Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_isOpen` working
 with any encodable source space). -/
-class BaireSpace (α : Type _) [TopologicalSpace α] : Prop where
+class BaireSpace (α : Type*) [TopologicalSpace α] : Prop where
   baire_property : ∀ f : ℕ → Set α, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 #align baire_space BaireSpace
 
 /-- Baire theorems asserts that various topological spaces have the Baire property.
 Two versions of these theorems are given.
-The first states that complete pseudo_emetric spaces are Baire. -/
-instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetricSpace α]
+The first states that complete `PseudoEMetricSpace`s are Baire. -/
+instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace [PseudoEMetricSpace α]
     [CompleteSpace α] : BaireSpace α := by
   refine' ⟨fun f ho hd => _⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
@@ -146,11 +143,11 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
     exact this (yball (n + 1))
   show edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)
-#align baire_category_theorem_emetric_complete baire_category_theorem_emetric_complete
+#align baire_category_theorem_emetric_complete BaireSpace.of_pseudoEMetricSpace_completeSpace
 
 /-- The second theorem states that locally compact spaces are Baire. -/
-instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSpace α] [T2Space α]
-    [LocallyCompactSpace α] : BaireSpace α := by
+instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
+    [TopologicalSpace α] [T2Space α] [LocallyCompactSpace α] : BaireSpace α := by
   constructor
   intro f ho hd
   /- To prove that an intersection of open dense subsets is dense, prove that its intersection
@@ -174,7 +171,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
   have hK_subset : (⋂ n, (K n).carrier : Set α) ⊆ U ∩ ⋂ n, f n := by
     intro x hx
     simp only [mem_iInter] at hx
-    simp only [mem_inter_iff, mem_inter] at hx⊢
+    simp only [mem_inter_iff, mem_inter] at hx ⊢
     refine' ⟨hK₀ <| hx 0, _⟩
     simp only [mem_iInter]
     exact fun n => (hK_decreasing n (hx (n + 1))).1
@@ -185,56 +182,56 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
       (fun n => (hK_decreasing n).trans (inter_subset_right _ _)) (fun n => (K n).nonempty)
       (K 0).isCompact fun n => (K n).isCompact.isClosed
   exact hK_nonempty.mono hK_subset
-#align baire_category_theorem_locally_compact baire_category_theorem_locally_compact
+#align baire_category_theorem_locally_compact BaireSpace.of_t2Space_locallyCompactSpace
 
 variable [TopologicalSpace α] [BaireSpace α]
 
 /-- Definition of a Baire space. -/
-theorem dense_iInter_of_open_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n)) (hd : ∀ n, Dense (f n)) :
-    Dense (⋂ n, f n) :=
+theorem dense_iInter_of_isOpen_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n))
+    (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
-#align dense_Inter_of_open_nat dense_iInter_of_open_nat
+#align dense_Inter_of_open_nat dense_iInter_of_isOpen_nat
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
-theorem dense_sInter_of_open {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
+theorem dense_sInter_of_isOpen {S : Set (Set α)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, hf⟩
     have F : ∀ n, f n ∈ S := fun n => by rw [hf]; exact mem_range_self _
     rw [hf, sInter_range]
-    exact dense_iInter_of_open_nat (fun n => ho _ (F n)) fun n => hd _ (F n)
-#align dense_sInter_of_open dense_sInter_of_open
+    exact dense_iInter_of_isOpen_nat (fun n => ho _ (F n)) fun n => hd _ (F n)
+#align dense_sInter_of_open dense_sInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable set in any type. -/
-theorem dense_biInter_of_open {S : Set β} {f : β → Set α} (ho : ∀ s ∈ S, IsOpen (f s))
+theorem dense_biInter_of_isOpen {S : Set β} {f : β → Set α} (ho : ∀ s ∈ S, IsOpen (f s))
     (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s)) : Dense (⋂ s ∈ S, f s) := by
   rw [← sInter_image]
-  apply dense_sInter_of_open
+  apply dense_sInter_of_isOpen
   · rwa [ball_image_iff]
   · exact hS.image _
   · rwa [ball_image_iff]
-#align dense_bInter_of_open dense_biInter_of_open
+#align dense_bInter_of_open dense_biInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is an encodable type. -/
-theorem dense_iInter_of_open [Encodable β] {f : β → Set α} (ho : ∀ s, IsOpen (f s))
+theorem dense_iInter_of_isOpen [Encodable β] {f : β → Set α} (ho : ∀ s, IsOpen (f s))
     (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) := by
   rw [← sInter_range]
-  apply dense_sInter_of_open
+  apply dense_sInter_of_isOpen
   · rwa [forall_range_iff]
   · exact countable_range _
   · rwa [forall_range_iff]
-#align dense_Inter_of_open dense_iInter_of_open
+#align dense_Inter_of_open dense_iInter_of_isOpen
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
-theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _)(_ : t ⊆ s), IsGδ t ∧ Dense t := by
+theorem mem_residual {s : Set α} : s ∈ residual α ↔ ∃ (t : _) (_ : t ⊆ s), IsGδ t ∧ Dense t := by
   constructor
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩
     refine' ⟨_, Ss, ⟨_, fun t ht => hSo _ ht, Sct, rfl⟩, _⟩
-    exact dense_sInter_of_open hSo Sct hSd
+    exact dense_sInter_of_isOpen hSo Sct hSd
   rintro ⟨t, ts, ho, hd⟩
   exact mem_of_superset (residual_of_dense_Gδ ho hd) ts
 #align mem_residual mem_residual
@@ -294,13 +291,13 @@ is dense. Formulated here with `⋃`. -/
 theorem IsGδ.dense_iUnion_interior_of_closed [Encodable ι] {s : Set α} (hs : IsGδ s) (hd : Dense s)
     {f : ι → Set α} (hc : ∀ i, IsClosed (f i)) (hU : s ⊆ ⋃ i, f i) :
     Dense (⋃ i, interior (f i)) := by
-  let g i := frontier (f i)ᶜ
+  let g i := (frontier (f i))ᶜ
   have hgo : ∀ i, IsOpen (g i) := fun i => isClosed_frontier.isOpen_compl
   have hgd : Dense (⋂ i, g i) := by
-    refine' dense_iInter_of_open hgo fun i x => _
+    refine' dense_iInter_of_isOpen hgo fun i x => _
     rw [closure_compl, interior_frontier (hc _)]
     exact id
-  refine' (hd.inter_of_Gδ hs (isGδ_iInter_of_open fun i => (hgo i)) hgd).mono _
+  refine' (hd.inter_of_Gδ hs (isGδ_iInter_of_isOpen fun i => (hgo i)) hgd).mono _
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩
@@ -331,7 +328,7 @@ set_option linter.uppercaseLean3 false in
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
 are dense. Formulated here with an index set which is a countable set in any type. -/
 theorem dense_biUnion_interior_of_closed {S : Set β} {f : β → Set α} (hc : ∀ s ∈ S, IsClosed (f s))
-    (hS : S.Countable) (hU : (⋃ s ∈ S, f s) = univ) : Dense (⋃ s ∈ S, interior (f s)) :=
+    (hS : S.Countable) (hU : ⋃ s ∈ S, f s = univ) : Dense (⋃ s ∈ S, interior (f s)) :=
   isGδ_univ.dense_biUnion_interior_of_closed dense_univ hS hc hU.ge
 #align dense_bUnion_interior_of_closed dense_biUnion_interior_of_closed
 
@@ -345,14 +342,14 @@ theorem dense_sUnion_interior_of_closed {S : Set (Set α)} (hc : ∀ s ∈ S, Is
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
 are dense. Formulated here with an index set which is an encodable type. -/
 theorem dense_iUnion_interior_of_closed [Encodable β] {f : β → Set α} (hc : ∀ s, IsClosed (f s))
-    (hU : (⋃ s, f s) = univ) : Dense (⋃ s, interior (f s)) :=
+    (hU : ⋃ s, f s = univ) : Dense (⋃ s, interior (f s)) :=
   isGδ_univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
 #align dense_Union_interior_of_closed dense_iUnion_interior_of_closed
 
 /-- One of the most useful consequences of Baire theorem: if a countable union of closed sets
 covers the space, then one of the sets has nonempty interior. -/
 theorem nonempty_interior_of_iUnion_of_closed [Nonempty α] [Encodable β] {f : β → Set α}
-    (hc : ∀ s, IsClosed (f s)) (hU : (⋃ s, f s) = univ) : ∃ s, (interior <| f s).Nonempty := by
+    (hc : ∀ s, IsClosed (f s)) (hU : ⋃ s, f s = univ) : ∃ s, (interior <| f s).Nonempty := by
   simpa using (dense_iUnion_interior_of_closed hc hU).nonempty
 #align nonempty_interior_of_Union_of_closed nonempty_interior_of_iUnion_of_closed
 

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module data.polynomial.mirror
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Data.Polynomial.RingDivision
+
+#align_import data.polynomial.mirror from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # "Mirror" of a univariate polynomial
@@ -36,7 +33,7 @@ open Polynomial
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (p q : R[X])
+variable {R : Type*} [Semiring R] (p q : R[X])
 
 /-- mirror of a polynomial: reverses the coefficients while preserving `Polynomial.natDegree` -/
 noncomputable def mirror :=
@@ -166,7 +163,7 @@ theorem coeff_mul_mirror :
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   refine'
     (Finset.sum_congr rfl fun n hn => _).trans
-      (p.sum_eq_of_subset (fun _ => (· ^ 2)) (fun _ => zero_pow zero_lt_two) _ fun n hn =>
+      (p.sum_eq_of_subset (fun _ => (· ^ 2)) (fun _ => zero_pow zero_lt_two) fun n hn =>
           Finset.mem_range_succ_iff.mpr
             ((le_natDegree_of_mem_supp n hn).trans (Nat.le_add_right _ _))).symm
   rw [coeff_mirror, ← revAt_le (Finset.mem_range_succ_iff.mp hn), revAt_invol, ← sq]
@@ -176,14 +173,14 @@ variable [NoZeroDivisors R]
 
 theorem natDegree_mul_mirror : (p * p.mirror).natDegree = 2 * p.natDegree := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, natDegree_zero, MulZeroClass.mul_zero]
+  · rw [hp, zero_mul, natDegree_zero, mul_zero]
   rw [natDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natDegree, two_mul]
 #align polynomial.nat_degree_mul_mirror Polynomial.natDegree_mul_mirror
 
 theorem natTrailingDegree_mul_mirror :
     (p * p.mirror).natTrailingDegree = 2 * p.natTrailingDegree := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, natTrailingDegree_zero, MulZeroClass.mul_zero]
+  · rw [hp, zero_mul, natTrailingDegree_zero, mul_zero]
   rw [natTrailingDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natTrailingDegree, two_mul]
 #align polynomial.nat_trailing_degree_mul_mirror Polynomial.natTrailingDegree_mul_mirror
 
@@ -191,7 +188,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] (p q : R[X])
+variable {R : Type*} [Ring R] (p q : R[X])
 
 theorem mirror_neg : (-p).mirror = -p.mirror := by
   rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]
@@ -201,9 +198,9 @@ variable [NoZeroDivisors R]
 
 theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
   by_cases hp : p = 0
-  · rw [hp, MulZeroClass.zero_mul, mirror_zero, MulZeroClass.zero_mul]
+  · rw [hp, zero_mul, mirror_zero, zero_mul]
   by_cases hq : q = 0
-  · rw [hq, MulZeroClass.mul_zero, mirror_zero, MulZeroClass.mul_zero]
+  · rw [hq, mul_zero, mirror_zero, mul_zero]
   rw [mirror, mirror, mirror, reverse_mul_of_domain, natTrailingDegree_mul hp hq, pow_add]
   rw [mul_assoc, ← mul_assoc q.reverse, ← X_pow_mul (p := reverse q)]
   repeat' rw [mul_assoc]
@@ -217,7 +214,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type _} [CommRing R] [NoZeroDivisors R] {f : R[X]}
+variable {R : Type*} [CommRing R] [NoZeroDivisors R] {f : R[X]}
 
 theorem irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)

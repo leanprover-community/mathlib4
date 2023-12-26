@@ -2,15 +2,12 @@
 Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
-
-! This file was ported from Lean 3 source module data.nat.choose.factorization
-! leanprover-community/mathlib commit dc9db541168768af03fe228703e758e649afdbfc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Multiplicity
+
+#align_import data.nat.choose.factorization from "leanprover-community/mathlib"@"dc9db541168768af03fe228703e758e649afdbfc"
 
 /-!
 # Factorization of Binomial Coefficients
@@ -88,7 +85,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
         n < 3 * p := hn
         _ ≤ p * p := mul_le_mul_right' this p
         _ = p ^ 2 := (sq p).symm
-        _ ≤ p ^ i := pow_le_pow hp.one_lt.le hi
+        _ ≤ p ^ i := pow_le_pow_right hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 #align nat.factorization_choose_of_lt_three_mul Nat.factorization_choose_of_lt_three_mul

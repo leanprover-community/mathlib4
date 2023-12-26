@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group.with_one.defs
-! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -25,9 +22,9 @@ information about these structures (which are not that standard in informal math
 ## Porting notes
 
 In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`WithOne` and `WithZero` are marked as `Irreducible` at the end of `algebra.group.with_one.defs`,
-so proofs that use `Option α` instead of `WithOne α` no longer typecheck. In Lean 4, both types are
-plain `def`s, so we don't need these `id`s.
+`WithOne` and `WithZero` are marked as `Irreducible` at the end of
+`Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
+longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
 -/
 
 
@@ -80,12 +77,6 @@ instance inv [Inv α] : Inv (WithOne α) :=
 #align with_zero.has_neg WithZero.neg
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
-  { WithOne.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
-@[to_additive]
 instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
   { WithOne.one, WithOne.inv with inv_one := rfl }
 
@@ -112,7 +103,7 @@ instance coeTC : CoeTC α (WithOne α) :=
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
 @[to_additive (attr := elab_as_elim)
   "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
-def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
+def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
 #align with_one.rec_one_coe WithOne.recOneCoe
@@ -125,9 +116,9 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
 attribute [elab_as_elim] WithZero.recZeroCoe
 
 
-/-- Deconstruct a `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
+/-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct a `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+      "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
 #align with_one.unone WithOne.unone
@@ -298,11 +289,6 @@ theorem inv_zero [Inv α] : (0 : WithZero α)⁻¹ = 0 :=
   rfl
 #align with_zero.inv_zero WithZero.inv_zero
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
-  { WithZero.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
 instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
 
@@ -323,7 +309,7 @@ instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
     | some x, n => ↑(x ^ n)⟩
 
 @[simp, norm_cast]
-theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n : α) = ((↑a : WithZero α) ^ n) :=
+theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n :=
   rfl
 #align with_zero.coe_zpow WithZero.coe_zpow
 
@@ -350,25 +336,6 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
 
 instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) :=
   { WithZero.divInvMonoid, WithZero.invOneClass with }
-
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { WithZero.divInvMonoid, WithZero.involutiveInv with
-    mul_inv_rev := fun a b =>
-      match a, b with
-      | none, none => rfl
-      | none, some b => rfl
-      | some a, none => rfl
-      | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
-      match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
-        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
-
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
-  { WithZero.divisionMonoid, WithZero.commSemigroup with }
 
 section Group
 
@@ -400,18 +367,28 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
+instance instLeftDistribClass [Mul α] [Add α] [LeftDistribClass α] :
+    LeftDistribClass (WithZero α) where
+  left_distrib a b c := by
+    cases' a with a; · rfl
+    cases' b with b <;> cases' c with c <;> try rfl
+    exact congr_arg some (left_distrib _ _ _)
+
+instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
+    RightDistribClass (WithZero α) where
+  right_distrib a b c := by
+    cases' c with c
+    · change (a + b) * 0 = a * 0 + b * 0
+      simp
+    cases' a with a <;> cases' b with b <;> try rfl
+    exact congr_arg some (right_distrib _ _ _)
+
+instance instDistrib [Distrib α] : Distrib (WithZero α) where
+  left_distrib := left_distrib
+  right_distrib := right_distrib
+
 instance semiring [Semiring α] : Semiring (WithZero α) :=
   { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
-    WithZero.monoidWithZero with
-    left_distrib := fun a b c => by
-      cases' a with a; · rfl
-      cases' b with b <;> cases' c with c <;> try rfl
-      exact congr_arg some (left_distrib _ _ _),
-    right_distrib := fun a b c => by
-      cases' c with c
-      · change (a + b) * 0 = a * 0 + b * 0
-        simp
-      cases' a with a <;> cases' b with b <;> try rfl
-      exact congr_arg some (right_distrib _ _ _) }
+    WithZero.monoidWithZero, WithZero.instDistrib with }
 
 end WithZero

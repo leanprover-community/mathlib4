@@ -2,15 +2,12 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.nodup
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Range
+
+#align_import data.multiset.nodup from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # The `Nodup` predicate for multisets without duplicate elements.
@@ -21,7 +18,7 @@ namespace Multiset
 
 open Function List
 
-variable {α β γ : Type _} {r : α → α → Prop} {s t : Multiset α} {a : α}
+variable {α β γ : Type*} {r : α → α → Prop} {s t : Multiset α} {a : α}
 
 -- nodup
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
@@ -85,13 +82,16 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
     simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
-    apply List.nodup_iff_count_le_one
+    exact List.nodup_iff_count_le_one
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
+
+theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=
+  Quot.induction_on s fun _l => by simpa using List.nodup_iff_count_eq_one
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) (h : a ∈ s) :
     count a s = 1 :=
-  le_antisymm (nodup_iff_count_le_one.1 d a) (count_pos.2 h)
+  nodup_iff_count_eq_one.mp d a h
 #align multiset.count_eq_one_of_mem Multiset.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) :
@@ -139,6 +139,14 @@ theorem Nodup.map_on {f : α → β} :
 theorem Nodup.map {f : α → β} {s : Multiset α} (hf : Injective f) : Nodup s → Nodup (map f s) :=
   Nodup.map_on fun _ _ _ _ h => hf h
 #align multiset.nodup.map Multiset.Nodup.map
+
+theorem nodup_map_iff_of_inj_on {f : α → β} (d : ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y) :
+    Nodup (map f s) ↔ Nodup s :=
+  ⟨Nodup.of_map _, fun h => h.map_on d⟩
+
+theorem nodup_map_iff_of_injective {f : α → β} (d : Function.Injective f) :
+    Nodup (map f s) ↔ Nodup s :=
+  ⟨Nodup.of_map _, fun h => h.map d⟩
 
 theorem inj_on_of_nodup_map {f : α → β} {s : Multiset α} :
     Nodup (map f s) → ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
@@ -191,11 +199,11 @@ protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodu
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
 #align multiset.nodup.product Multiset.Nodup.product
 
-protected theorem Nodup.sigma {σ : α → Type _} {t : ∀ a, Multiset (σ a)} :
+protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
   Quot.induction_on s fun l₁ => by
     choose f hf using fun a => Quotient.exists_rep (t a)
-    simpa [←funext hf] using List.Nodup.sigma
+    simpa [← funext hf] using List.Nodup.sigma
 #align multiset.nodup.sigma Multiset.Nodup.sigma
 
 protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
@@ -234,7 +242,7 @@ theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
 #align multiset.nodup_bind Multiset.nodup_bind
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
-  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext d₁ d₂
+  Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext_iff_of_nodup d₁ d₂
 #align multiset.nodup.ext Multiset.Nodup.ext
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=

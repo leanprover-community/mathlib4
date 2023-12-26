@@ -2,14 +2,11 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module order.conditionally_complete_lattice.finset
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Data.Set.Finite
+
+#align_import order.conditionally_complete_lattice.finset from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # Conditionally complete lattices and finite sets.
@@ -19,7 +16,7 @@ import Mathlib.Data.Set.Finite
 
 open Set
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 section ConditionallyCompleteLattice
 
@@ -31,8 +28,9 @@ theorem Finset.Nonempty.sup'_eq_cSup_image {s : Finset β} (hs : s.Nonempty) (f 
     simp [csSup_le_iff (s.finite_toSet.image f).bddAbove (hs.to_set.image f)]
 #align finset.nonempty.sup'_eq_cSup_image Finset.Nonempty.sup'_eq_cSup_image
 
-theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.sup' hs id = sSup s :=
-  by rw [hs.sup'_eq_cSup_image, Set.image_id]
+theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) :
+    s.sup' hs id = sSup s := by
+  rw [hs.sup'_eq_cSup_image, Set.image_id]
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
 end ConditionallyCompleteLattice

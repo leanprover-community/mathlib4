@@ -2,11 +2,6 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.interval
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Group.Prod
@@ -14,6 +9,8 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.interval from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Interval arithmetic
@@ -30,7 +27,7 @@ open scoped BigOperators Pointwise
 
 universe u
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 /-! ### One/zero -/
 
@@ -231,19 +228,19 @@ end Mul
 
 
 -- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_of_le_right s.fst_le_snd _⟩⟩
-#align nonempty_interval.has_nsmul NonemptyInterval.hasNsmul
+  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
+#align nonempty_interval.has_nsmul NonemptyInterval.hasNSMul
 
 section Pow
 
 variable [Monoid α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
-@[to_additive existing NonemptyInterval.hasNsmul]
+@[to_additive existing]
 instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ :=
-  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_of_le_left' s.fst_le_snd _⟩⟩
+  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 #align nonempty_interval.has_pow NonemptyInterval.hasPow
 
 namespace NonemptyInterval
@@ -307,7 +304,7 @@ namespace NonemptyInterval
 
 @[to_additive]
 theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
-    (s ^ n : Interval α) = (s : Interval α) ^ n :=
+    ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 #align nonempty_interval.coe_pow_interval NonemptyInterval.coe_pow_interval
 #align nonempty_interval.coe_nsmul_interval NonemptyInterval.coe_nsmul_interval
@@ -322,7 +319,7 @@ namespace Interval
 variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
-theorem bot_pow : ∀ {n : ℕ} (_ : n ≠ 0), (⊥ : Interval α) ^ n = ⊥
+theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
   | 0, h => (h rfl).elim
   | Nat.succ n, _ => bot_mul (⊥ ^ n)
 #align interval.bot_pow Interval.bot_pow

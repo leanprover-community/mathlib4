@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.colimit_limit
-! leanprover-community/mathlib commit 59382264386afdbaf1727e617f5fdda511992eb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+
+#align_import category_theory.limits.colimit_limit from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
@@ -113,7 +110,7 @@ theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim)
     where
-  Hom :=
+  hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
       colimitLimitToLimitColimit (uncurry.obj G : _) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
-
-! This file was ported from Lean 3 source module topology.algebra.order.field
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Field
+
+#align_import topology.algebra.order.field from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Topologies on linear ordered fields
@@ -22,14 +19,15 @@ then `f * g` tends to positive infinity.
 -/
 
 
-open Set Filter TopologicalSpace Function Topology Classical
+open Set Filter TopologicalSpace Function
+open scoped Pointwise Topology
 open OrderDual (toDual ofDual)
 
 /-- If a (possibly non-unital and/or non-associative) ring `R` admits a submultiplicative
 nonnegative norm `norm : R → 𝕜`, where `𝕜` is a linear ordered field, and the open balls
 `{ x | norm x < ε }`, `ε > 0`, form a basis of neighborhoods of zero, then `R` is a topological
 ring. -/
-theorem TopologicalRing.of_norm {R 𝕜 : Type _} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
+theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
     [TopologicalSpace R] [TopologicalAddGroup R] (norm : R → 𝕜)
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
@@ -51,7 +49,7 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type _} [NonUnitalNonAssocRing R] [Lin
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
       (norm_mul_le x y).trans_eq (mul_comm _ _)
 
-variable {𝕜 α : Type _} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {l : Filter α} {f g : α → 𝕜}
 
 -- see Note [lower instance priority]
@@ -120,20 +118,22 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
   simpa only [mul_comm] using hg.atBot_mul_neg hC hf
 #align filter.tendsto.neg_mul_at_bot Filter.Tendsto.neg_mul_atBot
 
+@[simp]
+lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
+  (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
+    (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi (inv_pos.2 ha)]
+
+@[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
+  rw [← inv_atTop₀, inv_inv]
+
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
-theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop := by
-  refine' (atTop_basis' 1).tendsto_right_iff.2 fun b hb => _
-  have hb' : 0 < b := by positivity
-  filter_upwards [Ioc_mem_nhdsWithin_Ioi
-      ⟨le_rfl, inv_pos.2 hb'⟩]with x hx using(le_inv hx.1 hb').1 hx.2
+theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
+  inv_nhdsWithin_Ioi_zero.le
 #align tendsto_inv_zero_at_top tendsto_inv_zero_atTop
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
-theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) := by
-  refine (atTop_basis.tendsto_iff ⟨fun s => mem_nhdsWithin_Ioi_iff_exists_Ioc_subset⟩).2 ?_
-  refine fun b hb => ⟨b⁻¹, trivial, fun x hx => ?_⟩
-  have : 0 < x := lt_of_lt_of_le (inv_pos.2 hb) hx
-  exact ⟨inv_pos.2 this, (inv_le this hb).2 hx⟩
+theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
+  inv_atTop₀.le
 #align tendsto_inv_at_top_zero' tendsto_inv_atTop_zero'
 
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
@@ -223,7 +223,7 @@ instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.toTopologicalDivisionRing
 
--- porting note: todo: generalize to a `GroupWithzero`
+-- porting note: todo: generalize to a `GroupWithZero`
 theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]

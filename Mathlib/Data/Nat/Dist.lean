@@ -2,13 +2,10 @@
 Copyright (c) 2014 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.nat.dist
-! leanprover-community/mathlib commit d50b12ae8e2bd910d08a94823976adae9825718b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import data.nat.dist from "leanprover-community/mathlib"@"d50b12ae8e2bd910d08a94823976adae9825718b"
 
 /-!
 #  Distance function on ℕ
@@ -118,7 +115,7 @@ theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
 #align nat.dist_succ_succ Nat.dist_succ_succ
 
 theorem dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>
-  Nat.lt_by_cases
+  Nat.ltByCases
     (fun h : i < j => by rw [dist_eq_sub_of_le (le_of_lt h)]; apply tsub_pos_of_lt h)
     (fun h : i = j => by contradiction) fun h : i > j => by
     rw [dist_eq_sub_of_le_right (le_of_lt h)]; apply tsub_pos_of_lt h

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.functor_category
-! leanprover-community/mathlib commit 73dd4b5411ec8fafb18a9d77c9c826907730af80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
+
+#align_import category_theory.monoidal.functor_category from "leanprover-community/mathlib"@"73dd4b5411ec8fafb18a9d77c9c826907730af80"
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.
@@ -60,6 +57,22 @@ def tensorHom : tensorObj F F' ⟶ tensorObj G G' where
   naturality X Y f := by dsimp; rw [← tensor_comp, α.naturality, β.naturality, tensor_comp]
 #align category_theory.monoidal.functor_category.tensor_hom CategoryTheory.Monoidal.FunctorCategory.tensorHom
 
+/-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
+@[simps]
+def whiskerLeft (F) (β : F' ⟶ G') : tensorObj F F' ⟶ tensorObj F G' where
+  app X := F.obj X ◁ β.app X
+  naturality X Y f := by
+    simp only [← id_tensorHom]
+    apply (tensorHom (𝟙 F) β).naturality
+
+/-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
+@[simps]
+def whiskerRight (F') : tensorObj F F' ⟶ tensorObj G F' where
+  app X := α.app X ▷ F'.obj X
+  naturality X Y f := by
+    simp only [← tensorHom_id]
+    apply (tensorHom α (𝟙 F')).naturality
+
 end FunctorCategory
 
 open CategoryTheory.Monoidal.FunctorCategory
@@ -68,24 +81,15 @@ open CategoryTheory.Monoidal.FunctorCategory
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
-instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
+instance functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
   tensorObj F G := tensorObj F G
   tensorHom α β := tensorHom α β
-  tensor_id F G := by ext; dsimp; rw [tensor_id]
-  tensor_comp α β γ δ := by ext; dsimp; rw [tensor_comp]
-  tensorUnit' := (CategoryTheory.Functor.const C).obj (𝟙_ D)
-  leftUnitor F := NatIso.ofComponents (fun X => λ_ (F.obj X))
-    (fun f => by dsimp; rw [leftUnitor_naturality])
-  rightUnitor F := NatIso.ofComponents (fun X => ρ_ (F.obj X))
-    (fun f => by dsimp; rw [rightUnitor_naturality])
-  associator F G H := NatIso.ofComponents (fun X => α_ (F.obj X) (G.obj X) (H.obj X))
-    (fun f => by dsimp;rw [associator_naturality])
-  leftUnitor_naturality α := by ext X; dsimp; rw [leftUnitor_naturality]
-  rightUnitor_naturality α := by ext X; dsimp; rw [rightUnitor_naturality]
-  associator_naturality α β γ := by ext X; dsimp; rw [associator_naturality]
-  triangle F G := by ext X; dsimp; rw [triangle]
-  pentagon F G H K := by ext X; dsimp; rw [pentagon]
-#align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
+  whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
+  whiskerRight α F := FunctorCategory.whiskerRight α F
+  tensorUnit := (CategoryTheory.Functor.const C).obj (𝟙_ D)
+  leftUnitor F := NatIso.ofComponents fun X => λ_ (F.obj X)
+  rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
+  associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
 
 @[simp]
 theorem tensorUnit_obj {X} : (𝟙_ (C ⥤ D)).obj X = 𝟙_ D :=
@@ -112,6 +116,16 @@ theorem tensorHom_app {F G F' G' : C ⥤ D} {α : F ⟶ G} {β : F' ⟶ G'} {X} 
     (α ⊗ β).app X = α.app X ⊗ β.app X :=
   rfl
 #align category_theory.monoidal.tensor_hom_app CategoryTheory.Monoidal.tensorHom_app
+
+@[simp]
+theorem whiskerLeft_app {F F' G' : C ⥤ D} {β : F' ⟶ G'} {X} :
+    (F ◁ β).app X = F.obj X ◁ β.app X :=
+  rfl
+
+@[simp]
+theorem whiskerRight_app {F G F' : C ⥤ D} {α : F ⟶ G} {X} :
+    (α ▷ F').app X = α.app X ▷ F'.obj X :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_app {F : C ⥤ D} {X} :
@@ -149,6 +163,15 @@ theorem associator_inv_app {F G H : C ⥤ D} {X} :
   rfl
 #align category_theory.monoidal.associator_inv_app CategoryTheory.Monoidal.associator_inv_app
 
+/-- When `C` is any category, and `D` is a monoidal category,
+the functor category `C ⥤ D` has a natural pointwise monoidal structure,
+where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
+-/
+instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
+  tensorHom_def := by intros; ext; simp [tensorHom_def]
+  pentagon F G H K := by ext X; dsimp; rw [pentagon]
+#align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
+
 section BraidedCategory
 
 open CategoryTheory.BraidedCategory
@@ -160,7 +183,7 @@ the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
-  braiding F G := NatIso.ofComponents (fun X => β_ _ _) (by aesop_cat)
+  braiding F G := NatIso.ofComponents fun X => β_ _ _
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
 #align category_theory.monoidal.functor_category_braided CategoryTheory.Monoidal.functorCategoryBraided
@@ -180,8 +203,8 @@ variable [SymmetricCategory.{v₂} D]
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also symmetric.
 -/
-instance functorCategorySymmetric : SymmetricCategory (C ⥤ D)
-    where symmetry F G := by ext X; apply symmetry
+instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
+  symmetry F G := by ext X; apply symmetry
 #align category_theory.monoidal.functor_category_symmetric CategoryTheory.Monoidal.functorCategorySymmetric
 
 end SymmetricCategory

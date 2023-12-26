@@ -2,13 +2,10 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.locally_convex.balanced_core_hull
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.LocallyConvex.Basic
+
+#align_import analysis.locally_convex.balanced_core_hull from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Balanced Core and Balanced Hull
@@ -44,7 +41,7 @@ balanced
 
 open Set Pointwise Topology Filter
 
-variable {𝕜 E ι : Type _}
+variable {𝕜 E ι : Type*}
 
 section balancedHull
 
@@ -108,8 +105,8 @@ theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜,
   mem_iInter₂
 #align mem_balanced_core_aux_iff mem_balancedCoreAux_iff
 
-theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ (r : 𝕜)(_ : ‖r‖ ≤ 1), x ∈ r • s :=
-  mem_iUnion₂
+theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ r : 𝕜, ‖r‖ ≤ 1 ∧ x ∈ r • s := by
+  simp [balancedHull]
 #align mem_balanced_hull_iff mem_balancedHull_iff
 
 /-- The balanced hull of `s` is minimal in the sense that it is contained in any balanced superset
@@ -177,7 +174,7 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   rintro a ha x ⟨y, hy, rfl⟩
   obtain rfl | h := eq_or_ne a 0
   · simp_rw [zero_smul, h0]
-  rw [mem_balancedCoreAux_iff] at hy⊢
+  rw [mem_balancedCoreAux_iff] at hy ⊢
   intro r hr
   have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
     rw [norm_smul, norm_inv]
@@ -205,7 +202,7 @@ theorem balancedCore_eq_iInter (hs : (0 : E) ∈ s) :
   exact balancedCore_subset_balancedCoreAux (balancedCore_zero_mem hs)
 #align balanced_core_eq_Inter balancedCore_eq_iInter
 
-theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ (a : 𝕜) (_ : ‖a‖ ≤ 1), a • s ⊆ t) :
+theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ ≤ 1 → a • s ⊆ t) :
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
   refine' subset_iInter₂ fun a ha => _
@@ -237,14 +234,14 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     exact isClosedMap_smul_of_ne_zero ha' U hU
   · have : balancedCore 𝕜 U = ∅ := by
       contrapose! h
-      exact balancedCore_nonempty_iff.mp (Set.nonempty_iff_ne_empty.2 h)
+      exact balancedCore_nonempty_iff.mp h
     rw [this]
     exact isClosed_empty
 #align is_closed.balanced_core IsClosed.balancedCore
 
 theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜 U ∈ 𝓝 (0 : E) := by
   -- Getting neighborhoods of the origin for `0 : 𝕜` and `0 : E`
-  obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ)(V : Set E),
+  obtain ⟨r, V, hr, hV, hrVU⟩ : ∃ (r : ℝ) (V : Set E),
       0 < r ∧ V ∈ 𝓝 (0 : E) ∧ ∀ (c : 𝕜) (y : E), ‖c‖ < r → y ∈ V → c • y ∈ U := by
     have h : Filter.Tendsto (fun x : 𝕜 × E => x.fst • x.snd) (𝓝 (0, 0)) (𝓝 0) :=
       continuous_smul.tendsto' (0, 0) _ (smul_zero _)

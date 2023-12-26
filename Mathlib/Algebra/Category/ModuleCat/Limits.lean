@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.limits
-! leanprover-community/mathlib commit c43486ecf2a5a17479a32ce09e4818924145e90e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.DirectLimit
+
+#align_import algebra.category.Module.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
 /-!
 # The category of R-modules has all limits
@@ -50,7 +47,7 @@ instance moduleObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
   infer_instance
 #align Module.module_obj ModuleCat.moduleObj
 
-/-- The flat sections of a functor into `Module R` form a submodule of all sections.
+/-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule (F : J ⥤ ModuleCatMax.{v, w, u} R) : Submodule R (∀ j, F.obj j) :=
   { AddGroupCat.sectionsAddSubgroup.{v, w}
@@ -91,10 +88,10 @@ def limitπLinearMap (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
 
 namespace HasLimits
 
--- The next two definitions are used in the construction of `HasLimits (Module R)`.
+-- The next two definitions are used in the construction of `HasLimits (ModuleCat R)`.
 -- After that, the limits should be constructed using the generic limits API,
 -- e.g. `limit F`, `limit.cone F`, and `limit.isLimit F`.
-/-- Construction of a limit cone in `Module R`.
+/-- Construction of a limit cone in `ModuleCat R`.
 (Internal use only; use the limits API.)
 -/
 def limitCone (F : J ⥤ ModuleCatMax.{v, w, u} R) : Cone F where
@@ -105,12 +102,12 @@ def limitCone (F : J ⥤ ModuleCatMax.{v, w, u} R) : Cone F where
         LinearMap.coe_injective ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
 #align Module.has_limits.limit_cone ModuleCat.HasLimits.limitCone
 
-/-- Witness that the limit cone in `Module R` is a limit cone.
+/-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit (F : J ⥤ ModuleCatMax.{v, w, u} R) : IsLimit (limitCone.{v, w} F) := by
   refine' IsLimit.ofFaithful (forget (ModuleCat R)) (Types.limitConeIsLimit.{v, w} _)
-    (fun s => ⟨⟨(Types.limitConeIsLimit.{v, w} _).lift ((forget (ModuleCat R)).mapCone s), _⟩ , _⟩)
+    (fun s => ⟨⟨(Types.limitConeIsLimit.{v, w} _).lift ((forget (ModuleCat R)).mapCone s), _⟩, _⟩)
     (fun s => rfl)
   all_goals
     intros
@@ -137,6 +134,9 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
 instance hasLimits : HasLimits (ModuleCat.{w} R) :=
   ModuleCat.hasLimitsOfSize.{w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
+
+instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
+  ModuleCat.hasLimitsOfSize.{u, u, u}
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
@@ -225,7 +225,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
+def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
     where
   desc s :=
     DirectLimit.lift R ι G f s.ι.app fun i j h x => by

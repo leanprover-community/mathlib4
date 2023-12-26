@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.semisimple
-! leanprover-community/mathlib commit 356447fe00e75e54777321045cdff7c9ea212e60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Solvable
+
+#align_import algebra.lie.semisimple from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
 
 /-!
 # Semisimple Lie algebras
@@ -101,7 +98,7 @@ theorem subsingleton_of_semisimple_lie_abelian [IsSemisimple R L] [h : IsLieAbel
 #align lie_algebra.subsingleton_of_semisimple_lie_abelian LieAlgebra.subsingleton_of_semisimple_lie_abelian
 
 theorem abelian_radical_of_semisimple [IsSemisimple R L] : IsLieAbelian (radical R L) := by
-  rw [IsSemisimple.semisimple]; exact isLieAbelian_bot R L
+  rw [IsSemisimple.semisimple]; infer_instance
 #align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_semisimple
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
@@ -114,7 +111,7 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
   constructor
   · rintro h₁ I h₂
     rw [LieIdeal.solvable_iff_le_radical] at h₂
-    exact (LieIdeal.homOfLe_injective h₂).isLieAbelian h₁
+    exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
 #align lie_algebra.abelian_radical_iff_solvable_is_abelian LieAlgebra.abelian_radical_iff_solvable_is_abelian
 

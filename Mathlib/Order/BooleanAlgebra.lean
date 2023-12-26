@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
-
-! This file was ported from Lean 3 source module order.boolean_algebra
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
+
+#align_import order.boolean_algebra from "leanprover-community/mathlib"@"9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4"
 
 /-!
 # (Generalized) Boolean algebras
@@ -63,7 +60,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type _} {w x y z : α}
+variable {α : Type u} {β : Type*} {w x y z : α}
 
 /-!
 ### Generalized Boolean algebras
@@ -90,7 +87,7 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 #align generalized_boolean_algebra GeneralizedBooleanAlgebra
 
--- We might want a `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
+-- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
 -- however we'd need another type class for lattices with bot, and all the API for that.
 section GeneralizedBooleanAlgebra
 
@@ -218,12 +215,12 @@ theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
 #align disjoint_sdiff_self_right disjoint_sdiff_self_right
 
 lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
-⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
-  by rw [←h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
+  ⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
+    by rw [← h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
 #align le_sdiff le_sdiff
 
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
-⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
+  ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
 #align sdiff_eq_left sdiff_eq_left
 
 /- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
@@ -420,6 +417,15 @@ theorem sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x
     _ = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y := by ac_rfl
 #align sdiff_sdiff_sup_sdiff' sdiff_sdiff_sup_sdiff'
 
+lemma sdiff_sdiff_sdiff_cancel_left (hca : z ≤ x) : (x \ y) \ (x \ z) = z \ y :=
+  sdiff_sdiff_sdiff_le_sdiff.antisymm <|
+    (disjoint_sdiff_self_right.mono_left sdiff_le).le_sdiff_of_le_left <| sdiff_le_sdiff_right hca
+
+lemma sdiff_sdiff_sdiff_cancel_right (hcb : z ≤ y) : (x \ z) \ (y \ z) = x \ y := by
+  rw [le_antisymm_iff, sdiff_le_comm]
+  exact ⟨sdiff_sdiff_sdiff_le_sdiff,
+    (disjoint_sdiff_self_left.mono_right sdiff_le).le_sdiff_of_le_left <| sdiff_le_sdiff_left hcb⟩
+
 theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
   sdiff_unique
     (calc
@@ -485,13 +491,18 @@ theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z :
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_right sup_lt_of_lt_sdiff_right
 
+instance Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+    GeneralizedBooleanAlgebra (α × β) where
+  sup_inf_sdiff _ _ := Prod.ext (sup_inf_sdiff _ _) (sup_inf_sdiff _ _)
+  inf_inf_sdiff _ _ := Prod.ext (inf_inf_sdiff _ _) (inf_inf_sdiff _ _)
+
 -- Porting note:
 -- Once `pi_instance` has been ported, this is just `by pi_instance`.
-instance Pi.generalizedBooleanAlgebra {α : Type u} {β : Type v} [GeneralizedBooleanAlgebra β] :
-    GeneralizedBooleanAlgebra (α → β) where
+instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
+    [∀ i, GeneralizedBooleanAlgebra (α i)] : GeneralizedBooleanAlgebra (∀ i, α i) where
   sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)
   inf_inf_sdiff := fun f g => funext fun a => inf_inf_sdiff (f a) (g a)
-#align pi.generalized_boolean_algebra Pi.generalizedBooleanAlgebra
+#align pi.generalized_boolean_algebra Pi.instGeneralizedBooleanAlgebra
 
 end GeneralizedBooleanAlgebra
 
@@ -547,6 +558,7 @@ def GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [O
     top_le_sup_compl := fun _ => le_sup_sdiff,
     sdiff_eq := fun _ _ => by
       -- Porting note: changed `rw` to `erw` here.
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
       erw [← inf_sdiff_assoc, inf_top_eq] }
 #align generalized_boolean_algebra.to_boolean_algebra GeneralizedBooleanAlgebra.toBooleanAlgebra
 
@@ -568,7 +580,7 @@ theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
   sup_comm.trans sup_compl_eq_top
 #align compl_sup_eq_top compl_sup_eq_top
 
-theorem isCompl_compl : IsCompl x (xᶜ) :=
+theorem isCompl_compl : IsCompl x xᶜ :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
 #align is_compl_compl isCompl_compl
 
@@ -687,6 +699,9 @@ theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
   ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
+@[simp] lemma compl_lt_compl_iff_lt : yᶜ < xᶜ ↔ x < y :=
+  lt_iff_lt_of_le_iff_le' compl_le_compl_iff_le compl_le_compl_iff_le
+
 theorem compl_le_of_compl_le (h : yᶜ ≤ x) : xᶜ ≤ y := by
   simpa only [compl_compl] using compl_le_compl h
 #align compl_le_of_compl_le compl_le_of_compl_le
@@ -695,11 +710,16 @@ theorem compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
   ⟨compl_le_of_compl_le, compl_le_of_compl_le⟩
 #align compl_le_iff_compl_le compl_le_iff_compl_le
 
+@[simp] theorem compl_le_self : xᶜ ≤ x ↔ x = ⊤ := by simpa using le_compl_self (a := xᶜ)
+
+@[simp] theorem compl_lt_self [Nontrivial α] : xᶜ < x ↔ x = ⊤ := by
+  simpa using lt_compl_self (a := xᶜ)
+
 @[simp]
 theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 #align sdiff_compl sdiff_compl
 
-instance : BooleanAlgebra αᵒᵈ :=
+instance OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra αᵒᵈ :=
   { OrderDual.distribLattice α, OrderDual.boundedOrder α with
     compl := fun a => toDual (ofDual aᶜ),
     sdiff :=
@@ -731,11 +751,11 @@ theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
   @compl_sdiff_compl αᵒᵈ _ _ _
 #align compl_himp_compl compl_himp_compl
 
-theorem disjoint_compl_left_iff : Disjoint (xᶜ) y ↔ y ≤ x := by
+theorem disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
   rw [← le_compl_iff_disjoint_left, compl_compl]
 #align disjoint_compl_left_iff disjoint_compl_left_iff
 
-theorem disjoint_compl_right_iff : Disjoint x (yᶜ) ↔ x ≤ y := by
+theorem disjoint_compl_right_iff : Disjoint x yᶜ ↔ x ≤ y := by
   rw [← le_compl_iff_disjoint_right, compl_compl]
 #align disjoint_compl_right_iff disjoint_compl_right_iff
 
@@ -761,6 +781,15 @@ instance Prop.booleanAlgebra : BooleanAlgebra Prop :=
     top_le_sup_compl := fun p _ => Classical.em p }
 #align Prop.boolean_algebra Prop.booleanAlgebra
 
+instance Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
+    BooleanAlgebra (α × β) where
+  __ := Prod.heytingAlgebra
+  __ := Prod.distribLattice α β
+  himp_eq x y := by ext <;> simp [himp_eq]
+  sdiff_eq x y := by ext <;> simp [sdiff_eq]
+  inf_compl_le_bot x := by constructor <;> simp
+  top_le_sup_compl x := by constructor <;> simp
+
 instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
     BooleanAlgebra (∀ i, α i) :=
   { Pi.sdiff, Pi.heytingAlgebra, @Pi.distribLattice ι α _ with
@@ -770,20 +799,13 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
     top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
 #align pi.boolean_algebra Pi.booleanAlgebra
 
-instance : BooleanAlgebra Bool :=
-  { Bool.linearOrder, Bool.boundedOrder with
-    sup := or,
-    le_sup_left := Bool.left_le_or,
-    le_sup_right := Bool.right_le_or,
-    sup_le := fun _ _ _ => Bool.or_le,
-    inf := and,
-    inf_le_left := Bool.and_le_left,
-    inf_le_right := Bool.and_le_right,
-    le_inf := fun _ _ _ => Bool.le_and,
-    le_sup_inf := by decide,
-    compl := not,
-    inf_compl_le_bot := fun a => a.and_not_self.le,
-    top_le_sup_compl := fun a => a.or_not_self.ge }
+instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
+  __ := Bool.linearOrder
+  __ := Bool.boundedOrder
+  __ := Bool.instDistribLattice
+  compl := not
+  inf_compl_le_bot a := a.and_not_self.le
+  top_le_sup_compl a := a.or_not_self.ge
 
 @[simp]
 theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
@@ -822,7 +844,7 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
 protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : BooleanAlgebra α :=
   { hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff with
     compl := compl,
@@ -840,11 +862,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
--- Porting note: when `refine_struct` is ported this can be by:
--- refine_struct { PUnit.biheytingAlgebra with } <;>
---   intros <;> first |trivial|exact Subsingleton.elim _ _
-instance PUnit.booleanAlgebra : BooleanAlgebra PUnit :=
+instance PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
+  refine'
   { PUnit.biheytingAlgebra with
-    le_sup_inf := by intros; trivial
-    inf_compl_le_bot := by intros; trivial
-    top_le_sup_compl := by intros; trivial }
+    .. } <;> (intros; trivial)

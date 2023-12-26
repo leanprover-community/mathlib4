@@ -2,15 +2,12 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.monoidal.free.coherence
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.DiscreteCategory
+
+#align_import category_theory.monoidal.free.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # The monoidal coherence theorem
@@ -26,7 +23,7 @@ objects that are in normal form. A normalization procedure is then just a functo
 functoriality says that two objects which are related by associators and unitors have the
 same normal form. Another desirable property of a normalization procedure is that an object is
 isomorphic (i.e., related via associators and unitors) to its normal form. In the case of the
-specific normalization procedure we use we not only get these isomorphismns, but also that they
+specific normalization procedure we use we not only get these isomorphisms, but also that they
 assemble into a natural isomorphism `𝟭 (FreeMonoidalCategory C) ≅ fullNormalize ⋙ inclusion`.
 But this means that any two parallel morphisms in the free monoidal category factor through a
 discrete category in the same way, so they must be equal, and hence the free monoidal category
@@ -58,7 +55,7 @@ variable (C)
     `(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
 -- porting note: removed @[nolint has_nonempty_instance]
 inductive NormalMonoidalObject : Type u
-  | Unit : NormalMonoidalObject
+  | unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject
 #align category_theory.free_monoidal_category.normal_monoidal_object CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject
 
@@ -76,7 +73,7 @@ instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscre
 /-- Auxiliary definition for `inclusion`. -/
 @[simp]
 def inclusionObj : NormalMonoidalObject C → F C
-  | NormalMonoidalObject.Unit => Unit
+  | NormalMonoidalObject.unit => unit
   | NormalMonoidalObject.tensor n a => tensor (inclusionObj n) (of a)
 #align category_theory.free_monoidal_category.inclusion_obj CategoryTheory.FreeMonoidalCategory.inclusionObj
 
@@ -89,7 +86,7 @@ def inclusion : N C ⥤ F C :=
 /-- Auxiliary definition for `normalize`. -/
 @[simp]
 def normalizeObj : F C → NormalMonoidalObject C → N C
-  | Unit, n => ⟨n⟩
+  | unit, n => ⟨n⟩
   | of X, n => ⟨NormalMonoidalObject.tensor n X⟩
   | tensor X Y, n => normalizeObj Y (normalizeObj X n).as
 #align category_theory.free_monoidal_category.normalize_obj CategoryTheory.FreeMonoidalCategory.normalizeObj
@@ -109,21 +106,15 @@ section
 
 open Hom
 
---attribute [local tidy] tactic.discrete_cases
-
 -- porting note: triggers a PANIC "invalid LCNF substitution of free variable
 -- with expression CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject.{u}"
 -- prevented with an initial call to dsimp...why?
--- the @[simp] attribute is removed because it also triggers a PANIC
--- `PANIC at _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
--- Lean.Meta.Match.MatchEqs:167:2: assertion violation: (
--- __do_lift._@.Lean.Meta.Match.MatchEqs._hyg.2199.0 ).xs.contains rhs`
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
     associators and unitors map to the same normal form. -/
--- @[simp]
+@[simp]
 def normalizeMapAux :
     ∀ {X Y : F C}, (X ⟶ᵐ Y) →
-      ((Discrete.functor (normalizeObj X) : _ ⥤  N C) ⟶ Discrete.functor (normalizeObj Y))
+      ((Discrete.functor (normalizeObj X) : _ ⥤ N C) ⟶ Discrete.functor (normalizeObj Y))
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
@@ -134,7 +125,7 @@ def normalizeMapAux :
   | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) => by
     dsimp
-    exact Discrete.natTrans (fun ⟨X⟩  => (normalizeMapAux g).app (normalizeObj T X) ≫
+    exact Discrete.natTrans (fun ⟨X⟩ => (normalizeMapAux g).app (normalizeObj T X) ≫
       (Discrete.functor (normalizeObj W) : _ ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
 #align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
 
@@ -163,8 +154,8 @@ def normalize' : F C ⥤ N C ⥤ F C :=
 
 /-- The normalization functor for the free monoidal category over `C`. -/
 def fullNormalize : F C ⥤ N C where
-  obj X := ((normalize C).obj X).obj ⟨NormalMonoidalObject.Unit⟩
-  map f := ((normalize C).map f).app ⟨NormalMonoidalObject.Unit⟩
+  obj X := ((normalize C).obj X).obj ⟨NormalMonoidalObject.unit⟩
+  map f := ((normalize C).map f).app ⟨NormalMonoidalObject.unit⟩
 #align category_theory.free_monoidal_category.full_normalize CategoryTheory.FreeMonoidalCategory.fullNormalize
 
 /-- Given an object `X` of the free monoidal category and an object `n` in normal form, taking
@@ -196,7 +187,7 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
 def normalizeIsoApp :
     ∀ (X : F C) (n : N C), ((tensorFunc C).obj X).obj n ≅ ((normalize' C).obj X).obj n
   | of _, _ => Iso.refl _
-  | Unit, _ => ρ_ _
+  | unit, _ => ρ_ _
   | tensor X _, n =>
     (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp X n) (Iso.refl _) ≪≫ normalizeIsoApp _ _
 #align category_theory.free_monoidal_category.normalize_iso_app CategoryTheory.FreeMonoidalCategory.normalizeIsoApp
@@ -249,10 +240,10 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C)
     (by -- porting note: the proof has been mostly rewritten
       rintro X Y f
-      induction' f using Quotient.recOn with f ; swap ; rfl
+      induction' f using Quotient.recOn with f; swap; rfl
       induction' f with _ X₁ X₂ X₃ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
-      . simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
-      . ext n
+      · simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
+      · ext n
         dsimp
         rw [mk_α_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
@@ -264,41 +255,41 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
           pentagon_inv_assoc (inclusionObj n.as) X₁ X₂ X₃,
           tensor_inv_hom_id_assoc, tensor_id, Category.id_comp, Iso.inv_hom_id,
           Category.comp_id]
-      . ext n
+      · ext n
         dsimp
         rw [mk_α_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [Category.assoc, comp_tensor_id, tensor_id, Category.comp_id,
           pentagon_inv_assoc, ← associator_inv_naturality_assoc]
         rfl
-      . ext n
+      · ext n
         dsimp [Functor.comp]
         rw [mk_l_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [triangle_assoc_comp_right_assoc, Category.assoc, Category.comp_id]
         rfl
-      . ext n
+      · ext n
         dsimp [Functor.comp]
         rw [mk_l_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [triangle_assoc_comp_left_inv_assoc, inv_hom_id_tensor_assoc, tensor_id,
           Category.id_comp, Category.comp_id]
         rfl
-      . ext n
+      · ext n
         dsimp
         rw [mk_ρ_hom, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.inv_comp_eq _).2 (rightUnitor_tensor _ _), Category.assoc,
           ← rightUnitor_naturality, Category.comp_id]; rfl
-      . ext n
+      · ext n
         dsimp
         rw [mk_ρ_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
         simp only [← (Iso.eq_comp_inv _).1 (rightUnitor_tensor_inv _ _), rightUnitor_conjugation,
           Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
           Discrete.functor, Category.comp_id, Function.comp]
-      . rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
-      . ext ⟨n⟩
+      · rw [mk_comp, Functor.map_comp, Functor.map_comp, Category.assoc, h₂, reassoc_of% h₁]
+      · ext ⟨n⟩
         replace h₁ := NatTrans.congr_app h₁ ⟨n⟩
         replace h₂ := NatTrans.congr_app h₂ ((Discrete.functor (normalizeObj X₁)).obj ⟨n⟩)
         have h₃ := (normalizeIsoAux _ Y₂).hom.naturality ((normalizeMapAux f).app ⟨n⟩)
@@ -317,19 +308,19 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         congr 2
         erw [← reassoc_of% h₂]
         rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄]
-        rfl )
+        rfl)
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
   NatIso.ofComponents
-  (fun X => (λ_ X).symm ≪≫ ((normalizeIso C).app X).app ⟨NormalMonoidalObject.Unit⟩)
+  (fun X => (λ_ X).symm ≪≫ ((normalizeIso C).app X).app ⟨NormalMonoidalObject.unit⟩)
     (by
       intro X Y f
       dsimp
       rw [leftUnitor_inv_naturality_assoc, Category.assoc, Iso.cancel_iso_inv_left]
       exact
-        congr_arg (fun f => NatTrans.app f (Discrete.mk NormalMonoidalObject.Unit))
+        congr_arg (fun f => NatTrans.app f (Discrete.mk NormalMonoidalObject.unit))
           ((normalizeIso.{u} C).hom.naturality f))
 #align category_theory.free_monoidal_category.full_normalize_iso CategoryTheory.FreeMonoidalCategory.fullNormalizeIso
 

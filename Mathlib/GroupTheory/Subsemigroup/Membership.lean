@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module group_theory.subsemigroup.membership
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subsemigroup.Basic
+
+#align_import group_theory.subsemigroup.membership from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Subsemigroups: membership criteria
@@ -32,7 +29,7 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
-variable {ι : Sort _} {M A B : Type _}
+variable {ι : Sort*} {M A B : Type*}
 
 section NonAssoc
 
@@ -47,10 +44,10 @@ namespace Subsemigroup
 @[to_additive]
 theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
     (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine' fun hx => closure_induction hx (fun y hy => mem_iUnion.mp hy) _
+  refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) ?_
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
@@ -59,7 +56,7 @@ theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
 
 @[to_additive]
 theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, ↑(S i) :=
+    ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
 #align subsemigroup.coe_supr_of_directed Subsemigroup.coe_iSup_of_directed
 #align add_subsemigroup.coe_supr_of_directed AddSubsemigroup.coe_iSup_of_directed
@@ -122,7 +119,7 @@ then it holds for all elements of the supremum of `S`. -/
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
 the supremum of `S`."]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
-    (hp : ∀ (i) (x₂ : M) (_hxS : x₂ ∈ S i), C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
+    (hp : ∀ i, ∀ x₂ ∈ S i, C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
   refine' closure_induction hx₁ (fun x₂ hx₂ => _) hmul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂

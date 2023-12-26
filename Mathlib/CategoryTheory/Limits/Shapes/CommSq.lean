@@ -2,11 +2,6 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.comm_sq
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Limits.Opposites
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+
+#align_import category_theory.limits.shapes.comm_sq from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Pullback and pushout squares, and bicartesian squares
@@ -200,7 +197,7 @@ namespace IsPullback
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 /-- The (limiting) `PullbackCone f g` implicit in the statement
-that we have a `IsPullback fst snd f g`.
+that we have an `IsPullback fst snd f g`.
 -/
 def cone (h : IsPullback fst snd f g) : PullbackCone f g :=
   h.toCommSq.cone
@@ -222,7 +219,7 @@ noncomputable def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
   h.isLimit'.some
 #align category_theory.is_pullback.is_limit CategoryTheory.IsPullback.isLimit
 
-/-- If `c` is a limiting pullback cone, then we have a `IsPullback c.fst c.snd f g`. -/
+/-- If `c` is a limiting pullback cone, then we have an `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
     isLimit' := ⟨IsLimit.ofIsoLimit h (Limits.PullbackCone.ext (Iso.refl _)
@@ -235,7 +232,7 @@ theorem of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
   of_isLimit h
 #align category_theory.is_pullback.of_is_limit' CategoryTheory.IsPullback.of_isLimit'
 
-/-- The pullback provided by `HasPullback f g` fits into a `IsPullback`. -/
+/-- The pullback provided by `HasPullback f g` fits into an `IsPullback`. -/
 theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsPullback (pullback.fst : pullback f g ⟶ X) (pullback.snd : pullback f g ⟶ Y) f g :=
   of_isLimit (limit.isLimit (cospan f g))
@@ -331,7 +328,7 @@ namespace IsPushout
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
 /-- The (colimiting) `PushoutCocone f g` implicit in the statement
-that we have a `IsPushout f g inl inr`.
+that we have an `IsPushout f g inl inr`.
 -/
 def cocone (h : IsPushout f g inl inr) : PushoutCocone f g :=
   h.toCommSq.cocone
@@ -353,7 +350,7 @@ noncomputable def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
   h.isColimit'.some
 #align category_theory.is_pushout.is_colimit CategoryTheory.IsPushout.isColimit
 
-/-- If `c` is a colimiting pushout cocone, then we have a `IsPushout f g c.inl c.inr`. -/
+/-- If `c` is a colimiting pushout cocone, then we have an `IsPushout f g c.inl c.inr`. -/
 theorem of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushout f g c.inl c.inr :=
   { w := c.condition
     isColimit' :=
@@ -367,7 +364,7 @@ theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
   of_isColimit h
 #align category_theory.is_pushout.of_is_colimit' CategoryTheory.IsPushout.of_isColimit'
 
-/-- The pushout provided by `HasPushout f g` fits into a `IsPushout`. -/
+/-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
 theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
     IsPushout f g (pushout.inl : X ⟶ pushout f g) (pushout.inr : Y ⟶ pushout f g) :=
   of_isColimit (colimit.isColimit (span f g))
@@ -444,7 +441,7 @@ theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ push
     (w₁ : inl ≫ i.hom = pushout.inl) (w₂ : inr ≫ i.hom = pushout.inr) : IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
-      (@PushoutCocone.ext _ _ _ _ _ _ _ (PushoutCocone.mk _ _ _) _ i w₁ w₂).symm)
+      (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)
 #align category_theory.is_pushout.of_iso_pushout CategoryTheory.IsPushout.of_iso_pushout
 
 end IsPushout
@@ -454,7 +451,7 @@ namespace IsPullback
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 theorem flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
-  of_isLimit (@PullbackCone.flipIsLimit _ _ _ _ _ _ _ _ _ _ h.w.symm h.isLimit)
+  of_isLimit (PullbackCone.flipIsLimit (comm := h.w.symm) h.isLimit)
 #align category_theory.is_pullback.flip CategoryTheory.IsPullback.flip
 
 theorem flip_iff : IsPullback fst snd f g ↔ IsPullback snd fst g f :=
@@ -474,7 +471,7 @@ theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X
     isLimit' :=
       ⟨{  lift := fun s => 0
           fac := fun s => by
-            simpa using
+            simpa [eq_iff_true_of_subsingleton] using
               @PullbackCone.equalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simpa using (PullbackCone.condition s).symm) }⟩ }
 #align category_theory.is_pullback.zero_left CategoryTheory.IsPullback.zero_left
@@ -488,8 +485,8 @@ theorem zero_top (X : C) : IsPullback (0 : (0 : C) ⟶ 0) (0 : 0 ⟶ X) (0 : 0 �
 /-- The square with `0 : 0 ⟶ 0` on the right and `𝟙 X` on the left is a pullback square. -/
 @[simp]
 theorem zero_right (X : C) : IsPullback (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
-  of_iso_pullback (by simp) ((zeroProdIso X).symm ≪≫ (pullbackZeroZeroIso _ _).symm) (by simp)
-    (by simp)
+  of_iso_pullback (by simp) ((zeroProdIso X).symm ≪≫ (pullbackZeroZeroIso _ _).symm)
+    (by simp [eq_iff_true_of_subsingleton]) (by simp)
 #align category_theory.is_pullback.zero_right CategoryTheory.IsPullback.zero_right
 
 /-- The square with `0 : 0 ⟶ 0` on the bottom and `𝟙 X` on the top is a pullback square. -/
@@ -664,7 +661,7 @@ namespace IsPushout
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
 theorem flip (h : IsPushout f g inl inr) : IsPushout g f inr inl :=
-  of_isColimit (@PushoutCocone.flipIsColimit _ _ _ _ _ _ _ _ _ _ h.w.symm h.isColimit)
+  of_isColimit (PushoutCocone.flipIsColimit (comm := h.w.symm) h.isColimit)
 #align category_theory.is_pushout.flip CategoryTheory.IsPushout.flip
 
 theorem flip_iff : IsPushout f g inl inr ↔ IsPushout g f inr inl :=
@@ -685,8 +682,8 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
       ⟨{  desc := fun s => 0
           fac := fun s => by
             have c :=
-              @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _) (by simp)
-                (by simpa using PushoutCocone.condition s)
+              @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
+                (by simp [eq_iff_true_of_subsingleton]) (by simpa using PushoutCocone.condition s)
             dsimp at c
             simpa using c }⟩ }
 #align category_theory.is_pushout.zero_right CategoryTheory.IsPushout.zero_right
@@ -701,7 +698,7 @@ theorem zero_bot (X : C) : IsPushout (𝟙 X) (0 : X ⟶ 0) (0 : X ⟶ 0) (0 : (
 @[simp]
 theorem zero_left (X : C) : IsPushout (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
   of_iso_pushout (by simp) ((coprodZeroIso X).symm ≪≫ (pushoutZeroZeroIso _ _).symm) (by simp)
-    (by simp)
+    (by simp [eq_iff_true_of_subsingleton])
 #align category_theory.is_pushout.zero_left CategoryTheory.IsPushout.zero_left
 
 /-- The square with `0 : 0 ⟶ 0` on the top and `𝟙 X` on the bottom is a pushout square. -/
@@ -1005,7 +1002,7 @@ theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f
         (isLimitOfPreserves F s.isLimit))
   · rfl
   · simp
-  . simp
+  · simp
 #align category_theory.functor.map_is_pullback CategoryTheory.Functor.map_isPullback
 
 theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g h i) :
@@ -1019,10 +1016,10 @@ theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g
   · simp
 #align category_theory.functor.map_is_pushout CategoryTheory.Functor.map_isPushout
 
-alias Functor.map_isPullback ← IsPullback.map
+alias IsPullback.map := Functor.map_isPullback
 #align category_theory.is_pullback.map CategoryTheory.IsPullback.map
 
-alias Functor.map_isPushout ← IsPushout.map
+alias IsPushout.map := Functor.map_isPushout
 #align category_theory.is_pushout.map CategoryTheory.IsPushout.map
 
 theorem IsPullback.of_map [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i)
@@ -1040,7 +1037,7 @@ theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [Faithful F
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pullback.of_map_of_faithful CategoryTheory.IsPullback.of_map_of_faithful
 
-theorem IsPullback.map_iff {D : Type _} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
+theorem IsPullback.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
     [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPullback f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
@@ -1061,7 +1058,7 @@ theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [Faithful F]
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pushout.of_map_of_faithful CategoryTheory.IsPushout.of_map_of_faithful
 
-theorem IsPushout.map_iff {D : Type _} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
+theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
     [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩

@@ -30,8 +30,9 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN! depth config patterns
-  catch _ => return [m]
+  m.congrN! depth config patterns
+
+namespace Mathlib.Tactic
 
 /--
 The `exact e` and `refine e` tactics require a term `e` whose type is
@@ -66,7 +67,7 @@ This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
 ```lean
-def p (n : ℕ) := true
+def p (n : ℕ) := True
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
@@ -103,8 +104,17 @@ elab_rules : tactic
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
-    let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
-      (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) `convert
+    let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
+    let (e, gs) ←
+      withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+        -- Allow typeclass inference failures since these will be inferred by unification
+        -- or else become new goals
+        withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
+          let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
+          -- Process everything so that tactics get run, but again allow TC failures
+          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          -- Use a type hint to ensure we collect goals from the type too
+          mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
@@ -127,10 +137,26 @@ The syntax for `convert_to` is the same as for `convert`, and it has variations 
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
 syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)?: tactic
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+
+/--
+`ac_change g using n` is `convert_to g using n` followed by `ac_rfl`. It is useful for
+rearranging/reassociating e.g. sums:
+```lean
+example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
+  ac_change a + d + e + f + c + g + b ≤ _
+  -- ⊢ a + d + e + f + c + g + b ≤ N
+```
+-/
+syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+
+macro_rules
+| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
+
+end Mathlib.Tactic

@@ -2,20 +2,17 @@
 Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
-! This file was ported from Lean 3 source module group_theory.group_action.fixing_subgroup
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
+
+#align_import group_theory.group_action.fixing_subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 
 # Fixing submonoid, fixing subgroup of an action
 
-In the presence of of an action of a monoid or a group,
+In the presence of an action of a monoid or a group,
 this file defines the fixing submonoid or the fixing subgroup,
 and relates it to the set of fixed points via a Galois connection.
 
@@ -46,7 +43,7 @@ section Monoid
 
 open MulAction
 
-variable (M : Type _) {α : Type _} [Monoid M] [MulAction M α]
+variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
 
 /-- The submonoid fixing a set under a `MulAction`. -/
 @[to_additive " The additive submonoid fixing a set under an `AddAction`. "]
@@ -87,7 +84,7 @@ theorem fixingSubmonoid_union {s t : Set α} :
 #align fixing_submonoid_union fixingSubmonoid_union
 
 /-- Fixing submonoid of iUnion is intersection -/
-theorem fixingSubmonoid_iUnion {ι : Sort _} {s : ι → Set α} :
+theorem fixingSubmonoid_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubmonoid M (⋃ i, s i) = ⨅ i, fixingSubmonoid M (s i) :=
   (fixingSubmonoid_fixedPoints_gc M α).l_iSup
 #align fixing_submonoid_Union fixingSubmonoid_iUnion
@@ -99,7 +96,7 @@ theorem fixedPoints_submonoid_sup {P Q : Submonoid M} :
 #align fixed_points_submonoid_sup fixedPoints_submonoid_sup
 
 /-- Fixed points of iSup of submonoids is intersection -/
-theorem fixedPoints_submonoid_iSup {ι : Sort _} {P : ι → Submonoid M} :
+theorem fixedPoints_submonoid_iSup {ι : Sort*} {P : ι → Submonoid M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubmonoid_fixedPoints_gc M α).u_iInf
 #align fixed_points_submonoid_supr fixedPoints_submonoid_iSup
@@ -110,7 +107,7 @@ section Group
 
 open MulAction
 
-variable (M : Type _) {α : Type _} [Group M] [MulAction M α]
+variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 
 /-- The subgroup fixing a set under a `MulAction`. -/
 @[to_additive " The additive subgroup fixing a set under an `AddAction`. "]
@@ -147,7 +144,7 @@ theorem fixingSubgroup_union {s t : Set α} :
 #align fixing_subgroup_union fixingSubgroup_union
 
 /-- Fixing subgroup of iUnion is intersection -/
-theorem fixingSubgroup_iUnion {ι : Sort _} {s : ι → Set α} :
+theorem fixingSubgroup_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubgroup M (⋃ i, s i) = ⨅ i, fixingSubgroup M (s i) :=
   (fixingSubgroup_fixedPoints_gc M α).l_iSup
 #align fixing_subgroup_Union fixingSubgroup_iUnion
@@ -159,7 +156,7 @@ theorem fixedPoints_subgroup_sup {P Q : Subgroup M} :
 #align fixed_points_subgroup_sup fixedPoints_subgroup_sup
 
 /-- Fixed points of iSup of subgroups is intersection -/
-theorem fixedPoints_subgroup_iSup {ι : Sort _} {P : ι → Subgroup M} :
+theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 #align fixed_points_subgroup_supr fixedPoints_subgroup_iSup

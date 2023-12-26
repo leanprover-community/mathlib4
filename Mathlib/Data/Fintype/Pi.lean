@@ -2,27 +2,25 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.pi
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Finset.Pi
+
+#align_import data.fintype.pi from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Fintype instances for pi types
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 
 namespace Fintype
 
-variable [DecidableEq α] [Fintype α] {δ : α → Type _}
+variable [DecidableEq α] [Fintype α] {δ : α → Type*}
 
 /-- Given for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
@@ -84,13 +82,13 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 #align pi.fintype Pi.fintype
 
 @[simp]
-theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Fintype.piFinset fun a : α => (Finset.univ : Finset (β a))) =
       (Finset.univ : Finset (∀ a, β a)) :=
@@ -107,8 +105,31 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]
-theorem Finset.univ_pi_univ {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp
 #align finset.univ_pi_univ Finset.univ_pi_univ
+
+lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
+  simp only [Fintype.mem_piFinset, forall_fin_succ, Fin.tail]
+
+lemma Fin.cons_mem_piFinset_cons_iff {n : ℕ} {α : Fin (n + 1) → Type*}
+    (x : α 0) (xs : (i : Fin n) → α i.succ)
+    (S₀ : Finset (α 0)) (Sᵢ : (i : Fin n) → Finset (α i.succ)) :
+    Fin.cons x xs ∈ Fintype.piFinset (Fin.cons S₀ Sᵢ) ↔ x ∈ S₀ ∧ xs ∈ Fintype.piFinset Sᵢ := by
+  simp_rw [Fin.mem_piFinset_succ_iff, cons_zero, tail_cons]
+
+lemma Fin.mem_piFinset_succ_iff' {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
+    (S : (i : Fin (n + 1)) → Finset (α i)) :
+    p ∈ Fintype.piFinset S ↔
+      Fin.init p ∈ Fintype.piFinset (Fin.init S) ∧ p (Fin.last n) ∈ S (Fin.last n) := by
+  simp only [Fintype.mem_piFinset, forall_fin_succ', Fin.init]
+
+lemma Fin.snoc_mem_piFinset_snoc_iff {n : ℕ} {α : Fin (n + 1) → Type*}
+    (xs : (i : Fin n) → α i.castSucc) (x : α (.last n))
+    (Sᵢ : (i : Fin n) → Finset (α i.castSucc)) (Sₙ : Finset (α <| .last n)) :
+    Fin.snoc xs x ∈ Fintype.piFinset (Fin.snoc Sᵢ Sₙ) ↔ xs ∈ Fintype.piFinset Sᵢ ∧ x ∈ Sₙ := by
+  simp_rw [Fin.mem_piFinset_succ_iff', init_snoc, snoc_last]

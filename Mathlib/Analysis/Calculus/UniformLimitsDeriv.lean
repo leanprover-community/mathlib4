@@ -2,22 +2,19 @@
 Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
-
-! This file was ported from Lean 3 source module analysis.calculus.uniform_limits_deriv
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Order.Filter.Curry
+
+#align_import analysis.calculus.uniform_limits_deriv from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Swapping limits and derivatives via uniform convergence
 
 The purpose of this file is to prove that the derivative of the pointwise limit of a sequence of
 functions is the pointwise limit of the functions' derivatives when the derivatives converge
-_uniformly_. The formal statement appears as `has_fderiv_at_of_tendsto_locally_uniformly_at`.
+_uniformly_. The formal statement appears as `hasFDerivAt_of_tendstoLocallyUniformlyOn`.
 
 ## Main statements
 
@@ -47,7 +44,7 @@ That is, we want to prove something like:
 ∀ ε > 0, ∃ δ > 0, ∀ y ∈ B_δ(x), |y - x|⁻¹ * |(g y - g x) - g' x (y - x)| < ε.
 ```
 
-To do so, we will need to introduce a pair of quantifers
+To do so, we will need to introduce a pair of quantifiers
 
 ```lean
 ∀ ε > 0, ∃ N, ∀ n ≥ N, ∃ δ > 0, ∀ y ∈ B_δ(x), |y - x|⁻¹ * |(g y - g x) - g' x (y - x)| < ε.
@@ -62,7 +59,7 @@ tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)
 There are two ways we might introduce `n`. We could do:
 
 ```lean
-∀ᶠ (n : ℕ) in at_top, tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)
+∀ᶠ (n : ℕ) in atTop, Tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)
 ```
 
 but this is equivalent to the quantifier order `∃ N, ∀ n ≥ N, ∀ ε > 0, ∃ δ > 0, ∀ y ∈ B_δ(x)`,
@@ -70,17 +67,17 @@ which _implies_ our desired `∀ ∃ ∀ ∃ ∀` but is _not_ equivalent to it.
 try
 
 ```lean
-tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (at_top ×ˢ 𝓝 x) (𝓝 0)
+Tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (atTop ×ˢ 𝓝 x) (𝓝 0)
 ```
 
-but this is equivalent to the quantifer order `∀ ε > 0, ∃ N, ∃ δ > 0, ∀ n ≥ N, ∀ y ∈ B_δ(x)`, which
+but this is equivalent to the quantifier order `∀ ε > 0, ∃ N, ∃ δ > 0, ∀ n ≥ N, ∀ y ∈ B_δ(x)`, which
 again _implies_ our desired `∀ ∃ ∀ ∃ ∀` but is not equivalent to it.
 
 So to get the quantifier order we want, we need to introduce a new filter construction, which we
 call a "curried filter"
 
 ```lean
-tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (at_top.curry (𝓝 x)) (𝓝 0)
+Tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (atTop.curry (𝓝 x)) (𝓝 0)
 ```
 
 Then the above implications are `Filter.Tendsto.curry` and
@@ -104,8 +101,8 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type _} {l : Filter ι} {E : Type _} [NormedAddCommGroup E] {𝕜 : Type _} [IsROrC 𝕜]
-  [NormedSpace 𝕜 E] {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [IsROrC 𝕜]
+  [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
 /-- If a sequence of functions real or complex functions are eventually differentiable on a
@@ -115,7 +112,7 @@ sequence in a neighborhood of `x`. -/
 theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hf' ⊢
   suffices
     TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
@@ -179,7 +176,7 @@ convergence. See `cauchy_map_of_uniformCauchySeqOn_fderiv`.
 theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   rcases le_or_lt r 0 with (hr | hr)
   · simp only [Metric.ball_eq_empty.2 hr, UniformCauchySeqOn, Set.mem_empty_iff_false,
@@ -450,12 +447,10 @@ section deriv
 /-! ### `deriv` versions of above theorems
 
 In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the previous section.
-The protected function `promote_deriv` provides the translation between derivatives and Fréchet
-derivatives
 -/
 
 
-variable {ι : Type _} {l : Filter ι} {𝕜 : Type _} [IsROrC 𝕜] {G : Type _} [NormedAddCommGroup G]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/
@@ -478,7 +473,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
   simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
     ContinuousLinearMap.one_apply]
   rw [← smul_sub, norm_smul, mul_comm]
-  exact mul_le_mul hn.le rfl.le (norm_nonneg _) hq.le
+  gcongr
 #align uniform_cauchy_seq_on_filter.one_smul_right UniformCauchySeqOnFilter.one_smulRight
 
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
@@ -526,7 +521,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
       ContinuousLinearMap.one_apply]
     rw [← smul_sub, norm_smul, mul_comm]
-    exact mul_le_mul hn.le rfl.le (norm_nonneg _) hq.le
+    gcongr
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg
 #align has_deriv_at_of_tendsto_uniformly_on_filter hasDerivAt_of_tendstoUniformlyOnFilter
 
@@ -549,7 +544,7 @@ theorem hasDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set 𝕜} (hs
     (hf : ∀ᶠ n in l, DifferentiableOn 𝕜 (f n) s)
     (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
   refine' hasDerivAt_of_tendstoLocallyUniformlyOn hs hf' _ hfg hx
-  filter_upwards [hf]with n h z hz using((h z hz).differentiableAt (hs.mem_nhds hz)).hasDerivAt
+  filter_upwards [hf] with n h z hz using ((h z hz).differentiableAt (hs.mem_nhds hz)).hasDerivAt
 #align has_deriv_at_of_tendsto_locally_uniformly_on' hasDerivAt_of_tendsto_locally_uniformly_on'
 
 theorem hasDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
@@ -565,7 +560,7 @@ theorem hasDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l
     (hfg : ∀ x : 𝕜, Tendsto (fun n => f n x) l (𝓝 (g x))) : ∀ x : 𝕜, HasDerivAt g (g' x) x := by
   intro x
   have hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ Set.univ → HasDerivAt (f n) (f' n x) x := by
-    filter_upwards [hf]with n h x _ using h x
+    filter_upwards [hf] with n h x _ using h x
   have hfg : ∀ x : 𝕜, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
   exact hasDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)

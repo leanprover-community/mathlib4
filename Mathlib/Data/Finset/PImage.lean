@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.finset.pimage
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.PFun
 import Mathlib.Data.Part
+
+#align_import data.finset.pimage from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Image of a `Finset α` under a partially defined function
@@ -24,11 +21,11 @@ finite set, image, partial function
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Part
 
-/-- Convert a `o : Part α` with decidable `Part.Dom o` to `Finset α`. -/
+/-- Convert an `o : Part α` with decidable `Part.Dom o` to `Finset α`. -/
 def toFinset (o : Part α) [Decidable o.Dom] : Finset α :=
   o.toOption.toFinset
 #align part.to_finset Part.toFinset
@@ -85,8 +82,8 @@ theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some
 theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g := by
   subst s
   ext y
-  -- Porting note: `←exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp (config := { contextual := true }) only [mem_pimage, ←exists_prop, h₂]
+  -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
+  simp (config := { contextual := true }) only [mem_pimage, ← exists_prop, h₂]
 #align finset.pimage_congr Finset.pimage_congr
 
 /-- Rewrite `s.pimage f` in terms of `Finset.filter`, `Finset.attach`, and `Finset.image`. -/
@@ -96,8 +93,8 @@ theorem pimage_eq_image_filter : s.pimage f =
         (f x).get (mem_filter.mp x.coe_prop).2 := by
   ext x
   simp [Part.mem_eq, And.exists]
-  -- Porting note: `←exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp only [←exists_prop]
+  -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
+  simp only [← exists_prop]
 #align finset.pimage_eq_image_filter Finset.pimage_eq_image_filter
 
 theorem pimage_union [DecidableEq α] : (s ∪ t).pimage f = s.pimage f ∪ t.pimage f :=

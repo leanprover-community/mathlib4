@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.rename
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.rename from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Renaming variables of polynomials
@@ -49,7 +46,7 @@ open Set Function Finsupp AddMonoidAlgebra
 
 open BigOperators
 
-variable {σ τ α R S : Type _} [CommSemiring R] [CommSemiring S]
+variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 
 namespace MvPolynomial
 
@@ -88,7 +85,7 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     -- porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking
     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPolynomial α R)) (X ∘ g)) C (X ∘ f) p]
-    simp only [(· ∘ ·), eval₂Hom_X', coe_eval₂Hom]
+    simp only [(· ∘ ·), eval₂Hom_X']
     refine' eval₂Hom_congr _ rfl rfl
     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
 #align mv_polynomial.rename_rename MvPolynomial.rename_rename
@@ -229,15 +226,14 @@ end
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
 theorem exists_finset_rename (p : MvPolynomial σ R) :
-    ∃ (s : Finset σ)(q : MvPolynomial { x // x ∈ s } R), p = rename (↑) q := by
+    ∃ (s : Finset σ) (q : MvPolynomial { x // x ∈ s } R), p = rename (↑) q := by
   classical
   apply induction_on p
   · intro r
     exact ⟨∅, C r, by rw [rename_C]⟩
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine' ⟨s ∪ t, ⟨_, _⟩⟩
-    ·
-      refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
+    · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
         simp (config := { contextual := true }) only [id.def, true_or_iff, or_true_iff,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, AlgHom.map_add]
@@ -251,12 +247,12 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
       rfl
 #align mv_polynomial.exists_finset_rename MvPolynomial.exists_finset_rename
 
-/-- `exists_finset_rename` for two polyonomials at once: for any two polynomials `p₁`, `p₂` in a
+/-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a
   polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
   a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
   `R[s]` of finitely many variables. -/
 theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
-    ∃ (s : Finset σ)(q₁ q₂ : MvPolynomial s R), p₁ = rename (↑) q₁ ∧ p₂ = rename (↑) q₂ := by
+    ∃ (s : Finset σ) (q₁ q₂ : MvPolynomial s R), p₁ = rename (↑) q₁ ∧ p₂ = rename (↑) q₂ := by
   obtain ⟨s₁, q₁, rfl⟩ := exists_finset_rename p₁
   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
   classical
@@ -264,15 +260,17 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
     use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
     constructor -- porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · rw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
+    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
       rfl
-    · rw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
+    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
       rfl
 #align mv_polynomial.exists_finset_rename₂ MvPolynomial.exists_finset_rename₂
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
 theorem exists_fin_rename (p : MvPolynomial σ R) :
-    ∃ (n : ℕ)(f : Fin n → σ) (_hf : Injective f)(q : MvPolynomial (Fin n) R), p = rename f q := by
+    ∃ (n : ℕ) (f : Fin n → σ) (_hf : Injective f) (q : MvPolynomial (Fin n) R), p = rename f q := by
   obtain ⟨s, q, rfl⟩ := exists_finset_rename p
   let n := Fintype.card { x // x ∈ s }
   let e := Fintype.equivFin { x // x ∈ s }
@@ -314,7 +312,7 @@ theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
   rw [Finset.mem_image] at H
   obtain ⟨u, hu, rfl⟩ := H
   specialize h u rfl
-  simp at h hu
+  simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
   contradiction
 #align mv_polynomial.coeff_rename_eq_zero MvPolynomial.coeff_rename_eq_zero
 
@@ -325,7 +323,7 @@ theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
 #align mv_polynomial.coeff_rename_ne_zero MvPolynomial.coeff_rename_ne_zero
 
 @[simp]
-theorem constantCoeff_rename {τ : Type _} (f : σ → τ) (φ : MvPolynomial σ R) :
+theorem constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPolynomial σ R) :
     constantCoeff (rename f φ) = constantCoeff φ := by
   apply φ.induction_on
   · intro a

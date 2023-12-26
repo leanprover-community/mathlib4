@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.split
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+
+#align_import analysis.box_integral.partition.split from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Split a box along one or more hyperplanes
@@ -49,7 +46,7 @@ open Function Set Filter
 
 namespace BoxIntegral
 
-variable {ι M : Type _} {n : ℕ}
+variable {ι M : Type*} {n : ℕ}
 
 namespace Box
 
@@ -92,7 +89,8 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.upper fun j y => I.lower j < y).2
         ⟨h.1, fun j _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
-  simp only [splitLower, mk'_eq_coe, min_eq_left h.2.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
+    update, and_self]
 #align box_integral.box.split_lower_def BoxIntegral.Box.splitLower_def
 
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
@@ -133,7 +131,8 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.lower fun j y => y < I.upper j).2
         ⟨h.2, fun j _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
-  simp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
+    update, and_self]
 #align box_integral.box.split_upper_def BoxIntegral.Box.splitUpper_def
 
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
@@ -194,7 +193,7 @@ theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I 
 #align box_integral.prepartition.is_partition_split BoxIntegral.Prepartition.isPartitionSplit
 
 -- Porting note: In the type, changed `Option.elim` to `Option.elim'`
-theorem sum_split_boxes {M : Type _} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
+theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J in (split I i x).boxes, f J) =
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
   rw [split, sum_ofWithBot, Finset.sum_pair (I.splitLower_ne_splitUpper i x)]
@@ -285,7 +284,7 @@ a box `I` into subboxes. Let `Js` be one of them. If `J` and `Js` have nonempty 
 theorem not_disjoint_imp_le_of_subset_of_mem_splitMany {I J Js : Box ι} {s : Finset (ι × ℝ)}
     (H : ∀ i, {(i, J.lower i), (i, J.upper i)} ⊆ s) (HJs : Js ∈ splitMany I s)
     (Hn : ¬Disjoint (J : WithBot (Box ι)) Js) : Js ≤ J := by
-  simp only [Finset.insert_subset, Finset.singleton_subset_iff] at H
+  simp only [Finset.insert_subset_iff, Finset.singleton_subset_iff] at H
   rcases Box.not_disjoint_coe_iff_nonempty_inter.mp Hn with ⟨x, hx, hxs⟩
   refine' fun y hy i => ⟨_, _⟩
   · rcases splitMany_le_split I (H i).1 HJs with ⟨Jl, Hmem : Jl ∈ split I i (J.lower i), Hle⟩

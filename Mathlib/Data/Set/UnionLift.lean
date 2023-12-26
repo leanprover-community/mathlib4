@@ -2,14 +2,11 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.set.Union_lift
-! leanprover-community/mathlib commit 5a4ea8453f128345f73cc656e80a49de2a54f481
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Directed
+
+#align_import data.set.Union_lift from "leanprover-community/mathlib"@"5a4ea8453f128345f73cc656e80a49de2a54f481"
 
 /-!
 # Union lift
@@ -41,7 +38,7 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 directed union, directed supremum, glue, gluing
 -/
 
-variable {α : Type _} {ι β : Sort _}
+variable {α : Type*} {ι β : Sort _}
 
 namespace Set
 
@@ -53,14 +50,14 @@ simplify terms involving `iUnionLift`. -/
 /-- Given a union of sets `iUnion S`, define a function on the Union by defining
 it on each component, and proving that it agrees on the intersections. -/
 @[nolint unusedArguments]
-noncomputable def iUnionLift (S : ι → Set α) (f : ∀ (i) (_ : S i), β)
+noncomputable def iUnionLift (S : ι → Set α) (f : ∀ i, S i → β)
     (_ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩) (T : Set α)
     (hT : T ⊆ iUnion S) (x : T) : β :=
   let i := Classical.indefiniteDescription _ (mem_iUnion.1 (hT x.prop))
   f i ⟨x, i.prop⟩
 #align set.Union_lift Set.iUnionLift
 
-variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
+variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩} {T : Set α}
   {hT : T ⊆ iUnion S} (hT' : T = iUnion S)
 
@@ -154,13 +151,13 @@ theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (o
 
 end UnionLift
 
-variable {S : ι → Set α} {f : ∀ (i) (_ : S i), β}
+variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩}
   {hS : iUnion S = univ}
 
 /-- Glue together functions defined on each of a collection `S` of sets that cover a type. See
   also `Set.iUnionLift`.   -/
-noncomputable def liftCover (S : ι → Set α) (f : ∀ (i) (_ : S i), β)
+noncomputable def liftCover (S : ι → Set α) (f : ∀ i, S i → β)
     (hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
     (hS : iUnion S = univ) (a : α) : β :=
   iUnionLift S f hf univ hS.symm.subset ⟨a, trivial⟩

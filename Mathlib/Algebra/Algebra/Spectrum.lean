@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.algebra.spectrum
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Tactic.NoncommRing
+
+#align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Spectrum of an element in an algebra
@@ -20,10 +17,10 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 ## Main definitions
 
 * `resolventSet a : Set R`: the resolvent set of an element `a : A` where
-  `A` is an  `R`-algebra.
+  `A` is an `R`-algebra.
 * `spectrum a : Set R`: the spectrum of an element `a : A` where
-  `A` is an  `R`-algebra.
-* `resolvent : R → A`: the resolvent function is `λ r, Ring.inverse (↑ₐr - a)`, and hence
+  `A` is an `R`-algebra.
+* `resolvent : R → A`: the resolvent function is `fun r ↦ Ring.inverse (↑ₐr - a)`, and hence
   when `r ∈ resolvent R A`, it is actually the inverse of the unit `(↑ₐr - a)`.
 
 ## Main statements
@@ -70,7 +67,7 @@ algebra `A`.
 
 The spectrum is simply the complement of the resolvent set.  -/
 def spectrum (a : A) : Set R :=
-  resolventSet R aᶜ
+  (resolventSet R a)ᶜ
 #align spectrum spectrum
 
 variable {R}
@@ -90,6 +87,8 @@ noncomputable def IsUnit.subInvSMul {r : Rˣ} {s : R} {a : A} (h : IsUnit <| r �
   val_inv := by rw [mul_smul_comm, ← smul_mul_assoc, smul_sub, smul_inv_smul, h.mul_val_inv]
   inv_val := by rw [smul_mul_assoc, ← mul_smul_comm, smul_sub, smul_inv_smul, h.val_inv_mul]
 #align is_unit.sub_inv_smul IsUnit.subInvSMul
+#align is_unit.coe_sub_inv_smul IsUnit.val_subInvSMul
+#align is_unit.coe_inv_sub_inv_smul IsUnit.val_inv_subInvSMul
 
 end Defs
 
@@ -120,9 +119,16 @@ theorem zero_mem_iff {a : A} : (0 : R) ∈ σ a ↔ ¬IsUnit a := by
   rw [mem_iff, map_zero, zero_sub, IsUnit.neg_iff]
 #align spectrum.zero_mem_iff spectrum.zero_mem_iff
 
+alias ⟨not_isUnit_of_zero_mem, zero_mem⟩ := spectrum.zero_mem_iff
+
 theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 #align spectrum.zero_not_mem_iff spectrum.zero_not_mem_iff
+
+alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
+
+lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
+  Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
 
 variable {R}
 
@@ -161,8 +167,8 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
   · simp only [resolvent]
     have h' : IsUnit (r • algebraMap R A (r⁻¹ • s) - a) := by
       simpa [Algebra.algebraMap_eq_smul_one, smul_assoc] using not_mem_iff.mp h
-    rw [← h'.subInvSMul_val, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
-      ←h'.subInvSMul.inv_eq_val_inv, h'.subInvSMul_inv]
+    rw [← h'.val_subInvSMul, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
+      h'.val_inv_subInvSMul]
     simp only [Algebra.algebraMap_eq_smul_one, smul_assoc, smul_inv_smul]
 #align spectrum.units_smul_resolvent spectrum.units_smul_resolvent
 
@@ -231,13 +237,11 @@ theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) 
     refine' fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, _, _⟩, rfl⟩
     calc
       (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
-          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x :=
-        by noncomm_ring
+          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
     calc
       (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
-          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x :=
-        by noncomm_ring
+          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
   have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
   rw [mul_smul_comm r⁻¹ b a] at this
@@ -293,9 +297,7 @@ theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : St
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
-    rw [singleton_add, image_add_left, mem_preimage]
-    simp only
-    rw [add_comm, add_mem_iff, map_neg, neg_neg]
+    rw [singleton_add, image_add_left, mem_preimage, add_comm, add_mem_iff, map_neg, neg_neg]
 #align spectrum.singleton_add_eq spectrum.singleton_add_eq
 
 theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
@@ -391,7 +393,7 @@ namespace AlgHom
 
 section CommSemiring
 
-variable {F R A B : Type _} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 variable [AlgHomClass F R A B]
 
@@ -412,7 +414,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type _} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 variable [AlgHomClass F R A R]
 
@@ -431,3 +433,11 @@ theorem apply_mem_spectrum [Nontrivial R] (φ : F) (a : A) : φ a ∈ σ a := by
 end CommRing
 
 end AlgHom
+
+@[simp]
+theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
+    [Algebra R B] [AlgEquivClass F R A B] (f : F) (a : A) :
+    spectrum R (f a) = spectrum R a :=
+  Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
+    simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
+      AlgHom.spectrum_apply_subset (f : A ≃ₐ[R] B).symm (f a)

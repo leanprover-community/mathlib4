@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.algebra.algebra
-! leanprover-community/mathlib commit 43afc5ad87891456c57b5a183e3e617d67c2b1db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import topology.algebra.algebra from "leanprover-community/mathlib"@"43afc5ad87891456c57b5a183e3e617d67c2b1db"
 
 /-!
 # Topological (sub)algebras
@@ -36,7 +33,7 @@ universe u v w
 
 section TopologicalAlgebra
 
-variable (R : Type _) (A : Type u)
+variable (R : Type*) (A : Type u)
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
@@ -82,7 +79,7 @@ end TopologicalAlgebra
 
 section TopologicalAlgebra
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 variable {A : Type u} [TopologicalSpace A]
 
@@ -137,7 +134,7 @@ but we don't have those, so we use the clunky approach of talking about
 an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
-theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type _}
+theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
     [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
@@ -151,7 +148,7 @@ end TopologicalAlgebra
 
 section Ring
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable {A : Type u} [TopologicalSpace A]
 
@@ -174,6 +171,7 @@ def Algebra.elementalAlgebra (x : A) : Subalgebra R A :=
   (Algebra.adjoin R ({x} : Set A)).topologicalClosure
 #align algebra.elemental_algebra Algebra.elementalAlgebra
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgebra R x :=
   SetLike.le_def.mp (Subalgebra.le_topologicalClosure (Algebra.adjoin R ({x} : Set A))) <|
     Algebra.self_mem_adjoin_singleton R x

@@ -2,17 +2,14 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.order.lemmas
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Set.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
+
+#align_import data.nat.order.lemmas from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Further lemmas about the natural numbers
@@ -86,17 +83,15 @@ protected theorem div_eq_zero_iff {a b : ℕ} (hb : 0 < b) : a / b = 0 ↔ a < b
       mul_zero, add_zero]⟩
 #align nat.div_eq_zero_iff Nat.div_eq_zero_iff
 
-protected theorem div_eq_zero {a b : ℕ} (hb : a < b) : a / b = 0 :=
-  (Nat.div_eq_zero_iff <| (zero_le a).trans_lt hb).mpr hb
-#align nat.div_eq_zero Nat.div_eq_zero
+protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
+  rw [ne_eq, Nat.div_eq_zero_iff hb.bot_lt, not_lt]
+
+protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
+  rw [pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
+
+#align nat.div_eq_zero Nat.div_eq_of_lt
 
 /-! ### `mod`, `dvd` -/
-
-
-@[simp]
-protected theorem dvd_one {n : ℕ} : n ∣ 1 ↔ n = 1 :=
-  ⟨eq_one_of_dvd_one, fun e => e.symm ▸ dvd_rfl⟩
-#align nat.dvd_one Nat.dvd_one
 
 set_option linter.deprecated false in
 @[simp]
@@ -120,7 +115,7 @@ protected theorem dvd_add_self_right {m n : ℕ} : m ∣ n + m ↔ m ∣ n :=
 
 -- TODO: update `Nat.dvd_sub` in core
 theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
-  cases' le_total n m with H H
+  rcases le_total n m with H | H
   · exact dvd_sub H h₁ h₂
   · rw [tsub_eq_zero_iff_le.mpr H]
     exact dvd_zero k
@@ -222,11 +217,6 @@ theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b :=
   exact mul_le_mul_left' (lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
-@[simp]
-theorem mod_div_self (m n : ℕ) : m % n / n = 0 := by
-  cases n
-  · exact (m % 0).div_zero
-  · case succ n => exact Nat.div_eq_zero (m.mod_lt n.succ_pos)
 #align nat.mod_div_self Nat.mod_div_self
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/

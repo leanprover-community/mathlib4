@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module data.polynomial.expand
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import data.polynomial.expand from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -25,7 +22,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 universe u v w
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
@@ -88,7 +85,7 @@ theorem expand_one (f : R[X]) : expand R 1 f = f :=
     rw [AlgHom.map_mul, expand_C, AlgHom.map_pow, expand_X, pow_one]
 #align polynomial.expand_one Polynomial.expand_one
 
-theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p^[q]) f :=
+theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
   Nat.recOn q (by rw [pow_zero, expand_one, Function.iterate_zero, id]) fun n ih => by
     rw [Function.iterate_succ_apply', pow_succ, expand_mul, ih]
 #align polynomial.expand_pow Polynomial.expand_pow
@@ -152,10 +149,10 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.expand_eq_C Polynomial.expand_eq_C
 
 theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
-  cases' p.eq_zero_or_pos with hp hp
-  · rw [hp, coe_expand, pow_zero, MulZeroClass.mul_zero, ← C_1, eval₂_hom, natDegree_C]
+  rcases p.eq_zero_or_pos with hp | hp
+  · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
-  · rw [hf, AlgHom.map_zero, natDegree_zero, MulZeroClass.zero_mul]
+  · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]
   have hf1 : expand R p f ≠ 0 := mt (expand_eq_zero hp).1 hf
   rw [← WithBot.coe_eq_coe]
   convert (degree_eq_natDegree hf1).symm -- Porting note: was `rw [degree_eq_natDegree hf1]`
@@ -173,9 +170,14 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
     exact mt leadingCoeff_eq_zero.1 hf
 #align polynomial.nat_degree_expand Polynomial.natDegree_expand
 
-theorem Monic.expand {p : ℕ} {f : R[X]} (hp : 0 < p) (h : f.Monic) : (expand R p f).Monic := by
-  rw [Monic.def, Polynomial.leadingCoeff, natDegree_expand, coeff_expand hp]
-  simp [hp, h]
+theorem leadingCoeff_expand {p : ℕ} {f : R[X]} (hp : 0 < p) :
+    (expand R p f).leadingCoeff = f.leadingCoeff := by
+  simp_rw [leadingCoeff, natDegree_expand, coeff_expand_mul hp]
+
+theorem monic_expand_iff {p : ℕ} {f : R[X]} (hp : 0 < p) : (expand R p f).Monic ↔ f.Monic := by
+  simp only [Monic, leadingCoeff_expand hp]
+
+alias ⟨_, Monic.expand⟩ := monic_expand_iff
 #align polynomial.monic.expand Polynomial.Monic.expand
 
 theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
@@ -194,7 +196,7 @@ theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval 
 #align polynomial.expand_eval Polynomial.expand_eval
 
 @[simp]
-theorem expand_aeval {A : Type _} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
+theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
     aeval r (expand R p P) = aeval (r ^ p) P := by
   refine' Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => _) fun n a _ => by simp
   rw [AlgHom.map_add, aeval_add, aeval_add, hf, hg]

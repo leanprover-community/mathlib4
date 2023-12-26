@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.elements
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PUnit
+
+#align_import category_theory.elements from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # The category of elements
@@ -64,7 +61,7 @@ lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst =
  -/
 instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
-  id p := ⟨𝟙 p.1, by aesop_cat⟩ -- porting note: was `obviously`
+  id p := ⟨𝟙 p.1, by aesop_cat⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 #align category_theory.category_of_elements CategoryTheory.categoryOfElements
 
@@ -88,14 +85,14 @@ theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = �
 
 end CategoryOfElements
 
-noncomputable instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
+instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
     Groupoid F.Elements
     where
   inv {p q} f :=
-    ⟨inv f.val,
+    ⟨Groupoid.inv f.val,
       calc
-        F.map (inv f.val) q.2 = F.map (inv f.val) (F.map f.val p.2) := by rw [f.2]
-        _ = (F.map f.val ≫ F.map (inv f.val)) p.2 := rfl
+        F.map (Groupoid.inv f.val) q.2 = F.map (Groupoid.inv f.val) (F.map f.val p.2) := by rw [f.2]
+        _ = (F.map f.val ≫ F.map (Groupoid.inv f.val)) p.2 := rfl
         _ = p.2 := by
           rw [← F.map_comp]
           simp
@@ -176,9 +173,8 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
   unitIso_inv counitIso_hom counitIso_inv]
 def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
   Equivalence.mk (toStructuredArrow F) (fromStructuredArrow F)
-    (NatIso.ofComponents (fun X => eqToIso (by aesop_cat)) (by aesop_cat))
-    (NatIso.ofComponents (fun X => StructuredArrow.isoMk (Iso.refl _)
-    (by aesop_cat)) (by aesop_cat))
+    (NatIso.ofComponents fun X => eqToIso (by aesop_cat))
+    (NatIso.ofComponents fun X => StructuredArrow.isoMk (Iso.refl _))
 #align category_theory.category_of_elements.structured_arrow_equivalence CategoryTheory.CategoryOfElements.structuredArrowEquivalence
 
 open Opposite
@@ -250,9 +246,7 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     ext x f
     convert congr_fun (X_hom.naturality f.op).symm (𝟙 X_left)
     simp
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · aesop
 #align category_theory.category_of_elements.to_from_costructured_arrow_eq CategoryTheory.CategoryOfElements.to_fromCostructuredArrow_eq
 
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
@@ -279,9 +273,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     congr
     ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · simp [autoParam]
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence_naturality CategoryTheory.CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality
 
 end CategoryOfElements

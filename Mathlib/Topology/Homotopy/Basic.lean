@@ -2,16 +2,13 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.homotopy.basic
-! leanprover-community/mathlib commit 11c53f174270aa43140c0b26dabce5fc4a253e80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
+
+#align_import topology.homotopy.basic from "leanprover-community/mathlib"@"11c53f174270aa43140c0b26dabce5fc4a253e80"
 
 /-!
 # Homotopy between functions
@@ -57,12 +54,14 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
 universe u v w x
 
-variable {F : Type _} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
+variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
@@ -89,8 +88,8 @@ section
 `f₁`.
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
-class HomotopyLike {X Y : outParam (Type _)} [TopologicalSpace X] [TopologicalSpace Y]
-    (F : Type _) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
+class HomotopyLike {X Y : outParam (Type*)} [TopologicalSpace X] [TopologicalSpace Y]
+    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -232,6 +231,10 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm =
   simp
 #align continuous_map.homotopy.symm_symm ContinuousMap.Homotopy.symm_symm
 
+theorem symm_bijective {f₀ f₁ : C(X, Y)} :
+    Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -244,8 +247,7 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (F.continuous.comp (by continuity)).continuousOn
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
-    rw [hx]
-    norm_num
+    norm_num [hx]
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
@@ -269,8 +271,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   simp only [coe_symm_eq, symm_apply]
   split_ifs with h₁ h₂ h₂
   · have ht : (t : ℝ) = 1 / 2 := by linarith
-    simp only [ht]
-    norm_num
+    norm_num [ht]
   · congr 2
     apply Subtype.ext
     simp only [coe_symm_eq]
@@ -331,7 +332,7 @@ def prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} (F : Homotopy f₀ f₁
 
 /-- Given a family of homotopies `F i` between `f₀ i : C(X, Y i)` and `f₁ i : C(X, Y i)`, returns a
 homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
-protected def pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+protected def pi {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
     (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.pi f₀) (.pi f₁) where
   toContinuousMap := .pi fun i ↦ F i
@@ -340,7 +341,7 @@ protected def pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ 
 
 /-- Given a family of homotopies `F i` between `f₀ i : C(X i, Y i)` and `f₁ i : C(X i, Y i)`,
 returns a homotopy between `ContinuousMap.piMap f₀` and `ContinuousMap.piMap f₁`. -/
-protected def piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
+protected def piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
     {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.piMap f₀) (.piMap f₁) :=
   .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
@@ -390,14 +391,14 @@ nonrec theorem prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} :
 
 /-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
 homotopic to `ContinuousMap.pi f₁`. -/
-protected theorem pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+protected theorem pi {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
     (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
     Homotopic (.pi f₀) (.pi f₁) :=
   ⟨.pi fun i ↦ (F i).some⟩
 
 /-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
 homotopic to `ContinuousMap.pi f₁`. -/
-protected theorem piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+protected theorem piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
     Homotopic (.piMap f₀) (.piMap f₁) :=
   .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
@@ -506,6 +507,10 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : F.symm.
   ext <| Homotopy.congr_fun <| Homotopy.symm_symm _
 #align continuous_map.homotopy_with.symm_symm ContinuousMap.HomotopyWith.symm_symm
 
+theorem symm_bijective {f₀ f₁ : C(X, Y)} :
+    Function.Bijective (HomotopyWith.symm : HomotopyWith f₀ f₁ P → HomotopyWith f₁ f₀ P) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `HomotopyWith f₀ f₁ P` and `HomotopyWith f₁ f₂ P`, we can define a `HomotopyWith f₀ f₂ P`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -568,6 +573,10 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P
   ⟨h.some.symm⟩
 #align continuous_map.homotopic_with.symm ContinuousMap.HomotopicWith.symm
 
+-- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
+-- the `trans` tactic could not use it.
+-- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- It could be restored by changing the argument order to `HomotopicWith P f g`.
 @[trans]
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :
     HomotopicWith f h P :=
@@ -580,7 +589,7 @@ end HomotopicWith
 A `HomotopyRel f₀ f₁ S` is a homotopy between `f₀` and `f₁` which is fixed on the points in `S`.
 -/
 abbrev HomotopyRel (f₀ f₁ : C(X, Y)) (S : Set X) :=
-  HomotopyWith f₀ f₁ fun f => ∀ x ∈ S, f x = f₀ x ∧ f x = f₁ x
+  HomotopyWith f₀ f₁ fun f ↦ ∀ x ∈ S, f x = f₀ x
 #align continuous_map.homotopy_rel ContinuousMap.HomotopyRel
 
 namespace HomotopyRel
@@ -590,11 +599,11 @@ section
 variable {f₀ f₁ : C(X, Y)} {S : Set X}
 
 theorem eq_fst (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₀ x :=
-  (F.prop t x hx).1
+  F.prop t x hx
 #align continuous_map.homotopy_rel.eq_fst ContinuousMap.HomotopyRel.eq_fst
 
-theorem eq_snd (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₁ x :=
-  (F.prop t x hx).2
+theorem eq_snd (F : HomotopyRel f₀ f₁ S) (t : I) {x : X} (hx : x ∈ S) : F (t, x) = f₁ x := by
+  rw [F.eq_fst t hx, ← F.eq_fst 1 hx, F.apply_one]
 #align continuous_map.homotopy_rel.eq_snd ContinuousMap.HomotopyRel.eq_snd
 
 theorem fst_eq_snd (F : HomotopyRel f₀ f₁ S) {x : X} (hx : x ∈ S) : f₀ x = f₁ x :=
@@ -611,7 +620,7 @@ filled in.
 -/
 @[simps!]
 def refl (f : C(X, Y)) (S : Set X) : HomotopyRel f f S :=
-  HomotopyWith.refl f fun _ _ => ⟨rfl, rfl⟩
+  HomotopyWith.refl f fun _ _ ↦ rfl
 #align continuous_map.homotopy_rel.refl ContinuousMap.HomotopyRel.refl
 
 /--
@@ -620,7 +629,7 @@ Given a `HomotopyRel f₀ f₁ S`, we can define a `HomotopyRel f₁ f₀ S` by 
 @[simps!]
 def symm (F : HomotopyRel f₀ f₁ S) : HomotopyRel f₁ f₀ S where
   toHomotopy := F.toHomotopy.symm
-  prop' := fun _ _ hx => ⟨F.eq_snd _ hx, F.eq_fst _ hx⟩
+  prop' := fun _ _ hx ↦ F.eq_snd _ hx
 #align continuous_map.homotopy_rel.symm ContinuousMap.HomotopyRel.symm
 
 @[simp]
@@ -628,17 +637,20 @@ theorem symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=
   HomotopyWith.symm_symm F
 #align continuous_map.homotopy_rel.symm_symm ContinuousMap.HomotopyRel.symm_symm
 
+theorem symm_bijective :
+    Function.Bijective (HomotopyRel.symm : HomotopyRel f₀ f₁ S → HomotopyRel f₁ f₀ S) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- Given `HomotopyRel f₀ f₁ S` and `HomotopyRel f₁ f₂ S`, we can define a `HomotopyRel f₀ f₂ S`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
-def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : HomotopyRel f₀ f₂ S :=
-  { Homotopy.trans F.toHomotopy G.toHomotopy with
-    prop' := fun t x hx => by
-      simp only [Homotopy.trans]
-      change (⟨fun _ => ite ((t : ℝ) ≤ _) _ _, _⟩ : C(X, Y)) _ = _ ∧ _ = _
-      split_ifs
-      · simp [(HomotopyWith.extendProp F (2 * t) x hx).1, F.fst_eq_snd hx, G.fst_eq_snd hx]
-      · simp [(HomotopyWith.extendProp G (2 * t - 1) x hx).1, F.fst_eq_snd hx, G.fst_eq_snd hx] }
+def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : HomotopyRel f₀ f₂ S where
+  toHomotopy := F.toHomotopy.trans G.toHomotopy
+  prop' t x hx := by
+    simp only [Homotopy.trans]
+    split_ifs
+    · simp [HomotopyWith.extendProp F (2 * t) x hx, F.fst_eq_snd hx, G.fst_eq_snd hx]
+    · simp [HomotopyWith.extendProp G (2 * t - 1) x hx, F.fst_eq_snd hx, G.fst_eq_snd hx]
 #align continuous_map.homotopy_rel.trans ContinuousMap.HomotopyRel.trans
 
 theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) (x : I × X) :
@@ -663,6 +675,12 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
   toHomotopy := Homotopy.cast F.toHomotopy h₀ h₁
   prop' t x hx := by simpa only [← h₀, ← h₁] using F.prop t x hx
 #align continuous_map.homotopy_rel.cast ContinuousMap.HomotopyRel.cast
+
+/-- Post-compose a homotopy relative to a set by a continuous function. -/
+@[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
+    (g.comp f₀).HomotopyRel (g.comp f₁) S where
+  toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
+  prop' t x hx := congr_arg g (F.prop t x hx)
 
 end HomotopyRel
 

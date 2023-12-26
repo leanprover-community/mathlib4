@@ -2,12 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
-Ported by: E.W.Ayers
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.Array.Defs
-import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
@@ -16,8 +14,8 @@ import Std.Data.Option.Basic
 import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
-import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
-import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
+import Std.Tactic.Relation.Rfl -- just to copy the attribute
+import Std.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -30,19 +28,21 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Command Std
 
-/-- The  `to_additive_ignore_args` attribute. -/
+/-- The `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-/-- The  `to_additive_relevant_arg` attribute. -/
+/-- The `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-/-- The  `to_additive_reorder` attribute. -/
+/-- The `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
-/-- The  `to_additive_change_numeral` attribute. -/
+/-- The `to_additive_change_numeral` attribute. -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
-/-- An `reorder := ...` option for `to_additive`. -/
+/-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
@@ -58,7 +58,7 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
-  of a lower-case letter followed by a upper-case letter.
+  of a lower-case letter followed by an upper-case letter.
 * If multiple strings have the same prefix, they should be grouped by prefix
 * In this case, the second list should be prefix-free
   (no element can be a prefix of a later element)
@@ -66,15 +66,15 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 Todo: automate the translation from `String` to an element in this `RBMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
 def endCapitalNames : Lean.RBMap String (List String) compare :=
--- todo: we want something like
--- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
-.ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
+  -- todo: we want something like
+  -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
+  .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
 
 /--
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
@@ -95,7 +95,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -106,7 +106,7 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `reorder` attribute is not given manually -/
 register_option linter.toAdditiveReorder : Bool := {
   defValue := true
   descr := "Linter to check that the reorder attribute is not given manually." }
@@ -118,7 +118,7 @@ register_option linter.existingAttributeWarning : Bool := {
   descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration " ++
     "doesn't have certain attributes" }
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `to_additive` attribute is not given manually -/
 register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++
@@ -285,16 +285,14 @@ open Lean.Expr.FindImpl in
   Note that this function is still called many times by `applyReplacementFun`
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
-  let size := cacheSize
-  let rec visit (e : Expr) (inApp := false) : OptionT FindM Unit := do
+  (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
+  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
       else
-        return
-    if ← visited e size then
-      failure
+        return e.constName
+    checkVisited e
     match e with
     | x@(.app e a)       =>
         visit e true <|> do
@@ -311,10 +309,10 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | _                  => failure
-  Option.isNone <| Id.run <| (visit e).run' initCache
+  Id.run <| (visit e).run' mkPtrSet
 
 /--
-`additiveTest e` tests whether the expression `e` contains no constant
+`additiveTest e` tests whether the expression `e` contains a constant
 `nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
 constants if `additiveTest` applied to their first argument returns `true`.
@@ -323,20 +321,20 @@ e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
 -/
 def additiveTest (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
+    (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
-| []      => []
-| [x]     => [x]
-| x::y::l => y::x::l
+  | []      => []
+  | [x]     => [x]
+  | x::y::l => y::x::l
 
 /-- Change the numeral `nat_lit 1` to the numeral `nat_lit 0`.
 Leave all other expressions unchanged. -/
 def changeNumeral : Expr → Expr
-| .lit (.natVal 1) => mkRawNatLit 0
-| e                => e
+  | .lit (.natVal 1) => mkRawNatLit 0
+  | e                => e
 
 /--
 `applyReplacementFun e` replaces the expression `e` with its additive counterpart.
@@ -388,25 +386,28 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst &&
-              not (additiveTest findTranslation? ignore gAllArgs[relevantArgId]!) then Id.run <| do
-              if trace then
-                dbg_trace
-                  s!"{gAllArgs[relevantArgId]!} contains a fixed type, so {nm} is not changed"
-              gf
+            if relevantArgId < gAllArgs.size && gf.isConst then
+              if let some fxd := additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
+                Id.run <| do
+                  if trace then
+                    dbg_trace s!"The application of {nm} contains the fixed type {fxd
+                      }, so it is not changed"
+                  gf
+              else
+                r gf
             else
               r gf
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
+            (additiveTest findTranslation? ignore gAllArgs[relevantArgId]!).isNone then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
           if let some changedArgNrs := changeNumeral? nm then
-            if additiveTest findTranslation? ignore firstArg then
+            if additiveTest findTranslation? ignore firstArg |>.isNone then
               if trace then
                 dbg_trace s!"applyReplacementFun: We change the numerals in this expression. {
                   ""}However, we will still recurse into all the non-numeral arguments."
@@ -431,7 +432,7 @@ where /-- Implementation of `applyReplacementFun`. -/
     | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
-def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
+def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
   forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
@@ -460,7 +461,7 @@ def expand (e : Expr) : MetaM Expr := do
       trace[to_additive_detail] "expanded {e} to {e'}"
       return .continue e'
   if e != e₂ then
-    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
+    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -478,9 +479,8 @@ def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr :=
     mkLambdaFVars (xs.permute! reorder) e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl
-  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := [])
-  : MetaM ConstantInfo := do
+def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+    MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
@@ -523,12 +523,12 @@ The last example may or may not be the equation lemma of a declaration with the 
 attribute. We will only translate it has the `@[to_additive]` attribute.
 -/
 def findAuxDecls (e : Expr) (pre mainModule : Name) : NameSet :=
-let auxLemma := mainModule ++ `_auxLemma
-e.foldConsts ∅ fun n l ↦
-  if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n || n.hasMacroScopes then
-    l.insert n
-  else
-    l
+  let auxLemma := mainModule ++ `_auxLemma
+  e.foldConsts ∅ fun n l ↦
+    if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n || n.hasMacroScopes then
+      l.insert n
+    else
+      l
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
@@ -536,7 +536,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+    (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[to_additive_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -615,7 +615,7 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
 def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
-  (thisAttr attrName src tgt : Name) : CoreM Unit := do
+    (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (ext.getState (← getEnv)) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. {
@@ -628,19 +628,19 @@ def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ
 
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
 def warnAttr [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
-  (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
+    (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src tgt
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
 def warnParametricAttr (stx : Syntax) (attr : ParametricAttribute β)
-  (thisAttr attrName src tgt : Name) : CoreM Unit :=
+    (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
 /-- `runAndAdditivize names desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
-  (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
+    (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
@@ -708,40 +708,43 @@ capitalization of the input. Input and first element should therefore be lower-c
 2nd element should be capitalized properly.
 -/
 def nameDict : String → List String
-| "one"         => ["zero"]
-| "mul"         => ["add"]
-| "smul"        => ["vadd"]
-| "inv"         => ["neg"]
-| "div"         => ["sub"]
-| "prod"        => ["sum"]
-| "hmul"        => ["hadd"]
-| "hsmul"       => ["hvadd"]
-| "hdiv"        => ["hsub"]
-| "hpow"        => ["hsmul"]
-| "finprod"     => ["finsum"]
-| "pow"         => ["nsmul"]
-| "npow"        => ["nsmul"]
-| "zpow"        => ["zsmul"]
-| "monoid"      => ["add", "Monoid"]
-| "submonoid"   => ["add", "Submonoid"]
-| "group"       => ["add", "Group"]
-| "subgroup"    => ["add", "Subgroup"]
-| "semigroup"   => ["add", "Semigroup"]
-| "magma"       => ["add", "Magma"]
-| "haar"        => ["add", "Haar"]
-| "prehaar"     => ["add", "Prehaar"]
-| "unit"        => ["add", "Unit"]
-| "units"       => ["add", "Units"]
-| "rootable"    => ["divisible"]
-| x             => [x]
+  | "one"         => ["zero"]
+  | "mul"         => ["add"]
+  | "smul"        => ["vadd"]
+  | "inv"         => ["neg"]
+  | "div"         => ["sub"]
+  | "prod"        => ["sum"]
+  | "hmul"        => ["hadd"]
+  | "hsmul"       => ["hvadd"]
+  | "hdiv"        => ["hsub"]
+  | "hpow"        => ["hsmul"]
+  | "finprod"     => ["finsum"]
+  | "pow"         => ["nsmul"]
+  | "npow"        => ["nsmul"]
+  | "zpow"        => ["zsmul"]
+  | "monoid"      => ["add", "Monoid"]
+  | "submonoid"   => ["add", "Submonoid"]
+  | "group"       => ["add", "Group"]
+  | "subgroup"    => ["add", "Subgroup"]
+  | "semigroup"   => ["add", "Semigroup"]
+  | "magma"       => ["add", "Magma"]
+  | "haar"        => ["add", "Haar"]
+  | "prehaar"     => ["add", "Prehaar"]
+  | "unit"        => ["add", "Unit"]
+  | "units"       => ["add", "Units"]
+  | "cyclic"      => ["add", "Cyclic"]
+  | "rootable"    => ["divisible"]
+  | "commute"     => ["add", "Commute"]
+  | "semiconj"    => ["add", "Semiconj"]
+  | x             => [x]
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
 def applyNameDict : List String → List String
-| x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
-| [] => []
+  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
+  | [] => []
 
 /--
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
@@ -751,62 +754,68 @@ Todo: A lot of abbreviations here are manual fixes and there might be room to
       improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
-| "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
-| "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
-| "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
-| "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
-| "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
-| "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
-| "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
-| "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
-| "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
-| "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
-| "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
-| "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
-| "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
-| "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
-| "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
-| "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
-| "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
-| "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
-| "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
-| "add" :: "Single" :: s            => "single" :: fixAbbreviation s
-| "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
-| "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
-| "add" :: "Support" :: s           => "support" :: fixAbbreviation s
-| "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
-| "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
-| "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
-| "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
-| "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
-| "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
-| "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
-| "is" :: "Square" :: s             => "even" :: fixAbbreviation s
-| "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
--- "Regular" is well-used in mathlib3 with various meanings (e.g. in
--- measure theory) and a direct translation
--- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
-| "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
-| "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
-| "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
-| "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
-| "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
-| "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
--- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
-| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
-| "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
-| "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
-| "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
-| "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
-| "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
-| "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
-| "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
-| "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
-| "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
-| "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
-| "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
-| x :: s                            => x :: fixAbbreviation s
-| []                                => []
+  | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
+  | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
+  | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
+  | "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
+  | "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
+  | "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
+  | "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
+  | "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
+  | "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
+  | "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
+  | "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
+  | "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
+  | "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
+  | "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
+  | "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
+  | "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
+  | "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
+  | "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
+  | "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
+  | "add" :: "Single" :: s            => "single" :: fixAbbreviation s
+  | "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
+  | "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
+  | "add" :: "Support" :: s           => "support" :: fixAbbreviation s
+  | "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
+  | "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
+  | "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
+  | "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
+  | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
+  | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
+  | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+  | "is" :: "Square" :: s             => "even" :: fixAbbreviation s
+  | "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
+  -- "Regular" is well-used in mathlib3 with various meanings (e.g. in
+  -- measure theory) and a direct translation
+  -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
+  | "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
+  | "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
+  | "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
+  | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
+  | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
+  | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
+  | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
+  | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
+  | "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
+  | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
+  | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
+  | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+  | "unique" :: "Prods" :: s          => "uniqueSums" :: fixAbbreviation s
+  | "Unique" :: "Prods" :: s          => "UniqueSums" :: fixAbbreviation s
+  | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
+  | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
+  | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
+  | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
+  | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
+  | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Semiconj" :: s
+                                      => "function" :: "_" :: "semiconj" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Commute" :: s
+                                      => "function" :: "_" :: "commute" :: fixAbbreviation s
+  | x :: s                            => x :: fixAbbreviation s
+  | []                                => []
 
 /--
 Autogenerate additive name.
@@ -911,11 +920,11 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         ""}calling @[{thisAttr}]. The preferred method is to use {
         ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
         src} and the target declaration {tgt}."
-    warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
-      thisAttr `ext src tgt
-    warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
-    warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
-    warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
+    warnAttr stx Std.Tactic.Ext.extExtension
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
+    warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Std.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
@@ -948,7 +957,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     let env ← getEnv
     match getAttributeImpl env attr.name with
     | Except.error errMsg => throwError errMsg
-    | Except.ok attrImpl  =>
+    | Except.ok attrImpl =>
       let runAttr := do
         attrImpl.add src attr.stx attr.kind
         attrImpl.add tgt attr.stx attr.kind
@@ -1086,7 +1095,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
@@ -1096,7 +1105,7 @@ attribute is added to the generated lemma only, to additivize it again.
 This is useful for lemmas about `Pow` to generate both lemmas about `SMul` and `VAdd`. Example:
 ```
 @[to_additive (attr := to_additive VAdd_lemma, simp) SMul_lemma]
-lemma Pow_lemma ...
+lemma Pow_lemma ... :=
 ```
 In the above example, the `simp` is added to all 3 lemmas. All other options to `to_additive`
 (like the generated name or `(reorder := ...)`) are not passed down,
@@ -1126,7 +1135,7 @@ mapped to its additive version. The basic heuristic is
 
 Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
-  first argument is `ℕ`, an identifier not applied to any arguments.
+  first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
   `prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
@@ -1144,9 +1153,9 @@ There are some exceptions to this heuristic:
   declaration when the first argument has no multiplicative type-class, but argument `n` does.
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
-  For example, `cont_mdiff_map` has attribute `@[to_additive_ignore_args 21]`, which means
-  that its 21st argument `(n : WithTop Nat)` can contain `ℕ`
-  (usually in the form `Top.top Nat ...`) and still be additivized.
+  For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
+  that its 21st argument `(n : WithTop ℕ)` can contain `ℕ`
+  (usually in the form `Top.top ℕ ...`) and still be additivized.
   So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
 
 ### Troubleshooting
@@ -1156,7 +1165,23 @@ various things you can try.
 The first thing to do is to figure out what `@[to_additive]` did wrong by looking at the type
 mismatch error.
 
-* Option 1: It additivized a declaration `d` that should remain multiplicative. Solution:
+* Option 1: The most common case is that it didn't additivize a declaration that should be
+  additivized. This happened because the heuristic applied, and the first argument contains a
+  fixed type, like `ℕ` or `ℝ`. However, the heuristic misfires on some other declarations.
+  Solutions:
+  * First figure out what the fixed type is in the first argument of the declaration that didn't
+    get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
+    it is hard, you can run `set_option trace.to_additive_detail true` and search the output for the
+    fragment "contains the fixed type" to find what the fixed type is.
+  * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
+    attribute.
+  * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
+    `@[to_additive existing Foo]` to the fixed type `Foo`.
+  * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
+    `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
+    attribute `[to_additive_ignore_args k]` to `d`.
+    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
+* Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
     multiplicative structure (and not some indexing type)?
@@ -1166,20 +1191,13 @@ mismatch error.
     should have automatically added the attribute `@[to_additive_relevant_arg]` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
     ```
-      #eval (do isRelevant `d >>= trace)
+      open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
     ```
-    The expected output is `n` where the `n`-th argument of `d` is a type (family) with a
-    multiplicative structure on it. If you get a different output (or a failure), you could add
-    the attribute `@[to_additive_relevant_arg n]` manually, where `n` is an argument with a
+    The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
+    with a multiplicative structure on it. `none` means `0`.
+    If you get a different output (or a failure), you could add the attribute
+    `@[to_additive_relevant_arg n]` manually, where `n` is an (1-indexed) argument with a
     multiplicative structure.
-* Option 2: It didn't additivize a declaration that should be additivized.
-  This happened because the heuristic applied, and the first argument contains a fixed type,
-  like `ℕ` or `ℝ`. Solutions:
-  * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
-    attribute.
-  * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
-    `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
-    attribute `[to_additive_ignore_args k]` to `d`.
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the

@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.halting
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.PartrecCode
+
+#align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
 /-!
 # Computability theory and the halting problem
@@ -64,7 +61,7 @@ end Nat.Partrec
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -164,7 +161,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type _} {σ : Type _}
+variable {α : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable σ]
 
@@ -183,7 +180,7 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
   exact
     ⟨by infer_instance,
       (cond hf (const false) (const true)).of_eq fun n => by
-        simp
+        simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
 #align computable_pred.not ComputablePred.not
 
@@ -197,6 +194,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   cases a; cases f n <;> simp
 #align computable_pred.to_re ComputablePred.to_re
 
+/-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   cases' h with _ h; skip
@@ -204,7 +202,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp at e
+  simp? at e says simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C
   · simp only [H, if_true] at e
     change (fun b => g b) ∈ C
@@ -232,10 +230,12 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
             exact ⟨by infer_instance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
+/-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 #align computable_pred.halting_problem_re ComputablePred.halting_problem_re
 
+/-- The **Halting problem** is not computable -/
 theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 #align computable_pred.halting_problem ComputablePred.halting_problem
@@ -252,11 +252,13 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
         Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
         (by
           intro a x hx y hy
-          simp at hx hy
+          simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
+            and_true, exists_const] at hx hy
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]
-        simp
+        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
         apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
@@ -336,8 +338,6 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
   simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
 #align nat.partrec'.map Nat.Partrec'.map
 
-attribute [-instance] Part.instZeroPart
-
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions.-/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
@@ -382,8 +382,7 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
         exists_congr fun a => (and_congr (iff_of_eq _) Iff.rfl).trans (and_congr_right fun h => _)
       · congr
         funext n
-        simp only [Part.some_inj, PFun.coe_val]
-        cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ]; rfl
+        cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ] <;> rfl
       · have := Nat.rfind_spec h
         simp only [Part.coe_some, Part.mem_some_iff] at this
         revert this; cases' f (a ::ᵥ v) with c <;> intro this
