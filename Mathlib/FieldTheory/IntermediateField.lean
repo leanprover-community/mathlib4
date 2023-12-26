@@ -403,10 +403,10 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
 
 section shortcut_instances
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
-instance alg : Algebra S T := T.algebra
-instance mod : Module S T := Algebra.toModule
-instance smul : SMul S T := Algebra.toSMul
-instance st [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+instance : Algebra S T := T.algebra
+instance : Module S T := Algebra.toModule
+instance : SMul S T := Algebra.toSMul
+instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
