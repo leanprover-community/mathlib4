@@ -251,11 +251,9 @@ theorem mem_toPointedCone_iff_eq_pos_convex_span {x : E} : (x ∈ s.toPointedCon
       conv_rhs => rw [← hf, ← this, ← Finset.sum_coe_sort]
   · rintro ⟨ι, _, f, c, _, -, hc, sum⟩
     rw [mem_span_set']
-    set eq := (@Fintype.equivFin ι).symm with heq
+    let eq := (@Fintype.equivFin ι).symm
     lift f to (ι → s)
     · aesop
     use (Fintype.card ι), fun x => ⟨(c ∘ eq) x, le_of_lt <| hc _⟩, f ∘ eq.1
     convert sum
-    have := @Equiv.sum_comp (Fin (Fintype.card ι)) ι E _ _ _ (@Fintype.equivFin ι _).symm
-      (fun x => c x • f x)
-    rwa [← heq] at this
+    exact @Equiv.sum_comp (Fin (Fintype.card ι)) ι E _ _ _ eq (fun x => c x • f x)
