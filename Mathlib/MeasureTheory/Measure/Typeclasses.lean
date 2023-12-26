@@ -283,8 +283,11 @@ theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
   prob_compl_eq_zero_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_zero_iff MeasureTheory.prob_compl_eq_zero_iff
 
-@[simp] lemma prob_compl_eq_one_iff (hs : MeasurableSet s) : μ sᶜ = 1 ↔ μ s = 0 := by
-  rw [← prob_compl_eq_zero_iff hs.compl, compl_compl]
+@[simp] lemma prob_compl_eq_one_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 1 ↔ μ s = 0 := by
+  rw [← prob_compl_eq_zero_iff₀ hs.compl, compl_compl]
+
+@[simp] lemma prob_compl_eq_one_iff (hs : MeasurableSet s) : μ sᶜ = 1 ↔ μ s = 0 :=
+  prob_compl_eq_one_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_iff MeasureTheory.prob_compl_eq_one_iff
 
 lemma mem_ae_iff_prob_eq_one₀ (hs : NullMeasurableSet s μ) : s ∈ μ.ae ↔ μ s = 1 :=
@@ -312,12 +315,9 @@ instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
     IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
 
 instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
-    IsProbabilityMeasure (μ.comap ULift.down) := by
-  refine isProbabilityMeasure_comap ?_ ?_ $ by
-    rintro s hs
-    change MeasurableSet (ULift.down ⁻¹' (ULift.down '' s))
-    rwa [Set.preimage_image_eq _ ULift.down_injective]
-  all_goals simp [ULift.down_injective]
+    IsProbabilityMeasure (μ.comap ULift.down) :=
+  MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
+    simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
 end IsProbabilityMeasure
 
