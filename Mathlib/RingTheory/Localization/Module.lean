@@ -167,7 +167,7 @@ theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ ((algebraMap A Aₛ) ∘ v) := by
   have : IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
     IsLocalizedModule_of_isScalarTower S Aₛ
-  exact hv.isLocalizedModule Rₛ S _ (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
+  exact hv.isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 #align linear_independent.localization_localization LinearIndependent.localization_localization
 
 theorem SpanEqTop.localization_localization {v : Set A} (hv : span R v = ⊤) :
