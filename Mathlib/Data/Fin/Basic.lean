@@ -1546,7 +1546,8 @@ theorem succAbove_pos (p : Fin (n + 2)) (i : Fin (n + 1)) (h : 0 < i) : 0 < p.su
   [rw [succAbove_below _ _ H]; rw [succAbove_above _ _ H]]
   exacts [castSucc_pos h, Fin.succ_pos _]
 
-theorem succAbove_pos' [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) : 0 < p.succAbove i := by
+theorem succAbove_pos' [NeZero n] (p : Fin (n + 1)) (i : Fin n) (h : 0 < i) :
+    0 < p.succAbove i := by
   cases' lt_or_le (castSucc i) p with H H <;>
   [rw [succAbove_below _ _ H]; rw [succAbove_above _ _ H]]
   exacts [castSucc_pos' h, Fin.succ_pos _]
