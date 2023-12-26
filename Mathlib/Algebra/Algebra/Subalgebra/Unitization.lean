@@ -322,7 +322,7 @@ theorem starLift_range_le
     (starLift f).range ≤ S ↔ NonUnitalStarAlgHom.range f ≤ S.toNonUnitalStarSubalgebra := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rintro - ⟨x, rfl⟩
-    exact @h (f x) ⟨x, by simp [lift]; rfl⟩
+    exact @h (f x) ⟨x, by simp [lift]⟩
   · rintro - ⟨x, rfl⟩
     induction x using ind with
     | _ r a => simpa [lift] using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
