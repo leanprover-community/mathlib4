@@ -421,6 +421,11 @@ theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
   exact isEmptyElim (α := α)
 #align measure_theory.measure.pi_of_empty MeasureTheory.Measure.pi_of_empty
 
+lemma volume_pi_eq_dirac {ι : Type*} [Fintype ι] [IsEmpty ι]
+    {α : ι → Type*} [∀ i, MeasureSpace (α i)] (x : ∀ a, α a := isEmptyElim) :
+    (volume : Measure (∀ i, α i)) = Measure.dirac x :=
+  Measure.pi_of_empty _ _
+
 @[simp]
 theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     {m : ∀ α, MeasurableSpace (β α)} (μ : ∀ a : α, Measure (β a)) :
