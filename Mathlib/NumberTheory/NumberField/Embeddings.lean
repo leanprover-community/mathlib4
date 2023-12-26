@@ -156,7 +156,7 @@ open Complex NumberField
 
 open scoped ComplexConjugate
 
-variable {K : Type*} [Field K]
+variable {K : Type*} [Field K] {k : Type*} [Field k]
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 @[reducible]
@@ -203,13 +203,31 @@ theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) 
     exact RingHom.congr_fun hφ x
 #align number_field.complex_embedding.is_real.coe_embedding_apply NumberField.ComplexEmbedding.IsReal.coe_embedding_apply
 
+lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
+    IsReal (φ.comp f) := by ext1 x; simpa using RingHom.congr_fun hφ (f x)
+
+lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
+    IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
+  ⟨fun H ↦ by convert H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
+
+lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
+    (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
+    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
+  letI := (φ.comp (algebraMap k K)).toAlgebra
+  letI := φ.toAlgebra
+  have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
+  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
+  use (AlgHom.restrictNormal' ψ' K).symm
+  ext1 x
+  exact AlgHom.restrictNormal_commutes ψ' K x
+
 end NumberField.ComplexEmbedding
 
 section InfinitePlace
 
 open NumberField
 
-variable (K : Type*) [Field K]
+variable (K : Type*) [Field K] {k : Type*} [Field k] {F : Type*} [Field F]
 
 /-- An infinite place of a number field `K` is a place associated to a complex embedding. -/
 def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
@@ -380,12 +398,17 @@ theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
   rw [not_isReal_iff_isComplex]
   exact ⟨φ, h, rfl⟩
 
+lemma isReal_mk_iff {φ : K →+* ℂ} :
+    IsReal (mk φ) ↔ ComplexEmbedding.IsReal φ :=
+  ⟨isReal_of_mk_isReal, fun H ↦ ⟨_, H, rfl⟩⟩
+
+lemma isComplex_mk_iff {φ : K →+* ℂ} :
+    IsComplex (mk φ) ↔ ¬ ComplexEmbedding.IsReal φ :=
+  not_isReal_iff_isComplex.symm.trans isReal_mk_iff.not
+
 @[simp]
 theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
-    ¬ ComplexEmbedding.IsReal φ := by
-  contrapose! h
-  rw [← not_isReal_iff_isComplex.not, not_not]
-  exact ⟨φ, h, rfl⟩
+    ¬ ComplexEmbedding.IsReal φ := by rwa [← isComplex_mk_iff]
 
 /-- The multiplicity of an infinite place, that is the number of distinct complex embeddings that
 define it, see `card_filter_mk_eq`. -/
@@ -501,6 +524,107 @@ theorem card_add_two_mul_card_eq_rank :
   rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
+
+variable {K}
+
+/-- The restriction of an infinite place along an embedding. -/
+def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
+  ⟨w.1.comp f.injective, w.embedding.comp f,
+    by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
+
+@[simp]
+lemma comap_mk (φ : K →+* ℂ) (f : k →+* K) : (mk φ).comap f = mk (φ.comp f) := rfl
+
+lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
+    w.comap (f.comp g) = (w.comap f).comap g := rfl
+
+lemma IsReal.comap (f : k →+* K) {w : InfinitePlace K} (hφ : IsReal w) :
+    IsReal (w.comap f) := by
+  rw [← mk_embedding w, comap_mk, isReal_mk_iff]
+  rw [← mk_embedding w, isReal_mk_iff] at hφ
+  exact hφ.comp f
+
+lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
+    IsReal (w.comap (f : k →+* K)) ↔ IsReal w := by
+  rw [← mk_embedding w, comap_mk, isReal_mk_iff, isReal_mk_iff, ComplexEmbedding.isReal_comp_iff]
+
+lemma comap_surjective [Algebra k K] (h : Algebra.IsAlgebraic k K) :
+    Function.Surjective (comap · (algebraMap k K)) := fun w ↦
+  letI := w.embedding.toAlgebra
+  ⟨mk (IsAlgClosed.lift (M := ℂ) h), by simp [comap_mk, RingHom.algebraMap_toAlgebra]⟩
+
+variable [Algebra k K] (σ : K ≃ₐ[k] K) (w : InfinitePlace K)
+
+/-- The action of the galois group on infinite places. -/
+@[simps! smul_coe_apply]
+instance : MulAction (K ≃ₐ[k] K) (InfinitePlace K) where
+  smul := fun σ w ↦ w.comap σ.symm
+  one_smul := fun _ ↦ rfl
+  mul_smul := fun _ _ _ ↦ rfl
+
+lemma smul_eq_comap : σ • w = w.comap σ.symm := rfl
+
+@[simp] lemma smul_apply (x) : (σ • w) x = w (σ.symm x) := rfl
+
+@[simp] lemma smul_mk (φ : K →+* ℂ) : σ • mk φ = mk (φ.comp σ.symm) := rfl
+
+lemma comap_smul {f : F →+* K} : (σ • w).comap f = w.comap (RingHom.comp σ.symm f) := rfl
+
+variable {σ w}
+
+lemma isReal_smul_iff : IsReal (σ • w) ↔ IsReal w := isReal_comap_iff (f := σ.symm.toRingEquiv)
+
+lemma isComplex_smul_iff : IsComplex (σ • w) ↔ IsComplex w := by
+  rw [← not_isReal_iff_isComplex, ← not_isReal_iff_isComplex, isReal_smul_iff]
+
+lemma ComplexEmbedding.exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
+    (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
+    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
+  letI := (φ.comp (algebraMap k K)).toAlgebra
+  letI := φ.toAlgebra
+  have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
+  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
+  use (AlgHom.restrictNormal' ψ' K).symm
+  ext1 x
+  exact AlgHom.restrictNormal_commutes ψ' K x
+
+lemma exists_smul_eq_of_comap_eq [Algebra k K] [IsGalois k K] (w w' : InfinitePlace K)
+    (h : w.comap (algebraMap k K) = w'.comap (algebraMap k K)) : ∃ σ : K ≃ₐ[k] K, σ • w = w' := by
+  rw [← mk_embedding w, ← mk_embedding w', comap_mk, comap_mk, mk_eq_iff] at h
+  cases h with
+  | inl h =>
+    obtain ⟨σ, hσ⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq w.embedding w'.embedding h
+    use σ
+    rw [← mk_embedding w, ← mk_embedding w', smul_mk, hσ]
+  | inr h =>
+    obtain ⟨σ, hσ⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq
+      ((starRingEnd ℂ).comp (embedding w)) w'.embedding h
+    use σ
+    rw [← mk_embedding w, ← mk_embedding w', smul_mk, mk_eq_iff]
+    exact Or.inr hσ
+
+lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
+    w' ∈ MulAction.orbit (K ≃ₐ[k] K) w ↔ w.comap (algebraMap k K) = w'.comap (algebraMap k K) := by
+  refine ⟨?_, exists_smul_eq_of_comap_eq w w'⟩
+  rintro ⟨σ, rfl : σ • w = w'⟩
+  rw [← mk_embedding w, comap_mk, smul_mk, comap_mk]
+  congr 1; ext1; simp
+
+/-- The orbits of infinite places under the action of the galois group are indexed by
+the infinite places of the base field. -/
+noncomputable
+def orbitRelEquiv [IsGalois k K] :
+    Quotient (MulAction.orbitRel (K ≃ₐ[k] K) (InfinitePlace K)) ≃ InfinitePlace k := by
+  refine Equiv.ofBijective (Quotient.lift (comap · (algebraMap k K))
+    <| fun _ _ e ↦ (mem_orbit_iff.mp e).symm) ⟨?_, ?_⟩
+  · rintro ⟨w⟩ ⟨w'⟩ e
+    exact Quotient.sound (mem_orbit_iff.mpr e.symm)
+  · intro w
+    obtain ⟨w', hw⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+    exact ⟨⟦w'⟧, hw⟩
+
+lemma orbitRelEquiv_apply_mk'' [IsGalois k K] (w : InfinitePlace K) :
+    orbitRelEquiv (Quotient.mk'' w) = comap w (algebraMap k K) := rfl
 
 end NumberField.InfinitePlace
 

@@ -32,9 +32,8 @@ compact-open, curry, function space
 -/
 
 
-open Set
-
-open Topology
+open Set Filter TopologicalSpace
+open scoped Topology
 
 namespace ContinuousMap
 
@@ -91,6 +90,23 @@ protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : 
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
 #align continuous_map.is_open_gen ContinuousMap.isOpen_gen
 
+lemma isOpen_setOf_mapsTo {K : Set α} (hK : IsCompact K) {U : Set β} (hU : IsOpen U) :
+    IsOpen {f : C(α, β) | MapsTo f K U} := by
+  simpa only [mapsTo'] using ContinuousMap.isOpen_gen hK hU
+
+lemma eventually_mapsTo {f : C(α, β)} {K U} (hK : IsCompact K) (hU : IsOpen U) (h : MapsTo f K U) :
+    ∀ᶠ g : C(α, β) in 𝓝 f, MapsTo g K U :=
+  (isOpen_setOf_mapsTo hK hU).mem_nhds h
+
+lemma tendsto_nhds_compactOpen {α : Type*} {l : Filter α} {f : α → C(β, γ)} {g : C(β, γ)} :
+    Tendsto f l (𝓝 g) ↔
+      ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
+  simp_rw [compactOpen_eq, tendsto_nhds_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+
+lemma continuous_compactOpen {f : α → C(β, γ)} :
+    Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} := by
+  simp_rw [compactOpen_eq, continuous_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+
 section Functorial
 
 variable (g : C(β, γ))
@@ -103,7 +119,7 @@ private theorem preimage_gen {s : Set α} {u : Set γ} :
 
 /-- C(α, -) is a functor. -/
 theorem continuous_comp : Continuous (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
-  continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
+  continuous_generateFrom_iff.2 fun m ⟨s, hs, u, hu, hm⟩ => by
     rw [hm, preimage_gen g]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
 
@@ -129,36 +145,27 @@ private theorem image_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpe
 
 /-- C(-, γ) is a functor. -/
 theorem continuous_comp_left : Continuous (fun g => g.comp f : C(β, γ) → C(α, γ)) :=
-  continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
+  continuous_generateFrom_iff.2 fun m ⟨s, hs, u, hu, hm⟩ => by
     rw [hm, image_gen f hs hu]
     exact ContinuousMap.isOpen_gen (hs.image f.2) hu
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
 /-- Composition is a continuous map from `C(α, β) × C(β, γ)` to `C(α, γ)`, provided that `β` is
   locally compact. This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's *Topologie Générale*. -/
-theorem continuous_comp' [LocallyCompactSpace β] :
-    Continuous fun x : C(α, β) × C(β, γ) => x.2.comp x.1 :=
-  continuous_generateFrom
-    (by
-      rintro M ⟨K, hK, U, hU, rfl⟩
-      conv =>
-        congr
-        rw [CompactOpen.gen, preimage_setOf_eq]
-        --congr
-        ext; dsimp [setOf]
-        rw [image_comp, image_subset_iff]
-      rw [isOpen_iff_forall_mem_open]
-      rintro ⟨φ₀, ψ₀⟩ H
-      obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between (hK.image φ₀.2) (hU.preimage ψ₀.2) H
-      use { φ : C(α, β) | φ '' K ⊆ interior L } ×ˢ { ψ : C(β, γ) | ψ '' L ⊆ U }
-      -- porting note: typing hint `: φ '' K ⊆ interior L` wasn't previously required
-      use fun ⟨φ, ψ⟩ ⟨(hφ : φ '' K ⊆ interior L), hψ⟩ =>
-        subset_trans hφ (interior_subset.trans <| image_subset_iff.mp hψ)
-      use (ContinuousMap.isOpen_gen hK isOpen_interior).prod (ContinuousMap.isOpen_gen hL hU)
-      exact mem_prod.mpr ⟨hKL, image_subset_iff.mpr hLU⟩)
+theorem continuous_comp' [LocallyCompactPair β γ] :
+    Continuous fun x : C(α, β) × C(β, γ) => x.2.comp x.1 := by
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
+  intro ⟨f, g⟩ K hK U hU (hKU : MapsTo (g ∘ f) K U)
+  obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
+    exists_mem_nhdsSet_isCompact_mapsTo g.continuous (hK.image f.continuous) hU
+      (mapsTo_image_iff.2 hKU)
+  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo'] at hKL
+  exact ((eventually_mapsTo hK isOpen_interior hKL).prod_nhds
+    (eventually_mapsTo hLc hU hLU)).mono fun ⟨f', g'⟩ ⟨hf', hg'⟩ ↦
+      hg'.comp <| hf'.mono_right interior_subset
 #align continuous_map.continuous_comp' ContinuousMap.continuous_comp'
 
-theorem continuous.comp' {X : Type*} [TopologicalSpace X] [LocallyCompactSpace β] {f : X → C(α, β)}
+theorem continuous.comp' {X : Type*} [TopologicalSpace X] [LocallyCompactPair β γ] {f : X → C(α, β)}
     {g : X → C(β, γ)} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg : Continuous fun x => (f x, g x))
@@ -168,30 +175,18 @@ end Functorial
 
 section Ev
 
-/-- The evaluation map `C(α, β) × α → β` is continuous if `α` is locally compact.
+/-- The evaluation map `C(α, β) × α → β` is continuous
+if `α, β` is a locally compact pair of spaces. -/
+@[continuity]
+theorem continuous_eval [LocallyCompactPair α β] : Continuous fun p : C(α, β) × α => p.1 p.2 := by
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
+  rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
+  rcases exists_mem_nhds_isCompact_mapsTo f.continuous (hU.mem_nhds hx) with ⟨K, hxK, hK, hKU⟩
+  filter_upwards [prod_mem_nhds (eventually_mapsTo hK hU hKU) hxK] using fun _ h ↦ h.1 h.2
+#align continuous_map.continuous_eval' ContinuousMap.continuous_eval
+#align continuous_map.continuous_eval ContinuousMap.continuous_eval
 
-See also `ContinuousMap.continuous_eval` -/
-theorem continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β) × α => p.1 p.2 :=
-  continuous_iff_continuousAt.mpr fun ⟨f, x⟩ n hn =>
-    let ⟨v, vn, vo, fxv⟩ := mem_nhds_iff.mp hn
-    have : v ∈ 𝓝 (f x) := IsOpen.mem_nhds vo fxv
-    let ⟨s, hs, sv, sc⟩ :=
-      LocallyCompactSpace.local_compact_nhds x (f ⁻¹' v) (f.continuous.tendsto x this)
-    let ⟨u, us, uo, xu⟩ := mem_nhds_iff.mp hs
-    show (fun p : C(α, β) × α => p.1 p.2) ⁻¹' n ∈ 𝓝 (f, x) from
-      let w := CompactOpen.gen s v ×ˢ u
-      have : w ⊆ (fun p : C(α, β) × α => p.1 p.2) ⁻¹' n := fun ⟨f', x'⟩ ⟨hf', hx'⟩ =>
-        vn <| hf' <| mem_image_of_mem f' (us hx')
-        --Porting note: The following `calc` block fails here.
-        --calc
-        --  f' x' ∈ f' '' s := mem_image_of_mem f' (us hx')
-        --  _ ⊆ v := hf'
-        --  _ ⊆ n := vn
-
-      have : IsOpen w := (ContinuousMap.isOpen_gen sc vo).prod uo
-      have : (f, x) ∈ w := ⟨image_subset_iff.mpr sv, xu⟩
-      mem_nhds_iff.mpr ⟨w, by assumption, by assumption, by assumption⟩
-#align continuous_map.continuous_eval' ContinuousMap.continuous_eval'
+@[deprecated] alias continuous_eval' := continuous_eval
 
 /-- Evaluation of a continuous map `f` at a point `a` is continuous in `f`.
 
@@ -338,7 +333,7 @@ theorem image_coev {y : β} (s : Set α) : coev α β y '' s = ({y} : Set β) ×
 
 -- The coevaluation map β → C(α, β × α) is continuous (always).
 theorem continuous_coev : Continuous (coev α β) :=
-  continuous_generateFrom <| by
+  continuous_generateFrom_iff.2 <| by
     rintro _ ⟨s, sc, u, uo, rfl⟩
     rw [isOpen_iff_forall_mem_open]
     intro y hy
@@ -395,13 +390,13 @@ theorem continuous_curry [LocallyCompactSpace (α × β)] :
   apply continuous_of_continuous_uncurry
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).symm.comp_continuous_iff']
-  exact continuous_eval'
+  exact continuous_eval
 #align continuous_map.continuous_curry ContinuousMap.continuous_curry
 
 /-- The uncurried form of a continuous map `α → C(β, γ)` is a continuous map `α × β → γ`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace β] (f : C(α, C(β, γ))) :
     Continuous (Function.uncurry fun x y => f x y) :=
-  continuous_eval'.comp <| f.continuous.prod_map continuous_id
+  continuous_eval.comp <| f.continuous.prod_map continuous_id
 #align continuous_map.continuous_uncurry_of_continuous ContinuousMap.continuous_uncurry_of_continuous
 
 /-- The uncurried form of a continuous map `α → C(β, γ)` as a continuous map `α × β → γ` (if `β` is
@@ -417,7 +412,7 @@ theorem continuous_uncurry [LocallyCompactSpace α] [LocallyCompactSpace β] :
     Continuous (uncurry : C(α, C(β, γ)) → C(α × β, γ)) := by
   apply continuous_of_continuous_uncurry
   rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
-  apply continuous_eval'.comp (continuous_eval'.prod_map continuous_id)
+  apply continuous_eval.comp (continuous_eval.prod_map continuous_id)
 #align continuous_map.continuous_uncurry ContinuousMap.continuous_uncurry
 
 /-- The family of constant maps: `β → C(α, β)` as a continuous map. -/
