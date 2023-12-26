@@ -474,7 +474,7 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
 
 /-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
 theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing
-  [IsNoetherianRing R] [LocalRing R] (I : Ideal R) : IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
+    [IsNoetherianRing R] [LocalRing R] (I : Ideal R) : IsIdempotentElem I ↔ I = ⊥ ∨ I = ⊤ := by
   constructor
   · intro H
     by_cases I = ⊤; · exact Or.inr ‹_›
