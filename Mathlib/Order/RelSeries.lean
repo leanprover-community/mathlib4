@@ -333,7 +333,8 @@ lemma monotone (x : LTSeries α) : Monotone x :=
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]
-def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α where
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
+    LTSeries α where
   toFun := toFun
   step i := strictMono <| lt_add_one i.1
 
