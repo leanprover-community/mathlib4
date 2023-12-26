@@ -2217,14 +2217,14 @@ theorem predAbove_last_apply  :
 @[simp]
 theorem predAbove_castSucc_below (p i : Fin (n + 1)) (h : i ≤ p) :
     p.predAbove (i.castSucc) = i := by
-  rw [predAbove_def, predAboveOfNe_eq_iff_predAbove?_eq_some,
-    succAbove_castSucc_above_apply _ _ h, predAbove?_below' (succ_le_succ_iff.mpr h)]
+  simp_rw [predAbove_def, succAbove_castSucc_above_apply _ _ h,
+    predAboveOfNe_below' (succ_le_succ_iff.mpr h)]
 
 @[simp]
 theorem predAbove_succ_above (p i : Fin (n + 1)) (h : p ≤ i) :
     p.predAbove (i.succ) = i := by
-  rw [predAbove_def, predAboveOfNe_eq_iff_predAbove?_eq_some,
-    succAbove_succ_below_apply _ _ h, predAbove?_above' (castSucc_le_castSucc_iff.mpr h)]
+  simp_rw [predAbove_def, succAbove_succ_below_apply _ _ h,
+    predAboveOfNe_above' (castSucc_le_castSucc_iff.mpr h)]
 
 theorem predAbove_below (p : Fin (n + 1)) (i : Fin (n + 2)) (h : i ≤ castSucc p) :
     p.predAbove i = i.castLT ((h.trans (castSucc_le_castSucc_iff.mpr (le_last _))).trans_lt
