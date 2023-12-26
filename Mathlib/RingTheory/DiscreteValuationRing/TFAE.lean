@@ -245,7 +245,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
-    cases' le_total m n with h' h'
+    rcases le_total m n with h' | h'
     · left; exact Ideal.pow_le_pow_right h'
     · right; exact Ideal.pow_le_pow_right h'
   tfae_finish

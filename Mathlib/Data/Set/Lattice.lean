@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Logic.Pairwise
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection
@@ -1683,7 +1684,7 @@ theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ (i) (_ : p i), Set α} (hp : ∃ i, p i)
+theorem InjOn.image_biInter_eq {p : ι → Prop} {s : ∀ i, p i → Set α} (hp : ∃ i, p i)
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [iInter, iInf_subtype']
@@ -2117,7 +2118,8 @@ theorem seq_singleton {s : Set (α → β)} {a : α} : Set.seq s {a} = (fun f : 
 
 theorem seq_seq {s : Set (β → γ)} {t : Set (α → β)} {u : Set α} :
     seq s (seq t u) = seq (seq ((· ∘ ·) '' s) t) u := by
-  simp only [seq_eq_image2, image2_image_left, image2_image2_left, image2_image2_right, comp_apply]
+  simp only [seq_eq_image2, image2_image_left]
+  exact .symm <| image2_assoc fun _ _ _ ↦ rfl
 #align set.seq_seq Set.seq_seq
 
 theorem image_seq {f : β → γ} {s : Set (α → β)} {t : Set α} :
@@ -2309,24 +2311,25 @@ theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
     ⟨⟨a, b, hb⟩, rfl⟩
 #align set.sigma_to_Union_surjective Set.sigmaToiUnion_surjective
 
-theorem sigmaToiUnion_injective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     Injective (sigmaToiUnion t)
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
     have a_eq : a₁ = a₂ :=
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
-        (h _ _ ne).le_bot this
+        (h ne).le_bot this
     Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
 #align set.sigma_to_Union_injective Set.sigmaToiUnion_injective
 
-theorem sigmaToiUnion_bijective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     Bijective (sigmaToiUnion t) :=
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
-noncomputable def unionEqSigmaOfDisjoint {t : α → Set β} (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
+noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
+    (h : Pairwise fun i j => Disjoint (t i) (t j)) :
     (⋃ i, t i) ≃ Σi, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 #align set.Union_eq_sigma_of_disjoint Set.unionEqSigmaOfDisjoint

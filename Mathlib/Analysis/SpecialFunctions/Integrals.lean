@@ -412,7 +412,7 @@ theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n +
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
 Picard-Lindelöf/Cauchy-Lipschitz theorem. -/
 theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n + 1) / (n + 1) := by
-  cases' le_or_lt a b with hab hab
+  rcases le_or_lt a b with hab | hab
   · calc
       ∫ x in Ι a b, |x - a| ^ n = ∫ x in a..b, |x - a| ^ n := by
         rw [uIoc_of_le hab, ← integral_of_le hab]
@@ -610,8 +610,8 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact continuous_const.add (continuous_ofReal.pow 2)
     · exact continuous_const
     · intro a
-      rw [add_re, one_re, ← ofReal_pow, ofReal_re]
-      exact Or.inl (add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg a))
+      norm_cast
+      exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 #align integral_mul_cpow_one_add_sq integral_mul_cpow_one_add_sq
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :

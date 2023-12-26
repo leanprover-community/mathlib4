@@ -1615,7 +1615,7 @@ theorem insertNth_length_self (l : List α) (x : α) : insertNth l.length x l = 
 
 theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
     l.length ≤ (insertNth n x l).length := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
     exact (Nat.lt_succ_self _).le
   · rw [insertNth_of_length_lt _ _ _ hn]
@@ -1623,7 +1623,7 @@ theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
 
 theorem length_insertNth_le_succ (l : List α) (x : α) (n : ℕ) :
     (insertNth n x l).length ≤ l.length + 1 := by
-  cases' le_or_lt n l.length with hn hn
+  rcases le_or_lt n l.length with hn | hn
   · rw [length_insertNth _ _ hn]
   · rw [insertNth_of_length_lt _ _ _ hn]
     exact (Nat.lt_succ_self _).le
@@ -2464,7 +2464,7 @@ for the seed element `b : β` and for all incremental `op : α → β → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
+    (hl : ∀ b, C b → ∀ a ∈ l, C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2479,7 +2479,7 @@ for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
+    (hl : ∀ b, C b → ∀ a ∈ l, C (op b a)) : C (foldl op b l) := by
   induction l generalizing b with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2497,7 +2497,7 @@ theorem foldrRecOn_nil {C : β → Sort*} (op : α → β → β) (b) (hb : C b)
 
 @[simp]
 theorem foldrRecOn_cons {C : β → Sort*} (x : α) (l : List α) (op : α → β → β) (b) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ x :: l), C (op a b)) :
+    (hl : ∀ b, C b → ∀ a ∈ x :: l, C (op a b)) :
     foldrRecOn (x :: l) op b hb hl =
       hl _ (foldrRecOn l op b hb fun b hb a ha => hl b hb a (mem_cons_of_mem _ ha)) x
         (mem_cons_self _ _) :=

@@ -640,10 +640,10 @@ theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
 
 theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
-    {I : ι → ℕ} (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
+    {I : ι → ℕ} (hI : Pairwise fun i j => (I i).Coprime (I j)) :
     ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
   rw [iInf_span_singleton, Nat.cast_prod]
-  exact fun i j h ↦ (hI i j h).cast
+  exact fun i j h ↦ (hI h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -1035,7 +1035,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
               hc hyc ⟨n, hrny⟩,
               fun z => le_sSup⟩)
           I hri
-      have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
+      have : ∀ x ∉ m, r ∈ radical (m ⊔ span {x}) := fun x hxm =>
         by_contradiction fun hrmx =>
           hxm <|
             hm (m ⊔ span {x}) hrmx le_sup_left ▸
@@ -1286,7 +1286,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
-      cases' s.eq_empty_or_nonempty with hse hsne
+      rcases s.eq_empty_or_nonempty with hse | hsne
       · subst hse
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
