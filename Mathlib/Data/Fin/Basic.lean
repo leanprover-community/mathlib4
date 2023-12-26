@@ -2191,14 +2191,12 @@ theorem predAbove_zero' [NeZero n] :
 
 @[simp]
 theorem predAbove_right_last : predAbove (i : Fin (n + 1)) (Fin.last (n + 1)) = last n := by
-  simp_rw [predAbove_def, predAboveOfNe_eq_iff_predAbove?_eq_some,
-    succAbove_last, predAbove?_castSucc_last]
+  simp_rw [predAbove_def, succAbove_last, predAboveOfNe_castSucc_last]
 
 @[simp]
 theorem predAbove_last_castSucc {i : Fin (n + 1)} :
     predAbove (Fin.last n) (i.castSucc) = i := by
-  simp_rw [predAbove_def, predAboveOfNe_eq_iff_predAbove?_eq_some,
-    succAbove_castSucc_last, predAbove?_last_castSucc]
+  simp_rw [predAbove_def, succAbove_castSucc_last, predAboveOfNe_last_castSucc]
 
 @[simp]
 theorem predAbove_last_eq_castLT {i : Fin (n + 2)} (hi : i ≠ last _):
