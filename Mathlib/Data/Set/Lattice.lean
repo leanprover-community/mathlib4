@@ -2081,7 +2081,7 @@ section Seq
 
 /-- Given a set `s` of functions `α → β` and `t : Set α`, `seq s t` is the union of `f '' t` over
 all `f ∈ s`. -/
-def seq (s : Set (α → β)) (t : Set α) : Set β := image2 id s t
+def seq (s : Set (α → β)) (t : Set α) : Set β := image2 (fun f a ↦ f a) s t
 #align set.seq Set.seq
 
 @[simp]
