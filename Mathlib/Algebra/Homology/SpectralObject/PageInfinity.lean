@@ -222,7 +222,7 @@ lemma spectralSequenceHasEdgeMonoAt_iff (pq : κ) (r : ℤ) [(X.spectralSequence
       all_goals rfl
     · exact HomologicalComplex.shape _ _ _ hpq
 
-/-lemma spectralSequence_edgeMonoStep_eq
+/-lemma spectralSequence_edgeMonoStep_compatibility
     (pq : κ) (r r' : ℤ) (hrr' : r + 1 = r') [(X.spectralSequence data).HasPage r]
     [(X.spectralSequence data).HasPage r']
     [(X.spectralSequence data).HasEdgeMonoAt pq r]
@@ -234,9 +234,17 @@ lemma spectralSequenceHasEdgeMonoAt_iff (pq : κ) (r : ℤ) [(X.spectralSequence
     (hi₂ : i₂ = data.i₂ pq)
     (hi₃ : i₃ = X.i₃ data r pq)
     (hi₃' : i₃' = X.i₃ data r' pq) :
-    (X.spectralSequence data).edgeMonoStep pq r r' hrr' = sorry :=
-  let e₁ := (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').hom
-  let e₂ := (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv
+    (X.spectralSequence data).edgeMonoStep pq r r' hrr' ≫
+    ((X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃)).hom ≫
+      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃' (X.le₀₁ data r pq hi₀ hi₁)
+      (X.le₁₂ data pq hi₁ hi₂) (X.le₂₃ data r pq hi₂ hi₃) (X.le₃₃' data hrr' pq hi₃ hi₃') =
+    (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').hom ≫
+      X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃' (X.le₀'₀ data hrr' pq hi₀' hi₀) _ _ _ := by
+  obtain rfl : n₀ = data.deg pq - 1 := by linarith
+  subst hn₁' hn₂ hi₀ hi₁ hi₂ hi₃ hi₃'
+  dsimp [spectralSequencePageXIso, spectralSequencePageXIso, SpectralSequence.pageXIso]
+  -- needs a general API for compution edgeMonoStep, given a left homology data for
+  -- a short complex like (E.page r).sc' pq pq' pq''
   sorry-/
 
 lemma spectralSequenceHasEdgeMonoAt (r r' : ℤ) (hrr' : r + 1 = r')
