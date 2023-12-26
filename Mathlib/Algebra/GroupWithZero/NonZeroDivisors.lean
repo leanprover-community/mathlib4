@@ -265,13 +265,13 @@ lemma mem_nonZeroSMulDivisors_iff {x : R} : x ∈ R⁰[M] ↔ ∀ (m : M), x •
 variable (R)
 
 @[simp]
-lemma unop_nonZeroSmulDivisors_mulOpposite_eq_nonZeroDivisors :
+lemma unop_nonZeroSMulDivisors_mulOpposite_eq_nonZeroDivisors :
     (Rᵐᵒᵖ ⁰[R]).unop = R⁰ := rfl
 
 /-- The non-zero `•`-divisors with `•` as right multiplication correspond with the non-zero
 divisors. Note that the `MulOpposite` is needed because we defined `nonZeroDivisors` with
 multiplication on the right. -/
-lemma nonZeroSmulDivisors_mulOpposite_eq_op_nonZeroDivisors :
+lemma nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :
     Rᵐᵒᵖ ⁰[R] = R⁰.op := rfl
 
 end nonZeroSMulDivisors

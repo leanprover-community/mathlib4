@@ -445,11 +445,7 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 @[to_additive]
 theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
     range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
-  ext fun _x ↦
-    ⟨fun hx ↦
-      let ⟨_p, _q, ⟨i, hi⟩, ⟨j, hj⟩, hpq⟩ := Set.mem_smul.1 hx
-      ⟨(i, j), hpq ▸ hi ▸ hj ▸ rfl⟩,
-      fun ⟨⟨i, j⟩, h⟩ ↦ Set.mem_smul.2 ⟨b i, c j, ⟨i, rfl⟩, ⟨j, rfl⟩, h⟩⟩
+  image2_range ..
 #align set.range_smul_range Set.range_smul_range
 #align set.range_vadd_range Set.range_vadd_range
 
@@ -489,26 +485,26 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 #align set.smul_comm_class Set.smulCommClass
 #align set.vadd_comm_class Set.vaddCommClass
 
-@[to_additive vAddAssocClass]
+@[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
   smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 #align set.is_scalar_tower Set.isScalarTower
-#align set.vadd_assoc_class Set.vAddAssocClass
+#align set.vadd_assoc_class Set.vaddAssocClass
 
-@[to_additive vAddAssocClass']
+@[to_additive vaddAssocClass']
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 #align set.is_scalar_tower' Set.isScalarTower'
-#align set.vadd_assoc_class' Set.vAddAssocClass'
+#align set.vadd_assoc_class' Set.vaddAssocClass'
 
-@[to_additive vAddAssocClass'']
+@[to_additive vaddAssocClass'']
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Set α) (Set β) (Set γ) where
   smul_assoc _ _ _ := image2_assoc smul_assoc
 #align set.is_scalar_tower'' Set.isScalarTower''
-#align set.vadd_assoc_class'' Set.vAddAssocClass''
+#align set.vadd_assoc_class'' Set.vaddAssocClass''
 
 @[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
