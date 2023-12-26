@@ -254,6 +254,6 @@ theorem mem_toPointedCone_iff_eq_pos_convex_span {x : E} : (x ∈ s.toPointedCon
     let eq := (@Fintype.equivFin ι).symm
     lift f to (ι → s)
     · aesop
-    use (Fintype.card ι), fun x => ⟨(c ∘ eq) x, le_of_lt <| hc _⟩, f ∘ eq.1
+    use (Fintype.card ι), fun x => ⟨(c ∘ eq) x, le_of_lt <| hc _⟩, f ∘ eq
     convert sum
     exact @Equiv.sum_comp (Fin (Fintype.card ι)) ι E _ _ _ eq (fun x => c x • f x)
