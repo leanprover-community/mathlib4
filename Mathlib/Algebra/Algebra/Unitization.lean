@@ -795,12 +795,10 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
       rw [NonUnitalStarAlgHom.coe_toNonUnitalAlgHom, map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by -- ext; simp,
-    ext a
+    ext
     simp [lift]
-    rfl
   right_inv := fun φ => Unitization.algHom_ext'' <| by
-    simp [lift]
-    exact fun _ => rfl }
+    simp [lift] }
 
 @[simp]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
