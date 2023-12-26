@@ -1,5 +1,4 @@
-import Mathlib.Algebra.Homology.SpectralObject.Stabilization
-import Mathlib.Algebra.Homology.SpectralSequenceNew.LowDegreesExactSequence
+import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
 
 namespace CategoryTheory
 
@@ -11,7 +10,6 @@ variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι] [OrderBot ι] 
   (X : SpectralObject C ι)
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
   [∀ r, DecidableRel (c r).Rel]
-
 
 namespace SpectralObject
 
