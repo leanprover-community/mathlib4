@@ -954,7 +954,7 @@ lemma IsUnramifiedAtInfinitePlaces.top [h : IsUnramifiedAtInfinitePlaces k F] :
   isUnramified w := (h.1 w).of_restrictScalars K
 
 lemma IsUnramifiedAtInfinitePlaces.bot [h₁ : IsUnramifiedAtInfinitePlaces k F]
-  (h : Algebra.IsAlgebraic K F) :
+    (h : Algebra.IsAlgebraic K F) :
     IsUnramifiedAtInfinitePlaces k K where
   isUnramified w := by
     obtain ⟨w, rfl⟩ := InfinitePlace.comap_surjective h w
