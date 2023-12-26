@@ -61,20 +61,6 @@ open FiniteDimensional Polynomial IntermediateField Field
 
 noncomputable section
 
-section Adhoc
-
-universe w w' v v'
-
-/-- TODO: remove once #9156 is merged -/
-axiom Algebra.lift_rank_eq_of_equiv_equiv
-    {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
-    {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
-    (i : R ≃+* R') (j : S ≃+* S')
-    (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
-    Cardinal.lift.{v'} (Module.rank R S) = Cardinal.lift.{v} (Module.rank R' S')
-
-end Adhoc
-
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
