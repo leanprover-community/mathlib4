@@ -124,10 +124,10 @@ instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient 
 ### Uncountable types
 -/
 
-/-- A type `α` is uncountable if it is not uncountable. -/
+/-- A type `α` is uncountable if it is not countable. -/
 @[mk_iff uncountable_iff_not_countable]
 class Uncountable (α : Sort*) : Prop where
-  /-- A type `α` is uncountable if it is not uncountable. -/
+  /-- A type `α` is uncountable if it is not countable. -/
   not_countable : ¬Countable α
 
 lemma not_uncountable_iff : ¬Uncountable α ↔ Countable α := by
