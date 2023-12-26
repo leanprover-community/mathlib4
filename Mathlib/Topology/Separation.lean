@@ -1477,23 +1477,28 @@ theorem IsCompact.finite_compact_cover [T2Space X] {s : Set X} (hs : IsCompact s
 
 end
 
+instance (priority := 900) [WeaklyLocallyCompactSpace X] [T2Space Y] : LocallyCompactPair X Y where
+  exists_mem_nhds_isCompact_mapsTo := by
+    intro f x s hf hs
+    rcases exists_compact_mem_nhds x with ⟨K, hKc, hKx⟩
+    have hc : IsCompact (f '' K \ interior s) := (hKc.image hf).diff isOpen_interior
+    have hd : Disjoint {f x} (f '' K \ interior s) := disjoint_singleton_left.2 fun h ↦
+      h.2 <| mem_interior_iff_mem_nhds.2 hs
+    rcases isCompact_isCompact_separated isCompact_singleton hc hd
+      with ⟨U, V, Uo, Vo, hxU, hV, hd⟩
+    refine ⟨K \ f ⁻¹' V, diff_mem hKx ?_, hKc.diff <| Vo.preimage hf, fun y hy ↦ ?_⟩
+    · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
+        using Set.disjoint_left.1 hd hx
+    · by_contra hys
+      exact hy.2 (hV ⟨mem_image_of_mem _ hy.1, not_mem_subset interior_subset hys⟩)
+
 -- see Note [lower instance priority]
 /-- A weakly locally compact Hausdorff space is locally compact. -/
 instance WeaklyLocallyCompactSpace.locallyCompactSpace [WeaklyLocallyCompactSpace X] [T2Space X] :
     LocallyCompactSpace X :=
-  ⟨fun x _n hn =>
-    let ⟨_u, un, uo, xu⟩ := mem_nhds_iff.mp hn
-    let ⟨k, kc, kx⟩ := exists_compact_mem_nhds x
-    -- K is compact but not necessarily contained in N.
-    -- K \ U is again compact and doesn't contain x, so
-    -- we may find open sets V, W separating x from K \ U.
-    -- Then K \ W is a compact neighborhood of x contained in U.
-    let ⟨v, w, vo, wo, xv, kuw, vw⟩ :=
-      isCompact_isCompact_separated isCompact_singleton (kc.diff uo)
-        (disjoint_singleton_left.2 fun h => h.2 xu)
-    have wn : wᶜ ∈ 𝓝 x :=
-      mem_nhds_iff.mpr ⟨v, vw.subset_compl_right, vo, singleton_subset_iff.mp xv⟩
-    ⟨k \ w, Filter.inter_mem kx wn, Subset.trans (diff_subset_comm.mp kuw) un, kc.diff wo⟩⟩
+  ⟨fun _ _ h =>
+    let ⟨K, hKx, hKc, hKs⟩ := exists_mem_nhds_isCompact_mapsTo continuous_id h
+    ⟨K, hKx, hKs, hKc⟩⟩
 #align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
 @[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace]
