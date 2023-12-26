@@ -25,7 +25,6 @@ open Finset
 namespace SimpleGraph
 
 variable {V : Type*} [DecidableEq V] (G : SimpleGraph V) (s t : V)
-variable [DecidableRel G.Adj]
 
 section ReplaceVertex
 
@@ -57,7 +56,7 @@ lemma adj_replaceVertex_iff_of_ne_right {w : V} (hw : w ≠ t) :
 lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) :
     (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by simp [hv, hw]
 
-variable [Fintype V] {s t}
+variable [Fintype V] {s t} [DecidableRel G.Adj]
 
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (fun v => ⟦(v, t)⟧) := by
@@ -153,7 +152,7 @@ lemma addEdge_adj (h : G.Adj s t) : G.addEdge s t = G := by
   simp only [ne_eq, G.ne_of_adj h, not_false_eq_true, true_and, or_iff_left_iff_imp]
   rintro (_ | _) <;> simp_all [adj_comm]
 
-variable [Fintype V] {s t}
+variable [Fintype V] {s t} [DecidableRel G.Adj]
 
 theorem edgeFinset_addEdge (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G.addEdge s t).edgeFinset = G.edgeFinset ∪ {⟦(s, t)⟧} := by
