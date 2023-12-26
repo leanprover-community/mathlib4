@@ -215,7 +215,7 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
-  continuous_eval'.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
+  continuous_eval.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
 #align path.continuous_eval Path.continuous_eval
 
 @[continuity]
