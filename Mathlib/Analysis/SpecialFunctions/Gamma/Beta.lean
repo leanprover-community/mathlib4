@@ -535,7 +535,7 @@ theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
 /-- The reciprocal of the Gamma function is differentiable everywhere (including the points where
 Gamma itself is not). -/
 theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := by
-  suffices : ∀ n : ℕ, ∀ (s : ℂ) (_ : -s.re < n), DifferentiableAt ℂ (fun u : ℂ => (Gamma u)⁻¹) s
+  suffices : ∀ (n : ℕ) (s : ℂ), -s.re < n → DifferentiableAt ℂ (fun u : ℂ => (Gamma u)⁻¹) s
   exact fun s =>
     let ⟨n, h⟩ := exists_nat_gt (-s.re)
     this n s h

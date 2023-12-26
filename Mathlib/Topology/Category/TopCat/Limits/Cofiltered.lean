@@ -80,7 +80,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       simp
   · rintro ⟨U, G, h1, h2⟩
     obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
-    let g : ∀ (e) (_he : e ∈ G), j ⟶ e := fun _ he => (hj he).some
+    let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
     let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
     let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
     refine' ⟨j, V, _, _⟩
