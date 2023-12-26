@@ -8,6 +8,7 @@ import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Algebra.Module.Equiv
 
 #align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -171,5 +172,17 @@ instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
 
 instance module [Semiring R] : Module R PUnit := by
   refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+
+/--
+If `M` is the trivial `R`-module, then it is isomorphic to `*`
+-/
+def linearEquiv_of_subsingleton (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
+    [Unique M] : M ≃ₗ[R] PUnit where
+  toFun _ := ⟨⟩
+  map_add' := by aesop
+  map_smul' := by aesop
+  invFun _ := default
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := rfl
 
 end PUnit
