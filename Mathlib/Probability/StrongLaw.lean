@@ -242,16 +242,8 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         exact continuous_const.intervalIntegrable _ _
       _ = ∑ i in range N, ∑ j in range (min (i + 1) K), ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
         simp_rw [sum_sigma']
-        refine' sum_bij' (fun (p : Σ _ : ℕ, ℕ) _ => (⟨p.2, p.1⟩ : Σ _ : ℕ, ℕ)) _ (fun a _ => rfl)
-          (fun (p : Σ _ : ℕ, ℕ) _ => (⟨p.2, p.1⟩ : Σ _ : ℕ, ℕ)) _ _ _
-        · rintro ⟨i, j⟩ hij
-          simp only [mem_sigma, mem_range, mem_Ico] at hij
-          simp only [hij, Nat.lt_succ_iff.2 hij.2.1, mem_sigma, mem_range, lt_min_iff, and_self_iff]
-        · rintro ⟨i, j⟩ hij
-          simp only [mem_sigma, mem_range, lt_min_iff] at hij
-          simp only [hij, Nat.lt_succ_iff.1 hij.2.1, mem_sigma, mem_range, mem_Ico, and_self_iff]
-        · rintro ⟨i, j⟩ hij; rfl
-        · rintro ⟨i, j⟩ hij; rfl
+        refine' sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) _ _ _ _ _ <;>
+          aesop (add simp Nat.lt_succ_iff)
       _ ≤ ∑ i in range N, (i + 1) * ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
         apply sum_le_sum fun i _ => ?_
         simp only [Nat.cast_add, Nat.cast_one, sum_const, card_range, nsmul_eq_mul, Nat.cast_min]

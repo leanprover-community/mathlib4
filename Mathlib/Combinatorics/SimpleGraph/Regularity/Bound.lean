@@ -56,6 +56,9 @@ theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
 alias ⟨_, stepBound_pos⟩ := stepBound_pos_iff
 #align szemeredi_regularity.step_bound_pos SzemerediRegularity.stepBound_pos
 
+@[norm_cast] lemma coe_stepBound {α : Type*} [Semiring α] (n : ℕ) :
+    (stepBound n : α) = n * 4 ^ n := by unfold stepBound; norm_cast
+
 end SzemerediRegularity
 
 open SzemerediRegularity
