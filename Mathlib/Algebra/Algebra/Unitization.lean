@@ -800,7 +800,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   right_inv := fun φ => Unitization.algHom_ext'' <| by
     simp [lift] }
 
-@[simp]
+-- @[simp]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl
@@ -808,3 +808,5 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
 end StarAlgHom
 
 end Unitization
+
+#lint
