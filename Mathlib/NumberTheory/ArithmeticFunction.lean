@@ -921,9 +921,7 @@ theorem cardFactors_multiset_prod {s : Multiset ℕ} (h0 : s.prod ≠ 0) :
     Ω s.prod = (Multiset.map Ω s).sum := by
   induction s using Multiset.induction_on with
   | empty => simp
-  | cons ih =>
-    rw [Multiset.prod_cons, mul_ne_zero_iff] at h0
-    simp [cardFactors_mul h0.1 h0.2, ih h0.2]
+  | cons ih => simp_all [cardFactors_mul, not_or]
 #align nat.arithmetic_function.card_factors_multiset_prod Nat.ArithmeticFunction.cardFactors_multiset_prod
 
 @[simp]
