@@ -187,7 +187,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by abel)
   step i := by
-    obtain (hi|rfl|hi) :=
+    obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
     · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
@@ -334,9 +334,9 @@ lemma monotone (x : LTSeries α) : Monotone x :=
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]
-def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
-{ toFun := toFun
-  step := fun i => strictMono <| lt_add_one i.1 }
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α where
+  toFun := toFun
+  step i := strictMono <| lt_add_one i.1
 
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
