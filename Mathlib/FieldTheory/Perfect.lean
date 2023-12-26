@@ -134,6 +134,7 @@ noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.ro
     ext r; obtain ⟨r, rfl⟩ := surjective_frobenius R p r
     simp [expand_eq_zero (Fact.out : p.Prime).pos, (frobenius_inj R p).eq_iff, ← frobenius_def]
 
+@[simp]
 theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
 
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
@@ -145,6 +146,7 @@ noncomputable def rootsExpandPowEquivRoots :
   | n + 1 => (Equiv.Set.ofEq <| by rw [pow_succ, ← expand_expand]).trans
     (rootsExpandEquivRoots p (expand R (p ^ n) f)) |>.trans (rootsExpandPowEquivRoots n)
 
+@[simp]
 theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :
     (rootsExpandPowEquivRoots p f n x : R) = x ^ p ^ n := by
   induction' n with n ih
