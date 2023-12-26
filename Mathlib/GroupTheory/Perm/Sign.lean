@@ -517,13 +517,14 @@ def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) →
 
 theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
-      ∀ x y, x ≠ y → signAux3 (swap x y) hs = -1 := by
+      Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   let ⟨l, hl⟩ := Quotient.exists_rep s
   let e := equivFin α
   --clear _let_match
   subst hl
   show
-    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧ ∀ x y, x ≠ y → signAux2 l (swap x y) = -1
+    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
+    Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
     Equiv.ext fun h => by simp [mul_apply]
   constructor
@@ -577,7 +578,7 @@ theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
 #align equiv.perm.sign_symm Equiv.Perm.sign_symm
 
 theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 :=
-  (signAux3_mul_and_swap 1 1 _ mem_univ).2 x y h
+  (signAux3_mul_and_swap 1 1 _ mem_univ).2 h
 #align equiv.perm.sign_swap Equiv.Perm.sign_swap
 
 @[simp]
