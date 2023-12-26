@@ -586,3 +586,10 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
     rintro x
     simp_intro hx₁ hx₂
     simp [ht x hx₁ hx₂]
+
+/-- Two simplices glue nicely if the union of their vertices is affine independent.
+
+Note that `AffineIndependent.convexHull_inter` should be more versatile in most use cases. -/
+lemma AffineIndependent.convexHull_inter' (hs : AffineIndependent R ((↑) : ↑(t₁ ∪ t₂) → E)) :
+    convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ :=
+  hs.convexHull_inter (subset_union_left _ _) (subset_union_right _ _)
