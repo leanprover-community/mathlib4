@@ -392,8 +392,9 @@ namespace FractionalIdeal
 
 open Ideal
 
-lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] (hNF : ¬IsField A) {I : Ideal A}
+lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) : ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
+  have hNF : ¬IsField A := fun h ↦ letI := h.toField; (eq_bot_or_eq_top I).elim hI0 hI1
   wlog hM : I.IsMaximal generalizing I
   · rcases I.exists_le_maximal hI1 with ⟨M, hmax, hIM⟩
     have hMbot : M ≠ ⊥ := (M.bot_lt_of_maximal hNF).ne'
