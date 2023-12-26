@@ -252,9 +252,7 @@ theorem ι_range_disjoint_one :
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
-  calc
-    _ = ι R (y + x) * ι R (y + x) := by simp [mul_add, add_mul]
-    _ = _ := ι_sq_zero _
+  CliffordAlgebra.ι_mul_ι_add_swap_of_isOrtho <| .all _ _
 #align exterior_algebra.ι_add_mul_swap ExteriorAlgebra.ι_add_mul_swap
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
