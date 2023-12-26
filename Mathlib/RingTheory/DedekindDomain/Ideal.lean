@@ -433,10 +433,9 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] (hNF : ¬IsField A) {I : Ideal A}
-    (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
-    ∃ x ∈ (I⁻¹ : FractionalIdeal A⁰ K), x ∉ (1 : FractionalIdeal A⁰ K) :=
-  Set.not_subset.1 <| not_inv_le_one_of_ne_bot hNF hI0 hI1
+theorem exists_not_mem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
+    (hI1 : I ≠ ⊤) : ∃ x ∈ (I⁻¹ : FractionalIdeal A⁰ K), x ∉ (1 : FractionalIdeal A⁰ K) :=
+  Set.not_subset.1 <| not_inv_le_one_of_ne_bot hI0 hI1
 #align fractional_ideal.exists_not_mem_one_of_ne_bot FractionalIdeal.exists_not_mem_one_of_ne_bot
 
 theorem one_mem_inv_coe_ideal {I : Ideal A} (hI : I ≠ ⊥) :
@@ -449,11 +448,6 @@ theorem one_mem_inv_coe_ideal {I : Ideal A} (hI : I ≠ ⊥) :
 
 theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
     (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
-  -- Handle a few trivial cases.
-  by_cases hI1 : I = ⊤
-  · rw [hI1, coeIdeal_top, one_mul, inv_one]
-  by_cases hNF : IsField A
-  · letI := hNF.toField; rcases hI1 (I.eq_bot_or_top.resolve_left hI0) with ⟨⟩
   -- We'll show a contradiction with `exists_not_mem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
   obtain ⟨J, hJ⟩ : ∃ J : Ideal A, (J : FractionalIdeal A⁰ K) = I * (I : FractionalIdeal A⁰ K)⁻¹ :=
@@ -467,7 +461,7 @@ theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I
   · rw [← hJ, hJ1, coeIdeal_top]
   obtain ⟨x, hx, hx1⟩ :
     ∃ x : K, x ∈ (J : FractionalIdeal A⁰ K)⁻¹ ∧ x ∉ (1 : FractionalIdeal A⁰ K) :=
-    exists_not_mem_one_of_ne_bot hNF hJ0 hJ1
+    exists_not_mem_one_of_ne_bot hJ0 hJ1
   contrapose! hx1 with h_abs
   rw [hJ] at hx
   exact hI hx
