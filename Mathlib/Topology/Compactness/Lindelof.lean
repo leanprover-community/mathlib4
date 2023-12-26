@@ -453,8 +453,8 @@ theorem coLindelof_le_cofinite : coLindelof X ≤ cofinite := fun s hs =>
   compl_compl s ▸ hs.isLindelof.compl_mem_coLindelof
 
 theorem Tendsto.isLindelof_insert_range_of_coLindelof {f : X → Y} {y}
-    (hf : Tendsto f (coLindelof X) (𝓝 y)) (hfc : Continuous f) : IsLindelof (insert y (range f))
-    := by
+    (hf : Tendsto f (coLindelof X) (𝓝 y)) (hfc : Continuous f) :
+    IsLindelof (insert y (range f)) := by
   intro l hne _ hle
   by_cases hy : ClusterPt y l
   · exact ⟨y, Or.inl rfl, hy⟩
@@ -481,12 +481,12 @@ theorem hasBasis_coclosedLindelof :
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
 
-theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔ ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s
-    := by
+theorem mem_coclosedLindelof : s ∈ coclosedLindelof X ↔
+    ∃ t, IsClosed t ∧ IsLindelof t ∧ tᶜ ⊆ s := by
   simp only [hasBasis_coclosedLindelof.mem_iff, and_assoc]
 
-theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔ ∃ t, IsClosed t ∧ IsLindelof t ∧ sᶜ ⊆ t
-    := by
+theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
+    ∃ t, IsClosed t ∧ IsLindelof t ∧ sᶜ ⊆ t := by
   simp only [mem_coclosedLindelof, compl_subset_comm]
 
 theorem coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
