@@ -167,7 +167,7 @@ theorem nodup_attach {s : Multiset α} : Nodup (attach s) ↔ Nodup s :=
   Quot.induction_on s fun _ => List.nodup_attach
 #align multiset.nodup_attach Multiset.nodup_attach
 
-alias ⟨_, Nodup.attach⟩ := nodup_attach
+protected alias ⟨_, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {s : Multiset α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) : Nodup s → Nodup (pmap f s H) :=

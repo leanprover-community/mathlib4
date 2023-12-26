@@ -56,8 +56,8 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
           val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
   simp only [← exists_prop] at hsurj
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
-    (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem (fun _ _ => rfl)
-    (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj
+    (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
+    (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
 #align zmod.Ico_map_val_min_abs_nat_abs_eq_Ico_map_id ZMod.Ico_map_valMinAbs_natAbs_eq_Ico_map_id
 
 private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
