@@ -346,16 +346,8 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       exact (continuous_id.pow _).intervalIntegrable _ _
     _ = ∑ k in range K, (∑ j in Ioo k K, ((j : ℝ) ^ 2)⁻¹) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       simp_rw [mul_sum, sum_mul, sum_sigma']
-      refine' sum_bij' (fun (p : Σ _ : ℕ, ℕ) _ => (⟨p.2, p.1⟩ : Σ _ : ℕ, ℕ)) _ (fun a _ => rfl)
-        (fun (p : Σ _ : ℕ, ℕ) _ => (⟨p.2, p.1⟩ : Σ _ : ℕ, ℕ)) _ _ _
-      · rintro ⟨i, j⟩ hij
-        simp only [mem_sigma, mem_range, mem_filter] at hij
-        simp [hij, mem_sigma, mem_range, and_self_iff, hij.2.trans hij.1]
-      · rintro ⟨i, j⟩ hij
-        simp only [mem_sigma, mem_range, mem_Ioo] at hij
-        simp only [hij, mem_sigma, mem_range, and_self_iff]
-      · rintro ⟨i, j⟩ hij; rfl
-      · rintro ⟨i, j⟩ hij; rfl
+      refine' sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) _ _ _ _ _ <;>
+        aesop (add unsafe lt_trans)
     _ ≤ ∑ k in range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       refine' mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) _
@@ -450,17 +442,14 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
       _ = ∑ j in range (u (N - 1)),
           (∑ i in (range N).filter fun i => j < u i, ((u i : ℝ) ^ 2)⁻¹) * Var[Y j] := by
         simp_rw [mul_sum, sum_mul, sum_sigma']
-        refine' sum_bij' (fun (p : Σ _ : ℕ, ℕ) _ => (⟨p.2, p.1⟩ : Σ _ : ℕ, ℕ)) _ (fun a _ => rfl)
-          (fun (p : Σ _ : ℕ, ℕ) _ => (⟨p.2, p.1⟩ : Σ _ : ℕ, ℕ)) _ _ _
-        · rintro ⟨i, j⟩ hij
-          simp only [mem_sigma, mem_range] at hij
-          simp only [hij.1, hij.2, mem_sigma, mem_range, mem_filter, and_true_iff]
-          exact hij.2.trans_le (u_mono (Nat.le_sub_one_of_lt hij.1))
-        · rintro ⟨i, j⟩ hij
-          simp only [mem_sigma, mem_range, mem_filter] at hij
-          simp only [hij.2.1, hij.2.2, mem_sigma, mem_range, and_self_iff]
-        · rintro ⟨i, j⟩ hij; rfl
-        · rintro ⟨i, j⟩ hij; rfl
+        refine' sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) _ _ _ _ _
+        · simp only [mem_sigma, mem_range, filter_congr_decidable, mem_filter, and_imp,
+            Sigma.forall]
+          exact fun a b haN hb ↦ ⟨hb.trans_le $ u_mono $ Nat.le_pred_of_lt haN, haN, hb⟩
+        · aesop
+        · aesop
+        · aesop
+        · aesop
       _ ≤ ∑ j in range (u (N - 1)), c ^ 5 * (c - 1)⁻¹ ^ 3 / ↑j ^ 2 * Var[Y j] := by
         apply sum_le_sum fun j hj => ?_
         rcases @eq_zero_or_pos _ _ j with (rfl | hj)

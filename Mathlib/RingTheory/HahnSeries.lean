@@ -812,15 +812,12 @@ instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) :=
-  { inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with
-    mul_comm := fun x y => by
-      ext
-      simp_rw [mul_coeff, mul_comm]
-      refine'
-          sum_bij (fun a _ => a.swap) (fun a ha => _) (fun a _ => rfl)
-            (fun _ _ _ _ => Prod.swap_inj.1) fun a ha => ⟨a.swap, _, a.swap_swap.symm⟩ <;>
-        rwa [swap_mem_addAntidiagonal] }
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
+  __ : NonUnitalSemiring (HahnSeries Γ R) := inferInstance
+  mul_comm x y := by
+    ext
+    simp_rw [mul_coeff, mul_comm]
+    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) $ by simp
 
 instance [CommSemiring R] : CommSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
