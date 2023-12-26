@@ -150,73 +150,6 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · rwa [Submodule.span_le, Set.singleton_subset_iff]
 #align maximal_ideal_is_principal_of_is_dedekind_domain maximalIdeal_isPrincipal_of_isDedekindDomain
 
-variable {R}
-
-lemma LocalRing.finrank_CotangentSpace_eq_zero_iff [IsNoetherianRing R] [LocalRing R] :
-    finrank (ResidueField R) (CotangentSpace R) = 0 ↔ IsField R := by
-  rw [finrank_zero_iff, subsingleton_CotangentSpace_iff]
-
-lemma LocalRing.finrank_CotangentSpace_eq_zero (R) [Field R] :
-    finrank (ResidueField R) (CotangentSpace R) = 0 :=
-  finrank_CotangentSpace_eq_zero_iff.mpr (Field.toIsField R)
-
-theorem LocalRing.finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] [LocalRing R] :
-    finrank (ResidueField R) (CotangentSpace R) ≤ 1 ↔ (maximalIdeal R).IsPrincipal := by
-  by_cases hR : IsField R
-  · rw [finrank_CotangentSpace_eq_zero_iff.mpr hR, isField_iff_maximalIdeal_eq.mp hR]
-    exact ⟨fun _ ↦ inferInstance, fun _ ↦ Nat.zero_le 1⟩
-  rw [Nat.le_one_iff_eq_zero_or_eq_one, finrank_CotangentSpace_eq_zero_iff, finrank_eq_one_iff']
-  simp only [hR, false_or]
-  constructor
-  · rintro ⟨x, hx, hx'⟩
-    induction x using Quotient.inductionOn' with | h x => ?_
-    use x
-    apply le_antisymm
-    swap; · rw [Submodule.span_le, Set.singleton_subset_iff]; exact x.prop
-    have h₁ :
-      (Ideal.span {(x : R)} : Ideal R) ⊔ maximalIdeal R ≤
-        Ideal.span {(x : R)} ⊔ maximalIdeal R • maximalIdeal R := by
-      refine' sup_le le_sup_left _
-      rintro m hm
-      obtain ⟨c, hc⟩ := hx' (Submodule.Quotient.mk ⟨m, hm⟩)
-      induction c using Quotient.inductionOn' with | h c => ?_
-      rw [← sub_sub_cancel (c * x) m]
-      apply sub_mem _ _
-      · refine' Ideal.mem_sup_left (Ideal.mem_span_singleton'.mpr ⟨c, rfl⟩)
-      · have := (Submodule.Quotient.eq _).mp hc
-        rw [Submodule.mem_smul_top_iff] at this
-        exact Ideal.mem_sup_right this
-    have h₂ : maximalIdeal R ≤ (⊥ : Ideal R).jacobson := by
-      rw [LocalRing.jacobson_eq_maximalIdeal]
-      exact bot_ne_top
-    have :=
-      Submodule.sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _) h₂ h₁
-    rw [Submodule.bot_smul, sup_bot_eq] at this
-    rw [← sup_eq_left, eq_comm]
-    exact le_sup_left.antisymm (h₁.trans <| le_of_eq this)
-  · rintro ⟨x, hx⟩
-    have : x ∈ maximalIdeal R := by rw [hx]; exact Submodule.subset_span (Set.mem_singleton x)
-    let x' : maximalIdeal R := ⟨x, this⟩
-    use Submodule.Quotient.mk x'
-    constructor
-    swap
-    · intro e
-      rw [Submodule.Quotient.mk_eq_zero] at e
-      apply Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal R) hR
-      apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (maximalIdeal R)
-      · exact ⟨{x}, (Finset.coe_singleton x).symm ▸ hx.symm⟩
-      · conv_lhs => rw [hx]
-        rw [Submodule.mem_smul_top_iff] at e
-        rwa [Submodule.span_le, Set.singleton_subset_iff]
-      · rw [LocalRing.jacobson_eq_maximalIdeal (⊥ : Ideal R) bot_ne_top]
-    · refine' fun w => Quotient.inductionOn' w fun y => _
-      obtain ⟨y, hy⟩ := y
-      rw [hx, Submodule.mem_span_singleton] at hy
-      obtain ⟨a, rfl⟩ := hy
-      exact ⟨Ideal.Quotient.mk _ a, rfl⟩
-
-variable (R)
-
 /--
 The following are equivalent for a noetherian local domain `(R, m, k)`:
 0. `R` is a PID
@@ -238,18 +171,16 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
         finrank (ResidueField R) (CotangentSpace R) ≤ 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   tfae_have 1 → 2
-  · intro; infer_instance
+  · exact fun _ ↦ inferInstance
   tfae_have 2 → 1
-  · intro
-    exact ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
+  · exact fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have 1 → 4
   · intro H
     exact ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
   tfae_have 4 → 3
-  · rintro ⟨h₁, h₂⟩
-    exact { h₁ with maximalOfPrime := fun hI hI' => by rw [h₂ _ hI hI']; infer_instance }
+  · exact fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
   tfae_have 3 → 5
-  · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
+  · exact fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 6 ↔ 5
   · exact finrank_cotangentSpace_le_one_iff
   tfae_have 5 → 7
@@ -296,7 +227,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   have : finrank (ResidueField R) (CotangentSpace R) = 1 ↔
     finrank (ResidueField R) (CotangentSpace R) ≤ 1
-  · simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_CotangentSpace_eq_zero_iff, h]
+  · simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
   rw [this]
   have : maximalIdeal R ≠ ⊥ := isField_iff_maximalIdeal_eq.not.mp h
   convert tfae_of_isNoetherianRing_of_localRing_of_isDomain R
@@ -311,7 +242,7 @@ lemma LocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [LocalRin
     finrank (ResidueField R) (CotangentSpace R) = 1 ↔ DiscreteValuationRing R := by
   by_cases hR : IsField R
   · letI := hR.toField
-    simp only [finrank_CotangentSpace_eq_zero, zero_ne_one, false_iff]
+    simp only [finrank_cotangentSpace_eq_zero, zero_ne_one, false_iff]
     exact fun h ↦ h.3 maximalIdeal_eq_bot
   · exact (DiscreteValuationRing.TFAE R hR).out 5 0
 
