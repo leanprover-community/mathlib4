@@ -106,7 +106,8 @@ class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid 
 #align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
-attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderBot
+attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderedAddCommMonoid
+attribute [instance 50] CanonicallyOrderedAddCommMonoid.toOrderBot
 
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
@@ -127,7 +128,8 @@ class CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, Or
 #align canonically_ordered_monoid.to_order_bot CanonicallyOrderedCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
-attribute [instance 100] CanonicallyOrderedCommMonoid.toOrderBot
+attribute [instance 100] CanonicallyOrderedCommMonoid.toOrderedCommMonoid
+attribute [instance 50] CanonicallyOrderedCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -327,12 +329,24 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
   extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
+attribute [instance 100] CanonicallyLinearOrderedAddCommMonoid.toCanonicallyOrderedAddCommMonoid
+attribute [instance 100] CanonicallyLinearOrderedAddCommMonoid.toLinearOrderedAddCommMonoid
+attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMin
+attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMax
+attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toOrd
+
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
 class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
+
+attribute [instance 100] CanonicallyLinearOrderedCommMonoid.toCanonicallyOrderedCommMonoid
+attribute [instance 100] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
+attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMin
+attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMax
+attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toOrd
 
 attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 

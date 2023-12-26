@@ -201,7 +201,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 
-@[nolint defLemma]
+@[nolint defLemma docBlame]
 scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]

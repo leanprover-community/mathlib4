@@ -593,7 +593,7 @@ theorem one_coeff [Zero R] [One R] {a : Γ} :
 #align hahn_series.one_coeff HahnSeries.one_coeff
 
 @[simp]
-theorem single_zero_one [Zero R] [One R] : single 0 (1 : R) = 1 :=
+theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 :=
   rfl
 #align hahn_series.single_zero_one HahnSeries.single_zero_one
 
@@ -978,6 +978,13 @@ theorem C_mul_eq_smul {r : R} {x : HahnSeries Γ R} : C r * x = r • x :=
   single_zero_mul_eq_smul
 #align hahn_series.C_mul_eq_smul HahnSeries.C_mul_eq_smul
 
+@[simp]
+theorem single_pow {a : Γ} {r : R} (n : ℕ) :
+    single a r ^ n = single (n • a) (r ^ n) := by
+  induction' n with n ih
+  · simp
+  · rw [pow_succ, pow_succ, ih, single_mul_single, succ_nsmul]
+
 end Semiring
 
 section Domain
@@ -1196,16 +1203,9 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
     simp (config := { contextual := true }) [Ne.symm hn]
 #align hahn_series.of_power_series_X HahnSeries.ofPowerSeries_X
 
-@[simp]
-theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
+theorem ofPowerSeries_X_pow (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
-  rw [RingHom.map_pow]
-  induction' n with n ih
-  · simp
-    rfl
-  · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
-      Nat.cast_succ, add_comm]
-#align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
+  simp [map_pow (ofPowerSeries Γ R)]
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.

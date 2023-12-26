@@ -155,6 +155,7 @@ instance of_powerSeries_localization [CommRing R] :
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
+@[nolint docBlame]
 local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
 instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
@@ -184,12 +185,12 @@ theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
 
-@[simp, norm_cast]
+@[norm_cast] -- Note: simp can prove this
 theorem coe_sub : ((f' - g' : PowerSeries R') : LaurentSeries R') = f' - g' :=
   (ofPowerSeries ℤ R').map_sub _ _
 #align power_series.coe_sub PowerSeries.coe_sub
 
-@[simp, norm_cast]
+@[norm_cast] -- Note: simp can prove this
 theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg
@@ -234,7 +235,7 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
-@[simp, norm_cast]
+@[norm_cast] -- Note: simp can prove this
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow

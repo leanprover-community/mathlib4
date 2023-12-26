@@ -60,6 +60,9 @@ class ConditionallyCompleteLinearOrderedField (α : Type*) extends
     LinearOrderedField α, ConditionallyCompleteLinearOrder α
 #align conditionally_complete_linear_ordered_field ConditionallyCompleteLinearOrderedField
 
+attribute [instance 100] ConditionallyCompleteLinearOrderedField.toLinearOrderedField
+attribute [instance 50] ConditionallyCompleteLinearOrderedField.toConditionallyCompleteLinearOrder
+
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean

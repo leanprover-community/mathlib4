@@ -18,9 +18,13 @@ variable {α : Type*}
 
 /-- A canonically linear ordered field is a linear ordered field in which `a ≤ b` iff there exists
 `c` with `b = a + c`. -/
-class CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedCommSemiring α,
-  LinearOrderedSemifield α
+class CanonicallyLinearOrderedSemifield (α : Type*) extends LinearOrderedSemifield α,
+    CanonicallyOrderedCommSemiring α
 #align canonically_linear_ordered_semifield CanonicallyLinearOrderedSemifield
+
+attribute [instance 100] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
+attribute [instance 100] CanonicallyLinearOrderedSemifield.toCanonicallyOrderedCommSemiring
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toOrderBot
 
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero

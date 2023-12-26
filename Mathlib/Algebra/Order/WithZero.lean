@@ -32,9 +32,16 @@ in another file. However, the lemmas about it are stated here.
 
 
 /-- A linearly ordered commutative group with a zero element. -/
-class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
-  CommGroupWithZero α
+class LinearOrderedCommGroupWithZero (α : Type*) extends CommGroupWithZero α,
+    LinearOrderedCommMonoidWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
+
+attribute [instance 50] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+attribute [instance 100] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
+attribute [instance 0] LinearOrderedCommGroupWithZero.toPartialOrder
+attribute [instance 0] LinearOrderedCommGroupWithZero.toMin
+attribute [instance 0] LinearOrderedCommGroupWithZero.toMax
+attribute [instance 0] LinearOrderedCommGroupWithZero.toOrd
 
 variable {α : Type*}
 
@@ -285,4 +292,4 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun _a ha ↦ mul_inv_cancel (G₀ := αᵒᵈ) ha }

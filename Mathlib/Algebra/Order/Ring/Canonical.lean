@@ -33,11 +33,16 @@ variable {α : Type u} {β : Type*}
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
 not the integers or other ordered groups. -/
-class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddCommMonoid α,
-    CommSemiring α where
+class CanonicallyOrderedCommSemiring (α : Type*) extends CommSemiring α,
+  CanonicallyOrderedAddCommMonoid α where
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
+
+attribute [instance 50] CanonicallyOrderedCommSemiring.toCommSemiring
+attribute [instance 100] CanonicallyOrderedCommSemiring.toCanonicallyOrderedAddCommMonoid
+attribute [instance 0] CanonicallyOrderedCommSemiring.toPartialOrder
+attribute [instance 0] CanonicallyOrderedCommSemiring.toOrderBot
 
 section StrictOrderedSemiring
 

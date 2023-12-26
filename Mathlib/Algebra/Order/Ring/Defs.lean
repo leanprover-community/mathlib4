@@ -138,13 +138,21 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 #align ordered_semiring OrderedSemiring
 
+attribute [instance 50] OrderedSemiring.toSemiring
+attribute [instance 100] OrderedSemiring.toOrderedAddCommMonoid
+attribute [instance 0] OrderedSemiring.toPartialOrder
+
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+class OrderedCommSemiring (α : Type u) extends CommSemiring α, OrderedSemiring α where
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
+
+attribute [instance 50] OrderedCommSemiring.toCommSemiring
+attribute [instance 100] OrderedCommSemiring.toOrderedSemiring
+attribute [instance 0] OrderedCommSemiring.toPartialOrder
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
@@ -155,10 +163,18 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   protected mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
 #align ordered_ring OrderedRing
 
+attribute [instance 50] OrderedRing.toRing
+attribute [instance 100] OrderedRing.toOrderedAddCommGroup
+attribute [instance 0] OrderedRing.toPartialOrder
+
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
-class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
+class OrderedCommRing (α : Type u) extends CommRing α, OrderedRing α
 #align ordered_comm_ring OrderedCommRing
+
+attribute [instance 50] OrderedCommRing.toCommRing
+attribute [instance 100] OrderedCommRing.toOrderedRing
+attribute [instance 0] OrderedCommRing.toPartialOrder
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
@@ -172,10 +188,20 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 #align strict_ordered_semiring StrictOrderedSemiring
 
+attribute [instance 50] StrictOrderedSemiring.toSemiring
+attribute [instance 100] StrictOrderedSemiring.toOrderedCancelAddCommMonoid
+attribute [instance 50] StrictOrderedSemiring.toNontrivial
+attribute [instance 0] StrictOrderedSemiring.toPartialOrder
+
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
+class StrictOrderedCommSemiring (α : Type u) extends CommSemiring α, StrictOrderedSemiring α
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
+
+attribute [instance 50] StrictOrderedCommSemiring.toCommSemiring
+attribute [instance 100] StrictOrderedCommSemiring.toStrictOrderedSemiring
+attribute [instance 0] StrictOrderedCommSemiring.toPartialOrder
+attribute [instance 0] StrictOrderedCommSemiring.toNontrivial
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
@@ -186,10 +212,21 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 #align strict_ordered_ring StrictOrderedRing
 
+attribute [instance 50] StrictOrderedRing.toRing
+attribute [instance 100] StrictOrderedRing.toOrderedAddCommGroup
+attribute [instance 50] StrictOrderedRing.toNontrivial
+attribute [instance 0] StrictOrderedRing.toPartialOrder
+attribute [instance 0] StrictOrderedRing.toNontrivial
+
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
+class StrictOrderedCommRing (α : Type u) extends CommRing α, StrictOrderedRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
+
+attribute [instance 50] StrictOrderedCommRing.toCommRing
+attribute [instance 100] StrictOrderedCommRing.toStrictOrderedRing
+attribute [instance 0] StrictOrderedCommRing.toPartialOrder
+attribute [instance 0] StrictOrderedCommRing.toNontrivial
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
@@ -197,24 +234,49 @@ search loops. -/
 /-- A `LinearOrderedSemiring` is a nontrivial semiring with a linear order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
-  LinearOrderedAddCommMonoid α
+    LinearOrderedAddCommMonoid α
 #align linear_ordered_semiring LinearOrderedSemiring
+
+attribute [instance 200] LinearOrderedSemiring.toStrictOrderedSemiring
+attribute [instance 100] LinearOrderedSemiring.toLinearOrderedAddCommMonoid
+attribute [instance 0] LinearOrderedSemiring.toMin
+attribute [instance 0] LinearOrderedSemiring.toMax
+attribute [instance 0] LinearOrderedSemiring.toOrd
 
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
-  LinearOrderedSemiring α
+class LinearOrderedCommSemiring (α : Type u) extends StrictOrderedCommSemiring α,
+    LinearOrderedSemiring α
 #align linear_ordered_comm_semiring LinearOrderedCommSemiring
+
+attribute [instance 200] LinearOrderedCommSemiring.toStrictOrderedCommSemiring
+attribute [instance 100] LinearOrderedCommSemiring.toLinearOrderedSemiring
+attribute [instance 0] LinearOrderedCommSemiring.toMin
+attribute [instance 0] LinearOrderedCommSemiring.toMax
+attribute [instance 0] LinearOrderedCommSemiring.toOrd
 
 /-- A `LinearOrderedRing` is a ring with a linear order such that addition is monotone and
 multiplication by a positive number is strictly monotone. -/
-class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
+class LinearOrderedRing (α : Type u) extends StrictOrderedRing α,
+    LinearOrderedAddCommGroup α
 #align linear_ordered_ring LinearOrderedRing
+
+attribute [instance 200] LinearOrderedRing.toStrictOrderedRing
+attribute [instance 100] LinearOrderedRing.toLinearOrderedAddCommGroup
+attribute [instance 0] LinearOrderedRing.toMin
+attribute [instance 0] LinearOrderedRing.toMax
+attribute [instance 0] LinearOrderedRing.toOrd
 
 /-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
+class LinearOrderedCommRing (α : Type u) extends StrictOrderedCommRing α, LinearOrderedRing α
 #align linear_ordered_comm_ring LinearOrderedCommRing
+
+attribute [instance 200] LinearOrderedCommRing.toStrictOrderedCommRing
+attribute [instance 100] LinearOrderedCommRing.toLinearOrderedRing
+attribute [instance 0] LinearOrderedCommRing.toMin
+attribute [instance 0] LinearOrderedCommRing.toMax
+attribute [instance 0] LinearOrderedCommRing.toOrd
 
 section OrderedSemiring
 
@@ -623,7 +685,7 @@ theorem lt_two_mul_self (ha : 0 < a) : a < 2 * a :=
 #align lt_two_mul_self lt_two_mul_self
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
+instance (priority := 50) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
   ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
 #align strict_ordered_semiring.to_no_max_order StrictOrderedSemiring.toNoMaxOrder
 
@@ -792,8 +854,6 @@ instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulRefle
 instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosReflectLT α :=
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
-
-attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
@@ -1006,21 +1066,13 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b c : α}
 
-attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
-
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
   { ‹LinearOrderedRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
 #align linear_ordered_ring.to_linear_ordered_semiring LinearOrderedRing.toLinearOrderedSemiring
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
-    LinearOrderedAddCommGroup α :=
-  { ‹LinearOrderedRing α› with }
-#align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
+instance (priority := 50) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
   { ‹LinearOrderedRing α› with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro a b hab
@@ -1185,12 +1237,6 @@ theorem eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0
 #align eq_zero_of_mul_self_add_mul_self_eq_zero eq_zero_of_mul_self_add_mul_self_eq_zero
 
 end LinearOrderedRing
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
-    [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
-  { d with }
-#align linear_ordered_comm_ring.to_strict_ordered_comm_ring LinearOrderedCommRing.toStrictOrderedCommRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring

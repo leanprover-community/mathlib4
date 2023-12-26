@@ -28,14 +28,14 @@ See note [reducible non-instances]. -/
 def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    OrderedCommMonoid β :=
-  { PartialOrder.lift f hf,
-    hf.commMonoid f one mul npow with
-    mul_le_mul_left := fun a b ab c =>
-      show f (c * a) ≤ f (c * b) by
-        rw [mul, mul]
-        apply mul_le_mul_left'
-        exact ab }
+    OrderedCommMonoid β where
+  toCommMonoid := hf.commMonoid f one mul npow
+  toPartialOrder := PartialOrder.lift f hf
+  mul_le_mul_left := fun a b ab c =>
+    show f (c * a) ≤ f (c * b) by
+      rw [mul, mul]
+      apply mul_le_mul_left'
+      exact ab
 #align function.injective.ordered_comm_monoid Function.Injective.orderedCommMonoid
 #align function.injective.ordered_add_comm_monoid Function.Injective.orderedAddCommMonoid
 
