@@ -151,7 +151,8 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
 #align maximal_ideal_is_principal_of_is_dedekind_domain maximalIdeal_isPrincipal_of_isDedekindDomain
 
 /--
-The following are equivalent for a noetherian local domain `(R, m, k)`:
+Let `(R, m, k)` be a noetherian local domain (possibly a field).
+The following are equivalent:
 0. `R` is a PID
 1. `R` is a valuation ring
 2. `R` is a dedekind domain
