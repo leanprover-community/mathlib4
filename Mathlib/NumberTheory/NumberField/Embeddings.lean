@@ -804,9 +804,9 @@ lemma isUnramified_smul_iff :
 
 variable (K)
 
-/-- A infinite place of the base field is unramified in a field extension iff every
+/-- A infinite place of the base field is unramified in a field extension if every
 infinite place over it is unramified. -/
-def IsUnramifiedIn [IsGalois k K] (w : InfinitePlace k) : Prop :=
+def IsUnramifiedIn (w : InfinitePlace k) : Prop :=
   ∀ v, comap v (algebraMap k K) = w → IsUnramified k v
 
 variable {K}
