@@ -311,6 +311,7 @@ def toSubmoduleEquiv (S : NonUnitalSubalgebra R A) : S.toSubmodule ≃ₗ[R] S :
 
 variable [NonUnitalAlgHomClass F R A B]
 
+/-- The LinearMap underlying a NonUnitalAlgHom -/
 def _root_.NonUnitalAlgHomClass.toLinearMap (f : F) : A →ₗ[R] B where
   toFun := f
   map_add' := map_add f
