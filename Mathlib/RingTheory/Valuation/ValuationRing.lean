@@ -352,7 +352,7 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   rw [IsBezout.iff_span_pair_isPrincipal]
   intro x y
   rw [Ideal.span_insert]
-  cases' le_total (Ideal.span {x} : Ideal R) (Ideal.span {y}) with h h
+  rcases le_total (Ideal.span {x} : Ideal R) (Ideal.span {y}) with h | h
   · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
   · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
@@ -368,7 +368,7 @@ theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R
       (show b ∈ Ideal.span {g} by rw [← e]; exact Ideal.subset_span (by simp))
   obtain ⟨x, y, e'⟩ := Ideal.mem_span_pair.mp
       (show g ∈ Ideal.span {a * g, b * g} by rw [e]; exact Ideal.subset_span (by simp))
-  cases' eq_or_ne g 0 with h h
+  rcases eq_or_ne g 0 with h | h
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
@@ -412,7 +412,7 @@ is a valuation ring. -/
 theorem of_integers : ValuationRing 𝒪 := by
   constructor
   intro a b
-  cases' le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h h
+  rcases le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h | h
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
     use c; exact Or.inr hc.symm
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
@@ -449,7 +449,7 @@ instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
   obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
   obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
   obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
-  cases' le_total m n with h h
+  rcases le_total m n with h | h
   · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
     simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
     simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]

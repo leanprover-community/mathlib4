@@ -355,13 +355,13 @@ then `f` is defined on the whole `Localization S`. -/
 for all `a b`, such that `r S (a, b) (c, d)` implies `f a b = f c d`,
 then `f` is defined on the whole `Localization S`."]
 def liftOn {p : Sort u} (x : Localization S) (f : M → S → p)
-    (H : ∀ {a c : M} {b d : S} (_ : r S (a, b) (c, d)), f a b = f c d) : p :=
+    (H : ∀ {a c : M} {b d : S}, r S (a, b) (c, d) → f a b = f c d) : p :=
   rec f (fun h ↦ (by simpa only [eq_rec_constant] using H h)) x
 #align localization.lift_on Localization.liftOn
 #align add_localization.lift_on AddLocalization.liftOn
 
 @[to_additive]
-theorem liftOn_mk {p : Sort u} (f : ∀ (_a : M) (_b : S), p) (H) (a : M) (b : S) :
+theorem liftOn_mk {p : Sort u} (f : M → S → p) (H) (a : M) (b : S) :
     liftOn (mk a b) f H = f a b := rfl
 #align localization.lift_on_mk Localization.liftOn_mk
 #align add_localization.lift_on_mk AddLocalization.liftOn_mk
@@ -388,7 +388,7 @@ then `f` is defined on the whole `Localization S`. -/
 for all `x` and `y`, such that `r S x x'` and `r S y y'` implies `f x y = f x' y'`,
 then `f` is defined on the whole `Localization S`."]
 def liftOn₂ {p : Sort u} (x y : Localization S) (f : M → S → M → S → p)
-    (H : ∀ {a a' b b' c c' d d'} (_ : r S (a, b) (a', b')) (_ : r S (c, d) (c', d')),
+    (H : ∀ {a a' b b' c c' d d'}, r S (a, b) (a', b') → r S (c, d) (c', d') →
       f a b c d = f a' b' c' d') : p :=
   liftOn x (fun a b ↦ liftOn y (f a b) fun hy ↦ H ((r S).refl _) hy) fun hx ↦
     induction_on y fun ⟨_, _⟩ ↦ H hx ((r S).refl _)
@@ -1660,7 +1660,7 @@ theorem mk_eq_monoidOf_mk' : mk = (monoidOf S).mk' :=
 universe u
 
 @[to_additive (attr := simp)]
-theorem liftOn_mk' {p : Sort u} (f : ∀ (_ : M) (_ : S), p) (H) (a : M) (b : S) :
+theorem liftOn_mk' {p : Sort u} (f : M → S → p) (H) (a : M) (b : S) :
     liftOn ((monoidOf S).mk' a b) f H = f a b := by rw [← mk_eq_monoidOf_mk', liftOn_mk]
 #align localization.lift_on_mk' Localization.liftOn_mk'
 #align add_localization.lift_on_mk' AddLocalization.liftOn_mk'
@@ -1794,6 +1794,14 @@ variable {M : Type*} [CommMonoidWithZero M] (S : Submonoid M) (N : Type*) [CommM
 
 namespace Submonoid
 
+variable {S N} in
+/-- If `S` contains `0` then the localization at `S` is trivial. -/
+theorem LocalizationMap.subsingleton  (f : Submonoid.LocalizationMap S N) (h : 0 ∈ S) :
+    Subsingleton N := by
+  refine ⟨fun a b ↦ ?_⟩
+  rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
+  exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
+
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
@@ -1841,7 +1849,7 @@ instance : CommMonoidWithZero (Localization S) where
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
 #align localization.mk_zero Localization.mk_zero
 
-theorem liftOn_zero {p : Type*} (f : ∀ (_ : M) (_ : S), p) (H) : liftOn 0 f H = f 0 1 := by
+theorem liftOn_zero {p : Type*} (f : M → S → p) (H) : liftOn 0 f H = f 0 1 := by
   rw [← mk_zero 1, liftOn_mk]
 #align localization.lift_on_zero Localization.liftOn_zero
 

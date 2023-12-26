@@ -1044,7 +1044,7 @@ theorem countable_biInf_eq_iInf_seq [CompleteLattice α] {B : Set ι} (Bcbl : B.
 
 theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
     (f : ι → α) {i₀ : ι} (h : f i₀ = ⊤) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) := by
-  cases' B.eq_empty_or_nonempty with hB Bnonempty
+  rcases B.eq_empty_or_nonempty with hB | Bnonempty
   · rw [hB, iInf_emptyset]
     use fun _ => i₀
     simp [h]

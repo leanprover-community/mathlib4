@@ -1059,7 +1059,7 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
       ∑ i in s, ‖f i‖ ^ p.toReal := by
   refine' ((hasSum_norm hp f).sub (hasSum_norm hp (f - ∑ i in s, lp.single p i (f i)))).unique _
   let F : α → ℝ := fun i => ‖f i‖ ^ p.toReal - ‖(f - ∑ i in s, lp.single p i (f i)) i‖ ^ p.toReal
-  have hF : ∀ (i) (_ : i ∉ s), F i = 0 := by
+  have hF : ∀ i ∉ s, F i = 0 := by
     intro i hi
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
       simpa only [coeFn_sum, lp.single_apply, coeFn_sub, Pi.sub_apply, Finset.sum_apply,
