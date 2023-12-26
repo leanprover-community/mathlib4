@@ -848,8 +848,9 @@ protected theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equiconti
 /-- If a set of functions is equicontinuous, its closure for the product topology (i.e the topology
 of pointwise convergence **on the whole `X`**) is also equicontinuous. See also
 `EquicontinuousOn.closure_rel` for a version that only assumes convergence pointwise **on `S`**.-/
-protected theorem EquicontinuousOn.closure {A : Set <| X → α} {S : Set X} (hA : A.EquicontinuousOn S) :
-    (closure A).EquicontinuousOn S := fun x hx ↦ (hA x hx).closure
+protected theorem EquicontinuousOn.closure {A : Set <| X → α} {S : Set X}
+    (hA : A.EquicontinuousOn S) : (closure A).EquicontinuousOn S :=
+  fun x hx ↦ (hA x hx).closure
 
 /-- A version of `UniformEquicontinuousOn.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
