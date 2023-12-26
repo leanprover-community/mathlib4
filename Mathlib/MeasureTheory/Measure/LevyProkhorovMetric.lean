@@ -96,20 +96,11 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
 
 lemma levyProkhorovEDist_le_max_measure_univ (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν ≤ max (μ univ) (ν univ) := by
-  apply sInf_le
-  simp only [ENNReal.coe_max, FiniteMeasure.ennreal_mass, ge_iff_le, ne_eq,
-    FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, mem_setOf_eq]
-  intro B _
-  refine ⟨(measure_mono (subset_univ B)).trans ?_, (measure_mono (subset_univ B)).trans ?_⟩
-  · apply le_add_left
-    exact le_max_left ..
-  · apply le_add_left
-    exact le_max_right ..
+  refine sInf_le fun B _ ↦ ⟨?_, ?_⟩ <;> apply le_add_left <;> simp [measure_mono]
 
 lemma levyProkhorovEDist_lt_top (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    levyProkhorovEDist μ ν < ∞ := by
-  apply lt_of_le_of_lt (levyProkhorovEDist_le_max_measure_univ μ ν)
-  exact (max_lt IsFiniteMeasure.measure_univ_lt_top IsFiniteMeasure.measure_univ_lt_top)
+    levyProkhorovEDist μ ν < ∞ :=
+  (levyProkhorovEDist_le_max_measure_univ μ ν).trans_lt <| by simp [measure_lt_top]
 
 lemma levyProkhorovEDist_self (μ : Measure Ω) :
     levyProkhorovEDist μ μ = 0 := by
