@@ -16,7 +16,6 @@ operations on filters.
 ## Main declarations
 
 * `Filter.map₂`: Binary map of filters.
-* `Filter.map₃`: Ternary map of filters.
 
 ## Notes
 
@@ -37,19 +36,9 @@ variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f 
 
 /-- The image of a binary function `m : α → β → γ` as a function `Filter α → Filter β → Filter γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
-    where
-  sets := { s | ∃ u v, u ∈ f ∧ v ∈ g ∧ image2 m u v ⊆ s }
-  univ_sets := ⟨univ, univ, univ_sets _, univ_sets _, subset_univ _⟩
-  sets_of_superset hs hst :=
-    Exists₂.imp (fun u v => And.imp_right <| And.imp_right fun h => Subset.trans h hst) hs
-  inter_sets := by
-    simp only [exists_prop, Set.mem_setOf_eq, subset_inter_iff]
-    rintro _ _ ⟨s₁, s₂, hs₁, hs₂, hs⟩ ⟨t₁, t₂, ht₁, ht₂, ht⟩
-    exact
-      ⟨s₁ ∩ t₁, s₂ ∩ t₂, inter_sets f hs₁ ht₁, inter_sets g hs₂ ht₂,
-        (image2_subset (inter_subset_left _ _) <| inter_subset_left _ _).trans hs,
-        (image2_subset (inter_subset_right _ _) <| inter_subset_right _ _).trans ht⟩
+def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ :=
+  ((f ×ˢ g).map (uncurry m)).copy { s | ∃ u v, u ∈ f ∧ v ∈ g ∧ image2 m u v ⊆ s } fun _ ↦ by
+    simp only [mem_map, mem_prod_iff, image2_subset_iff, prod_subset_iff, exists_and_left]; rfl
 #align filter.map₂ Filter.map₂
 
 @[simp 900]
@@ -63,8 +52,7 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
     Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
-  ext s
-  simp [mem_prod_iff, prod_subset_iff]
+  rw [map₂, copy_eq]; rfl
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
@@ -160,8 +148,7 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
-  ext u
-  constructor <;> rintro ⟨s, t, hs, ht, hu⟩ <;> refine' ⟨t, s, ht, hs, by rwa [image2_swap]⟩
+  rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂]; rfl
 #align filter.map₂_swap Filter.map₂_swap
 
 @[simp]
@@ -173,50 +160,9 @@ theorem map₂_left [NeBot g] : map₂ (fun x _ => x) f g = f := by
 theorem map₂_right [NeBot f] : map₂ (fun _ y => y) f g = g := by rw [map₂_swap, map₂_left]
 #align filter.map₂_right Filter.map₂_right
 
-/-- The image of a ternary function `m : α → β → γ → δ` as a function
-`Filter α → Filter β → Filter γ → Filter δ`. Mathematically this should be thought of as the image
-of the corresponding function `α × β × γ → δ`. -/
-def map₃ (m : α → β → γ → δ) (f : Filter α) (g : Filter β) (h : Filter γ) : Filter δ where
-  sets := { s | ∃ u v w, u ∈ f ∧ v ∈ g ∧ w ∈ h ∧ image3 m u v w ⊆ s }
-  univ_sets := ⟨univ, univ, univ, univ_sets _, univ_sets _, univ_sets _, subset_univ _⟩
-  sets_of_superset hs hst :=
-    Exists₃.imp
-      (fun u v w => And.imp_right <| And.imp_right <| And.imp_right fun h => Subset.trans h hst) hs
-  inter_sets := by
-    simp only [exists_prop, mem_setOf_eq, subset_inter_iff]
-    rintro _ _ ⟨s₁, s₂, s₃, hs₁, hs₂, hs₃, hs⟩ ⟨t₁, t₂, t₃, ht₁, ht₂, ht₃, ht⟩
-    exact
-      ⟨s₁ ∩ t₁, s₂ ∩ t₂, s₃ ∩ t₃, inter_mem hs₁ ht₁, inter_mem hs₂ ht₂, inter_mem hs₃ ht₃,
-        (image3_mono (inter_subset_left _ _) (inter_subset_left _ _) <| inter_subset_left _ _).trans
-          hs,
-        (image3_mono (inter_subset_right _ _) (inter_subset_right _ _) <|
-              inter_subset_right _ _).trans
-          ht⟩
-#align filter.map₃ Filter.map₃
-
-theorem map₂_map₂_left (m : δ → γ → ε) (n : α → β → δ) :
-    map₂ m (map₂ n f g) h = map₃ (fun a b c => m (n a b) c) f g h := by
-  ext w
-  constructor
-  · rintro ⟨s, t, ⟨u, v, hu, hv, hs⟩, ht, hw⟩
-    refine' ⟨u, v, t, hu, hv, ht, _⟩
-    rw [← image2_image2_left]
-    exact (image2_subset_right hs).trans hw
-  · rintro ⟨s, t, u, hs, ht, hu, hw⟩
-    exact ⟨_, u, image2_mem_map₂ hs ht, hu, by rwa [image2_image2_left]⟩
-#align filter.map₂_map₂_left Filter.map₂_map₂_left
-
-theorem map₂_map₂_right (m : α → δ → ε) (n : β → γ → δ) :
-    map₂ m f (map₂ n g h) = map₃ (fun a b c => m a (n b c)) f g h := by
-  ext w
-  constructor
-  · rintro ⟨s, t, hs, ⟨u, v, hu, hv, ht⟩, hw⟩
-    refine' ⟨s, u, v, hs, hu, hv, _⟩
-    rw [← image2_image2_right]
-    exact (image2_subset_left ht).trans hw
-  · rintro ⟨s, t, u, hs, ht, hu, hw⟩
-    exact ⟨s, _, hs, image2_mem_map₂ ht hu, by rwa [image2_image2_right]⟩
-#align filter.map₂_map₂_right Filter.map₂_map₂_right
+#noalign filter.map₃
+#noalign filter.map₂_map₂_left
+#noalign filter.map₂_map₂_right
 
 theorem map_map₂ (m : α → β → γ) (n : γ → δ) :
     (map₂ m f g).map n = map₂ (fun a b => n (m a b)) f g := by
@@ -255,11 +201,12 @@ The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm m
 `map₂ (*) f g = map₂ (*) g f` in a `CommSemigroup`.
 -/
 
-
 theorem map₂_assoc {m : δ → γ → ε} {n : α → β → δ} {m' : α → ε' → ε} {n' : β → γ → ε'}
     {h : Filter γ} (h_assoc : ∀ a b c, m (n a b) c = m' a (n' b c)) :
     map₂ m (map₂ n f g) h = map₂ m' f (map₂ n' g h) := by
-  simp only [map₂_map₂_left, map₂_map₂_right, h_assoc]
+  rw [← map_prod_eq_map₂ n, ← map_prod_eq_map₂ n', map₂_map_left, map₂_map_right,
+    ← map_prod_eq_map₂, ← map_prod_eq_map₂, ← prod_assoc, map_map]
+  simp only [h_assoc]; rfl
 #align filter.map₂_assoc Filter.map₂_assoc
 
 theorem map₂_comm {n : β → α → γ} (h_comm : ∀ a b, m a b = n b a) : map₂ m f g = map₂ n g f :=
@@ -310,7 +257,7 @@ theorem map_map₂_right_comm {m : α → β' → γ} {n : β → β'} {m' : α 
   (map_map₂_distrib_right fun a b => (h_right_comm a b).symm).symm
 #align filter.map_map₂_right_comm Filter.map_map₂_right_comm
 
-/-- The other direction does not hold because of the `f`-`f` cross terms on the RHS. -/
+/-- The other direction does not hold because of the `f-f` cross terms on the RHS. -/
 theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m₁ : α → β → β'} {m₂ : α → γ → γ'}
     {n' : β' → γ' → ε} (h_distrib : ∀ a b c, m a (n b c) = n' (m₁ a b) (m₂ a c)) :
     map₂ m f (map₂ n g h) ≤ map₂ n' (map₂ m₁ f g) (map₂ m₂ f h) := by
