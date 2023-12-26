@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.Algebra.Order.
 
 #align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
@@ -114,6 +115,8 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 #align same_ray.trans SameRay.trans
 
+variable {S : Type*} [SMul S R] [PosSMulMono S R] [IsScalarTower S R M]
+
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 theorem sameRay_nonneg_smul_right (v : M) {r : R} (h : 0 ≤ r) : SameRay R v (r • v) :=
   Or.inr <|
@@ -139,7 +142,7 @@ theorem pos_smul_right {r : R} (h : SameRay R x y) (hr : 0 < r) : SameRay R x (r
 #align same_ray.pos_smul_right SameRay.pos_smul_right
 
 /-- A nonnegative multiple of a vector is in the same ray as that vector. -/
-theorem sameRay_nonneg_smul_left (v : M) {r : R} (h : 0 ≤ r) : SameRay R (r • v) v :=
+theorem sameRay_nonneg_smul_left  (v : M) {r : R} (h : 0 ≤ r) : SameRay R (r • v) v :=
   (sameRay_nonneg_smul_right v h).symm
 #align same_ray_nonneg_smul_left SameRay.sameRay_nonneg_smul_left
 
