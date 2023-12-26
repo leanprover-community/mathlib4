@@ -38,17 +38,6 @@ structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiri
 -- commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_hom AlgHom
 
-def AlgHom.mk_of_commutes (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] (f : A →+* B)
-  (hf : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
-  AlgHom R A B := {
-f with
-map_smul' := fun r x => by
-  simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-    MonoidHom.coe_coe, RingHom.id_apply]
-  rw [← one_mul x, ← smul_eq_mul, ← smul_assoc, ← Algebra.algebraMap_eq_smul_one, smul_eq_mul, map_mul, hf r,
-    Algebra.algebraMap_eq_smul_one]
-  simp only [Algebra.smul_mul_assoc, one_mul, smul_eq_mul] }
-
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
 
@@ -320,6 +309,26 @@ def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →�
 theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
   rfl
 #align alg_hom.coe_mk' AlgHom.coe_mk'
+
+/-- Construct an `AlgHom` from a `RingHom` and the commutation property
+  of its `algebraMap` -/
+def mk_of_commutes (R A B : Type*) [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    (f : A →+* B) (hf : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
+    AlgHom R A B := {
+f with
+map_smul' := fun r x => by
+  simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    MonoidHom.coe_coe, RingHom.id_apply]
+  rw [← one_mul x, ← smul_eq_mul, ← smul_assoc, ← Algebra.algebraMap_eq_smul_one, smul_eq_mul, map_mul, hf r,
+    Algebra.algebraMap_eq_smul_one]
+  simp only [Algebra.smul_mul_assoc, one_mul, smul_eq_mul] }
+
+@[simp]
+lemma coe_mk_of_commutes (R A B : Type*) [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    (f : A →+* B) (hf : ∀ r : R, f (algebraMap R A r) = algebraMap R B r) :
+    (mk_of_commutes R A B f hf).toRingHom = f := rfl
 
 section
 
