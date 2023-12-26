@@ -63,6 +63,12 @@ lemma hasPage_of_LE (r r' : ℤ) (le : r ≤ r') [E.HasPage r] : E.HasPage r' wh
 
 instance : E.HasPage r₀ where
 
+instance [E.HasPage 0] : E.HasPage 1 := E.hasPage_of_LE 0 1 (by linarith)
+instance [E.HasPage 1] : E.HasPage 2 := E.hasPage_of_LE 1 2 (by linarith)
+instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_LE 2 3 (by linarith)
+instance [E.HasPage 3] : E.HasPage 4 := E.hasPage_of_LE 3 4 (by linarith)
+instance [E.HasPage 4] : E.HasPage 5 := E.hasPage_of_LE 4 5 (by linarith)
+
 instance (r : ℤ) [E.HasPage r] : E.HasPage (r + 1) :=
   E.hasPage_of_LE r _ (by linarith)
 
@@ -322,5 +328,11 @@ abbrev CohomologicalSpectralSequence :=
   SpectralSequence C (fun r => ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ))
 
 abbrev E₂CohomologicalSpectralSequence := CohomologicalSpectralSequence C 2
+
+abbrev CohomologicalSpectralSequenceNat :=
+  SpectralSequence C (fun r => ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩)
+
+abbrev E₂CohomologicalSpectralSequenceNat :=
+  CohomologicalSpectralSequenceNat C 2
 
 end CategoryTheory

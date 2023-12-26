@@ -23,15 +23,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject
 
-variable (C : Type*) [Category C] [Abelian C]
-
-abbrev CohomologicalSpectralSequenceNat :=
-  SpectralSequence C (fun r => ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩)
-
-abbrev E₂CohomologicalSpectralSequenceNat :=
-  CohomologicalSpectralSequenceNat C 2
-
-variable {C}
+variable {C : Type*} [Category C] [Abelian C]
 
 namespace CohomologicalSpectralSequenceNat
 
@@ -74,69 +66,9 @@ lemma stripes.position_eq_iff (n : ℕ) (i : Fin (n + 1))
 variable {r₀ : ℤ} (E : CohomologicalSpectralSequenceNat C r₀) [E.HasPage 2]
   {X : ℕ → C} (hE : E.StronglyConvergesTo stripes X)
 
-instance : E.HasPage 3 := E.hasPage_of_LE 2 3 (by linarith)
-
-lemma hasEdgeMonoAt (pq : ℕ × ℕ) (r : ℤ) [E.HasPage r] (hr : pq.1 + 1 ≤ r) :
-    E.HasEdgeMonoAt pq r where
-  zero := by
-    obtain ⟨p, q⟩ := pq
-    rintro ⟨p', q'⟩
-    apply (E.page r).shape
-    simp only [ComplexShape.spectralSequenceNat_rel_iff, not_and]
-    intro _ _
-    linarith
-
-lemma hasEdgeEpiAt (pq : ℕ × ℕ) (r : ℤ) [E.HasPage r] (hr : pq.2 + 2 ≤ r) :
-    E.HasEdgeEpiAt pq r where
-  zero := by
-    obtain ⟨p, q⟩ := pq
-    rintro ⟨p', q'⟩
-    apply (E.page r).shape
-    simp only [ComplexShape.spectralSequenceNat_rel_iff, not_and]
-    intro _ _
-    linarith
-
 namespace LowDegreesExactSequence
 
-instance (pq : ℕ × ℕ) : E.HasPageInfinityAt pq where
-  nonempty_hasEdgeEpiSet := ⟨pq.2 + 2, fun r hr =>
-    have := E.hasPage_of_LE 2 r (by linarith)
-    ⟨this, E.hasEdgeEpiAt _ _ (by linarith)⟩⟩
-  nonempty_hasEdgeMonoSet := ⟨pq.1 + 2, fun r hr =>
-    have := E.hasPage_of_LE 2 r (by linarith)
-    ⟨this, E.hasEdgeMonoAt _ _ (by linarith)⟩⟩
-
 def d₂ := (E.page 2).d ⟨0, 1⟩ ⟨2, 0⟩
-
-instance (n : ℕ) : E.HasEdgeMonoAtFrom ⟨0, n⟩ 2 :=
-  HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
-    apply E.hasEdgeMonoAt
-    dsimp
-    linarith)
-
-instance (n : ℕ) : E.HasEdgeEpiAtFrom ⟨n, 0⟩ 2 :=
-  HasEdgeEpiAtFrom.mk' _ _ _ (fun k => by
-    apply E.hasEdgeEpiAt
-    dsimp
-    linarith)
-
-instance (n : ℕ) : E.HasEdgeEpiAtFrom ⟨n, 1⟩ 3 :=
-  HasEdgeEpiAtFrom.mk' _ _ _ (fun k => by
-    apply E.hasEdgeEpiAt
-    dsimp
-    linarith)
-
-instance (n : ℕ) : E.HasEdgeMonoAtFrom ⟨1, n⟩ 2 :=
-  HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
-    apply E.hasEdgeMonoAt
-    dsimp
-    linarith)
-
-instance (n : ℕ) : E.HasEdgeMonoAtFrom ⟨2, n⟩ 3 :=
-  HasEdgeMonoAtFrom.mk' _ _ _ (fun k => by
-    apply E.hasEdgeMonoAt
-    dsimp
-    linarith)
 
 variable {E}
 

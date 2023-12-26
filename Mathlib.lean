@@ -311,6 +311,15 @@ import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.Algebra.Homology.SpectralObject.Basic
+import Mathlib.Algebra.Homology.SpectralObject.Convergence
+import Mathlib.Algebra.Homology.SpectralObject.Differentials
+import Mathlib.Algebra.Homology.SpectralObject.FirstPage
+import Mathlib.Algebra.Homology.SpectralObject.Homology
+import Mathlib.Algebra.Homology.SpectralObject.Images
+import Mathlib.Algebra.Homology.SpectralObject.Misc
+import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
+import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 import Mathlib.Algebra.Homology.SpectralSequence.Basic
 import Mathlib.Algebra.Homology.SpectralSequence.Construction
 import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
@@ -318,6 +327,11 @@ import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 import Mathlib.Algebra.Homology.SpectralSequence.LowDegreesExactSequence
 import Mathlib.Algebra.Homology.SpectralSequence.SpectralObject
 import Mathlib.Algebra.Homology.SpectralSequence.ZTilde
+import Mathlib.Algebra.Homology.SpectralSequenceNew.Basic
+import Mathlib.Algebra.Homology.SpectralSequenceNew.Convergence
+import Mathlib.Algebra.Homology.SpectralSequenceNew.LowDegreesExactSequence
+import Mathlib.Algebra.Homology.SpectralSequenceNew.PageInfinity
+import Mathlib.Algebra.Homology.SpectralSequenceNew.ZTilde
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Algebra.Invertible.Defs

@@ -770,4 +770,83 @@ end Hom
 
 end SpectralSequence
 
+namespace CohomologicalSpectralSequenceNat
+
+variable (E : CohomologicalSpectralSequenceNat C r₀)
+
+lemma hasEdgeEpiAt
+    (pq : ℕ × ℕ) (r : ℤ) (hpq : pq.2 + 2 ≤ r) [E.HasPage r] :
+    E.HasEdgeEpiAt pq r where
+  zero pq' := by
+    apply HomologicalComplex.shape
+    intro h
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at h
+    linarith
+
+lemma hasEdgeMonoAt
+    (pq : ℕ × ℕ) (r : ℤ) (hpq : pq.1 + 1 ≤ r) [E.HasPage r] :
+    E.HasEdgeMonoAt pq r where
+  zero pq' := by
+    apply HomologicalComplex.shape
+    intro h
+    simp only [ComplexShape.spectralSequenceNat_rel_iff] at h
+    linarith
+
+instance (pq : ℕ × ℕ) : E.HasPageInfinityAt pq where
+  nonempty_hasEdgeEpiSet := ⟨max r₀ (pq.2 + 2), fun r hr =>
+    have := E.hasPage_of_LE r₀ r ((le_max_left _ _).trans hr)
+    ⟨this, E.hasEdgeEpiAt pq r ((le_max_right _ _).trans hr)⟩⟩
+  nonempty_hasEdgeMonoSet := ⟨max r₀ (pq.1 + 1), fun r hr =>
+    have := E.hasPage_of_LE r₀ r ((le_max_left _ _).trans hr)
+    ⟨this, E.hasEdgeMonoAt pq r ((le_max_right _ _).trans hr)⟩⟩
+
+lemma hasEdgeEpiAtFrom
+    (pq : ℕ × ℕ) (r : ℤ) (hpq : pq.2 + 2 ≤ r) [E.HasPage r] :
+    E.HasEdgeEpiAtFrom pq r where
+  le := by
+    apply E.rFromMin_LE
+    intro r' hrr'
+    have := E.hasPage_of_LE _ _ hrr'
+    refine' ⟨inferInstance, _⟩
+    apply hasEdgeEpiAt
+    linarith
+
+lemma hasEdgeMonoAtFrom
+    (pq : ℕ × ℕ) (r : ℤ) (hpq : pq.1 + 1 ≤ r) [E.HasPage r] :
+    E.HasEdgeMonoAtFrom pq r where
+  le := by
+    apply E.rToMin_LE
+    intro r' hrr'
+    have := E.hasPage_of_LE _ _ hrr'
+    refine' ⟨inferInstance, _⟩
+    apply hasEdgeMonoAt
+    linarith
+
+instance (p : ℕ) [E.HasPage 2]: E.HasEdgeEpiAtFrom ⟨p, 0⟩ 2 := by
+  apply hasEdgeEpiAtFrom
+  dsimp
+  linarith
+
+instance (p : ℕ) [E.HasPage 2] : E.HasEdgeEpiAtFrom ⟨p, 1⟩ 3 := by
+  apply hasEdgeEpiAtFrom
+  dsimp
+  linarith
+
+instance (q : ℕ) [E.HasPage 2] : E.HasEdgeMonoAtFrom ⟨0, q⟩ 2 := by
+  apply hasEdgeMonoAtFrom
+  dsimp
+  linarith
+
+instance (q : ℕ) [E.HasPage 2] : E.HasEdgeMonoAtFrom ⟨1, q⟩ 2 := by
+  apply hasEdgeMonoAtFrom
+  dsimp
+  linarith
+
+instance (q : ℕ) [E.HasPage 2]: E.HasEdgeMonoAtFrom ⟨2, q⟩ 3 := by
+  apply hasEdgeMonoAtFrom
+  dsimp
+  linarith
+
+end CohomologicalSpectralSequenceNat
+
 end CategoryTheory
