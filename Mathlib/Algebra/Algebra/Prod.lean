@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.algebra.prod from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -58,12 +57,10 @@ end Prod
 namespace AlgHom
 
 variable (R A B)
-#check LinearMap.fst R A B
 
 /-- First projection as `AlgHom`. -/
 def fst : A × B →ₐ[R] A :=
-  { RingHom.fst A B , LinearMap.fst R A B with }
-    --  with commutes' := fun _r => rfl }
+  { RingHom.fst A B with commutes' := fun _r => rfl }
 #align alg_hom.fst AlgHom.fst
 
 /-- Second projection as `AlgHom`. -/
