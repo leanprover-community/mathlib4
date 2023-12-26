@@ -772,6 +772,11 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
   rw [mul_comm, mul_inv_of_unit a h]
 #align zmod.inv_mul_of_unit ZMod.inv_mul_of_unit
 
+-- TODO: If we changed `⁻¹` so that `ZMod n` is always a `DivisionMonoid`,
+-- then we could use the general lemma `inv_eq_of_mul_eq_one`
+protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
+  left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
+
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
 the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
