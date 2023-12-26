@@ -214,7 +214,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F := fun x hx ↦ by
   simp only [mem_restrictScalars, mem_separableClosure_iff] at hx ⊢
-  exact hx.map (f := algebraMap F E) |>.of_dvd (minpoly.dvd_map_of_isScalarTower F E x)
+  exact hx.map_minpoly E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
