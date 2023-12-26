@@ -32,7 +32,7 @@ variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractio
 
 open scoped DiscreteValuation
 
-open LocalRing
+open LocalRing FiniteDimensional
 
 open scoped BigOperators
 
@@ -157,7 +157,7 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     List.TFAE
       [DiscreteValuationRing R, ValuationRing R, IsDedekindDomain R,
         IsIntegrallyClosed R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ P.IsPrime, (maximalIdeal R).IsPrincipal,
-        FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 1,
+        finrank (ResidueField R) (CotangentSpace R) = 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   have ne_bot := Ring.ne_bot_of_isMaximal_of_not_isField (maximalIdeal.isMaximal R) h
   classical
@@ -254,37 +254,53 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
   tfae_finish
 #align discrete_valuation_ring.tfae DiscreteValuationRing.TFAE
 
+variable {R}
+
 lemma LocalRing.finrank_CotangentSpace_eq_zero_iff [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
-    FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 0 ↔ IsField R := by
-  rw [FiniteDimensional.finrank_zero_iff, subsingleton_CotangentSpace_iff]
+    finrank (ResidueField R) (CotangentSpace R) = 0 ↔ IsField R := by
+  rw [finrank_zero_iff, subsingleton_CotangentSpace_iff]
 
 lemma LocalRing.finrank_CotangentSpace_eq_zero (R) [Field R] :
-    FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) = 0 :=
-  (finrank_CotangentSpace_eq_zero_iff R).mpr (Field.toIsField R)
+    finrank (ResidueField R) (CotangentSpace R) = 0 :=
+  finrank_CotangentSpace_eq_zero_iff.mpr (Field.toIsField R)
+
+lemma LocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
+    finrank (ResidueField R) (CotangentSpace R) = 1 ↔ DiscreteValuationRing R := by
+  by_cases hR : IsField R
+  · letI := hR.toField
+    simp only [finrank_CotangentSpace_eq_zero, zero_ne_one, false_iff]
+    exact fun h ↦ h.3 maximalIdeal_eq_bot
+  · exact (DiscreteValuationRing.TFAE R hR).out 5 0
+
+variable (R)
+
+lemma LocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [DiscreteValuationRing R] :
+    finrank (ResidueField R) (CotangentSpace R) = 1 :=
+  finrank_CotangentSpace_eq_one_iff.mpr ‹_›
 
 theorem DiscreteValuationRing.TFAE' [IsNoetherianRing R] [LocalRing R] [IsDomain R] :
     List.TFAE
       [IsPrincipalIdealRing R, ValuationRing R, IsDedekindDomain R,
         IsIntegrallyClosed R ∧ ∀ P : Ideal R, P ≠ ⊥ → P.IsPrime → P = maximalIdeal R,
         (maximalIdeal R).IsPrincipal,
-        FiniteDimensional.finrank (ResidueField R) (CotangentSpace R) ≤ 1,
+        finrank (ResidueField R) (CotangentSpace R) ≤ 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
-    by_cases hR : IsField R
-    · letI := hR.toField
-      have : IsPrincipalIdealRing R := inferInstance
-      have : ValuationRing R := inferInstance
-      have : IsDedekindDomain R := inferInstance
-      have : IsIntegrallyClosed R := inferInstance
-      have : maximalIdeal R = ⊥ := maximalIdeal_eq_bot
-      have := finrank_CotangentSpace_eq_zero R
-      have : ∀ I : Ideal R, I ≠ ⊥ ↔ I = ⊤ := fun I ↦ by cases eq_bot_or_eq_top I <;> simp [*]
-      have : ∀ I : Ideal R, Ideal.IsPrime I ↔ I = ⊥ := fun I ↦ by
-        obtain rfl|rfl := eq_bot_or_eq_top I <;> simp only [Ideal.bot_prime, top_ne_bot, iff_false]
-        exact fun h ↦ h.1 rfl
-      have : ∃ n, ⊤ = (⊥ : Ideal R) ^ n := ⟨0, by simp⟩
-      simp only [*, or_true, ne_eq, true_and, zero_le, List.tfae_cons_self, eq_true bot_isPrincipal,
-        imp_self, implies_true, forall_const, forall_eq, List.tfae_singleton]
-    have hR' := LocalRing.isField_iff_maximalIdeal_eq.not.mp hR
+  by_cases hR : IsField R
+  · letI := hR.toField
+    have : IsPrincipalIdealRing R := inferInstance
+    have : ValuationRing R := inferInstance
+    have : IsDedekindDomain R := inferInstance
+    have : IsIntegrallyClosed R := inferInstance
+    have : maximalIdeal R = ⊥ := maximalIdeal_eq_bot
+    have := finrank_CotangentSpace_eq_zero R
+    have : ∀ I : Ideal R, I ≠ ⊥ ↔ I = ⊤ := fun I ↦ by cases eq_bot_or_eq_top I <;> simp [*]
+    have : ∀ I : Ideal R, Ideal.IsPrime I ↔ I = ⊥ := fun I ↦ by
+      obtain rfl|rfl := eq_bot_or_eq_top I <;> simp only [Ideal.bot_prime, top_ne_bot, iff_false]
+      exact fun h ↦ h.1 rfl
+    have : ∃ n, ⊤ = (⊥ : Ideal R) ^ n := ⟨0, by simp⟩
+    simp only [*, or_true, ne_eq, true_and, zero_le, List.tfae_cons_self, eq_true bot_isPrincipal,
+      imp_self, implies_true, forall_const, forall_eq, List.tfae_singleton]
+  · have hR' := LocalRing.isField_iff_maximalIdeal_eq.not.mp hR
     rw [Nat.le_one_iff_eq_zero_or_eq_one]
     convert DiscreteValuationRing.TFAE R hR
     · exact ⟨fun _ ↦ ⟨hR'⟩, @DiscreteValuationRing.toIsPrincipalIdealRing R _ _⟩
