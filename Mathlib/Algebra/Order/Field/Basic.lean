@@ -315,7 +315,7 @@ theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
 #align inv_lt_one_iff_of_pos inv_lt_one_iff_of_pos
 
 theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
-  cases' le_or_lt a 0 with ha ha
+  rcases le_or_lt a 0 with ha | ha
   · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
   · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha]
 #align inv_lt_one_iff inv_lt_one_iff

@@ -244,7 +244,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
   by_cases h0 : ‖hf.approx n x‖ = 0
   · simp only [h0, _root_.div_zero, min_eq_right, zero_le_one, norm_zero, mul_zero]
     exact hc
-  cases' le_total ‖hf.approx n x‖ c with h h
+  rcases le_total ‖hf.approx n x‖ c with h | h
   · rw [min_eq_left _]
     · simpa only [norm_one, one_mul] using h
     · rwa [one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm h0))]
@@ -907,12 +907,12 @@ theorem stronglyMeasurable_in_set {m : MeasurableSpace α} [TopologicalSpace β]
     {f : α → β} (hs : MeasurableSet s) (hf : StronglyMeasurable f)
     (hf_zero : ∀ x, x ∉ s → f x = 0) :
     ∃ fs : ℕ → α →ₛ β,
-      (∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) ∧ ∀ (x) (_ : x ∉ s) (n), fs n x = 0 := by
+      (∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) ∧ ∀ x ∉ s, ∀ n, fs n x = 0 := by
   let g_seq_s : ℕ → @SimpleFunc α m β := fun n => (hf.approx n).restrict s
   have hg_eq : ∀ x ∈ s, ∀ n, g_seq_s n x = hf.approx n x := by
     intro x hx n
     rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_mem hx]
-  have hg_zero : ∀ (x) (_ : x ∉ s), ∀ n, g_seq_s n x = 0 := by
+  have hg_zero : ∀ x ∉ s, ∀ n, g_seq_s n x = 0 := by
     intro x hx n
     rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_not_mem hx]
   refine' ⟨g_seq_s, fun x => _, hg_zero⟩
@@ -929,7 +929,7 @@ on `s` is `m`-strongly-measurable, then `f` is also `m₂`-strongly-measurable. 
 theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableSpace α}
     [TopologicalSpace E] [Zero E] {s : Set α} {f : α → E} (hs_m : MeasurableSet[m] s)
     (hs : ∀ t, MeasurableSet[m] (s ∩ t) → MeasurableSet[m₂] (s ∩ t))
-    (hf : StronglyMeasurable[m] f) (hf_zero : ∀ (x) (_ : x ∉ s), f x = 0) :
+    (hf : StronglyMeasurable[m] f) (hf_zero : ∀ x ∉ s, f x = 0) :
     StronglyMeasurable[m₂] f := by
   have hs_m₂ : MeasurableSet[m₂] s := by
     rw [← Set.inter_univ s]
@@ -1695,11 +1695,11 @@ one can select a strongly measurable function as the almost everywhere limit. -/
 theorem _root_.exists_stronglyMeasurable_limit_of_tendsto_ae [PseudoMetrizableSpace β]
     {f : ℕ → α → β} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) atTop (𝓝 l)) :
-    ∃ (f_lim : α → β) (hf_lim_meas : StronglyMeasurable f_lim),
+    ∃ f_lim : α → β, StronglyMeasurable f_lim ∧
       ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x)) := by
   borelize β
   obtain ⟨g, _, hg⟩ :
-    ∃ (g : α → β) (_ : Measurable g), ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x)) :=
+    ∃ g : α → β, Measurable g ∧ ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x)) :=
     measurable_limit_of_tendsto_metrizable_ae (fun n => (hf n).aemeasurable) h_ae_tendsto
   have Hg : AEStronglyMeasurable g μ := aestronglyMeasurable_of_tendsto_ae _ hf hg
   refine' ⟨Hg.mk g, Hg.stronglyMeasurable_mk, _⟩

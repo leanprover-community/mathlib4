@@ -287,7 +287,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
   id_mem' := mem_union_left _ rfl
   locality' e he := by
-    cases' e.source.eq_empty_or_nonempty with h h
+    rcases e.source.eq_empty_or_nonempty with h | h
     · right
       exact h
     · left

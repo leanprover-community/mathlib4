@@ -99,7 +99,7 @@ theorem laverage_eq_lintegral [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) 
 @[simp]
 theorem measure_mul_laverage [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     μ univ * ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂μ := by
-  cases' eq_or_ne μ 0 with hμ hμ
+  rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, lintegral_zero_measure, laverage_zero_measure, mul_zero]
   · rw [laverage_eq, ENNReal.mul_div_cancel' (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
 #align measure_theory.measure_mul_laverage MeasureTheory.measure_mul_laverage
@@ -289,7 +289,7 @@ theorem average_eq_integral [IsProbabilityMeasure μ] (f : α → E) : ⨍ x, f 
 @[simp]
 theorem measure_smul_average [IsFiniteMeasure μ] (f : α → E) :
     (μ univ).toReal • ⨍ x, f x ∂μ = ∫ x, f x ∂μ := by
-  cases' eq_or_ne μ 0 with hμ hμ
+  rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, integral_zero_measure, average_zero_measure, smul_zero]
   · rw [average_eq, smul_inv_smul₀]
     refine' (ENNReal.toReal_pos _ <| measure_ne_top _ _).ne'

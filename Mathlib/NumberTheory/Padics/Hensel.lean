@@ -354,7 +354,7 @@ private theorem bound :
     ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := by
   have := bound' hnorm
   simp? [Tendsto, nhds] at this says
-    simp only [Tendsto, nhds_def, Set.mem_setOf_eq, not_and, le_iInf_iff, le_principal_iff, mem_map,
+    simp only [Tendsto, nhds_def, Set.mem_setOf_eq, le_iInf_iff, le_principal_iff, mem_map,
       mem_atTop_sets, ge_iff_le, Set.mem_preimage, and_imp] at this
   intro ε hε
   cases' this (ball 0 ε) (mem_ball_self hε) isOpen_ball with N hN
