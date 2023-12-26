@@ -113,38 +113,14 @@ lemma levyProkhorovEDist_lt_top (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFin
 
 lemma levyProkhorovEDist_self (μ : Measure Ω) :
     levyProkhorovEDist μ μ = 0 := by
-  by_cases zero_meas : μ = 0
-  · simp [zero_meas, levyProkhorovEDist, FiniteMeasure.toMeasure_zero]
-  simp_rw [← Measure.measure_univ_eq_zero] at zero_meas
-  apply sInf_eq_of_forall_ge_of_forall_gt_exists_lt (by simp)
-  simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, and_self, mem_setOf_eq]
-  intro ε ε_pos
-  by_cases ε_infty : ε = ∞
-  · refine ⟨1, ?_, by simp only [ε_infty, one_lt_top]⟩
-    exact fun B _ ↦ le_add_right (measure_mono (self_subset_thickening (by simp) B))
-  have half_ε_pos : 0 < ε/2 := by
-    simp only [ENNReal.div_pos_iff, ne_eq, ε_pos.ne.symm, not_false_eq_true, two_ne_top, and_self]
-  have half_ε_lt_top : ε/2 < ∞ := div_lt_top ε_infty two_ne_zero
-  refine ⟨min (ε/2) (μ univ), ⟨?_, ?_⟩⟩
-  · intro B _
-    apply le_add_right (measure_mono (self_subset_thickening ?_ B))
-    apply ENNReal.toReal_pos
-    · exact (lt_min half_ε_pos (zero_lt_iff.mpr zero_meas)).ne.symm
-    · exact (lt_of_le_of_lt (min_le_left _ _) half_ε_lt_top).ne
-  · apply lt_of_le_of_lt (min_le_left _ _)
-    simpa only [gt_iff_lt, zero_add, ENNReal.add_halves]
-      using ENNReal.add_lt_add_right half_ε_lt_top.ne half_ε_pos
+  rw [← nonpos_iff_eq_zero, ← csInf_Ioo zero_lt_top]
+  refine sInf_le_sInf fun ε ⟨hε₀, hε_top⟩ B _ ↦ and_self_iff.2 ?_
+  refine le_add_right <| measure_mono <| self_subset_thickening ?_ _
+  exact ENNReal.toReal_pos hε₀.ne' hε_top.ne
 
 lemma levyProkhorovEDist_comm (μ ν : Measure Ω) :
     levyProkhorovEDist μ ν = levyProkhorovEDist ν μ := by
-  rw [levyProkhorovEDist]
-  congr
-  ext ε
-  simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, mem_setOf_eq]
-  refine ⟨?_, ?_⟩ <;>
-  · intro h B B_mble
-    specialize h B B_mble
-    refine ⟨h.2, h.1⟩
+  simp only [levyProkhorovEDist, and_comm]
 
 lemma levyProkhorovEDist_triangle (μ ν κ : Measure Ω) :
     levyProkhorovEDist μ κ ≤ levyProkhorovEDist μ ν + levyProkhorovEDist ν κ := by
