@@ -385,10 +385,9 @@ theorem id_comp' (f : X →ₑ[φ] Y) :
     (MulActionHom.id N).comp' f (CompTriple.id_comp) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
-@[simp]
+-- @[simp]
 theorem id_comp (f : X →ₑ[φ] Y) :
     (MulActionHom.id N).comp f = f := by simp
-
 #align mul_action_hom.id_comp MulActionHom.id_comp
 
 @[simp]
@@ -396,7 +395,7 @@ theorem comp'_id (f : X →ₑ[φ] Y) :
     f.comp' (MulActionHom.id M) (CompTriple.comp_id)= f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
-@[simp]
+-- @[simp]
 theorem comp_id (f : X →ₑ[φ] Y) : f.comp (MulActionHom.id M) = f := by simp
 #align mul_action_hom.comp_id MulActionHom.comp_id
 
@@ -409,7 +408,7 @@ theorem comp'_assoc {Q T : Type _} [SMul Q T]
     h.comp' (g.comp' f κ) κ' = (h.comp' g ξ).comp' f ξ':=
   ext fun _ => rfl
 
-@[simp]
+-- @[simp]
 theorem comp_assoc {Q T : Type _} [SMul Q T]
     {η : P → Q}
     (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
