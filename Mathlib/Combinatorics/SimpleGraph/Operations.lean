@@ -147,6 +147,9 @@ abbrev addEdge : SimpleGraph V where
   Adj v w := G.Adj v w ∨ s ≠ t ∧ (s = v ∧ t = w ∨ s = w ∧ t = v)
   symm v w := by simp_rw [adj_comm]; (conv_lhs => arg 2; arg 2; rw [or_comm]); exact id
 
+@[simp]
+lemma addEdge_self : G.addEdge s s = G := by ext; simp
+
 lemma addEdge_adj (h : G.Adj s t) : G.addEdge s t = G := by
   ext
   simp only [ne_eq, G.ne_of_adj h, not_false_eq_true, true_and, or_iff_left_iff_imp]
