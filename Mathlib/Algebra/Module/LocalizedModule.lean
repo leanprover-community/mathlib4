@@ -61,8 +61,8 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
     trans := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨m3, s3⟩ ⟨u1, hu1⟩ ⟨u2, hu2⟩ => by
       use u1 * u2 * s2
       -- Put everything in the same shape, sorting the terms using `simp`
-      have hu1' := congr_arg ((· • ·) (u2 * s3)) hu1.symm
-      have hu2' := congr_arg ((· • ·) (u1 * s1)) hu2.symm
+      have hu1' := congr_arg ((u2 * s3) • ·) hu1.symm
+      have hu2' := congr_arg ((u1 * s1) • ·) hu2.symm
       simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
@@ -142,6 +142,12 @@ theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
 instance : Zero (LocalizedModule S M) :=
   ⟨mk 0 1⟩
 
+/-- If `S` contains `0` then the localization at `S` is trivial. -/
+theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
+  refine ⟨fun a b ↦ ?_⟩
+  induction a,b using LocalizedModule.induction_on₂
+  exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
+
 @[simp]
 theorem zero_mk (s : S) : mk (0 : M) s = 0 :=
   mk_eq.mpr ⟨1, by rw [one_smul, smul_zero, smul_zero, one_smul]⟩
@@ -154,8 +160,8 @@ instance : Add (LocalizedModule S M) where
           mk_eq.mpr
             ⟨u1 * u2, by
               -- Put everything in the same shape, sorting the terms using `simp`
-              have hu1' := congr_arg ((· • ·) (u2 * s2 * s2')) hu1
-              have hu2' := congr_arg ((· • ·) (u1 * s1 * s1')) hu2
+              have hu1' := congr_arg ((u2 * s2 * s2') • ·) hu1
+              have hu2' := congr_arg ((u1 * s1 * s1') • ·) hu2
               simp only [smul_add, ← mul_smul, smul_assoc, mul_assoc, mul_comm,
                 mul_left_comm] at hu1' hu2' ⊢
               rw [hu1', hu2']⟩
@@ -237,11 +243,9 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-
   rfl
 #align localized_module.mk_neg LocalizedModule.mk_neg
 
-set_option maxHeartbeats 500000 in
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
-    Semiring (LocalizedModule S A) :=
-  { show (AddCommMonoid (LocalizedModule S A)) by infer_instance with
-    mul := fun m₁ m₂ =>
+    Monoid (LocalizedModule S A) :=
+  { mul := fun m₁ m₂ =>
       liftOn₂ m₁ m₂ (fun x₁ x₂ => LocalizedModule.mk (x₁.1 * x₂.1) (x₁.2 * x₂.2))
         (by
           rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
@@ -254,6 +258,23 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           all_goals
             rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
               mul_smul, mul_smul])
+    one := mk 1 (1 : S)
+    one_mul := by
+      rintro ⟨a, s⟩
+      exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
+    mul_one := by
+      rintro ⟨a, s⟩
+      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩
+    mul_assoc := by
+      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+      apply mk_eq.mpr _
+      use 1
+      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
+
+instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+    Semiring (LocalizedModule S A) :=
+  { show (AddCommMonoid (LocalizedModule S A)) by infer_instance,
+    show (Monoid (LocalizedModule S A)) by infer_instance with
     left_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       apply mk_eq.mpr _
@@ -271,19 +292,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
       exact mk_eq.mpr ⟨1, by simp only [zero_mul, smul_zero]⟩
     mul_zero := by
       rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩
-    mul_assoc := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm]
-    one := mk 1 (1 : S)
-    one_mul := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
-    mul_one := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩ }
+      exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩ }
 
 instance {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
@@ -317,7 +326,7 @@ instance : SMul (Localization S) (LocalizedModule S M) where
           (by
             rintro ⟨m1, t1⟩ ⟨m2, t2⟩ ⟨u, h⟩
             refine' mk_eq.mpr ⟨u, _⟩
-            have h' := congr_arg ((· • ·) (s • r)) h
+            have h' := congr_arg ((s • r) • ·) h
             simp only [← mul_smul, smul_eq_mul, mul_comm, mul_left_comm, Submonoid.smul_def,
               Submonoid.coe_mul] at h' ⊢
             rw [h'])))

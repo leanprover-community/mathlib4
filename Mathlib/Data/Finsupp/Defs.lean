@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
@@ -235,7 +236,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (a «expr ∉ » s) -/
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
-    ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 := by
+    ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
@@ -467,7 +468,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
-    f.support = {a} ↔ ∃ (b : _) (_ : b ≠ 0), f = single a b :=
+    f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
@@ -481,7 +482,7 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ (a : _) (b : _) (_ : b ≠ 0), f = single a b := by
+    card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 #align finsupp.card_support_eq_one' Finsupp.card_support_eq_one'
 
@@ -1214,7 +1215,7 @@ variable [AddMonoid M]
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar : SMul ℕ (α →₀ M) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
 instance addMonoid : AddMonoid (α →₀ M) :=
@@ -1276,7 +1277,7 @@ theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
-  ⟨fun n v => v.mapRange ((· • ·) n) (zsmul_zero _)⟩
+  ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=

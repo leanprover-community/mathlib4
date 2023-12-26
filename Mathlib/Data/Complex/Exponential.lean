@@ -541,6 +541,9 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   @map_prod (Multiplicative ℂ) α ℂ _ _ _ _ expMonoidHom f s
 #align complex.exp_sum Complex.exp_sum
 
+lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
+  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
   | Nat.succ n => by rw [pow_succ', Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
@@ -839,7 +842,7 @@ theorem sin_mul_I : sin (x * I) = sinh x * I := by
     ring_nf
     simp
   rw [← neg_neg (sinh x), ← h]
-  ext <;> simp
+  apply Complex.ext <;> simp
 set_option linter.uppercaseLean3 false in
 #align complex.sin_mul_I Complex.sin_mul_I
 
@@ -1159,6 +1162,9 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   @map_prod (Multiplicative ℝ) α ℝ _ _ _ _ expMonoidHom f s
 #align real.exp_sum Real.exp_sum
 
+lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
+  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _
+
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 #align real.exp_nat_mul Real.exp_nat_mul
@@ -1475,6 +1481,12 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 #align real.sum_le_exp_of_nonneg Real.sum_le_exp_of_nonneg
 
+lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x :=
+  calc
+    x ^ n / n ! ≤ ∑ k in range (n + 1), x ^ k / k ! :=
+        single_le_sum (f := fun k ↦ x ^ k / k !) (fun k _ ↦ by positivity) (self_mem_range_succ n)
+    _ ≤ exp x := sum_le_exp_of_nonneg hx _
+
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by
@@ -1485,17 +1497,13 @@ theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 #align real.quadratic_le_exp_of_nonneg Real.quadratic_le_exp_of_nonneg
 
-theorem add_one_lt_exp_of_pos {x : ℝ} (hx : 0 < x) : x + 1 < exp x :=
+private theorem add_one_lt_exp_of_pos {x : ℝ} (hx : 0 < x) : x + 1 < exp x :=
   (by nlinarith : x + 1 < 1 + x + x ^ 2 / 2).trans_le (quadratic_le_exp_of_nonneg hx.le)
-#align real.add_one_lt_exp_of_pos Real.add_one_lt_exp_of_pos
 
-/-- This is an intermediate result that is later replaced by `Real.add_one_le_exp`; use that lemma
-instead. -/
-theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x := by
+private theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x := by
   rcases eq_or_lt_of_le hx with (rfl | h)
   · simp
   exact (add_one_lt_exp_of_pos h).le
-#align real.add_one_le_exp_of_nonneg Real.add_one_le_exp_of_nonneg
 
 theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
 #align real.one_le_exp Real.one_le_exp
@@ -1506,10 +1514,15 @@ theorem exp_pos (x : ℝ) : 0 < exp x :=
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 #align real.exp_pos Real.exp_pos
 
+lemma exp_nonneg (x : ℝ) : 0 ≤ exp x := x.exp_pos.le
+
 @[simp]
 theorem abs_exp (x : ℝ) : |exp x| = exp x :=
   abs_of_pos (exp_pos _)
 #align real.abs_exp Real.abs_exp
+
+lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
+  cases le_total x 0 <;> simp [abs_of_nonpos, _root_.abs_of_nonneg, exp_nonneg, *]
 
 @[mono]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
@@ -1577,7 +1590,7 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 #align real.cosh_pos Real.cosh_pos
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
-  lt_of_pow_lt_pow 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+  lt_of_pow_lt_pow_left 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 #align real.sinh_lt_cosh Real.sinh_lt_cosh
 
 end Real
@@ -1970,48 +1983,42 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
   · exact (exp_bound_div_one_sub_of_interval' h1 h2).le
 #align real.exp_bound_div_one_sub_of_interval Real.exp_bound_div_one_sub_of_interval
 
-theorem one_sub_lt_exp_minus_of_pos {y : ℝ} (h : 0 < y) : 1 - y < Real.exp (-y) := by
-  cases' le_or_lt 1 y with h' h'
-  · linarith [(-y).exp_pos]
-  rw [exp_neg, lt_inv _ y.exp_pos, inv_eq_one_div]
-  · exact exp_bound_div_one_sub_of_interval' h h'
-  · linarith
-#align real.one_sub_le_exp_minus_of_pos Real.one_sub_lt_exp_minus_of_pos
-
-theorem one_sub_le_exp_minus_of_nonneg {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) := by
-  rcases eq_or_lt_of_le h with (rfl | h)
-  · simp
-  · exact (one_sub_lt_exp_minus_of_pos h).le
-#align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_minus_of_nonneg
-
-theorem add_one_lt_exp_of_neg {x : ℝ} (h : x < 0) : x + 1 < Real.exp x := by
-  have h1 : 0 < -x := by linarith
-  simpa [add_comm] using one_sub_lt_exp_minus_of_pos h1
-#align real.add_one_lt_exp_of_neg Real.add_one_lt_exp_of_neg
-
-theorem add_one_lt_exp_of_nonzero {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
-  cases' lt_or_gt_of_ne hx with h h
-  · exact add_one_lt_exp_of_neg h
-  exact add_one_lt_exp_of_pos h
-#align real.add_one_lt_exp_of_nonzero Real.add_one_lt_exp_of_nonzero
+theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
+  obtain hx | hx := hx.symm.lt_or_lt
+  · exact add_one_lt_exp_of_pos hx
+  obtain h' | h' := le_or_lt 1 (-x)
+  · linarith [x.exp_pos]
+  have hx' : 0 < x + 1 := by linarith
+  simpa [add_comm, exp_neg, inv_lt_inv (exp_pos _) hx']
+    using exp_bound_div_one_sub_of_interval' (neg_pos.2 hx) h'
+#align real.add_one_lt_exp_of_nonzero Real.add_one_lt_exp
+#align real.add_one_lt_exp_of_pos Real.add_one_lt_exp
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
-  cases' le_or_lt 0 x with h h
-  · exact Real.add_one_le_exp_of_nonneg h
-  exact (add_one_lt_exp_of_neg h).le
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  · exact (add_one_lt_exp hx).le
 #align real.add_one_le_exp Real.add_one_le_exp
+#align real.add_one_le_exp_of_nonneg Real.add_one_le_exp
+
+lemma one_sub_lt_exp_neg {x : ℝ} (hx : x ≠ 0) : 1 - x < exp (-x) :=
+  (sub_eq_neg_add _ _).trans_lt $ add_one_lt_exp $ neg_ne_zero.2 hx
+
+lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
+  (sub_eq_neg_add _ _).trans_le $ add_one_le_exp _
+#align real.one_sub_le_exp_minus_of_pos Real.one_sub_le_exp_neg
+#align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_neg
 
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_of_le_left ?_ (add_one_le_exp (-(t / n))) n using 2
-  · abel
+  convert pow_le_pow_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
   · rw [← Real.exp_nat_mul]
     congr 1
     field_simp
     ring_nf
-  · rwa [add_comm, ← sub_eq_add_neg, sub_nonneg, div_le_one]
+  · rwa [sub_nonneg, div_le_one]
     positivity
 #align real.one_sub_div_pow_le_exp_neg Real.one_sub_div_pow_le_exp_neg
 
@@ -2025,6 +2032,19 @@ open Lean.Meta Qq
 def evalExp : PositivityExt where eval {_ _} _ _ e := do
   let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"
   pure (.positive (q(Real.exp_pos $a) : Lean.Expr))
+
+/-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
+@[positivity Real.cosh _]
+def evalCosh : PositivityExt where eval {u α} _ _ e := do
+  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
+    match α, e with
+    | ~q(ℝ), ~q(Real.cosh $a) =>
+      assumeInstancesCommute
+      return .positive q(Real.cosh_pos $a)
+    | _, _ => throwError "not Real.cosh"
+  else throwError "not Real.cosh"
+
+example (x : ℝ) : 0 < x.cosh := by positivity
 
 end Mathlib.Meta.Positivity
 

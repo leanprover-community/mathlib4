@@ -106,7 +106,7 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
     ∃ T : Finset H, T.card ≤ H.index * S.card ∧ closure (T : Set H) = ⊤ := by
   letI := H.fintypeQuotientOfFiniteIndex
   haveI : DecidableEq G := Classical.decEq G
-  obtain ⟨R₀, hR : R₀ ∈ rightTransversals (H : Set G), hR1⟩ := exists_right_transversal (1 : G)
+  obtain ⟨R₀, hR, hR1⟩ := H.exists_right_transversal 1
   haveI : Fintype R₀ := Fintype.ofEquiv _ (toEquiv hR)
   let R : Finset G := Set.toFinset R₀
   replace hR : (R : Set G) ∈ rightTransversals (H : Set G) := by rwa [Set.coe_toFinset]
@@ -140,7 +140,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   calc
     Group.rank H ≤ T.card := Group.rank_le H hT
     _ ≤ H.index * S.card := hT₀
-    _ = H.index * Group.rank G := congr_arg ((· * ·) H.index) hS₀
+    _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 #align subgroup.rank_le_index_mul_rank Subgroup.rank_le_index_mul_rank
 
 variable (G)
@@ -196,7 +196,7 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
       (Nat.pow_le_pow_of_le_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_right (mul_le_mul_right' h1 _) 1))
   rw [← pow_succ'] at h2
-  refine' (Nat.le_of_dvd _ h2).trans (Nat.pow_le_pow_of_le_left h1 _)
+  refine' (Nat.le_of_dvd _ h2).trans (Nat.pow_le_pow_left h1 _)
   exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.finiteIndex) _
 #align subgroup.card_commutator_le_of_finite_commutator_set Subgroup.card_commutator_le_of_finite_commutatorSet
 
