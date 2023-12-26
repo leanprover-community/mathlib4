@@ -459,12 +459,7 @@ theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I
     exact coe_ideal_le_self_mul_inv K I
   by_cases hJ1 : J = ⊤
   · rw [← hJ, hJ1, coeIdeal_top]
-  obtain ⟨x, hx, hx1⟩ :
-    ∃ x : K, x ∈ (J : FractionalIdeal A⁰ K)⁻¹ ∧ x ∉ (1 : FractionalIdeal A⁰ K) :=
-    exists_not_mem_one_of_ne_bot hJ0 hJ1
-  contrapose! hx1 with h_abs
-  rw [hJ] at hx
-  exact hI hx
+  exact (not_inv_le_one_of_ne_bot (K := K) hJ0 hJ1 (hJ ▸ hI)).elim
 #align fractional_ideal.mul_inv_cancel_of_le_one FractionalIdeal.mul_inv_cancel_of_le_one
 
 /-- Nonzero integral ideals in a Dedekind domain are invertible.
