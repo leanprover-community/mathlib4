@@ -825,16 +825,6 @@ protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X
     (closure A).EquicontinuousWithinAt S x₀ :=
   EquicontinuousWithinAt.closure' (u := id) hA (Pi.continuous_restrict _) (continuous_apply _)
 
---theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
---    (hA : A.EquicontinuousWithinAt S x₀) :
---    (@closure _
---      (.induced S.restrict inferInstance ⊓ .induced (eval x₀) inferInstance)
---      A).EquicontinuousWithinAt S x₀ :=
---  EquicontinuousWithinAt.closure'
---    (tY := .induced (S.restrict ∘ id) Pi.topologicalSpace ⊓ .induced (eval x₀ ∘ id) toTopologicalSpace)
---      (u := id) hA (by convert continuous_inf_dom_left continuous_induced_dom)
---      (by convert continuous_inf_dom_right continuous_induced_dom)
-
 /-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any condition on the embedding
 other than continuity, but in practice this will mostly be applied to `FunLike` types where
@@ -900,32 +890,11 @@ protected theorem UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Se
     (hA : A.UniformEquicontinuousOn S) : (closure A).UniformEquicontinuousOn S :=
   UniformEquicontinuousOn.closure' (u := id) hA (Pi.continuous_restrict _)
 
---theorem UniformEquicontinuousOn.closure_rel {A : Set <| β → α} {S : Set β}
---    (hA : A.UniformEquicontinuousOn S) :
---    (@closure _ (.induced S.restrict inferInstance) A).UniformEquicontinuousOn S :=
---  UniformEquicontinuousOn.closure_rel' (tY := .induced S.restrict inferInstance) (u := id)
---    hA continuous_induced_dom
-
---/-- If `𝓕 : ι → β → α` tends to `f : β → α` *pointwise* along some nontrivial filter, and if the
---family `𝓕` is uniformly equicontinuous, then the limit is uniformly continuous. -/
 --theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι} [l.NeBot]
 --    {F : ι → β → α} {f : β → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : UniformEquicontinuous F) :
 --    UniformContinuous f :=
 --  (uniformEquicontinuous_iff_range.mp h₂).closure.uniformContinuous
 --    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
---#align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
-
---theorem Filter.Tendsto.uniformContinuousOn_of_uniformEquicontinuousOn {l : Filter ι} [l.NeBot]
---    {F : ι → β → α} {f : β → α} {S : Set β} (h₁ : ∀ x ∈ S, Tendsto (F · x) l (𝓝 (f x)))
---    (h₂ : UniformEquicontinuousOn F S) :
---    UniformContinuousOn f S := by
---  have := UniformEquicontinuousOn.closure' (u := id)
---    (tY := .induced (S.restrict ∘ id) Pi.topologicalSpace)
---    (uniformEquicontinuousOn_iff_range.mp h₂)
---    continuous_induced_dom
---  refine this.uniformContinuousOn
---    ⟨f, @mem_closure_of_tendsto _ _ (_) _ l _ _ _ ?_ <| eventually_of_forall mem_range_self⟩
---  simpa [nhds_induced, tendsto_pi_nhds] using h₁
 
 --theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot] {F : ι → X → α}
 --    {f : X → α} {x₀ : X} (h₁ : Tendsto F l (𝓝 f)) (h₂ : EquicontinuousAt F x₀) :
