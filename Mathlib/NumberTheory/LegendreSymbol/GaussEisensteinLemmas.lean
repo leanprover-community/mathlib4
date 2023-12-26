@@ -41,7 +41,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     simp [hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hx, lt_succ_iff, succ_le_iff, pos_iff_ne_zero,
       natAbs_valMinAbs_le _]
   have hsurj : ∀ (b : ℕ) (hb : b ∈ Ico 1 (p / 2).succ),
-      ∃ x ∈ Ico 1 (p / 2).succ, b = (a * x : ZMod p).valMinAbs.natAbs := by
+      ∃ x, ∃ _ : x ∈ Ico 1 (p / 2).succ, (a * x : ZMod p).valMinAbs.natAbs = b := by
     intro b hb
     refine' ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨_, _⟩, _⟩
     · apply Nat.pos_of_ne_zero
@@ -54,7 +54,6 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
           if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
       · erw [mul_neg, mul_div_cancel' _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
           val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
-  simp only [← exists_prop] at hsurj
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
