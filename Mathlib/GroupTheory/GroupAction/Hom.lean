@@ -550,7 +550,7 @@ class DistribMulActionSemiHomClass (F : Type _)
     It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B` -/
 abbrev DistribMulActionHomClass (F : Type _)
   (M : outParam (Type _)) (A B : outParam (Type _))
-  [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] :=
+  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] :=
   DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
 /- porting note: Removed a @[nolint dangerousInstance] for
