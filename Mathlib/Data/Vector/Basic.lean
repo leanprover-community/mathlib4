@@ -571,25 +571,25 @@ theorem removeNth_insertNth {v : Vector α n} {i : Fin (n + 1)} :
   Subtype.eq <| List.removeNth_insertNth i.1 v.1
 #align vector.remove_nth_insert_nth Vector.removeNth_insertNth
 
-theorem removeNth_insertNth' {v : Vector α (n + 1)} :
-    ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
-      removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v)
-  | ⟨i, hi⟩, ⟨j, hj⟩ => by
-    dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
-    rw [Subtype.mk_eq_mk]
-    simp only [Fin.lt_iff_val_lt_val]
-    split_ifs with hij
-    · rcases Nat.exists_eq_succ_of_ne_zero
-        (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
-      rw [← List.insertNth_removeNth_of_ge]
-      · simp; rfl
-      · simpa
-      · simpa [Nat.lt_succ_iff] using hij
-    · dsimp
-      rw [← List.insertNth_removeNth_of_le i j _ _ _]
-      · rfl
-      · simpa
-      · simpa [not_lt] using hij
+theorem removeNth_insertNth' {v : Vector α (n + 1)} : ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
+    removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v) := by
+  intros i j
+  have H := (lt_of_lt_of_eq i.2 (length_val v).symm)
+  dsimp [insertNth, removeNth]
+  rw [Subtype.mk_eq_mk]
+  rcases (le_or_lt j (i.castSucc)) with (h | h)
+  · rcases Fin.exists_castSucc_eq.mpr (h.trans_lt (Fin.castSucc_lt_last _)).ne with ⟨j, rfl⟩
+    rw [Fin.castSucc_le_castSucc_iff] at h
+    rw [Fin.predAbove_castSucc_below _ _ h, Fin.succAbove_castSucc_above_apply _ _ h,
+      Fin.coe_castSucc, Fin.val_succ,
+      ← List.insertNth_removeNth_of_le _ _ _ H h]
+    rfl
+  · rw [Fin.castSucc_lt_iff_succ_le] at h
+    rcases Fin.exists_succ_eq_iff.mpr (h.trans_lt' (Fin.succ_pos _)).ne' with ⟨j, rfl⟩
+    rw [Fin.succ_le_succ_iff] at h
+    rw [Fin.predAbove_succ_above _ _ h, Fin.succAbove_succ_below_apply _ _ h,
+      Fin.coe_castSucc, Fin.val_succ, ← List.insertNth_removeNth_of_ge _ _ _ H h]
+    rfl
 #align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :

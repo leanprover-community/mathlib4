@@ -2444,4 +2444,3 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
 #align fin.reflect Fin.toExprₓ
 
 end Fin
-#lint
