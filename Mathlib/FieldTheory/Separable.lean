@@ -596,11 +596,18 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field 
 
 section IsSeparableTower
 
+/-- If `R / K / A` is an extension tower, `x : R` is separable over `A`, then it's also separable
+over `K`. -/
+theorem Polynomial.Separable.map_minpoly {A : Type*} [CommRing A]
+    (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
+    [IsScalarTower A K R] {x : R} (h : (minpoly A x).Separable) : (minpoly K x).Separable :=
+  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+
 variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
-  ⟨fun x ↦ (IsSeparable.separable F x).map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)⟩
+  ⟨fun x ↦ (IsSeparable.separable F x).map_minpoly _⟩
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=
@@ -619,6 +626,19 @@ theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →�
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
   exact isSeparable_tower_bot_of_isSeparable F E E'
 #align is_separable.of_alg_hom IsSeparable.of_algHom
+
+lemma IsSeparable.of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
+    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    [IsSeparable A₁ B₁] : IsSeparable A₂ B₂ := by
+  letI := e₁.toRingHom.toAlgebra
+  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  let e : B₁ ≃ₐ[A₂] B₂ := { e₂ with commutes' := fun r ↦ by simpa [RingHom.algebraMap_toAlgebra]
+                                                  using FunLike.congr_fun he.symm (e₁.symm r) }
+  haveI := isSeparable_tower_top_of_isSeparable A₁ A₂ B₁
+  exact IsSeparable.of_algHom _ _ e.symm.toAlgHom
 
 end IsSeparableTower
 
