@@ -86,9 +86,10 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
     ext1
     simp only [map_map]
     refine (Sym.map_congr fun v hv ↦ ?_).trans (map_id' _)
-    exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
+    exact Fin.succAbove_castSucc_predAbove (ne_of_mem_of_not_mem hv s.2)
   right_inv s := by
-    simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
+    simp only [map_map, comp_apply, ← Fin.castSucc_zero,
+      Fin.predAbove_of_succAbove_castSucc, map_id']
 set_option linter.uppercaseLean3 false in
 #align sym.E2 Sym.e2
 
