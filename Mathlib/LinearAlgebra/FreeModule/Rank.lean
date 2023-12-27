@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.Dimension
-import Mathlib.SetTheory.Cardinal.Algebraic
+import Mathlib.SetTheory.Cardinal.Subfield
 
 #align_import linear_algebra.free_module.rank from "leanprover-community/mathlib"@"465d4301d8da5945ef1dc1b29fb34c2f2b315ac4"
 
