@@ -20,7 +20,7 @@ such that `a + b = n`.
 
 These functions apply to `ι →₀ ℕ`, more generally to `ι →₀ μ`
 under the additional assumption `OrderedSub μ` that make it
-a canonically ordered add monoid.
+a canonically ordered additive monoid.
 In fact, we just need an AddMonoid with a compatible order,
 finite Iic, such that if a + b = n, then a, b ≤ n,
 and any other bound would be OK.
