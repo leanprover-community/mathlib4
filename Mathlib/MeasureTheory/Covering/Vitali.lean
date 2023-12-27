@@ -58,7 +58,7 @@ wider applicability.
 theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : Set ι) (δ : ι → ℝ)
     (τ : ℝ) (hτ : 1 < τ) (δnonneg : ∀ a ∈ t, 0 ≤ δ a) (R : ℝ) (δle : ∀ a ∈ t, δ a ≤ R)
     (hne : ∀ a ∈ t, (B a).Nonempty) :
-    ∃ (u : _) (_ : u ⊆ t),
+    ∃ u ⊆ t,
       u.PairwiseDisjoint B ∧ ∀ a ∈ t, ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ δ a ≤ τ * δ b := by
   /- The proof could be formulated as a transfinite induction. First pick an element of `t` with `δ`
   as large as possible (up to a factor of `τ`). Then among the remaining elements not intersecting
@@ -160,7 +160,7 @@ extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by t
 dilations of balls in `u`. -/
 theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α] (t : Set ι)
     (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) :
-    ∃ (u : _) (_ : u ⊆ t),
+    ∃ u ⊆ t,
       (u.PairwiseDisjoint fun a => closedBall (x a) (r a)) ∧
         ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (5 * r b) := by
   rcases eq_empty_or_nonempty t with (rfl | _)
@@ -205,7 +205,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
     (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
     (hf : ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x) :
-    ∃ (u : _) (_ : u ⊆ t), u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
+    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
   /- The idea of the proof is the following. Assume for simplicity that `μ` is finite. Applying the
   abstract Vitali covering theorem with `δ = r` given by `hf`, one obtains a disjoint subfamily `u`,
   such that any element of `t` intersects an element of `u` with comparable radius. Fix `ε > 0`.
@@ -243,7 +243,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   -- they only see a finite part of the measure, and with a doubling property
   let t' := { a ∈ t | r a ≤ R (c a) }
   -- extract a disjoint subfamily `u` of `t'` thanks to the abstract Vitali covering theorem.
-  obtain ⟨u, ut', u_disj, hu⟩ : ∃ (u : _) (_ : u ⊆ t'),
+  obtain ⟨u, ut', u_disj, hu⟩ : ∃ u ⊆ t',
       u.PairwiseDisjoint B ∧ ∀ a ∈ t', ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b := by
     have A : ∀ a ∈ t', r a ≤ 1 := by
       intro a ha

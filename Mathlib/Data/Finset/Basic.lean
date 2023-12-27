@@ -477,8 +477,7 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 /-- The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used
 in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
 to the dot notation. -/
-protected def Nonempty (s : Finset α) : Prop :=
-  ∃ x : α, x ∈ s
+@[pp_dot] protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
 --Porting note: Much longer than in Lean3
@@ -737,6 +736,12 @@ theorem coe_singleton (a : α) : (({a} : Finset α) : Set α) = {a} := by
 theorem coe_eq_singleton {s : Finset α} {a : α} : (s : Set α) = {a} ↔ s = {a} := by
   rw [← coe_singleton, coe_inj]
 #align finset.coe_eq_singleton Finset.coe_eq_singleton
+
+@[norm_cast]
+lemma coe_subset_singleton : (s : Set α) ⊆ {a} ↔ s ⊆ {a} := by rw [← coe_subset, coe_singleton]
+
+@[norm_cast]
+lemma singleton_subset_coe : {a} ⊆ (s : Set α) ↔ {a} ⊆ s := by rw [← coe_subset, coe_singleton]
 
 theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a := by
   constructor <;> intro t
@@ -1918,6 +1923,12 @@ theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 #align finset.erase_empty Finset.erase_empty
 
+@[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
+  simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]
+  refine ⟨?_, fun hs ↦ hs.exists_ne a⟩
+  rintro ⟨b, hb, hba⟩
+  exact ⟨_, hb, _, ha, hba⟩
+
 @[simp]
 theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
   ext x
@@ -2074,6 +2085,19 @@ theorem erase_injOn (s : Finset α) : Set.InjOn s.erase s := fun _ _ _ _ => (era
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => erase s a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 #align finset.erase_inj_on' Finset.erase_injOn'
+
+lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s := by
+  classical
+  obtain ⟨a, ha⟩ := hs
+  exact ⟨s.erase a, a, not_mem_erase _ _, by simp [insert_erase ha]⟩
+
+lemma Nontrivial.exists_cons_eq (hs : s.Nontrivial) :
+    ∃ t a ha b hb hab, (cons b t hb).cons a (mem_cons.not.2 $ not_or_intro hab ha) = s := by
+  classical
+  obtain ⟨a, ha, b, hb, hab⟩ := hs
+  have : b ∈ s.erase a := mem_erase.2 ⟨hab.symm, hb⟩
+  refine ⟨(s.erase a).erase b, a, ?_, b, ?_, ?_, ?_⟩ <;>
+    simp [insert_erase this, insert_erase ha, *]
 
 end Erase
 
@@ -2246,6 +2270,15 @@ theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t
   insert_sdiff_of_mem _ (mem_insert_self _ _)
 #align finset.insert_sdiff_insert Finset.insert_sdiff_insert
 
+lemma insert_sdiff_insert' (hab : a ≠ b) (ha : a ∉ s) : insert a s \ insert b s = {a} := by
+  ext; aesop
+
+lemma erase_sdiff_erase (hab : a ≠ b) (hb : b ∈ s) : s.erase a \ s.erase b = {b} := by
+  ext; aesop
+
+lemma cons_sdiff_cons (hab : a ≠ b) (ha hb) : s.cons a ha \ s.cons b hb = {a} := by
+  rw [cons_eq_insert, cons_eq_insert, insert_sdiff_insert' hab ha]
+
 theorem sdiff_insert_of_not_mem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   refine' Subset.antisymm (sdiff_subset_sdiff (Subset.refl _) (subset_insert _ _)) fun y hy => _
   simp only [mem_sdiff, mem_insert, not_or] at hy ⊢
@@ -2288,6 +2321,12 @@ theorem erase_eq (s : Finset α) (a : α) : s.erase a = s \ {a} :=
 theorem disjoint_erase_comm : Disjoint (s.erase a) t ↔ Disjoint s (t.erase a) := by
   simp_rw [erase_eq, disjoint_sdiff_comm]
 #align finset.disjoint_erase_comm Finset.disjoint_erase_comm
+
+lemma disjoint_insert_erase (ha : a ∉ t) : Disjoint (s.erase a) (insert a t) ↔ Disjoint s t := by
+  rw [disjoint_erase_comm, erase_insert ha]
+
+lemma disjoint_erase_insert (ha : a ∉ s) : Disjoint (insert a s) (t.erase a) ↔ Disjoint s t := by
+  rw [← disjoint_erase_comm, erase_insert ha]
 
 theorem disjoint_of_erase_left (ha : a ∉ t) (hst : Disjoint (s.erase a) t) : Disjoint s t := by
   rw [← erase_insert ha, ← disjoint_erase_comm, disjoint_insert_right]
@@ -2489,6 +2528,8 @@ theorem attach_empty : attach (∅ : Finset α) = ∅ :=
 theorem attach_nonempty_iff {s : Finset α} : s.attach.Nonempty ↔ s.Nonempty := by
   simp [Finset.Nonempty]
 #align finset.attach_nonempty_iff Finset.attach_nonempty_iff
+
+protected alias ⟨_, Nonempty.attach⟩ := attach_nonempty_iff
 
 @[simp]
 theorem attach_eq_empty_iff {s : Finset α} : s.attach = ∅ ↔ s = ∅ := by
@@ -2710,7 +2751,10 @@ section Filter
 
 variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s : Finset α}
 
-/-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`. -/
+/-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
+
+For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α`
+as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). -/
 def filter (s : Finset α) : Finset α :=
   ⟨_, s.2.filter p⟩
 #align finset.filter Finset.filter

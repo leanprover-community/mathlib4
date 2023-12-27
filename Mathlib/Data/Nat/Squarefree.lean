@@ -399,10 +399,8 @@ lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime
     (coprime_div_gcd_div_gcd (m := m) (gcd_ne_zero_right hn).bot_lt).mul_right this
 
 lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p in n.primeFactors, p = n := by
-  convert factorization_prod_pow_eq_self hn.ne_zero
-  refine prod_congr rfl fun p hp ↦ ?_
-  simp only [support_factorization, toFinset_factors, mem_primeFactors_of_ne_zero hn.ne_zero] at hp
-  simp_rw [factorization_eq_one_of_squarefree hn hp.1 hp.2, pow_one]
+  rw [← toFinset_factors, List.prod_toFinset _ hn.nodup_factors, List.map_id',
+    Nat.prod_factors hn.ne_zero]
 
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p in s, p) = s := by
   have hn : ∏ p in s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
@@ -430,16 +428,12 @@ lemma prod_primeFactors_invOn_squarefree :
       {s | ∀ p ∈ s, p.Prime} {n | Squarefree n} :=
   ⟨fun _s ↦ primeFactors_prod, fun _n ↦ prod_primeFactors_of_squarefree⟩
 
-theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
-    ∏ p in n.factors.toFinset, p = n := by
-  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id', Nat.prod_factors hn.ne_zero]
-
-theorem prod_factors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t : Finset ℕ}
-    (ht : t ⊆ n.factors.toFinset) :
-    ∏ a in (n.factors.toFinset \ t), a = n / ∏ a in t, a := by
+theorem prod_primeFactors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t : Finset ℕ}
+    (ht : t ⊆ n.primeFactors) :
+    ∏ a in (n.primeFactors \ t), a = n / ∏ a in t, a := by
   refine symm $ Nat.div_eq_of_eq_mul_left (Finset.prod_pos
     fun p hp => (prime_of_mem_factors (List.mem_toFinset.mp (ht hp))).pos) ?_
-  rw [Finset.prod_sdiff ht, prod_factors_toFinset_of_squarefree  hn]
+  rw [Finset.prod_sdiff ht, prod_primeFactors_of_squarefree  hn]
 
 end Nat
 

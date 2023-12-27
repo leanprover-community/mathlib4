@@ -640,10 +640,10 @@ theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
 
 theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
-    {I : ι → ℕ} (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
+    {I : ι → ℕ} (hI : Pairwise fun i j => (I i).Coprime (I j)) :
     ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
   rw [iInf_span_singleton, Nat.cast_prod]
-  exact fun i j h ↦ (hI i j h).cast
+  exact fun i j h ↦ (hI h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -809,6 +809,7 @@ theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n
     exact Ideal.mul_mono e hn
 #align ideal.pow_right_mono Ideal.pow_right_mono
 
+@[simp]
 theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
     I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
   ⟨fun hij =>
@@ -823,9 +824,15 @@ instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
+@[simp]
+lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
+    s.prod = ⊥ ↔ ⊥ ∈ s :=
+  Multiset.prod_eq_zero_iff
+
+/-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
+@[deprecated multiset_prod_eq_bot] -- since 26 Dec 2023
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
-  rw [bot_eq_zero, prod_zero_iff_exists_zero]
   simp
 #align ideal.prod_eq_bot Ideal.prod_eq_bot
 
@@ -1024,7 +1031,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
               hc hyc ⟨n, hrny⟩,
               fun z => le_sSup⟩)
           I hri
-      have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
+      have : ∀ x ∉ m, r ∈ radical (m ⊔ span {x}) := fun x hxm =>
         by_contradiction fun hrmx =>
           hxm <|
             hm (m ⊔ span {x}) hrmx le_sup_left ▸
