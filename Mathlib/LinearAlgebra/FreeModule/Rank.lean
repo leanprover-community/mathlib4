@@ -173,7 +173,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
   set s := c.support
   let f i (j : s) : L := ⟨bK j i, Subfield.subset_closure ⟨(j, i), rfl⟩⟩
   have : ¬LinearIndependent Lᵐᵒᵖ f := fun h ↦ by
-    have := h.cardinal_lift_le_rank'
+    have := h.cardinal_lift_le_rank
     rw [lift_uzero, (LinearEquiv.piCongrRight fun _ ↦ MulOpposite.opLinearEquiv Lᵐᵒᵖ).rank_eq,
         rank_fun'] at this
     exact (nat_lt_aleph0 _).not_le this
