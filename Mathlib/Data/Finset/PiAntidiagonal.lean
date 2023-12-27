@@ -165,8 +165,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
   simp only [mem_piAntidiagonal', le_eq_subset, mem_antidiagonal, Prod.exists]
   constructor
   · rintro ⟨hsupp, hsum⟩
-    use (f a)
-    use (s.sum f)
+    use (f a), (s.sum f)
     rw [sum_insert h] at hsum
     simp only [hsum, true_and]
     use Finsupp.erase a f
