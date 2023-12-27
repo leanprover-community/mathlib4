@@ -309,7 +309,6 @@ instance : Module.Free R (M ⧸ Submodule.torsion R M) :=
 
 lemma Submodule.finrank_quotient_add_finrank_of_PID :
     finrank R (M ⧸ N) + finrank R N = finrank R M := by
-  have : IsNoetherian R M := isNoetherian_of_isNoetherianRing_of_finite R M
   have := finrank_quotient_add_finrank_of_free (N.map (Submodule.torsion R M).mkQ)
   rw [finrank_quotient_eq_of_le_torsion le_rfl, finrank_map_of_le_torsion] at this
   convert this using 2
