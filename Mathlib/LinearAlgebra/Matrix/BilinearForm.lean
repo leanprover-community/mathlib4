@@ -330,7 +330,8 @@ lemma diagonal_col_eq_row (v : n → R₂) (i : n) : (fun j => diagonal v j i) =
 
 -- c.f. Matrix.diagonal_dotProduct
 @[simp]
-theorem SMatrix.diagonal_dotProduct (v : n → R₂) (w : n → N₂) (i : n) : diagonal v i ⬝ₛᵥ w = v i • w i := by
+theorem SMatrix.diagonal_dotProduct (v : n → R₂) (w : n → N₂) (i : n) :
+    diagonal v i ⬝ₛᵥ w = v i • w i := by
   have : ∀ j ≠ i, diagonal v i j • w j = 0 := fun j hij => by
     simp [diagonal_apply_ne' _ hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
@@ -341,7 +342,7 @@ Multiplication of an n by o matrix on the left by an m by n matrix of scalars
 def SMatrixLeftMul  {m : Type*} :
     HSMul (Matrix m n R₂) (Matrix n o N₂) (Matrix m o N₂) where
   --hSMul M₁ M₂ := fun i k => ∑ j, M₁ i j • M₂ j k
-  hSMul M₁ M₂ := fun i k => (fun j => M₁ i j) ⬝ₛᵥ (fun j => M₂ j k)
+  hSMul M₁ M₂ := fun i k => (fun j₁ => M₁ i j₁) ⬝ₛᵥ (fun j₂ => M₂ j₂ k)
 
 /--
 Multiplication of an m by n matrix on the right by an n by o matrix of scalars
@@ -349,7 +350,7 @@ Multiplication of an m by n matrix on the right by an n by o matrix of scalars
 def SMatrixRightMul {m : Type*} :
     HSMul (Matrix m n N₂) (Matrix n o R₂) (Matrix m o N₂) where
   --hSMul M₁ M₂ := fun i k => ∑ j, M₂ j k • M₁ i j
-  hSMul M₁ M₂ := fun i k => (fun j => M₂ j k) ⬝ₛᵥ (fun j => M₁ i j)
+  hSMul M₁ M₂ := fun i k => (fun j₁ => M₂ j₁ k) ⬝ₛᵥ (fun j₂ => M₁ i j₂)
 
 local notation:100 M₁ "•ₗ" M₂:100 => SMatrixLeftMul.hSMul M₁ M₂
 
@@ -407,26 +408,22 @@ theorem SMatrixLeftMul.mul_apply {m : Type*}  {M₁ : Matrix m n R₂} {M₂ : M
 theorem SMatrixRightMul.mul_apply {m : Type*}  {M₁ : Matrix m n N₂} {M₂ : Matrix n o R₂} {i k} :
     (M₁ •ᵣ M₂) i k = ∑ j,  M₂ j k • M₁ i j := rfl
 
-theorem SMatrix_mul_assoc {m p : Type*}
+-- c.f. Matrix.dotProduct_assoc
+theorem SMatrix.dotProduct_assoc (u : n → R₂) (w : o → R₂) (v : Matrix n o R₂) :
+    (fun j => u ⬝ₛᵥ fun i => v i j) ⬝ₛᵥ w = u ⬝ₛᵥ fun i => v i ⬝ₛᵥ w := by
+  simpa [dotProduct, Finset.mul_sum, Finset.sum_mul, mul_assoc] using Finset.sum_comm
+
+theorem SMatrix.dotProduct_comm' (u : n → R₂) (w : o → R₂) (v : Matrix n o N₂) :
+    (w ⬝ₛᵥ fun i ↦ u ⬝ₛᵥ fun j ↦ v j i) = (u ⬝ₛᵥ fun i ↦ w ⬝ₛᵥ fun j ↦ v i j) := by
+  simpa [dotProduct, Finset.smul_sum, ← MulAction.mul_smul, mul_comm] using Finset.sum_comm
+
+-- c.f. Matrix.mul_assoc
+theorem SMatrix.mul_assoc {m p : Type*}
     {M₁ : Matrix m n R₂} {M₂ : Matrix n o N₂} {M₃ : Matrix o p R₂} :
-    (M₁ •ₗ M₂) •ᵣ M₃ = M₁ •ₗ (M₂ •ᵣ M₃) :=  ext (fun i k => by
-  rw [SMatrixLeftMul.mul_apply]
-  rw [SMatrixRightMul.mul_apply]
-  simp_rw [SMatrixLeftMul.mul_apply]
-  simp_rw [SMatrixRightMul.mul_apply]
-  /-
-  have e1 (x : o) : M₃ x k • ∑ j : n, M₁ i j • M₂ j x =
-  calc
-    ∑ x : o, M₃ x k • ∑ j : n, M₁ i j • M₂ j x = ∑ x : o, ∑ j : n, (M₃ x k) • (M₁ i j • M₂ j x) := ext (fun (x : o) => by rw [Finset.sum_nsmul])
-    _ = ∑ x : n, M₁ i x • ∑ j : o, M₃ j k • M₂ x j := by sorry
-  -/
-  --rw [← Finset.sum_nsmul]
-  sorry)
-  /-
-    by
-  rw [SMatrixLeftMul, SMatrixLeftMul, SMatrixRightMul, SMatrixRightMul]
-  simp only
-  -/
+    (M₁ •ₗ M₂) •ᵣ M₃ = M₁ •ₗ (M₂ •ᵣ M₃) := by
+  ext
+  simp_rw [SMatrixLeftMul, SMatrixRightMul]
+  apply SMatrix.dotProduct_comm'
 
 @[simp]
 theorem LinearMap.toMatrix'₂_comp (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂)
@@ -724,12 +721,12 @@ theorem LinearMap.toMatrix_mul_basis_toMatrix (c : Basis o R₂ M₂) (B : M₂ 
     (b.toMatrix c)ᵀ •ₗ toMatrix'₂' b B •ᵣ b.toMatrix c = toMatrix'₂' c B := by
   rw [← toMatrix_id_eq_basis_toMatrix, ← toMatrix'₂'_comp, compl₁₂_id_id]
 
-
 @[simp]
 theorem BilinForm.toMatrix_mul_basis_toMatrix (c : Basis o R₂ M₂) (B : BilinForm R₂ M₂) :
-    (b.toMatrix c)ᵀ * (BilinForm.toMatrix b B * b.toMatrix c) = BilinForm.toMatrix c B := by
-  rw [← SMatrixLeftMul_eq_Mul, ← SMatrixRightMul_eq_Mul, BilinForm.toMatrix, BilinForm.toMatrix]
-  simp only [LinearEquiv.trans_apply, LinearMap.toMatrix_mul_basis_toMatrix]
+    (b.toMatrix c)ᵀ * BilinForm.toMatrix b B * b.toMatrix c = BilinForm.toMatrix c B := by
+  rw [← SMatrixLeftMul_eq_Mul ((b.toMatrix c)ᵀ), ← SMatrixRightMul_eq_Mul, BilinForm.toMatrix,
+    BilinForm.toMatrix]
+  simp only [LinearEquiv.trans_apply, SMatrix.mul_assoc, LinearMap.toMatrix_mul_basis_toMatrix]
 #align bilin_form.to_matrix_mul_basis_to_matrix BilinForm.toMatrix_mul_basis_toMatrix
 
 theorem BilinForm.mul_toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix o n R₂) (N : Matrix n o R₂) :
