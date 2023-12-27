@@ -93,7 +93,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
 /-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
     ∃ f : α → ℓ^∞(ℕ), Isometry f := by
-  cases' (univ : Set α).eq_empty_or_nonempty with h h
+  rcases (univ : Set α).eq_empty_or_nonempty with h | h
   · use fun _ => 0; intro x; exact absurd h (Nonempty.ne_empty ⟨x, mem_univ x⟩)
   · -- We construct a map x : ℕ → α with dense image
     rcases h with ⟨basepoint⟩
