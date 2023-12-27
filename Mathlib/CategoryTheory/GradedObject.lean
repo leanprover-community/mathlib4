@@ -433,7 +433,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
-`X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is colimit.
+`X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
 a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
 and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
