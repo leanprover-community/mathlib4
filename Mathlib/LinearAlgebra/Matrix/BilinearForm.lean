@@ -323,6 +323,8 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
 def SMatrix.dotProduct (v : n → R₂) (w : n → N₂)  : N₂ :=
   ∑ i, v i • w i
 
+/- The precedence of 72 comes immediately after ` • ` for `SMul.smul`,
+   so that `r₁ • a ⬝ₛᵥ r₂ • b` is parsed as `(r₁ • a) ⬝ₛᵥ (r₂ • b)` here. -/
 infixl:72 " ⬝ₛᵥ " => SMatrix.dotProduct
 
 @[simp]
