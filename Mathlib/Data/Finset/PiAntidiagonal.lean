@@ -47,7 +47,7 @@ namespace Finset
 
 open scoped BigOperators
 
-open Function Finsupp HasAntidiagonal
+open Function Fin Finsupp HasAntidiagonal
 
 namespace HasAntidiagonal
 
@@ -55,29 +55,24 @@ section Fin
 
 variable {μ : Type*} [AddCommMonoid μ] [DecidableEq μ] [HasAntidiagonal μ]
 
--- `finAntidiagonal d n` is the type of d-tuples with sum n -/
-noncomputable def finAntidiagonal : (d : ℕ) → μ → Finset (Fin d →₀ μ)
+
+/-- `finAntidiagonal d n` is the type of d-tuples with sum n -/
+def finAntidiagonal : (d : ℕ) → μ → Finset (Fin d → μ)
   | 0 => fun n => ite (n = 0) {0} ∅
   | d + 1 => fun n => by
     exact Finset.biUnion (antidiagonal n)
       (fun ab => (finAntidiagonal d ab.2).map {
-        toFun := fun f => Finsupp.cons (ab.1) f
-        inj' := fun f g h => by
-          simp only at h
-          rw [← tail_cons ab.1 f, ← tail_cons ab.1 g, h]})
+        toFun := Fin.cons (ab.1)
+        inj' := Fin.cons_right_injective _ })
 
-lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
-    f ∈ finAntidiagonal d n ↔ sum f (fun _ x => x) = n := by
+lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
+    f ∈ finAntidiagonal d n ↔ univ.sum f = n := by
   induction d generalizing n with
   | zero =>
-      simp only [Nat.zero_eq, finAntidiagonal, Pi.const_zero,
-        Matrix.zero_empty, univ_eq_empty, sum_empty]
+      simp only [Nat.zero_eq, finAntidiagonal, Matrix.zero_empty, univ_eq_empty, sum_empty]
       by_cases hn : n = 0
-      · rw [if_pos hn, hn, mem_singleton]
-        simp only [eq_iff_true_of_subsingleton, true_iff]
-        rw [Subsingleton.eq_zero f, sum_zero_index]
+      · simp only [hn, ite_true, mem_singleton, eq_iff_true_of_subsingleton]
       · simp only [if_neg hn, not_mem_empty, false_iff]
-        rw [Subsingleton.eq_zero f, sum_zero_index]
         exact Ne.symm hn
   | succ d ih =>
       simp only [finAntidiagonal, mem_biUnion, mem_antidiagonal, mem_map,
@@ -85,31 +80,47 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
       constructor
       · rintro ⟨a, b, hab, g, hg, hf⟩
         rw [ih b g] at hg
-        rw [← hf, Finsupp.sum_cons, hg, hab]
+        rw [← hf, Fin.sum_cons, hg, hab]
       · intro hf
-        use f 0, sum (tail f) (fun _ e => e)
+        use f 0, univ.sum (Fin.tail f)
         constructor
-        · rw [← cons_tail f, Finsupp.sum_cons] at hf
+        · rw [← Fin.cons_self_tail f, Fin.sum_cons] at hf
           exact hf
-        exact ⟨tail f, by rw [ih], cons_tail f⟩
+        exact ⟨tail f, by rw [ih], Fin.cons_self_tail f⟩
 
-lemma mem_finAntidiagonal' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
-    f ∈ finAntidiagonal d n ↔ univ.sum f = n := by
-  rw [mem_finAntidiagonal, sum_of_support_subset f (subset_univ _) _ (fun _ _ => rfl)]
+/-- `finAntidiagonal₀ d n` is the type of d-tuples with sum `n` -/
+noncomputable def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
+  (finAntidiagonal d n).map ({
+      toFun := fun f => ofSupportFinite f (Set.toFinite (Function.support f))
+      inj' := fun _ _ h => FunLike.coe_fn_eq.mpr h})
+
+lemma mem_finAntidiagonal₀' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
+    f ∈ finAntidiagonal₀ d n ↔ univ.sum f = n := by
+  simp only [finAntidiagonal₀, mem_map, Embedding.coeFn_mk, ← mem_finAntidiagonal]
+  constructor
+  · rintro ⟨g, h, rfl⟩
+    exact h
+  · intro h
+    use f, h
+    exact Finsupp.ext (congrFun rfl)
+
+lemma mem_finAntidiagonal₀ (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
+    f ∈ finAntidiagonal₀ d n ↔ sum f (fun _ x => x) = n := by
+  rw [mem_finAntidiagonal₀', sum_of_support_subset f (subset_univ _) _ (fun _ _ => rfl)]
 
 end Fin
 
 section piAntidiagonal
 
-/- Here, we construct an `Finset.piAntidiagonal ι μ` whenever we are given `HasAntidiagonal μ` -/
-
 variable {ι : Type*} [DecidableEq ι]
 
 variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
 
+/- Here, we construct an `Finset.piAntidiagonal ι μ` whenever we are given `HasAntidiagonal μ` -/
+
 /-- The Finset of functions `ι →₀ μ` with support contained in `s` and sum `n`  -/
 noncomputable def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) := by
-  exact (finAntidiagonal s.card n).map {
+  exact (finAntidiagonal₀ s.card n).map {
     toFun := embDomain {
         toFun := Subtype.val.comp (equivFin s).symm,
         inj' := by
@@ -124,7 +135,7 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
   simp only [piAntidiagonal, mem_map, Embedding.coeFn_mk, le_eq_subset]
   constructor
   · rintro ⟨f, hf, rfl⟩
-    rw [mem_finAntidiagonal] at hf
+    rw [mem_finAntidiagonal₀] at hf
     suffices hs : _ ≤ s
     apply And.intro hs
     rw [sum_embDomain, hf]
@@ -134,7 +145,7 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
       rintro ⟨k, _, rfl⟩
       simp only [Embedding.coeFn_mk, comp_apply, coe_mem]
   · rintro ⟨hsupp, hsum⟩
-    simp_rw [mem_finAntidiagonal]
+    simp_rw [mem_finAntidiagonal₀]
     set e : Fin s.card ↪ ι :=
       Function.Embedding.trans s.equivFin.symm.toEmbedding (Embedding.subtype fun x ↦ x ∈ s) with he
     have he' : ∃ (v : Fin s.card →₀ μ), embDomain e v = f := by
