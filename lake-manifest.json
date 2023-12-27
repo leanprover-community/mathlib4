@@ -31,7 +31,7 @@
   {"url": "https://github.com/leanprover-community/ProofWidgets4",
    "type": "git",
    "subDir": null,
-   "rev": "bf61e90de075abfa27f638922e7aafafdce77c44",
+   "rev": "25eb33d3e327dea8f390d2e382dc4808cd6b74f7",
    "name": "proofwidgets",
    "manifestFile": "lake-manifest.json",
    "inputRev": "v0.0.24-pre2",
