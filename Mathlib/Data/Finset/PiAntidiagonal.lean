@@ -55,7 +55,7 @@ section Fin
 
 variable {μ : Type*} [AddCommMonoid μ] [DecidableEq μ] [HasAntidiagonal μ]
 
-/-- `finAntidiagonal d n` is the type of d-tuples with sum n -/
+-- `finAntidiagonal d n` is the type of d-tuples with sum n -/
 noncomputable def finAntidiagonal : (d : ℕ) → μ → Finset (Fin d →₀ μ)
   | 0 => fun n => ite (n = 0) {0} ∅
   | d + 1 => fun n => by
