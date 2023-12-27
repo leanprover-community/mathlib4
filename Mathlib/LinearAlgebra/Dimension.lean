@@ -577,7 +577,7 @@ theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Modu
     nontriviality R
     rw [Module.rank]
     have := nonempty_linearIndependent_set R M
-    refine ciSup_le fun ⟨s, hs⟩ ↦ cardinal_le_rank_of_linearIndependent (v := (N.mkQ ·)) ?_
+    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (N.mkQ ·)) ?_
     rw [linearIndependent_iff'] at hs ⊢
     simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
     intro t g hg i hi
