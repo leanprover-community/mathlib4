@@ -634,17 +634,31 @@ theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.t
   simp only [Matrix.toBilin_apply, Matrix.toBilin'_apply, Pi.basisFun_repr]
 #align matrix.to_bilin_basis_fun Matrix.toBilin_basisFun
 
+theorem LinearMap.toMatrix_basisFun :
+    LinearMap.toMatrix'₂' (Pi.basisFun R₂ n) = LinearMap.toMatrix'₂ (N₂ := N₂) := by
+  ext B
+  rw [toMatrix'₂'_apply, toMatrix'₂_apply, Pi.basisFun_apply, Pi.basisFun_apply]
+
 theorem BilinForm.toMatrix_basisFun :
     BilinForm.toMatrix (Pi.basisFun R₂ n) = BilinForm.toMatrix' := by
-  ext B
-  rw [BilinForm.toMatrix_apply, BilinForm.toMatrix'_apply, Pi.basisFun_apply, Pi.basisFun_apply]
+  rw [BilinForm.toMatrix, BilinForm.toMatrix', LinearMap.toMatrix_basisFun]
 #align bilin_form.to_matrix_basis_fun BilinForm.toMatrix_basisFun
+
+@[simp]
+theorem Matrix.toBilin_toMatrix' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) :
+    Matrix.toBilin''' b (LinearMap.toMatrix'₂' b B) = B :=
+  (Matrix.toBilin''' b).apply_symm_apply B
 
 @[simp]
 theorem Matrix.toBilin_toMatrix (B : BilinForm R₂ M₂) :
     Matrix.toBilin b (BilinForm.toMatrix b B) = B :=
   (Matrix.toBilin b).apply_symm_apply B
 #align matrix.to_bilin_to_matrix Matrix.toBilin_toMatrix
+
+@[simp]
+theorem LinearMap.toMatrix_toBilin (M : Matrix n n N₂) :
+    LinearMap.toMatrix'₂' b (Matrix.toBilin''' b M) = M :=
+  (LinearMap.toMatrix'₂' b).apply_symm_apply M
 
 @[simp]
 theorem BilinForm.toMatrix_toBilin (M : Matrix n n R₂) :
@@ -767,10 +781,19 @@ theorem BilinForm.toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
   exact rfl
 #align bilin_form.to_matrix_mul BilinForm.toMatrix_mul
 
+theorem Matrix.toBilin_comp' (M : Matrix n n N₂) (P Q : Matrix n o R₂) :
+    (toBilin''' b M).compl₁₂ (toLin c b P) (toLin c b Q) = toBilin''' c (Pᵀ •ₗ M •ᵣ Q) :=
+  (LinearMap.toMatrix'₂' c).injective
+    (by simp [LinearMap.toMatrix'₂'_comp b c, LinearMap.toMatrix_toBilin, toMatrix_toLin])
+
 theorem Matrix.toBilin_comp (M : Matrix n n R₂) (P Q : Matrix n o R₂) :
-    (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) :=
-  (BilinForm.toMatrix c).injective
-    (by simp only [BilinForm.toMatrix_comp b c, BilinForm.toMatrix_toBilin, toMatrix_toLin])
+    (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) := by
+  rw [← SMatrixRightMul_eq_Mul, ← SMatrixLeftMul_eq_Mul, SMatrix.mul_assoc, Matrix.toBilin,
+    BilinForm.toMatrix, Matrix.toBilin, BilinForm.toMatrix, LinearEquiv.trans_symm,
+    LinearEquiv.trans_symm, toMatrix'₂'_symm', toMatrix'₂'_symm', BilinForm.toLin_symm,
+    BilinForm.toLin_symm, LinearEquiv.trans_apply, LinearEquiv.trans_apply,
+    ← (Matrix.toBilin_comp' b c M P Q)]
+  exact rfl
 #align matrix.to_bilin_comp Matrix.toBilin_comp
 
 end ToMatrix
