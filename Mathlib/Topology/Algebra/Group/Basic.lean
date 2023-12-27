@@ -481,7 +481,7 @@ end Conj
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
 
-section Zpow
+section ZPow
 
 @[to_additive (attr := continuity)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
@@ -545,7 +545,7 @@ theorem ContinuousOn.zpow {f : α → G} {s : Set α} (hf : ContinuousOn f s) (z
 #align continuous_on.zpow ContinuousOn.zpow
 #align continuous_on.zsmul ContinuousOn.zsmul
 
-end Zpow
+end ZPow
 
 section OrderedCommGroup
 
@@ -1257,10 +1257,9 @@ variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
-    intro x ⟨g, y, hgs, hyt, hgyx⟩
+    rintro x ⟨g, y, hgs, hyt, rfl⟩
     refine ⟨g, hgs, ?_⟩
-    convert hyt
-    rwa [inv_smul_eq_iff, eq_comm]
+    rwa [inv_smul_smul]
   choose! f hf using this
   refine isClosed_of_closure_subset (fun x hx ↦ ?_)
   rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
@@ -1276,7 +1275,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
 
 /-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
 closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
-`ℚ` acting on `ℝ` by translation, and let `s : set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
+`ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`.
 To fix the proof, we would need to make two additional assumptions:

@@ -68,7 +68,7 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
   cases' n with n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
-    simp only [finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
+    simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
   -- Otherwise the vector space is nontrivial.
   · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
     -- Hence, `f` has an eigenvalue `μ₀`.

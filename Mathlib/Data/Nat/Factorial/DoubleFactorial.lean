@@ -36,6 +36,10 @@ def doubleFactorial : ℕ → ℕ
 -- This notation is `\!!` not two !'s
 scoped notation:10000 n "‼" => Nat.doubleFactorial n
 
+lemma doubleFactorial_pos : ∀ n, 0 < n‼
+  | 0 | 1 => zero_lt_one
+  | _n + 2 => mul_pos (succ_pos _) (doubleFactorial_pos _)
+
 theorem doubleFactorial_add_two (n : ℕ) : (n + 2)‼ = (n + 2) * n‼ :=
   rfl
 #align nat.double_factorial_add_two Nat.doubleFactorial_add_two
@@ -49,6 +53,11 @@ theorem factorial_eq_mul_doubleFactorial : ∀ n : ℕ, (n + 1)! = (n + 1)‼ * 
     rw [doubleFactorial_add_two, factorial, factorial_eq_mul_doubleFactorial _, mul_comm _ k‼,
       mul_assoc]
 #align nat.factorial_eq_mul_double_factorial Nat.factorial_eq_mul_doubleFactorial
+
+lemma doubleFactorial_le_factorial : ∀ n, n‼ ≤ n !
+  | 0 => le_rfl
+  | n + 1 => by
+    rw [factorial_eq_mul_doubleFactorial]; exact le_mul_of_pos_right n.doubleFactorial_pos
 
 theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
   | 0 => rfl
@@ -78,3 +87,21 @@ theorem doubleFactorial_eq_prod_odd :
 #align nat.double_factorial_eq_prod_odd Nat.doubleFactorial_eq_prod_odd
 
 end Nat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for `Nat.doubleFactorial`. -/
+@[positivity Nat.doubleFactorial _]
+def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
+  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
+    match α, e with
+    | ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
+      assumeInstancesCommute
+      return .positive q(Nat.doubleFactorial_pos $n)
+    | _, _ => throwError "not Nat.doubleFactorial"
+  else throwError "not Nat.doubleFactorial"
+
+example (n : ℕ) : 0 < n‼ := by positivity
+
+end Mathlib.Meta.Positivity

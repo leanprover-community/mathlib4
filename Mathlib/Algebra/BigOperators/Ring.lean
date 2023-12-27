@@ -227,7 +227,7 @@ variable {R : Type*} [CommRing R]
 theorem prod_range_cast_nat_sub (n k : ℕ) :
     ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) := by
   rw [prod_natCast]
-  cases' le_or_lt k n with hkn hnk
+  rcases le_or_lt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp

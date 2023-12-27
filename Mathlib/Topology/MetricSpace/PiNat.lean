@@ -56,7 +56,7 @@ open Classical Topology Filter
 
 open TopologicalSpace Set Metric Filter Function
 
-attribute [local simp] pow_le_pow_iff one_lt_two inv_le_inv zero_le_two zero_lt_two
+attribute [local simp] pow_le_pow_iff_right one_lt_two inv_le_inv zero_le_two zero_lt_two
 
 variable {E : ℕ → Type*}
 
@@ -295,7 +295,7 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
   simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne.def,
-    not_false_iff, le_max_iff, pow_le_pow_iff, one_lt_two, pow_pos,
+    not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
 
@@ -328,7 +328,7 @@ theorem apply_eq_of_dist_lt {x y : ∀ n, E n} {n : ℕ} (h : dist x y < (1 / 2)
   rcases eq_or_ne x y with (rfl | hne)
   · rfl
   have : n < firstDiff x y := by
-    simpa [dist_eq_of_ne hne, inv_lt_inv, pow_lt_pow_iff, one_lt_two] using h
+    simpa [dist_eq_of_ne hne, inv_lt_inv, pow_lt_pow_iff_right, one_lt_two] using h
   exact apply_eq_of_lt_firstDiff (hi.trans_lt this)
 #align pi_nat.apply_eq_of_dist_lt PiNat.apply_eq_of_dist_lt
 

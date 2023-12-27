@@ -133,9 +133,9 @@ theorem arcsin_of_le_neg_one {x : ℝ} (hx : x ≤ -1) : arcsin x = -(π / 2) :=
 
 @[simp]
 theorem arcsin_neg (x : ℝ) : arcsin (-x) = -arcsin x := by
-  cases' le_total x (-1) with hx₁ hx₁
+  rcases le_total x (-1) with hx₁ | hx₁
   · rw [arcsin_of_le_neg_one hx₁, neg_neg, arcsin_of_one_le (le_neg.2 hx₁)]
-  cases' le_total 1 x with hx₂ hx₂
+  rcases le_total 1 x with hx₂ | hx₂
   · rw [arcsin_of_one_le hx₂, arcsin_of_le_neg_one (neg_le_neg hx₂)]
   refine' arcsin_eq_of_sin_eq _ _
   · rw [sin_neg, sin_arcsin hx₁ hx₂]
@@ -149,7 +149,7 @@ theorem arcsin_le_iff_le_sin {x y : ℝ} (hx : x ∈ Icc (-1 : ℝ) 1) (hy : y �
 
 theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) :
     arcsin x ≤ y ↔ x ≤ sin y := by
-  cases' le_total x (-1) with hx₁ hx₁
+  rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
   cases' lt_or_le 1 x with hx₂ hx₂
   · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
