@@ -290,7 +290,7 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
   refine' ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (_ : J ⊆ Y)⟩
   have hJfin := finite_of_encard_le_coe (hP J hJ)
   refine' (eq_of_subset_of_ncard_le hYJ _ hJfin).symm.subset
-  rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_of_subset hYJ hJfin)]
+  rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_ncard hYJ hJfin)]
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
   isn't needed to define a matroid by independent sets. -/
@@ -382,7 +382,7 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
         (hE.subset (subset_ground hI)).cast_ncard_eq] )
     (indep_bdd := ⟨E.ncard, fun I hI ↦ by
       rw [hE.cast_ncard_eq]
-      exact encard_le_of_subset <| subset_ground hI ⟩)
+      exact encard_le_card <| subset_ground hI ⟩)
     (subset_ground := subset_ground)
 
 @[simp] theorem ofFinite_E {E : Set α} hE Indep indep_empty indep_subset indep_aug subset_ground :
