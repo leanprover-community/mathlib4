@@ -686,11 +686,31 @@ instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
 instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.LindelofSpace
 
-instance SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
-  refine { isLindelof_univ := ?isLindelof_univ }
+/-- A set `s` is Hereditarily Lindelöf if every subset is a Lindelof set. We require this only
+for open sets in the definition, and then conclude that this holds for all sets by ADD. -/
+def IsHereditarilyLindelof (s : Set X) :=
+  ∀ t ⊆ s, IsOpen t → IsLindelof t
+
+-- Type class for Hereditarily Lindelöf spaces.  -/
+class HereditarilyLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
+  /-- In a Hereditarily Lindelöf space, `Set.univ` is a Hereditarily Lindelöf set. -/
+  isHereditarilyLindelof_univ : IsHereditarilyLindelof (univ : Set X)
+
+instance SecondCountableTopology.to_HereditarilyLindelof [SecondCountableTopology X] :
+    HereditarilyLindelofSpace X := by
+  refine { isHereditarilyLindelof_univ := ?isHereditarilyLindelof_univ }
+  unfold IsHereditarilyLindelof
+  intro t _ _
   apply isLindelof_iff_countable_subcover.mpr
   intro ι U hι hcover
   have := @isOpen_iUnion_countable X _ _ ι U hι
   rcases this with ⟨t,⟨htc, htu⟩⟩
   use t, htc
   exact subset_of_subset_of_eq hcover (id htu.symm)
+
+instance HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] : LindelofSpace X := by
+  refine { isLindelof_univ := ?isLindelof_univ }
+  apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ <;> simp
+
+instance SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
+  apply HereditarilyLindelof.to_Lindelof
