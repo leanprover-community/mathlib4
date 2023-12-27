@@ -77,7 +77,7 @@ instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddComm
   { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
 
 instance canonicallyOrderedAddCancelCommMonoid : CanonicallyOrderedAddCancelCommMonoid ℕ :=
-  inferInstance
+  { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrderedCommSemiring with }
 
 variable {m n k l : ℕ}
 
