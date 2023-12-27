@@ -242,7 +242,7 @@ lemma spectralSequence_edgeMonoStep_compatibility
       X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃' (X.le₀'₀ data hrr' pq hi₀' hi₀) _ _ _ := by
   let H := X.spectralSequenceHomologyData data r r' hrr' _ pq _ rfl rfl n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
-  refine' ((X.spectralSequence data).rightHomologyDataπ_edgeMonoStep_compatibility r r' hrr' _ pq _ rfl rfl H.right).trans _
+  refine' ((X.spectralSequence data).rightHomologyData_p_edgeMonoStep_compatibility r r' hrr' _ pq _ rfl rfl H.right).trans _
   dsimp
   simp only [← assoc]
   congr 1
@@ -258,6 +258,45 @@ lemma spectralSequence_edgeMonoStep_compatibility
   dsimp [SpectralSequence.homologyIso, spectralSequenceHomologyData, SpectralSequence.homologyIso']
   simp only [assoc, Iso.inv_hom_id, comp_id]
   rfl
+
+lemma spectralSequence_edgeEpiStep_compatibility
+    (pq : κ) (r r' : ℤ) (hrr' : r + 1 = r') [(X.spectralSequence data).HasPage r]
+    [(X.spectralSequence data).HasPage r']
+    [(X.spectralSequence data).HasEdgeEpiAt pq r]
+    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₁' : n₁ = data.deg pq)
+    (i₀' i₀ i₁ i₂ i₃ i₃' : ι)
+    (hi₀' : i₀' = X.i₀ data r' pq)
+    (hi₀ : i₀ = X.i₀ data r pq)
+    (hi₁ : i₁ = data.i₁ pq)
+    (hi₂ : i₂ = data.i₂ pq)
+    (hi₃ : i₃ = X.i₃ data r pq)
+    (hi₃' : i₃' = X.i₃ data r' pq) :
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃ (X.le₀'₀ data hrr' pq hi₀' hi₀)
+      (X.le₀₁ data r pq hi₀ hi₁) (X.le₁₂ data pq hi₁ hi₂) (X.le₂₃ data r pq hi₂ hi₃) ≫
+    (X.spectralSequencePageXIso data r pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ hi₀ hi₁ hi₂ hi₃).inv ≫
+    (X.spectralSequence data).edgeEpiStep pq r r' hrr' =
+      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀' i₁ i₂ i₃ i₃' _
+          (X.le₁₂ data pq hi₁ hi₂) (X.le₂₃ data r pq hi₂ hi₃) (X.le₃₃' data hrr' pq hi₃ hi₃') ≫
+      (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').inv := by
+  let H := X.spectralSequenceHomologyData data r r' hrr' _ pq _ rfl rfl n₀ n₁ n₂ hn₁ hn₂ hn₁'
+    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
+  refine' Eq.trans _ (((X.spectralSequence data).leftHomologyData_i_edgeEpiStep_compatibility r r' hrr' _ pq _ rfl rfl H.left).trans _)
+  · rw [← assoc]
+    rfl
+  · dsimp
+    congr 1
+  -- the statement here should be a simp lemma
+    dsimp only [SpectralSequence.iso, SpectralSequence.iso', spectralSequence]
+    rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
+    simp
+    dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
+    obtain rfl : n₀ = n₁ - 1 := by linarith
+    subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
+    simp
+    erw [id_comp]
+    dsimp [SpectralSequence.homologyIso, spectralSequenceHomologyData, SpectralSequence.homologyIso']
+    simp
+    rfl
 
 lemma spectralSequenceHasEdgeMonoAt (r r' : ℤ) (hrr' : r + 1 = r')
     [(X.spectralSequence data).HasPage r] [(X.spectralSequence data).HasPage r']
