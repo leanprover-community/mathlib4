@@ -428,6 +428,13 @@ lemma prod_primeFactors_invOn_squarefree :
       {s | ∀ p ∈ s, p.Prime} {n | Squarefree n} :=
   ⟨fun _s ↦ primeFactors_prod, fun _n ↦ prod_primeFactors_of_squarefree⟩
 
+theorem prod_primeFactors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t : Finset ℕ}
+    (ht : t ⊆ n.primeFactors) :
+    ∏ a in (n.primeFactors \ t), a = n / ∏ a in t, a := by
+  refine symm $ Nat.div_eq_of_eq_mul_left (Finset.prod_pos
+    fun p hp => (prime_of_mem_factors (List.mem_toFinset.mp (ht hp))).pos) ?_
+  rw [Finset.prod_sdiff ht, prod_primeFactors_of_squarefree hn]
+
 end Nat
 
 -- Porting note: comment out NormNum tactic, to be moved to another file.
