@@ -260,7 +260,7 @@ theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempt
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
-    ⟨(· • ·) g ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
+    ⟨(g • ·) ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
 #align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.isLocallyFiniteMeasure_of_smulInvariant
 #align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.isLocallyFiniteMeasure_of_vaddInvariant

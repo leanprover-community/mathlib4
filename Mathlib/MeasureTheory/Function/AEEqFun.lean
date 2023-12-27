@@ -657,7 +657,7 @@ variable [SMul 𝕜 γ] [ContinuousConstSMul 𝕜 γ]
 variable [SMul 𝕜' γ] [ContinuousConstSMul 𝕜' γ]
 
 instance instSMul : SMul 𝕜 (α →ₘ[μ] γ) :=
-  ⟨fun c f => comp ((· • ·) c) (continuous_id.const_smul c) f⟩
+  ⟨fun c f => comp (c • ·) (continuous_id.const_smul c) f⟩
 #align measure_theory.ae_eq_fun.has_smul MeasureTheory.AEEqFun.instSMul
 
 @[simp]
@@ -835,7 +835,7 @@ theorem div_toGerm (f g : α →ₘ[μ] γ) : (f / g).toGerm = f.toGerm / g.toGe
 
 end Div
 
-section Zpow
+section ZPow
 
 instance instPowInt : Pow (α →ₘ[μ] γ) ℤ :=
   ⟨fun f n => comp _ (continuous_zpow n) f⟩
@@ -856,7 +856,7 @@ theorem zpow_toGerm (f : α →ₘ[μ] γ) (n : ℤ) : (f ^ n).toGerm = f.toGerm
   comp_toGerm _ _ _
 #align measure_theory.ae_eq_fun.zpow_to_germ MeasureTheory.AEEqFun.zpow_toGerm
 
-end Zpow
+end ZPow
 
 end Group
 

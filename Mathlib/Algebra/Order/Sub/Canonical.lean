@@ -428,7 +428,7 @@ theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not
 #align tsub_pos_iff_lt tsub_pos_iff_lt
 
 theorem tsub_eq_tsub_min (a b : α) : a - b = a - min a b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_eq_tsub_min tsub_eq_tsub_min
@@ -497,7 +497,7 @@ end Contra
 
 
 theorem tsub_add_eq_max : a - b + b = max a b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [max_eq_right h, tsub_eq_zero_of_le h, zero_add]
   · rw [max_eq_left h, tsub_add_cancel_of_le h]
 #align tsub_add_eq_max tsub_add_eq_max
@@ -506,7 +506,7 @@ theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, ts
 #align add_tsub_eq_max add_tsub_eq_max
 
 theorem tsub_min : a - min a b = a - b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_min tsub_min

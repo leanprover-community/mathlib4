@@ -44,7 +44,7 @@ made essentially invisible by the simplifier when working with `M`.
 Because of this setup, we don't define any API for `IndepMatroid`, as it would be
 a redundant copy of the existing API for `Matroid.Indep`.
 (In particular, one could define a natural equivalence `e : IndepMatroid α ≃ Matroid α`
-with `e.toFun = IndepMatroid.toMatroid`, but this would be pointless, as there is no need
+with `e.toFun = IndepMatroid.matroid`, but this would be pointless, as there is no need
 for the inverse of `e`).
 
 ## Main definitions
@@ -199,7 +199,7 @@ attribute [pp_dot] Indep E
     · have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib)
       · rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
       choose! f hf using hchoose
-      have _ := finite_coe_iff.2 (hB₀fin.diff I)
+      have := (hB₀fin.diff I).to_subtype
       refine ⟨iUnion f ∪ (B₀ ∩ I),
         union_subset (iUnion_subset (fun i ↦ (hf i).1)) (inter_subset_right _ _),
         (finite_iUnion <| fun i ↦ (hf i).2.1).union (hB₀fin.subset (inter_subset_left _ _)),
