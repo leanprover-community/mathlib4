@@ -81,7 +81,7 @@ associative, commutative operation and a list of "operand atoms" and rearranges 
 To work with a general associative, commutative binary operation, `move_oper`
 needs to have inbuilt the lemmas asserting the analogues of
 `add_comm, add_assoc, add_left_comm` for the new operation.
-Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`, `Max.max`.
+Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`, `Min.min`.
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
 
