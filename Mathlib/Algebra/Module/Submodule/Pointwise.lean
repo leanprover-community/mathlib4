@@ -500,7 +500,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
 -- should be true.
-/-- A subset of a ring `R` has a multiplicative action on submodule of a module over `R`. -/
+/-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
 protected def pointwiseSetMulAction [SMulCommClass R R M] :
     MulAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
