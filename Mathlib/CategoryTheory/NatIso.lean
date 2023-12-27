@@ -272,14 +272,14 @@ variable (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X)
 while being definitionally equal on objects to a given map `obj : C → D`
 such that for all `X : C`, we have an isomorphism `F.obj X ≅ obj X`. -/
 @[simps obj]
-def mkOfFunctorOfObj : C ⥤ D where
+def copyObj : C ⥤ D where
   obj := obj
   map f := (e _).inv ≫ F.map f ≫ (e _).hom
 
-/-- The functor constructed with `mkOfFunctorOfObj` is isomorphic to the given functor. -/
+/-- The functor constructed with `copyObj` is isomorphic to the given functor. -/
 @[simps!]
-def isoMkOfFunctorOfObj : F ≅ F.mkOfFunctorOfObj obj e :=
-  NatIso.ofComponents e (by simp [Functor.mkOfFunctorOfObj])
+def isoCopyObj : F ≅ F.copyObj obj e :=
+  NatIso.ofComponents e (by simp [Functor.copyObj])
 
 end Functor
 

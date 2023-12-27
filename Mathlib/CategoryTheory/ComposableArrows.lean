@@ -856,7 +856,7 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
 for all `i : Fin n`, this is `F : ComposableArrows C n` such that `F.obj i` is
 definitionally equal to `obj i` and such that `F.map' i (i + 1) = mapSucc ⟨i, hi⟩`. -/
 noncomputable def mkOfObjOfMapSucc : ComposableArrows C n :=
-  (mkOfObjOfMapSucc_exists obj mapSucc).choose.mkOfFunctorOfObj obj
+  (mkOfObjOfMapSucc_exists obj mapSucc).choose.copyObj obj
     (mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose
 
 @[simp]
