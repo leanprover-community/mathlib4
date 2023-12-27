@@ -130,6 +130,7 @@ lemma mem_piAntidiagonal' (s : Finset ι) (n : μ) (f) :
   rw [sum_of_support_subset _ hs]
   exact fun _ _ => rfl
 
+@[simp]
 theorem piAntidiagonal_empty_of_zero :
     piAntidiagonal (∅ : Finset ι) (0 : μ) = {0} := by
   ext f
