@@ -42,8 +42,8 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
   rcases fg_def.1 h1 with ⟨p, hp, hp'⟩
   rcases fg_def.1 h2 with ⟨q, hq, hq'⟩
   refine' fg_def.2 ⟨p * q, hp.mul hq, le_antisymm _ _⟩
-  · rw [span_le]
-    rintro _ ⟨x, y, hx, hy, rfl⟩
+  · rw [span_le, Set.mul_subset_iff]
+    intro x hx y hy
     change x * y ∈ adjoin R (s ∪ t)
     refine' Subalgebra.mul_mem _ _ _
     · have : x ∈ Subalgebra.toSubmodule (adjoin R s) := by

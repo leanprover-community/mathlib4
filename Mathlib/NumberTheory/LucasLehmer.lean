@@ -53,7 +53,7 @@ theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
 theorem one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
   lt_tsub_iff_right.2 <|
     calc 1 + 1 = 2 ^ 1 := by rw [one_add_one_eq_two, pow_one]
-    _ < 2 ^ p := Nat.pow_lt_pow_of_lt_right one_lt_two hp
+    _ < 2 ^ p := pow_lt_pow_right one_lt_two hp
 
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
@@ -94,27 +94,27 @@ def sMod (p : ℕ) : ℕ → ℤ
   | i + 1 => (sMod p i ^ 2 - 2) % (2 ^ p - 1)
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
-theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
+theorem mersenne_int_pos {p : ℕ} (hp : p ≠ 0) : (0 : ℤ) < 2 ^ p - 1 :=
   sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
 
-theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
-  (mersenne_int_pos w).ne'
+theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 :=
+  (mersenne_int_pos hp).ne'
 #align lucas_lehmer.mersenne_int_ne_zero LucasLehmer.mersenne_int_ne_zero
 
-theorem sMod_nonneg (p : ℕ) (w : 0 < p) (i : ℕ) : 0 ≤ sMod p i := by
+theorem sMod_nonneg (p : ℕ) (hp : p ≠ 0) (i : ℕ) : 0 ≤ sMod p i := by
   cases i <;> dsimp [sMod]
   · exact sup_eq_right.mp rfl
   · apply Int.emod_nonneg
-    exact mersenne_int_ne_zero p w
+    exact mersenne_int_ne_zero p hp
 #align lucas_lehmer.s_mod_nonneg LucasLehmer.sMod_nonneg
 
 theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <;> simp [sMod]
 #align lucas_lehmer.s_mod_mod LucasLehmer.sMod_mod
 
-theorem sMod_lt (p : ℕ) (w : 0 < p) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
+theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p w)).trans_eq ?_
-  exact abs_of_nonneg (mersenne_int_pos w).le
+  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  exact abs_of_nonneg (mersenne_int_pos hp).le
 #align lucas_lehmer.s_mod_lt LucasLehmer.sMod_lt
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
@@ -152,11 +152,11 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
     simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-      simp only [ge_iff_le, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos,
-        cast_pred, cast_pow, cast_ofNat] at h
+      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos, cast_pred,
+        cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
-    · apply sMod_nonneg _ (Nat.lt_of_succ_lt w)
-    · exact sMod_lt _ (Nat.lt_of_succ_lt w) (p - 2)
+    · exact sMod_nonneg _ (by positivity) _
+    · exact sMod_lt _ (by positivity) _
   · intro h
     rw [h]
     simp
@@ -425,9 +425,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
   simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-    simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right,
-      ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos, cast_pred, cast_pow,
-      cast_ofNat] at h
+    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two,
+      pow_pos, cast_pred, cast_pow, cast_ofNat] at h
   cases' h with k h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h

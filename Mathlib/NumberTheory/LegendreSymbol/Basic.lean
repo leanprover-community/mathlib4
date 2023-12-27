@@ -112,7 +112,7 @@ namespace legendreSym
 
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
-  cases' eq_or_ne (ringChar (ZMod p)) 2 with hc hc
+  rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc
   · by_cases ha : (a : ZMod p) = 0
     · rw [legendreSym, ha, quadraticChar_zero,
         zero_pow (Nat.div_pos (@Fact.out p.Prime).two_le (succ_pos 1))]
