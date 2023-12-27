@@ -257,10 +257,25 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
 #align polynomial.aeval_mul Polynomial.aeval_mul
 
+theorem comp_eq_aeval : p.comp q = aeval q p := rfl
+
 theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp (algebraMap R A)
 #align polynomial.aeval_comp Polynomial.aeval_comp
+
+/-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
+  induces an automorphism of the polynomial algebra. -/
+@[simps!]
+def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R[X] ≃ₐ[R] R[X] := by
+  refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
+    exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
+
+/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
+  with inverse `p(X) ↦ p(X-t)`. -/
+@[simps!]
+def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
@@ -454,7 +469,7 @@ section CommRing
 variable [CommRing S] {f : R →+* S}
 
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
-    (dvd_terms : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
+    (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
@@ -468,7 +483,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
 #align polynomial.dvd_term_of_dvd_eval_of_dvd_terms Polynomial.dvd_term_of_dvd_eval_of_dvd_terms
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
-    (h : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
+    (h : ∀ j ≠ i, p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
   dvd_term_of_dvd_eval_of_dvd_terms i (Eq.symm hr ▸ dvd_zero p) h
 #align polynomial.dvd_term_of_is_root_of_dvd_terms Polynomial.dvd_term_of_isRoot_of_dvd_terms
 

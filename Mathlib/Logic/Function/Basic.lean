@@ -196,7 +196,7 @@ theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
   ⟨fun S ↦ S.of_comp_left hf.1, hf.surjective.comp⟩
 #align function.surjective.of_comp_iff' Function.Surjective.of_comp_iff'
 
-instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
+instance decidableEqPFun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
     DecidableEq (∀ hp, α hp)
   | f, g => decidable_of_iff (∀ hp, f hp = g hp) funext_iff.symm
 

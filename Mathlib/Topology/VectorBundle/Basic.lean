@@ -848,8 +848,8 @@ open VectorBundle
 /-- This structure permits to define a vector bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space or the fibers.
 The total space is hence given a topology in such a way that there is a fiber bundle structure for
-which the local equivalences are also local homeomorphisms and hence vector bundle trivializations.
-The topology on the fibers is induced from the one on the total space.
+which the partial equivalences are also partial homeomorphisms and hence vector bundle
+trivializations. The topology on the fibers is induced from the one on the total space.
 
 The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
