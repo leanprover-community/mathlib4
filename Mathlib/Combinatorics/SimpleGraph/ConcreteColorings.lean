@@ -51,7 +51,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 /-- In a bicolored graph colors alternate on every path -/
 theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩)) (u : Fin n) :
-    c (hom u) ↔ (Even u.val) := by
+    c (hom u) ↔ Even u.val := by
   induction n with
   | zero => exact (Nat.not_succ_le_zero 0 hn).elim
   | succ n ih =>
@@ -93,7 +93,7 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
 
 theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ False) (u : Fin n) :
-    c (hom u) ↔ (¬Even u.val) := by
+    c (hom u) ↔ ¬Even u.val := by
   let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬(c v)) <| by
     intro v w
     intro (h : G.Adj v w)
