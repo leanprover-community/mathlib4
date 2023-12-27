@@ -291,8 +291,41 @@ lemma edgeEpiStep_edgeMonoStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r') [E.HasPa
 
 section
 
-variable (r : ℤ) (pq pq' pq'' : ι) (hpq : (c r).prev pq' = pq) (hpq'' : (c r).next pq' = pq'')
-  (left : ((c r).sc' pq pq' pq'').LeftHomologyData)
+variable (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
+  (pq pq' pq'' : ι) (hpq : (c r).prev pq' = pq) (hpq'' : (c r).next pq' = pq'')
+  (left : ((E.page r).sc' pq pq' pq'').LeftHomologyData)
+  (right : ((E.page r).sc' pq pq' pq'').RightHomologyData)
+
+@[reassoc (attr := simp)]
+lemma leftHomologyDataπ_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r] :
+    left.π ≫ left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
+      (E.iso r r' hr pq').hom ≫ E.edgeMonoStep pq' r r' hr = left.i := by
+  simp [edgeMonoStep]
+
+@[reassoc (attr := simp)]
+lemma rightHomologyDataπ_edgeMonoStep_compatibility [E.HasEdgeMonoAt pq' r] :
+      E.edgeMonoStep pq' r r' hr ≫ right.p =
+       (E.iso r r' hr pq').inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
+       right.homologyIso.hom ≫ right.ι := by
+  rw [← cancel_epi (E.iso r r' hr pq').hom,
+    ← cancel_epi ((E.page r).isoHomologyπ  _ pq' rfl (by apply d_eq_zero_of_hasEdgeMonoAt)).hom]
+  simp [edgeMonoStep]
+
+@[reassoc (attr := simp)]
+lemma leftHomologyDataπ_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r] :
+    left.i ≫ E.edgeEpiStep pq' r r' hr =
+      left.π ≫  left.homologyIso.inv ≫ ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').inv ≫
+        (E.iso r r' hr pq').hom := by
+  rw [← cancel_mono (E.iso r r' hr pq').inv,
+    ← cancel_mono ((E.page r).isoHomologyι  pq' pq'' hpq'' (by apply d_eq_zero_of_hasEdgeEpiAt)).hom]
+  simp [edgeEpiStep]
+
+@[reassoc (attr := simp)]
+lemma rightHomologyDataπ_edgeEpiStep_compatibility [E.HasEdgeEpiAt pq' r] :
+    E.edgeEpiStep pq' r r' hr ≫ (E.iso r r' hr pq').inv ≫
+      ((E.page r).homologyIsoSc' _ _ _ hpq hpq'').hom ≫
+        right.homologyIso.hom ≫ right.ι = right.p := by
+  simp [edgeEpiStep]
 
 end
 
