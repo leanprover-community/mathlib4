@@ -26,8 +26,6 @@ variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
 open Classical BigOperators
 
-section defs
-
 variable (R M)
 
 /-- A module with finite length is a module with a composition series starting with 0 and ending
@@ -54,8 +52,6 @@ instance : FiniteLengthModule R PUnit where
     change PUnit.unit ∈ ⊤ ↔ PUnit.unit ∈ ⊥
     simp
   last_eq := rfl
-
-variable {R M}
 
 /-- transport a composition series across a linear equivalence -/
 @[simps!]
@@ -98,10 +94,6 @@ instance [h : FiniteLengthModule R M] : IsFiniteLengthModule R M := ⟨⟨h⟩�
 
 noncomputable instance (priority := 100) [h : IsFiniteLengthModule R M] : FiniteLengthModule R M :=
   h.finite.some
-
-section decIssue
-
-variable (R M)
 
 /-- the length of a module `M` is infinite if `M` does not have a composition series of the form
   `0 ⋖ M₁ ⋖ ... ⋖ Mₙ ⋖ M`, and is the length of its composition series. By Jordan-Hölder theorem,
@@ -224,10 +216,6 @@ lemma moduleLength_eq_coe [h : FiniteLengthModule R M] :
     moduleLength R M = h.compositionSeries.length :=
   h.compositionSeries.moduleLength_eq_length h.head_eq h.last_eq
 
-end decIssue
-
-end defs
-
 namespace LTSeries
 
 private lemma lt_compositionSeries_length_aux
@@ -276,10 +264,6 @@ lemma length_le_compositionSeries
 
 end LTSeries
 
-section decIssue
-
--- variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
-
 lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
     moduleLength R M = krullDim (Submodule R M) :=
 le_antisymm
@@ -288,7 +272,6 @@ le_antisymm
   (iSup_le fun i ↦ by
     refine WithBot.coe_le_coe.mpr $ moduleLength_eq_coe (h := h) ▸ WithTop.coe_le_coe.mpr ?_
     exact i.length_le_compositionSeries _ h.head_eq h.last_eq)
-end decIssue
 
 section Noetherian_and_Artinian
 
@@ -382,8 +365,6 @@ lemma nthSubmodule_eventually_stabilize_of_isNoetherian [IsNoetherian R M] :
 (monotone_stabilizes_iff_noetherian).mpr (inferInstance : IsNoetherian R M) $
   nthSubmodule R M
 
-section decIssue
-
 variable  [IsNoetherian R M]
 
 /-- the index of `⊤` appearing in `nthSubmodule`-/
@@ -457,7 +438,7 @@ instance [IsArtinian R M] [IsNoetherian R M] : IsFiniteLengthModule R M where
     exact ⟨_, CompositionSeries.ofIsArtinianOfIsNoetherian_head_eq R M,
       CompositionSeries.ofIsArtinianOfIsNoetherian_last_eq R M⟩
 
-end decIssue
+end Noetherian_and_Artinian
 
 section additive
 
@@ -533,17 +514,20 @@ lemma CompositionSeries.liftSubmodule_head :
 lemma CompositionSeries.liftSubmodule_last :
     CompositionSeries.top d.liftSubmodule = (Submodule.map N.subtype d.top) := rfl
 
+variable (R M) in
 noncomputable def FiniteLengthModule.submodule [finLen : FiniteLengthModule R M] :
     FiniteLengthModule R N where
   compositionSeries := finLen.compositionSeries.ofInterList N
   head_eq := finLen.compositionSeries.ofInterList_head_eq_bot_of_head_eq_bot N finLen.head_eq
   last_eq := finLen.compositionSeries.ofInterList_last_eq_top_of_last_eq_top N finLen.last_eq
 
+variable (N) in
 noncomputable def FiniteLengthModule.quotient [finLen : FiniteLengthModule R M] :
     FiniteLengthModule R (M ⧸ N) := by
   classical
   exact FiniteLengthModule.of_noetherian_of_artinian R (M ⧸ N)
 
+variable (N) in
 def FiniteLengthModule.of_quotient_of_submodule
       [quotFin : FiniteLengthModule R (M ⧸ N)] [subFin : FiniteLengthModule R N] :
     FiniteLengthModule R M where
@@ -573,12 +557,13 @@ def FiniteLengthModule.of_quotient_of_submodule
     erw [show RelSeries.toFun compositionSeries (Fin.last _) = ⊤ from quotFin.last_eq,
       Submodule.comap_top]
 
+variable (N) in
 lemma moduleLength.eq_length_submodule_add_length_quotient :
     moduleLength R M = moduleLength R N + moduleLength R (M ⧸ N) := by
   by_cases finiteLength : IsFiniteLengthModule R M
   · haveI inst1 : FiniteLengthModule R M := Classical.choice finiteLength.finite
     let finiteLength_submodule : FiniteLengthModule R N := FiniteLengthModule.submodule R M
-    let finiteLength_quotient : FiniteLengthModule R (M ⧸ N) := FiniteLengthModule.quotient R M
+    let finiteLength_quotient : FiniteLengthModule R (M ⧸ N) := FiniteLengthModule.quotient N
     let finiteLength : FiniteLengthModule R M :=
       FiniteLengthModule.of_quotient_of_submodule (N := N)
     rw [finiteLength.compositionSeries.moduleLength_eq_length
@@ -609,7 +594,6 @@ section lt_series
 
 variable (x : LTSeries (Submodule R M))
 
-variable {R} in
 /-- if `x ≤ y` are both `R`-submodule of `M`, we can mathematically form their quotient but type
 theoretically more complicated, so introduce a definition to use a notation. -/
 private def quot {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) : Type _ :=
@@ -624,8 +608,6 @@ instance {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) :
     Module R (x ⧸ₛ y) := by
   delta quot; infer_instance
 
-variable {R M}
-
 abbrev LTSeries.cqf (i : Fin (x.length + 1)) :=
   x i ⧸ₛ x.head
 
@@ -635,6 +617,16 @@ def LTSeries.cqfToSucc (i : Fin x.length) :
     rw [← Submodule.comap_comp]
     intro m hm
     simpa using hm
+
+noncomputable def LTSeries.rangeCQFToSucc (i : Fin x.length) :
+    LinearMap.range (x.cqfToSucc i) ≃ₗ[R] x.cqf i.castSucc :=
+  LinearEquiv.symm <| LinearEquiv.ofInjective _ fun a b h ↦ by
+    induction' a using Quotient.inductionOn' with a
+    induction' b using Quotient.inductionOn' with b
+    erw [Submodule.mapQ_apply, Submodule.mapQ_apply, Submodule.Quotient.eq] at h
+    rw [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.eq]
+    simpa only using h
+
 
 noncomputable def LTSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   refine PUnit.linearEquivOfUnique (uniq := ?_)
@@ -694,42 +686,28 @@ noncomputable def LTSeries.cdfSuccEquiv (i : Fin x.length) :
         erw [Submodule.mapQ_apply]
         rfl
 
+lemma LTSeries.cqf_succ_length_eq (i : Fin x.length) :
+    moduleLength R (x.cqf i.succ) =
+    moduleLength R (x.cqf i.castSucc) + moduleLength R (x.qf i) := by
+  rw [moduleLength_congr (x.cdfSuccEquiv i)]
+  rw [moduleLength.eq_length_submodule_add_length_quotient
+    (Submodule.map (x.cqfToSucc i) ⊤ : Submodule R (x.cqf i.succ))]
+  congr 1
+  refine moduleLength_congr ?_
+  rw [Submodule.map_top]
+  exact x.rangeCQFToSucc _
+
 lemma LTSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
     moduleLength R (x.cqf i) =
-    ∑ j in (Finset.range i.1).attach, moduleLength R (x.qf ⟨j.1, by
-      have ineq1 := j.2
-      rw [Finset.mem_range] at ineq1
-      have ineq2 := i.2
-      linarith⟩) := by
+    ∑ j : Fin i.1, moduleLength R (x.qf ⟨j.1, by linarith [j.2, i.2]⟩) := by
   induction' i using Fin.induction with i ih
-  · simp only [Fin.val_zero, Finset.range_zero, Finset.attach_empty, Int.Nat.cast_ofNat_Int,
-      Nat.rawCast, Nat.cast_id, Int.ofNat_one, Int.rawCast, Int.cast_id, Int.ofNat_eq_coe,
-      Int.ofNat_zero, eq_mp_eq_cast, id_eq, Fin.succ_mk, Fin.castSucc_mk, Finset.sum_empty]
+  · simp only [Fin.val_zero, Finset.univ_eq_empty, Int.Nat.cast_ofNat_Int, Nat.rawCast,
+    Nat.cast_id, Int.ofNat_one, Int.rawCast, Int.cast_id, Int.ofNat_eq_coe, Int.ofNat_zero,
+    eq_mp_eq_cast, id_eq, Fin.succ_mk, Fin.castSucc_mk, Finset.sum_empty]
     rw [moduleLength_congr x.cqfZeroEquiv, moduleLength_punit]
-  · rw [show ∑ j in (Finset.range i.succ).attach, moduleLength R (x.qf ⟨j.1, ?_⟩) =
-      ∑ j in (Finset.range i).attach, moduleLength R (x.qf ⟨j.1, ?_⟩) + moduleLength R (x.qf i)
-      from ?_]
-    pick_goal 3
-    · have ineq1 := j.2
-      rw [Finset.mem_range] at ineq1
-      change j.1 < i + 1 at ineq1
-      have ineq2 := i.2
-      linarith
-    pick_goal 3
-    · have ineq1 := j.2
-      rw [Finset.mem_range] at ineq1
-      have ineq2 := i.2
-      linarith
-    pick_goal 2
-    · simp only [Fin.val_succ, Nat.rawCast, Nat.cast_id, Int.ofNat_one, Int.rawCast, Int.cast_id,
-        Int.ofNat_eq_coe, Int.ofNat_zero, Int.Nat.cast_ofNat_Int, eq_mp_eq_cast, id_eq, Fin.succ_mk,
-        Fin.castSucc_mk]
-      sorry
-    erw [← ih]
-    sorry
+  · erw [Fin.sum_univ_castSucc, ← ih, x.cqf_succ_length_eq]
+    congr
 
 end lt_series
 
 end additive
-
-end Noetherian_and_Artinian
