@@ -1778,6 +1778,12 @@ theorem basisRank_union_add_rank_inter_le_basisRank_add_basisRank (s t : Finset 
   · exact le_add_left h₆
   · exact h₃ ▸ sub_le _ _
 
+end BasisRank
+
+section RankFeasibleFamily
+
+variable {s : Finset α}
+
 theorem rankFeasibleFamily_submodular
   (s : Finset α) (hs : G.rankFeasible s) (t : Finset α) (ht : G.rankFeasible t) :
     G.rank (s ∪ t) + G.rank (s ∩ t) ≤ G.rank s + G.rank t := by
@@ -1885,14 +1891,6 @@ theorem rankFeasible_iff_monotoneClosure_equal_for_all_basis :
     intro _ ht
     exact h ht ▸ subset_monotoneClosureOperator_self
 
-/- The following instance will be created later.
-instance : Accessible G.rankFeasibleFamily where
-  accessible {s} h₁ h₂ := by
-    simp only [mem_rankFeasibleFamily_iff, rankFeasible, basisRank] at *
-    sorry
--/
-
-
-end BasisRank
+end RankFeasibleFamily
 
 end Greedoid
