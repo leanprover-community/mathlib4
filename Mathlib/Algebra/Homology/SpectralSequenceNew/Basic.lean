@@ -289,6 +289,14 @@ lemma edgeEpiStep_edgeMonoStep (pq : ι) (r r' : ℤ) (hr : r + 1 = r') [E.HasPa
     HomologicalComplex.homology_π_ι, HomologicalComplex.iCyclesIso_inv_hom_id_assoc,
     assoc, Iso.hom_inv_id_assoc]
 
+section
+
+variable (r : ℤ) (pq pq' pq'' : ι) (hpq : (c r).prev pq' = pq) (hpq'' : (c r).next pq' = pq'')
+  (left : ((c r).sc' pq pq' pq'').LeftHomologyData)
+
+end
+
+
 def hasEdgeMonoSet (pq : ι) : Set ℤ  :=
   fun r => ∀ (r' : ℤ) (_ : r ≤ r'), ∃ (_ : E.HasPage r'), E.HasEdgeMonoAt pq r'
 
