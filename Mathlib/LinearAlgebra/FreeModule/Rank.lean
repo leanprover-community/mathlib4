@@ -14,6 +14,10 @@ import Mathlib.SetTheory.Cardinal.Subfield
 
 This file contains some extra results not in `LinearAlgebra.Dimension`.
 
+It also contains a proof of the Erdős-Kaplansky theorem (`rank_dual_eq_card_dual_of_aleph0_le_rank`)
+which says that the dimension of an infinite-dimensional dual space over a division ring
+has dimension equal to its cardinality.
+
 -/
 
 
@@ -241,5 +245,13 @@ theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup
     Cardinal.lift.{u} (Module.rank K V) < Module.rank K (V →ₗ[K] K) := by
   rw [rank_dual_eq_card_dual_of_aleph0_le_rank h, ← rank_dual_eq_card_dual_of_aleph0_le_rank' h]
   exact lift_rank_lt_rank_dual' h
+
+theorem rank_lt_rank_dual' {V : Type u} [AddCommGroup V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
+    Module.rank K V < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
+  convert lift_rank_lt_rank_dual' h; rw [lift_id]
+
+theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
+    (h : ℵ₀ ≤ Module.rank K V) : Module.rank K V < Module.rank K (V →ₗ[K] K) := by
+  convert lift_rank_lt_rank_dual h; rw [lift_id]
 
 end DivisionRing
