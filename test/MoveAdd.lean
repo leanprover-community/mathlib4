@@ -94,7 +94,6 @@ example (k : ℕ) (h0 : 0 + 2 = 9 + 0) (h9 : k + 2 = k + 9) : k + 2 = 9 + k := b
   · move_add [9]
     exact h9
 
-
 -- Testing internals of the tactic `move_add`.
 section tactic
 open Mathlib.MoveAdd
