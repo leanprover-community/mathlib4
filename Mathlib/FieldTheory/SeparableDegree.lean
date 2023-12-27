@@ -19,9 +19,9 @@ This file contains basics about the separable degree of a field extension.
 ## Main definitions
 
 - `Field.Emb F E`: the type of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`
-  (mathematically, it should be the algebraic closure of `F`, but in order to make its cardinality
-  has the same type with `Module.rank F E`, we use the algebraic closure of `E`).
-  Usually denoted by $\operatorname{Emb}_F(E)$ in textbooks.
+  (the algebraic closure of `F` is usually used in the literature, but our definition has the
+  advantage that `Field.Emb F E` lies in the same universe as `E` rather than the maximum over `F`
+  and `E`). Usually denoted by $\operatorname{Emb}_F(E)$ in textbooks.
 
   **Remark:** if `E / F` is not algebraic, then this definition makes no mathematical sense,
   and if it is infinite, then its cardinality doesn't behave as expected (namely, not equal to the
@@ -30,7 +30,7 @@ This file contains basics about the separable degree of a field extension.
   uncontable, while $[\mathbb{Q}(\mu_{p^\infty}):\mathbb{Q}]$ is countable.
 
   **TODO:** prove or disprove that if `E / F` is algebraic and `Emb F E` is infinite, then
-  `Field.Emb F E` and `2 ^ Module.rank F (separableClosure F E)` have the same cardinality.
+  `Field.Emb F E` has cardinality `2 ^ Module.rank F (separableClosure F E)`.
 
 - `Field.finSepDegree F E`: the (finite) separable degree $[E:F]_s$ of an algebraic extension
   `E / F` of fields, defined to be the number of `F`-algebra homomorphisms from `E` to the algebraic
@@ -553,13 +553,12 @@ namespace Field
 /-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
-  · let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K ∣ finrank F K
-    rw [← finSepDegree_top F, ← finrank_top F E]
-    refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
-    · simp only [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
+  · rw [← finSepDegree_top F, ← finrank_top F E]
+    refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K ∣ finrank F K)
+      (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ ?_) ⊤
     simp only at h ⊢
     have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
-    set M := L⟮x⟯; clear_value M
+    set M := L⟮x⟯
     rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
       FiniteDimensional.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
@@ -584,15 +583,14 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     by_cases hd' : finSepDegree L E = 0
     · rw [← hd, hd', mul_zero]
     linarith only [h', hd, Nat.le_mul_of_pos_right (m := finrank F L) (Nat.pos_of_ne_zero hd')]
-  let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K = finrank F K
   rw [← finSepDegree_top F, ← finrank_top F E]
-  refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
-  · simp only [finSepDegree_bot, IntermediateField.finrank_bot]
+  refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
+    (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
       (IsSeparable.separable F x).map_minpoly L
-  set M := L⟮x⟯; clear_value M
+  set M := L⟮x⟯
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
     FiniteDimensional.finrank_mul_finrank F L M] at heq
 
@@ -671,15 +669,15 @@ namespace Field
 theorem separable_mul {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
     (minpoly F (x * y)).Separable :=
   haveI := isSeparable_adjoin_pair_of_separable F E hx hy
-  separable_of_mem_isSeparable F E <| F⟮x, y⟯.mul_mem (subset_adjoin F _ (Set.mem_insert x {y}))
-    (subset_adjoin F _ (Set.mem_insert_of_mem x rfl))
+  separable_of_mem_isSeparable F E <| F⟮x, y⟯.mul_mem (subset_adjoin F _ (.inl rfl))
+    (subset_adjoin F _ (.inr rfl))
 
 /-- If `x` and `y` are both separable elements, then `x + y` is also a separable element. -/
 theorem separable_add {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
     (minpoly F (x + y)).Separable :=
   haveI := isSeparable_adjoin_pair_of_separable F E hx hy
-  separable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (Set.mem_insert x {y}))
-    (subset_adjoin F _ (Set.mem_insert_of_mem x rfl))
+  separable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
+    (subset_adjoin F _ (.inr rfl))
 
 /-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
 theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
