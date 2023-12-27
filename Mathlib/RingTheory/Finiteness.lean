@@ -642,6 +642,9 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
 
+theorem equiv_iff (e : M ≃ₗ[R] N) : Finite R M ↔ Finite R N :=
+  ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
+
 instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 section Algebra
