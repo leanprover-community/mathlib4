@@ -342,7 +342,7 @@ lemma FiniteDimensional.exists_of_finrank_lt (h : finrank R N < finrank R M) :
     exists_finset_card_eq_finrank_and_linearIndependent R (M ⧸ N)
   obtain ⟨v, hv⟩ : s.Nonempty
   · rwa [Finset.nonempty_iff_ne_empty, ne_eq, ← Finset.card_eq_zero, hs,
-      FiniteDimensional.finrank_quotient, tsub_eq_zero_iff_le, not_le]
+      finrank_quotient_of_PID, tsub_eq_zero_iff_le, not_le]
   obtain ⟨v, rfl⟩ := N.mkQ_surjective v
   use v
   intro r hr
