@@ -733,10 +733,18 @@ theorem BilinForm.toMatrix_mul_basis_toMatrix (c : Basis o R₂ M₂) (B : Bilin
   simp only [LinearEquiv.trans_apply, SMatrix.mul_assoc, LinearMap.toMatrix_mul_basis_toMatrix]
 #align bilin_form.to_matrix_mul_basis_to_matrix BilinForm.toMatrix_mul_basis_toMatrix
 
+theorem LinearMap.mul_toMatrix_mul (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (M : Matrix o n R₂)
+    (N : Matrix n o R₂) : M •ₗ toMatrix'₂' b B •ᵣ N =
+    toMatrix'₂' c (B.compl₁₂ (Matrix.toLin c b Mᵀ) (Matrix.toLin c b N)) :=
+  by simp only [B.toMatrix'₂'_comp b c, toMatrix_toLin, transpose_transpose]
+
 theorem BilinForm.mul_toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix o n R₂) (N : Matrix n o R₂) :
     M * BilinForm.toMatrix b B * N =
-      BilinForm.toMatrix c (B.comp (Matrix.toLin c b Mᵀ) (Matrix.toLin c b N)) :=
-  by simp only [B.toMatrix_comp b c, toMatrix_toLin, transpose_transpose]
+      BilinForm.toMatrix c (B.comp (Matrix.toLin c b Mᵀ) (Matrix.toLin c b N)) := by
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, ← SMatrixRightMul_eq_Mul,
+    ← SMatrixLeftMul_eq_Mul, SMatrix.mul_assoc,
+    (LinearMap.mul_toMatrix_mul b c (BilinForm.toLin B) M N)]
+  exact rfl
 #align bilin_form.mul_to_matrix_mul BilinForm.mul_toMatrix_mul
 
 theorem BilinForm.mul_toMatrix (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
