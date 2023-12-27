@@ -749,7 +749,7 @@ section DotProduct
 variable [Fintype m] [Fintype n]
 
 /-- `dotProduct v w` is the sum of the entrywise products `v i * w i` -/
-def dotProduct [HMul α β γ] [AddCommMonoid γ] (v : m → α) (w : m → β)  : γ :=
+def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 #align matrix.dot_product Matrix.dotProduct
 
