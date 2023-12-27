@@ -820,8 +820,8 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''
       (fun a ha ↦ by { rw [mem_toFinset] at ha ⊢; exact hf a ha }) (by simpa)
-      (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁ a₂
-      (by simpa) (by simpa) (by simpa)
+      (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁
+      (by simpa) a₂ (by simpa) (by simpa)
 #align set.inj_on_of_surj_on_of_ncard_le Set.inj_on_of_surj_on_of_ncard_le
 
 section Lattice
