@@ -327,44 +327,56 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 #align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
-theorem cardinal_mk_le_finrank_of_linearIndependent [Module.Finite R V]
+end FiniteDimensional
+
+namespace LinearIndependent
+
+theorem cardinal_mk_le_finrank [Module.Finite R V]
     {ι : Type w} {b : ι → V} (h : LinearIndependent R b) : #ι ≤ finrank R V := by
   rw [← lift_le.{max v w}]
-  simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using
-    cardinal_lift_le_rank_of_linearIndependent h
-#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent FiniteDimensional.cardinal_mk_le_finrank_of_linearIndependent
+  simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
+#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent LinearIndependent.cardinal_mk_le_finrank
 
-theorem fintype_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem fintype_card_le_finrank [Module.Finite R V]
     {ι : Type*} [Fintype ι] {b : ι → V} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R V := by
-  simpa using cardinal_mk_le_finrank_of_linearIndependent h
-#align finite_dimensional.fintype_card_le_finrank_of_linear_independent FiniteDimensional.fintype_card_le_finrank_of_linearIndependent
+  simpa using h.cardinal_mk_le_finrank
+#align finite_dimensional.fintype_card_le_finrank_of_linear_independent LinearIndependent.fintype_card_le_finrank
 
-theorem finset_card_le_finrank_of_linearIndependent [Module.Finite R V]
+theorem finset_card_le_finrank [Module.Finite R V]
     {b : Finset V} (h : LinearIndependent R (fun x => x : b → V)) :
     b.card ≤ finrank R V := by
   rw [← Fintype.card_coe]
-  exact fintype_card_le_finrank_of_linearIndependent h
-#align finite_dimensional.finset_card_le_finrank_of_linear_independent FiniteDimensional.finset_card_le_finrank_of_linearIndependent
+  exact h.fintype_card_le_finrank
+#align finite_dimensional.finset_card_le_finrank_of_linear_independent LinearIndependent.finset_card_le_finrank
 
-end FiniteDimensional
-
-theorem Module.Finite.lt_aleph0_of_linearIndependent {ι : Type w}
+theorem lt_aleph0_of_finite {ι : Type w}
     [Module.Finite R V] {v : ι → V} (h : LinearIndependent R v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
-  apply cardinal_lift_le_rank_of_linearIndependent h
+  apply h.cardinal_lift_le_rank
   rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
   apply Cardinal.nat_lt_aleph0
 
-theorem LinearIndependent.finite [Module.Finite R V] {ι : Type*} {f : ι → V}
+theorem finite [Module.Finite R V] {ι : Type*} {f : ι → V}
     (h : LinearIndependent R f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 <| Module.Finite.lt_aleph0_of_linearIndependent h
+  Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
 
-theorem LinearIndependent.setFinite [Module.Finite R V] {b : Set V}
+theorem setFinite [Module.Finite R V] {b : Set V}
     (h : LinearIndependent R fun x : b => (x : V)) : b.Finite :=
-  Cardinal.lt_aleph0_iff_set_finite.mp (Module.Finite.lt_aleph0_of_linearIndependent h)
+  Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
 #align linear_independent.finite LinearIndependent.setFinite
+
+end LinearIndependent
+
+@[deprecated]
+alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
+@[deprecated]
+alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
+@[deprecated]
+alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
+@[deprecated]
+alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
 
 theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι] [Module.Finite R V]
     (v : ι → V) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
@@ -487,7 +499,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card
     [Module.Finite R V] {t : Finset V}
     (h : finrank R V < t.card) : ∃ f : V → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
-    (mt FiniteDimensional.finset_card_le_finrank_of_linearIndependent h.not_le)
+    (mt LinearIndependent.finset_card_le_finrank h.not_le)
   refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
   rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
 #align finite_dimensional.exists_nontrivial_relation_of_rank_lt_card Module.exists_nontrivial_relation_of_finrank_lt_card
@@ -541,8 +553,8 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R V] {n : ℕ} (h : Module.ran
     Module.Finite R V := by
   nontriviality R
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := V)
-  have := mk_lt_aleph0_iff.mp <| cardinal_le_rank_of_linearIndependent
-    b.linearIndependent |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
+  have := mk_lt_aleph0_iff.mp <|
+    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
   exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_zero [NoZeroSMulDivisors R V]
