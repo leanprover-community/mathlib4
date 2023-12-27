@@ -25,6 +25,8 @@ open Metric Set MeasureTheory
 open MvPolynomial hiding support
 open Function hiding eval
 
+variable {ι : Type*} [Fintype ι]
+
 section normed
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -65,35 +67,16 @@ lemma hasCompactSupport [ProperSpace E] (f : SmoothSupportedOn 𝕜 E F n (close
     HasCompactSupport f :=
   HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
 
-end SmoothSupportedOn
-
-end normed
-open SmoothSupportedOn
-
-instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
-    Module.Finite R (restrictTotalDegree σ R N) :=
-  have : Finite {n : σ →₀ ℕ | ∀ i, n i ≤ N} := by
-    erw [Finsupp.equivFunOnFinite.subtypeEquivOfSubtype'.finite_iff, Set.finite_coe_iff]
-    convert Set.Finite.pi fun _ : σ ↦ Set.finite_le_nat N using 1
-    ext; rw [mem_univ_pi]; rfl
-  have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
-    rw [Set.finite_coe_iff] at this ⊢
-    exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim
-      (fun h ↦ h.trans_le N.zero_le) fun h ↦
-        (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
-  Module.Finite.of_basis (basisRestrictSupport R _)
-
-variable {ι : Type*}
-lemma MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
-    Continuous fun x ↦ (eval x) p := by
-  continuity
-
-variable [Fintype ι]
-theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
+theorem integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ eval x p * f x :=
   (p.continuous_eval.mul (SmoothSupportedOn.contDiff f).continuous).integrable_of_hasCompactSupport
     (hasCompactSupport f).mul_left
+
+end SmoothSupportedOn
+
+end normed
+open SmoothSupportedOn
 
 variable (ι)
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported

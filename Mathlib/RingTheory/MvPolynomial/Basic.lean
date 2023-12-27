@@ -8,6 +8,7 @@ import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 #align_import ring_theory.mv_polynomial.basic from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -147,6 +148,19 @@ theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R)
     (Finsupp.single_left_injective one_ne_zero)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
+
+instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
+    Module.Finite R (restrictTotalDegree σ R N) :=
+  have : Finite {n : σ →₀ ℕ | ∀ i, n i ≤ N} := by
+    rw [Finsupp.equivFunOnFinite.subtypeEquivOfSubtype'.finite_iff, ← coe_setOf, Set.finite_coe_iff]
+    convert Set.Finite.pi fun _ : σ ↦ Set.finite_le_nat N using 1
+    ext; simp
+  have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
+    rw [Set.finite_coe_iff] at this ⊢
+    exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim
+      (fun h ↦ h.trans_le N.zero_le) fun h ↦
+        (Finset.single_le_sum (fun _ _ ↦ Nat.zero_le _) <| Finsupp.mem_support_iff.mpr h).trans hn
+  Module.Finite.of_basis (basisRestrictSupport R _)
 
 end Degree
 

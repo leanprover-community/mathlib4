@@ -15,7 +15,7 @@ This file combines the analysis and algebra libraries and shows that evaluation 
 is an analytic function.
 -/
 
-variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E A B ι : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}
 
 section Polynomial
@@ -73,5 +73,9 @@ theorem AnalyticOn.eval_linearMap' (f : σ → E →ₗ[𝕜] B) (p : MvPolynomi
 
 theorem AnalyticOn.eval_mvPolynomial [Fintype σ] (p : MvPolynomial σ 𝕜) :
     AnalyticOn 𝕜 (eval · p) Set.univ := AnalyticOn.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
+
+theorem MvPolynomial.continuous_eval (p : MvPolynomial ι ℝ) :
+    Continuous fun x ↦ (eval x) p := by
+  continuity
 
 end MvPolynomial
