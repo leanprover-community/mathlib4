@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.Submodule.JordanHolder
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Artinian
 import Mathlib.Order.KrullDimension
+import Mathlib.Algebra.BigOperators.Order
 
 /-!
 
@@ -212,6 +213,18 @@ lemma IsFiniteLengthModule_iff_moduleLength_finite :
     rw [dif_neg r]
     exact λ n ↦ by norm_num
 
+lemma IsFiniteLengthModule_iff_moduleLength_finite' :
+    IsFiniteLengthModule R M ↔ moduleLength R M < ⊤ := by
+  rw [IsFiniteLengthModule_iff_moduleLength_finite]
+  fconstructor
+  · rintro ⟨n, hn⟩
+    rw [hn]
+    exact WithTop.coe_lt_top _
+  · intro h
+    rw [WithTop.lt_iff_exists_coe] at h
+    obtain ⟨n, hn, -⟩ := h
+    exact ⟨n, hn⟩
+
 lemma moduleLength_eq_coe [h : FiniteLengthModule R M] :
     moduleLength R M = h.compositionSeries.length :=
   h.compositionSeries.moduleLength_eq_length h.head_eq h.last_eq
@@ -232,8 +245,7 @@ private lemma lt_compositionSeries_length_aux
   · intro i
     refine moduleLength_strictMono _ _ (x.strictMono $ Fin.castSucc_lt_succ _)
   have aux1 : ∀ (i : Fin x.length), i ≤ moduleLength R (x i.castSucc)
-  · -- haveI : fact (0 < x.len) := ⟨x_len⟩,
-    rintro ⟨i, hi⟩
+  · rintro ⟨i, hi⟩
     induction i with | zero => ?_ | succ i ih => ?_
     · simp only [Nat.zero_eq, WithTop.coe_zero, Fin.castSucc_mk, Fin.mk_zero, zero_le]
     · specialize this ⟨i, (lt_add_one _).trans hi⟩
@@ -707,6 +719,12 @@ lemma LTSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
     rw [moduleLength_congr x.cqfZeroEquiv, moduleLength_punit]
   · erw [Fin.sum_univ_castSucc, ← ih, x.cqf_succ_length_eq]
     congr
+
+lemma LTSeries.cqf_finiteLength_iff_each_qf_finiteLength (i : Fin (x.length + 1)) :
+    IsFiniteLengthModule R (x.cqf i) ↔
+    ∀ (j : Fin i.1), IsFiniteLengthModule R (x.qf ⟨j.1, by linarith [j.2, i.2]⟩) := by
+  simp_rw [IsFiniteLengthModule_iff_moduleLength_finite', cqf_length_eq_sum, WithTop.sum_lt_top_iff]
+  simp
 
 end lt_series
 
