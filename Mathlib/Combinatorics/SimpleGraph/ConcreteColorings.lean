@@ -50,7 +50,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 
 /-- In a bicolored graph colors alternate on every path -/
 theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
-    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ True) (u : Fin n) :
+    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩)) (u : Fin n) :
     c (hom u) ↔ (u.val % 2 = 0) := by
   induction n with
   | zero => exact (Nat.not_succ_le_zero 0 hn).elim
@@ -61,13 +61,13 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop)
       have hu : u = 0 :=
         Fin.le_zero_iff.mp (le_of_le_of_eq (Fin.le_val_last u) (congrArg Nat.cast hn'))
       simp [hu]
-      exact hc0.mpr trivial
+      exact hc0
     · intro (hn' : 1 ≤ n)
       let new_hom : pathGraph n →g G :=
         Hom.comp hom (pathGraph_self_Hom (Nat.le_add_right n 1))
-      have hhom0 : c (new_hom ⟨0, hn'⟩) ↔ True := by
+      have hhom0 : c (new_hom ⟨0, hn'⟩) := by
         simp [pathGraph_self_Hom_val, pathGraph_self_Hom]
-        exact hc0.mpr trivial
+        exact hc0
       have h_new_hom := ih hn' new_hom hhom0
       have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp (Fin.is_le u)
       apply Or.elim hu
@@ -104,9 +104,9 @@ theorem pathGraph_G_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop
   have hcc' : ∀ (a : α), c a ↔ ¬(c' a) := by
     intro a
     exact iff_not_comm.mp (hc'c a)
-  have hc'0 : c' (hom ⟨0, hn⟩) ↔ True := by
+  have hc'0 : c' (hom ⟨0, hn⟩) := by
     rw [hc'c, hc0]
-    decide
+    exact not_false
   rw [hcc']
   exact Iff.not (pathGraph_G_Hom_coloring G c' hn hom hc'0 u)
 
