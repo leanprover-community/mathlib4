@@ -129,12 +129,4 @@ def pathGraph_self_Hom {n m : ℕ} (hnm : n ≤ m) : pathGraph n →g pathGraph 
 theorem pathGraph_self_Hom_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
     (pathGraph_self_Hom hnm u).val = u.val := rfl
 
-/-- Smaller hommorphism from path graph to arbitrary graph· -/
-def pathGraph_smaller_Hom {α} (G : SimpleGraph α) {n : ℕ} (hom : pathGraph n →g G) (m : ℕ)
-    (hmn : m ≤ n) : pathGraph m →g G := Hom.comp hom (pathGraph_self_Hom hmn)
-
-theorem pathGraph_smaller_Hom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph n →g G) (m : ℕ)
-    (hmn : m ≤ n) (u : Fin m) :
-    pathGraph_smaller_Hom G hom m hmn u = hom ⟨u, Fin.val_lt_of_le u hmn⟩ := rfl
-
 end SimpleGraph

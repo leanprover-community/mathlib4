@@ -64,10 +64,10 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool)
       apply hc0
     · intro (hn' : 1 ≤ n)
       let new_hom : pathGraph n →g G :=
-        pathGraph_smaller_Hom G hom n (Nat.le_add_right n 1)
+        Hom.comp hom (pathGraph_self_Hom (Nat.le_add_right n 1))
       have hhom0 : c (new_hom ⟨0, hn'⟩) = true := by
-        simp [pathGraph_smaller_Hom_val]
-        simp_all only [Fin.zero_eta]
+        simp [pathGraph_self_Hom_val, pathGraph_self_Hom]
+        exact hc0
       have h_new_hom := ih hn' new_hom hhom0
       have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp (Fin.is_le u)
       apply Or.elim hu
