@@ -12,7 +12,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
 
-#align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
+#align_import logic.relation from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Relation closures
@@ -207,7 +207,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
 
 end Fibration
 
-section map
+section Map
 variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
 
 /-- The map of a relation `r` through a pair of functions pushes the
@@ -219,6 +219,9 @@ protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ 
   ∃ a b, r a b ∧ f a = c ∧ g b = d
 #align relation.map Relation.Map
 
+lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b = d := Iff.rfl
+#align relation.map_apply Relation.map_apply
+
 @[simp] lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → ζ) :
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
   ext a b
@@ -226,14 +229,19 @@ protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ 
   refine' exists₂_congr fun a b ↦ ⟨_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
   rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
   exact ⟨hab, h⟩
+#align relation.map_map Relation.map_map
 
 @[simp]
 lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :
     Relation.Map r f g (f a) (g b) ↔ r a b := by simp [Relation.Map, hf.eq_iff, hg.eq_iff]
 
 @[simp] lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by ext; simp [Relation.Map]
+#align relation.map_id_id Relation.map_id_id
 
-end map
+instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
+  ‹Decidable _›
+
+end Map
 
 variable {r : α → α → Prop} {a b c d : α}
 
