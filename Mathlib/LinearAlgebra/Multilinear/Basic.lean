@@ -846,16 +846,14 @@ lemma toFormalMultilinearSeriest_fixedDegree_zero [DecidableEq ι] [Fintype ι] 
   rw [Finset.card_univ]
   exact lt_of_lt_of_le (Nat.lt_succ_self _) hn
 
-
 /-- Expression of `f(x + y)` using the formal multilinear series of `f` at `x`, as a finite sum.-/
-lemma hasFiniteFPowerSeries [DecidableEq ι] [Fintype ι] [LinearOrder ι]
+lemma toFormalMultilinearSeries_partialSum [DecidableEq ι] [Fintype ι] [LinearOrder ι]
     (f : MultilinearMap R M₁ M₂) (x y : (i : ι) → M₁ i) :
-    f (x + y) = ∑ n : Finset.range (Fintype.card ι).succ,
+    f (x + y) = ∑ n in Finset.range (Fintype.card ι).succ,
     f.toFormalMultilinearSeries_fixedDegree x n (fun (_ : Fin n) => y) := by
   rw [add_comm, map_add_univ, ← (Finset.sum_fiberwise_of_maps_to (g := fun s => s.card)
     (t := Finset.range (Fintype.card ι).succ) fun s _ =>
     by rw [Finset.mem_range, Nat.lt_succ]; exact Finset.card_le_univ _)]
-  rw [Finset.sum_coe_sort _ (fun n => f.toFormalMultilinearSeries_fixedDegree x n (fun _ => y))]
   apply Finset.sum_congr rfl
   intro n hn
   simp only [Finset.mem_range] at hn
