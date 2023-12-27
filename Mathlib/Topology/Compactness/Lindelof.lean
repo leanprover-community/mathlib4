@@ -691,7 +691,7 @@ for open sets in the definition, and then conclude that this holds for all sets 
 def IsHereditarilyLindelof (s : Set X) :=
   ∀ t ⊆ s, IsOpen t → IsLindelof t
 
--- Type class for Hereditarily Lindelöf spaces.  -/
+/-- Type class for Hereditarily Lindelöf spaces.  -/
 class HereditarilyLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Hereditarily Lindelöf space, `Set.univ` is a Hereditarily Lindelöf set. -/
   isHereditarilyLindelof_univ : IsHereditarilyLindelof (univ : Set X)
