@@ -600,7 +600,6 @@ rather than by an inverse function.
 
 The difference with `Finset.sum_bij` is that the bijection is a non-dependent function, rather than
 being allowed to use membership of the domain of the sum."]
-@[to_additive]
 lemma prod_nbij (i : ι → κ) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set ι).InjOn i)
     (i_surj : (s : Set ι).SurjOn i t) (h : ∀ a ∈ s, f a = g (i a)) :
     ∏ x in s, f x = ∏ x in t, g x :=
