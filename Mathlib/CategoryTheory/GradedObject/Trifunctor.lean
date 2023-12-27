@@ -294,7 +294,7 @@ noncomputable def cofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
 
 variable [H : HasGoodTrifunctor₁₂Obj F₁₂ G ρ₁₂ X₁ X₂ X₃]
 
-/-- The cofan `cofan₃MapBifunctor₁₂BifunctorMapObj` is colimit, see the induced isomorphism
+/-- The cofan `cofan₃MapBifunctor₁₂BifunctorMapObj` is a colimit, see the induced isomorphism
 `mapBifunctorComp₁₂MapObjIso`. -/
 noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
     IsColimit (cofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) := by
