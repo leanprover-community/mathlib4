@@ -792,6 +792,16 @@ lemma spectralSequenceHomologyData_right_p :
           X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃' _ _ _
             (X.le₃₃' data hrr' pq' hi₃ hi₃') := rfl
 
+lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso :
+  (X.spectralSequenceHomologyData data r r' hrr' pq pq' pq'' hpq hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+      i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃').right.homologyIso =
+    (X.spectralSequenceHomologyData data r r' hrr' pq pq' pq'' hpq hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+      i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃').left.homologyIso := by
+  ext1
+  rw [ShortComplex.HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso]
+  dsimp
+  rw [comp_id]
+
 end
 
 end

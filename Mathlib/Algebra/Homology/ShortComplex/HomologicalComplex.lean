@@ -874,4 +874,19 @@ lemma homologyIsoSc'_inv_ι :
       (K.sc' i j k).homologyι ≫ (K.opcyclesIsoSc' i j k hi hk).inv := by
   apply ShortComplex.homologyι_naturality
 
+lemma homologyIsoSc'_eq_rfl [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    K.homologyIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext1
+  apply ShortComplex.homologyMap_id
+
+lemma cyclesIsoSc'_eq_rfl [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    K.cyclesIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext1
+  apply ShortComplex.cyclesMap_id
+
+lemma opcyclesIsoSc'_eq_rfl [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    K.opcyclesIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext1
+  apply ShortComplex.opcyclesMap_id
+
 end HomologicalComplex

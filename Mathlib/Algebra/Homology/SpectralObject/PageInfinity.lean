@@ -222,7 +222,7 @@ lemma spectralSequenceHasEdgeMonoAt_iff (pq : κ) (r : ℤ) [(X.spectralSequence
       all_goals rfl
     · exact HomologicalComplex.shape _ _ _ hpq
 
-/-lemma spectralSequence_edgeMonoStep_compatibility
+lemma spectralSequence_edgeMonoStep_compatibility
     (pq : κ) (r r' : ℤ) (hrr' : r + 1 = r') [(X.spectralSequence data).HasPage r]
     [(X.spectralSequence data).HasPage r']
     [(X.spectralSequence data).HasEdgeMonoAt pq r]
@@ -240,12 +240,24 @@ lemma spectralSequenceHasEdgeMonoAt_iff (pq : κ) (r : ℤ) [(X.spectralSequence
       (X.le₁₂ data pq hi₁ hi₂) (X.le₂₃ data r pq hi₂ hi₃) (X.le₃₃' data hrr' pq hi₃ hi₃') =
     (X.spectralSequencePageXIso data r' pq n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₁ i₂ i₃' hi₀' hi₁ hi₂ hi₃').hom ≫
       X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃' (X.le₀'₀ data hrr' pq hi₀' hi₀) _ _ _ := by
-  obtain rfl : n₀ = data.deg pq - 1 := by linarith
-  subst hn₁' hn₂ hi₀ hi₁ hi₂ hi₃ hi₃'
-  dsimp [spectralSequencePageXIso, spectralSequencePageXIso, SpectralSequence.pageXIso]
-  -- needs a general API for compution edgeMonoStep, given a left homology data for
-  -- a short complex like (E.page r).sc' pq pq' pq''
-  sorry-/
+  let H := X.spectralSequenceHomologyData data r r' hrr' _ pq _ rfl rfl n₀ n₁ n₂ hn₁ hn₂ hn₁'
+    i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
+  refine' ((X.spectralSequence data).rightHomologyDataπ_edgeMonoStep_compatibility r r' hrr' _ pq _ rfl rfl H.right).trans _
+  dsimp
+  simp only [← assoc]
+  congr 1
+  -- the statement here should be a simp lemma
+  dsimp only [SpectralSequence.iso, SpectralSequence.iso', spectralSequence]
+  rw [HomologicalComplex.homologyIsoSc'_eq_rfl]
+  simp
+  dsimp [spectralSequencePageXIso, SpectralSequence.pageXIso]
+  obtain rfl : n₀ = n₁ - 1 := by linarith
+  subst hn₁' hn₂ hi₀' hi₀ hi₁ hi₂ hi₃ hi₃'
+  simp
+  rw [spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso]
+  dsimp [SpectralSequence.homologyIso, spectralSequenceHomologyData, SpectralSequence.homologyIso']
+  simp only [assoc, Iso.inv_hom_id, comp_id]
+  rfl
 
 lemma spectralSequenceHasEdgeMonoAt (r r' : ℤ) (hrr' : r + 1 = r')
     [(X.spectralSequence data).HasPage r] [(X.spectralSequence data).HasPage r']
