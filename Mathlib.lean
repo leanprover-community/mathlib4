@@ -3338,10 +3338,10 @@ import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
-import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.Monotonicity.lemmas
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Multiplicativity
 import Mathlib.Tactic.Multiplicativity.Init
-import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
