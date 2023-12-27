@@ -65,12 +65,12 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 #align pow_add_pow_le pow_add_pow_le
 
-theorem pow_le_one : ∀ (n : ℕ) (_ : 0 ≤ a) (_ : a ≤ 1), a ^ n ≤ 1
+theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
   | 0, _, _ => (pow_zero a).le
   | n + 1, h₀, h₁ => (pow_succ' a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
 #align pow_le_one pow_le_one
 
-theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ} (_ : n ≠ 0), a ^ n < 1
+theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ]
@@ -458,3 +458,27 @@ theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, ne
 #align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
 end MonoidHom
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-23.
+-/
+
+@[deprecated] alias pow_mono := pow_right_mono
+@[deprecated] alias pow_le_pow := pow_le_pow_right
+@[deprecated] alias pow_le_pow_of_le_left := pow_le_pow_left
+@[deprecated] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
+@[deprecated] alias strictMonoOn_pow := pow_left_strictMonoOn
+@[deprecated] alias pow_strictMono_right := pow_right_strictMono
+@[deprecated] alias pow_lt_pow := pow_lt_pow_right
+@[deprecated] alias pow_lt_pow_iff := pow_lt_pow_iff_right
+@[deprecated] alias pow_le_pow_iff := pow_le_pow_iff_right
+@[deprecated] alias self_lt_pow := lt_self_pow
+@[deprecated] alias strictAnti_pow := pow_right_strictAnti
+@[deprecated] alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
+@[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
+@[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
+@[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
+@[deprecated] alias self_le_pow := le_self_pow

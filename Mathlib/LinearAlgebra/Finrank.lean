@@ -193,13 +193,7 @@ lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Nontrivial K] [Infinit
 
 theorem finrank_eq_nat_card_basis {ι} [StrongRankCondition K]
     (h : Basis ι K V) : finrank K V = Nat.card ι := by
-  cases finite_or_infinite ι
-  · letI := Fintype.ofFinite ι
-    rw [Nat.card_eq_fintype_card]
-    exact finrank_eq_card_basis h
-  · rw [Nat.card_eq_zero_of_infinite]
-    have := nontrivial_of_invariantBasisNumber K
-    exact h.linearIndependent.finrank_eq_zero_of_infinite
+  rw [Nat.card, ← toNat_lift.{v}, h.mk_eq_rank, toNat_lift, finrank]
 
 variable [Module.Free K V]
 

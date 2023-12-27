@@ -186,8 +186,8 @@ protected theorem mul_induction_on {C : A → Prop} {r : A} (hr : r ∈ M * N)
 /-- A dependent version of `mul_induction_on`. -/
 @[elab_as_elim]
 protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
-    (hm : ∀ m (_ : m ∈ M), ∀ n (_ : n ∈ N), C (m * n) (mul_mem_mul ‹_› ‹_›))
-    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {r : A} (hr : r ∈ M * N) :
+    (hm : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
+    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
   refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
@@ -670,19 +670,12 @@ theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
 
-theorem smul_singleton (a : A) (M : Submodule R A) :
+theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
-  change span _ _ * span _ _ = _
-  rw [span_mul_span]
-  apply le_antisymm
-  · rw [span_le]
-    rintro _ ⟨b, m, hb, hm, rfl⟩
-    rw [SetLike.mem_coe, mem_map, Set.mem_singleton_iff.mp hb]
-    exact ⟨m, hm, rfl⟩
-  · rintro _ ⟨m, hm, rfl⟩
-    exact subset_span ⟨a, m, Set.mem_singleton a, hm, rfl⟩
-#align submodule.smul_singleton Submodule.smul_singleton
+  rw [smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
+  exact (map (LinearMap.mulLeft R a) M).span_eq
+#align submodule.smul_singleton Submodule.singleton_smul
 
 section Quotient
 

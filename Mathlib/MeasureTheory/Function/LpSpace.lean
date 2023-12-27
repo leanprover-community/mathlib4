@@ -374,7 +374,7 @@ theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
 
 theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : ‖f‖ ≤ c * ‖g‖ := by
-  cases' le_or_lt 0 c with hc hc
+  rcases le_or_lt 0 c with hc | hc
   · lift c to ℝ≥0 using hc
     exact NNReal.coe_le_coe.mpr (nnnorm_le_mul_nnnorm_of_ae_le_mul h)
   · simp only [norm_def]
@@ -1680,7 +1680,7 @@ theorem cauchy_complete_ℒp [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α �
     ∃ (f_lim : α → E), Memℒp f_lim p μ ∧
       atTop.Tendsto (fun n => snorm (f n - f_lim) p μ) (𝓝 0) := by
   obtain ⟨f_lim, h_f_lim_meas, h_lim⟩ :
-      ∃ (f_lim : α → E) (_ : StronglyMeasurable f_lim),
+      ∃ f_lim : α → E, StronglyMeasurable f_lim ∧
         ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (nhds (f_lim x)) :=
     exists_stronglyMeasurable_limit_of_tendsto_ae (fun n => (hf n).1)
       (ae_tendsto_of_cauchy_snorm (fun n => (hf n).1) hp hB h_cau)
