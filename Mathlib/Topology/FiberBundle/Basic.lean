@@ -39,7 +39,7 @@ an implementation of this construction: starting from an object of type
 fiber bundle and projection.
 
 Similarly we implement the object `FiberPrebundle` which allows to define a topological
-fiber bundle from trivializations given as local equivalences with minimum additional properties.
+fiber bundle from trivializations given as partial equivalences with minimum additional properties.
 
 ## Main definitions
 
@@ -64,7 +64,7 @@ Let `Z : FiberBundleCore ι B F`. Then we define
                     open set in `B`.
 
 * `FiberPrebundle F E` : structure registering a cover of prebundle trivializations
-  and requiring that the relative transition maps are local homeomorphisms.
+  and requiring that the relative transition maps are partial homeomorphisms.
 * `FiberPrebundle.totalSpaceTopology a` : natural topology of the total space, making
   the prebundle into a bundle.
 
@@ -481,7 +481,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 between `proj ⁻¹ (baseSet i)` and `baseSet i × F`. As the fiber above `x` is `F` but read in the
 chart with index `index_at x`, the trivialization in the fiber above x is by definition the
 coordinate change from i to `index_at x`, so it depends on `x`.
-The local trivialization will ultimately be a local homeomorphism. For now, we only introduce the
+The local trivialization will ultimately be a partial homeomorphism. For now, we only introduce the
 partial equivalence version, denoted with a prime.
 In further developments, avoid this auxiliary version, and use `Z.local_triv` instead. -/
 def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
@@ -759,8 +759,8 @@ variable (F) (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space. The total space is hence given a
-topology in such a way that there is a fiber bundle structure for which the local equivalences
-are also local homeomorphism and hence local trivializations. -/
+topology in such a way that there is a fiber bundle structure for which the partial equivalences
+are also partial homeomorphisms and hence local trivializations. -/
 -- porting note: todo: was @[nolint has_nonempty_instance]
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
