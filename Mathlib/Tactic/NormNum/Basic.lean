@@ -80,18 +80,23 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
-theorem isNat_natAbs : {n n' : ℤ} → {a : ℕ} → IsInt n' n → n.natAbs = a → IsNat n.natAbs a
-  | _, _, _, ⟨rfl⟩, rfl => ⟨rfl⟩
+theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨rfl⟩
+
+theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
 /-- The `norm_num` extension which identifies the expression `Int.natAbs n` such that
 `norm_num` successfully recognizes `n`. -/
 @[norm_num Int.natAbs (_ : ℤ)] def evalIntNatAbs : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
-  let ⟨ex, p⟩ ← deriveInt x _
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Int.natAbs «$ex» := ⟨⟩
-  let ⟨ed, pf⟩ := rawIntLitNatAbs ex
-  return .isNat _ ed q(isNat_natAbs $p $pf)
+  haveI' aa: u =QL 0 := ⟨⟩; haveI' xx : $α =Q ℕ := ⟨⟩
+  haveI' : $e =Q Int.natAbs $x := ⟨⟩
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  match ← derive (u := .zero) x with
+  | .isNat    _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_pos $p)
+  | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
+  | _ => failure
 
 /-! # Casts -/
 
