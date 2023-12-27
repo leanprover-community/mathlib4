@@ -1149,6 +1149,7 @@ import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Localization.Prod
 import Mathlib.CategoryTheory.Monad.Adjunction
