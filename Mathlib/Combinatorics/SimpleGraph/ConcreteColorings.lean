@@ -49,7 +49,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
       hc.chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
 /-- In a bicolored graph colors alternate on every path -/
-theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
+theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩)) (u : Fin n) :
     c (hom u) ↔ (Even u.val) := by
   induction n with
@@ -91,7 +91,7 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop)
         rw [← @Nat.sub_add_cancel n 1 hn']
         exact Nat.even_add_one.symm
 
-theorem pathGraph_G_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
+theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ False) (u : Fin n) :
     c (hom u) ↔ (¬Even u.val) := by
   let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬(c v)) <| by
@@ -108,6 +108,6 @@ theorem pathGraph_G_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop
     rw [hc'c, hc0]
     exact not_false
   rw [hcc']
-  exact Iff.not (pathGraph_G_Hom_coloring G c' hn hom hc'0 u)
+  exact Iff.not (pathGraph_Hom_coloring G c' hn hom hc'0 u)
 
 end SimpleGraph
