@@ -219,14 +219,8 @@ section Deprecated
 
 #align monoid_hom.map_prod map_prodₓ
 #align add_monoid_hom.map_sum map_sumₓ
-
-/-- Deprecated: use `_root_.map_prod` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `_root_.map_sum` instead."]
-protected theorem MulEquiv.map_prod [CommMonoid β] [CommMonoid γ] (g : β ≃* γ) (f : α → β)
-    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
-  map_prod g f s
-#align mul_equiv.map_prod MulEquiv.map_prod
-#align add_equiv.map_sum AddEquiv.map_sum
+#align mul_equiv.map_prod map_prodₓ
+#align add_equiv.map_sum map_sumₓ
 
 @[deprecated _root_.map_list_prod]
 protected theorem RingHom.map_list_prod [Semiring β] [Semiring γ] (f : β →+* γ) (l : List β) :
@@ -1904,13 +1898,13 @@ open MulOpposite
 @[simp]
 theorem op_sum [AddCommMonoid β] {s : Finset α} (f : α → β) :
     op (∑ x in s, f x) = ∑ x in s, op (f x) :=
-  (opAddEquiv : β ≃+ βᵐᵒᵖ).map_sum _ _
+  map_sum (opAddEquiv : β ≃+ βᵐᵒᵖ) _ _
 #align finset.op_sum Finset.op_sum
 
 @[simp]
 theorem unop_sum [AddCommMonoid β] {s : Finset α} (f : α → βᵐᵒᵖ) :
     unop (∑ x in s, f x) = ∑ x in s, unop (f x) :=
-  (opAddEquiv : β ≃+ βᵐᵒᵖ).symm.map_sum _ _
+  map_sum (opAddEquiv : β ≃+ βᵐᵒᵖ).symm _ _
 #align finset.unop_sum Finset.unop_sum
 
 end Opposite
