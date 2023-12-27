@@ -687,10 +687,11 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
     obtain ⟨s, hs⟩ := h.out
-    refine' ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr fun x _ => _⟩⟩
-    apply TensorProduct.induction_on (motive := _) x
-    · exact zero_mem _
-    · intro x y
+    refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
+    rintro x -
+    induction x using TensorProduct.induction_on with
+    | zero => exact zero_mem _
+    | tmul x y =>
       -- Porting note: new TC reminder
       haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
@@ -698,7 +699,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
       change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
       rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
-    · exact fun _ _ => Submodule.add_mem _
+    | add x y hx hy => exact Submodule.add_mem _ hx hy
 #align module.finite.base_change Module.Finite.base_change
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]

@@ -111,6 +111,9 @@ protected irreducible_def Module.rank : Cardinal :=
 theorem rank_le_card : Module.rank K V ≤ #V :=
   (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
 
+lemma nonempty_linearIndependent_set : Nonempty {s : Set V // LinearIndependent K ((↑) : s → V)} :=
+  ⟨⟨∅, linearIndependent_empty _ _⟩⟩
+
 end
 
 section
@@ -148,6 +151,25 @@ theorem rank_le {n : ℕ}
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
 #align rank_le rank_le
 
+theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
+    Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
+  simp_rw [Module.rank_def]
+  have := nonempty_linearIndependent_set R (M ⧸ M')
+  have := nonempty_linearIndependent_set R M'
+  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
+  refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
+  choose f hf using Quotient.mk_surjective M'
+  let g : s ⊕ t → M := Sum.elim (f ·) (·)
+  suffices : LinearIndependent R g
+  · refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
+    rw [mk_range_eq _ this.injective, mk_sum, lift_id, lift_id]
+  refine .sum_type (.of_comp M'.mkQ ?_) (ht.map' M'.subtype M'.ker_subtype) ?_
+  · convert hs; ext x; exact hf x
+  refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
+  have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ i.1.2) h₂
+  obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h₁
+  simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply, hf] at this
+  rw [linearIndependent_iff.mp hs _ this, Finsupp.sum_zero_index]
 
 /-- The rank of the range of a linear map is at most the rank of the source. -/
 -- The proof is: a free submodule of the range lifts to a free submodule of the
@@ -244,32 +266,58 @@ theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Modul
 
 variable [Nontrivial R]
 
-theorem cardinal_lift_le_rank_of_linearIndependent {ι : Type w} {v : ι → M}
+variable (R M M')
+
+open LinearMap in
+theorem lift_rank_add_lift_rank_le_rank_prod :
+    lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
+  convert rank_quotient_add_rank_le (ker <| LinearMap.fst R M M')
+  · refine Eq.trans ?_ (lift_id'.{v, v'} _)
+    rw [(quotKerEquivRange _).lift_rank_eq,
+        rank_range_of_surjective _ fst_surjective, lift_umax.{v, v'}]
+  · refine Eq.trans ?_ (lift_id'.{v', v} _)
+    rw [ker_fst, ← (LinearEquiv.ofInjective _ <| inr_injective (M := M) (M₂ := M')).lift_rank_eq,
+        lift_umax.{v', v}]
+
+theorem rank_add_rank_le_rank_prod :
+    Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
+  convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
+
+variable {R M M'}
+
+namespace LinearIndependent
+
+theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
-  apply le_trans
-  · exact Cardinal.lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
-  · simp only [Cardinal.lift_le, Module.rank_def]
-    apply le_trans
-    swap
-    · exact le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨range v, hv.coe_range⟩
-    · exact le_rfl
-#align cardinal_lift_le_rank_of_linear_independent cardinal_lift_le_rank_of_linearIndependent
+  rw [Module.rank]
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range.{v, v} _) ⟨_, hv.coe_range⟩)
+  exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
+#align cardinal_lift_le_rank_of_linear_independent LinearIndependent.cardinal_lift_le_rank
+#align cardinal_lift_le_rank_of_linear_independent' LinearIndependent.cardinal_lift_le_rank
 
-theorem cardinal_lift_le_rank_of_linearIndependent' {ι : Type w} {v : ι → M}
-    (hv : LinearIndependent R v) : Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) :=
-  cardinal_lift_le_rank_of_linearIndependent hv
-#align cardinal_lift_le_rank_of_linear_independent' cardinal_lift_le_rank_of_linearIndependent'
+lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
+    (hv : LinearIndependent R v) : ℵ₀ ≤ Module.rank R M :=
+  aleph0_le_lift.mp <| (aleph0_le_lift.mpr <| aleph0_le_mk ι).trans hv.cardinal_lift_le_rank
 
-theorem cardinal_le_rank_of_linearIndependent {ι : Type v} {v : ι → M}
+theorem cardinal_le_rank {ι : Type v} {v : ι → M}
     (hv : LinearIndependent R v) : #ι ≤ Module.rank R M := by
-  simpa using cardinal_lift_le_rank_of_linearIndependent hv
-#align cardinal_le_rank_of_linear_independent cardinal_le_rank_of_linearIndependent
+  simpa using hv.cardinal_lift_le_rank
+#align cardinal_le_rank_of_linear_independent LinearIndependent.cardinal_le_rank
 
-theorem cardinal_le_rank_of_linearIndependent' {s : Set M}
+theorem cardinal_le_rank' {s : Set M}
     (hs : LinearIndependent R (fun x => x : s → M)) : #s ≤ Module.rank R M :=
-  cardinal_le_rank_of_linearIndependent hs
-#align cardinal_le_rank_of_linear_independent' cardinal_le_rank_of_linearIndependent'
+  hs.cardinal_le_rank
+#align cardinal_le_rank_of_linear_independent' LinearIndependent.cardinal_le_rank'
+
+end LinearIndependent
+
+@[deprecated]
+alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
+@[deprecated]
+alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
+@[deprecated] alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
+@[deprecated] alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
 variable (R M)
 
@@ -453,7 +501,7 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_rank [NoZeroSMulDivisors R
     exact i.prop
   choose v hvV hv using hI
   have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
-  exact cardinal_lift_le_rank_of_linearIndependent' this
+  exact this.cardinal_lift_le_rank
 #align complete_lattice.independent.subtype_ne_bot_le_rank CompleteLattice.Independent.subtype_ne_bot_le_rank
 
 end
@@ -488,23 +536,11 @@ theorem rank_pos [Nontrivial M] : 0 < Module.rank R M := by
   suffices 1 ≤ Module.rank R M by exact zero_lt_one.trans_le this
   letI := Module.nontrivial R M
   suffices LinearIndependent R fun y : ({x} : Set M) => (y : M) by
-    simpa using cardinal_le_rank_of_linearIndependent this
+    simpa using this.cardinal_le_rank
   exact linearIndependent_singleton hx
 #align rank_pos rank_pos
 
 variable [Nontrivial R]
-
-theorem rank_zero_iff_forall_zero : Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · contrapose! h
-    obtain ⟨x, hx⟩ := h
-    letI : Nontrivial M := nontrivial_of_ne _ _ hx
-    exact rank_pos.ne'
-  · have : (⊤ : Submodule R M) = ⊥ := by
-      ext x
-      simp [h x]
-    rw [← rank_top, this, rank_bot]
-#align rank_zero_iff_forall_zero rank_zero_iff_forall_zero
 
 /-- See `rank_zero_iff` for a stronger version with `NoZeroSMulDivisor R M`. -/
 lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
@@ -517,7 +553,7 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     have : LinearIndependent R (fun _ : Unit ↦ x)
     · exact linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
         hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
-    simpa using cardinal_lift_le_rank_of_linearIndependent this
+    simpa using this.cardinal_lift_le_rank
   · intro h
     rw [← le_zero_iff, Module.rank_def]
     apply ciSup_le'
@@ -528,10 +564,29 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     apply ha
     simpa using FunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
+theorem rank_zero_iff_forall_zero : Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
+  simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
+    exists_and_right, and_iff_right (exists_ne (0 : R))]
+#align rank_zero_iff_forall_zero rank_zero_iff_forall_zero
+
 lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] :
     Module.rank R M = 0 ↔ Module.IsTorsion R M := by
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
+
+theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
+    {N : Submodule R M} (hN : N ≤ torsion R M) : Module.rank R (M ⧸ N) = Module.rank R M :=
+  (rank_quotient_le N).antisymm <| by
+    nontriviality R
+    rw [Module.rank]
+    have := nonempty_linearIndependent_set R M
+    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (N.mkQ ·)) ?_
+    rw [linearIndependent_iff'] at hs ⊢
+    simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
+    intro t g hg i hi
+    obtain ⟨r, hg⟩ := hN hg
+    simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
+    exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
 Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
@@ -549,6 +604,142 @@ theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
 #align rank_pos_iff_nontrivial rank_pos_iff_nontrivial
 
 end RankZero
+
+section SurjectiveInjective
+
+section Module
+
+variable {R : Type w} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+  {R' : Type w'} {M' : Type v'} [Ring R'] [AddCommGroup M'] [Module R' M']
+
+/-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends non-zero elements to
+non-zero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
+multiplications on `M` and `M'` are compatible, then the rank of `M / R` is smaller than or equal to
+the rank of `M' / R'`. As a special case, taking `R = R'` it is
+`LinearMap.lift_rank_le_of_injective`. -/
+theorem lift_rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
+    (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
+    (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
+    lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
+  simp_rw [Module.rank, lift_iSup (bddAbove_range.{v', v'} _), lift_iSup (bddAbove_range.{v, v} _)]
+  exact ciSup_mono' (bddAbove_range.{v', v} _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+    (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
+      lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
+
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
+`j : M →+ M'` is an injective group homomorphism, such that the scalar multiplications on `M` and
+`M'` are compatible, then the rank of `M / R` is smaller than or equal to the rank of `M' / R'`.
+As a special case, taking `R = R'` it is `LinearMap.lift_rank_le_of_injective`. -/
+theorem lift_rank_le_of_surjective_injective (i : ZeroHom R R') (j : M →+ M')
+    (hi : Surjective i) (hj : Injective j) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
+  obtain ⟨i', hi'⟩ := hi.hasRightInverse
+  refine lift_rank_le_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_
+  · apply_fun i at h
+    rwa [hi', i.map_zero] at h
+  rw [hc (i' r) m, hi']
+
+/-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a bijective map which maps zero to zero,
+`j : M ≃+ M'` is a group isomorphism, such that the scalar multiplications on `M` and `M'` are
+compatible, then the rank of `M / R` is equal to the rank of `M' / R'`.
+As a special case, taking `R = R'` it is `LinearEquiv.lift_rank_eq`. -/
+theorem lift_rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
+    (hi : Bijective i) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
+  (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
+    lift_rank_le_of_injective_injective i j.symm (fun _ _ ↦ hi.1 <| by rwa [i.map_zero])
+      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+
+variable {M' : Type v} [Ring R'] [AddCommGroup M'] [Module R' M']
+
+/-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
+theorem rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
+    (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
+    (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
+    Module.rank R M ≤ Module.rank R' M' := by
+  simpa only [lift_id] using lift_rank_le_of_injective_injective i j hi hj hc
+
+/-- The same-universe version of `lift_rank_le_of_surjective_injective`. -/
+theorem rank_le_of_surjective_injective (i : ZeroHom R R') (j : M →+ M')
+    (hi : Surjective i) (hj : Injective j)
+    (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    Module.rank R M ≤ Module.rank R' M' := by
+  simpa only [lift_id] using lift_rank_le_of_surjective_injective i j hi hj hc
+
+/-- The same-universe version of `lift_rank_eq_of_equiv_equiv`. -/
+theorem rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
+    (hi : Bijective i) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
+    Module.rank R M = Module.rank R' M' := by
+  simpa only [lift_id] using lift_rank_eq_of_equiv_equiv i j hi hc
+
+end Module
+
+namespace Algebra
+
+variable {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
+  {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
+
+/-- If `S / R` and `S' / R'` are algebras, `i : R' →+* R` and `j : S →+* S'` are injective ring
+homorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
+smaller than or equal to the rank of `S' / R'`. -/
+theorem lift_rank_le_of_injective_injective
+    (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
+    (hc : (j.comp (algebraMap R S)).comp i = algebraMap R' S') :
+    lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
+  refine _root_.lift_rank_le_of_injective_injective i j
+    (fun _ _ ↦ hi <| by rwa [i.map_zero]) hj fun r _ ↦ ?_
+  have := congr($hc r)
+  simp only [RingHom.coe_comp, comp_apply] at this
+  simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
+
+/-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
+`j : S →+* S'` is an injective ring homorphism, such that `R → R' → S'` and `R → S → S'` commute,
+then the rank of `S / R` is smaller than or equal to the rank of `S' / R'`. -/
+theorem lift_rank_le_of_surjective_injective
+    (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)
+    (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
+    lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
+  refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
+  have := congr($hc r)
+  simp only [RingHom.coe_comp, comp_apply] at this
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+
+/-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
+ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
+then the rank of `S / R` is equal to the rank of `S' / R'`. -/
+theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
+    (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
+    lift.{v'} (Module.rank R S) = lift.{v} (Module.rank R' S') := by
+  refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
+  have := congr($hc r)
+  simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+
+variable {S' : Type v} [CommRing R'] [Ring S'] [Algebra R' S']
+
+/-- The same-universe version of `Algebra.lift_rank_le_of_injective_injective`. -/
+theorem rank_le_of_injective_injective
+    (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
+    (hc : (j.comp (algebraMap R S)).comp i = algebraMap R' S') :
+    Module.rank R S ≤ Module.rank R' S' := by
+  simpa only [lift_id] using lift_rank_le_of_injective_injective i j hi hj hc
+
+/-- The same-universe version of `Algebra.lift_rank_le_of_surjective_injective`. -/
+theorem rank_le_of_surjective_injective
+    (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)
+    (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
+    Module.rank R S ≤ Module.rank R' S' := by
+  simpa only [lift_id] using lift_rank_le_of_surjective_injective i j hi hj hc
+
+/-- The same-universe version of `Algebra.lift_rank_eq_of_equiv_equiv`. -/
+theorem rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
+    (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
+    Module.rank R S = Module.rank R' S' := by
+  simpa only [lift_id] using lift_rank_eq_of_equiv_equiv i j hc
+
+end Algebra
+
+end SurjectiveInjective
 
 section InvariantBasisNumber
 
@@ -841,8 +1032,7 @@ theorem Basis.card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : B
     {ι' : Type*} [Fintype ι'] {v : ι' → M} (hv : LinearIndependent R v) :
     Fintype.card ι' ≤ Fintype.card ι := by
   letI := nontrivial_of_invariantBasisNumber R
-  simpa [rank_eq_card_basis b, Cardinal.mk_fintype] using
-    cardinal_lift_le_rank_of_linearIndependent' hv
+  simpa [rank_eq_card_basis b, Cardinal.mk_fintype] using hv.cardinal_lift_le_rank
 #align basis.card_le_card_of_linear_independent Basis.card_le_card_of_linearIndependent
 
 theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
@@ -1282,7 +1472,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
     rcases h with ⟨s, hst, hsc⟩
     exact ⟨s, hsc, (ofVectorSpaceIndex.linearIndependent K V).mono hst⟩
   · rintro ⟨s, rfl, si⟩
-    exact cardinal_le_rank_of_linearIndependent si
+    exact si.cardinal_le_rank
 #align le_rank_iff_exists_linear_independent le_rank_iff_exists_linearIndependent
 
 theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.rank K V ↔
@@ -1493,7 +1683,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
   · rintro ⟨s, hsc, si⟩
     have : LinearIndependent K fun x : s => f.rangeRestrict x :=
       LinearIndependent.of_comp f.range.subtype (by convert si)
-    convert cardinal_le_rank_of_linearIndependent this.image
+    convert this.image.cardinal_le_rank
     rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
     exact injOn_iff_injective.2 this.injective
 #align linear_map.le_rank_iff_exists_linear_independent LinearMap.le_rank_iff_exists_linearIndependent
