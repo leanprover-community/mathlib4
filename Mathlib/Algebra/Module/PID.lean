@@ -287,7 +287,7 @@ variable [Module.Finite R M] (N : Submodule R M)
 
 lemma Submodule.finrank_quotient_add_finrank_of_free [Module.Free R M] :
     finrank R (M ⧸ N) + finrank R N = finrank R M := by
-  apply (finrank_add_finrank_quotient_le N).antisymm
+  apply (finrank_quotient_add_finrank_le N).antisymm
   let B := Submodule.smithNormalForm (Module.Free.chooseBasis R M) N
   rw [← tsub_le_iff_right]
   have : LinearIndependent R (N.mkQ ∘ B.2.bM ∘ Subtype.val : ((Set.range B.2.f)ᶜ : _) → _)
