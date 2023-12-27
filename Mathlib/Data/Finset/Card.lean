@@ -778,4 +778,12 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 #align finset.lt_wf Finset.lt_wf
 
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-27.
+-/
+
+@[deprecated] alias card_le_of_subset := card_le_card
+
 end Finset

@@ -1111,3 +1111,11 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 #align set.ncard_eq_three Set.ncard_eq_three
 
 end ncard
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023-12-27.
+-/
+
+@[deprecated] alias ncard_le_of_subset := ncard_le_ncard
