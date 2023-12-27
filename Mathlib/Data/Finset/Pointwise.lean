@@ -2099,20 +2099,20 @@ lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp 
 #align finset.zero_smul_subset Finset.zero_smul_subset
 
 lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
-  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+  s.smul_zero_subset.antisymm $ by simpa [mem_smul] using hs
 #align finset.nonempty.smul_zero Finset.Nonempty.smul_zero
 
 lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
-  t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
+  t.zero_smul_subset.antisymm $ by simpa [mem_smul] using ht
 #align finset.nonempty.zero_smul Finset.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing zero. -/
 @[simp] lemma zero_smul_finset {s : Finset β} (h : s.Nonempty) : (0 : α) • s = (0 : Finset β) :=
-  coe_injective <| by simpa using @Set.zero_smul_set α _ _ _ _ _ h
+  coe_injective $ by simpa using @Set.zero_smul_set α _ _ _ _ _ h
 #align finset.zero_smul_finset Finset.zero_smul_finset
 
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
-  image_subset_iff.2 fun x _ => mem_zero.2 <| zero_smul α x
+  image_subset_iff.2 fun x _ ↦ mem_zero.2 $ zero_smul α x
 #align finset.zero_smul_finset_subset Finset.zero_smul_finset_subset
 
 lemma zero_mem_smul_finset {t : Finset β} {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
@@ -2123,8 +2123,7 @@ variable [NoZeroSMulDivisors α β] {a : α}
 
 lemma zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
-  rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]
-  rfl
+  rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]; rfl
 #align finset.zero_mem_smul_iff Finset.zero_mem_smul_iff
 
 lemma zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
@@ -2176,7 +2175,7 @@ theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (
 #align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
-  coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
+  coe_injective $ by push_cast; exact Set.smul_set_univ₀ ha
 #align finset.smul_finset_univ₀ Finset.smul_finset_univ₀
 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
@@ -2186,8 +2185,8 @@ theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ
     exact Set.smul_univ₀ hs
 #align finset.smul_univ₀ Finset.smul_univ₀
 
-theorem smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
-  coe_injective <| by push_cast; exact Set.smul_univ₀' hs
+lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
+  coe_injective $ by push_cast; exact Set.smul_univ₀' hs
 
 variable [DecidableEq α]
 
