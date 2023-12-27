@@ -198,6 +198,14 @@ instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet
     simp only [smul_def, Equiv.apply_symm_apply, Equiv.symm_apply_apply, mul_smul]
 #align polynomial.gal.gal_action Polynomial.Gal.galAction
 
+lemma galAction_isPretransitive [Fact (p.Splits (algebraMap F E))] (hp : Irreducible p) :
+    MulAction.IsPretransitive p.Gal (p.rootSet E) := by
+  refine' ⟨fun x y ↦ _⟩
+  have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm x).2).2
+  have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm y).2).2
+  obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)
+  exact ⟨g, (rootsEquivRoots p E).apply_eq_iff_eq_symm_apply.mpr (Subtype.ext hg)⟩
+
 variable {p E}
 
 /-- `Polynomial.Gal.restrict p E` is compatible with `Polynomial.Gal.galAction p E`. -/

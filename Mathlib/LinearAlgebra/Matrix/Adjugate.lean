@@ -372,7 +372,7 @@ theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A]
 
 theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.card n - 1) := by
   -- get rid of the `- 1`
-  cases' (Fintype.card n).eq_zero_or_pos with h_card h_card
+  rcases (Fintype.card n).eq_zero_or_pos with h_card | h_card
   · haveI : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
     rw [h_card, Nat.zero_sub, pow_zero, adjugate_subsingleton, det_one]
   replace h_card := tsub_add_cancel_of_le h_card.nat_succ_le
