@@ -26,7 +26,7 @@ finite Iic, such that if a + b = n, then a, b ≤ n,
 and any other bound would be OK.
 
 In this file, we provide an analogous definition for `ι →₀ μ`,
-with an explicit finiteness conditions on the support.
+with an explicit finiteness condition on the support.
 This Finset could be viewed inside `ι → μ`, but the `Finsupp` condition
 provides a natural `DecidableEq` instance.
 
