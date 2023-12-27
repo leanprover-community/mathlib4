@@ -49,9 +49,9 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
       hc.chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
 /-- In a bicolored graph colors alternate on every path -/
-theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool) {n : ℕ} (hn : 1 ≤ n)
-    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) = true) (u : Fin n) :
-    c (hom u) = (u.val % 2 = 0) := by
+theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
+    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ True) (u : Fin n) :
+    c (hom u) ↔ (u.val % 2 = 0) := by
   induction n with
   | zero => exact (Nat.not_succ_le_zero 0 hn).elim
   | succ n ih =>
@@ -61,13 +61,13 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool)
       have hu : u = 0 :=
         Fin.le_zero_iff.mp (le_of_le_of_eq (Fin.le_val_last u) (congrArg Nat.cast hn'))
       simp [hu]
-      apply hc0
+      exact hc0.mpr trivial
     · intro (hn' : 1 ≤ n)
       let new_hom : pathGraph n →g G :=
         Hom.comp hom (pathGraph_self_Hom (Nat.le_add_right n 1))
-      have hhom0 : c (new_hom ⟨0, hn'⟩) = true := by
+      have hhom0 : c (new_hom ⟨0, hn'⟩) ↔ True := by
         simp [pathGraph_self_Hom_val, pathGraph_self_Hom]
-        exact hc0
+        exact hc0.mpr trivial
       have h_new_hom := ih hn' new_hom hhom0
       have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp (Fin.is_le u)
       apply Or.elim hu
@@ -81,43 +81,33 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Bool)
           simp [pathGraph_adj]
           exact Or.intro_left (n + 1 = n - 1) (Nat.sub_add_cancel hn')
         have hGadj : G.Adj (hom prev_last) (hom last) := hom.map_rel hpgadj
-        have h_c_prev_last : c (hom prev_last) = ((n - 1) % 2 = 0) :=
+        have h_c_prev_last : c (hom prev_last) ↔ ((n - 1) % 2 = 0) :=
           h_new_hom ⟨n-1, Nat.sub_lt hn' Nat.one_pos⟩
-        have h_c_last : c (hom last) = ((n - 1) % 2 ≠ 0) := by
-          rw [Bool.eq_not_iff.mpr (Coloring.valid c hGadj).symm]
-          simp [h_c_prev_last.symm]
+        have h_c_last : c (hom last) ↔ ((n - 1) % 2 ≠ 0) := by
+          have h := eq_iff_iff.not.1 (Coloring.valid c hGadj).symm
+          rw [h_c_prev_last] at h
+          exact (not_iff_comm.mp (not_iff.mp h)).symm
         simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
         rw [← @Nat.sub_add_cancel n 1 hn']
         apply (Nat.succ_mod_two_eq_zero_iff).symm
 
--- What name shuld this have?
-theorem aux2 {α} (p : Bool) (x y : α) (h : ((!p) = true) = (x = y)) : (p = true) = (x ≠ y) := by
-  simp_all only [Bool.not_eq_true', eq_iff_iff, iff_true, ne_eq]
-  apply Iff.intro
-  · intro a
-    subst a
-    simp_all only [eq_iff_iff, false_iff, not_false_eq_true]
-  · intro a
-    simp_all only [iff_false, Bool.not_eq_false]
-
-theorem pathGraph_G_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Bool) {n : ℕ} (hn : 1 ≤ n)
-    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) = false) (u : Fin n) :
-    c (hom u) = (u.val % 2 ≠ 0) := by
-  let c' : G.Coloring Bool := Coloring.mk (fun v ↦ !(c v)) <| by
+theorem pathGraph_G_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
+    (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ False) (u : Fin n) :
+    c (hom u) ↔ (u.val % 2 ≠ 0) := by
+  let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬(c v)) <| by
     intro v w
     intro (h : G.Adj v w)
     simp
-    exact (Bool.eq_not_iff.mpr (c.valid h.symm)).symm
-  have hc'c : ∀ (a : α), c' a = !(c a) := fun a ↦ rfl
-  have hcc' : ∀ (a : α), c a = !(c' a) := by
+    rw [not_iff_not]
+    exact eq_iff_iff.not.1 (c.valid h)
+  have hc'c : ∀ (a : α), c' a ↔ ¬(c a) := fun a ↦ Iff.rfl
+  have hcc' : ∀ (a : α), c a ↔ ¬(c' a) := by
     intro a
-    simp_all only [Bool.not_not]
-  have hc'0 : c' (hom ⟨0, hn⟩) = true := by
+    exact iff_not_comm.mp (hc'c a)
+  have hc'0 : c' (hom ⟨0, hn⟩) ↔ True := by
     rw [hc'c, hc0]
-    rfl
+    decide
   rw [hcc']
-  apply aux2
-  rw [Bool.not_not]
-  exact pathGraph_G_Hom_coloring G c' hn hom hc'0 u
+  exact Iff.not (pathGraph_G_Hom_coloring G c' hn hom hc'0 u)
 
 end SimpleGraph
