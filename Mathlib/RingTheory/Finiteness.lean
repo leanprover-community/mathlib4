@@ -743,13 +743,6 @@ open Module
 
 variable {R V} [Ring R] [AddCommGroup V] [Module R V]
 
-theorem fg_iff_finite (s : Submodule R V) : s.FG ↔ Module.Finite R s :=
-  (finite_def.trans (fg_top s)).symm
-
-variable (R V)
-
-variable {R V}
-
 /-- The sup of two fg submodules is finite. Also see `Submodule.FG.sup`. -/
 instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]
     [h₂ : Module.Finite R S₂] : Module.Finite R (S₁ ⊔ S₂ : Submodule R V) := by
