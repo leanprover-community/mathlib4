@@ -542,13 +542,18 @@ variable {ι κ α : Type*} [CommMonoid α] {s : Finset ι} {t : Finset κ} {f :
 
 /-- Reorder a product.
 
-  The difference with `prod_bij'` is that the bijection is specified as a surjective injection,
-  rather than by an inverse function.
--/
+The difference with `Finset.prod_bij'` is that the bijection is specified as a surjective injection,
+rather than by an inverse function.
+
+The difference with `Finset.prod_nbij` is that the bijection is allowed to use membership of the
+domain of the product, rather than being a non-dependent function. -/
 @[to_additive "Reorder a sum.
 
-  The difference with `sum_bij'` is that the bijection is specified as a surjective injection,
-  rather than by an inverse function."]
+The difference with `Finset.sum_bij'` is that the bijection is specified as a surjective injection,
+rather than by an inverse function.
+
+The difference with `Finset.sum_nbij` is that the bijection is allowed to use membership of the
+domain of the sum, rather than being a non-dependent function."]
 theorem prod_bij (i : ∀ a ∈ s, κ) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) :
@@ -559,13 +564,18 @@ theorem prod_bij (i : ∀ a ∈ s, κ) (hi : ∀ a ha, i a ha ∈ t)
 
 /-- Reorder a product.
 
-  The difference with `prod_bij` is that the bijection is specified with an inverse, rather than
-  as a surjective injection.
--/
+The difference with `Finset.prod_bij` is that the bijection is specified with an inverse, rather
+than as a surjective injection.
+
+The difference with `Finset.prod_nbij'` is that the bijection and its inverse are allowed to use
+membership of the domains of the products, rather than being non-dependent functions. -/
 @[to_additive "Reorder a sum.
 
-  The difference with `sum_bij` is that the bijection is specified with an inverse, rather than
-  as a surjective injection."]
+The difference with `Finset.sum_bij` is that the bijection is specified with an inverse, rather than
+as a surjective injection.
+
+The difference with `Finset.sum_nbij'` is that the bijection and its inverse are allowed to use
+membership of the domains of the sums, rather than being non-dependent functions."]
 theorem prod_bij' (i : ∀ a ∈ s, κ) (j : ∀ a ∈ t, ι) (hi : ∀ a ha, i a ha ∈ t)
     (hj : ∀ a ha, j a ha ∈ s) (left_inv : ∀ a ha, j (i a ha) (hi a ha) = a)
     (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) (h : ∀ a ha, f a = g (i a ha)) :
@@ -576,23 +586,56 @@ theorem prod_bij' (i : ∀ a ∈ s, κ) (j : ∀ a ∈ t, ι) (hi : ∀ a ha, i 
 #align finset.prod_bij' Finset.prod_bij'
 #align finset.sum_bij' Finset.sum_bij'
 
--- TODO: Backport arguments changes to `card_congr` and `prod_bij`
+/-- Reorder a product.
+
+The difference with `Finset.prod_nbij'` is that the bijection is specified as a surjective
+injection, rather than by an inverse function.
+
+The difference with `Finset.prod_bij` is that the bijection is a non-dependent function, rather than
+being allowed to use membership of the domain of the product. -/
+@[to_additive "Reorder a sum.
+
+The difference with `Finset.sum_nbij'` is that the bijection is specified as a surjective injection,
+rather than by an inverse function.
+
+The difference with `Finset.sum_bij` is that the bijection is a non-dependent function, rather than
+being allowed to use membership of the domain of the sum."]
 @[to_additive]
 lemma prod_nbij (i : ι → κ) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set ι).InjOn i)
     (i_surj : (s : Set ι).SurjOn i t) (h : ∀ a ∈ s, f a = g (i a)) :
     ∏ x in s, f x = ∏ x in t, g x :=
   prod_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj) h
 
-@[to_additive]
+/-- Reorder a product.
+
+The difference with `Finset.prod_nbij` is that the bijection is specified with an inverse, rather
+than as a surjective injection.
+
+The difference with `Finset.prod_bij'` is that the bijection and its inverse are non-dependent
+functions, rather than being allowed to use membership of the domains of the products.
+
+The difference with `Finset.prod_equiv` is that bijectivity is only required to hold on the domains
+of the products, rather than on the entire types.
+-/
+@[to_additive "Reorder a sum.
+
+The difference with `Finset.sum_nbij` is that the bijection is specified with an inverse, rather
+than as a surjective injection.
+
+The difference with `Finset.sum_bij'` is that the bijection and its inverse are non-dependent
+functions, rather than being allowed to use membership of the domains of the sums.
+
+The difference with `Finset.sum_equiv` is that bijectivity is only required to hold on the domains
+of the sums, rather than on the entire types."]
 lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (hj : ∀ a ∈ t, j a ∈ s)
     (left_inv : ∀ a ∈ s, j (i a) = a) (right_inv : ∀ a ∈ t, i (j a) = a)
     (h : ∀ a ∈ s, f a = g (i a)) : ∏ x in s, f x = ∏ x in t, g x :=
   prod_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv h
 
-/-- Specialization of `Finset.prod_bij` that automatically fills in most arguments.
+/-- Specialization of `Finset.prod_nbij'` that automatically fills in most arguments.
 
 See `Fintype.prod_equiv` for the version where `s` and `t` are `univ`. -/
-@[to_additive "`Specialization of `Finset.sum_bij` that automatically fills in most arguments.
+@[to_additive "`Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
 
 See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`."]
 lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
