@@ -258,7 +258,6 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
     have hi : i ∈ s := by simp
-    have _ : j ∈ s := by simp
     let w : ι → k := fun j' => if j' = i then x else 1 - x
     have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
     use s.affineCombination k b w

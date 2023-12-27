@@ -237,8 +237,7 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 #align pos_iff_ne_zero pos_iff_ne_zero
 
 @[to_additive]
-theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
-  (one_le a).eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
 
