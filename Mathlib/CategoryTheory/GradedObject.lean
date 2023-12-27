@@ -424,7 +424,7 @@ variable (k : K) (c : ∀ (j : J), q j = k → X.CofanMapObjFun p j)
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the datum of cofans `X.CofanMapObjFun p j` for all
 `j : J` and of a cofan for all the points of these cofans, this is a cofan of
-type `X.CofanMapObjFun r k`, which is colimit (see `isColimitCofanMapObjComp`) if the
+type `X.CofanMapObjFun r k`, which is a colimit (see `isColimitCofanMapObjComp`) if the
 given cofans are. -/
 @[simp]
 def cofanMapObjComp : X.CofanMapObjFun r k :=
