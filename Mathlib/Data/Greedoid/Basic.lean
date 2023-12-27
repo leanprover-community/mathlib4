@@ -14,13 +14,6 @@ import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.WLOG
 import Mathlib.Order.WithBot
 
--- bbN which `le_lt` or `lt_le` between adjacent bbNs
-theorem le_and_lt_add_one {m n : ℕ} (h₁ : m ≤ n) (h₂ : n < m + 1) : n = m :=
-  le_antisymm (Nat.lt_succ.mp h₂) h₁
-
-theorem lt_and_le_add_one {m n : ℕ} (h₁ : m < n) (h₂ : n ≤ m + 1) : n = m + 1 :=
-  le_antisymm h₂ h₁
-
 /-- The exchange property of greedoid· -/
 def exchangeProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) :=
   {s₁ : Finset α} → s₁ ∈ Sys →
@@ -87,6 +80,44 @@ decreasing_by
   intro h₂
   apply h
   exact le_antisymm hn₂ (h₂ ▸ hn₁)
+
+-- TODO: Fix name.
+theorem exchangeProperty_exists_feasible_superset_add_element_feasible {α : Type _} [DecidableEq α]
+  {Sys : Finset (Finset α)} (hSys : exchangeProperty Sys)
+  {s₁ : Finset α} (hs₁ : s₁ ∈ Sys)
+  {s₂ : Finset α} (hs₂ : s₂ ∈ Sys)
+  (hs : s₂ ⊆ s₁)
+  {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
+    ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∧ a ∉ s ∧ Insert.insert a s ∈ Sys := by
+  have h₁ : s₂.card < s₁.card := by
+    apply Finset.card_lt_card
+    simp only [Finset.ssubset_def, hs, true_and]
+    intro h
+    exact ha₂ (h ha₁)
+  by_cases h : Insert.insert a s₂ ∈ Sys
+  · exists s₂
+  · let ⟨t, ht₁, ht₂, ht₃, ht₄⟩ := exchangeProperty_exists_superset_of_card_le hSys hs₁ hs₂
+      (Finset.card_le_of_subset hs) h₁ (Nat.le_succ _)
+    have ht₅ : a ∉ t := by
+      intro h'
+      apply h; clear h
+      have h : insert a s₂ = t := by
+        apply Finset.eq_of_subset_of_card_le
+        · intro _ h
+          rw [Finset.mem_insert] at h
+          exact h.elim (fun h => h ▸ h') (fun h => ht₂ h)
+        · rw [ht₄, Finset.card_insert_of_not_mem ha₂]
+      exact h ▸ ht₁
+    let ⟨s', hs'₁, hs'₂, hs'₃, hs'₄, hs'₅⟩ :=
+      exchangeProperty_exists_feasible_superset_add_element_feasible hSys hs₁ ht₁
+        (Finset.union_eq_left.mpr hs ▸ ht₃) ha₁ ht₅
+    exists s'
+    exact ⟨hs'₁, subset_trans ht₂ hs'₂, hs'₃, hs'₄, hs'₅⟩
+termination_by exchangeProperty_exists_feasible_superset_add_element_feasible => s₁.card - s₂.card
+decreasing_by
+  simp_wf
+  rw [ht₄]
+  exact Nat.sub_succ_lt_self _ _ h₁
 
 /-- The accessible property of greedoid -/
 def accessibleProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop :=
@@ -352,6 +383,21 @@ theorem basis_card_eq
   · let ⟨x, hx₁, hx₂⟩ := G.exchangeProperty hb₁.1 hb₂.1 h'
     simp only [mem_sdiff] at hx₁
     exact hx₁.2 (hb₂.2.2 (hb₁.2.1 hx₁.1) hx₂)
+
+theorem base_card_eq
+  {b₁ : Finset α} (hb₁ : b₁ ∈ G.base)
+  {b₂ : Finset α} (hb₂ : b₂ ∈ G.base) :
+    b₁.card = b₂.card :=
+  basis_card_eq (G.base_bases_eq ▸ hb₁) (G.base_bases_eq ▸ hb₂)
+
+theorem basis_card_le_base_card
+  {b₁ b₂ : Finset α} (hb₁ : b₁ ∈ G.bases s) (hb₂ : b₂ ∈ G.base) :
+    b₁.card ≤ b₂.card := by
+  let ⟨b', hb'₁, hb'₂⟩ :=
+    exists_basis_containing_feasible_set (G.basis_mem_feasible hb₁) (subset_univ b₁)
+  rw [← base_bases_eq] at hb'₁
+  rw [base_card_eq hb₂ hb'₁]
+  exact card_le_of_subset hb'₂
 
 theorem mem_base_if_feasible_and_card_eq_basis_of_base
   {b : Finset α} (hb : b ∈ G.base)
@@ -864,7 +910,8 @@ theorem rank_of_feasible_insert_of_not_mem_closure (h₁ : s ∈ G) {e : α} (h�
     G.rank (insert e s) = s.card + 1 := by
   have h₃ := rank_lt_of_insert_of_not_mem_closure h₂
   rw [rank_of_feasible h₁] at *
-  apply lt_and_le_add_one h₃
+  apply eq_of_le_of_lt_succ h₃
+  simp_arith
   rw [← @card_insert_of_not_mem _ _ e _ (fun h => h₂ (self_subset_closure h))]
   exact G.rank_le_card (insert e s)
 
@@ -1761,43 +1808,7 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
     exact (lt_self_iff_false _).mp
       (lt_of_le_of_lt (h ▸ feasibleSet_inter_card_le_basisRank _
         (insert_feasible_of_not_mem_closure_feasible hc₁ h₃)) h₄)
-  · let ⟨x, hx⟩ := G.bases_nonempty s
-    let ⟨b, hb⟩ := G.base_nonempty
-    have ⟨a, ha₁, ha₂, ha₃, ha₄⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
-      (G.basis_mem_feasible (G.base_bases_eq ▸ hb)) (G.basis_mem_feasible hx)
-      (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
-      le_rfl (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
-    rw [system_feasible_set_mem_mem] at ha₁
-    have h₀ : ∀ u ∈ a, u ∉ x → u ∉ s := by
-      intro u hu₁ hu₂ hu₃
-      have hu₄ := h hx hu₃
-      sorry
-    have h₁ : a ∩ s = x := by
-      ext; rw [mem_inter]; constructor <;> intro h₁
-      · by_contra h'
-        exact h₀ _ h₁.1 h' h₁.2
-      · exact ⟨ha₂ h₁, basis_subset hx h₁⟩
-    have h₂ : a \ x ⊆ b \ s := by
-      have : a \ x = a \ s := by
-        ext; simp only [mem_sdiff, and_congr_right_iff]
-        intro ha₁
-        exact ⟨(fun h => h₀ _ ha₁ h), (fun h h' => h (basis_subset hx h'))⟩
-      rw [this]
-      have : b \ s = (b ∪ x) \ s := by
-        ext; simp only [mem_sdiff, mem_union, and_congr_left_iff]
-        intro h₂
-        constructor <;> intro h₃
-        · exact Or.inl h₃
-        · apply h₃.elim id
-          intro h₃
-          rw [← h₁, mem_inter] at h₃
-          tauto
-      exact this ▸ sdiff_subset_sdiff ha₃ subset_rfl
-    rw [← basisRank_le_rank_iff]
-    have h₃ : (b ∩ s).card ≤ (a ∩ s).card := by
-      sorry
-    have h₄ : (a ∩ s).card = x.card := by
-      sorry
+  · rw [← basisRank_le_rank_iff]
     sorry
 
 /- The following instance will be created later.
