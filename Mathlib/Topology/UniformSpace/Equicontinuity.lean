@@ -790,10 +790,11 @@ theorem UniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : 
   simp only [uniformEquicontinuousOn_iff_uniformContinuousOn, this.uniformContinuousOn_iff]
   rfl
 
-/-- A version of `EquicontinuousWithinAt.closure` applicable to subsets of types which embed
-continuously into `X → α` with the topology of pointwise convergence on `S ∪ {x₀}`. It turns out we
-don't need any condition on the embedding other than continuity, but in practice this will mostly
-be applied to `FunLike` types where the coercion is injective. -/
+/-- If a set of functions is equicontinuous at some `x₀` within a set `S`, the same is true for its
+closure in *any* topology such that evaluation at each `x ∈ S ∪ {x₀}` is continuous. Since
+this will be applied to `FunLike` types, we state it for any topological space whith a map
+to `X → α` satisfying the right continuity conditions. See also `EquicontinuousWithinAt.closure`
+for a more familiar statement. -/
 theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Set X} {x₀ : X}
     (hA : EquicontinuousWithinAt (u ∘ (↑) : A → X → α) S x₀) (hu₁ : Continuous (S.restrict ∘ u))
     (hu₂ : Continuous (eval x₀ ∘ u)) :
@@ -825,8 +826,8 @@ protected theorem EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X} (hA :
 #align equicontinuous_at.closure EquicontinuousAt.closure
 
 /-- If a set of functions is equicontinuous at some `x₀` within a set `S`, its closure for the
-product topology is also equicontinuous at `x₀`. This would also be true for the coarser topology
-of pointwise convergence on `S ∪ {x₀}`, see `EquicontinuousWithinAt.closure'`. -/
+product topology is also equicontinuous at `x₀` within `S`. This would also be true for the coarser
+topology of pointwise convergence on `S ∪ {x₀}`, see `EquicontinuousWithinAt.closure'`. -/
 protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
     (hA : A.EquicontinuousWithinAt S x₀) :
     (closure A).EquicontinuousWithinAt S x₀ :=
