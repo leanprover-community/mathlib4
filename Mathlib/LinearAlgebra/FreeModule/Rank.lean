@@ -143,7 +143,7 @@ section DivisionRing
 variable (K : Type u) [DivisionRing K]
 
 /-- Key lemma towards the Erdős-Kaplansky theorem from https://mathoverflow.net/a/168624 -/
-theorem max_aleph0_mk_le_rank_function_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
+theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
     (Finsupp.lcoeFun.rank_le_of_injective <| by exact FunLike.coe_injective)
   refine max_le aleph0_le ?_
@@ -192,13 +192,13 @@ theorem max_aleph0_mk_le_rank_function_nat : max ℵ₀ #K ≤ Module.rank K (�
 variable {K}
 
 open Function in
-theorem rank_pi_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι → K) = #(ι → K) := by
+theorem rank_fun_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι → K) = #(ι → K) := by
   obtain ⟨⟨ιK, bK⟩⟩ := Module.Free.exists_basis (R := K) (M := ι → K)
   obtain ⟨e⟩ := lift_mk_le'.mp ((aleph0_le_mk_iff.mpr hι).trans_eq (lift_uzero #ι).symm)
   have := LinearMap.lift_rank_le_of_injective _ <|
     LinearMap.funLeft_injective_of_surjective K K _ (invFun_surjective e.injective)
   rw [lift_umax.{u,v}, lift_id'.{u,v}] at this
-  have key := (lift_le.{v}.mpr <| max_aleph0_mk_le_rank_function_nat K).trans this
+  have key := (lift_le.{v}.mpr <| max_aleph0_card_le_rank_fun_nat K).trans this
   rw [lift_max, lift_aleph0, max_le_iff] at key
   haveI : Infinite ιK := by
     rw [← aleph0_le_mk_iff, ← rank_eq_cardinal_basis' bK]; exact key.1
@@ -208,29 +208,29 @@ theorem rank_pi_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι �
 
 /-- The **Erdős-Kaplansky Theorem**: the dual of an infinite-dimensional vector space
   over a division ring has dimension equal to its cardinality. -/
-theorem rank_dual_eq_card_of_aleph0_le_rank' {V : Type*} [AddCommGroup V] [Module K V]
+theorem rank_dual_eq_card_dual_of_aleph0_le_rank' {V : Type*} [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank Kᵐᵒᵖ (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
   rw [rank_eq_cardinal_basis' b, aleph0_le_mk_iff] at h
   have e := (b.constr Kᵐᵒᵖ (M' := K)).symm.trans
     (LinearEquiv.piCongrRight fun _ ↦ MulOpposite.opLinearEquiv Kᵐᵒᵖ)
   rw [e.rank_eq, e.toEquiv.cardinal_eq]
-  apply rank_pi_infinite
+  apply rank_fun_infinite
 
 /-- The **Erdős-Kaplansky Theorem** over a field. -/
-theorem rank_dual_eq_card_of_aleph0_le_rank {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+theorem rank_dual_eq_card_dual_of_aleph0_le_rank {K V} [Field K] [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
   rw [rank_eq_cardinal_basis' b, aleph0_le_mk_iff] at h
   have e := (b.constr K (M' := K)).symm
   rw [e.rank_eq, e.toEquiv.cardinal_eq]
-  apply rank_pi_infinite
+  apply rank_fun_infinite
 
 theorem lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) :
     Cardinal.lift.{u} (Module.rank K V) < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
-  rw [rank_eq_cardinal_basis' b, rank_dual_eq_card_of_aleph0_le_rank' h,
+  rw [rank_eq_cardinal_basis' b, rank_dual_eq_card_dual_of_aleph0_le_rank' h,
       ← (b.constr ℕ (M' := K)).toEquiv.cardinal_eq, mk_arrow]
   apply cantor'
   erw [nat_lt_lift_iff, one_lt_iff_nontrivial]
@@ -239,7 +239,7 @@ theorem lift_rank_lt_rank_dual' {V : Type v} [AddCommGroup V] [Module K V]
 theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) :
     Cardinal.lift.{u} (Module.rank K V) < Module.rank K (V →ₗ[K] K) := by
-  rw [rank_dual_eq_card_of_aleph0_le_rank h, ← rank_dual_eq_card_of_aleph0_le_rank' h]
+  rw [rank_dual_eq_card_dual_of_aleph0_le_rank h, ← rank_dual_eq_card_dual_of_aleph0_le_rank' h]
   exact lift_rank_lt_rank_dual' h
 
 end DivisionRing
