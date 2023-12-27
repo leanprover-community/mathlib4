@@ -159,7 +159,8 @@ theorem construction_of_accessible {α : Type _} [DecidableEq α]
   {s : Finset α} (hs₀ : s ∈ Sys) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s ∧ ∀ l', l' <:+ l → l'.toFinset ∈ Sys := by
   apply induction_on_accessible hs₀
-  · exists []; simp [hSys]
+  · exists []; simp only [List.nodup_nil, List.toFinset_nil, List.suffix_nil, forall_eq, hSys,
+    and_self]
   · simp only [List.mem_tails, forall_exists_index, and_imp]
     intro a s ha _ hs l hl₁ hl₂ hl₃
     exists a :: l
@@ -325,7 +326,10 @@ section Bases
 
 variable {s b : Finset α} (hb : b ∈ G.bases s)
 
-theorem base_bases_eq : G.base = G.bases univ := by ext s; simp [bases, base]
+theorem base_bases_eq : G.base = G.bases univ := by
+  ext s
+  simp only [base, system_feasible_set_mem_mem, Finset.mem_filter, bases, subset_univ, mem_univ,
+  forall_true_left, true_and]
 
 theorem basis_mem_feasible : b ∈ G := by simp only [bases, Finset.mem_filter] at hb; exact hb.1
 
@@ -358,7 +362,8 @@ decreasing_by
   have hx₃ := ‹x ∉ s'›
   exact Nat.sub_lt_sub_left
     (card_lt_card ((ssubset_iff_of_subset hs'₂).mpr ⟨x, hx₁, hx₃⟩))
-    (by simp [hx₃])
+    (by simp only [hx₃, not_false_eq_true, card_insert_of_not_mem, lt_add_iff_pos_right,
+      zero_lt_one])
 
 theorem bases_nonempty (s : Finset α) :
     Nonempty (G.bases s) := by
@@ -466,7 +471,9 @@ theorem bases_singleton_of_feasible {a : α} (ha : {a} ∈ G) (hb : b ∈ G.base
   apply (bases_of_singleton hb).elim _ (fun h => h)
   intro h
   rw [h] at hb; rw [h]
-  simp [bases] at hb
+  simp only [bases, Finset.subset_singleton_iff, Finset.mem_singleton, system_feasible_set_mem_mem,
+    forall_eq, Finset.mem_filter, true_or, insert_emptyc_eq, not_mem_empty, imp_false,
+    true_and] at hb
   exfalso
   exact hb.2 ha
 
@@ -658,7 +665,8 @@ theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} =
   apply ha
   have ⟨_, h'⟩ := G.bases_nonempty {a}
   rw [rank_eq_basis_card h'] at h
-  exact basis_mem_feasible (eq_of_subset_of_card_le (basis_subset h') (by simp [h]) ▸ h')
+  exact basis_mem_feasible (eq_of_subset_of_card_le (basis_subset h') (by
+    simp only [card_singleton, h, le_refl]) ▸ h')
 
 theorem rank_le_card (s : Finset α) : G.rank s ≤ s.card := by
   simp only [rank, filter_congr_decidable, max'_le_iff, mem_image, Finset.mem_filter,
@@ -892,7 +900,11 @@ section Closure
 variable {s t : Finset α} {x y : α}
 
 theorem mem_closure : x ∈ G.closure s ↔ G.rank (insert x s) = G.rank s :=
-  ⟨fun h => by simp [closure] at h; exact h, fun h => by simp [closure]; exact h⟩
+  ⟨fun h => by
+    simp only [closure, filter_congr_decidable, Finset.mem_filter, mem_univ, true_and] at h
+    exact h, fun h => by
+    simp only [closure, filter_congr_decidable, Finset.mem_filter, mem_univ, true_and]
+    exact h⟩
 
 theorem rank_lt_of_insert_of_not_mem_closure {e : α} (h : e ∉ G.closure s) :
     G.rank s < G.rank (insert e s) := by
@@ -951,7 +963,7 @@ theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.ran
       · exact fun h' => h (eq_of_subset_of_card_le self_subset_closure (by rw [h']))
     have ⟨x, hx⟩ : ∃ x, x ∈ G.closure s \ s := by
       by_contra h'
-      simp [mem_sdiff, not_exists, not_and, not_not] at h'
+      simp only [mem_sdiff, not_exists, not_and, not_not] at h'
       simp only [← subset_antisymm self_subset_closure h', lt_self_iff_false] at h₁
     have h₂ := rank_closure_eq_rank_self (insert x s)
     simp only [mem_sdiff, mem_closure] at hx
@@ -1271,7 +1283,8 @@ theorem kernelClosureOperator_def_closure :
 
 theorem mem_kernel {x : α} :
     x ∈ G.kernel s ↔ ∃ t ∈ G, t ⊆ s ∧ x ∈ t := by
-  constructor <;> intro h <;> simp [kernel] at * <;> let ⟨a, _⟩ := h <;> exists a <;> tauto
+  constructor <;> intro h <;> simp only [kernel, filter_congr_decidable, mem_biUnion,
+    Finset.mem_filter, mem_powerset, id_eq] at * <;> let ⟨a, _⟩ := h <;> exists a <;> tauto
 
 theorem kernelClosureOperator_eq_kernel_closure :
     G.kernelClosureOperator s = G.kernel (G.closure s) := by
@@ -1409,6 +1422,10 @@ variable {s t : Finset α}
 theorem mem_monotoneClosureOperator_iff {a : α} :
     a ∈ G.monotoneClosureOperator s ↔ (∀ {t}, s ⊆ t → G.closure t = t → a ∈ t) := by
   simp only [monotoneClosureOperator, mem_univ, Finset.mem_filter, true_and]
+
+theorem monotoneClosureOperator_subset_closure :
+    G.monotoneClosureOperator s ⊆ G.closure s := fun _ h =>
+  (mem_monotoneClosureOperator_iff.mp h) self_subset_closure closure_idempotent
 
 -- TODO: Rename.
 theorem subset_closure_of_subset_monotoneClosureOperator
@@ -1563,7 +1580,8 @@ theorem feasible_iff_rankFeasible_of_full [Full G] :
   intro s hs
   rw [mem_rankFeasibleFamily_iff] at hs
   have h₁ : G.basisRank s ≤ G.rank s := hs ▸ Nat.le_refl _
-  simp [basisRank, WithBot.unbot_le_iff, Finset.max] at h₁
+  simp only [basisRank, max'_le_iff, mem_image, system_feasible_set_mem_mem, forall_exists_index,
+    and_imp, forall_apply_eq_imp_iff₂] at h₁
   apply card_le_rank
   have h₂ : s ∩ univ = s := inter_univ s
   apply h₂ ▸ h₁ _
@@ -1784,8 +1802,7 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
     simp only [not_subset, not_and] at h'
     let ⟨e, he₁, he₂⟩ := h'; clear h'
     have h₂ : c ∈ G.bases y := by
-      simp [bases, system_feasible_set_mem_mem, not_and, not_forall, exists_prop,
-        exists_and_left, Finset.mem_filter, hc₁]
+      simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter, hc₁, true_and]
       apply And.intro (subset_trans hc₃ (union_subset (basis_subset hb) hy))
       intro a ha₁ ha₂
       have h₂ : insert a c ⊆ y := fun _ h => (mem_insert.mp h).elim
@@ -1833,7 +1850,7 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
           rw [mem_closure, rank_eq_card_iff_feasible.mpr hy₁, rank_eq_card_iff_feasible.mpr hy₄,
             card_insert_of_not_mem hy₃] at h₄
           simp only [add_right_eq_self] at h₄
-        exact h₄ ((G.subset_closure_of_subset_monotoneClosureOperator (h hx) hy₂) h₃)
+        exact h₄ ((subset_closure_of_subset_monotoneClosureOperator (h hx) hy₂) h₃)
       rw [rank_eq_basis_card hx, ← h₂, inter_comm s b]
       rw [← card_inter_add_card_sdiff a s, ← card_inter_add_card_sdiff b s] at ha₄
       rw [eq_tsub_of_add_eq ha₄, Nat.add_sub_assoc (by
@@ -1849,6 +1866,24 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
         rw [mem_inter] at h
         tauto)]
       simp only [le_add_iff_nonneg_right, _root_.zero_le]
+
+theorem rankFeasible_iff_monotoneClosure_equal_for_all_basis :
+    G.rankFeasible s ↔
+    ∀ {t}, t ∈ G.bases s → G.monotoneClosureOperator s = G.monotoneClosureOperator t := by
+  constructor <;> intro h
+  · rw [rankFeasible_iff_subset_subset_monotoneClosure] at h
+    intro b hb
+    apply subset_antisymm _ (monotoneClosureOperator_subset_of_subset (basis_subset hb))
+    intro _ he
+    simp only [monotoneClosureOperator, filter_congr_decidable, Finset.mem_filter, mem_univ,
+      true_and]
+    intro _ h₁ h₂
+    have := h₂ ▸ G.monotoneClosureOperator_subset_of_subset
+      (subset_closure_of_subset_monotoneClosureOperator (h hb) (h₂ ▸ h₁))
+    exact (h₂ ▸ subset_trans this monotoneClosureOperator_subset_closure) he
+  · rw [rankFeasible_iff_subset_subset_monotoneClosure]
+    intro _ ht
+    exact h ht ▸ subset_monotoneClosureOperator_self
 
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
