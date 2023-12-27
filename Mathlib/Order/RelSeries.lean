@@ -468,6 +468,53 @@ def eraseLast (p : RelSeries r) : RelSeries r where
     cases i
     exact this
 
+@[elab_as_elim]
+lemma snoc_induction {motive : (x : RelSeries r) → Prop}
+    (x : RelSeries r)
+    (single : ∀ (a : α), motive (singleton r a))
+    (snoc : ∀ (x : RelSeries r) (a : α) (ha : r x.last a), motive x → motive (x.snoc a ha)) :
+    motive x := by
+  induction' hn : x.length with n ih generalizing x
+  · have x_eq : x = singleton r (x 0)
+    · ext i
+      · exact hn
+      · simp only [singleton_length, Function.comp_apply, singleton_toFun]
+        congr
+        ext
+        have hi := i.2
+        simp_rw [hn] at hi
+        simpa using hi
+    rw [x_eq]
+    apply single
+  · have x_eq : x = x.eraseLast.snoc x.last (by
+      simp only [eraseLast_length, eraseLast_toFun, Fin.val_last]
+      convert x.step ⟨x.length - 1, Nat.pred_lt (show x.length ≠ 0 by rw [hn]; norm_num)⟩
+      delta last; congr; ext
+      simpa using Nat.succ_pred_eq_of_pos (by rw [hn]; norm_num) |>.symm)
+    · ext i
+      · simpa using Nat.succ_pred_eq_of_pos (by rw [hn]; norm_num) |>.symm
+      · rw [Function.comp_apply]
+        generalize_proofs h1 h2
+        by_cases ineq1 : i = Fin.last _
+        · subst ineq1
+          have eq1 : Fin.cast h2 (Fin.last _) = Fin.last _
+          · ext; simp
+          erw [eq1, snoc_last]
+          rfl
+        have eq1 : Fin.cast h2 i = Fin.castSucc ⟨i.1, by
+          simp only [snoc_length, eraseLast_length]
+          rw [show x.length - 1 + 1 = x.length from
+            @Nat.succ_pred_eq_of_ne_zero x.length (by rw [hn]; norm_num)]
+          change i < ⊤
+          rw [lt_top_iff_ne_top]
+          exact ineq1⟩
+        · ext; rfl
+        rw [eq1, RelSeries.snoc_toFun]
+        erw [Fin.append_left]
+        rfl
+    rw [x_eq]
+    exact snoc _ _ _ (ih _ <| by simp [hn])
+
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length - 1, lt_of_le_of_lt tsub_le_self (Nat.lt_succ_self _)⟩ :=
   show p _ = p _ from congr_arg p <| by ext; simp
