@@ -896,10 +896,13 @@ theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply Nat.ArithmeticFunction.cardFactors_apply
 
-@[simp]
-theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors]
+@[simp, nolint simpNF] -- this is a `dsimp` lemma
+lemma cardFactors_zero : Ω 0 = 0 := rfl
+
+@[simp] theorem cardFactors_one : Ω 1 = 0 := rfl
 #align nat.arithmetic_function.card_factors_one Nat.ArithmeticFunction.cardFactors_one
 
+@[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine' ⟨fun h => _, fun h => List.length_eq_one.2 ⟨n, factors_prime h⟩⟩
   cases' n with n
@@ -919,13 +922,9 @@ theorem cardFactors_mul {m n : ℕ} (m0 : m ≠ 0) (n0 : n ≠ 0) : Ω (m * n) =
 
 theorem cardFactors_multiset_prod {s : Multiset ℕ} (h0 : s.prod ≠ 0) :
     Ω s.prod = (Multiset.map Ω s).sum := by
-  revert h0
-  -- porting note: was `apply s.induction_on`
-  refine s.induction_on ?_ ?_
-  · simp
-  intro a t h h0
-  rw [Multiset.prod_cons, mul_ne_zero_iff] at h0
-  simp [h0, cardFactors_mul, h]
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons ih => simp_all [cardFactors_mul, not_or]
 #align nat.arithmetic_function.card_factors_multiset_prod Nat.ArithmeticFunction.cardFactors_multiset_prod
 
 @[simp]

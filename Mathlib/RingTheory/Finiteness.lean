@@ -396,7 +396,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
     constructor
     · rintro ⟨t, rfl⟩
       rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_iSup t sp]
-      apply CompleteLattice.finset_sup_compact_of_compact
+      apply CompleteLattice.isCompactElement_finsetSup
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
       -- s is the Sup of the spans of its elements.
@@ -641,6 +641,9 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
 theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
+
+theorem equiv_iff (e : M ≃ₗ[R] N) : Finite R M ↔ Finite R N :=
+  ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
 
 instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
