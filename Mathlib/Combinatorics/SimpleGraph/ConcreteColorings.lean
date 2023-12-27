@@ -51,7 +51,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 /-- In a bicolored graph colors alternate on every path -/
 theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩)) (u : Fin n) :
-    c (hom u) ↔ (u.val % 2 = 0) := by
+    c (hom u) ↔ (Even u.val) := by
   induction n with
   | zero => exact (Nat.not_succ_le_zero 0 hn).elim
   | succ n ih =>
@@ -74,26 +74,26 @@ theorem pathGraph_G_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop)
       · intro (hun : u.val < n)
         exact h_new_hom ⟨u.val, hun⟩
       · intro (hun : u.val = n)
-        -- c (hom n) = true ↔ n % 2 = 0
+        -- c (hom u) ↔ Even ↑u
         let last : Fin (n + 1) := ⟨n, Nat.lt.base n⟩
         let prev_last : Fin (n + 1) := ⟨n - 1, Nat.sub_lt_succ n 1⟩
         have hpgadj : (pathGraph (n + 1)).Adj prev_last last := by
           simp [pathGraph_adj]
           exact Or.intro_left (n + 1 = n - 1) (Nat.sub_add_cancel hn')
         have hGadj : G.Adj (hom prev_last) (hom last) := hom.map_rel hpgadj
-        have h_c_prev_last : c (hom prev_last) ↔ ((n - 1) % 2 = 0) :=
+        have h_c_prev_last : c (hom prev_last) ↔ (Even (n - 1)) :=
           h_new_hom ⟨n-1, Nat.sub_lt hn' Nat.one_pos⟩
-        have h_c_last : c (hom last) ↔ ((n - 1) % 2 ≠ 0) := by
+        have h_c_last : c (hom last) ↔ (¬Even (n - 1)) := by
           have h := eq_iff_iff.not.1 (Coloring.valid c hGadj).symm
           rw [h_c_prev_last] at h
           exact (not_iff_comm.mp (not_iff.mp h)).symm
         simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
         rw [← @Nat.sub_add_cancel n 1 hn']
-        apply (Nat.succ_mod_two_eq_zero_iff).symm
+        exact Nat.even_add_one.symm
 
 theorem pathGraph_G_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ False) (u : Fin n) :
-    c (hom u) ↔ (u.val % 2 ≠ 0) := by
+    c (hom u) ↔ (¬Even u.val) := by
   let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬(c v)) <| by
     intro v w
     intro (h : G.Adj v w)
