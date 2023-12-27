@@ -952,11 +952,11 @@ theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· �
 /-- Given an orthonormal set `v` of vectors in `E`, there exists a maximal orthonormal set
 containing it. -/
 theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.val : s → E)) :
-    ∃ (w : _) (_hw : w ⊇ s), Orthonormal 𝕜 (Subtype.val : w → E) ∧
-      ∀ (u) (_hu : u ⊇ w), Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
+    ∃ w ⊇ s, Orthonormal 𝕜 (Subtype.val : w → E) ∧
+      ∀ u ⊇ w, Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
   have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
-  obtain ⟨b, bi, sb, h⟩ := this
-  · refine' ⟨b, sb, bi, _⟩
+  · obtain ⟨b, bi, sb, h⟩ := this
+    refine' ⟨b, sb, bi, _⟩
     exact fun u hus hu => h u hu hus
   · refine' fun c hc cc _c0 => ⟨⋃₀ c, _, _⟩
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
