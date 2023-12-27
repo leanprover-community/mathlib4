@@ -280,3 +280,73 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
 #align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum
 
 end Module
+
+open FiniteDimensional
+
+variable [Module.Finite R M] (N : Submodule R M)
+
+lemma Submodule.finrank_quotient_add_finrank_of_free [Module.Free R M] :
+    finrank R (M ⧸ N) + finrank R N = finrank R M := by
+  apply (finrank_add_finrank_quotient_le N).antisymm
+  let B := Submodule.smithNormalForm (Module.Free.chooseBasis R M) N
+  rw [← tsub_le_iff_right]
+  have : LinearIndependent R (N.mkQ ∘ B.2.bM ∘ Subtype.val : ((Set.range B.2.f)ᶜ : _) → _)
+  · rw [linearIndependent_iff]
+    intros l hl
+    ext i
+    rw [← Finsupp.apply_total, N.mkQ_apply, Submodule.Quotient.mk_eq_zero, Finsupp.total_apply,
+      Finsupp.sum_fintype _ _ (by simp)] at hl
+    simpa only [Function.comp_apply, map_sum, map_smul, Basis.repr_self, Finsupp.smul_single,
+      smul_eq_mul, mul_one, Finsupp.single_apply, Finsupp.finset_sum_apply,
+      ← Subtype.ext_iff, Finset.sum_ite_eq', Finset.mem_univ, ite_true] using
+      B.2.repr_eq_zero_of_nmem_range ⟨_, hl⟩ i.prop
+  have := FiniteDimensional.fintype_card_le_finrank_of_linearIndependent this
+  rwa [Fintype.card_compl_set, ← finrank_eq_card_chooseBasisIndex,
+    Fintype.card_range, ← finrank_eq_card_basis B.2.bN] at this
+
+instance : Module.Free R (M ⧸ Submodule.torsion R M) :=
+  Module.free_of_finite_type_torsion_free'
+
+lemma Submodule.finrank_quotient_add_finrank_of_PID :
+    finrank R (M ⧸ N) + finrank R N = finrank R M := by
+  have : IsNoetherian R M := isNoetherian_of_isNoetherianRing_of_finite R M
+  have := finrank_quotient_add_finrank_of_free (N.map (Submodule.torsion R M).mkQ)
+  rw [finrank_quotient_eq_of_le_torsion le_rfl, finrank_map_of_le_torsion] at this
+  convert this using 2
+  symm
+  fapply finrank_of_surjective_of_le_torsion
+  · refine Submodule.liftQ N ((Submodule.mkQ _).comp (Submodule.mkQ _)) ?_
+    rw [LinearMap.ker_comp, ← Submodule.map_le_iff_le_comap, Submodule.ker_mkQ]
+  · rw [← LinearMap.range_eq_top, Submodule.range_liftQ, LinearMap.range_eq_top]
+    exact (Submodule.mkQ_surjective _).comp (Submodule.mkQ_surjective _)
+  · rw [Submodule.ker_liftQ, Submodule.map_le_iff_le_comap, LinearMap.ker_comp,
+      Submodule.ker_mkQ, Submodule.comap_map_eq, Submodule.ker_mkQ]
+    apply sup_le (N.le_comap_mkQ _)
+    rintro x ⟨r, hrx⟩
+    exact ⟨r, by rw [← LinearMap.map_smul_of_tower, hrx, _root_.map_zero]⟩
+  · rw [Submodule.ker_mkQ]
+    exact inf_le_right
+
+lemma Submodule.finrank_quotient_of_PID :
+    finrank R (M ⧸ N) = finrank R M - finrank R N := by
+  rw [← finrank_quotient_add_finrank_of_PID N, add_tsub_cancel_right]
+
+lemma Submodule.finrank_quotient_of_PID' {S} [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+    (N : Submodule S M) :
+    finrank R (M ⧸ N) = finrank R M - finrank R N :=
+  Submodule.finrank_quotient_of_PID (N.restrictScalars R)
+
+lemma FiniteDimensional.exists_of_finrank_lt (h : finrank R N < finrank R M) :
+    ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
+  obtain ⟨s, hs, hs'⟩ :=
+    exists_finset_card_eq_finrank_and_linearIndependent R (M ⧸ N)
+  obtain ⟨v, hv⟩ : s.Nonempty
+  · rwa [Finset.nonempty_iff_ne_empty, ne_eq, ← Finset.card_eq_zero, hs,
+      FiniteDimensional.finrank_quotient, tsub_eq_zero_iff_le, not_le]
+  obtain ⟨v, rfl⟩ := N.mkQ_surjective v
+  use v
+  intro r hr
+  have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)
+  rw [Finsupp.total_single, Finsupp.single_eq_zero, ← LinearMap.map_smul,
+    Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at this
+  exact mt this hr

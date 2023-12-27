@@ -578,6 +578,39 @@ theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Modu
     simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
     exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
 
+lemma lift_rank_map_of_le_torsion {R} {M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) {M' : Type v} [AddCommGroup M'] [Module R M']
+    (l : M →ₗ[R] M') (hN : N ⊓ LinearMap.ker l ≤ Submodule.torsion R M) :
+    lift.{u} (Module.rank R (N.map l)) = lift.{v} (Module.rank R N) := by
+  conv_lhs => rw [← N.range_subtype, ← LinearMap.range_comp,
+    ← (LinearMap.quotKerEquivRange (l.comp N.subtype)).lift_rank_eq]
+  congr 1
+  apply rank_quotient_eq_of_le_torsion
+  rintro x hx
+  obtain ⟨a, ha⟩ := hN ⟨x.prop, hx⟩
+  exact ⟨a, Subtype.val_injective ha⟩
+
+lemma rank_map_of_le_torsion {R} {M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) {M' : Type u} [AddCommGroup M'] [Module R M']
+    (l : M →ₗ[R] M') (hN : N ⊓ LinearMap.ker l ≤ Submodule.torsion R M) :
+    Module.rank R (N.map l) = Module.rank R N := by simpa using lift_rank_map_of_le_torsion N l hN
+
+lemma lift_rank_of_surjective_of_le_torsion {R} {M : Type u} [CommRing R] [AddCommGroup M]
+    [Module R M] {M' : Type v} [AddCommGroup M'] [Module R M']
+    (l : M →ₗ[R] M') (hl : Function.Surjective l)
+    (hl' : LinearMap.ker l ≤ Submodule.torsion R M) :
+    lift.{u} (Module.rank R M') = lift.{v} (Module.rank R M) := by
+  have := lift_rank_map_of_le_torsion ⊤ l (inf_le_right.trans hl')
+  rw [← LinearMap.range_eq_map l, LinearMap.range_eq_top.mpr hl] at this
+  simpa only [rank_top] using this
+
+lemma rank_of_surjective_of_le_torsion {R M M'} [CommRing R] [AddCommGroup M]
+    [Module R M] [AddCommGroup M'] [Module R M']
+    (l : M →ₗ[R] M') (hl : Function.Surjective l)
+    (hl' : LinearMap.ker l ≤ Submodule.torsion R M) :
+    Module.rank R M' = Module.rank R M := by
+  simpa using lift_rank_of_surjective_of_le_torsion l hl hl'
+
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
 Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
 theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=

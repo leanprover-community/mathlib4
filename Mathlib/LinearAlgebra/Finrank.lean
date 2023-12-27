@@ -102,6 +102,22 @@ theorem finrank_le_finrank_of_rank_le_rank
   simpa only [toNat_lift] using toNat_le_of_le_of_lt_aleph0 (lift_lt_aleph0.mpr h') h
 #align finite_dimensional.finrank_le_finrank_of_rank_le_rank FiniteDimensional.finrank_le_finrank_of_rank_le_rank
 
+lemma exists_finset_card_eq_finrank_and_linearIndependent :
+    ∃ s : Finset V, s.card = finrank K V ∧ LinearIndependent K ((↑) : s → V) := by
+  letI := nonempty_linearIndependent_set
+  by_cases H : finrank K V = 0
+  · use ∅
+    simp only [Finset.card_empty, H, linearIndependent_empty_type, and_self]
+  have := (Cardinal.toNat_eq_iff H).mp rfl
+  rw [Module.rank_def] at this
+  obtain ⟨⟨s, hs⟩, hι : #s = _⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
+    (Cardinal.bddAbove_range.{v, v} _) _ this
+  have : Finite s := Cardinal.lt_aleph0_iff_finite.mp (hι ▸ nat_lt_aleph0 (finrank K V))
+  cases nonempty_fintype s
+  exact ⟨s.toFinset,
+    Cardinal.natCast_injective (by rwa [Set.toFinset_card, ← Cardinal.mk_fintype]),
+    by convert hs <;> simp only [Set.mem_toFinset]⟩
+
 section
 
 variable [Nontrivial K] [NoZeroSMulDivisors K V]
