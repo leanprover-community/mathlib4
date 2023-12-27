@@ -92,21 +92,21 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
               · simp_all
         · have := ht₃ v
           have := he₃ v
-          simp_all? says simp_all only [Option.elim, ne_eq, normalized, Bool.and_eq_true,
+          simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
               Bool.not_eq_true', AList.lookup_insert, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
             simp_all
-          · simp_all? says simp_all only [ne_eq, hasNestedIf, Bool.or_self, hasConstantIf,
-              and_self, hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, not_false_eq_true,
+          · simp_all? says simp_all only [hasNestedIf, Bool.or_self, hasConstantIf, and_self,
+              hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, ne_eq, not_false_eq_true,
               disjoint, List.disjoint, decide_True, Bool.and_self]
         · have := ht₃ w
           have := he₃ w
           by_cases h : w = v
           · subst h; simp_all
-          · simp_all? says simp_all only [Option.elim, ne_eq, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', not_false_eq_true, AList.lookup_insert_ne]
+          · simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
+              Bool.not_eq_true', ne_eq, not_false_eq_true, AList.lookup_insert_ne]
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all

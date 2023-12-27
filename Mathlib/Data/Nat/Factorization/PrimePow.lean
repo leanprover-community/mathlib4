@@ -57,7 +57,7 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
 theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
     IsPrimePow n ↔ n.primeFactors.card = 1 := by
   simp_rw [isPrimePow_iff_factorization_eq_single, ← Nat.support_factorization,
-    Finsupp.card_support_eq_one', exists_prop, pos_iff_ne_zero]
+    Finsupp.card_support_eq_one', pos_iff_ne_zero]
 #align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_primeFactors_eq_one
 
 theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
