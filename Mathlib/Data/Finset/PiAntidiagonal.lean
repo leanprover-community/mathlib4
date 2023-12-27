@@ -84,9 +84,8 @@ noncomputable def finAntidiagonal : (d : ℕ) → μ → Finset (Fin d →₀ μ
 
 lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
     f ∈ finAntidiagonal d n ↔ sum f (fun _ x => x) = n := by
-  revert n f
-  induction d with
-  | zero => exact fun n f => (by
+  induction d generalizing n with
+  | zero =>
       simp only [Nat.zero_eq, finAntidiagonal, Pi.const_zero,
         Matrix.zero_empty, univ_eq_empty, sum_empty]
       by_cases hn : n = 0
@@ -95,8 +94,8 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
         rw [Subsingleton.eq_zero f, sum_zero_index]
       · simp only [if_neg hn, not_mem_empty, false_iff]
         rw [Subsingleton.eq_zero f, sum_zero_index]
-        exact Ne.symm hn)
-  | succ d ih => exact fun n f => by (
+        exact Ne.symm hn
+  | succ d ih =>
       simp only [finAntidiagonal, mem_biUnion, mem_antidiagonal, mem_map,
         Embedding.coeFn_mk, Prod.exists]
       constructor
@@ -108,7 +107,7 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
         constructor
         · rw [← cons_tail f, Finsupp.sum_cons] at hf
           exact hf
-        exact ⟨tail f, by rw [ih], cons_tail f⟩)
+        exact ⟨tail f, by rw [ih], cons_tail f⟩
 
 lemma mem_finAntidiagonal' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
     f ∈ finAntidiagonal d n ↔ univ.sum f = n := by
@@ -362,7 +361,7 @@ lemma mem_piAntidiagonal' {s : Finset ι} {n : μ} {f : ι →₀ μ} :
         rw [he, Embedding.trans]
         simp only [Embedding.coe_subtype, Equiv.coe_toEmbedding, Embedding.coeFn_mk,
           EquivLike.range_comp, Subtype.range_coe_subtype, setOf_mem]
-      rw [mem_embDomain, hrange, coe_subset]
+      rw [exists_mem_embDomain_eq, hrange, coe_subset]
       exact hsupp
     obtain ⟨v : Fin s.card →₀ μ, hv⟩ := he'
     use v

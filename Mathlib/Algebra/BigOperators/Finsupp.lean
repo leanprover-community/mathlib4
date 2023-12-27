@@ -551,7 +551,7 @@ theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β}
 #align finsupp.prod_emb_domain Finsupp.prod_embDomain
 #align finsupp.sum_emb_domain Finsupp.sum_embDomain
 
-lemma mem_embDomain [Zero M] {f : α ↪ β} {g : β →₀ M} :
+lemma exists_mem_embDomain_eq [Zero M] {f : α ↪ β} {g : β →₀ M} :
     (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
   constructor
   · rintro ⟨v, rfl⟩
