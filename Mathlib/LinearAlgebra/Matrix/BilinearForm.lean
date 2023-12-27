@@ -319,6 +319,7 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
   rfl
 #align bilin_form.to_matrix'_apply BilinForm.toMatrix'_apply
 
+/-- `SMatrix.dotProduct v w` is the sum of the entrywise scalar products `v i • w i` -/
 def SMatrix.dotProduct (v : n → R₂) (w : n → N₂)  : N₂ :=
   ∑ i, v i • w i
 
