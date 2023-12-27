@@ -1808,8 +1808,47 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
     exact (lt_self_iff_false _).mp
       (lt_of_le_of_lt (h ▸ feasibleSet_inter_card_le_basisRank _
         (insert_feasible_of_not_mem_closure_feasible hc₁ h₃)) h₄)
-  · rw [← basisRank_le_rank_iff]
-    sorry
+  · rw [← basisRank_le_rank_iff, basisRank, max'_le_iff]
+    intro br hbr
+    simp only [mem_image, system_feasible_set_mem_mem] at hbr
+    let ⟨b, hb₁, hb₂⟩ := hbr
+    rw [← hb₂]; clear br hbr hb₂
+    let ⟨x, hx⟩ := G.bases_nonempty s
+    by_cases h₁ : b.card ≤ x.card
+    · rw [rank_eq_basis_card hx]
+      exact le_trans (card_le_of_subset (inter_subset_right _ _)) h₁
+    · rw [not_le] at h₁
+      let ⟨a, ha₁, ha₂, ha₃, ha₄⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
+        hb₁ (basis_mem_feasible hx) (le_of_lt h₁) le_rfl (le_of_lt h₁)
+      have h₂ : a ∩ s = x := by
+        apply subset_antisymm _ (Finset.subset_inter ha₂ (basis_subset hx))
+        intro e h₂
+        let ⟨h₂, h₃⟩ := mem_inter.mp h₂
+        by_contra h'
+        let ⟨y, hy₁, hy₂, _, hy₃, hy₄⟩:=
+          exchangeProperty_exists_feasible_superset_add_element_feasible G.exchangeProperty ha₁
+            (basis_mem_feasible hx) ha₂ h₂ h'
+        have h₄ : e ∉ G.closure y := by
+          intro h₄
+          rw [mem_closure, rank_eq_card_iff_feasible.mpr hy₁, rank_eq_card_iff_feasible.mpr hy₄,
+            card_insert_of_not_mem hy₃] at h₄
+          simp only [add_right_eq_self] at h₄
+        exact h₄ ((G.subset_closure_of_subset_monotoneClosureOperator (h hx) hy₂) h₃)
+      rw [rank_eq_basis_card hx, ← h₂, inter_comm s b]
+      rw [← card_inter_add_card_sdiff a s, ← card_inter_add_card_sdiff b s] at ha₄
+      rw [eq_tsub_of_add_eq ha₄, Nat.add_sub_assoc (by
+        apply card_le_of_subset
+        intro e he
+        simp only [mem_sdiff] at *
+        simp only [he.2, not_false_eq_true, and_true]
+        have h : e ∈ b ∪ x := ha₃ he.1
+        rw [mem_union] at h
+        apply h.elim (fun h => h)
+        intro h
+        rw [← h₂] at h
+        rw [mem_inter] at h
+        tauto)]
+      simp only [le_add_iff_nonneg_right, _root_.zero_le]
 
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
