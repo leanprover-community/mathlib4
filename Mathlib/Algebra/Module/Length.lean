@@ -22,7 +22,9 @@ file, we show that two definitions are in fact equal.
 
 -/
 
-variable {R : Type _} [CommRing R] {M : Type _} [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
+
+open Classical
 
 section defs
 
@@ -44,6 +46,14 @@ class IsFiniteLengthModule : Prop where
   /-- A module with finite length is a module with a composition series starting with 0 and ending
   with itself. -/
   finite : Nonempty (FiniteLengthModule R M)
+
+instance : FiniteLengthModule R PUnit where
+  compositionSeries := RelSeries.singleton _ ⊤
+  head_eq := by
+    ext ⟨⟩
+    change PUnit.unit ∈ ⊤ ↔ PUnit.unit ∈ ⊥
+    simp
+  last_eq := rfl
 
 variable {R M}
 
@@ -92,8 +102,6 @@ noncomputable instance (priority := 100) [h : IsFiniteLengthModule R M] : Finite
 section decIssue
 
 variable (R M)
-variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
-
 
 /-- the length of a module `M` is infinite if `M` does not have a composition series of the form
   `0 ⋖ M₁ ⋖ ... ⋖ Mₙ ⋖ M`, and is the length of its composition series. By Jordan-Hölder theorem,
@@ -116,6 +124,11 @@ lemma _root_.CompositionSeries.moduleLength_eq_length
     · rw [show s.top = _ from slast, show h.finite.some.compositionSeries.top = _ from
         h.finite.some.last_eq]
   · exact (h ⟨_, s0, slast⟩).elim
+
+lemma moduleLength_punit : moduleLength R PUnit = 0 := by
+  let i : FiniteLengthModule R PUnit := inferInstance
+  rw [i.compositionSeries.moduleLength_eq_length i.head_eq i.last_eq]
+  rfl
 
 lemma moduleLength_lt_of_proper_submodule [h : FiniteLengthModule R M]
     (N : Submodule R M) (hN : N < ⊤) : moduleLength R N < moduleLength R M := by
@@ -145,7 +158,7 @@ lemma isFiniteLengthModule_congr {M' : Type _} [AddCommGroup M'] [Module R M']
   finite := ⟨finiteLengthModule_congr e (h := h.finite.some)⟩
 
 lemma moduleLength_congr
-    {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
+    {M' : Type*} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     moduleLength R M = moduleLength R M' := by
   by_cases H : IsFiniteLengthModule R M
   · rw [H.finite.some.compositionSeries.moduleLength_eq_length,
@@ -265,7 +278,7 @@ end LTSeries
 
 section decIssue
 
-variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
+-- variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
 
 lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
     moduleLength R M = krullDim (Submodule R M) :=
@@ -371,7 +384,6 @@ lemma nthSubmodule_eventually_stabilize_of_isNoetherian [IsNoetherian R M] :
 
 section decIssue
 
-variable [DecidablePred $ λ (n : ℕ) ↦ ∀ (m : ℕ), n ≤ m → nthSubmodule R M n = nthSubmodule R M m]
 variable  [IsNoetherian R M]
 
 /-- the index of `⊤` appearing in `nthSubmodule`-/
@@ -448,6 +460,8 @@ instance [IsArtinian R M] [IsNoetherian R M] : IsFiniteLengthModule R M where
 end decIssue
 
 section additive
+
+section submodule_quotient
 
 variable {N : Submodule R M} (c : CompositionSeries (Submodule R (M ⧸ N)))
 variable (d : CompositionSeries (Submodule R N))
@@ -559,8 +573,6 @@ def FiniteLengthModule.of_quotient_of_submodule
     erw [show RelSeries.toFun compositionSeries (Fin.last _) = ⊤ from quotFin.last_eq,
       Submodule.comap_top]
 
-variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
-
 lemma moduleLength.eq_length_submodule_add_length_quotient :
     moduleLength R M = moduleLength R N + moduleLength R (M ⧸ N) := by
   by_cases finiteLength : IsFiniteLengthModule R M
@@ -590,6 +602,80 @@ lemma moduleLength.eq_length_submodule_add_length_quotient :
     · conv_rhs => rhs; delta moduleLength
       rw [dif_neg inst1, add_comm]
       rfl
+
+end submodule_quotient
+
+section lt_series
+
+variable (x : LTSeries (Submodule R M))
+
+variable {R} in
+/-- if `x ≤ y` are both `R`-submodule of `M`, we can mathematically form their quotient but type
+theoretically more complicated, so introduce a definition to use a notation. -/
+private def quot {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) : Type _ :=
+  x ⧸ (Submodule.comap x.subtype y)
+local infix:80 "⧸ₛ" => quot
+
+instance {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) :
+    AddCommGroup (x ⧸ₛ y) := by
+  delta quot; infer_instance
+
+instance {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) :
+    Module R (x ⧸ₛ y) := by
+  delta quot; infer_instance
+
+variable {R M}
+
+abbrev LTSeries.cqf (i : Fin (x.length + 1)) :=
+  x i ⧸ₛ x.head
+
+noncomputable def LTSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
+  refine PUnit.linearEquivOfUnique (uniq := ?_)
+  suffices H : Nonempty (Unique _)
+  · exact Classical.choice H
+  erw [Submodule.unique_quotient_iff_eq_top]
+  simp only [Submodule.comap_subtype_eq_top]
+  rfl
+
+abbrev LTSeries.qf (i : Fin x.length) := x i.succ ⧸ₛ x i.castSucc
+
+open BigOperators Classical
+
+lemma LTSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
+    moduleLength R (x.cqf i) =
+    ∑ j in (Finset.range i.1).attach, moduleLength R (x.qf ⟨j.1, by
+      have ineq1 := j.2
+      rw [Finset.mem_range] at ineq1
+      have ineq2 := i.2
+      linarith⟩) := by
+  induction' i using Fin.induction with i ih
+  · simp only [Fin.val_zero, Finset.range_zero, Finset.attach_empty, Int.Nat.cast_ofNat_Int,
+      Nat.rawCast, Nat.cast_id, Int.ofNat_one, Int.rawCast, Int.cast_id, Int.ofNat_eq_coe,
+      Int.ofNat_zero, eq_mp_eq_cast, id_eq, Fin.succ_mk, Fin.castSucc_mk, Finset.sum_empty]
+    rw [moduleLength_congr x.cqfZeroEquiv, moduleLength_punit]
+  · rw [show ∑ j in (Finset.range i.succ).attach, moduleLength R (x.qf ⟨j.1, ?_⟩) =
+      ∑ j in (Finset.range i).attach, moduleLength R (x.qf ⟨j.1, ?_⟩) + moduleLength R (x.qf i)
+      from ?_]
+    pick_goal 3
+    · have ineq1 := j.2
+      rw [Finset.mem_range] at ineq1
+      change j.1 < i + 1 at ineq1
+      have ineq2 := i.2
+      linarith
+    pick_goal 3
+    · have ineq1 := j.2
+      rw [Finset.mem_range] at ineq1
+      have ineq2 := i.2
+      linarith
+    pick_goal 2
+    · simp only [Fin.val_succ, Nat.rawCast, Nat.cast_id, Int.ofNat_one, Int.rawCast, Int.cast_id,
+        Int.ofNat_eq_coe, Int.ofNat_zero, Int.Nat.cast_ofNat_Int, eq_mp_eq_cast, id_eq, Fin.succ_mk,
+        Fin.castSucc_mk]
+      sorry
+    erw [← ih]
+    sorry
+
+end lt_series
 
 end additive
 
