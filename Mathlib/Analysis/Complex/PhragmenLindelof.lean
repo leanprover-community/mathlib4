@@ -689,7 +689,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
   have hle : ∀ C', (∀ x : ℝ, 0 ≤ x → ‖f x‖ ≤ C') →
       ∀ z : ℂ, 0 ≤ z.re → ‖f z‖ ≤ max C C' := fun C' hC' z hz ↦ by
     rcases hexp with ⟨c, hc, B, hO⟩
-    cases' le_total z.im 0 with h h
+    rcases le_total z.im 0 with h | h
     · refine quadrant_IV (hd.mono fun _ => And.left) ⟨c, hc, B, ?_⟩
           (fun x hx => (hC' x hx).trans <| le_max_right _ _)
           (fun x _ => (him x).trans (le_max_left _ _)) hz h
@@ -714,7 +714,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     rw [Real.cocompact_eq, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
-  cases' le_or_lt ‖f x₀‖ C with h h
+  rcases le_or_lt ‖f x₀‖ C with h | h
   ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.

@@ -445,6 +445,21 @@ abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 @[simp]
 lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
 
+/-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.castSucc`. -/
+@[simps]
+def _root_.Fin.castSuccFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
+  obj i := i.castSucc
+  map hij := hij
+
+/-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
+the last arrow. -/
+@[simps!]
+def δlastFunctor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
+  whiskerLeftFunctor (Fin.castSuccFunctor (n + 1))
+
+/-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
+abbrev δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
+
 section
 
 variable {F G : ComposableArrows C (n + 1)}
