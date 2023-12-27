@@ -433,7 +433,7 @@ theorem prod_primeFactors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t :
     ∏ a in (n.primeFactors \ t), a = n / ∏ a in t, a := by
   refine symm $ Nat.div_eq_of_eq_mul_left (Finset.prod_pos
     fun p hp => (prime_of_mem_factors (List.mem_toFinset.mp (ht hp))).pos) ?_
-  rw [Finset.prod_sdiff ht, prod_primeFactors_of_squarefree  hn]
+  rw [Finset.prod_sdiff ht, prod_primeFactors_of_squarefree hn]
 
 end Nat
 
