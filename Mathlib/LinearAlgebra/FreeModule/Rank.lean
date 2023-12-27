@@ -143,7 +143,7 @@ section DivisionRing
 variable (K : Type u) [DivisionRing K]
 
 /-- Key lemma towards the Erdős-Kaplansky theorem from https://mathoverflow.net/a/168624 -/
-theorem rank_pi_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
+theorem max_aleph0_mk_le_rank_function_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
     (Finsupp.lcoeFun.rank_le_of_injective <| by exact FunLike.coe_injective)
   refine max_le aleph0_le ?_
@@ -198,7 +198,7 @@ theorem rank_pi_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι �
   have := LinearMap.lift_rank_le_of_injective _ <|
     LinearMap.funLeft_injective_of_surjective K K _ (invFun_surjective e.injective)
   rw [lift_umax.{u,v}, lift_id'.{u,v}] at this
-  have key := (lift_le.{v}.mpr <| rank_pi_nat K).trans this
+  have key := (lift_le.{v}.mpr <| max_aleph0_mk_le_rank_function_nat K).trans this
   rw [lift_max, lift_aleph0, max_le_iff] at key
   haveI : Infinite ιK := by
     rw [← aleph0_le_mk_iff, ← rank_eq_cardinal_basis' bK]; exact key.1
