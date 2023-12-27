@@ -34,7 +34,7 @@ open BigOperators
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving
   CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero,
-  Sub, Inhabited
+  CanonicallyOrderedAddCancelCommMonoid, Sub, Inhabited
 #align nnrat NNRat
 
 -- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`

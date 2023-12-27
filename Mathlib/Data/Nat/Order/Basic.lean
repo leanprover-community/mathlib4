@@ -76,6 +76,9 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
 instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ :=
   { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
 
+instance canonicallyOrderedAddCancelCommMonoid : CanonicallyOrderedAddCancelCommMonoid ℕ :=
+  inferInstance
+
 variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/

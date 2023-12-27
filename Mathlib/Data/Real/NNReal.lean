@@ -438,6 +438,8 @@ example : PartialOrder ℝ≥0 := by infer_instance
 
 noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
+noncomputable example : CanonicallyOrderedAddCancelCommMonoid ℝ≥0 := by infer_instance
+
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance

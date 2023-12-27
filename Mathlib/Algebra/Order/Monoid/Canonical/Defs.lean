@@ -92,7 +92,7 @@ theorem le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε
 end ExistsMulOfLE
 
 
-/-- A canonically ordered additive monoid is an ordered commutative additive monoid
+/-- A canonically ordered additive commutative monoid is an ordered commutative additive monoid
   in which the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
@@ -108,7 +108,7 @@ class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid 
 -- see Note [lower instance priority]
 attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderBot
 
-/-- A canonically ordered monoid is an ordered commutative monoid
+/-- A canonically ordered commutative monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
   Examples seem rare; it seems more likely that the `OrderDual`
@@ -320,13 +320,24 @@ instance bit0 {M} [CanonicallyOrderedAddCommMonoid M] {x : M} [NeZero x] : NeZer
 
 end NeZero
 
-/-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
-    whose ordering is a linear order. -/
+/-- A canonically ordered additive cancellative commutative monoid is
+    a canonically ordered additive commutative monoid in which addition is cancellative. -/
+class CanonicallyOrderedAddCancelCommMonoid (α : Type*)
+  extends CanonicallyOrderedAddCommMonoid α, OrderedCancelAddCommMonoid α
+
+/-- A canonically ordered cancellative commutative monoid is
+    a canonically ordered commutative monoid in which multiplication is cancellative. -/
+@[to_additive]
+class CanonicallyOrderedCancelCommMonoid (α : Type*)
+  extends CanonicallyOrderedCommMonoid α, OrderedCancelCommMonoid α
+
+/-- A canonically linear-ordered additive commutative monoid is
+    a canonically ordered additive commutative monoid whose ordering is a linear order. -/
 class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
   extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
-/-- A canonically linear-ordered monoid is a canonically ordered monoid
+/-- A canonically linear-ordered commutative monoid is a canonically ordered commutative monoid
     whose ordering is a linear order. -/
 @[to_additive]
 class CanonicallyLinearOrderedCommMonoid (α : Type*)
