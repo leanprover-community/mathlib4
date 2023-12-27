@@ -714,3 +714,24 @@ instance HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] : Lindel
 
 instance SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
   apply HereditarilyLindelof.to_Lindelof
+
+theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
+    IsLindelof s := by
+  apply isLindelof_iff_countable_subcover.mpr
+  intro ι U hι hs
+  have hU : IsOpen (⋃ i, U i) := isOpen_iUnion hι
+  have : IsLindelof (⋃ i, U i) := by
+    apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
+    apply subset_univ (⋃ i, U i)
+    apply hU
+  have := isLindelof_iff_countable_subcover.mp this U hι (Eq.subset rfl)
+  rcases this with ⟨t,⟨htc, hts⟩⟩
+  use t, htc
+  exact Subset.trans hs hts
+
+lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
+  have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
+  rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t,⟨htc, htu⟩⟩
+  use t, htc
+  apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
