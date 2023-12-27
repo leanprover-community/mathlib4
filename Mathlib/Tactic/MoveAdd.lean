@@ -358,7 +358,7 @@ operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
   `op`-analogues of `add_comm, add_assoc, add_left_comm`.
 -/
 def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
-    MetaM (List MVarId) := do
+    MetaM (List MVarId) := mv.withContext do
   let permExpr ← permuteExpr op (← mv.getType'') instr
   -- generate the implication `permutedMv → mv = permutedMv → mv`
   let eqmpr ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
