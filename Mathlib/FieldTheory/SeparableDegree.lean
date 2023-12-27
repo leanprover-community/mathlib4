@@ -431,8 +431,7 @@ theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
   refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
   · obtain ⟨g, h1, n, rfl⟩ := hi.hasSeparableContraction q
     have h2 : g.natDegree = 1 := by
-      rwa [natSepDegree_expand _ q,
-        natSepDegree_eq_natDegree_of_separable g h1] at h
+      rwa [natSepDegree_expand _ q, natSepDegree_eq_natDegree_of_separable g h1] at h
     rw [((monic_expand_iff <| expChar_pow_pos F q n).mp hm).eq_X_add_C h2]
     exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add]⟩
   rw [h, natSepDegree_expand _ q, natSepDegree_X_sub_C]
@@ -502,13 +501,11 @@ theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 
   refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_mem_pow q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
-    rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero] at hx
-    apply_fun map (algebraMap F E) at h
-    rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_C,
-      ← hx, map_pow, ← sub_pow_expChar_pow] at h
-    exact ⟨n, h⟩
+    rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
+    use n
+    rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow, ← sub_pow_expChar_pow]
   apply_fun constantCoeff at h
-  simp only [constantCoeff_apply, coeff_map, map_pow, map_sub, coeff_X_zero, coeff_C_zero] at h
+  simp_rw [map_pow, map_sub, constantCoeff_apply, coeff_map, coeff_X_zero, coeff_C_zero] at h
   rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
   exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
 
@@ -643,29 +640,13 @@ theorem isSeparable_adjoin_simple_iff_separable {x : E} :
 
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
-theorem isSeparable_adjoin_two_of_separable {x y : E}
+theorem IntermediateField.isSeparable_adjoin_pair_of_separable {x y : E}
     (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
     IsSeparable F F⟮x, y⟯ := by
-  let L := F⟮x⟯
-  haveI : FiniteDimensional F F⟮x, y⟯ := finiteDimensional_adjoin fun _ ↦ by
-    rintro (rfl | rfl)
-    exacts [hx.isIntegral, hy.isIntegral]
-  rw [← finSepDegree_eq_finrank_iff]
-  have halg' := hy.isIntegral.isAlgebraic.tower_top L
-  have heq : _ * _ = _ * _ := congr_arg₂ (· * ·)
-    (finSepDegree_adjoin_simple_eq_finrank_iff F E x hx.isIntegral.isAlgebraic |>.2 hx)
-    (finSepDegree_adjoin_simple_eq_finrank_iff L E y halg' |>.2 (hy.map_minpoly L))
-  let M := L⟮y⟯
-  letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
-  letI : Module L M := Algebra.toModule
-  letI : SMul L M := Algebra.toSMul
-  haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
-  haveI : FiniteDimensional F L := adjoin.finiteDimensional hx.isIntegral
-  haveI : FiniteDimensional L M := adjoin.finiteDimensional halg'.isIntegral
-  rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
-    FiniteDimensional.finrank_mul_finrank F L M] at heq
-  change finSepDegree F (restrictScalars F M) = finrank F (restrictScalars F M) at heq
-  rwa [adjoin_adjoin_left F {x} {y}, Set.union_comm, Set.union_singleton] at heq
+  rw [← adjoin_simple_adjoin_simple]
+  replace hy := hy.map.of_dvd (minpoly.dvd_map_of_isScalarTower F F⟮x⟯ y)
+  rw [← isSeparable_adjoin_simple_iff_separable] at hx hy
+  exact IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
 end IntermediateField
 
@@ -675,13 +656,9 @@ theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
   let f := minpoly E x
   let E' : IntermediateField F E := adjoin F f.frange
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
-  have h : f ∈ lifts (algebraMap E' E) := (lifts_iff_coeff_lifts f).2 fun n ↦ Set.mem_range.2 <| by
-    by_cases h : f.coeff n = 0
-    · simp only [h, _root_.map_eq_zero, exists_eq]
-    have : F⟮f.coeff n⟯ ≤ E' := adjoin.mono _ _ _ <|
-      Set.singleton_subset_iff.2 <| f.coeff_mem_frange n h
-    exact ⟨⟨f.coeff n, this <| mem_adjoin_simple_self F (f.coeff n)⟩, rfl⟩
-  obtain ⟨g, h⟩ := f.mem_lifts.1 h
+  let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
+  have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
+  clear_value g
   have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
     simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
