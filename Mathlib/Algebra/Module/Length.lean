@@ -24,7 +24,7 @@ file, we show that two definitions are in fact equal.
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
-open Classical
+open Classical BigOperators
 
 section defs
 
@@ -629,6 +629,13 @@ variable {R M}
 abbrev LTSeries.cqf (i : Fin (x.length + 1)) :=
   x i ⧸ₛ x.head
 
+def LTSeries.cqfToSucc (i : Fin x.length) :
+    x.cqf i.castSucc →ₗ[R] x.cqf i.succ :=
+  Submodule.mapQ _ _ (Submodule.inclusion <| le_of_lt <| x.step _) <| by
+    rw [← Submodule.comap_comp]
+    intro m hm
+    simpa using hm
+
 noncomputable def LTSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   refine PUnit.linearEquivOfUnique (uniq := ?_)
   suffices H : Nonempty (Unique _)
@@ -639,7 +646,53 @@ noncomputable def LTSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
 
 abbrev LTSeries.qf (i : Fin x.length) := x i.succ ⧸ₛ x i.castSucc
 
-open BigOperators Classical
+/--
+xᵢ₊₁ ⧸ xᵢ = (xᵢ₊₁ ⧸ x₀) ⧸ (xᵢ ⧸ x₀)
+
+-/
+noncomputable def LTSeries.cdfSuccEquiv (i : Fin x.length) :
+    x.qf i ≃ₗ[R]
+    x.cqf i.succ ⧸ (Submodule.map (x.cqfToSucc i) ⊤ : Submodule R (x.cqf i.succ)) := by
+  let x_i : Submodule R (x i.succ) :=
+    Submodule.map (Submodule.inclusion <| le_of_lt <| x.step _ : x i.castSucc →ₗ[R] x i.succ) ⊤
+  let x_0 : Submodule R (x i.succ) :=
+    Submodule.map (Submodule.inclusion <| x.monotone <| Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
+
+  let e := @Submodule.quotientQuotientEquivQuotient (R := R) (M := x i.succ)
+    (T := x_i) (S := x_0) (fun m hm ↦ by
+      simp only [Submodule.map_top, LinearMap.mem_range, Subtype.exists] at hm ⊢
+      rcases hm with ⟨n, h1, rfl⟩
+      exact ⟨n, x.monotone (Fin.zero_le _) h1, rfl⟩)
+  refine ?_ ≪≫ₗ e.symm ≪≫ₗ ?_
+  · refine Submodule.Quotient.equiv _ _ (LinearEquiv.refl R _) ?_
+    ext m
+    simp only [Submodule.mem_map, Submodule.mem_comap, Submodule.coeSubtype, LinearEquiv.refl_apply,
+      exists_eq_right, Submodule.map_top, LinearMap.mem_range, Subtype.exists]
+    fconstructor
+    · intro h; exact ⟨m.1, h, rfl⟩
+    · rintro ⟨n, hn, rfl⟩; exact hn
+  · refine Submodule.Quotient.equiv _ _
+      (Submodule.Quotient.equiv _ _ (LinearEquiv.refl R _) ?_) ?_
+    · ext m
+      simp only [Submodule.map_top, Submodule.mem_map, LinearMap.mem_range, Subtype.exists,
+        LinearEquiv.refl_apply, exists_eq_right, Submodule.mem_comap, Submodule.coeSubtype]
+      fconstructor
+      · rintro ⟨n, hn, rfl⟩; exact hn
+      · intro h; exact ⟨m.1, h, rfl⟩
+    · ext m
+      simp only [Submodule.Quotient.equiv_refl, Submodule.map_top, Submodule.mem_map,
+        LinearMap.mem_range, Subtype.exists, Submodule.mkQ_apply]
+      fconstructor
+      · rintro ⟨_, ⟨n, hn, ⟨⟨n', h0, h1⟩, rfl⟩⟩, h2⟩
+        refine ⟨Submodule.Quotient.mk ⟨n', h0⟩, ?_⟩
+        erw [Submodule.mapQ_apply]
+        rw [h1, ← h2]
+        rfl
+      · rintro ⟨(z : _ ⧸ _), rfl⟩
+        induction' z using Quotient.inductionOn' with z
+        refine ⟨_, ⟨z.1, (le_of_lt <| x.step _) z.2, ⟨z.1, z.2, rfl⟩, rfl⟩, ?_⟩
+        erw [Submodule.mapQ_apply]
+        rfl
 
 lemma LTSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
     moduleLength R (x.cqf i) =
