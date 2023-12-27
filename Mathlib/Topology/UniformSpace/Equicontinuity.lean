@@ -790,6 +790,10 @@ theorem UniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : 
   simp only [uniformEquicontinuousOn_iff_uniformContinuousOn, this.uniformContinuousOn_iff]
   rfl
 
+/-- A version of `EquicontinuousWithinAt.closure` applicable to subsets of types which embed
+continuously into `X → α` with the topology of pointwise convergence on `S ∪ {x₀}`. It turns out we
+don't need any condition on the embedding other than continuity, but in practice this will mostly
+be applied to `FunLike` types where the coercion is injective. -/
 theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Set X} {x₀ : X}
     (hA : EquicontinuousWithinAt (u ∘ (↑) : A → X → α) S x₀) (hu₁ : Continuous (S.restrict ∘ u))
     (hu₂ : Continuous (eval x₀ ∘ u)) :
@@ -820,6 +824,9 @@ protected theorem EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X} (hA :
   EquicontinuousAt.closure' (u := id) hA continuous_id
 #align equicontinuous_at.closure EquicontinuousAt.closure
 
+/-- If a set of functions is equicontinuous at some `x₀` within a set `S`, its closure for the
+product topology is also equicontinuous at `x₀`. This would also be true for the coarser topology
+of pointwise convergence on `S ∪ {x₀}`, see `EquicontinuousWithinAt.closure'`. -/
 protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
     (hA : A.EquicontinuousWithinAt S x₀) :
     (closure A).EquicontinuousWithinAt S x₀ :=
@@ -834,6 +841,10 @@ theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     Equicontinuous (u ∘ (↑) : closure A → X → α) := fun x ↦ (hA x).closure' hu
 #align equicontinuous.closure' Equicontinuous.closure'
 
+/-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
+into `X → α` with the product topology. It turns out we don't need any condition on the embedding
+other than continuity, but in practice this will mostly be applied to `FunLike` types where
+the coercion is injective. -/
 theorem EquicontinuousOn.closure' {A : Set Y} {u : Y → X → α} {S : Set X}
     (hA : EquicontinuousOn (u ∘ (↑) : A → X → α) S) (hu : Continuous (S.restrict ∘ u)) :
     EquicontinuousOn (u ∘ (↑) : closure A → X → α) S :=
