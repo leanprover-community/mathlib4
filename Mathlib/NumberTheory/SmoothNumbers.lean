@@ -261,7 +261,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
     (smoothNumbersUpTo N k).card ≤ 2 ^ k.primesBelow.card * N.sqrt := by
-  convert (Finset.card_le_of_subset <| smoothNumbersUpTo_subset_image N k).trans <|
+  convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <|
     Finset.card_image_le
   simp
 
