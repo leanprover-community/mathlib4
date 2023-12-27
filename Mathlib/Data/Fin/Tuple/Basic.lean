@@ -569,10 +569,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
 theorem snoc_init_self : snoc (init q) (q (last n)) = q := by
   ext j
   by_cases h : j.val < n
-  · simp only [init, snoc, h, cast_eq, dite_true]
-    have _ : castSucc (castLT j h) = j := castSucc_castLT _ _
-    rw [← cast_eq rfl (q j)]
-    congr
+  · simp only [init, snoc, h, cast_eq, dite_true, castSucc_castLT]
   · rw [eq_last_of_not_lt h]
     simp
 #align fin.snoc_init_self Fin.snoc_init_self
@@ -653,12 +650,12 @@ theorem snoc_eq_append {α : Type*} (xs : Fin n → α) (x : α) :
 
 theorem append_left_snoc {n m} {α : Type*} (xs : Fin n → α) (x : α) (ys : Fin m → α) :
     Fin.append (Fin.snoc xs x) ys =
-      Fin.append xs (Fin.cons x ys) ∘ Fin.cast (Nat.succ_add_eq_succ_add ..) := by
+      Fin.append xs (Fin.cons x ys) ∘ Fin.cast (Nat.succ_add_eq_add_succ ..) := by
   rw [snoc_eq_append, append_assoc, append_left_eq_cons, append_cast_right]; rfl
 
 theorem append_right_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : Fin m → α) :
     Fin.append xs (Fin.cons y ys) =
-      Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_succ_add ..).symm := by
+      Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :

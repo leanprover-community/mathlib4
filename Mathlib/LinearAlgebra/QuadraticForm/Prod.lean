@@ -147,6 +147,29 @@ theorem PosDef.prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
   posDef_prod_iff.mpr ⟨h₁, h₂⟩
 #align quadratic_form.pos_def.prod QuadraticForm.PosDef.prod
 
+theorem IsOrtho.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    {v w : M₁ × M₂} (h₁ : Q₁.IsOrtho v.1 w.1) (h₂ : Q₂.IsOrtho v.2 w.2) :
+    (Q₁.prod Q₂).IsOrtho v w :=
+  (congr_arg₂ HAdd.hAdd h₁ h₂).trans <| add_add_add_comm _ _ _ _
+
+@[simp] theorem IsOrtho.inl_inr {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₁ : M₁) (m₂ : M₂) :
+    (Q₁.prod Q₂).IsOrtho (m₁, 0) (0, m₂) := .prod (.zero_right _) (.zero_left _)
+
+@[simp] theorem IsOrtho.inr_inl {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₁ : M₁) (m₂ : M₂) :
+    (Q₁.prod Q₂).IsOrtho (0, m₂) (m₁, 0) := (IsOrtho.inl_inr _ _).symm
+
+@[simp] theorem isOrtho_inl_inl_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₁ m₁' : M₁) :
+    (Q₁.prod Q₂).IsOrtho (m₁, 0) (m₁', 0) ↔ Q₁.IsOrtho m₁ m₁' := by
+  simp [isOrtho_def]
+
+@[simp] theorem isOrtho_inr_inr_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₂ m₂' : M₂) :
+    (Q₁.prod Q₂).IsOrtho (0, m₂) (0, m₂') ↔ Q₂.IsOrtho m₂ m₂' := by
+  simp [isOrtho_def]
+
 end Semiring
 
 section Ring

@@ -773,7 +773,8 @@ theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagS
   induction' i with _ _ _ i_ih
   · simp [comp, diagSub, subtypeVal, prod.diag]
   · simp [prod.diag]
-    simp [comp, diagSub, subtypeVal, prod.diag] at *
+    simp? [comp, diagSub, subtypeVal, prod.diag] at * says
+      simp only [comp, subtypeVal, diagSub] at *
     apply @i_ih (drop _)
 #align typevec.subtype_val_diag_sub TypeVec.subtypeVal_diagSub
 

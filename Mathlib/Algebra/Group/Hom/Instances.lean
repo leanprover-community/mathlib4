@@ -331,6 +331,14 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
   Iff.symm AddMonoidHom.ext_iff₂
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
+lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
+    mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
+  FunLike.ext_iff
+
+lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
+    mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
+  FunLike.ext_iff
+
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
 @[simps!]
 def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
@@ -345,10 +353,6 @@ def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
 #align add_monoid.End.mul_right AddMonoid.End.mulRight
 #align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
-lemma AddMonoid.End.mulRight_eq_mulLeft_of_commute (a : R) (h : ∀ (b : R), Commute a b) :
-    mulRight a = mulLeft a :=
-  AddMonoidHom.ext fun _ ↦ (h _).eq.symm
-
 end Semiring
 
 section CommSemiring
@@ -357,9 +361,9 @@ variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
 
 namespace AddMonoid.End
 
-lemma comm_mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) := by
-  ext a
-  exact mulRight_eq_mulLeft_of_commute _ (Commute.all _)
+lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
+  AddMonoidHom.ext fun _ =>
+    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
 
 end AddMonoid.End
 

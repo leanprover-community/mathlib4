@@ -242,7 +242,7 @@ variable {ι' : Type*} [DecidableEq ι']
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
 theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
+    (h : ∀ y ∉ t, (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤ ∏ x in s, f x :=
   calc
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤
@@ -256,7 +256,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
+    (h : ∀ y ∉ t, ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
     ∏ x in s, f x ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 #align finset.prod_le_prod_fiberwise_of_prod_fiber_le_one' Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
@@ -323,7 +323,7 @@ variable [DecidableEq α] {s : Finset α} {B : Finset (Finset α)} {n : ℕ}
 
 /-- If every element belongs to at most `n` Finsets, then the sum of their sizes is at most `n`
 times how many they are. -/
-theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card ≤ n) :
+theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter (a ∈ ·)).card ≤ n) :
     (∑ t in B, (s ∩ t).card) ≤ s.card * n := by
   refine' le_trans _ (s.sum_le_card_nsmul _ _ h)
   simp_rw [← filter_mem_eq_inter, card_eq_sum_ones, sum_filter]
@@ -332,7 +332,7 @@ theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card ≤
 
 /-- If every element belongs to at most `n` Finsets, then the sum of their sizes is at most `n`
 times how many they are. -/
-theorem sum_card_le [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card ≤ n) :
+theorem sum_card_le [Fintype α] (h : ∀ a, (B.filter (a ∈ ·)).card ≤ n) :
     ∑ s in B, s.card ≤ Fintype.card α * n :=
   calc
     ∑ s in B, s.card = ∑ s in B, (univ ∩ s).card := by simp_rw [univ_inter]
@@ -341,7 +341,7 @@ theorem sum_card_le [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card �
 
 /-- If every element belongs to at least `n` Finsets, then the sum of their sizes is at least `n`
 times how many they are. -/
-theorem le_sum_card_inter (h : ∀ a ∈ s, n ≤ (B.filter <| (· ∈ ·) a).card) :
+theorem le_sum_card_inter (h : ∀ a ∈ s, n ≤ (B.filter (a ∈ ·)).card) :
     s.card * n ≤ ∑ t in B, (s ∩ t).card := by
   apply (s.card_nsmul_le_sum _ _ h).trans
   simp_rw [← filter_mem_eq_inter, card_eq_sum_ones, sum_filter]
@@ -350,7 +350,7 @@ theorem le_sum_card_inter (h : ∀ a ∈ s, n ≤ (B.filter <| (· ∈ ·) a).ca
 
 /-- If every element belongs to at least `n` Finsets, then the sum of their sizes is at least `n`
 times how many they are. -/
-theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ (B.filter <| (· ∈ ·) a).card) :
+theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ (B.filter (a ∈ ·)).card) :
     Fintype.card α * n ≤ ∑ s in B, s.card :=
   calc
     Fintype.card α * n ≤ ∑ s in B, (univ ∩ s).card := le_sum_card_inter fun a _ ↦ h a
@@ -359,14 +359,14 @@ theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ (B.filter <| (· ∈ ·) a).c
 
 /-- If every element belongs to exactly `n` Finsets, then the sum of their sizes is `n` times how
 many they are. -/
-theorem sum_card_inter (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card = n) :
+theorem sum_card_inter (h : ∀ a ∈ s, (B.filter (a ∈ ·)).card = n) :
     (∑ t in B, (s ∩ t).card) = s.card * n :=
   (sum_card_inter_le fun a ha ↦ (h a ha).le).antisymm (le_sum_card_inter fun a ha ↦ (h a ha).ge)
 #align finset.sum_card_inter Finset.sum_card_inter
 
 /-- If every element belongs to exactly `n` Finsets, then the sum of their sizes is `n` times how
 many they are. -/
-theorem sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) :
+theorem sum_card [Fintype α] (h : ∀ a, (B.filter (a ∈ ·)).card = n) :
     ∑ s in B, s.card = Fintype.card α * n := by
   simp_rw [Fintype.card, ← sum_card_inter fun a _ ↦ h a, univ_inter]
 #align finset.sum_card Finset.sum_card

@@ -1367,13 +1367,11 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
   exact injective_πs _ _
 
 theorem succ_exact :
-    CategoryTheory.Exact (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho)) := by
-  rw [ModuleCat.exact_iff]
-  ext f
-  rw [LinearMap.mem_ker, LinearMap.mem_range]
-  refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun hf ↦ ?_⟩
-  · simpa only [ModuleCat.ofHom, ← hy] using CC_comp_zero _ _ _ y
-  · exact CC_exact _ hC _ ho hf
+    (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
+    (by ext; apply CC_comp_zero)).Exact := by
+  rw [ShortComplex.moduleCat_exact_iff]
+  intro f
+  exact CC_exact C hC hsC ho
 
 end ExactSequence
 
@@ -1639,7 +1637,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     rw [Products.max_eq_o_cons_tail ho p hp.1 hp.2.1]
     rfl
   have hse := succ_exact C hC hsC ho
-  rw [ModuleCat.exact_iff] at hse
+  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at hse
   dsimp [ModuleCat.ofHom] at hse
 
   -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
@@ -1754,8 +1752,8 @@ theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
   have ho' : o < Ordinal.type (·<· : I → I → Prop) :=
     lt_of_lt_of_le (Order.lt_succ _) ho
   rw [linearIndependent_iff_sum C hsC ho']
-  refine ModuleCat.linearIndependent_leftExact ?_ ?_ (succ_mono C o) (succ_exact C hC hsC ho')
-      (square_commutes C ho')
+  refine' ModuleCat.linearIndependent_leftExact (succ_exact C hC hsC ho') ?_ ?_ (succ_mono C o)
+    (square_commutes C ho')
   · exact h (le_of_lt ho') (π C (ord I · < o)) (isClosed_proj C o hC) (contained_proj C o)
   · exact linearIndependent_comp_of_eval C hC hsC ho' (span (π C (ord I · < o))
       (isClosed_proj C o hC)) (h (le_of_lt ho') (C' C ho') (isClosed_C' C hC ho')

@@ -82,9 +82,9 @@ theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
   ⟨z, hz, h hx hz hxz, h hy hz hyz⟩
 #align directed_on.mono' DirectedOn.mono'
 
-theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ {a b}, r a b → r' a b) :
+theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ ⦃a b⦄, r a b → r' a b) :
     DirectedOn r' s :=
-  h.mono' fun _ _ _ _ => H
+  h.mono' fun _ _ _ _ h ↦ H h
 #align directed_on.mono DirectedOn.mono
 
 theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f) ↔ Directed (g ⁻¹'o r) f :=
