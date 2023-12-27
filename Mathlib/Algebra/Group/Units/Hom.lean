@@ -156,7 +156,7 @@ this map is a monoid homomorphism too. -/
   is an AddMonoid homomorphism too."]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
-  map_one' := by ext; dsimp only; rw [h 1]; exact f.map_one -- Porting note: why is `dsimp` needed?
+  map_one' := by ext; rw [h 1]; exact f.map_one
   map_mul' x y := Units.ext <| by simp only [h, val_mul, f.map_mul]
 #align units.lift_right Units.liftRight
 #align add_units.lift_right AddUnits.liftRight
@@ -391,7 +391,7 @@ protected theorem one_div_mul_cancel (h : IsUnit a) : 1 / a * a = 1 := by simp [
 @[to_additive]
 theorem inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rcases h with ⟨u, hu⟩
-  rw [←hu, ← Units.val_inv_eq_inv_val]
+  rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 #align is_unit.inv IsUnit.inv
 #align is_add_unit.neg IsAddUnit.neg

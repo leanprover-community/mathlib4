@@ -182,17 +182,9 @@ namespace Expr
 
 /-! ### Declarations about `Expr` -/
 
-/-- If the expression is a constant, return that name. Otherwise return `Name.anonymous`. -/
-def constName (e : Expr) : Name :=
-  e.constName?.getD Name.anonymous
-
 def bvarIdx? : Expr → Option Nat
   | bvar idx => some idx
   | _        => none
-
-/-- Return the function (name) and arguments of an application. -/
-def getAppFnArgs (e : Expr) : Name × Array Expr :=
-  withApp e λ e a => (e.constName, a)
 
 /-- Invariant: `i : ℕ` should be less than the size of `as : Array Expr`. -/
 private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
@@ -207,44 +199,6 @@ def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
-
-/-- Turn an expression that is a natural number literal into a natural number. -/
-def natLit! : Expr → Nat
-  | lit (Literal.natVal v) => v
-  | _                      => panic! "nat literal expected"
-
-/-- Turn an expression that is a constructor of `Int` applied to a natural number literal
-into an integer. -/
-def intLit! (e : Expr) : Int :=
-  if e.isAppOfArity ``Int.ofNat 1 then
-    e.appArg!.natLit!
-  else if e.isAppOfArity ``Int.negOfNat 1 then
-    .negOfNat e.appArg!.natLit!
-  else
-    panic! "not a raw integer literal"
-
-/--
-Check if an expression is a "natural number in normal form",
-i.e. of the form `OfNat n`, where `n` matches `.lit (.natVal lit)` for some `lit`.
-and if so returns `lit`.
--/
--- Note that an `Expr.lit (.natVal n)` is not considered in normal form!
-def nat? (e : Expr) : Option Nat := do
-  guard <| e.isAppOfArity ``OfNat.ofNat 3
-  let lit (.natVal n) := e.appFn!.appArg! | none
-  n
-
-
-/--
-Check if an expression is an "integer in normal form",
-i.e. either a natural number in normal form, or the negation of one,
-and if so returns the integer.
--/
-def int? (e : Expr) : Option Int :=
-  if e.isAppOfArity ``Neg.neg 3 then
-    (- ·) <$> e.appArg!.nat?
-  else
-    e.nat?
 
 /--
 Check if an expression is a "rational in normal form",
@@ -453,7 +407,7 @@ def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
 /-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
 structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
 def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+  let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
   let some baseStruct := findField? (← getEnv) structName fieldName |
     throwError "No parent of {structName} has field {fieldName}"

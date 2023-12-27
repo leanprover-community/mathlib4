@@ -30,7 +30,7 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 -/
 
 
-section SmulLemmas
+section SMulLemmas
 
 variable {R M : Type*}
 
@@ -70,7 +70,7 @@ theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 #align star_rat_smul star_rat_smul
 
-end SmulLemmas
+end SMulLemmas
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/

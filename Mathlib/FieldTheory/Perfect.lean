@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
+import Mathlib.Algebra.CharP.Reduced
 
 /-!
 
@@ -110,13 +111,51 @@ theorem not_irreducible_expand (f : R[X]) : ¬ Irreducible (expand R p f) := by
   rw [polynomial_expand_eq]
   exact not_irreducible_pow hp.out.ne_one
 
-instance (S : Type*) [CommSemiring S] [CharP S p] [PerfectRing S p] :
+instance instPerfectRingProd (S : Type*) [CommSemiring S] [CharP S p] [PerfectRing S p] :
     PerfectRing (R × S) p := by
   constructor
   have : frobenius (R × S) p = Prod.map (frobenius R p) (frobenius S p) := by
     ext <;> simp [frobenius_def]
   rw [this]
   exact Bijective.Prod_map (bijective_frobenius R p) (bijective_frobenius S p)
+
+namespace Polynomial
+
+open scoped Classical
+
+variable {R : Type*} [CommRing R] [IsDomain R]
+  (p : ℕ) [Fact p.Prime] [CharP R p] [PerfectRing R p] (f : R[X])
+
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
+a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
+It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
+noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
+  ((frobeniusEquiv R p).image _).trans <| Equiv.Set.ofEq <| show _ '' (setOf _) = setOf _ by
+    ext r; obtain ⟨r, rfl⟩ := surjective_frobenius R p r
+    simp [expand_eq_zero (Fact.out : p.Prime).pos, (frobenius_inj R p).eq_iff, ← frobenius_def]
+
+@[simp]
+theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
+
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
+a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
+It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
+noncomputable def rootsExpandPowEquivRoots :
+    (n : ℕ) → (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset
+  | 0 => Equiv.Set.ofEq <| by rw [pow_zero, expand_one]
+  | n + 1 => (Equiv.Set.ofEq <| by rw [pow_succ, ← expand_expand]).trans
+    (rootsExpandEquivRoots p (expand R (p ^ n) f)) |>.trans (rootsExpandPowEquivRoots n)
+
+@[simp]
+theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :
+    (rootsExpandPowEquivRoots p f n x : R) = x ^ p ^ n := by
+  induction' n with n ih
+  · simp only [pow_zero, pow_one]
+    rfl
+  simp_rw [rootsExpandPowEquivRoots, Equiv.trans_apply, ih, pow_succ, pow_mul]
+  rfl
+
+end Polynomial
 
 end PerfectRing
 
