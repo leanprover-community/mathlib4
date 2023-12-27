@@ -552,7 +552,7 @@ theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β}
 #align finsupp.sum_emb_domain Finsupp.sum_embDomain
 
 lemma mem_embDomain [Zero M] {f : α ↪ β} {g : β →₀ M} :
-    (∃  (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
+    (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
   constructor
   · rintro ⟨v, rfl⟩
     simp only [Finsupp.support_embDomain, coe_map, Set.image_subset_iff,
