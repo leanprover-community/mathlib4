@@ -685,3 +685,12 @@ instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
 
 instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.LindelofSpace
+
+instance SecondCountableTopology.to_Lindelof [SecondCountableTopology X] : LindelofSpace X := by
+  refine { isLindelof_univ := ?isLindelof_univ }
+  apply isLindelof_iff_countable_subcover.mpr
+  intro ι U hι hcover
+  have := @isOpen_iUnion_countable X _ _ ι U hι
+  rcases this with ⟨t,⟨htc, htu⟩⟩
+  use t, htc
+  exact subset_of_subset_of_eq hcover (id htu.symm)
