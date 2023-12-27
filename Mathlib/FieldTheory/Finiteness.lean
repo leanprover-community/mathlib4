@@ -32,7 +32,7 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
   rw [← b.mk_eq_rank'', lt_aleph0_iff_set_finite]
   constructor
   · intro
-    exact finite_of_linearIndependent (Basis.ofVectorSpaceIndex.linearIndependent K V)
+    exact LinearIndependent.set_finite_of_isNoetherian (Basis.ofVectorSpaceIndex.linearIndependent K V)
   · intro hbfinite
     refine'
       @isNoetherian_of_linearEquiv K (⊤ : Submodule K V) V _ _ _ _ _ (LinearEquiv.ofTop _ rfl)
