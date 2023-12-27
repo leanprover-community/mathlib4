@@ -753,13 +753,18 @@ theorem LinearMap.mul_toMatrix (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (M
 
 theorem BilinForm.mul_toMatrix (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
     M * BilinForm.toMatrix b B = BilinForm.toMatrix b (B.compLeft (Matrix.toLin b b Mᵀ)) := by
-  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, ← SMatrixLeftMul_eq_Mul, LinearMap.mul_toMatrix]
+  rw [toMatrix, LinearEquiv.trans_apply, ← SMatrixLeftMul_eq_Mul, LinearMap.mul_toMatrix]
   exact rfl
 #align bilin_form.mul_to_matrix BilinForm.mul_toMatrix
 
+theorem LinearMap.toMatrix_smul (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (M : Matrix n n R₂) :
+    toMatrix'₂' b B •ᵣ M = toMatrix'₂' b (B.compl₁₂ LinearMap.id (Matrix.toLin b b M)) := by
+  rw [B.toMatrix_compRight b, toMatrix_toLin]
+
 theorem BilinForm.toMatrix_mul (B : BilinForm R₂ M₂) (M : Matrix n n R₂) :
     BilinForm.toMatrix b B * M = BilinForm.toMatrix b (B.compRight (Matrix.toLin b b M)) := by
-  rw [B.toMatrix_compRight b, toMatrix_toLin]
+  rw [toMatrix, LinearEquiv.trans_apply, ← SMatrixRightMul_eq_Mul, LinearMap.toMatrix_smul]
+  exact rfl
 #align bilin_form.to_matrix_mul BilinForm.toMatrix_mul
 
 theorem Matrix.toBilin_comp (M : Matrix n n R₂) (P Q : Matrix n o R₂) :
