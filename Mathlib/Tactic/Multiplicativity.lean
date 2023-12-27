@@ -6,10 +6,10 @@ Authors: Arend Mellendijk
 
 import Mathlib.Tactic.Multiplicativity.Init
 
-/-
-# Measurability
+/-!
+# Multiplicativity
 
-We define the measurability tactic using aesop
+We define the multiplicativity tactic using aesop
 
 -/
 
@@ -27,7 +27,8 @@ by applying lemmas tagged with the user attribute `multiplicativity`. -/
 macro (name := multiplicativity) "multiplicativity" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   { aesop $c* (options :=
-  { destructProductsTransparency := .reducible, applyHypsTransparency := .default, introsTransparency? := some .reducible, terminal := false } )
+  { destructProductsTransparency := .reducible, applyHypsTransparency := .default,
+    introsTransparency? := some .reducible, terminal := false } )
   (simp_options := { enabled := false})
   (rule_sets [$(Lean.mkIdent `IsMultiplicative):ident])})
 
