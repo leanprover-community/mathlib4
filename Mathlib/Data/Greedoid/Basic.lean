@@ -1778,12 +1778,6 @@ theorem basisRank_union_add_rank_inter_le_basisRank_add_basisRank (s t : Finset 
   · exact le_add_left h₆
   · exact h₃ ▸ sub_le _ _
 
-end BasisRank
-
-section RankFeasibleFamily
-
-variable {s : Finset α}
-
 theorem rankFeasibleFamily_submodular
   (s : Finset α) (hs : G.rankFeasible s) (t : Finset α) (ht : G.rankFeasible t) :
     G.rank (s ∪ t) + G.rank (s ∩ t) ≤ G.rank s + G.rank t := by
@@ -1891,6 +1885,63 @@ theorem rankFeasible_iff_monotoneClosure_equal_for_all_basis :
     intro _ ht
     exact h ht ▸ subset_monotoneClosureOperator_self
 
-end RankFeasibleFamily
+-- Chapter V. Lemma 3.5.
+theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
+  (hs : G.rankFeasible s)
+  {y : α} (hy₁ : y ∉ s) (hy₂ : G.kernelClosureOperator s ≠ G.kernelClosureOperator (insert y s))
+  {z : α} (hz₁ : z ∉ s) (hz₂ : y ∈ G.kernelClosureOperator (insert z s)) :
+    z ∈ G.kernelClosureOperator (insert y s) := by
+  sorry
+
+-- Chapter V. Lemma 3.6.
+theorem rankFeasibleFamily_accessibleProperty :
+    _root_.accessibleProperty G.rankFeasibleFamily := by
+  sorry
+
+instance : Accessible G.rankFeasibleFamily := ⟨G.rankFeasibleFamily_accessibleProperty⟩
+
+def closureFeasible (G : Greedoid α) (s : Finset α) : Prop :=
+  ∀ ⦃t u : Finset α⦄, t ⊆ u → s ⊆ G.closure t → s ⊆ G.closure u
+
+instance : DecidablePred G.closureFeasible := fun s =>
+  if h : ((univ ×ˢ univ).filter fun t => t.1 ⊆ t.2).image (fun t =>
+    (s ⊆ G.closure t.1 → s ⊆ G.closure t.2) : Finset α × Finset α → Bool) = { true }
+  then isTrue (by
+    simp only [closureFeasible]
+    intro t u h₁ h₂
+    have h₃ : (t, u) ∈ (univ ×ˢ univ).filter
+      (fun t => t.1 ⊆ t.2) := by
+      simp only [univ_product_univ, Finset.mem_filter, mem_univ, h₁, and_self]
+    have h₄ : decide (s ⊆ G.closure t → s ⊆ G.closure u) ∈ image (fun t =>
+        decide (s ⊆ closure G t.1 → s ⊆ closure G t.2))
+        (Finset.filter (fun t ↦ t.1 ⊆ t.2) (univ ×ˢ univ)) := by
+      apply Finset.mem_image_of_mem _ h₃
+    rw [h] at h₄
+    simp only [Finset.mem_singleton, decide_eq_true_eq] at h₄
+    exact h₄ h₂)
+  else isFalse (fun h' => h (by
+    clear h
+    ext x
+    simp only [univ_product_univ, mem_image, Finset.mem_filter, mem_univ, true_and, Prod.exists,
+      Finset.mem_singleton]
+    simp only [closureFeasible] at h'
+    constructor <;> intro h
+    · let ⟨t, u, h₁, h₂⟩ := h
+      rw [← h₂]
+      simp only [decide_eq_true_eq]
+      exact h' h₁
+    · rw [h]
+      exists ∅, ∅
+      simp only [Finset.Subset.refl, imp_self, decide_True, and_self]))
+
+def closureFeasibleFamily (G : Greedoid α) : Finset (Finset α) :=
+  G.feasibleSet.filter fun s => G.closureFeasible s
+
+-- Chapter V. Lemma 3.7.
+theorem closureFeasibleFamily_subset_rankFeasibleFamily :
+    G.closureFeasibleFamily ⊆ G.rankFeasibleFamily := by
+  sorry
+
+end BasisRank
 
 end Greedoid
