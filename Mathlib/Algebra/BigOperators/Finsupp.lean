@@ -551,38 +551,6 @@ theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β}
 #align finsupp.prod_emb_domain Finsupp.prod_embDomain
 #align finsupp.sum_emb_domain Finsupp.sum_embDomain
 
-lemma exists_mem_embDomain_eq [Zero M] {f : α ↪ β} {g : β →₀ M} :
-    (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
-  constructor
-  · rintro ⟨v, rfl⟩
-    simp only [Finsupp.support_embDomain, coe_map, Set.image_subset_iff,
-      Set.preimage_range, Set.subset_univ]
-  · intro hg
-    set v : α →₀ M :=
-    { toFun := g.toFun.comp f,
-      support := Finset.preimage g.support f (Set.injOn_of_injective f.injective _),
-      mem_support_toFun := fun a => by
-        simp only [mem_preimage, mem_support_iff, ne_eq, comp_apply]
-        rfl} with hv
-    use v
-    rw [hv]
-    ext b
-    by_cases hb : b ∈ Set.range f
-    · simp only [Set.mem_range] at hb
-      obtain ⟨a, rfl⟩ := hb
-      simp only [embDomain_apply, coe_mk, comp_apply]
-      rfl
-    · suffices hb' : g b = 0
-      · rw [hb', ← not_mem_support_iff, support_embDomain, mem_map]
-        rintro ⟨a, _, rfl⟩
-        apply hb
-        exact Set.mem_range_self a
-      rw [← not_mem_support_iff]
-      intro hb'
-      apply hb
-      apply hg
-      simp only [mem_coe, hb']
-
 @[to_additive]
 theorem prod_finset_sum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g : ι → α →₀ M}
     {h : α → M → N} (h_zero : ∀ a, h a 0 = 1) (h_add : ∀ a b₁ b₂, h a (b₁ + b₂) = h a b₁ * h a b₂) :
