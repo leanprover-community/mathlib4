@@ -28,6 +28,21 @@ end Finite
 
 open CategoryTheory Limits Functor
 
+section
+
+--instance (G : Type v) [Group G] [Finite G] :
+--    @HasColimitsOfShape (SingleObj G) (SingleObj.category G) FintypeCat.{v} _ := by
+--  have : Fintype G := Fintype.ofFinite G
+--  have : Category (SingleObj G) := SingleObj.category G
+--  let inst1 : SmallCategory (SingleObj G) := (SingleObj.category G)
+--  have : FinCategory (SingleObj G) := sorry
+--  let inst : HasFiniteColimits FintypeCat := inferInstance
+--  have : @HasColimitsOfShape (SingleObj G)
+--    (SingleObj.category G) FintypeCat.{v} _ := inst.out (SingleObj G)
+--  exact this
+
+end
+
 variable {C : Type u} [Category.{v, u} C]
 
 section Pi

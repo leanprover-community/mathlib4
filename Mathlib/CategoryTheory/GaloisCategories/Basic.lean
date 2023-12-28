@@ -29,8 +29,8 @@ class PreGaloisCategory (C : Type u) [Category.{v, u} C] : Prop where
   hasQuotientsByFiniteGroups (G : Type v) [Group G] [Finite G] :
     HasColimitsOfShape (SingleObj G) C
   -- (G3)
-  epiMonoFactorisation {X Z : C} (f : X ⟶ Z) : ∃ (Y : C) (p : X ⟶ Y) (i : Y ⟶ Z),
-    Epi p ∧ Mono i ∧ p ≫ i = f
+  --epiMonoFactorisation {X Z : C} (f : X ⟶ Z) : ∃ (Y : C) (p : X ⟶ Y) (i : Y ⟶ Z),
+  --  Epi p ∧ Mono i ∧ p ≫ i = f
   monoInducesIsoOnDirectSummand {X Y : C} (i : X ⟶ Y) [Mono i] : ∃ (Z : C) (u : Z ⟶ Y),
     Nonempty (IsColimit (BinaryCofan.mk i u))
 
@@ -76,6 +76,8 @@ instance : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F :=
   FibreFunctor.preservesTerminalObjects
 instance : PreservesLimitsOfShape WalkingCospan F :=
   FibreFunctor.preservesPullbacks
+instance : PreservesEpimorphisms F :=
+  FibreFunctor.preservesEpis
 instance : PreservesFiniteCoproducts F :=
   FibreFunctor.preservesFiniteCoproducts
 instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) F :=
@@ -309,6 +311,33 @@ lemma card_aut_le_fibre_of_connected (A : C) [ConnectedObject A]
   apply Finite.card_le_of_injective (fun f : Aut A => F.map f.hom a)
   exact evaluation_aut_injective_of_connected A a
 
+def finite_aut_of_connected (X : C) [ConnectedObject X] : Finite (Aut X) := by
+  obtain ⟨x⟩ := @nonempty_fibre_of_connected _ _ F _ _ X _
+  apply Finite.of_injective (fun σ => F.map σ.hom x)
+  exact evaluation_aut_injective_of_connected X x
+
+lemma epi_of_nonempty_to_connected {X A : C} [ConnectedObject A] (h : Nonempty (F.obj X))
+    (f : X ⟶ A) : Epi f := by
+  constructor
+  intro Z u v huv
+  obtain ⟨x⟩ := h
+  apply evaluationInjectiveOfConnected A Z (F.map f x)
+  convert_to F.map (f ≫ u) x = F.map (f ≫ v) x
+  rw [F.map_comp]
+  rfl
+  rw [F.map_comp]
+  rfl
+  rw [huv]
+
+lemma surjective_on_fibre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
+  surjective_of_epi (FintypeCat.incl.map (F.map f))
+
+lemma surject_to_connected_of_nonempty_fibre {A X : C} (h : Nonempty (F.obj A))
+    [ConnectedObject X] (f : A ⟶ X) :
+    Function.Surjective (F.map f) := by
+  have : Epi f := epi_of_nonempty_to_connected F h f
+  exact surjective_on_fibre_of_epi F f
+
 end More
 
 section Examples
@@ -320,8 +349,8 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
   hasPullbacks := inferInstance
   hasFiniteCoproducts := inferInstance
   hasQuotientsByFiniteGroups := sorry
-  epiMonoFactorisation := sorry
   monoInducesIsoOnDirectSummand := by
+    -- maybe use CategoryTheory.Limits.Types.isCoprodOfMono
     intro X Y ⟨i, hi⟩ h
     let Z₁ : Set Y.V := Set.range i
     let Z₂ : Set Y.V := (Set.range i)ᶜ
@@ -438,10 +467,9 @@ def Action.ofMulAction' (X : Type _) [Fintype X] [MulAction G X] :
     map_mul' := by
       intro σ τ 
       apply FintypeCat.hom_ext
-      intro y
-      admit
-      --show (σ * τ) • y = σ • τ • y
-      --rw [MulAction.mul_smul]
+      intro (y : X)
+      show (σ * τ) • y = σ • τ • y
+      rw [MulAction.mul_smul]
   }
 
 lemma connected_of_transitive (X : FintypeCat) [MulAction G X]

@@ -34,16 +34,6 @@ namespace Galois
 variable {C : Type u} [Category.{u, u} C] (F : C ⥤ FintypeCat.{u})
   [PreGaloisCategory C] [FibreFunctor F]
 
-lemma surject_to_connected_of_nonempty_fibre {A X : C} (h : Nonempty (F.obj A))
-    [ConnectedObject X] (f : A ⟶ X) :
-    Function.Surjective (F.map f) := by
-  obtain ⟨a⟩ := h
-  intro x
-  obtain ⟨σ, hσ : (σ.hom.app X) (F.map f a) = x⟩ := MulAction.exists_smul_eq (Aut F) (F.map f a) x
-  use (σ.hom.app A) a
-  show (σ.hom.app A ≫ F.map f) a = x
-  rw [←σ.hom.naturality, FintypeCat.comp_apply, hσ]
-
 instance (X : C) : ContinuousSMul (Aut F) (F.obj X) := inferInstance
 
 lemma stabilizer_open (X : C) (x : ((H F).obj X).V) :
