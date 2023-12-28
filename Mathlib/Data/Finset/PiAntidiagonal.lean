@@ -69,24 +69,18 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
     f ∈ finAntidiagonal d n ↔ ∑ i, f i = n := by
   induction d generalizing n with
   | zero =>
-      simp only [Nat.zero_eq, finAntidiagonal, Matrix.zero_empty, univ_eq_empty, sum_empty]
-      by_cases hn : n = 0
-      · simp only [hn, ite_true, mem_singleton, eq_iff_true_of_subsingleton]
-      · simp only [if_neg hn, not_mem_empty, false_iff]
-        exact Ne.symm hn
+    simp_rw [finAntidiagonal, Matrix.zero_empty, Fin.sum_univ_zero]
+    obtain rfl | hn := Decidable.eq_or_ne n 0
+    · simp [if_pos rfl, mem_singleton, eq_iff_true_of_subsingleton]
+    · simpa only [if_neg hn, not_mem_empty, false_iff] using hn.symm
   | succ d ih =>
-      simp only [finAntidiagonal, mem_biUnion, mem_antidiagonal, mem_map,
-        Embedding.coeFn_mk, Prod.exists]
-      constructor
-      · rintro ⟨a, b, hab, g, hg, hf⟩
-        rw [ih b g] at hg
-        rw [← hf, Fin.sum_cons, hg, hab]
-      · intro hf
-        use f 0, univ.sum (Fin.tail f)
-        constructor
-        · rw [← Fin.cons_self_tail f, Fin.sum_cons] at hf
-          exact hf
-        exact ⟨tail f, by rw [ih], Fin.cons_self_tail f⟩
+    simp only [finAntidiagonal, mem_biUnion, mem_antidiagonal, mem_map,
+      Embedding.coeFn_mk, Prod.exists, ih, Fin.sum_univ_succ]
+    constructor
+    · rintro ⟨a, b, rfl, g, rfl, rfl⟩
+      simp only [Fin.cons_zero, Fin.cons_succ]
+    · intro hf
+      exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩
 
 /-- `finAntidiagonal₀ d n` is the type of d-tuples with sum `n` -/
 noncomputable def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
