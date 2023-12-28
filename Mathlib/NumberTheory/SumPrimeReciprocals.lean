@@ -37,8 +37,8 @@ open Set Nat BigOperators
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma sum_primes_ge_one_div_ge_half (k : ℕ) :
-    ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow, (1 / p : ℝ) ≥ 1 / 2
-    := by
+    ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+      (1 / p : ℝ) ≥ 1 / 2 := by
   set m : ℕ := 2 ^ k.primesBelow.card
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
