@@ -103,7 +103,65 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
   rw [mem_nhds_iff]
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
-section boundaryless
+variable (M) in
+/-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
+class _root_.Boundaryless : Prop where
+  isInteriorPoint : ∀ x : M, IsInteriorPoint I x
+-- #align model_with_corners.boundaryless ModelWithCorners.Boundaryless
+
+theorem Boundaryless.isInteriorPoint [_root_.Boundaryless I M] {x : M} :
+    IsInteriorPoint I x := _root_.Boundaryless.isInteriorPoint x
+
+/-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
+@[simps (config := {simpRhs := true})]
+def toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
+  __ := I
+  left_inv := I.left_inv
+  right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
+
+/-- The trivial model with corners has no boundary -/
+instance _root_.modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
+  ⟨by simp⟩
+#align model_with_corners_self_boundaryless modelWithCornersSelf_boundaryless
+
+/-- If two model with corners are boundaryless, their product also is -/
+instance range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+    [I'.Boundaryless] : (I.prod I').Boundaryless := by
+  constructor
+  dsimp [ModelWithCorners.prod, ModelProd]
+  rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
+    ModelWithCorners.Boundaryless.range_eq_univ, univ_prod_univ]
+#align model_with_corners.range_eq_univ_prod ModelWithCorners.range_eq_univ_prod
+
+/-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
+consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
+theorem _root_.mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
+    (e : PartialHomeomorph H H) :
+    e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
+    AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
+  apply Iff.intro
+  · intro he
+    have := mem_groupoid_of_pregroupoid.mp he.right
+    simp only [I.image_eq, I.range_eq_univ, interior_univ, subset_univ, and_true] at this ⊢
+    exact this
+  · intro he
+    apply And.intro
+    all_goals apply mem_groupoid_of_pregroupoid.mpr; simp only [I.image_eq, I.range_eq_univ,
+      interior_univ, subset_univ, and_true] at he ⊢
+    · exact ⟨he.left.contDiffOn, he.right.contDiffOn⟩
+    · exact he
+
+lemma _root_.PartialHomeomorph.isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
+  rw [extend_target, I.range_eq_univ, inter_univ]
+  exact I.continuous_symm.isOpen_preimage _ f.open_target
+
+section Boundaryless
 variable [I.Boundaryless]
 
 /-- If `I` is boundaryless, every point of `M` is an interior point. -/
@@ -123,5 +181,5 @@ lemma interior_eq_univ : I.interior M = univ := by
 lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
-end boundaryless
+end Boundaryless
 end ModelWithCorners
