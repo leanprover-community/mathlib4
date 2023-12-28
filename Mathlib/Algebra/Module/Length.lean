@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Artinian
 import Mathlib.Order.KrullDimension
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 
@@ -810,6 +811,9 @@ lemma finiteLengthModule_over_field_iff_finite_dimensional :
   · intro h
     exact ⟨⟨FiniteLengthModule.of_noetherian_of_artinian K M⟩⟩
 
+theorem Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.Finite K M := by
+  sorry
+
 end field
 
 section ringHom
@@ -839,5 +843,10 @@ lemma moduleLength_eq_restrictScalars_of_surjective
     intro s m hm
     obtain ⟨r, rfl⟩ := surj.1 s
     exact p.smul_mem r hm
+
+lemma isFiniteLengthModule_iff_restrictScalars [surj : RingHomSurjective (algebraMap R S)] :
+    IsFiniteLengthModule S M ↔ IsFiniteLengthModule R (RestrictScalars R S M) := by
+  rw [IsFiniteLengthModule_iff_moduleLength_finite', IsFiniteLengthModule_iff_moduleLength_finite',
+    moduleLength_eq_restrictScalars_of_surjective R]
 
 end ringHom

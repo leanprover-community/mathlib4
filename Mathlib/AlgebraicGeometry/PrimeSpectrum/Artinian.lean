@@ -279,12 +279,97 @@ def qfSubmoduleAgree (i : Fin (K R)) :
       specialize h hx
       simpa using h
 
-instance qfFinite_κ (i : Fin (K R)) : Module.Finite κ ((series R).qf i) := by
-  sorry
+@[simps!]
+def qfSubmoduleAgree' (i : Fin (K R)) :
+    Submodule κ ((series R).qf i)ᵒᵈ ≃o
+    Submodule R ((series R).qf i)ᵒᵈ :=
+ OrderIso.trans
+ { toFun := OrderDual.ofDual
+   invFun := OrderDual.toDual
+   left_inv := by intros p; rfl
+   right_inv := by intros p; rfl
+   map_rel_iff' := by intros; rfl } <| (qfSubmoduleAgree R i).trans
+  { toFun := OrderDual.ofDual
+    invFun := OrderDual.toDual
+    left_inv := by intros p; rfl
+    right_inv := by intros p; rfl
+    map_rel_iff' := by intros; rfl }
+
+instance qf_artinian_R (i : Fin (K R)) : IsArtinian R ((series R).qf i) := by
+  change IsArtinian R (_ ⧸ _)
+  apply isArtinian_of_quotient_of_artinian
+
+lemma qf_artinian_κR_iff (i : Fin (K R)) :
+    IsArtinian κ ((series R).qf i) ↔ IsArtinian R ((series R).qf i) := by
+  rw [← monotone_stabilizes_iff_artinian, ← monotone_stabilizes_iff_artinian]
+  fconstructor <;> intro h f
+  · let f' : ℕ →o (Submodule κ ((series R).qf i))ᵒᵈ := OrderHom.comp ?_ f
+    pick_goal 2
+    · fconstructor
+      · exact (qfSubmoduleAgree' R i).symm.toFun
+      · intro p q h
+        exact (qfSubmoduleAgree' R i).symm.monotone h
+    obtain ⟨n, hn⟩ := h f'
+    refine ⟨n, fun m hm ↦ ?_⟩
+    specialize hn m hm
+    exact (qfSubmoduleAgree' R i).symm.injective hn
+  · let f' : ℕ →o (Submodule R ((series R).qf i))ᵒᵈ := OrderHom.comp ?_ f
+    pick_goal 2
+    · fconstructor
+      · exact (qfSubmoduleAgree' R i).toFun
+      · intro p q h
+        exact (qfSubmoduleAgree' R i).monotone h
+    obtain ⟨n, hn⟩ := h f'
+    refine ⟨n, fun m hm ↦ ?_⟩
+    specialize hn m hm
+    exact (qfSubmoduleAgree' R i).injective hn
+
+instance qf_artinian_κ (i : Fin (K R)) : IsArtinian κ ((series R).qf i) :=
+  qf_artinian_κR_iff R i |>.mpr inferInstance
+
+instance qf_finiteLength_κ (i : Fin (K R)) : FiniteLengthModule κ ((series R).qf i) := by
+  suffices inst1 : IsFiniteLengthModule κ ((series R).qf i)
+  · exact Classical.choice inst1.finite
+  rw [finiteLengthModule_over_field_iff_finite_dimensional,
+    ← Module.finite_iff_artinian_over_divisionRing]
+  infer_instance
+
+instance qf_finiteLength_R (i : Fin (K R)) : FiniteLengthModule R ((series R).qf i) := by
+  have i1 := isFiniteLengthModule_iff_restrictScalars R κ ((series R).qf i) |>.mp
+    ⟨⟨qf_finiteLength_κ R i⟩⟩
+  exact Classical.choice i1.1
+
+def cdf_last_eq : (series R).cqf (Fin.last _) ≃ₗ[R] R :=
+LinearEquiv.ofLinear
+  (Submodule.liftQ _ (Submodule.subtype _) fun x hx ↦ by simpa using hx)
+  { toFun := fun r ↦ Submodule.Quotient.mk ⟨r, by
+      change r ∈ (series R).last
+      rw [series_last]
+      simp only [Submodule.mem_top]⟩
+    map_add' := by intros; rfl
+    map_smul' := by intros; rfl }
+  (LinearMap.ext fun x ↦ by
+    simp only [series_length, series_toFun, Fin.val_last, LinearMap.coe_comp, Function.comp_apply,
+      LinearMap.id_coe, id_eq]
+    erw [Submodule.liftQ_apply]
+    rfl)
+  (LinearMap.ext fun x ↦ by
+    induction' x using Quotient.inductionOn' with x
+    simp only [series_length, series_toFun, Fin.val_last, Submodule.Quotient.mk''_eq_mk,
+      LinearMap.id_coe, id_eq]
+    erw [LinearMap.comp_apply]
+    erw [Submodule.liftQ_apply, Submodule.Quotient.eq]
+    simp)
 
 end artinian_ring_proof_auxs
 
-instance isNotherianRing_of_local : IsNoetherianRing R := sorry
+instance isNoetherianRing_of_local [LocalRing R] : IsNoetherianRing R := by
+  suffices i1 : IsFiniteLengthModule R R
+  · exact isNoetherian_of_finiteLength R R
+  refine isFiniteLengthModule_congr (artinian_ring_proof_auxs.cdf_last_eq R) (h := ?_)
+  rw [RelSeries.cqf_finiteLength_iff_each_qf_finiteLength]
+  intros j
+  infer_instance
 
 end local_ring
 
