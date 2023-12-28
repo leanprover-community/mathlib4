@@ -716,7 +716,25 @@ theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β
   exact h b (hb.2.symm ▸ ha)
 #align finsupp.eq_zero_of_comap_domain_eq_zero Finsupp.eq_zero_of_comapDomain_eq_zero
 
-lemma exists_mem_embDomain_eq [Zero M] {f : α ↪ β} {g : β →₀ M} :
+section FInjective
+
+section Zero
+
+variable [Zero M]
+
+lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg: ↑g.support ⊆ Set.range ⇑f) :
+    embDomain f (comapDomain (⇑f) g (f.injective.injOn _)) = g := by
+  ext b
+  by_cases hb : b ∈ Set.range f
+  · rcases Set.mem_range.1 hb with ⟨a, rfl⟩
+    rw [embDomain_apply, comapDomain_apply]
+  · rw [embDomain_notin_range _ _ _ hb]
+    apply symm
+    rw [← not_mem_support_iff]
+    by_contra hb'
+    exact hb (hg hb')
+
+lemma exists_mem_embDomain_eq {f : α ↪ β} {g : β →₀ M} :
     (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
   constructor
   · rintro ⟨v, rfl⟩
@@ -725,28 +743,7 @@ lemma exists_mem_embDomain_eq [Zero M] {f : α ↪ β} {g : β →₀ M} :
   · intro hg
     use Finsupp.comapDomain f g (f.injective.injOn _)
     ext b
-    by_cases hb : b ∈ Set.range f
-    · simp only [Set.mem_range] at hb
-      obtain ⟨a, rfl⟩ := hb
-      simp only [embDomain_apply, coe_mk, comp_apply]
-      rfl
-    · suffices hb' : g b = 0
-      · rw [hb', ← not_mem_support_iff, support_embDomain, mem_map]
-        rintro ⟨a, _, rfl⟩
-        apply hb
-        exact Set.mem_range_self a
-      rw [← not_mem_support_iff]
-      intro hb'
-      apply hb
-      apply hg
-      simp only [mem_coe, hb']
-
-
-section FInjective
-
-section Zero
-
-variable [Zero M]
+    rw [embDomain_comapDomain hg]
 
 /-- Note the `hif` argument is needed for this to work in `rw`. -/
 @[simp]
@@ -803,14 +800,9 @@ end AddZeroClass
 variable [AddCommMonoid M] (f : α → β)
 
 theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
-    (hl : ↑l.support ⊆ Set.range f) : mapDomain f (comapDomain f l (hf.injOn _)) = l := by
-  ext a
-  by_cases h_cases : a ∈ Set.range f
-  · rcases Set.mem_range.1 h_cases with ⟨b, hb⟩
-    rw [hb.symm, mapDomain_apply hf, comapDomain_apply]
-  · rw [mapDomain_notin_range _ _ h_cases]
-    by_contra h_contr
-    apply h_cases (hl <| Finset.mem_coe.2 <| mem_support_iff.2 fun h => h_contr h.symm)
+    (hl : ↑l.support ⊆ Set.range f) :
+    mapDomain f (comapDomain f l (hf.injOn _)) = l := by conv_rhs =>
+    rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
 #align finsupp.map_domain_comap_domain Finsupp.mapDomain_comapDomain
 
 end FInjective
