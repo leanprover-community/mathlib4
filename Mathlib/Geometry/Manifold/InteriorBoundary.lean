@@ -111,13 +111,10 @@ class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop where
   isInteriorPoint' : ∀ x : M, IsInteriorPoint I x
 
-variable {I} in
-lemma _root_.BoundarylessManifold.isInteriorPoint [BoundarylessManifold I M] {x : M} :
-    IsInteriorPoint I x := BoundarylessManifold.isInteriorPoint' x
-
 section Boundaryless
 variable [I.Boundaryless]
 
+/-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
 instance : BoundarylessManifold I M where
   isInteriorPoint' := by
     intro x
@@ -132,14 +129,19 @@ end Boundaryless
 section BoundarylessManifold
 variable [BoundarylessManifold I M]
 
+lemma _root_.BoundarylessManifold.isInteriorPoint {x : M} :
+    IsInteriorPoint I x := BoundarylessManifold.isInteriorPoint' x
+
 /-- Boundaryless manifolds have full interior. -/
 lemma interior_eq_univ : I.interior M = univ := by
   ext
-  refine ⟨fun _ ↦ trivial, fun _ ↦ BoundarylessManifold.isInteriorPoint⟩
+  refine ⟨fun _ ↦ trivial, fun _ ↦ BoundarylessManifold.isInteriorPoint I⟩
 
 /-- Boundaryless manifolds have empty boundary. -/
 lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
+
+def ModelWithCorners.toPartialHomeomorph : PartialHomeomorph M E := sorry
 
 end BoundarylessManifold
 end ModelWithCorners
