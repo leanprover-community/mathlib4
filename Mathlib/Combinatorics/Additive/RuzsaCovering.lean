@@ -37,7 +37,7 @@ theorem exists_subset_mul_div (ht : t.Nonempty) :
   rw [mem_filter, mem_powerset] at hu
   refine' ⟨u,
     (card_mul_iff.2 <| pairwiseDisjoint_smul_iff.1 hu.2).ge.trans
-      (card_le_of_subset <| mul_subset_mul_right hu.1),
+      (card_le_card <| mul_subset_mul_right hu.1),
     fun a ha ↦ _⟩
   rw [mul_div_assoc]
   by_cases hau : a ∈ u

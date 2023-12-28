@@ -255,14 +255,14 @@ theorem card_le_card_image₂_left {s : Finset α} (hs : s.Nonempty) (hf : ∀ a
     t.card ≤ (image₂ f s t).card := by
   obtain ⟨a, ha⟩ := hs
   rw [← card_image₂_singleton_left _ (hf a)]
-  exact card_le_of_subset (image₂_subset_right <| singleton_subset_iff.2 ha)
+  exact card_le_card (image₂_subset_right <| singleton_subset_iff.2 ha)
 #align finset.card_le_card_image₂_left Finset.card_le_card_image₂_left
 
 theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
     (hf : ∀ b, Injective fun a => f a b) : s.card ≤ (image₂ f s t).card := by
   obtain ⟨b, hb⟩ := ht
   rw [← card_image₂_singleton_right _ (hf b)]
-  exact card_le_of_subset (image₂_subset_left <| singleton_subset_iff.2 hb)
+  exact card_le_card (image₂_subset_left <| singleton_subset_iff.2 hb)
 #align finset.card_le_card_image₂_right Finset.card_le_card_image₂_right
 
 variable {s t}
@@ -571,6 +571,18 @@ theorem image₂_union_inter_subset {f : α → α → β} {s t : Finset α} (hf
 #align finset.image₂_union_inter_subset Finset.image₂_union_inter_subset
 
 end Finset
+
+open Finset
+
+namespace Fintype
+variable {ι : Type*} {α β γ : ι → Type*} [DecidableEq ι] [Fintype ι] [∀ i, DecidableEq (γ i)]
+
+lemma piFinset_image₂ (f : ∀ i, α i → β i → γ i) (s : ∀ i, Finset (α i)) (t : ∀ i, Finset (β i)) :
+    piFinset (fun i ↦ image₂ (f i) (s i) (t i)) =
+      image₂ (fun a b i ↦ f _ (a i) (b i)) (piFinset s) (piFinset t) := by
+  ext; simp only [mem_piFinset, mem_image₂, Classical.skolem, forall_and, Function.funext_iff]
+
+end Fintype
 
 namespace Set
 

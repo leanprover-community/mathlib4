@@ -105,7 +105,7 @@ theorem mul_pluennecke_petridis (C : Finset α)
   have h₃ : (A * B * C').card ≤ (A * B * C).card + (A * B).card - (A' * B).card := by
     rw [h₁]
     refine' (card_union_le _ _).trans_eq _
-    rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_of_subset h₂), card_mul_singleton,
+    rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), card_mul_singleton,
       card_mul_singleton]
   refine' (mul_le_mul_right' h₃ _).trans _
   rw [tsub_mul, add_mul]
@@ -150,7 +150,7 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
   rw [mul_div_right_comm, mul_comm _ B]
   refine' (cast_le.2 <| card_le_card_mul_left _ hU.1).trans _
   refine' le_trans _
-    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_of_subset <| mul_subset_mul_right hU.2)
+    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
   rw [← mul_div_right_comm, ← mul_assoc]
   refine' (le_div_iff <| cast_pos.2 hU.1.card_pos).2 _
@@ -229,7 +229,7 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   rw [mul_mul_mul_comm, ← pow_add, ← mul_assoc]
   gcongr ((?_ ^ _) * Nat.cast ?_) * _
   · exact hCA _ hA'
-  · exact card_le_of_subset hC.2
+  · exact card_le_card hC.2
 #align finset.card_pow_div_pow_le Finset.card_pow_div_pow_le
 #align finset.card_nsmul_sub_nsmul_le Finset.card_nsmul_sub_nsmul_le
 

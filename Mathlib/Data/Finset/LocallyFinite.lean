@@ -1179,7 +1179,7 @@ theorem prod_prod_Ioi_mul_eq_prod_prod_off_diag [Fintype ι] [LinearOrder ι]
   simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
   congr 1
   rw [prod_sigma', prod_sigma']
-  refine' prod_bij' (fun i _ => ⟨i.2, i.1⟩) _ _ (fun i _ => ⟨i.2, i.1⟩) _ _ _ <;> simp
+  refine' prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) _ _ _ _ _ <;> simp
 #align finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag Finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag
 #align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
 
@@ -1208,7 +1208,7 @@ lemma transGen_wcovby_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     obtain ⟨z, z_mem, hz⟩ := (Ico x y).exists_maximal h_non
     have z_card : (Icc x z).card <(Icc x y).card := calc
       (Icc x z).card ≤ (Ico x y).card :=
-        card_le_of_subset <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
+        card_le_card <| Icc_subset_Ico_right (mem_Ico.mp z_mem).2
       _              < (Icc x y).card := this
     have h₁ := transGen_wcovby_of_le (mem_Ico.mp z_mem).1
     have h₂ : z ⩿ y := by
