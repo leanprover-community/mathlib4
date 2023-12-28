@@ -200,8 +200,6 @@ theorem AnalyticOn.iterated_deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
 #align analytic_on.iterated_deriv AnalyticOn.iterated_deriv
 
 end deriv
-
-
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
