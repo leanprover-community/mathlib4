@@ -563,7 +563,7 @@ instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < 
 instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
-instance CanonicallyOrderedAddCancelCommMonoid ℝ≥0 :=
+instance canonicallyOrderedAddCancelCommMonoid : CanonicallyOrderedAddCancelCommMonoid ℝ≥0 :=
   { (inferInstance : CanonicallyOrderedAddCommMonoid ℝ≥0),
     (inferInstance : OrderedCancelAddCommMonoid ℝ≥0) with }
 

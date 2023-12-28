@@ -233,7 +233,7 @@ instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0
 instance [AddCommMonoid α] [Module ℚ α] : Module ℚ≥0 α :=
   Module.compHom α coeHom
 
-instance CanonicallyOrderedAddCancelCommMonoid ℚ≥0 :=
+instance canonicallyOrderedAddCancelCommMonoid : CanonicallyOrderedAddCancelCommMonoid ℚ≥0 :=
   { (inferInstance : CanonicallyOrderedAddCommMonoid ℚ≥0),
     (inferInstance : OrderedCancelAddCommMonoid ℚ≥0) with }
 
