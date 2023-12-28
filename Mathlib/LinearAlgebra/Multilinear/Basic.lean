@@ -3,14 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.List.FinRange
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Tactic.Abel
+import Mathlib.Data.List.FinRange
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -278,28 +275,30 @@ def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, 
 
 section
 
-variable (R M₂)
+variable (R M₂ M₃)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
--/
+/-- Equivalence between linear maps `M₂ →ₗ[R] M₃` and one-multilinear maps. -/
 @[simps]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : MultilinearMap R (fun _ : ι => M₂) M₂ where
-  toFun := Function.eval i'
-  map_add' m i x y := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-  map_smul' m i r x := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingleton
-#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply
-
+def ofSubsingleton [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ MultilinearMap R (fun _ : ι ↦ M₂) M₃ where
+  toFun f :=
+    { toFun := fun x ↦ f (x i)
+      map_add' := by intros; simp [update_eq_const_of_subsingleton]
+      map_smul' := by intros; simp [update_eq_const_of_subsingleton] }
+  invFun f :=
+    { toFun := fun x ↦ f fun _ ↦ x
+      map_add' := fun x y ↦ by simpa [update_eq_const_of_subsingleton] using f.map_add 0 i x y
+      map_smul' := fun c x ↦ by simpa [update_eq_const_of_subsingleton] using f.map_smul 0 i c x }
+  left_inv f := rfl
+  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingletonₓ
+#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply_applyₓ
 
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 -- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_add' _ := isEmptyElim
@@ -593,7 +592,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
       refine'
-        Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (B_subset_A i))
+        Finset.sum_lt_sum (fun i _ => Finset.card_le_card (B_subset_A i))
           ⟨i₀, Finset.mem_univ _, _⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
       simp only [Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
@@ -603,7 +602,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- Express the inductive assumption for `C`
   have Crec : (f fun i => ∑ j in C i, g i j) = ∑ r in piFinset C, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (C i)) < ∑ i, Finset.card (A i) :=
-      Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (C_subset_A i))
+      Finset.sum_lt_sum (fun i _ => Finset.card_le_card (C_subset_A i))
         ⟨i₀, Finset.mem_univ _, by simp [hi₀]⟩
     rw [h] at this
     exact IH _ this C rfl
@@ -842,6 +841,21 @@ instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M�
 
 variable (R S M₁ M₂ M₃)
 
+section OfSubsingleton
+
+variable [AddCommMonoid M₃] [Semiring S] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+
+/-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
+and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
+@[simps (config := { simpRhs := true })]
+def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
+  { ofSubsingleton R M₂ M₃ i with
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
+
+end OfSubsingleton
+
 /-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
 @[simps apply symm_apply]
 def domDomCongrLinearEquiv' {ι' : Type*} (σ : ι ≃ ι') :
@@ -923,6 +937,45 @@ section CommSemiring
 
 variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M₂]
   [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂] (f f' : MultilinearMap R M₁ M₂)
+
+section
+variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
+
+/-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
+sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
+@[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
+    (MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂ where
+  toFun := fun g ↦ g.compLinearMap f
+  map_add' := fun _ _ ↦ rfl
+  map_smul' := fun _ _ ↦ rfl
+
+/-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
+sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
+`f₁, ..., fₙ`. -/
+@[simps] def compLinearMapMultilinear :
+  @MultilinearMap R ι (λ i ↦ M₁ i →ₗ[R] M₁' i)
+    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _ (λ i ↦ LinearMap.module) _ where
+  toFun := MultilinearMap.compLinearMapₗ
+  map_add' := by
+    intro _ f i f₁ f₂
+    ext g x
+    change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
+        (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
+    convert g.map_add (λ j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
+    · exact Function.apply_update c f i (f₁ + f₂) j
+    · exact Function.apply_update c f i f₁ j
+    · exact Function.apply_update c f i f₂ j
+  map_smul' := by
+    intro _ f i a f₀
+    ext g x
+    change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
+    convert g.map_smul (λ j ↦ f j (x j)) i a (f₀ (x i)) with j j j
+    · exact Function.apply_update c f i (a • f₀) j
+    · exact Function.apply_update c f i f₀ j
+
+end
 
 /-- If one multiplies by `c i` the coordinates in a finset `s`, then the image under a multilinear
 map is multiplied by `∏ i in s, c i`. This is mainly an auxiliary statement to prove the result when

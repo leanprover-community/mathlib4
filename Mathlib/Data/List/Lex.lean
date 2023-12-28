@@ -212,14 +212,27 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
 
-theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : lt l' l) (hl' : l' ≠ []) :
+theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
+    a' ≤ a := by
+  by_contra hh
+  simp only [not_le] at hh
+  exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hh) h
+
+theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
     l'.head! ≤ l.head! := by
-  rw [lt_iff_lex_lt l' l] at h
+  replace h : List.Lex (· < ·) l' l := h
   by_cases hl : l = []
-  · simp only [hl, List.Lex.not_nil_right] at h
-  · by_contra hh
-    have := List.Lex.rel (r := (·<·)) (l₁ := l.tail) (l₂ := l'.tail) (not_le.mp hh)
-    rw [List.cons_head!_tail hl', List.cons_head!_tail hl] at this
-    exact asymm h this
+  · simp [hl] at h
+  · rw [← List.cons_head!_tail hl', ← List.cons_head!_tail hl] at h
+    exact head_le_of_lt h
+
+theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
+    a :: l' ≤ a :: l := by
+  rw [le_iff_lt_or_eq] at h ⊢
+  refine h.imp ?_ (congr_arg _)
+  intro h
+  have haa := lt_irrefl a
+  exact (List.lt_iff_lex_lt _ _).mp
+    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr h))
 
 end List

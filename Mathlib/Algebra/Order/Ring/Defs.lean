@@ -3,18 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Pi.Algebra
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Data.Pi.Algebra
-import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
@@ -100,13 +101,12 @@ immediate predecessors and what conditions are added to each of them.
   - `StrictOrderedRing` & totality of the order
   - `LinearOrderedSemiring` & additive inverses
   - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Domain` & linear order structure
+  - `Ring` & `IsDomain` & linear order structure
 * `LinearOrderedCommRing`
   - `StrictOrderedCommRing` & totality of the order
   - `LinearOrderedRing` & commutativity of multiplication
   - `LinearOrderedCommSemiring` & additive inverses
-  - `IsDomain` & linear order structure
-
+  - `CommRing` & `IsDomain` & linear order structure
 -/
 
 open Function
@@ -414,7 +414,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
+theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone (a * ·) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
@@ -723,7 +723,7 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
+theorem strictAnti_mul_left {a : α} (ha : a < 0) : StrictAnti (a * ·) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 #align strict_anti_mul_left strictAnti_mul_left
 
@@ -800,12 +800,9 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b)
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
-  -- Porting note: for the middle case, we used to have `rfl`, but it is now rejected.
-  -- https://github.com/leanprover/std4/issues/62
-  rcases lt_trichotomy 0 a with (ha | ha | ha)
+  rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
-  · subst ha
-    exact ((ab le_rfl).asymm (nab le_rfl)).elim
+  · exact ((ab le_rfl).asymm (nab le_rfl)).elim
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
 #align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
@@ -834,18 +831,15 @@ theorem nonpos_of_mul_nonpos_right (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
 #align nonpos_of_mul_nonpos_right nonpos_of_mul_nonpos_right
 
 @[simp]
-theorem zero_le_mul_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  -- Porting note: this used to be by:
-  -- convert mul_le_mul_left h
-  -- simp
-  -- but the `convert` no longer works.
-  simpa using (mul_le_mul_left h : c * 0 ≤ c * b ↔ 0 ≤ b)
-#align zero_le_mul_left zero_le_mul_left
+theorem mul_nonneg_iff_of_pos_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
+  convert mul_le_mul_left h
+  simp
+#align zero_le_mul_left mul_nonneg_iff_of_pos_left
 
 @[simp]
-theorem zero_le_mul_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
+theorem mul_nonneg_iff_of_pos_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
   simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
-#align zero_le_mul_right zero_le_mul_right
+#align zero_le_mul_right mul_nonneg_iff_of_pos_right
 
 -- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a * b :=
@@ -907,22 +901,22 @@ theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
 
 @[simp]
 theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
-  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two' α)]
 #align one_le_bit1 one_le_bit1
 
 @[simp]
 theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
-  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two' α)]
 #align one_lt_bit1 one_lt_bit1
 
 @[simp]
 theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
-  rw [bit0, ← two_mul, zero_le_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
 #align zero_le_bit0 zero_le_bit0
 
 @[simp]
 theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
-  rw [bit0, ← two_mul, zero_lt_mul_left (zero_lt_two : 0 < (2 : α))]
+  rw [bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
 #align zero_lt_bit0 zero_lt_bit0
 
 end
@@ -946,7 +940,7 @@ theorem nonpos_of_mul_nonneg_right (h : 0 ≤ a * b) (ha : a < 0) : b ≤ 0 :=
 @[simp]
 theorem Units.inv_pos {u : αˣ} : (0 : α) < ↑u⁻¹ ↔ (0 : α) < u :=
   have : ∀ {u : αˣ}, (0 : α) < u → (0 : α) < ↑u⁻¹ := @fun u h =>
-    (zero_lt_mul_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
+    (mul_pos_iff_of_pos_left h).mp <| u.mul_inv.symm ▸ zero_lt_one
   ⟨this, this⟩
 #align units.inv_pos Units.inv_pos
 
@@ -1093,35 +1087,25 @@ theorem mul_nonpos_iff : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 �
   rw [← neg_nonneg, neg_mul_eq_mul_neg, mul_nonneg_iff, neg_nonneg, neg_nonpos]
 #align mul_nonpos_iff mul_nonpos_iff
 
+lemma mul_nonneg_iff_pos_imp_nonneg : 0 ≤ a * b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) := by
+  refine mul_nonneg_iff.trans ?_
+  simp_rw [← not_le, ← or_iff_not_imp_left]
+  have := le_total a 0
+  have := le_total b 0
+  tauto
+
+lemma mul_nonneg_iff_neg_imp_nonpos : 0 ≤ a * b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
+  rw [← neg_mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma mul_nonpos_iff_pos_imp_nonpos : a * b ≤ 0 ↔ (0 < a → b ≤ 0) ∧ (b < 0 → 0 ≤ a) := by
+  rw [← neg_nonneg, ← mul_neg, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
+lemma mul_nonpos_iff_neg_imp_nonneg : a * b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧ (0 < b → a ≤ 0) := by
+  rw [← neg_nonneg, ← neg_mul, mul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
+
 theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
   (le_total 0 a).elim (fun h => mul_nonneg h h) fun h => mul_nonneg_of_nonpos_of_nonpos h h
 #align mul_self_nonneg mul_self_nonneg
-
-@[simp]
-theorem neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
-  simp [neg_le_iff_add_nonneg, ← two_mul, mul_nonneg_iff, zero_le_one, (zero_lt_two' α).not_le]
-#align neg_le_self_iff neg_le_self_iff
-
-@[simp]
-theorem neg_lt_self_iff : -a < a ↔ 0 < a := by
-  simp [neg_lt_iff_pos_add, ← two_mul, mul_pos_iff, zero_lt_one, (zero_lt_two' α).not_lt]
-#align neg_lt_self_iff neg_lt_self_iff
-
-@[simp]
-theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
-  calc
-    a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
-    _ ↔ 0 ≤ -a := neg_le_self_iff
-    _ ↔ a ≤ 0 := neg_nonneg
-#align le_neg_self_iff le_neg_self_iff
-
-@[simp]
-theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
-  calc
-    a < -a ↔ - -a < -a := by rw [neg_neg]
-    _ ↔ 0 < -a := neg_lt_self_iff
-    _ ↔ a < 0 := neg_pos
-#align lt_neg_self_iff lt_neg_self_iff
 
 theorem neg_one_lt_zero : -1 < (0 : α) :=
   neg_lt_zero.2 zero_lt_one
@@ -1245,3 +1229,14 @@ theorem max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
 #align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
 
 end LinearOrderedCommRing
+
+/-!
+### Deprecated lemmas
+
+Those lemmas have been deprecated on 2023/12/23
+-/
+
+@[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
+@[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
+@[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
+@[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right

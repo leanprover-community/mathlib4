@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
@@ -400,6 +400,11 @@ noncomputable def mapCyclesIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S]
     (S.map F).cycles ≅ F.obj S.cycles :=
   (S.leftHomologyData.map F).cyclesIso
 
+@[reassoc (attr := simp)]
+lemma mapCyclesIso_hom_iCycles [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+    (S.mapCyclesIso F).hom ≫ F.map S.iCycles = (S.map F).iCycles := by
+  apply LeftHomologyData.cyclesIso_hom_comp_i
+
 /-- When a functor `F` preserves the left homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).leftHomology ≅ F.obj S.leftHomology`. -/
 noncomputable def mapLeftHomologyIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
@@ -720,6 +725,139 @@ noncomputable def homologyFunctorIso
   NatIso.ofComponents (fun S => S.mapHomologyIso F)
     (fun f => ShortComplex.mapHomologyIso_hom_naturality f F)
 
+section
+
+variable
+  {S₁ S₂ : ShortComplex C} {φ : S₁ ⟶ S₂}
+  {hl₁ : S₁.LeftHomologyData} {hr₁ : S₁.RightHomologyData}
+  {hl₂ : S₂.LeftHomologyData} {hr₂ : S₂.RightHomologyData}
+  (ψl : LeftHomologyMapData φ hl₁ hl₂)
+  (ψr : RightHomologyMapData φ hr₁ hr₂)
+
+lemma LeftHomologyMapData.quasiIso_map_iff
+    [(F.mapShortComplex.obj S₁).HasHomology]
+    [(F.mapShortComplex.obj S₂).HasHomology]
+    [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ IsIso (F.map ψl.φH) :=
+  (ψl.map F).quasiIso_iff
+
+lemma RightHomologyMapData.quasiIso_map_iff
+    [(F.mapShortComplex.obj S₁).HasHomology]
+    [(F.mapShortComplex.obj S₂).HasHomology]
+    [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ IsIso (F.map ψr.φH) :=
+  (ψr.map F).quasiIso_iff
+
+variable (φ) [S₁.HasHomology] [S₂.HasHomology]
+    [(F.mapShortComplex.obj S₁).HasHomology] [(F.mapShortComplex.obj S₂).HasHomology]
+
+instance quasiIso_map_of_preservesLeftHomology
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
+    [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
+  have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
+  have : IsIso γ.φH := by
+    rw [← γ.quasiIso_iff]
+    infer_instance
+  rw [(γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
+  infer_instance
+
+lemma quasiIso_map_iff_of_preservesLeftHomology
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
+    [ReflectsIsomorphisms F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
+  have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
+  rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
+  constructor
+  · intro
+    exact isIso_of_reflects_iso _ F
+  · intro
+    infer_instance
+
+instance quasiIso_map_of_preservesRightHomology
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
+    [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
+  have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
+  have : IsIso γ.φH := by
+    rw [← γ.quasiIso_iff]
+    infer_instance
+  rw [(γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
+  infer_instance
+
+lemma quasiIso_map_iff_of_preservesRightHomology
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
+    [ReflectsIsomorphisms F] :
+    QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
+  have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
+  rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
+  constructor
+  · intro
+    exact isIso_of_reflects_iso _ F
+  · intro
+    infer_instance
+
+end
+
 end ShortComplex
+
+namespace Functor
+
+variable (F : C ⥤ D) [F.PreservesZeroMorphisms] (S : ShortComplex C)
+
+/-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
+by a functor `F`, then `F` preserves the left homology of `S`. -/
+noncomputable def preservesLeftHomologyOfZerof (hf : S.f = 0)
+    [PreservesLimit (parallelPair S.g 0) F] :
+    F.PreservesLeftHomologyOf S := ⟨fun h =>
+  { g := by infer_instance
+    f' := Limits.preservesCokernelZero' _ _
+      (by rw [← cancel_mono h.i, h.f'_i, zero_comp, hf]) }⟩
+
+/-- If a short complex `S` is such that `S.g = 0` and that the cokernel of `S.f` is preserved
+by a functor `F`, then `F` preserves the right homology of `S`. -/
+noncomputable def preservesRightHomologyOfZerog (hg : S.g = 0)
+    [PreservesColimit (parallelPair S.f 0) F] :
+    F.PreservesRightHomologyOf S := ⟨fun h =>
+  { f := by infer_instance
+    g' := Limits.preservesKernelZero' _ _
+      (by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]) }⟩
+
+/-- If a short complex `S` is such that `S.g = 0` and that the cokernel of `S.f` is preserved
+by a functor `F`, then `F` preserves the left homology of `S`. -/
+noncomputable def preservesLeftHomologyOfZerog (hg : S.g = 0)
+    [PreservesColimit (parallelPair S.f 0) F] :
+    F.PreservesLeftHomologyOf S := ⟨fun h =>
+  { g := by
+      rw [hg]
+      infer_instance
+    f' := by
+      have := h.isIso_i hg
+      let e : parallelPair h.f' 0 ≅ parallelPair S.f 0 :=
+        parallelPair.ext (Iso.refl _) (asIso h.i) (by aesop_cat) (by aesop_cat)
+      exact Limits.preservesColimitOfIsoDiagram F e.symm}⟩
+
+/-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
+by a functor `F`, then `F` preserves the right homology of `S`. -/
+noncomputable def preservesRightHomologyOfZerof (hf : S.f = 0)
+    [PreservesLimit (parallelPair S.g 0) F] :
+    F.PreservesRightHomologyOf S := ⟨fun h =>
+  { f := by
+      rw [hf]
+      infer_instance
+    g' := by
+      have := h.isIso_p hf
+      let e : parallelPair S.g 0 ≅ parallelPair h.g' 0 :=
+        parallelPair.ext (asIso h.p) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+      exact Limits.preservesLimitOfIsoDiagram F e }⟩
+
+end Functor
+
+lemma NatTrans.app_homology {F G : C ⥤ D} (τ : F ⟶ G)
+    (S : ShortComplex C) [S.HasHomology] [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
+    [F.PreservesLeftHomologyOf S] [G.PreservesLeftHomologyOf S] [F.PreservesRightHomologyOf S]
+    [G.PreservesRightHomologyOf S] :
+    τ.app S.homology = (S.mapHomologyIso F).inv ≫
+      ShortComplex.homologyMap (S.mapNatTrans τ) ≫ (S.mapHomologyIso G).hom := by
+  rw [ShortComplex.homologyMap_mapNatTrans, assoc, assoc, Iso.inv_hom_id,
+    comp_id, Iso.inv_hom_id_assoc]
 
 end CategoryTheory

@@ -197,11 +197,7 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
 
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
-    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := by
-  -- Porting note: was just `rfl`
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
-  rfl
+    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := rfl
 #align witt_vector.standard_one_dim_isocrystal.frobenius_apply WittVector.StandardOneDimIsocrystal.frobenius_apply
 
 end PerfectRing

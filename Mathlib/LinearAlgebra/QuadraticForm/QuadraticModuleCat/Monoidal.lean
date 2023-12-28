@@ -80,13 +80,13 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    { μIsoSymm := fun X Y => Iso.refl _
-      εIsoSymm := Iso.refl _
+    { μIso := fun X Y => Iso.refl _
+      εIso := Iso.refl _
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
-        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
+        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
         rfl }
 
 variable (R) in

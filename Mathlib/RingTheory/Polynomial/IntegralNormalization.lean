@@ -99,7 +99,7 @@ theorem support_integralNormalization {f : R[X]} :
   refine' ⟨fun h => integralNormalization_support h, _⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
-  split_ifs with hi <;> simp [hfi, hi, pow_ne_zero _ (leadingCoeff_ne_zero.mpr hf)]
+  split_ifs with hi <;> simp [hf, hfi, hi]
 #align polynomial.support_integral_normalization Polynomial.support_integralNormalization
 
 end IsDomain
@@ -119,7 +119,7 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
           f (coeff (integralNormalization p) i.1 * p.leadingCoeff ^ i.1) * z ^ i.1 := by
       rw [eval₂_eq_sum, sum_def, support_integralNormalization]
       simp only [mul_comm z, mul_pow, mul_assoc, RingHom.map_pow, RingHom.map_mul]
-      exact Finset.sum_attach.symm
+      rw [← Finset.sum_attach]
     _ =
         p.support.attach.sum fun i =>
           f (coeff p i.1 * p.leadingCoeff ^ (natDegree p - 1)) * z ^ i.1 := by
@@ -133,14 +133,15 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
           tsub_add_cancel_of_le one_le_deg]
         exact degree_eq_natDegree hp
       · have : i.1 ≤ p.natDegree - 1 :=
-          Nat.le_pred_of_lt (lt_of_le_of_ne (le_natDegree_of_ne_zero (mem_support_iff.mp i.2)) hi)
+          Nat.le_sub_one_of_lt
+            (lt_of_le_of_ne (le_natDegree_of_ne_zero (mem_support_iff.mp i.2)) hi)
         rw [integralNormalization_coeff_ne_natDegree hi, mul_assoc, ← pow_add,
           tsub_add_cancel_of_le this]
     _ = f p.leadingCoeff ^ (natDegree p - 1) * eval₂ f z p := by
       simp_rw [eval₂_eq_sum, sum_def, fun i => mul_comm (coeff p i), RingHom.map_mul,
                RingHom.map_pow, mul_assoc, ← Finset.mul_sum]
       congr 1
-      exact @Finset.sum_attach _ _ p.support _ fun i => f (p.coeff i) * z ^ i
+      exact p.support.sum_attach fun i ↦ f (p.coeff i) * z ^ i
     _ = 0 := by rw [hz, mul_zero]
 #align polynomial.integral_normalization_eval₂_eq_zero Polynomial.integralNormalization_eval₂_eq_zero
 

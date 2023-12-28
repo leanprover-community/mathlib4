@@ -91,10 +91,9 @@ and showing that they satisfy the appropriate conditions. -/
 @[simps]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
-    (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
-    (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
-    (singleton_mem : ∀ x, {x} ∈ B) : Bornology α
-    where
+    (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
+    (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
+    (singleton_mem : ∀ x, {x} ∈ B) : Bornology α where
   cobounded' :=
     { sets := { s : Set α | sᶜ ∈ B }
       univ_sets := by rwa [← compl_univ] at empty_mem
@@ -114,8 +113,8 @@ and showing that they satisfy the appropriate conditions. -/
 @[simps!]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
-    (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
-    (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
+    (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
+    (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
     (sUnion_univ : ⋃₀ B = univ) :
     Bornology α :=
   Bornology.ofBounded B empty_mem subset_mem union_mem fun x => by
@@ -172,6 +171,12 @@ theorem isBounded_empty : IsBounded (∅ : Set α) := by
   rw [isBounded_def, compl_empty]
   exact univ_mem
 #align bornology.is_bounded_empty Bornology.isBounded_empty
+
+theorem nonempty_of_not_isBounded (h : ¬IsBounded s) : s.Nonempty := by
+  rw [nonempty_iff_ne_empty]
+  rintro rfl
+  exact h isBounded_empty
+#align metric.nonempty_of_unbounded Bornology.nonempty_of_not_isBounded
 
 @[simp]
 theorem isBounded_singleton : IsBounded ({x} : Set α) := by
@@ -306,6 +311,9 @@ theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i
   by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_range_iff]
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
+lemma eventually_ne_cobounded (a : α) : ∀ᶠ x in cobounded α, x ≠ a :=
+  le_cofinite_iff_eventually_ne.1 (le_cofinite _) a
+
 end Bornology
 
 open Bornology
@@ -318,6 +326,10 @@ theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 #align set.finite.is_bounded Set.Finite.isBounded
+
+nonrec lemma Filter.Tendsto.eventually_ne_cobounded [Bornology α] {f : β → α} {l : Filter β}
+    (h : Tendsto f l (cobounded α)) (a : α) : ∀ᶠ x in l, f x ≠ a :=
+  h.eventually <| eventually_ne_cobounded a
 
 instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩

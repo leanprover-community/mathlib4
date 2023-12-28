@@ -213,7 +213,7 @@ theorem whisker_exchange {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
   simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
 
 @[reassoc]
-theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
+theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
@@ -482,7 +482,7 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
           tensorHom (rightUnitor X).hom (𝟙 Y) := by
             aesop_cat) :
       MonoidalCategory C where
-  tensorHom_def := by intros; simp [← id_tensorHom, ←tensorHom_id, ← tensor_comp]
+  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   whiskerLeft_id := by intros; simp [← id_tensorHom, ← tensor_id]
   id_whiskerRight := by intros; simp [← tensorHom_id, tensor_id]
   pentagon := pentagon

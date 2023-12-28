@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathlib.LinearAlgebra.BilinearForm
+import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 #align_import linear_algebra.matrix.bilinear_form from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
@@ -568,7 +568,8 @@ theorem _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₃} (b : Bas
   rw [← Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin, Matrix.nondegenerate_toBilin'_iff]
 #align matrix.nondegenerate_to_bilin_iff Matrix.nondegenerate_toBilin_iff
 
--- Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
+/-! Lemmas transferring nondegeneracy between a bilinear form and its associated matrix -/
+
 @[simp]
 theorem nondegenerate_toMatrix'_iff {B : BilinForm R₃ (ι → R₃)} :
     B.toMatrix'.Nondegenerate ↔ B.Nondegenerate :=
@@ -591,7 +592,8 @@ theorem Nondegenerate.toMatrix {B : BilinForm R₃ M₃} (h : B.Nondegenerate) (
   (nondegenerate_toMatrix_iff b).mpr h
 #align bilin_form.nondegenerate.to_matrix BilinForm.Nondegenerate.toMatrix
 
--- Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero`
+/-! Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` -/
+
 theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
   rw [Matrix.nondegenerate_toBilin'_iff, Matrix.nondegenerate_iff_det_ne_zero]

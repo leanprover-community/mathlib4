@@ -3,7 +3,7 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Analysis.Convex.Star
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 
@@ -279,7 +279,7 @@ variable [OrderedAddCommMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
 theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab =>
   calc
     a • x + b • y ≤ a • r + b • r :=
-      add_le_add (smul_le_smul_of_nonneg hx ha) (smul_le_smul_of_nonneg hy hb)
+      add_le_add (smul_le_smul_of_nonneg_left hx ha) (smul_le_smul_of_nonneg_left hy hb)
     _ = r := Convex.combo_self hab _
 #align convex_Iic convex_Iic
 
@@ -317,8 +317,8 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
     rwa [zero_smul, zero_add, hab, one_smul]
   rw [mem_Iio] at hx hy
   calc
-    a • x + b • y < a • r + b • r :=
-      add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx ha') (smul_le_smul_of_nonneg hy.le hb)
+    a • x + b • y < a • r + b • r := add_lt_add_of_lt_of_le
+        (smul_lt_smul_of_pos_left hx ha') (smul_le_smul_of_nonneg_left hy.le hb)
     _ = r := Convex.combo_self hab _
 #align convex_Iio convex_Iio
 
@@ -522,10 +522,8 @@ theorem Convex.add_smul_sub_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy
 #align convex.add_smul_sub_mem Convex.add_smul_sub_mem
 
 /-- Affine subspaces are convex. -/
-theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) := by
-  intro x hx y hy a b _ _ hab
-  rw [eq_sub_of_add_eq hab, ← AffineMap.lineMap_apply_module]
-  exact AffineMap.lineMap_mem b hx hy
+theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) :=
+  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using Q.2 _ hy hx hx
 #align affine_subspace.convex AffineSubspace.convex
 
 /-- The preimage of a convex set under an affine map is convex. -/
@@ -551,6 +549,23 @@ theorem Convex.sub (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s - 
 end AddCommGroup
 
 end OrderedRing
+
+section LinearOrderedRing
+
+variable [LinearOrderedRing 𝕜] [AddCommMonoid E]
+
+theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (x + y) ≤ (f x) + (f y))
+    (hf2 : ∀ ⦃c⦄ x, 0 ≤ c → f (c • x) ≤ c * f x) (B : 𝕜) :
+    Convex 𝕜 { x | f x ≤ B } := by
+  rw [convex_iff_segment_subset]
+  rintro x hx y hy z ⟨a, b, ha, hb, hs, rfl⟩
+  calc
+    _ ≤ a • (f x) + b • (f y) := le_trans (hf1 _ _) (add_le_add (hf2 x ha) (hf2 y hb))
+    _ ≤ a • B + b • B :=
+        add_le_add (smul_le_smul_of_nonneg_left hx ha) (smul_le_smul_of_nonneg_left hy hb)
+    _ ≤ B := by rw [← add_smul, hs, one_smul]
+
+end LinearOrderedRing
 
 section LinearOrderedField
 
