@@ -37,15 +37,14 @@ section OrderedCommMonoid
 variable [OrderedCommMonoid α]
 
 @[to_additive]
-instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·) (· ≤ ·) where
+instance (priority := 200) OrderedCommMonoid.toCovariantClassLeft :
+    CovariantClass α α (· * ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.toCovariantClassLeft
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toCovariantClassLeft
 
-/- This instance can be proven with `by infer_instance`.  However, `WithBot ℕ` does not
-pick up a `CovariantClass M M (Function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
-instance OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
+theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   covariant_swap_mul_of_covariant_mul M _
 #align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.toCovariantClassRight
@@ -84,18 +83,14 @@ instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
 #noalign ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left
 
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassLeft :
+instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeft :
     ContravariantClass α α (· * ·) (· < ·) where
   elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toContravariantClassLeft
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toContravariantClassLeft
 
-/- This instance can be proven with `by infer_instance`.  However, by analogy with the
-instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
-this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
-instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassRight :
+theorem OrderedCancelCommMonoid.toContravariantClassRight :
     ContravariantClass α α (swap (· * ·)) (· < ·) :=
   contravariant_swap_mul_of_contravariant_mul α _
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.toContravariantClassRight
