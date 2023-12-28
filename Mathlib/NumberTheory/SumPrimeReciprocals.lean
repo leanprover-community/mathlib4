@@ -42,15 +42,17 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
   set m : ℕ := 2 ^ k.primesBelow.card
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
-  suffices : 1 / 2 ≤ S
-  · convert this using 5
-    rw [show 4 = 2 ^ 2 by norm_num, pow_right_comm]
-    ring
   suffices : 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S
-  · rwa [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add',
-      cast_mul, cast_mul, cast_pow, cast_two,
-      show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
-      _root_.mul_le_mul_left <| by positivity] at this
+  · rw [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add'] at this
+    push_cast at this
+    ring_nf at this
+    simp_rw [← one_div] at this
+    conv at this => enter [1, 2]; rw [show (2 : ℝ) = 4 * (1 / 2) by norm_num]
+    rw [← mul_assoc, mul_comm _ (1 / 2 : ℝ), mul_assoc (Finset.sum ..),
+      _root_.mul_le_mul_right <| by positivity] at this
+    convert this using 5
+    rw [show 4 = 2 ^ 2 by norm_num, Nat.pow_right_comm]
+    ring
   calc (2 * N₀ : ℝ)
     _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
