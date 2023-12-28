@@ -307,7 +307,7 @@ theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a 
   rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
 
 theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b ≠ a := by
-  by_contra' h'
+  by_contra! h'
   obtain ⟨b, b', hb, hb', hne⟩ := one_lt_encard_iff.1 h
   apply hne
   rw [h' b hb, h' b' hb']
@@ -476,7 +476,7 @@ theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
-@[simp] theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
+theorem Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := by
   obtain (h | h) := s.finite_or_infinite
   · have := h.fintype
     rw [ncard, h.encard_eq_coe_toFinset_card, Nat.card_eq_fintype_card,
@@ -1000,7 +1000,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 #align set.ncard_eq_one Set.ncard_eq_one
 
 theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
-    (∃ (a : α) (_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.ncard + 1 = t.ncard := by
+    (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ s.ncard + 1 = t.ncard := by
   classical
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,

@@ -43,9 +43,12 @@ theorem binomial_apply_zero (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
   simp [binomial_apply]
 
 @[simp]
+theorem binomial_apply_last (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
+    binomial p h n (.last n) = p^n := by
+  simp [binomial_apply]
+
 theorem binomial_apply_self (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n n = p^n := by
-  simp [binomial_apply, Nat.mod_eq_of_lt]
+    binomial p h n n = p^n := by simp
 
 /-- The binomial distribution on one coin is the bernoully distribution. -/
 theorem binomial_one_eq_bernoulli (p : ℝ≥0∞) (h : p ≤ 1) :

@@ -425,7 +425,7 @@ end CondIndepSet
 section CondIndep
 
 @[symm]
-theorem CondIndep.symm {m' m₁ m₂: MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
+theorem CondIndep.symm {m' m₁ m₂ : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
     [StandardBorelSpace Ω] [Nonempty Ω] {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h : CondIndep m' m₁ m₂ hm' μ) :
     CondIndep m' m₂ m₁ hm' μ :=
@@ -450,7 +450,7 @@ theorem condIndep_of_condIndep_of_le_left {m' m₁ m₂ m₃ : MeasurableSpace �
     CondIndep m' m₃ m₂ hm' μ :=
   kernel.indep_of_indep_of_le_left h_indep h31
 
-theorem condIndep_of_condIndep_of_le_right {m' m₁ m₂ m₃: MeasurableSpace Ω}
+theorem condIndep_of_condIndep_of_le_right {m' m₁ m₂ m₃ : MeasurableSpace Ω}
     [mΩ : MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
     {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
     (h_indep : CondIndep m' m₁ m₂ hm' μ) (h32 : m₃ ≤ m₂) :
@@ -694,6 +694,13 @@ theorem CondIndepFun.comp {γ γ' : Type*} {_mβ : MeasurableSpace β} {_mβ' : 
     CondIndepFun m' hm' (φ ∘ f) (ψ ∘ g) μ :=
   kernel.IndepFun.comp hfg hφ hψ
 
+section iCondIndepFun
+variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
+
+@[nontriviality]
+lemma iCondIndepFun.of_subsingleton [Subsingleton ι] : iCondIndepFun m' hm' m f μ :=
+  kernel.iIndepFun.of_subsingleton
+
 /-- If `f` is a family of mutually conditionally independent random variables
 (`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint finite index sets, then the tuple formed
 by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `i ∈ T`. -/
@@ -703,33 +710,90 @@ theorem iCondIndepFun.condIndepFun_finset {β : ι → Type*}
     CondIndepFun m' hm' (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
   kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
-theorem iCondIndepFun.condIndepFun_prod {β : ι → Type*}
+theorem iCondIndepFun.condIndepFun_prod_mk {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iCondIndepFun m' hm' m f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
-  kernel.iIndepFun.indepFun_prod hf_Indep hf_meas i j k hik hjk
+  kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
+
+open Finset in
+lemma iCondIndepFun.condIndepFun_prod_mk_prod_mk (h_indep : iCondIndepFun m' hm' m f μ)
+    (hf : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    CondIndepFun m' hm' (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ := by
+  classical
+  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
+    ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem $ mem_singleton_self _⟩⟩
+  have hg (i j : ι) : Measurable (g i j) := by measurability
+  exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
+
+end iCondIndepFun
+
+section Mul
+variable {β : Type*} {m : MeasurableSpace β} [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
-theorem iCondIndepFun.mul {m : MeasurableSpace β}
-    [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indep : iCondIndepFun m' hm' (fun _ => m) f μ)
+lemma iCondIndepFun.indepFun_mul_left (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     CondIndepFun m' hm' (f i * f j) (f k) μ :=
-  kernel.iIndepFun.mul hf_Indep hf_meas i j k hik hjk
+  kernel.iIndepFun.indepFun_mul_left hf_indep hf_meas i j k hik hjk
+
+@[to_additive]
+lemma iCondIndepFun.indepFun_mul_right (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    CondIndepFun m' hm' (f i) (f j * f k) μ :=
+  kernel.iIndepFun.indepFun_mul_right hf_indep hf_meas i j k hij hik
+
+@[to_additive]
+lemma iCondIndepFun.indepFun_mul_mul (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    CondIndepFun m' hm' (f i * f j) (f k * f l) μ :=
+  kernel.iIndepFun.indepFun_mul_mul hf_indep hf_meas i j k l hik hil hjk hjl
+
+end Mul
+
+section Div
+variable {β : Type*} {m : MeasurableSpace β} [Div β] [MeasurableDiv₂ β] {f : ι → Ω → β}
+
+@[to_additive]
+lemma iCondIndepFun.indepFun_div_left (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+    CondIndepFun m' hm' (f i / f j) (f k) μ :=
+  kernel.iIndepFun.indepFun_div_left hf_indep hf_meas i j k hik hjk
+
+@[to_additive]
+lemma iCondIndepFun.indepFun_div_right (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    CondIndepFun m' hm' (f i) (f j / f k) μ :=
+  kernel.iIndepFun.indepFun_div_right hf_indep hf_meas i j k hij hik
+
+@[to_additive]
+lemma iCondIndepFun.indepFun_div_div (hf_indep : iCondIndepFun m' hm' (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    CondIndepFun m' hm' (f i / f j) (f k / f l) μ :=
+  kernel.iIndepFun.indepFun_div_div hf_indep hf_meas i j k l hik hil hjk hjl
+
+end Div
+
+section CommMonoid
+variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_finset_prod_of_not_mem
-    {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
     (hf_Indep : iCondIndepFun m' hm' (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j in s, f j) (f i) μ :=
   kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
 
 @[to_additive]
-theorem iCondIndepFun.condIndepFun_prod_range_succ
-    {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ℕ → Ω → β}
+theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}
     (hf_Indep : iCondIndepFun m' hm' (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
     CondIndepFun m' hm' (∏ j in Finset.range n, f j) (f n) μ :=
   kernel.iIndepFun.indepFun_prod_range_succ hf_Indep hf_meas n
+
+end CommMonoid
 
 theorem iCondIndepSet.iCondIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β}
     {s : ι → Set Ω} (hs : iCondIndepSet m' hm' s μ) :

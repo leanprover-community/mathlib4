@@ -182,109 +182,109 @@ variable (x : R)
 
 variable (B : Type*) [CommRing B] [Algebra R B] [IsLocalization.Away x B]
 
-/-- `selfZpow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
-noncomputable def selfZpow (m : ℤ) : B :=
+/-- `selfZPow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
+noncomputable def selfZPow (m : ℤ) : B :=
   if _ : 0 ≤ m then algebraMap _ _ x ^ m.natAbs else mk' _ (1 : R) (Submonoid.pow x m.natAbs)
-#align self_zpow selfZpow
+#align self_zpow selfZPow
 
-theorem selfZpow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZpow x B n = algebraMap R B x ^ n.natAbs :=
+theorem selfZPow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZPow x B n = algebraMap R B x ^ n.natAbs :=
   dif_pos hn
-#align self_zpow_of_nonneg selfZpow_of_nonneg
+#align self_zpow_of_nonneg selfZPow_of_nonneg
 
 @[simp]
-theorem selfZpow_coe_nat (d : ℕ) : selfZpow x B d = algebraMap R B x ^ d :=
-  selfZpow_of_nonneg _ _ (Int.coe_nat_nonneg d)
-#align self_zpow_coe_nat selfZpow_coe_nat
+theorem selfZPow_coe_nat (d : ℕ) : selfZPow x B d = algebraMap R B x ^ d :=
+  selfZPow_of_nonneg _ _ (Int.coe_nat_nonneg d)
+#align self_zpow_coe_nat selfZPow_coe_nat
 
 @[simp]
-theorem selfZpow_zero : selfZpow x B 0 = 1 := by
-  simp [selfZpow_of_nonneg _ _ le_rfl]
-#align self_zpow_zero selfZpow_zero
+theorem selfZPow_zero : selfZPow x B 0 = 1 := by
+  simp [selfZPow_of_nonneg _ _ le_rfl]
+#align self_zpow_zero selfZPow_zero
 
-theorem selfZpow_of_neg {n : ℤ} (hn : n < 0) :
-    selfZpow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
+theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
+    selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
   dif_neg hn.not_le
-#align self_zpow_of_neg selfZpow_of_neg
+#align self_zpow_of_neg selfZPow_of_neg
 
-theorem selfZpow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
-    selfZpow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
+theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
+    selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
   by_cases hn0 : n = 0
-  · simp [hn0, selfZpow_zero, Submonoid.pow_apply]
-  · simp [selfZpow_of_neg _ _ (lt_of_le_of_ne hn hn0)]
-#align self_zpow_of_nonpos selfZpow_of_nonpos
+  · simp [hn0, selfZPow_zero, Submonoid.pow_apply]
+  · simp [selfZPow_of_neg _ _ (lt_of_le_of_ne hn hn0)]
+#align self_zpow_of_nonpos selfZPow_of_nonpos
 
 @[simp]
-theorem selfZpow_neg_coe_nat (d : ℕ) : selfZpow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
-  simp [selfZpow_of_nonpos _ _ (neg_nonpos.mpr (Int.coe_nat_nonneg d))]
-#align self_zpow_neg_coe_nat selfZpow_neg_coe_nat
+theorem selfZPow_neg_coe_nat (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
+  simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.coe_nat_nonneg d))]
+#align self_zpow_neg_coe_nat selfZPow_neg_coe_nat
 
 @[simp]
-theorem selfZpow_sub_cast_nat {n m : ℕ} :
-    selfZpow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
+theorem selfZPow_sub_cast_nat {n m : ℕ} :
+    selfZPow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
   by_cases h : m ≤ n
   · rw [IsLocalization.eq_mk'_iff_mul_eq, Submonoid.pow_apply, Subtype.coe_mk, ← Int.ofNat_sub h,
-      selfZpow_coe_nat, ← map_pow, ← map_mul, ← pow_add, Nat.sub_add_cancel h]
-  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_le h), selfZpow_neg_coe_nat,
+      selfZPow_coe_nat, ← map_pow, ← map_mul, ← pow_add, Nat.sub_add_cancel h]
+  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_le h), selfZPow_neg_coe_nat,
       IsLocalization.mk'_eq_iff_eq]
     simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
-#align self_zpow_sub_cast_nat selfZpow_sub_cast_nat
+#align self_zpow_sub_cast_nat selfZPow_sub_cast_nat
 
 @[simp]
-theorem selfZpow_add {n m : ℤ} : selfZpow x B (n + m) = selfZpow x B n * selfZpow x B m := by
-  cases' le_or_lt 0 n with hn hn <;> cases' le_or_lt 0 m with hm hm
-  · rw [selfZpow_of_nonneg _ _ hn, selfZpow_of_nonneg _ _ hm,
-      selfZpow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_nonneg hn hm, pow_add]
+theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
+  rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
+  · rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_nonneg _ _ hm,
+      selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_nonneg hn hm, pow_add]
   · have : n + m = n.natAbs - m.natAbs := by
       rw [Int.natAbs_of_nonneg hn, Int.ofNat_natAbs_of_nonpos hm.le, sub_neg_eq_add]
-    rw [selfZpow_of_nonneg _ _ hn, selfZpow_of_neg _ _ hm, this, selfZpow_sub_cast_nat,
+    rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_neg _ _ hm, this, selfZPow_sub_cast_nat,
       IsLocalization.mk'_eq_mul_mk'_one, map_pow]
   · have : n + m = m.natAbs - n.natAbs := by
       rw [Int.natAbs_of_nonneg hm, Int.ofNat_natAbs_of_nonpos hn.le, sub_neg_eq_add, add_comm]
-    rw [selfZpow_of_nonneg _ _ hm, selfZpow_of_neg _ _ hn, this, selfZpow_sub_cast_nat,
+    rw [selfZPow_of_nonneg _ _ hm, selfZPow_of_neg _ _ hn, this, selfZPow_sub_cast_nat,
       IsLocalization.mk'_eq_mul_mk'_one, map_pow, mul_comm]
-  · rw [selfZpow_of_neg _ _ hn, selfZpow_of_neg _ _ hm, selfZpow_of_neg _ _ (add_neg hn hm),
+  · rw [selfZPow_of_neg _ _ hn, selfZPow_of_neg _ _ hm, selfZPow_of_neg _ _ (add_neg hn hm),
       Int.natAbs_add_neg hn hm, ← mk'_mul, one_mul]
     congr
     ext
     simp [pow_add]
-#align self_zpow_add selfZpow_add
+#align self_zpow_add selfZPow_add
 
-theorem selfZpow_mul_neg (d : ℤ) : selfZpow x B d * selfZpow x B (-d) = 1 := by
+theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
   by_cases hd : d ≤ 0
-  · erw [selfZpow_of_nonpos x B hd, selfZpow_of_nonneg, ← map_pow, Int.natAbs_neg,
+  · erw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
       IsLocalization.mk'_spec, map_one]
     apply nonneg_of_neg_nonpos
     rwa [neg_neg]
-  · erw [selfZpow_of_nonneg x B (le_of_not_le hd), selfZpow_of_nonpos, ← map_pow, Int.natAbs_neg,
+  · erw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
       @IsLocalization.mk'_spec' R _ (Submonoid.powers x) B _ _ _ 1 (Submonoid.pow x d.natAbs),
       map_one]
     refine' nonpos_of_neg_nonneg (le_of_lt _)
     rwa [neg_neg, ← not_le]
-#align self_zpow_mul_neg selfZpow_mul_neg
+#align self_zpow_mul_neg selfZPow_mul_neg
 
-theorem selfZpow_neg_mul (d : ℤ) : selfZpow x B (-d) * selfZpow x B d = 1 := by
-  rw [mul_comm, selfZpow_mul_neg x B d]
-#align self_zpow_neg_mul selfZpow_neg_mul
+theorem selfZPow_neg_mul (d : ℤ) : selfZPow x B (-d) * selfZPow x B d = 1 := by
+  rw [mul_comm, selfZPow_mul_neg x B d]
+#align self_zpow_neg_mul selfZPow_neg_mul
 
-theorem selfZpow_pow_sub (a : R) (b : B) (m d : ℤ) :
-    selfZpow x B (m - d) * mk' B a (1 : Submonoid.powers x) = b ↔
-      selfZpow x B m * mk' B a (1 : Submonoid.powers x) = selfZpow x B d * b := by
-  rw [sub_eq_add_neg, selfZpow_add, mul_assoc, mul_comm _ (mk' B a 1), ← mul_assoc]
+theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
+    selfZPow x B (m - d) * mk' B a (1 : Submonoid.powers x) = b ↔
+      selfZPow x B m * mk' B a (1 : Submonoid.powers x) = selfZPow x B d * b := by
+  rw [sub_eq_add_neg, selfZPow_add, mul_assoc, mul_comm _ (mk' B a 1), ← mul_assoc]
   constructor
   · intro h
-    have := congr_arg (fun s : B => s * selfZpow x B d) h
+    have := congr_arg (fun s : B => s * selfZPow x B d) h
     simp only at this
-    rwa [mul_assoc, mul_assoc, selfZpow_neg_mul, mul_one, mul_comm b _] at this
+    rwa [mul_assoc, mul_assoc, selfZPow_neg_mul, mul_one, mul_comm b _] at this
   · intro h
-    have := congr_arg (fun s : B => s * selfZpow x B (-d)) h
+    have := congr_arg (fun s : B => s * selfZPow x B (-d)) h
     simp only at this
-    rwa [mul_comm _ b, mul_assoc b _ _, selfZpow_mul_neg, mul_one] at this
-#align self_zpow_pow_sub selfZpow_pow_sub
+    rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
+#align self_zpow_pow_sub selfZPow_pow_sub
 
 variable [IsDomain R] [NormalizationMonoid R] [UniqueFactorizationMonoid R]
 
 theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
-    ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZpow x B n * algebraMap R B a = b := by
+    ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
   have ha₀ : a₀ ≠ 0 := by
@@ -304,7 +304,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   classical
   obtain ⟨m, a, hyp1, hyp2⟩ := max_power_factor ha₀ hx
   refine' ⟨a, m - d, _⟩
-  rw [← mk'_one (M := Submonoid.powers x) B, selfZpow_pow_sub, selfZpow_coe_nat, selfZpow_coe_nat,
+  rw [← mk'_one (M := Submonoid.powers x) B, selfZPow_pow_sub, selfZPow_coe_nat, selfZPow_coe_nat,
     ← map_pow _ _ d, mul_comm _ b, H, hyp2, map_mul, map_pow _ _ m]
   exact ⟨hyp1, congr_arg _ (IsLocalization.mk'_one _ _)⟩
 #align exists_reduced_fraction' exists_reduced_fraction'

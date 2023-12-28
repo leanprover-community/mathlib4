@@ -57,7 +57,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 
 variable {f}
 
-/-- The **first isomorphism theorem** for commutative rings, computable version. -/
+/-- The **first isomorphism theorem for commutative rings**, computable version. -/
 def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f) :
     R ⧸ ker f ≃+* S :=
   { kerLift f with

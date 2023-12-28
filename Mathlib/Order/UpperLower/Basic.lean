@@ -306,6 +306,12 @@ theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
   forall_swap
 #align is_lower_set_set_of isLowerSet_setOf
 
+lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
+  fun ⟨_a, ha⟩ _b hb ↦ hs (hb ha) ha
+
+lemma IsLowerSet.lowerBounds_subset (hs : IsLowerSet s) : s.Nonempty → lowerBounds s ⊆ s :=
+  fun ⟨_a, ha⟩ _b hb ↦ hs (hb ha) ha
+
 section OrderTop
 
 variable [OrderTop α]
@@ -416,7 +422,7 @@ section LinearOrder
 variable [LinearOrder α] {s t : Set α}
 
 theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t ⊆ s := by
-  by_contra' h
+  by_contra! h
   simp_rw [Set.not_subset] at h
   obtain ⟨⟨a, has, hat⟩, b, hbt, hbs⟩ := h
   obtain hab | hba := le_total a b

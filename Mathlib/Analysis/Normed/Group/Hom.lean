@@ -619,7 +619,7 @@ def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : V₁ → V₂) :=
-  (coeAddHom : _ →+ V₁ → V₂).map_sum f s
+  map_sum coeAddHom f s
 #align normed_add_group_hom.coe_sum NormedAddGroupHom.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :

@@ -1179,9 +1179,9 @@ theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆
   forall₂_congr <| fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
 #align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
-theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
+theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
-  simp only [exists_prop, and_comm]
+  aesop
 #align set.ssubset_iff_insert Set.ssubset_iff_insert
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
@@ -1633,6 +1633,9 @@ lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 #align set.subset_diff Set.subset_diff
+
+lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
+  simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
 
 theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
   inf_sdiff_distrib_left _ _ _
@@ -2507,12 +2510,12 @@ theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.N
   (nontrivial_pair hxy).mono h
 #align set.nontrivial_of_pair_subset Set.nontrivial_of_pair_subset
 
-theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
+theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
-  ⟨x, y, hxy, insert_subset_iff.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
+  ⟨x, y, hxy, insert_subset hx <| singleton_subset_iff.2 hy⟩
 #align set.nontrivial.pair_subset Set.Nontrivial.pair_subset
 
-theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
+theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ x y, x ≠ y ∧ {x, y} ⊆ s :=
   ⟨Nontrivial.pair_subset, fun H =>
     let ⟨_, _, hxy, h⟩ := H
     nontrivial_of_pair_subset hxy h⟩
@@ -2524,7 +2527,7 @@ theorem nontrivial_of_exists_ne {x} (hx : x ∈ s) (h : ∃ y ∈ s, y ≠ x) : 
 #align set.nontrivial_of_exists_ne Set.nontrivial_of_exists_ne
 
 theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := by
-  by_contra' H
+  by_contra! H
   rcases hs with ⟨x, hx, y, hy, hxy⟩
   rw [H x hx, H y hy] at hxy
   exact hxy rfl
@@ -2540,19 +2543,18 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
 #align set.nontrivial_of_lt Set.nontrivial_of_lt
 
 theorem nontrivial_of_exists_lt [Preorder α]
-    (H : ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y) : s.Nontrivial :=
+    (H : ∃ᵉ (x ∈ s) (y ∈ s), x < y) : s.Nontrivial :=
   let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 #align set.nontrivial_of_exists_lt Set.nontrivial_of_exists_lt
 
-theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) :
-    ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y :=
+theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 #align set.nontrivial.exists_lt Set.Nontrivial.exists_lt
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
-    s.Nontrivial ↔ ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y :=
+    s.Nontrivial ↔ ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 #align set.nontrivial_iff_exists_lt Set.nontrivial_iff_exists_lt
 
@@ -2756,8 +2758,8 @@ variable [LinearOrder α] [LinearOrder β] {f : α → β}
 downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
-      ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+      ∃ᵉ (a ∈ s) (b ∈ s) (c ∈ s), a ≤ b ∧ b ≤ c ∧
+        (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_le_le, @and_left_comm (_ ∈ s)]
 #align set.not_monotone_on_not_antitone_on_iff_exists_le_le Set.not_monotoneOn_not_antitoneOn_iff_exists_le_le
@@ -2766,8 +2768,8 @@ theorem not_monotoneOn_not_antitoneOn_iff_exists_le_le :
 downright. -/
 theorem not_monotoneOn_not_antitoneOn_iff_exists_lt_lt :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
-      ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
-        a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+      ∃ᵉ (a ∈ s) (b ∈ s) (c ∈ s), a < b ∧ b < c ∧
+        (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_lt_lt, @and_left_comm (_ ∈ s)]
 #align set.not_monotone_on_not_antitone_on_iff_exists_lt_lt Set.not_monotoneOn_not_antitoneOn_iff_exists_lt_lt

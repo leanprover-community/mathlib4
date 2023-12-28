@@ -640,7 +640,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   rw [ENNReal.mul_lt_top_iff, and_self, or_self, or_iff_left_iff_imp]
   rintro rfl
-  decide
+  exact zero_lt_top
 #align ennreal.mul_self_lt_top_iff ENNReal.mul_self_lt_top_iff
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
@@ -954,7 +954,7 @@ theorem coe_max (r p : ℝ≥0) : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : 
 
 theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b = ⊤)
     (h_nnreal : a ≠ ⊤ → b ≠ ⊤ → a.toNNReal ≤ b.toNNReal) : a ≤ b := by
-  by_contra' hlt
+  by_contra! hlt
   lift b to ℝ≥0 using hlt.ne_top
   lift a to ℝ≥0 using mt h coe_ne_top
   refine hlt.not_le ?_
@@ -1030,7 +1030,7 @@ theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0�
   | (n + 1 + 1), _ => fun x y h => mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
 #align ennreal.pow_strict_mono ENNReal.pow_strictMono
 
-@[gcongr] protected theorem pow_lt_pow_of_lt_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
+@[gcongr] protected theorem pow_lt_pow_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
     a ^ n < b ^ n :=
   ENNReal.pow_strictMono hn h
 
@@ -1240,7 +1240,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
 #align ennreal.sub_right_inj ENNReal.sub_right_inj
 
 theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  cases' le_or_lt a b with hab hab; · simp [hab, mul_right_mono hab]
+  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 #align ennreal.sub_mul ENNReal.sub_mul
@@ -1801,7 +1801,7 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 #align ennreal.div_pos_iff ENNReal.div_pos_iff
 
 protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
-  simp only [div_pos_iff, ne_eq, h, not_false_eq_true]; decide
+  simp only [div_pos_iff, ne_eq, h, not_false_eq_true, two_ne_top, and_self]
 #align ennreal.half_pos ENNReal.half_pos
 
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=
@@ -1977,13 +1977,13 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
   · simp only [Int.ofNat_eq_coe, zpow_ofNat]
-    exact pow_le_pow hx (Int.le_of_ofNat_le_ofNat h)
+    exact pow_le_pow_right hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.ofNat_nonneg _)
   · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_ofNat]
     refine' (ENNReal.inv_le_one.2 _).trans _ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
-    apply pow_le_pow hx
+    apply pow_le_pow_right hx
     simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.ofNat_add, Int.ofNat_one, Int.negSucc_eq] using
       h
 #align ennreal.zpow_le_of_le ENNReal.zpow_le_of_le
@@ -2362,7 +2362,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 @[simp]
 theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toNNReal = ∏ i in s, (f i).toNNReal :=
-  toNNRealHom.map_prod _ _
+  map_prod toNNRealHom _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
 
 -- porting note: todo: upgrade to `→*₀`
@@ -2386,7 +2386,7 @@ theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=
 @[simp]
 theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toReal = ∏ i in s, (f i).toReal :=
-  toRealHom.map_prod _ _
+  map_prod toRealHom _ _
 #align ennreal.to_real_prod ENNReal.toReal_prod
 
 theorem toReal_ofReal_mul (c : ℝ) (a : ℝ≥0∞) (h : 0 ≤ c) :

@@ -651,7 +651,7 @@ namespace MeasureTheory
 
 variable {γ : Type*}
 
-/-- The Lusin-Souslin theorem: the range of a continuous injective function defined on a Polish
+/-- The **Lusin-Souslin theorem**: the range of a continuous injective function defined on a Polish
 space is Borel-measurable. -/
 theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpace γ]
     [PolishSpace γ] [TopologicalSpace β] [T2Space β] [MeasurableSpace β] [OpensMeasurableSpace β]
@@ -749,7 +749,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
-      by_contra' h
+      by_contra! h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
         (mem_iInter.1 this h : _)
@@ -777,7 +777,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       rw [← this]
       exact mem_range_self _
     -- assume for a contradiction that `f z ≠ x`.
-    by_contra' hne
+    by_contra! hne
     -- introduce disjoint open sets `v` and `w` separating `f z` from `x`.
     obtain ⟨v, w, v_open, w_open, fzv, xw, hvw⟩ := t2_separation hne
     obtain ⟨δ, δpos, hδ⟩ : ∃ δ > (0 : ℝ), ball z δ ⊆ f ⁻¹' v := by
