@@ -1055,13 +1055,13 @@ theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
   calc
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
         (∏ x in s.filter p, h (if hx : p x then f x hx else g x hx)) *
-          ∏ x in s.filter fun x => ¬p x, h (if hx : p x then f x hx else g x hx) :=
+          ∏ x in s.filter (¬p ·), h (if hx : p x then f x hx else g x hx) :=
       (prod_filter_mul_prod_filter_not s p _).symm
     _ = (∏ x in (s.filter p).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx)) *
-          ∏ x in (s.filter fun x => ¬p x).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx) :=
+          ∏ x in (s.filter (¬p ·)).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx) :=
       congr_arg₂ _ (prod_attach _ _).symm (prod_attach _ _).symm
     _ = (∏ x in (s.filter p).attach, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
-          ∏ x in (s.filter fun x ↦ ¬p x).attach, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
+          ∏ x in (s.filter (¬p ·)).attach, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
         congr_arg h (dif_pos <| by simpa using (mem_filter.mp x.2).2))
         (prod_congr rfl fun x _hx => congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
@@ -1909,8 +1909,8 @@ theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ 
   classical
     induction' S using Finset.induction_on' with a T _haS _hTS haT IH
     · simp
-    rw [Finset.prod_insert haT, Finset.prod_insert haT]
-    exact mul_dvd_mul (h a <| T.mem_insert_self a) (IH fun b hb ↦ h b <| Finset.mem_insert_of_mem hb)
+    · rw [Finset.prod_insert haT, prod_insert haT]
+      exact mul_dvd_mul (h a <| T.mem_insert_self a) <| IH fun b hb ↦ h b <| mem_insert_of_mem hb
 #align finset.prod_dvd_prod_of_dvd Finset.prod_dvd_prod_of_dvd
 
 theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)

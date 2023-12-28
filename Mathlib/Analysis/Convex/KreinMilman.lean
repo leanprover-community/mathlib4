@@ -112,7 +112,8 @@ lemma surjOn_extremePoints_image (f : E →A[ℝ] F) (hs : IsCompact s) :
     SurjOn f (extremePoints ℝ s) (extremePoints ℝ (f '' s)) := by
   rintro w hw
   -- The fiber of `w` is nonempty and compact
-  have ht : IsCompact {x ∈ s | f x = w} := hs.inter_right <| isClosed_singleton.preimage f.continuous
+  have ht : IsCompact {x ∈ s | f x = w} :=
+    hs.inter_right <| isClosed_singleton.preimage f.continuous
   have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using extremePoints_subset hw
   -- Hence by the Krein-Milman lemma it has an extreme point `x`
   obtain ⟨x, ⟨hx, rfl⟩, hyt⟩ := ht.extremePoints_nonempty ht₀

@@ -214,7 +214,8 @@ lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := 
   classical
   refine isCompact_of_finite_subcover fun f hf hsf ↦ ?_
   choose g hg using fun a (ha : a ∈ exterior s) ↦ mem_iUnion.1 (hsf ha)
-  refine ⟨hs.toFinset.attach.image fun a ↦ g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
+  refine ⟨hs.toFinset.attach.image fun a ↦
+    g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
     (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
   exact fun _ ↦ hf _
   refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ <| subset_exterior ha⟩

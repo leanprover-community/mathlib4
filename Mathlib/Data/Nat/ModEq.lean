@@ -105,7 +105,8 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 
 namespace ModEq
 
-lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] := modEq_of_dvd <| d.natCast.trans h.dvd
+lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
+  modEq_of_dvd <| d.natCast.trans h.dvd
 #align nat.modeq.of_dvd Nat.ModEq.of_dvd
 
 protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by

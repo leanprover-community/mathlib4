@@ -202,7 +202,8 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     · rw [mul_zero, zero_add]
       exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_insert_mem ‹_› h₃
         (insert_inter_distrib _ _ _).symm <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_›
-        h₄ (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
+        h₄ (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) (h₄ _) <|
+        collapse_nonneg h₃ _
     · simp_rw [mul_zero, add_zero]
       exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
   · simp_rw [add_zero, zero_mul]
@@ -221,7 +222,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     simp only [mem_image, mem_powerset, mem_sdiff, subset_insert_iff]
     refine' ⟨_, fun h ↦ ⟨_, h.1, _⟩⟩
     · rintro ⟨s, hs, rfl⟩
-      exact ⟨subset_insert_iff.1 <| insert_subset_insert _ hs, fun h ↦ hu <| h <| mem_insert_self _ _⟩
+      exact ⟨subset_insert_iff.1 <| insert_subset_insert _ hs, fun h ↦
+        hu <| h <| mem_insert_self _ _⟩
     · rw [insert_erase (erase_ne_self.1 fun hs ↦ ?_)]
       rw [hs] at h
       exact h.2 h.1

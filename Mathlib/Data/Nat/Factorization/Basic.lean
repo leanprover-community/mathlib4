@@ -395,7 +395,8 @@ theorem ord_compl_mul (a b p : ℕ) : ord_compl[p] (a * b) = ord_compl[p] a * or
 /-- A crude upper bound on `n.factorization p` -/
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
   by_cases pp : p.Prime
-  · exact (pow_lt_pow_iff_right pp.one_lt).1 <| (ord_proj_le p hn).trans_lt <| lt_pow_self pp.one_lt _
+  · exact (pow_lt_pow_iff_right pp.one_lt).1 <| (ord_proj_le p hn).trans_lt <|
+      lt_pow_self pp.one_lt _
   · simpa only [factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
 #align nat.factorization_lt Nat.factorization_lt
 

@@ -786,24 +786,24 @@ open Tactic
                   (
                     ic
                       ,
-                      q( ( [ <| ( en ) ] : List Nat ) )
+                      q( ( [ $ ( en ) ] : List Nat ) )
                         ,
-                        q( digits_one <| ( eb ) <| ( en ) <| ( pn0 ) <| ( pr ) )
+                        q( digits_one $ ( eb ) $ ( en ) $ ( pn0 ) $ ( pr ) )
                     )
             else
             do
               let em ← expr.of_nat q( ℕ ) m
-                let ( _ , pe ) ← norm_num.derive q( ( <| ( er ) + <| ( eb ) * <| ( em ) : ℕ ) )
+                let ( _ , pe ) ← norm_num.derive q( ( $ ( er ) + $ ( eb ) * $ ( em ) : ℕ ) )
                 let ( ic , el , p ) ← eval_aux em m ic
                 return
                   (
                     ic
                       ,
-                      q( @ List.cons ℕ <| ( er ) <| ( el ) )
+                      q( @ List.cons ℕ $ ( er ) $ ( el ) )
                         ,
                         q(
                           digits_succ
-                            <| ( eb ) <| ( en ) <| ( em ) <| ( er ) <| ( el ) <| ( pe ) <| ( pr ) <| ( p )
+                            $ ( eb ) $ ( en ) $ ( em ) $ ( er ) $ ( el ) $ ( pe ) $ ( pr ) $ ( p )
                           )
                     )
 #align nat.norm_digits.eval_aux Nat.NormDigits.eval_aux
