@@ -157,8 +157,8 @@ variable {ι c r₀}
 section
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
-    (i₀ i₁ i₂ i₃ i₄ : ι) (hi₀₁ : i₀ ≤ i₁)
-    (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄)
+    (i₀ i₁ i₂ i₃ i₄ i₅ : ι) (hi₀₁ : i₀ ≤ i₁)
+    (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
 
 noncomputable def EMapFourδ₁Toδ₀' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₁Toδ₀' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
@@ -175,6 +175,34 @@ instance epi_EMapFourδ₄Toδ₃' :
     Epi (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
   dsimp [EMapFourδ₄Toδ₃']
   infer_instance
+
+@[reassoc]
+lemma EMapFourδ₁Toδ₀'_comp :
+  X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₃ i₄ i₅ hi₀₁ (hi₁₂.trans hi₂₃) hi₃₄ hi₄₅ ≫
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ i₃ i₄ i₅ hi₁₂ hi₂₃ hi₃₄ hi₄₅ =
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ i₃ i₄ i₅ (hi₀₁.trans hi₁₂) hi₂₃ hi₃₄ hi₄₅ := by
+  dsimp [EMapFourδ₁Toδ₀']
+  rw [← EMap_comp]
+  rfl
+
+@[reassoc]
+lemma EMapFourδ₄Toδ₃'_comp :
+  X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ ≫
+    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₄ i₅ hi₀₁ hi₁₂ (hi₂₃.trans hi₃₄) hi₄₅ =
+    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₅ hi₀₁ hi₁₂ hi₂₃ (hi₃₄.trans hi₄₅) := by
+  dsimp [EMapFourδ₄Toδ₃']
+  rw [← EMap_comp]
+  rfl
+
+@[reassoc]
+lemma EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃' :
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ ≫
+      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ i₃ i₄ i₅ hi₁₂ hi₂₃ hi₃₄ hi₄₅ =
+      X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ i₃ i₄ i₅ _ _ _ hi₄₅ ≫
+        X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₅ hi₀₁ _ _ _ := by
+  dsimp [EMapFourδ₁Toδ₀', EMapFourδ₄Toδ₃']
+  rw [← EMap_comp, ← EMap_comp]
+  rfl
 
 end
 
@@ -653,6 +681,24 @@ abbrev i₀ (r : ℤ) [(X.spectralSequence data).HasPage r] (pq : κ) : ι :=
 
 abbrev i₃ (r : ℤ) [(X.spectralSequence data).HasPage r] (pq : κ) : ι :=
   data.i₃ r ((X.spectralSequence data).le_of_hasPage r) pq
+
+lemma antitone_i₀ (r r' : ℤ) (hrr' : r ≤ r') [(X.spectralSequence data).HasPage r]
+    [(X.spectralSequence data).HasPage r'] (pq : κ)
+    {i₀ i₀' : ι}
+    (hi₀ : i₀ = X.i₀ data r pq) (hi₀' : i₀' = X.i₀ data r' pq) :
+    i₀' ≤ i₀ := by
+  rw [hi₀, hi₀']
+  apply data.antitone_i₀
+  exact hrr'
+
+lemma monotone_i₃ (r r' : ℤ) (hrr' : r ≤ r') [(X.spectralSequence data).HasPage r]
+    [(X.spectralSequence data).HasPage r'] (pq : κ)
+    {i₃ i₃' : ι}
+    (hi₃ : i₃ = X.i₃ data r pq) (hi₃' : i₃' = X.i₃ data r' pq) :
+    i₃ ≤ i₃' := by
+  rw [hi₃, hi₃']
+  apply data.monotone_i₃
+  exact hrr'
 
 lemma le₀'₀ {r r' : ℤ} (hrr' : r + 1 = r') [(X.spectralSequence data).HasPage r]
     [(X.spectralSequence data).HasPage r'] (pq' : κ)
