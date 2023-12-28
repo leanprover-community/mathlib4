@@ -354,6 +354,11 @@ theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M)
   ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
+@[to_additive (attr := simp)]
+theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N):
+    prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
+  simp [prod, equivMapDomain]
+
 /-- Given `f : α ≃ β`, the finitely supported function spaces are also in bijection:
 `(α →₀ M) ≃ (β →₀ M)`.
 
