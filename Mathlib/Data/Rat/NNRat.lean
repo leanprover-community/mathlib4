@@ -34,7 +34,7 @@ open BigOperators
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving
   CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero,
-  CanonicallyOrderedAddCancelCommMonoid, Sub, Inhabited
+  Sub, Inhabited
 #align nnrat NNRat
 
 -- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
@@ -232,6 +232,10 @@ instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0
 /-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
 instance [AddCommMonoid α] [Module ℚ α] : Module ℚ≥0 α :=
   Module.compHom α coeHom
+
+instance CanonicallyOrderedAddCancelCommMonoid ℚ≥0 :=
+  { (inferInstance : CanonicallyOrderedAddCommMonoid ℚ≥0),
+    (inferInstance : OrderedCancelAddCommMonoid ℚ≥0) with }
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=

@@ -438,8 +438,6 @@ example : PartialOrder ℝ≥0 := by infer_instance
 
 noncomputable example : CanonicallyLinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
-noncomputable example : CanonicallyOrderedAddCancelCommMonoid ℝ≥0 := by infer_instance
-
 noncomputable example : LinearOrderedAddCommMonoid ℝ≥0 := by infer_instance
 
 example : DistribLattice ℝ≥0 := by infer_instance
@@ -564,6 +562,10 @@ instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < 
 
 instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
+
+instance CanonicallyOrderedAddCancelCommMonoid ℝ≥0 :=
+  { (inferInstance : CanonicallyOrderedAddCommMonoid ℝ≥0),
+    (inferInstance : OrderedCancelAddCommMonoid ℝ≥0) with }
 
 -- porting note: TODO: delete?
 nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
