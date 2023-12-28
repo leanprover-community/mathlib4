@@ -99,14 +99,14 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
   Pairwise.nodup h
 #align list.sorted.nodup List.Sorted.nodup
 
-theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~ l₂) (s₁ : Sorted r l₁)
-    (s₂ : Sorted r l₂) : l₁ = l₂ := by
-  induction' s₁ with a l₁ h₁ s₁ IH generalizing l₂
-  · exact p.nil_eq
-  · have : a ∈ l₂ := p.subset (mem_cons_self _ _)
+theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
+    (hs₂ : Sorted r l₂) : l₁ = l₂ := by
+  induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
+  · exact hp.nil_eq
+  · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
     rcases mem_split this with ⟨u₂, v₂, rfl⟩
-    have p' := (perm_cons a).1 (p.trans perm_middle)
-    obtain rfl := IH p' (s₂.sublist <| by simp)
+    have hp' := (perm_cons a).1 (hp.trans perm_middle)
+    obtain rfl := IH hp' (hs₂.sublist <| by simp)
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
     rw [← append_assoc]
     congr
@@ -118,10 +118,10 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ ~
       simp [iff_true_intro this, or_comm]
 #align list.eq_of_perm_of_sorted List.eq_of_perm_of_sorted
 
-theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (p : l₁ <+~ l₂)
-    (s₁ : l₁.Sorted r) (s₂ : l₂.Sorted r) : l₁ <+ l₂ := by
-  let ⟨_, h, h'⟩ := p
-  rwa [← eq_of_perm_of_sorted h (s₂.sublist h') s₁]
+theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
+    (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
+  let ⟨_, h, h'⟩ := hp
+  rwa [← eq_of_perm_of_sorted h (hs₂.sublist h') hs₁]
 #align list.sublist_of_subperm_of_sorted List.sublist_of_subperm_of_sorted
 
 @[simp 1100] --Porting note: higher priority for linter
