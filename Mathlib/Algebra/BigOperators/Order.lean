@@ -385,7 +385,7 @@ theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset �
     add_le_add_right
       ((card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
             nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_of_subset <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
+        card_le_card <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
       _
 #align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_biUnion_add_card_fiber
 

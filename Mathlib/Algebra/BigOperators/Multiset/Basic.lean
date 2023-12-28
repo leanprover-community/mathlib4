@@ -285,6 +285,7 @@ theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 := by
 
 variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
 
+@[simp]
 theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
   Quotient.inductionOn s fun l => by
     rw [quot_mk_to_coe, coe_prod]
