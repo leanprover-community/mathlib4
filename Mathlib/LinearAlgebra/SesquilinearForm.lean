@@ -477,7 +477,9 @@ variable [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁]
 
-variable {B F : M →ₗ[R] M →ₗ[R] R} {B' : M₁ →ₗ[R] M₁ →ₗ[R] R}
+variable [AddCommGroup M₂] [Module R M₂]
+
+variable {B F : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
 
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
