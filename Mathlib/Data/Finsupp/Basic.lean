@@ -1692,16 +1692,15 @@ instance uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) :=
 end
 
 section
-variable {M : Type*} [Zero M]
+variable {M : Type*} [Zero M] {P : α → Prop} [DecidablePred P]
 /-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
 @[simps]
-def extendDomain {P : α → Prop} [DecidablePred P] (f : Subtype P →₀ M) :
-    α →₀ M where
+def extendDomain (f : Subtype P →₀ M) : α →₀ M where
   toFun a := if h : P a then f ⟨a, h⟩ else 0
   support := f.support.map (.subtype _)
   mem_support_toFun a := by simp
 
-theorem extendDomain_eq_embDomain_subtype {P : α → Prop} [DecidablePred P] (f : Subtype P →₀ M) :
+theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
     extendDomain f = embDomain (.subtype _) f := by
   ext a
   by_cases h : P a
@@ -1710,7 +1709,7 @@ theorem extendDomain_eq_embDomain_subtype {P : α → Prop} [DecidablePred P] (f
   · rw [embDomain_notin_range, extendDomain_toFun, dif_neg h]
     simp [h]
 
-theorem support_extendDomain_subset {P : α → Prop} [DecidablePred P] (f : Subtype P →₀ M) :
+theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by
   intro x
   rw [extendDomain_support, mem_coe, mem_map, Embedding.coe_subtype]
@@ -1718,13 +1717,12 @@ theorem support_extendDomain_subset {P : α → Prop} [DecidablePred P] (f : Sub
   exact x.prop
 
 @[simp]
-theorem subtypeDomain_extendDomain {P : α → Prop} [DecidablePred P] (f : Subtype P →₀ M) :
+theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
     subtypeDomain P f.extendDomain = f :=
   Finsupp.ext fun a => dif_pos a.prop
 
 
-theorem extendDomain_subtypeDomain {P : α → Prop} [DecidablePred P] (f : α →₀ M)
-    (hf : ∀ a ∈ f.support, P a) :
+theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
     (subtypeDomain P f).extendDomain = f := by
   ext a
   by_cases h : P a
