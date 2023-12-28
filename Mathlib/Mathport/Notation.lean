@@ -316,7 +316,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
         let isDep := (← getExpr).bindingBody!.hasLooseBVar 0
         let ppTypes ← getPPOption getPPPiBinderTypes -- the same option controlling ∀
         let dom ← withBindingDomain delab
-        withBindingBodyUnusedName <| fun x => do
+        withBindingBodyUnusedName fun x => do
           let x : Ident := ⟨x⟩
           let binder ←
             if prop && !isDep then

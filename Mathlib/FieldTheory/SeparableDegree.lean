@@ -206,7 +206,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
     Emb F E ≃ (E →ₐ[F] K) :=
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
-    (hS ▸ isAlgebraic_adjoin (S := S) <| fun x hx ↦ (hK x hx).1)
+    (hS ▸ isAlgebraic_adjoin (S := S) fun x hx ↦ (hK x hx).1)
   Classical.choice <| Function.Embedding.antisymm
     (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F (S := S) hK (hS ▸ mem_top)) _)
     (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
@@ -222,7 +222,7 @@ theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
 and `K / F` is algebraically closed. -/
 def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
-  embEquivOfAdjoinSplits F E K (adjoin_univ F E) <| fun s _ ↦
+  embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
     ⟨(halg s).isIntegral, IsAlgClosed.splits_codomain _⟩
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
@@ -527,7 +527,7 @@ private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
   by_cases halg : IsAlgebraic F α
   · rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral]
     exact (minpoly.irreducible halg.isIntegral).natSepDegree_dvd_natDegree
-  have : finrank F F⟮α⟯ = 0 := finrank_of_infinite_dimensional <| fun _ ↦
+  have : finrank F F⟮α⟯ = 0 := finrank_of_infinite_dimensional fun _ ↦
     halg ((AdjoinSimple.isIntegral_gen F α).1 (IsIntegral.of_finite F _)).isAlgebraic
   rw [this]
   exact dvd_zero _

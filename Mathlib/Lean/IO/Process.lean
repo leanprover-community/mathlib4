@@ -29,7 +29,7 @@ def runCmdWithInput' (cmd : String) (args : Array String)
   let err ← child.stderr.readToEnd
   let exitCode ← child.wait
   if exitCode != 0 && throwFailure then
-    throw $ IO.userError err
+    throw <| IO.userError err
   else
     let out ← IO.ofExcept stdout.get
     return (exitCode, out, err)

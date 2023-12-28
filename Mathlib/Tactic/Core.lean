@@ -38,7 +38,7 @@ def toModifiers (nm : Name) (newDoc : Option String := none) :
       Visibility.regular
     else
       Visibility.protected
-    isNoncomputable := if (env.find? $ nm.mkStr "_cstage1").isSome then false else true
+    isNoncomputable := if (env.find? <| nm.mkStr "_cstage1").isSome then false else true
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
     attrs := #[] }

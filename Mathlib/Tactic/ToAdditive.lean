@@ -154,7 +154,7 @@ An attribute that stores all the declarations that needs their arguments reorder
 applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
 `to_additive`, and should not usually be added manually.
 -/
-initialize reorderAttr : NameMapExtension (List $ List Nat) ←
+initialize reorderAttr : NameMapExtension (List <| List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
     descr :=
@@ -441,7 +441,7 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 def expand (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) <| fun e ↦ do
+  let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) fun e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return .continue
@@ -591,7 +591,7 @@ partial def transformDeclAux
     | _ => panic! "unreachable"
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
-    setEnv $ addNoncomputable (← getEnv) tgt
+    setEnv <| addNoncomputable (← getEnv) tgt
   else
     addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
@@ -601,7 +601,7 @@ partial def transformDeclAux
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
-    setEnv $ addProtected (← getEnv) tgt
+    setEnv <| addProtected (← getEnv) tgt
 
 /-- Copy the instance attribute in a `to_additive`
 

@@ -526,7 +526,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
   induction' i with i hi
   · simp
   · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
-      (List.drop i digits) <| fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
+      (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
@@ -786,24 +786,24 @@ open Tactic
                   (
                     ic
                       ,
-                      q( ( [ $ ( en ) ] : List Nat ) )
+                      q( ( [ <| ( en ) ] : List Nat ) )
                         ,
-                        q( digits_one $ ( eb ) $ ( en ) $ ( pn0 ) $ ( pr ) )
+                        q( digits_one <| ( eb ) <| ( en ) <| ( pn0 ) <| ( pr ) )
                     )
             else
             do
               let em ← expr.of_nat q( ℕ ) m
-                let ( _ , pe ) ← norm_num.derive q( ( $ ( er ) + $ ( eb ) * $ ( em ) : ℕ ) )
+                let ( _ , pe ) ← norm_num.derive q( ( <| ( er ) + <| ( eb ) * <| ( em ) : ℕ ) )
                 let ( ic , el , p ) ← eval_aux em m ic
                 return
                   (
                     ic
                       ,
-                      q( @ List.cons ℕ $ ( er ) $ ( el ) )
+                      q( @ List.cons ℕ <| ( er ) <| ( el ) )
                         ,
                         q(
                           digits_succ
-                            $ ( eb ) $ ( en ) $ ( em ) $ ( er ) $ ( el ) $ ( pe ) $ ( pr ) $ ( p )
+                            <| ( eb ) <| ( en ) <| ( em ) <| ( er ) <| ( el ) <| ( pe ) <| ( pr ) <| ( p )
                           )
                     )
 #align nat.norm_digits.eval_aux Nat.NormDigits.eval_aux

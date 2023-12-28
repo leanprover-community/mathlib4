@@ -751,7 +751,7 @@ theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑
 namespace Function
 
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
-    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg $ by rw [Pi.smul_apply', hf, zero_smul]
+    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg <| by rw [Pi.smul_apply', hf, zero_smul]
 #align function.support_smul_subset_left Function.support_smul_subset_left
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
@@ -784,7 +784,7 @@ lemma indicator_smul_apply (s : Set α) (r : α → R) (f : α → M) (a : α) :
 
 lemma indicator_smul (s : Set α) (r : α → R) (f : α → M) :
     indicator s (fun a ↦ r a • f a) = fun a ↦ r a • indicator s f a :=
-  funext $ indicator_smul_apply s r f
+  funext <| indicator_smul_apply s r f
 #align set.indicator_smul Set.indicator_smul
 
 lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
@@ -794,7 +794,7 @@ lemma indicator_const_smul_apply (s : Set α) (r : R) (f : α → M) (a : α) :
 
 lemma indicator_const_smul (s : Set α) (r : R) (f : α → M) :
     indicator s (r • f ·) = (r • indicator s f ·) :=
-  funext $ indicator_const_smul_apply s r f
+  funext <| indicator_const_smul_apply s r f
 #align set.indicator_const_smul Set.indicator_const_smul
 
 end SMulZeroClass
@@ -810,14 +810,14 @@ lemma indicator_smul_apply_left (s : Set α) (r : α → R) (f : α → M) (a : 
 
 lemma indicator_smul_left (s : Set α) (r : α → R) (f : α → M) :
     indicator s (fun a ↦ r a • f a) = fun a ↦ indicator s r a • f a :=
-  funext $ indicator_smul_apply_left _ _ _
+  funext <| indicator_smul_apply_left _ _ _
 
 lemma indicator_smul_const_apply (s : Set α) (r : α → R) (m : M) (a : α) :
     indicator s (r · • m) a = indicator s r a • m := indicator_smul_apply_left _ _ _ _
 
 lemma indicator_smul_const (s : Set α) (r : α → R) (m : M) :
     indicator s (r · • m) = (indicator s r · • m) :=
-  funext $ indicator_smul_const_apply _ _ _
+  funext <| indicator_smul_const_apply _ _ _
 
 end SMulWithZero
 end Set

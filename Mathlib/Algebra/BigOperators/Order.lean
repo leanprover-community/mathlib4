@@ -745,11 +745,11 @@ theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
 
 @[to_additive sum_pos]
 lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
-  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive]
 lemma prod_lt_one (hf : f < 1) : ∏ i, f i < 1 :=
-  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by

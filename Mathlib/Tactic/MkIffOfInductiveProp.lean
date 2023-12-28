@@ -87,7 +87,7 @@ args.foldrM (λarg i:Expr => do
 def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
   | []        => empty
   | [e]       => e
-  | (e :: es) => mkApp2 op e $ mkOpList op empty es
+  | (e :: es) => mkApp2 op e <| mkOpList op empty es
 
 /-- `mkAndList [x1, x2, ...]` is defined as `x1 ∧ (x2 ∧ ...)`, or `True` if the list is empty. -/
 def mkAndList : List Expr → Expr := mkOpList (mkConst `And) (mkConst `True)
@@ -136,7 +136,7 @@ def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c
     MetaM (Shape × Expr) :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
-     pure $ ty.replaceFVars fvars params.toArray
+     pure <| ty.replaceFVars fvars params.toArray
 
    Meta.forallTelescope type' fun fvars ty ↦ do
      let idxs_inst := ty.getAppArgs.toList.drop params.length
@@ -171,15 +171,15 @@ close the resulting subgoals.
 def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
 match n with
 | 0   => do
-  let (subgoals',_) ← Term.TermElabM.run $ Tactic.run mvar do
+  let (subgoals',_) ← Term.TermElabM.run <| Tactic.run mvar do
     Tactic.evalTactic (← `(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
 | n + 1 => do
-  let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
+  let (subgoals,_) ← Term.TermElabM.run <| Tactic.run mvar do
     Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
-  let (subgoals',_) ← Term.TermElabM.run $ Tactic.run sg1 do
+  let (subgoals',_) ← Term.TermElabM.run <| Tactic.run sg1 do
     Tactic.evalTactic (← `(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   splitThenConstructor sg2 n
@@ -256,7 +256,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
                   pure ()
   | (n + 1) => do
       let subgoals ← nCasesSum n mvar h
-      let _ ← (cs.zip (subgoals.zip s)).mapM $ λ⟨constr_name, ⟨h, mv⟩, bs, e⟩ => do
+      let _ ← (cs.zip (subgoals.zip s)).mapM <| λ⟨constr_name, ⟨h, mv⟩, bs, e⟩ => do
         let n := (bs.filter id).length
         let (mvar', _fvars) ← match e with
         | none => nCasesProd (n-1) mv h
@@ -282,7 +282,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
           let hs := (fvarIds.reverse.take n).reverse
           let m := gs.map some ++ listBoolMerge bs hs
           let args ← m.mapM (λa => match a with
-                                   | some v => pure $ mkFVar v
+                                   | some v => pure <| mkFVar v
                                    | none => mkFreshExprMVar none)
           let c ← mkConstWithFreshMVarLevels constr_name
           let e := mkAppN c args.toArray
@@ -324,7 +324,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
   let ⟨mprFvar, mpr'⟩ ← mpr.intro1
   toInductive mpr' constrs ((fvars.toList.take params).map .fvar) shape mprFvar
 
-  addDecl $ .thmDecl {
+  addDecl <| .thmDecl {
     name := rel
     levelParams := univNames
     type := thmTy

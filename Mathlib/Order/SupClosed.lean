@@ -52,7 +52,7 @@ lemma supClosed_sInter (hS : ∀ s ∈ S, SupClosed s) : SupClosed (⋂₀ S) :=
 λ _a ha _b hb _s hs ↦ hS _ hs (ha _ hs) (hb _ hs)
 
 lemma supClosed_iInter (hf : ∀ i, SupClosed (f i)) : SupClosed (⋂ i, f i) :=
-supClosed_sInter $ forall_range_iff.2 hf
+supClosed_sInter <| forall_range_iff.2 hf
 
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
@@ -65,7 +65,7 @@ lemma SupClosed.preimage [SupHomClass F β α] (hs : SupClosed s) (f : F) : SupC
 lemma SupClosed.image [SupHomClass F α β] (hs : SupClosed s) (f : F) : SupClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
   rw [← map_sup]
-  exact Set.mem_image_of_mem _ $ hs ha hb
+  exact Set.mem_image_of_mem _ <| hs ha hb
 
 lemma supClosed_range [SupHomClass F α β] (f : F) : SupClosed (Set.range f) := by
   simpa using supClosed_univ.image f
@@ -116,7 +116,7 @@ lemma infClosed_sInter (hS : ∀ s ∈ S, InfClosed s) : InfClosed (⋂₀ S) :=
 λ _a ha _b hb _s hs ↦ hS _ hs (ha _ hs) (hb _ hs)
 
 lemma infClosed_iInter (hf : ∀ i, InfClosed (f i)) : InfClosed (⋂ i, f i) :=
-infClosed_sInter $ forall_range_iff.2 hf
+infClosed_sInter <| forall_range_iff.2 hf
 
 lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, inf_le_left, inf_le_right⟩
@@ -129,7 +129,7 @@ lemma InfClosed.preimage [InfHomClass F β α] (hs : InfClosed s) (f : F) : InfC
 lemma InfClosed.image [InfHomClass F α β] (hs : InfClosed s) (f : F) : InfClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
   rw [← map_inf]
-  exact Set.mem_image_of_mem _ $ hs ha hb
+  exact Set.mem_image_of_mem _ <| hs ha hb
 
 lemma infClosed_range [InfHomClass F α β] (f : F) : InfClosed (Set.range f) := by
   simpa using infClosed_univ.image f
@@ -260,10 +260,10 @@ def supClosure : ClosureOperator (Set α) := .ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono $ subset_union_left _ _, _, sup'_union ht hu _⟩
+    refine' ⟨_, ht.mono <| subset_union_left _ _, _, sup'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
-  (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetSup'_mem ht λ i hi ↦ hs $ hts hi)
+  (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetSup'_mem ht λ i hi ↦ hs <| hts hi)
 
 @[simp] lemma subset_supClosure {s : Set α} : s ⊆ supClosure s := supClosure.le_closure _
 
@@ -283,9 +283,9 @@ supClosure.idempotent _
 @[simp] lemma supClosure_univ : supClosure (Set.univ : Set α) = Set.univ := by simp
 
 @[simp] lemma upperBounds_supClosure (s : Set α) : upperBounds (supClosure s) = upperBounds s :=
-(upperBounds_mono_set subset_supClosure).antisymm $ by
+(upperBounds_mono_set subset_supClosure).antisymm <| by
   rintro a ha _ ⟨t, ht, hts, rfl⟩
-  exact sup'_le _ _ λ b hb ↦ ha $ hts hb
+  exact sup'_le _ _ λ b hb ↦ ha <| hts hb
 
 @[simp] lemma isLUB_supClosure : IsLUB (supClosure s) a ↔ IsLUB s a := by simp [IsLUB]
 
@@ -294,7 +294,7 @@ lemma sup_mem_supClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ supClosure 
 
 lemma finsetSup'_mem_supClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
     (hf : ∀ i ∈ t, f i ∈ s) : t.sup' ht f ∈ supClosure s :=
-  supClosed_supClosure.finsetSup'_mem _ $ fun _i hi ↦ subset_supClosure $ hf _ hi
+  supClosed_supClosure.finsetSup'_mem _ fun _i hi ↦ subset_supClosure <| hf _ hi
 
 lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClosure.closure_min
 
@@ -323,10 +323,10 @@ def infClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono $ subset_union_left _ _, _, inf'_union ht hu _⟩
+    refine' ⟨_, ht.mono <| subset_union_left _ _, _, inf'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
-  (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetInf'_mem ht λ i hi ↦ hs $ hts hi)
+  (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetInf'_mem ht λ i hi ↦ hs <| hts hi)
 
 @[simp] lemma subset_infClosure {s : Set α} : s ⊆ infClosure s := infClosure.le_closure _
 
@@ -346,9 +346,9 @@ infClosure.idempotent _
 @[simp] lemma infClosure_univ : infClosure (Set.univ : Set α) = Set.univ := by simp
 
 @[simp] lemma lowerBounds_infClosure (s : Set α) : lowerBounds (infClosure s) = lowerBounds s :=
-(lowerBounds_mono_set subset_infClosure).antisymm $ by
+(lowerBounds_mono_set subset_infClosure).antisymm <| by
   rintro a ha _ ⟨t, ht, hts, rfl⟩
-  exact le_inf' _ _ λ b hb ↦ ha $ hts hb
+  exact le_inf' _ _ λ b hb ↦ ha <| hts hb
 
 @[simp] lemma isGLB_infClosure : IsGLB (infClosure s) a ↔ IsGLB s a := by simp [IsGLB]
 open Finset
@@ -358,7 +358,7 @@ lemma inf_mem_infClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊓ b ∈ infClosure 
 
 lemma finsetInf'_mem_infClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
     (hf : ∀ i ∈ t, f i ∈ s) : t.inf' ht f ∈ infClosure s :=
-  infClosed_infClosure.finsetInf'_mem _ $ fun _i hi ↦ subset_infClosure $ hf _ hi
+  infClosed_infClosure.finsetInf'_mem _ fun _i hi ↦ subset_infClosure <| hf _ hi
 
 lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClosure.closure_min
 
@@ -381,7 +381,7 @@ variable [Lattice α] {s t : Set α}
 /-- Every set in a join-semilattice generates a set closed under join. -/
 @[simps! isClosed]
 def latticeClosure : ClosureOperator (Set α) :=
-  .ofCompletePred IsSublattice $ fun _ ↦ isSublattice_sInter
+  .ofCompletePred IsSublattice fun _ ↦ isSublattice_sInter
 
 @[simp] lemma subset_latticeClosure : s ⊆ latticeClosure s := latticeClosure.le_closure _
 
@@ -426,12 +426,12 @@ protected lemma InfClosed.supClosure (hs : InfClosed s) : InfClosed (supClosure 
 
 @[simp] lemma supClosure_infClosure (s : Set α) : supClosure (infClosure s) = latticeClosure s :=
   le_antisymm (supClosure_min (infClosure_min subset_latticeClosure isSublattice_latticeClosure.2)
-    isSublattice_latticeClosure.1) $ latticeClosure_min (subset_infClosure.trans subset_supClosure)
+    isSublattice_latticeClosure.1) <| latticeClosure_min (subset_infClosure.trans subset_supClosure)
       ⟨supClosed_supClosure, infClosed_infClosure.supClosure⟩
 
 @[simp] lemma infClosure_supClosure (s : Set α) : infClosure (supClosure s) = latticeClosure s :=
   le_antisymm (infClosure_min (supClosure_min subset_latticeClosure isSublattice_latticeClosure.1)
-    isSublattice_latticeClosure.2) $ latticeClosure_min (subset_supClosure.trans subset_infClosure)
+    isSublattice_latticeClosure.2) <| latticeClosure_min (subset_supClosure.trans subset_infClosure)
       ⟨supClosed_supClosure.infClosure, infClosed_infClosure⟩
 
 lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by
@@ -444,13 +444,13 @@ end DistribLattice
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
-  le_sSup s a ha := (h _ supClosed_supClosure).1 $ subset_supClosure ha
-  sSup_le s a ha := (isLUB_le_iff $ h _ supClosed_supClosure).2 $ by rwa [upperBounds_supClosure]
+  le_sSup s a ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
+  sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
 complete. -/
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)
-  sInf_le s a ha := (h _ infClosed_infClosure).1 $ subset_infClosure ha
-  le_sInf s a ha := (le_isGLB_iff $ h _ infClosed_infClosure).2 $ by rwa [lowerBounds_infClosure]
+  sInf_le s a ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
+  le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]

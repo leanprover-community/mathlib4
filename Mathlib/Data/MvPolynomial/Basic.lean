@@ -855,7 +855,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
 
 @[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
   suffices : IsLeftRegular (X n : MvPolynomial σ R)
-  · exact ⟨this, this.right_of_commute $ Commute.all _⟩
+  · exact ⟨this, this.right_of_commute <| Commute.all _⟩
   intro P Q (hPQ : (X n) * P = (X n) * Q)
   ext i
   rw [← coeff_X_mul i n P, hPQ, coeff_X_mul i n Q]

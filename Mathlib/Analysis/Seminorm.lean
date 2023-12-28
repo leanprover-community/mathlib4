@@ -1374,7 +1374,7 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     q x ≤ (C • s.sup p) x := by
   rcases hx with ⟨j, hj, hjx⟩
   have : (s.sup p) x ≠ 0 :=
-    ne_of_gt ((hjx.symm.lt_of_le $ map_nonneg _ _).trans_le (le_finset_sup_apply hj))
+    ne_of_gt ((hjx.symm.lt_of_le <| map_nonneg _ _).trans_le (le_finset_sup_apply hj))
   refine (s.sup p).bound_of_shell_smul q ε_pos hc (fun y hle hlt ↦ ?_) this
   rcases exists_apply_eq_finset_sup p ⟨j, hj⟩ y with ⟨i, hi, hiy⟩
   rw [smul_apply, hiy]

@@ -666,7 +666,7 @@ lemma prod_fiberwise_of_maps_to' {g : ι → κ} (h : ∀ i ∈ s, g i ∈ t) (f
     ∏ j in t, ∏ _i in s.filter fun i ↦ g i = j, f j = ∏ i in s, f (g i) := by
   calc
     _ = ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f (g x) :=
-        prod_congr rfl $ fun y _ ↦ prod_congr rfl fun x hx ↦ by rw [(mem_filter.1 hx).2]
+        prod_congr rfl fun y _ ↦ prod_congr rfl fun x hx ↦ by rw [(mem_filter.1 hx).2]
     _ = _ := prod_fiberwise_of_maps_to h _
 
 variable [Fintype κ]
@@ -1050,8 +1050,8 @@ theorem prod_congr_set {α : Type*} [CommMonoid α] {β : Type*} [Fintype β] (s
 theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
     [DecidablePred fun x => ¬p x] (f : ∀ x : α, p x → γ) (g : ∀ x : α, ¬p x → γ) (h : γ → β) :
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
-      (∏ x in (s.filter p).attach, h (f x.1 $ by simpa using (mem_filter.mp x.2).2)) *
-        ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 $ by simpa using (mem_filter.mp x.2).2) :=
+      (∏ x in (s.filter p).attach, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
+        ∏ x in (s.filter fun x => ¬p x).attach, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
   calc
     (∏ x in s, h (if hx : p x then f x hx else g x hx)) =
         (∏ x in s.filter p, h (if hx : p x then f x hx else g x hx)) *
@@ -1060,11 +1060,11 @@ theorem prod_apply_dite {s : Finset α} {p : α → Prop} {hp : DecidablePred p}
     _ = (∏ x in (s.filter p).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx)) *
           ∏ x in (s.filter fun x => ¬p x).attach, h (if hx : p x.1 then f x.1 hx else g x.1 hx) :=
       congr_arg₂ _ (prod_attach _ _).symm (prod_attach _ _).symm
-    _ = (∏ x in (s.filter p).attach, h (f x.1 $ by simpa using (mem_filter.mp x.2).2)) *
-          ∏ x in (s.filter fun x ↦ ¬p x).attach, h (g x.1 $ by simpa using (mem_filter.mp x.2).2) :=
+    _ = (∏ x in (s.filter p).attach, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
+          ∏ x in (s.filter fun x ↦ ¬p x).attach, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
-        congr_arg h (dif_pos $ by simpa using (mem_filter.mp x.2).2))
-        (prod_congr rfl fun x _hx => congr_arg h (dif_neg $ by simpa using (mem_filter.mp x.2).2))
+        congr_arg h (dif_pos <| by simpa using (mem_filter.mp x.2).2))
+        (prod_congr rfl fun x _hx => congr_arg h (dif_neg <| by simpa using (mem_filter.mp x.2).2))
 #align finset.prod_apply_dite Finset.prod_apply_dite
 #align finset.sum_apply_dite Finset.sum_apply_dite
 
@@ -1073,7 +1073,7 @@ theorem prod_apply_ite {s : Finset α} {p : α → Prop} {_hp : DecidablePred p}
     (h : γ → β) :
     (∏ x in s, h (if p x then f x else g x)) =
       (∏ x in s.filter p, h (f x)) * ∏ x in s.filter fun x => ¬p x, h (g x) :=
-  (prod_apply_dite _ _ _).trans $ congr_arg₂ _ (prod_attach _ (h ∘ f)) (prod_attach _ (h ∘ g))
+  (prod_apply_dite _ _ _).trans <| congr_arg₂ _ (prod_attach _ (h ∘ f)) (prod_attach _ (h ∘ g))
 #align finset.prod_apply_ite Finset.prod_apply_ite
 #align finset.sum_apply_ite Finset.sum_apply_ite
 
@@ -1261,7 +1261,7 @@ lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α
   calc
     _ = ∏ i in s, g i (mulIndicator ↑s f i) := by rw [prod_subset h fun i _ hn ↦ by simp [hn, hg]]
     -- Porting note: This did not use to need the implicit argument
-    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ $ mulIndicator_of_mem (α := ι) hi f
+    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ <| mulIndicator_of_mem (α := ι) hi f
 #align set.prod_mul_indicator_subset_of_eq_one Finset.prod_mulIndicator_subset_of_eq_one
 #align set.sum_indicator_subset_of_eq_zero Finset.sum_indicator_subset_of_eq_zero
 
@@ -1306,7 +1306,7 @@ lemma mulIndicator_biUnion (s : Finset ι) (t : ι → Set κ) {f : κ → β} :
   classical
   refine Finset.induction_on s (by simp) fun i s hi ih hs ↦ funext fun j ↦ ?_
   rw [prod_insert hi, set_biUnion_insert, mulIndicator_union_of_not_mem_inter,
-    ih (hs.subset $ subset_insert _ _)]
+    ih (hs.subset <| subset_insert _ _)]
   simp only [not_exists, exists_prop, mem_iUnion, mem_inter_iff, not_and]
   exact fun hji i' hi' hji' ↦ (ne_of_mem_of_not_mem hi' hi).symm $
     hs.elim_set (mem_insert_self _ _) (mem_insert_of_mem hi') _ hji hji'
@@ -1333,7 +1333,7 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
   calc
     ∏ x in s, f x = ∏ x in s.filter fun x => f x ≠ 1, f x := by rw [prod_filter_ne_one]
     _ = ∏ x in t.filter fun x => g x ≠ 1, g x :=
-      prod_bij (fun a ha => i a (mem_filter.mp ha).1 $ by simpa using (mem_filter.mp ha).2)
+      prod_bij (fun a ha => i a (mem_filter.mp ha).1 <| by simpa using (mem_filter.mp ha).2)
         ?_ ?_ ?_ ?_
     _ = ∏ x in t, g x := prod_filter_ne_one _
   · intros a ha
@@ -1864,7 +1864,7 @@ theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
   split_ifs with h
   · obtain ⟨i, hi, hpi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hpi]
-    exact fun j hj hji ↦ if_neg fun hpj ↦ hji $ h _ hj _ hi hpj hpi
+    exact fun j hj hji ↦ if_neg fun hpj ↦ hji <| h _ hj _ hi hpj hpi
   · push_neg at h
     rw [prod_eq_one]
     exact fun i hi => if_neg (h i hi)
@@ -1910,7 +1910,7 @@ theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ 
     induction' S using Finset.induction_on' with a T _haS _hTS haT IH
     · simp
     rw [Finset.prod_insert haT, Finset.prod_insert haT]
-    exact mul_dvd_mul (h a $ T.mem_insert_self a) (IH fun b hb ↦ h b $ Finset.mem_insert_of_mem hb)
+    exact mul_dvd_mul (h a <| T.mem_insert_self a) (IH fun b hb ↦ h b <| Finset.mem_insert_of_mem hb)
 #align finset.prod_dvd_prod_of_dvd Finset.prod_dvd_prod_of_dvd
 
 theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)
@@ -2109,7 +2109,7 @@ theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
 
 lemma support_prod_subset (s : Finset ι) (f : ι → α → β) :
     support (fun x ↦ ∏ i in s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
-  fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx $ prod_eq_zero hi H
+  fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx <| prod_eq_zero hi H
 #align function.support_prod_subset Finset.support_prod_subset
 
 variable [Nontrivial β] [NoZeroDivisors β]

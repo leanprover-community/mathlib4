@@ -24,7 +24,7 @@ section Set
 
 @[to_additive (attr := simp)]
 lemma stabilizer_empty : stabilizer G (∅ : Set α) = ⊤ :=
-  Subgroup.coe_eq_univ.1 $ eq_univ_of_forall fun _a ↦ smul_set_empty
+  Subgroup.coe_eq_univ.1 <| eq_univ_of_forall fun _a ↦ smul_set_empty
 
 @[to_additive (attr := simp)]
 lemma stabilizer_singleton (b : α) : stabilizer G ({b} : Set α) = stabilizer G b := by ext; simp
@@ -34,7 +34,7 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
   refine mem_stabilizer_iff.trans ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
   · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
   simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
-  exact ((MulAction.toPerm a).forall_congr' $ by simp [Iff.comm]).1 h
+  exact ((MulAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
 
 @[to_additive]
 lemma map_stabilizer_le (f : G →* H) (s : Set G) :
@@ -93,7 +93,7 @@ lemma stabilizer_coe_finset (s : Finset α) : stabilizer G (s : Set α) = stabil
 
 @[to_additive (attr := simp)]
 lemma stabilizer_finset_empty : stabilizer G (∅ : Finset α) = ⊤ :=
-  Subgroup.coe_eq_univ.1 $ eq_univ_of_forall Finset.smul_finset_empty
+  Subgroup.coe_eq_univ.1 <| eq_univ_of_forall Finset.smul_finset_empty
 
 @[to_additive (attr := simp)]
 lemma stabilizer_finset_singleton (b : α) : stabilizer G ({b} : Finset α) = stabilizer G b := by
@@ -163,7 +163,7 @@ lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   induction' a using QuotientGroup.induction_on' with a
   simp only [mem_stabilizer_iff, Subgroup.mem_bot, QuotientGroup.eq_one_iff]
   have : q a • q '' s = q '' (a • s) :=
-    (image_smul_distrib (QuotientGroup.mk' $ stabilizer G s) _ _).symm
+    (image_smul_distrib (QuotientGroup.mk' <| stabilizer G s) _ _).symm
   rw [this]
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   rwa [QuotientGroup.image_coe_inj, mul_smul_comm, stabilizer_mul_self] at h

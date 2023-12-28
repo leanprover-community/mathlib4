@@ -108,7 +108,7 @@ def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
   if declName matches .str _ "inj" then return true
   if declName matches .str _ "noConfusionType" then return true
   let env ← getEnv
-  pure $ declName.isInternal'
+  pure <| declName.isInternal'
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName

@@ -881,7 +881,7 @@ theorem isNilpotent_of_product_of_sylow_group
     let ps := (Fintype.card G).primeFactors
     have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
       intro p P
-      haveI : Fact (Nat.Prime ↑p) := Fact.mk $ Nat.prime_of_mem_primeFactors p.2
+      haveI : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
       exact P.isPGroup'.isNilpotent
     exact nilpotent_of_mulEquiv e
 #align is_nilpotent_of_product_of_sylow_group isNilpotent_of_product_of_sylow_group

@@ -461,19 +461,19 @@ theorem linearIndependent_subtype {s : Set M} :
 
 theorem linearIndependent_comp_subtype_disjoint {s : Set ι} :
     LinearIndependent R (v ∘ (↑) : s → M) ↔
-      Disjoint (Finsupp.supported R R s) (LinearMap.ker $ Finsupp.total ι M R v) :=
+      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total ι M R v) :=
   by rw [linearIndependent_comp_subtype, LinearMap.disjoint_ker]
 #align linear_independent_comp_subtype_disjoint linearIndependent_comp_subtype_disjoint
 
 theorem linearIndependent_subtype_disjoint {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
-      Disjoint (Finsupp.supported R R s) (LinearMap.ker $ Finsupp.total M M R id) :=
+      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total M M R id) :=
   by apply linearIndependent_comp_subtype_disjoint (v := id)
 #align linear_independent_subtype_disjoint linearIndependent_subtype_disjoint
 
 theorem linearIndependent_iff_totalOn {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
-    (LinearMap.ker $ Finsupp.totalOn M M R id s) = ⊥ := by
+    (LinearMap.ker <| Finsupp.totalOn M M R id s) = ⊥ := by
   rw [Finsupp.totalOn, LinearMap.ker, LinearMap.comap_codRestrict, Submodule.map_bot, comap_bot,
     LinearMap.ker_comp, linearIndependent_subtype_disjoint, disjoint_iff_inf_le, ←
     map_comap_subtype, map_le_iff_le_comap, comap_bot, ker_subtype, le_bot_iff]
