@@ -1920,8 +1920,8 @@ theorem rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq
   have h : G.rank (insert x s) = G.rank s := le_antisymm h₁ h₂
   simp_all only [self_eq_add_right, not_false_eq_true, le_add_iff_nonneg_right, _root_.zero_le,
     le_refl]
-
-  sorry
+  rw [← closure_insert_eq_iff_rank_eq] at h
+  rw [kernelClosureOperator_eq_kernel_closure, kernelClosureOperator_eq_kernel_closure, h]
 
 -- Chapter V. Lemma 3.5.
 theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
