@@ -207,6 +207,14 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 #align submodule.fg.map Submodule.FG.map
 
+theorem FG.map' {S : Type*} [Semiring S]  {P : Type*} [AddCommMonoid P] [Module S P]
+    {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] P)
+    {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
+  let ⟨t, ht⟩ := fg_def.1 hs
+  fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
+
+
 variable {f}
 
 theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
@@ -587,6 +595,14 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+theorem of_surjective' [hM : Finite R M]
+    {S : Type*} [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
+    {N : Type*} [AddCommMonoid N] [Module S N]
+    (f : M →ₛₗ[σ] N) (hf : Surjective f) : Finite S N :=
+  ⟨by
+    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
+    exact hM.1.map' f⟩
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Finite R M]
