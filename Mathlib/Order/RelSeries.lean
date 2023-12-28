@@ -321,10 +321,7 @@ another series -/
 def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
   toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
-  step i := by
-    have h := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
-    cases i
-    exact h
+  step i := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
 
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
@@ -348,27 +345,19 @@ def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     · erw [dif_neg h₂]
       by_cases h₁ : i.1 < p.length
       · erw [dif_pos h₁]
-        have h₃ : p.length = i.1 + 1
-        · linarith
+        have h₃ : p.length = i.1 + 1 := by linarith
         convert p.step ⟨i, h₁⟩ using 1
         convert connect.symm
-        · congr
-          simp only [Nat.zero_mod, tsub_eq_zero_iff_le]
-          simp_rw [h₃]
-          rfl
-        · congr
-          ext
-          exact h₃.symm
+        · aesop
+        · congr; aesop
       · erw [dif_neg h₁]
         convert q.step ⟨i.1 - p.length, _⟩ using 1
         · congr
           change (i.1 + 1) - _ = _
           rw [Nat.sub_add_comm]
-          rw [not_lt] at h₁
-          exact h₁
+          rwa [not_lt] at h₁
         · refine Nat.sub_lt_left_of_lt_add ?_ i.2
-          rw [not_lt] at h₁
-          exact h₁
+          rwa [not_lt] at h₁
 
 end RelSeries
 
