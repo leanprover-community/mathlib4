@@ -703,6 +703,15 @@ lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
     p.length = (LTSeries.longestOf α).length :=
   le_antisymm (longestOf_is_longest _) (is_longest _)
 
+lemma longestOf_is_compositionSeries [FiniteDimensionalOrder α]
+    (i : Fin (LTSeries.longestOf α).length) :
+    LTSeries.longestOf α i.castSucc ⋖ LTSeries.longestOf α i.succ := by
+  refine ⟨(LTSeries.longestOf α).step i, ?_⟩
+  by_contra! rid
+  obtain ⟨a, ha1, ha2⟩ := rid
+  let x := RelSeries.insertNth (LTSeries.longestOf α) i a ha1 ha2
+  have := LTSeries.longestOf_is_longest x
+  simp only [RelSeries.insertNth_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
 
 variable {β}
 

@@ -276,7 +276,7 @@ lemma length_le_compositionSeries
 
 end LTSeries
 
-lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
+lemma moduleLength_eq_krullDim_Submodules_of_finiteLength [h : FiniteLengthModule R M] :
     moduleLength R M = krullDim (Submodule R M) :=
 le_antisymm
   (le_iSup_iff.mpr fun m hm ↦ moduleLength_eq_coe (h := h) ▸ hm
@@ -284,6 +284,67 @@ le_antisymm
   (iSup_le fun i ↦ by
     refine WithBot.coe_le_coe.mpr $ moduleLength_eq_coe (h := h) ▸ WithTop.coe_le_coe.mpr ?_
     exact i.length_le_compositionSeries _ h.head_eq h.last_eq)
+
+lemma krullDim_submodules_of_infinite_length (h : ¬ IsFiniteLengthModule R M) :
+    krullDim (Submodule R M) = ⊤ := by
+  contrapose! h
+  have : FiniteDimensionalOrder (Submodule R M)
+  · fconstructor
+    rw [← lt_top_iff_ne_top] at h
+    obtain ⟨x, hx1, hx2⟩ := iSup_lt_iff.mp h
+    have hx3 : ∃ (n : ℕ), x = n
+    · rcases x with _ | ⟨_ | ⟨x⟩⟩
+      · specialize hx2 (RelSeries.singleton _ ⊥)
+        simp only [RelSeries.singleton_length, CharP.cast_eq_zero] at hx2
+        change 0 ≤ ⊥ at hx2
+        refine (not_le_of_lt ?_ hx2).elim
+        exact WithBot.bot_lt_coe 0
+      · change ⊤ < ⊤ at hx1
+        refine (lt_irrefl _ hx1).elim
+      · refine ⟨x, rfl⟩
+    obtain ⟨n, rfl⟩ := hx3
+
+    by_contra! rid
+    have rid' := rid
+    choose p hp1 using rid
+    let x := fun n ↦ p^[n] (RelSeries.singleton _ ⊥)
+    have hx : ∀ n, n ≤ (x n).length
+    · intro n
+      induction' n with n ih
+      · simp
+      · simp only [Function.iterate_succ', Function.comp_apply]
+        rw [Nat.succ_le]
+        refine lt_of_le_of_lt ih (hp1 <| x n)
+
+    obtain ⟨y, hy⟩ := rid' (x n)
+    specialize hx2 y
+    simp only [Nat.cast_le] at hy hx2
+    have hy2 : n < y.length := lt_of_le_of_lt (hx _) hy
+    linarith
+
+  let x := LTSeries.longestOf (Submodule R M)
+  refine ⟨⟨⟨?_, ?_, ?_⟩⟩⟩
+  · refine ⟨x.length, x.toFun, fun i ↦ LTSeries.longestOf_is_compositionSeries i⟩
+  · by_contra! rid
+    have rid' : x.head ≠ ⊥ := rid
+    let x' := RelSeries.cons x ⊥ (bot_lt_iff_ne_bot.mpr rid')
+    have := LTSeries.longestOf_is_longest x'
+    simp only [RelSeries.cons_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  · by_contra! rid
+    have rid' : x.last ≠ ⊤ := rid
+    let x' := RelSeries.snoc x ⊤ (lt_top_iff_ne_top.mpr rid')
+    have := LTSeries.longestOf_is_longest x'
+    simp only [RelSeries.snoc_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+
+lemma moduleLength_eq_krullDim_Submodules :
+    moduleLength R M = krullDim (Submodule R M) := by
+  by_cases h : IsFiniteLengthModule R M
+  · replace h := Classical.choice h.finite
+    rw [moduleLength_eq_krullDim_Submodules_of_finiteLength]
+  · rw [krullDim_submodules_of_infinite_length h]
+    delta moduleLength
+    rw [dif_neg h]
+    rfl
 
 section Noetherian_and_Artinian
 
@@ -750,3 +811,33 @@ lemma finiteLengthModule_over_field_iff_finite_dimensional :
     exact ⟨⟨FiniteLengthModule.of_noetherian_of_artinian K M⟩⟩
 
 end field
+
+section ringHom
+
+variable (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+variable (M : Type*) [AddCommGroup M] [Module S M]
+
+lemma moduleLength_le_restrictScalars :
+    moduleLength S M ≤ moduleLength R (RestrictScalars R S M) := by
+  suffices : (moduleLength S M : WithBot (WithTop ℕ)) ≤
+    (moduleLength R (RestrictScalars R S M) : WithBot (WithTop ℕ))
+  · simpa using this
+  rw [moduleLength_eq_krullDim_Submodules, moduleLength_eq_krullDim_Submodules]
+  refine krullDim.le_of_strictMono (fun p ↦ { __ := p, smul_mem' := ?_ }) fun _ _ h ↦ h
+  intro r m hm
+  exact p.smul_mem (algebraMap R S r) hm
+
+lemma moduleLength_eq_restrictScalars_of_surjective
+    [surj : RingHomSurjective (algebraMap R S)] :
+    moduleLength S M = moduleLength R (RestrictScalars R S M) :=
+  le_antisymm (moduleLength_le_restrictScalars R S M) <| by
+    suffices : (moduleLength R (RestrictScalars R S M) : WithBot (WithTop ℕ)) ≤
+      (moduleLength S M : WithBot (WithTop ℕ))
+    · simpa using this
+    rw [moduleLength_eq_krullDim_Submodules, moduleLength_eq_krullDim_Submodules]
+    refine krullDim.le_of_strictMono (fun p ↦ { __ := p, smul_mem' := ?_ }) fun _ _ h ↦ h
+    intro s m hm
+    obtain ⟨r, rfl⟩ := surj.1 s
+    exact p.smul_mem r hm
+
+end ringHom
