@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
 
@@ -140,7 +141,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
       use v
       simp only [true_and_iff, mem_filter, mem_univ]
       exact h
-    rwa [← card_pos, hg, ← two_mul, zero_lt_mul_left] at hh
+    rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
   have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w

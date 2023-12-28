@@ -445,11 +445,7 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 @[to_additive]
 theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
     range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
-  ext fun _x ↦
-    ⟨fun hx ↦
-      let ⟨_p, _q, ⟨i, hi⟩, ⟨j, hj⟩, hpq⟩ := Set.mem_smul.1 hx
-      ⟨(i, j), hpq ▸ hi ▸ hj ▸ rfl⟩,
-      fun ⟨⟨i, j⟩, h⟩ ↦ Set.mem_smul.2 ⟨b i, c j, ⟨i, rfl⟩, ⟨j, rfl⟩, h⟩⟩
+  image2_range ..
 #align set.range_smul_range Set.range_smul_range
 #align set.range_vadd_range Set.range_vadd_range
 
@@ -835,7 +831,7 @@ theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
 #align set.nonempty.zero_smul Set.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
-theorem zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
+@[simp] theorem zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
   simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
 #align set.zero_smul_set Set.zero_smul_set
 
@@ -1021,6 +1017,14 @@ theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | �
 #align set.Union_smul_eq_set_of_exists Set.iUnion_smul_eq_setOf_exists
 #align set.Union_vadd_eq_set_of_exists Set.iUnion_vadd_eq_setOf_exists
 
+@[to_additive (attr := simp)]
+lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
+  ext; simp [mem_smul_set_iff_inv_smul_mem]
+
+@[to_additive (attr := simp)]
+lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
+  ext; simp [mem_smul_set_iff_inv_smul_mem]
+
 end Group
 
 section GroupWithZero
@@ -1085,6 +1089,18 @@ theorem smul_univ₀ {s : Set α} (hs : ¬s ⊆ 0) : s • (univ : Set β) = uni
 theorem smul_univ₀' {s : Set α} (hs : s.Nontrivial) : s • (univ : Set β) = univ :=
   smul_univ₀ hs.not_subset_singleton
 #align set.smul_univ₀' Set.smul_univ₀'
+
+@[simp] protected lemma inv_zero : (0 : Set α)⁻¹ = 0 := by ext; simp
+
+@[simp] lemma inv_smul_set_distrib₀ (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
+  obtain rfl | ha := eq_or_ne a 0
+  · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
+  · ext; simp [mem_smul_set_iff_inv_smul_mem₀, *]
+
+@[simp] lemma inv_op_smul_set_distrib₀ (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
+  obtain rfl | ha := eq_or_ne a 0
+  · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
+  · ext; simp [mem_smul_set_iff_inv_smul_mem₀, *]
 
 end GroupWithZero
 

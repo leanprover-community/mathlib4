@@ -376,6 +376,28 @@ theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
 
 end AddCommGroup
 
+section OrderedAddCommGroup
+
+variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
+
+/-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
+lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
+  refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
+  rw [mem_compl_iff, mem_Iic] at hz ⊢
+  contrapose! hz
+  refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
+  calc
+    b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]
+    _ < b • x := by
+      rw [add_smul, sub_lt_iff_lt_add']
+      gcongr
+
+/-- If `x < y`, then `(Set.Ici y)ᶜ` is star convex at `x`. -/
+lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ :=
+  starConvex_compl_Iic (E := Eᵒᵈ) h
+
+end OrderedAddCommGroup
+
 end OrderedRing
 
 section LinearOrderedField
@@ -417,9 +439,10 @@ end LinearOrderedField
 Relates `starConvex` and `Set.ordConnected`.
 -/
 
-
 section OrdConnected
 
+/-- If `s` is an order-connected set in an ordered module over an ordered semiring
+and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
 theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
     (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
