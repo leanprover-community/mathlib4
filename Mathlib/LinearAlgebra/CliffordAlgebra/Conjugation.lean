@@ -156,11 +156,11 @@ theorem reverse_comp_involute :
       (involute.toLinearMap.comp reverse : _ →ₗ[R] CliffordAlgebra Q) := by
   ext x
   simp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply]
-  induction x using CliffordAlgebra.induction
-  case h_grade0 => simp
-  case h_grade1 => simp
-  case h_mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
-  case h_add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
+  induction x using CliffordAlgebra.induction with
+  | h_grade0 => simp
+  | h_grade1 => simp
+  | h_mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
+  | h_add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
 #align clifford_algebra.reverse_comp_involute CliffordAlgebra.reverse_comp_involute
 
 /-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition

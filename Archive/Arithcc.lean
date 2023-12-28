@@ -309,17 +309,17 @@ theorem compiler_correctness :
         (∀ x, loc x map < t) → outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by
   intro map e ξ η t hmap ht
   revert η t
-  induction e <;> intro η t hmap ht
+  induction e with intro η t hmap ht
   -- 5.I
-  case const => simp [StateEq, step]; rfl
+  | const => simp [StateEq, step]; rfl
   -- 5.II
-  case var =>
+  | var =>
     simp [hmap, StateEq, step] -- Porting note: was `finish [hmap, StateEq, step]`
     constructor
     · simp_all only [read, loc]
     · rfl
   -- 5.III
-  case sum =>
+  | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
     simp
     generalize value e_s₁ ξ = ν₁ at e_ih_s₁ ⊢
