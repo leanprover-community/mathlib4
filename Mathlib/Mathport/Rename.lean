@@ -167,7 +167,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
       if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
         if id3.getId.anyS suspiciousLean3Name then
-          Linter.logLint linter.uppercaseLean3 id3 $
+          Linter.logLint linter.uppercaseLean3 id3 <|
             "Lean 3 names are usually lowercase. This might be a typo.\n" ++
             "If the Lean 3 name is correct, then above this line, add:\n" ++
             "set_option linter.uppercaseLean3 false in\n"

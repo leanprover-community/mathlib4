@@ -31,7 +31,7 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) : ConvexOn 𝕜 s (f • g) := by
   refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
   dsimp
-  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hf₀ <| hf.1 hx hy ha hb hab) $
+  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hf₀ <| hf.1 hx hy ha hb hab) <|
     add_nonneg (smul_nonneg ha <| hg₀ hx) <| smul_nonneg hb <| hg₀ hy).trans ?_
   calc
       _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := ?_

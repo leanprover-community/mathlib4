@@ -710,7 +710,7 @@ lemma IsOfFinOrder.mem_powers_iff_mem_zpowers (hx : IsOfFinOrder x) :
     y ∈ powers x ↔ y ∈ zpowers x :=
   ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simp_all⟩, fun ⟨i, hi⟩ ↦ ⟨(i % orderOf x).natAbs, by
     dsimp only
-    rwa [← zpow_ofNat, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <| Int.coe_nat_ne_zero_iff_pos.2 $
+    rwa [← zpow_ofNat, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <| Int.coe_nat_ne_zero_iff_pos.2 <|
       hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
 
 @[to_additive IsOfFinAddOrder.multiples_eq_zmultiples]
@@ -848,7 +848,7 @@ theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
   "The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ powers y :=
-  (finEquivPowers x <| isOfFinOrder_of_finite _).symm.trans $
+  (finEquivPowers x <| isOfFinOrder_of_finite _).symm.trans <|
     (Fin.castIso h).toEquiv.trans <| finEquivPowers y <| isOfFinOrder_of_finite _
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
@@ -870,7 +870,7 @@ variable [Fintype G] {x : G}
 
 @[to_additive addOrderOf_eq_card_multiples]
 lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Set G) :=
-  (Fintype.card_fin (orderOf x)).symm.trans $
+  (Fintype.card_fin (orderOf x)).symm.trans <|
     Fintype.card_eq.2 ⟨finEquivPowers x <| isOfFinOrder_of_finite _⟩
 #align order_eq_card_powers orderOf_eq_card_powers
 #align add_order_of_eq_card_multiples addOrderOf_eq_card_multiples
@@ -941,7 +941,7 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (Fin.castIso h).toEquiv.trans $
+  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (Fin.castIso h).toEquiv.trans <|
     finEquivZPowers y <| isOfFinOrder_of_finite _
 #align zpowers_equiv_zpowers zpowersEquivZPowers
 #align zmultiples_equiv_zmultiples zmultiplesEquivZMultiples
@@ -964,7 +964,7 @@ variable [Fintype G] {x : G} {n : ℕ}
 /-- See also `Nat.card_addSubgroupZPowers`. -/
 @[to_additive Fintype.card_zmultiples "See also `Nat.card_subgroup`."]
 theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
-  (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans $
+  (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans <|
     Fintype.card_fin (orderOf x)
 #align order_eq_card_zpowers Fintype.card_zpowers
 #align add_order_eq_card_zmultiples Fintype.card_zmultiples
@@ -1019,7 +1019,7 @@ nonrec lemma Subgroup.orderOf_dvd_natCard (s : Subgroup G) (hx : x ∈ s) :
 @[to_additive]
 lemma Subgroup.orderOf_le_card (s : Subgroup G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
     orderOf x ≤ Nat.card s :=
-  le_of_dvd (Nat.card_pos_iff.2 <| ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) $
+  le_of_dvd (Nat.card_pos_iff.2 <| ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) <|
     s.orderOf_dvd_natCard hx
 
 @[to_additive]

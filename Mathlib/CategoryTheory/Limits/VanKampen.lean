@@ -355,7 +355,7 @@ theorem IsUniversalColimit.map_reflective
   let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c''
   · refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
     exact (inv <| adj.counit.app c'.pt)
-    · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app $
+    · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app <|
         Gl.obj c.pt), Category.assoc, Category.assoc, adj.left_triangle_components]
       erw [Category.comp_id]
       rfl
@@ -379,7 +379,7 @@ theorem IsUniversalColimit.map_reflective
     rw [this]
     infer_instance
   have ⟨Hc''⟩ := H c'' (whiskerRight α' Gr) pullback.snd ?_ (hα'.whiskerRight Gr) ?_
-  · exact ⟨IsColimit.precomposeHomEquiv β c' $
+  · exact ⟨IsColimit.precomposeHomEquiv β c' <|
       (isColimitOfPreserves Gl Hc'').ofIsoColimit (asIso cf).symm⟩
   · ext j
     dsimp

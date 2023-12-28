@@ -157,7 +157,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
       refine' (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans _
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (insert_union _ _ _), insert_inter_of_not_mem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) $
+      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
         add_nonneg (h₄ _) <| h₄ _
     · rw [zero_add, add_mul]
       refine' (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans _
@@ -173,10 +173,10 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     · refine' (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans _
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (union_insert _ _ _), inter_insert_of_not_mem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) $
+      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
         add_nonneg (h₄ _) <| h₄ _
     · rw [mul_zero, add_zero]
-      exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃ rfl $
+      exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃ rfl <|
         inter_mem_infs ‹_› ‹_›) (le_collapse_of_mem ‹_› h₄ rfl <| union_mem_sups ‹_› ‹_›)
         (h₄ _) <| collapse_nonneg h₃ _
     · rw [mul_zero, zero_add]

@@ -896,7 +896,7 @@ theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b �
 @[to_additive]
 lemma prod_union_eq_left [DecidableEq α] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
     ∏ a in s₁ ∪ s₂, f a = ∏ a in s₁, f a :=
-  Eq.symm $
+  Eq.symm <|
     prod_subset (subset_union_left _ _) fun _a ha ha' ↦ hs _ ((mem_union.1 ha).resolve_left ha') ha'
 
 @[to_additive]
@@ -1279,7 +1279,7 @@ lemma prod_mulIndicator_subset (f : ι → β) {s t : Finset ι} (h : s ⊆ t) :
 lemma prod_mulIndicator_eq_prod_filter (s : Finset ι) (f : ι → κ → β) (t : ι → Set κ) (g : ι → κ)
     [DecidablePred fun i ↦ g i ∈ t i] :
     ∏ i in s, mulIndicator (t i) (f i) (g i) = ∏ i in s.filter fun i ↦ g i ∈ t i, f i (g i) := by
-  refine (prod_filter_mul_prod_filter_not s (fun i ↦ g i ∈ t i) _).symm.trans $
+  refine (prod_filter_mul_prod_filter_not s (fun i ↦ g i ∈ t i) _).symm.trans <|
      Eq.trans (congr_arg₂ (· * ·) ?_ ?_) (mul_one _)
   · exact prod_congr rfl fun x hx ↦ mulIndicator_of_mem (mem_filter.1 hx).2 _
   · exact prod_eq_one fun x hx ↦ mulIndicator_of_not_mem (mem_filter.1 hx).2 _
@@ -1308,7 +1308,7 @@ lemma mulIndicator_biUnion (s : Finset ι) (t : ι → Set κ) {f : κ → β} :
   rw [prod_insert hi, set_biUnion_insert, mulIndicator_union_of_not_mem_inter,
     ih (hs.subset <| subset_insert _ _)]
   simp only [not_exists, exists_prop, mem_iUnion, mem_inter_iff, not_and]
-  exact fun hji i' hi' hji' ↦ (ne_of_mem_of_not_mem hi' hi).symm $
+  exact fun hji i' hi' hji' ↦ (ne_of_mem_of_not_mem hi' hi).symm <|
     hs.elim_set (mem_insert_self _ _) (mem_insert_of_mem hi') _ hji hji'
 #align set.mul_indicator_finset_bUnion Finset.mulIndicator_biUnion
 #align set.indicator_finset_bUnion Finset.indicator_biUnion

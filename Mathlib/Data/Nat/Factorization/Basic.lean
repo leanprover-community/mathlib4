@@ -699,7 +699,7 @@ theorem Ico_filter_pow_dvd_eq {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb : 
   ext x
   simp only [Finset.mem_filter, mem_Ico, mem_Icc, and_congr_left_iff, and_congr_right_iff]
   rintro h1 -
-  exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) $
+  exact iff_of_true (lt_of_pow_dvd_right hn pp.two_le h1) <|
     (pow_le_pow_iff_right pp.one_lt).1 <| (le_of_dvd hn.bot_lt h1).trans hb
 #align nat.Ico_filter_pow_dvd_eq Nat.Ico_filter_pow_dvd_eq
 

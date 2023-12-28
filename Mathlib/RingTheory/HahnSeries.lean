@@ -1096,7 +1096,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     ext n
     simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, mul_coeff, isPwo_support]
     classical
-    refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans $
+    refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
     ext m
     simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
@@ -1211,7 +1211,7 @@ def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃
     classical
       change (f * g).coeff n = _
       simp_rw [mul_coeff]
-      refine' (sum_filter_ne_zero _).symm.trans <| (sum_congr _ fun _ _ ↦ rfl).trans $
+      refine' (sum_filter_ne_zero _).symm.trans <| (sum_congr _ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
       simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,

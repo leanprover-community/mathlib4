@@ -65,7 +65,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
         (Int.coe_nat_inj'.1 _)
       push_cast
       simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
-    · exact (by positivity : 0 < c ^ n).not_lt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) $
+    · exact (by positivity : 0 < c ^ n).not_lt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine' h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)

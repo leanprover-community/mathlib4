@@ -507,7 +507,7 @@ lemma _root_.Covby.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t
 
 lemma _root_.Covby.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
   let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
-  ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' $
+  ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
     sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩
 
 lemma covby_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t :=

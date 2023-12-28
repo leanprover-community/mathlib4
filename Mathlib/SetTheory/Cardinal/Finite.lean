@@ -79,7 +79,7 @@ theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
 
 lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
     (hf : Injective f) : Nat.card α ≤ Nat.card β := by
-  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) <|
     mk_le_of_injective (α := ULift.{max u v} α) (β := ULift.{max u v} β) <| ULift.map_injective.2 hf
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
