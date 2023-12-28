@@ -36,24 +36,21 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
 open Set Nat BigOperators
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
-lemma sum_primes_ge_one_div_ge_half (k : ℕ) :
-    ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
-      (1 / p : ℝ) ≥ 1 / 2 := by
+lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
+    1 / 2 ≤ ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+      (1 / p : ℝ) := by
   set m : ℕ := 2 ^ k.primesBelow.card
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
-  suffices : 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S
-  · rw [ge_iff_le]
-    rw [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add'] at this
-    push_cast at this
-    ring_nf at this
-    simp_rw [← one_div] at this
-    conv at this => enter [1, 2]; rw [show (2 : ℝ) = 4 * (1 / 2) by norm_num]
-    rw [← mul_assoc, mul_comm _ (1 / 2 : ℝ), mul_assoc (Finset.sum ..),
-      _root_.mul_le_mul_right <| by positivity] at this
-    convert this using 5
-    rw [show 4 = 2 ^ 2 by norm_num, Nat.pow_right_comm]
+  suffices : 1 / 2 ≤ S
+  · convert this using 5
+    rw [show 4 = 2 ^ 2 by norm_num, pow_right_comm]
     ring
+  suffices : 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S
+  · rwa [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add',
+      cast_mul, cast_mul, cast_pow, cast_two,
+      show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
+      _root_.mul_le_mul_left <| by positivity] at this
   calc (2 * N₀ : ℝ)
     _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
@@ -72,7 +69,7 @@ theorem not_summable_one_div_on_primes :
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n)
   · convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
-  refine ((sum_primes_ge_one_div_ge_half k).le.trans_lt <| LE.le.trans_lt ?_ hk).false
+  refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
   convert sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
     (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using 2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
