@@ -93,7 +93,7 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
 
 theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : c (hom ⟨0, hn⟩) ↔ False) (u : Fin n) :
-    c (hom u) ↔ ¬Even u.val := by
+    c (hom u) ↔ Odd u.val := by
   let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬(c v)) <| by
     intro v w
     intro (h : G.Adj v w)
@@ -107,7 +107,7 @@ theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) 
   have hc'0 : c' (hom ⟨0, hn⟩) := by
     rw [hc'c, hc0]
     exact not_false
-  rw [hcc']
+  rw [hcc', Nat.odd_iff_not_even]
   exact Iff.not (pathGraph_Hom_coloring G c' hn hom hc'0 u)
 
 end SimpleGraph
