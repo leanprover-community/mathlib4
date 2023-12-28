@@ -187,31 +187,12 @@ theorem sum_range_diag_flip {α : Type*} [AddCommMonoid α] (n : ℕ) (f : ℕ �
     (∑ m in range n, ∑ k in range (m + 1), f k (m - k)) =
       ∑ m in range n, ∑ k in range (n - m), f m k := by
   rw [sum_sigma', sum_sigma']
-  exact
-    sum_bij (fun a _ => ⟨a.2, a.1 - a.2⟩)
-      (fun a ha =>
-        have h₁ : a.1 < n := mem_range.1 (mem_sigma.1 ha).1
-        have h₂ : a.2 < Nat.succ a.1 := mem_range.1 (mem_sigma.1 ha).2
-        mem_sigma.2
-          ⟨mem_range.2 (lt_of_lt_of_le h₂ h₁),
-            mem_range.2 ((tsub_lt_tsub_iff_right (Nat.le_of_lt_succ h₂)).2 h₁)⟩)
-      (fun _ _ => rfl)
-      (fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ ha hb h =>
-        have ha : a₁ < n ∧ a₂ ≤ a₁ :=
-          ⟨mem_range.1 (mem_sigma.1 ha).1, Nat.le_of_lt_succ (mem_range.1 (mem_sigma.1 ha).2)⟩
-        have hb : b₁ < n ∧ b₂ ≤ b₁ :=
-          ⟨mem_range.1 (mem_sigma.1 hb).1, Nat.le_of_lt_succ (mem_range.1 (mem_sigma.1 hb).2)⟩
-        have h : a₂ = b₂ ∧ _ := by simpa using h
-        have h' : a₁ = b₁ - b₂ + a₂ := (tsub_eq_iff_eq_add_of_le ha.2).1 (eq_of_heq h.2)
-        Sigma.mk.inj_iff.2 ⟨tsub_add_cancel_of_le hb.2 ▸ h'.symm ▸ h.1 ▸ rfl, heq_of_eq h.1⟩)
-      fun ⟨a₁, a₂⟩ ha =>
-      have ha : a₁ < n ∧ a₂ < n - a₁ :=
-        ⟨mem_range.1 (mem_sigma.1 ha).1, mem_range.1 (mem_sigma.1 ha).2⟩
-      ⟨⟨a₂ + a₁, a₁⟩,
-        ⟨mem_sigma.2
-            ⟨mem_range.2 (lt_tsub_iff_right.1 ha.2),
-              mem_range.2 (Nat.lt_succ_of_le (Nat.le_add_left _ _))⟩,
-          Sigma.mk.inj_iff.2 ⟨rfl, heq_of_eq (add_tsub_cancel_right _ _).symm⟩⟩⟩
+  refine sum_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
+    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
+      Nat.lt_succ_iff, le_add_iff_nonneg_right, zero_le, and_true, and_imp, imp_self, implies_true,
+      Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
+      add_tsub_cancel_left, heq_eq_eq]
+  · exact fun a b han hba ↦ lt_of_le_of_lt hba han
 #align sum_range_diag_flip sum_range_diag_flip
 
 end
@@ -1602,20 +1583,9 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
       (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
     (∑ m in filter (fun k => n ≤ k) (range j), (1 / m.factorial : α)) =
-        ∑ m in range (j - n), (1 / ((m + n).factorial : α)) :=
-      sum_bij (fun m _ => m - n)
-        (fun m hm =>
-          mem_range.2 <|
-            (tsub_lt_tsub_iff_right (by simp at hm; tauto)).2 (by simp at hm; tauto))
-        (fun m hm => by rw [tsub_add_cancel_of_le]; simp at *; tauto)
-        (fun a₁ a₂ ha₁ ha₂ h => by
-          rwa [tsub_eq_iff_eq_add_of_le, tsub_add_eq_add_tsub, eq_comm, tsub_eq_iff_eq_add_of_le,
-              add_left_inj, eq_comm] at h <;>
-          simp at * <;> aesop)
-        fun b hb =>
-        ⟨b + n,
-          mem_filter.2 ⟨mem_range.2 <| lt_tsub_iff_right.mp (mem_range.1 hb), Nat.le_add_left _ _⟩,
-          by dsimp; rw [add_tsub_cancel_right]⟩
+        ∑ m in range (j - n), (1 / ((m + n).factorial : α)) := by
+        refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
+          simp (config := { contextual := true }) [lt_tsub_iff_right, tsub_add_cancel_of_le]
     _ ≤ ∑ m in range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
       simp_rw [one_div]
       gcongr
