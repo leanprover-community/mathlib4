@@ -149,6 +149,36 @@ instance Function.locallyCompactSpace [LocallyCompactSpace Y] [CompactSpace Y] :
 
 end Pi
 
+/-- We say that `X` and `Y` are a locally compact pair of topological spaces,
+if for any continuous map `f : X → Y`, a point `x : X`, and a neighbourhood `s ∈ 𝓝 (f x)`,
+there exists a compact neighbourhood `K ∈ 𝓝 x` such that `f` maps `K` to `s`.
+
+This is a technical assumption that appears in several theorems,
+most notably in `ContinuousMap.continuous_comp'` and `ContinuousMap.continuous_eval`.
+It is satisfied in two cases:
+
+- if `X` is a locally compact topological space, for obvious reasons;
+- if `X` is a weakly locally compact topological space and `Y` is a Hausdorff space;
+  this fact is a simple generalization of the theorem
+  saying that a weakly locally compact Hausdorff topological space is locally compact.
+-/
+class LocallyCompactPair (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] : Prop where
+  /-- If `f : X → Y` is a continuous map in a locally compact pair of topological spaces
+  and `s : Set Y` is a neighbourhood of `f x`, `x : X`,
+  then there exists a compact neighbourhood `K` of `x` such that `f` maps `K` to `s`. -/
+  exists_mem_nhds_isCompact_mapsTo : ∀ {f : X → Y} {x : X} {s : Set Y},
+    Continuous f → s ∈ 𝓝 (f x) → ∃ K ∈ 𝓝 x, IsCompact K ∧ MapsTo f K s
+
+export LocallyCompactPair (exists_mem_nhds_isCompact_mapsTo)
+
+instance (priority := 900) [LocallyCompactSpace X] : LocallyCompactPair X Y where
+  exists_mem_nhds_isCompact_mapsTo hf hs :=
+    let ⟨K, hKx, hKs, hKc⟩ := local_compact_nhds (hf.continuousAt hs); ⟨K, hKx, hKc, hKs⟩
+
+instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X where
+  exists_compact_mem_nhds (x : X) :=
+    let ⟨K, hx, _, hKc⟩ := local_compact_nhds (x := x) univ_mem; ⟨K, hKc, hx⟩
+
 /-- A reformulation of the definition of locally compact space: In a locally compact space,
   every open set containing `x` has a compact subset containing `x` in its interior. -/
 theorem exists_compact_subset [LocallyCompactSpace X] {x : X} {U : Set X} (hU : IsOpen U)
@@ -157,25 +187,29 @@ theorem exists_compact_subset [LocallyCompactSpace X] {x : X} {U : Set X} (hU : 
   exact ⟨K, h3K, mem_interior_iff_mem_nhds.2 h1K, h2K⟩
 #align exists_compact_subset exists_compact_subset
 
-instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X where
-  exists_compact_mem_nhds (x : X) :=
-    let ⟨K, hKc, hx, _⟩ := exists_compact_subset isOpen_univ (mem_univ x)
-    ⟨K, hKc, mem_interior_iff_mem_nhds.1 hx⟩
+/-- If `f : X → Y` is a continuous map in a locally compact pair of topological spaces,
+`K : set X` is a compact set, and `U` is an open neighbourhood of `f '' K`,
+then there exists a compact neighbourhood `L` of `K` such that `f` maps `L` to `U`.
+
+This is a generalization of `exists_mem_nhds_isCompact_mapsTo`. -/
+lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y} {K : Set X}
+    {U : Set Y} (hf : Continuous f) (hK : IsCompact K) (hU : IsOpen U) (hKU : MapsTo f K U) :
+    ∃ L ∈ 𝓝ˢ K, IsCompact L ∧ MapsTo f L U := by
+  choose! V hxV hVc hVU using fun x (hx : x ∈ K) ↦
+    exists_mem_nhds_isCompact_mapsTo hf (hU.mem_nhds (hKU hx))
+  rcases hK.elim_nhds_subcover_nhdsSet hxV with ⟨s, hsK, hKs⟩
+  exact ⟨_, hKs, s.isCompact_biUnion fun x hx ↦ hVc x (hsK x hx), mapsTo_iUnion₂ fun x hx ↦
+    hVU x (hsK x hx)⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
   compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
   See also `exists_compact_closed_between`, in which one guarantees additionally that `L` is closed
   if the space is regular. -/
-theorem exists_compact_between [hX : LocallyCompactSpace X] {K U : Set X} (hK : IsCompact K)
-    (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U := by
-  choose V hVc hxV hKV using fun x : K => exists_compact_subset hU (h_KU x.2)
-  have : K ⊆ ⋃ x, interior (V x) := fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxV _⟩
-  rcases hK.elim_finite_subcover _ (fun x => @isOpen_interior X _ (V x)) this with ⟨t, ht⟩
-  refine'
-    ⟨_, t.isCompact_biUnion fun x _ => hVc x, fun x hx => _, Set.iUnion₂_subset fun i _ => hKV i⟩
-  rcases mem_iUnion₂.1 (ht hx) with ⟨y, hyt, hy⟩
-  exact interior_mono (subset_iUnion₂ y hyt) hy
+theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCompact K)
+    (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U :=
+  let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
+  ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 #align exists_compact_between exists_compact_between
 
 protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}

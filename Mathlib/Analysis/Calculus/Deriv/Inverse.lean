@@ -70,7 +70,7 @@ theorem HasStrictDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : �
   (hf.hasStrictFDerivAt_equiv hf').of_local_left_inverse hg hfg
 #align has_strict_deriv_at.of_local_left_inverse HasStrictDerivAt.of_local_left_inverse
 
-/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
+/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a` in the strict sense, then `f.symm` has the derivative `f'⁻¹`
 at `a` in the strict sense.
 
@@ -93,7 +93,7 @@ theorem HasDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : 𝕜} (hg
   (hf.hasFDerivAt_equiv hf').of_local_left_inverse hg hfg
 #align has_deriv_at.of_local_left_inverse HasDerivAt.of_local_left_inverse
 
-/-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
+/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have

@@ -243,7 +243,7 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
   calc
     Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
       Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
-    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := (Multiset.card_le_of_le (Multiset.dedup_le _))
+    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := (Multiset.card_le_card (Multiset.dedup_le _))
     _ = Multiset.card (nthRoots k (1 : R)) := Multiset.card_attach
     _ ≤ k := card_nthRoots k 1
 #align card_roots_of_unity card_rootsOfUnity
