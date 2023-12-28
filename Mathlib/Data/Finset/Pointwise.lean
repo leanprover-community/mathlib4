@@ -2095,7 +2095,7 @@ theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
   s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
 #align finset.nonempty.smul_zero Finset.Nonempty.smul_zero
 
-theorem zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
+theorem zero_mem_smul_finset {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
   mem_smul_finset.2 ⟨0, h, smul_zero _⟩
 #align finset.zero_mem_smul_finset Finset.zero_mem_smul_finset
 
