@@ -18,14 +18,14 @@ converges if and only if `r < -1`; see `Nat.Primes.summable_rpow`.
 
 ## References
 
-See the sixth proof for the infinity of of primes in Chapter 1 of [aigner1999proofs].
+See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs].
 The proof is due to Erdős.
 -/
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
 -- This needs `Mathlib.Data.IsROrC.Basic`, so we put it here
--- instead of in `Mathlib.NumberTheroy.SmoothNumbers`.
+-- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤
       N * (N.succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 : ℝ) / p) := by
