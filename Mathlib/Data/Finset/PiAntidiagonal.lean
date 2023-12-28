@@ -57,16 +57,16 @@ variable {μ : Type*} [AddCommMonoid μ] [DecidableEq μ] [HasAntidiagonal μ]
 
 
 /-- `finAntidiagonal d n` is the type of d-tuples with sum n -/
-def finAntidiagonal : (d : ℕ) → μ → Finset (Fin d → μ)
-  | 0 => fun n => ite (n = 0) {0} ∅
-  | d + 1 => fun n => by
-    exact Finset.biUnion (antidiagonal n)
-      (fun ab => (finAntidiagonal d ab.2).map {
+def finAntidiagonal (d : ℕ) (n : μ) : Finset (Fin d → μ) :=
+  match d with
+  | 0 => if n = 0 then {0} else ∅
+  | d + 1 => (antidiagonal n).biUnion fun ab =>
+    (finAntidiagonal d ab.2).map {
         toFun := Fin.cons (ab.1)
-        inj' := Fin.cons_right_injective _ })
+        inj' := Fin.cons_right_injective _ }
 
 lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
-    f ∈ finAntidiagonal d n ↔ univ.sum f = n := by
+    f ∈ finAntidiagonal d n ↔ ∑ i, f i = n := by
   induction d generalizing n with
   | zero =>
       simp only [Nat.zero_eq, finAntidiagonal, Matrix.zero_empty, univ_eq_empty, sum_empty]
@@ -90,9 +90,9 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
 
 /-- `finAntidiagonal₀ d n` is the type of d-tuples with sum `n` -/
 noncomputable def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
-  (finAntidiagonal d n).map ({
+  (finAntidiagonal d n).map {
       toFun := fun f => ofSupportFinite f (Set.toFinite (Function.support f))
-      inj' := fun _ _ h => FunLike.coe_fn_eq.mpr h})
+      inj' := fun _ _ h => FunLike.coe_fn_eq.mpr h }
 
 lemma mem_finAntidiagonal₀' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
     f ∈ finAntidiagonal₀ d n ↔ univ.sum f = n := by
@@ -131,7 +131,7 @@ noncomputable def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ
 /-- A function belongs to `piAntidiagonal s n`
     iff its support is contained in s and the sum of its components is equal to `n` -/
 lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
-    f ∈ piAntidiagonal s n ↔ f.support ≤ s ∧ Finsupp.sum f (fun _ x => x) = n := by
+    f ∈ piAntidiagonal s n ↔ f.support ⊆ s ∧ Finsupp.sum f (fun _ x => x) = n := by
   simp only [piAntidiagonal, mem_map, Embedding.coeFn_mk, le_eq_subset]
   constructor
   · rintro ⟨f, hf, rfl⟩

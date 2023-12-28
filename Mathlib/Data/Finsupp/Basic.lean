@@ -716,6 +716,32 @@ theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β
   exact h b (hb.2.symm ▸ ha)
 #align finsupp.eq_zero_of_comap_domain_eq_zero Finsupp.eq_zero_of_comapDomain_eq_zero
 
+lemma exists_mem_embDomain_eq [Zero M] {f : α ↪ β} {g : β →₀ M} :
+    (∃ (v : α →₀ M), embDomain f v = g) ↔ (g.support : Set β) ⊆ (Set.range f) := by
+  constructor
+  · rintro ⟨v, rfl⟩
+    simp only [Finsupp.support_embDomain, coe_map, Set.image_subset_iff,
+      Set.preimage_range, Set.subset_univ]
+  · intro hg
+    use Finsupp.comapDomain f g (f.injective.injOn _)
+    ext b
+    by_cases hb : b ∈ Set.range f
+    · simp only [Set.mem_range] at hb
+      obtain ⟨a, rfl⟩ := hb
+      simp only [embDomain_apply, coe_mk, comp_apply]
+      rfl
+    · suffices hb' : g b = 0
+      · rw [hb', ← not_mem_support_iff, support_embDomain, mem_map]
+        rintro ⟨a, _, rfl⟩
+        apply hb
+        exact Set.mem_range_self a
+      rw [← not_mem_support_iff]
+      intro hb'
+      apply hb
+      apply hg
+      simp only [mem_coe, hb']
+
+
 section FInjective
 
 section Zero
