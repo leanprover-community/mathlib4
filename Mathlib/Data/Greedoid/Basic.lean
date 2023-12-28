@@ -986,6 +986,20 @@ decreasing_by
   rw [← Nat.sub_sub]
   exact Nat.sub_lt (tsub_pos_iff_lt.mpr (card_lt_univ_of_not_mem hx.2)) (by decide)
 
+theorem closure_insert_eq_iff_rank_eq :
+    G.closure (insert x s) = G.closure s ↔ G.rank (insert x s) = G.rank s := by
+  constructor <;> intro h
+  · rw [← rank_closure_eq_rank_self s, ← rank_closure_eq_rank_self (insert x s), h]
+  · ext e
+    constructor <;> intro h₀
+    · rw [mem_closure] at *
+      apply Nat.le_antisymm _ (rank_le_of_subset (subset_insert _ _))
+      rw [← h, ← h₀, Insert.comm]
+      exact rank_le_of_subset (subset_insert _ _)
+    · rw [mem_closure] at *
+      rw [h]
+      exact local_submodularity h₀.symm h.symm
+
 theorem subset_closure_of_rank_subset_eq_rank (h₁ : s ⊆ t) (h₂ : G.rank s = G.rank t) :
     t ⊆ G.closure s := by
   intro x hx
@@ -1641,7 +1655,7 @@ theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t
         simp only [mem_sdiff, mem_union, h, true_or, not_false_eq_true, and_self]
     rw [h]
 
-theorem rankFeasible_TFAE :
+theorem rankFeasible_TFAE (G : Greedoid α) (s : Finset α) :
     TFAE [
       G.rankFeasible s,
       ∀ {t}, t ⊆ univ \ s → G.rank (s ∪ t) ≤ G.rank s + t.card,
@@ -1885,13 +1899,53 @@ theorem rankFeasible_iff_monotoneClosure_equal_for_all_basis :
     intro _ ht
     exact h ht ▸ subset_monotoneClosureOperator_self
 
+theorem rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq
+  (hs : G.rankFeasible s) {x : α} (hx : x ∉ s)
+  (h : G.kernelClosureOperator s ≠ G.kernelClosureOperator (insert x s)) :
+    G.rank (insert x s) = G.rank s + 1 := by
+  by_contra h'
+  apply h; clear h
+  have h₁ : G.rank (insert x s) ≤ G.rank s + 1 := by
+    have h : {x} ⊆ univ \ s := by
+      simp only [singleton_subset_iff, mem_sdiff, mem_univ, hx, not_false_eq_true, and_self]
+    have := ((G.rankFeasible_TFAE s).out 0 1).mp hs
+    have := this h
+    rw [card_singleton, union_comm, ← insert_eq] at this
+    exact this
+  have h₁ : G.rank (insert x s) ≤ G.rank s := by
+    have h₁ := le_or_eq_of_le_succ h₁
+    simp only [h', or_false] at h₁
+    exact h₁
+  have h₂ : G.rank s ≤ G.rank (insert x s) := G.rank_le_of_subset (subset_insert _ _)
+  have h : G.rank (insert x s) = G.rank s := le_antisymm h₁ h₂
+  simp_all only [self_eq_add_right, not_false_eq_true, le_add_iff_nonneg_right, _root_.zero_le,
+    le_refl]
+
+  sorry
+
 -- Chapter V. Lemma 3.5.
 theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
   (hs : G.rankFeasible s)
   {y : α} (hy₁ : y ∉ s) (hy₂ : G.kernelClosureOperator s ≠ G.kernelClosureOperator (insert y s))
   {z : α} (hz₁ : z ∉ s) (hz₂ : y ∈ G.kernelClosureOperator (insert z s)) :
     z ∈ G.kernelClosureOperator (insert y s) := by
-  sorry
+  have h₁ : G.rank (insert y s) = G.rank s + 1 := by
+    sorry
+  have h₂ : G.rank (insert z s) = G.rank s + 1 := by
+    sorry
+  have h₃ : G.rank (insert z (insert y s)) = G.rank s + 1 := by
+    sorry
+  have h₄ : G.kernelClosureOperator (insert y s) = G.kernelClosureOperator (insert z s) := by
+    sorry
+  have ⟨b, hb₁, hb₂⟩ : ∃ b ∈ G.bases (insert z s), z ∈ b := by
+    sorry
+  have h₅ : s ∪ b = insert z s := by
+    sorry
+  simp only [kernelClosureOperator_def_rank, insert_union, mem_biUnion, Finset.mem_filter,
+    system_feasible_set_mem_mem, id_eq]
+  exists b
+  simp only [basis_mem_feasible hb₁, h₅, true_and, hb₂, and_true]
+  rw [Insert.comm, h₃, h₁]
 
 -- Chapter V. Lemma 3.6.
 theorem rankFeasibleFamily_accessibleProperty :
