@@ -834,12 +834,12 @@ end Semiring
 
 section CommSemiring
 
-open Finset.HasPiAntidiagonal Finset
+open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod [HasPiAntidiagonal ι (σ →₀ ℕ)]
+theorem coeff_prod [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff R d (∏ j in s, f j) =
       ∑ l in piAntidiagonal s d,
@@ -2112,7 +2112,7 @@ end Ring
 
 section CommSemiring
 
-open Finset.HasPiAntidiagonal Finset
+open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
@@ -2120,15 +2120,14 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 -- multivariable power series
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod [HasPiAntidiagonal ι ℕ]
-    (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
+theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff R d (∏ j in s, f j) =
       ∑ l in piAntidiagonal s d,
         ∏ i in s, coeff R (l i) (f i) := by
   simp only [PowerSeries.coeff]
-  haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
+  -- haveI : HasPiAntidiagonal ι (Unit →₀ ℕ) := HasAntidiagonal.HasPiAntidiagonal
   convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
-  have := Finset.HasPiAntidiagonal.mapRange_piAntidiagonal_eq
+  have := Finset.HasAntidiagonal.mapRange_piAntidiagonal_eq
     (e := AddEquiv.finsuppUnique (ι := Unit)) (s := s) (n := AddEquiv.finsuppUnique.symm d)
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv,
     AddEquiv.apply_symm_apply] at this

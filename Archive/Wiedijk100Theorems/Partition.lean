@@ -92,13 +92,10 @@ def partialDistinctGF (m : ℕ) [CommSemiring α] :=
   ∏ i in range m, (1 + (X : PowerSeries α) ^ (i + 1))
 #align theorems_100.partial_distinct_gf Theorems100.partialDistinctGF
 
-open Finset HasPiAntidiagonal
+open Finset.HasAntidiagonal Finset
 
 universe u
 variable {ι : Type u}
-
-local instance : Finset.HasPiAntidiagonal ι ℕ :=
-  Finset.HasAntidiagonal.HasPiAntidiagonal
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
