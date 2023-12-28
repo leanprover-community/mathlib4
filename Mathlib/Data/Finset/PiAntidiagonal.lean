@@ -83,10 +83,11 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
       exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩
 
 /-- `finAntidiagonal₀ d n` is the type of d-tuples with sum `n` -/
--- TODO: make this computable by fixing `Finsupp.onFinset`.
-noncomputable def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
+def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
   (finAntidiagonal d n).map {
-      toFun := fun f => onFinset univ f <| fun _ _ => mem_univ _
+      toFun := fun f =>
+        -- this is `Finsupp.onFinset`, but computable
+        { toFun := f, support := univ.filter (f · ≠ 0), mem_support_toFun := fun x => by simp }
       inj' := fun _ _ h => FunLike.coe_fn_eq.mpr h }
 
 lemma mem_finAntidiagonal₀' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
@@ -111,51 +112,53 @@ variable {ι : Type*} [DecidableEq ι]
 
 variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
 
-/- Here, we construct an `Finset.piAntidiagonal ι μ` whenever we are given `HasAntidiagonal μ` -/
-
-/-- The Finset of functions `ι →₀ μ` with support contained in `s` and sum `n`  -/
-noncomputable def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
+/-- The Finset of functions `ι →₀ μ` with support contained in `s` and sum `n`. -/
+def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
   let x : Finset (s →₀ μ) :=
     (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
       (fun e => (finAntidiagonal₀ s.card n).map (equivCongrLeft e.symm).toEmbedding)
-      (fun e1 e2 => by
-        dsimp
-        ext
+      (fun e1 e2 => Finset.ext fun x => by
         simp only [mem_map_equiv, equivCongrLeft_symm, Equiv.symm_symm, equivCongrLeft_apply,
-          mem_finAntidiagonal₀, sum]
-        simp [equivMapDomain])
--- TODO: make this computable by fixing `Finsupp.embDomain`.
-  x.map { toFun := embDomain (.subtype _), inj' := embDomain_injective _ }
+          mem_finAntidiagonal₀, sum_equivMapDomain])
+  x.map
+    -- This is a computable version of `embDomain (.subtype _)`
+    { toFun := fun f =>
+      { support := f.support.map (.subtype _),
+        toFun := fun i => if h : i ∈ s then f ⟨_, h⟩ else 0
+        mem_support_toFun := fun i => by simp }
+      inj' := fun f g h => Finsupp.ext fun i => by
+          replace h := FunLike.congr_fun h i.val
+          dsimp at h
+          simp_rw [dif_pos i.prop] at h
+          exact h }
 
 /-- A function belongs to `piAntidiagonal s n`
     iff its support is contained in s and the sum of its components is equal to `n` -/
 lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
     f ∈ piAntidiagonal s n ↔ f.support ⊆ s ∧ Finsupp.sum f (fun _ x => x) = n := by
   simp only [piAntidiagonal, mem_map, Embedding.coeFn_mk, mem_finAntidiagonal₀]
-  -- generalize h : (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s) = e
   induction' (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s) using Trunc.ind with e'
   simp_rw [Trunc.lift_mk, mem_map_equiv, equivCongrLeft_symm, Equiv.symm_symm, equivCongrLeft_apply,
     mem_finAntidiagonal₀, sum_equivMapDomain]
   constructor
-  · rintro ⟨f, hf, rfl⟩
-    suffices hs : _ ⊆ s by
-      apply And.intro hs
-      rw [sum_embDomain, hf]
-    · simp only [support_embDomain]
-      intro i
-      simp only [mem_map]
-      rintro ⟨k, _, rfl⟩
-      simp only [Embedding.trans_apply, Embedding.coe_subtype, coe_mem]
+  · rintro ⟨f, rfl, rfl⟩
+    dsimp [sum]
+    constructor
+    · exact Finset.coe_subset.mpr (Finset.map_subtype_subset f.support)
+    · simp
   · rintro ⟨hsupp, rfl⟩
     refine (restrictSupportEquiv (s : Set ι) μ).surjective.exists.mpr ⟨⟨f, hsupp⟩, ?_, ?_⟩
     · simp_rw [sum, restrictSupportEquiv]
       rw [←sum_subtype_of_mem (p := (· ∈ s)) _ hsupp]
       dsimp [subtypeDomain]
       convert rfl
-    · convert (restrictSupportEquiv (s : Set ι) μ).symm_apply_apply ⟨f, hsupp⟩
-      rw [Subtype.ext_iff]
+    · ext i
+      replace hsupp := mt <| @hsupp i
+      rw [not_mem_support_iff] at hsupp
       dsimp [restrictSupportEquiv]
-      exact Iff.rfl
+      split_ifs with h
+      · simp [subtypeDomain]
+      · exact (hsupp h).symm
 
 end piAntidiagonal
 
