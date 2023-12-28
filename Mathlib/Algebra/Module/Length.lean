@@ -604,7 +604,10 @@ end submodule_quotient
 
 section lt_series
 
-variable (x : LTSeries (Submodule R M))
+variable (x : RelSeries ((· ≤ ·) : Submodule R M → Submodule R M → Prop))
+
+private lemma x_monotone : Monotone x :=
+  Fin.monotone_iff_le_succ.mpr x.step
 
 /-- if `x ≤ y` are both `R`-submodule of `M`, we can mathematically form their quotient but type
 theoretically more complicated, so introduce a definition to use a notation. -/
@@ -620,17 +623,17 @@ instance {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) :
     Module R (x ⧸ₛ y) := by
   delta quot; infer_instance
 
-abbrev LTSeries.cqf (i : Fin (x.length + 1)) :=
+abbrev RelSeries.cqf (i : Fin (x.length + 1)) :=
   x i ⧸ₛ x.head
 
-def LTSeries.cqfToSucc (i : Fin x.length) :
+def RelSeries.cqfToSucc (i : Fin x.length) :
     x.cqf i.castSucc →ₗ[R] x.cqf i.succ :=
-  Submodule.mapQ _ _ (Submodule.inclusion <| le_of_lt <| x.step _) <| by
+  Submodule.mapQ _ _ (Submodule.inclusion <| x.step _) <| by
     rw [← Submodule.comap_comp]
     intro m hm
     simpa using hm
 
-noncomputable def LTSeries.rangeCQFToSucc (i : Fin x.length) :
+noncomputable def RelSeries.rangeCQFToSucc (i : Fin x.length) :
     LinearMap.range (x.cqfToSucc i) ≃ₗ[R] x.cqf i.castSucc :=
   LinearEquiv.symm <| LinearEquiv.ofInjective _ fun a b h ↦ by
     induction' a using Quotient.inductionOn' with a
@@ -640,7 +643,7 @@ noncomputable def LTSeries.rangeCQFToSucc (i : Fin x.length) :
     simpa only using h
 
 
-noncomputable def LTSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
+noncomputable def RelSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   refine PUnit.linearEquivOfUnique (uniq := ?_)
   suffices H : Nonempty (Unique _)
   · exact Classical.choice H
@@ -648,25 +651,25 @@ noncomputable def LTSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   simp only [Submodule.comap_subtype_eq_top]
   rfl
 
-abbrev LTSeries.qf (i : Fin x.length) := x i.succ ⧸ₛ x i.castSucc
+abbrev RelSeries.qf (i : Fin x.length) := x i.succ ⧸ₛ x i.castSucc
 
 /--
 xᵢ₊₁ ⧸ xᵢ = (xᵢ₊₁ ⧸ x₀) ⧸ (xᵢ ⧸ x₀)
 
 -/
-noncomputable def LTSeries.cdfSuccEquiv (i : Fin x.length) :
+noncomputable def RelSeries.cdfSuccEquiv (i : Fin x.length) :
     x.qf i ≃ₗ[R]
     x.cqf i.succ ⧸ (Submodule.map (x.cqfToSucc i) ⊤ : Submodule R (x.cqf i.succ)) := by
   let x_i : Submodule R (x i.succ) :=
-    Submodule.map (Submodule.inclusion <| le_of_lt <| x.step _ : x i.castSucc →ₗ[R] x i.succ) ⊤
+    Submodule.map (Submodule.inclusion <| x.step _ : x i.castSucc →ₗ[R] x i.succ) ⊤
   let x_0 : Submodule R (x i.succ) :=
-    Submodule.map (Submodule.inclusion <| x.monotone <| Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
+    Submodule.map (Submodule.inclusion <| x_monotone _ <| Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
 
   let e := @Submodule.quotientQuotientEquivQuotient (R := R) (M := x i.succ)
     (T := x_i) (S := x_0) (fun m hm ↦ by
       simp only [Submodule.map_top, LinearMap.mem_range, Subtype.exists] at hm ⊢
       rcases hm with ⟨n, h1, rfl⟩
-      exact ⟨n, x.monotone (Fin.zero_le _) h1, rfl⟩)
+      exact ⟨n, x_monotone x (Fin.zero_le _) h1, rfl⟩)
   refine ?_ ≪≫ₗ e.symm ≪≫ₗ ?_
   · refine Submodule.Quotient.equiv _ _ (LinearEquiv.refl R _) ?_
     ext m
@@ -694,11 +697,11 @@ noncomputable def LTSeries.cdfSuccEquiv (i : Fin x.length) :
         rfl
       · rintro ⟨(z : _ ⧸ _), rfl⟩
         induction' z using Quotient.inductionOn' with z
-        refine ⟨_, ⟨z.1, (le_of_lt <| x.step _) z.2, ⟨z.1, z.2, rfl⟩, rfl⟩, ?_⟩
+        refine ⟨_, ⟨z.1, (x.step _) z.2, ⟨z.1, z.2, rfl⟩, rfl⟩, ?_⟩
         erw [Submodule.mapQ_apply]
         rfl
 
-lemma LTSeries.cqf_succ_length_eq (i : Fin x.length) :
+lemma RelSeries.cqf_succ_length_eq (i : Fin x.length) :
     moduleLength R (x.cqf i.succ) =
     moduleLength R (x.cqf i.castSucc) + moduleLength R (x.qf i) := by
   rw [moduleLength_congr (x.cdfSuccEquiv i)]
@@ -709,7 +712,7 @@ lemma LTSeries.cqf_succ_length_eq (i : Fin x.length) :
   rw [Submodule.map_top]
   exact x.rangeCQFToSucc _
 
-lemma LTSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
+lemma RelSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
     moduleLength R (x.cqf i) =
     ∑ j : Fin i.1, moduleLength R (x.qf ⟨j.1, by linarith [j.2, i.2]⟩) := by
   induction' i using Fin.induction with i ih
@@ -720,7 +723,7 @@ lemma LTSeries.cqf_length_eq_sum (i : Fin (x.length + 1)) :
   · erw [Fin.sum_univ_castSucc, ← ih, x.cqf_succ_length_eq]
     congr
 
-lemma LTSeries.cqf_finiteLength_iff_each_qf_finiteLength (i : Fin (x.length + 1)) :
+lemma RelSeries.cqf_finiteLength_iff_each_qf_finiteLength (i : Fin (x.length + 1)) :
     IsFiniteLengthModule R (x.cqf i) ↔
     ∀ (j : Fin i.1), IsFiniteLengthModule R (x.qf ⟨j.1, by linarith [j.2, i.2]⟩) := by
   simp_rw [IsFiniteLengthModule_iff_moduleLength_finite', cqf_length_eq_sum, WithTop.sum_lt_top_iff]
