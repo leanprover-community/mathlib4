@@ -27,7 +27,7 @@ This file contains basics about the separable degree of a field extension.
   and if it is infinite, then its cardinality doesn't behave as expected (namely, not equal to the
   field extension degree of `separableClosure F E / F`). For example,
   $\operatorname{Emb}_{\mathbb{Q}}(\mathbb{Q}(\mu_{p^\infty}))\cong\mathbb{Z}_p^\times$ which is
-  uncontable, while $[\mathbb{Q}(\mu_{p^\infty}):\mathbb{Q}]$ is countable.
+  uncountable, while $[\mathbb{Q}(\mu_{p^\infty}):\mathbb{Q}]$ is countable.
 
   **TODO:** prove or disprove that if `E / F` is algebraic and `Emb F E` is infinite, then
   `Field.Emb F E` has cardinality `2 ^ Module.rank F (separableClosure F E)`.
