@@ -736,7 +736,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
   · rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
     · simp only [measure_empty, nonpos_iff_eq_zero, mul_zero, image_empty]
     have : f '' s = {f x} :=
-      haveI : (f '' s).Subsingleton := by simpa [diam_eq_zero_iff] using h.ediam_image_le
+      have : (f '' s).Subsingleton := by simpa [diam_eq_zero_iff] using h.ediam_image_le
       (subsingleton_iff_singleton (mem_image_of_mem f hx)).1 this
     rw [this]
     rcases eq_or_lt_of_le hd with (rfl | h'd)
@@ -755,12 +755,9 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
       ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top hr
     rcases ENNReal.nhds_zero_basis_Iic.eventually_iff.1 (this.eventually (gt_mem_nhds hR)) with
       ⟨δ, δ0, H⟩
-    refine'
-      le_iSup₂_of_le δ δ0
-        (iInf₂_mono' fun t hst =>
-          ⟨fun n => f '' (t n ∩ s), _,
-            iInf_mono' fun htδ =>
-              ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, _⟩⟩)
+    refine le_iSup₂_of_le δ δ0 <| iInf₂_mono' fun t hst ↦
+      ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦
+        ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, ?_⟩⟩
     · rw [← image_iUnion, ← iUnion_inter]
       exact image_subset _ (subset_inter hst Subset.rfl)
     · refine' ENNReal.tsum_le_tsum fun n => _
@@ -802,15 +799,15 @@ open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
-    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = NNReal.rpow ‖r‖₊ d • μH[d] s := by
-  suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ NNReal.rpow ‖r‖₊ d • μH[d] s by
+    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
+  suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s by
     refine' le_antisymm (this hr s) _
-    rw [← ENNReal.le_inv_smul_iff]
+    rw [← le_inv_smul_iff_of_pos]
     dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
     · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
       rw [inv_smul_smul₀ hr]
-    · simp [hr]
+    · simp [pos_iff_ne_zero, hr]
   intro r _ s
   simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]
   exact (lipschitzWith_smul (β := E) r).hausdorffMeasure_image_le hd s
@@ -819,7 +816,6 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
 /-!
 ### Antilipschitz maps do not decrease Hausdorff measures and dimension
 -/
-
 
 namespace AntilipschitzWith
 
@@ -951,15 +947,13 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     (μH[Fintype.card ι] : Measure (ι → ℝ)) = volume := by
   classical
   -- it suffices to check that the two measures coincide on products of rational intervals
-  refine'
-    (pi_eq_generateFrom (fun _ => Real.borel_eq_generateFrom_Ioo_rat.symm)
-        (fun _ => Real.isPiSystem_Ioo_rat) (fun _ => Real.finiteSpanningSetsInIooRat _) _).symm
+  refine (pi_eq_generateFrom (fun _ => Real.borel_eq_generateFrom_Ioo_rat.symm)
+    (fun _ => Real.isPiSystem_Ioo_rat) (fun _ => Real.finiteSpanningSetsInIooRat _) ?_).symm
   simp only [mem_iUnion, mem_singleton_iff]
   -- fix such a product `s` of rational intervals, of the form `Π (a i, b i)`.
   intro s hs
   choose a b H using hs
-  obtain rfl : s = fun i => Ioo (α := ℝ) (a i) (b i)
-  exact funext fun i => (H i).2
+  obtain rfl : s = fun i => Ioo (α := ℝ) (a i) (b i) := funext fun i => (H i).2
   replace H := fun i => (H i).1
   apply le_antisymm _
   -- first check that `volume s ≤ μH s`
@@ -1072,10 +1066,10 @@ theorem hausdorffMeasure_prod_real : (μH[2] : Measure (ℝ × ℝ)) = volume :=
 
 /-! ### Geometric results in affine spaces -/
 
-
 section Geometric
 
 variable {𝕜 E P : Type*}
+
 theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (v : E) (s : Set ℝ) :
     μH[1] ((fun r => r • v) '' s) = ‖v‖₊ • μH[1] s := by
@@ -1104,8 +1098,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     refine' AddMonoidHomClass.isometry_of_norm _ fun x => (norm_smul _ _).trans _
     rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel hn, mul_one, LinearMap.id_apply]
   rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnnorm_norm,
-      NNReal.rpow_eq_pow, NNReal.rpow_one,
-      iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
+      NNReal.rpow_one, iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
 #align measure_theory.hausdorff_measure_smul_right_image MeasureTheory.hausdorffMeasure_smul_right_image
 
 section NormedFieldAffine
@@ -1116,10 +1109,10 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
 theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
-    (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = NNReal.rpow ‖c‖₊ d • μH[d] s := by
+    (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μH[d] s := by
   suffices
     μH[d] (IsometryEquiv.vaddConst x '' ((c • ·) '' ((IsometryEquiv.vaddConst x).symm '' s))) =
-      NNReal.rpow ‖c‖₊ d • μH[d] s by
+      ‖c‖₊ ^ d • μH[d] s by
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, Set.image_smul, Measure.hausdorffMeasure_smul₀ hd hc,
@@ -1127,7 +1120,7 @@ theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : �
 #align measure_theory.hausdorff_measure_homothety_image MeasureTheory.hausdorffMeasure_homothety_image
 
 theorem hausdorffMeasure_homothety_preimage {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
-    (s : Set P) : μH[d] (AffineMap.homothety x c ⁻¹' s) = NNReal.rpow ‖c‖₊⁻¹ d • μH[d] s := by
+    (s : Set P) : μH[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μH[d] s := by
   change μH[d] (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 c hc) ⁻¹' s) = _
   rw [← AffineEquiv.image_symm, AffineEquiv.coe_homothetyUnitsMulHom_apply_symm,
     hausdorffMeasure_homothety_image hd x (_ : 𝕜ˣ).isUnit.ne_zero, Units.val_inv_eq_inv_val,

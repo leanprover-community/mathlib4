@@ -234,22 +234,10 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 #align non_zero_divisors_le_comap_non_zero_divisors_of_injective nonZeroDivisors_le_comap_nonZeroDivisors_of_injective
 
+@[deprecated Multiset.prod_eq_zero_iff] -- since 26 Dec 2023
 theorem prod_zero_iff_exists_zero [NoZeroDivisors M₁] [Nontrivial M₁] {s : Multiset M₁} :
     s.prod = 0 ↔ ∃ (r : M₁) (_ : r ∈ s), r = 0 := by
-  constructor; swap
-  · rintro ⟨r, hrs, rfl⟩
-    exact Multiset.prod_eq_zero hrs
-  induction' s using Multiset.induction_on with a s ih
-  · intro habs
-    simp at habs
-  · rw [Multiset.prod_cons]
-    intro hprod
-    replace hprod := eq_zero_or_eq_zero_of_mul_eq_zero hprod
-    cases' hprod with ha hb
-    · exact ⟨a, Multiset.mem_cons_self a s, ha⟩
-    · apply (ih hb).imp _
-      rintro b ⟨hb₁, hb₂⟩
-      exact ⟨Multiset.mem_cons_of_mem hb₁, hb₂⟩
+  simp [Multiset.prod_eq_zero_iff]
 #align prod_zero_iff_exists_zero prod_zero_iff_exists_zero
 
 end nonZeroDivisors
