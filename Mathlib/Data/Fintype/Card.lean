@@ -222,10 +222,10 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
   Subsingleton.elim (ofSubsingleton default) h ▸ card_ofSubsingleton _
 #align fintype.card_unique Fintype.card_unique
 
-/-- Note: this lemma is specifically about `Fintype.of_is_empty`. For a statement about
-arbitrary `Fintype` instances, use `Fintype.card_eq_zero_iff`. -/
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
+arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
 @[simp]
-theorem card_of_isEmpty [IsEmpty α] : Fintype.card α = 0 :=
+theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
 #align fintype.card_of_is_empty Fintype.card_of_isEmpty
 
@@ -261,7 +261,7 @@ theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) :
 #align finset.card_eq_iff_eq_univ Finset.card_eq_iff_eq_univ
 
 theorem Finset.card_le_univ [Fintype α] (s : Finset α) : s.card ≤ Fintype.card α :=
-  card_le_of_subset (subset_univ s)
+  card_le_card (subset_univ s)
 #align finset.card_le_univ Finset.card_le_univ
 
 theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
@@ -356,12 +356,10 @@ theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
   Fintype.card_unique
 #align fintype.card_subtype_eq' Fintype.card_subtype_eq'
 
-@[simp]
 theorem Fintype.card_empty : Fintype.card Empty = 0 :=
   rfl
 #align fintype.card_empty Fintype.card_empty
 
-@[simp]
 theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
   rfl
 #align fintype.card_pempty Fintype.card_pempty
@@ -399,6 +397,12 @@ theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ
 theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
   rfl
 #align fintype.card_lex Fintype.card_lex
+
+@[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
+    card (Multiplicative α) = card α := Finset.card_map _
+
+@[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
+  Finset.card_map _
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
@@ -534,7 +538,7 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   rw [card, Finset.card_eq_zero, univ_eq_empty_iff]
 #align fintype.card_eq_zero_iff Fintype.card_eq_zero_iff
 
-theorem card_eq_zero [IsEmpty α] : card α = 0 :=
+@[simp] theorem card_eq_zero [IsEmpty α] : card α = 0 :=
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
@@ -761,11 +765,20 @@ noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card 
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
 #align finset.equiv_fin_of_card_eq Finset.equivFinOfCardEq
 
+theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
+  Fin.equiv_iff_eq.1 ⟨s.equivFin.symm.trans i⟩
+
+theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
+    s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
+
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
 that `s.card = t.card`.-/
-noncomputable def Finset.equivOfCardEq {s t : Finset α} (h : s.card = t.card) : s ≃ t :=
-  Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
+noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
+    s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
+
+theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
+  (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=
@@ -1100,28 +1113,19 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (hm : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
--- Porting note: new theorem, to work around missing `wlog`
-private theorem natEmbeddingAux_injective_aux (α : Type*) [Infinite α] (m n : ℕ)
-  (h : Infinite.natEmbeddingAux α m = Infinite.natEmbeddingAux α n) (hmn : m < n) : m = n := by
-  letI := Classical.decEq α
-  exfalso
-  refine'
-    (Classical.choose_spec
-        (exists_not_mem_finset
-          ((Multiset.range n).pmap (fun m (_hm : m < n) => natEmbeddingAux α m) fun _ =>
-              Multiset.mem_range.1).toFinset))
-      _
-  refine' Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, _⟩)
-  rw [h, natEmbeddingAux]
-
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
   letI := Classical.decEq α
-  rcases lt_trichotomy m n with hmn | rfl | hnm
-  · apply natEmbeddingAux_injective_aux α m n h hmn
-  · rfl
-  · apply (natEmbeddingAux_injective_aux α n m h.symm hnm).symm
+  wlog hmlen : m ≤ n generalizing m n
+  · exact (this h.symm $ le_of_not_le hmlen).symm
+  by_contra hmn
+  have hmn : m < n := lt_of_le_of_ne hmlen hmn
+  refine (Classical.choose_spec (exists_not_mem_finset
+    ((Multiset.range n).pmap (λ m (_ : m < n) => natEmbeddingAux α m)
+      (fun _ => Multiset.mem_range.1)).toFinset)) ?_
+  refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
+  rw [h, natEmbeddingAux]
 
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
@@ -1140,7 +1144,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.
     ∃ t : Finset α, s ⊆ t ∧ t.card = n := by
   induction' n with n IH generalizing s
   · exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
-  · cases' hn.eq_or_lt with hn' hn'
+  · rcases hn.eq_or_lt with hn' | hn'
     · exact ⟨s, subset_refl _, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_not_mem_finset t
@@ -1190,7 +1194,7 @@ See also: `Finite.exists_ne_map_eq_of_infinite`
 theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     ∃ y : β, Infinite (f ⁻¹' {y}) := by
   classical
-    by_contra' hf
+    by_contra! hf
     cases nonempty_fintype β
     haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
@@ -1227,7 +1231,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id'', List.map_id]
+    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id', List.map_id]
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
@@ -1304,7 +1308,7 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
 -- unsafe def positivity_finset_card : expr → tactic strictness
 --   | q(Finset.card $(s)) => do
 --     let p
---       ←-- TODO: Partial decision procedure for `Finset.nonempty`
+--       ← -- TODO: Partial decision procedure for `Finset.nonempty`
 --             to_expr
 --             ``(Finset.Nonempty $(s)) >>=
 --           find_assumption

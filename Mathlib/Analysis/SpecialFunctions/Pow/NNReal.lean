@@ -152,7 +152,7 @@ theorem list_prod_map_rpow (l : List ℝ≥0) (r : ℝ) :
 
 theorem list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ≥0) (r : ℝ) :
     (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
-  rw [←list_prod_map_rpow, List.map_map]; rfl
+  rw [← list_prod_map_rpow, List.map_map]; rfl
 
 /-- `rpow` version of `Multiset.prod_map_pow` for `ℝ≥0`. -/
 lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : ℝ) :
@@ -175,12 +175,12 @@ theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : �
   have := congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.list_prod_map_rpow l r)
   push_cast at this
   rw [List.map_map] at this ⊢
-  exact_mod_cast this
+  exact mod_cast this
 
 theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
     (hl : ∀ i ∈ l, (0 : ℝ) ≤ f i) (r : ℝ) :
     (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
-  rw [←Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
+  rw [← Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
   simpa using hl
 
 /-- `rpow` version of `Multiset.prod_map_pow`. -/
@@ -320,15 +320,15 @@ theorem rpow_one_div_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ (1 / 
   rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
 #align nnreal.rpow_one_div_eq_iff NNReal.rpow_one_div_eq_iff
 
-theorem pow_nat_rpow_nat_inv (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
+theorem pow_rpow_inv_natCast (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← NNReal.coe_eq, coe_rpow, NNReal.coe_pow]
-  exact Real.pow_nat_rpow_nat_inv x.2 hn
-#align nnreal.pow_nat_rpow_nat_inv NNReal.pow_nat_rpow_nat_inv
+  exact Real.pow_rpow_inv_natCast x.2 hn
+#align nnreal.pow_nat_rpow_nat_inv NNReal.pow_rpow_inv_natCast
 
-theorem rpow_nat_inv_pow_nat (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
+theorem rpow_inv_natCast_pow (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
   rw [← NNReal.coe_eq, NNReal.coe_pow, coe_rpow]
-  exact Real.rpow_nat_inv_pow_nat x.2 hn
-#align nnreal.rpow_nat_inv_pow_nat NNReal.rpow_nat_inv_pow_nat
+  exact Real.rpow_inv_natCast_pow x.2 hn
+#align nnreal.rpow_nat_inv_pow_nat NNReal.rpow_inv_natCast_pow
 
 theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
     Real.toNNReal (x ^ y) = Real.toNNReal x ^ y := by

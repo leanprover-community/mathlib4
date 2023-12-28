@@ -91,11 +91,10 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   have := Imo2019Q4.upper_bound hk h
   interval_cases n
   -- n = 1
-  · left; congr; norm_num at h; rw [factorial_eq_one] at h; apply antisymm h
-    apply succ_le_of_lt hk
+  · norm_num at h; simp [le_antisymm h (succ_le_of_lt hk)]
   -- n = 2
-  · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rw [← factorial_inj]
-    exact h; rw [h]; norm_num
+  · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rwa [← factorial_inj']
+    norm_num
   all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> decide

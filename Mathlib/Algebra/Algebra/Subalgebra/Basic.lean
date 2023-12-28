@@ -1031,7 +1031,7 @@ instance : Unique (Subalgebra R R) :=
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `Submodule.ofLe`, or `Subring.inclusion`  -/
+This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
     where
   toFun := Set.inclusion h

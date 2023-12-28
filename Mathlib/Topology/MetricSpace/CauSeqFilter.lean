@@ -55,7 +55,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
-  simp at ht; cases' ht with N hN
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage] at ht; cases' ht with N hN
   exists N
   intro j hj
   rw [← dist_eq_norm]

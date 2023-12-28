@@ -171,6 +171,10 @@ theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s
 #align sym.mem_mk Sym.mem_mk
 
 @[simp]
+theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
+  Multiset.not_mem_zero a
+
+@[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
   Multiset.mem_cons
 #align sym.mem_cons Sym.mem_cons
@@ -195,6 +199,7 @@ theorem cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = 
     rfl
 #align sym.cons_of_coe_eq Sym.cons_of_coe_eq
 
+open scoped List in
 theorem sound {a b : Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
   Subtype.ext <| Quotient.sound h
 #align sym.sound Sym.sound
@@ -297,6 +302,16 @@ theorem eq_replicate_iff : s = replicate n a ↔ ∀ b ∈ s, b = a := by
 theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
+
+theorem exists_cons_of_mem {s : Sym α (n + 1)} {a : α} (h : a ∈ s) : ∃ t, s = a ::ₛ t := by
+  obtain ⟨m, h⟩ := Multiset.exists_cons_of_mem h
+  have : Multiset.card m = n := by
+    apply_fun Multiset.card at h
+    rw [s.2, Multiset.card_cons, add_left_inj] at h
+    exact h.symm
+  use ⟨m, this⟩
+  apply Subtype.ext
+  exact h
 
 theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
@@ -540,7 +555,7 @@ open Multiset
 Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
-    m.1.filter ((· ≠ ·) a),
+    m.1.filter (a ≠ ·),
     eq_tsub_of_add_eq <|
       Eq.trans
         (by

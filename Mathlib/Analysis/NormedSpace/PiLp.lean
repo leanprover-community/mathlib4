@@ -293,9 +293,8 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
       calc
         (∑ i, edist (f i) (h i) ^ p.toReal) ^ (1 / p.toReal) ≤
             (∑ i, (edist (f i) (g i) + edist (g i) (h i)) ^ p.toReal) ^ (1 / p.toReal) := by
-          apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans hp)
-          refine' Finset.sum_le_sum fun i _ => _
-          exact ENNReal.rpow_le_rpow (edist_triangle _ _ _) (zero_le_one.trans hp)
+          gcongr
+          apply edist_triangle
         _ ≤
             (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) +
               (∑ i, edist (g i) (h i) ^ p.toReal) ^ (1 / p.toReal) :=
@@ -313,7 +312,7 @@ theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
   obtain ⟨M, hM⟩ := Fintype.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
   refine' ne_of_lt ((iSup_le fun i => _).trans_lt (@ENNReal.coe_lt_top M))
   simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
-  exact_mod_cast hM i
+  exact mod_cast hM i
 #align pi_Lp.supr_edist_ne_top_aux PiLp.iSup_edist_ne_top_aux
 
 /-- Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
@@ -377,7 +376,7 @@ theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i))
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         simp [← ENNReal.rpow_mul, cancel, -one_div]
       _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
-        apply ENNReal.rpow_le_rpow _ (one_div_nonneg.2 <| zero_le_one.trans h)
+        gcongr
         exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
 #align pi_Lp.lipschitz_with_equiv_aux PiLp.lipschitzWith_equiv_aux
 
@@ -397,9 +396,7 @@ theorem antilipschitzWith_equiv_aux :
     calc
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
           (∑ _i, edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
-        refine ENNReal.rpow_le_rpow ?_ nonneg
-        refine Finset.sum_le_sum fun i _ => ?_
-        apply ENNReal.rpow_le_rpow _ (le_of_lt pos)
+        gcongr with i
         exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
       _ =
           ((Fintype.card ι : ℝ≥0) ^ (1 / p.toReal) : ℝ≥0) *
@@ -619,7 +616,7 @@ instance normedSpace [∀ i, SeminormedAddCommGroup (β i)] [∀ i, NormedSpace 
   { norm_smul_le := fun c f => by
       rcases p.dichotomy with (rfl | hp)
       · letI : Module 𝕜 (PiLp ∞ β) := Pi.module ι β 𝕜
-        suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+        suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ from mod_cast NNReal.coe_mono this.le
         simp only [nnnorm_eq_ciSup, NNReal.mul_iSup, ← nnnorm_smul]
         -- Porting note: added
         congr
@@ -758,8 +755,8 @@ theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
         exact zero_le _
     · rw [Pi.single_eq_same]
   | coe p =>
-    have hp0 : (p : ℝ) ≠ 0 := by
-      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
+    have hp0 : (p : ℝ) ≠ 0 :=
+      mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     rw [nnnorm_eq_sum ENNReal.coe_ne_top, ENNReal.coe_toReal, Fintype.sum_eq_single i,
       WithLp.equiv_symm_pi_apply, Pi.single_eq_same, ← NNReal.rpow_mul, one_div, mul_inv_cancel hp0,
       NNReal.rpow_one]

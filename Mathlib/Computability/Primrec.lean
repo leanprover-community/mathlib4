@@ -776,7 +776,7 @@ theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
 #align primrec.list_find_index₁ Primrec.list_findIdx₁
 
 theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
-  list_findIdx₁ .beq l
+  list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
 theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
@@ -971,9 +971,8 @@ instance list : Primcodable (List α) :=
         intro n IH; simp
         cases' @decode α _ n.unpair.1 with a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
-        suffices :
-          ∀ (o : Option (List ℕ)) (p) (_ : encode o = encode p),
-            encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
+        suffices : ∀ (o : Option (List ℕ)) (p), encode o = encode p →
+          encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
         exact this _ _ (IH _ (Nat.unpair_right_le n))
         intro o p IH
         cases o <;> cases p
@@ -1134,7 +1133,7 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
 #align primrec.list_find_index Primrec.list_findIdx
 
 theorem list_indexOf [DecidableEq α] : Primrec₂ (@List.indexOf α _) :=
-  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ (fst.comp fst).to₂ snd.to₂
+  to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
 #align primrec.list_index_of Primrec.list_indexOfₓ
 
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Primrec₂ g)
