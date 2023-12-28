@@ -224,6 +224,7 @@ theorem X_pow_sub_X_sub_one_gal :
     rw [Set.mem_iUnion] at hσ
     obtain ⟨hq, hσ : ∀ x : R, res σ x - x ∈ q⟩ := hσ
     let F := R ⧸ q
+    let π : R →+* F := Ideal.Quotient.mk q
     have : Field F := Ideal.Quotient.field q
     -- finite field, might not need to consider the characteristic
     -- reduce to action on roots in R
