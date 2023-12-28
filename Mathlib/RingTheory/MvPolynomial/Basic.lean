@@ -150,11 +150,13 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.linear_independent_X MvPolynomial.linearIndependent_X
 
 instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
+    Module.Finite R (restrictDegree σ R N) :=
+  have := Finsupp.finite_setOf_bounded σ N
+  Module.Finite.of_basis (basisRestrictSupport R _)
+
+instance {R σ : Type*} [CommSemiring R] [Finite σ] (N : ℕ) :
     Module.Finite R (restrictTotalDegree σ R N) :=
-  have : Finite {n : σ →₀ ℕ | ∀ i, n i ≤ N} := by
-    rw [Finsupp.equivFunOnFinite.subtypeEquivOfSubtype'.finite_iff, ← coe_setOf, Set.finite_coe_iff]
-    convert Set.Finite.pi fun _ : σ ↦ Set.finite_le_nat N using 1
-    ext; simp
+  have := Finsupp.finite_setOf_bounded σ N
   have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
     rw [Set.finite_coe_iff] at this ⊢
     exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim
