@@ -3,6 +3,7 @@ import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Artinian
 import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
 import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.Algebra.Module.Length
 
 open TopologicalSpace AlgebraicGeometry Opposite CategoryTheory
 
@@ -12,7 +13,7 @@ variable (R : Type u) [CommRing R] [IsArtinianRing R]
 namespace IsArtinianRing
 
 instance : Finite (PrimeSpectrum R) := @Finite.of_equiv _ {I : Ideal R | I.IsPrime}
-  (Set.finite_coe_iff.mpr IsArtinianRing.primeSpectrum_finite)
+  (Set.finite_coe_iff.mpr <| IsArtinianRing.primeSpectrum_finite R)
   ⟨fun x ↦ ⟨x.1, x.2⟩, fun x ↦ ⟨x.1, x.2⟩, fun _ ↦ by aesop, fun _ ↦ by aesop⟩
 
 noncomputable instance : Fintype (PrimeSpectrum R) :=
@@ -135,10 +136,155 @@ noncomputable def equivProdLocalization :
     R ≃+* ((i : PrimeSpectrum R) → Localization.AtPrime i.asIdeal) :=
   Classical.choice equivProdLocalization'
 
+noncomputable section local_ring
 
-section local_ring
+namespace artinian_ring_proof_auxs
 
-instance isNotherianRing_of_local [LocalRing R] : IsNoetherianRing R := sorry
+variable (R)
+variable [LocalRing R] [Nontrivial R]
+
+local notation "𝓂" => LocalRing.maximalIdeal (R := R)
+local notation "κ" => LocalRing.ResidueField (R := R)
+
+lemma exists_K : ∃ K : ℕ, 𝓂 ^ K = 0 := by
+  have H := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
+  rw [LocalRing.jacobson_eq_maximalIdeal] at H
+  pick_goal 2
+  · simp
+  exact H
+
+def K : ℕ := exists_K R |>.choose
+lemma K_spec : 𝓂 ^ K R = 0 := exists_K R |>.choose_spec
+
+@[simps]
+def series : RelSeries ((· ≤ ·) : Ideal R → Ideal R → Prop) where
+  length := K R
+  toFun i := 𝓂 ^ (K R - i.1)
+  step i := by
+    simp only [Fin.coe_castSucc, Fin.val_succ]
+    apply Ideal.pow_le_pow_right
+    apply Nat.sub_le_sub_left
+    norm_num
+
+@[simp] lemma series_head : (series R).head = 0 := show 𝓂 ^ (K R - 0) = 0 from by
+  simp [K_spec]
+
+@[simp] lemma series_last : (series R).last = ⊤ := show 𝓂 ^ (K R - K R) = ⊤ from by
+  simp
+
+def residualFieldActionOnQF (i : Fin (K R)) : κ →ₗ[R] Module.End R ((series R).qf i) :=
+  Submodule.liftQ _ (LinearMap.lsmul _ _) fun r hr ↦ by
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, LinearMap.mem_ker]
+    ext m
+    simp only [LinearMap.lsmul_apply, LinearMap.zero_apply]
+    induction' m using Quotient.inductionOn' with m
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc,
+      Submodule.Quotient.mk''_eq_mk]
+    change Submodule.Quotient.mk (r • m) = 0
+    rw [Submodule.Quotient.mk_eq_zero]
+    simp only [series_length, series_toFun, Fin.val_succ, Submodule.mem_comap, map_smulₛₗ,
+      RingHom.id_apply, Submodule.coeSubtype, smul_eq_mul]
+    have mem1 := m.2
+    simp only [series_length, series_toFun, Fin.val_succ] at mem1
+    have eq1 : 𝓂 ^ (K R - i) = 𝓂 * 𝓂 ^ (K R - (i + 1))
+    · conv_rhs => lhs; rw [show 𝓂 = 𝓂 ^ 1 from pow_one _ |>.symm]
+      rw [← pow_add, add_comm]
+      congr
+      rw [Nat.sub_add_eq, Nat.sub_add_cancel]
+      apply Nat.sub_pos_of_lt i.2
+    rw [eq1]
+    refine Ideal.mul_mem_mul hr mem1
+
+instance (i : Fin (K R)) : Module κ ((series R).qf i) where
+  smul x := residualFieldActionOnQF R i x
+  one_smul x := by
+    change residualFieldActionOnQF R i 1 x = x
+    induction' x using Quotient.inductionOn' with x
+    erw [Submodule.liftQ_apply]
+    simp
+  mul_smul a b x := by
+    change residualFieldActionOnQF R i (a * b) x = residualFieldActionOnQF R i a
+      (residualFieldActionOnQF R i b x)
+    induction' x using Quotient.inductionOn' with x
+    induction' a using Quotient.inductionOn' with a
+    induction' b using Quotient.inductionOn' with b
+    delta residualFieldActionOnQF
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc,
+      Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk]
+    erw [Submodule.liftQ_apply, Submodule.liftQ_apply, Submodule.liftQ_apply]
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, LinearMap.lsmul_apply,
+      map_smul]
+    rw [mul_comm, mul_smul]
+  smul_zero a := by
+    change residualFieldActionOnQF R i a 0 = 0
+    induction' a using Quotient.inductionOn' with a
+    delta residualFieldActionOnQF
+    simp
+  smul_add a x y := by
+    change residualFieldActionOnQF R i a (x + y) = residualFieldActionOnQF R i a x +
+      residualFieldActionOnQF R i a y
+    delta residualFieldActionOnQF
+    induction' x using Quotient.inductionOn' with x
+    induction' y using Quotient.inductionOn' with y
+    induction' a using Quotient.inductionOn' with a
+    simp
+  add_smul a b x := by
+    change residualFieldActionOnQF R i (a + b) x = residualFieldActionOnQF R i a x +
+      residualFieldActionOnQF R i b x
+    delta residualFieldActionOnQF
+    induction' x using Quotient.inductionOn' with x
+    induction' a using Quotient.inductionOn' with a
+    induction' b using Quotient.inductionOn' with b
+    simp
+  zero_smul x := by
+    change residualFieldActionOnQF R i 0 x = 0
+    delta residualFieldActionOnQF
+    induction' x using Quotient.inductionOn' with x
+    simp
+
+@[simps]
+def qfEquiv_κR (i : Fin (K R)) : (series R).qf i →ₛₗ[algebraMap R κ] (series R).qf i :=
+{ toFun := id
+  map_add' := fun _ _ ↦ rfl
+  map_smul' := fun r m ↦ by
+    induction' m using Quotient.inductionOn' with m
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc,
+      Submodule.Quotient.mk''_eq_mk, id_eq, LocalRing.ResidueField.algebraMap_eq]
+    rfl }
+
+instance : RingHomSurjective (algebraMap R κ) where
+  is_surjective := Submodule.mkQ_surjective _
+
+@[simps]
+def qfSubmoduleAgree (i : Fin (K R)) :
+    Submodule κ ((series R).qf i) ≃o
+    Submodule R ((series R).qf i) where
+  toFun p := Submodule.comap (qfEquiv_κR R i) p
+  invFun q := Submodule.map (qfEquiv_κR R i) q
+  left_inv p := by
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc]
+    rw [Submodule.map_comap_eq_of_surjective]
+    exact fun x ↦ ⟨x, rfl⟩
+  right_inv q := by
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc]
+    rw [Submodule.comap_map_eq_of_injective]
+    exact fun _ _ h ↦ h
+  map_rel_iff' {p q} := by
+    simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, Equiv.coe_fn_mk]
+    fconstructor
+    · intro h x hx
+      specialize h hx
+      simpa only [Submodule.mem_comap, qfEquiv_κR_apply, id_eq] using h
+    · intro h x hx
+      specialize h hx
+      simpa using h
+
+instance qfFinite_κ (i : Fin (K R)) : Module.Finite κ ((series R).qf i) := by
+  sorry
+
+end artinian_ring_proof_auxs
+
+instance isNotherianRing_of_local : IsNoetherianRing R := sorry
 
 end local_ring
 
