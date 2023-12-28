@@ -861,6 +861,24 @@ def greedoidRankAxioms (r : Finset α → ℕ) :=
   (r ∅ = 0) ∧ (∀ {s}, r s ≤ s.card) ∧ (∀ {s t}, s ⊆ t → r s ≤ r t) ∧
   (∀ {s x y}, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
 
+def exists_basis_containing_element_if_rank_insert_increases
+  (h : G.rank s < G.rank (insert x s)) :
+    ∃ t ∈ G.bases (insert x s), x ∈ t := by
+  by_contra h'
+  simp only [not_exists, not_and] at h'
+  let ⟨b, hb⟩ := G.bases_nonempty (insert x s)
+  have h₁ : x ∉ b := h' _ hb
+  have h₂ : b ⊆ s := by
+    intro e he
+    have h'' := (G.basis_subset hb) he
+    rw [mem_insert] at h''
+    exact h''.elim (fun h'' => False.elim (h₁ (h'' ▸ he))) (fun h'' => h'')
+  have h₃ : G.rank (insert x s) ≤ G.rank s := by
+    rw [rank_eq_basis_card hb]
+    exact card_feasible_subset_le_rank (G.basis_mem_feasible hb) h₂
+  rw [← not_lt_eq] at h₃
+  exact h₃ h
+
 end Rank
 
 /-- Closure of `s` is the largest set which contains `s` and have the same rank with `s`· -/
@@ -1930,11 +1948,19 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
   {z : α} (hz₁ : z ∉ s) (hz₂ : y ∈ G.kernelClosureOperator (insert z s)) :
     z ∈ G.kernelClosureOperator (insert y s) := by
   have h₁ : G.rank (insert y s) = G.rank s + 1 := by
-    rw [← rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq hs hy₁]
-    exact hy₂
+    rw [← rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq hs hy₁ hy₂]
   have h₂ : G.rank (insert z s) = G.rank s + 1 := by
     rw [← rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq hs hz₁]
-    sorry
+    have h₂ : y ∉ G.kernelClosureOperator s := by
+      intro h'
+      apply hy₂; clear hy₂
+      apply subset_antisymm <;> intro e he
+      · simp only [kernelClosureOperator_def_closure, mem_biUnion, Finset.mem_filter,
+          system_feasible_set_mem_mem, id_eq] at *
+        sorry
+      · sorry
+    intro h'
+    exact h₂ (h' ▸ hz₂)
   have h₃ : G.rank (insert z (insert y s)) = G.rank s + 1 := by
     sorry
   have h₄ : G.kernelClosureOperator (insert y s) = G.kernelClosureOperator (insert z s) := by
