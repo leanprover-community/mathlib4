@@ -48,14 +48,16 @@ instance fin_two_zero_le_one : ZeroLEOneClass (Fin 2) where
 
 section nerve
 
+variable {C : Type} [inst : Category C]
+
 -- TODO: move
 /-- A constructor for `n`-simplices of the nerve of a category,
 by specifying `n+1` objects and a morphism between each of the `n` pairs of adjecent objects. -/
-def nerve.mk (C : Type) [inst : Category C] (n : ℕ)
+noncomputable
+def nerve.mk (n : ℕ)
     (obj : Fin (n+1) → C) (mor : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ) :
-    (nerve C).obj (op [n]) := sorry
-
-variable {C : Type} [inst : Category C]
+    (nerve C).obj (op [n]) :=
+  ComposableArrows.mkOfObjOfMapSucc obj mor
 
 -- TODO: move
 def nerve.source (f : (nerve C).obj (op [1])) : C := f.obj (0 : Fin 2)
@@ -77,13 +79,36 @@ open SimplexCategory in
 lemma nerve.target_eq (f : (nerve C).obj (op [1])) :
     target f = ((nerve C).map (δ (0 : Fin 2)).op f).obj (0 : Fin 1) := rfl
 
+lemma nerve.horn_ext {n : ℕ} {i : Fin (n+1)} (σ₀ σ₁ : Λ[n, i] ⟶ nerve C)
+    (h : σ₀.app (op [1]) = σ₁.app (op [1])) : σ₀ = σ₁ := by
+  apply NatTrans.ext; apply funext
+  apply Opposite.rec
+  apply SimplexCategory.rec
+  intro m
+  ext f
+  apply ComposableArrows.ext
+  intro j hj
+  cases m using Nat.casesAuxOn with
+  | zero => simp at hj
+  | succ m =>
+  cases m using Nat.casesAuxOn with
+  | zero =>
+    simp only [zero_add, SimplexCategory.len_mk, Nat.lt_one_iff] at hj
+    subst j
+    rw [Function.funext_iff] at h
+    specialize h f
+    dsimp
+    sorry
+  | succ m =>
+  sorry
+
 end nerve
 
 /-- The nerve of a category is a quasicategory.
 
 [Kerodon, 0032] -/
 instance (C : Type) [Category C] : quasicategory (nerve C) where
-  hornFilling n i σ₀ h₀ hₙ  := by
+  hornFilling n i σ₀ h₀ hₙ := by
     let v : Fin (n+1) → (horn n i).obj (op [0]) :=
       fun j ↦ ⟨SimplexCategory.Hom.mk (OrderHom.const _ j), ?_⟩
     swap
@@ -96,20 +121,20 @@ instance (C : Type) [Category C] : quasicategory (nerve C) where
         simp [h, hₙ.ne', (h₀.trans hₙ).ne]
       · refine ⟨0, ?_⟩
         simp [h, h₀.ne]
+    let obj : Fin (n+1) → C := fun j ↦ (σ₀.app (op [0]) (v j)).obj ⟨0, by simp⟩
     let σ : Δ[n] ⟶ nerve C :=
-      yonedaEquiv.symm <| nerve.mk C n (fun j ↦ ?_) (fun j ↦ ?_)
+      yonedaEquiv.symm <| nerve.mk n obj (fun j ↦ ?mor)
     use σ
     swap
-    · refine (σ₀.app (op [0]) (v j)).obj ⟨0, by simp⟩
-    swap
-    let e : (horn n i).obj (op [1]) := ⟨SimplexCategory.Hom.mk ⟨![j.castSucc, j.succ], ?_⟩, ?_⟩
+    let e : (horn n i).obj (op [1]) :=
+      ⟨SimplexCategory.Hom.mk ⟨![j.castSucc, j.succ], ?mono⟩, ?range⟩
     let f := σ₀.app (op [1]) e
     swap
     · rw [Fin.monotone_iff_le_succ]
       dsimp
       simp only [Matrix.cons_val_succ, Matrix.cons_val_fin_one, Fin.le_iff_val_le_val, Fin.val_succ,
         Fin.forall_fin_one, Fin.castSucc_zero, Matrix.cons_val_zero, Fin.coe_castSucc,
-        le_add_iff_nonneg_right]
+        le_add_iff_nonneg_right, zero_le]
     swap
     · simp only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
         OrderHom.const_coe_coe, Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def,
@@ -154,14 +179,13 @@ instance (C : Type) [Category C] : quasicategory (nerve C) where
         apply funext
         erw [Fin.forall_fin_one]
         rfl
-    apply NatTrans.ext; apply funext
-    apply Opposite.rec
-    apply SimplexCategory.rec
-    intro m
-    ext f
-    refine CategoryTheory.Functor.ext ?_ ?_
-    · intro (k : Fin (m+1))
-      sorry
-    · sorry
+    apply nerve.horn_ext
+    rw [NatTrans.comp_app]
+    simp only [nerve_obj, unop_op, SimplexCategory.len_mk, ne_eq, Function.const_apply, id_eq,
+      eq_mpr_eq_cast, Nat.zero_eq, Fin.zero_eta, Fin.castSucc_zero, Matrix.cons_val_zero,
+      Fin.coe_castSucc, Fin.val_succ, OrderHom.coe_mk, Matrix.cons_val_one, Matrix.head_cons,
+      eq_mp_eq_cast, Fin.val_zero, Nat.rawCast, Nat.cast_id, Int.ofNat_one, Int.rawCast,
+      Int.cast_id, Int.ofNat_eq_coe, Int.ofNat_zero, Int.Nat.cast_ofNat_Int, cast_eq, Fin.val_last,
+      nerve_map, Quiver.Hom.unop_op, SimplexCategory.toCat_map, ComposableArrows.whiskerLeft_obj]
 
 end SSet
