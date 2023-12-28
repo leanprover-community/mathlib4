@@ -103,7 +103,16 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
   rw [mem_nhds_iff]
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
-section boundaryless
+class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop where
+  isInteriorPoint' : ∀ x : M, IsInteriorPoint I x
+
+lemma _root_.BoundarylessManifold.isInteriorPoint [BoundarylessManifold I M] {x : M} :
+    IsInteriorPoint I x := _root_.BoundarylessManifold.isInteriorPoint' x
+
+section Boundaryless
 variable [I.Boundaryless]
 
 /-- If `I` is boundaryless, every point of `M` is an interior point. -/
@@ -123,5 +132,5 @@ lemma interior_eq_univ : I.interior M = univ := by
 lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
   rw [I.boundary_eq_complement_interior, I.interior_eq_univ, compl_empty_iff]
 
-end boundaryless
+end Boundaryless
 end ModelWithCorners
