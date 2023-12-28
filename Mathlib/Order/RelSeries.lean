@@ -177,6 +177,8 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
+variable {r}
+
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
 such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
@@ -277,72 +279,68 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           congr; ext; exact hm.symm
 
 /--
-A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by
-reversing the series `a_n <-r-- a_{n - 1} <-r-- ... <-r-- a_1 <-r-- a_0`.
+A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation series of the reverse of `r`
+by reversing the series `aₙ ←r- aₙ₋₁ ←r- ... ←r- a₁ ←r- a₀`.
 -/
 @[simps]
 def reverse (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
   length := p.length
   toFun := p ∘ Fin.rev
-    -- p ∘ (Sub.sub ⟨p.length, lt_add_one _⟩)
-  step := fun i => by
+  step i := by
     rw [Function.comp_apply, Function.comp_apply]
     have hi : i.1 + 1 ≤ p.length
     · linarith [i.2]
-    convert p.step ⟨p.length - (i.1 + 1), _⟩
+    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by linarith) hi⟩
     · ext; simp
     · ext
       simp only [Fin.val_rev, Fin.coe_castSucc, Nat.succ_sub_succ_eq_sub, Fin.val_succ]
-      rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel]
-      · assumption
-      · linarith
-    exact Nat.sub_lt_self (by linarith) hi
+      rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel] <;>
+      aesop
 
 /--
-given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_0 a` holds, there is
-a series of length `n+1`: `a --r-> a_0 --r-> a_1 --r-> ... --r-> a_n`.
+given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
+a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
 @[simps!]
-def cons (p : RelSeries r) (newBot : α) (rel : r newBot p.bot) : RelSeries r :=
-  (singleton r newBot).append p rel
+def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r :=
+  (singleton r newHead).append p rel
 
 /--
-If a series `a_0 --r-> a_1 --r-> ...` has positive length, then `a_1 --r-> ...` is another series
+If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
 -/
 @[simps]
 def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   length := p.length - 1
   toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
-  step := fun i => p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
+  step i := p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
 
 /--
-If a series `a_0 --r-> a_1 --r-> ... a_n`, then `a_0 --r-> ... a_{n-1}` is
+If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
 @[simps]
 def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
   toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
   step i := by
-    have := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
+    have h := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
     cases i
-    exact this
+    exact h
 
 /--
-Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
-`a₀ --r-> ... --r-> x --r-> b ...`
+Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
+then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
+
 -/
 @[simps]
-def combine (p q : RelSeries r) (connect : p.top = q.bot) : RelSeries r where
+def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
-  toFun := fun i =>
+  toFun i :=
     if H : i.1 < p.length
     then p ⟨i.1, H.trans (lt_add_one _)⟩
-    else q ⟨i.1 - p.length, by
-      apply Nat.sub_lt_left_of_lt_add
-      · rwa [not_lt] at H
-      · rw [← add_assoc]; exact i.2⟩
-  step := fun i => by
-    dsimp only []
+    else q ⟨i.1 - p.length,
+      Nat.sub_lt_left_of_lt_add (by rwa [not_lt] at H) (by rw [← add_assoc]; exact i.2)⟩
+  step i := by
+    dsimp only
     by_cases h₂ : i.1 + 1 < p.length
     · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
       erw [dif_pos h₁, dif_pos h₂]
@@ -384,7 +382,6 @@ abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
 
 section LTSeries
 
-variable (α) [Preorder α] [Preorder β]
 variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
