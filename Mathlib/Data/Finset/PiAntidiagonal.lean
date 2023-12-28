@@ -113,13 +113,9 @@ variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
 /- Here, we construct an `Finset.piAntidiagonal ι μ` whenever we are given `HasAntidiagonal μ` -/
 
 /-- The Finset of functions `ι →₀ μ` with support contained in `s` and sum `n`  -/
-noncomputable def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) := by
-  exact (finAntidiagonal₀ s.card n).map {
-    toFun := embDomain {
-        toFun := Subtype.val.comp (equivFin s).symm,
-        inj' := by
-          rw [Equiv.injective_comp]
-          exact Subtype.val_injective }
+noncomputable def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
+  (finAntidiagonal₀ s.card n).map {
+    toFun := embDomain <| (equivFin s).symm.toEmbedding.trans (.subtype _)
     inj' := embDomain_injective _ }
 
 /-- A function belongs to `piAntidiagonal s n`
@@ -137,7 +133,7 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
       intro i
       simp only [mem_map]
       rintro ⟨k, _, rfl⟩
-      simp only [Embedding.coeFn_mk, comp_apply, coe_mem]
+      simp only [Embedding.trans_apply, Embedding.coe_subtype, coe_mem]
   · rintro ⟨hsupp, hsum⟩
     simp_rw [mem_finAntidiagonal₀]
     set e : Fin s.card ↪ ι :=
@@ -156,7 +152,6 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
       simp only [sum_embDomain] at hsum
       exact hsum
     · rw [← hv, he]
-      rfl
 
 end piAntidiagonal
 
