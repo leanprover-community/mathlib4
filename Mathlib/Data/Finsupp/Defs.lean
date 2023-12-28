@@ -679,15 +679,20 @@ theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
 #align finsupp.erase_zero Finsupp.erase_zero
 
 theorem update_eq_erase (f : α →₀ M) (a : α) : update f a 0 = f.erase a :=
-  ext fun a' => by classical  exact Function.update_apply _ _ _ _
+  letI := Classical.decEq α
+  ext fun _ => Function.update_apply _ _ _ _
+
+@[simp] theorem erase_idem (f : α →₀ M) (a : α) :
+    erase a (erase a f) = erase a f := by
+  rw [← update_eq_erase, ← update_eq_erase, update_idem]
 
 @[simp] theorem update_erase (f : α →₀ M) (a : α) (b : M) :
     update (erase a f) a b = update f a b := by
-  rw [←update_eq_erase, update_idem]
+  rw [← update_eq_erase, update_idem]
 
 @[simp] theorem erase_update (f : α →₀ M) (a : α) (b : M) :
     erase a (update f a b) = erase a f := by
-  rw [←update_eq_erase, ← update_eq_erase, update_idem]
+  rw [← update_eq_erase, ← update_eq_erase, update_idem]
 
 end Erase
 
