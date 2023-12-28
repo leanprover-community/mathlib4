@@ -225,7 +225,6 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f
     fderiv 𝕜 f (x + y) = continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
   (h.hasFDerivAt hy).fderiv
 
-
 /-- If a function has a finite power series on a ball, then so does its derivative. -/
 theorem HasFiniteFPowerSeriesOnBall.fderiv (h : HasFiniteFPowerSeriesOnBall f p x (n + 1) r) :
     HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f)
