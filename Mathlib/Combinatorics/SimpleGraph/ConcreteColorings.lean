@@ -69,7 +69,7 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
         simp [pathGraph_self_Hom_val, pathGraph_self_Hom]
         exact hc0
       have h_new_hom := ih hn' new_hom hhom0
-      have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp (Fin.is_le u)
+      have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp u.is_le
       apply Or.elim hu
       · intro (hun : u.val < n)
         exact h_new_hom ⟨u.val, hun⟩
@@ -81,10 +81,10 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
           simp [pathGraph_adj]
           exact Or.intro_left (n + 1 = n - 1) (Nat.sub_add_cancel hn')
         have hGadj : G.Adj (hom prev_last) (hom last) := hom.map_rel hpgadj
-        have h_c_prev_last : c (hom prev_last) ↔ (Even (n - 1)) :=
+        have h_c_prev_last : c (hom prev_last) ↔ Even (n - 1) :=
           h_new_hom ⟨n-1, Nat.sub_lt hn' Nat.one_pos⟩
-        have h_c_last : c (hom last) ↔ (¬Even (n - 1)) := by
-          have h := eq_iff_iff.not.1 (Coloring.valid c hGadj).symm
+        have h_c_last : c (hom last) ↔ ¬Even (n - 1) := by
+          have h := eq_iff_iff.not.mp (c.valid hGadj).symm
           rw [h_c_prev_last] at h
           exact (not_iff_comm.mp (not_iff.mp h)).symm
         simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
@@ -94,14 +94,14 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
 theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ} (hn : 1 ≤ n)
     (hom : pathGraph n →g G) (hc0 : ¬c (hom ⟨0, hn⟩)) (u : Fin n) :
     c (hom u) ↔ Odd u.val := by
-  let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬(c v)) <| by
+  let c' : G.Coloring Prop := Coloring.mk (fun v ↦ ¬c v) <| by
     intro v w
     intro (h : G.Adj v w)
     simp
     rw [not_iff_not]
-    exact eq_iff_iff.not.1 (c.valid h)
-  have hc'c : ∀ (a : α), c' a ↔ ¬(c a) := fun a ↦ Iff.rfl
-  have hcc' : ∀ (a : α), c a ↔ ¬(c' a) := by
+    exact eq_iff_iff.not.mp (c.valid h)
+  have hc'c : ∀ (a : α), c' a ↔ ¬c a := fun a ↦ Iff.rfl
+  have hcc' : ∀ (a : α), c a ↔ ¬c' a := by
     intro a
     exact iff_not_comm.mp (hc'c a)
   have hc'0 : c' (hom ⟨0, hn⟩) := by
