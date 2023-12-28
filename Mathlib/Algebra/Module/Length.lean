@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Artinian
 import Mathlib.Order.KrullDimension
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 
@@ -812,7 +813,58 @@ lemma finiteLengthModule_over_field_iff_finite_dimensional :
     exact ⟨⟨FiniteLengthModule.of_noetherian_of_artinian K M⟩⟩
 
 theorem Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.Finite K M := by
-  sorry
+  fconstructor
+  · intro h
+    let s := Basis.ofVectorSpaceIndex K M
+    let b : Basis s K M := Basis.ofVectorSpace K M
+    suffices : _root_.Finite s
+    · apply Module.Finite.of_basis b
+    contrapose! h
+    simp only [not_finite_iff_infinite] at h
+    replace h : s.Infinite
+    · exact Set.infinite_coe_iff.mp h
+
+    let enum := h.natEmbedding
+    rw [← monotone_stabilizes_iff_artinian]
+    let enum' : ℕ → Set (Basis.ofVectorSpaceIndex K M) := fun n ↦ Set.univ \ enum '' { m | m ≤ n }
+    push_neg
+    let g := fun n ↦ OrderDual.toDual (Submodule.span K (b '' enum' n))
+    refine ⟨⟨g, ?_⟩, ?_⟩
+    · intro m n h
+      dsimp
+      rw [OrderDual.toDual_le_toDual]
+      refine Submodule.span_mono ?_
+      rintro _ ⟨x, hx, rfl⟩
+      refine ⟨x, ?_, rfl⟩
+      simp only [Set.mem_diff, Set.mem_univ, Set.mem_image, Set.mem_setOf_eq, not_exists, not_and,
+        true_and] at hx ⊢
+      intro k hk
+      exact hx k (hk.trans h)
+    intro n
+    refine ⟨n + 1, by norm_num, ?_⟩
+    change g n ≠ g (n + 1)
+    have mem1 : b (enum (n + 1)) ∈ OrderDual.ofDual (g n)
+    · simp only [Basis.coe_ofVectorSpace, OrderDual.ofDual_toDual]
+      refine Submodule.subset_span ?_
+      simp only [Set.mem_image, Set.mem_diff, Set.mem_univ, Set.mem_setOf_eq, not_exists, not_and,
+        true_and, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta,
+        EmbeddingLike.apply_eq_iff_eq, Subtype.coe_prop, exists_const]
+      rintro x hx rfl
+      norm_num at hx
+    suffices mem2 : b (enum (n + 1)) ∉ OrderDual.ofDual (g (n + 1))
+    · intro r
+      dsimp only at r
+      erw [r] at mem1
+      exact mem2 mem1
+    intro r
+    suffices : ¬ LinearIndependent K b
+    · exact this b.linearIndependent
+    apply not_linearIndependent_of_mem_span (hs2 := r)
+    simp
+  · rw [← finiteLengthModule_over_field_iff_finite_dimensional]
+    intro h
+    replace h := Classical.choice h.finite
+    apply isArtinian_of_finiteLength
 
 end field
 
