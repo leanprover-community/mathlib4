@@ -208,14 +208,10 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
     f ∈ piAntidiagonal (insert a s) n ↔
       ∃ m ∈ antidiagonal n, ∃ (g : ι →₀ μ),
         f = Finsupp.update g a m.1 ∧ g ∈ piAntidiagonal s m.2 := by
-  simp only [mem_piAntidiagonal', le_eq_subset, mem_antidiagonal, Prod.exists]
+  simp only [mem_piAntidiagonal', le_eq_subset, mem_antidiagonal, Prod.exists, sum_insert h]
   constructor
-  · rintro ⟨hsupp, hsum⟩
-    use (f a), (s.sum f)
-    rw [sum_insert h] at hsum
-    simp only [hsum, true_and]
-    use Finsupp.erase a f
-    constructor
+  · rintro ⟨hsupp, rfl⟩
+    refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
     · ext x
       by_cases hx : x = a
       · rw [hx]
@@ -224,7 +220,6 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
         simp only [Function.update, dif_neg hx]
         simp only [Finsupp.erase, coe_mk]
         rw [if_neg hx]
-    constructor
     · intro x hx
       rw [mem_support_iff] at hx
       suffices hx' : x ∈ insert a s
@@ -243,10 +238,10 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
     · apply sum_congr rfl
       intro x hx
       simp only [Finsupp.erase, coe_mk, ite_eq_left_iff, if_neg (ne_of_mem_of_not_mem hx h)]
-  · rintro ⟨n1, n2, hn, g, hf, hgsupp, hgsum⟩
+  · rintro ⟨n1, n2, rfl, g, rfl, hgsupp, rfl⟩
     constructor
     · intro x
-      simp only [hf, mem_support_iff, Finset.mem_insert]
+      simp only [mem_support_iff, Finset.mem_insert]
       simp only [Finsupp.coe_update, ne_eq]
       by_cases hx : x = a
       · simp only [hx, ne_eq, not_true, true_or, implies_true]
@@ -256,13 +251,10 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
         apply hgsupp
         rw [mem_support_iff]
         exact hx
-    · rw [sum_insert h, ← hn]
-      apply congr_arg₂
-      · simp only [hf, coe_update, update_same]
-      · rw [← hgsum]
-        apply sum_congr rfl
+    · apply congr_arg₂
+      · simp only [coe_update, update_same]
+      · apply sum_congr rfl
         intro x hx
-        rw [hf]
         simp only [Finsupp.update, coe_mk]
         unfold Function.update
         rw [dif_neg (ne_of_mem_of_not_mem hx h)]
