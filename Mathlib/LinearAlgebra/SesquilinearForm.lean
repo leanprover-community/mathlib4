@@ -52,45 +52,46 @@ section CommRing
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁] [CommSemiring R₂]
-  [AddCommMonoid M₂] [Module R₂ M₂] {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
+  [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M] [Module R M]
+  {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
 /-- The proposition that two elements of a sesquilinear form space are orthogonal -/
-def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x : M₁) (y : M₂) : Prop :=
+def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
   B x y = 0
 #align linear_map.is_ortho LinearMap.IsOrtho
 
-theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
+theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
   Iff.rfl
 #align linear_map.is_ortho_def LinearMap.isOrtho_def
 
-theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B (0 : M₁) x := by
+theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
   dsimp only [IsOrtho]
   rw [map_zero B, zero_apply]
 #align linear_map.is_ortho_zero_left LinearMap.isOrtho_zero_left
 
-theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B x (0 : M₂) :=
+theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
   map_zero (B x)
 #align linear_map.is_ortho_zero_right LinearMap.isOrtho_zero_right
 
-theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
+theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
 #align linear_map.is_ortho_flip LinearMap.isOrtho_flip
 
 /-- A set of vectors `v` is orthogonal with respect to some bilinear form `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.isOrtho` -/
-def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) (v : n → M₁) : Prop :=
+def IsOrthoᵢ (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) (v : n → M₁) : Prop :=
   Pairwise (B.IsOrtho on v)
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho LinearMap.IsOrthoᵢ
 
-theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R} {v : n → M₁} :
+theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n → M₁} :
     B.IsOrthoᵢ v ↔ ∀ i j : n, i ≠ j → B (v i) (v j) = 0 :=
   Iff.rfl
 set_option linter.uppercaseLean3 false in
 #align linear_map.is_Ortho_def LinearMap.isOrthoᵢ_def
 
-theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) {v : n → M₁} :
+theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) {v : n → M₁} :
     B.IsOrthoᵢ v ↔ B.flip.IsOrthoᵢ v := by
   simp_rw [isOrthoᵢ_def]
   constructor <;> intro h i j hij
