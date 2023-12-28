@@ -476,49 +476,6 @@ theorem ModelWithCorners.range_prod : range (I.prod J) = range I ×ˢ range J :=
 
 end ModelWithCornersProd
 
-section Boundaryless
-
-/-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
-class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) : Prop where
-  range_eq_univ : range I = univ
-#align model_with_corners.boundaryless ModelWithCorners.Boundaryless
-
-theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
-    range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
-
-/-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
-@[simps (config := {simpRhs := true})]
-def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
-  __ := I
-  left_inv := I.left_inv
-  right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
-
-/-- The trivial model with corners has no boundary -/
-instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
-  ⟨by simp⟩
-#align model_with_corners_self_boundaryless modelWithCornersSelf_boundaryless
-
-/-- If two model with corners are boundaryless, their product also is -/
-instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormedAddCommGroup E']
-    [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-    [I'.Boundaryless] : (I.prod I').Boundaryless := by
-  constructor
-  dsimp [ModelWithCorners.prod, ModelProd]
-  rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
-    ModelWithCorners.Boundaryless.range_eq_univ, univ_prod_univ]
-#align model_with_corners.range_eq_univ_prod ModelWithCorners.range_eq_univ_prod
-
-end Boundaryless
-
 section contDiffGroupoid
 
 /-! ### Smooth functions on models with corners -/
@@ -788,24 +745,6 @@ instance : ClosedUnderRestriction (analyticGroupoid I) :=
       apply (analyticGroupoid I).eq_on_source' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)
 
-/-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
-consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
-theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
-    (e : PartialHomeomorph H H) :
-    e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
-    AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
-  apply Iff.intro
-  · intro he
-    have := mem_groupoid_of_pregroupoid.mp he.right
-    simp only [I.image_eq, I.range_eq_univ, interior_univ, subset_univ, and_true] at this ⊢
-    exact this
-  · intro he
-    apply And.intro
-    all_goals apply mem_groupoid_of_pregroupoid.mpr; simp only [I.image_eq, I.range_eq_univ,
-      interior_univ, subset_univ, and_true] at he ⊢
-    · exact ⟨he.left.contDiffOn, he.right.contDiffOn⟩
-    · exact he
-
 end analyticGroupoid
 
 section SmoothManifoldWithCorners
@@ -976,10 +915,6 @@ theorem isOpen_extend_source : IsOpen (f.extend I).source := by
 theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I := by
   simp_rw [extend, PartialEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target PartialHomeomorph.extend_target
-
-lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
-  rw [extend_target, I.range_eq_univ, inter_univ]
-  exact I.continuous_symm.isOpen_preimage _ f.open_target
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
