@@ -152,6 +152,12 @@ variable [E.HasEdgeMonoAtFrom pq r]
 
 lemma LE_of_hasEdgeMonoAtFrom : E.rToMin pq ≤ r := by apply HasEdgeMonoAtFrom.le
 
+lemma mem_hasEdgeMonoSet : r ∈ E.hasEdgeMonoSet pq := by
+  intro r' hr'
+  have H := (E.LE_of_hasEdgeMonoAtFrom pq r).trans hr'
+  have := E.hasPage_of_LE _ _ H
+  exact ⟨this, ⟨fun pq' => E.d_to_eq_zero _ _ _ H⟩⟩
+
 lemma hasEdgeMonoAtFrom_of_GE (r' : ℤ) (_ : r ≤ r') :
     E.HasEdgeMonoAtFrom pq r' where
   le := by linarith [E.LE_of_hasEdgeMonoAtFrom pq r]
@@ -301,6 +307,12 @@ lemma HasEdgeEpiAtFrom.mk' [E.HasPage r] (hr : ∀ (k : ℕ), E.HasEdgeEpiAt pq 
 variable [E.HasEdgeEpiAtFrom pq r]
 
 lemma LE_of_hasEdgeEpiAtFrom : E.rFromMin pq ≤ r := by apply HasEdgeEpiAtFrom.le
+
+lemma mem_hasEdgeEpiSet : r ∈ E.hasEdgeEpiSet pq := by
+  intro r' hr'
+  have H := (E.LE_of_hasEdgeEpiAtFrom pq r).trans hr'
+  have := E.hasPage_of_LE _ _ H
+  exact ⟨this, ⟨fun pq' => E.d_from_eq_zero _ _ _ H⟩⟩
 
 lemma hasEdgeEpiAtFrom_of_GE (r' : ℤ) (_ : r ≤ r') :
     E.HasEdgeEpiAtFrom pq r' where

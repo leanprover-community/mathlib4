@@ -204,6 +204,66 @@ lemma EMapFourδ₁Toδ₀'_EMapFourδ₃Toδ₃' :
   rw [← EMap_comp, ← EMap_comp]
   rfl
 
+section
+
+variable (h : IsZero ((H X n₂).obj (mk₁ (homOfLE hi₀₁))))
+
+lemma isIso_EMapFourδ₁Toδ₀' :
+    IsIso (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
+  apply X.isIso_EMap_fourδ₁Toδ₀_of_isZero
+  exact h
+
+@[simps! hom]
+noncomputable def isoEMapFourδ₁Toδ₀' :
+    X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) ≅
+      X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE hi₁₂) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
+  have := X.isIso_EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h
+  asIso (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
+
+@[reassoc (attr := simp)]
+lemma isoEMapFourδ₁Toδ₀'_hom_inv_id :
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ ≫
+    (X.isoEMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).inv = 𝟙 _ :=
+  (X.isoEMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoEMapFourδ₁Toδ₀'_inv_hom_id :
+    (X.isoEMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).inv ≫
+    X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ = 𝟙 _ :=
+  (X.isoEMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).inv_hom_id
+
+end
+
+section
+
+variable (h : IsZero ((H X n₀).obj (mk₁ (homOfLE hi₃₄))))
+
+lemma isIso_EMapFourδ₄Toδ₃' :
+    IsIso (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
+  apply X.isIso_EMap_fourδ₄Toδ₃_of_isZero
+  exact h
+
+@[simps! hom]
+noncomputable def isoEMapFourδ₄Toδ₃' :
+    X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE hi₂₃) ≅
+      X.E n₀ n₁ n₂ hn₁ hn₂ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE (hi₂₃.trans hi₃₄)) :=
+  have := X.isIso_EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h
+  asIso (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
+
+@[reassoc (attr := simp)]
+lemma isoEMapFourδ₄Toδ₄'_hom_inv_id :
+    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ ≫
+    (X.isoEMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).inv = 𝟙 _ :=
+  (X.isoEMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoEMapFourδ₄Toδ₄'_inv_hom_id :
+    (X.isoEMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).inv ≫
+    X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ = 𝟙 _ :=
+  (X.isoEMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄ h).inv_hom_id
+
+end
+
 end
 
 variable (data : SpectralSequenceMkData ι c r₀)
