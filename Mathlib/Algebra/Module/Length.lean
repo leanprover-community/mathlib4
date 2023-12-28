@@ -606,7 +606,7 @@ section lt_series
 
 variable (x : RelSeries ((· ≤ ·) : Submodule R M → Submodule R M → Prop))
 
-private lemma x_monotone : Monotone x :=
+lemma LESeries.monotone : Monotone x :=
   Fin.monotone_iff_le_succ.mpr x.step
 
 /-- if `x ≤ y` are both `R`-submodule of `M`, we can mathematically form their quotient but type
@@ -663,13 +663,13 @@ noncomputable def RelSeries.cdfSuccEquiv (i : Fin x.length) :
   let x_i : Submodule R (x i.succ) :=
     Submodule.map (Submodule.inclusion <| x.step _ : x i.castSucc →ₗ[R] x i.succ) ⊤
   let x_0 : Submodule R (x i.succ) :=
-    Submodule.map (Submodule.inclusion <| x_monotone _ <| Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
+    Submodule.map (Submodule.inclusion <| LESeries.monotone _ <| Fin.zero_le _ : x.head →ₗ[R] x i.succ) ⊤
 
   let e := @Submodule.quotientQuotientEquivQuotient (R := R) (M := x i.succ)
     (T := x_i) (S := x_0) (fun m hm ↦ by
       simp only [Submodule.map_top, LinearMap.mem_range, Subtype.exists] at hm ⊢
       rcases hm with ⟨n, h1, rfl⟩
-      exact ⟨n, x_monotone x (Fin.zero_le _) h1, rfl⟩)
+      exact ⟨n, LESeries.monotone x (Fin.zero_le _) h1, rfl⟩)
   refine ?_ ≪≫ₗ e.symm ≪≫ₗ ?_
   · refine Submodule.Quotient.equiv _ _ (LinearEquiv.refl R _) ?_
     ext m
@@ -732,3 +732,21 @@ lemma RelSeries.cqf_finiteLength_iff_each_qf_finiteLength (i : Fin (x.length + 1
 end lt_series
 
 end additive
+
+section field
+
+variable (K : Type*) [Field K]
+variable (M : Type*) [AddCommGroup M] [Module K M]
+
+lemma finiteLengthModule_over_field_iff_finite_dimensional :
+    IsFiniteLengthModule K M ↔ Module.Finite K M := by
+  fconstructor
+  · rw [Module.finite_def]
+    intro h
+    have i := isNoetherian_of_finiteLength (h := Classical.choice h.finite)
+    rw [isNoetherian_def] at i
+    apply i
+  · intro h
+    exact ⟨⟨FiniteLengthModule.of_noetherian_of_artinian K M⟩⟩
+
+end field
