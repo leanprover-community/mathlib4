@@ -3,6 +3,8 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+import Mathlib.Algebra.DirectSum.Algebra
+import Mathlib.Algebra.GradedMonoid
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
@@ -12,7 +14,8 @@ import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 /-!
 # Modular forms
 
-This file defines modular forms and proves some basic properties about them.
+This file defines modular forms and proves some basic properties about them. Including constructing
+the graded ring of modular forms.
 
 We begin by defining modular forms and cusp forms as extension of `SlashInvariantForm`s then we
 define the space of modular forms, cusp forms and prove that the product of two modular forms is a
@@ -265,17 +268,42 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
   rfl
 #align modular_form.mul_coe ModularForm.mul_coe
 
-instance : One (ModularForm Γ 0) :=
-  ⟨ { toSlashInvariantForm := 1
-      holo' := fun x => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
-      bdd_at_infty' := fun A => by
-        simpa only [SlashInvariantForm.one_coe_eq_one,
-          ModularForm.is_invariant_one] using atImInfty.const_boundedAtFilter (1 : ℂ) }⟩
+/-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
+@[simps! (config := .asFn) toFun toSlashInvariantForm]
+def const (x : ℂ) : ModularForm Γ 0 where
+  toSlashInvariantForm := .const x
+  holo' x := mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
+  bdd_at_infty' A := by
+    simpa only [SlashInvariantForm.const_toFun,
+      ModularForm.is_invariant_const] using atImInfty.const_boundedAtFilter x
+
+instance : One (ModularForm Γ 0) where
+  one := { const 1 with toSlashInvariantForm := 1 }
 
 @[simp]
-theorem one_coe_eq_one : ((1 : ModularForm Γ 0) : ℍ → ℂ) = 1 :=
+theorem one_coe_eq_one : ⇑(1 : ModularForm Γ 0) = 1 :=
   rfl
 #align modular_form.one_coe_eq_one ModularForm.one_coe_eq_one
+
+instance (Γ : Subgroup SL(2, ℤ)) : NatCast (ModularForm Γ 0) where
+  natCast n := const n
+
+@[simp, norm_cast]
+lemma coe_natCast (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
+    ⇑(n : ModularForm Γ 0) = n := rfl
+
+lemma toSlashInvariantForm_natCast (Γ : Subgroup SL(2, ℤ)) (n : ℕ) :
+    (n : ModularForm Γ 0).toSlashInvariantForm = n := rfl
+
+instance (Γ : Subgroup SL(2, ℤ)) : IntCast (ModularForm Γ 0) where
+  intCast z := const z
+
+@[simp, norm_cast]
+lemma coe_intCast (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
+    ⇑(z : ModularForm Γ 0) = z := rfl
+
+lemma toSlashInvariantForm_intCast (Γ : Subgroup SL(2, ℤ)) (z : ℤ) :
+    (z : ModularForm Γ 0).toSlashInvariantForm = z := rfl
 
 end ModularForm
 
@@ -397,3 +425,55 @@ instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).boundedAtFilter
 
 end CuspForm
+
+namespace ModularForm
+
+section GradedRing
+
+/-- Cast for modular forms, which is useful for avoiding `Heq`s. -/
+def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
+    where
+  toFun := (f : ℍ → ℂ)
+  slash_action_eq' A := h ▸ f.slash_action_eq' A
+  holo' := f.holo'
+  bdd_at_infty' A := h ▸ f.bdd_at_infty' A
+
+@[ext]
+theorem gradedMonoid_eq_of_cast {Γ : Subgroup SL(2, ℤ)} {a b : GradedMonoid (ModularForm Γ)}
+    (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
+  obtain ⟨i, a⟩ := a
+  obtain ⟨j, b⟩ := b
+  cases h
+  exact congr_arg _ h2
+
+instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GOne (ModularForm Γ) where
+  one := 1
+
+instance (Γ : Subgroup SL(2, ℤ)) : GradedMonoid.GMul (ModularForm Γ) where
+  mul f g := f.mul g
+
+instance instGCommRing (Γ : Subgroup SL(2, ℤ)) : DirectSum.GCommRing (ModularForm Γ) where
+  one_mul a := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
+  mul_one a := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
+  mul_assoc a b c := gradedMonoid_eq_of_cast (add_assoc _ _ _) (ext fun _ => mul_assoc _ _ _)
+  mul_zero {i j} f := ext fun _ => mul_zero _
+  zero_mul {i j} f := ext fun _ => zero_mul _
+  mul_add {i j} f g h := ext fun _ => mul_add _ _ _
+  add_mul {i j} f g h := ext fun _ => add_mul _ _ _
+  mul_comm a b := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
+  natCast := Nat.cast
+  natCast_zero := ext fun _ => Nat.cast_zero
+  natCast_succ n := ext fun _ => Nat.cast_succ _
+  intCast := Int.cast
+  intCast_ofNat n := ext fun _ => AddGroupWithOne.intCast_ofNat _
+  intCast_negSucc_ofNat n := ext fun _ => AddGroupWithOne.intCast_negSucc _
+
+instance instGAlgebra (Γ : Subgroup SL(2, ℤ)) : DirectSum.GAlgebra ℂ (ModularForm Γ) where
+  toFun := { toFun := const, map_zero' := rfl, map_add' := fun _ _ => rfl }
+  map_one := rfl
+  map_mul _x _y := rfl
+  commutes _c _x := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)
+  smul_def _x _x := gradedMonoid_eq_of_cast (zero_add _).symm (ext fun _ => rfl)
+
+open scoped DirectSum in
+example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := inferInstance

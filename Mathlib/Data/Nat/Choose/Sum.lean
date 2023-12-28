@@ -157,7 +157,7 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     intro y hy
     rw [mem_range, Nat.lt_succ_iff]
     rw [mem_powerset] at hy
-    exact card_le_of_subset hy
+    exact card_le_card hy
   · refine' sum_congr rfl fun y _ ↦ _
     rw [← card_powersetCard, ← sum_const]
     refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _

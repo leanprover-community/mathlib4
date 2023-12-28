@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.Functor.Trifunctor
 /-!
 # The action of trifunctors on graded objects
 
@@ -26,8 +27,8 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C₁ C₂ C₃ C₄ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄]
+variable {C₁ C₂ C₃ C₄ C₁₂ : Type*}
+  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂]
   (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
 namespace GradedObject
@@ -236,6 +237,118 @@ noncomputable def mapTrifunctorMap
         simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp,
           NatTrans.naturality_app_assoc] }
+
+end
+
+section
+
+variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
+  {I₁ I₂ I₃ J : Type*} (r : I₁ × I₂ × I₃ → J)
+
+/-- Given a map `r : I₁ × I₂ × I₃ → J`, a `BifunctorComp₁₂IndexData r` consists of the data
+of a type `I₁₂`, maps `p : I₁ × I₂ → I₁₂` and `q : I₁₂ × I₃ → J`, such that `r` is obtained
+by composition of `p` and `q`. -/
+structure BifunctorComp₁₂IndexData :=
+  /-- an auxiliary type -/
+  I₁₂ : Type*
+  /-- a map `I₁ × I₂ → I₁₂` -/
+  p : I₁ × I₂ → I₁₂
+  /-- a map `I₁₂ × I₃ → J` -/
+  q : I₁₂ × I₃ → J
+  hpq (i : I₁ × I₂ × I₃) : q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
+
+variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData r)
+  (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
+
+/-- Given bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂`, `G : C₁₂ ⥤ C₃ ⥤ C₄`, graded objects
+`X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃` and
+`ρ₁₂ : BifunctorComp₁₂IndexData r`, this asserts that for all `i₁₂ : ρ₁₂.I₁₂` and `i₃ : I₃`,
+the functor `G(-, X₃ i₃)` commutes wich the coproducts of the `F₁₂(X₁ i₁, X₂ i₂)`
+such that `ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂`. -/
+abbrev HasGoodTrifunctor₁₂Obj :=
+  ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), PreservesColimit
+    (Discrete.functor (mapObjFun (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p i₁₂))
+      ((Functor.flip G).obj (X₃ i₃))
+
+variable [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p]
+  [HasMap (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃) ρ₁₂.q]
+
+/-- The inclusion of `(G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃)` in
+`mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j`
+when `r (i₁, i₂, i₃) = j`. -/
+noncomputable def ιMapBifunctor₁₂BifunctorMapObj (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+    (h : r (i₁, i₂, i₃) = j) :
+    (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).obj (X₃ i₃) ⟶
+      mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j :=
+  (G.map (ιMapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂ i₁ i₂ _ rfl)).app (X₃ i₃) ≫
+    ιMapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ (ρ₁₂.p ⟨i₁, i₂⟩) i₃ j
+      (by rw [← h, ← ρ₁₂.hpq])
+
+/-- The cofan consisting of the inclusions given by `ιMapBifunctor₁₂BifunctorMapObj`. -/
+noncomputable def cofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
+    ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj
+      X₃).CofanMapObjFun r j :=
+  Cofan.mk (mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ j)
+    (fun ⟨⟨i₁, i₂, i₃⟩, (hi : r ⟨i₁, i₂, i₃⟩ = j)⟩ =>
+      ιMapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ i₁ i₂ i₃ j hi)
+
+variable [H : HasGoodTrifunctor₁₂Obj F₁₂ G ρ₁₂ X₁ X₂ X₃]
+
+/-- The cofan `cofan₃MapBifunctor₁₂BifunctorMapObj` is a colimit, see the induced isomorphism
+`mapBifunctorComp₁₂MapObjIso`. -/
+noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
+    IsColimit (cofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j) := by
+  let c₁₂ := fun i₁₂ => (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).cofanMapObj ρ₁₂.p i₁₂
+  have h₁₂ : ∀ i₁₂, IsColimit (c₁₂ i₁₂) := fun i₁₂ =>
+    (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂).isColimitCofanMapObj ρ₁₂.p i₁₂
+  let c := (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj
+    (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).cofanMapObj ρ₁₂.q j
+  have hc : IsColimit c := (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj
+    (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃).isColimitCofanMapObj ρ₁₂.q j
+  let c₁₂' := fun (i : ρ₁₂.q ⁻¹' {j}) => (G.flip.obj (X₃ i.1.2)).mapCocone (c₁₂ i.1.1)
+  have hc₁₂' : ∀ i, IsColimit (c₁₂' i) := fun i => isColimitOfPreserves _ (h₁₂ i.1.1)
+  let Z := (((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
+  let p' : I₁ × I₂ × I₃ → ρ₁₂.I₁₂ × I₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨ρ₁₂.p ⟨i₁, i₂⟩, i₃⟩
+  let e : ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), p' ⁻¹' {(i₁₂, i₃)} ≃ ρ₁₂.p ⁻¹' {i₁₂} := fun i₁₂ i₃ =>
+    { toFun := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => ⟨⟨i₁, i₂⟩, by aesop⟩
+      invFun := fun ⟨⟨i₁, i₂⟩, hi⟩ => ⟨⟨i₁, i₂, i₃⟩, by aesop⟩
+      left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
+        obtain rfl : i₃ = i₃' := by aesop
+        rfl
+      right_inv := fun _ => rfl }
+  let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
+    fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
+      refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
+        (Discrete.equivalence (e i₁₂ i₃))).functor.obj (c₁₂' ⟨⟨i₁₂, i₃⟩, hi⟩))
+      refine' (Discrete.natIso (fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ =>
+        (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).mapIso (eqToIso _)))
+      obtain rfl : i₃' = i₃ := congr_arg _root_.Prod.snd hi
+      rfl
+  have h₁₂'' : ∀ i, IsColimit (c₁₂'' i) := fun _ =>
+    (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₁₂' _))
+  refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₁₂.q r ρ₁₂.hpq j
+    (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc)
+    (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => _))
+  dsimp [Cofan.inj]
+  rw [comp_id, Functor.map_id, id_comp]
+  rfl
+
+variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
+
+lemma HasGoodTrifunctor₁₂Obj.hasMap :
+    HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r :=
+  fun j => ⟨_, isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j⟩
+
+variable (F₁₂ G ρ₁₂ X₁ X₂ X₃)
+
+/-- The action on graded objects of a trifunctor obtained by composition of two
+bifunctors can be computed as a composition of the actions of these two bifunctors.  -/
+noncomputable def mapBifunctorComp₁₂MapObjIso
+    [HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r] :
+    mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ ≅
+    mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ :=
+  isoMk _ _ (fun j => (CofanMapObjFun.iso
+    (isColimitCofan₃MapBifunctor₁₂BifunctorMapObj F₁₂ G ρ₁₂ X₁ X₂ X₃ j)).symm)
 
 end
 
