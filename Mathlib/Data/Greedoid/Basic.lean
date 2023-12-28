@@ -1930,8 +1930,10 @@ theorem kernelClosureOperator_weak_exchange_property_over_rankFeasible
   {z : α} (hz₁ : z ∉ s) (hz₂ : y ∈ G.kernelClosureOperator (insert z s)) :
     z ∈ G.kernelClosureOperator (insert y s) := by
   have h₁ : G.rank (insert y s) = G.rank s + 1 := by
-    sorry
+    rw [← rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq hs hy₁]
+    exact hy₂
   have h₂ : G.rank (insert z s) = G.rank s + 1 := by
+    rw [← rank_le_of_rankFeasible_insert_not_mem_and_kernelClosureOperator_neq hs hz₁]
     sorry
   have h₃ : G.rank (insert z (insert y s)) = G.rank s + 1 := by
     sorry
