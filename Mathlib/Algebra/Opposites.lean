@@ -205,6 +205,9 @@ instance unique [Unique α] : Unique αᵐᵒᵖ :=
 instance isEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
   Function.isEmpty unop
 
+@[to_additive]
+instance instDecidableEq [DecidableEq α] : DecidableEq αᵐᵒᵖ := unop_injective.decidableEq
+
 instance zero [Zero α] : Zero αᵐᵒᵖ where zero := op 0
 
 @[to_additive]
