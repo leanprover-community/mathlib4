@@ -20,15 +20,20 @@ def try_alternate_tactic_call(filename, alternate_line, line_no):
     with open(filename, "r") as f:
         lines = list(f)
 
+    assert(lines[line_no] != alternate_line)
+
     initial_lines = lines.copy()
 
     # insert a trace state
     lines.insert(line_no+1, " " * num_spaces + "trace_state\n")
 
     # Run once to get trace state
-    proc = subprocess.Popen(["lake", "build", f"{module_name}"], stdout=subprocess.PIPE, shell=True)
-    out_current, err = proc.communicate()
-    assert(err == 0)
+    print("Running lake build")
+    out_current = str(subprocess.check_output(["lake", "build", module_name]))
+    # out_current, err = proc.communicate()
+    err = ("error" in out_current)
+    print(out_current)
+    assert(err == False)
 
     lines[line_no] = alternate_line
 
@@ -37,10 +42,15 @@ def try_alternate_tactic_call(filename, alternate_line, line_no):
         f.writelines(lines)
 
     # Run again
-    proc = subprocess.Popen(["lake", "build", f"{module_name}"], stdout=subprocess.PIPE, shell=True)
-    out_alternate, err = proc.communicate()
+    try:
+        out_alternate = str(subprocess.check_output(["lake", "build", module_name]))
+    except subprocess.CalledProcessError as e:
+        out_alternate = str(e.output)
 
-    if err != 0:
+    # out_alternate, err = proc.communicate()
+    err = ("error" in out_alternate)
+
+    if err:
         print("Failed to build")
         with open(filename, "w") as f:
             f.writelines(initial_lines)
@@ -58,6 +68,10 @@ def try_alternate_tactic_call(filename, alternate_line, line_no):
     lines.pop(line_no+1)
     with open(filename, "w") as f:
         f.writelines(lines)
+
+    # print("a", out_current)
+    # print("b", out_alternate)
+    # quit()
     return True
 
 
@@ -65,8 +79,8 @@ def remove_lemma_from_simp_only(filename):
 
     print(f"Removing unnecessary lemmas from simp only calls in {filename}")
 
-    print("Building file and deps")
     module_name = module_name_from_filename(filename)
+    print(f"Building file and deps: lake build {module_name} > /dev/null")
     exit_code = os.system(f"lake build {module_name} > /dev/null")
     assert(exit_code == 0)
 
