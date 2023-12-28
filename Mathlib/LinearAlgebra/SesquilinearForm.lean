@@ -14,10 +14,10 @@ import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 /-!
 # Sesquilinear form
 
-This files provides properties about sesquilinear forms. The maps considered are of the form
-`M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R`, where `I₁ : R₁ →+* R` and `I₂ : R₂ →+* R` are ring homomorphisms and
-`M₁` is a module over `R₁` and `M₂` is a module over `R₂`.
-Sesquilinear forms are the special case that `M₁ = M₂`, `R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
+This files provides properties about sesquilinear maps and forms. The maps considered are of the
+form `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`, where `I₁ : R₁ →+* R` and `I₂ : R₂ →+* R` are ring homomorphisms and
+`M₁` is a module over `R₁`, `M₂` is a module over `R₂` and `M` is a module over `R`.
+Sesquilinear forms are the special case that `M₁ = M₂`, `M = R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
 Taking additionally `I₂ = RingHom.id R`, then one obtains bilinear forms.
 
 These forms are a special case of the bilinear maps defined in `BilinearMap.lean` and all basic
@@ -25,7 +25,7 @@ lemmas about construction and elementary calculations are found there.
 
 ## Main declarations
 
-* `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear form
+* `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear map
 * `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
 * `orthogonalBilin`: provides the orthogonal complement with respect to sesquilinear form
 
