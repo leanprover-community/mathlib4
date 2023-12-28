@@ -18,7 +18,20 @@ open CategoryTheory CategoryTheory.Limits Opposite
 
 open Simplicial
 
-namespace CategoryTheory.ComposableArrows
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C : Type*} [Category C] {D : Type*} [Category D]
+
+lemma map_eqToHom (F : C ⥤ D) (X Y : C) (h : X = Y) :
+    F.map (eqToHom h) = eqToHom (congrArg F.obj h) := by
+  subst h
+  simp only [eqToHom_refl, map_id]
+
+end Functor
+
+namespace ComposableArrows
 
 variable {C : Type*} [inst : Category C] {n : ℕ}
 
@@ -56,7 +69,9 @@ lemma map'_def (F : ComposableArrows C n)
     (i j : ℕ) (hij : i ≤ j := by linarith) (hjn : j ≤ n := by linarith) :
     F.map' i j = F.map (homOfLE (Fin.mk_le_mk.mpr hij)) := rfl
 
-end CategoryTheory.ComposableArrows
+end ComposableArrows
+
+end CategoryTheory
 
 namespace SSet
 
@@ -195,10 +210,37 @@ lemma nerve.δ_mk (n : ℕ)
   dsimp only [δ_mor]
   by_cases hij : i + 1 < j
   · simp only [hij, unop_op, SimplexCategory.len_mk, Fin.castSucc_mk, Fin.succ_mk, dite_true]
-    -- have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
-    -- refine Eq.trans ?_ (this.trans ?_)
-    sorry
-  sorry
+    have aux := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
+    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux
+    have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map_eqToHom
+    rw [← this, ← this, aux, ← Functor.map_comp, ← Functor.map_comp]
+    rfl
+    · have : i < j.val := by linarith only [hij]
+      simp [Fin.succAbove, this]
+    · ext; simp [Fin.succAbove, hij]
+  rw [dif_neg hij]
+  by_cases hij' : i + 1 = j
+  · simp only [hij', unop_op, SimplexCategory.len_mk, Fin.castSucc_mk, Fin.succ_mk, dite_true]
+    have aux1 := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def i (i+1) (by omega) (by omega)
+    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor i (by omega)] at aux1
+    have aux2 := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
+    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux2
+    have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map_eqToHom
+    rw [← this, ← this, aux1, aux2, ← Functor.map_comp, ← Functor.map_comp, ← Functor.map_comp]
+    rfl
+    · simp [Fin.succAbove, hij'.symm]
+    · simp [Fin.succAbove, hij'.symm]
+  rw [dif_neg hij']
+  · simp only [unop_op, SimplexCategory.len_mk, Fin.castSucc_mk, Fin.succ_mk, dite_true]
+    have aux := (ComposableArrows.mkOfObjOfMapSucc obj mor).map'_def (i+1) (i+2) (by omega) (by omega)
+    rw [ComposableArrows.mkOfObjOfMapSucc_map_succ obj mor (i+1) (by omega)] at aux
+    have := (ComposableArrows.mkOfObjOfMapSucc obj mor).map_eqToHom
+    rw [← this, ← this, aux, ← Functor.map_comp, ← Functor.map_comp]
+    rfl
+    · have : ¬ i < j.val := by omega
+      ext; simp [Fin.succAbove, this]
+    · have : ¬ i + 1 < j.val := by omega
+      ext; simp [Fin.succAbove, this]
 
 -- TODO: move
 def nerve.source (f : (nerve C).obj (op [1])) : C := f.obj (0 : Fin 2)
@@ -351,9 +393,8 @@ instance (C : Type) [Category C] : quasicategory (nerve C) := by
     have := fun (k : Fin 2) (e : Λ[n+2, i].obj (op [1])) ↦
       congr_fun (σ₀.naturality (SimplexCategory.δ k).op) e
     dsimp only [types_comp, Function.comp] at this
-    refine ?_ ≫ φ ≫ ?_
+    refine eqToHom ?_ ≫ φ ≫ eqToHom ?_
     · rw [nerve.source_eq, ← this]
-      apply eqToHom
       suffices : Λ[n+2, i].map (SimplexCategory.δ 1).op e = v j.castSucc
       · rw [this]; rfl
       apply Subtype.ext
@@ -363,7 +404,6 @@ instance (C : Type) [Category C] : quasicategory (nerve C) := by
       erw [Fin.forall_fin_one]
       rfl
     · rw [nerve.target_eq, ← this]
-      apply eqToHom
       suffices : Λ[n+2, i].map (SimplexCategory.δ 0).op e = v j.succ
       · rw [this]; rfl
       apply Subtype.ext
