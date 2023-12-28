@@ -75,8 +75,8 @@ theorem AnalyticOn.eval_mvPolynomial [Fintype σ] (p : MvPolynomial σ 𝕜) :
     AnalyticOn 𝕜 (eval · p) Set.univ := AnalyticOn.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
 
 theorem MvPolynomial.continuous_eval
-    {X : Type*} [TopologicalSpace X] [NonUnitalNonAssocSemiring X] [TopologicalSemiring X]
-    (p : MvPolynomial σ ℝ) :
+    {X : Type*} [TopologicalSpace X] [CommSemiring X] [TopologicalSemiring X]
+    (p : MvPolynomial σ X) :
     Continuous fun x ↦ (eval x) p := by
   continuity
 
