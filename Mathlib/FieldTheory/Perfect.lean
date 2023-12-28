@@ -180,3 +180,34 @@ instance toPerfectRing (p : ℕ) [hp : Fact p.Prime] [CharP K p] : PerfectRing K
   exact minpoly.degree_pos ha
 
 end PerfectField
+
+namespace Polynomial
+
+variable {R : Type*} [CommRing R] [IsDomain R] {p n : ℕ} [Fact p.Prime] [CharP R p]
+  [PerfectRing R p] {f : R[X]}
+
+open Multiset
+
+theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
+  classical
+  refine ext' fun r ↦ ?_
+  rw [count_roots, rootMultiplicity_expand, ← count_roots, count_nsmul, count_map,
+      count_eq_card_filter_eq]; congr; ext
+  exact (frobeniusEquiv R p).eq_symm_apply.symm
+
+theorem roots_expand_pow :
+    (expand R (p ^ n) f).roots = p ^ n • f.roots.map (frobeniusEquiv R p).symm ^[n] := by
+  induction' n with n ih generalizing f; · simp
+  rw [pow_succ', expand_mul, ih, mul_smul, roots_expand,
+      Multiset.map_nsmul, Multiset.map_map, iterate_succ]
+
+theorem roots_expand_map_frobenius : (expand R p f).roots.map (frobenius R p) = p • f.roots := by
+  simp [roots_expand, Multiset.map_nsmul]
+
+theorem roots_expand_pow_map_frobenius :
+    (expand R (p ^ n) f).roots.map (frobenius R p)^[n] = p ^ n • f.roots := by
+  simp_rw [roots_expand_pow, Multiset.map_nsmul, Multiset.map_map, ← coe_frobeniusEquiv,
+    ← RingEquiv.coe_toEquiv, RingEquiv.coe_toEquiv_symm, Equiv.Perm.iterate_eq_pow,
+    ← Equiv.Perm.inv_def, inv_pow, comp_apply, Equiv.Perm.apply_inv_self, map_id']
+
+end Polynomial

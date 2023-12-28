@@ -43,6 +43,8 @@ theorem coe_expand : (expand R p : R[X] → R[X]) = eval₂ C (X ^ p) :=
 
 variable {R}
 
+theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
+
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
   simp [expand, eval₂]
 #align polynomial.expand_eq_sum Polynomial.expand_eq_sum
@@ -262,6 +264,27 @@ theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
 end CharP
 
 end CommSemiring
+
+section rootMultiplicity
+
+variable {R : Type u} [CommRing R] {p n : ℕ} [Fact p.Prime] [CharP R p] {f : R[X]} {r : R}
+
+theorem rootMultiplicity_expand :
+    (expand R p f).rootMultiplicity r = p * f.rootMultiplicity (r ^ p) := by
+  obtain rfl | h0 := eq_or_ne f 0; · simp
+  obtain ⟨g, hg, ndvd⟩ := f.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h0 (r ^ p)
+  rw [dvd_iff_isRoot, ← eval_X (x := r), ← eval_pow, ← isRoot_comp, ← expand_eq_comp_X_pow] at ndvd
+  conv_lhs => rw [hg, map_mul, map_pow, map_sub, expand_X, expand_C, map_pow, ← sub_pow_char,
+    ← pow_mul, mul_comm, rootMultiplicity_mul_X_sub_C_pow ((expand_ne_zero Fin.size_pos').mpr <|
+    right_ne_zero_of_mul <| hg ▸ h0), rootMultiplicity_eq_zero ndvd, zero_add]
+
+theorem rootMultiplicity_expand_pow :
+    (expand R (p ^ n) f).rootMultiplicity r = p ^ n * f.rootMultiplicity (r ^ p ^ n) := by
+  induction' n with n ih generalizing f
+  · rw [pow_zero, expand_one, pow_one, one_mul]
+  · rw [pow_succ', expand_mul, ih, rootMultiplicity_expand, mul_assoc, pow_mul]
+
+end rootMultiplicity
 
 section IsDomain
 
