@@ -687,7 +687,7 @@ theorem update_eq_erase (f : α →₀ M) (a : α) : update f a 0 = f.erase a :=
 
 @[simp] theorem erase_update (f : α →₀ M) (a : α) (b : M) :
     erase a (update f a b) = erase a f := by
-  rw [←update_eq_erase, ←update_eq_erase, update_idem]
+  rw [←update_eq_erase, ← update_eq_erase, update_idem]
 
 end Erase
 
