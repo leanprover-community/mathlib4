@@ -508,9 +508,11 @@ variable [CommSemiring R]
 
 variable [AddCommMonoid M] [Module R M]
 
+variable [AddCommMonoid M₁] [Module R M₁]
+
 variable {I : R →+* R}
 
-variable (B F : M →ₗ[R] M →ₛₗ[I] R)
+variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 
 /-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear forms
 on the underlying module. In the case that these two forms are identical, this is the usual concept
@@ -532,9 +534,9 @@ section AddCommGroup
 
 variable [CommRing R]
 
-variable [AddCommGroup M] [Module R M]
+variable [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
 
-variable [AddCommGroup M₁] [Module R M₁] (B F : M →ₗ[R] M →ₗ[R] R)
+variable [AddCommGroup M₂] [Module R M₂] (B F : M →ₗ[R] M →ₗ[R] M₂)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
 def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
