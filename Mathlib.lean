@@ -2801,6 +2801,7 @@ import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.Rayleigh
 import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
+import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
