@@ -445,6 +445,21 @@ abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 @[simp]
 lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
 
+/-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.castSucc`. -/
+@[simps]
+def _root_.Fin.castSuccFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
+  obj i := i.castSucc
+  map hij := hij
+
+/-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
+the last arrow. -/
+@[simps!]
+def δlastFunctor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
+  whiskerLeftFunctor (Fin.castSuccFunctor (n + 1))
+
+/-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
+abbrev δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
+
 section
 
 variable {F G : ComposableArrows C (n + 1)}
@@ -809,6 +824,54 @@ lemma mk₅_surjective (X : ComposableArrows C 5) :
       (f₃ : X₃ ⟶ X₄) (f₄ : X₄ ⟶ X₅), X = mk₅ f₀ f₁ f₂ f₃ f₄ :=
   ⟨_, _, _, _, _, _, X.map' 0 1, X.map' 1 2, X.map' 2 3, X.map' 3 4, X.map' 4 5,
     ext₅ rfl rfl rfl rfl rfl rfl (by simp) (by simp) (by simp) (by simp) (by simp)⟩
+
+/-- The `i`th arrow of `F : ComposableArrows C n`. -/
+def arrow (i : ℕ) (hi : i < n := by linarith) :
+    ComposableArrows C 1 := mk₁ (F.map' i (i + 1))
+
+section mkOfObjOfMapSucc
+
+variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
+
+lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
+    ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
+      (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
+  clear F G
+  revert obj mapSucc
+  induction' n with n hn
+  · intro obj _
+    exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
+  · intro obj mapSucc
+    obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
+    refine' ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
+      | 0 => Iso.refl _
+      | ⟨i + 1, hi⟩ => e _, fun i hi => _⟩
+    obtain _ | i := i
+    · dsimp
+      rw [assoc, Iso.inv_hom_id, comp_id]
+      erw [id_comp]
+    · exact h i (by linarith)
+
+/-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`
+for all `i : Fin n`, this is `F : ComposableArrows C n` such that `F.obj i` is
+definitionally equal to `obj i` and such that `F.map' i (i + 1) = mapSucc ⟨i, hi⟩`. -/
+noncomputable def mkOfObjOfMapSucc : ComposableArrows C n :=
+  (mkOfObjOfMapSucc_exists obj mapSucc).choose.copyObj obj
+    (mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose
+
+@[simp]
+lemma mkOfObjOfMapSucc_obj (i : Fin (n + 1)) :
+    (mkOfObjOfMapSucc obj mapSucc).obj i = obj i := rfl
+
+lemma mkOfObjOfMapSucc_map_succ (i : ℕ) (hi : i < n := by linarith) :
+    (mkOfObjOfMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ :=
+  ((mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose_spec i hi).symm
+
+lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by linarith) :
+    (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
+  ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
+
+end mkOfObjOfMapSucc
 
 end ComposableArrows
 
