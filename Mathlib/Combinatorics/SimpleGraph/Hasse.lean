@@ -122,11 +122,11 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covby_iff, Nat.covby_iff_succ_eq]
 
 /-- Hommorphism from smaller path graph to bigger path graph· -/
-def pathGraph_self_Hom {n m : ℕ} (hnm : n ≤ m) : pathGraph n →g pathGraph m where
+protected def Hom.pathGraph {n m : ℕ} (hnm : n ≤ m) : pathGraph n →g pathGraph m where
   toFun v := ⟨v.val, trans v.is_lt hnm⟩
   map_rel' := by simp [pathGraph_adj]
 
-theorem pathGraph_self_Hom_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
-    (pathGraph_self_Hom hnm u).val = u.val := rfl
+protected theorem Hom.pathGraph_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
+    (Hom.pathGraph hnm u).val = u.val := rfl
 
 end SimpleGraph

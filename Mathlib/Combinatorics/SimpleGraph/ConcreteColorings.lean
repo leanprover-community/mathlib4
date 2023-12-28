@@ -64,9 +64,9 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
       exact hc0
     · intro (hn' : 1 ≤ n)
       let new_hom : pathGraph n →g G :=
-        Hom.comp hom (pathGraph_self_Hom (Nat.le_add_right n 1))
+        Hom.comp hom (Hom.pathGraph (Nat.le_add_right n 1))
       have hhom0 : c (new_hom ⟨0, hn'⟩) := by
-        simp [pathGraph_self_Hom_val, pathGraph_self_Hom]
+        simp [Hom.pathGraph_val, Hom.pathGraph]
         exact hc0
       have h_new_hom := ih hn' new_hom hhom0
       have hu : u.val < n ∨ u.val = n := le_iff_lt_or_eq.mp u.is_le
