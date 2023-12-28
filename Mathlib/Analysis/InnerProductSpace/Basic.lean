@@ -81,11 +81,18 @@ class Inner (𝕜 E : Type*) where
 
 export Inner (inner)
 
-/-- The inner product with values in `ℝ`. -/
-notation "⟪" x ", " y "⟫_ℝ" => @inner ℝ _ _ x y
+/-- The inner product with values in `𝕜`. -/
+notation:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
 
-/-- The inner product with values in `ℂ`. -/
-notation "⟪" x ", " y "⟫_ℂ" => @inner ℂ _ _ x y
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `Inner.inner` -/
+@[delab app.Inner.inner]
+def delabInner : Delab := do
+  guard <| (← getExpr).isAppOfArity' ``inner 5
+  let 𝕜 ← withNaryArg 0 delab
+  let x ← withNaryArg 3 delab
+  let y ← withNaryArg 4 delab
+  `(⟪$x, $y⟫_$𝕜)
 
 section Notations
 
