@@ -108,6 +108,9 @@ protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
 #align module.rank Module.rank
 
+theorem rank_le_card : Module.rank K V ≤ #V :=
+  (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
+
 lemma nonempty_linearIndependent_set : Nonempty {s : Set V // LinearIndependent K ((↑) : s → V)} :=
   ⟨⟨∅, linearIndependent_empty _ _⟩⟩
 
@@ -1518,8 +1521,8 @@ theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
 #align linear_map.rank_finset_sum_le LinearMap.rank_finset_sum_le
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
-    c ≤ rank f ↔ ∃ s : Set V, Cardinal.lift.{v'} #s =
-    Cardinal.lift.{v} c ∧ LinearIndependent K fun x : s => f x := by
+    c ≤ rank f ↔ ∃ s : Set V,
+    Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndependent K (fun x : s => f x) := by
   rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
   have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
   refine' ⟨fun h => _, _⟩

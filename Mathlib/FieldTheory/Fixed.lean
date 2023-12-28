@@ -144,7 +144,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine' (@sum_attach _ _ s _ fun i => (g • l i - l i) • MulAction.toFun G F i).trans _
+  refine' (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans _
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
