@@ -89,7 +89,7 @@ theorem image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s
 #align set.image_smul_prod Set.image_smul_prod
 
 @[to_additive]
-theorem mem_smul : b ∈ s • t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x • y = b :=
+theorem mem_smul : b ∈ s • t ↔ ∃ x ∈ s, ∃ y ∈ t, x • y = b :=
   Iff.rfl
 #align set.mem_smul Set.mem_smul
 #align set.mem_vadd Set.mem_vadd
@@ -445,11 +445,7 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 @[to_additive]
 theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
     range b • range c = range fun p : ι × κ ↦ b p.1 • c p.2 :=
-  ext fun _x ↦
-    ⟨fun hx ↦
-      let ⟨_p, _q, ⟨i, hi⟩, ⟨j, hj⟩, hpq⟩ := Set.mem_smul.1 hx
-      ⟨(i, j), hpq ▸ hi ▸ hj ▸ rfl⟩,
-      fun ⟨⟨i, j⟩, h⟩ ↦ Set.mem_smul.2 ⟨b i, c j, ⟨i, rfl⟩, ⟨j, rfl⟩, h⟩⟩
+  image2_range ..
 #align set.range_smul_range Set.range_smul_range
 #align set.range_vadd_range Set.range_vadd_range
 
@@ -489,26 +485,26 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 #align set.smul_comm_class Set.smulCommClass
 #align set.vadd_comm_class Set.vaddCommClass
 
-@[to_additive vAddAssocClass]
+@[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
   smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 #align set.is_scalar_tower Set.isScalarTower
-#align set.vadd_assoc_class Set.vAddAssocClass
+#align set.vadd_assoc_class Set.vaddAssocClass
 
-@[to_additive vAddAssocClass']
+@[to_additive vaddAssocClass']
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 #align set.is_scalar_tower' Set.isScalarTower'
-#align set.vadd_assoc_class' Set.vAddAssocClass'
+#align set.vadd_assoc_class' Set.vaddAssocClass'
 
-@[to_additive vAddAssocClass'']
+@[to_additive vaddAssocClass'']
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Set α) (Set β) (Set γ) where
   smul_assoc _ _ _ := image2_assoc smul_assoc
 #align set.is_scalar_tower'' Set.isScalarTower''
-#align set.vadd_assoc_class'' Set.vAddAssocClass''
+#align set.vadd_assoc_class'' Set.vaddAssocClass''
 
 @[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
@@ -616,7 +612,7 @@ theorem image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = 
   image_prod _
 #align set.image_vsub_prod Set.image_vsub_prod
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x -ᵥ y = a :=
+theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ x ∈ s, ∃ y ∈ t, x -ᵥ y = a :=
   Iff.rfl
 #align set.mem_vsub Set.mem_vsub
 
@@ -818,7 +814,7 @@ theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
 #align set.nonempty.zero_smul Set.Nonempty.zero_smul
 
 /-- A nonempty set is scaled by zero to the singleton set containing 0. -/
-theorem zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
+@[simp] theorem zero_smul_set {s : Set β} (h : s.Nonempty) : (0 : α) • s = (0 : Set β) := by
   simp only [← image_smul, image_eta, zero_smul, h.image_const, singleton_zero]
 #align set.zero_smul_set Set.zero_smul_set
 
@@ -839,13 +835,13 @@ variable [NoZeroSMulDivisors α β] {a : α}
 theorem zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   constructor
-  · rintro ⟨a, b, ha, hb, h⟩
+  · rintro ⟨a, ha, b, hb, h⟩
     obtain rfl | rfl := eq_zero_or_eq_zero_of_smul_eq_zero h
     · exact Or.inl ⟨ha, b, hb⟩
     · exact Or.inr ⟨hb, a, ha⟩
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)
-    · exact ⟨0, b, hs, hb, zero_smul _ _⟩
-    · exact ⟨a, 0, ha, ht, smul_zero _⟩
+    · exact ⟨0, hs, b, hb, zero_smul _ _⟩
+    · exact ⟨a, ha, 0, ht, smul_zero _⟩
 #align set.zero_mem_smul_iff Set.zero_mem_smul_iff
 
 theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
@@ -964,7 +960,7 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
-  eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul _ _⟩
+  eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul _ _⟩
 #align set.smul_univ Set.smul_univ
 #align set.vadd_univ Set.vadd_univ
 
@@ -1013,6 +1009,14 @@ theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | �
   by simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
 #align set.Union_smul_eq_set_of_exists Set.iUnion_smul_eq_setOf_exists
 #align set.Union_vadd_eq_set_of_exists Set.iUnion_vadd_eq_setOf_exists
+
+@[to_additive (attr := simp)]
+lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
+  ext; simp [mem_smul_set_iff_inv_smul_mem]
+
+@[to_additive (attr := simp)]
+lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
+  ext; simp [mem_smul_set_iff_inv_smul_mem]
 
 end Group
 
@@ -1072,12 +1076,24 @@ theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
 
 theorem smul_univ₀ {s : Set α} (hs : ¬s ⊆ 0) : s • (univ : Set β) = univ :=
   let ⟨a, ha, ha₀⟩ := not_subset.1 hs
-  eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul₀ ha₀ _⟩
+  eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul₀ ha₀ _⟩
 #align set.smul_univ₀ Set.smul_univ₀
 
 theorem smul_univ₀' {s : Set α} (hs : s.Nontrivial) : s • (univ : Set β) = univ :=
   smul_univ₀ hs.not_subset_singleton
 #align set.smul_univ₀' Set.smul_univ₀'
+
+@[simp] protected lemma inv_zero : (0 : Set α)⁻¹ = 0 := by ext; simp
+
+@[simp] lemma inv_smul_set_distrib₀ (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
+  obtain rfl | ha := eq_or_ne a 0
+  · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
+  · ext; simp [mem_smul_set_iff_inv_smul_mem₀, *]
+
+@[simp] lemma inv_op_smul_set_distrib₀ (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
+  obtain rfl | ha := eq_or_ne a 0
+  · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
+  · ext; simp [mem_smul_set_iff_inv_smul_mem₀, *]
 
 end GroupWithZero
 

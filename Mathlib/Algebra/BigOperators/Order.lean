@@ -242,7 +242,7 @@ variable {ι' : Type*} [DecidableEq ι']
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
 theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
+    (h : ∀ y ∉ t, (1 : N) ≤ ∏ x in s.filter fun x ↦ g x = y, f x) :
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤ ∏ x in s, f x :=
   calc
     (∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x) ≤
@@ -256,7 +256,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
+    (h : ∀ y ∉ t, ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
     ∏ x in s, f x ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 #align finset.prod_le_prod_fiberwise_of_prod_fiber_le_one' Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
@@ -385,7 +385,7 @@ theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset �
     add_le_add_right
       ((card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
             nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_of_subset <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
+        card_le_card <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
       _
 #align finset.card_le_card_bUnion_add_card_fiber Finset.card_le_card_biUnion_add_card_fiber
 

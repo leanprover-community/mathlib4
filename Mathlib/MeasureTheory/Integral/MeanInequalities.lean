@@ -205,10 +205,10 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
     (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     {p : ι → ℝ} (hp : ∑ i in s, p i = 1) (h2p : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤ ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
-  induction s using Finset.induction generalizing p
-  case empty =>
+  induction s using Finset.induction generalizing p with
+  | empty =>
     simp at hp
-  case insert i₀ s hi₀ ih =>
+  | @insert i₀ s hi₀ ih =>
     rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
     · simp [hi₀]
       have h2p : ∀ i ∈ s, p i = 0 := by
@@ -322,10 +322,6 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
   have hq0_lt : 0 < q := lt_of_le_of_lt hp0 hpq
   have hq0_ne : q ≠ 0 := (ne_of_lt hq0_lt).symm
   have h_one_div_r : 1 / r = 1 / p - 1 / q := by rw [hpqr]; simp
-  have _ : r ≠ 0 := by
-    have hr_inv_pos : 0 < 1 / r := by rwa [h_one_div_r, sub_pos, one_div_lt_one_div hq0_lt hp0_lt]
-    rw [one_div, _root_.inv_pos] at hr_inv_pos
-    exact (ne_of_lt hr_inv_pos).symm
   let p2 := q / p
   let q2 := p2.conjugateExponent
   have hp2q2 : p2.IsConjugateExponent q2 :=
