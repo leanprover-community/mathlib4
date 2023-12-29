@@ -348,19 +348,16 @@ def horn.edge {n : ℕ} {i : Fin (n+1)}
 open Finset in
 lemma exists_ne_ne_ne_of_four_le (n : ℕ) (hn : 4 ≤ n) (a b c : Fin n) :
     ∃ d, ¬a = d ∧ ¬b = d ∧ ¬c = d := by
-  let S : Finset (Fin n) := {a, b, c}
-  have hS : S.card ≤ 3 := by
-    apply (card_insert_le _ _).trans
-    apply Nat.succ_le_succ
-    apply (card_insert_le _ _).trans
-    apply Nat.succ_le_succ
-    simp
-  obtain ⟨d, hd⟩ : (Finset.univ \ S).Nonempty := by
-    rw [← card_pos, card_sdiff (subset_univ _), card_fin, tsub_pos_iff_lt]
-    apply lt_of_le_of_lt hS
-    omega
-  simp [not_or, @eq_comm _ d] at hd
-  use d
+  by_contra! h
+  replace h : Finset.univ ⊆ {a, b, c} :=
+    fun d _ ↦ by simpa [or_iff_not_imp_left, eq_comm] using h d
+  replace h := card_le_card h
+  rw [card_fin] at h
+  have : ¬ (4:ℕ) ≤ 3 := by decide
+  apply this ((hn.trans h).trans _)
+  apply (card_insert_le _ _).trans; apply Nat.succ_le_succ
+  apply (card_insert_le _ _).trans; apply Nat.succ_le_succ
+  simp
 
 def horn.edge' {n m : ℕ} {i : Fin (n+4)}
     (f : Λ[n+3, i] _[m]) (k : ℕ) (hk : k + 1 ≤ m) :
