@@ -60,7 +60,7 @@ lemma GradedRing.mem_homogeneousComponents_iff [DecidableEq A] (a c : A) :
 lemma GradedRing.mem_homogeneousSubmonoid_of_mem_homogeneousComponents [DecidableEq A]
     (a c : A) (hc : c ∈ GradedRing.homogeneousComponents 𝒜 a) :
     c ∈ SetLike.homogeneousSubmonoid 𝒜 := by
-  rw [←(GradedRing.exists_of_mem_homogeneousComponents 𝒜 a c hc).choose_spec]
+  rw [← (GradedRing.exists_of_mem_homogeneousComponents 𝒜 a c hc).choose_spec]
   dsimp [SetLike.homogeneousSubmonoid]
   simp only [Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, SetLike.homogeneous_coe]
 
@@ -76,7 +76,7 @@ lemma FG.spanningSet_span_eq : Ideal.span (FG.spanningSet 𝒜 I hI) = I.toIdeal
 lemma FG.decompose_mem_toIdeal_of_mem_spanningSet (i : ι) (a : A) : a ∈ FG.spanningSet 𝒜 I hI →
     ((DirectSum.decompose 𝒜 a) i : A) ∈ I.toIdeal :=
   λ ha ↦ I.isHomogeneous i <| show a ∈ I.toIdeal by
-  rw [←spanningSet_span_eq]; exact Ideal.subset_span ha
+  rw [← spanningSet_span_eq]; exact Ideal.subset_span ha
 
 variable [DecidableEq A]
 
@@ -103,7 +103,7 @@ lemma FG.ne_zero_of_mem_homoSpanningSet (a : A) (ha : a ∈ FG.homoSpanningSet �
   rw [GradedRing.homogeneousComponents, Finset.mem_image] at hsa
   rcases hsa with ⟨i, hi1, hi2⟩
   rw [DFinsupp.mem_support_iff] at hi1
-  rw [←hi2]
+  rw [← hi2]
   simp only [ne_eq, ZeroMemClass.coe_eq_zero]
   exact hi1
 
@@ -142,9 +142,9 @@ lemma FG.decompose_mem_homoSpanningSet_of_mem_spanningSet (a : A) (i : ι)
 
 lemma FG.toIdeal_le_homoSpanningSet_span :
     I.toIdeal ≤ Ideal.span (FG.homoSpanningSet 𝒜 I hI) := by
-  rw [←spanningSet_span_eq, Ideal.span_le]
+  rw [← spanningSet_span_eq, Ideal.span_le]
   exact (λ s hs ↦ by
-    rw [←DirectSum.sum_support_decompose 𝒜 s];
+    rw [← DirectSum.sum_support_decompose 𝒜 s];
     exact @Ideal.sum_mem A _ (Ideal.span (homoSpanningSet 𝒜 I hI)) ι
       (DFinsupp.support (DirectSum.decompose 𝒜 s)) (fun i ↦ DirectSum.decompose 𝒜 s i) (λ i hi
       ↦ Ideal.subset_span (decompose_mem_homoSpanningSet_of_mem_spanningSet 𝒜 I hI s i hs hi)))
