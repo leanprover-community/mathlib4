@@ -174,12 +174,12 @@ noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
     (fun p ↦ ⟨p.asIdeal, p.IsPrime.isMinimal_of_dim_zero h⟩ : PrimeSpectrum R → minimalPrimes R)
     (fun _ _ H ↦ PrimeSpectrum.ext _ _ <| Subtype.ext_iff.mp H)
 
-open TopologicalSpace in
-lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
-    IsArtinianRing R := by
-  letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
+-- open TopologicalSpace in
+-- lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
+--    IsArtinianRing R := by
+--  letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
 
-  sorry
+--  sorry
 
 end artinian_and_noetherian
 
