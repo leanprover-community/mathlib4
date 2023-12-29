@@ -298,27 +298,8 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
   ext1 n
   classical
   simp only [coeff_mul, Finset.sum_mul, Finset.mul_sum, Finset.sum_sigma']
-  refine' Finset.sum_bij (fun p _ => ⟨(p.2.1, p.2.2 + p.1.2), (p.2.2, p.1.2)⟩) _ _ _ _ <;>
-    simp only [mem_antidiagonal, Finset.mem_sigma, heq_iff_eq, Prod.mk.inj_iff, and_imp,
-      exists_prop]
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩
-    dsimp only
-    rintro rfl rfl
-    simp [add_assoc]
-  · rintro ⟨⟨a, b⟩, ⟨c, d⟩⟩
-    dsimp only
-    rintro rfl rfl
-    apply mul_assoc
-  · rintro ⟨⟨a, b⟩, ⟨c, d⟩⟩ ⟨⟨i, j⟩, ⟨k, l⟩⟩
-    dsimp only
-    rintro rfl rfl - rfl
-    simp only [Sigma.mk.inj_iff, Prod.mk.injEq, heq_iff_eq, and_imp]
-    rintro rfl - rfl rfl
-    simp only [and_self]
-  · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩
-    dsimp only
-    rintro rfl rfl
-    refine' ⟨⟨(i + k, l), (i, k)⟩, _, _⟩ <;> simp [add_assoc]
+  apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
+    (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 #align mv_power_series.mul_assoc MvPowerSeries.mul_assoc
 
 instance : Semiring (MvPowerSeries σ R) :=
@@ -1975,35 +1956,21 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   split_ifs; · rfl
   congr 1
   symm
-  apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
-  · rintro ⟨i, j⟩ hij
-    rw [mem_antidiagonal] at hij
-    rw [mem_antidiagonal, ← Finsupp.single_add, hij]
+  apply Finset.sum_nbij' (fun (a, b) ↦ (single () a, single () b))
+    fun (f, g) ↦ (f (), g ())
+  · aesop
+  · aesop
+  · aesop
+  · aesop
   · rintro ⟨i, j⟩ _hij
-    by_cases H : j < n
-    · rw [if_pos H, if_pos]
-      · rfl
-      constructor
-      · rintro ⟨⟩
-        simpa [Finsupp.single_eq_same] using le_of_lt H
-      · intro hh
-        rw [lt_iff_not_ge] at H
-        apply H
-        simpa [Finsupp.single_eq_same] using hh ()
-    · rw [if_neg H, if_neg]
-      rintro ⟨_h₁, h₂⟩
-      apply h₂
-      rintro ⟨⟩
-      simpa [Finsupp.single_eq_same] using not_lt.1 H
-  · rintro ⟨i, j⟩ ⟨k, l⟩ _hij _hkl
-    simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
-  · rintro ⟨f, g⟩ hfg
-    refine' ⟨(f (), g ()), _, _⟩
-    · rw [mem_antidiagonal] at hfg
-      rw [mem_antidiagonal, ← Finsupp.add_apply, hfg, Finsupp.single_eq_same]
-    · rw [Prod.mk.inj_iff]
-      dsimp
-      exact ⟨Finsupp.unique_single f, Finsupp.unique_single g⟩
+    obtain H | H := le_or_lt n j
+    · aesop
+    rw [if_pos H, if_pos]
+    · rfl
+    refine ⟨?_, fun hh ↦ H.not_le ?_⟩
+    · rintro ⟨⟩
+      simpa [Finsupp.single_eq_same] using le_of_lt H
+    · simpa [Finsupp.single_eq_same] using hh ()
 #align power_series.coeff_inv_aux PowerSeries.coeff_inv_aux
 
 /-- A formal power series is invertible if the constant coefficient is invertible.-/
@@ -2363,10 +2330,9 @@ theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := 
 then the order of the power series is less than or equal to `n`.-/
 theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
   classical
-  have _ :  ∃ n, coeff R n φ ≠ 0 := Exists.intro n h
   rw [order, dif_neg]
-  · simp only [PartENat.coe_le_coe, Nat.find_le_iff]
-    exact ⟨n, le_rfl, h⟩
+  · simp only [PartENat.coe_le_coe]
+    exact Nat.find_le h
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
 #align power_series.order_le PowerSeries.order_le
 

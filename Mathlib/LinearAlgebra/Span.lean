@@ -673,7 +673,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
   exact
-    CompleteLattice.finset_sup_compact_of_compact S fun x _ => singleton_span_isCompactElement x
+    CompleteLattice.isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
 #align submodule.finset_span_is_compact_element Submodule.finset_span_isCompactElement
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
