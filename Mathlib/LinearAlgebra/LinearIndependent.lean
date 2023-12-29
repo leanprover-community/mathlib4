@@ -170,9 +170,6 @@ theorem not_linearIndependent_iff :
   simp only [exists_prop, not_forall]
 #align not_linear_independent_iff not_linearIndependent_iff
 
-lemma not_linearIndependent_of_mem_span (i : ι) (s : Set ι)
-  (hs1 : i ∉ s) (hs2 : v i ∈ Submodule.span R (v '' s)) : ¬ LinearIndependent R v := sorry
-
 theorem Fintype.linearIndependent_iff [Fintype ι] :
     LinearIndependent R v ↔ ∀ g : ι → R, ∑ i, g i • v i = 0 → ∀ i, g i = 0 := by
   refine'

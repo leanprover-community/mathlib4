@@ -857,10 +857,7 @@ theorem Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module
       erw [r] at mem1
       exact mem2 mem1
     intro r
-    suffices : ¬ LinearIndependent K b
-    · exact this b.linearIndependent
-    apply not_linearIndependent_of_mem_span (hs2 := r)
-    simp
+    exact b.linearIndependent.not_mem_span_image (by simp) r
   · rw [← finiteLengthModule_over_field_iff_finite_dimensional]
     intro h
     replace h := Classical.choice h.finite
