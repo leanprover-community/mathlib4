@@ -2146,5 +2146,61 @@ protected lemma real.cInf_lt_iff {S : Set (real Z b)} {hn : S.Nonempty} {h : Bdd
     contrapose! hg'
     exact hg'.trans (real.cInf_le _ _ _ _ hg)
 
+noncomputable instance : ConditionallyCompleteLinearOrder (real Z b) :=
+  { DigitExpansion.real.instLinearOrder _
+    _ with
+    sup := max
+    inf := min
+    le_sup_left := le_max_left
+    le_sup_right := le_max_right
+    sup_le := fun _ _ _ => max_le
+    inf_le_left := min_le_left
+    inf_le_right := min_le_right
+    le_inf := fun _ _ _ => le_min
+    sSup := fun s => if h : s.Nonempty ∧ BddAbove s then
+      - real.cInf (-s) (by simpa using h.left.image (- ·)) (by
+          have : Antitone (fun x : real Z b ↦ -x) := by intro; simp
+          simpa using this.map_bddAbove h.right
+        )
+        else 0
+    sInf := fun s => if h : s.Nonempty ∧ BddBelow s then real.cInf s h.left h.right else 0
+    le_csSup := by
+      intro s x hs hx
+      have hs' : s.Nonempty := ⟨_, hx⟩
+      have hx' : -x ∈ -s := by simp [hx]
+      simpa [hs', hs, ←le_neg (b := x)] using real.cInf_le _ _ _ _ hx'
+    le_csInf := by
+      intro s x hs hx
+      have hs' : BddBelow s := ⟨x, hx⟩
+      simp only [hs, hs', and_self, dite_true, ge_iff_le]
+      rw [←not_lt, real.cInf_lt_iff]
+      push_neg
+      intro _ hg
+      exact hx hg
+    csSup_le := by
+      intro s x hs hx
+      have hs' : BddAbove s := ⟨x, hx⟩
+      simp only [hs, hs', and_self, dite_true, ge_iff_le]
+      rw [neg_le, ←not_lt, real.cInf_lt_iff]
+      push_neg
+      intro _ hg
+      rw [neg_le]
+      exact hx hg
+    csInf_le := by
+      intro s _ hs hx
+      have hs' : s.Nonempty := ⟨_, hx⟩
+      simpa [hs, hs'] using real.cInf_le _ _ _ _ hx
+    csSup_of_not_bddAbove := by
+      intro _ hs
+      dsimp only
+      rw [dif_neg, dif_neg] <;>
+      simp [hs]
+    csInf_of_not_bddBelow := by
+      intro _ hs
+      dsimp only
+      rw [dif_neg, dif_neg] <;>
+      simp [hs]
+  }
+
 end DigitExpansion
 end S10
