@@ -7,6 +7,7 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Abel
 
 /-!
