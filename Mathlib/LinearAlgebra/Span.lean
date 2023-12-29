@@ -183,11 +183,11 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
 open AddSubmonoid in
 theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ R • s) := by
   refine le_antisymm
-    (fun x hx ↦ span_induction hx (fun x hx ↦ subset_closure ⟨1, x, trivial, hx, one_smul R x⟩)
+    (fun x hx ↦ span_induction hx (fun x hx ↦ subset_closure ⟨1, trivial, x, hx, one_smul R x⟩)
       (zero_mem _) (fun _ _ ↦ add_mem) fun r m hm ↦ closure_induction hm ?_ ?_ fun _ _ h h' ↦ ?_)
     (closure_le.2 ?_)
-  · rintro _ ⟨r, m, -, hm, rfl⟩; exact smul_mem _ _ (subset_span hm)
-  · rintro _ ⟨r', m, -, hm, rfl⟩; exact subset_closure ⟨r * r', m, trivial, hm, mul_smul r r' m⟩
+  · rintro _ ⟨r, -, m, hm, rfl⟩; exact smul_mem _ _ (subset_span hm)
+  · rintro _ ⟨r', -, m, hm, rfl⟩; exact subset_closure ⟨r * r', trivial, m, hm, mul_smul r r' m⟩
   · rw [smul_zero]; apply zero_mem
   · rw [smul_add]; exact add_mem h h'
 
@@ -198,7 +198,7 @@ theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
     (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ r : R, ∀ x ∈ s, p (r • x)) : p x := by
   rw [← mem_toAddSubmonoid, span_eq_closure] at h
   refine AddSubmonoid.closure_induction h ?_ H0 H1
-  rintro _ ⟨r, m, -, hm, rfl⟩
+  rintro _ ⟨r, -, m, hm, rfl⟩
   exact H2 r m hm
 
 /-- A dependent version of `Submodule.closure_induction`. -/
