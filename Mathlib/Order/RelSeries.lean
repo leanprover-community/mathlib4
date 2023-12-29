@@ -1,15 +1,13 @@
 /-
 Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
+Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.Rel
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Abel
 
 /-!
 # Series of a relation
@@ -20,6 +18,7 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 -/
 
 variable {α : Type*} (r : Rel α α)
+variable {β : Type*} (s : Rel β β)
 
 /--
 Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
@@ -199,136 +198,126 @@ protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSe
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
+instance membership : Membership α (RelSeries r) :=
+  ⟨(· ∈ Set.range ·)⟩
+
+theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
+  Iff.rfl
+
+/-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
+
+Since a relation series is assumed to be non-empty, this is well defined. -/
+def head (x : RelSeries r) : α := x 0
+
+/-- End of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its last element is `aₙ`.
+
+Since a relation series is assumed to be non-empty, this is well defined. -/
+def last (x : RelSeries r) : α := x <| Fin.last _
+
+lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
+
+lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
+
 variable {r}
 
 /--
-If `a_0 --r-> a_1 --r-> ... --r-> a_n` and `b_0 --r-> b_1 --r-> ... --r-> b_m` are two strict series
-such that `r a_n b_0`, then there is a chain of length `n + m + 1` given by
-`a_0 --r-> a_1 --r-> ... --r-> a_n --r-> b_0 --r-> b_1 --r-> ... --r-> b_m`.
+If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
+such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
+`a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
 @[simps]
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ Fin.cast (by ring)
-  step := fun i => by
-    obtain (hi|rfl|hi) :=
+  toFun := Fin.append p q ∘ Fin.cast (by abel)
+  step i := by
+    obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by linarith) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;>
-      · convert Fin.append_left p q _
-        rfl
+    · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
-      convert Fin.append_left p q _
-      · rfl
-      · convert Fin.append_right p q _
-        rfl
+      · convert Fin.append_left p q _; rfl
+      · convert Fin.append_right p q _; rfl
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-        i.2.trans <| by linarith⟩
+        i.2.trans <| by linarith!⟩
+      · ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
+      have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
+        (by exact i.2)⟩
       · ext
-        change _ = _ + (_ - _)
-        rw [Nat.add_sub_cancel']
         dsimp
-        exact hi
-      have hy : y = Fin.natAdd _ ⟨i - p.length,
-        by
-          apply Nat.sub_lt_left_of_lt_add (le_of_lt hi)
-          exact i.2⟩
-      · ext
-        change _ = _ + (_ - _)
-        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc]
-        rw [Nat.add_sub_cancel']
-        swap; exact le_of_lt hi
-        conv_rhs => rw [add_comm]
+        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
+          Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
       rw [hx, Fin.append_right, hy, Fin.append_right]
-      convert q.step _
-      pick_goal 3
-      · refine ⟨i - (p.length + 1), ?_⟩
-        apply Nat.sub_lt_left_of_lt_add hi
-        convert i.2 using 1
-        dsimp
-        rw [Nat.succ_eq_add_one]
-        ring
-      · rfl
-      · dsimp
-        rw [Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
-          Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
-        exact hi
+      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
+        by convert i.2 using 1; abel⟩
+      rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
+        Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
+      exact hi
 
 /--
-If `a_0 --r-> a_1 --r-> ... --r-> a_n` is an `r`-series and `a` is such that
-`a_i --r-> a --r-> a_{i + 1}`, then
-`a_0 --r-> a_1 --r-> ... --r-> a_i --r-> a --r-> a_{i + 1} --r-> ... --r-> a_n`
+For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
+`r`-series can be pushed out to an `s`-series by
+`a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
+-/
+@[simps]
+def map (p : RelSeries r)
+    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+  length := p.length
+  toFun := f.comp p
+  step := (hf <| p.step .)
+
+/--
+If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
+`aᵢ -r→ a -r→ a_ᵢ₊₁`, then
+`a₀ -r→ a₁ -r→ ... -r→ a_i -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
-  length := p.length + 1
   toFun :=  (Fin.castSucc i.succ).insertNth a p
-  step := fun m => by
-    set x := _; set y := _
-    change r x y
-    obtain (hm|hm|hm) := lt_trichotomy m.1 i.1
-    · have hx : x = p m
-      · change Fin.insertNth _ _ _ _ = _
+  step m := by
+    set x := _; set y := _; change r x y
+    obtain hm | hm | hm := lt_trichotomy m.1 i.1
+    · convert p.step ⟨m, hm.trans i.2⟩
+      · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        swap; exact hm.trans (lt_add_one _)
-        simp only [Fin.castLT_castSucc, eq_rec_constant]
-      convert p.step ⟨m, hm.trans i.2⟩
-      change Fin.insertNth _ _ _ _ = _
-      rw [Fin.insertNth_apply_below]
-      simp only [eq_rec_constant]
-      congr
-      change m.1 + 1 < i.1 + 1
-      simpa only [add_lt_add_iff_right]
-    · have hx : x = p m
-      · change Fin.insertNth _ _ _ _ = _
+        pick_goal 2; exact hm.trans (lt_add_one _)
+        simp
+      · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        swap
-        · change m.1 < i.1 + 1
-          rw [hm]
-          exact lt_add_one _
-        simp only [Fin.castLT_castSucc, eq_rec_constant]
-      rw [hx]
+        pick_goal 2; change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
+        simp; rfl
+    · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
+        rw [Fin.insertNth_apply_below]
+        pick_goal 2; show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
+        simp]
       convert prev_connect
       · ext; exact hm
       · change Fin.insertNth _ _ _ _ = _
-        have H : m.succ = i.succ.castSucc
-        · ext; change _ + 1 = _ + 1; rw [hm]
-        rw [H, Fin.insertNth_apply_same]
+        rw [show m.succ = i.succ.castSucc by ext; change _ + 1 = _ + 1; rw [hm],
+          Fin.insertNth_apply_same]
     · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
-      obtain (hm|hm) := hm
-      · have hx : x = p ⟨m.1 - 1, (Nat.sub_lt (by linarith) (by linarith)).trans m.2⟩
+      obtain hm | hm := hm
+      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
-          rw [Fin.insertNth_apply_above]
-          swap; exact hm
-          simp only [eq_rec_constant]
-          congr
-        have hy : y = p m
+          rw [Fin.insertNth_apply_above (h := hm)]
+          aesop
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; exact hm.trans (lt_add_one _)
-          simp only [Fin.pred_succ, eq_rec_constant]
-        rw [hy]
-        convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by linarith) m.2⟩
-        ext
-        symm
-        exact Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
-      · have hx : x = a
+          simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
+            Fin.succ_mk]
+          congr
+          exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
+      · convert connect_next
         · change Fin.insertNth _ _ _ _ = _
-          have H : m.castSucc = i.succ.castSucc
-          · ext; change m.1 = i.1 + 1; rw [hm]
-          rw [H, Fin.insertNth_apply_same]
-        have hy : y = p m
+          rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
           simp only [Fin.pred_succ, eq_rec_constant]
-        rw [hy]
-        convert connect_next
-        ext
-        exact hm.symm
+          congr; ext; exact hm.symm
 
 variable {β} (s : Rel β β)
 
@@ -741,8 +730,16 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
+
+/-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
+@[simps]
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
+    LTSeries α where
+  toFun := toFun
+  step i := strictMono <| lt_add_one i.1
+
 /--
-For two pre-ordered sets `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
+For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
 can be pushed out to a strict chain of `β` by
 `a₀ < a₁ < ... < aₙ ↦ f a₀ < f a₁ < ... < f aₙ`
 -/
@@ -751,20 +748,17 @@ def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
 
 /--
-For two pre-ordered sets `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
+For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
 strict series of `β` can be pulled back to a strict chain of `α` by
 `b₀ < b₁ < ... < bₙ ↦ f⁻¹ b₀ < f⁻¹ b₁ < ... < f⁻¹ bₙ` where `f⁻¹ bᵢ` is an arbitrary element in the
 preimage of `f⁻¹ {bᵢ}`.
 -/
 @[simps!]
 noncomputable def comap (p : LTSeries β) (f : α → β)
-  (hf1 : ∀ ⦃x y⦄, f x < f y → x < y)
-  (hf2 : Function.Surjective f) :
-  LTSeries α := mk p.length (fun i ↦ (hf2 (p i)).choose)
-    (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
+  (comap : ∀ ⦃x y⦄, f x < f y → x < y)
+  (surjective : Function.Surjective f) :
+  LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
+    (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
-lemma exists_len_gt_of_noTopOrder [InfiniteDimensionalOrder α] (n : ℕ) :
-    ∃ (p : LTSeries α), n < p.length :=
-  RelSeries.exists_len_gt_of_infiniteDimensional _ n
 
 end LTSeries

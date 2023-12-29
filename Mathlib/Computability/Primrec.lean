@@ -971,9 +971,8 @@ instance list : Primcodable (List α) :=
         intro n IH; simp
         cases' @decode α _ n.unpair.1 with a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
-        suffices :
-          ∀ (o : Option (List ℕ)) (p) (_ : encode o = encode p),
-            encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
+        suffices : ∀ (o : Option (List ℕ)) (p), encode o = encode p →
+          encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
         exact this _ _ (IH _ (Nat.unpair_right_le n))
         intro o p IH
         cases o <;> cases p
@@ -1378,12 +1377,12 @@ namespace Nat.Primrec'
 open Vector Primrec
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
-  induction pf
-  case zero => exact .const 0
-  case succ => exact _root_.Primrec.succ.comp .vector_head
-  case get n i => exact Primrec.vector_get.comp .id (.const i)
-  case comp m n f g _ _ hf hg => exact hf.comp (.vector_ofFn fun i => hg i)
-  case prec n f g _ _ hf hg =>
+  induction pf with
+  | zero => exact .const 0
+  | succ => exact _root_.Primrec.succ.comp .vector_head
+  | get i => exact Primrec.vector_get.comp .id (.const i)
+  | comp _ _ _ hf hg => exact hf.comp (.vector_ofFn fun i => hg i)
+  | @prec n f g _ _ hf hg =>
     exact
       .nat_rec' .vector_head (hf.comp Primrec.vector_tail)
         (hg.comp <|
@@ -1526,14 +1525,14 @@ theorem of_prim {n f} : Primrec f → @Primrec' n f :=
             Primrec'.encode).of_eq
       fun i => by simp [encodek]
   fun f hf => by
-  induction hf
-  case zero => exact const 0
-  case succ => exact succ
-  case left => exact unpair₁ head
-  case right => exact unpair₂ head
-  case pair f g _ _ hf hg => exact natPair.comp₂ _ hf hg
-  case comp f g _ _ hf hg => exact hf.comp₁ _ hg
-  case prec f g _ _ hf hg =>
+  induction hf with
+  | zero => exact const 0
+  | succ => exact succ
+  | left => exact unpair₁ head
+  | right => exact unpair₂ head
+  | pair _ _ hf hg => exact natPair.comp₂ _ hf hg
+  | comp _ _ hf hg => exact hf.comp₁ _ hg
+  | prec _ _ hf hg =>
     simpa using
       prec' (unpair₂ head) (hf.comp₁ _ (unpair₁ head))
         (hg.comp₁ _ <|
