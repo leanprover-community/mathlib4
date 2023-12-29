@@ -222,7 +222,7 @@ variable {ι : Type u} (f : ι → CommRingCat.{u})
 /--
 The categorical pi object and usual pi object
 -/
-@[simps!]
+@[simps! pt]
 def piFan : Fan f :=
   Fan.mk (CommRingCat.of ((i : ι) → f i)) fun i ↦
     { toFun := fun g ↦ g i

@@ -60,7 +60,9 @@ and a sheaf of commutative rings (see `AlgebraicGeometry.StructureSheaf`).
 It is a fundamental building block in algebraic geometry. -/
 @[ext]
 structure PrimeSpectrum where
+  /--A point in the prime spectrum is a prime ideal.-/
   asIdeal : Ideal R
+  /--the underlying ideal is prime.-/
   IsPrime : asIdeal.IsPrime
 #align prime_spectrum PrimeSpectrum
 
@@ -929,6 +931,9 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
 #align prime_spectrum.localization_map_of_specializes PrimeSpectrum.localizationMapOfSpecializes
 
 variable (R) in
+/--
+each point in the prime spectrum corresponds to a closed irreducible set in the prime spectrum.
+-/
 @[simps] def bijection :
     PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsClosed s ∧ IsIrreducible s}ᵒᵈ :=
   { toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isClosed_zeroLocus p.asIdeal,
@@ -942,6 +947,9 @@ variable (R) in
       intro p q
       change zeroLocus _ ≤ zeroLocus _ ↔ _
       simp [zeroLocus_subset_zeroLocus_iff, q.IsPrime.radical] }
+
+attribute [nolint simpNF] PrimeSpectrum.bijection_apply_coe
+attribute [nolint simpNF] PrimeSpectrum.bijection_symm_apply_asIdeal
 
 end PrimeSpectrum
 

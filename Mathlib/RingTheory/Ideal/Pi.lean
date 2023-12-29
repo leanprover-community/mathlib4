@@ -20,6 +20,9 @@ namespace Ideal
 
 variable {f}
 
+/--
+Construct an ideal in the product of a family of rings `Rᵢ` from a family of `Iᵢ : Ideal Rᵢ`
+-/
 def Pi (I : (Π i, Ideal (f i))) : Ideal (Π i, f i) where
   carrier := { f | ∀ i, f i ∈ I i }
   add_mem' h h' i := (I i).add_mem (h i) (h' i)
@@ -55,6 +58,9 @@ lemma Pi_eq (I : Ideal (Π i, f i)) :
       · exact Finset.sum_congr rfl fun i _ ↦ by split_ifs <;> aesop]
     exact I.sum_mem fun j _ ↦ hy1 j
 
+/--
+Given an ideal of the product of a family of rings, we can obtain a family of ideals of each ring.
+-/
 def unPi (I : Ideal (Π i, f i)) (i : ι) : Ideal (f i) :=
   map (Pi.evalRingHom f i) I
 
@@ -75,7 +81,9 @@ lemma mem_prod_of_ideals (I : Ideal (Π i, f i)) (x : Π i, f i) :
     obtain ⟨y, hy1, hy2⟩ := H
     exact hy2 ▸ hy1 i
 
-
+/--
+The ideals in product ring are just products of ideals.
+-/
 def PiEquiv : (Π i, Ideal (f i)) ≃ Ideal (Π i, f i) where
   toFun := Pi
   invFun := unPi
