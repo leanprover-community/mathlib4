@@ -285,12 +285,12 @@ noncomputable instance : ConditionallyCompleteLinearOrder (real Z b) :=
       intro s x hs hx
       have hs' : s.Nonempty := ⟨_, hx⟩
       have hx' : -x ∈ ((- ·) '' s) := by simp [hx]
-      simpa [hs', hs, ←le_neg (b := x)] using real.sInf_le _ _ _ _ hx'
+      simpa [hs', hs, ← le_neg (b := x)] using real.sInf_le _ _ _ _ hx'
     le_csInf := by
       intro s x hs hx
       have hs' : BddBelow s := ⟨x, hx⟩
       simp only [hs, hs', and_self, dite_true, ge_iff_le]
-      rw [←not_lt, real.sInf_lt_iff]
+      rw [← not_lt, real.sInf_lt_iff]
       push_neg
       intro _ hg
       exact hx hg
@@ -298,7 +298,7 @@ noncomputable instance : ConditionallyCompleteLinearOrder (real Z b) :=
       intro s x hs hx
       have hs' : BddAbove s := ⟨x, hx⟩
       simp only [hs, hs', and_self, dite_true, ge_iff_le]
-      rw [neg_le, ←not_lt, real.sInf_lt_iff]
+      rw [neg_le, ← not_lt, real.sInf_lt_iff]
       push_neg
       intro g hg
       rw [neg_le]
