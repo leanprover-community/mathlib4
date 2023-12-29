@@ -509,7 +509,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
-            (lp.isLUB_norm f).1 (lp.isLUB_norm g).1 ⟨_, _, ⟨i, rfl⟩, ⟨i, rfl⟩, rfl⟩)
+            (lp.isLUB_norm f).1 (lp.isLUB_norm g).1 ⟨_, ⟨i, rfl⟩, _, ⟨i, rfl⟩, rfl⟩)
           exact norm_add_le (f i) (g i)
         · have hp'' : 0 < p.toReal := zero_lt_one.trans_le hp'
           have hf₁ : ∀ i, 0 ≤ ‖f i‖ := fun i => norm_nonneg _

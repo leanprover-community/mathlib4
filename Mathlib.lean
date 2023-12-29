@@ -2803,6 +2803,7 @@ import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.Rayleigh
 import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
+import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
@@ -3551,6 +3552,7 @@ import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.Category.UniformSpace
 import Mathlib.Topology.Clopen
+import Mathlib.Topology.ClopenBox
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactness.Compact
