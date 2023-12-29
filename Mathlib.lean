@@ -1472,6 +1472,12 @@ import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
+import Mathlib.Data.DigitExpansion.Add
+import Mathlib.Data.DigitExpansion.Defs
+import Mathlib.Data.DigitExpansion.Hensel
+import Mathlib.Data.DigitExpansion.Integer
+import Mathlib.Data.DigitExpansion.Real.Basic
+import Mathlib.Data.DigitExpansion.Real.ConditionallyComplete
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.DFinsupp.Encodable
 import Mathlib.Data.DFinsupp.Interval
@@ -1908,7 +1914,6 @@ import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Real.ConjugateExponents
-import Mathlib.Data.Real.DeBruijn.DigitExpansion
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
