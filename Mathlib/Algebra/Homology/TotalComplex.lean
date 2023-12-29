@@ -155,7 +155,8 @@ noncomputable def total : HomologicalComplex C c₁₂ where
               rw [K.d₂_eq c₁₂ i₁ h₈ i₁₂'' h₉, Linear.comp_units_smul,
                 HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero, smul_zero]
             · rw [K.d₂_eq_zero _ _ _ _ h₈, comp_zero, smul_zero]
-        · rw [K.d₂_eq_zero _ _ _ _ h₄, K.d₂_eq_zero _ _ _ _ h₄, comp_zero, zero_comp, smul_zero, add_zero]
+        · rw [K.d₂_eq_zero _ _ _ _ h₄, K.d₂_eq_zero _ _ _ _ h₄, comp_zero, zero_comp,
+            smul_zero, add_zero]
     · rw [K.d₁_eq_zero _ _ _ _ h₃, zero_comp, zero_add]
       by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
       · by_cases h₅ : ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, c₂.next i₂⟩ = i₁₂'
