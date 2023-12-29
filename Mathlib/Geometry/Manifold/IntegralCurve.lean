@@ -114,6 +114,11 @@ lemma isIntegralCurveAt_iff :
   obtain ⟨ε, hε, hsub⟩ := Metric.mem_nhds_iff.mp hs
   exact ⟨ε, hε, h.mono hsub⟩
 
+lemma IsIntegralCurveAt.hasMFDerivAt (h : IsIntegralCurveAt γ v t₀) :
+    HasMFDerivAt 𝓘(ℝ, ℝ) I γ t₀ ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t₀))) :=
+  have ⟨_, hs, h⟩ := h
+  h t₀ (mem_of_mem_nhds hs)
+
 lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ nhds t₀) :
     IsIntegralCurveAt γ v t₀ := ⟨s, hs, h⟩
 
