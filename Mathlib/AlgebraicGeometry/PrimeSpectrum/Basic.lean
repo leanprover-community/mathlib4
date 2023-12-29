@@ -982,30 +982,24 @@ lemma zeroLocus_minimalPrimes :
   simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
     using isClosed_of_mem_irreducibleComponents s hs
 
-lemma mem_irreducibleComponents_iff_vanishingIdeal_mem_minimalPrimes
-    {s : Set (PrimeSpectrum R)} (hs : IsClosed s) :
-    s ∈ irreducibleComponents (PrimeSpectrum R) ↔ (vanishingIdeal s) ∈ minimalPrimes R := by
+lemma vanishingIdeal_mem_minimalPrimes
+    {s : Set (PrimeSpectrum R)} :
+    (vanishingIdeal s) ∈ minimalPrimes R ↔ closure s ∈ irreducibleComponents (PrimeSpectrum R) := by
   constructor
-  · rw [minimalPrimes.eq_irreducibleComponents]; exact Set.mem_image_of_mem _
-  · conv_rhs => rw [← zeroLocus_minimalPrimes, ← hs.closure_eq,
+  · conv_rhs => rw [← zeroLocus_minimalPrimes,
       ← zeroLocus_vanishingIdeal_eq_closure]
     exact Set.mem_image_of_mem _
+  · rw [minimalPrimes.eq_irreducibleComponents, ← vanishingIdeal_closure]
+    exact Set.mem_image_of_mem _
 
-lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrimes (I : Ideal R) :
-    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔
-    ∃ (J : Ideal R), J ∈ minimalPrimes R ∧ zeroLocus I = zeroLocus (J : Set R) := by
-  rw [← PrimeSpectrum.zeroLocus_minimalPrimes]
-  simp_rw [eq_comm (a := zeroLocus (I : Set R))]
-  rfl
-
-lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrimes_of_isRadical
-    {I : Ideal R} (hI : I.IsRadical) :
-    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I ∈ minimalPrimes R := by
+lemma zeroLocus_ideal_mem_irreducibleComponents
+    {I : Ideal R} :
+    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I.radical ∈ minimalPrimes R := by
   constructor
-  · conv_rhs => rw [minimalPrimes.eq_irreducibleComponents, ← hI.radical,
+  · conv_rhs => rw [minimalPrimes.eq_irreducibleComponents,
       ← vanishingIdeal_zeroLocus_eq_radical]
     exact Set.mem_image_of_mem _
-  · rw [← PrimeSpectrum.zeroLocus_minimalPrimes]
+  · rw [← PrimeSpectrum.zeroLocus_minimalPrimes, ← zeroLocus_radical]
     exact Set.mem_image_of_mem _
 
 end PrimeSpectrum
