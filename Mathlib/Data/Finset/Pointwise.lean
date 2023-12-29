@@ -2086,7 +2086,7 @@ end Group
 
 section SMulZeroClass
 
-variable [Zero β] [SMulZeroClass α β] [DecidableEq β] {s : Finset α} {t : Finset β}
+variable [Zero β] [SMulZeroClass α β] [DecidableEq β] {s : Finset α} {t : Finset β} {a : α}
 
 theorem smul_zero_subset (s : Finset α) : s • (0 : Finset β) ⊆ 0 := by simp [subset_iff, mem_smul]
 #align finset.smul_zero_subset Finset.smul_zero_subset
@@ -2095,11 +2095,11 @@ theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
   s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
 #align finset.nonempty.smul_zero Finset.Nonempty.smul_zero
 
-theorem zero_mem_smul_finset {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
+theorem zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
   mem_smul_finset.2 ⟨0, h, smul_zero _⟩
 #align finset.zero_mem_smul_finset Finset.zero_mem_smul_finset
 
-variable [Zero α] [NoZeroSMulDivisors α β] {a : α}
+variable [Zero α] [NoZeroSMulDivisors α β]
 
 theorem zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
