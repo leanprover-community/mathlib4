@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.Tactic.FieldSimp
