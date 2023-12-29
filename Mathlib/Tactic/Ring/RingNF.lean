@@ -237,6 +237,22 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? : conv => `(conv| ring_nf ! $(cfg)?)
 
+/-- Make `ring` terminal, i.e. wrap `ring1` only rather than also suggesting `ring_nf` as a
+nonterminal normalization option. -/
+register_option ring.terminal : Bool :=
+  { defValue := false
+    group := ""
+    descr := "Make the `ring` tactic terminal, i.e. turn off the Try This offering `ring_nf` as a nonterminal normalization option" }
+
+elab (name := conditionalRingNF) "ring1_conditional_ring_nf" tk:"!"? : tactic => do
+  if ← Lean.getBoolOption `ring.terminal then
+    evalTactic (← `(tactic | ring1))
+  else
+    if tk.isSome then
+      evalTactic (← `(tactic| first | ring1! | (ring_nf!; trace "Try this: ring_nf!")))
+    else
+      evalTactic (← `(tactic| first | ring1 | (ring_nf; trace "Try this: ring_nf")))
+
 /--
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the
 exponent.
@@ -251,10 +267,8 @@ example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * 
 example (x y : ℕ) : x + id y = y + id x := by ring!
 ```
 -/
-macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | ring_nf; trace "Try this: ring_nf")
-@[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | ring_nf!; trace "Try this: ring_nf!")
+macro (name := ring) "ring" : tactic => `(tactic| ring1_conditional_ring_nf)
+@[inherit_doc ring] macro "ring!" : tactic => `(tactic| ring1_conditional_ring_nf !)
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.

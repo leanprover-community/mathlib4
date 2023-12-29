@@ -99,6 +99,12 @@ example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 
+-- Example with ring failing to discharge, with "Try this: ring_nf" option turned off.
+set_option ring.terminal true in
+example {a b : ℤ} : a + b + 1 = b + a + 2 := by
+  fail_if_success ring
+  exact test_sorry
+
 -- Example with ring discharging the goal
 example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
   conv => ring
