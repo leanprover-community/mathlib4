@@ -179,10 +179,10 @@ noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
 
 -- open TopologicalSpace in
 -- lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
---     IsArtinianRing R := by
---   letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
+--    IsArtinianRing R := by
+--  letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
 
---   sorry
+--  sorry
 
 end artinian_and_noetherian
 
