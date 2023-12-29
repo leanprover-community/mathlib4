@@ -9,12 +9,15 @@ namespace BundledSet
 section SemilatticeInf
 
 class InterPred (α : Type*) (p : Set α → Prop) : Prop where
-  inter (s t : Set α) : p s → p t → p (s ∩ t)
+  inter : ∀ ⦃s⦄, p s → ∀ ⦃t⦄, p t → p (s ∩ t)
 
 variable {α : Type*} {p : Set α → Prop} [InterPred α p]
 
+instance {q : Set α → Prop} [InterPred α q] : InterPred α (fun s ↦ p s ∧ q s) :=
+  ⟨fun _s hs _t ht ↦ ⟨InterPred.inter hs.1 ht.1, InterPred.inter hs.2 ht.2⟩⟩
+
 protected instance instInf : Inf (BundledSet α p) where
-  inf s t := ⟨s ∩ t, InterPred.inter s t s.2 t.2⟩
+  inf s t := ⟨s ∩ t, InterPred.inter s.2 t.2⟩
 
 @[simp]
 theorem inf_carrier (s t : BundledSet α p) : (s ⊓ t).carrier = ↑s ∩ ↑t := rfl
@@ -35,6 +38,9 @@ class UnivPred (α : Type*) (p : Set α → Prop) : Prop where
   univ : p univ
 
 variable {α : Type*} {p : Set α → Prop} [UnivPred α p]
+
+instance {q : Set α → Prop} [UnivPred α q] : UnivPred α (fun s ↦ p s ∧ q s) :=
+  ⟨⟨UnivPred.univ, UnivPred.univ⟩⟩
 
 protected instance instOrderTop : OrderTop (BundledSet α p) where
   top := ⟨univ, UnivPred.univ⟩
