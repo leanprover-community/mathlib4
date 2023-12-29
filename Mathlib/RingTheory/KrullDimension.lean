@@ -165,6 +165,9 @@ lemma eq_zero_of_isArtinianRing [IsArtinianRing R] : ringKrullDim R = 0 := by
       exact H0.eq_of_le (x 1).1.IsPrime.1 (le_of_lt this))
 
 variable {R} in
+/--
+A noetherian ring of dimension `0` has finitely many prime ideals.
+-/
 noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
     [IsNoetherianRing R] (h : ringKrullDim R = 0) :
     Fintype (PrimeSpectrum R) :=
@@ -174,12 +177,12 @@ noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
     (fun p ↦ ⟨p.asIdeal, p.IsPrime.isMinimal_of_dim_zero h⟩ : PrimeSpectrum R → minimalPrimes R)
     (fun _ _ H ↦ PrimeSpectrum.ext _ _ <| Subtype.ext_iff.mp H)
 
-open TopologicalSpace in
-lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
-    IsArtinianRing R := by
-  letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
+-- open TopologicalSpace in
+-- lemma artinian_of_zero_dimensional_noetherian [IsNoetherianRing R] (h : ringKrullDim R = 0) :
+--     IsArtinianRing R := by
+--   letI : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoetherian h
 
-  sorry
+--   sorry
 
 end artinian_and_noetherian
 
@@ -187,6 +190,9 @@ section PID
 
 variable (R : Type _) [CommRing R] [IsPrincipalIdealRing R] [IsDomain R] (hR : ¬ IsField R)
 
+/--
+`0 < 𝓂` is a series of prime ideal in a PID.
+-/
 noncomputable def _root_.LTSeries.ofPID : LTSeries (PrimeSpectrum R) where
   length := 1
   toFun :=
@@ -297,3 +303,5 @@ theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
 end aboutHeightAndLocalization
 
 end ringKrullDim
+
+#lint

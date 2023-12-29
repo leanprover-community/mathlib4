@@ -44,6 +44,10 @@ instance : T1Space (PrimeSpectrum R) where
 instance : DiscreteTopology (PrimeSpectrum R) := discrete_of_t1_of_finite
 
 variable {R}
+
+/--
+Cover of Spec of an artinian ring by singleton sets.
+-/
 def openCover (i : PrimeSpectrum R) : Opens (PrimeSpectrum R) :=
   ⟨{i}, by continuity⟩
 
@@ -66,6 +70,9 @@ instance (i : PrimeSpectrum R) : Unique (openCover i) where
   default := ⟨i, by aesop⟩
   uniq p := Subtype.ext <| by rw [Set.mem_singleton_iff.mp p.2]; rfl
 
+/--
+𝒪(Spec R) = ∏ᵢ Rᵢ where `i` runs through prime ideals.
+-/
 noncomputable def sectionsOnOpenCover (i : PrimeSpectrum R) :
     (Spec.structureSheaf R).presheaf.obj (op <| openCover i) ≅
     CommRingCat.of <| Localization.AtPrime i.asIdeal :=
@@ -165,6 +172,9 @@ variable [LocalRing R] [Nontrivial R]
 local notation "𝓂" => LocalRing.maximalIdeal (R := R)
 local notation "κ" => LocalRing.ResidueField (R := R)
 
+/--
+Maximal ideal of an artinian local ring is nilpotent.
+-/
 lemma exists_K : ∃ K : ℕ, 𝓂 ^ K = 0 := by
   have H := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
   rw [LocalRing.jacobson_eq_maximalIdeal] at H
@@ -172,9 +182,15 @@ lemma exists_K : ∃ K : ℕ, 𝓂 ^ K = 0 := by
   · simp
   exact H
 
+/--
+Let `K` be the smallest number such that `𝓂 ^ K = 0`
+-/
 def K : ℕ := exists_K R |>.choose
 lemma K_spec : 𝓂 ^ K R = 0 := exists_K R |>.choose_spec
 
+/--
+Construct a series by `0 ≤ 𝓂ᵏ⁻¹ ≤ 𝓂ᵏ⁻² ≤ ... ≤ 𝓂 ≤ R`
+-/
 @[simps]
 def series : RelSeries ((· ≤ ·) : Ideal R → Ideal R → Prop) where
   length := K R
@@ -191,6 +207,9 @@ def series : RelSeries ((· ≤ ·) : Ideal R → Ideal R → Prop) where
 @[simp] lemma series_last : (series R).last = ⊤ := show 𝓂 ^ (K R - K R) = ⊤ from by
   simp
 
+/--
+Define the action of `R ⧸ 𝓂` on `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` by `[r] • [x] = [r • x]`
+-/
 def residualFieldActionOnQF (i : Fin (K R)) : κ →ₗ[R] Module.End R ((series R).qf i) :=
   Submodule.liftQ _ (LinearMap.lsmul _ _) fun r hr ↦ by
     simp only [series_length, series_toFun, Fin.val_succ, Fin.coe_castSucc, LinearMap.mem_ker]
@@ -261,6 +280,9 @@ instance (i : Fin (K R)) : Module κ ((series R).qf i) where
     induction' x using Quotient.inductionOn' with x
     simp
 
+/--
+A semilinear map from `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` as `R`-module to `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` as `R ⧸ 𝓂` module
+-/
 @[simps]
 def qfEquiv_κR (i : Fin (K R)) : (series R).qf i →ₛₗ[algebraMap R κ] (series R).qf i :=
 { toFun := id
@@ -274,6 +296,9 @@ def qfEquiv_κR (i : Fin (K R)) : (series R).qf i →ₛₗ[algebraMap R κ] (se
 instance : RingHomSurjective (algebraMap R κ) where
   is_surjective := Submodule.mkQ_surjective _
 
+/--
+The `R ⧸ 𝓂`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` are exactly the same as the `R`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹`.
+-/
 @[simps]
 def qfSubmoduleAgree (i : Fin (K R)) :
     Submodule κ ((series R).qf i) ≃o
@@ -298,6 +323,10 @@ def qfSubmoduleAgree (i : Fin (K R)) :
       specialize h hx
       simpa using h
 
+/--
+The `R ⧸ 𝓂`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹` are exactly the same as the `R`-submodules of `𝓂ⁿ ⧸ 𝓂ⁿ⁺¹`.
+(reverse the order)
+-/
 @[simps!]
 def qfSubmoduleAgree' (i : Fin (K R)) :
     Submodule κ ((series R).qf i)ᵒᵈ ≃o
@@ -358,6 +387,9 @@ instance qf_finiteLength_R (i : Fin (K R)) : FiniteLengthModule R ((series R).qf
     ⟨⟨qf_finiteLength_κ R i⟩⟩
   exact Classical.choice i1.1
 
+/--
+The last cumulative quotient factor is exactly `R`.
+-/
 def cdf_last_eq : (series R).cqf (Fin.last _) ≃ₗ[R] R :=
 LinearEquiv.ofLinear
   (Submodule.liftQ _ (Submodule.subtype _) fun x hx ↦ by simpa using hx)

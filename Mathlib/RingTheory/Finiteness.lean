@@ -585,7 +585,7 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
-noncomputable def exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
+lemma exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
     ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S:= by
   classical
   rw [finite_def] at h

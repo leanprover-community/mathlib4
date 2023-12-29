@@ -561,6 +561,10 @@ lemma CompositionSeries.liftQuotient_head :
 lemma CompositionSeries.liftQuotient_last :
     CompositionSeries.top c.liftQuotient = N.comapMkQRelIso c.top := rfl
 
+/--
+Give a composition series `p₀ ⋖ p₁ ⋖ ... ⋖  pₙ` of `N`, we can also view it as a composition series
+of `M`.
+-/
 def CompositionSeries.liftSubmodule : CompositionSeries (Submodule R M) where
   length := d.length
   toFun i := Submodule.MapSubtype.relIso N (d i)
@@ -590,6 +594,9 @@ lemma CompositionSeries.liftSubmodule_last :
     CompositionSeries.top d.liftSubmodule = (Submodule.map N.subtype d.top) := rfl
 
 variable (R M) in
+/--
+If `M` has finite length, then all its submodules have finite lengths as well.
+-/
 noncomputable def FiniteLengthModule.submodule [finLen : FiniteLengthModule R M] :
     FiniteLengthModule R N where
   compositionSeries := finLen.compositionSeries.ofInterList N
@@ -597,12 +604,19 @@ noncomputable def FiniteLengthModule.submodule [finLen : FiniteLengthModule R M]
   last_eq := finLen.compositionSeries.ofInterList_last_eq_top_of_last_eq_top N finLen.last_eq
 
 variable (N) in
+/--
+If `M` has finite length, then quotient of its submodules has finite lengths as well.
+-/
 noncomputable def FiniteLengthModule.quotient [finLen : FiniteLengthModule R M] :
     FiniteLengthModule R (M ⧸ N) := by
   classical
   exact FiniteLengthModule.of_noetherian_of_artinian R (M ⧸ N)
 
 variable (N) in
+/--
+Let `N` be a submodule of `M`, if both `N` and `M ⧸ N` have finite length, `M` has finite length as
+well.
+-/
 def FiniteLengthModule.of_quotient_of_submodule
     [quotFin : FiniteLengthModule R (M ⧸ N)] [subFin : FiniteLengthModule R N] :
     FiniteLengthModule R M where
@@ -686,9 +700,18 @@ instance {M : Type _} [AddCommGroup M] [Module R M] (x y : Submodule R M) :
     Module R (x ⧸ₛ y) := by
   delta quot; infer_instance
 
+/--
+`i`-th cumulative quotient factor (xᵢ ⧸ x₀). It is called cumulative quotient factor because its
+length is the sum of previous quotient factor.
+
+# TODO: generalize to arbitrary relation on submodules
+-/
 abbrev RelSeries.cqf (i : Fin (x.length + 1)) :=
   x i ⧸ₛ x.head
 
+/--
+The embedding of `i`-th cumulative quotient factor to `i+1`-st cumulative quotient factor.
+-/
 def RelSeries.cqfToSucc (i : Fin x.length) :
     x.cqf i.castSucc →ₗ[R] x.cqf i.succ :=
   Submodule.mapQ _ _ (Submodule.inclusion <| x.step _) <| by
@@ -696,6 +719,10 @@ def RelSeries.cqfToSucc (i : Fin x.length) :
     intro m hm
     simpa using hm
 
+/--
+The range of embedding `i`-th cumulative quotient factor to `i+1`-st cumulative quotient factor is
+`i`-th cumulative quotient factor.
+-/
 noncomputable def RelSeries.rangeCQFToSucc (i : Fin x.length) :
     LinearMap.range (x.cqfToSucc i) ≃ₗ[R] x.cqf i.castSucc :=
   LinearEquiv.symm <| LinearEquiv.ofInjective _ fun a b h ↦ by
@@ -705,7 +732,9 @@ noncomputable def RelSeries.rangeCQFToSucc (i : Fin x.length) :
     rw [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.eq]
     simpa only using h
 
-
+/--
+The `0`-th cumulative quotient factor is trivial.
+-/
 noncomputable def RelSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   refine PUnit.linearEquivOfUnique (uniq := ?_)
   suffices H : Nonempty (Unique _)
@@ -714,11 +743,15 @@ noncomputable def RelSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   simp only [Submodule.comap_subtype_eq_top]
   rfl
 
+/--
+The `i`-th quotient factor is `xᵢ₊₁ ⧸ xᵢ`.
+-/
 abbrev RelSeries.qf (i : Fin x.length) := x i.succ ⧸ₛ x i.castSucc
 
 /--
+The `i`-th quotient factor is equivalent to the `i+1`-st cumulative quotient factor quotiented by
+the `i`-th cumulative quotient factor.
 xᵢ₊₁ ⧸ xᵢ = (xᵢ₊₁ ⧸ x₀) ⧸ (xᵢ ⧸ x₀)
-
 -/
 noncomputable def RelSeries.cdfSuccEquiv (i : Fin x.length) :
     x.qf i ≃ₗ[R]
@@ -813,7 +846,7 @@ lemma finiteLengthModule_over_field_iff_finite_dimensional :
   · intro h
     exact ⟨⟨FiniteLengthModule.of_noetherian_of_artinian K M⟩⟩
 
-theorem Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.Finite K M := by
+lemma Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.Finite K M := by
   fconstructor
   · intro h
     let s := Basis.ofVectorSpaceIndex K M
