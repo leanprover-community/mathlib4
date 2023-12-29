@@ -78,7 +78,7 @@ namespace SSet
 /-- A *Kan complex* is a simplicial set `S` if it satisfies the following horn-filling condition:
 for every `n : ℕ` and `0 ≤ i ≤ n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`. -/
-class Kan_complex (S : SSet) : Prop :=
+class KanComplex (S : SSet) : Prop :=
   (hornFilling : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄ (σ₀ : Λ[n, i] ⟶ S),
     ∃ σ : Δ[n] ⟶ S, σ₀ = hornInclusion n i ≫ σ)
 
@@ -87,12 +87,12 @@ for every `n : ℕ` and `0 < i < n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`.
 
 [Kerodon, 003A] -/
-class quasicategory (S : SSet) : Prop :=
+class Quasicategory (S : SSet) : Prop :=
   (hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
      (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
        ∃ σ : Δ[n+2] ⟶ S, σ₀ = hornInclusion (n+2) i ≫ σ)
 
-lemma quasicategory.hornFilling {S : SSet} [quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄
+lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n+1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)
     (σ₀ : Λ[n, i] ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = hornInclusion n i ≫ σ := by
   cases n using Nat.casesAuxOn with
@@ -102,13 +102,13 @@ lemma quasicategory.hornFilling {S : SSet} [quasicategory S] ⦃n : ℕ⦄ ⦃i 
   | zero =>
     simp only [Fin.lt_iff_val_lt_val, Fin.val_zero, Fin.val_last, zero_add, Nat.lt_one_iff] at h0 hn
     simp [hn] at h0
-  | succ n => exact quasicategory.hornFilling' σ₀ h0 hn
+  | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
 
 /-- Every Kan complex is a quasicategory.
 
 [Kerodon, 003C] -/
-instance (S : SSet) [Kan_complex S] : quasicategory S where
-  hornFilling' _ _ σ₀ _ _ := Kan_complex.hornFilling σ₀
+instance (S : SSet) [KanComplex S] : Quasicategory S where
+  hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
 def horn.face {n : ℕ} (i j : Fin (n+1+1)) (h : j ≠ i) : Λ[n+1, i] _[n] := by
   refine ⟨SimplexCategory.δ j, ?_⟩
@@ -118,12 +118,12 @@ def horn.face {n : ℕ} (i j : Fin (n+1+1)) (h : j ≠ i) : Λ[n+1, i] _[n] := b
     Fin.succAboveEmb_apply, Fin.exists_succAbove_eq_iff, forall_true_left, not_forall, not_or,
     not_not, exists_eq_right]
 
-open SimplicialObject in
+open SimplicialObject SimplexCategory in
 lemma quasicategory_of_filler (S : SSet)
     (H : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S) (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
       ∃ σ : S _[n+2], ∀ (j) (h : j ≠ i),
         S.δ j σ = σ₀.app _ (horn.face i j h)) :
-    quasicategory S where
+    Quasicategory S where
   hornFilling' n i σ₀ h₀ hₙ := by
     obtain ⟨σ, h⟩ := H σ₀ h₀ hₙ
     use yonedaEquiv.symm σ
@@ -138,12 +138,30 @@ lemma quasicategory_of_filler (S : SSet)
     --   fun k ↦ if f.1.toOrderHom k ≤ j then f.1.toOrderHom k else f.1.toOrderHom k
     -- have g_mono : Monotone g_fun := sorry
     -- let g : ([m] : SimplexCategory) ⟶ [n] := .mk ⟨g_fun, g_mono⟩
-    -- let g : ([m] : SimplexCategory) ⟶ [n] := f.1 ≫ SimplexCategory.σ 0
     -- have hg : g ≫ SimplexCategory.δ j = f.1 := by
     --   ext k
     --   simp
-    have aux : ∃ g, f.1 = g ≫ SimplexCategory.δ j := sorry
-    obtain ⟨g, hg⟩ := aux
+    obtain ⟨g, hg⟩ : ∃ g, f.1 = g ≫ SimplexCategory.δ j := by
+      let g : ([m] : SimplexCategory) ⟶ [n+1] := f.1 ≫ SimplexCategory.σ (Fin.predAbove 0 j)
+      use g
+      apply Hom.ext
+      ext k : 2
+      specialize hj₂ k
+      rw [Ne.def, Fin.ext_iff] at hj₂
+      dsimp [SimplexCategory.δ, SimplexCategory.σ, Fin.succAbove, Fin.predAbove]
+      split <;> rename_i h0j
+      all_goals
+      · split <;> rename_i hjk <;>
+        simp only [Fin.lt_iff_val_lt_val, Fin.val_zero, Fin.coe_castSucc, Fin.coe_pred] at h0j hjk
+        · simp only [Fin.coe_pred, Fin.succ_pred]
+          symm
+          apply dif_neg
+          omega
+        · simp only [Fin.coe_castLT, Fin.castSucc_castLT]
+          symm
+          apply dif_pos
+          omega
+
     have H : f = (Λ[n+2, i].map g.op) (horn.face i j hj₁) := by
       apply Subtype.ext; exact hg
     have := σ₀.naturality g.op
@@ -367,7 +385,7 @@ end nerve
 /-- The nerve of a category is a quasicategory.
 
 [Kerodon, 0032] -/
-instance (C : Type) [Category C] : quasicategory (nerve C) := by
+instance (C : Type) [Category C] : Quasicategory (nerve C) := by
   apply quasicategory_of_filler
   intro n i σ₀ h₀ hₙ
   let v : Fin (n+3) → Λ[n+2, i].obj (op [0]) :=
