@@ -1015,12 +1015,12 @@ set_option linter.uppercaseLean3 false
 
 section
 
+-- type of "labels" or TM states
 variable (Γ : Type*) [Inhabited Γ]
 
 -- type of tape symbols
 variable (Λ : Type*) [Inhabited Λ]
 
--- type of "labels" or TM states
 /-- A Turing machine "statement" is just a command to either move
   left or right, or write a symbol on the tape. -/
 inductive Stmt
@@ -1207,8 +1207,8 @@ state, but the statements themselves have a fixed structure. The `Stmt`s can be 
 
 Note that here most statements do not have labels; `goto` commands can only go to a new function.
 Only the `goto` and `halt` statements actually take a step; the rest is done by recursion on
-statements and so take 0 steps. (There is a uniform bound on many statements can be executed before
-the next `goto`, so this is an `O(1)` speedup with the constant depending on the machine.)
+statements and so take 0 steps. (There is a uniform bound on how many statements can be executed
+before the next `goto`, so this is an `O(1)` speedup with the constant depending on the machine.)
 
 The `halt` command has a one step stutter before actually halting so that any changes made before
 the halt have a chance to be "committed", since the `eval` relation uses the final configuration

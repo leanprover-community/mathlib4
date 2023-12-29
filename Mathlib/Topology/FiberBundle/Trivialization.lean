@@ -16,10 +16,10 @@ import Mathlib.Topology.PartialHomeomorph
 
 ### Basic definitions
 
-* `Trivialization F p` : structure extending local homeomorphisms, defining a local
+* `Trivialization F p` : structure extending partial homeomorphisms, defining a local
   trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
-* `Pretrivialization F proj` : trivialization as a local equivalence, mainly used when the
+* `Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
   topology on the total space has not yet been defined.
 
 ### Operations on bundles
@@ -299,9 +299,9 @@ end Pretrivialization
 
 variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 
-/-- A structure extending local homeomorphisms, defining a local trivialization of a projection
-`proj : Z → B` with fiber `F`, as a local homeomorphism between `Z` and `B × F` defined between two
-sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
+/-- A structure extending partial homeomorphisms, defining a local trivialization of a projection
+`proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
+two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
 -- porting note: todo: was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
