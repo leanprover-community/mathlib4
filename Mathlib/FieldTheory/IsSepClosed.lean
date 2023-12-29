@@ -29,15 +29,17 @@ and prove some of their properties.
 
 separable closure, separably closed
 
+## Related
+
+- `separableClosure`: maximal separable subextension of `K/k`, consisting of all elements of `K`
+  which are separable over `k`.
+
+- `separableClosure.isSepClosure`: if `K` is a separably closed field containing `k`, then the
+  maximal separable subextension of `K/k` is a separable closure of `k`.
+
+- In particular, a separable closure (`SeparableClosure`) exists.
+
 ## TODO
-
-- Maximal separable subextension of `K/k`, consisting of all elements of `K` which are separable
-  over `k`.
-
-- If `K` is a separably closed field containing `k`, then the maximal separable subextension
-  of `K/k` is a separable closure of `k`.
-
-- In particular, a separable closure exists.
 
 - If `k` is a perfect field, then its separable closure coincides with its algebraic closure.
 

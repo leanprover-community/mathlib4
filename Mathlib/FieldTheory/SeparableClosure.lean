@@ -18,6 +18,9 @@ This file contains basics about the (relative) separable closure of a field exte
   subextension of `E / F`, is defined to be the intermediate field of `E / F` consisting of all
   separable elements.
 
+- `SeparableClosure`: the (absolute) separable closure, defined to be the (relative) separable
+  closure inside the algebraic closure.
+
 - `Field.sepDegree F E`: the (infinite) separable degree $[E:F]_s$ of an algebraic extension
   `E / F` of fields, defined to be the degree of `separableClosure F E / F`. Later we will show
   that (`Field.finSepDegree_eq`, not in this file), if `Field.Emb F E` is finite, then this
@@ -198,6 +201,10 @@ instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separab
   use ⟨x, le_separableClosure F E (restrictScalars F L⟮x⟯) this⟩
   apply_fun algebraMap L E using (algebraMap L E).injective
   rwa [map_zero, ← aeval_algebraMap_apply_eq_algebraMap_eval]
+
+/-- The (absolute) separable closure is defined to be the (relative) separable closure inside the
+algebraic closure. -/
+abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
