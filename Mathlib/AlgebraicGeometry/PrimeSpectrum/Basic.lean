@@ -545,66 +545,14 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
-lemma mem_irreducibleComponents_iff_vanishingIdeal_mem_minimalPrimes
-    {s : Set (PrimeSpectrum R)} (hs : IsClosed s) :
-    s ∈ irreducibleComponents (PrimeSpectrum R) ↔ (vanishingIdeal s) ∈ minimalPrimes R := by
-  fconstructor
-  · rintro ⟨(h1 : IsIrreducible _), h2⟩
-    refine ⟨⟨isIrreducible_iff_vanishingIdeal_isPrime (s := s) |>.mp h1, bot_le⟩, ?_⟩
-    rintro J ⟨hJ, -⟩ le
-    specialize @h2 (zeroLocus J) (isIrreducible_zeroLocus_iff _ |>.mpr <| by rwa [hJ.radical])
-      (subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr le)
-    exact le_trans (vanishingIdeal_anti_mono h2) <| by simp [hJ.radical]
-  · rintro ⟨⟨h1, -⟩, h2⟩
-    refine ⟨isIrreducible_iff_vanishingIdeal_isPrime.mpr h1, ?_⟩
-    rintro t (ht : IsIrreducible t) le
-    specialize @h2 (vanishingIdeal t) ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩
-      (vanishingIdeal_anti_mono le)
-    exact vanishingIdeal_anti_mono_iff hs |>.mpr h2
-
-lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrime (I : Ideal R) :
-    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔
-    ∃ (J : Ideal R), J ∈ minimalPrimes R ∧ zeroLocus I = zeroLocus (J : Set R) := by
-  fconstructor
-  · intro h
-    obtain ⟨J, hJ1, hJ2⟩ := isClosed_iff_zeroLocus_radical_ideal _ |>.mp
-      (isClosed_of_mem_irreducibleComponents _ h)
-    have := (mem_irreducibleComponents_iff_vanishingIdeal_mem_minimalPrimes <|
-      isClosed_of_mem_irreducibleComponents _ h).mp h
-    simp only [hJ2, vanishingIdeal_zeroLocus_eq_radical, hJ1.radical] at this
-    refine ⟨J, this, hJ2⟩
-  · rintro ⟨J, ⟨⟨hJ1, -⟩, hJ2⟩, hJ3⟩
-    rw [hJ3]
-    refine ⟨isIrreducible_iff_vanishingIdeal_isPrime (R := R) (s := zeroLocus J) |>.mpr
-      (by simpa [hJ1.isRadical.radical]), ?_⟩
-    intro t (ht : IsIrreducible t) le1
-    refine subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr ?_
-    have := vanishingIdeal_anti_mono le1
-    simp only [vanishingIdeal_zeroLocus_eq_radical, hJ1.isRadical.radical] at this
-    exact hJ2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩ this
-
-lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrime_of_radical
-    {I : Ideal R} (hI : I.IsRadical) :
-    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I ∈ minimalPrimes R := by
-  fconstructor
-  · rintro ⟨(hI1 : IsIrreducible _), hI2⟩
-    have := isIrreducible_iff_vanishingIdeal_isPrime.mp hI1
-    simp [vanishingIdeal_zeroLocus_eq_radical, hI.radical] at this
-    refine ⟨⟨this, bot_le⟩, ?_⟩
-    rintro J ⟨hJ1, -⟩ le
-    specialize @hI2 (zeroLocus J)
-      (isIrreducible_iff_vanishingIdeal_isPrime.mpr <| by simpa [hJ1.radical])
-      (zeroLocus_anti_mono le)
-    convert vanishingIdeal_anti_mono hI2 <;>
-    simp [hI.radical,  hJ1.radical]
-  · rintro ⟨⟨hI1, -⟩, hI2⟩
-    refine ⟨isIrreducible_iff_vanishingIdeal_isPrime.mpr <| by simpa [hI1.radical], ?_⟩
-    rintro t (ht : IsIrreducible t) le1
-    refine subset_zeroLocus_iff_le_vanishingIdeal _ _ |>.mpr ?_
-    have := vanishingIdeal_anti_mono le1
-    simp only [vanishingIdeal_zeroLocus_eq_radical, hI1.radical] at this
-    refine hI2 ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp ht, bot_le⟩ this
-
+lemma PrimeSpectrum.vanishingIdeal_isClosed_isIrreducible {R} [CommRing R] :
+    vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = setOf Ideal.IsPrime :=
+  Set.ext fun I ↦ ⟨fun ⟨s, ⟨hs, hs'⟩, e⟩ ↦
+    e ▸ (isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)).mp
+      (by rwa [zeroLocus_vanishingIdeal_eq_closure, hs.closure_eq]),
+    fun h ↦ ⟨zeroLocus I, ⟨isClosed_zeroLocus I,
+      (isIrreducible_zeroLocus_iff_of_radical _ h.isRadical).mpr h⟩,
+        (vanishingIdeal_zeroLocus_eq_radical I).trans h.radical⟩⟩
 
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
@@ -1019,19 +967,48 @@ open PrimeSpectrum in
 lemma minimalPrimes.eq_irreducibleComponents :
     minimalPrimes R =
     PrimeSpectrum.vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) := by
-  let e := minimalPrimes.equivIrreducibleComponents R
-  ext I; fconstructor
-  · intro hI
-    refine ⟨(e ⟨I, hI⟩).1, (e ⟨I, hI⟩).2, ?_⟩
-    show vanishingIdeal (closure _) = _
-    simp [PrimeSpectrum.closure_singleton, hI.1.1.radical]
-  · rintro ⟨s, hs, rfl⟩
-    convert (e.symm ⟨s, hs⟩).2
-    show vanishingIdeal s = hs.1.genericPoint.asIdeal
-    have eq1 : closure _ = _ := hs.1.genericPoint_spec
-    rw [isClosed_of_mem_irreducibleComponents _ hs |>.closure_eq,
-      PrimeSpectrum.closure_singleton] at eq1
-    conv_lhs => rw [← eq1, vanishingIdeal_zeroLocus_eq_radical, hs.1.genericPoint.2.radical]
+  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals, ← minimals_swap,
+    ← PrimeSpectrum.vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
+  intro s t hs _
+  exact vanishingIdeal_anti_mono_iff hs.1
+
+namespace PrimeSpectrum
+
+lemma zeroLocus_minimalPrimes :
+  zeroLocus ∘ (↑) '' minimalPrimes R =
+    irreducibleComponents (PrimeSpectrum R) := by
+  rw [minimalPrimes.eq_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
+  intros s hs
+  simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
+    using isClosed_of_mem_irreducibleComponents s hs
+
+lemma mem_irreducibleComponents_iff_vanishingIdeal_mem_minimalPrimes
+    {s : Set (PrimeSpectrum R)} (hs : IsClosed s) :
+    s ∈ irreducibleComponents (PrimeSpectrum R) ↔ (vanishingIdeal s) ∈ minimalPrimes R := by
+  constructor
+  · rw [minimalPrimes.eq_irreducibleComponents]; exact Set.mem_image_of_mem _
+  · conv_rhs => rw [← zeroLocus_minimalPrimes, ← hs.closure_eq,
+      ← zeroLocus_vanishingIdeal_eq_closure]
+    exact Set.mem_image_of_mem _
+
+lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrimes (I : Ideal R) :
+    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔
+    ∃ (J : Ideal R), J ∈ minimalPrimes R ∧ zeroLocus I = zeroLocus (J : Set R) := by
+  rw [← PrimeSpectrum.zeroLocus_minimalPrimes]
+  simp_rw [eq_comm (a := zeroLocus (I : Set R))]
+  rfl
+
+lemma zeroLocus_ideal_mem_irreducibleComponents_iff_mem_minimalPrimes_of_isRadical
+    {I : Ideal R} (hI : I.IsRadical) :
+    zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I ∈ minimalPrimes R := by
+  constructor
+  · conv_rhs => rw [minimalPrimes.eq_irreducibleComponents, ← hI.radical,
+      ← vanishingIdeal_zeroLocus_eq_radical]
+    exact Set.mem_image_of_mem _
+  · rw [← PrimeSpectrum.zeroLocus_minimalPrimes]
+    exact Set.mem_image_of_mem _
+
+end PrimeSpectrum
 
 namespace LocalRing
 
