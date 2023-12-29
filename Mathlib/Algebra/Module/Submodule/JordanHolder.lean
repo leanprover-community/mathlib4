@@ -58,7 +58,7 @@ def interList : List (Submodule R N) :=
   s.toList.map $ fun si => Submodule.comap N.subtype (N ⊓ si)
 
 lemma interList_length : (s.interList N).length = s.length + 1 :=
-by rw [interList, List.length_map, CompositionSeries.toList, List.length_ofFn]
+by rw [interList, List.length_map, RelSeries.toList, List.length_ofFn]
 
 lemma interList_get_eq_aux (i : ℕ) (hi : i < s.length + 1) :
     (s.interList N).get ⟨i, by rw [interList_length]; linarith⟩ =
@@ -381,7 +381,7 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
     push_neg at rid
     norm_num at rid
     rw [List.length_eq_zero] at rid
-    exact List.dedup_ne_nil_of_ne_nil _ (List.map_ne_nil_of_ne_nil _ s.toList_ne_nil _) rid
+    exact List.dedup_ne_nil_of_ne_nil _ (List.map_ne_nil_of_ne_nil _ s.toList_ne_empty _) rid
   apply Nat.sub_lt_right_of_lt_add (H := ineq2) (h := ineq1)
 
 end CompositionSeries
