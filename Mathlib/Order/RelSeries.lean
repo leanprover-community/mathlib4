@@ -38,19 +38,6 @@ namespace RelSeries
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
-instance membership : Membership α (RelSeries r) :=
-  ⟨fun x s => x ∈ Set.range s⟩
-
-theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
-  Iff.rfl
-
-/-- start of a series -/
-def head (x : RelSeries r) : α := x 0
-/-- end of a series -/
-def last (x : RelSeries r) : α := x <| Fin.last _
-lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
-lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
-
 /--
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
 -/
@@ -114,29 +101,6 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
 
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
-
-lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
-  rw [List.mem_ofFn, mem_def]
-
-theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) : 0 < s.length := by
-  obtain ⟨i, rfl⟩ := hx
-  obtain ⟨j, rfl⟩ := hy
-  contrapose! hxy
-  simp only [nonpos_iff_eq_zero] at hxy
-  congr
-  apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
-  · exact Subsingleton.elim (α := Fin 1) _ _
-  · exact OrderIso.injective _
-
-theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
-    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
-  rcases hx with ⟨i, rfl⟩
-  rcases hy with ⟨j, rfl⟩
-  congr
-  apply_fun Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1)
-  · exact Subsingleton.elim (α := Fin 1) _ _
-  · exact OrderIso.injective _
 
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
@@ -204,6 +168,29 @@ instance membership : Membership α (RelSeries r) :=
 
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
+
+lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+  rw [List.mem_ofFn, mem_def]
+
+theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+    (hxy : x ≠ y) : 0 < s.length := by
+  obtain ⟨i, rfl⟩ := hx
+  obtain ⟨j, rfl⟩ := hy
+  contrapose! hxy
+  simp only [nonpos_iff_eq_zero] at hxy
+  congr
+  apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
+  · exact Subsingleton.elim (α := Fin 1) _ _
+  · exact OrderIso.injective _
+
+theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
+    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
+  rcases hx with ⟨i, rfl⟩
+  rcases hy with ⟨j, rfl⟩
+  congr
+  apply_fun Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1)
+  · exact Subsingleton.elim (α := Fin 1) _ _
+  · exact OrderIso.injective _
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
@@ -320,18 +307,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 
-variable {β} (s : Rel β β)
-
-/--
-For two sets `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
-`r`-series can be pushed out to an `s`-series by
-`a₀ --r-> a₁ --r-> ... --r-> aₙ ↦ f a₀ --s-> f a₁ --s-> ... --s-> f aₙ`
--/
-@[simps]
-def map (p : RelSeries r) (f : α → β) (map : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
-  length := p.length
-  toFun := f.comp p
-  step := (map <| p.step .)
+variable (s : Rel β β)
 
 /--
 A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by
@@ -730,14 +706,6 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
-
-
-/-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
-@[simps]
-def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
-    LTSeries α where
-  toFun := toFun
-  step i := strictMono <| lt_add_one i.1
 
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
