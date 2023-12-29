@@ -359,7 +359,7 @@ section PartialOrder
 variable [PartialOrder α] {p : Set α → Prop} [Implies p (IsChain (· ≤ ·))]
 
 theorem isChain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.isChain_le.lt_of_le
-#align flag.chain_lt Flag.isChain_lt
+#align flag.chain_lt BundledSet.isChain_lt
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : BundledSet α p) :
     LinearOrder s :=

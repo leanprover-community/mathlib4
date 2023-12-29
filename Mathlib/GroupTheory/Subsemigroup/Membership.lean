@@ -35,7 +35,7 @@ section NonAssoc
 
 variable [Mul M]
 
-open Set
+open Set BundledSet
 
 namespace Subsemigroup
 

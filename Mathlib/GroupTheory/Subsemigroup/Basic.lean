@@ -66,23 +66,18 @@ structure IsAddSubsemigroup (s : Set A) : Prop where
 structure IsSubsemigroup (s : Set M) : Prop where
   mul_mem {a b : M} : a ∈ s → b ∈ s → a * b ∈ s
 
-@[to_additive]
-theorem IsSubsemigroup.inter {s t : Set M} (hs : IsSubsemigroup s) (ht : IsSubsemigroup t) :
-    IsSubsemigroup (s ∩ t) :=
-  ⟨fun ha hb ↦ ⟨hs.1 ha.1 hb.1, ht.1 ha.2 hb.2⟩⟩
-
 /-- A subsemigroup is closed under multiplication. -/
 @[to_additive "An additive subsemigroup is closed under addition."]
-theorem BundledSet.mul_mem {p : Set M → Prop} [Implies p IsSubsemigroup] (s : BundledSet M p)
+theorem BundledSet.mul_mem {p : Set M → Prop} [Implies p IsSubsemigroup] (s : BundledSet M p) {a b}
     (ha : a ∈ s) (hb : b ∈ s) : a * b ∈ s :=
   IsSubsemigroup.mul_mem (BundledSet.Implies.implies s s.2) ha hb
 
-attribute [aesop safe apply (rule_sets [SetLike])] mul_mem add_mem
+attribute [aesop safe apply (rule_sets [SetLike])] BundledSet.mul_mem BundledSet.add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 @[to_additive
   "An additive subsemigroup of an additive magma `M` is a subset closed under addition."]
-abbrev Subsemigroup (M : Type _) [Mul M] := BundledSet M IsSubsemigroup
+abbrev Subsemigroup (M : Type*) [Mul M] := BundledSet M IsSubsemigroup
 #align subsemigroup Subsemigroup
 #align add_subsemigroup AddSubsemigroup
 

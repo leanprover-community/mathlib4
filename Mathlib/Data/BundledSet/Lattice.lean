@@ -1,3 +1,4 @@
+import Mathlib.Tactic.SetLike
 import Mathlib.Data.BundledSet.Basic
 import Mathlib.Data.Set.Lattice
 
@@ -158,6 +159,7 @@ theorem closure_le {s : Set α} {t : BundledSet α p} : BundledSet.closure p s �
 theorem closure_eq (s : BundledSet α p) : BundledSet.closure p s = s :=
   (BundledSet.gi p).l_u_eq _
 
+@[simp, aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_closure {s : Set α} : s ⊆ BundledSet.closure p s := closure_le.1 le_rfl
 
 theorem not_mem_of_not_mem_closure {x : α} {s : Set α} (hx : x ∉ BundledSet.closure p s) :
