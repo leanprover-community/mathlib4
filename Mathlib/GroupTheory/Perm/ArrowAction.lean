@@ -8,7 +8,7 @@ import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Data.Set.Card
 
-/-!  Subgroup of `Equiv.Perm α` preserving a fibration `p : α → ι`
+/-!  Subgroup of `Equiv.Perm α` preserving a function `p : α → ι`
 
 Let `α` and `ι` by types.
 We consider `arrowAction : MulAction (Equiv.Perm α) (α → ι)`.
@@ -71,6 +71,6 @@ def stabilizerMulEquiv : stabilizer (Perm α) p ≃* (∀ i, Perm {a | p a = i})
   map_mul' g h := rfl
 
 lemma stabilizerMulEquiv_apply (g : stabilizer (Perm α) p) {a : α} {i : ι} (h : p a = i) :
-  (stabilizerMulEquiv p) g i ⟨a, h⟩ = (g : Equiv.Perm α) a := rfl
+   ((stabilizerMulEquiv p)) g i ⟨a, h⟩ = (g : Equiv.Perm α) a := rfl
 
 end arrowAction
