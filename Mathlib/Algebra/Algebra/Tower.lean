@@ -299,7 +299,7 @@ open IsScalarTower
 
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
-  span_induction hks (fun c hc => subset_span <| Set.mem_smul.2 ⟨c, x, hc, hx, rfl⟩)
+  span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
     (by rw [zero_smul]; exact zero_mem _)
     (fun c₁ c₂ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
     fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
@@ -319,7 +319,7 @@ theorem smul_mem_span_smul' {s : Set S} (hs : span R s = ⊤) {t : Set A} {k : S
     (hx : x ∈ span R (s • t)) : k • x ∈ span R (s • t) :=
   span_induction hx
     (fun x hx => by
-      let ⟨p, q, _hp, hq, hpq⟩ := Set.mem_smul.1 hx
+      let ⟨p, _hp, q, hq, hpq⟩ := Set.mem_smul.1 hx
       rw [← hpq, smul_smul]
       exact smul_mem_span_smul_of_mem (hs.symm ▸ mem_top) hq)
     (by rw [smul_zero]; exact zero_mem _)

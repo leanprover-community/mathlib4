@@ -47,8 +47,8 @@ lemma map_stabilizer_le (f : G →* H) (s : Set G) :
 @[to_additive (attr := simp)]
 lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
   ext
-  refine ⟨?_, fun h ↦ ⟨_, _, (stabilizer G s).one_mem, h, one_mul _⟩⟩
-  rintro ⟨a, b, ha, hb, rfl⟩
+  refine ⟨?_, fun h ↦ ⟨_, (stabilizer G s).one_mem, _, h, one_mul _⟩⟩
+  rintro ⟨a, ha, b, hb, rfl⟩
   rw [← mem_stabilizer_iff.1 ha]
   exact smul_mem_smul_set hb
 

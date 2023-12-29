@@ -328,8 +328,7 @@ theorem image_mul_product : ((s ×ˢ t).image fun x : α × α => x.fst * x.snd)
 #align finset.image_add_product Finset.image_add_product
 
 @[to_additive]
-theorem mem_mul {x : α} : x ∈ s * t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y * z = x :=
-  mem_image₂
+theorem mem_mul {x : α} : x ∈ s * t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := mem_image₂
 #align finset.mem_mul Finset.mem_mul
 #align finset.mem_add Finset.mem_add
 
@@ -556,7 +555,7 @@ theorem image_div_product : ((s ×ˢ t).image fun x : α × α => x.fst / x.snd)
 #align finset.add_image_prod Finset.image_sub_product
 
 @[to_additive]
-theorem mem_div : a ∈ s / t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b / c = a :=
+theorem mem_div : a ∈ s / t ↔ ∃ b ∈ s, ∃ c ∈ t, b / c = a :=
   mem_image₂
 #align finset.mem_div Finset.mem_div
 #align finset.mem_sub Finset.mem_sub
@@ -800,13 +799,13 @@ scoped[Pointwise] attribute [instance] Finset.semigroup Finset.addSemigroup Fins
 
 @[to_additive]
 theorem subset_mul_left (s : Finset α) {t : Finset α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun a ha =>
-  mem_mul.2 ⟨a, 1, ha, ht, mul_one _⟩
+  mem_mul.2 ⟨a, ha, 1, ht, mul_one _⟩
 #align finset.subset_mul_left Finset.subset_mul_left
 #align finset.subset_add_left Finset.subset_add_left
 
 @[to_additive]
 theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun a ha =>
-  mem_mul.2 ⟨1, a, hs, ha, one_mul _⟩
+  mem_mul.2 ⟨1, hs, a, ha, one_mul _⟩
 #align finset.subset_mul_right Finset.subset_mul_right
 #align finset.subset_add_right Finset.subset_add_right
 
@@ -940,13 +939,13 @@ theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
 
 @[to_additive]
 theorem mul_univ_of_one_mem [Fintype α] (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
 #align finset.mul_univ_of_one_mem Finset.mul_univ_of_one_mem
 #align finset.add_univ_of_zero_mem Finset.add_univ_of_zero_mem
 
 @[to_additive]
 theorem univ_mul_of_one_mem [Fintype α] (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
 #align finset.univ_mul_of_one_mem Finset.univ_mul_of_one_mem
 #align finset.univ_add_of_zero_mem Finset.univ_add_of_zero_mem
 
@@ -1136,7 +1135,7 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
   let ⟨a, ha⟩ := h
-  mem_div.2 ⟨a, a, ha, ha, div_self' _⟩
+  mem_div.2 ⟨a, ha, a, ha, div_self' _⟩
 #align finset.nonempty.one_mem_div Finset.Nonempty.one_mem_div
 #align finset.nonempty.zero_mem_sub Finset.Nonempty.zero_mem_sub
 
@@ -1287,7 +1286,7 @@ theorem image_smul_product : ((s ×ˢ t).image fun x : α × β => x.fst • x.s
 #align finset.image_vadd_product Finset.image_vadd_product
 
 @[to_additive]
-theorem mem_smul {x : β} : x ∈ s • t ↔ ∃ y z, y ∈ s ∧ z ∈ t ∧ y • z = x :=
+theorem mem_smul {x : β} : x ∈ s • t ↔ ∃ y ∈ s, ∃ z ∈ t, y • z = x :=
   mem_image₂
 #align finset.mem_smul Finset.mem_smul
 #align finset.mem_vadd Finset.mem_vadd
@@ -1461,7 +1460,7 @@ theorem image_vsub_product : image₂ (· -ᵥ ·) s t = s -ᵥ t :=
   rfl
 #align finset.image_vsub_product Finset.image_vsub_product
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b c, b ∈ s ∧ c ∈ t ∧ b -ᵥ c = a :=
+theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b ∈ s, ∃ c ∈ t, b -ᵥ c = a :=
   mem_image₂
 #align finset.mem_vsub Finset.mem_vsub
 
