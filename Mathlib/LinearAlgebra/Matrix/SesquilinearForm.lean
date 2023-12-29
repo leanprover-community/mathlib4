@@ -61,9 +61,10 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
     (fun _ _ _ => by simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul,
       smul_sum])
-    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib]) fun _ v _ => by
-      simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum]
-      simp_rw [smul_algebra_smul_comm (σ₁ (v _))]
+    (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib])
+      fun _ v _ => by
+        simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum]
+        simp_rw [smul_algebra_smul_comm (σ₁ (v _))]
 #align matrix.to_linear_map₂'_aux Matrix.toLinearMap₂'Aux
 
 variable [DecidableEq n] [DecidableEq m]
@@ -383,7 +384,7 @@ theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] R) (i : n
 
 @[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m R) (x : M₁) (y : M₂) :
-    Matrix.toLinearMap₂ b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i * M i j * b₂.repr y j :=
+    Matrix.toLinearMap₂ b₁ b₂ M x y = ∑ i, ∑ j, b₁.repr x i • b₂.repr y j • M i j  :=
   rfl
 #align matrix.to_linear_map₂_apply Matrix.toLinearMap₂_apply
 
