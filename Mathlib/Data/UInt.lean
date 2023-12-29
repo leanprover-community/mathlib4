@@ -5,15 +5,20 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
 
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma USize.val_eq_of_lt {a : Nat} : a < USize.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
 instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
 

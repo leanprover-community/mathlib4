@@ -150,6 +150,10 @@ example (x y : ℝ) : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) ↔
     intro
     linarith
 
+example : (∃ k > 0, ∃ n ≥ k, n = k) ↔ ∃ k > 0, ∃ n ≥ k, k = n := by
+  peel 4
+  exact eq_comm
+
 /-! ## Eventually and frequently -/
 
 example {f : ℝ → ℝ} (h : ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ≤ |y - x|) :

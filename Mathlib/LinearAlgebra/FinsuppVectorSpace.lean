@@ -180,12 +180,6 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
   simp [hx']
 #align finset.sum_single_ite Finset.sum_single_ite
 
--- Porting note: LHS of equivFun_symm_stdBasis simplifies to this
-@[simp]
-theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
-    (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
-  simp only [ite_smul, zero_smul, one_smul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   simp

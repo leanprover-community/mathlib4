@@ -91,6 +91,10 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
   ext; simp [Function.IsFixedPt]
 #align representation.invariants_eq_inter Representation.invariants_eq_inter
 
+theorem invariants_eq_top [ρ.IsTrivial] :
+    invariants ρ = ⊤ :=
+eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
+
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- The action of `average k G` gives a projection map onto the subspace of invariants.

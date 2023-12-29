@@ -19,9 +19,9 @@ noncomputable section
 
 namespace Complex
 
-open Set Filter
+open Set Filter Bornology
 
-open Real Topology ComplexConjugate
+open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
@@ -85,6 +85,14 @@ theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
+
+lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+    log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
+  refine ext_iff.trans <| Iff.trans ?_ <| arg_mul_eq_add_arg_iff hx₀ hy₀
+  simp_rw [add_re, add_im, log_re, log_im, AbsoluteValue.map_mul,
+    Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀), true_and]
+
+alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
 
 @[simp]
 theorem log_zero : log 0 = 0 := by simp [log]
@@ -161,7 +169,7 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine' ⟨fun hs => _, fun hs => _⟩
   · refine' ((hs.image exp).insert 0).mono _
-    rw [Set.image_preimage_eq_inter_range, range_exp, ←Set.diff_eq, ←Set.union_singleton,
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
   · rw [← Set.biUnion_preimage_singleton]
@@ -199,8 +207,7 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
         tendsto_const_nhds) using 1
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.continuous_within_at_log_of_re_neg_of_im_zero
-Complex.continuousWithinAt_log_of_re_neg_of_im_zero
+#align complex.continuous_within_at_log_of_re_neg_of_im_zero Complex.continuousWithinAt_log_of_re_neg_of_im_zero
 
 theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by
@@ -214,9 +221,9 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
 @[simp]
-theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop := by
-  rw [← comap_exp_comap_abs_atTop, map_comap, range_exp, inf_eq_left, le_principal_iff]
-  exact eventually_ne_of_tendsto_norm_atTop tendsto_comap 0
+theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
+  rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
+  exact eventually_ne_cobounded _
 #align complex.map_exp_comap_re_at_top Complex.map_exp_comap_re_atTop
 
 end Complex
@@ -229,20 +236,18 @@ open Topology
 
 variable {α : Type*}
 
-theorem continuousAt_clog {x : ℂ} (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt log x := by
+theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
   refine' ContinuousAt.add _ _
   · refine' continuous_ofReal.continuousAt.comp _
     refine' (Real.continuousAt_log _).comp Complex.continuous_abs.continuousAt
-    rw [Complex.abs.ne_zero_iff]
-    rintro rfl
-    simp at h
+    exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
     refine' h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp _)
     exact continuousAt_arg h
 #align continuous_at_clog continuousAt_clog
 
 theorem _root_.Filter.Tendsto.clog {l : Filter α} {f : α → ℂ} {x : ℂ} (h : Tendsto f l (𝓝 x))
-    (hx : 0 < x.re ∨ x.im ≠ 0) : Tendsto (fun t => log (f t)) l (𝓝 <| log x) :=
+    (hx : x ∈ slitPlane) : Tendsto (fun t => log (f t)) l (𝓝 <| log x) :=
   (continuousAt_clog hx).tendsto.comp h
 #align filter.tendsto.clog Filter.Tendsto.clog
 
@@ -250,26 +255,26 @@ variable [TopologicalSpace α]
 
 nonrec
 theorem _root_.ContinuousAt.clog {f : α → ℂ} {x : α} (h₁ : ContinuousAt f x)
-    (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) : ContinuousAt (fun t => log (f t)) x :=
+    (h₂ : f x ∈ slitPlane) : ContinuousAt (fun t => log (f t)) x :=
   h₁.clog h₂
 #align continuous_at.clog ContinuousAt.clog
 
 nonrec
 theorem _root_.ContinuousWithinAt.clog {f : α → ℂ} {s : Set α} {x : α}
-    (h₁ : ContinuousWithinAt f s x) (h₂ : 0 < (f x).re ∨ (f x).im ≠ 0) :
+    (h₁ : ContinuousWithinAt f s x) (h₂ : f x ∈ slitPlane) :
     ContinuousWithinAt (fun t => log (f t)) s x :=
   h₁.clog h₂
 #align continuous_within_at.clog ContinuousWithinAt.clog
 
 nonrec
 theorem _root_.ContinuousOn.clog {f : α → ℂ} {s : Set α} (h₁ : ContinuousOn f s)
-    (h₂ : ∀ x ∈ s, 0 < (f x).re ∨ (f x).im ≠ 0) : ContinuousOn (fun t => log (f t)) s := fun x hx =>
+    (h₂ : ∀ x ∈ s, f x ∈ slitPlane) : ContinuousOn (fun t => log (f t)) s := fun x hx =>
   (h₁ x hx).clog (h₂ x hx)
 #align continuous_on.clog ContinuousOn.clog
 
 nonrec
 theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
-    (h₂ : ∀ x, 0 < (f x).re ∨ (f x).im ≠ 0) : Continuous fun t => log (f t) :=
+    (h₂ : ∀ x, f x ∈ slitPlane) : Continuous fun t => log (f t) :=
   continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
 #align continuous.clog Continuous.clog
 

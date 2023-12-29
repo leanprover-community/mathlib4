@@ -70,7 +70,7 @@ namespace AlgHom
 /--
 An algebra homomorphism `f : A →ₐ[R] B` such that `f x` commutes with `f y` for all `x, y` defines
 an algebra homomorphism from `Aᵐᵒᵖ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐᵒᵖ →ₐ[R] B :=
   { f.toRingHom.fromOpposite hf with
     toFun := f ∘ unop
@@ -89,7 +89,7 @@ theorem toRingHom_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) 
 /--
 An algebra homomorphism `f : A →ₐ[R] B` such that `f x` commutes with `f y` for all `x, y` defines
 an algebra homomorphism to `Bᵐᵒᵖ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →ₐ[R] Bᵐᵒᵖ :=
   { f.toRingHom.toOpposite hf with
     toFun := op ∘ f
