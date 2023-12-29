@@ -60,12 +60,9 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
   | succ n ih =>
     let new_hom : pathGraph (n + 1) →g G := hom.comp (Hom.pathGraph ((n + 1).le_add_right 1))
     have h_new_hom := ih new_hom hc0
-    have hu : u.val < n + 1 ∨ u.val = n + 1 := le_iff_lt_or_eq.mp u.is_le
-    apply Or.elim hu
-    · intro (hun : u.val < n + 1)
-      exact h_new_hom ⟨u.val, hun⟩
-    · intro (hun : u.val = n + 1)
-      -- c (hom u) ↔ Even ↑u
+    obtain (hu : u.val < n + 1) | (hu : u.val = n + 1) := u.is_le.lt_or_eq
+    · exact h_new_hom ⟨u.val, hu⟩
+    · -- c (hom u) ↔ Even ↑u
       let last : Fin (n + 2) := ⟨n + 1, Nat.lt.base (n + 1)⟩
       let prev_last : Fin (n + 2) := ⟨n, Nat.sub_lt_succ (n + 1) 1⟩
       have hpgadj : (pathGraph (n + 2)).Adj prev_last last := by
@@ -76,7 +73,7 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
         have h := eq_iff_iff.not.mp (c.valid hGadj).symm
         rw [h_c_prev_last] at h
         exact (not_iff_comm.mp (not_iff.mp h)).symm
-      simp [Fin.eq_mk_iff_val_eq.mpr hun, h_c_last]
+      simp [Fin.eq_mk_iff_val_eq.mpr hu, h_c_last]
       exact Nat.even_add_one.symm
 
 theorem pathGraph_Hom_coloring' {α} (G : SimpleGraph α) (c : G.Coloring Prop) {n : ℕ}
