@@ -231,12 +231,12 @@ theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image�
   image₂_congr fun a _ b _ => h a b
 #align finset.image₂_congr' Finset.image₂_congr'
 
-@[simp (default + 1)]
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
 lemma sup_image₂_le [SemilatticeSup δ] [OrderBot δ] {g : γ → δ} {a : δ} :
     sup (image₂ f s t) g ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, g (f x y) ≤ a := by
   rw [Finset.sup_le_iff, forall_image₂_iff]
 
-@[simp (default + 1)]
+@[simp (default + 1)] -- otherwise `simp` doesn't use `forall_image₂_iff`
 lemma le_inf_image₂ [SemilatticeInf δ] [OrderTop δ] {g : γ → δ} {a : δ} :
     a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
   sup_image₂_le (δ := δᵒᵈ)
