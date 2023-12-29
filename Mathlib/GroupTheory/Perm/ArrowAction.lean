@@ -29,8 +29,8 @@ open Equiv MulAction
 
 namespace DomMulAct
 
-lemma mem_stabilizer_iff {g : DomMulAct (Perm α)} :
-    g ∈ stabilizer (DomMulAct (Perm α)) p ↔ p ∘ (DomMulAct.mk.symm g :) = p := by
+lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
+    g ∈ stabilizer (Perm α)ᵈᵐᵃ p ↔ p ∘ (mk.symm g :) = p := by
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
@@ -58,12 +58,12 @@ def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // p a = i}) : Perm α where
 
 variable (p)
 
-/-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (DomMulAct (Perm α)) p`
+/-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (Perm α)ᵈᵐᵃ p`
   to the product of the `Equiv.Perm {a // p a = i}` -/
-def stabilizerMulEquiv : (stabilizer (DomMulAct (Perm α)) p)ᵐᵒᵖ ≃* (∀ i, Perm {a // p a = i}) where
-  toFun g i := Perm.subtypePerm (DomMulAct.mk.symm g.unop) fun a ↦ by
-    rw [← Function.comp_apply (f := p), DomMulAct.mem_stabilizer_iff.mp g.unop.prop]
-  invFun g := ⟨DomMulAct.mk (stabilizerEquiv_invFun_aux g), by
+def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ ≃* (∀ i, Perm {a // p a = i}) where
+  toFun g i := Perm.subtypePerm (mk.symm g.unop) fun a ↦ by
+    rw [← Function.comp_apply (f := p), mem_stabilizer_iff.mp g.unop.prop]
+  invFun g := ⟨mk (stabilizerEquiv_invFun_aux g), by
     ext a
     rw [smul_apply, symm_apply_apply, Perm.smul_def]
     apply comp_stabilizerEquiv_invFun⟩
@@ -71,7 +71,7 @@ def stabilizerMulEquiv : (stabilizer (DomMulAct (Perm α)) p)ᵐᵒᵖ ≃* (∀
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
   map_mul' g h := by rfl
 
-lemma stabilizerMulEquiv_apply (g : (stabilizer (DomMulAct (Perm α)) p)ᵐᵒᵖ) {a : α} {i : ι} (h : p a = i) :
-    ((stabilizerMulEquiv p)) g i ⟨a, h⟩ = (DomMulAct.mk.symm g.unop : Equiv.Perm α) a := rfl
+lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ p)ᵐᵒᵖ) {a : α} {i : ι} (h : p a = i) :
+    ((stabilizerMulEquiv p)) g i ⟨a, h⟩ = (mk.symm g.unop : Equiv.Perm α) a := rfl
 
 end DomMulAct
