@@ -1899,7 +1899,7 @@ namespace PartialHomeomorph
 
 variable (𝕜)
 
-/-- Restrict a local homeomorphism to the subsets of the source and target
+/-- Restrict a partial homeomorphism to the subsets of the source and target
 that consist of points `x ∈ f.source`, `y = f x ∈ f.target`
 such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
 

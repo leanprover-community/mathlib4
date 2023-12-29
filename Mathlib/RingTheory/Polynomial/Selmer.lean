@@ -172,16 +172,6 @@ lemma keylemma' {α β : Type*} [Group α] [MulAction α β] [DecidableEq β] [F
 
 open IntermediateField
 
-lemma galAction_isPretransitive {F E : Type*} [Field F] [Field E] [Algebra F E] {p : Polynomial F}
-    (hp : Irreducible p) [Fact (p.Splits (algebraMap F E))] :
-    MulAction.IsPretransitive p.Gal (p.rootSet E) := by
-  refine' ⟨fun x y ↦ _⟩
-  let ϕ := Gal.rootsEquivRoots p E
-  have hx := minpoly.eq_of_irreducible hp (aeval_eq_zero_of_mem_rootSet (ϕ.symm x).2)
-  have hy := minpoly.eq_of_irreducible hp (aeval_eq_zero_of_mem_rootSet (ϕ.symm y).2)
-  obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)
-  exact ⟨g, ϕ.apply_eq_iff_eq_symm_apply.mpr (Subtype.ext hg)⟩
-
 attribute [local instance] Gal.splits_ℚ_ℂ
 
 instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :

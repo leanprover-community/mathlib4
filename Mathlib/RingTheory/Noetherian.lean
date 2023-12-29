@@ -449,7 +449,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
   refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
-  cases' le_or_lt m l with h h
+  rcases le_or_lt m l with h | h
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
 
@@ -588,7 +588,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     rcases hn with ⟨l, hl1, hl2⟩
     refine' ⟨fun x => l x, Subtype.ext _⟩
     change (∑ i in s.attach, l i • (i : M)) = n
-    rw [@Finset.sum_attach M M s _ fun i => l i • i, ← hl2,
+    rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]
     refine' Finset.sum_subset hl1 fun x _ hx => _
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
