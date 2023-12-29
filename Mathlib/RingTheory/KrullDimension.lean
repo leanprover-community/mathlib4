@@ -303,5 +303,3 @@ theorem primeIdealHeight_eq_ringKrullDim_of_Localization :
 end aboutHeightAndLocalization
 
 end ringKrullDim
-
-#lint
