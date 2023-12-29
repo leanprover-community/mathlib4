@@ -26,8 +26,7 @@ variable {α ι : Type*} {p : α → ι}
 
 open Equiv MulAction
 
-/-- The natural `MulAction` of `Equiv.Perm α` on `α → ι` -/
-local instance  : MulAction (Equiv.Perm α) (α → ι) := arrowAction
+attribute [local instance] arrowAction
 
 namespace arrowAction
 
