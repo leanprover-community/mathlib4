@@ -648,11 +648,12 @@ end jacobiSym
 namespace legendreSym
 
 /-- Computes `legendreSym p a` using `jacobiSym.fastJacobiSym`. -/
+@[nolint unusedArguments]
 def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ :=
   jacobiSym.fastJacobiSym a p
 
 @[csimp]
-theorem fastLegendreSym.eq : @legendreSym = @fastLegendreSym :=
+theorem fastLegendreSym.eq : legendreSym = fastLegendreSym :=
   funext₃ fun p _ a ↦ (jacobiSym.legendreSym.to_jacobiSym p a).trans <|
     congr_fun₂ jacobiSym.fastJacobiSym.eq a p
 
