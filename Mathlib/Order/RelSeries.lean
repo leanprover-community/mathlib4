@@ -593,7 +593,8 @@ def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   · congr
     exact Nat.add_sub_self_left _ _
 
-@[simp] lemma combine_succ_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
+@[simp] lemma combine_succ_natAdd {s₁ s₂ : RelSeries r}
+    (h : s₁.last = s₂.head) (i : Fin s₂.length) :
     combine s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
   dsimp [combine]
   split_ifs with H
